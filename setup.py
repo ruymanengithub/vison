@@ -23,7 +23,7 @@ def configuration():
     config = Configuration()
     
     config.add_subpackage('vison')
-    config.add_subpackage('vison/pipeline')
+    config.add_subpackage('vison/pipe')
     config.add_subpackage('vison/flat')
     config.add_subpackage('vison/point')
     config.add_subpackage('vison/inject')
@@ -34,12 +34,12 @@ def configuration():
     
     #config.add_subpackage('vison/doc')
         
-#    config.add_data_dir(['vison/data','vison/data'])
+    config.add_data_dir(['vison/data','vison/data'])
     config.add_data_dir(['vison/doc','vison/doc'])  
     
     config.add_scripts(['vison/scripts/HKmonitor.py',
            'vison/scripts/QLA.py',
-           'vissim/scripts/quickds9.py'])
+           'vison/scripts/quickds9.py'])
    
     
     return config

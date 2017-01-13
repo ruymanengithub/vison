@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 """
 
-House-Keeping inspection tools.
+House-Keeping inspection and handling tools.
 
 :History:
 Created on Thu Mar 10 12:11:58 2016
 
-@author: Ruyman Azzollini
+:author: Ruyman Azzollini
+:contact: r.azzollini_at_ucl.ac.uk
 """
 
 # IMPORT STUFF
@@ -70,14 +71,17 @@ allHK_keys['5.7.06'] = allHK_keys['5.7.04']
 allHK_keys['5.7.08'] = allHK_keys['5.7.07']
 allHK_keys['5.7.09'] = allHK_keys['5.7.08']
 
+allHK_keys['5.8.X'] = allHK_keys['5.7.09']
+allHK_keys['5.8.X'] = ['HK_timestamp'] + allHK_keys['5.8.X']
+
 allstats = ['mean','std','min','max']
 
 
-def loadHK(filename,form='5.7.07'):
+def loadHK_preQM(filename,form='5.7.07'):
     """Loads a HK file
     
     It only assumes a structure given by a HK keyword followed by a number of 
-    of blank-separated values (number not specified).
+    of tab-separated values (number not specified).
     Note that the length of the values arrays is variable (depends on length
     of exposure and HK sampling rate).
     
@@ -102,6 +106,29 @@ def loadHK(filename,form='5.7.07'):
     
     
     return data
+
+def loadHK_QFM(filename,form='5.8.X'):
+    """Loads a HK file
+    
+    Structure: tab separated columns, one per Keyword. First column is a 
+    timestamp, and there may be a variable number of rows (readings).
+    
+    :param filename: path to the file to be loaded, including the file itself
+    :param form: format of HK file, given by version of "ELVIS"
+    
+    :return: dictionary with pairs parameter:[values]
+    
+    """
+    
+    table = ascii.read(filename)
+    data = dict()
+    
+    for key in table.keys():
+        data[key] = table[key].data.copy()
+    
+    return data
+
+
 
 def filtervalues(values,key):
     """ """
