@@ -11,8 +11,16 @@ Created on Wed Nov 30 11:11:27 2016
 """
 
 # IMPORT STUFF
+from pdb import set_trace as stop
+
 import copy
-from vissim.datamodel.ccd import CCD
+from vison.datamodel.ccd import CCD
+from vison.datamodel import EXPLOGtools as ELtools
+from vison.datamodel import HKtools
+
+from glob import glob
+import os
+import numpy as np
 # END IMPORT
 
 
@@ -60,8 +68,98 @@ for iCCD in range(2,4):
     for Q in Quads:
         Point_CooNom['CCD%i' % iCCD][Q] = copy.deepcopy(Point_CooNom['CCD1'][Q])
 
+def loadexplogs(explogfs,elvis='5.8.X',addpedigree=False):
+    """loads in memory an explog (text-file) or list of explogs (text-files)."""
+    
+    if isinstance(explogfs,str):
+        explog = ELtools.loadExplog(explogfs,elvis=elvis)
+        return explog
+    
+    elif isinstance(explogfs,list):
+        expLogList = []
+        for explogf in explogfs:
+            expLogList.append(ELtools.loadExpLog(explogf,elvis=elvis))
+        explog = ELtools.mergeExpLogs(expLogList,addpedigree)
+        return explog
+        
+def check_test_structure(explog,selbool,structure,CCDs=[1,2,3]):
+    """Checks whether a selected number of exposures is consistent with the 
+    expected acquisition test structure.
+    
+    TO-DO: account for 3 entries per exposure (3 CCDs). Otherwise no test
+           will be compliant.
+    
+    """
+    
+    isconsistent = True
+    
+    Ncols = structure['Ncols']
+    
+    
+    for iCCD in CCDs:
+        
+        cselbool = selbool & (explog['CCD'] == 'CCD%i' % iCCD)
+    
+        ix0 = 0
+        for iC in range(1,Ncols+1):
+            
+            colname = 'col%i' % iC
+        
+            expectation = structure[colname]
+            N = expectation['N']
+            
+            ix1 = ix0+N
+            
+            ixsubsel = np.where(cselbool)[0][ix0:ix1]
+            
+            
+            logkeys = expectation.keys()
+            logkeys.remove('N')
+            
+            isamatch = np.ones(N,dtype='bool')
+
+            for key in logkeys:
+                
+                isamatch = isamatch & (explog[key][ixsubsel] == expectation[key])
+            
+            isconsistent = isconsistent and np.all(isamatch)
+            
+            ix0 += N
+        
+    
+    return isconsistent        
 
 
-def addHK(DataDict,HKKeys=[]):
+def addHK(DataDict,HKKeys,elvis='5.8.X'):
     """Adds HK information to a DataDict object."""
     
+    
+    for ixCCD in [1,2,3]:
+        CCDkey = 'CCD%i' % ixCCD
+        
+        if CCDkey in DataDict:
+            ObsIDs = DataDict[CCDkey]['ObsID'].copy()            
+            datapaths = DataDict[CCDkey]['datapath'].copy()
+            
+            HKlist = []
+            
+            for iOBS,ObsID in enumerate(ObsIDs):
+                tmp = os.path.join(datapaths[iOBS],'HK_%s_*_ROE1.txt' % ObsID)
+                
+                HKs = glob(tmp)
+                
+                if len(HKs) == 1:
+                    HKlist.append(HKs[0])
+                else:
+                    print 'More than one HK file for ObsID %i' % ObsID
+                    print HKs
+                    stop()
+
+            obsids, dtobjs, tdeltasec, HK_keys, HKdata = HKtools.parseHKfiles(HKlist,elvis=elvis)
+            
+            for HKKey in HKKeys:
+                ixkey = HK_keys.index(HKKey)
+                DataDict[CCDkey][HKKey] = HKdata[:,0,ixkey]
+    
+    return DataDict
+            

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Script to analyze Test PSF02
+Script to analyze Test PSF01
 
 PSF vs. Fluence, and Wavelength
 
@@ -71,7 +71,7 @@ def showstamp(stamp,title='',outfile=None):
         plt.show()
     plt.close()
     
-def process_exposures_PSF02(DataDict,box,Quad,mask_fits,flatfields_dict,VSCAN=[500-1,800-1],doshow=False):
+def process_exposures_PSF01(DataDict,box,Quad,mask_fits,flatfields_dict,VSCAN=[500-1,800-1],doshow=False):
     """ 
     Flow:
     
@@ -165,7 +165,7 @@ def process_exposures_PSF02(DataDict,box,Quad,mask_fits,flatfields_dict,VSCAN=[5
             
             # SAVING
     
-            outfile = 'PSF02_%i_Q%s_CCD%i_ofsflfbgd.cpickle' % (OBSID,Quad,CCD)
+            outfile = 'PSF01_%i_Q%s_CCD%i_ofsflfbgd.cpickle' % (OBSID,Quad,CCD)
             outfile = os.path.join(resultspath,outfile)
             
             FAILED = stamp_nobgd.max() < 1.E2 # failed exposure, no source
@@ -182,7 +182,7 @@ def process_exposures_PSF02(DataDict,box,Quad,mask_fits,flatfields_dict,VSCAN=[5
     
     return DataDict
 
-def filter_exposuresPSF02(explog,OBSID_lims,inwavelength,inCCD):
+def filter_exposuresPSF01(explog,OBSID_lims,inwavelength,inCCD):
     """ """
     
     OBSIDs = np.array(explog['ObsID'].copy())
@@ -198,7 +198,7 @@ def filter_exposuresPSF02(explog,OBSID_lims,inwavelength,inCCD):
     #selbool = (TEST == 'PSF02') & (Wavelength == inwavelength) & \ # IF THE LOG WAS RIGHT...
     #    (CCD == 'CCD%i' % inCCD)
 
-    selbool = (TEST == 'PSF02') & (OBSIDs >= OBSID_lims[0]) & \
+    selbool = (TEST == 'PSF01') & (OBSIDs >= OBSID_lims[0]) & \
         (OBSIDs <= OBSID_lims[1]) & (CCD == 'CCD%i' % inCCD) & (Exptime > 0.)
     
     
@@ -233,10 +233,10 @@ def filter_exposuresPSF02(explog,OBSID_lims,inwavelength,inCCD):
 def run(inputs,log=None):
     
     
-    if log: log.info('PSF02 Running...')
+    if log: log.info('PSF01 Running...')
     
     
-    sys.exit('PSF02 not ready')
+    sys.exit('PSF01 not ready')
     
     FilterID = inputs['FilterID']
     VSTART = inputs['VSTART']
@@ -249,7 +249,7 @@ def run(inputs,log=None):
     resultsroot = inputs['resultsroot']
     datapath = inputs['datapath']
     
-    resultspath = os.path.join(resultsroot,'PSF02')
+    resultspath = os.path.join(resultsroot,'PSF01')
     
     global resultspath
     global datapath
@@ -258,15 +258,15 @@ def run(inputs,log=None):
     wavelength = FMlib.FW[FilterID]
     wavekey = '%inm' % wavelength
     
-    outdict = os.path.join(resultspath,'DataDict_PSF02_%s.cpickle' % wavekey)
+    outdict = os.path.join(resultspath,'DataDict_PSF01_%s.cpickle' % wavekey)
     
     explog = ELtools.loadExpLog(explogf)
     
     OBSID_lims = [OBSID_start,OBSID_end]
     
-    DataDict = filter_exposuresPSF02(explog,OBSID_lims,wavelength,CCD)
+    DataDict = filter_exposuresPSF01(explog,OBSID_lims,wavelength,CCD)
     
-    DataDict = process_exposures_PSF02(DataDict,box,Q,mask_fits,\
+    DataDict = process_exposures_PSF01(DataDict,box,Q,mask_fits,\
        flatfields_dict=flatfields_dict,VSCAN=[VSTART,VEND],doshow=doshow)
     
     #wavekeys = DataDict.keys()
@@ -370,7 +370,7 @@ if __name__ == '__main__':
         
             wavekey = '%inm' % wavelength
     
-            outdict = os.path.join(resultspath,'DataDict_PSF02_%s.cpickle' % wavekey)
+            outdict = os.path.join(resultspath,'DataDict_PSF01_%s.cpickle' % wavekey)
             
             DataDict = cPickleRead(outdict)
             uexptime = DataDict['uexptime']

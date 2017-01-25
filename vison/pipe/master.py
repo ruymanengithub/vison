@@ -38,13 +38,13 @@ from copy import copy
 import os
 
 from vison.support import logger as lg
-from vison.point import PSF02
+from vison.point import PSF01
 
 import datetime
 
 # END IMPORT
 
-task_dict = dict(PSF02=PSF02)
+task_dict = dict(PSF01=PSF01)
 #task_dict = {}
 
 defaults = dict(BLOCKID='R00P00CC000000',CHAMBER='A')
@@ -101,6 +101,8 @@ class Pipe(object):
                 msg += ['%s = %s' % (key,str(taskinputs[key]))]
             
             self.log.info(msg)
+            
+            taskinputs['resultspath'] = os.path.join(resultsroot,taskinputs['resultspath'])
             
             task.run(taskinputs,log=self.log)
             

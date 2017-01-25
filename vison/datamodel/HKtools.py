@@ -77,7 +77,7 @@ allHK_keys['5.8.X'] = ['HK_timestamp'] + allHK_keys['5.8.X']
 allstats = ['mean','std','min','max']
 
 
-def loadHK_preQM(filename,form='5.7.07'):
+def loadHK_preQM(filename,elvis='5.7.07'):
     """Loads a HK file
     
     It only assumes a structure given by a HK keyword followed by a number of 
@@ -107,7 +107,7 @@ def loadHK_preQM(filename,form='5.7.07'):
     
     return data
 
-def loadHK_QFM(filename,form='5.8.X'):
+def loadHK_QFM(filename,elvis='5.8.X'):
     """Loads a HK file
     
     Structure: tab separated columns, one per Keyword. First column is a 
@@ -231,7 +231,7 @@ def parseHKfname(HKfname):
     return obsid,DTobject,ROE
     
 
-def parseHKfiles(HKlist,form='5.7.07'):
+def parseHKfiles(HKlist,elvis='5.7.07'):
     """ 
     
     :param HKlist: list of HK files (path+name).
@@ -240,9 +240,14 @@ def parseHKfiles(HKlist,form='5.7.07'):
     """
     
     nfiles = len(HKlist)
-    HK_keys = allHK_keys[form]
+    HK_keys = allHK_keys[elvis]
     nkeys = len(HK_keys)
     
+    
+    if int(st.split(elvis,'.')[1]) <= 7:
+        HKloader = loadHK_preQM
+    else:
+        HKloader = loadHK_QFM
     
     obsids = []
     dtobjs = []
@@ -255,7 +260,7 @@ def parseHKfiles(HKlist,form='5.7.07'):
         obsids.append(obsid)
         dtobjs.append(dtobj)
         
-        HK = loadHK(HKfname)
+        HK = HKloader(HKfname,elvis=elvis)
         synthHKdict = synthHK(HK)
         
         for ik,key in enumerate(HK_keys):
