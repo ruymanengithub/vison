@@ -10,6 +10,7 @@ Created on Fri Apr 22 16:13:22 2016
 """
 
 # IMPORT STUFF
+
 from multiprocessing import Pool
 from pdb import set_trace as stop
 import numpy as np
@@ -17,12 +18,11 @@ import datetime
 import warnings
 from scipy import interpolate
 
+import vison
+
 #from matplotlib import pyplot as plt
 
-from vissim.datamodel import ccd as ccdmodule
-#from vissim.support.files import cPickleDumpDictionary, cPickleRead
-#from vissim.datamodel.HKtools import parseHKfiles
-from vissim.simulator.simulator import __version__
+from vison.datamodel import ccd as ccdmodule
 
 from scipy import ndimage as nd
 #from scipy import signal
@@ -146,7 +146,7 @@ def produce_SingleFlatfield(infits,outfits,settings={},runonTests=False):
     
     print infits
     
-    #ffits = glob(os.path.join(datapath,'EUC_%i_*_CCD%i.fits' % (OBSID,CCD)))[0]       
+    
     ccd = ccdmodule.CCD(infits)
     NX,NY = ccd.NAXIS1,ccd.NAXIS2
     
@@ -277,8 +277,6 @@ def produce_MasterFlat(infits,outfits,mask=None,settings={}):
     
         cubeflat = np.zeros((NAXIS1,NAXIS2,len(infits)))
         
-        
-        
         for ix in range(nin):
         
             print 'Loading img %i of %i..., Q=%s' % (ix+1,nin,Quad)
@@ -307,16 +305,14 @@ def produce_MasterFlat(infits,outfits,mask=None,settings={}):
             cubeflat[:,:,ix] = subdivimg
 
             #cubeflat[:,:,iOBS] = np.zeros((NAXIS1*2,NAXIS2*2))
-    
+        
         
         qflat = np.zeros((NAXIS1,NAXIS2))
         eqflat = np.zeros((NAXIS1,NAXIS2))
-    
+        
         for ix in range(NAXIS1):
             qflat[ix,:] = np.nanmedian(cubeflat[ix,:,:],axis=1)
             eqflat[ix,:] = np.nanstd(cubeflat[ix,:,:],axis=1)/np.sqrt(nin)
-        
-        
         
         mflat[x0:x1,y0:y1] = qflat.copy()
         eflat[x0:x1,y0:y1] = eqflat.copy()
@@ -334,8 +330,8 @@ def produce_MasterFlat(infits,outfits,mask=None,settings={}):
     hdu.header.add_history('Extension 1: FLAT')
     hdu.header.add_history('Extension 2: eFLAT')
     hdu.header.add_history('CCD273 EM1A Characterization Campaign')
-    hdu.header.add_history('Created by VISsim (version=%s) at %s' % (__version__, datetime.datetime.isoformat(datetime.datetime.now())))
-    hdu.header.add_history('Further Info: Ruyman Azzollini (r.azzollini at mssl.ucl.ac.uk)')
+    hdu.header.add_history('Created by vison (version=%s) at %s' % (vison.__version__, datetime.datetime.isoformat(datetime.datetime.now())))
+    hdu.header.add_history('Further Info: Ruyman Azzollini (r.azzollini_at_mssl.ucl.ac.uk)')
     
     hdulist = fts.HDUList([hdu])
     
@@ -348,3 +344,75 @@ def produce_MasterFlat(infits,outfits,mask=None,settings={}):
     #hdulist.append(fts.ImageHDU(filtmflat.transpose()))
         
     hdulist.writeto(outfits,clobber=True)
+
+
+
+
+class FlatField(ccdmodule.CCD):
+    """ """
+# Individual:
+#cube[B[0]:B[1],B[2]:B[3],0] = img[:,::-1].copy()
+#            cube[B[0]:B[1],B[2]:B[3],1] = filtered[:,::-1].copy()
+#            cube[B[0]:B[1],B[2]:B[3],2] = poly[:,::-1].copy()
+
+# Master
+#     hdu.header.add_history('Extension 1: FLAT')
+#    hdu.header.add_history('Extension 2: eFLAT')
+#    What about a Mask?: Extension 3: Mask
+
+
+    def __init__(self,fitsfile='',data=dict(),meta=dict(),ftype='Individual'):
+        """ """
+        
+        self.ftype = ftype
+        
+        
+        if fitsfile != '':
+            self.loadfromFITS(fitsfile,self.ftype)
+        else:
+            self.data = data
+            self.meta = meta 
+            self.parse_data(ftype)
+    
+    
+    def parse_data(self,ftype):
+        """ """
+        
+        try: self.mask = self.data['mask'].copy()
+        except KeyError:
+            self.mask = None
+        
+        if ftype == 'Individual':
+            self.img = self.data['img'].copy()
+            self.filtered = self.data['filtered'].copy()
+            self.poly = self.data['poly'].copy()
+        elif ftype == 'Combined':
+            self.flat = self.data['flat'].copy()
+            self.eflat = self.data['eflat'].copy()
+            
+    def loadfromFITS(self,fitsfile,ftype):
+        """ """
+        
+        inhdulist = fts.open(fitsfile)
+        
+        if ftype == 'Individual':
+        
+            
+        
+            img = inhdulist[1].data.transpose().copy() # offset-subtracted exposure
+            filtered = inhdulist[2].data.transpose().copy() # medianfiltered bias-sub exposure
+            poly = inhdulist[3].data.transpose().copy() # polynomial fit to  bias-sub exposure
+        
+            inhdulist.close()
+            
+            self.data = dict(img=img,filtered=filtered,poly=poly)
+            self.parse_data(self.ftype)
+            
+        elif ftype == 'Combined':
+            
+            PENDING
+        
+    def writeto(self,outfits,clobber=False):
+        """Writes 'self' to a FITS file."""
+        
+        

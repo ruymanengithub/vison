@@ -34,8 +34,8 @@ import numpy as np
 from pdb import set_trace as stop
 import os
 from vison.pipe import lib as plib
-from vison import FlatFielding as FFing
-from vison import Report
+from vison.pipe import FlatFielding as FFing
+from vison.support.report import Report
 # END IMPORT
 
 isthere = os.path.exists

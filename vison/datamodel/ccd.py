@@ -47,33 +47,60 @@ QuadBound = dict(E=[0,NAXIS1/2,NAXIS2/2,NAXIS2],\
                G=[NAXIS1/2,NAXIS1,0,NAXIS2/2],\
                H=[0,NAXIS1/2,0,NAXIS2/2])
 
-class CCD():
+
+class Extension():
+    """Extension Class"""
     
-    def __init__(self,infits=None,extension=-1):
+    def __init__(self,data,header=None,label=None):
         """ """
         
+        self.data = data
+        self.header = header
+        self.label = label
+
+
+
+class CCD():
+    """Class of CCD objects. 
+    Euclid Images as acquired by ELVIS software (Euclid LabView Imaging Software).
+    
+    
+    The class has been extended to handle multi-extension images. This is useful
+    to also "host" calibration data-products, such as Flat-Fields.
+    
+    """
+    
+    def __init__(self,infits=None,extensions=[-1],getallextensions=False):
+        """ """
+        
+        self.extensions = []
+        
+        
         if infits is not None:
         
-            assert type(infits) is str, 'infits is not a name of a file'
-            assert isthere(infits), 'infits is just not there'
+            assert type(infits) is str, "infits can't be a name for a file!"
+            assert isthere(infits), 'infits is just not there :-('
             
-            f = fts.open(infits)
             
-            #assert len(f) == 2, 'len of fits object should be 2'
-            
-            self.data = f[extension].data.transpose() # Beware!!
-            self.data = self.data.astype('float32').copy()
-            self.header = f[extension].header
+            self.loadfromFITS(infits,extensions,getallextensions)
+
         else:
-            self.data = []
-            self.header = ''
+            
+            self.extensions = [Extension(data=None,header=None)]
         
-        self.NAXIS1 = 4238
-        self.NAXIS2 = 4132
+        self.nextensions = len(self.extensions)
+        
+        self.NAXIS1 = NAXIS1
+        self.NAXIS2 = NAXIS2        
+        self.shape = (NAXIS1,NAXIS2)
         
         if infits is not None:
-            assert self.NAXIS1 == self.data.shape[0]
-            assert self.NAXIS2 == self.data.shape[1]
+            
+            for iext in range(self.nextensions):
+                
+                assert self.shape == self.extensions[iext].data.shape                
+                #assert self.NAXIS1 == self.extensions[iext].data.shape[0]
+                #assert self.NAXIS2 == self.extensions[iext].data.shape[1]
         
         self.prescan = prescan
         self.overscan = overscan
@@ -83,12 +110,66 @@ class CCD():
         self.QuadBound = QuadBound 
         
         self.masked = False
+    
+    
+    def loadfromFITS(self,fitsfile,extensions=[-1],getallextensions=False):
         
-    def get_quad(self,Quadrant,canonical=False):
-        """ """
+        hdulist = fts.open(fitsfile)
+            
+        nextensions = len(hdulist)
+            
+        if getallextensions:
+            extensions = np.arange(nextensions)
+            
+            
+            
+        for iext in extensions:
+                
+            hdu = hdulist[iext]
+                
+            data = hdu.data.transpose().astype('float32').copy()
+            header = hdu.header
+                
+            if 'EXTENSION' in hdu.header:
+                label = hdu.header['EXTENSION']
+            else:
+                label = ''
+                
+            self.extensions.append(Extension(data,header,label))
+            
+        hdulist.close()
+
+    
+    def add_extension(self,data,header=None,label=None):
+        """ """       
+        self.extensions.append(Extension(data,header,label))
+        
+    
+    
+    def get_quad(self,Quadrant,canonical=False,extension=-1):
+        """Returns a quadrant in canonical or non-canonical orientation.
+        
+        :param Quadrant: Quadrant, one of 'E', 'F', 'G', 'H'
+        :type Quadrant: char
+        
+        :param canonical: 
+        
+           Canonical: with readout-node at pixel index (0,0) regardless of quadrant.
+                      This is the orientation which corresponds to the data-reading
+                      order (useful for cross-talk measurements, for example).
+            Non-Canonical: with readout-node at corner matching placement
+                      of quadrant on the CCD. This is the orientation that would
+                      match the representation of the image on DS9.        
+                      
+        :type canonical: bool
+        
+        :param extension: extension number. Default = -1 (last)
+        :type extension: int
+        
+        """
         
         edges = self.QuadBound[Quadrant]        
-        Qdata = self.data[edges[0]:edges[1],edges[2]:edges[3]]
+        Qdata = self.extensions[extension].data[edges[0]:edges[1],edges[2]:edges[3]]
         
         if canonical:
             if Quadrant == 'E': Qdata = Qdata[:,::-1].copy()
@@ -98,12 +179,44 @@ class CCD():
         
         
         return Qdata
-
-    def set_quad(self,inQdata,Quadrant,canonical=False):
+        
+    def get_cutout(self,corners,Quadrant,canonical=False,extension=-1):
+        """Returns a cutout from the CCD image, either in 
+        canonical or non-canonical orientation.
+        
+        
+        :param corners: [x0,x1,y0,y1]
+        :type corners: list (of int)
+        
+        :param Quadrant: Quadrant, one of 'E', 'F', 'G', 'H'
+        :type Quadrant: char
+        
+        :param canonical: 
+        
+           Canonical: with readout-node at pixel index (0,0) regardless of quadrant.
+                      This is the orientation which corresponds to the data-reading
+                      order (useful for cross-talk measurements, for example).
+            Non-Canonical: with readout-node at corner matching placement
+                      of quadrant on the CCD. This is the orientation that would
+                      match the representation of the image on DS9.        
+                      
+        :type canonical: bool
+        
+        :param extension: extension number. Default = -1 (last)
+        :type extension: int
+        
+        
+        """       
+        Qdata = self.get_quad(Quadrant,canonical,extension)        
+        section = Qdata[corners[0]:corners[1],corners[2]:corners[3]].copy()
+        return section
+        
+        
+    def set_quad(self,inQdata,Quadrant,canonical=False,extension=-1):
         """ """
         
         edges = self.QuadBound[Quadrant]        
-        Qdata = self.data[edges[0]:edges[1],edges[2]:edges[3]]
+        Qdata = self.extensions[extension].data[edges[0]:edges[1],edges[2]:edges[3]]
         
         if canonical:
             if Quadrant == 'E': Qdata = inQdata[:,::-1].copy()
@@ -112,6 +225,8 @@ class CCD():
             elif Quadrant == 'H': Qdata = inQdata[:,:].copy()
         else:
             Qdata = inQdata.copy()
+        
+        self.extensions[extension].data = Qdata.copy()
         
         return None
 
@@ -143,10 +258,10 @@ class CCD():
 
 
    
-    def meas_bias(self,Quadrant,sector='both',detail=False):
+    def meas_bias(self,Quadrant,sector='both',detail=False,extension=-1):
         """ """
         
-        Qdata = self.get_quad(Quadrant,canonical=True)
+        Qdata = self.get_quad(Quadrant,canonical=True,extension=extension)
         
         prescan = Qdata[4:self.prescan-1,3:-3]
         ovscan = Qdata[self.prescan+2048+4:-3,3:-3]
@@ -176,7 +291,7 @@ class CCD():
             return bias,stdbias,biasodd,stdodd,biaseven,stdeven
                 
     
-    def sub_offset(self,Quad,method='row',scan='pre',trimscan=[3,2]):
+    def sub_offset(self,Quad,method='row',scan='pre',trimscan=[3,2],extension=-1):
         """ """
         
         if self.masked:
@@ -184,12 +299,8 @@ class CCD():
         else:
             median = np.median
         
-        quaddata = self.get_quad(Quad,canonical=True)
+        quaddata = self.get_quad(Quad,canonical=True,extension=extension)
         
-        #if Quad == 'E': quaddata = quaddata[:,::-1].copy()
-        #elif Quad == 'F': quaddata = quaddata[::-1,::-1].copy()
-        #elif Quad == 'G': quaddata = quaddata[::-1,:].copy()
-        #elif Quad == 'H': quaddata = quaddata.copy()
         
         if scan == 'pre':
             lims = [0,self.prescan]
@@ -215,26 +326,19 @@ class CCD():
             #if self.masked : offset = offset.data
             quaddata -= offset
             offsets = [offset]
-            
-        
         
         B = self.QuadBound[Quad]
-        self.data[B[0]:B[1],B[2]:B[3]] = self.flip_tocanonical(quaddata,Quad).copy()
+        self.extension[extension].data[B[0]:B[1],B[2]:B[3]] = self.flip_tocanonical(quaddata,Quad).copy()
         
-        #if Quad == 'E': self.data[B[0]:B[1],B[2]:B[3]] = quaddata[:,::-1].copy()
-        #elif Quad == 'F': self.data[B[0]:B[1],B[2]:B[3]] = quaddata[::-1,::-1].copy()
-        #elif Quad == 'G': self.data[B[0]:B[1],B[2]:B[3]] = quaddata[::-1,:].copy()
-        #elif Quad == 'H': self.data[B[0]:B[1],B[2]:B[3]] = quaddata.copy()
-        
-        
+
         return offsets
         
     
-    def sub_bias(self,superbias):
+    def sub_bias(self,superbias,extension=-1):
         """Subtracts a superbias"""
         
-        assert self.data.shape == superbias.shape
-        self.data -= superbias
+        assert self.shape == superbias.shape
+        self.extensions[extension].data -= superbias
         
     
     def flip_tocanonical(self,array,Quad):
@@ -258,32 +362,54 @@ class CCD():
         
         
         return VscanMask
-            
     
     def get_mask(self,mask):
         """ """
-        assert self.data.shape == mask.shape
-        masked = np.ma.masked_array(self.data,mask)
-        self.data = masked.copy()
-        #self.mask = mask.copy()
+        assert self.shape == mask.shape
+        
+        for iext in range(self.nextensions):
+            
+            masked = np.ma.masked_array(self.extensions[iext].data,mask)
+            self.extensions[iext].data = masked.copy()
+        
         self.masked = True
         
     
     def writeto(self,fitsf,clobber=False):
         """ """
         
-        if self.masked: data = self.data.data.copy()
-        else: data = self.data.copy()
+        firstextension = self.extensions[0]
         
-        hdu = fts.PrimaryHDU(self.data.transpose())
-    
-        #hdu.header['OBSID']=OBSID
-        #hdu.header['CCD']=CCD   
-        comments = ['FITS generated by vissim.datamodel.ccd',
-        'point of contact: Ruyman Azzollini (r.azzollini@ucl.ac.uk)',]
+        if self.masked: pridata = firstextension.data.data.copy()
+        else: pridata = firstextension.data.copy()
+        
+        prihdr = firstextension.header
+        
+        
+        prihdu = fts.PrimaryHDU(data=pridata.transpose(),header=prihdr)
+
+          
+        comments = ['FITS file generated by vison.datamodel.ccd',
+        'point of contact: Ruyman Azzollini (r.azzollini_at_ucl.ac.uk)',]
         for comm in comments:
-            hdu.header.add_comment(comm)
+            prihdu.header.add_comment(comm)
     
-        hdulist = fts.HDUList([hdu])
+        hdulist = fts.HDUList([prihdu])
+        
+        if self.nextensions > 1:
+            
+            for iext in range(1,self.nextensions):
+                
+                if self.masked: idata = self.extensions[iext].data.data.copy()
+                else: idata = self.extensions[iext].data.copy()
+                
+                iheader = self.extensions[iext].header
+                iname = self.extensions[iext].label
+                
+                ihdu = fts.ImageHDU(data=idata,header=iheader,name=iname)
+            
+                hdulist.append(ihdu)
+        
+        
         hdulist.writeto(fitsf,clobber=clobber)
         

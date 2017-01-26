@@ -68,6 +68,11 @@ for iCCD in range(2,4):
     for Q in Quads:
         Point_CooNom['CCD%i' % iCCD][Q] = copy.deepcopy(Point_CooNom['CCD1'][Q])
 
+# Editions of Point_CooNom: PENDING upon characterization of OGSE
+
+
+
+
 def loadexplogs(explogfs,elvis='5.8.X',addpedigree=False):
     """loads in memory an explog (text-file) or list of explogs (text-files)."""
     
