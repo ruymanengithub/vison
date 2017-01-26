@@ -18,24 +18,6 @@ import sys
 
 isthere = os.path.exists
 
-#class Quadrant():
-#    
-#    def __init__(self,data):
-#                
-#        self.data = data.copy()
-#        shape = self.data.shape
-#        
-#        self.NAXIS1 = 2119
-#        self.NAXIS2 = 2066
-#        
-#        assert self.NAXIS1 == shape[0]
-#        assert self.NAXIS2 == shape[1]
-#        
-#        self.prescan = 51
-#        self.overscan = 20
-#        self.gain = 3.1
-#        self.readnoise = 4.5
-
 NAXIS1 = 4238
 NAXIS2 = 4132
 prescan = 51
@@ -51,11 +33,23 @@ QuadBound = dict(E=[0,NAXIS1/2,NAXIS2/2,NAXIS2],\
 class Extension():
     """Extension Class"""
     
-    def __init__(self,data,header=None,label=None):
+    def __init__(self,data,header=None,label=None,headerdict=None):
         """ """
         
         self.data = data
+        
+        if header is None:
+            header = fts.Header()
+        
+        if headerdict is not None:
+            for key in headerdict:
+                header[key] = headerdict[key]
+                
         self.header = header
+        
+        if label is not None:
+            self.header['EXTNAME'] = label
+        
         self.label = label
 
 
@@ -73,6 +67,7 @@ class CCD():
     def __init__(self,infits=None,extensions=[-1],getallextensions=False):
         """ """
         
+        self.extnames = []
         self.extensions = []
         
         
@@ -87,6 +82,7 @@ class CCD():
         else:
             
             self.extensions = [Extension(data=None,header=None)]
+            self.extnames = [None]
         
         self.nextensions = len(self.extensions)
         
@@ -94,13 +90,9 @@ class CCD():
         self.NAXIS2 = NAXIS2        
         self.shape = (NAXIS1,NAXIS2)
         
-        if infits is not None:
-            
-            for iext in range(self.nextensions):
-                
+        for iext in range(self.nextensions):
+            if self.extensions[iext].data is not None:
                 assert self.shape == self.extensions[iext].data.shape                
-                #assert self.NAXIS1 == self.extensions[iext].data.shape[0]
-                #assert self.NAXIS2 == self.extensions[iext].data.shape[1]
         
         self.prescan = prescan
         self.overscan = overscan
@@ -121,8 +113,6 @@ class CCD():
         if getallextensions:
             extensions = np.arange(nextensions)
             
-            
-            
         for iext in extensions:
                 
             hdu = hdulist[iext]
@@ -130,19 +120,20 @@ class CCD():
             data = hdu.data.transpose().astype('float32').copy()
             header = hdu.header
                 
-            if 'EXTENSION' in hdu.header:
-                label = hdu.header['EXTENSION']
+            if 'EXTNAME' in hdu.header:
+                label = hdu.header['EXTNAME']
             else:
-                label = ''
+                label = None
                 
             self.extensions.append(Extension(data,header,label))
+            self.extnames.append(label)
             
         hdulist.close()
 
     
-    def add_extension(self,data,header=None,label=None):
-        """ """       
-        self.extensions.append(Extension(data,header,label))
+    def add_extension(self,data,header=None,label=None,headerdict=None):
+        """ """    
+        self.extensions.append(Extension(data,header,label,headerdict))
         
     
     
@@ -413,3 +404,11 @@ class CCD():
         
         hdulist.writeto(fitsf,clobber=clobber)
         
+def test_create_from_scratch():
+    """ """
+    pass
+    
+if __name__ == '__main__':
+    
+    test_create_from_scratch()
+    
