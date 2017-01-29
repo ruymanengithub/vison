@@ -39,6 +39,7 @@ import os
 
 from vison.support import logger as lg
 from vison.point import PSF01
+import vison
 
 import datetime
 
@@ -54,6 +55,8 @@ def get_time_tag():
     t = datetime.datetime.now()
     s = t.strftime('%Y%m%d_%H%M%S')
     return s
+
+
 
 class Pipe(object):
     """Master Class of FM-analysis """
@@ -79,6 +82,7 @@ class Pipe(object):
                           'Pipeline ID: %s' % self.ID,
                           'BLOCK ID: %s' % self.BLOCKID,
                           'Chamber: %s\n' % self.CHAMBER,
+                          'vison version: %s\n' % vison.__version__,
                           'Tasks: %s\n' % ( ('%s,'*len(self.tasks)) % tuple(self.tasks))[0:-1]])
 
     def run(self):

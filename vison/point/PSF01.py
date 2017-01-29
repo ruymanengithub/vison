@@ -36,6 +36,7 @@ import os
 from vison.pipe import lib as plib
 from vison.pipe import FlatFielding as FFing
 from vison.support.report import Report
+from vison.support import files
 # END IMPORT
 
 isthere = os.path.exists
@@ -262,13 +263,25 @@ def report_PSF01(DataDict,RepDict,inputs,log=None):
     """ """
 
 
+def save_progress(DataDict,reportobj,DataDictFile,reportobjFile):        
+    files.cPickleDumpDictionary(DataDict,DataDictFile)
+    files.cPickleDump(reportobj,reportobjFile)
+
+
+def recover_progress(DataDictFile,reportobjFile):
+    
+    DataDict = files.cPickleRead(DataDictFile)
+    reportobj = files.cPickleRead(reportobjFile)
+    
+    return DataDict,reportobj
+
 def run(inputs,log=None):
     """Test PSF01 master function."""
     
     
     # INPUTS
     
-    todo_flags = dict(basic=True,bayes=True,meta=True,report=True)
+    todo_flags = dict(init=True,basic=True,bayes=True,meta=True,report=True)
     
     OBSID_lims = inputs['OBSID_lims']
     explogf = inputs['explogf']
@@ -276,6 +289,10 @@ def run(inputs,log=None):
     resultspath = inputs['resultspath']
     wavelength = inputs['wavelength']
     elvis = inputs['elvis']
+    
+    
+    DataDictFile = os.path.join(resultspath,'PSF01_%snm_DataDict.pick' % wavelength)
+    reportobjFile = os.path.join(resultspath,'PSF01_%snm_Report.pick' % wavelength)
     
     try: 
         structure = inputs['structure']
@@ -300,59 +317,77 @@ def run(inputs,log=None):
         os.system('mkdir %s' % resindivpath)
     
     
-    # META-DATA WORK
+    if todo_flags['init']:
+    
+        # Initialising Report Object
+    
+        if todo_flags['report']:
+            reportobj = Report(TestName='PSF01: %s nm' % wavelength)
+        else:
+            reportobj = None
+    
+        # META-DATA WORK
     
     
-    # Filter Exposures that belong to the test
+        # Filter Exposures that belong to the test
     
-    DataDict, isconsistent = filterexposures_PSF01(wavelength,explogf,datapath,OBSID_lims,
+        DataDict, isconsistent = filterexposures_PSF01(wavelength,explogf,datapath,OBSID_lims,
                                      structure,elvis)
     
-    if log is not None:
-        log.info('PSF01 acquisition is consistent with expectations: %s' % isconsistent)
+        if log is not None:
+            log.info('PSF01 acquisition is consistent with expectations: %s' % isconsistent)
     
    
-    # Add HK information
-    DataDict = plib.addHK(DataDict,HKKeys_PSF01,elvis=elvis)
+        # Add HK information
+        DataDict = plib.addHK(DataDict,HKKeys_PSF01,elvis=elvis)
     
-    # DATA-WORK
+        # DATA-WORK
     
-    # Initialising Report Dictionary
+        # Prepare Data for further analysis (subtract offsets, divide by FFF, trim snapshots). 
+        # Check Data has enough quality:
+        #     median levels in pre-scan, image-area, overscan
+        #     fluences and spot-sizes (coarse measure) match expectations for all spots
+        #     
     
-    if todo_flags['report']:
-        reportobj = Report(TestName='PSF01: %s nm' % wavelength)
+        DataDict, reportobj = prep_data_PSF01(DataDict,reportobj,inputs,log)
+
+        save_progress(DataDict,reportobj,DataDictFile,reportobjFile)        
+
+        
     else:
-        reportobj = None
-    
-    # Prepare Data for further analysis (subtract offsets, divide by FFF, trim snapshots). 
-    # Check Data has enough quality:
-    #     median levels in pre-scan, image-area, overscan
-    #     fluences and spot-sizes (coarse measure) match expectations for all spots
-    #     
-    
-    
-    DataDict, RepDict = prep_data_PSF01(DataDict,reportobj,inputs,log)
-    
+        
+        DataDict, reportobj = recover_progress(DataDictFile,reportobjFile)
+        
+
     
     # Optional
     # Perform Basic Analysis : Gaussian fits and Moments
     
-    if todo_flags['basic']:
-        DataDict = basic_analysis_PSF01(DataDict,reportobj,inputs,log)
+    if todo_flags['basic']:        
+        DataDict, reportobj = basic_analysis_PSF01(DataDict,reportobj,inputs,log)
+        save_progress(DataDict,reportobj,DataDictFile,reportobjFile)        
+    else:
+        DataDict, reportobj = recover_progress(DataDictFile,reportobjFile)
     
     # Optional
     # Perform Bayesian Analysis
     
     
     if todo_flags['bayes']:
-        DataDict = bayes_analysis_PSF01(DataDict,reportobj,inputs,log)
+        DataDict, reportobj = bayes_analysis_PSF01(DataDict,reportobj,inputs,log)
+        save_progress(DataDict,reportobj,DataDictFile,reportobjFile)  
+    else:
+        DataDict, reportobj = recover_progress(DataDictFile,reportobjFile)
+        
     
     # Optional
     # Produce Summary Figures and Tables
     
     if todo_flags['meta']:
-        DataDict = meta_analysis_PSF01(DataDict,reportobj,inputs,log)
-    
+        DataDict, reportobj = meta_analysis_PSF01(DataDict,reportobj,inputs,log)
+        save_progress(DataDict,reportobj,DataDictFile,reportobjFile)  
+    else:
+        DataDict, reportobj = recover_progress(DataDictFile,reportobjFile)
     
     # Write automatic Report of Results
     
@@ -360,6 +395,7 @@ def run(inputs,log=None):
         reportobj.generate_Texbody()
         reportobj.writeto(reportroot,cleanafter)
     
+    save_progress(DataDict,reportobj,DataDictFile,reportobjFile)
     
     if log is not None:
         log.info('Finished PSF01')
