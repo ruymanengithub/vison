@@ -21,6 +21,7 @@ from vison.datamodel import HKtools
 from glob import glob
 import os
 import numpy as np
+import datetime
 # END IMPORT
 
 
@@ -168,3 +169,8 @@ def addHK(DataDict,HKKeys,elvis='5.8.X'):
     
     return DataDict
             
+def get_time_tag():
+    """ """
+    t = datetime.datetime.now()
+    s = t.strftime('%Y%m%d_%H%M%S')
+    return s

@@ -22,7 +22,7 @@ import vison
 
 #from matplotlib import pyplot as plt
 
-from vison.datamodel import ccd as ccdmodule
+from vison.datamodel.ccd import CCD
 
 from scipy import ndimage as nd
 #from scipy import signal
@@ -147,7 +147,7 @@ def produce_SingleFlatfield(infits,outfits,settings={},runonTests=False):
     print infits
     
     
-    ccd = ccdmodule.CCD(infits)
+    ccd = CCD(infits)
     NX,NY = ccd.NAXIS1,ccd.NAXIS2
     
     # Cosmetic Masking
@@ -346,73 +346,71 @@ def produce_MasterFlat(infits,outfits,mask=None,settings={}):
     hdulist.writeto(outfits,clobber=True)
 
 
-
-
-class FlatField(ccdmodule.CCD):
+class FlatField(CCD,object):
     """ """
-# Individual:
-#cube[B[0]:B[1],B[2]:B[3],0] = img[:,::-1].copy()
-#            cube[B[0]:B[1],B[2]:B[3],1] = filtered[:,::-1].copy()
-#            cube[B[0]:B[1],B[2]:B[3],2] = poly[:,::-1].copy()
 
 # Master
-#     hdu.header.add_history('Extension 1: FLAT')
-#    hdu.header.add_history('Extension 2: eFLAT')
+#     hdu.header.add_history('Extension 1: Flat')
+#    hdu.header.add_history('Extension 2: eFlat')
 #    What about a Mask?: Extension 3: Mask
 
 
-    def __init__(self,fitsfile='',data=dict(),meta=dict(),ftype='Individual'):
+    def __init__(self,fitsfile='',data=dict(),meta=dict()):
         """ """
         
-        self.ftype = ftype
+        super(FlatField,self).__init__(infits=None)
         
         
         if fitsfile != '':
-            self.loadfromFITS(fitsfile,self.ftype)
+            
+            self.loadfromFITS(fitsfile=fitsfile,getallextensions=True)            
+            self.parse_fits()
+            
         else:
-            self.data = data
-            self.meta = meta 
-            self.parse_data(ftype)
+            
+            assert isinstance(data,dict)
+            assert 'Flat' in data.keys()
+            assert 'eFlat' in data.keys()
+            
+            assert isinstance(meta,dict)
+            assert 'NCOMB' in meta.keys()
+            self.ncomb = meta['NCOMB']
+            assert 'WAVEL' in meta.keys()
+            self.wavelength = meta['WAVEL']
+            
+            
+            self.add_extension(data=None,header=None,label=None,headerdict=meta)            
+            self.add_extension(data=data['Flat'].copy(),label='Flat')
+            self.add_extension(data=data['eFlat'].copy(),label='eFlat')
+            
+            if 'Mask' in data.keys():
+                self.add_extension(data=data['Mask'].copy(),label='Mask')
     
     
-    def parse_data(self,ftype):
+    def parse_fits(self,):
         """ """
         
-        try: self.mask = self.data['mask'].copy()
-        except KeyError:
-            self.mask = None
+        stop()
         
-        if ftype == 'Individual':
-            self.img = self.data['img'].copy()
-            self.filtered = self.data['filtered'].copy()
-            self.poly = self.data['poly'].copy()
-        elif ftype == 'Combined':
-            self.flat = self.data['flat'].copy()
-            self.eflat = self.data['eflat'].copy()
-            
-    def loadfromFITS(self,fitsfile,ftype):
-        """ """
+        assert self.nextensions >= 3
         
-        inhdulist = fts.open(fitsfile)
+        self.ncomb = self.extensions[0].header['NCOMB']
+        self.wavelength = self.extensions[0].header['WAVEL']
         
-        if ftype == 'Individual':
+        assert self.extensions[1].label == 'Flat'
+        self.Flat = self.extensions[1].data
         
-            
+        assert self.extensions[2].label == 'eFlat'
+        self.eFlat = self.extensions[2].data
         
-            img = inhdulist[1].data.transpose().copy() # offset-subtracted exposure
-            filtered = inhdulist[2].data.transpose().copy() # medianfiltered bias-sub exposure
-            poly = inhdulist[3].data.transpose().copy() # polynomial fit to  bias-sub exposure
-        
-            inhdulist.close()
-            
-            self.data = dict(img=img,filtered=filtered,poly=poly)
-            self.parse_data(self.ftype)
-            
-        elif ftype == 'Combined':
-            
-            PENDING
-        
-    def writeto(self,outfits,clobber=False):
-        """Writes 'self' to a FITS file."""
+        if self.nextensions >3:
+            assert self.extensions[3].label == 'Mask'
+            self.Mask = self.extensions[3].data
+        else:
+            self.Mask = None
+
+
+    #def writeto(self,outfits,clobber=False):
+    #    """Writes 'self' to a FITS file."""
         
         

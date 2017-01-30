@@ -152,8 +152,6 @@ def filterexposures_PSF01(inwavelength,explogf,datapath,OBSID_lims,structure=PSF
     return DataDict, isconsistent
     
     
-
-    
 def prep_data_PSF01(DataDict,RepDict,inputs,log=None):
     """Takes Raw Data and prepares it for further analysis. Also checks that
     data quality is enough."""
@@ -163,17 +161,14 @@ def prep_data_PSF01(DataDict,RepDict,inputs,log=None):
     FFs = inputs['FFs'] # flat-fields for each CCD (1,2,3)
     
     
-    # Load Flat-Field data for each CCD: BYPASSED
+    # Load Flat-Field data for each CCD
     
-    #FFdata = dict()
-    #for CCDindex in range(1,4):
-    #    FFdata['CCD%i' % CCDindex] = FFing.loadFF(FFs[CCDkey])
-    
-    FFdata = dict(CCD1=1.,
-    CCD2=1.,
-    CCD3=1.)
-    
-    
+    FFdata = dict()
+    for CCDindex in range(1,4):
+        CCDkey = 'CCD%i' % CCDindex
+        if CCDkey in FFs.keys():
+            FFdata[CCDkey] = FFing.FlatField(fitsfile=FFs[CCDkey])
+        
     RepDict['prepPSF01'] = dict(Title='Data Pre-Processing and QA',items=[])
     
     
@@ -195,6 +190,8 @@ def prep_data_PSF01(DataDict,RepDict,inputs,log=None):
             for iObs, ObsID in enumerate(ObsIDs):
                 
                 ilabel = label[iObs]
+                
+                stop()
                 
                 # log object being analyzed: ObsID
                 
@@ -256,12 +253,6 @@ def meta_analysis_PSF01(DataDict,RepDict,inputs,log=None):
     
     """
     
-    
-    
-    
-def report_PSF01(DataDict,RepDict,inputs,log=None):
-    """ """
-
 
 def save_progress(DataDict,reportobj,DataDictFile,reportobjFile):        
     files.cPickleDumpDictionary(DataDict,DataDictFile)
@@ -269,10 +260,8 @@ def save_progress(DataDict,reportobj,DataDictFile,reportobjFile):
 
 
 def recover_progress(DataDictFile,reportobjFile):
-    
     DataDict = files.cPickleRead(DataDictFile)
     reportobj = files.cPickleRead(reportobjFile)
-    
     return DataDict,reportobj
 
 def run(inputs,log=None):
@@ -281,7 +270,7 @@ def run(inputs,log=None):
     
     # INPUTS
     
-    todo_flags = dict(init=True,basic=True,bayes=True,meta=True,report=True)
+    todo_flags = dict(init=True,prep=True,basic=True,bayes=True,meta=True,report=True)
     
     OBSID_lims = inputs['OBSID_lims']
     explogf = inputs['explogf']
@@ -290,9 +279,11 @@ def run(inputs,log=None):
     wavelength = inputs['wavelength']
     elvis = inputs['elvis']
     
-    
     DataDictFile = os.path.join(resultspath,'PSF01_%snm_DataDict.pick' % wavelength)
     reportobjFile = os.path.join(resultspath,'PSF01_%snm_Report.pick' % wavelength)
+    
+    if not isthere(resultspath):
+        os.system('mkdir %s' % resultspath)
     
     try: 
         structure = inputs['structure']
@@ -300,7 +291,7 @@ def run(inputs,log=None):
         structure = PSF01_structure
         
     try: reportroot = inputs['reportroot']
-    except KeyError: reportroot = ''
+    except KeyError: reportroot = 'PSF01_%inm_report' % wavelength
     
     try: cleanafter = inputs['cleanafter']
     except KeyError: cleanafter = False
@@ -327,7 +318,7 @@ def run(inputs,log=None):
             reportobj = None
     
         # META-DATA WORK
-    
+        
     
         # Filter Exposures that belong to the test
     
@@ -340,30 +331,32 @@ def run(inputs,log=None):
    
         # Add HK information
         DataDict = plib.addHK(DataDict,HKKeys_PSF01,elvis=elvis)
-    
-        # DATA-WORK
-    
-        # Prepare Data for further analysis (subtract offsets, divide by FFF, trim snapshots). 
-        # Check Data has enough quality:
-        #     median levels in pre-scan, image-area, overscan
-        #     fluences and spot-sizes (coarse measure) match expectations for all spots
-        #     
-    
-        DataDict, reportobj = prep_data_PSF01(DataDict,reportobj,inputs,log)
-
-        save_progress(DataDict,reportobj,DataDictFile,reportobjFile)        
-
+        save_progress(DataDict,reportobj,DataDictFile,reportobjFile)
         
     else:
         
         DataDict, reportobj = recover_progress(DataDictFile,reportobjFile)
         
-
+    # DATA-WORK
+    
+    # Prepare Data for further analysis (subtract offsets, divide by FFF, trim snapshots). 
+    # Check Data has enough quality:
+    #     median levels in pre-scan, image-area, overscan
+    #     fluences and spot-sizes (coarse measure) match expectations for all spots
+    #     
+    
+    if todo_flags['prep']:
+    
+        DataDict, reportobj = prep_data_PSF01(DataDict,reportobj,inputs,log)
+        save_progress(DataDict,reportobj,DataDictFile,reportobjFile)        
+    else:
+        DataDict, reportobj = recover_progress(DataDictFile,reportobjFile)
     
     # Optional
     # Perform Basic Analysis : Gaussian fits and Moments
     
-    if todo_flags['basic']:        
+    if todo_flags['basic']:
+        
         DataDict, reportobj = basic_analysis_PSF01(DataDict,reportobj,inputs,log)
         save_progress(DataDict,reportobj,DataDictFile,reportobjFile)        
     else:
@@ -393,7 +386,10 @@ def run(inputs,log=None):
     
     if todo_flags['report']:
         reportobj.generate_Texbody()
-        reportobj.writeto(reportroot,cleanafter)
+        outfiles = reportobj.writeto(reportroot,cleanafter)
+        
+        for outfile in outfiles:
+            os.system('mv %s %s/' % (outfile,resultspath))
     
     save_progress(DataDict,reportobj,DataDictFile,reportobjFile)
     

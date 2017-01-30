@@ -37,11 +37,10 @@ from pdb import  set_trace as stop
 from copy import copy
 import os
 
+
 from vison.support import logger as lg
 from vison.point import PSF01
-import vison
-
-import datetime
+from lib import get_time_tag
 
 # END IMPORT
 
@@ -50,11 +49,7 @@ task_dict = dict(PSF01=PSF01)
 
 defaults = dict(BLOCKID='R00P00CC000000',CHAMBER='A')
 
-def get_time_tag():
-    """ """
-    t = datetime.datetime.now()
-    s = t.strftime('%Y%m%d_%H%M%S')
-    return s
+
 
 
 
@@ -84,7 +79,9 @@ class Pipe(object):
                           'Chamber: %s\n' % self.CHAMBER,
                           'vison version: %s\n' % vison.__version__,
                           'Tasks: %s\n' % ( ('%s,'*len(self.tasks)) % tuple(self.tasks))[0:-1]])
-
+        self.log = None
+        
+         
     def run(self):
         """ """
         tasknames = self.tasks
@@ -92,7 +89,8 @@ class Pipe(object):
         if not os.path.exists(resultsroot):
             os.system('mkdir %s' % resultsroot)
         
-        self.log.info('\n\nResults will be saved in: %s\n' % resultsroot)
+        
+        if self.log is not None: self.log.info('\n\nResults will be saved in: %s\n' % resultsroot)
         
         for taskname in tasknames:
             
@@ -104,7 +102,7 @@ class Pipe(object):
             for key in taskinputs:
                 msg += ['%s = %s' % (key,str(taskinputs[key]))]
             
-            self.log.info(msg)
+            if self.log is not None: self.log.info(msg)
             
             taskinputs['resultspath'] = os.path.join(resultsroot,taskinputs['resultspath'])
             

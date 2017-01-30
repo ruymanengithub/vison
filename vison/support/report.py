@@ -16,6 +16,9 @@ Created on Wed Jan 25 16:58:33 2017
 # IMPORT STUFF
 from pdb import set_trace as stop
 import os
+from vison.pipe.lib import get_time_tag
+from latex import generate_header, generate_preamble
+from vison import data as visondata
 # END IMPORT
 
 
@@ -106,10 +109,12 @@ class Text(Content):
 class Report(object):
     
     
-    def __init__(self,TestName='Test',Contents=[],Texheader=default_header,Texbody=['']):
+    def __init__(self,TestName='Test',Model='XM',Contents=[],Texheader=default_header,Texbody=['']):
         """ """
         
         self.TestName = TestName
+        self.Model = Model
+        self.timestamp = get_time_tag()
         
         self.Texheader = Texheader
         self.Texbody = Texbody
@@ -118,11 +123,21 @@ class Report(object):
         self.Contents = Contents
     
     
-    def generate_Texbody(self):
-        """ """                
-        Texbody = []
+    def generate_Header(self,author='Ruyman Azzollini'):
         
-        Texbody += ['\\title{%s}' % self.TestName]
+        test = self.TestName
+        model = self.Model
+        
+        headerList = generate_header(test,model,author)        
+        self.Texheader = headerList
+        
+    
+    def generate_Texbody(self,custodian='Ruyman Azzollini'):
+        """ """
+        model = self.Model
+        test = self.TestName
+        
+        Texbody = generate_preamble(model,test,custodian)
         
         for item in self.Contents:            
             Texbody += item.generate_Texbody()
@@ -153,9 +168,9 @@ class Report(object):
         fileLaTex = '%s.tex' % fileroot
         
         self.writeLaTex(fileLaTex)
-        self.compileLaTex2pdf(fileroot,cleanafter=cleanafter)
+        outfiles = self.compileLaTex2pdf(fileroot,cleanafter=cleanafter)
         
-        return None
+        return outfiles
         
     def writeLaTex(self,filename):
         """Writes the LaTeX file"""
@@ -163,17 +178,36 @@ class Report(object):
         f = open(filename,'a')
         for line in self.Texheader : print >> f, line
         for line in self.Texbody : print >> f, line
+        for line in self.Texfooter: print >> f, line
         f.close()
     
     
-    def compileLaTex2pdf(self,fileroot,cleanafter=False,figures=[]):
+    def compileLaTex2pdf(self,fileroot,cleanafter=False):
         """Compiles a Latex file"""
+        
+        EuclidViscls = 'EuclidVIS.cls'
+        logo = 'logosmall.png'
+        
+        os.system('ln -s %s' % os.path.join(visondata.__path__[0],EuclidViscls))
+        os.system('ln -s %s' % os.path.join(visondata.__path__[0],logo))
         
         execline1 = 'latex %s.tex' % fileroot
         os.system(execline1)
         execline2 = 'dvipdf %s.dvi %s.pdf' % tuple([fileroot]*2)
         os.system(execline2)
+        os.system(execline2) # twice to get all references
         
         if cleanafter :
-            os.system('rm %s.dvi %s.aux %s.log %s.tex' % \
-            tuple([fileroot]*4))
+            os.system('rm %s.dvi %s.aux %s.log %s.tex %s.out %s.soc %s.toc' % \
+            tuple([fileroot]*7))
+            outfiles = [item % fileroot for item in \
+              ['%s.pdf']]
+        else:
+            outfiles = [item % fileroot for item in \
+              ['%s.pdf','%s.dvi','%s.aux','%s.log','%s.tex','%s.out','%s.soc',\
+              '%s.toc']]
+              
+        os.system('rm %s' % EuclidViscls)
+        os.system('rm %s' % logo)
+
+        return outfiles

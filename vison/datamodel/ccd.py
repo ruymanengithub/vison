@@ -54,7 +54,7 @@ class Extension():
 
 
 
-class CCD():
+class CCD(object):
     """Class of CCD objects. 
     Euclid Images as acquired by ELVIS software (Euclid LabView Imaging Software).
     
@@ -392,6 +392,8 @@ class CCD():
         'point of contact: Ruyman Azzollini (r.azzollini_at_ucl.ac.uk)',]
         for comm in comments:
             prihdu.header.add_comment(comm)
+            
+        
     
         hdulist = fts.HDUList([prihdu])
         
