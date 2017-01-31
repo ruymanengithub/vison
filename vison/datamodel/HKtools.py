@@ -71,8 +71,24 @@ allHK_keys['5.7.06'] = allHK_keys['5.7.04']
 allHK_keys['5.7.08'] = allHK_keys['5.7.07']
 allHK_keys['5.7.09'] = allHK_keys['5.7.08']
 
-allHK_keys['5.8.X'] = allHK_keys['5.7.09']
-allHK_keys['5.8.X'] = ['HK_timestamp'] + allHK_keys['5.8.X']
+#allHK_keys['5.8.X'] = allHK_keys['5.7.09']
+#allHK_keys['5.8.X'] = ['HK_timestamp'] + allHK_keys['5.8.X']
+
+allHK_keys['6.0.0'] = ['TimeStamp','HK_OD_Top_CCD1','HK_OD_Bottom_CCD1',
+'HK_OD_Top_CCD2','HK_OD_Bottom_CCD2','HK_OD_Top_CCD3','HK_OD_Bottom_CCD3',
+'HK_IG1_Top_CCD1','HK_IG1_Bottom_CCD1','HK_IG1_Top_CCD2','HK_IG1_Bottom_CCD2',
+'HK_IG1_Top_CCD3','HK_IG1_Bottom_CCD3','HK_temp_top_CCD1','HK_temp_bottom_CCD1',
+'HK_temp_top_CCD2','HK_temp_bottom_CCD2','HK_temp_top_CCD3',
+'HK_temp_bottom_CCD3','HK_RD_top','HK_RD_bot','HK_IG2_top','HK_IG2_bot',
+'HK_IDH','HK_IDL','HK_DD_bias','HK_OG_bias','HK_1.5V_ROE','HK_VCCD_ROE',
+'HK_5VA_pos_ROE','HK_5V_ref_ROE','HK_10VA_ROE','HK_5.2V_neg_ROE','HK_3V_neg_ROE',
+'HK_VRclk_ROE','HK_VRClk_Lo_ROE','HK_3.3V_DIG_RPSU','HK_I3.3V_DIG_RPSU',
+'HK_1.5V_DIG_RPSU','HK_I1.5V_DIG_RPSU','HK_28V_Pri_RPSU','HK_I28V_RPSU',
+'HK_VAN_pos_RPSU','HK_I+VAN_RPSU','HK_VAN_neg_RPSU','HK_I-VAN_RPSU',
+'HK_VCLK_RPSU','HK_IVCLK_RPSU','HK_VCCD_RPSU','HK_IVCCD_RPSU','HK_Temp1_RPSU',
+'HK_Temp2_RPSU','HK_Video_TOP','HK_Video_BOT','HK_FPGA_TOP','HK_FPGA_BOT',
+'HK_ID1','HK_ID2','HK_Viclk_ROE']
+
 
 allstats = ['mean','std','min','max']
 

@@ -35,7 +35,20 @@ columnlist = {'5.7.02':['ObsID','File_name','CCD','ROE','DATE','PROGRAM','TEST',
               'R2CCD3TT','R2CCD3TB','IDL_V','IDH_V','IG1_V','IG2_V','ODCCD1_V',
               'RDCCD1_V','ODCCD2_V','RDCCD2_V','ODCCD3_V','RDCCD3_V']}
 
-columnlist['5.8.X'] = columnlist['5.7.04']
+columnlist['5.7.09'] = columnlist['5.7.04']
+
+columnlist['6.0.0'] = ['ObsID','File_name','CCD','ROE','DATE','PROGRAM',
+'TEST','CCD1_SN','CCD2_SN','CCD3_SN','BUNIT','Operator','Lab_ver','Con_file',
+'Exptime','Flsh-Rdout_e_time','C.Inj-Rdout_e_time','N_P_high','Chrg_inj',
+'On_cycle','Off_cycl','Rpeat_cy','pls_leng','pls_del','SerRdDel','Trappump',
+'TP_Ser_S','TP_Ver_S','TP_DW_V','TP_DW_H','TOI_flsh','TOI_pump','TOI_read',
+'TOI_CInj','Invflshp','Invflush','Flushes','Vstart','Vend','Ovrscn_H',
+'CLK_ROE','CnvStart','SumWell','IniSweep','SPW_clk','FPGA_ver','EGSE_ver',
+'M_Steps','M_St_Sze','Wavelength','Mirr_pos','RPSU_SN','ROE_SN','CalScrpt',
+'R1CCD1TT','R1CCD1TB','R1CCD2TT','R1CCD2TB','R1CCD3TT','R1CCD3TB','IDL_V',
+'IDH_V','IG1_T1_V','IG1_T2_V','IG1_T3_V','IG1_B1_V','IG1_B2_V','IG1_B3_V',
+'IG2_T_V','IG2_B_V','OD_T1_V','OD_T2_V','OD_T3_V','OD_B1_V','OD_B2_V',
+'OD_B3_V','RD_T_V','RD_B_V']
 
 
 def loadExpLog(expfile,elvis='5.7.04'):
