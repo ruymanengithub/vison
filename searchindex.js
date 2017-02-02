@@ -1,0 +1,1 @@
+Search.setIndex({envversion:47,filenames:["index","source/includeme"],objects:{},objnames:{},objtypes:{},terms:{calibr:1,content:0,euclid:1,ground:1,index:0,modul:0,page:0,pipelin:1,search:0},titles:["Welcome to vison&#8217;s documentation!","&lt;no title&gt;"],titleterms:{document:0,indic:0,tabl:0,vison:0,welcom:0}})
