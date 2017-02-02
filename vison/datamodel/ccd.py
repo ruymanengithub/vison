@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 
-data model for CCDs
+Data model for Euclid-VIS CCDs (ground testing at MSSL)
 
 Created on Fri Nov 13 17:42:36 2015
 
-@author: raf
+:Author: Ruyman Azzollini
 """
 
 # IMPORT STUFF
@@ -149,13 +149,9 @@ class CCD(object):
         
         :param canonical: 
         
-           Canonical: with readout-node at pixel index (0,0) regardless of quadrant.
-                      This is the orientation which corresponds to the data-reading
-                      order (useful for cross-talk measurements, for example).
-            Non-Canonical: with readout-node at corner matching placement
-                      of quadrant on the CCD. This is the orientation that would
-                      match the representation of the image on DS9.        
-                      
+        Canonical [True] = with readout-node at pixel index (0,0) regardless of quadrant. This is the orientation which corresponds to the data-reading order (useful for cross-talk measurements, for example).
+        Non-Canonical [False] = with readout-node at corner matching placement of quadrant on the CCD. This is the orientation that would match the representation of the image on DS9.        
+
         :type canonical: bool
         
         :param extension: extension number. Default = -1 (last)
@@ -188,12 +184,8 @@ class CCD(object):
         
         :param canonical: 
         
-           Canonical: with readout-node at pixel index (0,0) regardless of quadrant.
-                      This is the orientation which corresponds to the data-reading
-                      order (useful for cross-talk measurements, for example).
-            Non-Canonical: with readout-node at corner matching placement
-                      of quadrant on the CCD. This is the orientation that would
-                      match the representation of the image on DS9.        
+         Canonical [True] = with readout-node at pixel index (0,0) regardless of quadrant. This is the orientation which corresponds to the data-readin order (useful for cross-talk measurements, for example).
+         Non-Canonical [False] = with readout-node at corner matching placement of  quadrant on the CCD. This is the orientation that would match the representation of the image on DS9.        
                       
         :type canonical: bool
         

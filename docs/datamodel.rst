@@ -1,16 +1,18 @@
 Data Model
 ==========
 
-.. automodule:: datamodel.ccd
+.. currentmodule:: datamodel
+
+.. automodule:: vison.datamodel.ccd
       :members:
 
 
-.. automodule:: datamodel.EXPLOGtools
+.. automodule:: vison.datamodel.EXPLOGtools
       :members:
 
 
-.. automodule:: datamodel.HKtools
+.. automodule:: vison.datamodel.HKtools
       :members:
 
-.. automodule:: datamodel.QLAtools
+.. automodule:: vison.datamodel.QLAtools
       :members:
