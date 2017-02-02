@@ -14,6 +14,40 @@ Contents:
    includeme
 
 
+
+:Author: Ruyman Azzollini
+:Contact: r.azzollini_at_ucl.ac.uk
+:issue: 0.1
+:version: 0.1
+:date: |today|
+
+This Python package "vison" is the pipeline that will be used at MSSL for ground calibration of the VIS detection chains, including one ROE, one RPSU and three CCDs.
+
+Installation
+============
+
+The package will be distributed via github. The repository is hosted at:
+
+https://github.com/ruymanengithub/vison
+
+
+Detailed instructions: TBW
+
+Dependencies
+------------
+
+
+A copy of the conda environment that provides all dependencies will be included in the package.
+
+
+Data Model
+==========
+
+.. toctree::
+   :maxdepth: 4
+   
+   datamodel
+
 Indices and tables
 ==================
 
