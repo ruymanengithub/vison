@@ -1,0 +1,318 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Support Code &mdash; vison 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="vison 0.1 documentation" href="index.html" />
+    <link rel="prev" title="Data Model" href="datamodel.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-vison.support.files">
+<span id="support-code"></span><h1>Support Code<a class="headerlink" href="#module-vison.support.files" title="Permalink to this headline">¶</a></h1>
+<p>IO related functions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">requires:</th><td class="field-body">PyFITS</td>
+</tr>
+<tr class="field-even field"><th class="field-name">requires:</th><td class="field-body">NumPy</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Sami-Matias Niemi</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="vison.support.files.cPickleDump">
+<code class="descclassname">vison.support.files.</code><code class="descname">cPickleDump</code><span class="sig-paren">(</span><em>data</em>, <em>output</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.files.cPickleDump" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dumps data to a cPickled file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> &#8211; a Python data container</li>
+<li><strong>output</strong> &#8211; name of the output file</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.support.files.cPickleDumpDictionary">
+<code class="descclassname">vison.support.files.</code><code class="descname">cPickleDumpDictionary</code><span class="sig-paren">(</span><em>dictionary</em>, <em>output</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.files.cPickleDumpDictionary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dumps a dictionary of data to a cPickled file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dictionary</strong> &#8211; a Python data container does not have to be a dictionary</li>
+<li><strong>output</strong> &#8211; name of the output file</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.support.files.cPickleRead">
+<code class="descclassname">vison.support.files.</code><code class="descname">cPickleRead</code><span class="sig-paren">(</span><em>file</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.files.cPickleRead" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads data from a pickled file.</p>
+</dd></dl>
+
+<span class="target" id="module-vison.support.report"></span><p>Euclid-VIS Calibration Programme Pipeline: vison</p>
+<p>Reporting Utilities.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">History:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>Created on Wed Jan 25 16:58:33 2017</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="vison.support.report.Content">
+<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Content</code><span class="sig-paren">(</span><em>contenttype=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Content" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="vison.support.report.Figure">
+<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Figure</code><span class="sig-paren">(</span><em>figpath</em>, <em>textfraction=0.7</em>, <em>caption=None</em>, <em>label=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Figure" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.support.report.Figure.generate_Latex">
+<code class="descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Figure.generate_Latex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates LaTeX as list of strings.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vison.support.report.Section">
+<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Section</code><span class="sig-paren">(</span><em>Title=''</em>, <em>level=0</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Section" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.support.report.Section.generate_Latex">
+<code class="descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Section.generate_Latex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vison.support.report.Table">
+<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Table</code><span class="sig-paren">(</span><em>tableDict</em>, <em>formats={}</em>, <em>names=[]</em>, <em>caption=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Table" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><dl class="docutils">
+<dt>PENDING:</dt>
+<dd><ul class="first last simple">
+<li>adjust width of table to texwidth:</li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>esizebox{       extwidth}{!}{</dt>
+<dd><blockquote class="first">
+<div>...
+end{tabular}}</div></blockquote>
+<ul class="last simple">
+<li>include option to rotate table to show in landscape</li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="vison.support.report.Table.generate_Latex">
+<code class="descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Table.generate_Latex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates LaTeX as list of strings.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vison.support.report.Text">
+<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Text</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Text" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.support.report.Text.generate_Latex">
+<code class="descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Text.generate_Latex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-vison.support.latex"></span><p>Just a collection of LaTeX templates for use in report.py</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">History:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>Created on Mon Jan 30 2017</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="vison.support.latex.generate_header">
+<code class="descclassname">vison.support.latex.</code><code class="descname">generate_header</code><span class="sig-paren">(</span><em>test</em>, <em>model</em>, <em>author</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.latex.generate_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<span class="target" id="module-vison.support.logger"></span><p>These functions can be used for logging information.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">logger is not multiprocessing safe.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Sami-Matias Niemi</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">version:</th><td class="field-body">0.3</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="vison.support.logger.SimpleLogger">
+<em class="property">class </em><code class="descclassname">vison.support.logger.</code><code class="descname">SimpleLogger</code><span class="sig-paren">(</span><em>filename</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.logger.SimpleLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple class to create a log file or print the information on screen.</p>
+<dl class="method">
+<dt id="vison.support.logger.SimpleLogger.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.logger.SimpleLogger.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes text either to file or screen.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.support.logger.setUpLogger">
+<code class="descclassname">vison.support.logger.</code><code class="descname">setUpLogger</code><span class="sig-paren">(</span><em>log_filename</em>, <em>loggername='logger'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.logger.setUpLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up a logger.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body">log_filename: name of the file to save the log.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Param:</th><td class="field-body">loggername: name of the logger</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">logger instance</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="datamodel.html" title="previous chapter">Data Model</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/support.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Ruyman Azzollini.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/support.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

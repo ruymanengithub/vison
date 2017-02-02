@@ -1,0 +1,458 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Data Model &mdash; vison 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="vison 0.1 documentation" href="index.html" />
+    <link rel="prev" title="Welcome to vison’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-vison.datamodel.ccd">
+<span id="data-model"></span><h1>Data Model<a class="headerlink" href="#module-vison.datamodel.ccd" title="Permalink to this headline">¶</a></h1>
+<p>Data model for Euclid-VIS CCDs (ground testing at MSSL)</p>
+<p>Created on Fri Nov 13 17:42:36 2015</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="vison.datamodel.ccd.CCD">
+<em class="property">class </em><code class="descclassname">vison.datamodel.ccd.</code><code class="descname">CCD</code><span class="sig-paren">(</span><em>infits=None, extensions=[-1], getallextensions=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class of CCD objects. 
+Euclid Images as acquired by ELVIS software (Euclid LabView Imaging Software).</p>
+<p>The class has been extended to handle multi-extension images. This is useful
+to also &#8220;host&#8221; calibration data-products, such as Flat-Fields.</p>
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.add_extension">
+<code class="descname">add_extension</code><span class="sig-paren">(</span><em>data</em>, <em>header=None</em>, <em>label=None</em>, <em>headerdict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.add_extension" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.get_cutout">
+<code class="descname">get_cutout</code><span class="sig-paren">(</span><em>corners</em>, <em>Quadrant</em>, <em>canonical=False</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.get_cutout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a cutout from the CCD image, either in 
+canonical or non-canonical orientation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>corners</strong> (<em>list (of int)</em>) &#8211; [x0,x1,y0,y1]</li>
+<li><strong>Quadrant</strong> (<em>char</em>) &#8211; Quadrant, one of &#8216;E&#8217;, &#8216;F&#8217;, &#8216;G&#8217;, &#8216;H&#8217;</li>
+<li><strong>canonical</strong> (<em>bool</em>) &#8211; Canonical [True] = with readout-node at pixel index (0,0) regardless of quadrant. This is the orientation which corresponds to the data-readin order (useful for cross-talk measurements, for example).
+Non-Canonical [False] = with readout-node at corner matching placement of  quadrant on the CCD. This is the orientation that would match the representation of the image on DS9.</li>
+<li><strong>extension</strong> (<em>int</em>) &#8211; extension number. Default = -1 (last)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.get_mask">
+<code class="descname">get_mask</code><span class="sig-paren">(</span><em>mask</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.get_mask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.get_quad">
+<code class="descname">get_quad</code><span class="sig-paren">(</span><em>Quadrant</em>, <em>canonical=False</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.get_quad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a quadrant in canonical or non-canonical orientation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Quadrant</strong> (<em>char</em>) &#8211; Quadrant, one of &#8216;E&#8217;, &#8216;F&#8217;, &#8216;G&#8217;, &#8216;H&#8217;</li>
+<li><strong>canonical</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Canonical [True] = with readout-node at pixel index (0,0) regardless of quadrant. This is the orientation which corresponds to the data-reading order (useful for cross-talk measurements, for example).
+Non-Canonical [False] = with readout-node at corner matching placement of quadrant on the CCD. This is the orientation that would match the representation of the image on DS9.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>extension</strong> (<em>int</em>) &#8211; extension number. Default = -1 (last)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.getsectioncollims">
+<code class="descname">getsectioncollims</code><span class="sig-paren">(</span><em>QUAD</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.getsectioncollims" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns limits of sections: prescan, image and overscan</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.meas_bias">
+<code class="descname">meas_bias</code><span class="sig-paren">(</span><em>Quadrant</em>, <em>sector='both'</em>, <em>detail=False</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.meas_bias" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.set_quad">
+<code class="descname">set_quad</code><span class="sig-paren">(</span><em>inQdata</em>, <em>Quadrant</em>, <em>canonical=False</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.set_quad" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.sub_bias">
+<code class="descname">sub_bias</code><span class="sig-paren">(</span><em>superbias</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.sub_bias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subtracts a superbias</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.sub_offset">
+<code class="descname">sub_offset</code><span class="sig-paren">(</span><em>Quad, method='row', scan='pre', trimscan=[3, 2], extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.sub_offset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.writeto">
+<code class="descname">writeto</code><span class="sig-paren">(</span><em>fitsf</em>, <em>clobber=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.writeto" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vison.datamodel.ccd.Extension">
+<em class="property">class </em><code class="descclassname">vison.datamodel.ccd.</code><code class="descname">Extension</code><span class="sig-paren">(</span><em>data</em>, <em>header=None</em>, <em>label=None</em>, <em>headerdict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.Extension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extension Class</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.ccd.test_create_from_scratch">
+<code class="descclassname">vison.datamodel.ccd.</code><code class="descname">test_create_from_scratch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.test_create_from_scratch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.ccd.test_load_ELVIS_fits">
+<code class="descclassname">vison.datamodel.ccd.</code><code class="descname">test_load_ELVIS_fits</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.test_load_ELVIS_fits" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<span class="target" id="module-vison.datamodel.EXPLOGtools"></span><dl class="function">
+<dt id="vison.datamodel.EXPLOGtools.loadExpLog">
+<code class="descclassname">vison.datamodel.EXPLOGtools.</code><code class="descname">loadExpLog</code><span class="sig-paren">(</span><em>expfile</em>, <em>elvis='5.7.04'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.EXPLOGtools.loadExpLog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads an Exposure Log from file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.EXPLOGtools.mergeExpLogs">
+<code class="descclassname">vison.datamodel.EXPLOGtools.</code><code class="descname">mergeExpLogs</code><span class="sig-paren">(</span><em>explogList</em>, <em>addpedigree=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.EXPLOGtools.mergeExpLogs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merges explog objects in a list.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.EXPLOGtools.test">
+<code class="descclassname">vison.datamodel.EXPLOGtools.</code><code class="descname">test</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.EXPLOGtools.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>This Tests needs UPDATE (for data access and probably data format)</p>
+</dd></dl>
+
+<span class="target" id="module-vison.datamodel.HKtools"></span><p>House-Keeping inspection and handling tools.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">History:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>Created on Thu Mar 10 12:11:58 2016</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="vison.datamodel.HKtools.HKplot">
+<code class="descclassname">vison.datamodel.HKtools.</code><code class="descname">HKplot</code><span class="sig-paren">(</span><em>allHKdata</em>, <em>keylist</em>, <em>key</em>, <em>dtobjs</em>, <em>filename=''</em>, <em>stat='mean'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.HKtools.HKplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the values of a HK parameter as a function of time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>allHKdata</strong> &#8211; HKdata = [(nfiles,nstats,nHKparams)]</li>
+<li><strong>keylist</strong> &#8211; list with all HK keys.</li>
+<li><strong>key</strong> &#8211; selected key.</li>
+<li><strong>tdeltahour</strong> &#8211; time axis.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None!!</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.HKtools.filtervalues">
+<code class="descclassname">vison.datamodel.HKtools.</code><code class="descname">filtervalues</code><span class="sig-paren">(</span><em>values</em>, <em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.HKtools.filtervalues" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.HKtools.loadHK_QFM">
+<code class="descclassname">vison.datamodel.HKtools.</code><code class="descname">loadHK_QFM</code><span class="sig-paren">(</span><em>filename</em>, <em>elvis='5.8.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.HKtools.loadHK_QFM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a HK file</p>
+<p>Structure: tab separated columns, one per Keyword. First column is a 
+timestamp, and there may be a variable number of rows (readings).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> &#8211; path to the file to be loaded, including the file itself</li>
+<li><strong>form</strong> &#8211; format of HK file, given by version of &#8220;ELVIS&#8221;</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dictionary with pairs parameter:[values]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.HKtools.loadHK_preQM">
+<code class="descclassname">vison.datamodel.HKtools.</code><code class="descname">loadHK_preQM</code><span class="sig-paren">(</span><em>filename</em>, <em>elvis='5.7.07'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.HKtools.loadHK_preQM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a HK file</p>
+<p>It only assumes a structure given by a HK keyword followed by a number of 
+of tab-separated values (number not specified).
+Note that the length of the values arrays is variable (depends on length
+of exposure and HK sampling rate).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> &#8211; path to the file to be loaded, including the file itself</li>
+<li><strong>form</strong> &#8211; format of HK file, given by version of &#8220;ELVIS&#8221;</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dictionary with pairs parameter:[values]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.HKtools.parseHKfiles">
+<code class="descclassname">vison.datamodel.HKtools.</code><code class="descname">parseHKfiles</code><span class="sig-paren">(</span><em>HKlist</em>, <em>elvis='5.7.07'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.HKtools.parseHKfiles" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>HKlist</strong> &#8211; list of HK files (path+name).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">[obsids],[dtobjs],[tdeltasec],[HK_keys], [data(nfiles,nstats,nHKparams)]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.HKtools.parseHKfname">
+<code class="descclassname">vison.datamodel.HKtools.</code><code class="descname">parseHKfname</code><span class="sig-paren">(</span><em>HKfname</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.HKtools.parseHKfname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses name of a HK file to retrieve OBSID, date and time, and ROE number.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>HKfname</strong> &#8211; name of HK file.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">obsid,dtobj=datetime.datetime(yy,MM,dd,hh,mm,ss),ROE</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.HKtools.reportHK">
+<code class="descclassname">vison.datamodel.HKtools.</code><code class="descname">reportHK</code><span class="sig-paren">(</span><em>HKs</em>, <em>key</em>, <em>reqstat='all'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.HKtools.reportHK" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns (mean, std, min, max) for each keyword in a list of
+HK dictionaries (output from loadHK).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>HK</strong> &#8211; dictionary with HK data.</li>
+<li><strong>key</strong> &#8211; HK key.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Reqstat:</th><td class="field-body"><p class="first last">what statistic to retrieve.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.HKtools.synthHK">
+<code class="descclassname">vison.datamodel.HKtools.</code><code class="descname">synthHK</code><span class="sig-paren">(</span><em>HK</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.HKtools.synthHK" title="Permalink to this definition">¶</a></dt>
+<dd><p>Synthetizes the values for each parameter in a HK dictionary into
+[mean,std,min,max].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>HK</strong> &#8211; a dictionary as those output by loadHK.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dictionary with pairs parameter:[mean,std,min,max]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<span class="target" id="module-vison.datamodel.QLAtools"></span><p>Quick-Look-Analysis Tools.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">History:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>Created on Wed Mar 16 11:31:58 2016</p>
+<p>&#64;author: Ruyman Azzollini</p>
+<dl class="function">
+<dt id="vison.datamodel.QLAtools.dissectFITS">
+<code class="descclassname">vison.datamodel.QLAtools.</code><code class="descname">dissectFITS</code><span class="sig-paren">(</span><em>FITSfile</em>, <em>path=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.QLAtools.dissectFITS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.QLAtools.getacrosscolscut">
+<code class="descclassname">vison.datamodel.QLAtools.</code><code class="descname">getacrosscolscut</code><span class="sig-paren">(</span><em>CCDobj</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.QLAtools.getacrosscolscut" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.QLAtools.getacrossrowscut">
+<code class="descclassname">vison.datamodel.QLAtools.</code><code class="descname">getacrossrowscut</code><span class="sig-paren">(</span><em>CCDobj</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.QLAtools.getacrossrowscut" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.QLAtools.getsectionstats">
+<code class="descclassname">vison.datamodel.QLAtools.</code><code class="descname">getsectionstats</code><span class="sig-paren">(</span><em>CCDobj</em>, <em>QUAD</em>, <em>section</em>, <em>xbuffer=(0</em>, <em>0)</em>, <em>ybuffer=(0</em>, <em>0)</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.QLAtools.getsectionstats" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.QLAtools.plotAcCOLcuts">
+<code class="descclassname">vison.datamodel.QLAtools.</code><code class="descname">plotAcCOLcuts</code><span class="sig-paren">(</span><em>dissection</em>, <em>filename=None</em>, <em>suptitle=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.QLAtools.plotAcCOLcuts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.QLAtools.plotAcROWcuts">
+<code class="descclassname">vison.datamodel.QLAtools.</code><code class="descname">plotAcROWcuts</code><span class="sig-paren">(</span><em>dissection</em>, <em>filename=None</em>, <em>suptitle=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.QLAtools.plotAcROWcuts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.QLAtools.plotQuads">
+<code class="descclassname">vison.datamodel.QLAtools.</code><code class="descname">plotQuads</code><span class="sig-paren">(</span><em>CCDobj</em>, <em>filename=None</em>, <em>suptitle=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.QLAtools.plotQuads" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.QLAtools.reportFITS">
+<code class="descclassname">vison.datamodel.QLAtools.</code><code class="descname">reportFITS</code><span class="sig-paren">(</span><em>FITSfile</em>, <em>outpath=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.QLAtools.reportFITS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to vison&#8217;s documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/datamodel.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Ruyman Azzollini.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/datamodel.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
