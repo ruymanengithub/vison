@@ -148,14 +148,14 @@ latex:
 #	$(MAKE) -C $(BUILDDIR)/latex all-pdf
 #	@echo "pdflatex finished; the PDF files are in $(BUILDDIR)/latex."
 latexpdf:
-    $(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(PDFBUILDDIR)/latex
-    #                                          ^^^
-    @echo "Running LaTeX files through pdflatex..."
-    make -C $(PDFBUILDDIR)/latex all-pdf
-    #         ^^^
-    cp $(PDFBUILDDIR)/latex/*.pdf $(PDF)
-    #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    @echo "pdflatex finished; see $(PDF)"
+	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(PDFBUILDDIR)/latex
+	#                                          
+	@echo "Running LaTeX files through pdflatex..."
+	$(MAKE) -C $(PDFBUILDDIR)/latex all-pdf
+	#         
+	cp $(PDFBUILDDIR)/latex/*.pdf $(PDF)
+	#
+	@echo "pdflatex finished; see $(PDF)"
 
 
 .PHONY: latexpdfja

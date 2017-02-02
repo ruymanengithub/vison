@@ -38,9 +38,9 @@ imgheight = ccdobj.NAXIS2/2
 quad_width = ccdobj.NAXIS1/2
 imgwidth = quad_width - prescan - overscan
 
-FW = dict(Filter1='570nm',Filter2='650nm',
-          Filter3='700nm',Filter4='800nm',
-          Filter5='900nm',Filter6='ND')
+FW = dict(Filter1='590nm',Filter2='640nm',
+          Filter3='730nm',Filter4='800nm',
+          Filter5='880nm',Filter6='ND')
 
 Point_CooNom = {'CCD1':{'E':{'ALPHA':(prescan+0.2*imgwidth,imgheight*(1.+0.8)),
                               'BRAVO':(prescan+0.8*imgwidth,imgheight*(1.+0.8)),
