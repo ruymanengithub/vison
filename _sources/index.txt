@@ -40,6 +40,15 @@ Dependencies
 A copy of the conda environment that provides all dependencies will be included in the package.
 
 
+Pipeline Core
+=============
+
+.. toctree::
+    :maxdepth: 4
+    
+    pipe
+
+
 Data Model
 ==========
 
@@ -47,6 +56,17 @@ Data Model
    :maxdepth: 4
    
    datamodel
+
+
+Support Code
+============
+
+.. toctree::
+   :maxdepth: 4
+   
+   support
+
+
 
 Indices and tables
 ==================
