@@ -2,9 +2,11 @@
 """
 
 VIS Ground Calibration
-TEST: PSF01
+TEST: PSF0X
 
 PSF vs. Fluence, and Wavelength
+   PSF01 - nominal temperature
+   PSF02 - alternative temperatures
 
 Tasks:
 
@@ -41,10 +43,10 @@ from vison.support import files
 
 isthere = os.path.exists
 
-HKKeys_PSF01 = ['HK_temp_top_CCD1','HK_temp_bottom_CCD1','HK_temp_top_CCD2',
+HKKeys_PSF0X = ['HK_temp_top_CCD1','HK_temp_bottom_CCD1','HK_temp_top_CCD2',
 'HK_temp_bottom_CCD2','HK_temp_top_CCD3','HK_temp_bottom_CCD3'] # TESTS
 
-PSF01_structure = dict(col1=dict(N=5,Exptime=0),
+PSF0X_structure = dict(col1=dict(N=5,Exptime=0),
                           col2=dict(N=20,Exptime=1.),
                           col3=dict(N=18,Exptime=5.),
                           col4=dict(N=10,Exptime=10.),
@@ -53,8 +55,8 @@ PSF01_structure = dict(col1=dict(N=5,Exptime=0),
                    Ncols=6)
 
 
-def filterexposures_PSF01(inwavelength,explogf,datapath,OBSID_lims,structure=PSF01_structure,elvis='5.7.04'):
-    """Loads a list of Exposure Logs and selects exposures from test PSF01.
+def filterexposures_PSF0X(inwavelength,explogf,datapath,OBSID_lims,structure=PSF0X_structure,elvis='5.7.04'):
+    """Loads a list of Exposure Logs and selects exposures from test PSF0X.
     
     The filtering takes into account an expected structure for the 
     acquisition script.
@@ -152,7 +154,7 @@ def filterexposures_PSF01(inwavelength,explogf,datapath,OBSID_lims,structure=PSF
     return DataDict, isconsistent
     
     
-def prep_data_PSF01(DataDict,RepDict,inputs,log=None):
+def prep_data_PSF0X(DataDict,RepDict,inputs,log=None):
     """Takes Raw Data and prepares it for further analysis. Also checks that
     data quality is enough."""
     
@@ -169,7 +171,7 @@ def prep_data_PSF01(DataDict,RepDict,inputs,log=None):
         if CCDkey in FFs.keys():
             FFdata[CCDkey] = FFing.FlatField(fitsfile=FFs[CCDkey])
         
-    RepDict['prepPSF01'] = dict(Title='Data Pre-Processing and QA',items=[])
+    RepDict['prepPSF0X'] = dict(Title='Data Pre-Processing and QA',items=[])
     
     
     # Loop over CCDs
@@ -233,12 +235,12 @@ def prep_data_PSF01(DataDict,RepDict,inputs,log=None):
     return DataDict, RepDict
 
 
-def basic_analysis_PSF01(DataDict,RepDict,inputs,log=None):
+def basic_analysis_PSF0X(DataDict,RepDict,inputs,log=None):
     """Performs basic analysis on spots:
          - Gaussian Fits: peak, position, width_x, width_y
     """
     
-def bayes_analysis_PSF01(DataDict,RepDict,inputs,log=None):
+def bayes_analysis_PSF0X(DataDict,RepDict,inputs,log=None):
     """ 
     Performs bayesian decomposition of the spot images:
         - optomechanic PSF and detector PSF.
@@ -246,7 +248,7 @@ def bayes_analysis_PSF01(DataDict,RepDict,inputs,log=None):
     """
     
 
-def meta_analysis_PSF01(DataDict,RepDict,inputs,log=None):
+def meta_analysis_PSF0X(DataDict,RepDict,inputs,log=None):
     """
     
     Analyzes the relation between detector PSF and fluence.
@@ -265,7 +267,7 @@ def recover_progress(DataDictFile,reportobjFile):
     return DataDict,reportobj
 
 def run(inputs,log=None):
-    """Test PSF01 master function."""
+    """Test PSF0X master function."""
     
     
     # INPUTS
@@ -279,8 +281,8 @@ def run(inputs,log=None):
     wavelength = inputs['wavelength']
     elvis = inputs['elvis']
     
-    DataDictFile = os.path.join(resultspath,'PSF01_%snm_DataDict.pick' % wavelength)
-    reportobjFile = os.path.join(resultspath,'PSF01_%snm_Report.pick' % wavelength)
+    DataDictFile = os.path.join(resultspath,'PSF0X_%snm_DataDict.pick' % wavelength)
+    reportobjFile = os.path.join(resultspath,'PSF0X_%snm_Report.pick' % wavelength)
     
     if not isthere(resultspath):
         os.system('mkdir %s' % resultspath)
@@ -288,10 +290,10 @@ def run(inputs,log=None):
     try: 
         structure = inputs['structure']
     except: 
-        structure = PSF01_structure
+        structure = PSF0X_structure
         
     try: reportroot = inputs['reportroot']
-    except KeyError: reportroot = 'PSF01_%inm_report' % wavelength
+    except KeyError: reportroot = 'PSF0X_%inm_report' % wavelength
     
     try: cleanafter = inputs['cleanafter']
     except KeyError: cleanafter = False
@@ -313,7 +315,7 @@ def run(inputs,log=None):
         # Initialising Report Object
     
         if todo_flags['report']:
-            reportobj = Report(TestName='PSF01: %s nm' % wavelength)
+            reportobj = Report(TestName='PSF0X: %s nm' % wavelength)
         else:
             reportobj = None
     
@@ -322,15 +324,15 @@ def run(inputs,log=None):
     
         # Filter Exposures that belong to the test
     
-        DataDict, isconsistent = filterexposures_PSF01(wavelength,explogf,datapath,OBSID_lims,
+        DataDict, isconsistent = filterexposures_PSF0X(wavelength,explogf,datapath,OBSID_lims,
                                      structure,elvis)
     
         if log is not None:
-            log.info('PSF01 acquisition is consistent with expectations: %s' % isconsistent)
+            log.info('PSF0X acquisition is consistent with expectations: %s' % isconsistent)
     
    
         # Add HK information
-        DataDict = plib.addHK(DataDict,HKKeys_PSF01,elvis=elvis)
+        DataDict = plib.addHK(DataDict,HKKeys_PSF0X,elvis=elvis)
         save_progress(DataDict,reportobj,DataDictFile,reportobjFile)
         
     else:
@@ -347,7 +349,7 @@ def run(inputs,log=None):
     
     if todo_flags['prep']:
     
-        DataDict, reportobj = prep_data_PSF01(DataDict,reportobj,inputs,log)
+        DataDict, reportobj = prep_data_PSF0X(DataDict,reportobj,inputs,log)
         save_progress(DataDict,reportobj,DataDictFile,reportobjFile)        
     else:
         DataDict, reportobj = recover_progress(DataDictFile,reportobjFile)
@@ -357,7 +359,7 @@ def run(inputs,log=None):
     
     if todo_flags['basic']:
         
-        DataDict, reportobj = basic_analysis_PSF01(DataDict,reportobj,inputs,log)
+        DataDict, reportobj = basic_analysis_PSF0X(DataDict,reportobj,inputs,log)
         save_progress(DataDict,reportobj,DataDictFile,reportobjFile)        
     else:
         DataDict, reportobj = recover_progress(DataDictFile,reportobjFile)
@@ -367,7 +369,7 @@ def run(inputs,log=None):
     
     
     if todo_flags['bayes']:
-        DataDict, reportobj = bayes_analysis_PSF01(DataDict,reportobj,inputs,log)
+        DataDict, reportobj = bayes_analysis_PSF0X(DataDict,reportobj,inputs,log)
         save_progress(DataDict,reportobj,DataDictFile,reportobjFile)  
     else:
         DataDict, reportobj = recover_progress(DataDictFile,reportobjFile)
@@ -377,7 +379,7 @@ def run(inputs,log=None):
     # Produce Summary Figures and Tables
     
     if todo_flags['meta']:
-        DataDict, reportobj = meta_analysis_PSF01(DataDict,reportobj,inputs,log)
+        DataDict, reportobj = meta_analysis_PSF0X(DataDict,reportobj,inputs,log)
         save_progress(DataDict,reportobj,DataDictFile,reportobjFile)  
     else:
         DataDict, reportobj = recover_progress(DataDictFile,reportobjFile)
@@ -394,5 +396,5 @@ def run(inputs,log=None):
     save_progress(DataDict,reportobj,DataDictFile,reportobjFile)
     
     if log is not None:
-        log.info('Finished PSF01')
+        log.info('Finished PSF0X')
     
