@@ -32,10 +32,12 @@ Created on Mon Apr 03 16:21:00 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
-from vison.pipe import lib as plib
+from vison.pipe import lib as pilib
 from vison.pipe import FlatFielding as FFing
 from vison.support.report import Report
 from vison.support import files
+from vison.point import lib as polib
+from vison.datamodel import ccd
 # END IMPORT
 
 isthere = os.path.exists
@@ -43,20 +45,22 @@ isthere = os.path.exists
 HKKeys_FOCUS00 = ['HK_temp_top_CCD1','HK_temp_bottom_CCD1','HK_temp_top_CCD2',
 'HK_temp_bottom_CCD2','HK_temp_top_CCD3','HK_temp_bottom_CCD3'] # TESTS
 
-FOCUS00_structure = dict(col1=dict(N=5,Exptime=0,mirror=50),
-                          col2=dict(N=2,Exptime=10.,mirror=45),
-                          col3=dict(N=2,Exptime=10.,mirror=46),
-                          col4=dict(N=2,Exptime=10.,mirror=47),
-                          col5=dict(N=2,Exptime=10.,mirror=48),
-                          col6=dict(N=2,Exptime=10.,mirror=49),
-                          col7=dict(N=2,Exptime=10.,mirror=50),
-                          col8=dict(N=2,Exptime=10.,mirror=51),
-                          col9=dict(N=2,Exptime=10.,mirror=52),
-                          col10=dict(N=2,Exptime=10.,mirror=53),
-                          col11=dict(N=2,Exptime=10.,mirror=54),
-                          col12=dict(N=2,Exptime=10.,mirror=55),
-                   Ncols=12)
 
+def get_FOCUS00_structure(wavelength):
+    """ """
+    
+    FilterPos = [key for key in pilib.FW if pilib.FW[key] == wavelength][0]    
+    mirror_nom = polib.mirror_nom[FilterPos]
+
+    FOCUS00_structure = dict(col1=dict(N=5,Exptime=0,mirror=mirror_nom-0.2),
+                          col2=dict(N=2,Exptime=10.,mirror=mirror_nom-0.2),
+                          col3=dict(N=2,Exptime=10.,mirror=mirror_nom-0.1),
+                          col4=dict(N=2,Exptime=10.,mirror=mirror_nom-0.0),
+                          col5=dict(N=2,Exptime=10.,mirror=mirror_nom+0.1),
+                          col6=dict(N=2,Exptime=10.,mirror=mirror_nom+0.2),
+                   Ncols=6)
+    
+    return FOCUS00_structure
 
 def filterexposures_FOCUS00(inwavelength,explogf,datapath,OBSID_lims,structure=FOCUS00_structure,elvis='5.7.04'):
     """Loads a list of Exposure Logs and selects exposures from test FOCUS00.
@@ -72,7 +76,7 @@ def filterexposures_FOCUS00(inwavelength,explogf,datapath,OBSID_lims,structure=F
     """
     
     # load exposure log(s)
-    explog = plib.loadexplogs(explogf,elvis=elvis,addpedigree=True)
+    explog = pilib.loadexplogs(explogf,elvis=elvis,addpedigree=True)
     
     # add datapath(s)
     
@@ -94,12 +98,12 @@ def filterexposures_FOCUS00(inwavelength,explogf,datapath,OBSID_lims,structure=F
     DataDict = {}
         
     
-    for key in plib.FW.keys():
-        if plib.FW[key] == '%inm' % inwavelength: Filter = key
+    for key in pilib.FW.keys():
+        if pilib.FW[key] == '%inm' % inwavelength: Filter = key
     
     Filter = '%i' % inwavelength # TESTS
     
-    selbool = (['PSF02' in item for item in explog['TEST']]) & \
+    selbool = (['FOCUS' in item for item in explog['TEST']]) & \
         (explog['ObsID'] >= OBSID_lims[0]) & \
         (explog['ObsID'] <= OBSID_lims[1]) & \
         (explog['Wavelength'] == Filter) # TESTS
@@ -107,7 +111,7 @@ def filterexposures_FOCUS00(inwavelength,explogf,datapath,OBSID_lims,structure=F
     
     # Assess structure
     
-    isconsistent = plib.check_test_structure(explog,selbool,structure)
+    isconsistent = pilib.check_test_structure(explog,selbool,structure)
     
     
     # Build DataDict
@@ -131,18 +135,23 @@ def filterexposures_FOCUS00(inwavelength,explogf,datapath,OBSID_lims,structure=F
             DataDict[CCDkey][key] = explog[key][CCDselbool]
         
         
+        Mirr_pos = DataDict[CCDkey]['Mirr_pos'].copy()
         Exptime = DataDict[CCDkey]['Exptime'].copy()
         
         label = np.zeros(Nobs,dtype='40str')
         
-        uexptimes = np.sort(np.unique(Exptime))
+        uMirr_pos = np.sort(np.unique(Mirr_pos))
         
         
-        for ixflu,uexptime in enumerate(uexptimes):
+        for ixMP,MP in enumerate(uMirr_pos):
             
-            ixsel = np.where(Exptime == uexptime)
+            ixsel = np.where(Mirr_pos == uMirr_pos)
             
-            label[ixsel] = 'fluence_%i' % ixflu
+            iexptime = Exptime[ixsel]
+            if iexptime >0:
+                label[ixsel] = 'focus_%i' % ixMP
+            else:
+                label[ixsel] = 'BGD'
         
         DataDict[CCDkey]['label'] = label.copy()
         
@@ -165,7 +174,6 @@ def prep_data_FOCUS00(DataDict,RepDict,inputs,log=None):
     
     FFs = inputs['FFs'] # flat-fields for each CCD (1,2,3)
     
-    
     # Load Flat-Field data for each CCD
     
     FFdata = dict()
@@ -177,6 +185,9 @@ def prep_data_FOCUS00(DataDict,RepDict,inputs,log=None):
     RepDict['prepFOCUS00'] = dict(Title='Data Pre-Processing and QA',items=[])
     
     
+    cols_to_add = ['offset_%s','std_pre_%s','std_ove_%s','med_img_%s',
+                   'std_img_%s']
+                   
     # Loop over CCDs
     
     for CCDindex in range(1,4):
@@ -190,22 +201,54 @@ def prep_data_FOCUS00(DataDict,RepDict,inputs,log=None):
             ObsIDs = DataDict[CCDkey]['ObsID'].copy()
             label = DataDict[CCDkey]['label'].copy()
             #Nobs = len(ObsIDs)
+            Nobs = len(ObsIDs)
+            
+            for col in cols_to_add:
+                for Q in pilib.Quads:
+                    DataDict[CCDkey][col % Q] = np.zeros(Nobs,dtype='float32')
             
             
             for iObs, ObsID in enumerate(ObsIDs):
                 
                 ilabel = label[iObs]
                 
-                stop()
+                # log object-id being analyzed: ObsID
                 
-                # log object being analyzed: ObsID
+                if log is not None: log.info('working on ObsID %i' % ObsID)
                 
                 # retrieve FITS file and open it
+                                
+                idatapath = DataDict[CCDkey]['datapath'][iObs]
+                
+                fitsf = os.path.join(idatapath,DataDict[CCDkey]['Files'][iObs])
+                
                 
                 # subtract offset and add to DataDict
                 # measure STD in pre and over-scan and add to DataDict
+                                
+                ccdobj = ccd.CCD(fitsf)
+                
+                
+                for Q in pilib.Quads:
+                    
+                    Qoffset = ccdobj.sub_offset(Q,method='median',scan='pre',trimscan=[5,5])[0]
+                    DataDict[CCDkey]['offset_%s' % Q][iObs] = Qoffset
+                    
+                    
+                    ignore,std_pre = ccdobj.get_stats(Q,area='pre',detail=False,trimscan=[5,5])
+                    ignore,std_ove = ccdobj.get_stats(Q,area='ove',detail=False,trimscan=[5,5])
+                    med_img,std_img = ccdobj.get_stats(Q,area='img',detail=False,trimscan=[10,10])
+                    
+                    DataDict[CCDkey]['std_pre_%s' % Q][iObs] = std_pre
+                    DataDict[CCDkey]['std_ove_%s' % Q][iObs] = std_ove
+                    DataDict[CCDkey]['std_img_%s' % Q][iObs] = std_img
+                    DataDict[CCDkey]['med_img_%s' % Q][iObs] = med_img
                 
                 # Divide by flat-field
+                
+                
+                
+                
                 
                 for spotID in spotIDs[CCDkey]:
                     
@@ -287,7 +330,7 @@ def run(inputs,log=None):
     try: 
         structure = inputs['structure']
     except: 
-        structure = FOCUS00_structure
+        structure = get_FOCUS00_structure(wavelength)
         
     try: reportroot = inputs['reportroot']
     except KeyError: reportroot = 'FOCUS00_%inm_report' % wavelength
@@ -296,16 +339,7 @@ def run(inputs,log=None):
     except KeyError: cleanafter = False
     
     if 'todo_flags' in inputs: todo_flags.update(inputs['todo_flags'])
-    
-    doIndivs = []
-    for key in ['basic','bayes']:
-        if todo_flags[key] == True: doIndivs.append(True)
-    
-    resindivpath = '%s_indiv' % resultspath
-    
-    if not isthere(resindivpath) and np.any(doIndivs):
-        os.system('mkdir %s' % resindivpath)
-    
+        
     
     if todo_flags['init']:
     
@@ -326,10 +360,9 @@ def run(inputs,log=None):
     
         if log is not None:
             log.info('FOCUS00 acquisition is consistent with expectations: %s' % isconsistent)
-    
-   
+        
         # Add HK information
-        DataDict = plib.addHK(DataDict,HKKeys_FOCUS00,elvis=elvis)
+        DataDict = pilib.addHK(DataDict,HKKeys_FOCUS00,elvis=elvis)
         save_progress(DataDict,reportobj,DataDictFile,reportobjFile)
         
     else:
@@ -342,10 +375,8 @@ def run(inputs,log=None):
     # Check Data has enough quality:
     #     median levels in pre-scan, image-area, overscan
     #     fluences and spot-sizes (coarse measure) match expectations for all spots
-    #     
     
     if todo_flags['prep']:
-    
         DataDict, reportobj = prep_data_FOCUS00(DataDict,reportobj,inputs,log)
         save_progress(DataDict,reportobj,DataDictFile,reportobjFile)        
     else:
@@ -355,12 +386,10 @@ def run(inputs,log=None):
     # Perform Basic Analysis : Gaussian fits and Moments
     
     if todo_flags['basic']:
-        
         DataDict, reportobj = basic_analysis_FOCUS00(DataDict,reportobj,inputs,log)
         save_progress(DataDict,reportobj,DataDictFile,reportobjFile)        
     else:
         DataDict, reportobj = recover_progress(DataDictFile,reportobjFile)
-    
     
     # Optional
     # Produce Summary Figures and Tables
@@ -384,4 +413,8 @@ def run(inputs,log=None):
     
     if log is not None:
         log.info('Finished FOCUS00')
+
+
+if __name__ == '__main__':
     
+    pass

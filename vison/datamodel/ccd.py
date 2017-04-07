@@ -253,7 +253,6 @@ class CCD(object):
         prescan = Qdata[4:self.prescan-1,3:-3]
         ovscan = Qdata[self.prescan+2048+4:-3,3:-3]
         
-        
         #stop()
         
         if sector == 'both':

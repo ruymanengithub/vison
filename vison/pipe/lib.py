@@ -42,32 +42,6 @@ FW = dict(Filter1='590nm',Filter2='640nm',
           Filter3='730nm',Filter4='800nm',
           Filter5='880nm',Filter6='ND')
 
-Point_CooNom = {'CCD1':{'E':{'ALPHA':(prescan+0.2*imgwidth,imgheight*(1.+0.8)),
-                              'BRAVO':(prescan+0.8*imgwidth,imgheight*(1.+0.8)),
-                             'CHARLIE':(prescan+0.5*imgwidth,imgheight*(1.+0.5)),
-                              'DELTA':(prescan+0.2*imgwidth,imgheight*(1.+0.2)),
-                              'ECHO':(prescan+0.8*imgwidth,imgheight*(1.+0.2))},
-                        'F':{'ALPHA':(quad_width+prescan+0.2*imgwidth,imgheight*(1.+0.8)),
-                            'BRAVO':(quad_width+prescan+0.8*imgwidth,imgheight*(1.+0.8)),
-                            'CHARLIE':(quad_width+prescan+0.5*imgwidth,imgheight*(1.+0.5)),
-                            'DELTA':(quad_width+prescan+0.2*imgwidth,imgheight*(1.+0.2)),
-                            'ECHO':(quad_width+prescan+0.8*imgwidth,imgheight*(1.+0.2))},
-                        'H':{'ALPHA':(prescan+0.2*imgwidth,imgheight*(0.8)),
-                             'BRAVO':(prescan+0.8*imgwidth,imgheight*(0.8)),
-                            'CHARLIE':(prescan+0.5*imgwidth,imgheight*(0.5)),
-                            'DELTA':(prescan+0.2*imgwidth,imgheight*(0.2)),
-                            'ECHO':(prescan+0.8*imgwidth,imgheight*(0.2))},
-                        'G':{'ALPHA':(prescan+0.2*imgwidth,imgheight*(0.8)),
-                            'BRAVO':(prescan+0.8*imgwidth,imgheight*(0.8)),
-                            'CHARLIE':(prescan+0.5*imgwidth,imgheight*(0.5)),
-                            'DELTA':(prescan+0.2*imgwidth,imgheight*(0.2)),
-                            'ECHO':(prescan+0.8*imgwidth,imgheight*(0.2))}
-                            }}
-
-for iCCD in range(2,4):
-    Point_CooNom['CCD%i' % iCCD] = dict()
-    for Q in Quads:
-        Point_CooNom['CCD%i' % iCCD][Q] = copy.deepcopy(Point_CooNom['CCD1'][Q])
 
 # Editions of Point_CooNom: PENDING upon characterization of OGSE
 
