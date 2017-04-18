@@ -22,6 +22,7 @@ import pylab
 import matplotlib
 
 from astropy.io import ascii
+from astropy.table import Table
 import string as st
 import numpy as np
 # END IMPORT
@@ -145,6 +146,17 @@ def loadHK_QFM(filename,elvis='5.8.X'):
     return data
 
 
+def iniHK_QFM(elvis='6.0.0'):
+    """ """
+    columns = allHK_keys[elvis]    
+    
+    dtypes = ['S8'] # TimeStamp
+    for column in columns[1:]:
+        dtypes.append('f')
+    
+    HK= Table(names=columns,dtype=dtypes)
+    
+    return HK
 
 def filtervalues(values,key):
     """ """
@@ -237,7 +249,11 @@ def parseHKfname(HKfname):
     ROE = items[3]
     
     date = DT[0:DT.index('D')]
-    dd,MM,yy = int(date[0:2]),int(date[2:4]),int(date[4:6])+2000
+    
+    y2d = int(date[4:6])
+    if y2d < 20: century = 2000
+    else: century = 1900
+    dd,MM,yy = int(date[0:2]),int(date[2:4]),y2d+century
 
     time = DT[DT.index('D')+1:-1]
     hh,mm,ss = int(time[0:2]),int(time[2:4]),int(time[4:6])

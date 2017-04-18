@@ -23,12 +23,18 @@ NAXIS2 = 4132
 prescan = 51
 overscan = 20
 imgarea = [2048,2066]
+RON = 1.4
+gain = 3.1 # e/adu
 
 QuadBound = dict(E=[0,NAXIS1/2,NAXIS2/2,NAXIS2],\
                F=[NAXIS1/2,NAXIS1,NAXIS2/2,NAXIS2],\
                G=[NAXIS1/2,NAXIS1,0,NAXIS2/2],\
                H=[0,NAXIS1/2,0,NAXIS2/2])
 
+Quads = ['E','F','G','H']
+
+
+HeadKeys = dict()
 
 class Extension():
     """Extension Class"""
@@ -327,6 +333,12 @@ class CCD(object):
         self.extensions[extension].data -= superbias
         
     
+    def divide_by_flatfield(self,FF,extension=-1):
+        """Divide by a Flat-field"""
+        assert self.shape == FF.shape
+        self.extensions[extension].data /= FF
+        
+    
     def flip_tocanonical(self,array,Quad):
         
         if Quad == 'E': return array[:,::-1].copy()
@@ -361,7 +373,7 @@ class CCD(object):
         self.masked = True
         
     
-    def writeto(self,fitsf,clobber=False):
+    def writeto(self,fitsf,clobber=False,unsigned16bit=False):
         """ """
         
         #prihdu = fts.PrimaryHDU()
@@ -384,8 +396,6 @@ class CCD(object):
         for comm in comments:
             prihdu.header.add_comment(comm)
             
-        
-    
         hdulist = fts.HDUList([prihdu])
         
         if self.nextensions > 1:
@@ -399,11 +409,57 @@ class CCD(object):
                 iname = self.extensions[iext].label
                 
                 ihdu = fts.ImageHDU(data=idata,header=iheader,name=iname)
+                
+                if unsigned16bit:
+                    ihdu.scale('int16', '', bzero=32768)
+                    ihdu.header.add_history('Scaled to unsigned 16bit integer!')
             
                 hdulist.append(ihdu)
         
         hdulist.writeto(fitsf,overwrite=clobber)
+    
+    
+    def simadd_flatilum(self,levels=dict(E=0.,F=0.,G=0.,H=0.),extension=-1):
+        """ """
+
+        for Q in Quads:            
+            B = self.QuadBound[Q]
+            self.extensions[extension].data[B[0]:B[1],B[2]:B[3]] += levels[Q]
         
+    
+    def simadd_bias(self,levels=dict(E=2000,F=2000,G=2000,H=2000),extension=-1):
+        
+         for Q in Quads:            
+            B = self.QuadBound[Q]
+            self.extensions[extension].data[B[0]:B[1],B[2]:B[3]] += levels[Q]
+    
+    
+    def simadd_ron(self,extension=-1):
+        """ """
+        
+        noise = np.random.normal(loc=0.0, scale=self.rn['E'],size=self.extensions[extension].data.shape)
+        self.extensions[extension].data += noise
+        
+    
+    def simadd_poisson(self,extension=-1):
+        """ """
+        
+        gain = self.gain['E']
+        
+        image_e = self.extensions[extension].data.copy()*gain
+        
+        rounded = np.rint(image_e)
+        residual = image_e - rounded #ugly workaround for multiple rounding operations...
+        rounded[rounded < 0.0] = 0.0
+        image_e = np.random.poisson(rounded).astype(np.float64)
+        image_e += residual
+        
+        image = image_e / gain
+        
+        self.extensions[extension].data = image.copy()
+            
+
+    
 def test_create_from_scratch():
     """ """
     

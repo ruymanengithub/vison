@@ -38,6 +38,10 @@ from vison.support.report import Report
 from vison.support import files
 from vison.point import lib as polib
 from vison.datamodel import ccd
+from vison.datamodel import EXPLOGtools as ELtools
+from vison.datamodel import HKtools
+from vison.datamodel import ccd
+import datetime
 # END IMPORT
 
 isthere = os.path.exists
@@ -45,24 +49,28 @@ isthere = os.path.exists
 HKKeys_FOCUS00 = ['HK_temp_top_CCD1','HK_temp_bottom_CCD1','HK_temp_top_CCD2',
 'HK_temp_bottom_CCD2','HK_temp_top_CCD3','HK_temp_bottom_CCD3'] # TESTS
 
+dtobj_default = datetime.datetime(1980,2,21,7,0,0) # early riser
+
 
 def get_FOCUS00_structure(wavelength):
     """ """
     
-    FilterPos = [key for key in pilib.FW if pilib.FW[key] == wavelength][0]    
+    FilterPos = [key for key in pilib.FW if pilib.FW[key] == '%inm' % wavelength][0]    
     mirror_nom = polib.mirror_nom[FilterPos]
 
-    FOCUS00_structure = dict(col1=dict(N=5,Exptime=0,mirror=mirror_nom-0.2),
-                          col2=dict(N=2,Exptime=10.,mirror=mirror_nom-0.2),
-                          col3=dict(N=2,Exptime=10.,mirror=mirror_nom-0.1),
-                          col4=dict(N=2,Exptime=10.,mirror=mirror_nom-0.0),
-                          col5=dict(N=2,Exptime=10.,mirror=mirror_nom+0.1),
-                          col6=dict(N=2,Exptime=10.,mirror=mirror_nom+0.2),
+    FOCUS00_structure = dict(col1=dict(N=5,Exptime=0,Mirr_pos=mirror_nom-0.2),
+                          col2=dict(N=2,Exptime=10.,Mirr_pos=mirror_nom-0.2),
+                          col3=dict(N=2,Exptime=10.,Mirr_pos=mirror_nom-0.1),
+                          col4=dict(N=2,Exptime=10.,Mirr_pos=mirror_nom-0.0),
+                          col5=dict(N=2,Exptime=10.,Mirr_pos=mirror_nom+0.1),
+                          col6=dict(N=2,Exptime=10.,Mirr_pos=mirror_nom+0.2),
                    Ncols=6)
-    
+
     return FOCUS00_structure
 
-def filterexposures_FOCUS00(inwavelength,explogf,datapath,OBSID_lims,structure=FOCUS00_structure,elvis='5.7.04'):
+FOCUS00_structure_wnom = get_FOCUS00_structure(800)
+
+def filterexposures_FOCUS00(inwavelength,explogf,datapath,OBSID_lims,structure=FOCUS00_structure_wnom,elvis='5.7.04'):
     """Loads a list of Exposure Logs and selects exposures from test FOCUS00.
     
     The filtering takes into account an expected structure for the 
@@ -247,7 +255,9 @@ def prep_data_FOCUS00(DataDict,RepDict,inputs,log=None):
                 # Divide by flat-field
                 
                 
+                iFF = FFdata[CCDkey].copy()
                 
+                ccdobj.divide_by_flatfield(iFF)
                 
                 
                 for spotID in spotIDs[CCDkey]:
@@ -306,6 +316,244 @@ def recover_progress(DataDictFile,reportobjFile):
     reportobj = files.cPickleRead(reportobjFile)
     return DataDict,reportobj
 
+
+def generate_Explog_FOCUS00(wavelength,struct,elvis='6.0.0',date=dtobj_default):
+    """ """
+    
+    Nscriptcols = struct['Ncols']
+    
+    columns = ELtools.columnlist[elvis]
+    
+    defaults = {'ObsID':0,'File_name':'','CCD':0,
+    'ROE':'R01','DATE':'',
+    'PROGRAM':'CALFM','TEST':'FOCUS00',
+    'CCD1_SN':'C01','CCD2_SN':'C02','CCD3_SN':'C03',
+    'BUNIT':'ADU','Operator':'x',
+    'Lab_ver':'x.x.x','Con_file':'xxx.con',
+    'Exptime':0,
+    'Flsh-Rdout_e_time':0.,'C.Inj-Rdout_e_time':0.,'N_P_high':'I1I2I3',
+    'Chrg_inj':0,'On_cycle':0,'Off_cycl':0,
+    'Rpeat_cy':0,'pls_leng':0,'pls_del':0,
+    'SerRdDel':0,'Trappump':0,'TP_Ser_S':0,
+    'TP_Ver_S':0,'TP_DW_V':0,'TP_DW_H':0,'TOI_flsh':143,'TOI_pump':1000,
+    'TOI_read':1000,'TOI_CInj':1000,'Invflshp':500,'Invflush':1,
+    'Flushes':3,'Vstart':1,'Vend':2066,'Ovrscn_H':0,'CLK_ROE':'Normal',
+    'CnvStart':0,'SumWell':0,'IniSweep':1,'SPW_clk':1,'FPGA_ver':'x.x.x',
+    'EGSE_ver':elvis,'M_Steps':0,'M_St_Sze':0,
+    'Wavelength':wavelength,'Mirr_pos':0,
+    'RPSU_SN':'RP01','ROE_SN':'RO01','CalScrpt':'FakeScriptFOCUS00',
+    'R1CCD1TT':153,'R1CCD1TB':153,'R1CCD2TT':153,'R1CCD2TB':153,'R1CCD3TT':153,
+    'R1CCD3TB':153,'IDL_V':13000,'IDH_V':18000,'IG1_T1_V':4000,
+    'IG1_T2_V':6000,'IG1_T3_V':4000,'IG1_B1_V':4000,'IG1_B2_V':6000,'IG1_B3_V':4000,
+    'IG2_T_V':6000,'IG2_B_V':6000,'OD_T1_V':26000,'OD_T2_V':26000,'OD_T3_V':26000,
+    'OD_B1_V':26000,'OD_B2_V':26000,'OD_B3_V':26000,'RD_T_V':17000,'RD_B_V':17000}
+    
+    explog = ELtools.iniExplog(elvis)
+    
+    ixObsID = 1000
+    
+    for iscrcol in range(1,Nscriptcols+1):
+        scriptcol = struct['col%i' % iscrcol]
+        N = scriptcol['N']
+        inputkeys = [key for key in scriptcol.keys() if key != 'N']
+        
+        rowdict = {}
+        
+        for subixrow in range(N):
+        
+            for ecol in columns:
+                rowdict[ecol] = defaults[ecol]
+        
+            for key in inputkeys:
+                rowdict[key] = scriptcol[key]
+            
+            for ixCCD in range(1,4):
+                
+                dmy = date.strftime('%d%m%y')
+                hms = date.strftime('%H%M%S')
+            
+                rowdict['ObsID'] = ixObsID
+                rowdict['File_name'] = 'EUC_%i_%sD_%sT_ROE1_CCD%i' % (ixObsID,dmy,hms,ixCCD)
+                rowdict['DATE'] = '%sD%sT' % (dmy,hms)
+                rowdict['CCD'] = 'CCD%i' % ixCCD
+                
+                explog.add_row(vals=[rowdict[key] for key in columns])
+                
+                date = date + datetime.timedelta(seconds=90)
+            
+            ixObsID += 1
+                    
+            
+    return explog
+
+def get_dtobj(DT):
+    
+        date = DT[0:DT.index('D')]
+        y2d = int(date[4:6])
+        if y2d < 20: century = 2000
+        else: century = 1900
+        dd,MM,yy = int(date[0:2]),int(date[2:4]),y2d+century 
+        
+        time = DT[DT.index('D')+1:-1]
+        
+        hh,mm,ss = int(time[0:2]),int(time[2:4]),int(time[4:6])
+    
+        dtobj = datetime.datetime(yy,MM,dd,hh,mm,ss)
+        return dtobj
+
+def generate_HK_FOCUS00(explog,datapath,elvis='6.0.0'):
+    """ """
+    
+    HKkeys = HKtools.allHK_keys[elvis]
+    
+    Nobs = len(explog['ObsID'])
+    
+    defaults = {'TimeStamp':'','HK_OD_Top_CCD1':27.,'HK_OD_Bottom_CCD1':27.,
+'HK_OD_Top_CCD2':27.,'HK_OD_Bottom_CCD2':27.,'HK_OD_Top_CCD3':27.,'HK_OD_Bottom_CCD3':27.,
+'HK_IG1_Top_CCD1':0.,'HK_IG1_Bottom_CCD1':0.,'HK_IG1_Top_CCD2':0.,'HK_IG1_Bottom_CCD2':0.,
+'HK_IG1_Top_CCD3':0.,'HK_IG1_Bottom_CCD3':0.,'HK_temp_top_CCD1':153.,'HK_temp_bottom_CCD1':153.,
+'HK_temp_top_CCD2':153.,'HK_temp_bottom_CCD2':153.,'HK_temp_top_CCD3':153.,
+'HK_temp_bottom_CCD3':153.,'HK_RD_top':17.,'HK_RD_bot':17.,'HK_IG2_top':0.,'HK_IG2_bot':0.,
+'HK_IDH':18.,'HK_IDL':13.,'HK_DD_bias':20.,'HK_OG_bias':2.,'HK_1.5V_ROE':0.,'HK_VCCD_ROE':0.,
+'HK_5VA_pos_ROE':0.,'HK_5V_ref_ROE':0.,'HK_10VA_ROE':0.,'HK_5.2V_neg_ROE':0.,'HK_3V_neg_ROE':0.,
+'HK_VRclk_ROE':0.,'HK_VRClk_Lo_ROE':0.,'HK_3.3V_DIG_RPSU':0.,'HK_I3.3V_DIG_RPSU':0.,
+'HK_1.5V_DIG_RPSU':0.,'HK_I1.5V_DIG_RPSU':0.,'HK_28V_Pri_RPSU':0.,'HK_I28V_RPSU':0.,
+'HK_VAN_pos_RPSU':0.,'HK_I+VAN_RPSU':0.,'HK_VAN_neg_RPSU':0.,'HK_I-VAN_RPSU':0.,
+'HK_VCLK_RPSU':0.,'HK_IVCLK_RPSU':0.,'HK_VCCD_RPSU':0.,'HK_IVCCD_RPSU':0.,'HK_Temp1_RPSU':30.,
+'HK_Temp2_RPSU':30.,'HK_Video_TOP':30.,'HK_Video_BOT':30.,'HK_FPGA_TOP':30.,'HK_FPGA_BOT':30.,
+'HK_ID1':0.,'HK_ID2':0.,'HK_Viclk_ROE':0.}
+    
+    
+    for ixobs,obsid in enumerate(explog['ObsID']):
+        
+        idate = explog['DATE'][ixobs]
+        
+        idtobj = get_dtobj(idate)
+        
+        if ixobs < Nobs-1:
+            ip1dtobj = get_dtobj(explog['DATE'][ixobs+1])
+            dt = (ip1dtobj-idtobj).seconds
+        else:
+            dt = 90
+        
+        HKfilef = 'HK_%s_%s_ROE1.txt' % (obsid,idate)
+        
+        HKfilef = os.path.join(datapath,HKfilef)
+        
+        HKfile = HKtools.iniHK_QFM(elvis)
+        
+        for sec in range(dt):
+            iidtobj = idtobj + datetime.timedelta(seconds=sec)
+            
+            iTimeStamp = iidtobj.strftime('%H:%M:%S')
+            
+            rowdict = {}
+            
+            for HKkey in HKkeys:
+                rowdict[HKkey] = defaults[HKkey]
+                
+            rowdict['TimeStamp'] = iTimeStamp
+            
+            HKfile.add_row(vals=[rowdict[key] for key in HKkeys])
+        
+        
+        HKfile.write(HKfilef,format='ascii',overwrite=True)
+        
+
+def generate_FITS_FOCUS00(explog,datapath,elvis='6.0.0'):
+    """ """
+    
+    NAXIS1,NAXIS2 = 4238,4132
+    
+    maxexptime = explog['Exptime'].max()
+    flatlevel = 100.
+    biaslevel = 2000.
+    
+    waivedkeys = ['File_name','Flsh-Rdout_e_time','C.Inj-Rdout_e_time',
+                  'Wavelength']
+    
+    for ixobs,obsid in enumerate(explog['ObsID']):
+        
+        idate = explog['DATE'][ixobs]
+        iCCD = explog['CCD'][ixobs]
+        iexptime = explog['Exptime'][ixobs]
+        
+        idtobj = get_dtobj(idate)
+        
+        dmy = idtobj.strftime('%d%m%y')
+        HMS = idtobj.strftime('%H%M%S')
+
+        FITSf = 'EUC_%s_%sD_%sT_ROE1_%s.fits' % \
+            (obsid,dmy,HMS,iCCD)
+        
+        FITSf = os.path.join(datapath,FITSf)
+        
+        ccdobj = ccd.CCD()
+        
+        img = np.zeros(shape=(NAXIS1,NAXIS2),dtype='float32')
+        
+        ccdobj.add_extension(data=None)
+        ccdobj.add_extension(data=img,label='ROE1_%s' % iCCD)
+        
+        ccdobj.simadd_flatilum(levels=dict(E=flatlevel*iexptime*1.,
+                                           F=flatlevel*iexptime*1.1,
+                                           G=flatlevel*iexptime*1.2,
+                                           H=flatlevel*iexptime*1.3))
+        ccdobj.simadd_poisson()
+        
+        ccdobj.simadd_bias(levels=dict(E=biaslevel*1.,
+                                           F=biaslevel*1.1,
+                                           G=biaslevel*1.2,
+                                           H=biaslevel*1.3))
+        ccdobj.simadd_ron()
+        
+        ccdobj.extensions[-1].data = np.round(ccdobj.extensions[-1].data).astype('int32')
+        
+
+        ccdobj.extensions[-1].header['WAVELENG'] = explog['Wavelength'][ixobs]
+        
+        for key in ELtools.columnlist[elvis]:
+            if key not in waived:
+                ccdobj.extensions[-1].header[key] = explog[key][ixobs]
+        
+        
+        ccdobj.writeto(FITSf,clobber=True,unsigned16bit=True)
+        
+        stop()
+    
+
+
+def generate_Fake_FOCUS00(wavelength,date=dtobj_default,rootpath=''):
+    """Generates Fake FOCUS00 data"""
+    
+    # Generate Exposure Log
+    # Generate HK files
+    # Generate FITS files
+    
+    FOCUS00_structure = get_FOCUS00_structure(wavelength)
+    
+    dmmmy = date.strftime('%d_%b_%y')
+    dmy = date.strftime('%d%m%y')
+    
+    datapath = os.path.join(rootpath,dmmmy)
+    
+    if not isthere(datapath):
+        os.system('mkdir %s' % datapath)
+    
+    explog = generate_Explog_FOCUS00(wavelength,FOCUS00_structure,elvis='6.0.0',
+                                     date=date)
+                                     
+    explogf = os.path.join(datapath,'EXP_LOG_%s.txt' % dmy)
+    
+    explog.write(explogf,format='ascii',overwrite=True)
+    
+    #generate_HK_FOCUS00(explog,datapath,elvis='6.0.0')
+    
+    
+    generate_FITS_FOCUS00(explog,datapath,elvis='6.0.0')
+    
+    
+    
 def run(inputs,log=None):
     """Test FOCUS00 master function."""
     
