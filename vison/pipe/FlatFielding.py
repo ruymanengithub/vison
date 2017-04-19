@@ -22,7 +22,7 @@ import vison
 
 #from matplotlib import pyplot as plt
 
-from vison.datamodel.ccd import CCD
+from vison.datamodel import ccd as ccdmodule
 
 from scipy import ndimage as nd
 #from scipy import signal
@@ -147,7 +147,7 @@ def produce_SingleFlatfield(infits,outfits,settings={},runonTests=False):
     print infits
     
     
-    ccd = CCD(infits)
+    ccd = ccdmodule.CCD(infits)
     NX,NY = ccd.NAXIS1,ccd.NAXIS2
     
     # Cosmetic Masking
@@ -336,7 +336,7 @@ def produce_MasterFlat(infits,outfits,mask=None,settings={}):
     hdulist = fts.HDUList([hdu])
     
     mhdu = fts.ImageHDU(mflat.transpose())
-    mhdu.header['EXTNAME'] = 'Flat'    
+    mhdu.header['EXTNAME'] = 'FLAT'    
     hdulist.append(mhdu)
     ehdu = fts.ImageHDU(eflat.transpose())
     ehdu.header['EXTNAME'] = 'Uncertainty'
@@ -346,7 +346,7 @@ def produce_MasterFlat(infits,outfits,mask=None,settings={}):
     hdulist.writeto(outfits,clobber=True)
 
 
-class FlatField(CCD,object):
+class FlatField(ccdmodule.CCD,object):
     """ """
 
 # Master
@@ -358,15 +358,16 @@ class FlatField(CCD,object):
     def __init__(self,fitsfile='',data=dict(),meta=dict()):
         """ """
         
-        super(FlatField,self).__init__(infits=None)
-        
+        #super(FlatField,self).__init__(infits=None)        
+        print 'TODO: FlatFielding.FlatField needs improvemenents: masking'
         
         if fitsfile != '':
-            
-            self.loadfromFITS(fitsfile=fitsfile,getallextensions=True)            
+            super(FlatField,self).__init__(infits=fitsfile,getallextensions=True)
+            #self.loadfromFITS(fitsfile=fitsfile,getallextensions=True)            
             self.parse_fits()
             
         else:
+            super(FlatField,self).__init__(infits=None)
             
             assert isinstance(data,dict)
             assert 'Flat' in data.keys()
@@ -380,31 +381,30 @@ class FlatField(CCD,object):
             
             
             self.add_extension(data=None,header=None,label=None,headerdict=meta)            
-            self.add_extension(data=data['Flat'].copy(),label='Flat')
-            self.add_extension(data=data['eFlat'].copy(),label='eFlat')
+            self.add_extension(data=data['Flat'].copy(),label='FLAT')
+            self.add_extension(data=data['eFlat'].copy(),label='EFLAT')
             
             if 'Mask' in data.keys():
-                self.add_extension(data=data['Mask'].copy(),label='Mask')
+                self.add_extension(data=data['Mask'].copy(),label='MASK')
     
     
     def parse_fits(self,):
         """ """
         
-        stop()
         
         assert self.nextensions >= 3
         
         self.ncomb = self.extensions[0].header['NCOMB']
         self.wavelength = self.extensions[0].header['WAVEL']
         
-        assert self.extensions[1].label == 'Flat'
+        assert self.extensions[1].label.upper() == 'FLAT'
         self.Flat = self.extensions[1].data
         
-        assert self.extensions[2].label == 'eFlat'
+        assert self.extensions[2].label.upper() == 'EFLAT'
         self.eFlat = self.extensions[2].data
         
         if self.nextensions >3:
-            assert self.extensions[3].label == 'Mask'
+            assert self.extensions[3].label.upper() == 'MASK'
             self.Mask = self.extensions[3].data
         else:
             self.Mask = None
