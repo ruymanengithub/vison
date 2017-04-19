@@ -47,8 +47,7 @@ default_header = [
 '\\addtolength{\headwidth}{\marginparsep}',\
 '\\addtolength{\headwidth}{\marginparwidth}',\
 '\\addtolength{\\textwidth}{1.5cm}',\
-'\n',\
-'\\begin{document}']
+'\n']
 
 
 class Content(dict):
@@ -183,7 +182,8 @@ class Text(Content):
 class Report(object):
     
     
-    def __init__(self,TestName='Test',Model='XM',Contents=[],Texheader=default_header,Texbody=['']):
+    def __init__(self,TestName='Test',Model='XM',Contents=[],Texheader=default_header,
+                 Texbody=['\\begin{document}']):
         """ """
         
         self.TestName = TestName
@@ -266,6 +266,7 @@ class Report(object):
         for line in self.Texbody : print >> f, line
         for line in self.Texfooter: print >> f, line
         f.close()
+        
     
     
     def compileLaTex2pdf(self,fileroot,cleanafter=False):
@@ -281,11 +282,14 @@ class Report(object):
         
         execline1 = 'latex %s.tex' % fileroot
         os.system(execline1)
+        stop()
         execline2 = 'dvipdf %s.dvi %s.pdf' % tuple([fileroot]*2)
         os.system(execline2)
         os.system(execline2) # twice to get all references
         
+        
         if cleanafter :
+            stop()
             os.system('rm %s.dvi %s.aux %s.log %s.tex %s.out %s.soc %s.toc' % \
             tuple([fileroot]*7))
             outfiles = [item % fileroot for item in \

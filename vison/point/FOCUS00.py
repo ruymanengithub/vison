@@ -84,6 +84,7 @@ def filterexposures_FOCUS00(inwavelength,explogf,datapath,OBSID_lims,structure=F
     """
     
     # load exposure log(s)
+    
     explog = pilib.loadexplogs(explogf,elvis=elvis,addpedigree=True)
     
     # add datapath(s)
@@ -106,16 +107,16 @@ def filterexposures_FOCUS00(inwavelength,explogf,datapath,OBSID_lims,structure=F
     DataDict = {}
         
     
-    for key in pilib.FW.keys():
-        if pilib.FW[key] == '%inm' % inwavelength: Filter = key
+    #for key in pilib.FW.keys():
+    #    if pilib.FW[key] == '%inm' % inwavelength: Filter = key
     
-    Filter = '%i' % inwavelength # TESTS
+    #Filter = '%i' % inwavelength # TESTS
     
-    selbool = (['FOCUS' in item for item in explog['TEST']]) & \
+    selbool = (['FOCUS00' in item for item in explog['TEST']]) & \
         (explog['ObsID'] >= OBSID_lims[0]) & \
         (explog['ObsID'] <= OBSID_lims[1]) & \
-        (explog['Wavelength'] == Filter) # TESTS
-    
+        (explog['Wavelength'] == inwavelength) # TESTS
+
     
     # Assess structure
     
@@ -174,7 +175,7 @@ def filterexposures_FOCUS00(inwavelength,explogf,datapath,OBSID_lims,structure=F
     return DataDict, isconsistent
     
     
-def prep_data_FOCUS00(DataDict,RepDict,inputs,log=None):
+def prep_data_FOCUS00(DataDict,Report,inputs,log=None):
     """Takes Raw Data and prepares it for further analysis. 
     Also checks that data quality is enough."""
     
@@ -189,11 +190,11 @@ def prep_data_FOCUS00(DataDict,RepDict,inputs,log=None):
         CCDkey = 'CCD%i' % CCDindex
         if CCDkey in FFs.keys():
             FFdata[CCDkey] = FFing.FlatField(fitsfile=FFs[CCDkey])
+
+    Report.add_Section(Title='Data Pre-Processing and QA',level=0)
+    
         
-    RepDict['prepFOCUS00'] = dict(Title='Data Pre-Processing and QA',items=[])
-    
-    
-    cols_to_add = ['offset_%s','std_pre_%s','std_ove_%s','med_img_%s',
+    cols_to_add = ['offset_%s','med_pre_%s','std_pre_%s','med_ove_%s','std_ove_%s','med_img_%s',
                    'std_img_%s']
                    
     # Loop over CCDs
@@ -214,6 +215,9 @@ def prep_data_FOCUS00(DataDict,RepDict,inputs,log=None):
             for col in cols_to_add:
                 for Q in pilib.Quads:
                     DataDict[CCDkey][col % Q] = np.zeros(Nobs,dtype='float32')
+
+            what = polib.Point_CooNom[CCDkey]
+            stop()
             
             
             for iObs, ObsID in enumerate(ObsIDs):
@@ -232,7 +236,7 @@ def prep_data_FOCUS00(DataDict,RepDict,inputs,log=None):
                 
                 
                 # subtract offset and add to DataDict
-                # measure STD in pre and over-scan and add to DataDict
+                # measure basic image statistics and add to DataDict
                                 
                 ccdobj = ccd.CCD(fitsf)
                 
@@ -242,29 +246,32 @@ def prep_data_FOCUS00(DataDict,RepDict,inputs,log=None):
                     Qoffset = ccdobj.sub_offset(Q,method='median',scan='pre',trimscan=[5,5])[0]
                     DataDict[CCDkey]['offset_%s' % Q][iObs] = Qoffset
                     
+                    med_pre,std_pre = ccdobj.get_stats(Q,sector='pre',statkeys=['median','std'],trimscan=[5,5])
+                    med_ove,std_ove = ccdobj.get_stats(Q,sector='ove',statkeys=['median','std'],trimscan=[5,5])
+                    med_img,std_img = ccdobj.get_stats(Q,sector='img',statkeys=['median','std'],trimscan=[10,10])
                     
-                    ignore,std_pre = ccdobj.get_stats(Q,area='pre',detail=False,trimscan=[5,5])
-                    ignore,std_ove = ccdobj.get_stats(Q,area='ove',detail=False,trimscan=[5,5])
-                    med_img,std_img = ccdobj.get_stats(Q,area='img',detail=False,trimscan=[10,10])
-                    
+                    DataDict[CCDkey]['med_pre_%s' % Q][iObs] = med_pre
                     DataDict[CCDkey]['std_pre_%s' % Q][iObs] = std_pre
+                    DataDict[CCDkey]['med_ove_%s' % Q][iObs] = med_ove
                     DataDict[CCDkey]['std_ove_%s' % Q][iObs] = std_ove
-                    DataDict[CCDkey]['std_img_%s' % Q][iObs] = std_img
                     DataDict[CCDkey]['med_img_%s' % Q][iObs] = med_img
+                    DataDict[CCDkey]['std_img_%s' % Q][iObs] = std_img
+                    
                 
                 # Divide by flat-field
+
+                ccdobj.divide_by_flatfield(FFdata[CCDkey].Flat)
                 
-                
-                iFF = FFdata[CCDkey].copy()
-                
-                ccdobj.divide_by_flatfield(iFF)
-                
+                if log is not None: log.info('Divided Image by Flat-field')
+
                 
                 for spotID in spotIDs[CCDkey]:
                     
                     if log is not None: log.info('ObsID - spotID = %s-%s' % (ObsID,spotID))
                     
                     # get coordinates of spotID
+                    
+                    stop()
                     
                     # Cut-out stamp of the spot
                     
@@ -334,19 +341,19 @@ def generate_Explog_FOCUS00(wavelength,struct,elvis='6.0.0',date=dtobj_default):
     'Flsh-Rdout_e_time':0.,'C.Inj-Rdout_e_time':0.,'N_P_high':'I1I2I3',
     'Chrg_inj':0,'On_cycle':0,'Off_cycl':0,
     'Rpeat_cy':0,'pls_leng':0,'pls_del':0,
-    'SerRdDel':0,'Trappump':0,'TP_Ser_S':0,
+    'SerRdDel':0,'Trappump':'x','TP_Ser_S':0,
     'TP_Ver_S':0,'TP_DW_V':0,'TP_DW_H':0,'TOI_flsh':143,'TOI_pump':1000,
     'TOI_read':1000,'TOI_CInj':1000,'Invflshp':500,'Invflush':1,
     'Flushes':3,'Vstart':1,'Vend':2066,'Ovrscn_H':0,'CLK_ROE':'Normal',
     'CnvStart':0,'SumWell':0,'IniSweep':1,'SPW_clk':1,'FPGA_ver':'x.x.x',
     'EGSE_ver':elvis,'M_Steps':0,'M_St_Sze':0,
-    'Wavelength':wavelength,'Mirr_pos':0,
+    'Wavelength':wavelength,'Chmb_pre':1.E-6,'Mirr_pos':0,
     'RPSU_SN':'RP01','ROE_SN':'RO01','CalScrpt':'FakeScriptFOCUS00',
     'R1CCD1TT':153,'R1CCD1TB':153,'R1CCD2TT':153,'R1CCD2TB':153,'R1CCD3TT':153,
-    'R1CCD3TB':153,'IDL_V':13000,'IDH_V':18000,'IG1_T1_V':4000,
-    'IG1_T2_V':6000,'IG1_T3_V':4000,'IG1_B1_V':4000,'IG1_B2_V':6000,'IG1_B3_V':4000,
-    'IG2_T_V':6000,'IG2_B_V':6000,'OD_T1_V':26000,'OD_T2_V':26000,'OD_T3_V':26000,
-    'OD_B1_V':26000,'OD_B2_V':26000,'OD_B3_V':26000,'RD_T_V':17000,'RD_B_V':17000}
+    'R1CCD3TB':153,'IDL_V':13,'IDH_V':18,'IG1_T1_V':4,
+    'IG1_T2_V':6,'IG1_T3_V':4,'IG1_B1_V':4,'IG1_B2_V':6,'IG1_B3_V':4,
+    'IG2_T_V':6,'IG2_B_V':6,'OD_T1_V':26,'OD_T2_V':26,'OD_T3_V':26,
+    'OD_B1_V':26,'OD_B2_V':26,'OD_B3_V':26,'RD_T_V':17,'RD_B_V':17}
     
     explog = ELtools.iniExplog(elvis)
     
@@ -386,20 +393,7 @@ def generate_Explog_FOCUS00(wavelength,struct,elvis='6.0.0',date=dtobj_default):
             
     return explog
 
-def get_dtobj(DT):
-    
-        date = DT[0:DT.index('D')]
-        y2d = int(date[4:6])
-        if y2d < 20: century = 2000
-        else: century = 1900
-        dd,MM,yy = int(date[0:2]),int(date[2:4]),y2d+century 
-        
-        time = DT[DT.index('D')+1:-1]
-        
-        hh,mm,ss = int(time[0:2]),int(time[2:4]),int(time[4:6])
-    
-        dtobj = datetime.datetime(yy,MM,dd,hh,mm,ss)
-        return dtobj
+
 
 def generate_HK_FOCUS00(explog,datapath,elvis='6.0.0'):
     """ """
@@ -423,15 +417,19 @@ def generate_HK_FOCUS00(explog,datapath,elvis='6.0.0'):
 'HK_Temp2_RPSU':30.,'HK_Video_TOP':30.,'HK_Video_BOT':30.,'HK_FPGA_TOP':30.,'HK_FPGA_BOT':30.,
 'HK_ID1':0.,'HK_ID2':0.,'HK_Viclk_ROE':0.}
     
+    doneObsids = []
     
     for ixobs,obsid in enumerate(explog['ObsID']):
         
+        if obsid in doneObsids: continue # to avoid duplications 
+                                     # (each CCD has an entry in explog, so 3 entries per OBSID)
+        
         idate = explog['DATE'][ixobs]
         
-        idtobj = get_dtobj(idate)
+        idtobj = pilib.get_dtobj(idate)
         
         if ixobs < Nobs-1:
-            ip1dtobj = get_dtobj(explog['DATE'][ixobs+1])
+            ip1dtobj = pilib.get_dtobj(explog['DATE'][ixobs+1])
             dt = (ip1dtobj-idtobj).seconds
         else:
             dt = 90
@@ -457,28 +455,40 @@ def generate_HK_FOCUS00(explog,datapath,elvis='6.0.0'):
             HKfile.add_row(vals=[rowdict[key] for key in HKkeys])
         
         
-        HKfile.write(HKfilef,format='ascii',overwrite=True)
+        HKfile.write(HKfilef,format='ascii',overwrite=True,delimiter='\t')
+        
+        doneObsids.append(obsid)
         
 
-def generate_FITS_FOCUS00(explog,datapath,elvis='6.0.0'):
+def generate_FITS_FOCUS00(wavelength,explog,datapath,elvis='6.0.0'):
     """ """
     
     NAXIS1,NAXIS2 = 4238,4132
     
     maxexptime = explog['Exptime'].max()
-    flatlevel = 100.
+    flatlevel = 200.
     biaslevel = 2000.
+    pflux = 1.E4 # adu
+    pfwhm = 9./12. # pixels
+    
+    FilterID = pilib.get_FW_ID(wavelength)
+    
+    mirror_nom = polib.mirror_nom[FilterID]
     
     waivedkeys = ['File_name','Flsh-Rdout_e_time','C.Inj-Rdout_e_time',
                   'Wavelength']
     
     for ixobs,obsid in enumerate(explog['ObsID']):
         
+        
         idate = explog['DATE'][ixobs]
         iCCD = explog['CCD'][ixobs]
         iexptime = explog['Exptime'][ixobs]
+        iMirr_pos = explog['Mirr_pos'][ixobs]
         
-        idtobj = get_dtobj(idate)
+        #if iexptime == 0.: continue # TESTS
+        
+        idtobj = pilib.get_dtobj(idate)
         
         dmy = idtobj.strftime('%d%m%y')
         HMS = idtobj.strftime('%H%M%S')
@@ -495,10 +505,19 @@ def generate_FITS_FOCUS00(explog,datapath,elvis='6.0.0'):
         ccdobj.add_extension(data=None)
         ccdobj.add_extension(data=img,label='ROE1_%s' % iCCD)
         
-        ccdobj.simadd_flatilum(levels=dict(E=flatlevel*iexptime*1.,
-                                           F=flatlevel*iexptime*1.1,
-                                           G=flatlevel*iexptime*1.2,
-                                           H=flatlevel*iexptime*1.3))
+        ccdobj.simadd_flatilum(levels=dict(E=flatlevel*iexptime/maxexptime*1.,
+                                           F=flatlevel*iexptime/maxexptime*1.1,
+                                           G=flatlevel*iexptime/maxexptime*1.2,
+                                           H=flatlevel*iexptime/maxexptime*1.3))
+        
+        if iexptime > 0:
+            
+            ipflux = pflux * iexptime/maxexptime
+            ipfwhm = pfwhm * (1.+((iMirr_pos-mirror_nom)/0.2)**2.)
+            
+            ccdobj.simadd_points(ipflux,ipfwhm,CCDID=iCCD,dx=0,dy=0)
+        
+        
         ccdobj.simadd_poisson()
         
         ccdobj.simadd_bias(levels=dict(E=biaslevel*1.,
@@ -508,18 +527,15 @@ def generate_FITS_FOCUS00(explog,datapath,elvis='6.0.0'):
         ccdobj.simadd_ron()
         
         ccdobj.extensions[-1].data = np.round(ccdobj.extensions[-1].data).astype('int32')
-        
 
         ccdobj.extensions[-1].header['WAVELENG'] = explog['Wavelength'][ixobs]
         
         for key in ELtools.columnlist[elvis]:
-            if key not in waived:
+            if key not in waivedkeys:
                 ccdobj.extensions[-1].header[key] = explog[key][ixobs]
-        
         
         ccdobj.writeto(FITSf,clobber=True,unsigned16bit=True)
         
-        stop()
     
 
 
@@ -545,12 +561,11 @@ def generate_Fake_FOCUS00(wavelength,date=dtobj_default,rootpath=''):
                                      
     explogf = os.path.join(datapath,'EXP_LOG_%s.txt' % dmy)
     
-    explog.write(explogf,format='ascii',overwrite=True)
+    explog.write(explogf,format='ascii',overwrite=True,delimiter='\t')
     
-    #generate_HK_FOCUS00(explog,datapath,elvis='6.0.0')
+    generate_HK_FOCUS00(explog,datapath,elvis='6.0.0')
     
-    
-    generate_FITS_FOCUS00(explog,datapath,elvis='6.0.0')
+    generate_FITS_FOCUS00(wavelength,explog,datapath,elvis='6.0.0')
     
     
     
@@ -600,7 +615,6 @@ def run(inputs,log=None):
     
         # META-DATA WORK
         
-    
         # Filter Exposures that belong to the test
     
         DataDict, isconsistent = filterexposures_FOCUS00(wavelength,explogf,datapath,OBSID_lims,
@@ -651,7 +665,8 @@ def run(inputs,log=None):
     # Write automatic Report of Results
     
     if todo_flags['report']:
-        reportobj.generate_Texbody()
+        
+        reportobj.doreport(reportroot,cleanafter)
         outfiles = reportobj.writeto(reportroot,cleanafter)
         
         for outfile in outfiles:

@@ -39,12 +39,12 @@ import os
 
 
 from vison.support import logger as lg
-from vison.point import PSF0X
+from vison.point import PSF0X,FOCUS00
 from lib import get_time_tag
 
 # END IMPORT
 
-task_dict = dict(PSF0X=PSF0X)
+task_dict = dict(PSF0X=PSF0X,FOCUS00=FOCUS00)
 #task_dict = {}
 
 defaults = dict(BLOCKID='R00P00CC000000',CHAMBER='A')
