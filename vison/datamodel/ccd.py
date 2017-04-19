@@ -34,7 +34,49 @@ QuadBound = dict(E=[0,NAXIS1/2,NAXIS2/2,NAXIS2],\
 Quads = ['E','F','G','H']
 
 
-HeadKeys = dict()
+HeadKeys = {'6.0.0':['EXTNAME','BUNIT','PROGRAM','OBJECT','OBSID','OPERATOR',
+'FULLPATH','LAB_VER','CON_FILE','DATE','EXPTIME','FL_RDOUT','CI_RDOUT',
+'N_P_HIGH','CHRG_INJ','ON_CYCLE''OFF_CYCL''RPEAT_CY''PLS_WDTH','PLS_DEL',
+'SERRDDEL','TRAPPUMP','TP_SER_S','TP_VER_S','TP_DW_V','TP_DW_H','TOI_FLSH',
+'TOI_PUMP','TOI_READ','TOI_CINJ','INVFLSHP','INVFLUSH','FLUSHES','VSTART',
+'VEND','OVRSCN_H','CLK_ROE','CNVSTART','SUMWELL','INISWEEP','SPW_CLK','FPGA_VER',
+'EGSE_VER','M_STEPS','M_ST_SZE','WAVELENG','MIRR_POS','CHMB_PRE','CCD1_SN',
+'CCD2_SN','CCD3_SN','ROE_SN','CALSCRPT','COMMENTS','TMPCCD1T','TMPCCD1B',
+'TMPCCD2T','TMPCCD2B','TMPCCD3T','TMPCCD3B','IDL_V','IDH_V','IG1_T1_V','IG1_T2_V',
+'IG1_T3_V','IG1_B1_V','IG1_B2_V','IG1_B3_V','IG2_T_V','IG2_B_V','OD_T1_V',
+'OD_T2_V','OD_T3_V','OD_B1_V','OD_B2_V','OD_B3_V','RD_T_V','RD_B_V']}
+
+Head_2_Explog_Dict = {'6.0.0':{'EXTNAME':None,'BUNIT':None,'PROGRAM':'PROGRAM',
+'OBJECT':'TEST','OBSID':None,'OPERATOR':'Operator',
+'FULLPATH':None,'LAB_VER':'Lab_ver','CON_FILE':'Con_file',
+'DATE':'DATE','EXPTIME':'Exptime','FL_RDOUT':'Flsh-Rdout_e_time',
+'CI_RDOUT':'C.Inj-Rdout_e_time','N_P_HIGH':'N_P_high',
+'CHRG_INJ':'Chrg_inj','ON_CYCLE':'On_cycle','OFF_CYCL':'Off_cycle',
+'RPEAT_CY':'Rpeat_cy','PLS_WDTH':'pls_len','PLS_DEL':'pls_del',
+'SERRDDEL':'SerRDel','TRAPPUMP':'Trappump',
+'TP_SER_S':'TP_Ser_S','TP_VER_S':'TP_Ver_S','TP_DW_V':'TP_DW_V',
+'TP_DW_H':'TP_DW_H','TOI_FLSH':'TOI_flsh','TOI_PUMP':'TOI_pump',
+'TOI_READ':'TOI_read','TOI_CINJ':'TOI_CInj',
+'INVFLSHP':'Invflshp','INVFLUSH':'Invflush','FLUSHES':'Flushes',
+'VSTART':'Vstart','VEND':'Vend',
+'OVRSCN_H':'Ovrscn_H','CLK_ROE':'CLK_ROE','CNVSTART':'CnvStart',
+'SUMWELL':'SumWell','INISWEEP':'IniSweep','SPW_CLK':'SPW_clk',
+'FPGA_VER':'FPGA_ver','EGSE_VER':'EGSE_ver',
+'M_STEPS':'M_Steps','M_ST_SZE':'M_st_Sze',
+'WAVELENG':'Wavelength','MIRR_POS':'Mirr_pos',
+'CHMB_PRE':'Chmb_pre','CCD1_SN':'CCD1_SN','CCD2_SN':'CCD2_SN','CCD3_SN':'CCD3_SN',
+'ROE_SN':'ROE_SN','CALSCRPT':'CalScrpt','COMMENTS':None,
+'TMPCCD1T':'R1CCD1TT','TMPCCD1B':'R1CCD1TB',
+'TMPCCD2T':'R1CCD2TT','TMPCCD2B':'R1CCD2TB',
+'TMPCCD3T':'R1CCD3TT','TMPCCD3B':'R1CCD3TB',
+'IDL_V':'IDL_V','IDH_V':'IDH_V',
+'IG1_T1_V':'IG1_T1_V','IG1_T2_V':'IG1_T2_V','IG1_T3_V':'IG1_T3_V',
+'IG1_B1_V':'IG1_B1_V','IG1_B2_V':'IG1_B2_V','IG1_B3_V':'IG1_B3_V',
+'IG2_T_V':'IG2_T_V','IG2_B_V':'IG2_B_V',
+'OD_T1_V':'OD_T1_V','OD_T2_V':'OD_T2_V','OD_T3_V':'OD_T3_V',
+'OD_B1_V':'OD_B1_V','OD_B2_V':'OD_B2_V','OD_B3_V':'OD_V3_V',
+'RD_T_V':'RD_T_V','RD_B_V':'RD_B_V'}}
+
 
 class Extension():
     """Extension Class"""
@@ -207,9 +249,8 @@ class CCD(object):
         
     def set_quad(self,inQdata,Quadrant,canonical=False,extension=-1):
         """ """
-        
-        edges = self.QuadBound[Quadrant]        
-        Qdata = self.extensions[extension].data[edges[0]:edges[1],edges[2]:edges[3]]
+        edges = self.QuadBound[Quadrant]
+        #Qdata = self.data[edges[0]:edges[1],edges[2]:edges[3]]
         
         if canonical:
             if Quadrant == 'E': Qdata = inQdata[:,::-1].copy()
@@ -219,7 +260,7 @@ class CCD(object):
         else:
             Qdata = inQdata.copy()
         
-        self.extensions[extension].data = Qdata.copy()
+        self.extensions[extension].data[edges[0]:edges[1],edges[2]:edges[3]] = Qdata.copy()
         
         return None
 
@@ -251,37 +292,35 @@ class CCD(object):
 
 
    
-    def meas_bias(self,Quadrant,sector='both',detail=False,extension=-1):
+    def get_stats(self,Quadrant,sector='img',statkeys=['mean'],trimscan=[0,0],
+                  extension=-1):
         """ """
         
         Qdata = self.get_quad(Quadrant,canonical=True,extension=extension)
         
-        prescan = Qdata[4:self.prescan-1,3:-3]
-        ovscan = Qdata[self.prescan+2048+4:-3,3:-3]
-        
-        #stop()
-        
-        if sector == 'both':
-            virpixels = np.concatenate((prescan,ovscan))
-        elif sector == 'pre':
-            virpixels = prescan.copy()
-        elif sector == 'over':
-            virpixels = ovscan.copy()
-        
-        bias = np.mean(virpixels)
-        stdbias = np.std(virpixels)
-        
-                
-        if not detail:
-            return bias,stdbias
+        if isinstance(Qdata,np.ma.masked_array):
+            stat_dict = dict(mean=np.ma.mean,median=np.ma.median,std=np.ma.std)
         else:
-            biasodd = np.mean(virpixels[0::2,:])
-            stdodd = np.std(virpixels[0::2,:])
-            biaseven = np.mean(virpixels[1::2,:])
-            stdeven = np.std(virpixels[1::2,:])
-            #if Quadrant=='F': stop()
-            return bias,stdbias,biasodd,stdodd,biaseven,stdeven
-                
+            stat_dict = dict(mean=np.mean,median=np.median,std=np.std)
+        
+        if sector == 'pre':
+            lims = [0,self.prescan]
+        elif sector == 'ove':
+            lims = [self.NAXIS1/2-self.overscan,self.NAXIS1/2]
+        elif sector == 'img':
+            lims = [self.prescan,self.NAXIS1/2-self.overscan]
+           
+            
+        lims[0] += trimscan[0]
+        lims[1] -= trimscan[1]
+        
+        results = []
+        
+        for statkey in statkeys:
+            
+            results.append(stat_dict[statkey](Qdata[lims[0]:lims[1],:]))
+        
+        return results
     
     def sub_offset(self,Quad,method='row',scan='pre',trimscan=[3,2],extension=-1):
         """ """
@@ -320,7 +359,7 @@ class CCD(object):
             offsets = [offset]
         
         B = self.QuadBound[Quad]
-        self.extension[extension].data[B[0]:B[1],B[2]:B[3]] = self.flip_tocanonical(quaddata,Quad).copy()
+        self.extensions[extension].data[B[0]:B[1],B[2]:B[3]] = self.flip_tocanonical(quaddata,Quad).copy()
         
 
         return offsets
@@ -334,7 +373,8 @@ class CCD(object):
         
     
     def divide_by_flatfield(self,FF,extension=-1):
-        """Divide by a Flat-field"""
+        """Divides by a Flat-field"""
+        print 'TODO: ccd.CCD.divide_by_flatfield needs improvements: handling of masked values'
         assert self.shape == FF.shape
         self.extensions[extension].data /= FF
         
@@ -422,9 +462,55 @@ class CCD(object):
     def simadd_flatilum(self,levels=dict(E=0.,F=0.,G=0.,H=0.),extension=-1):
         """ """
 
-        for Q in Quads:            
+        for Q in Quads:
+            quaddata = self.get_quad(Q,canonical=True,extension=extension)
+            quaddata[self.prescan:-self.overscan,:] += levels[Q]
+            self.set_quad(quaddata,Q,canonical=True,extension=extension)
+    
+    
+    def simadd_points(self,flux,fwhm,CCDID='CCD1',dx=0,dy=0,extension=-1):
+        """ """
+        from vison.point.lib import Point_CooNom
+        from vison.point.models import fgauss2D
+        
+        sigma = fwhm/2.355
+        i0 = flux/(2.*np.pi*sigma**2.)
+        
+        nx = 15
+        ny = 15
+
+        
+        for Q in Quads:
+            quaddata = self.get_quad(Q,canonical=False,extension=extension).copy()
+            
+            point_keys = Point_CooNom[CCDID][Q].keys()
+            
             B = self.QuadBound[Q]
-            self.extensions[extension].data[B[0]:B[1],B[2]:B[3]] += levels[Q]
+            
+            for pkey in point_keys:
+                xp,yp = Point_CooNom[CCDID][Q][pkey]
+                
+                x0 = xp - B[0] + dx
+                y0 = yp - B[2] + dy
+                
+                xmin = int(np.round(x0))-nx/2
+                xmax = xmin+nx
+                ymin = int(np.round(y0))-ny/2
+                ymax = ymin+ny
+                
+                x = np.arange(xmin,xmax)
+                y = np.arange(ymin,ymax)
+                
+                xx,yy = np.meshgrid(x,y,indexing='xy')
+                
+                p = [i0,x0,y0,sigma,sigma,0.]
+                point_stamp = fgauss2D(xx,yy,p)
+                
+                quaddata[xmin:xmax,ymin:ymax] += point_stamp.copy()
+                
+            self.set_quad(quaddata,Q,canonical=False,extension=extension)
+        
+        
         
     
     def simadd_bias(self,levels=dict(E=2000,F=2000,G=2000,H=2000),extension=-1):
