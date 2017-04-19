@@ -265,25 +265,31 @@ def prep_data_FOCUS00(DataDict,Report,inputs,log=None):
                 if log is not None: log.info('Divided Image by Flat-field')
 
                 
-                for spotID in spotIDs[CCDkey]:
+                for Q in pilib.Quads:
                     
-                    if log is not None: log.info('ObsID - spotID = %s-%s' % (ObsID,spotID))
+                    coo_dict_CCDQ = polib.Point_CooNom[CCDkey][Q]
+                    spotIDs = coo_dict_CCDQ.keys()
                     
-                    # get coordinates of spotID
-                    
-                    stop()
-                    
-                    # Cut-out stamp of the spot
-                    
-                    # Measure background locally and add to DataDict
-                    
-                    # if ilabel != fluence_0:
-                    #   do basic measurements on each spot and add to DataDict
-                    #     peak fluence, peak position (CCD coordinates), FWHM
-                    #     quadrupole moments, ellipticity, R2
-                    #
                 
-                    # save spot-data to a hard-file and add path to DataDict
+                    for spotID in spotIDs[CCDkey]:
+                        
+                        if log is not None: log.info('ObsID - CCD - spotID = %s-%s' % (ObsID,CCDkey,spotID))
+                        
+                        # get coordinates of spotID
+                        
+                        coo = coo_dict_CCDQ[spotID]
+                        
+                        # Cut-out stamp of the spot
+                        
+                        # Measure background locally and add to DataDict
+                        
+                        # if ilabel != fluence_0:
+                        #   do basic measurements on each spot and add to DataDict
+                        #     peak fluence, peak position (CCD coordinates), FWHM
+                        #     quadrupole moments, ellipticity, R2
+                        #
+                    
+                        # save spot-data to a hard-file and add path to DataDict
     
             # Data Quality Assessment:
             
