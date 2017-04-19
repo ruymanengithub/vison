@@ -47,7 +47,7 @@ columnlist['6.0.0'] = ['ObsID','File_name','CCD','ROE','DATE','PROGRAM',
 'TP_Ser_S','TP_Ver_S','TP_DW_V','TP_DW_H','TOI_flsh','TOI_pump','TOI_read',
 'TOI_CInj','Invflshp','Invflush','Flushes','Vstart','Vend','Ovrscn_H',
 'CLK_ROE','CnvStart','SumWell','IniSweep','SPW_clk','FPGA_ver','EGSE_ver',
-'M_Steps','M_St_Sze','Wavelength','Mirr_pos','RPSU_SN','ROE_SN','CalScrpt',
+'M_Steps','M_St_Sze','Wavelength','Mirr_pos','Chmb_pre','RPSU_SN','ROE_SN','CalScrpt',
 'R1CCD1TT','R1CCD1TB','R1CCD2TT','R1CCD2TB','R1CCD3TT','R1CCD3TB','IDL_V',
 'IDH_V','IG1_T1_V','IG1_T2_V','IG1_T3_V','IG1_B1_V','IG1_B2_V','IG1_B3_V',
 'IG2_T_V','IG2_B_V','OD_T1_V','OD_T2_V','OD_T3_V','OD_B1_V','OD_B2_V',
@@ -60,7 +60,7 @@ dtypes_dict = {'ObsID':'i','File_name':'S40','CCD':'S4','ROE':'S5','DATE':'S20',
               'Con_file':'S30','Exptime':'f',
               'Flsh-Rdout_e_time':'f','C.Inj-Rdout_e_time':'f',
               'N_P_high':'S6','Chrg_inj':'i', 'On_cycle':'i','Off_cycl':'i',
-              'Rpeat_cy':'i','pls_leng':'f','pls_del':'f','SerRdDel':'i','Trappump':'i', 
+              'Rpeat_cy':'i','pls_leng':'f','pls_del':'f','SerRdDel':'i','Trappump':'S10', 
               'TP_Ser_S':'i','TP_Ver_S':'i','TP_DW_V':'i','TP_DW_H':'i','TOI_flsh':'i','TOI_flu':'i',
               'TOI_pump':'i','TOI_read':'i','TOI_CInj':'f','Invflshp':'i','Invflush':'i',
               'Flushes':'i','Vstart':'i','Vend':'i','Ovrscn_H':'i','CLK_ROE':'S10',
@@ -95,17 +95,17 @@ def iniExplog(elvis):
 
 def loadExpLog(expfile,elvis='5.7.04'):
     """Loads an Exposure Log from file."""
-    
     explog = ascii.read(expfile,data_start=1,delimiter='\t',guess=False,\
                         names=columnlist[elvis],format='no_header')
     return explog
     
+
 def mergeExpLogs(explogList,addpedigree=False):
     """Merges explog objects in a list."""
     
     nexplogs=len(explogList)
     
-    assert nexplogs >=2
+    #assert nexplogs >=2
     
     explog = copy(explogList[0])
     colnames = explog.colnames

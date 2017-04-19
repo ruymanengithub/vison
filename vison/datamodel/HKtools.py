@@ -275,8 +275,10 @@ def parseHKfiles(HKlist,elvis='5.7.07'):
     HK_keys = allHK_keys[elvis]
     nkeys = len(HK_keys)
     
+    ver = int(st.split(elvis,'.')[0])
+    subver = int(st.split(elvis,'.')[1])
     
-    if int(st.split(elvis,'.')[1]) <= 7:
+    if ver ==5 and subver <= 7:
         HKloader = loadHK_preQM
     else:
         HKloader = loadHK_QFM
