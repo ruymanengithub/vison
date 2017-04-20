@@ -22,9 +22,11 @@ from pdb import set_trace as stop
 
 import numpy as np
 from astropy.modeling import models, fitting
+
+from basis import SpotBase
 # END IMPORT
 
-class Gaussmeter():
+class Gaussmeter(SpotBase):
     """
     Provides methods to measure the shape of an object using 
     a 2D Gaussian Model.
@@ -50,19 +52,15 @@ class Gaussmeter():
 
         Settings dictionary contains all parameter values needed.
         """
-        self.data = data.copy()
-        self.log = log
-
-        NY, NX = self.data.shape
-        self.NX = NX
-        self.NY = NY
         
-        self.gasettings = dict(x=NX/2,y=NY/2)
+        super(Gaussmeter,self).__init__(data,log)
+        
+        self.gasettings = dict()
 
         self.gasettings.update(kwargs)
         
 
-        for key, value in self.settings.iteritems():
+        for key, value in self.gasettings.iteritems():
             if self.log is not None: self.log.info('%s = %s' % (key, value))
     
     
@@ -71,13 +69,17 @@ class Gaussmeter():
         
         i00 = self.data.max()
         
-        gaus = models.Gaussian2D(i00, self.NX, self.NY, x_stddev=0.5, y_stddev=0.5)
+        gaus = models.Gaussian2D(i00, self.xcen, self.ycen, x_stddev=0.5, y_stddev=0.5)
         gaus.theta.fixed = True  #fix angle
         p_init = gaus
         fit_p = fitting.LevMarLSQFitter()
         
         XX, YY = np.meshgrid(np.arange(self.NX), np.arange(self.NY),indexing='xy')
-        p = fit_p(p_init, XX, YY, self.data)
-        print p
+        rawres = fit_p(p_init, XX, YY, self.data)
         
-        stop()
+        params = rawres.parameters[0:-1] # theta is fixed
+        eparams = np.diag(fit_p.fit_info['param_cov'])**0.5
+        
+        return params, eparams
+        
+        

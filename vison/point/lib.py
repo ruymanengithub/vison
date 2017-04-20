@@ -51,3 +51,36 @@ for iCCD in range(2,4):
 
 
 
+def get_photom_spot(stamp,x0,y0):
+    """ 
+    
+    measurements:'apflu','eapflu','bgd','ebgd'
+    """
+    
+    results = dict()    
+    return results
+
+def get_Gauss_spot():
+    """ 
+
+    measurements:'i0_G','ei0_G','flu_G','eflu_G',
+                 'x0_G','ex0_G','y0_G','ey0_G',
+                 'sx_G','esx_G','sy_G','esy_G',
+                 'e1','e2','e','R2'
+
+    
+    """
+    
+    results = dict()
+    return results
+    
+def get_Quadrupoles_spot():
+    """ 
+    
+    measurements:'e1','e2','e','R2'                 
+    
+    """
+    
+    results = dict()
+    return results
+    

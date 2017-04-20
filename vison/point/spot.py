@@ -9,10 +9,18 @@ Created on Thu Apr 20 15:35:08 2017
 """
 
 # IMPORT STUFF
+
+from pdb import set_trace as stop
+
 from shape import Shapemeter
 from photom import Photometer
 from gauss import Gaussmeter
 # END IMPORT
+
+   
+        
+    
+
 
 class Spot(Shapemeter,Photometer,Gaussmeter):
     """
@@ -43,17 +51,20 @@ class Spot(Shapemeter,Photometer,Gaussmeter):
 
         Settings dictionary contains all parameter values needed.
         """
+        
+        #super(Spot, self).__init__(data,log=log,**kwargs)
+        
+        Shapemeter.__init__(self,data,log,**kwargs)
+        Photometer.__init__(self,data,log,**kwargs)
+        Gaussmeter.__init__(self,data,log,**kwargs)
+        
+        
         self.data = data.copy()
         self.log = log
 
-        sizeY, sizeX = self.data.shape
-        self.settings = dict(sizeX=sizeX,
-                             sizeY=sizeY)
-
-        self.settings.update(kwargs)
+        NY, NX = self.data.shape
+        self.NX = NX
+        self.NY = NY
         
-
-        for key, value in self.settings.iteritems():
-            if self.log is not None: self.log.info('%s = %s' % (key, value))
         
     

@@ -41,6 +41,7 @@ from vison.datamodel import ccd
 from vison.datamodel import EXPLOGtools as ELtools
 from vison.datamodel import HKtools
 from vison.datamodel import ccd
+from vison.point.spot import Spot
 import datetime
 # END IMPORT
 
@@ -51,6 +52,7 @@ HKKeys_FOCUS00 = ['HK_temp_top_CCD1','HK_temp_bottom_CCD1','HK_temp_top_CCD2',
 
 dtobj_default = datetime.datetime(1980,2,21,7,0,0) # early riser
 
+stampw = 25
 
 def get_FOCUS00_structure(wavelength):
     """ """
@@ -141,7 +143,7 @@ def filterexposures_FOCUS00(inwavelength,explogf,datapath,OBSID_lims,structure=F
         Nobs = len(np.where(CCDselbool)[0])
         
         for key in explog.colnames:
-            DataDict[CCDkey][key] = explog[key][CCDselbool]
+            DataDict[CCDkey][key] = explog[key][CCDselbool].data.copy()
         
         
         Mirr_pos = DataDict[CCDkey]['Mirr_pos'].copy()
@@ -151,19 +153,17 @@ def filterexposures_FOCUS00(inwavelength,explogf,datapath,OBSID_lims,structure=F
         
         uMirr_pos = np.sort(np.unique(Mirr_pos))
         
-        
-        for ixMP,MP in enumerate(uMirr_pos):
+
+        for ixMP,iMP in enumerate(uMirr_pos):
             
-            ixsel = np.where(Mirr_pos == uMirr_pos)
+            ixselMP = Mirr_pos == iMP
             
-            iexptime = Exptime[ixsel]
-            if iexptime >0:
-                label[ixsel] = 'focus_%i' % ixMP
-            else:
-                label[ixsel] = 'BGD'
+            label[ixselMP & (Exptime > 0)] = 'focus_%i' % ixMP
+            label[ixselMP & (Exptime ==0)] = 'BGD'
+            
         
         DataDict[CCDkey]['label'] = label.copy()
-        
+
         
         rootFile_name = DataDict[CCDkey]['File_name'].copy()
         
@@ -173,6 +173,18 @@ def filterexposures_FOCUS00(inwavelength,explogf,datapath,OBSID_lims,structure=F
         
     
     return DataDict, isconsistent
+
+
+def get_basic_spot_FOCUS00(stamp,x0,y0,log=None):
+    """ """
+
+    spot = Spot(stamp,log)
+    
+    pG,ePG = spot.fit_Gauss()
+    stop()
+    
+    res = dict()
+    return res
     
     
 def prep_data_FOCUS00(DataDict,Report,inputs,log=None):
@@ -216,9 +228,6 @@ def prep_data_FOCUS00(DataDict,Report,inputs,log=None):
                 for Q in pilib.Quads:
                     DataDict[CCDkey][col % Q] = np.zeros(Nobs,dtype='float32')
 
-            what = polib.Point_CooNom[CCDkey]
-            stop()
-            
             
             for iObs, ObsID in enumerate(ObsIDs):
                 
@@ -258,38 +267,60 @@ def prep_data_FOCUS00(DataDict,Report,inputs,log=None):
                     DataDict[CCDkey]['std_img_%s' % Q][iObs] = std_img
                     
                 
-                # Divide by flat-field
+                if ilabel != 'BGD':
+                
+                    # Divide by flat-field
+    
+                    ccdobj.divide_by_flatfield(FFdata[CCDkey].Flat)
+                    
+                    if log is not None: log.info('Divided Image by Flat-field')
 
-                ccdobj.divide_by_flatfield(FFdata[CCDkey].Flat)
-                
-                if log is not None: log.info('Divided Image by Flat-field')
+                    
+                    for Q in pilib.Quads:
+                        
+                        coo_dict_CCDQ = polib.Point_CooNom[CCDkey][Q]
+                        spotIDs = coo_dict_CCDQ.keys()
+                        B=ccdobj.QuadBound[Q]
+                    
+                        for spotID in spotIDs:
+                            
+                            if log is not None: log.info('ObsID - CCD - spotID = %s-%s' % (ObsID,CCDkey,spotID))
+                            
+                            # get coordinates of spotID
+                            
+                            coo = coo_dict_CCDQ[spotID]
+                            
+                            x0Q,y0Q = tuple([int(np.round(item)) for item in coo])
+                            x0Q -= B[0]
+                            y0Q -= B[2]
+                            
+                            corners = [x0Q-stampw/2,x0Q-stampw/2+stampw,
+                                       y0Q-stampw/2,y0Q-stampw/2+stampw]
+                            
+                            # Cut-out stamp of the spot
+                            stamp = ccdobj.get_cutout(corners,Q,canonical=False)
+                            
+                            x0 = stampw/2
+                            y0 = stampw/2
 
-                
-                for Q in pilib.Quads:
-                    
-                    coo_dict_CCDQ = polib.Point_CooNom[CCDkey][Q]
-                    spotIDs = coo_dict_CCDQ.keys()
-                    
-                
-                    for spotID in spotIDs[CCDkey]:
+                            # Measure background locally and add to DataDict
+                            
+                            spot_basic = get_basic_spot_FOCUS00(stamp,x0,y0)
+                            
+                            spot_basic_keys = ['apflu','eapflu','bgd','ebgd',
+                                               'i0_G','ei0_G','flu_G','eflu_G',
+                                               'x0_G','ex0_G','y0_G','ey0_G',
+                                               'sx_G','esx_G','sy_G','esy_G',
+                                               'e1','e2','e','R2'] 
+                            
+                            
+                            # if True:
+                            #   do basic measurements on each spot and add to DataDict
+                            #     peak fluence, peak position (CCD coordinates), FWHM
+                            #     quadrupole moments, ellipticity, R2
+                            #
                         
-                        if log is not None: log.info('ObsID - CCD - spotID = %s-%s' % (ObsID,CCDkey,spotID))
-                        
-                        # get coordinates of spotID
-                        
-                        coo = coo_dict_CCDQ[spotID]
-                        
-                        # Cut-out stamp of the spot
-                        
-                        # Measure background locally and add to DataDict
-                        
-                        # if ilabel != fluence_0:
-                        #   do basic measurements on each spot and add to DataDict
-                        #     peak fluence, peak position (CCD coordinates), FWHM
-                        #     quadrupole moments, ellipticity, R2
-                        #
-                    
-                        # save spot-data to a hard-file and add path to DataDict
+                            # save spot-data to a hard-file and add path to DataDict
     
             # Data Quality Assessment:
             

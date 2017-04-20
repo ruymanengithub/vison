@@ -14,12 +14,13 @@ Simple class to measure quadrupole moments and ellipticity of an object.
 import os, datetime, unittest
 import numpy as np
 import pyfits as pf
+from basis import SpotBase
 
 from pdb import set_trace as stop
 #from astropy.io import fits as fts
 
 
-class Shapemeter():
+class Shapemeter(SpotBase):
     """
     Provides methods to measure the shape of an object.
 
@@ -44,12 +45,9 @@ class Shapemeter():
 
         Settings dictionary contains all parameter values needed.
         """
-        self.data = data.copy()
-        self.log = log
-
-        NY, NX = self.data.shape
-        self.NX = NX
-        self.NY = NY
+        
+        super(Shapemeter,self).__init__(data,log)
+        
 
         self.shsettings = dict(iterations=4,
                              sampling=1.0,
