@@ -23,6 +23,7 @@ def configuration():
     config = Configuration()
     
     config.add_subpackage('vison')
+    config.add_subpackage('vison/analysis')
     config.add_subpackage('vison/pipe')
     config.add_subpackage('vison/flat')
     config.add_subpackage('vison/point')
