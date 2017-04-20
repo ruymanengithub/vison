@@ -231,10 +231,12 @@ class CCD(object):
         :type Quadrant: char
         
         :param canonical: 
-        
-         Canonical [True] = with readout-node at pixel index (0,0) regardless of quadrant. This is the orientation which corresponds to the data-readin order (useful for cross-talk measurements, for example).
-         Non-Canonical [False] = with readout-node at corner matching placement of  quadrant on the CCD. This is the orientation that would match the representation of the image on DS9.        
-                      
+         Canonical [True] = with readout-node at pixel index (0,0) regardless of quadrant. 
+         This is the orientation which corresponds to the data-readin order 
+         (useful for cross-talk measurements, for example).
+         Non-Canonical [False] = with readout-node at corner matching placement of  
+         quadrant on the CCD. This is the orientation that would match the representation 
+         of the image on DS9.        
         :type canonical: bool
         
         :param extension: extension number. Default = -1 (last)
@@ -242,9 +244,9 @@ class CCD(object):
         
         
         """       
-        Qdata = self.get_quad(Quadrant,canonical,extension)        
-        section = Qdata[corners[0]:corners[1],corners[2]:corners[3]].copy()
-        return section
+        Qdata = self.get_quad(Quadrant,canonical,extension)
+        cutout = Qdata[corners[0]:corners[1],corners[2]:corners[3]].copy()
+        return cutout
         
         
     def set_quad(self,inQdata,Quadrant,canonical=False,extension=-1):
