@@ -18,8 +18,6 @@ from gauss import Gaussmeter
 # END IMPORT
 
    
-        
-    
 
 
 class Spot(Shapemeter,Photometer,Gaussmeter):
@@ -62,9 +60,9 @@ class Spot(Shapemeter,Photometer,Gaussmeter):
         self.data = data.copy()
         self.log = log
 
-        NY, NX = self.data.shape
+        NX, NY = self.data.shape
         self.NX = NX
         self.NY = NY
         
-        
-    
+        self.xcen = NX/2
+        self.ycen = NY/2

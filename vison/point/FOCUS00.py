@@ -176,9 +176,20 @@ def filterexposures_FOCUS00(inwavelength,explogf,datapath,OBSID_lims,structure=F
 
 
 def get_basic_spot_FOCUS00(stamp,x0,y0,log=None):
-    """ """
+    """ 
+    # TODO:
+    #   get basic statistics, measure and subtract background
+    #   update centroid
+    #   do aperture photometry
+    #   do Gaussian shape measurement
+    #   do quadrupole moments shape measurement
+    #   pack-up results and return
+    """
 
     spot = Spot(stamp,log)
+    spot.xcen = x0
+    spot.ycen = y0
+    
     
     pG,ePG = spot.fit_Gauss()
     stop()
