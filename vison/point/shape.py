@@ -68,7 +68,7 @@ class Shapemeter(SpotBase):
             if self.log is not None: self.log.info('%s = %s' % (key, value))
 
 
-    def quadrupoles(self):
+    def quadrupoles(self,image):
         """
         Derive quadrupole moments and ellipticity from the input image.
 
@@ -79,7 +79,6 @@ class Shapemeter(SpotBase):
         :rtype: dict
         """
         if self.log is not None: self.log.info('Deriving quadrupole moments')
-        image = self.data.copy()
 
         #normalization factor
         imsum = float(np.sum(image))

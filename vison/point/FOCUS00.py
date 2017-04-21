@@ -213,7 +213,65 @@ def get_basic_spot_FOCUS00(stamp,x0,y0,log=None,debug=False):
                x=x,y=y,fwhmx=fwhmx,fwhmy=fwhmy,stamp=spot.data.copy())
          
     return res
+
+
+def get_shape_spot_FOCUS00(stamp,x0,y0,method='G',log=None,debug=False):
+    """ 
+    # TODO:
+    #   get basic statistics, measure and subtract background
+    #   update centroid
+    #   do aperture photometry
+    #   pack-up results and return
+    """
     
+    if debug and method == 'G':
+        return dict()
+    
+    if debug and method == 'M':
+        return dict()
+
+    spot = Spot(stamp,log)
+    spot.xcen = x0
+    spot.ycen = y0
+    
+    if method == 'G':
+        # gauss(): i00, xcen, self.ycen, x_stddev=0.5, y_stddev=0.5
+        # G_keys = ['x','ey','y','ey','i0','ei0','sigma_x','esigma_x',
+        # 'sigma_y','esigma_y','fwhm_x','efwhm_x','fwhm_y','efwhm_y',
+        # 'fluence','efluence']
+    
+        Gpars, eGpars = spot.fit_Gauss()
+        
+        res = dict(i0=Gpars[0],ei0=eGpars[0],
+                  x=Gpars[1],ex=eGpars[1],y=Gpars[2],ey=eGpars[2],
+                  sigma_x=Gpars[3],esigma_x=eGpars[3],
+                  sigma_y=Gpars[4],esigma_y=eGpars[4])
+        res['fwhm_x'] = res['sigma_x']*2.355
+        res['efwhm_x'] = res['esigma_x']*2.355
+        res['fwhm_y'] = res['sigma_y']*2.355
+        res['efwhm_y'] = res['esigma_y']*2.355
+        res['fluence'] = None  # ??
+        res['efluence'] = None # ??
+        
+        
+    if method == 'M':
+        #res = dict(centreX=quad['centreX']+1, centreY=quad['centreY']+1,
+        #           e1=quad['e1'], e2=quad['e2'],
+        #           ellipticity=quad['ellipticity'],
+        #           R2=R2,
+        #           R2arcsec=R2arcsec,
+        #           GaussianWeighted=GaussianWeighted,
+        #           a=quad['a'], b=quad['b'])
+        #M_keys = ['x','y','ellip','e1','e2','R2','a','b']
+        rawres = spot.measureRefinedEllipticity()
+        res = dict(x=rawres['centreX']-1.,y=rawres['centreY']-1.,
+                   ellip=rawres['ellipticity'],e1=rawres['e1'],
+                   e2=rawres['e2'],R2=rawres['R2'],
+                   a=rawres['a'],b=rawres['b'])
+
+         
+    return res    
+
     
 def prep_data_FOCUS00(DataDict,Report,inputs,log=None,debug=False):
     """Takes Raw Data and prepares it for further analysis. 
@@ -417,45 +475,135 @@ def prep_data_FOCUS00(DataDict,Report,inputs,log=None,debug=False):
         pdspl.show_spots_allCCDs(spots_bag_FP,title=spots_disp_title,
                                  filename=spots_disp_f,dobar=True)
     
-    
+
     # Data Quality Assessment:
-    #ccd_keys_Q = ['offset','med_pre','std_pre','med_ove','std_ove','med_img',
-    #               'std_img']
-    
-    plotF00_CCDkey_vstime(DataDict,'offset')
-    plotF00_CCDkey_vstime(DataDict,'std_pre')
+    # TODO:
+    #plotF00_CCDkey_vstime(DataDict,'offset')
+    #plotF00_CCDkey_vstime(DataDict,'std_pre')
          
     #spot_basic_keys = ['x','y','peak','fluence', 'efluence','bgd','fwhmy', 'fwhmx']
     
-    for CCDindex in range(1,4):
-        
-        CCDkey = 'CCD%i' % CCDindex
-        
-        if CCDkey not in DataDict: continue
+    #TODO:
+#    for CCDindex in range(1,4):
+#        
+#        CCDkey = 'CCD%i' % CCDindex
+#        
+#        if CCDkey not in DataDict: continue
+#    
+#        plotF00_spotkey_vstime(DataDict,'peak',ccdkey=CCDkey,filename='')
+#        plotF00_spotkey_vstime(DataDict,'fluence',error='efluence',
+#                               ccdkey=CCDkey,filename='')
+#        
+#        plotF00_spotkey_vstime(DataDict,'fwhmx',ccdkey=CCDkey,filename='')
+#        plotF00_spotkey_vstime(DataDict,'fwhmy',ccdkey=CCDkey,filename='')
     
-        plotF00_spotkey_vstime(DataDict,'peak',ccdkey=CCDkey,filename='')
-        plotF00_spotkey_vstime(DataDict,'fluence',error='efluence',
-                               ccdkey=CCDkey,filename='')
-        
-        plotF00_spotkey_vstime(DataDict,'fwhmx',ccdkey=CCDkey,filename='')
-        plotF00_spotkey_vstime(DataDict,'fwhmy',ccdkey=CCDkey,filename='')
     
-    
-
+    # TODO:
     # Check all parameters are within expected ranges:
     #    offsets, STDs, peak fluence, fwhm, ellipticity
     #    save reports to RepDict
     
     
     
-    return DataDict, RepDict
+    return DataDict, Report
 
 
-def basic_analysis_FOCUS00(DataDict,RepDict,inputs,log=None):
+def basic_analysis_FOCUS00(DataDict,Report,inputs,log=None,debug=False):
     """Performs basic analysis on spots:
-         - Gaussian Fits: peak, position, width_x, width_y
+         - 2D Gaussian Model shape measurements
+         - Quadrupole Moments shape measurements
     """
     
+    # Inputs un-packing
+    
+    resultspath = inputs['resultspath']
+
+    
+    Report.add_Section(Title='Data Analysis: Basic',level=0)
+    
+    # Initialization of columns to be added to DataDict
+    
+    Quadrants = pilib.Quads
+    
+    G_keys = ['x','ex','y','ey','i0','ei0','sigma_x','esigma_x',
+    'sigma_y','esigma_y','fwhm_x','efwhm_x','fwhm_y','efwhm_y',
+    'fluence','efluence']
+    
+    M_keys = ['x','y','ellip','e1','e2','R2','a','b']
+    
+    
+    spotIDs = polib.Point_CooNom['names']
+    
+    for CCDindex in range(1,4):
+        
+        CCDkey = 'CCD%i' % CCDindex
+        
+        if CCDkey in DataDict:
+            
+            # Loop over ObsIDs
+            
+            Nobs = len(DataDict[CCDkey]['ObsID'].copy())
+            
+
+            for key in G_keys:
+                dtype = 'float32'
+                for Q in pilib.Quads:
+                    for spotID in spotIDs:
+                        DataDict[CCDkey]['G_%s_%s_%s' % (key,Q,spotID)] = \
+                         (np.zeros(Nobs) + np.nan).astype(dtype)
+                         
+            for key in M_keys:
+                dtype = 'float32'
+                for Q in pilib.Quads:
+                    for spotID in spotIDs:
+                        DataDict[CCDkey]['M_%s_%s_%s' % (key,Q,spotID)] = \
+                         (np.zeros(Nobs) + np.nan).astype(dtype)
+
+    # Loop over CCDs, Obsids, quadrants and spots
+    
+    for CCDindex in range(1,4):
+        if 'CCD%i' % CCDindex in DataDict:
+            CCDindex_ref = CCDindex
+    ObsIDs = DataDict['CCD%i' % CCDindex_ref]['ObsID'].copy()
+    label = DataDict['CCD%i' % CCDindex_ref]['label'].copy()
+    
+    for iObs,ObsID in enumerate(ObsIDs):
+        
+        ilabel = label[iObs]
+        
+        if ilabel == 'BGD': continue
+        
+        
+        for CCDindex in range(1,4):
+            
+            spots_bag_f = os.path.join(resultspath,DataDict[CCDkey]['spots_file'][iObs])
+            spots_bag = files.cPickleRead(spots_bag_f)
+            
+            for Q in Quadrants:
+                for spotID in spotIDs:
+                    data = spots_bag[Q][spotID]
+                    
+                    stamp = data['stamp'].copy()
+                    x0,y0 = data['x'],data['y']
+                    
+                    spot_shape_G = get_shape_spot_FOCUS00(stamp,x0,y0,method='G',
+                                                          log=log,debug=debug)
+                    
+                    for key in spot_shape_G:
+                        DataDict[CCDkey]['G_%s_%s_%s' % (key,Q,spotID)][iObs] =\
+                           spot_shape_G[key]
+                    
+                    spot_shape_M = get_shape_spot_FOCUS00(stamp,x0,y0,method='M',
+                                                          log=log,debug=debug)
+                    
+                    for key in spot_shape_M:
+                        DataDict[CCDkey]['M_%s_%s_%s' % (key,Q,spotID)][iObs] =\
+                           spot_shape_M[key]
+    
+    # QA
+
+    return DataDict, Report
+             
 
 
 def meta_analysis_FOCUS00(DataDict,RepDict,inputs,log=None):
@@ -780,7 +928,7 @@ def run(inputs,log=None):
     #     median levels in pre-scan, image-area, overscan
     #     fluences and spot-sizes (coarse measure) match expectations for all spots
     
-    debug = True
+    debug = False
     
     if todo_flags['prep']:
         DataDict, reportobj = prep_data_FOCUS00(DataDict,reportobj,inputs,log,debug)
@@ -789,13 +937,15 @@ def run(inputs,log=None):
         DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
     
     # Optional
-    # Perform Basic Analysis : Gaussian fits and Moments
+    # Perform Basic Analysis : Gaussian fits and Moments shape measurements of spots
     
     if todo_flags['basic']:
         DataDict, reportobj = basic_analysis_FOCUS00(DataDict,reportobj,inputs,log)
         pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)        
     else:
         DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
+    
+    stop()
     
     # Optional
     # Produce Summary Figures and Tables
