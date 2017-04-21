@@ -17,7 +17,7 @@ import copy
 from vison.datamodel.ccd import CCD
 from vison.datamodel import EXPLOGtools as ELtools
 from vison.datamodel import HKtools
-
+from vison.support import files
 from glob import glob
 import os
 import numpy as np
@@ -166,4 +166,15 @@ def get_dtobj(DT):
     hh,mm,ss = int(time[0:2]),int(time[2:4]),int(time[4:6])
 
     dtobj = datetime.datetime(yy,MM,dd,hh,mm,ss)
+    
     return dtobj
+
+def save_progress(DataDict,reportobj,DataDictFile,reportobjFile):        
+    files.cPickleDumpDictionary(DataDict,DataDictFile)
+    files.cPickleDump(reportobj,reportobjFile)
+
+
+def recover_progress(DataDictFile,reportobjFile):
+    DataDict = files.cPickleRead(DataDictFile)
+    reportobj = files.cPickleRead(reportobjFile)
+    return DataDict,reportobj
