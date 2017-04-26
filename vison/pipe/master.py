@@ -45,11 +45,8 @@ from lib import get_time_tag
 # END IMPORT
 
 task_dict = dict(PSF0X=PSF0X,FOCUS00=FOCUS00)
-#task_dict = {}
 
 defaults = dict(BLOCKID='R00P00CC000000',CHAMBER='A')
-
-
 
 
 class Pipe(object):
