@@ -58,9 +58,9 @@ stampw = 25
 def get_FOCUS00_structure(wavelength):
     """ """
     
-    FilterPos = [key for key in pilib.FW if pilib.FW[key] == '%inm' % wavelength][0]    
+    FilterPos = [key for key in pilib.FW if pilib.FW[key] == '%inm' % wavelength][0]
     mirror_nom = polib.mirror_nom[FilterPos]
-
+    
     FOCUS00_structure = dict(col1=dict(N=5,Exptime=0,Mirr_pos=mirror_nom-0.2),
                           col2=dict(N=2,Exptime=10.,Mirr_pos=mirror_nom-0.2),
                           col3=dict(N=2,Exptime=10.,Mirr_pos=mirror_nom-0.1),
