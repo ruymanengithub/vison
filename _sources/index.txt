@@ -13,8 +13,6 @@ Contents:
    
    includeme
 
-
-
 :Author: Ruyman Azzollini
 :Contact: r.azzollini_at_ucl.ac.uk
 :issue: 0.1
@@ -68,7 +66,7 @@ Analysis (Shared)
 Monitoring ("Eyegore")
 ======================
 
-..toctree::
+.. toctree::
     :maxdepth: 4
 
     eyegore
@@ -81,8 +79,6 @@ Point-Source Analysis
     :maxdepth: 4
 
     point
-
-
 
 
 

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Eyegore &mdash; vison 0.1 documentation</title>
+    <title>Monitoring (“Eyegore”) &mdash; vison 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,6 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="vison 0.1 documentation" href="index.html" />
+    <link rel="next" title="Point-Source Analysis" href="point.html" />
+    <link rel="prev" title="Analysis (Shared)" href="analysis.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -38,13 +40,101 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="eyegore">
-<h1>Eyegore<a class="headerlink" href="#eyegore" title="Permalink to this headline">¶</a></h1>
-<div class="figure align-center">
-<img alt="_images/Eyegore.gif" src="_images/Eyegore.gif" />
+  <div class="section" id="monitoring-eyegore">
+<h1>Monitoring (&#8220;Eyegore&#8221;)<a class="headerlink" href="#monitoring-eyegore" title="Permalink to this headline">¶</a></h1>
+<div class="figure align-center" id="id1">
+<img alt="_images/Eyegore.eps" src="_images/Eyegore.eps" />
+<p class="caption"><span class="caption-text">You must be Igor...</span></p>
 </div>
-<div class="section" id="eyegore-py">
-<h2>eyegore.py<a class="headerlink" href="#eyegore-py" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-vison.eyegore.eyegore">
+<span id="eyegore-py"></span><h2>eyegore.py<a class="headerlink" href="#module-vison.eyegore.eyegore" title="Permalink to this headline">¶</a></h2>
+<p>eyegore</p>
+<p>data acquisition monitoring script for vison package.</p>
+<p>&#8216;- You must be Igor...
+- No, it&#8217;s pronounced &#8220;Eye-gore&#8221;.&#8217;</p>
+<p>Created on Thu Feb  2 15:27:39 2017</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="vison.eyegore.eyegore.ExpLogDisplay">
+<em class="property">class </em><code class="descclassname">vison.eyegore.eyegore.</code><code class="descname">ExpLogDisplay</code><span class="sig-paren">(</span><em>parent</em>, <em>path</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.ExpLogDisplay" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.eyegore.eyegore.ExpLogDisplay.changeNumeric">
+<code class="descname">changeNumeric</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.ExpLogDisplay.changeNumeric" title="Permalink to this definition">¶</a></dt>
+<dd><p>if the data to be sorted is numeric change to float</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.eyegore.eyegore.ExpLogDisplay.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.ExpLogDisplay.get_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.eyegore.eyegore.ExpLogDisplay.isNumeric">
+<code class="descname">isNumeric</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.ExpLogDisplay.isNumeric" title="Permalink to this definition">¶</a></dt>
+<dd><p>test if a string s is numeric</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.eyegore.eyegore.ExpLogDisplay.search_EXPLOG">
+<code class="descname">search_EXPLOG</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.ExpLogDisplay.search_EXPLOG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.eyegore.eyegore.ExpLogDisplay.sortBy">
+<code class="descname">sortBy</code><span class="sig-paren">(</span><em>tree</em>, <em>col</em>, <em>descending</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.ExpLogDisplay.sortBy" title="Permalink to this definition">¶</a></dt>
+<dd><p>sort tree contents when a column header is clicked</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vison.eyegore.eyegore.Eyegore">
+<em class="property">class </em><code class="descclassname">vison.eyegore.eyegore.</code><code class="descname">Eyegore</code><span class="sig-paren">(</span><em>path</em>, <em>interval=3000</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.Eyegore" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="vison.eyegore.eyegore.HKDisplay">
+<em class="property">class </em><code class="descclassname">vison.eyegore.eyegore.</code><code class="descname">HKDisplay</code><span class="sig-paren">(</span><em>parent</em>, <em>path</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.HKDisplay" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.eyegore.eyegore.HKDisplay.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.HKDisplay.get_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.eyegore.eyegore.HKDisplay.search_HKfile">
+<code class="descname">search_HKfile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.HKDisplay.search_HKfile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.eyegore.eyegore.HKDisplay.select_HKkeys">
+<code class="descname">select_HKkeys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.HKDisplay.select_HKkeys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vison.eyegore.eyegore.ImageDisplay">
+<em class="property">class </em><code class="descclassname">vison.eyegore.eyegore.</code><code class="descname">ImageDisplay</code><span class="sig-paren">(</span><em>parent</em>, <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.ImageDisplay" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.eyegore.eyegore.ImageDisplay.gen_render">
+<code class="descname">gen_render</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.ImageDisplay.gen_render" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.eyegore.eyegore.ImageDisplay.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.ImageDisplay.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>PENDING</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 
@@ -55,12 +145,12 @@
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/vison_logo.jpg" alt="Logo"/>
+              <img class="logo" src="_static/vison_logo.eps" alt="Logo"/>
             </a></p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Eyegore</a><ul>
-<li><a class="reference internal" href="#eyegore-py">eyegore.py</a></li>
+<li><a class="reference internal" href="#">Monitoring (&#8220;Eyegore&#8221;)</a><ul>
+<li><a class="reference internal" href="#module-vison.eyegore.eyegore">eyegore.py</a></li>
 </ul>
 </li>
 </ul>
@@ -68,6 +158,8 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="analysis.html" title="previous chapter">Analysis (Shared)</a></li>
+      <li>Next: <a href="point.html" title="next chapter">Point-Source Analysis</a></li>
   </ul></li>
 </ul>
 </div>
