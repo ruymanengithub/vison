@@ -24,7 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="vison 0.1 documentation" href="index.html" />
-    <link rel="prev" title="Welcome to vison’s documentation!" href="index.html" />
+    <link rel="next" title="Support Code" href="support.html" />
+    <link rel="prev" title="Pipeline" href="pipe.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -64,6 +65,12 @@ to also &#8220;host&#8221; calibration data-products, such as Flat-Fields.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="vison.datamodel.ccd.CCD.divide_by_flatfield">
+<code class="descname">divide_by_flatfield</code><span class="sig-paren">(</span><em>FF</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.divide_by_flatfield" title="Permalink to this definition">¶</a></dt>
+<dd><p>Divides by a Flat-field</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="vison.datamodel.ccd.CCD.get_cutout">
 <code class="descname">get_cutout</code><span class="sig-paren">(</span><em>corners</em>, <em>Quadrant</em>, <em>canonical=False</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.get_cutout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a cutout from the CCD image, either in 
@@ -75,8 +82,12 @@ canonical or non-canonical orientation.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>corners</strong> (<em>list (of int)</em>) &#8211; [x0,x1,y0,y1]</li>
 <li><strong>Quadrant</strong> (<em>char</em>) &#8211; Quadrant, one of &#8216;E&#8217;, &#8216;F&#8217;, &#8216;G&#8217;, &#8216;H&#8217;</li>
-<li><strong>canonical</strong> (<em>bool</em>) &#8211; Canonical [True] = with readout-node at pixel index (0,0) regardless of quadrant. This is the orientation which corresponds to the data-readin order (useful for cross-talk measurements, for example).
-Non-Canonical [False] = with readout-node at corner matching placement of  quadrant on the CCD. This is the orientation that would match the representation of the image on DS9.</li>
+<li><strong>canonical</strong> (<em>bool</em>) &#8211; Canonical [True] = with readout-node at pixel index (0,0) regardless of quadrant. 
+This is the orientation which corresponds to the data-readin order 
+(useful for cross-talk measurements, for example).
+Non-Canonical [False] = with readout-node at corner matching placement of  
+quadrant on the CCD. This is the orientation that would match the representation 
+of the image on DS9.</li>
 <li><strong>extension</strong> (<em>int</em>) &#8211; extension number. Default = -1 (last)</li>
 </ul>
 </td>
@@ -119,19 +130,39 @@ Non-Canonical [False] = with readout-node at corner matching placement of quadra
 </dd></dl>
 
 <dl class="method">
+<dt id="vison.datamodel.ccd.CCD.get_stats">
+<code class="descname">get_stats</code><span class="sig-paren">(</span><em>Quadrant, sector='img', statkeys=['mean'], trimscan=[0, 0], extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.get_stats" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="vison.datamodel.ccd.CCD.getsectioncollims">
 <code class="descname">getsectioncollims</code><span class="sig-paren">(</span><em>QUAD</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.getsectioncollims" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns limits of sections: prescan, image and overscan</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="vison.datamodel.ccd.CCD.meas_bias">
-<code class="descname">meas_bias</code><span class="sig-paren">(</span><em>Quadrant</em>, <em>sector='both'</em>, <em>detail=False</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.meas_bias" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.datamodel.ccd.CCD.set_quad">
+<code class="descname">set_quad</code><span class="sig-paren">(</span><em>inQdata</em>, <em>Quadrant</em>, <em>canonical=False</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.set_quad" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="vison.datamodel.ccd.CCD.set_quad">
-<code class="descname">set_quad</code><span class="sig-paren">(</span><em>inQdata</em>, <em>Quadrant</em>, <em>canonical=False</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.set_quad" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.datamodel.ccd.CCD.simadd_flatilum">
+<code class="descname">simadd_flatilum</code><span class="sig-paren">(</span><em>levels={'H': 0.0</em>, <em>'E': 0.0</em>, <em>'G': 0.0</em>, <em>'F': 0.0}</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.simadd_flatilum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.simadd_points">
+<code class="descname">simadd_points</code><span class="sig-paren">(</span><em>flux</em>, <em>fwhm</em>, <em>CCDID='CCD1'</em>, <em>dx=0</em>, <em>dy=0</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.simadd_points" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.simadd_poisson">
+<code class="descname">simadd_poisson</code><span class="sig-paren">(</span><em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.simadd_poisson" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.simadd_ron">
+<code class="descname">simadd_ron</code><span class="sig-paren">(</span><em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.simadd_ron" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -147,7 +178,7 @@ Non-Canonical [False] = with readout-node at corner matching placement of quadra
 
 <dl class="method">
 <dt id="vison.datamodel.ccd.CCD.writeto">
-<code class="descname">writeto</code><span class="sig-paren">(</span><em>fitsf</em>, <em>clobber=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.writeto" title="Permalink to this definition">¶</a></dt>
+<code class="descname">writeto</code><span class="sig-paren">(</span><em>fitsf</em>, <em>clobber=False</em>, <em>unsigned16bit=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.writeto" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -168,7 +199,32 @@ Non-Canonical [False] = with readout-node at corner matching placement of quadra
 <code class="descclassname">vison.datamodel.ccd.</code><code class="descname">test_load_ELVIS_fits</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.test_load_ELVIS_fits" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<span class="target" id="module-vison.datamodel.EXPLOGtools"></span><dl class="function">
+<span class="target" id="module-vison.datamodel.EXPLOGtools"></span><dl class="class">
+<dt id="vison.datamodel.EXPLOGtools.ExpLogClass">
+<em class="property">class </em><code class="descclassname">vison.datamodel.EXPLOGtools.</code><code class="descname">ExpLogClass</code><span class="sig-paren">(</span><em>elvis='5.7.04'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.EXPLOGtools.ExpLogClass" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.datamodel.EXPLOGtools.ExpLogClass.addRow">
+<code class="descname">addRow</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.EXPLOGtools.ExpLogClass.addRow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.EXPLOGtools.ExpLogClass.iniExplog">
+<code class="descname">iniExplog</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.EXPLOGtools.ExpLogClass.iniExplog" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.EXPLOGtools.ExpLogClass.writeto">
+<code class="descname">writeto</code><span class="sig-paren">(</span><em>outfile</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.EXPLOGtools.ExpLogClass.writeto" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.EXPLOGtools.iniExplog">
+<code class="descclassname">vison.datamodel.EXPLOGtools.</code><code class="descname">iniExplog</code><span class="sig-paren">(</span><em>elvis</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.EXPLOGtools.iniExplog" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="vison.datamodel.EXPLOGtools.loadExpLog">
 <code class="descclassname">vison.datamodel.EXPLOGtools.</code><code class="descname">loadExpLog</code><span class="sig-paren">(</span><em>expfile</em>, <em>elvis='5.7.04'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.EXPLOGtools.loadExpLog" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads an Exposure Log from file.</p>
@@ -232,6 +288,11 @@ Non-Canonical [False] = with readout-node at corner matching placement of quadra
 <dl class="function">
 <dt id="vison.datamodel.HKtools.filtervalues">
 <code class="descclassname">vison.datamodel.HKtools.</code><code class="descname">filtervalues</code><span class="sig-paren">(</span><em>values</em>, <em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.HKtools.filtervalues" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.HKtools.iniHK_QFM">
+<code class="descclassname">vison.datamodel.HKtools.</code><code class="descname">iniHK_QFM</code><span class="sig-paren">(</span><em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.HKtools.iniHK_QFM" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -414,7 +475,8 @@ HK dictionaries (output from loadHK).</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">Welcome to vison&#8217;s documentation!</a></li>
+      <li>Previous: <a href="pipe.html" title="previous chapter">Pipeline</a></li>
+      <li>Next: <a href="support.html" title="next chapter">Support Code</a></li>
   </ul></li>
 </ul>
 </div>
