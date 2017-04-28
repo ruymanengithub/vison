@@ -24,12 +24,13 @@ def configuration():
     
     config.add_subpackage('vison')
     config.add_subpackage('vison/analysis')
-    config.add_subpackage('vison/pipe')
-    config.add_subpackage('vison/flat')
-    config.add_subpackage('vison/point')
-    config.add_subpackage('vison/inject')
-    config.add_subpackage('vison/pump')
     config.add_subpackage('vison/datamodel')
+    config.add_subpackage('vison/eyegore')
+    config.add_subpackage('vison/flat')
+    config.add_subpackage('vison/inject')
+    config.add_subpackage('vison/pipe')
+    config.add_subpackage('vison/point')
+    config.add_subpackage('vison/pump')
     config.add_subpackage('vison/sandbox')
     config.add_subpackage('vison/support')
     

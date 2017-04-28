@@ -6,7 +6,6 @@ eyegore
 data acquisition monitoring script for vison package.
 
 
-
 '- You must be Igor...
 - No, it's pronounced "Eye-gore".'
 
@@ -49,8 +48,10 @@ small_font = ("Verdana", 8)
 
 
 class ImageDisplay(tk.Toplevel):
+    """ """
     
     def __init__(self,parent,path):
+        """ """
         tk.Toplevel.__init__(self,parent)
         self.parent = parent
         self.path = path
@@ -87,7 +88,7 @@ class ImageDisplay(tk.Toplevel):
     
     
     def gen_render(self):
-        
+        """ """
         def render(image):
             
             t = datetime.datetime.now()
@@ -123,7 +124,7 @@ class ImageDisplay(tk.Toplevel):
         
 
 class HKDisplay(tk.Toplevel):
-    
+    """ """
     def __init__(self,parent,path,elvis='6.0.0'):
         
         self.elvis = elvis
@@ -321,6 +322,7 @@ class HKDisplay(tk.Toplevel):
 
 
 class ExpLogDisplay(tk.Toplevel):
+    """ """
     
     def __init__(self,parent,path,elvis='6.0.0'):
         
@@ -498,7 +500,7 @@ class ExpLogDisplay(tk.Toplevel):
    
 
 class Eyegore(tk.Tk):
-    
+    """ """
     
     def __init__(self,path,interval=3000):
         """ """

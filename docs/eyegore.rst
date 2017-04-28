@@ -1,14 +1,14 @@
-Eyegore
-=======
-
-.. figure:: Eyegore.eps
-    :align: center
-
-    - You must be Igor...
-    - No, it's pronounced "Eye-gore".
+Monitoring ("Eyegore")
+======================
 
 
 .. currentmodule:: eyegore
+
+
+.. figure:: figs/Eyegore.eps
+    :align: center
+
+    You must be Igor...
 
 
 eyegore.py

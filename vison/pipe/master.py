@@ -104,4 +104,6 @@ class Pipe(object):
             
             task.run(taskinputs,log=self.log)
             
+    def wait_and_run(self):
+        """ """
         

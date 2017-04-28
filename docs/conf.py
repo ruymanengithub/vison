@@ -131,7 +131,7 @@ html_theme = 'alabaster'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = 'vison_logo.pdf'
+html_logo = 'figs/vison_logo.eps'
 
 # The name of an image file (relative to this directory) to use as a favicon of
 # the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -234,7 +234,7 @@ latex_documents = [
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-latex_logo = 'vison_logo.eps'
+latex_logo = 'figs/vison_logo.eps'
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.
