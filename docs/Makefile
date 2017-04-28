@@ -8,6 +8,7 @@ PAPER         =
 BUILDDIR      = ../../vison-docs
 PDFBUILDDIR   = /tmp
 PDF           = ../manual_vison.pdf
+PACKAGE       = vison
 
 # User-friendly check for sphinx-build
 ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $$?), 1)
@@ -153,7 +154,7 @@ latexpdf:
 	@echo "Running LaTeX files through pdflatex..."
 	$(MAKE) -C $(PDFBUILDDIR)/latex all-pdf
 	#         
-	cp $(PDFBUILDDIR)/latex/*.pdf $(PDF)
+	cp $(PDFBUILDDIR)/latex/$(PACKAGE).pdf $(PDF)
 	#
 	@echo "pdflatex finished; see $(PDF)"
 
