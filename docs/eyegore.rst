@@ -1,7 +1,7 @@
 Eyegore
 =======
 
-.. figure:: Eyegore.gif
+.. figure:: Eyegore.eps
     :align: center
 
     - You must be Igor...
