@@ -68,7 +68,7 @@ Analysis (Shared)
 Monitoring ("Eyegore")
 ======================
 
-..toctree::
+.. toctree::
     :maxdepth: 4
 
     eyegore
@@ -81,8 +81,6 @@ Point-Source Analysis
     :maxdepth: 4
 
     point
-
-
 
 
 
