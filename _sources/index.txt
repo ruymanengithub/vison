@@ -57,6 +57,34 @@ Data Model
    
    datamodel
 
+Analysis (Shared)
+=================
+
+.. toctree::
+    :maxdepth: 4
+
+    analysis
+
+Monitoring ("Eyegore")
+======================
+
+..toctree::
+    :maxdepth: 4
+
+    eyegore
+
+
+Point-Source Analysis
+=====================
+
+.. toctree::
+    :maxdepth: 4
+
+    point
+
+
+
+
 
 Support Code
 ============

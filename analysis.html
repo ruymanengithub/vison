@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Analysis (Shared) &mdash; vison 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="vison 0.1 documentation" href="index.html" />
+    <link rel="next" title="Point-Source Analysis" href="point.html" />
+    <link rel="prev" title="Data Model" href="datamodel.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="analysis-shared">
+<h1>Analysis (Shared)<a class="headerlink" href="#analysis-shared" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-vison.analysis.ellipse">
+<span id="ellipse-py"></span><h2>ellipse.py<a class="headerlink" href="#module-vison.analysis.ellipse" title="Permalink to this headline">¶</a></h2>
+<p>Auxiliary module with functions to generate generalized ellipse masks.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body"><a class="reference external" href="mailto:r&#46;azzollini&#37;&#52;&#48;ucl&#46;ac&#46;uk">r<span>&#46;</span>azzollini<span>&#64;</span>ucl<span>&#46;</span>ac<span>&#46;</span>uk</a></td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="vison.analysis.ellipse.area_superellip">
+<code class="descclassname">vison.analysis.ellipse.</code><code class="descname">area_superellip</code><span class="sig-paren">(</span><em>r</em>, <em>q</em>, <em>c=0</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.ellipse.area_superellip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns area of superellipse, given the semi-major axis length</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.ellipse.dist_superellipse">
+<code class="descclassname">vison.analysis.ellipse.</code><code class="descname">dist_superellipse</code><span class="sig-paren">(</span><em>n</em>, <em>center</em>, <em>q=1</em>, <em>pos_ang=0.0</em>, <em>c=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.ellipse.dist_superellipse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Form an array in which the value of each element is equal to the 
+semi-major axis of the superellipse of specified center, axial ratio,
+position  angle, and c parameter which passes through that element.  
+Useful for super-elliptical aperture photometry.</p>
+<p>Inspired on dist_ellipse.pro from AstroLib (IDL).</p>
+<p>Note: this program doesn&#8217;t take into account the change in the order of axes
+from IDL to Python. That means, that in &#8216;n&#8217; and in &#8216;center&#8217;, the order of the
+coordinates must be reversed with respect to the case for dist_ellipse.pro, in
+order to get expected results. Nonetheless, the polar angle means the 
+counter-clock wise angle with respect to the &#8216;y&#8217; axis.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>n</strong> &#8211; shape of array (N1,N2)</li>
+<li><strong>center</strong> &#8211; center of superellipse radii: (c1,c2)</li>
+<li><strong>q</strong> &#8211; axis ratio r2/r1</li>
+<li><strong>pos_ang</strong> &#8211; position angle of isophotes, in degrees, CCW from axis 1</li>
+<li><strong>c</strong> &#8211; boxyness (c&gt;0) /diskyness (c&lt;0)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.ellipse.effective_radius">
+<code class="descclassname">vison.analysis.ellipse.</code><code class="descname">effective_radius</code><span class="sig-paren">(</span><em>area</em>, <em>q=0</em>, <em>c=0</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.ellipse.effective_radius" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns semi-major axis length of superellipse, given the area</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/vison_logo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Analysis (Shared)</a><ul>
+<li><a class="reference internal" href="#module-vison.analysis.ellipse">ellipse.py</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="datamodel.html" title="previous chapter">Data Model</a></li>
+      <li>Next: <a href="point.html" title="next chapter">Point-Source Analysis</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/analysis.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Ruyman Azzollini.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/analysis.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
