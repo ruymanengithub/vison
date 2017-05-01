@@ -73,7 +73,7 @@ to clone the repository to your own computer. Follow the link for instructions i
 to be made.</li>
 <li><dl class="first docutils">
 <dt>Type <code class="docutils literal"><span class="pre">git</span> <span class="pre">clone</span></code>, and then paste the URL you copied in Step 1.</dt>
-<dd>git clone <a class="reference external" href="https://github.com/ruymanengithub/vison">https://github.com/ruymanengithub/vison</a></dd>
+<dd>&gt;&gt; git clone <a class="reference external" href="https://github.com/ruymanengithub/vison">https://github.com/ruymanengithub/vison</a></dd>
 </dl>
 </li>
 <li>Press Enter. Your local clone will be created.</li>
@@ -83,8 +83,8 @@ to be made.</li>
 <img alt="_images/repo_screenshot.png" src="_images/repo_screenshot.png" />
 </div>
 </div>
-<div class="section" id="installing-conda-environment-and-dependencies">
-<h2>Installing <cite>conda</cite> Environment and Dependencies<a class="headerlink" href="#installing-conda-environment-and-dependencies" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h2>Installation<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>We recommend installing the code through a <cite>conda</cite> environment, with a specific list
 of packages, so you can be sure you have all the needed dependencies.</p>
 <p>First, if you don&#8217;t have <cite>conda</cite> already installed in your system already,
@@ -98,34 +98,46 @@ allow you to install the pipeline and meet all its dependencies.</p>
 <div><ul class="simple">
 <li><dl class="first docutils">
 <dt>change directory to your copy of the vison repository:</dt>
-<dd>cd vison</dd>
+<dd>&gt;&gt; cd vison</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
 <dt>Under the &#8216;conda&#8217; sub-folder, you will find two text files:</dt>
-<dd>cd conda
-ls</dd>
+<dd>&gt;&gt; cd conda
+&gt;&gt; ls</dd>
 </dl>
 </li>
 </ul>
 <p>env-conda_vison.txt  env-pip_vison.txt
 * Then execute the following command to create a new conda environment, <cite>vison</cite>:</p>
 <blockquote>
-<div>conda create -n vison &#8211;file env-conda_vison.txt</div></blockquote>
+<div>&gt;&gt; conda create -n vison &#8211;file env-conda_vison.txt</div></blockquote>
 <ul class="simple">
 <li>When prompted, type &#8220;y&#8221; and return to install the listed packages.</li>
 <li><dl class="first docutils">
 <dt>Activate the new environment</dt>
-<dd>source activate vison</dd>
+<dd>&gt;&gt; source activate vison</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
 <dt>Install the packages that are accessed via <cite>pip</cite>, within the conda environment:</dt>
-<dd>pip install -r env-pip_vison.txt</dd>
+<dd>&gt;&gt; pip install -r env-pip_vison.txt</dd>
 </dl>
 </li>
 </ul>
 </div></blockquote>
+</div>
+<div class="section" id="installing-vison">
+<h3>Installing <cite>vison</cite><a class="headerlink" href="#installing-vison" title="Permalink to this headline">¶</a></h3>
+<p>Finally, to install the <cite>vison</cite> pipeline itself, we will go back to the folder we downloaded
+from the github repository:</p>
+<p>&gt;&gt; cd ../
+&gt;&gt; ls
+conda  docs  LICENSE  manual_vison.pdf  README.md  setup.cfg  setup_distutils.py  setup.py  vison</p>
+<p>Then do the actual installation, via:</p>
+<p>&gt;&gt; python setup.py install</p>
+<p>Now the vison package will be accessible from anywhere in your system, whenever you start python from
+within the <cite>vison</cite> conda environment.</p>
 </div>
 </div>
 </div>
@@ -143,8 +155,9 @@ ls</dd>
   <ul>
 <li><a class="reference internal" href="#">Installation</a><ul>
 <li><a class="reference internal" href="#cloning-vison-from-the-repository-using-git">Cloning <em>vison</em> from the repository using <em>git</em></a></li>
-<li><a class="reference internal" href="#installing-conda-environment-and-dependencies">Installing <cite>conda</cite> Environment and Dependencies</a><ul>
+<li><a class="reference internal" href="#id1">Installation</a><ul>
 <li><a class="reference internal" href="#installing-conda-and-creating-vison-environment">Installing conda and creating <cite>vison</cite> environment</a></li>
+<li><a class="reference internal" href="#installing-vison">Installing <cite>vison</cite></a></li>
 </ul>
 </li>
 </ul>
