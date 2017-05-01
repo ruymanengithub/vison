@@ -5,10 +5,10 @@ Installation
 ============
 
 
-Cloning *vison* from the repository
-----------------------------------
+Cloning *vison* from the repository using *git*
+---------------------------------------------
 
-Here we will follow the .. instructions: https://help.github.com/articles/cloning-a-repository/ for a linux system:
+Here we will follow the `instructions <https://help.github.com/articles/cloning-a-repository/ for a linux system>`:
 
 Step-by-step:
 
