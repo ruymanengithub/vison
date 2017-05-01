@@ -1,0 +1,35 @@
+
+.. installation:
+
+Installation
+============
+
+
+Cloning *vison* from the repository
+----------------------------------
+
+Here we will follow the .. instructions: https://help.github.com/articles/cloning-a-repository/ for a linux system:
+
+Step-by-step:
+
+    * Go to https://github.com/ruymanengithub/vison
+    * click on the green "Clone or download" button.
+    * In the Clone with HTTPs section, click  to copy the clone URL for the repository.
+    * Open Terminal.
+    * Change the current working directory to the location where you want the cloned directory 
+      to be made.
+    * Type ``git clone``, and then paste the URL you copied in Step 2.::
+
+git clone https://github.com/ruymanengithub/vison
+    * Press Enter. Your local clone will be created.
+
+.. figure:: figs/repo_screenshot.png
+    :align: center
+    https://github.com/ruymanengithub/vison
+
+
+Installing Dependencies
+-----------------------
+
+
+Installing conda
