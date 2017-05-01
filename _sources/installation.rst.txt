@@ -48,3 +48,20 @@ Once you have succesfully installed conda, we will create an environment that wi
 allow you to install the pipeline and meet all its dependencies.
 
 
+Step-by-Step:
+
+    * change directory to your copy of the vison repository:
+        cd vison
+    * Under the 'conda' sub-folder, you will find two text files: 
+        cd conda
+        ls
+    env-conda_vison.txt  env-pip_vison.txt
+    * Then execute the following command to create a new conda environment, `vison`:
+        conda create -n vison --file env-conda_vison.txt
+    * When prompted, type "y" and return to install the listed packages.
+    * Activate the new environment
+        source activate vison
+    * Install the packages that are accessed via `pip`, within the conda environment:
+        pip install -r env-pip_vison.txt
+        
+    

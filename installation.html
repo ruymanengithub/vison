@@ -93,6 +93,39 @@ follow the instructions in this <a class="reference external" href="https://cond
 <h3>Installing conda and creating <cite>vison</cite> environment<a class="headerlink" href="#installing-conda-and-creating-vison-environment" title="Permalink to this headline">¶</a></h3>
 <p>Once you have succesfully installed conda, we will create an environment that will
 allow you to install the pipeline and meet all its dependencies.</p>
+<p>Step-by-Step:</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="first docutils">
+<dt>change directory to your copy of the vison repository:</dt>
+<dd>cd vison</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Under the &#8216;conda&#8217; sub-folder, you will find two text files:</dt>
+<dd>cd conda
+ls</dd>
+</dl>
+</li>
+</ul>
+<p>env-conda_vison.txt  env-pip_vison.txt
+* Then execute the following command to create a new conda environment, <cite>vison</cite>:</p>
+<blockquote>
+<div>conda create -n vison &#8211;file env-conda_vison.txt</div></blockquote>
+<ul class="simple">
+<li>When prompted, type &#8220;y&#8221; and return to install the listed packages.</li>
+<li><dl class="first docutils">
+<dt>Activate the new environment</dt>
+<dd>source activate vison</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Install the packages that are accessed via <cite>pip</cite>, within the conda environment:</dt>
+<dd>pip install -r env-pip_vison.txt</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
 </div>
 </div>
 </div>
