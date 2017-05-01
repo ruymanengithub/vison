@@ -40,7 +40,7 @@ Dependencies
 ------------
 
 Instructions to acquire a copy of the "conda" environment that provides all 
-dependencies is included in the package. See :ref:'installation' instructions for 
+dependencies is included in the package. See :ref:`installation` instructions for 
 details.
 
 
