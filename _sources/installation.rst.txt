@@ -24,7 +24,7 @@ Step-by-step:
     * Change the current working directory to the location where you want the cloned directory 
       to be made.
     * Type ``git clone``, and then paste the URL you copied in Step 1.
-            >> git clone https://github.com/ruymanengithub/vison
+            ~$ git clone https://github.com/ruymanengithub/vison
     * Press Enter. Your local clone will be created.
 
 .. figure:: figs/repo_screenshot.png
@@ -51,18 +51,18 @@ allow you to install the pipeline and meet all its dependencies.
 Step-by-Step:
 
     * change directory to your copy of the vison repository:
-        >> cd vison
+        ~$ cd vison
     * Under the 'conda' sub-folder, you will find two text files: 
-        >> cd conda
-        >> ls
+        ~$ cd conda
+        ~$ ls
     env-conda_vison.txt  env-pip_vison.txt
     * Then execute the following command to create a new conda environment, `vison`:
-        >> conda create -n vison --file env-conda_vison.txt
+        ~$ conda create -n vison --file env-conda_vison.txt
     * When prompted, type "y" and return to install the listed packages.
     * Activate the new environment
-        >> source activate vison
+        ~$ source activate vison
     * Install the packages that are accessed via `pip`, within the conda environment:
-        >> pip install -r env-pip_vison.txt
+        ~$ pip install -r env-pip_vison.txt
         
 
 Installing `vison`
@@ -71,14 +71,26 @@ Installing `vison`
 Finally, to install the `vison` pipeline itself, we will go back to the folder we downloaded
 from the github repository:
 
->> cd ../
->> ls
+~$ cd ../
+~$ ls
 conda  docs  LICENSE  manual_vison.pdf  README.md  setup.cfg  setup_distutils.py  setup.py  vison
 
 Then do the actual installation, via:
 
->> python setup.py install
+~$ python setup.py install
 
 Now the vison package will be accessible from anywhere in your system, whenever you start python from 
-within the `vison` conda environment.
+within the `vison` conda environment. For example:
 
+    * open a new terminal and go to your home directory
+        ~$ cd 
+    * activate the vison environment:
+        ~$ source activate vison
+    * start the python interpreter and import vison:
+        ~$ source activate vison
+        ~$ python
+        >>> import vison
+        >>> dir(vison)
+        ['Eyegore', 'FlatFielding', 'Pipe', 'Report', '__all__', '__builtins__', '__doc__', '__file__', 
+         '__name__', '__package__', '__path__', '__version__', 'analysis', 'data', 'datamodel', 
+         'eyegore', 'pipe', 'point', 'support']
