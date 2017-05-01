@@ -611,7 +611,58 @@ def meta_analysis_FOCUS00(DataDict,RepDict,inputs,log=None):
     
     Analyzes the relation between PSF shape and mirror position.
     
+    :param DataDict: Dictionary with input data
+    :param RepDict: Report Dictionary
+    :param inputs: Dictionary with inputs
+    
     """
+    
+    Quadrants = pilib.Quads
+    spotIDs = polib.Point_CooNom['names']
+    
+    G_keys = ['x','ex','y','ey','i0','ei0','sigma_x','esigma_x',
+    'sigma_y','esigma_y','fwhm_x','efwhm_x','fwhm_y','efwhm_y',
+    'fluence','efluence']
+    
+    # Loop over CCDs, Obsids, quadrants and spots
+    
+    for CCDindex in range(1,4):
+        if 'CCD%i' % CCDindex in DataDict:
+            CCDindex_ref = CCDindex
+    
+    ObsIDs = DataDict['CCD%i' % CCDindex_ref]['ObsID'].copy()
+    label = DataDict['CCD%i' % CCDindex_ref]['label'].copy()
+    
+    shape_seq = dict()
+    
+    selix = label != 'BGD'
+    
+    for CCDindex in range(1,4):
+        CCDkey = 'CCD%i' % CCDindex
+        shape_seq[CCDkey] = dict()
+        shape_seq[CCDkey]['Mirr_pos'] = DataDict[CCDkey]['Mirr_pos'][selix].copy()
+        
+        for Q in Quadrants:
+            
+            for spotID in spotIDs:
+                
+                for key in G_keys:
+                    spkey = 'G_%s_%s_%s' % (key,Q,spotID)
+                    shape_seq[CCDkey][spkey] = dict()
+                stop()
+                
+                
+                
+    for iObs,ObsID in enumerate(ObsIDs):
+        
+        ilabel = label[iObs]
+        
+        if ilabel == 'BGD': continue
+        
+
+
+    return DataDict, Report
+
 
 
 def generate_Explog_FOCUS00(wavelength,struct,elvis='6.0.0',date=dtobj_default):
@@ -945,12 +996,11 @@ def run(inputs,log=None):
     else:
         DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
     
-    stop()
-    
     # Optional
     # Produce Summary Figures and Tables
     
     if todo_flags['meta']:
+        
         DataDict, reportobj = meta_analysis_FOCUS00(DataDict,reportobj,inputs,log)
         pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)  
     else:
