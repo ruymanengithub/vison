@@ -17,14 +17,14 @@ to clone the repository to your own computer. Follow the link for instructions i
 
 Step-by-step:
 
-    * Go to https://github.com/ruymanengithub/vison
-    * click on the green "Clone or download" button.
+    * Go to https://github.com/ruymanengithub/vison.
+    * Click on the green "Clone or download" button.
     * In the Clone with HTTPs section, click  to copy the clone URL for the repository.
-    * Open Terminal.
+    * Open a Terminal.
     * Change the current working directory to the location where you want the cloned directory 
       to be made.
-    * Type ``git clone``, and then paste the URL you copied in Step 1.
-            ~$ git clone https://github.com/ruymanengithub/vison
+    * Type ``git clone``, and then paste the URL you copied in Step 1.::
+        ~$ git clone https://github.com/ruymanengithub/vison
     * Press Enter. Your local clone will be created.
 
 .. figure:: figs/repo_screenshot.png
