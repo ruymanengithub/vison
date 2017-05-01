@@ -82,7 +82,7 @@ Point-Source Analysis
     point
 
 Point-Source Scripts
-====================
+--------------------
 
 .. toctree::
     :maxdepth: 4
