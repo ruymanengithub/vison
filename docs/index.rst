@@ -11,7 +11,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
    
-   includeme
+   source/includeme
 
 :Author: Ruyman Azzollini
 :Contact: r.azzollini_at_ucl.ac.uk
@@ -24,18 +24,24 @@ This Python package "vison" is the pipeline that will be used at MSSL for ground
 Installation
 ============
 
-The package will be distributed via github. The repository is hosted at:
+The package is distributed via github. The repository is hosted at:
 
 https://github.com/ruymanengithub/vison
 
 
-Detailed instructions: TBW
+Detailed instructions:
+
+.. toctree::
+    :maxdepth: 4
+    
+    installation
 
 Dependencies
 ------------
 
-
-A copy of the conda environment that provides all dependencies will be included in the package.
+Instructions to acquire a copy of the "conda" environment that provides all 
+dependencies is included in the package. See :ref:`installation` instructions for 
+details.
 
 
 Pipeline Core
@@ -54,6 +60,7 @@ Data Model
    :maxdepth: 4
    
    datamodel
+
 
 Analysis (Shared)
 =================
@@ -80,7 +87,13 @@ Point-Source Analysis
 
     point
 
+Point-Source Scripts
+--------------------
 
+.. toctree::
+    :maxdepth: 4
+
+    point_scripts
 
 Support Code
 ============

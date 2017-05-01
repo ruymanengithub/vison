@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 """
 
-FM-Calib. Campaign.
+Models (Point-Like Sources)
+===========================
 
 Library module with models for processing of point-source imaging data.
 
-Created on Wed Apr 19 11:47:00 2017
-
+:requires: NumPy
 :author: Ruyman Azzollini
 :contact: r.azzollini_at_ucl.ac.uk
+
+Created on Wed Apr 19 11:47:00 2017
 
 """
 

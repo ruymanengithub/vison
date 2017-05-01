@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Doing Aperture Photometry of an object
-======================================
+Gaussian Model of Point-like Sources
+====================================
 
 Simple class to do Gaussian Fitting to a spot.
 
@@ -12,8 +12,6 @@ Simple class to do Gaussian Fitting to a spot.
 
 Created on Thu Apr 20 16:42:47 2017
 
-:author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

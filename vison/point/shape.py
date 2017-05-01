@@ -1,11 +1,10 @@
 """
-Measuring a shape of an object
-==============================
+Quadrupole Moments Shape Measurement
+====================================
 
 Simple class to measure quadrupole moments and ellipticity of an object.
 
-:requires: NumPy
-:requres: PyFITS
+:requires: NumPy, PyFITS
 
 :author: Sami-Matias Niemi, Ruyman Azzollini
 :contact: r.azzollini_at_ucl.ac.uk

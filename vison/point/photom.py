@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 
-Doing Aperture Photometry of an object
-======================================
+Aperture Photometry of point-like objects
+=========================================
 
 Simple class to do aperture photometry on a stamp of a point-source.
 
@@ -14,8 +14,6 @@ Simple class to do aperture photometry on a stamp of a point-source.
 
 Created on Thu Apr 20 14:37:46 2017
 
-:author: Ruyman Azzollini
-:contact: r.azzollini _at_ ucl.ac.uk
 """
 
 # IMPORT STUFF

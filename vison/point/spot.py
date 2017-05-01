@@ -3,21 +3,20 @@
 
 
 
+
+:author: Ruyman Azzollini
+:contact: r.azzollini__at__ucl.ac.uk
+
 Created on Thu Apr 20 15:35:08 2017
 
-@author: raf
 """
 
 # IMPORT STUFF
-
 from pdb import set_trace as stop
-
 from shape import Shapemeter
 from photom import Photometer
 from gauss import Gaussmeter
 # END IMPORT
-
-   
 
 
 class Spot(Shapemeter,Photometer,Gaussmeter):

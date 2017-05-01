@@ -5,7 +5,7 @@ Monitoring ("Eyegore")
 .. currentmodule:: eyegore
 
 
-.. figure:: figs/Eyegore.eps
+.. figure:: figs/Eyegore.png
     :align: center
 
     You must be Igor...
