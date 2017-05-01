@@ -1,0 +1,83 @@
+Point-Source Analysis
+=====================
+
+.. currentmodule:: point
+
+
+FOCUS00
+-------
+
+.. automodule:: vison.point.FOCUS00
+        :members:
+
+
+PSF0X
+-----
+
+.. automodule:: vison.point.PSF0X
+        :members:
+
+
+basis
+-----
+
+.. automodule:: vison.point.basis
+
+.. autoclass:: SpotBase
+	:memberse:
+
+
+display
+-------
+
+.. automodule:: vison.point.display
+        :members:
+
+gauss
+-----
+
+.. automodule:: vison.point.gauss
+
+.. autoclass:: Gaussmeter
+	:members:
+
+
+models
+------
+
+.. automodule:: vison.point.models
+        :members:
+
+photom
+------
+
+.. automodule:: vison.point.photom
+
+.. autoclass:: Photometer
+	:members:
+
+
+shape
+-----
+
+.. automodule:: vison.point.shape
+
+.. autoclass:: Shapemeter
+        :members:
+
+spot
+----
+
+.. automodule:: vison.point.spot
+
+.. autoclass:: Spot
+        :members:
+
+
+
+lib.py
+---------
+
+.. automodule:: vison.point.lib
+        :members:
+

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Point-Source Analysis &mdash; vison 0.1 documentation</title>
+    <title>Point-Source Analysis &#8212; vison 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,17 +17,20 @@
         VERSION:     '0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="vison 0.1 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Support Code" href="support.html" />
     <link rel="prev" title="Monitoring (“Eyegore”)" href="eyegore.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
@@ -49,18 +52,14 @@ TEST: FOCUS00</p>
 <p>Focus analysis script</p>
 <p>Tasks:</p>
 <blockquote>
-<div><ul>
-<li><p class="first">Select exposures, get file names, get metadata (commandig, HK).</p>
-</li>
-<li><p class="first">Check quality of data (integrated fluxes are roughly constant, matching expected level).</p>
-</li>
-<li><p class="first">Subtract offset level.</p>
-</li>
-<li><p class="first">Divide by Flat-field.</p>
-</li>
+<div><ul class="simple">
+<li>Select exposures, get file names, get metadata (commandig, HK).</li>
+<li>Check quality of data (integrated fluxes are roughly constant, matching expected level).</li>
+<li>Subtract offset level.</li>
+<li>Divide by Flat-field.</li>
 <li><dl class="first docutils">
 <dt>Crop stamps of the sources on each CCD/Quadrant.</dt>
-<dd><ul class="first last simple">
+<dd><ul class="first last">
 <li>save snapshot figures of sources.</li>
 </ul>
 </dd>
@@ -68,22 +67,19 @@ TEST: FOCUS00</p>
 </li>
 <li><dl class="first docutils">
 <dt>for each source (5 x Nquadrants):</dt>
-<dd><ul class="first last simple">
+<dd><ul class="first last">
 <li>measure shape using Gaussian Fit</li>
 </ul>
 </dd>
 </dl>
 </li>
-<li><p class="first">Find position of mirror that minimizes PSF sizes</p>
-</li>
+<li>Find position of mirror that minimizes PSF sizes</li>
 <li><dl class="first docutils">
 <dt>Produce synoptic figures:</dt>
-<dd><p class="first last">source size and ellipticity across combined FOV (of 3 CCDs)</p>
-</dd>
+<dd>source size and ellipticity across combined FOV (of 3 CCDs)</dd>
 </dl>
 </li>
-<li><p class="first">Save results.</p>
-</li>
+<li>Save results.</li>
 </ul>
 </div></blockquote>
 <p>Created on Mon Apr 03 16:21:00 2017</p>
@@ -193,20 +189,15 @@ PSF02 - alternative temperatures</dd>
 </dl>
 <p>Tasks:</p>
 <blockquote>
-<div><ul>
-<li><p class="first">Select exposures, get file names, get metadata (commandig, HK).</p>
-</li>
-<li><p class="first">Check exposure time pattern matches test design.</p>
-</li>
-<li><p class="first">Check quality of data (rough scaling of fluences with Exposure times).</p>
-</li>
-<li><p class="first">Subtract offset level.</p>
-</li>
-<li><p class="first">Divide by Flat-field.</p>
-</li>
+<div><ul class="simple">
+<li>Select exposures, get file names, get metadata (commandig, HK).</li>
+<li>Check exposure time pattern matches test design.</li>
+<li>Check quality of data (rough scaling of fluences with Exposure times).</li>
+<li>Subtract offset level.</li>
+<li>Divide by Flat-field.</li>
 <li><dl class="first docutils">
 <dt>Crop stamps of the sources on each CCD/Quadrant.</dt>
-<dd><ul class="first last simple">
+<dd><ul class="first last">
 <li>save snapshot figures of sources.</li>
 </ul>
 </dd>
@@ -214,7 +205,7 @@ PSF02 - alternative temperatures</dd>
 </li>
 <li><dl class="first docutils">
 <dt>for each source:</dt>
-<dd><ul class="first last simple">
+<dd><ul class="first last">
 <li>measure shape using weighted moments</li>
 <li>measure shape using Gaussian Fit</li>
 <li>Bayesian Forward Modelling the optomechanic+detector PSF</li>
@@ -222,10 +213,8 @@ PSF02 - alternative temperatures</dd>
 </dd>
 </dl>
 </li>
-<li><p class="first">Produce synoptic figures.</p>
-</li>
-<li><p class="first">Save results.</p>
-</li>
+<li>Produce synoptic figures.</li>
+<li>Save results.</li>
 </ul>
 </div></blockquote>
 <p>Created on Thu Dec 29 15:01:07 2016</p>
@@ -292,7 +281,6 @@ data quality is enough.</p>
 </div>
 <div class="section" id="module-vison.point.basis">
 <span id="basis"></span><h2>basis<a class="headerlink" href="#module-vison.point.basis" title="Permalink to this headline">¶</a></h2>
-<p>Created on Thu Apr 20 18:56:40 2017</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -303,35 +291,36 @@ data quality is enough.</p>
 </tr>
 </tbody>
 </table>
-<dl class="class">
-<dt id="vison.point.basis.SpotBase">
-<em class="property">class </em><code class="descclassname">vison.point.basis.</code><code class="descname">SpotBase</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.basis.SpotBase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<p>Created on Thu Apr 20 18:56:40 2017</p>
 </div>
 <div class="section" id="module-vison.point.display">
 <span id="display"></span><h2>display<a class="headerlink" href="#module-vison.point.display" title="Permalink to this headline">¶</a></h2>
-<p>Created on Fri Apr 21 14:02:57 2017</p>
+<div class="section" id="display-library-for-point-source-analysis">
+<h3>Display Library for Point-Source Analysis<a class="headerlink" href="#display-library-for-point-source-analysis" title="Permalink to this headline">¶</a></h3>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+<tr class="field-odd field"><th class="field-name">requires:</th><td class="field-body">matplotlib</td>
 </tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini _at_ ucl.ac.uk</td>
+<tr class="field-even field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">contact:</th><td class="field-body">r.azzollini _at_ ucl.ac.uk</td>
 </tr>
 </tbody>
 </table>
+<p>Created on Fri Apr 21 14:02:57 2017</p>
 <dl class="function">
 <dt id="vison.point.display.show_spots_allCCDs">
 <code class="descclassname">vison.point.display.</code><code class="descname">show_spots_allCCDs</code><span class="sig-paren">(</span><em>spots_bag</em>, <em>title=''</em>, <em>filename=''</em>, <em>dobar=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.display.show_spots_allCCDs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
+</div>
 <div class="section" id="module-vison.point.gauss">
 <span id="gauss"></span><h2>gauss<a class="headerlink" href="#module-vison.point.gauss" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="doing-aperture-photometry-of-an-object">
-<h3>Doing Aperture Photometry of an object<a class="headerlink" href="#doing-aperture-photometry-of-an-object" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="gaussian-model-of-point-like-sources">
+<h3>Gaussian Model of Point-like Sources<a class="headerlink" href="#gaussian-model-of-point-like-sources" title="Permalink to this headline">¶</a></h3>
 <p>Simple class to do Gaussian Fitting to a spot.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -346,16 +335,7 @@ data quality is enough.</p>
 </tbody>
 </table>
 <p>Created on Thu Apr 20 16:42:47 2017</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
-</tr>
-</tbody>
-</table>
+</div>
 <dl class="class">
 <dt id="vison.point.gauss.Gaussmeter">
 <em class="property">class </em><code class="descclassname">vison.point.gauss.</code><code class="descname">Gaussmeter</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.gauss.Gaussmeter" title="Permalink to this definition">¶</a></dt>
@@ -383,22 +363,24 @@ a 2D Gaussian Model.</p>
 </dd></dl>
 
 </div>
-</div>
 <div class="section" id="module-vison.point.models">
 <span id="models"></span><h2>models<a class="headerlink" href="#module-vison.point.models" title="Permalink to this headline">¶</a></h2>
-<p>FM-Calib. Campaign.</p>
+<div class="section" id="models-point-like-sources">
+<h3>Models (Point-Like Sources)<a class="headerlink" href="#models-point-like-sources" title="Permalink to this headline">¶</a></h3>
 <p>Library module with models for processing of point-source imaging data.</p>
-<p>Created on Wed Apr 19 11:47:00 2017</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+<tr class="field-odd field"><th class="field-name">requires:</th><td class="field-body">NumPy</td>
 </tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
+<tr class="field-even field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
 </tr>
 </tbody>
 </table>
+<p>Created on Wed Apr 19 11:47:00 2017</p>
 <dl class="function">
 <dt id="vison.point.models.fgauss2D">
 <code class="descclassname">vison.point.models.</code><code class="descname">fgauss2D</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.models.fgauss2D" title="Permalink to this definition">¶</a></dt>
@@ -414,10 +396,11 @@ p[5] = floor</dd>
 </dd></dl>
 
 </div>
+</div>
 <div class="section" id="module-vison.point.photom">
 <span id="photom"></span><h2>photom<a class="headerlink" href="#module-vison.point.photom" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id1">
-<h3>Doing Aperture Photometry of an object<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="aperture-photometry-of-point-like-objects">
+<h3>Aperture Photometry of point-like objects<a class="headerlink" href="#aperture-photometry-of-point-like-objects" title="Permalink to this headline">¶</a></h3>
 <p>Simple class to do aperture photometry on a stamp of a point-source.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -432,16 +415,7 @@ p[5] = floor</dd>
 </tbody>
 </table>
 <p>Created on Thu Apr 20 14:37:46 2017</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini _at_ ucl.ac.uk</td>
-</tr>
-</tbody>
-</table>
+</div>
 <dl class="class">
 <dt id="vison.point.photom.Photometer">
 <em class="property">class </em><code class="descclassname">vison.point.photom.</code><code class="descname">Photometer</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.photom.Photometer" title="Permalink to this definition">¶</a></dt>
@@ -487,26 +461,24 @@ p[5] = floor</dd>
 </dd></dl>
 
 </div>
-</div>
 <div class="section" id="module-vison.point.shape">
 <span id="shape"></span><h2>shape<a class="headerlink" href="#module-vison.point.shape" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="measuring-a-shape-of-an-object">
-<h3>Measuring a shape of an object<a class="headerlink" href="#measuring-a-shape-of-an-object" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="quadrupole-moments-shape-measurement">
+<h3>Quadrupole Moments Shape Measurement<a class="headerlink" href="#quadrupole-moments-shape-measurement" title="Permalink to this headline">¶</a></h3>
 <p>Simple class to measure quadrupole moments and ellipticity of an object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">requires:</th><td class="field-body">NumPy</td>
+<tr class="field-odd field"><th class="field-name">requires:</th><td class="field-body">NumPy, PyFITS</td>
 </tr>
-<tr class="field-even field"><th class="field-name">requres:</th><td class="field-body">PyFITS</td>
+<tr class="field-even field"><th class="field-name">author:</th><td class="field-body">Sami-Matias Niemi, Ruyman Azzollini</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Sami-Matias Niemi, Ruyman Azzollini</td>
-</tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
+<tr class="field-odd field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
 </tr>
 </tbody>
 </table>
+</div>
 <dl class="class">
 <dt id="vison.point.shape.Shapemeter">
 <em class="property">class </em><code class="descclassname">vison.point.shape.</code><code class="descname">Shapemeter</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.shape.Shapemeter" title="Permalink to this definition">¶</a></dt>
@@ -636,18 +608,20 @@ If self.shsettings[&#8216;weighted&#8217;] is False then no weighting scheme is 
 
 </dd></dl>
 
-<dl class="class">
-<dt id="vison.point.shape.TestShape">
-<em class="property">class </em><code class="descclassname">vison.point.shape.</code><code class="descname">TestShape</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.shape.TestShape" title="Permalink to this definition">¶</a></dt>
-<dd><p>Unit tests for the shape class.</p>
-</dd></dl>
-
-</div>
 </div>
 <div class="section" id="module-vison.point.spot">
 <span id="spot"></span><h2>spot<a class="headerlink" href="#module-vison.point.spot" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini__at__ucl.ac.uk</td>
+</tr>
+</tbody>
+</table>
 <p>Created on Thu Apr 20 15:35:08 2017</p>
-<p>&#64;author: raf</p>
 <dl class="class">
 <dt id="vison.point.spot.Spot">
 <em class="property">class </em><code class="descclassname">vison.point.spot.</code><code class="descname">Spot</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot" title="Permalink to this definition">¶</a></dt>
@@ -757,7 +731,7 @@ Y,X order for use as array indices, etc.</dd>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/vison_logo.eps" alt="Logo"/>
+              <img class="logo" src="_static/vison_logo.png" alt="Logo"/>
             </a></p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
@@ -765,18 +739,24 @@ Y,X order for use as array indices, etc.</dd>
 <li><a class="reference internal" href="#module-vison.point.FOCUS00">FOCUS00</a></li>
 <li><a class="reference internal" href="#module-vison.point.PSF0X">PSF0X</a></li>
 <li><a class="reference internal" href="#module-vison.point.basis">basis</a></li>
-<li><a class="reference internal" href="#module-vison.point.display">display</a></li>
-<li><a class="reference internal" href="#module-vison.point.gauss">gauss</a><ul>
-<li><a class="reference internal" href="#doing-aperture-photometry-of-an-object">Doing Aperture Photometry of an object</a></li>
+<li><a class="reference internal" href="#module-vison.point.display">display</a><ul>
+<li><a class="reference internal" href="#display-library-for-point-source-analysis">Display Library for Point-Source Analysis</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-vison.point.models">models</a></li>
+<li><a class="reference internal" href="#module-vison.point.gauss">gauss</a><ul>
+<li><a class="reference internal" href="#gaussian-model-of-point-like-sources">Gaussian Model of Point-like Sources</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-vison.point.models">models</a><ul>
+<li><a class="reference internal" href="#models-point-like-sources">Models (Point-Like Sources)</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-vison.point.photom">photom</a><ul>
-<li><a class="reference internal" href="#id1">Doing Aperture Photometry of an object</a></li>
+<li><a class="reference internal" href="#aperture-photometry-of-point-like-objects">Aperture Photometry of point-like objects</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-vison.point.shape">shape</a><ul>
-<li><a class="reference internal" href="#measuring-a-shape-of-an-object">Measuring a shape of an object</a></li>
+<li><a class="reference internal" href="#quadrupole-moments-shape-measurement">Quadrupole Moments Shape Measurement</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-vison.point.spot">spot</a></li>
@@ -796,15 +776,15 @@ Y,X order for use as array indices, etc.</dd>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/point.txt"
+      <li><a href="_sources/point.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -818,11 +798,11 @@ Y,X order for use as array indices, etc.</dd>
       &copy;2017, Ruyman Azzollini.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
       
       |
-      <a href="_sources/point.txt"
+      <a href="_sources/point.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
