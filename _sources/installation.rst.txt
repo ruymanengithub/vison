@@ -8,7 +8,8 @@ Installation
 Cloning *vison* from the repository using *git*
 ---------------------------------------------
 
-Here we will follow the `instructions <https://help.github.com/articles/cloning-a-repository/ for a linux system>`:
+Here we will follow `instructions <https://help.github.com/articles/cloning-a-repository/ for a linux system>`_.
+Follow the link for instructions in other operative systems.
 
 Step-by-step:
 
