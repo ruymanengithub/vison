@@ -55,6 +55,7 @@ Data Model
    
    datamodel
 
+
 Analysis (Shared)
 =================
 
@@ -80,7 +81,13 @@ Point-Source Analysis
 
     point
 
+Point-Source Scripts
+====================
 
+.. toctree::
+    :maxdepth: 4
+
+    point_scripts
 
 Support Code
 ============

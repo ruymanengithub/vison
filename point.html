@@ -56,242 +56,8 @@
             
   <div class="section" id="point-source-analysis">
 <h1>Point-Source Analysis<a class="headerlink" href="#point-source-analysis" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-vison.point.FOCUS00">
-<span id="focus00"></span><h2>FOCUS00<a class="headerlink" href="#module-vison.point.FOCUS00" title="Permalink to this headline">¶</a></h2>
-<p>VIS Ground Calibration
-TEST: FOCUS00</p>
-<p>Focus analysis script</p>
-<p>Tasks:</p>
-<blockquote>
-<div><ul class="simple">
-<li>Select exposures, get file names, get metadata (commandig, HK).</li>
-<li>Check quality of data (integrated fluxes are roughly constant, matching expected level).</li>
-<li>Subtract offset level.</li>
-<li>Divide by Flat-field.</li>
-<li><dl class="first docutils">
-<dt>Crop stamps of the sources on each CCD/Quadrant.</dt>
-<dd><ul class="first last">
-<li>save snapshot figures of sources.</li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>for each source (5 x Nquadrants):</dt>
-<dd><ul class="first last">
-<li>measure shape using Gaussian Fit</li>
-</ul>
-</dd>
-</dl>
-</li>
-<li>Find position of mirror that minimizes PSF sizes</li>
-<li><dl class="first docutils">
-<dt>Produce synoptic figures:</dt>
-<dd>source size and ellipticity across combined FOV (of 3 CCDs)</dd>
-</dl>
-</li>
-<li>Save results.</li>
-</ul>
-</div></blockquote>
-<p>Created on Mon Apr 03 16:21:00 2017</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
-</tr>
-</tbody>
-</table>
-<dl class="function">
-<dt id="vison.point.FOCUS00.basic_analysis_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">basic_analysis_FOCUS00</code><span class="sig-paren">(</span><em>DataDict</em>, <em>Report</em>, <em>inputs</em>, <em>log=None</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.basic_analysis_FOCUS00" title="Permalink to this definition">¶</a></dt>
-<dd><p>Performs basic analysis on spots:
-- 2D Gaussian Model shape measurements
-- Quadrupole Moments shape measurements</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.FOCUS00.filterexposures_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">filterexposures_FOCUS00</code><span class="sig-paren">(</span><em>inwavelength</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>structure={'Ncols': 6</em>, <em>'col6': {'Mirr_pos': 70.2</em>, <em>'Exptime': 10.0</em>, <em>'N': 2}</em>, <em>'col4': {'Mirr_pos': 70.0</em>, <em>'Exptime': 10.0</em>, <em>'N': 2}</em>, <em>'col5': {'Mirr_pos': 70.1</em>, <em>'Exptime': 10.0</em>, <em>'N': 2}</em>, <em>'col2': {'Mirr_pos': 69.8</em>, <em>'Exptime': 10.0</em>, <em>'N': 2}</em>, <em>'col3': {'Mirr_pos': 69.9</em>, <em>'Exptime': 10.0</em>, <em>'N': 2}</em>, <em>'col1': {'Mirr_pos': 69.8</em>, <em>'Exptime': 0</em>, <em>'N': 5}}</em>, <em>elvis='5.7.04'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.filterexposures_FOCUS00" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads a list of Exposure Logs and selects exposures from test FOCUS00.</p>
-<p>The filtering takes into account an expected structure for the 
-acquisition script.</p>
-<p>The datapath becomes another column in DataDict. This helps dealing
-with tests that run overnight and for which the input data is in several
-date-folders.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.FOCUS00.generate_Explog_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">generate_Explog_FOCUS00</code><span class="sig-paren">(</span><em>wavelength</em>, <em>struct</em>, <em>elvis='6.0.0'</em>, <em>date=datetime.datetime(1980</em>, <em>2</em>, <em>21</em>, <em>7</em>, <em>0)</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.generate_Explog_FOCUS00" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="vison.point.FOCUS00.generate_FITS_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">generate_FITS_FOCUS00</code><span class="sig-paren">(</span><em>wavelength</em>, <em>explog</em>, <em>datapath</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.generate_FITS_FOCUS00" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="vison.point.FOCUS00.generate_Fake_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">generate_Fake_FOCUS00</code><span class="sig-paren">(</span><em>wavelength</em>, <em>date=datetime.datetime(1980</em>, <em>2</em>, <em>21</em>, <em>7</em>, <em>0)</em>, <em>rootpath=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.generate_Fake_FOCUS00" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates Fake FOCUS00 data</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.FOCUS00.generate_HK_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">generate_HK_FOCUS00</code><span class="sig-paren">(</span><em>explog</em>, <em>datapath</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.generate_HK_FOCUS00" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="vison.point.FOCUS00.get_FOCUS00_structure">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">get_FOCUS00_structure</code><span class="sig-paren">(</span><em>wavelength</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.get_FOCUS00_structure" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="vison.point.FOCUS00.get_basic_spot_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">get_basic_spot_FOCUS00</code><span class="sig-paren">(</span><em>stamp</em>, <em>x0</em>, <em>y0</em>, <em>log=None</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.get_basic_spot_FOCUS00" title="Permalink to this definition">¶</a></dt>
-<dd><p># TODO:
-#   get basic statistics, measure and subtract background
-#   update centroid
-#   do aperture photometry
-#   pack-up results and return</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.FOCUS00.get_shape_spot_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">get_shape_spot_FOCUS00</code><span class="sig-paren">(</span><em>stamp</em>, <em>x0</em>, <em>y0</em>, <em>method='G'</em>, <em>log=None</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.get_shape_spot_FOCUS00" title="Permalink to this definition">¶</a></dt>
-<dd><p># TODO:
-#   get basic statistics, measure and subtract background
-#   update centroid
-#   do aperture photometry
-#   pack-up results and return</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.FOCUS00.meta_analysis_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">meta_analysis_FOCUS00</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.meta_analysis_FOCUS00" title="Permalink to this definition">¶</a></dt>
-<dd><p>Analyzes the relation between PSF shape and mirror position.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.FOCUS00.prep_data_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">prep_data_FOCUS00</code><span class="sig-paren">(</span><em>DataDict</em>, <em>Report</em>, <em>inputs</em>, <em>log=None</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.prep_data_FOCUS00" title="Permalink to this definition">¶</a></dt>
-<dd><p>Takes Raw Data and prepares it for further analysis. 
-Also checks that data quality is enough.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.FOCUS00.run">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">run</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test FOCUS00 master function.</p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-vison.point.PSF0X">
-<span id="psf0x"></span><h2>PSF0X<a class="headerlink" href="#module-vison.point.PSF0X" title="Permalink to this headline">¶</a></h2>
-<p>VIS Ground Calibration
-TEST: PSF0X</p>
-<dl class="docutils">
-<dt>PSF vs. Fluence, and Wavelength</dt>
-<dd>PSF01 - nominal temperature
-PSF02 - alternative temperatures</dd>
-</dl>
-<p>Tasks:</p>
-<blockquote>
-<div><ul class="simple">
-<li>Select exposures, get file names, get metadata (commandig, HK).</li>
-<li>Check exposure time pattern matches test design.</li>
-<li>Check quality of data (rough scaling of fluences with Exposure times).</li>
-<li>Subtract offset level.</li>
-<li>Divide by Flat-field.</li>
-<li><dl class="first docutils">
-<dt>Crop stamps of the sources on each CCD/Quadrant.</dt>
-<dd><ul class="first last">
-<li>save snapshot figures of sources.</li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>for each source:</dt>
-<dd><ul class="first last">
-<li>measure shape using weighted moments</li>
-<li>measure shape using Gaussian Fit</li>
-<li>Bayesian Forward Modelling the optomechanic+detector PSF</li>
-</ul>
-</dd>
-</dl>
-</li>
-<li>Produce synoptic figures.</li>
-<li>Save results.</li>
-</ul>
-</div></blockquote>
-<p>Created on Thu Dec 29 15:01:07 2016</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
-</tr>
-</tbody>
-</table>
-<dl class="function">
-<dt id="vison.point.PSF0X.basic_analysis_PSF0X">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">basic_analysis_PSF0X</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.basic_analysis_PSF0X" title="Permalink to this definition">¶</a></dt>
-<dd><p>Performs basic analysis on spots:
-- Gaussian Fits: peak, position, width_x, width_y</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.PSF0X.bayes_analysis_PSF0X">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">bayes_analysis_PSF0X</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.bayes_analysis_PSF0X" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Performs bayesian decomposition of the spot images:</dt>
-<dd><ul class="first last simple">
-<li>optomechanic PSF and detector PSF.</li>
-</ul>
-</dd>
-</dl>
-<p>Also measures R2, fwhm and ellipticity of &#8220;extracted&#8221; detector PSF.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.PSF0X.filterexposures_PSF0X">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">filterexposures_PSF0X</code><span class="sig-paren">(</span><em>inwavelength</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>structure={'Ncols': 6</em>, <em>'col6': {'Exptime': 18.0</em>, <em>'N': 3}</em>, <em>'col4': {'Exptime': 10.0</em>, <em>'N': 10}</em>, <em>'col5': {'Exptime': 15.0</em>, <em>'N': 4}</em>, <em>'col2': {'Exptime': 1.0</em>, <em>'N': 20}</em>, <em>'col3': {'Exptime': 5.0</em>, <em>'N': 18}</em>, <em>'col1': {'Exptime': 0</em>, <em>'N': 5}}</em>, <em>elvis='5.7.04'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.filterexposures_PSF0X" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads a list of Exposure Logs and selects exposures from test PSF0X.</p>
-<p>The filtering takes into account an expected structure for the 
-acquisition script.</p>
-<p>The datapath becomes another column in DataDict. This helps dealing
-with tests that run overnight and for which the input data is in several
-date-folders.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.PSF0X.meta_analysis_PSF0X">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">meta_analysis_PSF0X</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.meta_analysis_PSF0X" title="Permalink to this definition">¶</a></dt>
-<dd><p>Analyzes the relation between detector PSF and fluence.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.PSF0X.prep_data_PSF0X">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">prep_data_PSF0X</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.prep_data_PSF0X" title="Permalink to this definition">¶</a></dt>
-<dd><p>Takes Raw Data and prepares it for further analysis. Also checks that
-data quality is enough.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.PSF0X.run">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">run</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test PSF0X master function.</p>
-</dd></dl>
-
-</div>
 <div class="section" id="module-vison.point.basis">
-<span id="basis"></span><h2>basis<a class="headerlink" href="#module-vison.point.basis" title="Permalink to this headline">¶</a></h2>
+<span id="basis-py"></span><h2>basis.py<a class="headerlink" href="#module-vison.point.basis" title="Permalink to this headline">¶</a></h2>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -305,7 +71,7 @@ data quality is enough.</p>
 <p>Created on Thu Apr 20 18:56:40 2017</p>
 </div>
 <div class="section" id="module-vison.point.display">
-<span id="display"></span><h2>display<a class="headerlink" href="#module-vison.point.display" title="Permalink to this headline">¶</a></h2>
+<span id="display-py"></span><h2>display.py<a class="headerlink" href="#module-vison.point.display" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="display-library-for-point-source-analysis">
 <h3>Display Library for Point-Source Analysis<a class="headerlink" href="#display-library-for-point-source-analysis" title="Permalink to this headline">¶</a></h3>
 <table class="docutils field-list" frame="void" rules="none">
@@ -329,7 +95,7 @@ data quality is enough.</p>
 </div>
 </div>
 <div class="section" id="module-vison.point.gauss">
-<span id="gauss"></span><h2>gauss<a class="headerlink" href="#module-vison.point.gauss" title="Permalink to this headline">¶</a></h2>
+<span id="gauss-py"></span><h2>gauss.py<a class="headerlink" href="#module-vison.point.gauss" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="gaussian-model-of-point-like-sources">
 <h3>Gaussian Model of Point-like Sources<a class="headerlink" href="#gaussian-model-of-point-like-sources" title="Permalink to this headline">¶</a></h3>
 <p>Simple class to do Gaussian Fitting to a spot.</p>
@@ -375,7 +141,7 @@ a 2D Gaussian Model.</p>
 
 </div>
 <div class="section" id="module-vison.point.models">
-<span id="models"></span><h2>models<a class="headerlink" href="#module-vison.point.models" title="Permalink to this headline">¶</a></h2>
+<span id="models-py"></span><h2>models.py<a class="headerlink" href="#module-vison.point.models" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="models-point-like-sources">
 <h3>Models (Point-Like Sources)<a class="headerlink" href="#models-point-like-sources" title="Permalink to this headline">¶</a></h3>
 <p>Library module with models for processing of point-source imaging data.</p>
@@ -409,7 +175,7 @@ p[5] = floor</dd>
 </div>
 </div>
 <div class="section" id="module-vison.point.photom">
-<span id="photom"></span><h2>photom<a class="headerlink" href="#module-vison.point.photom" title="Permalink to this headline">¶</a></h2>
+<span id="photom-py"></span><h2>photom.py<a class="headerlink" href="#module-vison.point.photom" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="aperture-photometry-of-point-like-objects">
 <h3>Aperture Photometry of point-like objects<a class="headerlink" href="#aperture-photometry-of-point-like-objects" title="Permalink to this headline">¶</a></h3>
 <p>Simple class to do aperture photometry on a stamp of a point-source.</p>
@@ -473,7 +239,7 @@ p[5] = floor</dd>
 
 </div>
 <div class="section" id="module-vison.point.shape">
-<span id="shape"></span><h2>shape<a class="headerlink" href="#module-vison.point.shape" title="Permalink to this headline">¶</a></h2>
+<span id="shape-py"></span><h2>shape.py<a class="headerlink" href="#module-vison.point.shape" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="quadrupole-moments-shape-measurement">
 <h3>Quadrupole Moments Shape Measurement<a class="headerlink" href="#quadrupole-moments-shape-measurement" title="Permalink to this headline">¶</a></h3>
 <p>Simple class to measure quadrupole moments and ellipticity of an object.</p>
@@ -621,7 +387,7 @@ If self.shsettings[&#8216;weighted&#8217;] is False then no weighting scheme is 
 
 </div>
 <div class="section" id="module-vison.point.spot">
-<span id="spot"></span><h2>spot<a class="headerlink" href="#module-vison.point.spot" title="Permalink to this headline">¶</a></h2>
+<span id="spot-py"></span><h2>spot.py<a class="headerlink" href="#module-vison.point.spot" title="Permalink to this headline">¶</a></h2>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -747,30 +513,28 @@ Y,X order for use as array indices, etc.</dd>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Point-Source Analysis</a><ul>
-<li><a class="reference internal" href="#module-vison.point.FOCUS00">FOCUS00</a></li>
-<li><a class="reference internal" href="#module-vison.point.PSF0X">PSF0X</a></li>
-<li><a class="reference internal" href="#module-vison.point.basis">basis</a></li>
-<li><a class="reference internal" href="#module-vison.point.display">display</a><ul>
+<li><a class="reference internal" href="#module-vison.point.basis">basis.py</a></li>
+<li><a class="reference internal" href="#module-vison.point.display">display.py</a><ul>
 <li><a class="reference internal" href="#display-library-for-point-source-analysis">Display Library for Point-Source Analysis</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-vison.point.gauss">gauss</a><ul>
+<li><a class="reference internal" href="#module-vison.point.gauss">gauss.py</a><ul>
 <li><a class="reference internal" href="#gaussian-model-of-point-like-sources">Gaussian Model of Point-like Sources</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-vison.point.models">models</a><ul>
+<li><a class="reference internal" href="#module-vison.point.models">models.py</a><ul>
 <li><a class="reference internal" href="#models-point-like-sources">Models (Point-Like Sources)</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-vison.point.photom">photom</a><ul>
+<li><a class="reference internal" href="#module-vison.point.photom">photom.py</a><ul>
 <li><a class="reference internal" href="#aperture-photometry-of-point-like-objects">Aperture Photometry of point-like objects</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-vison.point.shape">shape</a><ul>
+<li><a class="reference internal" href="#module-vison.point.shape">shape.py</a><ul>
 <li><a class="reference internal" href="#quadrupole-moments-shape-measurement">Quadrupole Moments Shape Measurement</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-vison.point.spot">spot</a></li>
+<li><a class="reference internal" href="#module-vison.point.spot">spot.py</a></li>
 <li><a class="reference internal" href="#module-vison.point.lib">lib.py</a></li>
 </ul>
 </li>
