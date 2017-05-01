@@ -12,8 +12,8 @@ If you don't have *git* installed in your system, please follow this
 `link <https://www.atlassian.com/git/tutorials/install-git>`_ first.
 
 
-Here we will follow these `instructions <https://help.github.com/articles/cloning-a-repository/ for a linux system>`_.
-Follow the link for instructions in other operative systems.
+Here we will follow these `instructions <https://help.github.com/articles/cloning-a-repository/ for a linux system>`_ 
+to clone the repository to your own computer. Follow the link for instructions in other operative systems.
 
 Step-by-step:
 
@@ -31,8 +31,20 @@ Step-by-step:
     :align: center
 
 
-Installing Dependencies
------------------------
+Installing `conda` Environment and Dependencies
+-----------------------------------------------
+
+We recommend installing the code through a `conda` environment, with a specific list
+of packages, so you can be sure you have all the needed dependencies.
+
+First, if you don't have `conda` already installed in your system already, 
+follow the instructions in this `link <https://conda.io/docs/install/quick.html>`_.
 
 
-Installing conda
+Installing conda and creating `vison` environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Once you have succesfully installed conda, we will create an environment that will
+allow you to install the pipeline and meet all its dependencies.
+
+
