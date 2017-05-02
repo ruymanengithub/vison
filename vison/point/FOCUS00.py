@@ -44,6 +44,9 @@ from vison.datamodel import ccd
 from vison.point.spot import Spot
 from vison.point import display as pdspl
 import datetime
+
+import FOCUS00_lib as Flib
+
 # END IMPORT
 
 isthere = os.path.exists
@@ -250,8 +253,12 @@ def get_shape_spot_FOCUS00(stamp,x0,y0,method='G',log=None,debug=False):
         res['efwhm_x'] = res['esigma_x']*2.355
         res['fwhm_y'] = res['sigma_y']*2.355
         res['efwhm_y'] = res['esigma_y']*2.355
-        res['fluence'] = None  # ??
-        res['efluence'] = None # ??
+        sigma_maj = np.max([res['sigma_x'],res['sigma_y']])
+        sigma_min = np.min([res['sigma_x'],res['sigma_y']])#
+        q = sigma_min/sigma_maj
+        
+        res['fluence'] = 2.*np.pi*res['i0']*q*sigma_maj**2.
+        res['efluence'] = 2.*np.pi*res['ei0']*q*sigma_maj**2.
         
         
     if method == 'M':
@@ -269,7 +276,7 @@ def get_shape_spot_FOCUS00(stamp,x0,y0,method='G',log=None,debug=False):
                    e2=rawres['e2'],R2=rawres['R2'],
                    a=rawres['a'],b=rawres['b'])
 
-         
+    
     return res    
 
     
@@ -289,7 +296,17 @@ def prep_data_FOCUS00(DataDict,Report,inputs,log=None,debug=False):
         CCDkey = 'CCD%i' % CCDindex
         if CCDkey in FFs.keys():
             FFdata[CCDkey] = FFing.FlatField(fitsfile=FFs[CCDkey])
-
+    
+    ThisSectionTitle = 'Data Pre-Processing and QA'
+    try: 
+        lastsection = Report.Contents[-1]
+        if (lastsection.type == 'section') and \
+           (lastsection.Title == ThisSectionTitle):
+               _ = Report.Contents.pop(-1)
+        Report.add_Section(Title=ThisSectionTitle,level=0)
+    except:
+        pass
+    
     Report.add_Section(Title='Data Pre-Processing and QA',level=0)
     
     # Initialization of columns to be added to DataDict
@@ -517,9 +534,17 @@ def basic_analysis_FOCUS00(DataDict,Report,inputs,log=None,debug=False):
     # Inputs un-packing
     
     resultspath = inputs['resultspath']
-
     
-    Report.add_Section(Title='Data Analysis: Basic',level=0)
+    
+    ThisSectionTitle = 'Data Analysis: Basic'
+    try: 
+        lastsection = Report.Contents[-1]
+        if (lastsection.type == 'section') and \
+           (lastsection.Title == ThisSectionTitle):
+               _ = Report.Contents.pop(-1)
+        Report.add_Section(Title=ThisSectionTitle,level=0)
+    except:
+        pass
     
     # Initialization of columns to be added to DataDict
     
@@ -568,13 +593,13 @@ def basic_analysis_FOCUS00(DataDict,Report,inputs,log=None,debug=False):
     label = DataDict['CCD%i' % CCDindex_ref]['label'].copy()
     
     for iObs,ObsID in enumerate(ObsIDs):
-        
         ilabel = label[iObs]
         
         if ilabel == 'BGD': continue
         
-        
         for CCDindex in range(1,4):
+            
+            CCDkey = 'CCD%i' % CCDindex
             
             spots_bag_f = os.path.join(resultspath,DataDict[CCDkey]['spots_file'][iObs])
             spots_bag = files.cPickleRead(spots_bag_f)
@@ -589,40 +614,48 @@ def basic_analysis_FOCUS00(DataDict,Report,inputs,log=None,debug=False):
                     spot_shape_G = get_shape_spot_FOCUS00(stamp,x0,y0,method='G',
                                                           log=log,debug=debug)
                     
-                    for key in spot_shape_G:
+                    for key in G_keys:
                         DataDict[CCDkey]['G_%s_%s_%s' % (key,Q,spotID)][iObs] =\
                            spot_shape_G[key]
                     
                     spot_shape_M = get_shape_spot_FOCUS00(stamp,x0,y0,method='M',
                                                           log=log,debug=debug)
                     
-                    for key in spot_shape_M:
+                    for key in M_keys:
                         DataDict[CCDkey]['M_%s_%s_%s' % (key,Q,spotID)][iObs] =\
                            spot_shape_M[key]
     
     # QA
-
     return DataDict, Report
              
 
 
-def meta_analysis_FOCUS00(DataDict,RepDict,inputs,log=None):
+def meta_analysis_FOCUS00(DataDict,Report,inputs,log=None):
     """
     
     Analyzes the relation between PSF shape and mirror position.
     
     :param DataDict: Dictionary with input data
-    :param RepDict: Report Dictionary
+    :param Report: Report Objects
     :param inputs: Dictionary with inputs
     
     """
     
+    ThisSectionTitle = 'Data Analysis: Meta'
+    try: 
+        lastsection = Report.Contents[-1]
+        if (lastsection.type == 'section') and \
+           (lastsection.Title == ThisSectionTitle):
+               _ = Report.Contents.pop(-1)
+        Report.add_Section(Title=ThisSectionTitle,level=0)
+    except:
+        pass
+    
     Quadrants = pilib.Quads
     spotIDs = polib.Point_CooNom['names']
     
-    G_keys = ['x','ex','y','ey','i0','ei0','sigma_x','esigma_x',
-    'sigma_y','esigma_y','fwhm_x','efwhm_x','fwhm_y','efwhm_y',
-    'fluence','efluence']
+    G_keys = ['x','y','i0','fwhm_x','fwhm_y','fluence']
+    keys_to_fit = ['fwhm_x','fwhm_y']
     
     # Loop over CCDs, Obsids, quadrants and spots
     
@@ -630,12 +663,11 @@ def meta_analysis_FOCUS00(DataDict,RepDict,inputs,log=None):
         if 'CCD%i' % CCDindex in DataDict:
             CCDindex_ref = CCDindex
     
-    ObsIDs = DataDict['CCD%i' % CCDindex_ref]['ObsID'].copy()
+    #ObsIDs = DataDict['CCD%i' % CCDindex_ref]['ObsID'].copy()
     label = DataDict['CCD%i' % CCDindex_ref]['label'].copy()
-    
-    shape_seq = dict()
-    
     selix = label != 'BGD'
+    
+    shape_seq = dict()    
     
     for CCDindex in range(1,4):
         CCDkey = 'CCD%i' % CCDindex
@@ -648,17 +680,27 @@ def meta_analysis_FOCUS00(DataDict,RepDict,inputs,log=None):
                 
                 for key in G_keys:
                     spkey = 'G_%s_%s_%s' % (key,Q,spotID)
+                    espkey = 'G_e%s_%s_%s' % (key,Q,spotID)
                     shape_seq[CCDkey][spkey] = dict()
-                stop()
-                
-                
-                
-    for iObs,ObsID in enumerate(ObsIDs):
+                    val = DataDict[CCDkey][spkey][selix].copy()
+                    erval = DataDict[CCDkey][espkey][selix].copy()
+                    shape_seq[CCDkey][spkey]['val'] = val
+                    shape_seq[CCDkey][spkey]['eval'] = erval
+                    
+                    if key in keys_to_fit:
+                        
+                        pfit = Flib.fit_focus_single(shape_seq[CCDkey]['Mirr_pos'],
+                                                     val,yerror=erval,
+                                                     degree=2,doplot=False)
+                        shape_seq[CCDkey][spkey]['coeffs'] = pfit['coeffs']
+                        shape_seq[CCDkey][spkey]['ecoeffs'] = pfit['ecoeffs']
+                        shape_seq[CCDkey][spkey]['focus'] = pfit['focus']
         
-        ilabel = label[iObs]
-        
-        if ilabel == 'BGD': continue
-        
+            
+    Flib.fit_focus_all(shape_seq,doplot=True)
+    
+    Flib.inspect_focus_all(shape_seq,doplot=True)
+    
 
 
     return DataDict, Report
@@ -998,9 +1040,8 @@ def run(inputs,log=None):
     
     # Optional
     # Produce Summary Figures and Tables
-    
+
     if todo_flags['meta']:
-        
         DataDict, reportobj = meta_analysis_FOCUS00(DataDict,reportobj,inputs,log)
         pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)  
     else:
