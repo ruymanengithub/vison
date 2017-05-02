@@ -37,7 +37,7 @@ from pdb import  set_trace as stop
 from copy import copy
 import os
 
-
+from vison import __version__
 from vison.support import logger as lg
 from vison.point import PSF0X,FOCUS00
 from lib import get_time_tag
@@ -73,7 +73,7 @@ class Pipe(object):
                           'Pipeline ID: %s' % self.ID,
                           'BLOCK ID: %s' % self.BLOCKID,
                           'Chamber: %s\n' % self.CHAMBER,
-                          'vison version: %s\n' % vison.__version__,
+                          'vison version: %s\n' % __version__,
                           'Tasks: %s\n' % ( ('%s,'*len(self.tasks)) % tuple(self.tasks))[0:-1]])
         self.log = None
         

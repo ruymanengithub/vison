@@ -76,7 +76,10 @@ class Gaussmeter(SpotBase):
         rawres = fit_p(p_init, XX, YY, self.data)
         
         params = rawres.parameters[0:-1] # theta is fixed
-        eparams = np.diag(fit_p.fit_info['param_cov'])**0.5
+        try: eparams = np.diag(fit_p.fit_info['param_cov'])**0.5
+        except:
+            if self.log is not None: self.log.info('Gaussmeter.fit_Gauss did not converge')
+            eparams = np.zeros_like(params)+np.nan
         
         return params, eparams
         
