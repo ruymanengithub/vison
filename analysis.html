@@ -112,8 +112,318 @@ counter-clock wise angle with respect to the &#8216;y&#8217; axis.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="guyonnet15-py">
-<h2>Guyonnet15.py<a class="headerlink" href="#guyonnet15-py" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-vison.analysis.Guyonnet15">
+<span id="guyonnet15-py"></span><h2>Guyonnet15.py<a class="headerlink" href="#module-vison.analysis.Guyonnet15" title="Permalink to this headline">¶</a></h2>
+<p>Library with functions that implement the algorithms described in Guyonnet+15.
+&#8220;Evidence for self-interaction of charge distribution in CCDs&#8221;
+Guyonnet, Astier, Antilogus, Regnault and Doherty 2015</p>
+<p>Notes:</p>
+<ul class="simple">
+<li>I renamed &#8220;x&#8221; (pixel boundary index) to &#8220;b&#8221;, to avoid confusion with
+cartesian &#8220;x&#8221;.</li>
+<li>In paper, X belongsto [(0,1),(1,0),(0,-1),(-1,0)]. Here
+b is referred to as cardinal points &#8220;N&#8221;,&#8221;E&#8221;,&#8221;S&#8221;,&#8221;W&#8221;. 
+It is linked to matrix index ib, running between 0 and 3.</li>
+</ul>
+<p>Created on Thu Sep 22 11:38:24 2016</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="vison.analysis.Guyonnet15.correct_estatic">
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">correct_estatic</code><span class="sig-paren">(</span><em>img</em>, <em>aijb</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.correct_estatic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Corrects an image from pixel-boundaries deformation due to
+electrostatic forces. Subtracts delta-Q.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>img</strong> &#8211; image, 2D array</li>
+<li><strong>aijb</strong> &#8211; Aijb matrix, 3D array</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array, img - delta-Q</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.Guyonnet15.degrade_estatic">
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">degrade_estatic</code><span class="sig-paren">(</span><em>img</em>, <em>aijb</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.degrade_estatic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Degrades an image according to matrix of pixel-boundaries deformations.
+Follows on Eq. 11 of G15. Adds delta-Q.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>img</strong> &#8211; image, 2D array</li>
+<li><strong>aijb</strong> &#8211; Aijb matrix, 3D array</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array, img + delta-Q</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.Guyonnet15.fpred_aijb">
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">fpred_aijb</code><span class="sig-paren">(</span><em>p</em>, <em>i</em>, <em>j</em>, <em>ib</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.fpred_aijb" title="Permalink to this definition">¶</a></dt>
+<dd><p>&#8216;The smoothing model assumes that a_{ij}^x coefficients are the
+product of a function of distance from the source charge to the
+considered boundary (r_{ij}) and that it also trivially depends on
+the angle between the source-boundary vector and the normal to
+the boundary (theta_{i,j}^x)&#8217;</p>
+<p>Eq. 18</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> &#8211; parameters of the radial function (list of 2)</li>
+<li><strong>i</strong> &#8211; pixel coordinate i</li>
+<li><strong>j</strong> &#8211; pixel coordinate j</li>
+<li><strong>ib</strong> &#8211; boundary index [0, 1, 2, 3]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">f(rij)cos(theta_ij^x)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.Guyonnet15.frdist">
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">frdist</code><span class="sig-paren">(</span><em>i</em>, <em>j</em>, <em>ib</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.frdist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distance from the source charge to considered boundary &#8220;b&#8221;</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>i</strong> &#8211; pixel coordinate i</li>
+<li><strong>j</strong> &#8211; pixel coordinate j</li>
+<li><strong>ib</strong> &#8211; boundary index [0, 1, 2, 3]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">distance r(ijb)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.Guyonnet15.ftheta_bound">
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">ftheta_bound</code><span class="sig-paren">(</span><em>i</em>, <em>j</em>, <em>ib</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.ftheta_bound" title="Permalink to this definition">¶</a></dt>
+<dd><p>&#8220;[theta_i,j^X is] the angle between the source-boundary vector and the
+normal to the boundary&#8221;.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>i</strong> &#8211; pixel coordinate i</li>
+<li><strong>j</strong> &#8211; pixel coordinate j</li>
+<li><strong>ib</strong> &#8211; boundary index [0, 1, 2, 3]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">theta_i,j^x</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.Guyonnet15.fun_p">
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">fun_p</code><span class="sig-paren">(</span><em>x</em>, <em>*p</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.fun_p" title="Permalink to this definition">¶</a></dt>
+<dd><p>auxiliary function to &#8216;solve_for_psmooth&#8217;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.Guyonnet15.generate_GaussPSF">
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">generate_GaussPSF</code><span class="sig-paren">(</span><em>N</em>, <em>sigma</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.generate_GaussPSF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a circular symmetric Gaussian centered on the centre of
+a NxN matrix/image.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.Guyonnet15.get_Rdisp">
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">get_Rdisp</code><span class="sig-paren">(</span><em>img</em>, <em>aijb</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.get_Rdisp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves map of relative displacements of pixel boundaries, 
+for input img and Aijb matrix.</p>
+<blockquote>
+<div>See G15 - Eq. 6</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>img</strong> &#8211; image, 2D array</li>
+<li><strong>aijb</strong> &#8211; aijb matrix, 3D array NxNx4</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array, relative displacements all boundaries of pixels in img</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.Guyonnet15.get_deltaQ">
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">get_deltaQ</code><span class="sig-paren">(</span><em>img</em>, <em>aijb</em>, <em>writeFits=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.get_deltaQ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves deltaQ map for input image and aijb matrix.</p>
+<p>See G15 - Eq. 11</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>img</strong> &#8211; image, 2D array</li>
+<li><strong>aijb</strong> &#8211; Aijb matrix, 3D array</li>
+<li><strong>writeFits</strong> &#8211; save FITS file with resulting dQ map (optional)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array, matrix with delta-Q for each pixel in img, given aijb</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.Guyonnet15.get_kernel">
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">get_kernel</code><span class="sig-paren">(</span><em>aijb</em>, <em>writeFits=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.get_kernel" title="Permalink to this definition">¶</a></dt>
+<dd><p>&#8216;kernel&#8217; is an array (2N-1)x(2N-1)x4. Each plane kernel[:,:,b] is
+a 2D array with the displacement coefficients aijb, in all
+directions around a pixel at (0,0).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>aijb</strong> &#8211; array, matrix with displacements in 1st quadrant</li>
+<li><strong>writeFits</strong> &#8211; save kernel to 4 FITS files</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">kernel matrix, (2N-1)x(2N-1)x4</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.Guyonnet15.plot_map">
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">plot_map</code><span class="sig-paren">(</span><em>z</em>, <em>ii</em>, <em>jj</em>, <em>title=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.plot_map" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.Guyonnet15.plot_maps_ftheta">
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">plot_maps_ftheta</code><span class="sig-paren">(</span><em>f</em>, <em>ii</em>, <em>jj</em>, <em>suptitle=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.plot_maps_ftheta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.Guyonnet15.show_disps_CCD273">
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">show_disps_CCD273</code><span class="sig-paren">(</span><em>aijb</em>, <em>stretch=5.0</em>, <em>peak=28571.428571428572</em>, <em>N=25</em>, <em>sigma=1.6</em>, <em>title=''</em>, <em>figname=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.show_disps_CCD273" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.Guyonnet15.solve_for_A_linalg">
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">solve_for_A_linalg</code><span class="sig-paren">(</span><em>covij</em>, <em>var=1.0</em>, <em>mu=1.0</em>, <em>doplot=False</em>, <em>psmooth=None</em>, <em>returnAll=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.solve_for_A_linalg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to retrieve the A matrix of pixel boundaries
+displacements, given a matrix of pixel covariances, variance, and mu.</p>
+<p>if var==1 and mu==1, it is understood that covij is
+the correlation matrix.</p>
+<p>See section 6.1 of G15.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>covij</strong> &#8211; array, squared matrix with pixel covariances.</li>
+<li><strong>var</strong> &#8211; float, variance of the flat-field.</li>
+<li><strong>mu</strong> &#8211; float, mean value of the flat-field.</li>
+<li><strong>doplot</strong> &#8211; if True, plot the fit of the fpred(ijb) function</li>
+<li><strong>psmooth</strong> &#8211; coefficients of the fpred(aijb) function (Eq. 18)</li>
+<li><strong>returnAll</strong> &#8211; bool, controls return values</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">if returnAll == True, return (aijb, psmooth), otherwise return aijb only</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.Guyonnet15.solve_for_psmooth">
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">solve_for_psmooth</code><span class="sig-paren">(</span><em>covij</em>, <em>var</em>, <em>mu</em>, <em>doplot=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.solve_for_psmooth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solving (p0,p1) parameters in Eq. 18 using covariance matrix and 
+measured covariance  matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>covij</strong> &#8211; array, covariance matrix</li>
+<li><strong>var</strong> &#8211; float, variance</li>
+<li><strong>mu</strong> &#8211; float, expected value of pixel values (&#8220;mean&#8221; of flat-field)</li>
+<li><strong>doplot</strong> &#8211; bool, if True, plot data and best fit model</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">best-fit parameters, and errors: 2 tuples of 2 elements each</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.Guyonnet15.test0">
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">test0</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.test0" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.Guyonnet15.test_getkernel">
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">test_getkernel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.test_getkernel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.Guyonnet15.test_selfconsist">
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">test_selfconsist</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.test_selfconsist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.analysis.Guyonnet15.test_solve">
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">test_solve</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.test_solve" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 </div>
 
@@ -130,7 +440,7 @@ counter-clock wise angle with respect to the &#8216;y&#8217; axis.</p>
   <ul>
 <li><a class="reference internal" href="#">Analysis (Shared)</a><ul>
 <li><a class="reference internal" href="#module-vison.analysis.ellipse">ellipse.py</a></li>
-<li><a class="reference internal" href="#guyonnet15-py">Guyonnet15.py</a></li>
+<li><a class="reference internal" href="#module-vison.analysis.Guyonnet15">Guyonnet15.py</a></li>
 </ul>
 </li>
 </ul>
