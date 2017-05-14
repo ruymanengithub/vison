@@ -8,12 +8,12 @@ Guyonnet, Astier, Antilogus, Regnault and Doherty 2015
 
 Notes:
     
-    - I renamed "x" (pixel boundary index) to "b", to avoid confusion with
-    cartesian "x".
-    - In paper, X belongsto [(0,1),(1,0),(0,-1),(-1,0)]. Here
-       b is referred to as cardinal points "N","E","S","W". 
-       It is linked to matrix index ib, running between 0 and 3.
-       
+- I renamed "x" (pixel boundary index) to "b", to avoid confusion with
+  cartesian "x".
+- In paper, X belongsto [(0,1),(1,0),(0,-1),(-1,0)]. Here
+  b is referred to as cardinal points "N","E","S","W". 
+  It is linked to matrix index ib, running between 0 and 3.
+     
 Created on Thu Sep 22 11:38:24 2016
 
 :author: Ruyman Azzollini
@@ -55,9 +55,9 @@ def frdist(i,j,ib):
 
 def ftheta_bound(i,j,ib):
     """
-     '[theta_i,j^X is] the angle between the source-boundary vector and the
-    normal to the boundary'.
-            
+    "[theta_i,j^X is] the angle between the source-boundary vector and the
+    normal to the boundary".
+           
     :param i: pixel coordinate i
     :param j: pixel coordinate j
     :param ib: boundary index [0, 1, 2, 3]
