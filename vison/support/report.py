@@ -282,7 +282,6 @@ class Report(object):
         
         execline1 = 'latex %s.tex' % fileroot
         os.system(execline1)
-        stop()
         execline2 = 'dvipdf %s.dvi %s.pdf' % tuple([fileroot]*2)
         os.system(execline2)
         os.system(execline2) # twice to get all references
