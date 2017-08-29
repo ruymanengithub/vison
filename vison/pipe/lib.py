@@ -68,8 +68,8 @@ def check_test_structure(explog,selbool,structure,CCDs=[1,2,3]):
     """Checks whether a selected number of exposures is consistent with the 
     expected acquisition test structure.
     
-    TO-DO: account for 3 entries per exposure (3 CCDs). Otherwise no test
-           will be compliant.
+    TODO: account for 3 entries per exposure (3 CCDs). Otherwise no test
+           will be compliant. [DONE?]
     
     """
     
@@ -93,7 +93,6 @@ def check_test_structure(explog,selbool,structure,CCDs=[1,2,3]):
             ix1 = ix0+N
             
             ixsubsel = np.where(cselbool)[0][ix0:ix1]
-            
             
             logkeys = expectation.keys()
             logkeys.remove('N')

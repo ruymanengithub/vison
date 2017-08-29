@@ -105,6 +105,8 @@ class Script(object):
             
             self.cargo.append(vallist)
         
+        if self.elvis > '6.0.0':
+            self.cargo.append(['End'])
         
     
     def write(self,scriptname):

@@ -61,8 +61,8 @@ stampw = 25
 
 def get_FOCUS00_structure(wavelength):
     """ """
-    
-    FilterPos = [key for key in pilib.FW if pilib.FW[key] == '%inm' % wavelength][0]
+     
+    FilterPos = pilib.get_FW_ID(wavelength)
     mirror_nom = polib.mirror_nom[FilterPos]
     
     FOCUS00_structure = dict(col1=dict(N=5,Exptime=0,Mirr_pos=mirror_nom-0.2),
@@ -76,6 +76,62 @@ def get_FOCUS00_structure(wavelength):
     return FOCUS00_structure
 
 FOCUS00_structure_wnom = get_FOCUS00_structure(800)
+
+FOCUS00_commvalues = dict(program='CALCAMP',test='FOCUS_%i',
+  IDL=13000,IDH=18000,IG1=5000,IG2=5000,
+  OD=26000,RD=16000,
+  iphi1='TRUE',iphi2='TRUE',iphi3='TRUE',iphi4='FALSE',
+  readmode_1='Normal',readmode_2='Normal',
+  vertical_clk = 'Tri-level',serial_clk='Even mode',
+  flushes=7,shutter='Thorlabs SC10',
+  electro_shutter='FALSE',vstart=1,vend=2066,
+  sinvflush='FALSE',chinj='FALSE',chinj_rows_on=20,
+  chinj_rows_off=20,chinj_repeat=1,id_width=100,
+  id_delay=100,tpump='FALSE',ser_shuffles=1,
+  ver_shuffles=1,dwell_v=0,dwell_h=0,Motor='FALSE',
+  matrix_size=2,step_size=100,add_h_overscan=0,
+  add_v_overscan=0,toi_flush=143.,toi_tpump=1000.,
+  toi_rdout=1000.,toi_chinj=1000.,
+  operator='who',sn_ccd1='x',sn_ccd2='y',sn_ccd3='z',
+  sn_roe='rr',sn_rpsu='pp')
+  
+
+
+def build_FOCUS00_scriptdict(wavelength,diffvalues=dict()):
+    """ """
+    
+    Ncols = 6
+    
+    FilterPos = pilib.get_FW_ID(wavelength)
+    mirror_nom = polib.mirror_nom[FilterPos]
+    
+    
+    FOCUS00_sdict = dict(col1=dict(N=5,Exptime=0,Mirr_pos=mirror_nom-5,
+                                   comments='BGD'),
+                    Ncols=Ncols)
+    
+    
+    for i,j in enumerate(range(-5,6,1)):
+        FOCUS00_sdict['col%i' % (i+1,)] = dict(N=2,Exptime=10.,
+                      Mirr_pos=mirror_nom+float(j),comments='F%.1f' % float(j))
+        
+    Ndiff = len(diffvalues.keys())
+
+    for ic in range(1,Ncols+1):
+        ickey = 'col%i' % ic
+        
+        for comkey in FOCUS00_commvalues.keys():    
+            FOCUS00_sdict[ickey][comkey] = FOCUS00_commvalues[comkey]
+        
+        FOCUS00_sdict[ickey]['test'] = FOCUS00_sdict[ickey]['test'] % wavelength
+        
+        
+        if Ndiff>0:
+            FOCUS00_sdict[ickey].update(diffvalues)
+    
+    return FOCUS00_sdict
+
+    
 
 def filterexposures_FOCUS00(inwavelength,explogf,datapath,OBSID_lims,structure=FOCUS00_structure_wnom,elvis='5.7.04'):
     """Loads a list of Exposure Logs and selects exposures from test FOCUS00.
@@ -711,7 +767,7 @@ def meta_analysis_FOCUS00(DataDict,Report,inputs,log=None):
 def generate_Explog_FOCUS00(wavelength,struct,elvis='6.0.0',date=dtobj_default):
     """ """
     
-    defaults = {'ObsID':0,'File_name':'','CCD':0,
+    Edefaults = {'ObsID':0,'File_name':'','CCD':0,
     'ROE':'R01','DATE':'',
     'PROGRAM':'CALFM','TEST':'FOCUS00',
     'CCD1_SN':'C01','CCD2_SN':'C02','CCD3_SN':'C03',
@@ -736,7 +792,7 @@ def generate_Explog_FOCUS00(wavelength,struct,elvis='6.0.0',date=dtobj_default):
     'OD_B1_V':26,'OD_B2_V':26,'OD_B3_V':26,'RD_T_V':17,'RD_B_V':17}
 
     
-    explog = generator.generate_Explog(struct,defaults,elvis=elvis,date=date)
+    explog = generator.generate_Explog(struct,Edefaults,elvis=elvis,date=date)
     return explog
 
 
@@ -744,7 +800,7 @@ def generate_Explog_FOCUS00(wavelength,struct,elvis='6.0.0',date=dtobj_default):
 def generate_HK_FOCUS00(explog,datapath,elvis='6.0.0'):
     """ """
     
-    defaults = {'TimeStamp':'','HK_OD_Top_CCD1':27.,'HK_OD_Bottom_CCD1':27.,
+    HKdefaults = {'TimeStamp':'','HK_OD_Top_CCD1':27.,'HK_OD_Bottom_CCD1':27.,
 'HK_OD_Top_CCD2':27.,'HK_OD_Bottom_CCD2':27.,'HK_OD_Top_CCD3':27.,'HK_OD_Bottom_CCD3':27.,
 'HK_IG1_Top_CCD1':0.,'HK_IG1_Bottom_CCD1':0.,'HK_IG1_Top_CCD2':0.,'HK_IG1_Bottom_CCD2':0.,
 'HK_IG1_Top_CCD3':0.,'HK_IG1_Bottom_CCD3':0.,'HK_temp_top_CCD1':153.,'HK_temp_bottom_CCD1':153.,
@@ -759,7 +815,7 @@ def generate_HK_FOCUS00(explog,datapath,elvis='6.0.0'):
 'HK_Temp2_RPSU':30.,'HK_Video_TOP':30.,'HK_Video_BOT':30.,'HK_FPGA_TOP':30.,'HK_FPGA_BOT':30.,
 'HK_ID1':0.,'HK_ID2':0.,'HK_Viclk_ROE':0.}
     
-    generator.generate_HK(explog,defaults,datapath=dapath,elvis=elvis)
+    generator.generate_HK(explog,HKdefaults,datapath=datapath,elvis=elvis)
     
 
 def generate_FITS_FOCUS00(wavelength,explog,datapath,elvis='6.0.0'):

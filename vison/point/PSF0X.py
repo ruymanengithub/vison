@@ -35,7 +35,7 @@ Created on Thu Dec 29 15:01:07 2016
 import numpy as np
 from pdb import set_trace as stop
 import os
-from vison.pipe import lib as plib
+from vison.pipe import lib as pilib
 from vison.pipe import FlatFielding as FFing
 from vison.support.report import Report
 from vison.support import files
@@ -55,6 +55,8 @@ PSF0X_structure = dict(col1=dict(N=5,Exptime=0),
                    Ncols=6)
 
 
+
+
 def filterexposures_PSF0X(inwavelength,explogf,datapath,OBSID_lims,structure=PSF0X_structure,elvis='5.7.04'):
     """Loads a list of Exposure Logs and selects exposures from test PSF0X.
     
@@ -69,7 +71,7 @@ def filterexposures_PSF0X(inwavelength,explogf,datapath,OBSID_lims,structure=PSF
     """
     
     # load exposure log(s)
-    explog = plib.loadexplogs(explogf,elvis=elvis,addpedigree=True)
+    explog = pilib.loadexplogs(explogf,elvis=elvis,addpedigree=True)
     
     # add datapath(s)
     
@@ -91,8 +93,8 @@ def filterexposures_PSF0X(inwavelength,explogf,datapath,OBSID_lims,structure=PSF
     DataDict = {}
         
     
-    for key in plib.FW.keys():
-        if plib.FW[key] == '%inm' % inwavelength: Filter = key
+    for key in pilib.FW.keys():
+        if pilib.FW[key] == '%inm' % inwavelength: Filter = key
     
     Filter = '%i' % inwavelength # TESTS
     
@@ -104,7 +106,7 @@ def filterexposures_PSF0X(inwavelength,explogf,datapath,OBSID_lims,structure=PSF
     
     # Assess structure
     
-    isconsistent = plib.check_test_structure(explog,selbool,structure)
+    isconsistent = pilib.check_test_structure(explog,selbool,structure)
     
     
     # Build DataDict
@@ -256,15 +258,6 @@ def meta_analysis_PSF0X(DataDict,RepDict,inputs,log=None):
     """
     
 
-def save_progress(DataDict,reportobj,DataDictFile,reportobjFile):        
-    files.cPickleDumpDictionary(DataDict,DataDictFile)
-    files.cPickleDump(reportobj,reportobjFile)
-
-
-def recover_progress(DataDictFile,reportobjFile):
-    DataDict = files.cPickleRead(DataDictFile)
-    reportobj = files.cPickleRead(reportobjFile)
-    return DataDict,reportobj
 
 def run(inputs,log=None):
     """Test PSF0X master function."""
@@ -332,12 +325,12 @@ def run(inputs,log=None):
     
    
         # Add HK information
-        DataDict = plib.addHK(DataDict,HKKeys_PSF0X,elvis=elvis)
-        save_progress(DataDict,reportobj,DataDictFile,reportobjFile)
+        DataDict = pilib.addHK(DataDict,HKKeys_PSF0X,elvis=elvis)
+        pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)
         
     else:
         
-        DataDict, reportobj = recover_progress(DataDictFile,reportobjFile)
+        DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
         
     # DATA-WORK
     
@@ -350,9 +343,9 @@ def run(inputs,log=None):
     if todo_flags['prep']:
     
         DataDict, reportobj = prep_data_PSF0X(DataDict,reportobj,inputs,log)
-        save_progress(DataDict,reportobj,DataDictFile,reportobjFile)        
+        pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)        
     else:
-        DataDict, reportobj = recover_progress(DataDictFile,reportobjFile)
+        DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
     
     # Optional
     # Perform Basic Analysis : Gaussian fits and Moments
@@ -360,9 +353,9 @@ def run(inputs,log=None):
     if todo_flags['basic']:
         
         DataDict, reportobj = basic_analysis_PSF0X(DataDict,reportobj,inputs,log)
-        save_progress(DataDict,reportobj,DataDictFile,reportobjFile)        
+        pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)        
     else:
-        DataDict, reportobj = recover_progress(DataDictFile,reportobjFile)
+        DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
     
     # Optional
     # Perform Bayesian Analysis
@@ -370,9 +363,9 @@ def run(inputs,log=None):
     
     if todo_flags['bayes']:
         DataDict, reportobj = bayes_analysis_PSF0X(DataDict,reportobj,inputs,log)
-        save_progress(DataDict,reportobj,DataDictFile,reportobjFile)  
+        pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)  
     else:
-        DataDict, reportobj = recover_progress(DataDictFile,reportobjFile)
+        DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
         
     
     # Optional
@@ -380,9 +373,9 @@ def run(inputs,log=None):
     
     if todo_flags['meta']:
         DataDict, reportobj = meta_analysis_PSF0X(DataDict,reportobj,inputs,log)
-        save_progress(DataDict,reportobj,DataDictFile,reportobjFile)  
+        pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)  
     else:
-        DataDict, reportobj = recover_progress(DataDictFile,reportobjFile)
+        DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
     
     # Write automatic Report of Results
     
@@ -393,7 +386,7 @@ def run(inputs,log=None):
         for outfile in outfiles:
             os.system('mv %s %s/' % (outfile,resultspath))
     
-    save_progress(DataDict,reportobj,DataDictFile,reportobjFile)
+    pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)
     
     if log is not None:
         log.info('Finished PSF0X')
