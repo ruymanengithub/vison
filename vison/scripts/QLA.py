@@ -32,7 +32,7 @@ isthere = os.path.exists
 
 if __name__ == '__main__':
     """ 
-    # TO-DO:
+    # TODO:
     #  find FITS files in a folder
     #  load FITS file into a CCD object
     #  obtain metrics on the data:

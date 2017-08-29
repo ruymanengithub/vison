@@ -28,7 +28,7 @@ isthere = os.path.exists
 
 if __name__ == '__main__':
     """
-    # TO-DO:
+    # TODO:
     #  find HK files in a folder
     #  parse HK files
     #  plot HK parameters vs. time
