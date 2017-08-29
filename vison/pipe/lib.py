@@ -24,7 +24,7 @@ import numpy as np
 import datetime
 # END IMPORT
 
-
+dtobj_default = datetime.datetime(1980,2,21,7,0,0) # early riser
 
 Quads =['E','F','G','H']
 RON = 4.5 # e-

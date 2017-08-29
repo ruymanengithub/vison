@@ -41,6 +41,7 @@ from vison.datamodel import ccd
 from vison.datamodel import EXPLOGtools as ELtools
 from vison.datamodel import HKtools
 from vison.datamodel import ccd
+from vison.datamodel import generator
 from vison.point.spot import Spot
 from vison.point import display as pdspl
 import datetime
@@ -710,10 +711,6 @@ def meta_analysis_FOCUS00(DataDict,Report,inputs,log=None):
 def generate_Explog_FOCUS00(wavelength,struct,elvis='6.0.0',date=dtobj_default):
     """ """
     
-    Nscriptcols = struct['Ncols']
-    
-    columns = ELtools.columnlist[elvis]
-    
     defaults = {'ObsID':0,'File_name':'','CCD':0,
     'ROE':'R01','DATE':'',
     'PROGRAM':'CALFM','TEST':'FOCUS00',
@@ -737,53 +734,15 @@ def generate_Explog_FOCUS00(wavelength,struct,elvis='6.0.0',date=dtobj_default):
     'IG1_T2_V':6,'IG1_T3_V':4,'IG1_B1_V':4,'IG1_B2_V':6,'IG1_B3_V':4,
     'IG2_T_V':6,'IG2_B_V':6,'OD_T1_V':26,'OD_T2_V':26,'OD_T3_V':26,
     'OD_B1_V':26,'OD_B2_V':26,'OD_B3_V':26,'RD_T_V':17,'RD_B_V':17}
+
     
-    explog = ELtools.iniExplog(elvis)
-    
-    ixObsID = 1000
-    
-    for iscrcol in range(1,Nscriptcols+1):
-        scriptcol = struct['col%i' % iscrcol]
-        N = scriptcol['N']
-        inputkeys = [key for key in scriptcol.keys() if key != 'N']
-        
-        rowdict = {}
-        
-        for subixrow in range(N):
-        
-            for ecol in columns:
-                rowdict[ecol] = defaults[ecol]
-        
-            for key in inputkeys:
-                rowdict[key] = scriptcol[key]
-            
-            for ixCCD in range(1,4):
-                
-                dmy = date.strftime('%d%m%y')
-                hms = date.strftime('%H%M%S')
-            
-                rowdict['ObsID'] = ixObsID
-                rowdict['File_name'] = 'EUC_%i_%sD_%sT_ROE1_CCD%i' % (ixObsID,dmy,hms,ixCCD)
-                rowdict['DATE'] = '%sD%sT' % (dmy,hms)
-                rowdict['CCD'] = 'CCD%i' % ixCCD
-                
-                explog.add_row(vals=[rowdict[key] for key in columns])
-                
-                date = date + datetime.timedelta(seconds=90)
-            
-            ixObsID += 1
-                    
-            
+    explog = generator.generate_Explog(struct,defaults,elvis=elvis,date=date)
     return explog
 
 
 
 def generate_HK_FOCUS00(explog,datapath,elvis='6.0.0'):
     """ """
-    
-    HKkeys = HKtools.allHK_keys[elvis]
-    
-    Nobs = len(explog['ObsID'])
     
     defaults = {'TimeStamp':'','HK_OD_Top_CCD1':27.,'HK_OD_Bottom_CCD1':27.,
 'HK_OD_Top_CCD2':27.,'HK_OD_Bottom_CCD2':27.,'HK_OD_Top_CCD3':27.,'HK_OD_Bottom_CCD3':27.,
@@ -800,48 +759,8 @@ def generate_HK_FOCUS00(explog,datapath,elvis='6.0.0'):
 'HK_Temp2_RPSU':30.,'HK_Video_TOP':30.,'HK_Video_BOT':30.,'HK_FPGA_TOP':30.,'HK_FPGA_BOT':30.,
 'HK_ID1':0.,'HK_ID2':0.,'HK_Viclk_ROE':0.}
     
-    doneObsids = []
+    generator.generate_HK(explog,defaults,datapath=dapath,elvis=elvis)
     
-    for ixobs,obsid in enumerate(explog['ObsID']):
-        
-        if obsid in doneObsids: continue # to avoid duplications 
-                                     # (each CCD has an entry in explog, so 3 entries per OBSID)
-        
-        idate = explog['DATE'][ixobs]
-        
-        idtobj = pilib.get_dtobj(idate)
-        
-        if ixobs < Nobs-1:
-            ip1dtobj = pilib.get_dtobj(explog['DATE'][ixobs+1])
-            dt = (ip1dtobj-idtobj).seconds
-        else:
-            dt = 90
-        
-        HKfilef = 'HK_%s_%s_ROE1.txt' % (obsid,idate)
-        
-        HKfilef = os.path.join(datapath,HKfilef)
-        
-        HKfile = HKtools.iniHK_QFM(elvis)
-        
-        for sec in range(dt):
-            iidtobj = idtobj + datetime.timedelta(seconds=sec)
-            
-            iTimeStamp = iidtobj.strftime('%H:%M:%S')
-            
-            rowdict = {}
-            
-            for HKkey in HKkeys:
-                rowdict[HKkey] = defaults[HKkey]
-                
-            rowdict['TimeStamp'] = iTimeStamp
-            
-            HKfile.add_row(vals=[rowdict[key] for key in HKkeys])
-        
-        
-        HKfile.write(HKfilef,format='ascii',overwrite=True,delimiter='\t')
-        
-        doneObsids.append(obsid)
-        
 
 def generate_FITS_FOCUS00(wavelength,explog,datapath,elvis='6.0.0'):
     """ """

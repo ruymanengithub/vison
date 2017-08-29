@@ -67,6 +67,7 @@ class Script(object):
     def __init__(self,defaults={},structure={},elvis='6.0.0'):
         """Initialization."""
         
+        self.scriptname = ''
         self.defaults = defaults
         self.structure = structure
         self.elvis = elvis
@@ -137,6 +138,8 @@ class Script(object):
         writer = pd.ExcelWriter(scriptname)
         df.to_excel(writer,'Sheet1',index=False)
         writer.save()
+        
+        self.scriptname = scriptname
 
         return None
     
@@ -158,7 +161,6 @@ class Script(object):
 
         assert np.all(cargo[0] == aliaslist)
         
-        
         for ixc in df.columns:
             if ixc == 'Frames':
                 continue
@@ -176,6 +178,9 @@ class Script(object):
                 cargo.append(vals)
     
         self.cargo = cargo
+        
+        self.scriptname = scriptname
+        
         
     
     
