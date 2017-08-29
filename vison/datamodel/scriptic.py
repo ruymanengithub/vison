@@ -20,45 +20,50 @@ import numpy as np
 
 
 script_dictionary = {'6.0.0':{'keys':['frames',
-'program','test','IDL','IDH','IG1_1_T','IG1_2_T','IG1_3_T',
-'IG1_1_B','IG1_2_B','IG1_3_B','IG2_T','IG2_B','OD_1_T',
-'OD_1_B','OD_2_T','OD_2_B','OD_3_T','OD_3_B',
-'RD_T','RD_B','IPHI1','IPHI2','IPHI3','IPHI4','readmode_1',
-'ser_tpump_rdout','ser_tpump_mode','flushes','exptime',
-'shutter','electroshutter','vstart','vend','sinvflush','sinvflushperiod',
+'program','test','IDL','IDH','IG1','IG2','OD_1',
+'RD_1','OD_2','RD_2','OD_3','RD_3',
+'iphi1','iphi2','iphi3','iphi4',
+'readmode_1','readmode_2','vertical_clk','serial_clk',
+'flushes','exptime','shutter','electroshutter','vstart','vend',
+'sinvflush',
 'chinj','chinj_rows_on','chinj_rows_off','chinj_repeat',
-'id_width','id_delay','ser_rdout_delay','tpump',
-'ser_shuffles','ver_shuffles','dwell_v','dwell_h','tpump_mode',
-'move_motor','matrix_size','step_size','add_h_overscan','toi_flush',
-'toi_tpump','toi_rdout','toi_chinj','wavelength','pos_cal_mirror',
-'operator','sn_ccd1','sn_ccd2','sn_ccd3','sn_roe',
+'id_width','id_delay',
+'tpump','ser_shuffles','ver_shuffles',
+'dwell_v','dwell_h',
+'motor','matrix_size','step_size',
+'add_h_overscan','add_v_overscan',
+'toi_flush','toi_tpump','toi_rdout','toi_chinj',
+'wavelength','pos_cal_mirror',
+'operator',
+'sn_ccd1','sn_ccd2','sn_ccd3','sn_roe','sn_rpsu',
 'comments'],
-'alias':{'frames':'Frames','program':'Program','test':'Test','IDL':'IDL(mV)',
-'IDH':'IDH(mV)','IG1_1_T':'IG1_1_T(mV)','IG1_2_T':'IG1_2_T(mV)',
-'IG1_3_T':'IG1_3_T(mV)','IG1_1_B':'IG1_1_B(mV)',
-'IG1_2_B':'IG1_2_B(mV)','IG1_3_B':'IG1_3_B(mV)',
-'IG2_T':'IG2_T(mV)','IG2_B':'IG2_B(mV)',
-'OD_1_T':'OD CCD1 T(mV)','OD_1_B':'OD CCD1 B(mV)','OD_2_T':'OD CCD2 T(mV)',
-'OD_2_B':'OD CCD2 B(mV)','OD_3_T':'OD CCD3 T(mV)','OD_3_B':'OD CCD3 B(mV)',
-'RD_T':'RD T(mV)','RD_B':'RD B(mV)',
-'IPHI1':'Iphi1','IPHI2':'Iphi2','IPHI3':'Iphi3','IPHI4':'Iphi4',
-'readmode_1':'Readout mode R0E1',
-'ser_tpump_rdout':'Serial T Pump Rdout','ser_tpump_mode':'Serial T Pump mode',
-'flushes':'Flushes','exptime':'Exposure time(ms)',
-'shutter':'Shutter','electroshutter':'Electronic shutter',
-'vstart':'Vstart','vend':'Vend','sinvflush':'S. Inv. Flush','sinvflushperiod':'S. Inv. Flush period(ms)',
-'chinj':'charge injection','chinj_rows_on':'chrg_inj rows on','chinj_rows_off':'chrg_inj rows off',
-'chinj_repeat':'chrg_inj repeat','id_width':'Id pulse width(us)','id_delay':'Id pulse delay(us)',
-'ser_rdout_delay':'Serial Rdout delay',
-'tpump':'Trap pumping','ser_shuffles':'Serial shuffles','ver_shuffles':'Vertical shuffles',
-'dwell_v':'Dwell_V','dwell_h':'Dwell_H',
-'tpump_mode':'T. Pump mode','move_motor':'Move motor',
-'matrix_size':'Matrix size','step_size':'Step size',
-'add_h_overscan':'Additional H.Overscan',
-'toi_flush':'TOI Flush(us)','toi_tpump':'TOI T. Pump(us)','toi_rdout':'TOI Rdout(us)','toi_chinj':'TOI C.Inj(us)',
-'wavelength':'Wavelenght','pos_cal_mirror':'Pos cal mirror(mm)','operator':'Operator name',
-'sn_ccd1':'CCD1 type/sn','sn_ccd2':'CCD2 type/sn','sn_ccd3':'CCD3 type/sn','sn_roe':'ROE type/sn','sn_rpsu':'RPSU type/sn',
-'comments':'Comments'}}}
+'alias':dict(frames='Frames',
+program='Program',test='Test',IDL='IDL(mV)',IDH='IDH(mV)',
+ IG1='IG1(mV)',IG2='IG2(mV)',
+OD_1='OD CCD1(mV)',RD_1='RD CCD1(mV)',OD_2='OD CCD2(mV)',
+             RD_2='RD CCD2(mV)',OD_3='OD CCD3(mV)',RD_3='RD CCD3(mV)',
+iphi1='Iphi1',iphi2='Iphi2',iphi3='Iphi3',iphi4='Iphi4',
+readmode_1='Readout mode R01',readmode_2='Readout mode R02',
+vertical_clk='Vertical clk',serial_clk='Serial clk',
+flushes='Flushes',exptime='Exposure time(ms)',
+shutter='Shutter',electroshutter='Electronic shutter',
+vstart='Vstart',vend='Vend',
+sinvflush='S. Inv.Flush',
+chinj='charge injection',chinj_rows_on='chrg_inj rows on',
+chinj_rows_off='chrg_inj rows off',chinj_repeat='chrg_inj repeat',
+id_width='id pulse length(us)',id_delay='id pulse delay(us)',
+tpump='Trap pumping',ser_shuffles='Serial shuffles',ver_shuffles='Vertical shuffles',
+dwell_v='Dwell_V',dwell_h='Dwell_H',
+motor='Move motor',matrix_size='Matrix size',step_size='Step size',
+add_h_overscan='Additional H.Overscan',add_v_overscan='Additional V.Overscan',
+toi_flush='TOI Flush(us)',toi_tpump='TOI T.Pump(us)',
+                    toi_rdout='TOI Rdout(us)',toi_chinj='TOI Chinj(us)',
+wavelength='Wavelength',pos_cal_mirror='Pos cal mirro(mm)',
+operator='Operator name',
+sn_ccd1='CCD1 type/sn',sn_ccd2='CCD2 type/sn',sn_ccd3='CCD3 type/sn',
+sn_roe='ROE type/sn',sn_rpsu='RPSU type/sn',
+comments='Comments')
+    }}
 
 
 class Script(object):
@@ -91,14 +96,16 @@ class Script(object):
         self.cargo = []
         
         self.cargo.append([aliases[key] for key in keys]) # first column, aliases
+        
+        cols = ['col%i' % (i+1,) for i in range(stru['Ncols'])]
 
-        for col in stru:
+        for col in cols:
             
             vallist = []
             
             for key in keys:
-                if key in stru:
-                    val = stru[key]
+                if key in stru[col]:
+                    val = stru[col][key]
                 else:
                     val = defaults[key]
                 vallist.append(val)
@@ -139,7 +146,8 @@ class Script(object):
  
         writer = pd.ExcelWriter(scriptname)
         df.to_excel(writer,'Sheet1',index=False)
-        writer.save()
+        #writer.save()
+        df.save()
         
         self.scriptname = scriptname
 

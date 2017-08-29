@@ -38,16 +38,18 @@ isthere = os.path.exists
 
 BIAS01_commvalues = dict(program='CALCAMP',test='BIAS01',
   IDL=13000,IDH=18000,IG1=5000,IG2=5000,
-  OD=26000,RD=16000,
+  OD_1=26000,RD_1=16000,
+  OD_2=26000,RD_2=16000,
+  OD_3=26000,RD_3=16000,
   iphi1='TRUE',iphi2='TRUE',iphi3='TRUE',iphi4='FALSE',
   readmode_1='Normal',readmode_2='Normal',
   vertical_clk = 'Tri-level',serial_clk='Even mode',
   flushes=7,exptime=0.,shutter='Thorlabs SC10',
-  electro_shutter='FALSE',vstart=1,vend=2066,
+  electroshutter='FALSE',vstart=1,vend=2066,
   sinvflush='FALSE',chinj='FALSE',chinj_rows_on=20,
   chinj_rows_off=20,chinj_repeat=1,id_width=100,
   id_delay=100,tpump='FALSE',ser_shuffles=1,
-  ver_shuffles=1,dwell_v=0,dwell_h=0,Motor='FALSE',
+  ver_shuffles=1,dwell_v=0,dwell_h=0,motor='FALSE',
   matrix_size=2,step_size=100,add_h_overscan=0,
   add_v_overscan=0,toi_flush=143.,toi_tpump=1000.,
   toi_rdout=1000.,toi_chinj=1000.,
@@ -63,7 +65,7 @@ def build_BIAS01_scriptdict(N,diffvalues=dict()):
     
     Ncols = 1
     
-    BIAS01_sdict = dict(col1=dict(N=N,exptime=0),
+    BIAS01_sdict = dict(col1=dict(frames=N,exptime=0),
                     Ncols=Ncols)
         
     Ndiff = len(diffvalues.keys())
