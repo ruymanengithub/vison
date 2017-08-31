@@ -19,6 +19,7 @@ import numpy as np
 from pdb import set_trace as stop
 import os
 from vison.pipe import lib as pilib
+from vison.datamodel import scriptic as sc
 #from vison.pipe import FlatFielding as FFing
 #from vison.support.report import Report
 #from vison.support import files
@@ -61,19 +62,12 @@ DARK01_commvalues = dict(program='CALCAMP',test='DARK01',
 def build_DARK01_scriptdict(N,exptime,diffvalues=dict()):
     """ """
     
-    Ncols = 1
-    DARK01_sdict = dict(col1=dict(N=N,exptime=exptime),
-                    Ncols=Ncols)
-        
-    Ndiff = len(diffvalues.keys())
-
-    for ic in range(1,Ncols+1):
-        ickey = 'col%i' % ic
-        
-        for comkey in DARK01_commvalues.keys():    
-            DARK01_sdict[ickey][comkey] = DARK01_commvalues[comkey]
-        
-        if Ndiff>0:
-            DARK01_sdict[ickey].update(diffvalues)
+    DARK01_sdict = dict(col1=dict(N=N,exptime=exptime))
+    
+    Ncols = len(DARK01_sdict.keys())    
+    DARK01_sdict['Ncols'] = Ncols
+    
+    DARK01_sdict = sc.update_structdict(DARK01_sdict,DARK01_commvalues,diffvalues)    
     
     return DARK01_sdict
+

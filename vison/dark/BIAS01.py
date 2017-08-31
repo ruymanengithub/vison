@@ -19,6 +19,7 @@ import numpy as np
 from pdb import set_trace as stop
 import os
 from vison.pipe import lib as pilib
+from vison.datamodel import  scriptic as sc
 #from vison.pipe import FlatFielding as FFing
 #from vison.support.report import Report
 #from vison.support import files
@@ -63,20 +64,11 @@ BIAS01_commvalues = dict(program='CALCAMP',test='BIAS01',
 def build_BIAS01_scriptdict(N,diffvalues=dict()):
     """ """
     
-    Ncols = 1
-    
-    BIAS01_sdict = dict(col1=dict(frames=N,exptime=0),
-                    Ncols=Ncols)
-        
-    Ndiff = len(diffvalues.keys())
+    BIAS01_sdict = dict(col1=dict(frames=N,exptime=0))
 
-    for ic in range(1,Ncols+1):
-        ickey = 'col%i' % ic
-        
-        for comkey in BIAS01_commvalues.keys():    
-            BIAS01_sdict[ickey][comkey] = BIAS01_commvalues[comkey]
-        
-        if Ndiff>0:
-            BIAS01_sdict[ickey].update(diffvalues)
+    Ncols = len(BIAS01_sdict.keys())    
+    BIAS01_sdict['Ncols'] = Ncols
+    
+    BIAS01_sdict = sc.update_structdict(BIAS01_sdict,BIAS01_commvalues,diffvalues)
     
     return BIAS01_sdict
