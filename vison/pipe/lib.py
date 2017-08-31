@@ -40,7 +40,7 @@ imgwidth = quad_width - prescan - overscan
 
 FW = dict(Filter1='590nm',Filter2='640nm',
           Filter3='730nm',Filter4='800nm',
-          Filter5='880nm',Filter6='ND')
+          Filter5='880nm',Filter6='0nm')
 
 
 # Editions of Point_CooNom: PENDING upon characterization of OGSE

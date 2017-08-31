@@ -19,6 +19,7 @@ import numpy as np
 from pdb import set_trace as stop
 import os
 from vison.pipe import lib as pilib
+from vison.point import  lib as polib
 from vison.datamodel import scriptic as sc
 #from vison.pipe import FlatFielding as FFing
 #from vison.support.report import Report
@@ -54,7 +55,7 @@ DARK01_commvalues = dict(program='CALCAMP',test='DARK01',
   matrix_size=2,step_size=100,add_h_overscan=0,
   add_v_overscan=0,toi_flush=143.,toi_tpump=1000.,
   toi_rdout=1000.,toi_chinj=1000.,
-  wavelength='Filter 1',pos_cal_mirror=0,
+  wavelength='Filter 4',pos_cal_mirror=polib.mirror_nom['Filter4'],
   operator='who',sn_ccd1='x',sn_ccd2='y',sn_ccd3='z',
   sn_roe='rr',sn_rpsu='pp',
   comments='BIAS')
