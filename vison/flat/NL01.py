@@ -32,7 +32,9 @@ Created on Mon Apr  3 17:38:00 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
-from vison.pipe import lib as plib
+from vison.pipe import lib as pilib
+from vison.pipe import lib as polib
+from vison.datamodel import  scriptic as sc
 from vison.pipe import FlatFielding as FFing
 from vison.support.report import Report
 from vison.support import files
@@ -50,6 +52,65 @@ NL01_structure = dict(col1=dict(N=5,Exptime=0),
                           col5=dict(N=2,Exptime=15.),
                           col6=dict(N=2,Exptime=18.),
                    Ncols=6)
+
+
+NL01_commvalues = dict(program='CALCAMP',
+  IDL=13000,IDH=18000,IG1=5000,IG2=5000,
+  OD_1=26000,RD_1=16000,
+  OD_2=26000,RD_2=16000,
+  OD_3=26000,RD_3=16000,
+  iphi1='TRUE',iphi2='TRUE',iphi3='TRUE',iphi4='FALSE',
+  readmode_1='Normal',readmode_2='Normal',
+  vertical_clk = 'Tri-level',serial_clk='Even mode',
+  flushes=7,exptime=0.,shutter='Thorlabs SC10',
+  electroshutter='FALSE',vstart=1,vend=2066,
+  sinvflush='TRUE',chinj='FALSE',chinj_rows_on=20,
+  chinj_rows_off=20,chinj_repeat=1,id_width=100,
+  id_delay=100,tpump='FALSE',ser_shuffles=1,
+  ver_shuffles=1,dwell_v=0,dwell_h=0,motor='FALSE',
+  matrix_size=2,step_size=100,add_h_overscan=0,
+  add_v_overscan=0,toi_flush=143.,toi_tpump=1000.,
+  toi_rdout=1000.,toi_chinj=1000.,
+  wavelength='Filter 6',pos_cal_mirror=polib.mirror_nom['Filter4'],
+  operator='who',sn_ccd1='x',sn_ccd2='y',sn_ccd3='z',
+  sn_roe='rr',sn_rpsu='pp',
+  comments='')
+
+def build_NL01_scriptdict(expts,exptinter,frames,wavelength=0,diffvalues=dict()):
+    """ """
+
+    assert  len(expts) == len(frames)
+    
+    
+    FW_ID = pilib.get_FW_ID(wavelength)
+    FW_IDX = int(FW_ID[-1])
+    
+    NL01_commvalues['wavelength'] = 'Filter %i' % FW_IDX
+    
+    NL01_sdict = dict()
+    
+    NL01_sdict['col1'] = dict(frames=4,exptime=0,comment='BGD')
+    NL01_sdict['col2'] = dict(frames=1,exptime=exptinter,comment='STAB')
+    
+    for ix,ifra in enumerate(frames):
+
+        iexp = expts[ix]
+        
+        colkeyFlu = ['col%i' % (ix*2+5,)]
+    
+        NL01_sdict[colkeyFlu] = dict(frames=ifra,exptime=iexp,comment='Fluence%i' % (ix+1,))
+        
+        colkeySta = ['col%i' % (ix*2+5+1,)]
+    
+        NL01_sdict[colkeySta] = dict(frames=1,exptime=exptinter,comment='STA')
+        
+
+    Ncols = len(NL01_sdict.keys())    
+    NL01_sdict['Ncols'] = Ncols
+    
+    NL01_sdict = sc.update_structdict(NL01_sdict,NL01_commvalues,diffvalues)
+    
+    return NL01_sdict
 
 
 def filterexposures_NLC01(inwavelength,explogf,datapath,OBSID_lims,structure=NL01_structure,elvis='5.7.04'):
@@ -77,15 +138,6 @@ def basic_analysis_NL01(DataDict,RepDict,inputs,log=None):
 
 
 
-def save_progress(DataDict,reportobj,DataDictFile,reportobjFile):        
-    files.cPickleDumpDictionary(DataDict,DataDictFile)
-    files.cPickleDump(reportobj,reportobjFile)
-
-
-def recover_progress(DataDictFile,reportobjFile):
-    DataDict = files.cPickleRead(DataDictFile)
-    reportobj = files.cPickleRead(reportobjFile)
-    return DataDict,reportobj
     
 def run(inputs,log=None):
     """Test NL01 master function."""
