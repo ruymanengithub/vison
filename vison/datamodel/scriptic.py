@@ -58,13 +58,31 @@ motor='Move motor',matrix_size='Matrix size',step_size='Step size',
 add_h_overscan='Additional H.Overscan',add_v_overscan='Additional V.Overscan',
 toi_flush='TOI Flush(us)',toi_tpump='TOI T.Pump(us)',
                     toi_rdout='TOI Rdout(us)',toi_chinj='TOI Chinj(us)',
-wavelength='Wavelength',pos_cal_mirror='Pos cal mirro(mm)',
+wavelength='Wavelength',pos_cal_mirror='Pos cal mirror(mm)',
 operator='Operator name',
 sn_ccd1='CCD1 type/sn',sn_ccd2='CCD2 type/sn',sn_ccd3='CCD3 type/sn',
 sn_roe='ROE type/sn',sn_rpsu='RPSU type/sn',
 comments='Comments')
     }}
 
+
+
+def update_structdict(sdict,commvalues,diffvalues):
+    
+    Ncols = sdict['Ncols']
+
+    Ndiff = len(diffvalues.keys())
+
+    for ic in range(1,Ncols+1):
+        ickey = 'col%i' % ic
+        
+        for comkey in commvalues.keys():    
+            sdict[ickey][comkey] = commvalues[comkey]
+        
+        if Ndiff>0:
+            sdict[ickey].update(diffvalues)
+    
+    return sdict    
 
 class Script(object):
     """Core Class that provides automatic test script generation and validation."""
@@ -144,10 +162,10 @@ class Script(object):
         
         df = pd.DataFrame(datadict)
  
-        writer = pd.ExcelWriter(scriptname)
-        df.to_excel(writer,'Sheet1',index=False)
-        #writer.save()
-        df.save()
+        writer = pd.ExcelWriter(scriptname,engine='xlsxwriter')
+        df.to_excel(writer,sheet_name='Sheet1',header=False,index=False)
+        
+        writer.save()
         
         self.scriptname = scriptname
 
