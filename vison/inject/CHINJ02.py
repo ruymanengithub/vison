@@ -22,7 +22,7 @@ import os
 from vison.pipe import lib as pilib
 from vison.point import lib as polib
 from vison.datamodel import ccd
-from vison.datamodel import scriptiont as sc
+from vison.datamodel import scriptic as sc
 #from vison.datamodel import EXPLOGtools as ELtools
 #from vison.datamodel import HKtools
 #from vison.datamodel import ccd
@@ -64,8 +64,8 @@ CHINJ02_commvalues = dict(program='CALCAMP',test='CHINJ02',
 
 def build_CHINJ02_scriptdict(IDLs,IDH,id_delays,diffvalues=dict()):
     """ """
-    dIDL = 0.25 # V
-    NIDL = (IDLs[1]-IDLs[0])/dIDL
+    dIDL = 0.25*1.E3 # Vx1E3
+    NIDL = (IDLs[1]-IDLs[0])/dIDL+1
     IDLv = np.arange(NIDL)*dIDL+IDLs[0]
     
     CHINJ02_sdict = dict()
@@ -80,13 +80,13 @@ def build_CHINJ02_scriptdict(IDLs,IDH,id_delays,diffvalues=dict()):
         colcounter += 1
     
     # Second Injection Drain Delay
+    
+    colstart  = colcounter
 
     for j,IDL in enumerate(IDLv):
-        colkey = 'col%i' % (colcounter+j+1,)
-        CHINJ02_sdict[colkey] = dict(frames=1,IG1=IG1,IDL=IDL,IDH=IDH,
+        colkey = 'col%i' % (colstart+j,)
+        CHINJ02_sdict[colkey] = dict(frames=1,IDL=IDL,IDH=IDH,
                      id_delay=id_delays[1])
-        colcounter += 1    
-    
     
     Ncols = len(CHINJ02_sdict.keys())    
     CHINJ02_sdict['Ncols'] = Ncols
