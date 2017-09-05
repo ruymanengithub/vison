@@ -80,14 +80,12 @@ PTC0X_commvalues = dict(program='CALCAMP',
 
 
 def build_PTC0X_scriptdict(exptimes,frames,wavelength=800,diffvalues=dict()):
-    """ 
-   
-    PTC01:
-        11 av. fluences: 5%, 10%, 20%, 30%, 50%, 70%, 80%, 90%, 100%, 110%, 
-        120% x FWC. 10 frames per fluence (except for last 3 fluences, for which it's only 4 frames).
+    """Builds PTC0X script structure dictionary.
     
-    PTC02 (alt. wavelengths):    
-        6 av. fluences: 10%, 30%, 50%, 70%, 80%, 90% x FWC. 4 frames per fluence.
+    :param exptimes: list of ints [ms], exposure times.
+    :param frames: list of ints, number of frames for each exposure time.
+    :param wavelength: int, wavelength. Default: 800 nm.
+    :param diffvalues: dict, opt, differential values.   
         
     """
     

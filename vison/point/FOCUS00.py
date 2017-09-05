@@ -101,7 +101,14 @@ FOCUS00_commvalues = dict(program='CALCAMP',test='FOCUS_%i',
 
 
 def build_FOCUS00_scriptdict(wavelength,exptime,diffvalues=dict()):
-    """ """
+    """Builds FOCUS00 script structure dictionary.
+    
+    :param wavelength: int, [nm], wavelength.
+    :param exptime: int, [ms], exposure time.
+    :param diffvalues: dict, opt, differential values.
+    
+    
+    """
     
     
     FW_ID = pilib.get_FW_ID(wavelength)

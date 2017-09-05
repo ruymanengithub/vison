@@ -64,7 +64,13 @@ DARK01_commvalues = dict(program='CALCAMP',test='DARK01',
 
 
 def build_DARK01_scriptdict(N,exptime,diffvalues=dict()):
-    """ """
+    """Builds DARK01 script structure dictionary.
+    
+    :param N: integer, number of frames to acquire.
+    :param exptime: integer, ms, exposure time.
+    :param diffvalues: dict, opt, differential values.
+    
+    """
     
     DARK01_sdict = dict(col1=dict(frames=N,exptime=exptime))
     

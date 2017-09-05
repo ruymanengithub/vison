@@ -63,13 +63,26 @@ CHINJ02_commvalues = dict(program='CALCAMP',test='CHINJ02',
 
 
 def build_CHINJ02_scriptdict(IDLs,IDH,id_delays,toi_chinj,diffvalues=dict()):
-    """ """
+    """ 
+    Builds CHINJ02 script structure dictionary.
+    
+    :param IDLs: list of 2 ints, [mV], [min,max] values of IDL (Inject. Drain Low).
+    :param IDH: int, [mV], Injection Drain High.
+    :param id_delays: list of 2 ints, [mV], injection drain delays (2).
+    :param toi_chinj: int, [us], TOI-charge injection.
+    :param diffvalues: dict, opt, differential values.
+    
+    """
+    
+    assert len(IDLs) == 2
+    assert len(id_delays) == 2
     
     dIDL = 0.25*1.E3 # Vx1E3
     NIDL = (IDLs[1]-IDLs[0])/dIDL+1
     IDLv = np.arange(NIDL)*dIDL+IDLs[0]
     
     CHINJ02_sdict = dict()
+    
     
     # First Injection Drain Delay
     

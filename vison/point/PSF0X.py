@@ -81,8 +81,20 @@ PSF0X_commvalues = dict(program='CALCAMP',
 
 
 def build_PSF0X_scriptdict(exptimes,frames,wavelength=800,diffvalues=dict()):
-    """ """
-            
+    """ 
+    
+    Builds PSF0X script structure dictionary.
+    
+    :param exptimes: list of ints, [ms], exposure times.
+    :param frames: list of frame numbers. Same length as exptimes.
+    :param wavelength: int, [nm], wavelength.
+    :param diffvalues: dict, opt, differential values.
+    
+    
+    """
+    
+    assert len(exptimes) == len(frames)
+    
     FW_ID = pilib.get_FW_ID(wavelength)
     FW_IDX = int(FW_ID[-1])
     

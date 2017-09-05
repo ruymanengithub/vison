@@ -61,7 +61,14 @@ FLAT0X_commvalues = dict(program='CALCAMP',
 
 
 def build_FLAT0X_scriptdict(exptimes,wavelength=800,testkey='FLAT0X',diffvalues=dict()):
-    """ """
+    """Builds FLAT0X script structure dictionary.
+    
+    :param exptimes: list of ints, exposure times.
+    :param wavelength: int, wavelength.
+    :param testkey: char, test identifier.
+    :param diffvalues: dict, opt, differential values.
+    
+    """
     
     FW_ID = pilib.get_FW_ID(wavelength)
     FW_IDX = int(FW_ID[-1])

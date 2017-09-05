@@ -60,7 +60,15 @@ PER01_commvalues = dict(program='CALCAMP',test='PERSIST01',
   
 
 def build_PER01_scriptdict(exptSATUR,exptLATEN,diffvalues=dict()):
-    """ """
+    """ 
+    Builds PERSISTENCE01 script structure dictionary.
+    
+    :param exptSATUR: int, saturation exposure time.
+    :param exptLATEN: int, latency exposure time.
+    :param diffvalues: dict, opt, differential values.
+    
+    
+    """
     
     PER01_sdict = dict(col1=dict(frames=5,exptime=0,comments='REFER.'),
                        col2=dict(frames=1,exptime=exptSATUR,comments='EXPOSE'),

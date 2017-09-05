@@ -92,6 +92,14 @@ comments='')
 
 
 def update_structdict(sdict,commvalues,diffvalues):
+    """Updates an script structure with common values and differential values.
+    :param sdict: dict, dictionary with script structure. Takes precedence over
+                  commvalues.
+    :param commvalues: dict, dictionary with common values to update sdict.
+    :param diffvalues: dict, dictionaty with "differential" values to update
+                       "sdict". Takes precedence over sdict and commvalues.
+    
+    """
     
     Ncols = sdict['Ncols']
 
@@ -117,7 +125,13 @@ class Script(object):
     """Core Class that provides automatic test script generation and validation."""
     
     def __init__(self,defaults={},structure={},elvis='6.0.0'):
-        """Initialization."""
+        """Initialization.
+        
+        :param defaults: dict, default values.
+        :param structure: dict, structure of script.
+        :param elvis: ELVIS version.
+        
+        """
         
         self.scriptname = ''
         self.defaults = defaults
@@ -176,7 +190,11 @@ class Script(object):
         
     
     def write(self,scriptname):
-        """Writes self.cargo (script) to an excel file."""
+        """Writes self.cargo (script) to an excel file.
+        
+        :param scriptname: char, name of file where to write script.
+        
+        """
                 
         ncols = len(self.cargo)
         
@@ -200,7 +218,12 @@ class Script(object):
         return None
     
     def load(self,scriptname,elvis='6.0.0'):
-        """Loads an script from an excel file."""
+        """Loads an script from an excel file.
+        
+        :param scriptname: char, script to load
+        :param elvis: char, ELVIS version of script to load
+        
+        """
         self.elvis = elvis
         
         converters = {'Frames':str}

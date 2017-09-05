@@ -63,7 +63,12 @@ BIAS01_commvalues = dict(program='CALCAMP',test='BIAS01',
 
 
 def build_BIAS01_scriptdict(N,diffvalues=dict()):
-    """ """
+    """Builds BIAS01 script structure dictionary.
+    
+    :param N: integer, number of frames to acquire.
+    :param diffvalues: dict, opt, differential values.
+    
+    """
     
     BIAS01_sdict = dict(col1=dict(frames=N,exptime=0))
 

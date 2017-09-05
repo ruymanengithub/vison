@@ -46,7 +46,9 @@ FW = dict(Filter1='590nm',Filter2='640nm',
 # Editions of Point_CooNom: PENDING upon characterization of OGSE
 
 def get_FW_ID(wavelength):
-    """ """
+    """returns FW key corresponding to input wavelength.
+    :param wavelength: integer, wavelength.
+    """
     return [key for key in FW if FW[key] == '%inm' % wavelength][0] 
 
 

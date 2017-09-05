@@ -77,7 +77,14 @@ NL01_commvalues = dict(program='CALCAMP',
   comments='')
 
 def build_NL01_scriptdict(expts,exptinter,frames,wavelength=0,diffvalues=dict()):
-    """ """
+    """Builds NL01 script structure dictionary.
+    
+    :param expts: list of ints [ms], exposure times.
+    :param exptinter: int, ms, exposure time of interleaved source-stability exposures.
+    :param frames: list of ints, number of frames for each exposure time.
+    :param wavelength: int, wavelength. Default: 0 (Neutral Density Filter)
+    :param diffvalues: dict, opt, differential values.
+    """
 
     assert  len(expts) == len(frames)
     
