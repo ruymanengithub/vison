@@ -35,8 +35,8 @@ def generate_Explog(struct,defaults,elvis='6.0.0',date=pilib.dtobj_default):
     
     for iscrcol in range(1,Nscriptcols+1):
         scriptcol = struct['col%i' % iscrcol]
-        N = scriptcol['N']
-        inputkeys = [key for key in scriptcol.keys() if key != 'N']
+        N = scriptcol['frames']
+        inputkeys = [key for key in scriptcol.keys() if key != 'frames']
         
         rowdict = {}
         
