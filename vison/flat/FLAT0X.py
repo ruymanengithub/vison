@@ -41,15 +41,15 @@ FLAT0X_commvalues = dict(program='CALCAMP',
   OD_1=26000,RD_1=16000,
   OD_2=26000,RD_2=16000,
   OD_3=26000,RD_3=16000,
-  iphi1='TRUE',iphi2='TRUE',iphi3='TRUE',iphi4='FALSE',
+  iphi1=1,iphi2=1,iphi3=1,iphi4=0,
   readmode_1='Normal',readmode_2='Normal',
   vertical_clk = 'Tri-level',serial_clk='Even mode',
   flushes=7,exptime=0.,shutter='Thorlabs SC10',
-  electroshutter='FALSE',vstart=1,vend=2066,
-  sinvflush='FALSE',chinj='FALSE',chinj_rows_on=20,
+  electroshutter=0,vstart=1,vend=2066,
+  sinvflush=0,chinj=0,chinj_rows_on=20,
   chinj_rows_off=20,chinj_repeat=1,id_width=100,
-  id_delay=100,tpump='FALSE',ser_shuffles=1,
-  ver_shuffles=1,dwell_v=0,dwell_h=0,motor='FALSE',
+  id_delay=100,tpump=0,ser_shuffles=1,
+  ver_shuffles=1,dwell_v=0,dwell_h=0,motor=0,
   matrix_size=2,step_size=100,add_h_overscan=0,
   add_v_overscan=0,toi_flush=143.,toi_tpump=1000.,
   toi_rdout=1000.,toi_chinj=1000.,
@@ -60,15 +60,12 @@ FLAT0X_commvalues = dict(program='CALCAMP',
   
 
 
-def build_FLAT0X_scriptdict(exptimes,subtest='01',wavelength=800,diffvalues=dict()):
+def build_FLAT0X_scriptdict(exptimes,wavelength=800,diffvalues=dict()):
     """ """
     
-    if subtest == '01': assert wavelength == 800
-        
     FW_ID = pilib.get_FW_ID(wavelength)
     FW_IDX = int(FW_ID[-1])
     
-    FLAT0X_commvalues['test'] = 'FLAT%s' % subtest
     FLAT0X_commvalues['wavelength'] = 'Filter %i' % FW_IDX
     
     

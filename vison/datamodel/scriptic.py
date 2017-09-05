@@ -62,7 +62,31 @@ wavelength='Wavelength',pos_cal_mirror='Pos cal mirror(mm)',
 operator='Operator name',
 sn_ccd1='CCD1 type/sn',sn_ccd2='CCD2 type/sn',sn_ccd3='CCD3 type/sn',
 sn_roe='ROE type/sn',sn_rpsu='RPSU type/sn',
-comments='Comments')
+comments='Comments'),
+             
+'defaults':dict(frames=1,
+program='CALCAMP',test='Test',IDL=13,IDH=18,
+ IG1=6,IG2=6,
+OD_1=26,RD_1=16,OD_2=26,RD_2=16,OD_3=26,RD_3=16,
+iphi1=1,iphi2=1,iphi3=1,iphi4=0,
+readmode_1='Normal',readmode_2='Normal',
+vertical_clk='?',serial_clk='?',
+flushes=7,exptime=0,
+shutter='Thorlabs SC10',electroshutter=0,
+vstart=1,vend=2066,
+sinvflush=0,
+chinj=0,chinj_rows_on=1,chinj_rows_off=1,chinj_repeat=1,
+id_width=1,id_delay=1,
+tpump=0,ser_shuffles=0,ver_shuffles=0,
+dwell_v=0,dwell_h=0,
+motor=0,matrix_size=2,step_size=100,
+add_h_overscan=0,add_v_overscan=0,
+toi_flush=143,toi_tpump=1000,toi_rdout=1000,toi_chinj=1000,
+wavelength='Filter 4',pos_cal_mirror=70,
+operator='cpf',
+sn_ccd1='CCD273-XX-X-XXX',sn_ccd2='CCD273-XX-X-XXX',sn_ccd3='CCD273-XX-X-XXX',
+sn_roe='ROEXX',sn_rpsu='RPSUXX',
+comments='')
     }}
 
 
@@ -102,7 +126,9 @@ class Script(object):
         'cargo': list of lists, each corresponding to a column in the script.
                  Each element in the inner lists is a register value.
                  The first column corresponds to the aliases column.
-            
+        
+        Note: the number of frames is accumuled across columns, as ELVIS expects.
+        
         """
         dictio = script_dictionary[self.elvis]
         keys = dictio['keys']
@@ -116,6 +142,8 @@ class Script(object):
         self.cargo.append([aliases[key] for key in keys]) # first column, aliases
         
         cols = ['col%i' % (i+1,) for i in range(stru['Ncols'])]
+        
+        cumframes = 0
 
         for col in cols:
             
@@ -127,10 +155,15 @@ class Script(object):
                 else:
                     val = defaults[key]
                 vallist.append(val)
+                vallist[0] += cumframes # accumulation of frames number
+                cumframes += vallist[0]
             
             self.cargo.append(vallist)
         
-        if self.elvis > '6.0.0':
+        
+        
+        
+        if self.elvis >= '6.0.0':
             self.cargo.append(['End'])
         
     
