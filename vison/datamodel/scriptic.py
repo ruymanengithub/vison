@@ -144,6 +144,7 @@ class Script(object):
         cols = ['col%i' % (i+1,) for i in range(stru['Ncols'])]
         
         cumframes = 0
+        
 
         for col in cols:
             
@@ -155,43 +156,32 @@ class Script(object):
                 else:
                     val = defaults[key]
                 vallist.append(val)
-                vallist[0] += cumframes # accumulation of frames number
-                cumframes += vallist[0]
+            
+            frs = vallist[0]
+            vallist[0] += cumframes # accumulation of frames number
+            cumframes += frs
             
             self.cargo.append(vallist)
         
         
-        
-        
         if self.elvis >= '6.0.0':
-            self.cargo.append(['End'])
+            endcol = ['']*len(keys)
+            endcol[0] = 'End'
+            self.cargo.append(endcol)
         
     
     def write(self,scriptname):
         """Writes self.cargo (script) to an excel file."""
-        
-        alphabet = list(string.ascii_lowercase)
-        
+                
         ncols = len(self.cargo)
         
-        nalpha = ncols/len(alphabet)
-        
-        colnames = []
-    
-        colnameroot =''
-        for ia in range(nalpha+1):
-        
-            if ia>0: colnameroot += alphabet[(ia-1)%len(alphabet)]
-        
-            for iia in range(len(alphabet)):
-                colnames.append(colnameroot+alphabet[iia])
-                if len(colnames) == ncols:
-                    break
+        colnames = ['col%04i' % i for i in range(ncols)]
         
         datadict = {} 
         
         for ixc in range(ncols):
             datadict[colnames[ixc]] = self.cargo[ixc]
+        
         
         df = pd.DataFrame(datadict)
  
