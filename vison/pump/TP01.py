@@ -39,13 +39,13 @@ TP01_commvalues = dict(program='CALCAMP',test='TP01',
   flushes=7,exptime=0.,shutter='Thorlabs SC10',
   electroshutter=0,vstart=1,vend=2066,
   sinvflush=0,chinj=0,chinj_rows_on=2066,
-  chinj_rows_off=0,chinj_repeat=1,id_width=57.1428571428571,
-  id_delay=742.857142857144,
+  chinj_rows_off=0,chinj_repeat=1,id_width=60,
+  id_delay=750,
   tpump=1,ser_shuffles=0,
   ver_shuffles=1,dwell_v=0,dwell_h=0,motor=0,
   matrix_size=2,step_size=100,add_h_overscan=0,
-  add_v_overscan=0,toi_flush=143.,#toi_tpump=1000.,
-  toi_rdout=1000.,toi_chinj=250.,
+  add_v_overscan=0,toi_flush=143,toi_tpump=1000,
+  toi_rdout=1000,toi_chinj=250,
   wavelength='Filter 4',pos_cal_mirror=polib.mirror_nom['Filter4'],
   operator='who',sn_ccd1='x',sn_ccd2='y',sn_ccd3='z',
   sn_roe='rr',sn_rpsu='pp',
@@ -97,11 +97,12 @@ def build_TP01_scriptdict(Nshuffles_V,TOI_TPv,id_delays,diffvalues=dict()):
                          id_delay=id_delays[1],vert_tpump_mode=phstart)    
             
             colcounter += 1
-            
+    
     
     Ncols = len(TP01_sdict.keys())    
     TP01_sdict['Ncols'] = Ncols
     
+   
     TP01_sdict = sc.update_structdict(TP01_sdict,TP01_commvalues,diffvalues)
     
     return TP01_sdict

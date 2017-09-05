@@ -96,12 +96,17 @@ def update_structdict(sdict,commvalues,diffvalues):
     Ncols = sdict['Ncols']
 
     Ndiff = len(diffvalues.keys())
+    
 
     for ic in range(1,Ncols+1):
         ickey = 'col%i' % ic
         
-        for comkey in commvalues.keys():    
-            sdict[ickey][comkey] = commvalues[comkey]
+        for comkey in commvalues.keys():
+            #try:
+            if comkey not in sdict[ickey].keys():
+                sdict[ickey][comkey] = commvalues[comkey]
+            #except:
+            #    stop()
         
         if Ndiff>0:
             sdict[ickey].update(diffvalues)

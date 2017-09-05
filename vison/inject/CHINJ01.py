@@ -46,8 +46,8 @@ CHINJ01_commvalues = dict(program='CALCAMP',test='CHINJ01',
   vertical_clk = 'Tri-level',serial_clk='Even mode',
   flushes=7,exptime=0.,shutter='Thorlabs SC10',
   electroshutter=0,vstart=1,vend=2066,
-  sinvflush=0,chinj=0,chinj_rows_on=30,
-  chinj_rows_off=100,chinj_repeat=15,id_width=57.1428571428571,
+  sinvflush=0,chinj=1,chinj_rows_on=30,
+  chinj_rows_off=100,chinj_repeat=15,id_width=60,
 #  id_delay=100,
   tpump=0,ser_shuffles=1,
   ver_shuffles=1,dwell_v=0,dwell_h=0,motor=0,
@@ -61,8 +61,9 @@ CHINJ01_commvalues = dict(program='CALCAMP',test='CHINJ01',
   
 
 
-def build_CHINJ01_scriptdict(IDL,IDH,IG1s,id_delays,diffvalues=dict()):
+def build_CHINJ01_scriptdict(IDL,IDH,IG1s,id_delays,toi_chinj,diffvalues=dict()):
     """ """
+    
     dIG1 = 0.25 * 1.E3 # Vx1E3
     NIG1 = (IG1s[1]-IG1s[0])/dIG1+1
     IG1v = np.arange(NIG1)*dIG1+IG1s[0]
@@ -76,7 +77,7 @@ def build_CHINJ01_scriptdict(IDL,IDH,IG1s,id_delays,diffvalues=dict()):
         colkey = 'col%i' % (i+1,)
         #print colkey
         CHINJ01_sdict[colkey] = dict(frames=1,IG1=IG1,IDL=IDL,IDH=IDH,
-                     id_delay=id_delays[0])
+                     id_delay=id_delays[0],toi_chinj=toi_chinj)
         colcounter += 1
     
     # Second Injection Drain Delay
@@ -87,7 +88,7 @@ def build_CHINJ01_scriptdict(IDL,IDH,IG1s,id_delays,diffvalues=dict()):
         colkey = 'col%i' % (colstart+j,)
         #print colkey
         CHINJ01_sdict[colkey] = dict(frames=1,IG1=IG1,IDL=IDL,IDH=IDH,
-                     id_delay=id_delays[1])    
+                     id_delay=id_delays[1],toi_chinj=toi_chinj)    
 
     
     Ncols = len(CHINJ01_sdict.keys())    

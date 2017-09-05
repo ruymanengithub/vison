@@ -42,6 +42,7 @@ from vison.datamodel import EXPLOGtools as ELtools
 from vison.datamodel import HKtools
 from vison.datamodel import ccd
 from vison.datamodel import generator
+from vison.datamodel import scriptic as sc
 from vison.point.spot import Spot
 from vison.point import display as pdspl
 import datetime
@@ -78,17 +79,19 @@ def get_FOCUS00_structure(wavelength):
 FOCUS00_structure_wnom = get_FOCUS00_structure(800)
 
 FOCUS00_commvalues = dict(program='CALCAMP',test='FOCUS_%i',
-  IDL=13000,IDH=18000,IG1=5000,IG2=5000,
-  OD=26000,RD=16000,
+  IDL=13000,IDH=18000,IG1=3500,IG2=6000,
+  OD_1=26000,RD_1=16000,
+  OD_2=26000,RD_2=16000,
+  OD_3=26000,RD_3=16000,
   iphi1=1,iphi2=1,iphi3=1,iphi4=0,
   readmode_1='Normal',readmode_2='Normal',
   vertical_clk = 'Tri-level',serial_clk='Even mode',
   flushes=7,shutter='Thorlabs SC10',
-  electro_shutter=0,vstart=1,vend=2066,
+  electroshutter=0,vstart=1,vend=2066,
   sinvflush=0,chinj=0,chinj_rows_on=20,
   chinj_rows_off=20,chinj_repeat=1,id_width=100,
   id_delay=100,tpump=0,ser_shuffles=1,
-  ver_shuffles=1,dwell_v=0,dwell_h=0,Motor=0,
+  ver_shuffles=1,dwell_v=0,dwell_h=0,motor=0,
   matrix_size=2,step_size=100,add_h_overscan=0,
   add_v_overscan=0,toi_flush=143.,toi_tpump=1000.,
   toi_rdout=1000.,toi_chinj=1000.,
@@ -97,37 +100,31 @@ FOCUS00_commvalues = dict(program='CALCAMP',test='FOCUS_%i',
   
 
 
-def build_FOCUS00_scriptdict(wavelength,diffvalues=dict()):
+def build_FOCUS00_scriptdict(wavelength,exptime,diffvalues=dict()):
     """ """
     
-    Ncols = 6
     
-    FilterPos = pilib.get_FW_ID(wavelength)
-    mirror_nom = polib.mirror_nom[FilterPos]
+    FW_ID = pilib.get_FW_ID(wavelength)
+    FW_IDX = int(FW_ID[-1])
+    mirror_nom = polib.mirror_nom[FW_ID]
     
     
-    FOCUS00_sdict = dict(col1=dict(N=5,Exptime=0,Mirr_pos=mirror_nom-5,
-                                   comments='BGD'),
-                    Ncols=Ncols)
+    FOCUS00_sdict = dict(col1=dict(frames=5,wavelength='Filter %i' % FW_IDX,Exptime=0,
+                                   pos_cal_mirror=mirror_nom-5,
+                                   comments='BGD'))
     
     
     for i,j in enumerate(range(-5,6,1)):
-        FOCUS00_sdict['col%i' % (i+1,)] = dict(N=2,Exptime=10.,
-                      Mirr_pos=mirror_nom+float(j),comments='F%.1f' % float(j))
-        
-    Ndiff = len(diffvalues.keys())
-
-    for ic in range(1,Ncols+1):
-        ickey = 'col%i' % ic
-        
-        for comkey in FOCUS00_commvalues.keys():    
-            FOCUS00_sdict[ickey][comkey] = FOCUS00_commvalues[comkey]
-        
-        FOCUS00_sdict[ickey]['test'] = FOCUS00_sdict[ickey]['test'] % wavelength
-        
-        
-        if Ndiff>0:
-            FOCUS00_sdict[ickey].update(diffvalues)
+        FOCUS00_sdict['col%i' % (i+1,)] = dict(frames=2,exptime=exptime,
+                      pos_cal_mirror=mirror_nom+float(j),
+                      wavelength='Filter %i' % FW_IDX,
+                      comments='F%.1f' % float(j))
+    
+    Ncols = len(FOCUS00_sdict.keys())    
+    FOCUS00_sdict['Ncols'] = Ncols
+    
+    FOCUS00_sdict = sc.update_structdict(FOCUS00_sdict,FOCUS00_commvalues,diffvalues)
+    
     
     return FOCUS00_sdict
 

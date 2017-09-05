@@ -47,13 +47,13 @@ isthere = os.path.exists
 HKKeys_PTC0X = ['HK_temp_top_CCD1','HK_temp_bottom_CCD1','HK_temp_top_CCD2',
 'HK_temp_bottom_CCD2','HK_temp_top_CCD3','HK_temp_bottom_CCD3'] # TESTS
 
-#PTC0X_structure = dict(col1=dict(N=5,Exptime=0),
-#                          col2=dict(N=2,Exptime=1.),
-#                          col3=dict(N=2,Exptime=5.),
-#                          col4=dict(N=2,Exptime=10.),
-#                          col5=dict(N=2,Exptime=15.),
-#                          col6=dict(N=2,Exptime=18.),
-#                   Ncols=6)
+PTC0X_structure = dict(col1=dict(N=5,Exptime=0),
+                          col2=dict(N=2,Exptime=1.),
+                          col3=dict(N=2,Exptime=5.),
+                          col4=dict(N=2,Exptime=10.),
+                          col5=dict(N=2,Exptime=15.),
+                          col6=dict(N=2,Exptime=18.),
+                   Ncols=6)
 
 PTC0X_commvalues = dict(program='CALCAMP',
   IDL=13000,IDH=18000,IG1=5000,IG2=5000,
@@ -65,7 +65,7 @@ PTC0X_commvalues = dict(program='CALCAMP',
   vertical_clk = 'Tri-level',serial_clk='Even mode',
   flushes=7,exptime=0.,shutter='Thorlabs SC10',
   electroshutter=0,vstart=1,vend=2066,
-  sinvflush=0,chinj=0,chinj_rows_on=20,
+  sinvflush=1,chinj=0,chinj_rows_on=20,
   chinj_rows_off=20,chinj_repeat=1,id_width=100,
   id_delay=100,tpump=0,ser_shuffles=1,
   ver_shuffles=1,dwell_v=0,dwell_h=0,motor=0,
@@ -107,7 +107,7 @@ def build_PTC0X_scriptdict(exptimes,frames,wavelength=800,diffvalues=dict()):
     for ix,ifra in enumerate(frames):
         iexp = exptimes[ix]
         
-        colkey= ['col%i' % (ix+1,)]
+        colkey= 'col%i' % (ix+1,)
     
         PTC0X_sdict[colkey] = dict(frames=ifra,exptime=iexp)
 

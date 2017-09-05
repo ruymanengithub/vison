@@ -33,7 +33,7 @@ import numpy as np
 from pdb import set_trace as stop
 import os
 from vison.pipe import lib as pilib
-from vison.pipe import lib as polib
+from vison.point import lib as polib
 from vison.datamodel import  scriptic as sc
 from vison.pipe import FlatFielding as FFing
 from vison.support.report import Report
@@ -96,14 +96,14 @@ def build_NL01_scriptdict(expts,exptinter,frames,wavelength=0,diffvalues=dict())
 
         iexp = expts[ix]
         
-        colkeyFlu = ['col%i' % (ix*2+5,)]
+        colkeyFlu = 'col%i' % (ix*2+2,)
     
         NL01_sdict[colkeyFlu] = dict(frames=ifra,exptime=iexp,comment='Fluence%i' % (ix+1,))
         
-        colkeySta = ['col%i' % (ix*2+5+1,)]
+        colkeySta = 'col%i' % (ix*2+2+1,)
     
         NL01_sdict[colkeySta] = dict(frames=1,exptime=exptinter,comment='STA')
-        
+    
 
     Ncols = len(NL01_sdict.keys())    
     NL01_sdict['Ncols'] = Ncols
