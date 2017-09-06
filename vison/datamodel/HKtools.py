@@ -228,6 +228,26 @@ def reportHK(HKs,key,reqstat='all'):
     
     return vals
 
+
+def parseDTstr(DTstr):
+    """ """
+    
+    date = DTstr[0:DTstr.index('D')]
+    
+    y2d = int(date[4:6])
+    if y2d < 20: century = 2000
+    else: century = 1900
+    dd,MM,yy = int(date[0:2]),int(date[2:4]),y2d+century
+
+    time = DTstr[DTstr.index('D')+1:-1]
+    hh,mm,ss = int(time[0:2]),int(time[2:4]),int(time[4:6])
+    
+    DTobject = datetime.datetime(yy,MM,dd,hh,mm,ss)
+    
+    return DTobject
+    
+
+
 def parseHKfname(HKfname):
     """Parses name of a HK file to retrieve OBSID, date and time, and ROE number.
     
@@ -247,18 +267,8 @@ def parseHKfname(HKfname):
     obsid = int(items[1])
     DT = items[2]
     ROE = items[3]
-    
-    date = DT[0:DT.index('D')]
-    
-    y2d = int(date[4:6])
-    if y2d < 20: century = 2000
-    else: century = 1900
-    dd,MM,yy = int(date[0:2]),int(date[2:4]),y2d+century
 
-    time = DT[DT.index('D')+1:-1]
-    hh,mm,ss = int(time[0:2]),int(time[2:4]),int(time[4:6])
-    
-    DTobject = datetime.datetime(yy,MM,dd,hh,mm,ss)
+    DTobject = parseDTstr(DT)
     
     return obsid,DTobject,ROE
     

@@ -23,51 +23,51 @@ import string as st
 import astropy
 # END IMPORT
 
-def generate_Explog_old(struct,defaults,elvis='6.0.0',date=pilib.dtobj_default):
-    """ """
-    
-    
-    Nscriptcols = struct['Ncols']
-    
-    columns = ELtools.columnlist[elvis]
-    
-    explog = ELtools.iniExplog(elvis)
-    
-    ixObsID = 1000
-    
-    for iscrcol in range(1,Nscriptcols+1):
-        scriptcol = struct['col%i' % iscrcol]
-        N = scriptcol['N']
-        inputkeys = [key for key in scriptcol.keys() if key != 'frames']
-        
-        rowdict = {}
-        
-        for subixrow in range(N):
-        
-            for ecol in columns:
-                rowdict[ecol] = defaults[ecol]
-        
-            for key in inputkeys:
-                rowdict[key] = scriptcol[key]
-            
-            for ixCCD in range(1,4):
-                
-                dmy = date.strftime('%d%m%y')
-                hms = date.strftime('%H%M%S')
-            
-                rowdict['ObsID'] = ixObsID
-                rowdict['File_name'] = 'EUC_%i_%sD_%sT_ROE1_CCD%i' % (ixObsID,dmy,hms,ixCCD)
-                rowdict['DATE'] = '%sD%sT' % (dmy,hms)
-                rowdict['CCD'] = 'CCD%i' % ixCCD
-                
-                explog.add_row(vals=[rowdict[key] for key in columns])
-                
-                date = date + datetime.timedelta(seconds=90)
-            
-            ixObsID += 1
-                    
-            
-    return explog
+#def generate_Explog_old(struct,defaults,elvis='6.0.0',date=pilib.dtobj_default):
+#    """ """
+#    
+#    
+#    Nscriptcols = struct['Ncols']
+#    
+#    columns = ELtools.columnlist[elvis]
+#    
+#    explog = ELtools.iniExplog(elvis)
+#    
+#    ixObsID = 1000
+#    
+#    for iscrcol in range(1,Nscriptcols+1):
+#        scriptcol = struct['col%i' % iscrcol]
+#        N = scriptcol['N']
+#        inputkeys = [key for key in scriptcol.keys() if key != 'frames']
+#        
+#        rowdict = {}
+#        
+#        for subixrow in range(N):
+#        
+#            for ecol in columns:
+#                rowdict[ecol] = defaults[ecol]
+#        
+#            for key in inputkeys:
+#                rowdict[key] = scriptcol[key]
+#            
+#            for ixCCD in range(1,4):
+#                
+#                dmy = date.strftime('%d%m%y')
+#                hms = date.strftime('%H%M%S')
+#            
+#                rowdict['ObsID'] = ixObsID
+#                rowdict['File_name'] = 'EUC_%i_%sD_%sT_ROE1_CCD%i' % (ixObsID,dmy,hms,ixCCD)
+#                rowdict['DATE'] = '%sD%sT' % (dmy,hms)
+#                rowdict['CCD'] = 'CCD%i' % ixCCD
+#                
+#                explog.add_row(vals=[rowdict[key] for key in columns])
+#                
+#                date = date + datetime.timedelta(seconds=90)
+#            
+#            ixObsID += 1
+#                    
+#            
+#    return explog
 
 
 def _update_fromscript(rowdict,scriptcol):
@@ -81,17 +81,14 @@ def _update_fromscript(rowdict,scriptcol):
             rowdict[key] = scriptcol[elog2sc[key]]
     
     phkeys = ['iphi1','iphi2','iphi3','iphi4']
-    N_P_high = st.join(['I%i' % (i+1,) for i in range(4) if scriptcol[phkeys[i]]],'')
-    
-    
+    N_P_high = st.join(['I%i' % (i+1,) for i in range(4) if scriptcol[phkeys[i]]],'')    
     rowdict['N_P_high'] = N_P_high
     
     Trappump = '%i-%s' % (scriptcol['tpump'],scriptcol['tpump_mode'])
     rowdict['Trappump'] = Trappump
     
-    
-    rowdict['Overscn_H'] = 0
-    #'Ovrscn_H'             f(add_v_overscan)?         
+    waveix = int(scriptcol['wavelength'][-1])
+    rowdict['Wavelength'] = waveix
     
     volt_cross = dict(IDL_V='IDL',IDH_V='IDH',
                           IG1_T1_V='IG1_1_T',IG1_T2_V='IG1_2_T',IG1_T3_V='IG1_3_T',
@@ -116,6 +113,9 @@ def generate_Explog(scrdict,defaults,elvis='6.0.0',explog=None,OBSID0=1000,
         *ObsID, *File_name, *CCD, *ROE=ROE1, *DATE, *BUNIT=ADU,
         SPW_clk=0?,EGSE_ver=elvis,
     
+    Temporal:
+        SerRdDel
+    
     To be provided in defaults: (EASY)   
         Lab_ver,Con_file,CnvStart,
         Flsh-Rdout_e_time,C.Inj-Rdout_e_time,
@@ -136,11 +136,20 @@ def generate_Explog(scrdict,defaults,elvis='6.0.0',explog=None,OBSID0=1000,
     expcolkeys = ELtools.columnlist[elvis]
     if explog is None:
         explog = ELtools.iniExplog(elvis)
+        ixObsID = OBSID0
+        
     else:
         assert isinstance(explog,astropy.table.table.Table)
+        
+        ixObsID = explog['ObsID'][-1]+1
+        
+        datelast = HKtools.parseDTstr(explog['DATE'][-1])
+        
+        exptsec = explog['Exptime'][-1]/1.e3
+        
+        date = datelast + datetime.timedelta(seconds=80.+exptsec)
     
     
-    ixObsID = OBSID0
     
     for iscrcol in range(1,Nscriptcols+1):
         
@@ -164,9 +173,11 @@ def generate_Explog(scrdict,defaults,elvis='6.0.0',explog=None,OBSID0=1000,
             
             
             rowdict['ROE'] = 'ROE1'
-            rowdict['ADU'] = 'ADU' 
+            rowdict['BUNIT'] = 'ADU' 
             rowdict['EGSE_ver'] = elvis
-            
+            rowdict['SPW_clk'] =  0
+            rowdict['CalScrpt'] = 'Uknown'
+                   
             exptsec = scriptcol['exptime']/1.e3
             
             for ixCCD in range(1,4):
@@ -182,7 +193,7 @@ def generate_Explog(scrdict,defaults,elvis='6.0.0',explog=None,OBSID0=1000,
                        
                 explog.add_row(vals=[rowdict[key] for key in expcolkeys])
                 
-                date = date + datetime.timedelta(seconds=80.+exptsec)
+            date = date + datetime.timedelta(seconds=80. + exptsec)
             
             ixObsID += 1
                     
