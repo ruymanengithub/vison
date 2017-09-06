@@ -16,12 +16,14 @@ Created on Tue Aug 29 11:08:56 2017
 from pdb import set_trace as stop
 from vison.datamodel import EXPLOGtools as ELtools
 from vison.datamodel import HKtools
+from vison.pipe import lib as pilib
 import datetime
 import os
-from vison.pipe import lib as pilib
+import string as st
+import astropy
 # END IMPORT
 
-def generate_Explog(struct,defaults,elvis='6.0.0',date=pilib.dtobj_default):
+def generate_Explog_old(struct,defaults,elvis='6.0.0',date=pilib.dtobj_default):
     """ """
     
     
@@ -35,7 +37,7 @@ def generate_Explog(struct,defaults,elvis='6.0.0',date=pilib.dtobj_default):
     
     for iscrcol in range(1,Nscriptcols+1):
         scriptcol = struct['col%i' % iscrcol]
-        N = scriptcol['frames']
+        N = scriptcol['N']
         inputkeys = [key for key in scriptcol.keys() if key != 'frames']
         
         rowdict = {}
@@ -61,6 +63,126 @@ def generate_Explog(struct,defaults,elvis='6.0.0',date=pilib.dtobj_default):
                 explog.add_row(vals=[rowdict[key] for key in columns])
                 
                 date = date + datetime.timedelta(seconds=90)
+            
+            ixObsID += 1
+                    
+            
+    return explog
+
+
+def _update_fromscript(rowdict,scriptcol):
+    """ """
+    
+    elog2sc = ELtools.script_keys_cross
+    elog2sckeys = elog2sc.keys()
+    
+    for key in rowdict:
+        if key in elog2sckeys:
+            rowdict[key] = scriptcol[elog2sc[key]]
+    
+    phkeys = ['iphi1','iphi2','iphi3','iphi4']
+    N_P_high = st.join(['I%i' % (i+1,) for i in range(4) if scriptcol[phkeys[i]]],'')
+    
+    
+    rowdict['N_P_high'] = N_P_high
+    
+    Trappump = '%i-%s' % (scriptcol['tpump'],scriptcol['tpump_mode'])
+    rowdict['Trappump'] = Trappump
+    
+    
+    rowdict['Overscn_H'] = 0
+    #'Ovrscn_H'             f(add_v_overscan)?         
+    
+    volt_cross = dict(IDL_V='IDL',IDH_V='IDH',
+                          IG1_T1_V='IG1_1_T',IG1_T2_V='IG1_2_T',IG1_T3_V='IG1_3_T',
+                          IG1_B1_V='IG1_1_B',IG1_B2_V='IG1_2_B',IG1_B3_V='IG1_3_B',
+                          IG2_T_V='IG2_T',IG2_B_V='IG2_B',
+                          OD_T1_V='OD_1_T',OD_T2_V='OD_2_T',OD_T3_V='OD_3_T',
+                          OD_B1_V='OD_1_T',OD_B2_V='OD_2_T',OD_B3_V='OD_3_T',
+                          RD_T_V='RD_T',RD_B_V='RD_B')
+    
+    for key in volt_cross.keys():
+        rowdict[key] = scriptcol[volt_cross[key]]/1.E3
+    
+    return rowdict
+    
+def generate_Explog(scrdict,defaults,elvis='6.0.0',explog=None,OBSID0=1000,
+                        date=pilib.dtobj_default):
+    """ 
+    
+    DEVELOPMENT NOTES:
+        
+    To be generated: (EASY)
+        *ObsID, *File_name, *CCD, *ROE=ROE1, *DATE, *BUNIT=ADU,
+        SPW_clk=0?,EGSE_ver=elvis,
+    
+    To be provided in defaults: (EASY)   
+        Lab_ver,Con_file,CnvStart,
+        Flsh-Rdout_e_time,C.Inj-Rdout_e_time,
+        FPGA_ver,Chmb_pre,R1CCD[1,2,3]T[T,B]
+        
+    To be read/parsed/processed from struct: (DIFFICULT)
+        
+        SerRDel?,SumWell?,
+        IniSweep?,+etc.
+    
+    
+    """
+    
+    
+    Nscriptcols = scrdict['Ncols']
+    
+    
+    expcolkeys = ELtools.columnlist[elvis]
+    if explog is None:
+        explog = ELtools.iniExplog(elvis)
+    else:
+        assert isinstance(explog,astropy.table.table.Table)
+    
+    
+    ixObsID = OBSID0
+    
+    for iscrcol in range(1,Nscriptcols+1):
+        
+        scriptcol = scrdict['col%i' % iscrcol]
+        N = scriptcol['frames']
+        inputkeys = [key for key in scriptcol.keys() if key != 'frames']
+        
+        rowdict = {}
+        for eckey in expcolkeys: rowdict[eckey] = None
+        
+        for subixrow in range(N):
+            
+            rowdict.update(defaults)
+            #for ecol in columns:
+            #    rowdict[ecol] = defaults[ecol]
+            
+            rowdict = _update_fromscript(rowdict,scriptcol)
+            
+            for key in inputkeys:
+                rowdict[key] = scriptcol[key]
+            
+            
+            rowdict['ROE'] = 'ROE1'
+            rowdict['ADU'] = 'ADU' 
+            rowdict['EGSE_ver'] = elvis
+            
+            exptsec = scriptcol['exptime']/1.e3
+            
+            for ixCCD in range(1,4):
+                
+                dmy = date.strftime('%d%m%y')
+                hms = date.strftime('%H%M%S')
+            
+                rowdict['ObsID'] = ixObsID
+                rowdict['File_name'] = 'EUC_%i_%sD_%sT_ROE1_CCD%i' % (ixObsID,dmy,hms,ixCCD)
+                rowdict['DATE'] = '%sD%sT' % (dmy,hms)
+                rowdict['CCD'] = 'CCD%i' % ixCCD
+
+                       
+                explog.add_row(vals=[rowdict[key] for key in expcolkeys])
+                
+                date = date + datetime.timedelta(seconds=80.+exptsec)
             
             ixObsID += 1
                     

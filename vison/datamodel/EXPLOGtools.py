@@ -78,6 +78,34 @@ dtypes_dict = {'ObsID':'i','File_name':'S40','CCD':'S4','ROE':'S5','DATE':'S20',
               'IG1_V':'f','IG2_V':'f','ODCCD1_V':'f',
               'RDCCD1_V':'f','ODCCD2_V':'f','RDCCD2_V':'f','ODCCD3_V':'f','RDCCD3_V':'f'}
 
+script_keys_cross = dict(
+              PROGRAM='program',TEST='test',CCD1_SN='sn_ccd1',CCD2_SN='sn_ccd2',
+              CCD3_SN='sn_ccd3',Operator='operator',Exptime='exptime',
+              Chrg_inj='chinj', On_cycle='chinj_rows_on',Off_cycl='chinj_rows_off',
+              pls_leng='id_width',pls_del='id_delay',#'SerRdDel':'i',
+              Trappump='tpump', 
+              TP_Ser_S='ser_shuffles',TP_Ver_S='ver_shuffles',
+              TP_DW_V='dwell_v',TP_DW_H='dwell_h',TOI_flsh='toi_flush',TOI_flu='toi_flush',
+              TOI_pump='toi_tpump',TOI_read='toi_rdout',TOI_CInj='toi_chinj',
+              Invflshp='sinvflushp',Invflush='sinvflush',
+              Flushes='flushes',Vstart='vstart',Vend='vend',Ovrscn_H='add_h_overscan',
+              #SumWell:'i',IniSweep:'i',
+              M_Steps='matrix_size',M_St_Sze='step_size',Wavelength='wavelength',
+              Mirr_pos='pos_cal_mirror',RPSU_SN='sn_rpsu',ROE_SN='sn_roe',
+              #IDL_V='f',IDH_V='f',IG1_T1_V='f',IG1_T2_V='f',IG1_T3_V='f',
+              #IG1_B1_V='f',IG1_B2_V='f',IG1_B3_V='f',IG2_T_V='f',IG2_B_V='f',
+              #OD_T1_V='f',OD_T2_V='f',OD_T3_V='f',OD_B1_V='f',OD_B2_V='f',
+              #OD_B3_V='f',RD_T_V='f',RD_B_V='f',TOI_flsh='i',
+              #Lim_scan='i',
+              Ovrscn_V='add_v_overscan',
+              #V_clocks='S10',S_clocks='S10',
+              #CLK_ROE1='S10',CLK_ROE2='S10',ROE1_On='i',ROE2_On='i',
+              #Lght_int='f',Chmb_pre='f',R2CCD1TT='f',R2CCD1TB='f',R2CCD2TT='f',
+              #R2CCD2TB='f',R2CCD3TT='f',R2CCD3TB='f',
+              #IG1_V='f',IG2_V='f',ODCCD1_V='f',
+              #RDCCD1_V='f',ODCCD2_V='f',RDCCD2_V='f',ODCCD3_V='f',RDCCD3_V='f') 
+              )
+
 
 def iniExplog(elvis):
     """ """
@@ -139,7 +167,6 @@ class ExpLogClass():
     
     def __init__(self,elvis='5.7.04'):
         """ """
-        
         self.elvis = elvis
         
     def loadfromfile(self,expfile,elvis='5.7.04'):
@@ -148,19 +175,16 @@ class ExpLogClass():
     
     def writeto(self,outfile):
         """ """
-        
         self.explog.write(outfile,format='ascii')
     
     def iniExplog(self):
         """ """
-        
         self.explog = iniExplog(self.elvis)
     
-        return None
     
-    
-    def addRow(self):
+    def addRow(self,row):
         """ """
+        self.explog.add_row(row.as_void().tolist())
     
 
 
