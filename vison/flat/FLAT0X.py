@@ -30,6 +30,7 @@ from vison.datamodel import HKtools
 from vison.datamodel import ccd
 from vison.datamodel import generator
 import datetime
+from copy import deepcopy
 
 # END IMPORT
 
@@ -37,30 +38,23 @@ isthere = os.path.exists
 
 
 FLAT0X_commvalues = dict(program='CALCAMP',
-  IDL=13000,IDH=18000,IG1=5000,IG2=5000,
-  OD_1=26000,RD_1=16000,
-  OD_2=26000,RD_2=16000,
-  OD_3=26000,RD_3=16000,
   iphi1=1,iphi2=1,iphi3=1,iphi4=0,
-  readmode_1='Normal',readmode_2='Normal',
+  readmode_1='Normal',
   vertical_clk = 'Tri-level',serial_clk='Even mode',
   flushes=7,exptime=0.,shutter='Thorlabs SC10',
   electroshutter=0,vstart=1,vend=2066,
-  sinvflush=0,chinj=0,chinj_rows_on=20,
-  chinj_rows_off=20,chinj_repeat=1,id_width=100,
-  id_delay=100,tpump=0,ser_shuffles=1,
-  ver_shuffles=1,dwell_v=0,dwell_h=0,motor=0,
-  matrix_size=2,step_size=100,add_h_overscan=0,
-  add_v_overscan=0,toi_flush=143.,toi_tpump=1000.,
+  sinvflush=0,chinj=0,
+  tpump=0,motor=0,
+  add_h_overscan=0,add_v_overscan=0,
+  toi_flush=143.,toi_tpump=1000.,
   toi_rdout=1000.,toi_chinj=1000.,
   wavelength='Filter 4',pos_cal_mirror=polib.mirror_nom['Filter4'],
-  operator='who',sn_ccd1='x',sn_ccd2='y',sn_ccd3='z',
-  sn_roe='rr',sn_rpsu='pp',
   comments='')
   
 
 
-def build_FLAT0X_scriptdict(exptimes,wavelength=800,testkey='FLAT0X',diffvalues=dict()):
+def build_FLAT0X_scriptdict(exptimes,wavelength=800,testkey='FLAT0X',
+                            diffvalues=dict(),elvis='6.0.0'):
     """Builds FLAT0X script structure dictionary.
     
     :param exptimes: list of ints, exposure times.
@@ -83,7 +77,10 @@ def build_FLAT0X_scriptdict(exptimes,wavelength=800,testkey='FLAT0X',diffvalues=
 
     Ncols = len(FLAT0X_sdict.keys())    
     FLAT0X_sdict['Ncols'] = Ncols
+                
+    commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+    commvalues.update(FLAT0X_commvalues)
     
-    FLAT0X_sdict = sc.update_structdict(FLAT0X_sdict,FLAT0X_commvalues,diffvalues)
+    FLAT0X_sdict = sc.update_structdict(FLAT0X_sdict,commvalues,diffvalues)
     
     return FLAT0X_sdict

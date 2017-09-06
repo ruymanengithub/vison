@@ -28,41 +28,38 @@ from vison.datamodel import scriptic as sc
 #from vison.datamodel import ccd
 #from vison.datamodel import generator
 #import datetime
-
+from copy import deepcopy
 # END IMPORT
 
 isthere = os.path.exists
 
 
+IG1comm = 6000
+IG2comm = 4000
 
 CHINJ02_commvalues = dict(program='CALCAMP',test='CHINJ02',
-  #IDL=13000,IDH=18000,
-  IG1=6000,IG2=4000,
-  OD_1=26000,RD_1=16000,
-  OD_2=26000,RD_2=16000,
-  OD_3=26000,RD_3=16000,
+  IG1_1_T=IG1comm,IG1_2_T=IG1comm,IG1_3_T=IG1comm,
+  IG1_1_B=IG1comm,IG1_2_B=IG1comm,IG1_3_B=IG1comm,
+  IG2_T=IG2comm,IG2_B=IG2comm,
   iphi1=1,iphi2=1,iphi3=1,iphi4=0,
-  readmode_1='Normal',readmode_2='Normal',
+  readmode_1='Normal',
   vertical_clk = 'Tri-level',serial_clk='Even mode',
   flushes=7,exptime=0.,shutter='Thorlabs SC10',
   electroshutter=0,vstart=1,vend=2066,
   sinvflush=0,chinj=1,chinj_rows_on=30,
-  chinj_rows_off=100,chinj_repeat=15,id_width=60,
-#  id_delay=100,
-  tpump=0,ser_shuffles=1,
-  ver_shuffles=1,dwell_v=0,dwell_h=0,motor=0,
-  matrix_size=2,step_size=100,add_h_overscan=0,
-  add_v_overscan=0,toi_flush=143.,toi_tpump=1000.,
+  chinj_rows_off=100,id_width=60,
+  tpump=0,motor=0,
+  add_h_overscan=0,add_v_overscan=0,
+  toi_flush=143.,toi_tpump=1000.,
   toi_rdout=1000.,toi_chinj=1000.,
   wavelength='Filter 4',pos_cal_mirror=polib.mirror_nom['Filter4'],
-  operator='who',sn_ccd1='x',sn_ccd2='y',sn_ccd3='z',
-  sn_roe='rr',sn_rpsu='pp',
   comments='')
   
 
 
 
-def build_CHINJ02_scriptdict(IDLs,IDH,id_delays,toi_chinj,diffvalues=dict()):
+def build_CHINJ02_scriptdict(IDLs,IDH,id_delays,toi_chinj,diffvalues=dict(),
+                             elvis='6.0.0'):
     """ 
     Builds CHINJ02 script structure dictionary.
     
@@ -73,6 +70,9 @@ def build_CHINJ02_scriptdict(IDLs,IDH,id_delays,toi_chinj,diffvalues=dict()):
     :param diffvalues: dict, opt, differential values.
     
     """
+    
+    CCDs = [1,2,3]
+    halves = ['T','B']
     
     assert len(IDLs) == 2
     assert len(id_delays) == 2
@@ -105,6 +105,9 @@ def build_CHINJ02_scriptdict(IDLs,IDH,id_delays,toi_chinj,diffvalues=dict()):
     Ncols = len(CHINJ02_sdict.keys())    
     CHINJ02_sdict['Ncols'] = Ncols
     
-    CHINJ02_sdict = sc.update_structdict(CHINJ02_sdict,CHINJ02_commvalues,diffvalues)
+    commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+    commvalues.update(CHINJ02_commvalues)
+                 
+    CHINJ02_sdict = sc.update_structdict(CHINJ02_sdict,commvalues,diffvalues)
     
     return CHINJ02_sdict

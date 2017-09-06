@@ -28,7 +28,7 @@ from vison.datamodel import scriptic as sc
 #from vison.datamodel import ccd
 #from vison.datamodel import generator
 #import datetime
-
+from copy import deepcopy
 # END IMPORT
 
 isthere = os.path.exists
@@ -36,11 +36,7 @@ isthere = os.path.exists
 
 
 CHINJ01_commvalues = dict(program='CALCAMP',test='CHINJ01',
-#  IDL=13000,IDH=18000,IG1=5000,
-  IDH=18000,IG2=5500,
-  OD_1=26000,RD_1=16000,
-  OD_2=26000,RD_2=16000,
-  OD_3=26000,RD_3=16000,
+  IG2_T=5500,IG2_B=5500,
   iphi1=1,iphi2=1,iphi3=1,iphi4=0,
   readmode_1='Normal',readmode_2='Normal',
   vertical_clk = 'Tri-level',serial_clk='Even mode',
@@ -61,7 +57,8 @@ CHINJ01_commvalues = dict(program='CALCAMP',test='CHINJ01',
   
 
 
-def build_CHINJ01_scriptdict(IDL,IDH,IG1s,id_delays,toi_chinj,diffvalues=dict()):
+def build_CHINJ01_scriptdict(IDL,IDH,IG1s,id_delays,toi_chinj,diffvalues=dict(),
+                             elvis='6.0.0'):
     """
     Builds CHINJ01 script structure dictionary.
     
@@ -73,6 +70,9 @@ def build_CHINJ01_scriptdict(IDL,IDH,IG1s,id_delays,toi_chinj,diffvalues=dict())
     :param diffvalues: dict, opt, differential values.
     
     """
+    
+    CCDs = [1,2,3]
+    halves = ['T','B']
     
     assert len(IG1s) == 2
     assert len(id_delays) == 2
@@ -90,8 +90,14 @@ def build_CHINJ01_scriptdict(IDL,IDH,IG1s,id_delays,toi_chinj,diffvalues=dict())
     for i,IG1 in enumerate(IG1v):
         colkey = 'col%i' % (i+1,)
         #print colkey
-        CHINJ01_sdict[colkey] = dict(frames=1,IG1=IG1,IDL=IDL,IDH=IDH,
+        CHINJ01_sdict[colkey] = dict(frames=1,IDL=IDL,IDH=IDH,
                      id_delay=id_delays[0],toi_chinj=toi_chinj)
+        
+        for CCD in CCDs:
+            for half in halves:
+                CHINJ01_sdict[colkey]['IG1_%i_%s' % (CCD,half)] = IG1
+        
+        
         colcounter += 1
     
     # Second Injection Drain Delay
@@ -101,14 +107,21 @@ def build_CHINJ01_scriptdict(IDL,IDH,IG1s,id_delays,toi_chinj,diffvalues=dict())
     for j,IG1 in enumerate(IG1v):
         colkey = 'col%i' % (colstart+j,)
         #print colkey
-        CHINJ01_sdict[colkey] = dict(frames=1,IG1=IG1,IDL=IDL,IDH=IDH,
-                     id_delay=id_delays[1],toi_chinj=toi_chinj)    
+        CHINJ01_sdict[colkey] = dict(frames=1,IDL=IDL,IDH=IDH,
+                     id_delay=id_delays[1],toi_chinj=toi_chinj)
+        
+        for CCD in CCDs:
+            for half in halves:
+                CHINJ01_sdict[colkey]['IG1_%i_%s' % (CCD,half)] = IG1
 
     
     Ncols = len(CHINJ01_sdict.keys())    
     CHINJ01_sdict['Ncols'] = Ncols
     
-    CHINJ01_sdict = sc.update_structdict(CHINJ01_sdict,CHINJ01_commvalues,diffvalues)
+    commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+    commvalues.update(CHINJ01_commvalues)
+    
+    CHINJ01_sdict = sc.update_structdict(CHINJ01_sdict,commvalues,diffvalues)
     
     return CHINJ01_sdict
 

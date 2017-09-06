@@ -40,6 +40,7 @@ from vison.datamodel import scriptic as sc
 #from vison.pipe import FlatFielding as FFing
 #from vison.support.report import Report
 #from vison.support import files
+from copy import deepcopy
 # END IMPORT
 
 isthere = os.path.exists
@@ -56,30 +57,22 @@ PTC0X_structure = dict(col1=dict(N=5,Exptime=0),
                    Ncols=6)
 
 PTC0X_commvalues = dict(program='CALCAMP',
-  IDL=13000,IDH=18000,IG1=5000,IG2=5000,
-  OD_1=26000,RD_1=16000,
-  OD_2=26000,RD_2=16000,
-  OD_3=26000,RD_3=16000,
   iphi1=1,iphi2=1,iphi3=1,iphi4=0,
-  readmode_1='Normal',readmode_2='Normal',
+  readmode_1='Normal',
   vertical_clk = 'Tri-level',serial_clk='Even mode',
   flushes=7,exptime=0.,shutter='Thorlabs SC10',
   electroshutter=0,vstart=1,vend=2066,
-  sinvflush=1,chinj=0,chinj_rows_on=20,
-  chinj_rows_off=20,chinj_repeat=1,id_width=100,
-  id_delay=100,tpump=0,ser_shuffles=1,
-  ver_shuffles=1,dwell_v=0,dwell_h=0,motor=0,
-  matrix_size=2,step_size=100,add_h_overscan=0,
-  add_v_overscan=0,toi_flush=143.,toi_tpump=1000.,
+  sinvflush=1,chinj=0,tpump=0,motor=0,
+  add_h_overscan=0,add_v_overscan=0,
+  toi_flush=143.,toi_tpump=1000.,
   toi_rdout=1000.,toi_chinj=1000.,
   wavelength = 'Filter 4', pos_cal_mirror=polib.mirror_nom['Filter4'],
-  operator='who',sn_ccd1='x',sn_ccd2='y',sn_ccd3='z',
-  sn_roe='rr',sn_rpsu='pp',
   comments='')
   
 
 
-def build_PTC0X_scriptdict(exptimes,frames,wavelength=800,diffvalues=dict()):
+def build_PTC0X_scriptdict(exptimes,frames,wavelength=800,diffvalues=dict(),
+                           elvis='6.0.0'):
     """Builds PTC0X script structure dictionary.
     
     :param exptimes: list of ints [ms], exposure times.
@@ -112,7 +105,12 @@ def build_PTC0X_scriptdict(exptimes,frames,wavelength=800,diffvalues=dict()):
     Ncols = len(PTC0X_sdict.keys())    
     PTC0X_sdict['Ncols'] = Ncols
     
-    PTC0X_sdict = sc.update_structdict(PTC0X_sdict,PTC0X_commvalues,diffvalues)
+               
+               
+    commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+    commvalues.update(PTC0X_commvalues)
+    
+    PTC0X_sdict = sc.update_structdict(PTC0X_sdict,commvalues,diffvalues)
     
     return PTC0X_sdict
 
