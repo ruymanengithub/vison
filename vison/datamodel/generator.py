@@ -20,7 +20,9 @@ from vison.pipe import lib as pilib
 import datetime
 import os
 import string as st
-import astropy
+import astropy as astpy
+from time import time
+import numpy as np
 # END IMPORT
 
 #def generate_Explog_old(struct,defaults,elvis='6.0.0',date=pilib.dtobj_default):
@@ -139,7 +141,7 @@ def generate_Explog(scrdict,defaults,elvis='6.0.0',explog=None,OBSID0=1000,
         ixObsID = OBSID0
         
     else:
-        assert isinstance(explog,astropy.table.table.Table)
+        assert isinstance(explog,astpy.table.table.Table)
         
         ixObsID = explog['ObsID'][-1]+1
         
@@ -200,58 +202,82 @@ def generate_Explog(scrdict,defaults,elvis='6.0.0',explog=None,OBSID0=1000,
             
     return explog
 
+def _fill_HKrow(row,vals):
+    """ """
+    rowdict = {}
+    
+    for key in vals:
+        val = vals[key]
+        if isinstance(val,str):
+            rowdict[key] = row[val]
+        else:
+            rowdict[key] = val
+    return rowdict
 
-
-def generate_HK(explog,defaults,datapath='',elvis='6.0.0'):
+def _fill_HKcols(HKfile,row,vals):
     """ """
     
-    HKkeys = HKtools.allHK_keys[elvis]
+    nrows = len(HKfile)
     
-    Nobs = len(explog['ObsID'])
+    for key in vals:
+        val = vals[key]
+        dtype = HKfile[key].dtype
+        unity = np.ones(nrows,dtype=dtype)
+        
+        if isinstance(val,str):
+            HKfile[key] = row[val] * unity
+        else:
+            HKfile[key] = val * unity
+                   
+    return HKfile
     
+
+        
+
+def generate_HK(explog,vals,datapath='',elvis='6.0.0'):
+    """ """
+    
+    rdouttime = 71 # seconds
+    
+    #HKkeys = HKtools.allHK_keys[elvis]
+    #Nobs = len(explog['ObsID'])    
     
     doneObsids = []
+    
+    t0 = time()
     
     for ixobs,obsid in enumerate(explog['ObsID']):
         
         if obsid in doneObsids: continue # to avoid duplications 
-                                     # (each CCD has an entry in explog, so 3 entries per OBSID)
+                                         # (each CCD has an entry in explog, so 3 entries per OBSID)
         
         idate = explog['DATE'][ixobs]
         
         idtobj = pilib.get_dtobj(idate)
         
-        if ixobs < Nobs-1:
-            ip1dtobj = pilib.get_dtobj(explog['DATE'][ixobs+1])
-            dt = (ip1dtobj-idtobj).seconds
-        else:
-            dt = 90
-        
         HKfilef = 'HK_%s_%s_ROE1.txt' % (obsid,idate)
         
         HKfilef = os.path.join(datapath,HKfilef)
         
-        HKfile = HKtools.iniHK_QFM(elvis)
+        HKfile = HKtools.iniHK_QFM(elvis,length=rdouttime)
+
+        TimeStamp = np.array([idtobj+datetime.timedelta(seconds=sec) for sec in np.arange(rdouttime)])        
         
-        for sec in range(dt):
-            iidtobj = idtobj + datetime.timedelta(seconds=sec)
-            
-            iTimeStamp = iidtobj.strftime('%H:%M:%S')
-            
-            rowdict = {}
-            
-            for HKkey in HKkeys:
-                rowdict[HKkey] = defaults[HKkey]
-                
-            rowdict['TimeStamp'] = iTimeStamp
-            
-            HKfile.add_row(vals=[rowdict[key] for key in HKkeys])
+        HKfile['TimeStamp'] = TimeStamp
+        
+        HKfile = _fill_HKcols(HKfile,explog[ixobs],vals)
         
         
         HKfile.write(HKfilef,format='ascii',overwrite=True,delimiter='\t')
         
         doneObsids.append(obsid)
         
+    t1 = time()
+    dtmin = (t1-t0)/60.
+    nobs = len(doneObsids)
+    print '%.3f minutes in generating %i HK files' % (dtmin,nobs)
+
+    return None   
 
 #def generate_FITS(wavelength,explog,datapath='',elvis='6.0.0'):
 #    """ """

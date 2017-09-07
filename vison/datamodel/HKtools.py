@@ -22,7 +22,7 @@ import pylab
 import matplotlib
 
 from astropy.io import ascii
-from astropy.table import Table
+from astropy.table import Table,Column
 import string as st
 import numpy as np
 # END IMPORT
@@ -90,6 +90,7 @@ allHK_keys['6.0.0'] = ['TimeStamp','HK_OD_Top_CCD1','HK_OD_Bottom_CCD1',
 'HK_Temp2_RPSU','HK_Video_TOP','HK_Video_BOT','HK_FPGA_TOP','HK_FPGA_BOT',
 'HK_ID1','HK_ID2','HK_Viclk_ROE']
 
+allHK_keys['6.1.0'] = allHK_keys['6.0.0']
 
 allstats = ['mean','std','min','max']
 
@@ -146,7 +147,7 @@ def loadHK_QFM(filename,elvis='5.8.X'):
     return data
 
 
-def iniHK_QFM(elvis='6.0.0'):
+def iniHK_QFM(elvis='6.0.0',length=0):
     """ """
     columns = allHK_keys[elvis]    
     
@@ -154,7 +155,15 @@ def iniHK_QFM(elvis='6.0.0'):
     for column in columns[1:]:
         dtypes.append('f')
     
-    HK= Table(names=columns,dtype=dtypes)
+    if length>0:
+        
+        ColList = []
+        for i,column in enumerate(columns):
+            ColList.append(Column(name=column,dtype=dtypes[i],length=length))
+        HK = Table(ColList)
+        
+    else:
+        HK= Table(names=columns,dtype=dtypes)
     
     return HK
 
