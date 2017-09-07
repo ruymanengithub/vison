@@ -16,60 +16,21 @@ Created on Tue Aug 29 11:08:56 2017
 from pdb import set_trace as stop
 from vison.datamodel import EXPLOGtools as ELtools
 from vison.datamodel import HKtools
+from vison.datamodel import ccd
 from vison.pipe import lib as pilib
+from vison.point import lib as polib
 import datetime
 import os
 import string as st
 import astropy as astpy
 from time import time
 import numpy as np
+
 # END IMPORT
 
-#def generate_Explog_old(struct,defaults,elvis='6.0.0',date=pilib.dtobj_default):
-#    """ """
-#    
-#    
-#    Nscriptcols = struct['Ncols']
-#    
-#    columns = ELtools.columnlist[elvis]
-#    
-#    explog = ELtools.iniExplog(elvis)
-#    
-#    ixObsID = 1000
-#    
-#    for iscrcol in range(1,Nscriptcols+1):
-#        scriptcol = struct['col%i' % iscrcol]
-#        N = scriptcol['N']
-#        inputkeys = [key for key in scriptcol.keys() if key != 'frames']
-#        
-#        rowdict = {}
-#        
-#        for subixrow in range(N):
-#        
-#            for ecol in columns:
-#                rowdict[ecol] = defaults[ecol]
-#        
-#            for key in inputkeys:
-#                rowdict[key] = scriptcol[key]
-#            
-#            for ixCCD in range(1,4):
-#                
-#                dmy = date.strftime('%d%m%y')
-#                hms = date.strftime('%H%M%S')
-#            
-#                rowdict['ObsID'] = ixObsID
-#                rowdict['File_name'] = 'EUC_%i_%sD_%sT_ROE1_CCD%i' % (ixObsID,dmy,hms,ixCCD)
-#                rowdict['DATE'] = '%sD%sT' % (dmy,hms)
-#                rowdict['CCD'] = 'CCD%i' % ixCCD
-#                
-#                explog.add_row(vals=[rowdict[key] for key in columns])
-#                
-#                date = date + datetime.timedelta(seconds=90)
-#            
-#            ixObsID += 1
-#                    
-#            
-#    return explog
+
+Quads = ['E','F','G','H']
+rdouttime = 71 # seconds, integer
 
 
 def _update_fromscript(rowdict,scriptcol):
@@ -202,17 +163,18 @@ def generate_Explog(scrdict,defaults,elvis='6.0.0',explog=None,OBSID0=1000,
             
     return explog
 
-def _fill_HKrow(row,vals):
-    """ """
-    rowdict = {}
-    
-    for key in vals:
-        val = vals[key]
-        if isinstance(val,str):
-            rowdict[key] = row[val]
-        else:
-            rowdict[key] = val
-    return rowdict
+#def _fill_HKrow(row,vals): # obsolete
+#    """ """
+#    rowdict = {}
+#    
+#    for key in vals:
+#        val = vals[key]
+#        if isinstance(val,str):
+#            rowdict[key] = row[val]
+#        else:
+#            rowdict[key] = val
+#    return rowdict
+
 
 def _fill_HKcols(HKfile,row,vals):
     """ """
@@ -230,18 +192,12 @@ def _fill_HKcols(HKfile,row,vals):
             HKfile[key] = val * unity
                    
     return HKfile
-    
-
         
 
 def generate_HK(explog,vals,datapath='',elvis='6.0.0'):
     """ """
     
-    rdouttime = 71 # seconds
-    
-    #HKkeys = HKtools.allHK_keys[elvis]
-    #Nobs = len(explog['ObsID'])    
-    
+        
     doneObsids = []
     
     t0 = time()
@@ -259,9 +215,9 @@ def generate_HK(explog,vals,datapath='',elvis='6.0.0'):
         
         HKfilef = os.path.join(datapath,HKfilef)
         
-        HKfile = HKtools.iniHK_QFM(elvis,length=rdouttime)
+        HKfile = HKtools.iniHK_QFM(elvis,length=int(rdouttime))
 
-        TimeStamp = np.array([idtobj+datetime.timedelta(seconds=sec) for sec in np.arange(rdouttime)])        
+        TimeStamp = np.array([idtobj+datetime.timedelta(seconds=sec) for sec in np.arange(int(rdouttime))])        
         
         HKfile['TimeStamp'] = TimeStamp
         
@@ -279,81 +235,229 @@ def generate_HK(explog,vals,datapath='',elvis='6.0.0'):
 
     return None   
 
-#def generate_FITS(wavelength,explog,datapath='',elvis='6.0.0'):
-#    """ """
-#    
-#    NAXIS1,NAXIS2 = 4238,4132
-#    
-#    maxexptime = explog['Exptime'].max()
-#    flatlevel = 200.
-#    biaslevel = 2000.
-#    pflux = 1.E4 # adu
-#    pfwhm = 9./12. # pixels
-#    
-#    FilterID = pilib.get_FW_ID(wavelength)
-#    
-#    mirror_nom = polib.mirror_nom[FilterID]
-#    
-#    waivedkeys = ['File_name','Flsh-Rdout_e_time','C.Inj-Rdout_e_time',
-#                  'Wavelength']
-#    
-#    for ixobs,obsid in enumerate(explog['ObsID']):
-#        
-#        
-#        idate = explog['DATE'][ixobs]
-#        iCCD = explog['CCD'][ixobs]
-#        iexptime = explog['Exptime'][ixobs]
-#        iMirr_pos = explog['Mirr_pos'][ixobs]
-#        
-#        #if iexptime == 0.: continue # TESTS
-#        
-#        idtobj = pilib.get_dtobj(idate)
-#        
-#        dmy = idtobj.strftime('%d%m%y')
-#        HMS = idtobj.strftime('%H%M%S')
-#
-#        FITSf = 'EUC_%s_%sD_%sT_ROE1_%s.fits' % \
-#            (obsid,dmy,HMS,iCCD)
-#        
-#        FITSf = os.path.join(datapath,FITSf)
-#        
-#        ccdobj = ccd.CCD()
-#        
-#        img = np.zeros(shape=(NAXIS1,NAXIS2),dtype='float32')
-#        
-#        ccdobj.add_extension(data=None)
-#        ccdobj.add_extension(data=img,label='ROE1_%s' % iCCD)
-#        
-#        ccdobj.simadd_flatilum(levels=dict(E=flatlevel*iexptime/maxexptime*1.,
-#                                           F=flatlevel*iexptime/maxexptime*1.1,
-#                                           G=flatlevel*iexptime/maxexptime*1.2,
-#                                           H=flatlevel*iexptime/maxexptime*1.3))
-#        
-#        if iexptime > 0:
-#            
-#            ipflux = pflux * iexptime/maxexptime
-#            ipfwhm = pfwhm * (1.+((iMirr_pos-mirror_nom)/0.2)**2.)
-#            
-#            ccdobj.simadd_points(ipflux,ipfwhm,CCDID=iCCD,dx=0,dy=0)
-#        
-#        
-#        ccdobj.simadd_poisson()
-#        
-#        ccdobj.simadd_bias(levels=dict(E=biaslevel*1.,
-#                                           F=biaslevel*1.1,
-#                                           G=biaslevel*1.2,
-#                                           H=biaslevel*1.3))
-#        ccdobj.simadd_ron()
-#        
-#        ccdobj.extensions[-1].data = np.round(ccdobj.extensions[-1].data).astype('int32')
-#
-#        ccdobj.extensions[-1].header['WAVELENG'] = explog['Wavelength'][ixobs]
-#        
-#        for key in ELtools.columnlist[elvis]:
-#            if key not in waivedkeys:
-#                ccdobj.extensions[-1].header[key] = explog[key][ixobs]
-#        
-#        ccdobj.writeto(FITSf,clobber=True,unsigned16bit=True)
-        
+
+def _add_ron_window_round(ccdobj,vstart,vend):
+    """ """
     
+    ccdobj.simadd_ron()
+    ccdobj.extensions[-1].data = np.round(ccdobj.extensions[-1].data).astype('int32')    
+    
+    if vstart != 0 or vend != 2066:
+        ccdobj.sim_window(vstart,vend)
+    
+    return ccdobj
+
+gen_bias_levels = dict(E=2300.,F=2400.,G=2500.,H=2600.)
+
+expt_FWC_flat = dict(Filter1=2.E3,
+                Filter2=2.E3,
+                Filter3=2.E3,
+                Filter4=2.E3,
+                Filter5=2.E3,
+                Filter6=200.*1.E3)
+
+expt_FWC_point = dict(Filter1=2.E3,
+                Filter2=2.E3,
+                Filter3=2.E3,
+                Filter4=2.E3,
+                Filter5=2.E3,
+                Filter6=200.*1.E3)
+
+fwhm_nom = 9./12.
+
+def IMG_bias_gen(ccdobj,ELdict):
+    """ """
+    
+    vstart = ELdict['Vstart']
+    vend = ELdict['Vend']
+
+    ccdobj.simadd_bias(levels=gen_bias_levels)
+    
+    ccdobj = _add_ron_window_round(ccdobj,vstart,vend)
+
+    ccdobj.extensions[-1].data = np.round(ccdobj.extensions[-1].data).astype('int32')
+
+    return ccdobj
+
+def IMG_flat_gen(ccdobj,ELdict):
+    """ """
+
+    vstart = ELdict['Vstart']
+    vend = ELdict['Vend']
+    
+    wavelength = ELdict['Wavelength']
+    exptime = ELdict['Exptime']
+    
+    tsatur = expt_FWC_flat['Filter%i' % wavelength]
+    
+    fluence = 2.**16 * exptime / tsatur
+    
+    ilumlevels = dict(E=fluence,F=fluence,G=fluence,H=fluence)
+    
+    ccdobj.simadd_flatilum(levels=ilumlevels)
+        
+    ccdobj.simadd_poisson()
+
+    ccdobj.simadd_bias(levels=gen_bias_levels) # add bias    
+
+    ccdobj = _add_ron_window_round(ccdobj,vstart,vend)
+
+    ccdobj.extensions[-1].data = np.round(ccdobj.extensions[-1].data).astype('int32')
+
+    return ccdobj
+    
+def IMG_chinj_gen(ccdobj,ELdict,):
+    """ """
+    
+    inj_threshold = 7.5
+    
+    vstart = ELdict['Vstart']
+    vend = ELdict['Vend']    
+    
+    chinj = ELdict['Chrg_inj']
+    tpump = ELdict['Trappump']
+    
+    stCCD = ELdict['CCD']
+    iCCD = int(stCCD[-1])
+    
+    noff = ELdict['Off_cycl']
+    non = ELdict['On_cycle']
+
+    IG1 = ELdict['IG1_T%i_V' % iCCD] # don't care if IG1_B is different
+    IG2 = ELdict['IG2_T_V'] 
+    IDL = ELdict['IDL_V']
+    
+    doInject = ((chinj == 1) or (tpump ==1)) and (IDL < IG1+inj_threshold)
+    
+    if doInject:
+        
+        injlevel = 2000. - max(0,IG1-IG2)/0.5*2000.
+        
+        injlevels = dict(E=injlevel,F=injlevel,G=injlevel,H=injlevel)
+                              
+        ccdobj.simadd_flatilum(levels=injlevels)
+        
+        ccdobj.simadd_injection(levels=injlevels,on=non,off=noff)
+
+
+    ccdobj.simadd_bias(levels=gen_bias_levels) # add bias    
+
+    ccdobj = _add_ron_window_round(ccdobj,vstart,vend)
+
+    ccdobj.extensions[-1].data = np.round(ccdobj.extensions[-1].data).astype('int32')
+    
+
+    return ccdobj
+    
+def IMG_point_gen(ccdobj,ELdict):
+    """ """
+
+    vstart = ELdict['Vstart']
+    vend = ELdict['Vend']
+    
+    wavelength = ELdict['Wavelength']
+    exptime = ELdict['Exptime']
+    mirror = ELdict['Mirr_pos']
+    iCCD = ELdict['CCD']
+    
+    mirror_nom = polib.mirror_nom['Filter%i' % wavelength]    
+    tsatur = expt_FWC_flat['Filter%i' % wavelength]
+    
+    fluence = 2.*2.**16 * exptime / tsatur
+    
+    fwhm = fwhm_nom * (1.+((mirror-mirror_nom)/0.2)**2.)
+    
+    ccdobj.simadd_points(fluence,fwhm,CCDID=iCCD,dx=0,dy=0)
+
+    ccdobj.simadd_bias(levels=gen_bias_levels) # add bias    
+
+    ccdobj = _add_ron_window_round(ccdobj,vstart,vend)
+
+    ccdobj.extensions[-1].data = np.round(ccdobj.extensions[-1].data).astype('int32')
+
+    
+    return ccdobj
+
+
+def generate_FITS(ELdict,funct,filename='',elvis='6.0.0'):
+    """ """
+    
+    NAXIS1,NAXIS2 = 4238,4132
+    
+    
+    waivedkeys = ['File_name','Flsh-Rdout_e_time','C.Inj-Rdout_e_time',
+                  'Wavelength']
+    CCD = ELdict['CCD']
+    
+    
+    # CCD object initialisation
+    
+    ccdobj = ccd.CCD()
+    img = np.zeros(shape=(NAXIS1,NAXIS2),dtype='float32')        
+    ccdobj.add_extension(data=None)
+    ccdobj.add_extension(data=img,label='ROE1_%s' % CCD)
+    
+    
+    ccdobj = funct(ccdobj,ELdict)
+    
+    ccdobj.extensions[-1].header['WAVELENG'] = ELdict['Wavelength']
+    
+    for key in ELtools.columnlist[elvis]:
+        if key not in waivedkeys:
+            ccdobj.extensions[-1].header[key] = ELdict[key]
+    
+    
+    if filename != '':
+        ccdobj.writeto(filename,clobber=True,unsigned16bit=True)
+        return None
+    else:
+        return ccdobj
+
+
+
+def generate_FITS_fromExpLog(explog,datapath,elvis='6.0.0'):
+    """ """    
+    
+    IMGgens = dict(BIAS=IMG_bias_gen,FLAT=IMG_flat_gen,
+                          CHINJ=IMG_chinj_gen,POINT=IMG_point_gen)
+    
+    t0 = time()
+    
+    Nfiles = len(explog)
+    
+    for ixrow,obsid in enumerate(explog['ObsID']):
+        
+        row = explog[ixrow]
+
+        #date = row['DATE']
+        #CCD = row['CCD']
+        test = row['TEST']
+        
+        tmpFITSname = row['File_name']
+        FITSname = os.path.join(datapath,'%s.fits' % tmpFITSname)
+        
+        isbias = np.any([key in test for key in ['BIAS','DARK']])
+        if isbias: FITSgen = IMGgens['BIAS']
+        
+        isinj = np.any([key in test for key in ['CHINJ','TP']])
+        if isinj: FITSgen = IMGgens['CHINJ']
+        
+        isflat = np.any([key in test for key in ['FLAT','PTC','NL']])
+        if isflat: FITSgen = IMGgens['FLAT']
+        
+        ispoint = np.any([key in test for key in ['FOCUS','PSF','PERSIST']])
+        if ispoint: FITSgen = IMGgens['POINT']
+        
+        generate_FITS(row,funct=FITSgen,filename=FITSname,elvis=elvis)
+        
+        
+    t1 = time()
+    dtmin = (t1-t0)/60.
+    
+    print '%.3f minutes in generating %i FITS files' % (dtmin,Nfiles)
+
+    return None       
+
+
+
 

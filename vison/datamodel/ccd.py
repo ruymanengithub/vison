@@ -546,7 +546,45 @@ class CCD(object):
         
         self.extensions[extension].data = image.copy()
             
+    def sim_window(self,vstart,vend,extension=-1):
+        """ """
+        
+        mask = np.ones((self.NAXIS1/2,self.NAXIS2/2),dtype='int8')
+        mask[:,vstart:vend+1] = 0
+        
+        for Q in Quads:            
+            qdata = self.get_quad(Q,canonical=True,extension=extension)
+            qdata[np.where(mask)] = 0
+            self.set_quad(qdata,Q,canonical=True,extension=extension)
+        
+    def simadd_injection(self,levels,on=2066,off=0,extension=-1):
+        
+        self.simadd_flatilum(levels=levels,extension=-1)
+        
+        # ON/OFF masking
+        
+        NX,NY = self.NAXIS1/2,self.NAXIS2/2
+        
+        mask_onoff = np.zeros((NX,NY),dtype='int8')
+        
+        y0 = 0
+        Fahrtig = False
+        
+        while not Fahrtig:
+            y1 = min(y0 + on,NY)
+            mask_onoff[:,y0:y1] = 1
+            y0 = y1 + off
+            if (y0>NY-1):
+                break
 
+        #from astropy.io import fits as fts
+        #fts.writeto('mask.fits',mask_onoff.transpose().astype('int32'),overwrite=True)
+        
+        for Q in Quads:
+            qdata = self.get_quad(Q,canonical=True,extension=extension)
+            qdata[np.where(mask_onoff==0)] = 0.
+            self.set_quad(qdata,Q,canonical=True,extension=extension)
+        
     
 def test_create_from_scratch():
     """ """
