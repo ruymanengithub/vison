@@ -22,8 +22,8 @@ import string as st
 import numpy as np
 
 #from vissim.datamodel.HKtools import parseHKfiles,allHK_keys
-from vissim.support.latex import LaTeX
-from vissim.datamodel import QLAtools as QLAt
+#from vison.support.latex import LaTeX
+from vison.datamodel import QLAtools as QLAt
 
 from pdb import set_trace as stop
 

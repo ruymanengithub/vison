@@ -16,8 +16,8 @@ import os
 from matplotlib import pyplot as plt
 import string as st
 
-from vissim.datamodel import ccd
-from vissim.support import latex
+from vison.datamodel import ccd
+from vison.support import latex
 
 from pdb import set_trace as stop
 # END IMPORT
