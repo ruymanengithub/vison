@@ -34,7 +34,8 @@ Created on Mon Apr  3 17:00:24 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
-from vison.pipe import lib as pilib
+#from vison.pipe import lib as pilib
+from vison.ogse import ogse
 from vison.point import lib as polib
 from vison.datamodel import scriptic as sc
 #from vison.pipe import FlatFielding as FFing
@@ -84,7 +85,7 @@ def build_PTC0X_scriptdict(exptimes,frames,wavelength=800,diffvalues=dict(),
     
     assert  len(exptimes) == len(frames)
     
-    FW_ID = pilib.get_FW_ID(wavelength)
+    FW_ID = ogse.get_FW_ID(wavelength)
     FW_IDX = int(FW_ID[-1])
     
     if wavelength == 800: subtest = '01'

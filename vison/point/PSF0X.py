@@ -36,6 +36,7 @@ import numpy as np
 from pdb import set_trace as stop
 import os
 from vison.pipe import lib as pilib
+from vison.ogse import ogse
 from vison.datamodel import scriptic as sc
 from vison.pipe import FlatFielding as FFing
 from vison.point import lib as polib
@@ -90,7 +91,7 @@ def build_PSF0X_scriptdict(exptimes,frames,wavelength=800,
     
     assert len(exptimes) == len(frames)
     
-    FW_ID = pilib.get_FW_ID(wavelength)
+    FW_ID = ogse.get_FW_ID(wavelength)
     FW_IDX = int(FW_ID[-1])
     
     PSF0X_commvalues['wavelength'] = 'Filter %i' % FW_IDX

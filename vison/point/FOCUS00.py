@@ -33,6 +33,7 @@ import numpy as np
 from pdb import set_trace as stop
 import os
 from vison.pipe import lib as pilib
+from vison.ogse import ogse
 from vison.pipe import FlatFielding as FFing
 from vison.support.report import Report
 from vison.support import files
@@ -64,7 +65,7 @@ stampw = 25
 def get_FOCUS00_structure(wavelength):
     """ """
      
-    FilterPos = pilib.get_FW_ID(wavelength)
+    FilterPos = ogse.get_FW_ID(wavelength)
     mirror_nom = polib.mirror_nom[FilterPos]
     
     FOCUS00_structure = dict(col1=dict(N=5,Exptime=0,Mirr_pos=mirror_nom-0.2),
@@ -103,7 +104,7 @@ def build_FOCUS00_scriptdict(wavelength,exptime,
     
     """
         
-    FW_ID = pilib.get_FW_ID(wavelength)
+    FW_ID = ogse.get_FW_ID(wavelength)
     FW_IDX = int(FW_ID[-1])
     mirror_nom = polib.mirror_nom[FW_ID]
     
@@ -158,20 +159,13 @@ def filterexposures_FOCUS00(inwavelength,explogf,datapath,OBSID_lims,structure=F
         for idata in range(len(datapath)):
             explog['datapath'][explognumber == idata] = datapath[idata]
     
-    #OBSIDs = np.array(explog['ObsID'].copy())
-    #Exptime = np.array(explog['Exptime'].copy())
+
     rootFile_name = explog['File_name'].copy()
-    #TEST = np.array(explog['TEST'].copy())
-    #Wavelength = np.array(explog['Wavelength'].copy())
-    #CCD = np.array(explog['CCD'].copy())
+
     
     DataDict = {}
         
-    
-    #for key in pilib.FW.keys():
-    #    if pilib.FW[key] == '%inm' % inwavelength: Filter = key
-    
-    #Filter = '%i' % inwavelength # TESTS
+
     
     selbool = (['FOCUS00' in item for item in explog['TEST']]) & \
         (explog['ObsID'] >= OBSID_lims[0]) & \
@@ -828,7 +822,7 @@ def generate_FITS_FOCUS00(wavelength,explog,datapath,elvis='6.0.0'):
     pflux = 1.E4 # adu
     pfwhm = 9./12. # pixels
     
-    FilterID = pilib.get_FW_ID(wavelength)
+    FilterID = ogse.get_FW_ID(wavelength)
     
     mirror_nom = polib.mirror_nom[FilterID]
     

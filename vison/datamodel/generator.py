@@ -26,7 +26,28 @@ import astropy as astpy
 from time import time
 import numpy as np
 
+from vison.ogse import ogse
+
 # END IMPORT
+
+gen_bias_levels = dict(E=2300.,F=2400.,G=2500.,H=2600.)
+
+#expt_FWC_flat = dict(Filter1=2.E3,
+#                Filter2=2.E3,
+#                Filter3=2.E3,
+#                Filter4=2.E3,
+#                Filter5=2.E3,
+#                Filter6=200.*1.E3)
+#
+#expt_FWC_point = dict(Filter1=2.E3,
+#                Filter2=2.E3,
+#                Filter3=2.E3,
+#                Filter4=2.E3,
+#                Filter5=2.E3,
+#                Filter6=200.*1.E3)
+#
+#fwhm_nom = 9./12. # pixels
+
 
 
 Quads = ['E','F','G','H']
@@ -247,23 +268,7 @@ def _add_ron_window_round(ccdobj,vstart,vend):
     
     return ccdobj
 
-gen_bias_levels = dict(E=2300.,F=2400.,G=2500.,H=2600.)
 
-expt_FWC_flat = dict(Filter1=2.E3,
-                Filter2=2.E3,
-                Filter3=2.E3,
-                Filter4=2.E3,
-                Filter5=2.E3,
-                Filter6=200.*1.E3)
-
-expt_FWC_point = dict(Filter1=2.E3,
-                Filter2=2.E3,
-                Filter3=2.E3,
-                Filter4=2.E3,
-                Filter5=2.E3,
-                Filter6=200.*1.E3)
-
-fwhm_nom = 9./12.
 
 def IMG_bias_gen(ccdobj,ELdict):
     """ """
@@ -285,10 +290,10 @@ def IMG_flat_gen(ccdobj,ELdict):
     vstart = ELdict['Vstart']
     vend = ELdict['Vend']
     
-    wavelength = ELdict['Wavelength']
+    waveID = ELdict['Wavelength']
     exptime = ELdict['Exptime']
     
-    tsatur = expt_FWC_flat['Filter%i' % wavelength]
+    tsatur = ogse.tFWC_flat[ogse.FW['Filter%i' % waveID]]
     
     fluence = 2.**16 * exptime / tsatur
     
@@ -355,17 +360,19 @@ def IMG_point_gen(ccdobj,ELdict):
     vstart = ELdict['Vstart']
     vend = ELdict['Vend']
     
-    wavelength = ELdict['Wavelength']
+    waveID = ELdict['Wavelength']
+    wave = ogse.FW['Filter%i' % waveID]
     exptime = ELdict['Exptime']
     mirror = ELdict['Mirr_pos']
     iCCD = ELdict['CCD']
     
-    mirror_nom = polib.mirror_nom['Filter%i' % wavelength]    
-    tsatur = expt_FWC_flat['Filter%i' % wavelength]
+    mirror_nom = polib.mirror_nom['Filter%i' % waveID]    
+    tsatur = ogse.tFWC_flat[wave]
     
+     
     fluence = 2.*2.**16 * exptime / tsatur
     
-    fwhm = fwhm_nom * (1.+((mirror-mirror_nom)/0.2)**2.)
+    fwhm = ogse.fwhm_lambda[wave] * (1.+((mirror-mirror_nom)/0.2)**2.)
     
     ccdobj.simadd_points(fluence,fwhm,CCDID=iCCD,dx=0,dy=0)
 

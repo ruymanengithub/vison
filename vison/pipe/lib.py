@@ -38,18 +38,6 @@ imgheight = ccdobj.NAXIS2/2
 quad_width = ccdobj.NAXIS1/2
 imgwidth = quad_width - prescan - overscan
 
-FW = dict(Filter1='590nm',Filter2='640nm',
-          Filter3='730nm',Filter4='800nm',
-          Filter5='880nm',Filter6='0nm')
-
-
-# Editions of Point_CooNom: PENDING upon characterization of OGSE
-
-def get_FW_ID(wavelength):
-    """returns FW key corresponding to input wavelength.
-    :param wavelength: integer, wavelength.
-    """
-    return [key for key in FW if FW[key] == '%inm' % wavelength][0] 
 
 
 def loadexplogs(explogfs,elvis='5.8.X',addpedigree=False):
