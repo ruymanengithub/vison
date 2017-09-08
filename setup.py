@@ -43,7 +43,8 @@ def configuration():
     
     config.add_scripts(['vison/scripts/HKmonitor.py',
            'vison/scripts/QLA.py',
-           'vison/scripts/quickds9.py'])
+           'vison/scripts/quickds9.py',
+           'vison/scripts/vis_mkscripts.py'])
    
     return config
 
