@@ -29,27 +29,27 @@ from vison.other import PERSIST01 as PER01
 
 from vison.point import lib as polib
 
+from vison.ogse.ogse import tFWC_flat,tFWC_point
+
 import datetime
 
 # END IMPORT
 
     
 
-def genExpLog(doGen,explogf,elvis):
+def genExpLog(toGen,explogf,equipment,elvis='6.1.0'):
     """ """
     
-    
     OBSID0 = 1000
-    operator = 'raf'
-    sn_ccd1 = 'CCD1TEST'
-    sn_ccd2 = 'CCD2TEST'
-    sn_ccd3 = 'CCD3TEST'
-    sn_roe= 'ROETEST'
-    sn_rpsu = 'RPSUTEST'
+
+    operator = equipment['opertor']
+    sn_ccd1 = equipment['sn_ccd1']
+    sn_ccd2 = equipment['sn_ccd2']
+    sn_ccd3 = equipment['sn_ccd3']
+    sn_roe =  equipment['sn_roe']
+    sn_rpsu = equipment['sn_rpsu']    
     
     
-    #if not os.path.exists(outpath):
-    #    os.system('mkdir %s' % outpath)
     
     logdefaults = {'Lab_ver':'15.0.0','Con_file':'vis_roe_config_cotsqm_273_vn.txt',
         'CnvStart':0,'Flsh-Rdout_e_time':0,'C.Inj-Rdout_e_time':0,
@@ -65,7 +65,7 @@ def genExpLog(doGen,explogf,elvis):
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
-    if doGen['BIAS01']:
+    if toGen['BIAS01']:
         
         print 'BIAS01...'
         
@@ -83,7 +83,7 @@ def genExpLog(doGen,explogf,elvis):
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
-    if doGen['DARK01']: 
+    if toGen['DARK01']: 
         
         print 'DARK01...'
         
@@ -108,7 +108,7 @@ def genExpLog(doGen,explogf,elvis):
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
-    if doGen['CHINJ01']: 
+    if toGen['CHINJ01']: 
         
         print 'CHINJ01...'
         
@@ -129,7 +129,7 @@ def genExpLog(doGen,explogf,elvis):
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
-    if doGen['CHINJ02']: 
+    if toGen['CHINJ02']: 
         
         print 'CHINJ02...'
         
@@ -140,11 +140,13 @@ def genExpLog(doGen,explogf,elvis):
     
     # FLATS
     
-    exptimes_FLAT0X = dict(nm590=np.array([1.,2.,3.])*1.E3,
-                           nm640=np.array([1.,2.,3.])*1.E3,
-                           nm730=np.array([1.,2.,3.])*1.E3,
-                           nm800=np.array([1.,2.,3.])*1.E3,
-                           nm880=np.array([1.,2.,3.])*1.E3)    
+    t_dummy = np.array([25.,50.,75])/100.
+                      
+    exptimes_FLAT0X = dict(nm590=t_dummy * tFWC_flat['nm590'],
+                           nm640=t_dummy * tFWC_flat['nm640'],
+                           nm730=t_dummy * tFWC_flat['nm730'],
+                           nm800=t_dummy * tFWC_flat['nm800'],
+                           nm880=t_dummy * tFWC_flat['nm880']) 
     
     # FLAT-01
 
@@ -156,7 +158,7 @@ def genExpLog(doGen,explogf,elvis):
                       sn_rpsu=sn_rpsu,operator=operator,
                       test='FLAT01_800')
     
-    if doGen['FLAT01']: 
+    if toGen['FLAT01']: 
         
         print 'FLAT01...'
 
@@ -174,7 +176,7 @@ def genExpLog(doGen,explogf,elvis):
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
-    if doGen['FLAT02']: 
+    if toGen['FLAT02']: 
     
         for iw, wave in enumerate(wavesFLAT02):
             
@@ -196,14 +198,6 @@ def genExpLog(doGen,explogf,elvis):
         
     # PTC
     
-    tFWC_flat = dict(nm590=2.E3,
-                nm640=2.E3,
-                nm730=2.E3,
-                nm800=2.E3,
-                nm880=2.E3,
-                ND=200.*1.E3)
-    
-    
     # PTC-01
     
     #filePTC01 = 'vis_CalCamp_PTC01_%s_v%s.xlsx' % (datetag,elvis)
@@ -215,7 +209,7 @@ def genExpLog(doGen,explogf,elvis):
     exptsPTC01 = np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100.*tFWC_flat['nm800'] # ms
     frsPTC01 = [10,10,10,10,10,10,10,10,4,4,4]
     
-    if doGen['PTC01']: 
+    if toGen['PTC01']: 
         
         print 'PTC01...'
     
@@ -232,7 +226,7 @@ def genExpLog(doGen,explogf,elvis):
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
-    if doGen['PTC02WAVE']: 
+    if toGen['PTC02WAVE']: 
     
         for iw, wave in enumerate(wavesPTC02w):
             
@@ -269,7 +263,7 @@ def genExpLog(doGen,explogf,elvis):
     exptsPTC02T = np.array([10.,30.,50.,70.,80.,90.])/100.*tFWC_flat['nm%i' % wavePTC02T]
     frsPTC02T = [4,4,4,4,4,4]
 
-    if doGen['PTC02TEMP']: 
+    if toGen['PTC02TEMP']: 
    
         for it,T in enumerate(TempsPTC02T):    
             
@@ -299,7 +293,7 @@ def genExpLog(doGen,explogf,elvis):
     exptinterNL01 = 0.5 * tFWC_flat['ND']
     frsNL01 = np.ones(11,dtype='int32')*5
 
-    if doGen['NL01']: 
+    if toGen['NL01']: 
         
         print 'NL01...'
     
@@ -309,14 +303,6 @@ def genExpLog(doGen,explogf,elvis):
 
     
     # PSF
-
-    tFWC_point = dict(nm590=2.E3,
-                nm640=2.E3,
-                nm730=2.E3,
-                nm800=2.E3,
-                nm880=2.E3,
-                ND=200.*1.E3)
-    
     
     # PSF01-800nm
     
@@ -326,7 +312,7 @@ def genExpLog(doGen,explogf,elvis):
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
 
-    if doGen['PSF01']: 
+    if toGen['PSF01']: 
 
         for iw, wave in enumerate(wavesPSF01w):
             
@@ -362,7 +348,7 @@ def genExpLog(doGen,explogf,elvis):
                       sn_rpsu=sn_rpsu,operator=operator)
     
     
-    if doGen['PSF02']: 
+    if toGen['PSF02']: 
 
     
         for it,temp in enumerate(temps_PSF02):
@@ -397,7 +383,7 @@ def genExpLog(doGen,explogf,elvis):
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator,toi_chinj=toi_chinjTP01)
 
-    if doGen['TP01']: 
+    if toGen['TP01']: 
         
         print 'TP01...'
    
@@ -418,7 +404,7 @@ def genExpLog(doGen,explogf,elvis):
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator,toi_chinj=toi_chinjTP02)
 
-    if doGen['TP02']: 
+    if toGen['TP02']: 
         
         print 'TP02...'
     
@@ -441,7 +427,7 @@ def genExpLog(doGen,explogf,elvis):
     
     #filePER01 = 'vis_CalCamp_PERSIST01_%s_v%s.xlsx' % (datetag,elvis)
     
-    if doGen['PERSIST01']: 
+    if toGen['PERSIST01']: 
         
         print 'PERSIST01...'
     
@@ -460,7 +446,7 @@ def genExpLog(doGen,explogf,elvis):
                       sn_rpsu=sn_rpsu,operator=operator)
     
 
-    if doGen['FOCUS00']: 
+    if toGen['FOCUS00']: 
 
         for iw, wave in enumerate(wavesFOCUS00w):
             
@@ -493,17 +479,23 @@ def datasetGenerator(TestsSelector,doGenExplog,doGenHK,doGenFITS,outpath,elvis,
     """ """
     
     
+    equipment = dict(operator = 'raf',
+    sn_ccd1 = 'CCD1TEST',
+    sn_ccd2 = 'CCD2TEST',
+    sn_ccd3 = 'CCD3TEST',
+    sn_roe= 'ROETEST',
+    sn_rpsu = 'RPSUTEST')
+    
     datekey = date0.strftime('%d%m%y')    
     explogf = os.path.join(outpath,'EXP_LOG_%s.txt' % datekey)
     
     
-    if doGenExplog:
-        explog = genExpLog(TestsSelector,explogf,elvis)
+    if doGenExplog:       
+        explog = genExpLog(TestsSelector,explogf,equipment,elvis)
     else:
         explog = ELtools.loadExpLog(explogf,elvis=elvis)
     
-    
-    
+        
     if doGenHK:
         
         HKvals = {'HK_OD_Top_CCD1':'OD_T1_V','HK_OD_Bottom_CCD1':'OD_B1_V',
@@ -565,6 +557,8 @@ if __name__ =='__main__':
                       PERSIST01=0,FOCUS00=1)
     
     outpath = os.path.join('TEST_DATA',date0.strftime('%d_%b_%y'))
+    
+    
     
     datasetGenerator(TestsSelector,doGenExplog,doGenHK,doGenFITS,outpath,elvis,
                      Nrows=Nrows)
