@@ -29,6 +29,7 @@ def configuration():
     config.add_subpackage('vison/eyegore')
     config.add_subpackage('vison/flat')
     config.add_subpackage('vison/inject')
+    config.add_subpackage('vison/ogse')
     config.add_subpackage('vison/other')
     config.add_subpackage('vison/pipe')
     config.add_subpackage('vison/point')

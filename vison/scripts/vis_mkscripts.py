@@ -24,8 +24,9 @@ from vison.flat import NL01, PTC0X, FLAT0X
 from vison.inject import CHINJ01,CHINJ02
 from vison.pump import TP01, TP02
 from vison.other import PERSIST01 as PER01
-
 from vison.point import lib as polib
+
+from vison.ogse.ogse import tFWC_flat,tFWC_point
 
 import datetime
 
@@ -38,20 +39,6 @@ def f_write_script(struct,filename,outpath,elvis):
     script.write(filename)    
     os.system('mv %s %s/' % (filename,outpath))   
     
-
-tFWC_flat = dict(nm590=2.E3,
-                nm640=2.E3,
-                nm730=2.E3,
-                nm800=2.E3,
-                nm880=2.E3,
-                ND=200.*1.E3)
-
-tFWC_point = dict(nm590=2.E3,
-                nm640=2.E3,
-                nm730=2.E3,
-                nm800=2.E3,
-                nm880=2.E3,
-                ND=200.*1.E3)
 
 
 def scwriter(toWrite,outpath,equipment,elvis='6.0.0'):
