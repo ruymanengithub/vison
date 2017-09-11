@@ -179,6 +179,9 @@ class Pipe(object):
         
             # META-DATA WORK
             
+             
+            
+            
             # Filter Exposures that belong to the test
         
             DataDict, isconsistent = Test.filterexposures(structure,explogf,datapath,OBSID_lims,

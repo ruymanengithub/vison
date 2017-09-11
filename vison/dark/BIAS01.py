@@ -88,8 +88,97 @@ def filterexposures(structure,explogf,datapath,OBSID_lims,
     
     DataDict = {}
     isconsistent = False
+
+    #The filtering takes into account an expected structure for the 
+    #acquisition script.
+
+    #The datapath becomes another column in DataDict. This helps dealing
+    #with tests that run overnight and for which the input data is in several
+    #date-folders.
+
     
     
+    # load exposure log(s)
+    
+    explog = pilib.loadexplogs(explogf,elvis=elvis,addpedigree=True)
+    
+    # add datapath(s)
+    
+    if isinstance(datapath,list):
+        longestdatapathname = max([len(item) for item in datapath])
+        explog['datapath'] = np.zeros(len(explog),dtype='S%i' % longestdatapathname)
+        explognumber=explog['explognumber']
+        for idata in range(len(datapath)):
+            explog['datapath'][explognumber == idata] = datapath[idata]
+    
+
+    #rootFile_name = explog['File_name'].copy()
+
+    
+    DataDict = {}
+        
+    # SELECTION OF OBSIDS
+    
+    selbool = (['FOCUS00' in item for item in explog['TEST']]) & \
+        (explog['ObsID'] >= OBSID_lims[0]) & \
+        (explog['ObsID'] <= OBSID_lims[1]) & \
+        (explog['Wavelength'] == inwavelength) # TESTS
+
+    
+    # Assess structure
+    
+    isconsistent = pilib.check_test_structure(explog,selbool,structure)
+    
+    
+    # Build DataDict - And Labelling
+    
+    DataDict = dict(meta = dict(inwavelength=inwavelength,structure=structure))
+    
+    for CCDindex in [1,2,3]:
+        
+        CCDkey = 'CCD%i' % CCDindex
+        
+        DataDict[CCDkey] = dict()
+        
+        CCDselbool = selbool & (explog['CCD'] == CCDkey)
+        
+        if len(np.where(CCDselbool)[0]) == 0:
+            continue
+        
+        Nobs = len(np.where(CCDselbool)[0])
+        
+        for key in explog.colnames:
+            DataDict[CCDkey][key] = explog[key][CCDselbool].data.copy()
+        
+        DataDict[CCDkey]['time'] = np.array(map(pilib.get_dtobj,DataDict[CCDkey]['DATE'])).copy()
+        
+        
+        Mirr_pos = DataDict[CCDkey]['Mirr_pos'].copy()
+        Exptime = DataDict[CCDkey]['Exptime'].copy()
+        
+        label = np.zeros(Nobs,dtype='40str')
+        
+        uMirr_pos = np.sort(np.unique(Mirr_pos))
+        
+
+        for ixMP,iMP in enumerate(uMirr_pos):
+            
+            ixselMP = Mirr_pos == iMP
+            
+            label[ixselMP & (Exptime > 0)] = 'focus_%i' % ixMP
+            label[ixselMP & (Exptime ==0)] = 'BGD'
+            
+        
+        DataDict[CCDkey]['label'] = label.copy()
+
+        
+        rootFile_name = DataDict[CCDkey]['File_name'].copy()
+        
+        File_name  = ['%s.fits' % item for item in rootFile_name]
+        
+        DataDict[CCDkey]['Files'] = np.array(File_name).copy()
+        
+   
     
     return DataDict, isconsistent
 
