@@ -42,7 +42,7 @@ def genExpLog(toGen,explogf,equipment,elvis='6.1.0'):
     
     OBSID0 = 1000
 
-    operator = equipment['opertor']
+    operator = equipment['operator']
     sn_ccd1 = equipment['sn_ccd1']
     sn_ccd2 = equipment['sn_ccd2']
     sn_ccd3 = equipment['sn_ccd3']
@@ -56,6 +56,8 @@ def genExpLog(toGen,explogf,equipment,elvis='6.1.0'):
         'FPGA_ver':'2AC','Chmb_pre':1.e-6,
         'R1CCD1TT':-153.,'R1CCD2TT':-153.,'R1CCD3TT':-153.,
         'R1CCD1TB':-153.,'R1CCD2TB':-153.,'R1CCD3TB':-153.,}
+    
+    
     
     # BIAS
     
@@ -491,12 +493,17 @@ def datasetGenerator(TestsSelector,doGenExplog,doGenHK,doGenFITS,outpath,elvis,
     
     
     if doGenExplog:       
+        
+        print 'Generating EXPOSURE LOG...'
+        
         explog = genExpLog(TestsSelector,explogf,equipment,elvis)
     else:
         explog = ELtools.loadExpLog(explogf,elvis=elvis)
     
         
     if doGenHK:
+        
+        print 'Generating HK files...'
         
         HKvals = {'HK_OD_Top_CCD1':'OD_T1_V','HK_OD_Bottom_CCD1':'OD_B1_V',
                   'HK_OD_Top_CCD2':'OD_T2_V','HK_OD_Bottom_CCD2':'OD_B2_V','HK_OD_Top_CCD3':'OD_T3_V',
@@ -528,7 +535,9 @@ def datasetGenerator(TestsSelector,doGenExplog,doGenHK,doGenFITS,outpath,elvis,
         
         #tests
         #selix = [0,113,314,3988] # bias=0,flat=314,chinj=113,psf=3988        
-        #selix = [0,113,314,3988]        
+        #selix = [0,113,314,3988]      
+        
+        print 'Generating FITS files... '
         
         if Nrows > 0:
             sexplog = explog[0:Nrows]
@@ -543,11 +552,12 @@ if __name__ =='__main__':
     
     
     doGenExplog = True
-    doGenHK = True
-    doGenFITS = True
+    doGenHK = False
+    doGenFITS = False
     Nrows = 0
     
-    date0 = pilib.dtobj_default 
+    #date0 = pilib.dtobj_default 
+    date0 = datetime.datetime(1980,2,22,7,0,0) # early riser
     elvis = '6.1.0'
     
     TestsSelector = dict(BIAS01=1,DARK01=0,CHINJ01=1,CHINJ02=0,
