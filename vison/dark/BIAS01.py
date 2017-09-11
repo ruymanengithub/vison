@@ -32,10 +32,16 @@ from vison.datamodel import generator
 import datetime
 from copy import deepcopy
 
+
+#from vison.support.report import Report
+
+
 # END IMPORT
 
 isthere = os.path.exists
 
+
+HKKeys = []
 
 
 BIAS01_commvalues = dict(program='CALCAMP',test='BIAS01',
@@ -73,5 +79,41 @@ def build_BIAS01_scriptdict(N,diffvalues=dict(),elvis='6.0.0'):
     BIAS01_sdict = sc.update_structdict(BIAS01_sdict,commvalues,diffvalues)
     
     return BIAS01_sdict
+
+
+
+def filterexposures(structure,explogf,datapath,OBSID_lims,
+                                     elvis):
+    """ """
+    
+    DataDict = {}
+    isconsistent = False
+    
+    
+    
+    return DataDict, isconsistent
+
+
+
+
+def prep_data(DataDict,report,inputs,log=None):
+    """ """
+    
+def basic_analysis(DataDict,report,inputs,log=None):
+    """ """
+    
+def meta_analysis(DataDict,report,inputs,log=None):
+    """ """
+    
+
+def feeder(inputs):
+    """ """
+    
+    subtasks = [('prep',prep_data),('basic',basic_analysis),
+                ('meta',meta_analysis)]
+    
+    return inputs,subtasks
+
+
 
 
