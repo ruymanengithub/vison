@@ -56,6 +56,8 @@ isthere = os.path.exists
 
 defaults = dict(BLOCKID='R00P00CC000000',CHAMBER='A')
 
+waittime = 120 # seconds
+
 
 class Pipe(object):
     """Master Class of FM-analysis """
@@ -256,8 +258,34 @@ class Pipe(object):
         
         
     
-    
-            
-    def wait_and_run(self):
+
+    def wait_and_run(self,explogf):
         """ """
         
+        tasknames = self.tasks
+        resultsroot = self.inputs['resultsroot']
+        if not os.path.exists(resultsroot):
+            os.system('mkdir %s' % resultsroot)
+                
+        if self.log is not None: self.log.info('\n\nResults will be saved in: %s\n' % resultsroot)
+        
+        for taskname in tasknames:
+            
+            taskinputs = self.inputs[taskname]
+            
+            Test = self.Test_dict[taskname]
+            taskinputs = Test.feeder(taskinputs)
+            
+            stop()
+            
+            
+            msg = ['\n\nRunning Task: %s\n' % taskname]
+            msg += ['Inputs:']
+            for key in taskinputs:
+                msg += ['%s = %s' % (key,str(taskinputs[key]))]
+            
+            if self.log is not None: self.log.info(msg)
+            
+            taskinputs['resultspath'] = os.path.join(resultsroot,taskinputs['resultspath'])
+            
+            self.dotask(taskname,taskinputs)
