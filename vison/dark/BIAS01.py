@@ -121,70 +121,22 @@ def filterexposures(structure,explogf,datapath,OBSID_lims,
     return explog, checkreport
 
     
-    # Build DataDict - And Labelling
-    
-    DataDict = dict(meta = dict(inwavelength=inwavelength,structure=structure))
-    
-    for CCDindex in [1,2,3]:
-        
-        CCDkey = 'CCD%i' % CCDindex
-        
-        DataDict[CCDkey] = dict()
-        
-        CCDselbool = selbool & (explog['CCD'] == CCDkey)
-        
-        if len(np.where(CCDselbool)[0]) == 0:
-            continue
-        
-        Nobs = len(np.where(CCDselbool)[0])
-        
-        for key in explog.colnames:
-            DataDict[CCDkey][key] = explog[key][CCDselbool].data.copy()
-        
-        DataDict[CCDkey]['time'] = np.array(map(pilib.get_dtobj,DataDict[CCDkey]['DATE'])).copy()
-        
-        
-        Mirr_pos = DataDict[CCDkey]['Mirr_pos'].copy()
-        Exptime = DataDict[CCDkey]['Exptime'].copy()
-        
-        label = np.zeros(Nobs,dtype='40str')
-        
-        uMirr_pos = np.sort(np.unique(Mirr_pos))
-        
-
-        for ixMP,iMP in enumerate(uMirr_pos):
-            
-            ixselMP = Mirr_pos == iMP
-            
-            label[ixselMP & (Exptime > 0)] = 'focus_%i' % ixMP
-            label[ixselMP & (Exptime ==0)] = 'BGD'
-          
-        
-        DataDict[CCDkey]['label'] = label.copy()
-
-        
-        rootFile_name = DataDict[CCDkey]['File_name'].copy()
-        
-        File_name  = ['%s.fits' % item for item in rootFile_name]
-        
-        DataDict[CCDkey]['Files'] = np.array(File_name).copy()
-        
-   
-    
-    return DataDict, isconsistent
-
-
 
 
 def prep_data(DataDict,report,inputs,log=None):
     """ """
     
+    return DataDict,report
+    
 def basic_analysis(DataDict,report,inputs,log=None):
     """ """
+    
+    return DataDict,report
     
 def meta_analysis(DataDict,report,inputs,log=None):
     """ """
     
+    return DataDict,report
 
 def feeder(inputs,elvis='6.1.0'):
     """ """

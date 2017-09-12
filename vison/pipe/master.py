@@ -196,9 +196,13 @@ class Pipe(object):
                     self.log.info('%s failed columns: %s' % (testkey,checkreport['failedcols']))
                 if len(checkreport['failedkeys'])>0:
                     self.log.info('%s failed keys: %s' % (testkey,checkreport['failedkeys']))
-           
+            
+            # Adding Time Axis            
+            
             explog['time'] = np.array(map(pilib.get_dtobj,explog['DATE'])).copy()
-        
+
+            # Filling in the .fits extension
+            
             rootFile_name = explog['File_name'].copy()
             File_name  = ['%s.fits' % item for item in rootFile_name]
             explog['Files'] = np.array(File_name).copy()
@@ -221,8 +225,6 @@ class Pipe(object):
         else:
             
             DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
-        
-        stop()        
         
         # DATA-WORK and ANALYSIS        
         
