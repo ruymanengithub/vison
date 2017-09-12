@@ -37,6 +37,7 @@ from pdb import  set_trace as stop
 from copy import copy
 import os
 import numpy as np
+from time import sleep
 
 from vison import __version__
 from vison.support import logger as lg
@@ -110,7 +111,22 @@ class Pipe(object):
         else:
             self.log = None
         
-         
+    def launchtask(self,taskname):
+        """ """
+        
+        taskinputs = self.inputs[taskname]
+            
+        msg = ['\n\nRunning Task: %s\n' % taskname]
+        msg += ['Inputs:']
+        for key in taskinputs:
+            msg += ['%s = %s' % (key,str(taskinputs[key]))]
+            
+        if self.log is not None: self.log.info(msg)
+        
+        self.dotask(taskname,taskinputs)
+        
+        
+    
     def run(self):
         """ """
         tasknames = self.tasks
@@ -123,18 +139,11 @@ class Pipe(object):
         
         for taskname in tasknames:
             
-            taskinputs = self.inputs[taskname]
-            
-            msg = ['\n\nRunning Task: %s\n' % taskname]
-            msg += ['Inputs:']
-            for key in taskinputs:
-                msg += ['%s = %s' % (key,str(taskinputs[key]))]
-            
-            if self.log is not None: self.log.info(msg)
-            
+            taskinputs = self.inputs[taskname]            
             taskinputs['resultspath'] = os.path.join(resultsroot,taskinputs['resultspath'])
+            self.inputs[taskname] = taskinputs
             
-            self.dotask(taskname,taskinputs)
+            self.launchtask(taskname)
     
     def dotask(self,taskname,inputs):
         """Generic test master function."""
@@ -259,8 +268,9 @@ class Pipe(object):
         
     
 
-    def wait_and_run(self,explogf):
+    def wait_and_run(self,explogf,elvis='6.1.0'):
         """ """
+        
         
         tasknames = self.tasks
         resultsroot = self.inputs['resultsroot']
@@ -269,23 +279,48 @@ class Pipe(object):
                 
         if self.log is not None: self.log.info('\n\nResults will be saved in: %s\n' % resultsroot)
         
+        # Learn how many ObsIDs will generate each task
+        
+        tasksequence = []
+        
         for taskname in tasknames:
             
             taskinputs = self.inputs[taskname]
             
+            testkey = taskinputs['testkey']
+            
             Test = self.Test_dict[taskname]
             taskinputs = Test.feeder(taskinputs)
             
-            stop()
+            structure = taskinputs['structure']
             
+            Ncols = structure['Ncols']
             
-            msg = ['\n\nRunning Task: %s\n' % taskname]
-            msg += ['Inputs:']
-            for key in taskinputs:
-                msg += ['%s = %s' % (key,str(taskinputs[key]))]
+            Nframes = 0
+            for ic in range(1,Ncols+1): Nframes += structure['col%i' % ic]['frames']
             
-            if self.log is not None: self.log.info(msg)
+            tasksequence.append((taskname,testkey,Nframes))
             
-            taskinputs['resultspath'] = os.path.join(resultsroot,taskinputs['resultspath'])
+        
+        # Launching tasks
+        
+        fahrtig = False
+        
+        while not fahrtig:
             
-            self.dotask(taskname,taskinputs)
+            explog = pilib.loadexplogs(explogf,elvis)
+            
+            for taskitem in tasksequence:
+                
+                taskname,testkey,Nframes = taskitem
+        
+                available = pilib.coarsefindTestinExpLog(explog,testkey,Nframes)
+                
+                if available:
+                    self.launchtask(taskname)
+                    tasksequence.pop(0)
+            
+            sleep(waittime)
+            
+            if len(tasksequence) == 0:
+                fahrtig = True    
