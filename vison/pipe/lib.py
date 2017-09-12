@@ -40,33 +40,60 @@ imgwidth = quad_width - prescan - overscan
 
 
 
-def loadexplogs(explogfs,elvis='5.8.X',addpedigree=False):
+def loadexplogs(explogfs,elvis='5.8.X',addpedigree=False,datapath=None):
     """loads in memory an explog (text-file) or list of explogs (text-files)."""
     
     if isinstance(explogfs,str):
-        explog = ELtools.loadExplog(explogfs,elvis=elvis)
-        return explog
+        explog = ELtools.loadExpLog(explogfs,elvis=elvis)
+        
     
     elif isinstance(explogfs,list):
         expLogList = []
         for explogf in explogfs:
             expLogList.append(ELtools.loadExpLog(explogf,elvis=elvis))
         explog = ELtools.mergeExpLogs(expLogList,addpedigree)
-        return explog
+    
+    # add datapath(s)
+    # The datapath becomes another column in DataDict. This helps dealing
+    # with tests that run overnight and for which the input data is in several
+    # date-folders.
+    
+    if datapath is not None:
         
-def check_test_structure(explog,selbool,structure,CCDs=[1,2,3]):
+        if isinstance(datapath,list):
+            assert len(datapath) == len(explogfs)
+            
+            longestdatapathname = max([len(item) for item in datapath])
+            explog['datapath'] = np.zeros(len(explog),dtype='S%i' % longestdatapathname)
+            explognumber=explog['explognumber']
+            for idata in range(len(datapath)):
+                explog['datapath'][explognumber == idata] = datapath[idata]
+        else:
+            explog['datapath'] = np.array([datapath]*len(explog))
+            
+    
+    return explog
+
+        
+def check_test_structure(explog,structure,CCDs=[1,2,3],selbool=True,wavedkeys=[]):
     """Checks whether a selected number of exposures is consistent with the 
     expected acquisition test structure.
     
-    TODO: account for 3 entries per exposure (3 CCDs). Otherwise no test
-           will be compliant. [DONE?]
     
     """
+    
+    from vison.datamodel.generator import _update_fromscript
     
     isconsistent = True
     
     Ncols = structure['Ncols']
     
+    elogkeys = explog.keys()
+    
+    dummyrowdict = dict([(key,None) for key in elogkeys])
+    
+    failedkeys = []
+    failedcols = []
     
     for iCCD in CCDs:
         
@@ -75,35 +102,82 @@ def check_test_structure(explog,selbool,structure,CCDs=[1,2,3]):
         ix0 = 0
         for iC in range(1,Ncols+1):
             
+            
             colname = 'col%i' % iC
         
             expectation = structure[colname]
-            N = expectation['N']
             
-            ix1 = ix0+N
+            frames = expectation['frames']
             
-            ixsubsel = np.where(cselbool)[0][ix0:ix1]
-            
-            logkeys = expectation.keys()
-            logkeys.remove('N')
-            
-            isamatch = np.ones(N,dtype='bool')
+            if frames >0:
+                ix1 = ix0+frames
+            else:
+                ix1 = None
 
-            for key in logkeys:
+            if (ix1 is not None) and (ix1-ix0+1 != frames):
+                failedcols.append(iC)
+                continue
+
+            
+            try:
+                ixsubsel = np.where(cselbool)[0][ix0:ix1]
+            except IndexError:
+                failedcols.append(iC)
+                continue
+            
+            rowdict = _update_fromscript(dummyrowdict,expectation)
+            
+            for key in rowdict:
+                val = rowdict[key]
+                if val is None or key in wavedkeys: continue
+                checksout = np.all(explog[key][ixsubsel] == val)                
+                isconsistent &= checksout
+                if ~checksout:
+                    failedkeys.append(key)
+                    
+            ix0 += frames
+    
+    failedkeys = np.unique(failedkeys)
+    failedcols = np.unique(failedcols)
+    
+    report = dict(checksout=isconsistent,failedkeys=failedkeys,failedcols=failedcols)
+    
+    return report
+            
+
+def DataDict_builder(explog,inputs,structure):
+    """ """
+    
+    # Build DataDict - And Labelling
+    
+    DataDict = dict(meta = dict(inputs=inputs,structure=structure))
+    
+    for CCDindex in [1,2,3]:
+        
+        CCDkey = 'CCD%i' % CCDindex
+        
+        DataDict[CCDkey] = dict()
+        
+        CCDselbool = explog['CCD'] == CCDkey
+        
+        if len(np.where(CCDselbool)[0]) == 0:
+            continue
                 
-                isamatch = isamatch & (explog[key][ixsubsel] == expectation[key])
-            
-            isconsistent = isconsistent and np.all(isamatch)
-            
-            ix0 += N
+        for key in explog.colnames:
+            DataDict[CCDkey][key] = explog[key][CCDselbool].data.copy()
+        
         
     
-    return isconsistent        
+    return DataDict
+    
 
 
 def addHK(DataDict,HKKeys,elvis='5.8.X'):
     """Adds HK information to a DataDict object."""
     
+    
+    if len(HKKeys) == 0:
+        return DataDict
     
     for ixCCD in [1,2,3]:
         CCDkey = 'CCD%i' % ixCCD
@@ -121,15 +195,17 @@ def addHK(DataDict,HKKeys,elvis='5.8.X'):
                 
                 if len(HKs) == 1:
                     HKlist.append(HKs[0])
-                else:
+                elif len(HKs)>1:
                     print 'More than one HK file for ObsID %i' % ObsID
                     print HKs
-                    stop()
+                elif len(HKs) ==0:
+                    print 'HK file for ObsID %i not found' % ObsID
+            
 
-            obsids, dtobjs, tdeltasec, HK_keys, HKdata = HKtools.parseHKfiles(HKlist,elvis=elvis)
+            obsids, dtobjs, tdeltasec, readHKKeys, HKdata = HKtools.parseHKfiles(HKlist,elvis=elvis)
             
             for HKKey in HKKeys:
-                ixkey = HK_keys.index(HKKey)
+                ixkey = readHKKeys.index(HKKey)
                 DataDict[CCDkey][HKKey] = HKdata[:,0,ixkey]
     
     return DataDict

@@ -86,49 +86,40 @@ def filterexposures(structure,explogf,datapath,OBSID_lims,
                                      elvis):
     """ """
     
-    DataDict = {}
-    isconsistent = False
+    wavedkeys = []
 
-    #The filtering takes into account an expected structure for the 
-    #acquisition script.
 
-    #The datapath becomes another column in DataDict. This helps dealing
-    #with tests that run overnight and for which the input data is in several
-    #date-folders.
+    # The filtering takes into account an expected structure for the 
+    # acquisition script.
 
-    
     
     # load exposure log(s)
     
-    explog = pilib.loadexplogs(explogf,elvis=elvis,addpedigree=True)
+    explog = pilib.loadexplogs(explogf,elvis=elvis,addpedigree=True,datapath=datapath)
     
-    # add datapath(s)
-    
-    if isinstance(datapath,list):
-        longestdatapathname = max([len(item) for item in datapath])
-        explog['datapath'] = np.zeros(len(explog),dtype='S%i' % longestdatapathname)
-        explognumber=explog['explognumber']
-        for idata in range(len(datapath)):
-            explog['datapath'][explognumber == idata] = datapath[idata]
-    
-
-    #rootFile_name = explog['File_name'].copy()
-
-    
-    DataDict = {}
         
     # SELECTION OF OBSIDS
     
-    selbool = (['FOCUS00' in item for item in explog['TEST']]) & \
+    selbool = (explog['TEST']=='BIAS01') & \
         (explog['ObsID'] >= OBSID_lims[0]) & \
-        (explog['ObsID'] <= OBSID_lims[1]) & \
-        (explog['Wavelength'] == inwavelength) # TESTS
+        (explog['ObsID'] <= OBSID_lims[1]) 
+    
+    explog = explog[selbool]
 
     
     # Assess structure
     
-    isconsistent = pilib.check_test_structure(explog,selbool,structure)
+    checkreport = pilib.check_test_structure(explog,structure,CCDs=[1,2,3],
+                                           wavedkeys=wavedkeys)
     
+    # Labeling of exposures [optional]
+    
+    explog['label'] = np.array(['bias']*len(explog))
+    
+    
+    
+    return explog, checkreport
+
     
     # Build DataDict - And Labelling
     
@@ -167,7 +158,7 @@ def filterexposures(structure,explogf,datapath,OBSID_lims,
             
             label[ixselMP & (Exptime > 0)] = 'focus_%i' % ixMP
             label[ixselMP & (Exptime ==0)] = 'BGD'
-            
+          
         
         DataDict[CCDkey]['label'] = label.copy()
 
@@ -195,13 +186,28 @@ def meta_analysis(DataDict,report,inputs,log=None):
     """ """
     
 
-def feeder(inputs):
+def feeder(inputs,elvis='6.1.0'):
     """ """
     
     subtasks = [('prep',prep_data),('basic',basic_analysis),
                 ('meta',meta_analysis)]
     
-    return inputs,subtasks
+    N = inputs['N']
+    if 'elvis' in inputs:
+        elvis = inputs['elvis']
+    if 'diffvalues' in inputs:
+        diffvalues = inputs['diffvalues']
+    else:
+        diffvalues = {}
+    
+    
+    scriptdict = build_BIAS01_scriptdict(N,diffvalues,elvis=elvis)
+    
+    inputs['structure'] = scriptdict
+    inputs['subtasks'] = subtasks
+    
+    
+    return inputs
 
 
 

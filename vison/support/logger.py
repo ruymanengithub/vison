@@ -61,7 +61,8 @@ def setUpLogger(log_filename, loggername='logger'):
     handler = logging.handlers.RotatingFileHandler(log_filename)
     #maxBytes=20, backupCount=5)
     # create formatter
-    formatter = logging.Formatter('%(asctime)s - %(module)s - %(funcName)s - %(levelname)s - %(message)s')
+    #formatter = logging.Formatter('%(asctime)s - %(module)s - %(funcName)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
     # add formatter to ch
     handler.setFormatter(formatter)
     # add handler to logger 

@@ -36,6 +36,7 @@ Created on Wed Jul 27 12:16:40 2016
 from pdb import  set_trace as stop
 from copy import copy
 import os
+import numpy as np
 
 from vison import __version__
 from vison.support import logger as lg
@@ -104,7 +105,8 @@ class Pipe(object):
                           'Chamber: %s\n' % self.CHAMBER,
                           'vison version: %s\n' % __version__,
                           'Tasks: %s\n' % ( ('%s,'*len(self.tasks)) % tuple(self.tasks))[0:-1]])
-        self.log = None
+        else:
+            self.log = None
         
          
     def run(self):
@@ -135,15 +137,15 @@ class Pipe(object):
     def dotask(self,taskname,inputs):
         """Generic test master function."""
     
-    
         # INPUTS
         
         #todo_flags = dict(init=True,prep=True,basic=True,meta=True,report=True)
         
         #self.Test_dict[taskname].feeder(inputs)
         Test = self.Test_dict[taskname]
-        inputs,subtasks = Test.feeder(inputs)
+        inputs = Test.feeder(inputs)
         
+        subtasks = inputs['subtasks']
         OBSID_lims = inputs['OBSID_lims']
         explogf = inputs['explogf']
         datapath = inputs['datapath']
@@ -179,28 +181,49 @@ class Pipe(object):
         
             # META-DATA WORK
             
-             
-            
             
             # Filter Exposures that belong to the test
         
-            DataDict, isconsistent = Test.filterexposures(structure,explogf,datapath,OBSID_lims,
+            #DataDict, isconsistent = Test.filterexposures(structure,explogf,datapath,OBSID_lims,
+            #                             elvis)
+            
+            explog, checkreport = Test.filterexposures(structure,explogf,datapath,OBSID_lims,
                                          elvis)
-
-        
+    
             if self.log is not None:
-                self.log.info('%s acquisition is consistent with expectations: %s' % (testkey,isconsistent))
+                self.log.info('%s acquisition consistent with expectations: %s' % (testkey,checkreport['checksout']))
+                if len(checkreport['failedcols'])>0:
+                    self.log.info('%s failed columns: %s' % (testkey,checkreport['failedcols']))
+                if len(checkreport['failedkeys'])>0:
+                    self.log.info('%s failed keys: %s' % (testkey,checkreport['failedkeys']))
+           
+            explog['time'] = np.array(map(pilib.get_dtobj,explog['DATE'])).copy()
+        
+            rootFile_name = explog['File_name'].copy()
+            File_name  = ['%s.fits' % item for item in rootFile_name]
+            explog['Files'] = np.array(File_name).copy()
+            
+            
+            # Building DataDict 
+            
+            
+            DataDict = pilib.DataDict_builder(explog,inputs,structure)
+            
             
             HKKeys = Test.HKKeys
             
             # Add HK information
             DataDict = pilib.addHK(DataDict,HKKeys,elvis=elvis)
+            
+            
             pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)
             
         else:
             
             DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
-            
+        
+        stop()        
+        
         # DATA-WORK and ANALYSIS        
         
         for subtask in subtasks:
