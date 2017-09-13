@@ -114,7 +114,7 @@ def check_test_structure(explog,structure,CCDs=[1,2,3],selbool=True,wavedkeys=[]
             else:
                 ix1 = None
 
-            if (ix1 is not None) and (ix1-ix0+1 != frames):
+            if (ix1 is not None) and (ix1-ix0 != frames):
                 failedcols.append(iC)
                 continue
 

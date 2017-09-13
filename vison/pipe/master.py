@@ -57,7 +57,7 @@ isthere = os.path.exists
 
 defaults = dict(BLOCKID='R00P00CC000000',CHAMBER='A')
 
-waittime = 1 # 120 # seconds
+waittime = 120 # seconds
 
 
 class Pipe(object):
