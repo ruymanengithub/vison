@@ -209,7 +209,27 @@ def addHK(DataDict,HKKeys,elvis='5.8.X'):
                 DataDict[CCDkey][HKKey] = HKdata[:,0,ixkey]
     
     return DataDict
-            
+
+
+def coarsefindTestinExpLog(explog,testkey,Nframes):
+    """Checks whether the 'Nframes' of test with key 'testkey' are in 'explog'.
+    :param explog: astropy table, exposure log object.
+    :param testkey: char, 
+    :param Nframes: number of frames expected from test.
+    :return: bool, test was acquired or not.
+    
+    """
+    
+    indices = np.where(explog['TEST'] == testkey)
+    ccds = explog['CCD'][indices]
+    uccd = np.unique(ccds)
+    nccds = len(uccd)
+    Nobsids = len(indices[0])/nccds
+    
+    wasacquired = Nobsids == Nframes    
+    return wasacquired
+
+
 def get_time_tag():
     """ """
     t = datetime.datetime.now()

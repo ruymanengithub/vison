@@ -266,7 +266,6 @@ class Pipe(object):
             self.log.info('Finished %s' % taskname)
         
         
-    
 
     def wait_and_run(self,explogf,elvis='6.1.0'):
         """ """
