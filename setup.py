@@ -17,6 +17,7 @@ import os
 
 from pdb import set_trace as stop
 
+import versioneer
 
 def configuration():
     
@@ -60,7 +61,9 @@ def setup_package():
      author="Ruyman Azzollini",
      author_email="r.azzollini_at_ucl.ac.uk",
      url="https://github.com/ruymanengithub/vison",
-     configuration=configuration)
+     configuration=configuration,
+     version=versioneer.get_version(),
+     cmdclass=versioneer.get_cmdclass())
     
     setup(**metadata)
     
