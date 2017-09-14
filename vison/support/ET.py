@@ -22,12 +22,14 @@ import os
 URLs = dict(NonSpecificWarning="https://visonwarningcall.000webhostapp.com/visonwarningcall.xml")
 
 def grab_numbers_and_codes():
-    """ """
+    """Retrieves phone numbers and access codes necessary to make the phone calls."""
+    
     detailsf = os.path.join('/home/raf','credentials_twilio.pick')
     details = pickle.load(open(detailsf))
     return details
 
 class ET(object):
+    """Class to do phone calls."""
     
     def __init__(self,):
         
@@ -38,7 +40,13 @@ class ET(object):
         
         
     def dial_numbers(self,url):
-        """Dials one or more phone numbers from a Twilio phone number."""
+        """Dials one or more phone numbers from a Twilio phone number.
+        
+        :param url: char, URL with the TwiML code that Twilio uses as instructions 
+                    on call. Basically, it provides a message to be voiced, 
+                    as intended.
+        
+        """
         
         SID,Token = self.SIDnToken
         TWILIO_PHONE_NUMBER = self.TWILIO_PHONE_NUMBER
@@ -54,6 +62,7 @@ class ET(object):
 
     
 if __name__ == '__main__':
+    """Tests"""
     
     et = ET()
     et.dial_numbers(URLs['NonSpecificWarning'])
