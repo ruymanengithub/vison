@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 
+NEEDSREVISION
+
 Module to provide common tools for analysis of Charge Injection acquisitions.
 
 Created on Thu Sep 14 15:32:10 2017
