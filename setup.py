@@ -56,7 +56,6 @@ def setup_package():
         
     metadata = dict(
      name="vison",
-     version="0.1",
      description="Euclid VIS Ground Calibration Pipeline",
      author="Ruyman Azzollini",
      author_email="r.azzollini_at_ucl.ac.uk",
