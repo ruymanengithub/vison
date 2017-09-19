@@ -70,6 +70,16 @@ Analysis (Shared)
 
     analysis
 
+
+Charge Injection Tools
+======================
+
+.. toctree::
+    :maxdepth: 4
+    
+    inject
+
+
 Monitoring ("Eyegore")
 ======================
 

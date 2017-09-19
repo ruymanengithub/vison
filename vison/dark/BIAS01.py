@@ -120,16 +120,32 @@ def filterexposures(structure,explogf,datapath,OBSID_lims,
     
     return explog, checkreport
 
-    
 
+def check_data(DataDict,report,inputs,log=None):
+    """ 
+    Meta-Code
+    
+    Checks quality of ingested data.
+    
+    
+    """
 
 def prep_data(DataDict,report,inputs,log=None):
-    """ """
+    """
+    METACODE
+    
+    Preparation of data for further analysis.
+    """
+    
+    
+    
     
     return DataDict,report
     
 def basic_analysis(DataDict,report,inputs,log=None):
-    """ """
+    """ 
+    METACODE
+    """
     
     return DataDict,report
     
