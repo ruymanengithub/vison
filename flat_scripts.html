@@ -1,0 +1,354 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Flat-Illumination Scripts &#8212; vison 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Other Scripts" href="other_scripts.html" />
+    <link rel="prev" title="“Dark Acquisitions” Scripts" href="dark_scripts.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="other_scripts.html" title="Other Scripts"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dark_scripts.html" title="“Dark Acquisitions” Scripts"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="flat-illumination-scripts">
+<h1>Flat-Illumination Scripts<a class="headerlink" href="#flat-illumination-scripts" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="flat0x">
+<h2>FLAT0X<a class="headerlink" href="#flat0x" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vison.flat.FLAT0X"></span><p>VIS Ground Calibration
+TEST: FLAT0X</p>
+<p>Flat-fields acquisition / analysis script</p>
+<p>Created on Tue Aug 29 17:32:52 2017</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini__at__ucl.ac.uk</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="vison.flat.FLAT0X.build_FLAT0X_scriptdict">
+<code class="descclassname">vison.flat.FLAT0X.</code><code class="descname">build_FLAT0X_scriptdict</code><span class="sig-paren">(</span><em>exptimes</em>, <em>wavelength=800</em>, <em>testkey='FLAT0X'</em>, <em>diffvalues={}</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.build_FLAT0X_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds FLAT0X script structure dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>exptimes</strong> &#8211; list of ints, exposure times.</li>
+<li><strong>wavelength</strong> &#8211; int, wavelength.</li>
+<li><strong>testkey</strong> &#8211; char, test identifier.</li>
+<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vison.flat.NL01">
+<span id="nl01"></span><h2>NL01<a class="headerlink" href="#module-vison.flat.NL01" title="Permalink to this headline">¶</a></h2>
+<p>VIS Ground Calibration
+TEST: NL01</p>
+<p>End-To-End Non-Linearity Curve</p>
+<p>Tasks:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Select exposures, get file names, get metadata (commandig, HK).</li>
+<li>Check exposure time pattern matches test design.</li>
+<li>Check quality of data (rough scaling of fluences with Exposure times).</li>
+<li>Subtract offset level.</li>
+<li>Divide by Flat-field.</li>
+<li><dl class="first docutils">
+<dt>Synoptic analysis:</dt>
+<dd>fluence ratios vs. extime ratios &gt;&gt; non-linearity curve</dd>
+</dl>
+</li>
+<li>extract: Non-Linearity curve for each CCD and quadrant</li>
+<li>produce synoptic figures</li>
+<li>Save results.</li>
+</ul>
+</div></blockquote>
+<p>Created on Mon Apr  3 17:38:00 2017</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">raf</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="vison.flat.NL01.basic_analysis_NL01">
+<code class="descclassname">vison.flat.NL01.</code><code class="descname">basic_analysis_NL01</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.basic_analysis_NL01" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs basic analysis:
+- builds Non-Lin curves
+- fits Non-Linearity curves</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.NL01.build_NL01_scriptdict">
+<code class="descclassname">vison.flat.NL01.</code><code class="descname">build_NL01_scriptdict</code><span class="sig-paren">(</span><em>expts</em>, <em>exptinter</em>, <em>frames</em>, <em>wavelength=0</em>, <em>diffvalues={}</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.build_NL01_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds NL01 script structure dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>expts</strong> &#8211; list of ints [ms], exposure times.</li>
+<li><strong>exptinter</strong> &#8211; int, ms, exposure time of interleaved source-stability exposures.</li>
+<li><strong>frames</strong> &#8211; list of ints, number of frames for each exposure time.</li>
+<li><strong>wavelength</strong> &#8211; int, wavelength. Default: 0 (Neutral Density Filter)</li>
+<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.NL01.filterexposures_NLC01">
+<code class="descclassname">vison.flat.NL01.</code><code class="descname">filterexposures_NLC01</code><span class="sig-paren">(</span><em>inwavelength</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>structure={'Ncols': 6</em>, <em>'col6': {'Exptime': 18.0</em>, <em>'N': 2}</em>, <em>'col4': {'Exptime': 10.0</em>, <em>'N': 2}</em>, <em>'col5': {'Exptime': 15.0</em>, <em>'N': 2}</em>, <em>'col2': {'Exptime': 1.0</em>, <em>'N': 2}</em>, <em>'col3': {'Exptime': 5.0</em>, <em>'N': 2}</em>, <em>'col1': {'Exptime': 0</em>, <em>'N': 5}}</em>, <em>elvis='5.7.04'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.filterexposures_NLC01" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a list of Exposure Logs and selects exposures from test PSF0X.</p>
+<p>The filtering takes into account an expected structure for the 
+acquisition script.</p>
+<p>The datapath becomes another column in DataDict. This helps dealing
+with tests that run overnight and for which the input data is in several
+date-folders.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.NL01.prep_data_NL01">
+<code class="descclassname">vison.flat.NL01.</code><code class="descname">prep_data_NL01</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.prep_data_NL01" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes Raw Data and prepares it for further analysis. 
+Also checks that data quality is enough.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.NL01.run">
+<code class="descclassname">vison.flat.NL01.</code><code class="descname">run</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test NL01 master function.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vison.flat.PTC0X">
+<span id="ptc0x"></span><h2>PTC0X<a class="headerlink" href="#module-vison.flat.PTC0X" title="Permalink to this headline">¶</a></h2>
+<p>VIS Ground Calibration
+TEST: PTC_0X</p>
+<dl class="docutils">
+<dt>Photon-Transfer-Curve Analysis</dt>
+<dd>PTC01 - nominal temperature
+PTC02 - alternative temperatures</dd>
+</dl>
+<p>Tasks:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Select exposures, get file names, get metadata (commandig, HK).</li>
+<li>Check exposure time pattern matches test design.</li>
+<li>Check quality of data (rough scaling of fluences with Exposure times).</li>
+<li>Subtract pairs of exposures with equal fluence</li>
+<li><dl class="first docutils">
+<dt>Synoptic analysis:</dt>
+<dd>variance vs. fluence
+variance(binned difference-frames) vs. fluence</dd>
+</dl>
+</li>
+<li>extract: RON, gain, gain(fluence)</li>
+<li>produce synoptic figures</li>
+<li>Save results.</li>
+</ul>
+</div></blockquote>
+<p>Created on Mon Apr  3 17:00:24 2017</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">raf</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="vison.flat.PTC0X.basic_analysis_PTC0X">
+<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">basic_analysis_PTC0X</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.basic_analysis_PTC0X" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs basic analysis of images:
+- builds PTC curves: both on non-binned and binned images</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.PTC0X.build_PTC0X_scriptdict">
+<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">build_PTC0X_scriptdict</code><span class="sig-paren">(</span><em>exptimes</em>, <em>frames</em>, <em>wavelength=800</em>, <em>diffvalues={}</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.build_PTC0X_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds PTC0X script structure dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>exptimes</strong> &#8211; list of ints [ms], exposure times.</li>
+<li><strong>frames</strong> &#8211; list of ints, number of frames for each exposure time.</li>
+<li><strong>wavelength</strong> &#8211; int, wavelength. Default: 800 nm.</li>
+<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.PTC0X.filterexposures_PTC0X">
+<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">filterexposures_PTC0X</code><span class="sig-paren">(</span><em>inwavelength</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>structure={'Ncols': 6</em>, <em>'col6': {'Exptime': 18.0</em>, <em>'N': 2}</em>, <em>'col4': {'Exptime': 10.0</em>, <em>'N': 2}</em>, <em>'col5': {'Exptime': 15.0</em>, <em>'N': 2}</em>, <em>'col2': {'Exptime': 1.0</em>, <em>'N': 2}</em>, <em>'col3': {'Exptime': 5.0</em>, <em>'N': 2}</em>, <em>'col1': {'Exptime': 0</em>, <em>'N': 5}}</em>, <em>elvis='5.7.04'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.filterexposures_PTC0X" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a list of Exposure Logs and selects exposures from test PSF0X.</p>
+<p>The filtering takes into account an expected structure for the 
+acquisition script.</p>
+<p>The datapath becomes another column in DataDict. This helps dealing
+with tests that run overnight and for which the input data is in several
+date-folders.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.PTC0X.meta_analysis_PSF0X">
+<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">meta_analysis_PSF0X</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.meta_analysis_PSF0X" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Analyzes the variance and fluence:</dt>
+<dd>gain, and gain(fluence)</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.PTC0X.prep_data_PTC0X">
+<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">prep_data_PTC0X</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.prep_data_PTC0X" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes Raw Data and prepares it for further analysis. 
+Also checks that data quality is enough.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.PTC0X.run">
+<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">run</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test PTC0X master function.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/vison_logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Flat-Illumination Scripts</a><ul>
+<li><a class="reference internal" href="#flat0x">FLAT0X</a></li>
+<li><a class="reference internal" href="#module-vison.flat.NL01">NL01</a></li>
+<li><a class="reference internal" href="#module-vison.flat.PTC0X">PTC0X</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="dark_scripts.html"
+                        title="previous chapter">&#8220;Dark Acquisitions&#8221; Scripts</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="other_scripts.html"
+                        title="next chapter">Other Scripts</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/flat_scripts.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="other_scripts.html" title="Other Scripts"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dark_scripts.html" title="“Dark Acquisitions” Scripts"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Ruyman Azzollini.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>

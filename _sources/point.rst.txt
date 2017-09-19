@@ -10,7 +10,7 @@ basis.py
 .. automodule:: vison.point.basis
 
 .. autoclass:: SpotBase
-	:memberse:
+	:members:
 
 
 display.py

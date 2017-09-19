@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Charge Injection Scripts &#8212; vison 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="“Dark Acquisitions” Scripts" href="dark_scripts.html" />
+    <link rel="prev" title="Point-Source Analysis" href="point.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dark_scripts.html" title="“Dark Acquisitions” Scripts"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="point.html" title="Point-Source Analysis"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="charge-injection-scripts">
+<h1>Charge Injection Scripts<a class="headerlink" href="#charge-injection-scripts" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-vison.inject.CHINJ01">
+<span id="chinj01"></span><h2>CHINJ01<a class="headerlink" href="#module-vison.inject.CHINJ01" title="Permalink to this headline">¶</a></h2>
+<p>VIS Ground Calibration
+TEST: CHINJ01</p>
+<dl class="docutils">
+<dt>Charge injection calibration (part 1)</dt>
+<dd>Injection vs. IG1-IG2</dd>
+</dl>
+<p>Created on Tue Aug 29 17:36:00 2017</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini__at__ucl.ac.uk</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="vison.inject.CHINJ01.build_CHINJ01_scriptdict">
+<code class="descclassname">vison.inject.CHINJ01.</code><code class="descname">build_CHINJ01_scriptdict</code><span class="sig-paren">(</span><em>IDL</em>, <em>IDH</em>, <em>IG1s</em>, <em>id_delays</em>, <em>toi_chinj</em>, <em>diffvalues={}</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.build_CHINJ01_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds CHINJ01 script structure dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>IDL</strong> &#8211; int, [mV], value of IDL (Inject. Drain Low).</li>
+<li><strong>IDH</strong> &#8211; int, [mV], Injection Drain High.</li>
+<li><strong>IG1s</strong> &#8211; list of 2 ints, [mV], [min,max] values of IG1.</li>
+<li><strong>id_delays</strong> &#8211; list of 2 ints, [mV], injection drain delays (2).</li>
+<li><strong>toi_chinj</strong> &#8211; int, [us], TOI-charge injection.</li>
+<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vison.inject.CHINJ02">
+<span id="chinj02"></span><h2>CHINJ02<a class="headerlink" href="#module-vison.inject.CHINJ02" title="Permalink to this headline">¶</a></h2>
+<p>VIS Ground Calibration
+TEST: CHINJ02</p>
+<dl class="docutils">
+<dt>Charge injection calibration (part 2)</dt>
+<dd>Injection vs. IDL (injection threshold)</dd>
+</dl>
+<p>Created on Tue Aug 29 17:36:00 2017</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini__at__ucl.ac.uk</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="vison.inject.CHINJ02.build_CHINJ02_scriptdict">
+<code class="descclassname">vison.inject.CHINJ02.</code><code class="descname">build_CHINJ02_scriptdict</code><span class="sig-paren">(</span><em>IDLs</em>, <em>IDH</em>, <em>id_delays</em>, <em>toi_chinj</em>, <em>diffvalues={}</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.build_CHINJ02_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds CHINJ02 script structure dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>IDLs</strong> &#8211; list of 2 ints, [mV], [min,max] values of IDL (Inject. Drain Low).</li>
+<li><strong>IDH</strong> &#8211; int, [mV], Injection Drain High.</li>
+<li><strong>id_delays</strong> &#8211; list of 2 ints, [mV], injection drain delays (2).</li>
+<li><strong>toi_chinj</strong> &#8211; int, [us], TOI-charge injection.</li>
+<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/vison_logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Charge Injection Scripts</a><ul>
+<li><a class="reference internal" href="#module-vison.inject.CHINJ01">CHINJ01</a></li>
+<li><a class="reference internal" href="#module-vison.inject.CHINJ02">CHINJ02</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="point.html"
+                        title="previous chapter">Point-Source Analysis</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dark_scripts.html"
+                        title="next chapter">&#8220;Dark Acquisitions&#8221; Scripts</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/chinj_scripts.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dark_scripts.html" title="“Dark Acquisitions” Scripts"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="point.html" title="Point-Source Analysis"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Ruyman Azzollini.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>

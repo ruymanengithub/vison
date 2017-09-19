@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Point-Source Analysis" href="point.html" /> 
+    <link rel="prev" title="Scripts" href="scripts.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -39,7 +39,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="point.html" title="Point-Source Analysis"
+          <a href="scripts.html" title="Scripts"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">vison 0.1 documentation</a> &#187;</li> 
       </ul>
@@ -50,9 +50,92 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-vison.support.files">
-<span id="support-code"></span><h1>Support Code<a class="headerlink" href="#module-vison.support.files" title="Permalink to this headline">¶</a></h1>
-<p>IO related functions.</p>
+  <div class="section" id="module-vison.support.ds9">
+<span id="support-code"></span><h1>Support Code<a class="headerlink" href="#module-vison.support.ds9" title="Permalink to this headline">¶</a></h1>
+<p>NEEDS REVISION
+TODO: UPDATE</p>
+<p>Module with functions related to the handling of ds9 from python
+through XPA.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">History:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>Created on Thu Mar 17 13:18:10 2016</p>
+<p>&#64;author: Ruyman Azzollini</p>
+<dl class="class">
+<dt id="vison.support.ds9.ds9class">
+<em class="property">class </em><code class="descclassname">vison.support.ds9.</code><code class="descname">ds9class</code><a class="headerlink" href="#vison.support.ds9.ds9class" title="Permalink to this definition">¶</a></dt>
+<dd><p>A very simple class to handle ds9 through xpa.</p>
+<dl class="method">
+<dt id="vison.support.ds9.ds9class.isOpen">
+<code class="descname">isOpen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.ds9.ds9class.isOpen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this ds9 window is open
+and available for communication, False otherwise.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.support.ds9.ds9class.launch">
+<code class="descname">launch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.ds9.ds9class.launch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Launches ds9</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.support.ds9.ds9class.xpaget">
+<code class="descname">xpaget</code><span class="sig-paren">(</span><em>cmd</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.ds9.ds9class.xpaget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes xpaget and retrieves the stdout. If an error happens, an exception is raised.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.support.ds9.ds9class.xpaset">
+<code class="descname">xpaset</code><span class="sig-paren">(</span><em>cmd</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.ds9.ds9class.xpaset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes xpaset.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.support.ds9.ds9class.zoomhere">
+<code class="descname">zoomhere</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>zoom</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.ds9.ds9class.zoomhere" title="Permalink to this definition">¶</a></dt>
+<dd><p>Zooms in on given coordinates of display (ds9).</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-vison.support.ET"></span><p>Module to issue WARNING / ALERT phone calls to designated phone numbers.</p>
+<p>&#8216;... E.T. phone home...&#8217;</p>
+<p>Created on Thu Sep 14 10:13:12 2017</p>
+<p>&#64;author: raf</p>
+<dl class="class">
+<dt id="vison.support.ET.ET">
+<em class="property">class </em><code class="descclassname">vison.support.ET.</code><code class="descname">ET</code><a class="headerlink" href="#vison.support.ET.ET" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to do phone calls.</p>
+<dl class="method">
+<dt id="vison.support.ET.ET.dial_numbers">
+<code class="descname">dial_numbers</code><span class="sig-paren">(</span><em>url</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.ET.ET.dial_numbers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dials one or more phone numbers from a Twilio phone number.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>url</strong> &#8211; char, URL with the TwiML code that Twilio uses as instructions 
+on call. Basically, it provides a message to be voiced, 
+as intended.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.support.ET.grab_numbers_and_codes">
+<code class="descclassname">vison.support.ET.</code><code class="descname">grab_numbers_and_codes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.ET.grab_numbers_and_codes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves phone numbers and access codes necessary to make the phone calls.</p>
+</dd></dl>
+
+<span class="target" id="module-vison.support.files"></span><p>IO related functions.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -274,6 +357,112 @@ end{tabular}}</div></blockquote>
 </table>
 </dd></dl>
 
+<span class="target" id="module-vison.support.monitor"></span><p>Euclid VIS Ground Calibration Campaign
+Classes and functions to do Real-Time Monitoring of the Data Acquisition</p>
+<p>Created on Wed Feb  1 17:37:32 2017</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="vison.support.monitor.test">
+<code class="descclassname">vison.support.monitor.</code><code class="descname">test</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.monitor.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests Module Basic Functionality</p>
+</dd></dl>
+
+<span class="target" id="module-vison.support.report"></span><p>Euclid-VIS Calibration Programme Pipeline: vison</p>
+<p>Reporting Utilities.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">History:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>Created on Wed Jan 25 16:58:33 2017</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Content</code><span class="sig-paren">(</span><em>contenttype=''</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Figure</code><span class="sig-paren">(</span><em>figpath</em>, <em>textfraction=0.7</em>, <em>caption=None</em>, <em>label=None</em><span class="sig-paren">)</span></dt>
+<dd><dl class="method">
+<dt>
+<code class="descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Generates LaTeX as list of strings.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Section</code><span class="sig-paren">(</span><em>Title=''</em>, <em>level=0</em><span class="sig-paren">)</span></dt>
+<dd><dl class="method">
+<dt>
+<code class="descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Table</code><span class="sig-paren">(</span><em>tableDict</em>, <em>formats={}</em>, <em>names=[]</em>, <em>caption=None</em><span class="sig-paren">)</span></dt>
+<dd><blockquote>
+<div><dl class="docutils">
+<dt>PENDING:</dt>
+<dd><ul class="first last simple">
+<li>adjust width of table to texwidth:</li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>esizebox{       extwidth}{!}{</dt>
+<dd><blockquote class="first">
+<div>...
+end{tabular}}</div></blockquote>
+<ul class="last simple">
+<li>include option to rotate table to show in landscape</li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt>
+<code class="descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Generates LaTeX as list of strings.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Text</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span></dt>
+<dd><dl class="method">
+<dt>
+<code class="descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -286,8 +475,8 @@ end{tabular}}</div></blockquote>
               <img class="logo" src="_static/vison_logo.png" alt="Logo"/>
             </a></p>
   <h4>Previous topic</h4>
-  <p class="topless"><a href="point.html"
-                        title="previous chapter">Point-Source Analysis</a></p>
+  <p class="topless"><a href="scripts.html"
+                        title="previous chapter">Scripts</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -319,7 +508,7 @@ end{tabular}}</div></blockquote>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="point.html" title="Point-Source Analysis"
+          <a href="scripts.html" title="Scripts"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">vison 0.1 documentation</a> &#187;</li> 
       </ul>
