@@ -17,7 +17,7 @@ from glob import glob
 import string as st
 from pdb import set_trace as stop
 
-from vissim.support.ds9 import ds9class
+from vison.support.ds9 import ds9class
 
 
 isthere = os.path.exists

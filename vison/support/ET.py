@@ -24,7 +24,7 @@ URLs = dict(NonSpecificWarning="https://visonwarningcall.000webhostapp.com/vison
 def grab_numbers_and_codes():
     """Retrieves phone numbers and access codes necessary to make the phone calls."""
     
-    detailsf = os.path.join('/home/raf','credentials_twilio.pick')
+    detailsf = os.path.join(os.path.pathsep,'home','raf','credentials_twilio.pick')[1:]
     details = pickle.load(open(detailsf))
     return details
 
@@ -64,6 +64,13 @@ class ET(object):
 if __name__ == '__main__':
     """Tests"""
     
-    et = ET()
-    et.dial_numbers(URLs['NonSpecificWarning'])
+    ETavailable = True
+    try:
+        et = ET()
+    except IOError:
+        print 'vison.support.ET: Phone Calling is limited to personel with access details.'
+        ETavailable = False
+    
+    if ETavailable:
+        et.dial_numbers(URLs['NonSpecificWarning'])
     

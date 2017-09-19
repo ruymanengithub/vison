@@ -9,7 +9,7 @@ __version__ = get_versions()['version']
 del get_versions
 
 
-from pipe import FlatFielding
+from flat import FlatFielding
 from pipe.master import Pipe
 from support.report import Report
 from eyegore.eyegore import Eyegore

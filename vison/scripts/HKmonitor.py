@@ -3,6 +3,8 @@
 # -*- coding: utf-8 -*-
 """
 
+TODO: DEBUG, calls unexistent class LaTeX
+
 Script to produce HK reports out of HK files in a folder.
 Aimed at quick inspection of data from Characterization and Calibration Campaigns
 of Euclid-VIS.
@@ -19,8 +21,8 @@ import os
 from glob import glob
 import string as st
 
-from vissim.datamodel.HKtools import HKplot,parseHKfiles,allHK_keys
-from vissim.support.latex import LaTeX
+from vison.datamodel.HKtools import HKplot,parseHKfiles,allHK_keys
+#from vison.support.latex import LaTeX
 
 from pdb import set_trace as stop
 
@@ -28,11 +30,11 @@ isthere = os.path.exists
 
 if __name__ == '__main__':
     """
-    # TODO:
-    #  find HK files in a folder
-    #  parse HK files
-    #  plot HK parameters vs. time
-    # assemble all plots into a pdf file
+    TODO:
+     find HK files in a folder
+     parse HK files
+     plot HK parameters vs. time
+     assemble all plots into a pdf file
     
     """
     

@@ -80,6 +80,24 @@ Charge Injection Tools
     inject
 
 
+
+"Flat" Acq. Analysis Tools
+==========================
+
+.. toctree::
+    :maxdepth: 4
+    
+    flat
+
+Image
+=====
+
+.. toctree::
+    :maxdepth: 4
+
+    image
+
+
 Monitoring ("Eyegore")
 ======================
 
@@ -88,6 +106,13 @@ Monitoring ("Eyegore")
 
     eyegore
 
+OGSE
+====
+
+.. toctree::
+    :maxdepth: 4
+
+    ogse
 
 Point-Source Analysis
 =====================
@@ -97,6 +122,47 @@ Point-Source Analysis
 
     point
 
+
+Test Scripts
+============
+
+
+
+Charge Injection Scripts
+------------------------
+
+.. toctree::
+    :maxdepth: 4
+
+    chinj_scripts
+
+
+Dark Scripts
+--------------
+
+.. toctree::
+    :maxdepth: 4
+    
+    dark_scripts
+
+
+Flat-Illumination Scripts
+-------------------------
+
+
+.. toctree::
+    :maxdepth: 4
+
+    flat_scripts
+
+
+Other Test Scripts
+------------------
+
+.. toctree::
+
+    other_scripts
+
 Point-Source Scripts
 --------------------
 
@@ -104,6 +170,27 @@ Point-Source Scripts
     :maxdepth: 4
 
     point_scripts
+
+
+Trap-Pumping Scripts
+--------------------
+
+.. toctree::
+    :maxdepth: 4
+    
+    tp_scripts
+
+
+
+Scripts
+=======
+
+
+.. toctree::
+   :maxdepth: 4
+   
+   scripts
+
 
 Support Code
 ============
