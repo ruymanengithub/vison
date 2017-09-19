@@ -110,7 +110,7 @@ OGSE
 .. toctree::
     :maxdepth: 4
 
-
+    ogse
 
 Point-Source Analysis
 =====================

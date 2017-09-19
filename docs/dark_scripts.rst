@@ -14,5 +14,5 @@ BIAS01
 DARK01
 ------
 
-.. automodule:: vison.point.DARK01
+.. automodule:: vison.dark.DARK01
         :members:

@@ -34,7 +34,7 @@ from pdb import set_trace as stop
 import os
 from vison.pipe import lib as pilib
 from vison.ogse import ogse
-from vison.pipe import FlatFielding as FFing
+from vison.flat import FlatFielding as FFing
 from vison.support.report import Report
 from vison.support import files
 from vison.point import lib as polib

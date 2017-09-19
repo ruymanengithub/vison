@@ -7,6 +7,6 @@ Image Analysis
 bits.py
 --------
 
-.. automodule:: vison.point.bits
+.. automodule:: vison.image.bits
     :members:
 
