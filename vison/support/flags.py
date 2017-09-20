@@ -1,26 +1,72 @@
-"""Functions and variables related to flags for moments.py"""
+"""
 
-import numpy as num
+VIS Ground Calibration
 
-allflags = {'NOPETRO': 2**0L, 'MANYPETRO':2**1L, 'NEGPETRO':2**2L,\
-'BADRADIAL':2**3L,'MAXITER_AS':2**4L,'NOCONC':2**5L,'MANYCONC':2**6L,\
-'NORADIAL':2**8L,'USEPETROMSK':2**9L,'PETROMSKTRUNC':2**10L,\
-'MAXITER_AXAS':2**11L,'NOM20':2**12L,'NEGGROWTH':2**13L,'BLANK':2**14L,\
-'NONCHECKEDRADIAL':2**15L,'NOFFACTOR':2**16L,'NOCLUMPS':2**17L,\
-'NOPEAKS':2**18L,'SHORTSKYRAD':2**19L}
 
-#for key in allflags.keys(): allflags[key] = num.long(allflags[key])
+Functions and variables related to flags for vison.
 
-def isflagon(allflags,flag):
-    if allflags & flag == flag : return True
-    else : return False
+Created on Wed Sep 20 17:05:00 2017
 
-def addflag(allflags,flag):
-    """Adds a flag to a flag variable."""
-    # IMPORT STUFF
-    from pdb import set_trace as stop
-    # END IMPORT
-    #if type(allflags) != type(flag) : stop()
-    allflags = allflags | flag    
-    return allflags
+:author: Ruyman Azzollini
+:contact: r.azzollini_at_ucl.ac.uk
+
+"""
+# IMPORT STUFF
+import numpy as np
+from pdb import set_trace as stop
+# END IMPORT
+
+flagsdict = {'MISSDATA': [2**0L], 'BADQUALDATA':[2**1L],'HK_OOL':[2**2L],
+            'CCDTEMP_OOL':[2**3L],'WRONGTEST':[2**4L],'SOURCEOFF':[2**5L],
+            'WRONGSOURCE':[2**6L],'FLUENCE_OOL':[2**7L],
+            'WRONG_ROE_CONF':[2**8L],'FOCUS_OOL':[2**9L],
+            'RON_OOL':[2**10L]}
+
+
+
+class Flags(object):
+    """ """
     
+    def __init__(self,):
+        self.value = 0L
+        self.dict = flagsdict
+    
+    def isflagon(self,flag):
+        if self.value & self.dict[flag][0] == self.dict[flag][0]: 
+            return True
+        else: return False
+        
+    def add(self,flag):
+        self.value |= self.dict[flag][0]
+    
+    
+if __name__ == '__main__':
+    
+    flags = Flags()
+    
+    keys = flags.dict.keys()
+    flagvals = [flags.dict[key][0] for key in keys]
+    maxflag = np.max(flagvals)
+    maxpow = int(np.log10(maxflag)/np.log10(2))
+    
+    for key in keys:
+        flags.add(key)
+    
+    test=0
+    for i in range(maxpow+1):
+        test = test | 2**(i*1L)
+        
+    
+    assert test == flags.value
+    
+    areOn = True
+    
+    for key in keys:
+        areOn &= flags.isflagon(key)
+    
+    assert areOn == True
+    
+    
+    print 'flags.py: Tests Ran Succesfully'
+
+
