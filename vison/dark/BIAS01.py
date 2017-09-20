@@ -123,21 +123,50 @@ def filterexposures(structure,explogf,datapath,OBSID_lims,
 
 def check_data(DataDict,report,inputs,log=None):
     """ 
-    Meta-Code
+    METACODE
     
     Checks quality of ingested data.
     
     
+    TODO: consider to raise an exception that
+          would halt execution of task if 
+          processing data could be just a waste of time.
+          
+    TODO: consider add a common binary "flags" variable as 
+          input/output. It could go in DataDict, and reported in 
+          log and report.
+    
     """
+    
+    # check common HK values are within safe / nominal margins
+    # check voltages in HK match commanded voltages, within margins
+    
+    # f.e.ObsID, f.e.CCD, f.e.Q.:
+        # measure offsets in pre-, img-, over-
+        # measure std in pre-, img-, over-
+    # assess std in pre- is within allocated margins
+    # assess offsets in pre-, img-, over- are equal, within allocated  margins
+    # assess offsets are within allocated margins
+    
+    # plot offsets vs. time
+    # plot std vs. time
+    
+    # issue any warnings to log
+    # issue update to report
+    
+    return DataDict, report
+    
 
 def prep_data(DataDict,report,inputs,log=None):
     """
     METACODE
     
     Preparation of data for further analysis.
+    
     """
     
-    
+    # f.e. ObsID, f.e.CCD, f.e.Q:
+        # subtract offset: save to FITS, update filename
     
     
     return DataDict,report
@@ -145,14 +174,37 @@ def prep_data(DataDict,report,inputs,log=None):
 def basic_analysis(DataDict,report,inputs,log=None):
     """ 
     METACODE
+    
+    Basic analysis of data.
+    
     """
+    
+    # f. e. ObsID, f.e.CCD, f.e.Q:
+        # produce a 2D poly model of bias, save coefficients
+        # produce average profile along rows
+        # produce average profile along cols
+        # save 2D model and profiles in a pick file for each OBSID-CCD
+        # measure and save RON after subtracting large scale structure
+    # plot RON vs. time f. each CCD and Q
+    # plot average profiles f. each CCD and Q (color coded by time)
+    
     
     return DataDict,report
     
 def meta_analysis(DataDict,report,inputs,log=None):
     """ """
     
+    # f. each CCD, f. e. Q:
+        # stack all ObsIDs to produce Master Bias
+        # measure average profile along rows
+        # measure average profile along cols
+    # plot average profiles of Master Bias f. each Q
+    # produce table with summary of results, include in report
+    # show Master Bias (image), include in report
+    # save name of MasterBias to DataDict, report
+    
     return DataDict,report
+
 
 def feeder(inputs,elvis='6.1.0'):
     """ """

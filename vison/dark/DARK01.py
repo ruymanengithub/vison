@@ -72,3 +72,86 @@ def build_DARK01_scriptdict(N,exptime,diffvalues=dict(),elvis='6.0.0'):
     
     return DARK01_sdict
 
+
+def check_data(DataDict,report,inputs,log=None):
+    """ 
+    METACODE
+    
+    Checks quality of ingested data.
+    
+
+    
+    """
+    
+    # check common HK values are within safe / nominal margins
+    # check voltages in HK match commanded voltages, within margins
+    
+    # f.e.ObsID, f.e.CCD, f.e.Q.:
+        # measure offsets/means in pre-, img-, over-
+        # measure std in pre-, img-, over-
+    # assess std in pre- is within allocated margins
+    # assess offsets/means in pre-, img-, over- are equal, within allocated  margins
+    # assess offsets/means are within allocated margins
+    
+    # plot offsets/means vs. time
+    # plot std vs. time
+    
+    # issue any warnings to log
+    # issue update to report
+    
+    return DataDict, report
+    
+
+def prep_data(DataDict,report,inputs,log=None):
+    """
+    METACODE
+    
+    Preparation of data for further analysis.
+    
+    """
+    
+    # f.e. ObsID, f.e.CCD, f.e.Q:
+        # subtract offset: save to FITS, update filename
+    
+    return DataDict,report
+    
+def basic_analysis(DataDict,report,inputs,log=None):
+    """ 
+    METACODE
+    
+    Basic analysis of data.
+    
+    """
+    
+    # f. e. ObsID, f.e.CCD, f.e.Q:
+        # produce mask of hot pixels
+            # count hot pixels / columns
+        # produce a 2D poly model of masked-image, save coefficients
+        # produce average profile along rows
+        # produce average profile along cols
+        # save 2D model and profiles in a pick file for each OBSID-CCD
+        # measure and save RON after subtracting large scale structure
+    
+    # plot average profiles f. each CCD and Q (color coded by time)
+    
+    
+    return DataDict,report
+    
+def meta_analysis(DataDict,report,inputs,log=None):
+    """ """
+    
+    # f. each CCD, f. e. Q:
+        # stack all ObsIDs to produce Master Dark
+        # produce mask of hot pixels / columns
+        # count hot pixels / columns
+        # measure average profile along rows
+        # measure average profile along cols
+        
+    # plot average profiles of Master Bias f. each Q
+    # show Master Dark (image), include in report
+    # report stats of defects, include in report
+    # save name of MasterDark to DataDict, report
+    # save name of Defects in Darkness Mask to DD, report
+    
+    return DataDict,report
+
