@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Flat-Illumination Scripts &#8212; vison 0.2+29.g8ff216c.dirty documentation</title>
+    <title>Flat-Illumination Scripts &#8212; vison 0.2+33.gab041b4 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2+29.g8ff216c.dirty',
+        VERSION:     '0.2+33.gab041b4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Other Scripts" href="other_scripts.html" />
+    <link rel="next" title="Point-Source Scripts" href="point_scripts.html" />
     <link rel="prev" title="“Dark Acquisitions” Scripts" href="dark_scripts.html" /> 
   </head>
   <body role="document">
@@ -40,12 +40,12 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="other_scripts.html" title="Other Scripts"
+          <a href="point_scripts.html" title="Point-Source Scripts"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="dark_scripts.html" title="“Dark Acquisitions” Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+29.g8ff216c.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+33.gab041b4 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -92,6 +92,82 @@ TEST: FLAT0X</p>
 </table>
 </dd></dl>
 
+<dl class="function">
+<dt id="vison.flat.FLAT0X.check_data">
+<code class="descclassname">vison.flat.FLAT0X.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.check_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>METACODE</p>
+<p>Checks quality of ingested data.</p>
+<p># check common HK values are within safe / nominal margins
+# check voltages in HK match commanded voltages, within margins</p>
+<dl class="docutils">
+<dt># f.e.ObsID, f.e.CCD, f.e.Q.:</dt>
+<dd># measure offsets/means in pre-, img-, over-
+# measure std in pre-, img-, over-</dd>
+</dl>
+<p># assess std in pre- is within allocated margins
+# assess offsets in pre- and over- are equal, within allocated  margins
+# assess fluences are within allocated margins
+# flag saturations if there are.</p>
+<p># plot fluence vs. time for each exptime
+# plot std-pre vs. time</p>
+<p># issue any warnings to log
+# issue update to report</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.FLAT0X.do_indiv_flats">
+<code class="descclassname">vison.flat.FLAT0X.</code><code class="descname">do_indiv_flats</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.do_indiv_flats" title="Permalink to this definition">¶</a></dt>
+<dd><p>METACODE</p>
+<p>Preparation of data for further analysis and 
+produce flat-field for each OBSID.</p>
+<dl class="docutils">
+<dt># f.e. ObsID, f.e.CCD, f.e.Q:</dt>
+<dd># subtract offset
+# opt: [sub bias frame]
+# model 2D fluence distro in image area
+# produce average profile along rows
+# produce average profile along cols
+# save 2D model and profiles in a pick file for each OBSID-CCD
+#
+# divide by 2D model to produce indiv-flat
+# save indiv-Flat to FITS, update add filename</dd>
+</dl>
+<p># plot average profiles f. each CCD and Q (color coded by time)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.FLAT0X.do_master_flat">
+<code class="descclassname">vison.flat.FLAT0X.</code><code class="descname">do_master_flat</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.do_master_flat" title="Permalink to this definition">¶</a></dt>
+<dd><p>METACODE</p>
+<p>Produces Master Flat-Field</p>
+<dl class="docutils">
+<dt># f.e.CCD, f.e.Q:</dt>
+<dd># stack individual flat-fields by chosen estimator
+# save Master FF to FITS
+# measure PRNU and</dd>
+</dl>
+<p># report PRNU figures</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.FLAT0X.do_prdef_mask">
+<code class="descclassname">vison.flat.FLAT0X.</code><code class="descname">do_prdef_mask</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.do_prdef_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>METACODE</p>
+<p>Produces mask of defects in Photo-Response</p>
+<dl class="docutils">
+<dt># f.e.CCD, f.e.Q:</dt>
+<dd># produce mask of PR defects
+# save mask of PR defects
+# count dead pixels / columns</dd>
+</dl>
+<p># report PR-defects stats</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.FLAT0X.feeder">
+<code class="descclassname">vison.flat.FLAT0X.</code><code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.1.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.feeder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="module-vison.flat.NL01">
 <span id="nl01"></span><h2>NL01<a class="headerlink" href="#module-vison.flat.NL01" title="Permalink to this headline">¶</a></h2>
@@ -128,14 +204,6 @@ TEST: NL01</p>
 </tbody>
 </table>
 <dl class="function">
-<dt id="vison.flat.NL01.basic_analysis_NL01">
-<code class="descclassname">vison.flat.NL01.</code><code class="descname">basic_analysis_NL01</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.basic_analysis_NL01" title="Permalink to this definition">¶</a></dt>
-<dd><p>Performs basic analysis:
-- builds Non-Lin curves
-- fits Non-Linearity curves</p>
-</dd></dl>
-
-<dl class="function">
 <dt id="vison.flat.NL01.build_NL01_scriptdict">
 <code class="descclassname">vison.flat.NL01.</code><code class="descname">build_NL01_scriptdict</code><span class="sig-paren">(</span><em>expts</em>, <em>exptinter</em>, <em>frames</em>, <em>wavelength=0</em>, <em>diffvalues={}</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.build_NL01_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds NL01 script structure dictionary.</p>
@@ -157,8 +225,73 @@ TEST: NL01</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="vison.flat.NL01.check_data_NL01">
+<code class="descclassname">vison.flat.NL01.</code><code class="descname">check_data_NL01</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.check_data_NL01" title="Permalink to this definition">¶</a></dt>
+<dd><p>METACODE</p>
+<p>Checks that data quality is good enough.</p>
+<p># check common HK values are within safe / nominal margins
+# check voltages in HK match commanded voltages, within margins</p>
+<dl class="docutils">
+<dt># f.e.ObsID, f.e.CCD, f.e.Q.:</dt>
+<dd># measure offsets/means in pre-, img-, over-
+# measure std in pre-, img-, over-</dd>
+</dl>
+<p># assess std in pre- is within allocated margins
+# (assess offsets in pre- and over- are equal, within allocated  margins)
+# assess image-fluences are within allocated margins for each exposure time</p>
+<p># plot fluences vs. exposure time
+# plot std-pre vs. time</p>
+<p># issue any warnings to log
+# issue update to report</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.NL01.do_satCTE">
+<code class="descclassname">vison.flat.NL01.</code><code class="descname">do_satCTE</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.do_satCTE" title="Permalink to this definition">¶</a></dt>
+<dd><p>METACODE</p>
+<p># select ObsIDs with fluence(exptime) &gt;~ 0.5 FWC</p>
+<dl class="docutils">
+<dt># f.e. ObsID, CCD, Q:</dt>
+<dd><ul class="first last simple">
+<li>measure CTE from amount of charge in over-scan relative to fluence</li>
+</ul>
+</dd>
+<dt># f.e. CCD, Q:</dt>
+<dd><ul class="first last simple">
+<li>get curve of CTE vs. fluence</li>
+<li>measure FWC from curve in ADU</li>
+</ul>
+</dd>
+</dl>
+<p>report FWCs in electrons [via gain in inputs] 
+f.e. CCD, Q (table)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.NL01.extract_stats">
+<code class="descclassname">vison.flat.NL01.</code><code class="descname">extract_stats</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.extract_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>METACODE</p>
+<p>Performs basic analysis: extracts statistics from 
+image regions to later build NLC.</p>
+<p># create segmentation map given grid parameters</p>
+<p># f.e. ObsID, f.e.CCD, f.e.Q:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt># f.e. segment:</dt>
+<dd># measure central value
+# measure variance</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.NL01.feeder">
+<code class="descclassname">vison.flat.NL01.</code><code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.1.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.feeder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="vison.flat.NL01.filterexposures_NLC01">
-<code class="descclassname">vison.flat.NL01.</code><code class="descname">filterexposures_NLC01</code><span class="sig-paren">(</span><em>inwavelength</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>structure={'Ncols': 6</em>, <em>'col6': {'Exptime': 18.0</em>, <em>'N': 2}</em>, <em>'col4': {'Exptime': 10.0</em>, <em>'N': 2}</em>, <em>'col5': {'Exptime': 15.0</em>, <em>'N': 2}</em>, <em>'col2': {'Exptime': 1.0</em>, <em>'N': 2}</em>, <em>'col3': {'Exptime': 5.0</em>, <em>'N': 2}</em>, <em>'col1': {'Exptime': 0</em>, <em>'N': 5}}</em>, <em>elvis='5.7.04'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.filterexposures_NLC01" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.flat.NL01.</code><code class="descname">filterexposures_NLC01</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.filterexposures_NLC01" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a list of Exposure Logs and selects exposures from test PSF0X.</p>
 <p>The filtering takes into account an expected structure for the 
 acquisition script.</p>
@@ -170,14 +303,28 @@ date-folders.</p>
 <dl class="function">
 <dt id="vison.flat.NL01.prep_data_NL01">
 <code class="descclassname">vison.flat.NL01.</code><code class="descname">prep_data_NL01</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.prep_data_NL01" title="Permalink to this definition">¶</a></dt>
-<dd><p>Takes Raw Data and prepares it for further analysis. 
-Also checks that data quality is enough.</p>
+<dd><p>METACODE</p>
+<p>Takes Raw Data and prepares it for further analysis.</p>
+<dl class="docutils">
+<dt># f.e. ObsID, f.e.CCD, f.e.Q:</dt>
+<dd># subtract offset
+# opt: [sub bias frame]</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
-<dt id="vison.flat.NL01.run">
-<code class="descclassname">vison.flat.NL01.</code><code class="descname">run</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test NL01 master function.</p>
+<dt id="vison.flat.NL01.produce_NLCs">
+<code class="descclassname">vison.flat.NL01.</code><code class="descname">produce_NLCs</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.produce_NLCs" title="Permalink to this definition">¶</a></dt>
+<dd><p>METACODE</p>
+<p>Obtains Best-Fit Non-Linearity Curve</p>
+<p># f.e. CCD, f.e. Q:</p>
+<blockquote>
+<div># [opt] apply correction for source variability (interspersed exposure 
+#      with constant exptime)
+# Build NL Curve (NLC)
+# fit poly. shape to NL curve</div></blockquote>
+<p># plot NL curves for each CCD, Q
+# report max. values of NL (table)</p>
 </dd></dl>
 
 </div>
@@ -220,13 +367,6 @@ variance(binned difference-frames) vs. fluence</dd>
 </tbody>
 </table>
 <dl class="function">
-<dt id="vison.flat.PTC0X.basic_analysis_PTC0X">
-<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">basic_analysis_PTC0X</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.basic_analysis_PTC0X" title="Permalink to this definition">¶</a></dt>
-<dd><p>Performs basic analysis of images:
-- builds PTC curves: both on non-binned and binned images</p>
-</dd></dl>
-
-<dl class="function">
 <dt id="vison.flat.PTC0X.build_PTC0X_scriptdict">
 <code class="descclassname">vison.flat.PTC0X.</code><code class="descname">build_PTC0X_scriptdict</code><span class="sig-paren">(</span><em>exptimes</em>, <em>frames</em>, <em>wavelength=800</em>, <em>diffvalues={}</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.build_PTC0X_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds PTC0X script structure dictionary.</p>
@@ -247,8 +387,59 @@ variance(binned difference-frames) vs. fluence</dd>
 </dd></dl>
 
 <dl class="function">
+<dt id="vison.flat.PTC0X.check_data">
+<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.check_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>METACODE</p>
+<p>Checks quality of ingested data.</p>
+<p># check common HK values are within safe / nominal margins
+# check voltages in HK match commanded voltages, within margins</p>
+<dl class="docutils">
+<dt># f.e.ObsID, f.e.CCD, f.e.Q.:</dt>
+<dd># measure offsets/means in pre-, img-, over-
+# measure std in pre-, img-, over-</dd>
+</dl>
+<p># assess std in pre- is within allocated margins
+# assess offsets in pre- and over- are equal, within allocated  margins
+# assess image-fluences are within allocated margins</p>
+<p># plot fluences vs. exposure time
+# plot std-pre vs. time</p>
+<p># issue any warnings to log
+# issue update to report</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.PTC0X.extract_PTC">
+<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">extract_PTC</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.extract_PTC" title="Permalink to this definition">¶</a></dt>
+<dd><p>METACODE</p>
+<dl class="docutils">
+<dt>Performs basic analysis of images:</dt>
+<dd><ul class="first last simple">
+<li>builds PTC curves: both on non-binned and binned images</li>
+</ul>
+</dd>
+</dl>
+<p># create list of OBSID pairs</p>
+<p># create segmentation map given grid parameters</p>
+<p># f.e. OBSID pair, CCD, Q:</p>
+<blockquote>
+<div><p># [apply defects mask if available]</p>
+<p># subtract CCD images</p>
+<dl class="docutils">
+<dt>f.e. segment:</dt>
+<dd># measure central value
+# measure variance</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.PTC0X.feeder">
+<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.1.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.feeder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="vison.flat.PTC0X.filterexposures_PTC0X">
-<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">filterexposures_PTC0X</code><span class="sig-paren">(</span><em>inwavelength</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>structure={'Ncols': 6</em>, <em>'col6': {'Exptime': 18.0</em>, <em>'N': 2}</em>, <em>'col4': {'Exptime': 10.0</em>, <em>'N': 2}</em>, <em>'col5': {'Exptime': 15.0</em>, <em>'N': 2}</em>, <em>'col2': {'Exptime': 1.0</em>, <em>'N': 2}</em>, <em>'col3': {'Exptime': 5.0</em>, <em>'N': 2}</em>, <em>'col1': {'Exptime': 0</em>, <em>'N': 5}}</em>, <em>elvis='5.7.04'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.filterexposures_PTC0X" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">filterexposures_PTC0X</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.filterexposures_PTC0X" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a list of Exposure Logs and selects exposures from test PSF0X.</p>
 <p>The filtering takes into account an expected structure for the 
 acquisition script.</p>
@@ -258,25 +449,26 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="vison.flat.PTC0X.meta_analysis_PSF0X">
-<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">meta_analysis_PSF0X</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.meta_analysis_PSF0X" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
+<dt id="vison.flat.PTC0X.meta_analysis">
+<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">meta_analysis</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>METACODE</p>
+<dl class="docutils">
 <dt>Analyzes the variance and fluence:</dt>
 <dd>gain, and gain(fluence)</dd>
 </dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.flat.PTC0X.prep_data_PTC0X">
-<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">prep_data_PTC0X</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.prep_data_PTC0X" title="Permalink to this definition">¶</a></dt>
-<dd><p>Takes Raw Data and prepares it for further analysis. 
-Also checks that data quality is enough.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.flat.PTC0X.run">
-<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">run</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test PTC0X master function.</p>
+<p># f.e. CCD, Q:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt># using stats across segments:</dt>
+<dd>fit PTC to quadratic model
+solve for gain
+solve for alpha (G+15)
+solve for blooming limit</dd>
+</dl>
+</div></blockquote>
+<p># plot PTC curves with best-fit f.e. CCD, Q
+# report on gain estimates f. e. CCD, Q (table)
+# report on blooming limits (table)</p>
 </dd></dl>
 
 </div>
@@ -305,8 +497,8 @@ Also checks that data quality is enough.</p>
   <p class="topless"><a href="dark_scripts.html"
                         title="previous chapter">&#8220;Dark Acquisitions&#8221; Scripts</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="other_scripts.html"
-                        title="next chapter">Other Scripts</a></p>
+  <p class="topless"><a href="point_scripts.html"
+                        title="next chapter">Point-Source Scripts</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -338,12 +530,12 @@ Also checks that data quality is enough.</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="other_scripts.html" title="Other Scripts"
+          <a href="point_scripts.html" title="Point-Source Scripts"
              >next</a> |</li>
         <li class="right" >
           <a href="dark_scripts.html" title="“Dark Acquisitions” Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+29.g8ff216c.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+33.gab041b4 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
