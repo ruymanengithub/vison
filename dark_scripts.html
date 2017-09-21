@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>“Dark Acquisitions” Scripts &#8212; vison 0.1 documentation</title>
+    <title>“Dark Acquisitions” Scripts &#8212; vison 0.2+28.gd877ee4.dirty documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1',
+        VERSION:     '0.2+28.gd877ee4.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="chinj_scripts.html" title="Charge Injection Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+28.gd877ee4.dirty documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -73,9 +73,10 @@ TEST: BIAS01</p>
 </tbody>
 </table>
 <dl class="function">
-<dt id="vison.dark.BIAS01.bias01">
-<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">bias01</code><span class="sig-paren">(</span><em>self</em>, <em>inputs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.bias01" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test BIAS01 master function.</p>
+<dt id="vison.dark.BIAS01.basic_analysis">
+<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">basic_analysis</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.basic_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>METACODE</p>
+<p>Basic analysis of data.</p>
 </dd></dl>
 
 <dl class="function">
@@ -98,9 +99,41 @@ TEST: BIAS01</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="vison.dark.BIAS01.filterexposures_BIAS01">
-<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">filterexposures_BIAS01</code><span class="sig-paren">(</span><em>N</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>structure</em>, <em>elvis</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.filterexposures_BIAS01" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.dark.BIAS01.check_data">
+<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.check_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>METACODE</p>
+<p>Checks quality of ingested data.</p>
+<dl class="docutils">
+<dt>TODO: consider to raise an exception that</dt>
+<dd>would halt execution of task if 
+processing data could be just a waste of time.</dd>
+<dt>TODO: consider add a common binary &#8220;flags&#8221; variable as </dt>
+<dd>input/output. It could go in DataDict, and reported in 
+log and report.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.dark.BIAS01.feeder">
+<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.1.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.feeder" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.dark.BIAS01.filterexposures">
+<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>elvis</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.filterexposures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.dark.BIAS01.meta_analysis">
+<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">meta_analysis</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.dark.BIAS01.prep_data">
+<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">prep_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.prep_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>METACODE</p>
+<p>Preparation of data for further analysis.</p>
+</dd></dl>
 
 </div>
 <div class="section" id="module-vison.dark.DARK01">
@@ -120,6 +153,13 @@ TEST: DARK01</p>
 </tbody>
 </table>
 <dl class="function">
+<dt id="vison.dark.DARK01.basic_analysis">
+<code class="descclassname">vison.dark.DARK01.</code><code class="descname">basic_analysis</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.basic_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>METACODE</p>
+<p>Basic analysis of data.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="vison.dark.DARK01.build_DARK01_scriptdict">
 <code class="descclassname">vison.dark.DARK01.</code><code class="descname">build_DARK01_scriptdict</code><span class="sig-paren">(</span><em>N</em>, <em>exptime</em>, <em>diffvalues={}</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.build_DARK01_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds DARK01 script structure dictionary.</p>
@@ -136,6 +176,25 @@ TEST: DARK01</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.dark.DARK01.check_data">
+<code class="descclassname">vison.dark.DARK01.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.check_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>METACODE</p>
+<p>Checks quality of ingested data.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.dark.DARK01.meta_analysis">
+<code class="descclassname">vison.dark.DARK01.</code><code class="descname">meta_analysis</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.dark.DARK01.prep_data">
+<code class="descclassname">vison.dark.DARK01.</code><code class="descname">prep_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.prep_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>METACODE</p>
+<p>Preparation of data for further analysis.</p>
 </dd></dl>
 
 </div>
@@ -201,7 +260,7 @@ TEST: DARK01</p>
         <li class="right" >
           <a href="chinj_scripts.html" title="Charge Injection Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+28.gd877ee4.dirty documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
