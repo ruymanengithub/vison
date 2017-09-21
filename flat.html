@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>“Flat” Acq. Analysis Tools &#8212; vison 0.2+28.gd877ee4.dirty documentation</title>
+    <title>“Flat” Acq. Analysis Tools &#8212; vison 0.2+29.g8ff216c.dirty documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2+28.gd877ee4.dirty',
+        VERSION:     '0.2+29.g8ff216c.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="inject.html" title="Charge Injection Tools"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+28.gd877ee4.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+29.g8ff216c.dirty documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -56,6 +56,54 @@
             
   <div class="section" id="flat-acq-analysis-tools">
 <h1>&#8220;Flat&#8221; Acq. Analysis Tools<a class="headerlink" href="#flat-acq-analysis-tools" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-vison.pipe.FlatFielding">
+<span id="flatfielding-py"></span><h2>FlatFielding.py<a class="headerlink" href="#module-vison.pipe.FlatFielding" title="Permalink to this headline">¶</a></h2>
+<p>Flat-fielding Utilities.</p>
+<p>Created on Fri Apr 22 16:13:22 2016</p>
+<p>&#64;author: raf</p>
+<dl class="class">
+<dt id="vison.pipe.FlatFielding.FlatField">
+<em class="property">class </em><code class="descclassname">vison.pipe.FlatFielding.</code><code class="descname">FlatField</code><span class="sig-paren">(</span><em>fitsfile=''</em>, <em>data={}</em>, <em>meta={}</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.FlatFielding.FlatField" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.pipe.FlatFielding.FlatField.parse_fits">
+<code class="descname">parse_fits</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.FlatFielding.FlatField.parse_fits" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.pipe.FlatFielding.fit2D">
+<code class="descclassname">vison.pipe.FlatFielding.</code><code class="descname">fit2D</code><span class="sig-paren">(</span><em>xx</em>, <em>yy</em>, <em>zz</em>, <em>degree=1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.FlatFielding.fit2D" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.pipe.FlatFielding.get_ilum">
+<code class="descclassname">vison.pipe.FlatFielding.</code><code class="descname">get_ilum</code><span class="sig-paren">(</span><em>img</em>, <em>pdegree=5</em>, <em>filtsize=15</em>, <em>filtertype='median'</em>, <em>Tests=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.FlatFielding.get_ilum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.pipe.FlatFielding.get_ilum_splines">
+<code class="descclassname">vison.pipe.FlatFielding.</code><code class="descname">get_ilum_splines</code><span class="sig-paren">(</span><em>img</em>, <em>filtsize=25</em>, <em>filtertype='median'</em>, <em>Tests=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.FlatFielding.get_ilum_splines" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.pipe.FlatFielding.produce_IndivFlats">
+<code class="descclassname">vison.pipe.FlatFielding.</code><code class="descname">produce_IndivFlats</code><span class="sig-paren">(</span><em>infits</em>, <em>outfits</em>, <em>settings</em>, <em>runonTests</em>, <em>processes=6</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.FlatFielding.produce_IndivFlats" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.pipe.FlatFielding.produce_MasterFlat">
+<code class="descclassname">vison.pipe.FlatFielding.</code><code class="descname">produce_MasterFlat</code><span class="sig-paren">(</span><em>infits</em>, <em>outfits</em>, <em>mask=None</em>, <em>settings={}</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.FlatFielding.produce_MasterFlat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produces a Master Flat out of a number of flat-illumination exposures.
+Takes the outputs from produce_IndivFlats.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.pipe.FlatFielding.produce_SingleFlatfield">
+<code class="descclassname">vison.pipe.FlatFielding.</code><code class="descname">produce_SingleFlatfield</code><span class="sig-paren">(</span><em>infits</em>, <em>outfits</em>, <em>settings={}</em>, <em>runonTests=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.FlatFielding.produce_SingleFlatfield" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
 <div class="section" id="module-vison.flat.ptc">
 <span id="ptc-py"></span><h2>ptc.py<a class="headerlink" href="#module-vison.flat.ptc" title="Permalink to this headline">¶</a></h2>
 <p>NEEDSREVISION</p>
@@ -91,6 +139,7 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">&#8220;Flat&#8221; Acq. Analysis Tools</a><ul>
+<li><a class="reference internal" href="#module-vison.pipe.FlatFielding">FlatFielding.py</a></li>
 <li><a class="reference internal" href="#module-vison.flat.ptc">ptc.py</a></li>
 </ul>
 </li>
@@ -138,7 +187,7 @@
         <li class="right" >
           <a href="inject.html" title="Charge Injection Tools"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+28.gd877ee4.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+29.g8ff216c.dirty documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

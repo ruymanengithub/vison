@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>“Dark Acquisitions” Scripts &#8212; vison 0.2+28.gd877ee4.dirty documentation</title>
+    <title>“Dark Acquisitions” Scripts &#8212; vison 0.2+29.g8ff216c.dirty documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2+28.gd877ee4.dirty',
+        VERSION:     '0.2+29.g8ff216c.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="chinj_scripts.html" title="Charge Injection Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+28.gd877ee4.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+29.g8ff216c.dirty documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -77,6 +77,16 @@ TEST: BIAS01</p>
 <code class="descclassname">vison.dark.BIAS01.</code><code class="descname">basic_analysis</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.basic_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>METACODE</p>
 <p>Basic analysis of data.</p>
+<dl class="docutils">
+<dt># f. e. ObsID, f.e.CCD, f.e.Q:</dt>
+<dd># produce a 2D poly model of bias, save coefficients
+# produce average profile along rows
+# produce average profile along cols
+# save 2D model and profiles in a pick file for each OBSID-CCD
+# measure and save RON after subtracting large scale structure</dd>
+</dl>
+<p># plot RON vs. time f. each CCD and Q
+# plot average profiles f. each CCD and Q (color coded by time)</p>
 </dd></dl>
 
 <dl class="function">
@@ -111,6 +121,20 @@ processing data could be just a waste of time.</dd>
 <dd>input/output. It could go in DataDict, and reported in 
 log and report.</dd>
 </dl>
+<p># check common HK values are within safe / nominal margins
+# check voltages in HK match commanded voltages, within margins</p>
+<dl class="docutils">
+<dt># f.e.ObsID, f.e.CCD, f.e.Q.:</dt>
+<dd># measure offsets in pre-, img-, over-
+# measure std in pre-, img-, over-</dd>
+</dl>
+<p># assess std in pre- is within allocated margins
+# assess offsets in pre-, img-, over- are equal, within allocated  margins
+# assess offsets are within allocated margins</p>
+<p># plot offsets vs. time
+# plot std vs. time</p>
+<p># issue any warnings to log
+# issue update to report</p>
 </dd></dl>
 
 <dl class="function">
@@ -126,13 +150,27 @@ log and report.</dd>
 <dl class="function">
 <dt id="vison.dark.BIAS01.meta_analysis">
 <code class="descclassname">vison.dark.BIAS01.</code><code class="descname">meta_analysis</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.meta_analysis" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><dl class="docutils">
+<dt># f. each CCD, f. e. Q:</dt>
+<dd># stack all ObsIDs to produce Master Bias
+# measure average profile along rows
+# measure average profile along cols</dd>
+</dl>
+<p># plot average profiles of Master Bias f. each Q
+# produce table with summary of results, include in report
+# show Master Bias (image), include in report
+# save name of MasterBias to DataDict, report</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="vison.dark.BIAS01.prep_data">
 <code class="descclassname">vison.dark.BIAS01.</code><code class="descname">prep_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.prep_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>METACODE</p>
 <p>Preparation of data for further analysis.</p>
+<dl class="docutils">
+<dt># f.e. ObsID, f.e.CCD, f.e.Q:</dt>
+<dd># subtract offset: save to FITS, update filename</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -157,6 +195,20 @@ TEST: DARK01</p>
 <code class="descclassname">vison.dark.DARK01.</code><code class="descname">basic_analysis</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.basic_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>METACODE</p>
 <p>Basic analysis of data.</p>
+<dl class="docutils">
+<dt># f. e. ObsID, f.e.CCD, f.e.Q:</dt>
+<dd><dl class="first docutils">
+<dt># produce mask of hot pixels</dt>
+<dd># count hot pixels / columns</dd>
+</dl>
+<p class="last"># produce a 2D poly model of masked-image, save coefficients
+# produce average profile along rows
+# produce average profile along cols
+# save 2D model and profiles in a pick file for each OBSID-CCD
+# measure and save RON after subtracting large scale structure</p>
+</dd>
+</dl>
+<p># plot average profiles f. each CCD and Q (color coded by time)</p>
 </dd></dl>
 
 <dl class="function">
@@ -183,18 +235,50 @@ TEST: DARK01</p>
 <code class="descclassname">vison.dark.DARK01.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.check_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>METACODE</p>
 <p>Checks quality of ingested data.</p>
+<p># check common HK values are within safe / nominal margins
+# check voltages in HK match commanded voltages, within margins</p>
+<dl class="docutils">
+<dt># f.e.ObsID, f.e.CCD, f.e.Q.:</dt>
+<dd># measure offsets/means in pre-, img-, over-
+# measure std in pre-, img-, over-</dd>
+</dl>
+<p># assess std in pre- is within allocated margins
+# assess offsets/means in pre-, img-, over- are equal, within allocated  margins
+# assess offsets/means are within allocated margins</p>
+<p># plot offsets/means vs. time
+# plot std vs. time</p>
+<p># issue any warnings to log
+# issue update to report</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="vison.dark.DARK01.meta_analysis">
 <code class="descclassname">vison.dark.DARK01.</code><code class="descname">meta_analysis</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.meta_analysis" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>METACODE</p>
+<dl class="docutils">
+<dt># f. each CCD, f. e. Q:</dt>
+<dd># stack all ObsIDs to produce Master Dark
+# produce mask of hot pixels / columns
+# count hot pixels / columns
+# measure average profile along rows
+# measure average profile along cols</dd>
+</dl>
+<p># plot average profiles of Master Bias f. each Q
+# show Master Dark (image), include in report
+# report stats of defects, include in report
+# save name of MasterDark to DataDict, report
+# save name of Defects in Darkness Mask to DD, report</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="vison.dark.DARK01.prep_data">
 <code class="descclassname">vison.dark.DARK01.</code><code class="descname">prep_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.prep_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>METACODE</p>
 <p>Preparation of data for further analysis.</p>
+<dl class="docutils">
+<dt># f.e. ObsID, f.e.CCD, f.e.Q:</dt>
+<dd># subtract offset: save to FITS, update filename</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -260,7 +344,7 @@ TEST: DARK01</p>
         <li class="right" >
           <a href="chinj_scripts.html" title="Charge Injection Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+28.gd877ee4.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+29.g8ff216c.dirty documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
