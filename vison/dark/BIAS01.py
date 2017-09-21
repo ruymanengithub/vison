@@ -215,7 +215,8 @@ def meta_analysis(DataDict,report,inputs,log=None):
 def feeder(inputs,elvis='6.1.0'):
     """ """
     
-    subtasks = [('prep',prep_data),('basic',basic_analysis),
+    subtasks = [('check',check_data),('prep',prep_data),
+                ('basic',basic_analysis),
                 ('meta',meta_analysis)]
     
     N = inputs['N']

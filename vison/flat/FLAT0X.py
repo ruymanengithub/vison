@@ -85,3 +85,123 @@ def build_FLAT0X_scriptdict(exptimes,wavelength=800,testkey='FLAT0X',
     FLAT0X_sdict = sc.update_structdict(FLAT0X_sdict,commvalues,diffvalues)
     
     return FLAT0X_sdict
+
+
+
+def check_data(DataDict,report,inputs,log=None):
+    """ 
+    METACODE
+    
+    Checks quality of ingested data.
+    
+    # check common HK values are within safe / nominal margins
+    # check voltages in HK match commanded voltages, within margins
+    
+    # f.e.ObsID, f.e.CCD, f.e.Q.:
+        # measure offsets/means in pre-, img-, over-
+        # measure std in pre-, img-, over-
+    # assess std in pre- is within allocated margins
+    # assess offsets in pre- and over- are equal, within allocated  margins
+    # assess fluences are within allocated margins
+    # flag saturations if there are.
+    
+    # plot fluence vs. time for each exptime
+    # plot std-pre vs. time
+    
+    # issue any warnings to log
+    # issue update to report
+
+    
+    """
+    
+    
+    return DataDict, report
+    
+
+def do_indiv_flats(DataDict,report,inputs,log=None):
+    """
+    METACODE
+    
+    Preparation of data for further analysis and 
+    produce flat-field for each OBSID.
+
+    # f.e. ObsID, f.e.CCD, f.e.Q:
+        # subtract offset
+        # opt: [sub bias frame]
+        # model 2D fluence distro in image area
+        # produce average profile along rows
+        # produce average profile along cols
+        # save 2D model and profiles in a pick file for each OBSID-CCD
+        #
+        # divide by 2D model to produce indiv-flat
+        # save indiv-Flat to FITS, update add filename
+
+    # plot average profiles f. each CCD and Q (color coded by time)
+    
+    
+    """
+    
+    
+    return DataDict,report
+    
+def do_master_flat(DataDict,report,inputs,log=None):
+    """ 
+    METACODE
+    
+    Produces Master Flat-Field
+
+    # f.e.CCD, f.e.Q:
+        # stack individual flat-fields by chosen estimator
+        # save Master FF to FITS
+        # measure PRNU and 
+    
+    # report PRNU figures
+    
+    """
+    
+    return DataDict,report
+
+
+def do_prdef_mask(DataDict,report,inputs,log=None):
+    """
+    METACODE
+    
+    Produces mask of defects in Photo-Response
+    
+    # f.e.CCD, f.e.Q:
+        # produce mask of PR defects
+        # save mask of PR defects
+        # count dead pixels / columns 
+    
+    # report PR-defects stats
+    
+    """    
+
+
+
+def feeder(inputs,elvis='6.1.0'):
+    """ """
+    
+    subtasks = [('check',check_data),('indivflats',do_indiv_flats),
+                ('masterflat',do_master_flat),
+                ('prmask',do_prdef_mask)]
+    
+    
+    exptimes = inputs['exptimes']
+    wavelength = inputs['wavelength']
+    testkey = inputs['testkey']
+    if 'elvis' in inputs:
+        elvis = inputs['elvis']
+    if 'diffvalues' in inputs:
+        diffvalues = inputs['diffvalues']
+    else:
+        diffvalues = {}
+    
+    scriptdict = build_FLAT0X_scriptdict(exptimes,wavelength,testkey,
+                            diffvalues=diffvalues,elvis=elvis)
+
+    
+    inputs['structure'] = scriptdict
+    inputs['subtasks'] = subtasks
+    
+    return inputs

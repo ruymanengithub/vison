@@ -49,13 +49,7 @@ isthere = os.path.exists
 HKKeys_PTC0X = ['HK_temp_top_CCD1','HK_temp_bottom_CCD1','HK_temp_top_CCD2',
 'HK_temp_bottom_CCD2','HK_temp_top_CCD3','HK_temp_bottom_CCD3'] # TESTS
 
-PTC0X_structure = dict(col1=dict(N=5,Exptime=0),
-                          col2=dict(N=2,Exptime=1.),
-                          col3=dict(N=2,Exptime=5.),
-                          col4=dict(N=2,Exptime=10.),
-                          col5=dict(N=2,Exptime=15.),
-                          col6=dict(N=2,Exptime=18.),
-                   Ncols=6)
+
 
 PTC0X_commvalues = dict(program='CALCAMP',
   iphi1=1,iphi2=1,iphi3=1,iphi4=0,
@@ -118,7 +112,7 @@ def build_PTC0X_scriptdict(exptimes,frames,wavelength=800,diffvalues=dict(),
 
 
 
-def filterexposures_PTC0X(inwavelength,explogf,datapath,OBSID_lims,structure=PTC0X_structure,elvis='5.7.04'):
+def filterexposures_PTC0X():
     """Loads a list of Exposure Logs and selects exposures from test PSF0X.
     
     The filtering takes into account an expected structure for the 
@@ -132,23 +126,108 @@ def filterexposures_PTC0X(inwavelength,explogf,datapath,OBSID_lims,structure=PTC
     """
 
 
-def prep_data_PTC0X(DataDict,RepDict,inputs,log=None):
-    """Takes Raw Data and prepares it for further analysis. 
-    Also checks that data quality is enough."""
+def check_data(DataDict,RepDict,inputs,log=None):
+    """
     
-def basic_analysis_PTC0X(DataDict,RepDict,inputs,log=None):
-    """Performs basic analysis of images:
-         - builds PTC curves: both on non-binned and binned images
+    METACODE
+    
+    Checks quality of ingested data.
+    
+    # check common HK values are within safe / nominal margins
+    # check voltages in HK match commanded voltages, within margins
+    
+    # f.e.ObsID, f.e.CCD, f.e.Q.:
+        # measure offsets/means in pre-, img-, over-
+        # measure std in pre-, img-, over-
+    # assess std in pre- is within allocated margins
+    # assess offsets in pre- and over- are equal, within allocated  margins
+    # assess image-fluences are within allocated margins
+    
+    # plot fluences vs. exposure time
+    # plot std-pre vs. time
+    
+    # issue any warnings to log
+    # issue update to report
+    
+    
+    """
+    
+
+
+def extract_PTC(DataDict,RepDict,inputs,log=None):
+    """
+    
+    METACODE
+    
+    Performs basic analysis of images:
+        - builds PTC curves: both on non-binned and binned images
+    
+    # create list of OBSID pairs
+    
+    # create segmentation map given grid parameters
+    
+    # f.e. OBSID pair, CCD, Q:
+        
+        # [apply defects mask if available]
+        
+        # subtract CCD images
+        
+        f.e. segment:
+            # measure central value
+            # measure variance
+    
+    
     """
 
-def meta_analysis_PSF0X(DataDict,RepDict,inputs,log=None):
+
+
+def meta_analysis(DataDict,RepDict,inputs,log=None):
     """
+    
+    METACODE
     
     Analyzes the variance and fluence:
        gain, and gain(fluence)
     
+    # f.e. CCD, Q:
+        
+        # using stats across segments:
+            fit PTC to quadratic model
+            solve for gain
+            solve for alpha (G+15)
+            solve for blooming limit
+    
+    
+    # plot PTC curves with best-fit f.e. CCD, Q
+    # report on gain estimates f. e. CCD, Q (table)
+    # report on blooming limits (table)
+    
     """
 
-def run(inputs,log=None):
-    """Test PTC0X master function."""
+
+def feeder(inputs,elvis='6.1.0'):
+    """ """
+    
+    subtasks = [('check',check_data),('extract',extract_PTC),
+                ('meta',meta_analysis)]
+    
+    
+    exptimes = inputs['exptimes']
+    frames = inputs['frames']
+    wavelength = inputs['wavelength']
+    if 'elvis' in inputs:
+        elvis = inputs['elvis']
+    if 'diffvalues' in inputs:
+        diffvalues = inputs['diffvalues']
+    else:
+        diffvalues = {}
+        
+    scriptdict = build_PTC0X_scriptdict(exptimes,frames,wavelength=wavelength,
+                           diffvalues=diffvalues,
+                           elvis=elvis)
+    
+    inputs['structure'] = scriptdict
+    inputs['subtasks'] = subtasks
+    
+    return inputs
     

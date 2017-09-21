@@ -165,3 +165,27 @@ def meta_analysis(DataDict,report,inputs,log=None):
     
     return DataDict,report
 
+
+def feeder(inputs,elvis='6.1.0'):
+    """ """
+    
+    subtasks = [('check',check_data),('prep',prep_data),
+                ('basic',basic_analysis),
+                ('meta',meta_analysis)]
+    
+    N = inputs['N']
+    exptime = inputs['exptime']
+    if 'elvis' in inputs:
+        elvis = inputs['elvis']
+    if 'diffvalues' in inputs:
+        diffvalues = inputs['diffvalues']
+    else:
+        diffvalues = {}
+    
+    scriptdict = build_DARK01_scriptdict(N,exptime,diffvalues=diffvalues,elvis=elvis)
+
+    inputs['structure'] = scriptdict
+    inputs['subtasks'] = subtasks
+    
+    
+    return inputs

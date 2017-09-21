@@ -47,13 +47,6 @@ isthere = os.path.exists
 HKKeys_NL01 = ['HK_temp_top_CCD1','HK_temp_bottom_CCD1','HK_temp_top_CCD2',
 'HK_temp_bottom_CCD2','HK_temp_top_CCD3','HK_temp_bottom_CCD3'] # TESTS
 
-NL01_structure = dict(col1=dict(N=5,Exptime=0),
-                          col2=dict(N=2,Exptime=1.),
-                          col3=dict(N=2,Exptime=5.),
-                          col4=dict(N=2,Exptime=10.),
-                          col5=dict(N=2,Exptime=15.),
-                          col6=dict(N=2,Exptime=18.),
-                   Ncols=6)
 
 
 NL01_commvalues = dict(program='CALCAMP',
@@ -117,7 +110,7 @@ def build_NL01_scriptdict(expts,exptinter,frames,wavelength=0,
     return NL01_sdict
 
 
-def filterexposures_NLC01(inwavelength,explogf,datapath,OBSID_lims,structure=NL01_structure,elvis='5.7.04'):
+def filterexposures_NLC01():
     """Loads a list of Exposure Logs and selects exposures from test PSF0X.
     
     The filtering takes into account an expected structure for the 
@@ -130,19 +123,135 @@ def filterexposures_NLC01(inwavelength,explogf,datapath,OBSID_lims,structure=NL0
     """
 
 
-def prep_data_NL01(DataDict,RepDict,inputs,log=None):
-    """Takes Raw Data and prepares it for further analysis. 
-    Also checks that data quality is enough."""
+def check_data_NL01(DataDict,RepDict,inputs,log=None):
+    """
+    METACODE
     
-def basic_analysis_NL01(DataDict,RepDict,inputs,log=None):
-    """Performs basic analysis:
-         - builds Non-Lin curves
-         - fits Non-Linearity curves
+    Checks that data quality is good enough.
+    
+    # check common HK values are within safe / nominal margins
+    # check voltages in HK match commanded voltages, within margins
+    
+    # f.e.ObsID, f.e.CCD, f.e.Q.:
+        # measure offsets/means in pre-, img-, over-
+        # measure std in pre-, img-, over-
+    # assess std in pre- is within allocated margins
+    # (assess offsets in pre- and over- are equal, within allocated  margins)
+    # assess image-fluences are within allocated margins for each exposure time
+    
+    # plot fluences vs. exposure time
+    # plot std-pre vs. time
+    
+    # issue any warnings to log
+    # issue update to report    
+    
+    
+    """
+
+def prep_data_NL01(DataDict,RepDict,inputs,log=None):
+    """
+    
+    METACODE
+    
+    Takes Raw Data and prepares it for further analysis. 
+        
+    # f.e. ObsID, f.e.CCD, f.e.Q:
+        # subtract offset
+        # opt: [sub bias frame]
+           
+    
+    """
+    
+def extract_stats(DataDict,RepDict,inputs,log=None):
+    """
+    
+    METACODE
+    
+    Performs basic analysis: extracts statistics from 
+    image regions to later build NLC.
+    
+    # create segmentation map given grid parameters    
+    
+    
+    # f.e. ObsID, f.e.CCD, f.e.Q:
+        
+        # f.e. segment:
+            # measure central value
+            # measure variance
+    
     """
 
 
+def produce_NLCs(DataDict,RepDict,inputs,log=None):
+    """ 
+    
+    METACODE
+    
+    Obtains Best-Fit Non-Linearity Curve
+    
+    # f.e. CCD, f.e. Q:
+        
+        # [opt] apply correction for source variability (interspersed exposure 
+        #      with constant exptime)
+        # Build NL Curve (NLC)
+        # fit poly. shape to NL curve
+    
+    # plot NL curves for each CCD, Q
+    # report max. values of NL (table)
+    
+    
+    """
+    
+def do_satCTE(DataDict,RepDict,inputs,log=None):
+    """
+    METACODE 
+    
+    # select ObsIDs with fluence(exptime) >~ 0.5 FWC
+    
+    # f.e. ObsID, CCD, Q:
+        - measure CTE from amount of charge in over-scan relative to fluence
+    
+    # f.e. CCD, Q:
+        - get curve of CTE vs. fluence
+        - measure FWC from curve in ADU
+        
+    report FWCs in electrons [via gain in inputs] 
+    f.e. CCD, Q (table)
+    
+    """
+    
+    
+    
+def feeder(inputs,elvis='6.1.0'):
+    """ """
+    
+    subtasks = [('check',check_data_NL01),('prep',prep_data_NL01),
+                ('extract',extract_stats),
+                ('NL',produce_NLCs),
+                ('satCTE',do_satCTE)]
+    
+    
+    expts = inputs['exptimes']
+    exptinter = inputs['exptinter']
+    frames = inputs['frames']
+    wavelength = inputs['wavelength']
+    if 'elvis' in inputs:
+        elvis = inputs['elvis']
+    if 'diffvalues' in inputs:
+        diffvalues = inputs['diffvalues']
+    else:
+        diffvalues = {}
+        
+    
+    scriptdict = build_NL01_scriptdict(expts,exptinter,frames,
+                        wavelength=wavelength,
+                          diffvalues=diffvalues,elvis=elvis)
+    
 
     
-def run(inputs,log=None):
-    """Test NL01 master function."""
+    inputs['structure'] = scriptdict
+    inputs['subtasks'] = subtasks
+    
+    return inputs
+
     
