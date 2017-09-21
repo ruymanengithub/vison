@@ -47,6 +47,8 @@ details.
 Pipeline Core
 =============
 
+Pipeline master classes.
+
 .. toctree::
     :maxdepth: 4
     
@@ -55,6 +57,9 @@ Pipeline Core
 
 Data Model
 ==========
+
+Modules with classes to hold data model for inputs and outputs: exposure log,
+HK files, FITS files, etc.
 
 .. toctree::
    :maxdepth: 4
@@ -80,7 +85,6 @@ Charge Injection Tools
     inject
 
 
-
 "Flat" Acq. Analysis Tools
 ==========================
 
@@ -101,6 +105,9 @@ Image
 Monitoring ("Eyegore")
 ======================
 
+Tools to monitor data acquisition on real time: plots of HK, auto-updating of
+visual display of Exposure Log with some interactive capabilities, and display of latest images.
+
 .. toctree::
     :maxdepth: 4
 
@@ -108,6 +115,8 @@ Monitoring ("Eyegore")
 
 OGSE
 ====
+
+OGSE stands for Optical Ground Support Equipment.
 
 .. toctree::
     :maxdepth: 4
@@ -122,10 +131,39 @@ Point-Source Analysis
 
     point
 
+Scripts
+=======
+
+These are pipeline scripts, not the Test Scripts (for those keep scrolling down).
+
+.. toctree::
+   :maxdepth: 4
+   
+   scripts
+
+
+Support Code
+============
+
+.. toctree::
+   :maxdepth: 4
+   
+   support
+
+
 
 Test Scripts
 ============
 
+These are the scripts that hold the description, execution, data validation and
+analysis of the tests that make the campaign. They are served by the
+infrasctructure and tools provided by the pipeline.
+
+**WARNING**: Currently most of the test scripts are largely meta-code, with the
+exception of very basic functionality used to generate acqusition scripts and
+validate the acquisitions, as listed in the Exposure Log, against the
+description of the test. The metacode has been included in the doc-strings for
+ease of browsing.
 
 
 Charge Injection Scripts
@@ -156,13 +194,6 @@ Flat-Illumination Scripts
     flat_scripts
 
 
-Other Test Scripts
-------------------
-
-.. toctree::
-
-    other_scripts
-
 Point-Source Scripts
 --------------------
 
@@ -170,7 +201,6 @@ Point-Source Scripts
     :maxdepth: 4
 
     point_scripts
-
 
 Trap-Pumping Scripts
 --------------------
@@ -182,23 +212,15 @@ Trap-Pumping Scripts
 
 
 
-Scripts
-=======
-
-
-.. toctree::
-   :maxdepth: 4
-   
-   scripts
-
-
-Support Code
-============
+Other Test Scripts
+------------------
 
 .. toctree::
-   :maxdepth: 4
-   
-   support
+
+    other_scripts
+
+
+
 
 
 
