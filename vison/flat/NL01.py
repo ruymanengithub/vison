@@ -193,7 +193,7 @@ def produce_NLCs(DataDict,RepDict,inputs,log=None):
         
         # [opt] apply correction for source variability (interspersed exposure 
         #      with constant exptime)
-        # Build NL Curve (NLC)
+        # Build NL Curve (NLC) - use stats and exptimes
         # fit poly. shape to NL curve
     
     # plot NL curves for each CCD, Q
