@@ -3,7 +3,6 @@ alabaster==0.7.9
 argcomplete==0.8.9
 astroid==1.4.9
 astropy==1.3.1
-astroquery==0.3.4
 Babel==2.3.4
 backports-abc==0.5
 backports.shutil-get-terminal-size==1.0.0
@@ -25,14 +24,12 @@ clyent==0.3.4
 colorama==0.3.3
 configobj==5.0.6
 configparser==3.5.0
-corner==2.0.1
 cryptography==0.9.1
 Cython==0.22.1
 cytoolz==0.7.3
 datashape==0.4.5
 decorator==4.0.11
 docutils==0.13.1
-emcee==2.2.1
 enum34==1.1.6
 fastcache==1.0.2
 Flask==0.10.1
@@ -44,6 +41,7 @@ greenlet==0.4.7
 grin==1.2.1
 h5py==2.5.0
 html5lib==0.999
+httplib2==0.10.3
 idna==2.0
 imagesize==0.7.1
 ipaddress==1.0.7
@@ -87,11 +85,10 @@ pexpect==4.2.1
 pickleshare==0.7.4
 Pillow==2.8.2
 ply==3.6
-Pmw==2.0.1
 prompt-toolkit==1.0.9
 psutil==5.1.2
 ptyprocess==0.5.1
-py==1.4.22
+py==1.4.27
 pyasn1==0.1.7
 pycosat==0.6.1
 pycparser==2.14
@@ -104,7 +101,7 @@ pylint==1.6.4
 pymc==2.3.6
 pyOpenSSL==0.15.1
 pyparsing==2.0.3
-pytest==2.6.0
+pytest==2.7.1
 python-dateutil==2.4.2
 pytz==2016.10
 PyYAML==3.11
@@ -120,7 +117,6 @@ scandir==1.4
 scikit-image==0.11.3
 scikit-learn==0.16.1
 scipy==0.17.0
-SecretStorage==2.3.1
 simplegeneric==0.8.1
 singledispatch==3.4.0.3
 six==1.10.0
@@ -135,12 +131,14 @@ sympy==0.7.6
 tables==3.2.0
 terminado==0.5
 Theano==0.7.0
-tkintertable==1.2
 toolz==0.7.2
 tornado==4.4.2
 traitlets==4.3.1
+twilio==5.7.0
 ujson==1.33
 unicodecsv==0.9.4
+versioneer==0.18
+vison==0.1
 wcwidth==0.1.7
 Werkzeug==0.10.4
 wrapt==1.10.8
