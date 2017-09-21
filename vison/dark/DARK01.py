@@ -79,10 +79,6 @@ def check_data(DataDict,report,inputs,log=None):
     
     Checks quality of ingested data.
     
-
-    
-    """
-    
     # check common HK values are within safe / nominal margins
     # check voltages in HK match commanded voltages, within margins
     
@@ -98,6 +94,10 @@ def check_data(DataDict,report,inputs,log=None):
     
     # issue any warnings to log
     # issue update to report
+
+    
+    """
+    
     
     return DataDict, report
     
@@ -107,11 +107,13 @@ def prep_data(DataDict,report,inputs,log=None):
     METACODE
     
     Preparation of data for further analysis.
+
+    # f.e. ObsID, f.e.CCD, f.e.Q:
+        # subtract offset: save to FITS, update filename
+
     
     """
     
-    # f.e. ObsID, f.e.CCD, f.e.Q:
-        # subtract offset: save to FITS, update filename
     
     return DataDict,report
     
@@ -120,9 +122,7 @@ def basic_analysis(DataDict,report,inputs,log=None):
     METACODE
     
     Basic analysis of data.
-    
-    """
-    
+
     # f. e. ObsID, f.e.CCD, f.e.Q:
         # produce mask of hot pixels
             # count hot pixels / columns
@@ -134,12 +134,18 @@ def basic_analysis(DataDict,report,inputs,log=None):
     
     # plot average profiles f. each CCD and Q (color coded by time)
     
+
+    
+    """
+    
     
     return DataDict,report
     
 def meta_analysis(DataDict,report,inputs,log=None):
-    """ """
+    """ 
     
+    METACODE
+
     # f. each CCD, f. e. Q:
         # stack all ObsIDs to produce Master Dark
         # produce mask of hot pixels / columns
@@ -152,6 +158,10 @@ def meta_analysis(DataDict,report,inputs,log=None):
     # report stats of defects, include in report
     # save name of MasterDark to DataDict, report
     # save name of Defects in Darkness Mask to DD, report
+    
+    
+    """
+    
     
     return DataDict,report
 
