@@ -80,18 +80,6 @@ class Pipe(object):
     def __init__(self,inputdict,dolog=True):
         """ """
         
-        
-#        self.task_dict = dict(BIAS01=self.bias01)
-#        ,DARK1=self.dark01,
-#                 CHINJ01=self.chinj01,CHINJ02=self.chinj02,
-#                 NL01=self.nl01,                 
-#                 PSF01_590=self.psf0x,PSF01_640=self.psf0x,
-#                 PSF01_730=self.psf0x,PSF01_800=self.psf0x,
-#                 PSF01_880=self.psf0x,
-#                 FOCUS00_590=self.focus00,FOCUS00_640=self.focus00,
-#                 FOCUS00_730=self.focus00,FOCUS00_800=self.focus00,
-#                 FOCUS00_890=self.focus00)
-#        
         self.inputs = defaults
         self.inputs.update(inputdict)
         self.tasks = self.inputs['tasks']
