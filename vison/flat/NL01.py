@@ -125,98 +125,114 @@ def filterexposures_NLC01():
 
 def check_data_NL01(DataDict,RepDict,inputs,log=None):
     """
-    METACODE
     
-    Checks that data quality is good enough.
+    NL01: Checks that data quality is good enough.
     
-    # check common HK values are within safe / nominal margins
-    # check voltages in HK match commanded voltages, within margins
+    **METACODE**
     
-    # f.e.ObsID, f.e.CCD, f.e.Q.:
-        # measure offsets/means in pre-, img-, over-
-        # measure std in pre-, img-, over-
-    # assess std in pre- is within allocated margins
-    # (assess offsets in pre- and over- are equal, within allocated  margins)
-    # assess image-fluences are within allocated margins for each exposure time
+    ::
+        
+        Check common HK values are within safe / nominal margins
+        Check voltages in HK match commanded voltages, within margins
     
-    # plot fluences vs. exposure time
-    # plot std-pre vs. time
+        f.e.ObsID:
+            f.e.CCD:
+                f.e.Q.:
+                    measure offsets/means in pre-, img-, over-
+                    measure std in pre-, img-, over-
+        assess std in pre- is within allocated margins
+        (assess offsets in pre- and over- are equal, within allocated  margins)
+        assess image-fluences are within allocated margins for each exposure time
+        
+        plot fluences vs. exposure time
+        plot std-pre vs. time
     
-    # issue any warnings to log
-    # issue update to report    
-    
+        issue any warnings to log
+        issue update to report
     
     """
 
 def prep_data_NL01(DataDict,RepDict,inputs,log=None):
     """
     
-    METACODE
-    
     Takes Raw Data and prepares it for further analysis. 
+    
+    **METACODE**
+    
+    ::
         
-    # f.e. ObsID, f.e.CCD, f.e.Q:
-        # subtract offset
-        # opt: [sub bias frame]
-           
+        f.e. ObsID:
+            f.e.CCD:
+                f.e.Q:
+                    subtract offset
+                    opt: [sub bias frame] 
     
     """
     
 def extract_stats(DataDict,RepDict,inputs,log=None):
     """
     
-    METACODE
-    
     Performs basic analysis: extracts statistics from 
     image regions to later build NLC.
     
-    # create segmentation map given grid parameters    
+    **METACODE**
     
-    
-    # f.e. ObsID, f.e.CCD, f.e.Q:
+    ::
         
-        # f.e. segment:
-            # measure central value
-            # measure variance
+        create segmentation map given grid parameters    
     
+        f.e. ObsID:
+            f.e.CCD:
+                f.e.Q:
+                    f.e. "img-segment": (done elsewhere)
+                        measure central value
+                        measure variance
+
     """
 
 
 def produce_NLCs(DataDict,RepDict,inputs,log=None):
     """ 
     
-    METACODE
+    **METACODE**
     
-    Obtains Best-Fit Non-Linearity Curve
+    ::
     
-    # f.e. CCD, f.e. Q:
+        Obtains Best-Fit Non-Linearity Curve
+    
+        f.e. CCD:
+            f.e. Q:
         
-        # [opt] apply correction for source variability (interspersed exposure 
-        #      with constant exptime)
-        # Build NL Curve (NLC) - use stats and exptimes
-        # fit poly. shape to NL curve
+                [opt] apply correction for source variability (interspersed exposure 
+                  with constant exptime)
+                Build NL Curve (NLC) - use stats and exptimes
+                fit poly. shape to NL curve
     
-    # plot NL curves for each CCD, Q
-    # report max. values of NL (table)
-    
+        plot NL curves for each CCD, Q
+        report max. values of NL (table)
     
     """
     
 def do_satCTE(DataDict,RepDict,inputs,log=None):
     """
-    METACODE 
     
-    # select ObsIDs with fluence(exptime) >~ 0.5 FWC
+    **METACODE**
     
-    # f.e. ObsID, CCD, Q:
-        - measure CTE from amount of charge in over-scan relative to fluence
+    ::
     
-    # f.e. CCD, Q:
-        - get curve of CTE vs. fluence
-        - measure FWC from curve in ADU
+        select ObsIDs with fluence(exptime) >~ 0.5 FWC
         
-    report FWCs in electrons [via gain in inputs] 
-    f.e. CCD, Q (table)
+        f.e. ObsID: 
+            CCD: 
+                Q:
+                    measure CTE from amount of charge in over-scan relative to fluence
+    
+        f.e. CCD: 
+            Q:
+                get curve of CTE vs. fluence
+                measure FWC from curve in ADU
+        
+        report FWCs in electrons [via gain in inputs] f.e. CCD, Q (table)
     
     """
     

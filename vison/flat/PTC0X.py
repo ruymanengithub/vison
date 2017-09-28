@@ -129,26 +129,29 @@ def filterexposures_PTC0X():
 def check_data(DataDict,RepDict,inputs,log=None):
     """
     
-    METACODE
-    
     Checks quality of ingested data.
     
-    # check common HK values are within safe / nominal margins
-    # check voltages in HK match commanded voltages, within margins
+    **METACODE**
     
-    # f.e.ObsID, f.e.CCD, f.e.Q.:
-        # measure offsets/means in pre-, img-, over-
-        # measure std in pre-, img-, over-
-    # assess std in pre- is within allocated margins
-    # assess offsets in pre- and over- are equal, within allocated  margins
-    # assess image-fluences are within allocated margins
+    ::
+        
+        check common HK values are within safe / nominal margins
+        check voltages in HK match commanded voltages, within margins
     
-    # plot fluences vs. exposure time
-    # plot std-pre vs. time
+        f.e.ObsID:
+            f.e.CCD:
+                f.e.Q.:
+                    measure offsets/means in pre-, img-, over-
+                    measure std in pre-, img-, over-
+        assess std in pre- is within allocated margins
+        assess offsets in pre- and over- are equal, within allocated  margins
+        assess image-fluences are within allocated margins
     
-    # issue any warnings to log
-    # issue update to report
+        plot fluences vs. exposure time
+        plot std-pre vs. time
     
+        issue any warnings to log
+        issue update to report
     
     """
     
@@ -157,25 +160,25 @@ def check_data(DataDict,RepDict,inputs,log=None):
 def extract_PTC(DataDict,RepDict,inputs,log=None):
     """
     
-    METACODE
-    
     Performs basic analysis of images:
         - builds PTC curves: both on non-binned and binned images
     
-    # create list of OBSID pairs
+    **METACODE**
     
-    # create segmentation map given grid parameters
+    ::
     
-    # f.e. OBSID pair, CCD, Q:
-        
-        # [apply defects mask if available]
-        
-        # subtract CCD images
-        
-        f.e. segment:
-            # measure central value
-            # measure variance
+        create list of OBSID pairs
     
+        create segmentation map given grid parameters
+    
+        f.e. OBSID pair:
+            CCD:
+                Q:
+                    [apply defects mask if available]
+                    subtract CCD images
+                    f.e. segment:
+                        measure central value
+                        measure variance
     
     """
 
@@ -183,24 +186,25 @@ def extract_PTC(DataDict,RepDict,inputs,log=None):
 
 def meta_analysis(DataDict,RepDict,inputs,log=None):
     """
-    
+
+    Analyzes the variance and fluence:
+    gain, and gain(fluence)
+
     METACODE
     
-    Analyzes the variance and fluence:
-       gain, and gain(fluence)
+    ::
     
-    # f.e. CCD, Q:
-        
-        # using stats across segments:
-            fit PTC to quadratic model
-            solve for gain
-            solve for alpha (G+15)
-            solve for blooming limit
+        f.e. CCD:
+            Q:
+                (using stats across segments:)
+                fit PTC to quadratic model
+                solve for gain
+                solve for alpha (pixel-correls, Guyonnet+15)
+                solve for blooming limit
     
-    
-    # plot PTC curves with best-fit f.e. CCD, Q
-    # report on gain estimates f. e. CCD, Q (table)
-    # report on blooming limits (table)
+        plot PTC curves with best-fit f.e. CCD, Q
+        report on gain estimates f. e. CCD, Q (table)
+        report on blooming limits (table)
     
     """
 

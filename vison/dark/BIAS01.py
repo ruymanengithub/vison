@@ -176,7 +176,6 @@ def prep_data(DataDict,report,inputs,log=None):
             f.e.CCD:
                 f.e.Q:
                     subtract offset: save to FITS, update filename
-
     
     """
     
