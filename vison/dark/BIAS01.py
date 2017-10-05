@@ -45,8 +45,8 @@ HKKeys = []
 
 
 BIAS01_commvalues = dict(program='CALCAMP',test='BIAS01',
-  flushes=7,exptime=0.,shutter='Thorlabs SC10',
-  e_shutter=0,vstart=1,vend=2066,
+  flushes=7,exptime=0.,shuttr=1,
+  e_shuttr=0,vstart=1,vend=2066,
   siflush=0,#sinvflushp=500,
   chinj=0,
   s_tpump=0,
