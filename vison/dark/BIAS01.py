@@ -46,14 +46,14 @@ HKKeys = []
 
 BIAS01_commvalues = dict(program='CALCAMP',test='BIAS01',
   flushes=7,exptime=0.,shutter='Thorlabs SC10',
-  electroshutter=0,vstart=1,vend=2066,
-  sinvflush=0,#sinvflushp=500,
+  e_shutter=0,vstart=1,vend=2066,
+  siflush=0,#sinvflushp=500,
   chinj=0,
-  tpump=0,
-  motor=0,
-  add_h_overscan=0,add_v_overscan=0,
-  toi_flush=143.,toi_tpump=1000.,toi_rdout=1000.,toi_chinj=1000.,
-  wavelength='Filter 4',pos_cal_mirror=polib.mirror_nom['Filter4'],
+  s_tpump=0,
+  v_tpump=0,
+  motr_on=0,
+  toi_fl=143.,toi_tp=1000.,toi_ro=1000.,toi_ch=1000.,
+  wave=4,
   comments='BIAS')
   
 

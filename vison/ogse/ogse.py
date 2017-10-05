@@ -44,9 +44,9 @@ fwhm_lambda = dict(nm590=1.3,
                 nm880=1.6,
                 ND=1.5) # ms
 
-FW = dict(Filter1=590,Filter2=640,
-          Filter3=730,Filter4=800,
-          Filter5=880,Filter6=0)
+FW = dict(F1=590,F2=640,
+          F3=730,F4=800,
+          F5=880,F6=0)
 
 
 

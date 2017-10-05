@@ -66,9 +66,10 @@ def _update_fromscript(rowdict,scriptcol):
         if key in scriptkeys:
             rowdict[key] = scriptcol[key]
     
-    phkeys = ['iphi1','iphi2','iphi3','iphi4']
-    N_P_high = st.join(['I%i' % (i+1,) for i in range(4) if scriptcol[phkeys[i]]],'')    
-    rowdict['N_P_high'] = N_P_high
+    phkeys = ['IPHI1','IPHI2','IPHI3','IPHI4']
+    
+    IPHI = st.join(['I%i' % (i+1,) for i in range(4) if scriptcol[phkeys[i]]],'')    
+    rowdict['IPHI'] = IPHI
     
     #Trappump = '%i-%s' % (scriptcol['tpump'],scriptcol['tpump_mode'])
     #rowdict['Trappump'] = Trappump
@@ -89,7 +90,7 @@ def _update_fromscript(rowdict,scriptcol):
     
     return rowdict
     
-def generate_Explog(scrdict,defaults,elvis='6.0.0',explog=None,OBSID0=1000,
+def generate_Explog(scrdict,defaults,elvis='6.3.0',explog=None,OBSID0=1000,
                         date=pilib.dtobj_default):
     """ 
     
@@ -120,7 +121,6 @@ def generate_Explog(scrdict,defaults,elvis='6.0.0',explog=None,OBSID0=1000,
     
     Nscriptcols = scrdict['Ncols']
     
-    
     expcolkeys = ELtools.columnlist[elvis]
     if explog is None:
         explog = ELtools.iniExplog(elvis)
@@ -131,11 +131,11 @@ def generate_Explog(scrdict,defaults,elvis='6.0.0',explog=None,OBSID0=1000,
         
         ixObsID = explog['ObsID'][-1]+1
         
-        datelast = HKtools.parseDTstr(explog['DATE'][-1])
+        datelast = HKtools.parseDTstr(explog['date'][-1])
         
-        exptsec = explog['Exptime'][-1]/1.e3
+        exptsec = explog['exptime'][-1]
         
-        date = datelast + datetime.timedelta(seconds=80.+exptsec)
+        date = datelast + datetime.timedelta(seconds=5.+72.+exptsec)
     
     
     
@@ -162,11 +162,11 @@ def generate_Explog(scrdict,defaults,elvis='6.0.0',explog=None,OBSID0=1000,
             
             rowdict['ROE'] = 'ROE1'
             rowdict['BUNIT'] = 'ADU' 
-            rowdict['EGSE_ver'] = elvis
-            rowdict['SPW_clk'] =  0
-            rowdict['CalScrpt'] = 'Uknown'
+            rowdict['egse_ver'] = elvis
+            rowdict['spw_clk'] =  0
+            rowdict['calscrpt'] = 'Unknown'
                    
-            exptsec = scriptcol['exptime']/1.e3
+            exptsec = scriptcol['exptime']
             
             for ixCCD in range(1,4):
                 
@@ -175,13 +175,14 @@ def generate_Explog(scrdict,defaults,elvis='6.0.0',explog=None,OBSID0=1000,
             
                 rowdict['ObsID'] = ixObsID
                 rowdict['File_name'] = 'EUC_%i_%sD_%sT_ROE1_CCD%i' % (ixObsID,dmy,hms,ixCCD)
-                rowdict['DATE'] = '%sD%sT' % (dmy,hms)
+                rowdict['date'] = '%sD%sT' % (dmy,hms)
                 rowdict['CCD'] = 'CCD%i' % ixCCD
 
                        
-                explog.add_row(vals=[rowdict[key] for key in expcolkeys])
+                try: explog.add_row(vals=[rowdict[key] for key in expcolkeys])
+                except: stop()
                 
-            date = date + datetime.timedelta(seconds=80. + exptsec)
+            date = date + datetime.timedelta(seconds= 5. + 72. + exptsec)
             
             ixObsID += 1
                     
@@ -219,7 +220,7 @@ def _fill_HKcols(HKfile,row,vals):
     return HKfile
         
 
-def generate_HK(explog,vals,datapath='',elvis='6.0.0'):
+def generate_HK(explog,vals,datapath='',elvis='6.3.0'):
     """ """
     
         
@@ -390,7 +391,7 @@ def IMG_point_gen(ccdobj,ELdict):
     return ccdobj
 
 
-def generate_FITS(ELdict,funct,filename='',elvis='6.0.0'):
+def generate_FITS(ELdict,funct,filename='',elvis='6.3.0'):
     """ """
     
     NAXIS1,NAXIS2 = 4238,4132
@@ -426,7 +427,7 @@ def generate_FITS(ELdict,funct,filename='',elvis='6.0.0'):
 
 
 
-def generate_FITS_fromExpLog(explog,datapath,elvis='6.0.0'):
+def generate_FITS_fromExpLog(explog,datapath,elvis='6.3.0'):
     """ """    
     
     IMGgens = dict(BIAS=IMG_bias_gen,FLAT=IMG_flat_gen,

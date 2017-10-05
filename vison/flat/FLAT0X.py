@@ -39,17 +39,11 @@ isthere = os.path.exists
 
 
 FLAT0X_commvalues = dict(program='CALCAMP',
-  iphi1=1,iphi2=1,iphi3=1,iphi4=0,
-  readmode_1='Normal',
-  vertical_clk = 'Tri-level',serial_clk='Even mode',
-  flushes=7,exptime=0.,shutter='Thorlabs SC10',
-  electroshutter=0,vstart=1,vend=2066,
-  sinvflush=0,chinj=0,
-  tpump=0,motor=0,
-  add_h_overscan=0,add_v_overscan=0,
-  toi_flush=143.,toi_tpump=1000.,
-  toi_rdout=1000.,toi_chinj=1000.,
-  wavelength='Filter 4',pos_cal_mirror=polib.mirror_nom['Filter4'],
+  IPHI1=1,IPHI2=1,IPHI3=1,IPHI4=0,
+  rdmode='Normal',
+  flushes=7,exptime=0.,shuttr=1,
+  siflush=0,
+  wave=4,
   comments='')
   
 

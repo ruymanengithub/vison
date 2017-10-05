@@ -28,26 +28,16 @@ from copy import deepcopy
 
 isthere = os.path.exists
 
-IG1comm = 3500
-IG2comm = 6000
 
 TP01_commvalues = dict(program='CALCAMP',test='TP01',
-  IDL=13000,IDH=18000,
-  IG1_1_T=IG1comm,IG1_2_T=IG1comm,IG1_3_T=IG1comm,
-  IG1_1_B=IG1comm,IG1_2_B=IG1comm,IG1_3_B=IG1comm,  
-  IG2_T=IG2comm,IG2_B=IG2comm,
-  iphi1=1,iphi2=1,iphi3=1,iphi4=0,
-  readmode_1='Normal',
-  vertical_clk = 'Tri-level',serial_clk='Even mode',
-  flushes=7,exptime=0.,shutter='Thorlabs SC10',
-  electroshutter=0,vstart=1,vend=2066,
-  sinvflush=0,chinj=0,chinj_ser_wait=0,
-  tpump=1,ser_shuffles=0,
-  ver_shuffles=1,dwell_v=0,dwell_h=0,
-  motor=0,
-  add_h_overscan=0,add_v_overscan=0,
-  toi_flush=143,toi_tpump=1000,
-  toi_rdout=1000,toi_chinj=250,
+  flushes=7,exptime=0.,shuttr=0,
+  e_shuttr=0,vstart=1,vend=2066,
+  siflsh=1,siflsh_p=500,
+  chinj=0,chin_dly=0,
+  v_tpump=1,s_tpump=0,
+  v_tp_cnt=1,
+  dwell_v=0,dwell_h=0,
+  motor_on=0,
   comments='')
   
 

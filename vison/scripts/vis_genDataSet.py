@@ -37,7 +37,7 @@ import datetime
 
     
 
-def genExpLog(toGen,explogf,equipment,elvis='6.1.0'):
+def genExpLog(toGen,explogf,equipment,elvis='6.3.0'):
     """ """
     
     OBSID0 = 1000
@@ -51,19 +51,18 @@ def genExpLog(toGen,explogf,equipment,elvis='6.1.0'):
     
     
     
-    logdefaults = {'Lab_ver':'15.0.0','Con_file':'vis_roe_config_cotsqm_273_vn.txt',
-        'CnvStart':0,'Flsh-Rdout_e_time':0,'C.Inj-Rdout_e_time':0,
-        'FPGA_ver':'2AC','Chmb_pre':1.e-6,
-        'R1CCD1TT':-153.,'R1CCD2TT':-153.,'R1CCD3TT':-153.,
-        'R1CCD1TB':-153.,'R1CCD2TB':-153.,'R1CCD3TB':-153.,}
-    
+    logdefaults = {'egse_ver':elvis,'con_file':'vis_roe_config_cotsqm_273_vn.txt',
+        'fl_rdout':0,'ci_rdout':0,
+        'fpga_ver':'2AC',
+        'R1C1_TT':-153.,'R1C2_TT':-153.,'R1C3_TT':-153.,
+        'R1C1_TB':-153.,'R1C2_TB':-153.,'R1C3_TB':-153.,}
     
     
     # BIAS
     
     Nbias01 = 25
     #fileBIAS01 = 'vis_CalCamp_BIAS01_%s_v%s.xlsx' % (datetag,elvis)
-    diffBIAS01 = dict(pos_cal_mirror=polib.mirror_nom['Filter1'],sn_ccd1=sn_ccd1,
+    diffBIAS01 = dict(pos_cal_mirror=polib.mirror_nom['F4'],sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
@@ -76,12 +75,18 @@ def genExpLog(toGen,explogf,equipment,elvis='6.1.0'):
         explog = gen.generate_Explog(structBIAS01,logdefaults,elvis=elvis,explog=None,OBSID0=OBSID0,
                         date=date0)
     
+    explog.write(explogf,format='ascii',overwrite=True,delimiter='\t')
+    
+    return explog
+    
+    
+    
     # DARKS
     
     Ndark01 = 4
     exptime_dark01 = 565*1.E3 # ms
     #fileDARK01 = 'vis_CalCamp_DARK01_%s_v%s.xlsx' % (datetag,elvis)
-    diffDARK01 = dict(pos_cal_mirror=polib.mirror_nom['Filter1'],sn_ccd1=sn_ccd1,
+    diffDARK01 = dict(pos_cal_mirror=polib.mirror_nom['F4'],sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
@@ -106,7 +111,7 @@ def genExpLog(toGen,explogf,equipment,elvis='6.1.0'):
     id_delays = [toi_chinj01*3,toi_chinj01*2]
     
     #fileCHINJ01 = 'vis_CalCamp_CHINJ01_%s_v%s.xlsx' % (datetag,elvis)
-    diffCHINJ01 = dict(pos_cal_mirror=polib.mirror_nom['Filter4'],sn_ccd1=sn_ccd1,
+    diffCHINJ01 = dict(pos_cal_mirror=polib.mirror_nom['F4'],sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
@@ -127,7 +132,7 @@ def genExpLog(toGen,explogf,equipment,elvis='6.1.0'):
     toi_chinj02 = 500
     id_delays = [toi_chinj02*3,toi_chinj02*2]
     #fileCHINJ02 = 'vis_CalCamp_CHINJ02_%s_v%s.xlsx' % (datetag,elvis)
-    diffCHINJ02 = dict(pos_cal_mirror=polib.mirror_nom['Filter4'],sn_ccd1=sn_ccd1,
+    diffCHINJ02 = dict(pos_cal_mirror=polib.mirror_nom['F4'],sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
@@ -497,6 +502,7 @@ def datasetGenerator(TestsSelector,doGenExplog,doGenHK,doGenFITS,outpath,elvis,
         print 'Generating EXPOSURE LOG...'
         
         explog = genExpLog(TestsSelector,explogf,equipment,elvis)
+        
     else:
         explog = ELtools.loadExpLog(explogf,elvis=elvis)
     
@@ -557,8 +563,8 @@ if __name__ =='__main__':
     Nrows = 0
     
     #date0 = pilib.dtobj_default 
-    date0 = datetime.datetime(1980,2,22,7,0,0) # early riser
-    elvis = '6.1.0'
+    date0 = datetime.datetime(1980,2,23,7,0,0) # early riser
+    elvis = '6.3.0'
     
     TestsSelector = dict(BIAS01=1,DARK01=0,CHINJ01=1,CHINJ02=0,
                       FLAT01=1,FLAT02=0,PTC01=0,PTC02WAVE=0,PTC02TEMP=0,NL01=1,
@@ -568,7 +574,8 @@ if __name__ =='__main__':
     
     outpath = os.path.join('TEST_DATA',date0.strftime('%d_%b_%y'))
     
-    
+    if not os.path.exists(outpath):
+        os.system('mkdir %s' % outpath)
     
     datasetGenerator(TestsSelector,doGenExplog,doGenHK,doGenFITS,outpath,elvis,
                      Nrows=Nrows)

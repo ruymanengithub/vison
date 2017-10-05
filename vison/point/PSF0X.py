@@ -50,27 +50,22 @@ isthere = os.path.exists
 HKKeys_PSF0X = ['HK_temp_top_CCD1','HK_temp_bottom_CCD1','HK_temp_top_CCD2',
 'HK_temp_bottom_CCD2','HK_temp_top_CCD3','HK_temp_bottom_CCD3'] # TESTS
 
-PSF0X_structure = dict(col1=dict(N=5,Exptime=0),
-                          col2=dict(N=20,Exptime=1.),
-                          col3=dict(N=18,Exptime=5.),
-                          col4=dict(N=10,Exptime=10.),
-                          col5=dict(N=4,Exptime=15.),
-                          col6=dict(N=3,Exptime=18.),
+PSF0X_structure = dict(col1=dict(frames=5,exptime=0),
+                          col2=dict(frames=20,exptime=1.),
+                          col3=dict(frames=18,exptime=5.),
+                          col4=dict(frames=10,exptime=10.),
+                          col5=dict(frames=4,exptime=15.),
+                          col6=dict(frames=3,exptime=18.),
                    Ncols=6)
 
 PSF0X_commvalues = dict(program='CALCAMP',
-  iphi1=1,iphi2=1,iphi3=1,iphi4=0,
-  readmode_1='Normal',
-  vertical_clk = 'Tri-level',serial_clk='Even mode',
-  flushes=7,exptime=0.,shutter='Thorlabs SC10',
-  electroshutter=0,vstart=1,vend=2066,
-  sinvflush=1,sinvflushp=500,
-  chinj=0,tpump=0,motor=0,
-  matrix_size=2,
-  add_h_overscan=0,add_v_overscan=0,
-  toi_flush=143.,toi_tpump=1000.,
-  toi_rdout=1000.,toi_chinj=1000.,
-  wavelength='Filter 4',pos_cal_mirror=polib.mirror_nom['Filter4'],
+  IPHI1=1,IPHI2=1,IPHI3=1,IPHI4=0,
+  rdmode='fwd_bas',
+  flushes=7,exptime=0.,shuttr=1,
+  siflsh=1,siflush_p=500,
+  motr_on=0,
+  motr_cnt=2,
+  wavelength=4,mirr_pos=polib.mirror_nom['F4'],
   comments='')
 
 
@@ -94,8 +89,8 @@ def build_PSF0X_scriptdict(exptimes,frames,wavelength=800,
     FW_ID = ogse.get_FW_ID(wavelength)
     FW_IDX = int(FW_ID[-1])
     
-    PSF0X_commvalues['wavelength'] = 'Filter %i' % FW_IDX
-    PSF0X_commvalues['pos_cal_mirror'] = polib.mirror_nom['Filter%i' % FW_IDX]
+    PSF0X_commvalues['wave'] = FW_IDX
+    PSF0X_commvalues['mirr_pos'] = polib.mirror_nom['F%i' % FW_IDX]
     
     ncols = len(exptimes)
     

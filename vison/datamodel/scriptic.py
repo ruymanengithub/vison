@@ -147,12 +147,12 @@ script_dictionary['6.3.0']['keys'] = [
 'vstart','vend','toi_fl','toi_tp','toi_ro','toi_ch',
 'chinj','chinj_on','chinj_of','id_wid','id_dly','chin_dly',
 's_tpump','s_tpmod','v_tpump','v_tpmod','s_tp_cnt','v_tp_cnt','dwell_v',
-'dwell_s','exptime','shuttr','e_shuttr','mirr_on','mirr_pos','lambda',
+'dwell_s','exptime','shuttr','e_shuttr','mirr_on','mirr_pos','wave',
 'motr_on','motr_cnt','motr_siz','source',
 'operator','sn_ccd1','sn_ccd2','sn_ccd3','sn_roe','sn_rpsu',
 'comments']
 
-script_dictionary['6.3.X']['defaults'] =  {
+script_dictionary['6.3.0']['defaults'] =  {
 'frames':1,'program':'CALCAMP','test':'Test','IDL':13.0,'IDH':18.0,
 'IG1_1_T':6.0,'IG1_2_T':6.0,'IG1_3_T':6.0,'IG1_1_B':6.0,
 'IG1_2_B':6.0,'IG1_3_B':6.0,'IG2_T':5.0,'IG2_B':5.0,
@@ -174,7 +174,7 @@ script_dictionary['6.3.X']['defaults'] =  {
 'exptime':0,'shuttr':1,
 'e_shuttr':0,
 'mirr_on':0,'mirr_pos':70,
-'lambda':4,
+'wave':4,
 'motr_on':0,'motr_cnt':2,'motr_siz':50,'source':'flat',
 'operator':'cpf',
 'sn_ccd1':'CCD273-XX-X-XXX','sn_ccd2':'CCD273-XX-X-XXX',

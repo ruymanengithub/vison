@@ -49,7 +49,7 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     datetag = (datetime.datetime.now()).strftime('%d%b%y')
     
     
-    operator = equipment['opertor']
+    operator = equipment['operator']
     sn_ccd1 = equipment['sn_ccd1']
     sn_ccd2 = equipment['sn_ccd2']
     sn_ccd3 = equipment['sn_ccd3']
@@ -64,7 +64,7 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     
     Nbias01 = 25
     fileBIAS01 = 'vis_CalCamp_BIAS01_%s_v%s.xlsx' % (datetag,elvis)
-    diffBIAS01 = dict(pos_cal_mirror=polib.mirror_nom['Filter1'],sn_ccd1=sn_ccd1,
+    diffBIAS01 = dict(pos_cal_mirror=polib.mirror_nom['F1'],sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
@@ -79,7 +79,7 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     Ndark01 = 4
     exptime_dark01 = 565*1.E3 # ms
     fileDARK01 = 'vis_CalCamp_DARK01_%s_v%s.xlsx' % (datetag,elvis)
-    diffDARK01 = dict(pos_cal_mirror=polib.mirror_nom['Filter1'],sn_ccd1=sn_ccd1,
+    diffDARK01 = dict(mirr_on=0,sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
@@ -101,7 +101,7 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     id_delays = [toi_chinj01*3,toi_chinj01*2]
     
     fileCHINJ01 = 'vis_CalCamp_CHINJ01_%s_v%s.xlsx' % (datetag,elvis)
-    diffCHINJ01 = dict(pos_cal_mirror=polib.mirror_nom['Filter4'],sn_ccd1=sn_ccd1,
+    diffCHINJ01 = dict(mirr_on=0,sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
@@ -119,7 +119,7 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     toi_chinj02 = 500
     id_delays = [toi_chinj02*3,toi_chinj02*2]
     fileCHINJ02 = 'vis_CalCamp_CHINJ02_%s_v%s.xlsx' % (datetag,elvis)
-    diffCHINJ02 = dict(pos_cal_mirror=polib.mirror_nom['Filter4'],sn_ccd1=sn_ccd1,
+    diffCHINJ02 = dict(mirr_on=0,sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
@@ -145,7 +145,7 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     exptimesF01 = exptimes_FLAT0X['nm800'] # ms
     
     fileFLAT01 = 'vis_CalCamp_FLAT01_%s_v%s.xlsx' % (datetag,elvis)
-    diffFLAT01 = dict(sn_ccd1=sn_ccd1,
+    diffFLAT01 = dict(mirr_on=0,sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator,
                       test='FLAT01_800')
@@ -162,7 +162,8 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     wavesFLAT02 = [590,640,730,880]
     
 
-    diffFLAT02 = dict(sn_ccd1=sn_ccd1,
+    diffFLAT02 = dict(mirr_on=0,
+                      sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
@@ -209,7 +210,8 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     
     wavesPTC02w = [590,640,730,880]
     
-    diffPTC02w = dict(sn_ccd1=sn_ccd1,
+    diffPTC02w = dict(mirr_on=0,
+                      sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
@@ -237,7 +239,8 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     wavePTC02T = 800
     TempsPTC02T = [150.,156.]
     
-    diffPTC02T = dict(sn_ccd1=sn_ccd1,
+    diffPTC02T = dict(mirr_on=0,
+                      sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
 
@@ -262,7 +265,8 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     # NL-01
 
     fileNL01 = 'vis_CalCamp_NL01_%s_v%s.xlsx' % (datetag,elvis)
-    diffNL01 = dict(test='NL01',sn_ccd1=sn_ccd1,
+    diffNL01 = dict(mirr_on=0,
+                    test='NL01',sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
