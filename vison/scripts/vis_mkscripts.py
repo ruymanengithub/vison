@@ -17,6 +17,7 @@ from pdb import set_trace as stop
 import numpy as np
 import os
 
+from vison.datamodel import elvis as elv
 from vison.datamodel import scriptic as sc
 from vison.point import FOCUS00,PSF0X
 from vison.dark import BIAS01,DARK01
@@ -41,7 +42,7 @@ def f_write_script(struct,filename,outpath,elvis):
     
 
 
-def scwriter(toWrite,outpath,equipment,elvis='6.0.0'):
+def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     """ """
     
     
@@ -429,7 +430,7 @@ def scwriter(toWrite,outpath,equipment,elvis='6.0.0'):
 if __name__ =='__main__':
     
     
-    elvis = '6.1.0'
+    elvis = '6.3.0'
     
     
     outpath = 'CAL_scripts'

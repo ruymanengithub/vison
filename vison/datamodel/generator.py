@@ -57,39 +57,43 @@ rdouttime = 71 # seconds, integer
 def _update_fromscript(rowdict,scriptcol):
     """ """
     
-    elog2sc = ELtools.script_keys_cross
-    elog2sckeys = elog2sc.keys()
+    #elog2sc = ELtools.script_keys_cross
+    #elog2sckeys = elog2sc.keys()
+    
+    scriptkeys = scriptcol.keys()
     
     for key in rowdict:
-        if key in elog2sckeys:
-            rowdict[key] = scriptcol[elog2sc[key]]
+        if key in scriptkeys:
+            rowdict[key] = scriptcol[key]
     
     phkeys = ['iphi1','iphi2','iphi3','iphi4']
     N_P_high = st.join(['I%i' % (i+1,) for i in range(4) if scriptcol[phkeys[i]]],'')    
     rowdict['N_P_high'] = N_P_high
     
-    Trappump = '%i-%s' % (scriptcol['tpump'],scriptcol['tpump_mode'])
-    rowdict['Trappump'] = Trappump
+    #Trappump = '%i-%s' % (scriptcol['tpump'],scriptcol['tpump_mode'])
+    #rowdict['Trappump'] = Trappump
     
-    waveix = int(scriptcol['wavelength'][-1])
-    rowdict['Wavelength'] = waveix
+    #waveix = int(scriptcol['wavelength'][-1])
+    #rowdict['Wavelength'] = waveix
     
-    volt_cross = dict(IDL_V='IDL',IDH_V='IDH',
-                          IG1_T1_V='IG1_1_T',IG1_T2_V='IG1_2_T',IG1_T3_V='IG1_3_T',
-                          IG1_B1_V='IG1_1_B',IG1_B2_V='IG1_2_B',IG1_B3_V='IG1_3_B',
-                          IG2_T_V='IG2_T',IG2_B_V='IG2_B',
-                          OD_T1_V='OD_1_T',OD_T2_V='OD_2_T',OD_T3_V='OD_3_T',
-                          OD_B1_V='OD_1_T',OD_B2_V='OD_2_T',OD_B3_V='OD_3_T',
-                          RD_T_V='RD_T',RD_B_V='RD_B')
+    #volt_cross = dict(IDL_V='IDL',IDH_V='IDH',
+    #                      IG1_T1_V='IG1_1_T',IG1_T2_V='IG1_2_T',IG1_T3_V='IG1_3_T',
+    #                      IG1_B1_V='IG1_1_B',IG1_B2_V='IG1_2_B',IG1_B3_V='IG1_3_B',
+    #                      IG2_T_V='IG2_T',IG2_B_V='IG2_B',
+    #                      OD_T1_V='OD_1_T',OD_T2_V='OD_2_T',OD_T3_V='OD_3_T',
+    #                      OD_B1_V='OD_1_T',OD_B2_V='OD_2_T',OD_B3_V='OD_3_T',
+    #                      RD_T_V='RD_T',RD_B_V='RD_B')
     
-    for key in volt_cross.keys():
-        rowdict[key] = scriptcol[volt_cross[key]]/1.E3
+    #for key in volt_cross.keys():
+    #    rowdict[key] = scriptcol[volt_cross[key]]/1.E3
     
     return rowdict
     
 def generate_Explog(scrdict,defaults,elvis='6.0.0',explog=None,OBSID0=1000,
                         date=pilib.dtobj_default):
     """ 
+    
+    Generates a fake ExposureLog from a test structure dictionary.
     
     DEVELOPMENT NOTES:
         

@@ -50,3 +50,5 @@ FITS_keys = ['XTENSION','BITPIX','NAXIS','NAXIS1','NAXIS2','PCOUNT','GCOUNT',
 'R1C2_TB','R1C3_TT','R1C3_TT','IDL','IDH','IG1_1_T','IG1_2_T','IG1_3_T',
 'IG1_1_B','IG1_2_B','IG1_3_B','IG2_T','IG2_B','OD_1_T','OD_2_T','OD_3_T',
 'OD_1_B','OD_2_B','OD_3_B','RD_T','RD_B']
+
+
