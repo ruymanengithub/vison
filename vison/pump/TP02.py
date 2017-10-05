@@ -53,7 +53,7 @@ TP02_commvalues = dict(program='CALCAMP',test='TP02',
 
 
 def build_TP02_scriptdict(Nshuffles_H,dwell_hv,id_delays,
-                diffvalues=dict(),elvis='6.0.0'):
+                diffvalues=dict(),elvis='6.3.0'):
     """MISSING: different starting points (not implemented in ELVIS yet)."""
     
     assert len(id_delays) == 2

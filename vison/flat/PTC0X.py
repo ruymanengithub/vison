@@ -67,7 +67,7 @@ PTC0X_commvalues = dict(program='CALCAMP',
 
 
 def build_PTC0X_scriptdict(exptimes,frames,wavelength=800,diffvalues=dict(),
-                           elvis='6.0.0'):
+                           elvis='6.3.0'):
     """Builds PTC0X script structure dictionary.
     
     :param exptimes: list of ints [ms], exposure times.
@@ -205,7 +205,7 @@ def meta_analysis(DataDict,RepDict,inputs,log=None):
     """
 
 
-def feeder(inputs,elvis='6.1.0'):
+def feeder(inputs,elvis='6.3.0'):
     """ """
     
     subtasks = [('check',check_data),('extract',extract_PTC),

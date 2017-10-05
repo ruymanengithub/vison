@@ -94,7 +94,7 @@ FOCUS00_commvalues = dict(program='CALCAMP',test='FOCUS_%i',
 
 
 def build_FOCUS00_scriptdict(wavelength,exptime,
-                diffvalues=dict(),elvis='6.0.0'):
+                diffvalues=dict(),elvis='6.3.0'):
     """Builds FOCUS00 script structure dictionary.
     
     :param wavelength: int, [nm], wavelength.
@@ -757,7 +757,7 @@ def meta_analysis_FOCUS00(DataDict,Report,inputs,log=None):
 
 
 
-def generate_Explog_FOCUS00(wavelength,struct,elvis='6.0.0',date=dtobj_default):
+def generate_Explog_FOCUS00(wavelength,struct,elvis='6.3.0',date=dtobj_default):
     """ """
     
     Edefaults = {'ObsID':0,'File_name':'','CCD':0,
@@ -790,7 +790,7 @@ def generate_Explog_FOCUS00(wavelength,struct,elvis='6.0.0',date=dtobj_default):
 
 
 
-def generate_HK_FOCUS00(explog,datapath,elvis='6.0.0'):
+def generate_HK_FOCUS00(explog,datapath,elvis='6.3.0'):
     """ """
     
     HKdefaults = {'TimeStamp':'','HK_OD_Top_CCD1':27.,'HK_OD_Bottom_CCD1':27.,
@@ -811,7 +811,7 @@ def generate_HK_FOCUS00(explog,datapath,elvis='6.0.0'):
     generator.generate_HK(explog,HKdefaults,datapath=datapath,elvis=elvis)
     
 
-def generate_FITS_FOCUS00(wavelength,explog,datapath,elvis='6.0.0'):
+def generate_FITS_FOCUS00(wavelength,explog,datapath,elvis='6.3.0'):
     """ """
     
     NAXIS1,NAXIS2 = 4238,4132
@@ -907,16 +907,16 @@ def generate_Fake_FOCUS00(wavelength,date=dtobj_default,rootpath=''):
     if not isthere(datapath):
         os.system('mkdir %s' % datapath)
     
-    explog = generate_Explog_FOCUS00(wavelength,FOCUS00_structure,elvis='6.0.0',
+    explog = generate_Explog_FOCUS00(wavelength,FOCUS00_structure,elvis='6.3.0',
                                      date=date)
                                      
     explogf = os.path.join(datapath,'EXP_LOG_%s.txt' % dmy)
     
     explog.write(explogf,format='ascii',overwrite=True,delimiter='\t')
     
-    generate_HK_FOCUS00(explog,datapath,elvis='6.0.0')
+    generate_HK_FOCUS00(explog,datapath,elvis='6.3.0')
     
-    generate_FITS_FOCUS00(wavelength,explog,datapath,elvis='6.0.0')
+    generate_FITS_FOCUS00(wavelength,explog,datapath,elvis='6.3.0')
     
     
     

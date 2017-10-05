@@ -18,7 +18,7 @@ Created on Tue Aug 29 17:32:52 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
-#from vison.pipe import lib as pilib
+from vison.pipe import lib as pilib
 from vison.ogse import ogse
 from vison.point import lib as polib
 from vison.datamodel import  scriptic as sc
@@ -55,7 +55,7 @@ FLAT0X_commvalues = dict(program='CALCAMP',
 
 
 def build_FLAT0X_scriptdict(exptimes,wavelength=800,testkey='FLAT0X',
-                            diffvalues=dict(),elvis='6.0.0'):
+                            diffvalues=dict(),elvis='6.3.0'):
     """Builds FLAT0X script structure dictionary.
     
     :param exptimes: list of ints, exposure times.
@@ -179,7 +179,7 @@ def do_prdef_mask(DataDict,report,inputs,log=None):
 
 
 
-def feeder(inputs,elvis='6.1.0'):
+def feeder(inputs,elvis='6.3.0'):
     """ """
     
     subtasks = [('check',check_data),('indivflats',do_indiv_flats),

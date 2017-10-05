@@ -58,7 +58,7 @@ CHINJ01_commvalues = dict(program='CALCAMP',test='CHINJ01',
 
 
 def build_CHINJ01_scriptdict(IDL,IDH,IG1s,id_delays,toi_chinj,diffvalues=dict(),
-                             elvis='6.0.0'):
+                             elvis='6.3.0'):
     """
     Builds CHINJ01 script structure dictionary.
     

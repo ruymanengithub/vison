@@ -63,7 +63,7 @@ NL01_commvalues = dict(program='CALCAMP',
   comments='')
 
 def build_NL01_scriptdict(expts,exptinter,frames,wavelength=0,
-                          diffvalues=dict(),elvis='6.0.0'):
+                          diffvalues=dict(),elvis='6.3.0'):
     """Builds NL01 script structure dictionary.
     
     :param expts: list of ints [ms], exposure times.
@@ -222,7 +222,7 @@ def do_satCTE(DataDict,RepDict,inputs,log=None):
     
     
     
-def feeder(inputs,elvis='6.1.0'):
+def feeder(inputs,elvis='6.3.0'):
     """ """
     
     subtasks = [('check',check_data_NL01),('prep',prep_data_NL01),

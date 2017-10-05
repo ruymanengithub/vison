@@ -53,7 +53,7 @@ TP01_commvalues = dict(program='CALCAMP',test='TP01',
 
 
 def build_TP01_scriptdict(Nshuffles_V,TOI_TPv,id_delays,
-                    diffvalues=dict(),elvis='6.0.0'):
+                    diffvalues=dict(),elvis='6.3.0'):
     """ """
     
     assert len(id_delays) == 2

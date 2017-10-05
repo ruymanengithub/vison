@@ -76,7 +76,7 @@ PSF0X_commvalues = dict(program='CALCAMP',
 
 
 def build_PSF0X_scriptdict(exptimes,frames,wavelength=800,
-        diffvalues=dict(),elvis='6.0.0'):
+        diffvalues=dict(),elvis='6.3.0'):
     """ 
     
     Builds PSF0X script structure dictionary.

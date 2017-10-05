@@ -58,7 +58,7 @@ BIAS01_commvalues = dict(program='CALCAMP',test='BIAS01',
   
 
 
-def build_BIAS01_scriptdict(N,diffvalues=dict(),elvis='6.0.0'):
+def build_BIAS01_scriptdict(N,diffvalues=dict(),elvis='6.3.0'):
     """Builds BIAS01 script structure dictionary.
     
     :param N: integer, number of frames to acquire.
@@ -212,7 +212,7 @@ def meta_analysis(DataDict,report,inputs,log=None):
     return DataDict,report
 
 
-def feeder(inputs,elvis='6.1.0'):
+def feeder(inputs,elvis='6.3.0'):
     """ """
     
     subtasks = [('check',check_data),('prep',prep_data),
