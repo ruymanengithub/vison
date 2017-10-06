@@ -30,6 +30,7 @@ from vison.point import lib as polib
 from vison.ogse.ogse import tFWC_flat,tFWC_point
 
 import datetime
+import string as st
 
 # END IMPORT
 
@@ -37,9 +38,14 @@ def f_write_script(struct,filename,outpath,elvis):
     
     script = sc.Script(structure=struct,elvis=elvis)
     script.build_cargo()
-    script.write(filename)    
+    script.write(filename)
+    
+    stdout = os.popen('md5sum %s' % filename).read()
+    xsum = st.split(stdout)[0]
+    
     os.system('mv %s %s/' % (filename,outpath))   
     
+    return xsum
 
 
 def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
@@ -48,6 +54,8 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     
     datetag = (datetime.datetime.now()).strftime('%d%b%y')
     
+    checksumf = 'CHECK_SUMS.txt'
+    checksums = []
     
     operator = equipment['operator']
     sn_ccd1 = equipment['sn_ccd1']
@@ -64,20 +72,21 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     
     Nbias01 = 25
     fileBIAS01 = 'vis_CalCamp_BIAS01_%s_v%s.xlsx' % (datetag,elvis)
-    diffBIAS01 = dict(pos_cal_mirror=polib.mirror_nom['F1'],sn_ccd1=sn_ccd1,
+    diffBIAS01 = dict(mirr_on=0,sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
     if toWrite['BIAS01']: 
          structBIAS01 = BIAS01.build_BIAS01_scriptdict(Nbias01,
                                         diffvalues=diffBIAS01,elvis=elvis)
-         f_write_script(structBIAS01,fileBIAS01,outpath,elvis)
+         xsumB01 = f_write_script(structBIAS01,fileBIAS01,outpath,elvis)
+         checksums.append((fileBIAS01,xsumB01))
     
     
     # DARKS
     
     Ndark01 = 4
-    exptime_dark01 = 565*1.E3 # ms
+    exptime_dark01 = 565. # s
     fileDARK01 = 'vis_CalCamp_DARK01_%s_v%s.xlsx' % (datetag,elvis)
     diffDARK01 = dict(mirr_on=0,sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
@@ -86,7 +95,8 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     if toWrite['DARK01']: 
         structDARK01 = DARK01.build_DARK01_scriptdict(Ndark01,exptime_dark01,
                                     diffvalues=diffDARK01,elvis=elvis)
-        f_write_script(structDARK01,fileDARK01,outpath,elvis)
+        xsumD01 = f_write_script(structDARK01,fileDARK01,outpath,elvis)
+        checksums.append((fileDARK01,xsumD01))
 
 
     
@@ -94,9 +104,9 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     
     # CHINJ01
     
-    IDL = 1100
-    IDH = 1800
-    IG1s = [2000,6000]
+    IDL = 11.
+    IDH = 18.
+    IG1s = [2.,6.]
     toi_chinj01 = 500
     id_delays = [toi_chinj01*3,toi_chinj01*2]
     
@@ -108,13 +118,15 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     if toWrite['CHINJ01']: 
         structCHINJ01 = CHINJ01.build_CHINJ01_scriptdict(IDL,IDH,IG1s,id_delays,
                                 toi_chinj01,diffvalues=diffCHINJ01,elvis=elvis)
-        f_write_script(structCHINJ01,fileCHINJ01,outpath,elvis)
+        xsumC01 = f_write_script(structCHINJ01,fileCHINJ01,outpath,elvis)
+        
+        checksums.append((fileCHINJ01,xsumC01))
     
 
     # CHINJ02
     
-    IDLs = [13000,16000]
-    IDH = 1800
+    IDLs = [13.,16.]
+    IDH = 18.
     #IG1s = [2000,6000]
     toi_chinj02 = 500
     id_delays = [toi_chinj02*3,toi_chinj02*2]
@@ -126,7 +138,9 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     if toWrite['CHINJ02']: 
         structCHINJ02 = CHINJ02.build_CHINJ02_scriptdict(IDLs,IDH,id_delays,toi_chinj02,
                                     diffvalues=diffCHINJ02,elvis=elvis)
-        f_write_script(structCHINJ02,fileCHINJ02,outpath,elvis)     
+
+        xsumC02 = f_write_script(structCHINJ02,fileCHINJ02,outpath,elvis)             
+        checksums.append((fileCHINJ02,xsumC02))
 
     
     
@@ -142,7 +156,7 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     
     # FLAT-01
 
-    exptimesF01 = exptimes_FLAT0X['nm800'] # ms
+    exptimesF01 = exptimes_FLAT0X['nm800'] # s
     
     fileFLAT01 = 'vis_CalCamp_FLAT01_%s_v%s.xlsx' % (datetag,elvis)
     diffFLAT01 = dict(mirr_on=0,sn_ccd1=sn_ccd1,
@@ -154,7 +168,9 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
 
         structFLAT01 = FLAT0X.build_FLAT0X_scriptdict(exptimesF01,
                         diffvalues=diffFLAT01,elvis=elvis)
-        f_write_script(structFLAT01,fileFLAT01,outpath,elvis)
+        xsumFL01 = f_write_script(structFLAT01,fileFLAT01,outpath,elvis)
+        
+        checksums.append((fileFLAT01,xsumFL01))
     
     
     # FLAT-02
@@ -180,7 +196,9 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
             istructFLAT02 = FLAT0X.build_FLAT0X_scriptdict(iexptimes,wavelength=wave,
                                 testkey=itestkey,diffvalues=diffFLAT02,elvis=elvis)
             
-            f_write_script(istructFLAT02,ifileFLAT02,outpath,elvis)
+            xsumiFL02 = f_write_script(istructFLAT02,ifileFLAT02,outpath,elvis)
+            
+            checksums.append((ifileFLAT02,xsumiFL02))
     
         
     # PTC
@@ -202,7 +220,9 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     
         structPTC01 = PTC0X.build_PTC0X_scriptdict(exptsPTC01,frsPTC01,
                                 wavelength=800,diffvalues=diffPTC01,elvis=elvis)
-        f_write_script(structPTC01,filePTC01,outpath,elvis)    
+        xsumPTC01 = f_write_script(structPTC01,filePTC01,outpath,elvis)    
+        
+        checksums.append((filePTC01,xsumPTC01))
 
 
     
@@ -231,7 +251,10 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
             istructPTC02w = PTC0X.build_PTC0X_scriptdict(exptsPTC02w,frsPTC02w,
                                 wavelength=wave,diffvalues=diffPTC02w,elvis=elvis)
             
-            f_write_script(istructPTC02w,ifilePTC02w,outpath,elvis)
+            xsumPTC02w = f_write_script(istructPTC02w,ifilePTC02w,outpath,elvis)
+            
+            checksums.append((ifilePTC02w,xsumPTC02w))
+
     
     
    # PTC-02 - Temp.
@@ -259,7 +282,10 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
             istructPTC02T = PTC0X.build_PTC0X_scriptdict(exptsPTC02T,frsPTC02T,
                                 wavelength=wavePTC02T,diffvalues=diffPTC02T,elvis=elvis)
             
-            f_write_script(istructPTC02T,ifilePTC02T,outpath,elvis)   
+            xsumPTC02T = f_write_script(istructPTC02T,ifilePTC02T,outpath,elvis)  
+            
+            checksums.append((ifilePTC02T,xsumPTC02T))
+
    
     
     # NL-01
@@ -279,7 +305,10 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     
         structNL01 = NL01.build_NL01_scriptdict(exptsNL01,exptinterNL01,frsNL01,wavelength=0,
                             diffvalues=diffNL01,elvis=elvis)
-        f_write_script(structNL01,fileNL01,outpath,elvis)    
+        xsumNL01 = f_write_script(structNL01,fileNL01,outpath,elvis)    
+        
+        checksums.append((fileNL01,xsumNL01))
+
 
 
     # PSF
@@ -309,7 +338,10 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
             istructPSF01w = PSF0X.build_PSF0X_scriptdict(exptsPSF01w,frsPSF01w,
                                     wavelength=wave,diffvalues=diffPSF01w,elvis=elvis)
             
-            f_write_script(istructPSF01w,ifilePSF01w,outpath,elvis)     
+            xsumPSF01w = f_write_script(istructPSF01w,ifilePSF01w,outpath,elvis)
+            
+            checksums.append((ifilePSF01w,xsumPSF01w))
+
         
         
     # PSF02
@@ -339,7 +371,10 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
             istructPSF02 = PSF0X.build_PSF0X_scriptdict(exptsPSF02,frsPSF02,
                         wavelength=wPSF02,diffvalues=diffPSF02,elvis=elvis)
             
-            f_write_script(istructPSF02,ifilePSF02,outpath,elvis)     
+            xsumPSF02 = f_write_script(istructPSF02,ifilePSF02,outpath,elvis)  
+            
+            checksums.append((ifilePSF02,xsumPSF02))
+
     
     
     # TRAP-PUMPING
@@ -362,13 +397,16 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
                              id_delays=id_delays_TP01,
                                 diffvalues=diffTP01,elvis=elvis)
         
-        f_write_script(structTP01,fileTP01,outpath,elvis)
+        xsumTP01 = f_write_script(structTP01,fileTP01,outpath,elvis)
+        
+        checksums.append((fileTP01,xsumTP01))
+
     
     
     
     # TP02
     
-    dwell_hv = [0.,4.75,14.3,28.6] # us
+    dwell_sv = [0.,4.75,14.3,28.6] # us
     toi_chinjTP02 = 250 # quick injection
     id_delays_TP02 = np.array([3.,2.])*toi_chinjTP02
           
@@ -379,18 +417,20 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
 
     if toWrite['TP02']: 
     
-        structTP02 = TP02.build_TP02_scriptdict(Nshuffles_H=5000,dwell_hv=dwell_hv,
+        structTP02 = TP02.build_TP02_scriptdict(Nshuffles_H=5000,dwell_sv=dwell_sv,
                         id_delays=id_delays_TP02,diffvalues=diffTP02,elvis=elvis)
         
-        f_write_script(structTP02,fileTP02,outpath,elvis)    
+        xsumTP02 = f_write_script(structTP02,fileTP02,outpath,elvis)
+        checksums.append((fileTP02,xsumTP02))
+
     
     
     # OTHER
     
     # PERSIST
     
-    exptPER01_SATUR = 50*tFWC_point['nm800']   # ms
-    exptPER01_LATEN = 565.*1.E3 # ms
+    exptPER01_SATUR = 50*tFWC_point['nm800']   # s
+    exptPER01_LATEN = 565. # s
     
     diffPER01 = dict(sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
@@ -403,7 +443,9 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
         structPER01 = PER01.build_PER01_scriptdict(exptPER01_SATUR,exptPER01_LATEN,
                                 diffvalues=diffPER01,elvis=elvis)
         
-        f_write_script(structPER01,filePER01,outpath,elvis)        
+        xsumPER01 = f_write_script(structPER01,filePER01,outpath,elvis)
+        checksums.append((filePER01,xsumPER01))
+
     
     # FOCUS
     
@@ -428,7 +470,16 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
             istructFOCUS00w = FOCUS00.build_FOCUS00_scriptdict(wave,iexptimeF00,
                                     diffvalues=diffFOCUS00w,elvis=elvis)
             
-            f_write_script(istructFOCUS00w,ifileFOCUS00w,outpath,elvis)         
+            xsumFOCUS00w = f_write_script(istructFOCUS00w,ifileFOCUS00w,outpath,elvis)
+            checksums.append((ifileFOCUS00w,xsumFOCUS00w))
+    
+    # WRITING CHECKSUMS
+            
+    f = open(os.path.join(outpath,checksumf),'w')
+    for item in checksums:
+        print >> f, '%-60s\t%s' % item
+    f.close()
+
 
 
 if __name__ =='__main__':

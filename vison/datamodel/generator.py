@@ -182,7 +182,7 @@ def generate_Explog(scrdict,defaults,elvis='6.3.0',explog=None,OBSID0=1000,
                 try: explog.add_row(vals=[rowdict[key] for key in expcolkeys])
                 except: stop()
                 
-            date = date + datetime.timedelta(seconds= 5. + 72. + exptsec)
+            date = date + datetime.timedelta(seconds= 75. + exptsec)
             
             ixObsID += 1
                     
@@ -233,7 +233,7 @@ def generate_HK(explog,vals,datapath='',elvis='6.3.0'):
         if obsid in doneObsids: continue # to avoid duplications 
                                          # (each CCD has an entry in explog, so 3 entries per OBSID)
         
-        idate = explog['DATE'][ixobs]
+        idate = explog['date'][ixobs]
         
         idtobj = pilib.get_dtobj(idate)
         
@@ -278,8 +278,8 @@ def _add_ron_window_round(ccdobj,vstart,vend):
 def IMG_bias_gen(ccdobj,ELdict):
     """ """
     
-    vstart = ELdict['Vstart']
-    vend = ELdict['Vend']
+    vstart = ELdict['vstart']
+    vend = ELdict['vend']
 
     ccdobj.simadd_bias(levels=gen_bias_levels)
     
@@ -292,13 +292,13 @@ def IMG_bias_gen(ccdobj,ELdict):
 def IMG_flat_gen(ccdobj,ELdict):
     """ """
 
-    vstart = ELdict['Vstart']
-    vend = ELdict['Vend']
+    vstart = ELdict['vstart']
+    vend = ELdict['vend']
     
-    waveID = ELdict['Wavelength']
-    exptime = ELdict['Exptime']
+    waveID = ELdict['wave']
+    exptime = ELdict['exptime']
     
-    tsatur = ogse.tFWC_flat[ogse.FW['Filter%i' % waveID]]
+    tsatur = ogse.tFWC_flat[ogse.FW['F%i' % waveID]]
     
     fluence = 2.**16 * exptime / tsatur
     
@@ -321,23 +321,22 @@ def IMG_chinj_gen(ccdobj,ELdict,):
     
     inj_threshold = 7.5
     
-    vstart = ELdict['Vstart']
-    vend = ELdict['Vend']    
+    vstart = ELdict['vstart']
+    vend = ELdict['vend']    
     
-    chinj = ELdict['Chrg_inj']
-    tpump = ELdict['Trappump']
+    chinj = ELdict['chinj']
     
     stCCD = ELdict['CCD']
     iCCD = int(stCCD[-1])
     
-    noff = ELdict['Off_cycl']
-    non = ELdict['On_cycle']
+    noff = ELdict['chinj_of']
+    non = ELdict['chinj_on']
 
-    IG1 = ELdict['IG1_T%i_V' % iCCD] # don't care if IG1_B is different
-    IG2 = ELdict['IG2_T_V'] 
-    IDL = ELdict['IDL_V']
+    IG1 = ELdict['IG1_%i_T' % iCCD] # don't care if IG1_B is different
+    IG2 = ELdict['IG2_T'] 
+    IDL = ELdict['IDL']
     
-    doInject = ((chinj == 1) or (tpump ==1)) and (IDL < IG1+inj_threshold)
+    doInject = (chinj == 1) and (IDL < IG1+inj_threshold)
     
     if doInject:
         
@@ -362,16 +361,16 @@ def IMG_chinj_gen(ccdobj,ELdict,):
 def IMG_point_gen(ccdobj,ELdict):
     """ """
 
-    vstart = ELdict['Vstart']
-    vend = ELdict['Vend']
+    vstart = ELdict['vstart']
+    vend = ELdict['vend']
     
-    waveID = ELdict['Wavelength']
-    wave = ogse.FW['Filter%i' % waveID]
-    exptime = ELdict['Exptime']
-    mirror = ELdict['Mirr_pos']
+    waveID = ELdict['wave']
+    wave = ogse.FW['F%i' % waveID]
+    exptime = ELdict['exptime']
+    mirror = ELdict['mirr_pos']
     iCCD = ELdict['CCD']
     
-    mirror_nom = polib.mirror_nom['Filter%i' % waveID]    
+    mirror_nom = polib.mirror_nom['F%i' % waveID]    
     tsatur = ogse.tFWC_flat[wave]
     
      
@@ -395,10 +394,10 @@ def generate_FITS(ELdict,funct,filename='',elvis='6.3.0'):
     """ """
     
     NAXIS1,NAXIS2 = 4238,4132
+        
+    waivedkeys = ['File_name','fl_rdout','ci_rdout',
+                  'wave']
     
-    
-    waivedkeys = ['File_name','Flsh-Rdout_e_time','C.Inj-Rdout_e_time',
-                  'Wavelength']
     CCD = ELdict['CCD']
     
     
@@ -412,7 +411,7 @@ def generate_FITS(ELdict,funct,filename='',elvis='6.3.0'):
     
     ccdobj = funct(ccdobj,ELdict)
     
-    ccdobj.extensions[-1].header['WAVELENG'] = ELdict['Wavelength']
+    ccdobj.extensions[-1].header['WAVELENG'] = ELdict['wave']
     
     for key in ELtools.columnlist[elvis]:
         if key not in waivedkeys:
@@ -437,13 +436,15 @@ def generate_FITS_fromExpLog(explog,datapath,elvis='6.3.0'):
     
     Nfiles = len(explog)
     
+    #explog = explog[0:100] # tests
+    
     for ixrow,obsid in enumerate(explog['ObsID']):
         
         row = explog[ixrow]
 
         #date = row['DATE']
         #CCD = row['CCD']
-        test = row['TEST']
+        test = row['test']
         
         tmpFITSname = row['File_name']
         FITSname = os.path.join(datapath,'%s.fits' % tmpFITSname)
