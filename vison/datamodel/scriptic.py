@@ -164,7 +164,7 @@ script_dictionary['6.3.0']['defaults'] =  {
 'flushes':7,'siflsh':0,'siflsh_p':500,
 'swellw':9.425,'swelldly':4.825,
 'inisweep':1,
-'vstart':1,'vend':2066,
+'vstart':1,'vend':2086,
 'toi_fl':143,'toi_tp':1000,'toi_ro':1000,'toi_ch':1000,
 'chinj':0,'chinj_on':1,'chinj_of':1,
 'id_wid':100,'id_dly':1500,'chin_dly':0,

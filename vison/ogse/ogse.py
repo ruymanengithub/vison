@@ -16,24 +16,24 @@ Created on Fri Sep  8 12:11:55 2017
 
 """
 
-# saturation exposure times for flat-source, ms, orientative
+# saturation exposure times for flat-source, s, place-holders
 
-tFWC_flat = dict(nm590=2.E3,
-                nm640=2.E3,
-                nm730=2.E3,
-                nm800=2.E3,
-                nm880=2.E3,
-                ND=200.*1.E3) 
+tFWC_flat = dict(nm590=2.,
+                nm640=2.,
+                nm730=2.,
+                nm800=2.,
+                nm880=2.,
+                ND=200.) 
 
 # saturation exposure times for point-source, ms, orientative
 
 
-tFWC_point = dict(nm590=2.E3,
-                nm640=2.E3,
-                nm730=2.E3,
-                nm800=2.E3,
-                nm880=2.E3,
-                ND=200.*1.E3) # ms
+tFWC_point = dict(nm590=2.,
+                nm640=2.,
+                nm730=2.,
+                nm800=2.,
+                nm880=2.,
+                ND=200.) # ms
 
 # FWHM (lambda), in pixels, orientative
                   

@@ -63,9 +63,11 @@ PSF0X_commvalues = dict(program='CALCAMP',
   rdmode='fwd_bas',
   flushes=7,exptime=0.,shuttr=1,
   siflsh=1,siflush_p=500,
-  motr_on=0,
+  motr_on=1,
   motr_cnt=2,
-  wavelength=4,mirr_pos=polib.mirror_nom['F4'],
+  source='point',
+  mirr_on=1,
+  wave=4,mirr_pos=polib.mirror_nom['F4'],
   comments='')
 
 

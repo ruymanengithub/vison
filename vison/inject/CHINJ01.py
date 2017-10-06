@@ -36,14 +36,13 @@ isthere = os.path.exists
 
 
 CHINJ01_commvalues = dict(program='CALCAMP',test='CHINJ01',
-  IG2_T=5500,IG2_B=5500,
+  IG2_T=5.5,IG2_B=5.5,
   IPHI1=1,IPHI2=1,IPHI3=1,IPHI4=0,
   rdmode='Normal',
   flushes=7,exptime=0.,
   chinj=1,chinj_on=30,
   chinj_of=100,
   id_wid=60,chin_dly=1,
-#  id_delay=100,
   operator='who',
   comments='')
   
@@ -70,7 +69,7 @@ def build_CHINJ01_scriptdict(IDL,IDH,IG1s,id_delays,toi_chinj,diffvalues=dict(),
     assert len(id_delays) == 2
     
     
-    dIG1 = 0.25 * 1.E3 # Vx1E3
+    dIG1 = 0.25  # V
     NIG1 = (IG1s[1]-IG1s[0])/dIG1+1
     IG1v = np.arange(NIG1)*dIG1+IG1s[0]
     
@@ -80,10 +79,10 @@ def build_CHINJ01_scriptdict(IDL,IDH,IG1s,id_delays,toi_chinj,diffvalues=dict(),
     
     colcounter = 1
     for i,IG1 in enumerate(IG1v):
-        colkey = 'col%i' % (i+1,)
+        colkey = 'col%i' % colcounter
         #print colkey
         CHINJ01_sdict[colkey] = dict(frames=1,IDL=IDL,IDH=IDH,
-                     id_delay=id_delays[0],toi_chinj=toi_chinj)
+                     id_dly=id_delays[0],toi_ch=toi_chinj)
         
         for CCD in CCDs:
             for half in halves:
@@ -93,20 +92,20 @@ def build_CHINJ01_scriptdict(IDL,IDH,IG1s,id_delays,toi_chinj,diffvalues=dict(),
         colcounter += 1
     
     # Second Injection Drain Delay
-    
-    colstart = colcounter
 
     for j,IG1 in enumerate(IG1v):
-        colkey = 'col%i' % (colstart+j,)
+        colkey = 'col%i' % colcounter
         #print colkey
         CHINJ01_sdict[colkey] = dict(frames=1,IDL=IDL,IDH=IDH,
-                     id_delay=id_delays[1],toi_chinj=toi_chinj)
+                     id_dly=id_delays[1],toi_ch=toi_chinj)
         
         for CCD in CCDs:
             for half in halves:
                 CHINJ01_sdict[colkey]['IG1_%i_%s' % (CCD,half)] = IG1
 
-    
+        colcounter += 1
+                
+                
     Ncols = len(CHINJ01_sdict.keys())    
     CHINJ01_sdict['Ncols'] = Ncols
     

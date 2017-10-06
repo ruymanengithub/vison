@@ -48,14 +48,15 @@ HKKeys_NL01 = ['HK_temp_top_CCD1','HK_temp_bottom_CCD1','HK_temp_top_CCD2',
 'HK_temp_bottom_CCD2','HK_temp_top_CCD3','HK_temp_bottom_CCD3'] # TESTS
 
 
-
 NL01_commvalues = dict(program='CALCAMP',
   IPHI1=1,IPHI2=1,IPHI3=1,IPHI4=0,
   rdmode='fwd_bas',
   flushes=7,exptime=0.,shuttr=1,
   siflsh=1,siflsh_p=500,
   wave=6,
+  source='flat',
   comments='')
+
 
 def build_NL01_scriptdict(expts,exptinter,frames,wavelength=0,
                           diffvalues=dict(),elvis='6.3.0'):
@@ -74,7 +75,7 @@ def build_NL01_scriptdict(expts,exptinter,frames,wavelength=0,
     FW_ID = ogse.get_FW_ID(wavelength)
     FW_IDX = int(FW_ID[-1])
     
-    NL01_commvalues['wavelength'] = 'Filter %i' % FW_IDX
+    NL01_commvalues['wave'] = FW_IDX
     
     NL01_sdict = dict()
     

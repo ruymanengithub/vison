@@ -62,9 +62,12 @@ def genExpLog(toGen,explogf,equipment,elvis='6.3.0'):
     
     Nbias01 = 25
     #fileBIAS01 = 'vis_CalCamp_BIAS01_%s_v%s.xlsx' % (datetag,elvis)
-    diffBIAS01 = dict(pos_cal_mirror=polib.mirror_nom['F4'],sn_ccd1=sn_ccd1,
+    diffBIAS01 = dict(sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
+    
+    explog = None
+    
     
     if toGen['BIAS01']:
         
@@ -72,21 +75,16 @@ def genExpLog(toGen,explogf,equipment,elvis='6.3.0'):
         
         structBIAS01 = BIAS01.build_BIAS01_scriptdict(Nbias01,
                                     diffvalues=diffBIAS01,elvis=elvis)
-        explog = gen.generate_Explog(structBIAS01,logdefaults,elvis=elvis,explog=None,OBSID0=OBSID0,
+        explog = gen.generate_Explog(structBIAS01,logdefaults,elvis=elvis,explog=explog,OBSID0=OBSID0,
                         date=date0)
-    
-    explog.write(explogf,format='ascii',overwrite=True,delimiter='\t')
-    
-    return explog
-    
     
     
     # DARKS
     
     Ndark01 = 4
-    exptime_dark01 = 565*1.E3 # ms
+    exptime_dark01 = 565. # s
     #fileDARK01 = 'vis_CalCamp_DARK01_%s_v%s.xlsx' % (datetag,elvis)
-    diffDARK01 = dict(pos_cal_mirror=polib.mirror_nom['F4'],sn_ccd1=sn_ccd1,
+    diffDARK01 = dict(sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
@@ -98,20 +96,20 @@ def genExpLog(toGen,explogf,equipment,elvis='6.3.0'):
                     diffvalues=diffDARK01,elvis=elvis)
         
         explog = gen.generate_Explog(structDARK01,logdefaults,elvis=elvis,explog=explog)
-
     
+
     # CHARGE INJECTION
     
     # CHINJ01
     
-    IDL = 1100
-    IDH = 1800
-    IG1s = [2000,6000]
+    IDL = 11.
+    IDH = 18.
+    IG1s = [2.,6.]
     toi_chinj01 = 500
     id_delays = [toi_chinj01*3,toi_chinj01*2]
     
     #fileCHINJ01 = 'vis_CalCamp_CHINJ01_%s_v%s.xlsx' % (datetag,elvis)
-    diffCHINJ01 = dict(pos_cal_mirror=polib.mirror_nom['F4'],sn_ccd1=sn_ccd1,
+    diffCHINJ01 = dict(mirr_on=0,sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
@@ -126,8 +124,8 @@ def genExpLog(toGen,explogf,equipment,elvis='6.3.0'):
     
     # CHINJ02
     
-    IDLs = [13000,16000]
-    IDH = 1800
+    IDLs = [13.,16.]
+    IDH = 18.
     #IG1s = [2000,6000]
     toi_chinj02 = 500
     id_delays = [toi_chinj02*3,toi_chinj02*2]
@@ -144,6 +142,7 @@ def genExpLog(toGen,explogf,equipment,elvis='6.3.0'):
                             diffvalues=diffCHINJ02,elvis=elvis)
         explog = gen.generate_Explog(structCHINJ02,logdefaults,elvis=elvis,explog=explog)
 
+
     
     # FLATS
     
@@ -157,7 +156,7 @@ def genExpLog(toGen,explogf,equipment,elvis='6.3.0'):
     
     # FLAT-01
 
-    exptimesF01 = exptimes_FLAT0X['nm800'] # ms
+    exptimesF01 = exptimes_FLAT0X['nm800'] # s
     
     #fileFLAT01 = 'vis_CalCamp_FLAT01_%s_v%s.xlsx' % (datetag,elvis)
     diffFLAT01 = dict(sn_ccd1=sn_ccd1,
@@ -208,9 +207,12 @@ def genExpLog(toGen,explogf,equipment,elvis='6.3.0'):
     # PTC-01
     
     #filePTC01 = 'vis_CalCamp_PTC01_%s_v%s.xlsx' % (datetag,elvis)
-    diffPTC01 = dict(test='PTC01',sn_ccd1=sn_ccd1,
-                      sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-                      sn_rpsu=sn_rpsu,operator=operator)
+    diffPTC01 = dict(test='PTC01',
+                     vstart=1,
+                     vend=2086,
+                     sn_ccd1=sn_ccd1,
+                     sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
+                     sn_rpsu=sn_rpsu,operator=operator)
         
     # 5%, 10%, 20%, 30%, 50%, 70%, 80%, 90%, 100%, 110%, 120%
     exptsPTC01 = np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100.*tFWC_flat['nm800'] # ms
@@ -402,7 +404,7 @@ def genExpLog(toGen,explogf,equipment,elvis='6.3.0'):
     
     # TP02
     
-    dwell_hv = [0.,4.75,14.3,28.6] # us
+    dwell_sv = [0.,4.75,14.3,28.6] # us
     toi_chinjTP02 = 250 # quick injection
     id_delays_TP02 = np.array([3.,2.])*toi_chinjTP02
           
@@ -415,18 +417,19 @@ def genExpLog(toGen,explogf,equipment,elvis='6.3.0'):
         
         print 'TP02...'
     
-        structTP02 = TP02.build_TP02_scriptdict(Nshuffles_H=5000,dwell_hv=dwell_hv,
+        structTP02 = TP02.build_TP02_scriptdict(Nshuffles_H=5000,dwell_sv=dwell_sv,
             id_delays=id_delays_TP02,diffvalues=diffTP02,elvis=elvis)
         
         explog = gen.generate_Explog(structTP02,logdefaults,elvis=elvis,explog=explog)
+
 
     
     # OTHER
     
     # PERSIST
     
-    exptPER01_SATUR = 15*1.E3   # ms
-    exptPER01_LATEN = 565.*1.E3 # ms
+    exptPER01_SATUR = 15.   # s
+    exptPER01_LATEN = 565. # s
     
     diffPER01 = dict(sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
@@ -458,7 +461,7 @@ def genExpLog(toGen,explogf,equipment,elvis='6.3.0'):
         for iw, wave in enumerate(wavesFOCUS00w):
             
             
-            iexptimeF00 = 60./100.*tFWC_point['nm%i' % wave]
+            iexptimeF00 = 60./100. * tFWC_point['nm%i' % wave]
             
             
             itestkey = 'FOCUS00_%i' % wave
@@ -506,7 +509,9 @@ def datasetGenerator(TestsSelector,doGenExplog,doGenHK,doGenFITS,outpath,elvis,
     else:
         explog = ELtools.loadExpLog(explogf,elvis=elvis)
     
-        
+    
+    stop()
+    
     if doGenHK:
         
         print 'Generating HK files...'
@@ -554,8 +559,7 @@ def datasetGenerator(TestsSelector,doGenExplog,doGenHK,doGenFITS,outpath,elvis,
      
 
 if __name__ =='__main__':
-    
-    
+        
     
     doGenExplog = True
     doGenHK = False
@@ -566,11 +570,11 @@ if __name__ =='__main__':
     date0 = datetime.datetime(1980,2,23,7,0,0) # early riser
     elvis = '6.3.0'
     
-    TestsSelector = dict(BIAS01=1,DARK01=0,CHINJ01=1,CHINJ02=0,
-                      FLAT01=1,FLAT02=0,PTC01=0,PTC02WAVE=0,PTC02TEMP=0,NL01=1,
-                      PSF01=1,PSF02=0,
-                      TP01=1,TP02=0,
-                      PERSIST01=0,FOCUS00=1)
+    TestsSelector = dict(BIAS01=1,DARK01=1,CHINJ01=1,CHINJ02=1,
+                      FLAT01=1,FLAT02=1,PTC01=1,PTC02WAVE=1,PTC02TEMP=1,NL01=1,
+                      PSF01=1,PSF02=1,
+                      TP01=1,TP02=1,
+                      PERSIST01=1,FOCUS00=1)
     
     outpath = os.path.join('TEST_DATA',date0.strftime('%d_%b_%y'))
     

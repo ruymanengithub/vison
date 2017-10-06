@@ -55,6 +55,7 @@ PTC0X_commvalues = dict(program='CALCAMP',
   flushes=7,exptime=0.,shuttr=1,
   siflsh=1,siflsh_p=500,
   wave = 4,
+  source='flat',
   comments='')
   
 
@@ -79,7 +80,7 @@ def build_PTC0X_scriptdict(exptimes,frames,wavelength=800,diffvalues=dict(),
     else: subtest = '02'
     
     PTC0X_commvalues['test'] = 'PTC%s_%i' % (subtest,wavelength)
-    PTC0X_commvalues['wavelength'] = 'Filter %i' % FW_IDX
+    PTC0X_commvalues['wave'] = FW_IDX
 
     PTC0X_sdict = dict()
     
@@ -92,8 +93,6 @@ def build_PTC0X_scriptdict(exptimes,frames,wavelength=800,diffvalues=dict(),
 
     Ncols = len(PTC0X_sdict.keys())    
     PTC0X_sdict['Ncols'] = Ncols
-    
-               
                
     commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
     commvalues.update(PTC0X_commvalues)

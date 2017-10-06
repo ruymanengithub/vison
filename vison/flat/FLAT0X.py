@@ -62,7 +62,7 @@ def build_FLAT0X_scriptdict(exptimes,wavelength=800,testkey='FLAT0X',
     FW_ID = ogse.get_FW_ID(wavelength)
     FW_IDX = int(FW_ID[-1])
     
-    FLAT0X_commvalues['wavelength'] = 'Filter %i' % FW_IDX
+    FLAT0X_commvalues['wave'] = FW_IDX
     FLAT0X_commvalues['test'] = testkey
     
     

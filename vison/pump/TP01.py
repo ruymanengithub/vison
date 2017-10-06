@@ -28,16 +28,24 @@ from copy import deepcopy
 
 isthere = os.path.exists
 
+IG1=6
+IG2=5
+
 
 TP01_commvalues = dict(program='CALCAMP',test='TP01',
   flushes=7,exptime=0.,shuttr=0,
   e_shuttr=0,vstart=1,vend=2066,
   siflsh=1,siflsh_p=500,
-  chinj=0,chin_dly=0,
+  IDL=11,IDH=18,
+  IG1_1_T=IG1,IG1_2_T=IG1,IG1_3_T=IG1,
+  IG1_1_B=IG1,IG1_2_B=IG1,IG1_3_B=IG1,
+  IG2_T=IG2,IG2_B=IG2,
+  chinj=1,chinj_on=2066,chinj_of=0,
+  chin_dly=0,
   v_tpump=1,s_tpump=0,
-  v_tp_cnt=1,
-  dwell_v=0,dwell_h=0,
-  motor_on=0,
+  v_tp_cnt=1000,
+  dwell_v=0,dwell_s=0,
+  motr_on=0,
   comments='')
   
 
@@ -48,7 +56,7 @@ def build_TP01_scriptdict(Nshuffles_V,TOI_TPv,id_delays,
     
     assert len(id_delays) == 2
     
-    vpumpmodes = ['V1&2','V3&4','V4&1']
+    vpumpmodes = [123,234,341,412]
               
     TP01_sdict = dict()
     
@@ -57,34 +65,34 @@ def build_TP01_scriptdict(Nshuffles_V,TOI_TPv,id_delays,
     
     # First Injection Drain Delay
     
-    TP01_sdict['col1'] = dict(frames=1,tpump=0,comments='BGD',
+    TP01_sdict['col1'] = dict(frames=1,v_tpump=0,comments='BGD',
               id_delay=id_delays[0])
     
-    colcounter = 1
+    colcounter = 2
     for i,TOI_TP in enumerate(TOI_TPv):
         
         for k,vpumpmode in enumerate(vpumpmodes):
             colkey = 'col%i' % colcounter
-            TP01_sdict[colkey] = dict(frames=1,toi_tpump=TOI_TP,
-                     id_delay=id_delays[0],tpump_mode=vpumpmode)
+            TP01_sdict[colkey] = dict(frames=1,toi_tp=TOI_TP,
+                     id_dly=id_delays[0],v_tpmod=vpumpmode)
             
             colcounter += 1
     
     # Second Injection Drain Delay
     
     
-    TP01_sdict['col%i' % colcounter] = dict(frames=1,tpump=0,comments='BGD',
+    TP01_sdict['col%i' % colcounter] = dict(frames=1,v_tpump=0,comments='BGD',
               id_delay=id_delays[1])
     colcounter += 1
 
     for j,TOI_TP in enumerate(TOI_TPv):
         
-        for k,vpumpmode in enumerate(vpumpmode):
+        for k,vpumpmode in enumerate(vpumpmodes):
         
             colkey = 'col%i' % colcounter
             #print colkey
-            TP01_sdict[colkey] = dict(frames=1,toi_tpump=TOI_TP,
-                         id_delay=id_delays[1],tpump_mode=vpumpmode)    
+            TP01_sdict[colkey] = dict(frames=1,toi_tp=TOI_TP,
+                         id_dly=id_delays[1],v_tpmod=vpumpmode)    
             
             colcounter += 1
     

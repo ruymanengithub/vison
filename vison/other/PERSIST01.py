@@ -42,6 +42,7 @@ PER01_commvalues = dict(program='CALCAMP',test='PERSIST01',
   siflsh=1,siflsh_p=500,
   chinj=0,
   wave=4,mirr_pos=polib.mirror_nom['F4'],
+  mirr_on=1,
   comments='')
   
 
