@@ -19,10 +19,11 @@ import sys
 isthere = os.path.exists
 
 NAXIS1 = 4238
-NAXIS2 = 4132
+NrowsCCD = 2066
+NAXIS2 = (NrowsCCD+20)*2 # 4132
 prescan = 51
 overscan = 20
-imgarea = [2048,2066]
+#imgarea = [2048,2066]
 RON = 1.4
 gain = 3.1 # e/adu
 
@@ -69,36 +70,36 @@ HeadKeys['6.3.0'] = [
 'IG2_T','IG2_B',
 'OD_1_T','OD_2_T','OD_3_T','OD_1_B','OD_2_B','OD_3_B','RD_T','RD_B']
 
-Head_2_Explog_Dict = {'6.0.0':{'EXTNAME':None,'BUNIT':None,'PROGRAM':'PROGRAM',
-'OBJECT':'TEST','OBSID':None,'OPERATOR':'Operator',
-'FULLPATH':None,'LAB_VER':'Lab_ver','CON_FILE':'Con_file',
-'DATE':'DATE','EXPTIME':'Exptime','FL_RDOUT':'Flsh-Rdout_e_time',
-'CI_RDOUT':'C.Inj-Rdout_e_time','N_P_HIGH':'N_P_high',
-'CHRG_INJ':'Chrg_inj','ON_CYCLE':'On_cycle','OFF_CYCL':'Off_cycle',
-'RPEAT_CY':'Rpeat_cy','PLS_WDTH':'pls_len','PLS_DEL':'pls_del',
-'SERRDDEL':'SerRDel','TRAPPUMP':'Trappump',
-'TP_SER_S':'TP_Ser_S','TP_VER_S':'TP_Ver_S','TP_DW_V':'TP_DW_V',
-'TP_DW_H':'TP_DW_H','TOI_FLSH':'TOI_flsh','TOI_PUMP':'TOI_pump',
-'TOI_READ':'TOI_read','TOI_CINJ':'TOI_CInj',
-'INVFLSHP':'Invflshp','INVFLUSH':'Invflush','FLUSHES':'Flushes',
-'VSTART':'Vstart','VEND':'Vend',
-'OVRSCN_H':'Ovrscn_H','CLK_ROE':'CLK_ROE','CNVSTART':'CnvStart',
-'SUMWELL':'SumWell','INISWEEP':'IniSweep','SPW_CLK':'SPW_clk',
-'FPGA_VER':'FPGA_ver','EGSE_VER':'EGSE_ver',
-'M_STEPS':'M_Steps','M_ST_SZE':'M_st_Sze',
-'WAVELENG':'Wavelength','MIRR_POS':'Mirr_pos',
-'CHMB_PRE':'Chmb_pre','CCD1_SN':'CCD1_SN','CCD2_SN':'CCD2_SN','CCD3_SN':'CCD3_SN',
-'ROE_SN':'ROE_SN','CALSCRPT':'CalScrpt','COMMENTS':None,
-'TMPCCD1T':'R1CCD1TT','TMPCCD1B':'R1CCD1TB',
-'TMPCCD2T':'R1CCD2TT','TMPCCD2B':'R1CCD2TB',
-'TMPCCD3T':'R1CCD3TT','TMPCCD3B':'R1CCD3TB',
-'IDL_V':'IDL_V','IDH_V':'IDH_V',
-'IG1_T1_V':'IG1_T1_V','IG1_T2_V':'IG1_T2_V','IG1_T3_V':'IG1_T3_V',
-'IG1_B1_V':'IG1_B1_V','IG1_B2_V':'IG1_B2_V','IG1_B3_V':'IG1_B3_V',
-'IG2_T_V':'IG2_T_V','IG2_B_V':'IG2_B_V',
-'OD_T1_V':'OD_T1_V','OD_T2_V':'OD_T2_V','OD_T3_V':'OD_T3_V',
-'OD_B1_V':'OD_B1_V','OD_B2_V':'OD_B2_V','OD_B3_V':'OD_V3_V',
-'RD_T_V':'RD_T_V','RD_B_V':'RD_B_V'}}
+#Head_2_Explog_Dict = {'6.0.0':{'EXTNAME':None,'BUNIT':None,'PROGRAM':'PROGRAM',
+#'OBJECT':'TEST','OBSID':None,'OPERATOR':'Operator',
+#'FULLPATH':None,'LAB_VER':'Lab_ver','CON_FILE':'Con_file',
+#'DATE':'DATE','EXPTIME':'Exptime','FL_RDOUT':'Flsh-Rdout_e_time',
+#'CI_RDOUT':'C.Inj-Rdout_e_time','N_P_HIGH':'N_P_high',
+#'CHRG_INJ':'Chrg_inj','ON_CYCLE':'On_cycle','OFF_CYCL':'Off_cycle',
+#'RPEAT_CY':'Rpeat_cy','PLS_WDTH':'pls_len','PLS_DEL':'pls_del',
+#'SERRDDEL':'SerRDel','TRAPPUMP':'Trappump',
+#'TP_SER_S':'TP_Ser_S','TP_VER_S':'TP_Ver_S','TP_DW_V':'TP_DW_V',
+#'TP_DW_H':'TP_DW_H','TOI_FLSH':'TOI_flsh','TOI_PUMP':'TOI_pump',
+#'TOI_READ':'TOI_read','TOI_CINJ':'TOI_CInj',
+#'INVFLSHP':'Invflshp','INVFLUSH':'Invflush','FLUSHES':'Flushes',
+#'VSTART':'Vstart','VEND':'Vend',
+#'OVRSCN_H':'Ovrscn_H','CLK_ROE':'CLK_ROE','CNVSTART':'CnvStart',
+#'SUMWELL':'SumWell','INISWEEP':'IniSweep','SPW_CLK':'SPW_clk',
+#'FPGA_VER':'FPGA_ver','EGSE_VER':'EGSE_ver',
+#'M_STEPS':'M_Steps','M_ST_SZE':'M_st_Sze',
+#'WAVELENG':'Wavelength','MIRR_POS':'Mirr_pos',
+#'CHMB_PRE':'Chmb_pre','CCD1_SN':'CCD1_SN','CCD2_SN':'CCD2_SN','CCD3_SN':'CCD3_SN',
+#'ROE_SN':'ROE_SN','CALSCRPT':'CalScrpt','COMMENTS':None,
+#'TMPCCD1T':'R1CCD1TT','TMPCCD1B':'R1CCD1TB',
+#'TMPCCD2T':'R1CCD2TT','TMPCCD2B':'R1CCD2TB',
+#'TMPCCD3T':'R1CCD3TT','TMPCCD3B':'R1CCD3TB',
+#'IDL_V':'IDL_V','IDH_V':'IDH_V',
+#'IG1_T1_V':'IG1_T1_V','IG1_T2_V':'IG1_T2_V','IG1_T3_V':'IG1_T3_V',
+#'IG1_B1_V':'IG1_B1_V','IG1_B2_V':'IG1_B2_V','IG1_B3_V':'IG1_B3_V',
+#'IG2_T_V':'IG2_T_V','IG2_B_V':'IG2_B_V',
+#'OD_T1_V':'OD_T1_V','OD_T2_V':'OD_T2_V','OD_T3_V':'OD_T3_V',
+#'OD_B1_V':'OD_B1_V','OD_B2_V':'OD_B2_V','OD_B3_V':'OD_V3_V',
+#'RD_T_V':'RD_T_V','RD_B_V':'RD_B_V'}}
 
 
 class Extension():
@@ -144,10 +145,9 @@ class CCD(object):
         
         if infits is not None:
         
-            assert type(infits) is str, "infits can't be a name for a file!"
+            assert type(infits) is str, "'%s' can't be a name for a file!" % infits
             assert isthere(infits), 'infits is just not there :-('
-            
-            
+                        
             self.loadfromFITS(infits,extensions,getallextensions)
 
         else:
@@ -318,7 +318,7 @@ class CCD(object):
 
    
     def get_stats(self,Quadrant,sector='img',statkeys=['mean'],trimscan=[0,0],
-                  extension=-1):
+                  ignore_pover=True,extension=-1):
         """ """
         
         Qdata = self.get_quad(Quadrant,canonical=True,extension=extension)
@@ -328,26 +328,33 @@ class CCD(object):
         else:
             stat_dict = dict(mean=np.mean,median=np.median,std=np.std)
         
+        if ignore_pover:
+            vlims = [0,NrowsCCD]
+        else:
+            vlims = [0,None]
+        
         if sector == 'pre':
-            lims = [0,self.prescan]
+            hlims = [0,self.prescan]
         elif sector == 'ove':
-            lims = [self.NAXIS1/2-self.overscan,self.NAXIS1/2]
+            hlims = [self.NAXIS1/2-self.overscan,self.NAXIS1/2]
         elif sector == 'img':
-            lims = [self.prescan,self.NAXIS1/2-self.overscan]
-           
+            hlims = [self.prescan,self.NAXIS1/2-self.overscan]
+        elif sector == 'all':
+            hlims = [0,None]
             
-        lims[0] += trimscan[0]
-        lims[1] -= trimscan[1]
+        hlims[0] += trimscan[0]
+        hlims[1] -= trimscan[1]
         
         results = []
         
         for statkey in statkeys:
             
-            results.append(stat_dict[statkey](Qdata[lims[0]:lims[1],:]))
+            results.append(stat_dict[statkey](Qdata[hlims[0]:hlims[1],vlims[0]:vlims[1]]))
         
         return results
     
-    def sub_offset(self,Quad,method='row',scan='pre',trimscan=[3,2],extension=-1):
+    def sub_offset(self,Quad,method='row',scan='pre',trimscan=[3,2],
+                   ignore_pover=True,extension=-1):
         """ """
         
         if self.masked:
@@ -359,26 +366,31 @@ class CCD(object):
         
         
         if scan == 'pre':
-            lims = [0,self.prescan]
+            hlims = [0,self.prescan]
         elif scan == 'ove':
-            lims = [self.NAXIS1/2-self.overscan,self.NAXIS1/2]
+            hlims = [self.NAXIS1/2-self.overscan,self.NAXIS1/2]
         else:
             sys.exit('ccd.sub_offset: scan=%s unkonwn' % scan)
             
-        lims[0] += trimscan[0]
-        lims[1] -= trimscan[1]
+        hlims[0] += trimscan[0]
+        hlims[1] -= trimscan[1]
+        
+        if ignore_pover:
+            vlims = [0,NrowsCCD]
+        else:
+            vlims = [0,None]
 
         if method == 'row':
             offsets = []
             for ix in range(self.NAXIS2/2):
-                offset = median(quaddata[lims[0]:lims[1],ix])
+                offset = median(quaddata[hlims[0]:hlims[1],ix])
                 if self.masked : offset = offset.data
                 quaddata[:,ix] -= offset
                 offsets.append(offset)
             
         elif method == 'median':
             
-            offset = median(quaddata[lims[0]:lims[1],:])
+            offset = median(quaddata[hlims[0]:hlims[1],vlims[0]:vlims[1]])
             #if self.masked : offset = offset.data
             quaddata -= offset
             offsets = [offset]
@@ -412,6 +424,7 @@ class CCD(object):
         elif Quad == 'H': return array.copy()
     
     def do_Vscan_Mask(self,VSTART,VEND):
+        """ """
         
         VscanMask = np.ones((self.NAXIS1,self.NAXIS2),dtype='bool')
         
@@ -489,7 +502,7 @@ class CCD(object):
 
         for Q in Quads:
             quaddata = self.get_quad(Q,canonical=True,extension=extension)
-            quaddata[self.prescan:-self.overscan,:] += levels[Q]
+            quaddata[self.prescan:-self.overscan,0:NrowsCCD] += levels[Q]
             self.set_quad(quaddata,Q,canonical=True,extension=extension)
     
     
@@ -580,7 +593,7 @@ class CCD(object):
             qdata[np.where(mask)] = 0
             self.set_quad(qdata,Q,canonical=True,extension=extension)
         
-    def simadd_injection(self,levels,on=2066,off=0,extension=-1):
+    def simadd_injection(self,levels,on=NrowsCCD,off=0,extension=-1):
         
         self.simadd_flatilum(levels=levels,extension=-1)
         
@@ -612,7 +625,7 @@ class CCD(object):
 def test_create_from_scratch():
     """ """
     
-    NAXIS1,NAXIS2 = 4238,4132
+    NAXIS1,NAXIS2 = 4238,4172
     
     img = np.ones((NAXIS1,NAXIS2),dtype='float32')
     eimg = np.ones((NAXIS1,NAXIS2),dtype='float32') * 0.1
