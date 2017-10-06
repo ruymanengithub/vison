@@ -36,18 +36,13 @@ from copy import deepcopy
 
 
 PER01_commvalues = dict(program='CALCAMP',test='PERSIST01',
-  iphi1=1,iphi2=1,iphi3=1,iphi4=0,
-  readmode_1='Normal',readmode_2='Normal',
-  vertical_clk = 'Tri-level',serial_clk='Even mode',
+  rdmode='fwd_bas',
   flushes=7,#exptime=0.,
-  shutter='Thorlabs SC10',
-  electroshutter=0,vstart=1,vend=2066,
-  sinvflush=1,sinvflushp=500,
-  chinj=0,tpump=0,motor=0,
-  add_h_overscan=0,add_v_overscan=0,
-  toi_flush=143.,toi_tpump=1000.,
-  toi_rdout=1000.,toi_chinj=1000.,
-  wavelength='Filter 4',pos_cal_mirror=polib.mirror_nom['Filter4'],
+  shuttr=1,
+  siflsh=1,siflsh_p=500,
+  chinj=0,
+  wave=4,mirr_pos=polib.mirror_nom['F4'],
+  mirr_on=1,
   comments='')
   
 

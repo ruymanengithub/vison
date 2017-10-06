@@ -125,7 +125,7 @@ class ImageDisplay(tk.Toplevel):
 
 class HKDisplay(tk.Toplevel):
     """ """
-    def __init__(self,parent,path,elvis='6.0.0'):
+    def __init__(self,parent,path,elvis='6.3.0'):
         
         self.elvis = elvis
         self.date = '21-02-80'
@@ -324,7 +324,7 @@ class HKDisplay(tk.Toplevel):
 class ExpLogDisplay(tk.Toplevel):
     """ """
     
-    def __init__(self,parent,path,elvis='6.0.0'):
+    def __init__(self,parent,path,elvis='6.3.0'):
         
         self.elvis = elvis
         self.date = '21-02-80'

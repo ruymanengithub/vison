@@ -26,6 +26,7 @@ import datetime
 
 dtobj_default = datetime.datetime(1980,2,21,7,0,0) # early riser
 
+elvis = '6.3.0'
 Quads =['E','F','G','H']
 RON = 4.5 # e-
 gain = 3.5 # e-/ADU
@@ -38,9 +39,11 @@ imgheight = ccdobj.NAXIS2/2
 quad_width = ccdobj.NAXIS1/2
 imgwidth = quad_width - prescan - overscan
 
+sumwell = dict(fwd_bas=[9.425,4.825],fwd_e2v=[7.475,6.55],
+               rwd_bas_v=[6.5,0.175],rwd_bas_s=[6.5,0.175],
+               rwd_bas_vs=[6.5,0.175])
 
-
-def loadexplogs(explogfs,elvis='5.8.X',addpedigree=False,datapath=None):
+def loadexplogs(explogfs,elvis='6.3.0',addpedigree=False,datapath=None):
     """loads in memory an explog (text-file) or list of explogs (text-files)."""
     
     if isinstance(explogfs,str):

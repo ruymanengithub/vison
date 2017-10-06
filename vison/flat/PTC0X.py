@@ -52,22 +52,16 @@ HKKeys_PTC0X = ['HK_temp_top_CCD1','HK_temp_bottom_CCD1','HK_temp_top_CCD2',
 
 
 PTC0X_commvalues = dict(program='CALCAMP',
-  iphi1=1,iphi2=1,iphi3=1,iphi4=0,
-  readmode_1='Normal',
-  vertical_clk = 'Tri-level',serial_clk='Even mode',
-  flushes=7,exptime=0.,shutter='Thorlabs SC10',
-  electroshutter=0,vstart=1,vend=2066,
-  sinvflush=1,chinj=0,tpump=0,motor=0,
-  add_h_overscan=0,add_v_overscan=0,
-  toi_flush=143.,toi_tpump=1000.,
-  toi_rdout=1000.,toi_chinj=1000.,
-  wavelength = 'Filter 4', pos_cal_mirror=polib.mirror_nom['Filter4'],
+  flushes=7,exptime=0.,shuttr=1,
+  siflsh=1,siflsh_p=500,
+  wave = 4,
+  source='flat',
   comments='')
   
 
 
 def build_PTC0X_scriptdict(exptimes,frames,wavelength=800,diffvalues=dict(),
-                           elvis='6.0.0'):
+                           elvis='6.3.0'):
     """Builds PTC0X script structure dictionary.
     
     :param exptimes: list of ints [ms], exposure times.
@@ -86,7 +80,7 @@ def build_PTC0X_scriptdict(exptimes,frames,wavelength=800,diffvalues=dict(),
     else: subtest = '02'
     
     PTC0X_commvalues['test'] = 'PTC%s_%i' % (subtest,wavelength)
-    PTC0X_commvalues['wavelength'] = 'Filter %i' % FW_IDX
+    PTC0X_commvalues['wave'] = FW_IDX
 
     PTC0X_sdict = dict()
     
@@ -99,8 +93,6 @@ def build_PTC0X_scriptdict(exptimes,frames,wavelength=800,diffvalues=dict(),
 
     Ncols = len(PTC0X_sdict.keys())    
     PTC0X_sdict['Ncols'] = Ncols
-    
-               
                
     commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
     commvalues.update(PTC0X_commvalues)
@@ -209,7 +201,7 @@ def meta_analysis(DataDict,RepDict,inputs,log=None):
     """
 
 
-def feeder(inputs,elvis='6.1.0'):
+def feeder(inputs,elvis='6.3.0'):
     """ """
     
     subtasks = [('check',check_data),('extract',extract_PTC),

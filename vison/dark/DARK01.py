@@ -39,18 +39,13 @@ isthere = os.path.exists
 
 
 DARK01_commvalues = dict(program='CALCAMP',test='DARK01',
-  flushes=7,shutter='Thorlabs SC10',
-  electroshutter=0,vstart=1,vend=2066,
-  sinvflush=1,sinvflushp=500,
-  chinj=0,tpump=0,motor=0,
-  add_h_overscan=0,add_v_overscan=0,toi_flush=143.,toi_tpump=1000.,
-  toi_rdout=1000.,toi_chinj=1000.,
-  wavelength='Filter 4',pos_cal_mirror=polib.mirror_nom['Filter4'],
+  flushes=7,shuttr=1,
+  siflsh=1,siflsh_p=500,
   comments='DARK')
   
 
 
-def build_DARK01_scriptdict(N,exptime,diffvalues=dict(),elvis='6.0.0'):
+def build_DARK01_scriptdict(N,exptime,diffvalues=dict(),elvis='6.3.0'):
     """Builds DARK01 script structure dictionary.
     
     :param N: integer, number of frames to acquire.
@@ -180,7 +175,7 @@ def meta_analysis(DataDict,report,inputs,log=None):
     return DataDict,report
 
 
-def feeder(inputs,elvis='6.1.0'):
+def feeder(inputs,elvis='6.3.0'):
     """ """
     
     subtasks = [('check',check_data),('prep',prep_data),

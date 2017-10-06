@@ -68,12 +68,12 @@ def get_FOCUS00_structure(wavelength):
     FilterPos = ogse.get_FW_ID(wavelength)
     mirror_nom = polib.mirror_nom[FilterPos]
     
-    FOCUS00_structure = dict(col1=dict(N=5,Exptime=0,Mirr_pos=mirror_nom-0.2),
-                          col2=dict(N=2,Exptime=10.,Mirr_pos=mirror_nom-0.2),
-                          col3=dict(N=2,Exptime=10.,Mirr_pos=mirror_nom-0.1),
-                          col4=dict(N=2,Exptime=10.,Mirr_pos=mirror_nom-0.0),
-                          col5=dict(N=2,Exptime=10.,Mirr_pos=mirror_nom+0.1),
-                          col6=dict(N=2,Exptime=10.,Mirr_pos=mirror_nom+0.2),
+    FOCUS00_structure = dict(col1=dict(frames=5,exptime=0,mirr_pos=mirror_nom-0.2),
+                          col2=dict(frames=2,exptime=10.,mirr_pos=mirror_nom-0.2),
+                          col3=dict(frames=2,exptime=10.,mirr_pos=mirror_nom-0.1),
+                          col4=dict(frames=2,exptime=10.,mirr_pos=mirror_nom-0.0),
+                          col5=dict(frames=2,exptime=10.,mirr_pos=mirror_nom+0.1),
+                          col6=dict(frames=2,exptime=10.,mirr_pos=mirror_nom+0.2),
                    Ncols=6)
 
     return FOCUS00_structure
@@ -81,20 +81,19 @@ def get_FOCUS00_structure(wavelength):
 FOCUS00_structure_wnom = get_FOCUS00_structure(800)
 
 FOCUS00_commvalues = dict(program='CALCAMP',test='FOCUS_%i',
-  iphi1=1,iphi2=1,iphi3=1,iphi4=0,
-  readmode_1='Normal',
-  vertical_clk = 'Tri-level',serial_clk='Even mode',
-  flushes=7,shutter='Thorlabs SC10',
-  electroshutter=0,vstart=1,vend=2066,
-  sinvflush=0,chinj=0,tpump=0,motor=0,
-  add_h_overscan=0,add_v_overscan=0,
-  toi_flush=143.,toi_tpump=1000.,
-  toi_rdout=1000.,toi_chinj=1000.)
+  IPHI1=1,IPHI2=1,IPHI3=1,IPHI4=0,
+  rdmode='fwd_bas',
+  flushes=7,
+  shuttr=1,
+  vstart=1,vend=2066,
+  siflsh=0,siflsh_p=500,
+  motr_on=0,
+  source='point')
   
 
 
 def build_FOCUS00_scriptdict(wavelength,exptime,
-                diffvalues=dict(),elvis='6.0.0'):
+                diffvalues=dict(),elvis='6.3.0'):
     """Builds FOCUS00 script structure dictionary.
     
     :param wavelength: int, [nm], wavelength.
@@ -109,15 +108,15 @@ def build_FOCUS00_scriptdict(wavelength,exptime,
     mirror_nom = polib.mirror_nom[FW_ID]
     
     
-    FOCUS00_sdict = dict(col1=dict(frames=5,wavelength='Filter %i' % FW_IDX,Exptime=0,
-                                   pos_cal_mirror=mirror_nom-5,
+    FOCUS00_sdict = dict(col1=dict(frames=5,wave=FW_IDX,exptime=0,
+                                   mirr_pos=mirror_nom-5,
                                    comments='BGD'))
     
     
     for i,j in enumerate(range(-5,6,1)):
         FOCUS00_sdict['col%i' % (i+1,)] = dict(frames=2,exptime=exptime,
-                      pos_cal_mirror=mirror_nom+float(j),
-                      wavelength='Filter %i' % FW_IDX,
+                      mirr_pos=mirror_nom+float(j),
+                      wave=FW_IDX,
                       comments='F%.1f' % float(j))
     
     Ncols = len(FOCUS00_sdict.keys())    
@@ -757,7 +756,7 @@ def meta_analysis_FOCUS00(DataDict,Report,inputs,log=None):
 
 
 
-def generate_Explog_FOCUS00(wavelength,struct,elvis='6.0.0',date=dtobj_default):
+def generate_Explog_FOCUS00(wavelength,struct,elvis='6.3.0',date=dtobj_default):
     """ """
     
     Edefaults = {'ObsID':0,'File_name':'','CCD':0,
@@ -790,7 +789,7 @@ def generate_Explog_FOCUS00(wavelength,struct,elvis='6.0.0',date=dtobj_default):
 
 
 
-def generate_HK_FOCUS00(explog,datapath,elvis='6.0.0'):
+def generate_HK_FOCUS00(explog,datapath,elvis='6.3.0'):
     """ """
     
     HKdefaults = {'TimeStamp':'','HK_OD_Top_CCD1':27.,'HK_OD_Bottom_CCD1':27.,
@@ -811,7 +810,7 @@ def generate_HK_FOCUS00(explog,datapath,elvis='6.0.0'):
     generator.generate_HK(explog,HKdefaults,datapath=datapath,elvis=elvis)
     
 
-def generate_FITS_FOCUS00(wavelength,explog,datapath,elvis='6.0.0'):
+def generate_FITS_FOCUS00(wavelength,explog,datapath,elvis='6.3.0'):
     """ """
     
     NAXIS1,NAXIS2 = 4238,4132
@@ -907,16 +906,16 @@ def generate_Fake_FOCUS00(wavelength,date=dtobj_default,rootpath=''):
     if not isthere(datapath):
         os.system('mkdir %s' % datapath)
     
-    explog = generate_Explog_FOCUS00(wavelength,FOCUS00_structure,elvis='6.0.0',
+    explog = generate_Explog_FOCUS00(wavelength,FOCUS00_structure,elvis='6.3.0',
                                      date=date)
                                      
     explogf = os.path.join(datapath,'EXP_LOG_%s.txt' % dmy)
     
     explog.write(explogf,format='ascii',overwrite=True,delimiter='\t')
     
-    generate_HK_FOCUS00(explog,datapath,elvis='6.0.0')
+    generate_HK_FOCUS00(explog,datapath,elvis='6.3.0')
     
-    generate_FITS_FOCUS00(wavelength,explog,datapath,elvis='6.0.0')
+    generate_FITS_FOCUS00(wavelength,explog,datapath,elvis='6.3.0')
     
     
     

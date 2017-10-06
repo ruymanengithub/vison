@@ -57,39 +57,44 @@ rdouttime = 71 # seconds, integer
 def _update_fromscript(rowdict,scriptcol):
     """ """
     
-    elog2sc = ELtools.script_keys_cross
-    elog2sckeys = elog2sc.keys()
+    #elog2sc = ELtools.script_keys_cross
+    #elog2sckeys = elog2sc.keys()
+    
+    scriptkeys = scriptcol.keys()
     
     for key in rowdict:
-        if key in elog2sckeys:
-            rowdict[key] = scriptcol[elog2sc[key]]
+        if key in scriptkeys:
+            rowdict[key] = scriptcol[key]
     
-    phkeys = ['iphi1','iphi2','iphi3','iphi4']
-    N_P_high = st.join(['I%i' % (i+1,) for i in range(4) if scriptcol[phkeys[i]]],'')    
-    rowdict['N_P_high'] = N_P_high
+    phkeys = ['IPHI1','IPHI2','IPHI3','IPHI4']
     
-    Trappump = '%i-%s' % (scriptcol['tpump'],scriptcol['tpump_mode'])
-    rowdict['Trappump'] = Trappump
+    IPHI = st.join(['I%i' % (i+1,) for i in range(4) if scriptcol[phkeys[i]]],'')    
+    rowdict['IPHI'] = IPHI
     
-    waveix = int(scriptcol['wavelength'][-1])
-    rowdict['Wavelength'] = waveix
+    #Trappump = '%i-%s' % (scriptcol['tpump'],scriptcol['tpump_mode'])
+    #rowdict['Trappump'] = Trappump
     
-    volt_cross = dict(IDL_V='IDL',IDH_V='IDH',
-                          IG1_T1_V='IG1_1_T',IG1_T2_V='IG1_2_T',IG1_T3_V='IG1_3_T',
-                          IG1_B1_V='IG1_1_B',IG1_B2_V='IG1_2_B',IG1_B3_V='IG1_3_B',
-                          IG2_T_V='IG2_T',IG2_B_V='IG2_B',
-                          OD_T1_V='OD_1_T',OD_T2_V='OD_2_T',OD_T3_V='OD_3_T',
-                          OD_B1_V='OD_1_T',OD_B2_V='OD_2_T',OD_B3_V='OD_3_T',
-                          RD_T_V='RD_T',RD_B_V='RD_B')
+    #waveix = int(scriptcol['wavelength'][-1])
+    #rowdict['Wavelength'] = waveix
     
-    for key in volt_cross.keys():
-        rowdict[key] = scriptcol[volt_cross[key]]/1.E3
+    #volt_cross = dict(IDL_V='IDL',IDH_V='IDH',
+    #                      IG1_T1_V='IG1_1_T',IG1_T2_V='IG1_2_T',IG1_T3_V='IG1_3_T',
+    #                      IG1_B1_V='IG1_1_B',IG1_B2_V='IG1_2_B',IG1_B3_V='IG1_3_B',
+    #                      IG2_T_V='IG2_T',IG2_B_V='IG2_B',
+    #                      OD_T1_V='OD_1_T',OD_T2_V='OD_2_T',OD_T3_V='OD_3_T',
+    #                      OD_B1_V='OD_1_T',OD_B2_V='OD_2_T',OD_B3_V='OD_3_T',
+    #                      RD_T_V='RD_T',RD_B_V='RD_B')
+    
+    #for key in volt_cross.keys():
+    #    rowdict[key] = scriptcol[volt_cross[key]]/1.E3
     
     return rowdict
     
-def generate_Explog(scrdict,defaults,elvis='6.0.0',explog=None,OBSID0=1000,
+def generate_Explog(scrdict,defaults,elvis='6.3.0',explog=None,OBSID0=1000,
                         date=pilib.dtobj_default):
     """ 
+    
+    Generates a fake ExposureLog from a test structure dictionary.
     
     DEVELOPMENT NOTES:
         
@@ -116,7 +121,6 @@ def generate_Explog(scrdict,defaults,elvis='6.0.0',explog=None,OBSID0=1000,
     
     Nscriptcols = scrdict['Ncols']
     
-    
     expcolkeys = ELtools.columnlist[elvis]
     if explog is None:
         explog = ELtools.iniExplog(elvis)
@@ -127,11 +131,11 @@ def generate_Explog(scrdict,defaults,elvis='6.0.0',explog=None,OBSID0=1000,
         
         ixObsID = explog['ObsID'][-1]+1
         
-        datelast = HKtools.parseDTstr(explog['DATE'][-1])
+        datelast = HKtools.parseDTstr(explog['date'][-1])
         
-        exptsec = explog['Exptime'][-1]/1.e3
+        exptsec = explog['exptime'][-1]
         
-        date = datelast + datetime.timedelta(seconds=80.+exptsec)
+        date = datelast + datetime.timedelta(seconds=5.+72.+exptsec)
     
     
     
@@ -158,11 +162,11 @@ def generate_Explog(scrdict,defaults,elvis='6.0.0',explog=None,OBSID0=1000,
             
             rowdict['ROE'] = 'ROE1'
             rowdict['BUNIT'] = 'ADU' 
-            rowdict['EGSE_ver'] = elvis
-            rowdict['SPW_clk'] =  0
-            rowdict['CalScrpt'] = 'Uknown'
+            rowdict['egse_ver'] = elvis
+            rowdict['spw_clk'] =  0
+            rowdict['calscrpt'] = 'Unknown'
                    
-            exptsec = scriptcol['exptime']/1.e3
+            exptsec = scriptcol['exptime']
             
             for ixCCD in range(1,4):
                 
@@ -171,13 +175,14 @@ def generate_Explog(scrdict,defaults,elvis='6.0.0',explog=None,OBSID0=1000,
             
                 rowdict['ObsID'] = ixObsID
                 rowdict['File_name'] = 'EUC_%i_%sD_%sT_ROE1_CCD%i' % (ixObsID,dmy,hms,ixCCD)
-                rowdict['DATE'] = '%sD%sT' % (dmy,hms)
+                rowdict['date'] = '%sD%sT' % (dmy,hms)
                 rowdict['CCD'] = 'CCD%i' % ixCCD
 
                        
-                explog.add_row(vals=[rowdict[key] for key in expcolkeys])
+                try: explog.add_row(vals=[rowdict[key] for key in expcolkeys])
+                except: stop()
                 
-            date = date + datetime.timedelta(seconds=80. + exptsec)
+            date = date + datetime.timedelta(seconds= 75. + exptsec)
             
             ixObsID += 1
                     
@@ -215,7 +220,7 @@ def _fill_HKcols(HKfile,row,vals):
     return HKfile
         
 
-def generate_HK(explog,vals,datapath='',elvis='6.0.0'):
+def generate_HK(explog,vals,datapath='',elvis='6.3.0'):
     """ """
     
         
@@ -228,7 +233,7 @@ def generate_HK(explog,vals,datapath='',elvis='6.0.0'):
         if obsid in doneObsids: continue # to avoid duplications 
                                          # (each CCD has an entry in explog, so 3 entries per OBSID)
         
-        idate = explog['DATE'][ixobs]
+        idate = explog['date'][ixobs]
         
         idtobj = pilib.get_dtobj(idate)
         
@@ -273,8 +278,8 @@ def _add_ron_window_round(ccdobj,vstart,vend):
 def IMG_bias_gen(ccdobj,ELdict):
     """ """
     
-    vstart = ELdict['Vstart']
-    vend = ELdict['Vend']
+    vstart = ELdict['vstart']
+    vend = ELdict['vend']
 
     ccdobj.simadd_bias(levels=gen_bias_levels)
     
@@ -287,13 +292,13 @@ def IMG_bias_gen(ccdobj,ELdict):
 def IMG_flat_gen(ccdobj,ELdict):
     """ """
 
-    vstart = ELdict['Vstart']
-    vend = ELdict['Vend']
+    vstart = ELdict['vstart']
+    vend = ELdict['vend']
     
-    waveID = ELdict['Wavelength']
-    exptime = ELdict['Exptime']
+    waveID = ELdict['wave']
+    exptime = ELdict['exptime']
     
-    tsatur = ogse.tFWC_flat[ogse.FW['Filter%i' % waveID]]
+    tsatur = ogse.tFWC_flat[ogse.FW['F%i' % waveID]]
     
     fluence = 2.**16 * exptime / tsatur
     
@@ -316,23 +321,22 @@ def IMG_chinj_gen(ccdobj,ELdict,):
     
     inj_threshold = 7.5
     
-    vstart = ELdict['Vstart']
-    vend = ELdict['Vend']    
+    vstart = ELdict['vstart']
+    vend = ELdict['vend']    
     
-    chinj = ELdict['Chrg_inj']
-    tpump = ELdict['Trappump']
+    chinj = ELdict['chinj']
     
     stCCD = ELdict['CCD']
     iCCD = int(stCCD[-1])
     
-    noff = ELdict['Off_cycl']
-    non = ELdict['On_cycle']
+    noff = ELdict['chinj_of']
+    non = ELdict['chinj_on']
 
-    IG1 = ELdict['IG1_T%i_V' % iCCD] # don't care if IG1_B is different
-    IG2 = ELdict['IG2_T_V'] 
-    IDL = ELdict['IDL_V']
+    IG1 = ELdict['IG1_%i_T' % iCCD] # don't care if IG1_B is different
+    IG2 = ELdict['IG2_T'] 
+    IDL = ELdict['IDL']
     
-    doInject = ((chinj == 1) or (tpump ==1)) and (IDL < IG1+inj_threshold)
+    doInject = (chinj == 1) and (IDL < IG1+inj_threshold)
     
     if doInject:
         
@@ -357,16 +361,16 @@ def IMG_chinj_gen(ccdobj,ELdict,):
 def IMG_point_gen(ccdobj,ELdict):
     """ """
 
-    vstart = ELdict['Vstart']
-    vend = ELdict['Vend']
+    vstart = ELdict['vstart']
+    vend = ELdict['vend']
     
-    waveID = ELdict['Wavelength']
-    wave = ogse.FW['Filter%i' % waveID]
-    exptime = ELdict['Exptime']
-    mirror = ELdict['Mirr_pos']
+    waveID = ELdict['wave']
+    wave = ogse.FW['F%i' % waveID]
+    exptime = ELdict['exptime']
+    mirror = ELdict['mirr_pos']
     iCCD = ELdict['CCD']
     
-    mirror_nom = polib.mirror_nom['Filter%i' % waveID]    
+    mirror_nom = polib.mirror_nom['F%i' % waveID]    
     tsatur = ogse.tFWC_flat[wave]
     
      
@@ -386,14 +390,14 @@ def IMG_point_gen(ccdobj,ELdict):
     return ccdobj
 
 
-def generate_FITS(ELdict,funct,filename='',elvis='6.0.0'):
+def generate_FITS(ELdict,funct,filename='',elvis='6.3.0'):
     """ """
     
     NAXIS1,NAXIS2 = 4238,4132
+        
+    waivedkeys = ['File_name','fl_rdout','ci_rdout',
+                  'wave']
     
-    
-    waivedkeys = ['File_name','Flsh-Rdout_e_time','C.Inj-Rdout_e_time',
-                  'Wavelength']
     CCD = ELdict['CCD']
     
     
@@ -407,7 +411,7 @@ def generate_FITS(ELdict,funct,filename='',elvis='6.0.0'):
     
     ccdobj = funct(ccdobj,ELdict)
     
-    ccdobj.extensions[-1].header['WAVELENG'] = ELdict['Wavelength']
+    ccdobj.extensions[-1].header['WAVELENG'] = ELdict['wave']
     
     for key in ELtools.columnlist[elvis]:
         if key not in waivedkeys:
@@ -422,7 +426,7 @@ def generate_FITS(ELdict,funct,filename='',elvis='6.0.0'):
 
 
 
-def generate_FITS_fromExpLog(explog,datapath,elvis='6.0.0'):
+def generate_FITS_fromExpLog(explog,datapath,elvis='6.3.0'):
     """ """    
     
     IMGgens = dict(BIAS=IMG_bias_gen,FLAT=IMG_flat_gen,
@@ -432,13 +436,15 @@ def generate_FITS_fromExpLog(explog,datapath,elvis='6.0.0'):
     
     Nfiles = len(explog)
     
+    #explog = explog[0:100] # tests
+    
     for ixrow,obsid in enumerate(explog['ObsID']):
         
         row = explog[ixrow]
 
         #date = row['DATE']
         #CCD = row['CCD']
-        test = row['TEST']
+        test = row['test']
         
         tmpFITSname = row['File_name']
         FITSname = os.path.join(datapath,'%s.fits' % tmpFITSname)

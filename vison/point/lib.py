@@ -25,6 +25,8 @@ import numpy as np
 mirror_nom = dict(Filter1=70.,Filter2=70.,Filter3=70.,
                   Filter4=70.,Filter5=70.,Filter6=70.)# nominal focus positions of mirror
 
+mirror_nom = dict(F1=70.,F2=70.,F3=70.,F4=70.,F5=70.,F6=70.) # nominal focus positions of mirror
+
 Point_CooNom = {'names' : ['ALPHA','BRAVO','CHARLIE','DELTA','ECHO'],
     'CCD1':{'E':{'ALPHA':(plib.prescan+0.2*plib.imgwidth,plib.imgheight*(1.+0.8)),
                               'BRAVO':(plib.prescan+0.8*plib.imgwidth,plib.imgheight*(1.+0.8)),

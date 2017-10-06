@@ -45,37 +45,37 @@ script_dictionary = {'6.0.0':{
 'sn_ccd1','sn_ccd2','sn_ccd3','sn_roe','sn_rpsu',
 'comments'],
 
-'alias':dict(frames='Frames',
-program='Program',test='Test',IDL='IDL(mV)',IDH='IDH(mV)',
-IG1_1_T='IG1_1_T(mV)',IG1_2_T='IG1_2_T(mV)',IG1_3_T='IG1_3_T(mV)',
-IG1_1_B='IG1_1_B(mV)',IG1_2_B='IG1_2_B(mV)',IG1_3_B='IG1_3_B(mV)',
-IG2_T='IG2_T(mV)',IG2_B='IG2_B(mV)',
-OD_1_T='OD CCD1 T(mV)',OD_1_B='OD CCD1 B(mV)',OD_2_T='OD CCD2 T(mV)',
-OD_2_B='OD CCD2 B(mV)',OD_3_T='OD CCD3 T(mV)',OD_3_B='OD CCD3 B(mV)',
-RD_T='RD T(mV)',RD_B='RD B(mV)',
-iphi1='Iphi1',iphi2='Iphi2',iphi3='Iphi3',iphi4='Iphi4',
-readmode_1='Readout mode R01',readmode_2='Readout mode R02',
-ser_tpump='Serial T Pump Rdout',ser_tpump_mode='Serial T Pump mode',
-vertical_clk='Vertical clk',serial_clk='Serial clk',
-flushes='Flushes',exptime='Exposure time(ms)',
-shutter='Shutter',electroshutter='Electronic shutter',
-vstart='Vstart',vend='Vend',
-sinvflush='S. Inv.Flush',sinvflushp='S.Inv.FlushPeriod',
-chinj='charge injection',chinj_rows_on='chrg_inj rows on',
-chinj_rows_off='chrg_inj rows off',#chinj_repeat='chrg_inj repeat',
-id_width='id pulse length(us)',id_delay='id pulse delay(us)',
-chinj_ser_wait='chinj_ser_wait',
-tpump='Trap pumping',ser_shuffles='Serial shuffles',ver_shuffles='Vertical shuffles',
-dwell_v='Dwell_V',dwell_h='Dwell_H',tpump_mode='T.Pump mode',
-motor='Move motor',matrix_size='Matrix size',step_size='Step size',
-add_h_overscan='Additional H.Overscan',add_v_overscan='Additional V.Overscan',
-toi_flush='TOI Flush(us)',toi_tpump='TOI T.Pump(us)',
-                    toi_rdout='TOI Rdout(us)',toi_chinj='TOI Chinj(us)',
-wavelength='Wavelength',pos_cal_mirror='Pos cal mirror(mm)',
-operator='Operator name',
-sn_ccd1='CCD1 type/sn',sn_ccd2='CCD2 type/sn',sn_ccd3='CCD3 type/sn',
-sn_roe='ROE type/sn',sn_rpsu='RPSU type/sn',
-comments='Comments'),
+#'alias':dict(frames='Frames',
+#program='Program',test='Test',IDL='IDL(mV)',IDH='IDH(mV)',
+#IG1_1_T='IG1_1_T(mV)',IG1_2_T='IG1_2_T(mV)',IG1_3_T='IG1_3_T(mV)',
+#IG1_1_B='IG1_1_B(mV)',IG1_2_B='IG1_2_B(mV)',IG1_3_B='IG1_3_B(mV)',
+#IG2_T='IG2_T(mV)',IG2_B='IG2_B(mV)',
+#OD_1_T='OD CCD1 T(mV)',OD_1_B='OD CCD1 B(mV)',OD_2_T='OD CCD2 T(mV)',
+#OD_2_B='OD CCD2 B(mV)',OD_3_T='OD CCD3 T(mV)',OD_3_B='OD CCD3 B(mV)',
+#RD_T='RD T(mV)',RD_B='RD B(mV)',
+#iphi1='Iphi1',iphi2='Iphi2',iphi3='Iphi3',iphi4='Iphi4',
+#readmode_1='Readout mode R01',readmode_2='Readout mode R02',
+#ser_tpump='Serial T Pump Rdout',ser_tpump_mode='Serial T Pump mode',
+#vertical_clk='Vertical clk',serial_clk='Serial clk',
+#flushes='Flushes',exptime='Exposure time(ms)',
+#shutter='Shutter',electroshutter='Electronic shutter',
+#vstart='Vstart',vend='Vend',
+#sinvflush='S. Inv.Flush',sinvflushp='S.Inv.FlushPeriod',
+#chinj='charge injection',chinj_rows_on='chrg_inj rows on',
+#chinj_rows_off='chrg_inj rows off',#chinj_repeat='chrg_inj repeat',
+#id_width='id pulse length(us)',id_delay='id pulse delay(us)',
+#chinj_ser_wait='chinj_ser_wait',
+#tpump='Trap pumping',ser_shuffles='Serial shuffles',ver_shuffles='Vertical shuffles',
+#dwell_v='Dwell_V',dwell_h='Dwell_H',tpump_mode='T.Pump mode',
+#motor='Move motor',matrix_size='Matrix size',step_size='Step size',
+#add_h_overscan='Additional H.Overscan',add_v_overscan='Additional V.Overscan',
+#toi_flush='TOI Flush(us)',toi_tpump='TOI T.Pump(us)',
+#                    toi_rdout='TOI Rdout(us)',toi_chinj='TOI Chinj(us)',
+#wavelength='Wavelength',pos_cal_mirror='Pos cal mirror(mm)',
+#operator='Operator name',
+#sn_ccd1='CCD1 type/sn',sn_ccd2='CCD2 type/sn',sn_ccd3='CCD3 type/sn',
+#sn_roe='ROE type/sn',sn_rpsu='RPSU type/sn',
+#comments='Comments'),
              
 'defaults':dict(frames=1,
 program='CALCAMP',test='Test',IDL=13000,IDH=18000,
@@ -132,80 +132,62 @@ script_dictionary['6.1.0']['keys'] = ['frames',
 'operator',
 'sn_ccd1','sn_ccd2','sn_ccd3','sn_roe','sn_rpsu',
 'comments']
-script_dictionary['6.1.0']['alias'].update(dict(sumwell='sumwell',
-                 inisweep='inisweep'))
+#script_dictionary['6.1.0']['alias'].update(dict(sumwell='sumwell',
+#                 inisweep='inisweep'))
 script_dictionary['6.1.0']['defaults'].update(dict(sumwell=0,
                  inisweep=1))
 
+script_dictionary['6.3.0'] = script_dictionary['6.1.0']
+script_dictionary['6.3.0']['keys'] = [
+'frames','program','test','IDL','IDH',
+'IG1_1_T','IG1_2_T','IG1_3_T','IG1_1_B','IG1_2_B','IG1_3_B','IG2_T',
+'IG2_B','OD_1_T','OD_1_B','OD_2_T','OD_2_B','OD_3_T','OD_3_B',
+'RD_T','RD_B','IPHI1','IPHI2','IPHI3','IPHI4',
+'rdmode','flushes','siflsh','siflsh_p','swellw','swelldly','inisweep',
+'vstart','vend','toi_fl','toi_tp','toi_ro','toi_ch',
+'chinj','chinj_on','chinj_of','id_wid','id_dly','chin_dly',
+'s_tpump','s_tpmod','v_tpump','v_tpmod','s_tp_cnt','v_tp_cnt','dwell_v',
+'dwell_s','exptime','shuttr','e_shuttr','mirr_on','mirr_pos','wave',
+'motr_on','motr_cnt','motr_siz','source',
+'operator','sn_ccd1','sn_ccd2','sn_ccd3','sn_roe','sn_rpsu',
+'comments']
 
-explog_keys_cross = dict(
-              PROGRAM='program',
-              TEST='test',
-              CCD1_SN='sn_ccd1',
-              CCD2_SN='sn_ccd2',
-              CCD3_SN='sn_ccd3',
-              Operator='operator',
-              Exptime='exptime',
-              Chrg_inj='chinj', 
-              On_cycle='chinj_rows_on',
-              Off_cycl='chinj_rows_off',
-              pls_leng='id_width',
-              pls_del='id_delay',
-              SerRdDel='chinj_ser_wait',
-              Trappump='tpump', 
-              TP_Ser_S='ser_shuffles',
-              TP_Ver_S='ver_shuffles',
-              TP_DW_V='dwell_v',
-              TP_DW_H='dwell_h',
-              TOI_flsh='toi_flush',
-              TOI_flu='toi_flush',
-              TOI_pump='toi_tpump',
-              TOI_read='toi_rdout',
-              TOI_CInj='toi_chinj',
-              Invflshp='sinvflushp',
-              Invflush='sinvflush',
-              Flushes='flushes',
-              Vstart='vstart',
-              Vend='vend',
-              Ovrscn_H='add_h_overscan',
-              SumWell='sumwell',
-              IniSweep='inisweep',
-              M_Steps='matrix_size',
-              M_St_Sze='step_size',
-              Wavelength='wavelength',
-              Mirr_pos='pos_cal_mirror',
-              RPSU_SN='sn_rpsu',
-              ROE_SN='sn_roe',
-              IDL_V='f',
-              IDH_V='f',
-              IG1_T1_V='f',
-              IG1_T2_V='f',
-              IG1_T3_V='f',
-              IG1_B1_V='f',
-              IG1_B2_V='f',
-              IG1_B3_V='f',
-              IG2_T_V='f',
-              IG2_B_V='f',
-              OD_T1_V='f',
-              OD_T2_V='f',
-              OD_T3_V='f',
-              OD_B1_V='f',
-              OD_B2_V='f',
-              OD_B3_V='f',
-              RD_T_V='f',
-              RD_B_V='f',
-              #V_clocks='S10',S_clocks='S10',
-              CLK_ROE='readmode_1',CLK_ROE1='readmode_1',CLK_ROE2='readmode_2',
-              #ROE1_On='i',ROE2_On='i',
-              #Lght_int='f',Chmb_pre='f',R2CCD1TT='f',R2CCD1TB='f',R2CCD2TT='f',
-              #R2CCD2TB='f',R2CCD3TT='f',R2CCD3TB='f',
-              #IG1_V='f',IG2_V='f',ODCCD1_V='f',
-              #RDCCD1_V='f',ODCCD2_V='f',RDCCD2_V='f',ODCCD3_V='f',RDCCD3_V='f') 
-              )
+script_dictionary['6.3.0']['defaults'] =  {
+'frames':1,'program':'CALCAMP','test':'Test','IDL':13.0,'IDH':18.0,
+'IG1_1_T':6.0,'IG1_2_T':6.0,'IG1_3_T':6.0,'IG1_1_B':6.0,
+'IG1_2_B':6.0,'IG1_3_B':6.0,'IG2_T':5.0,'IG2_B':5.0,
+'OD_1_T':26.0,'OD_1_B':26.0,'OD_2_T':26.0,'OD_2_B':26.0,
+'OD_3_T':26.0,'OD_3_B':26.0,
+'RD_T':16.0,'RD_B':16.0,
+'IPHI1':1,'IPHI2':1,'IPHI3':1,'IPHI4':0,
+'rdmode':'fwd_bas',
+'flushes':7,'siflsh':0,'siflsh_p':500,
+'swellw':9.425,'swelldly':4.825,
+'inisweep':1,
+'vstart':1,'vend':2086,
+'toi_fl':143,'toi_tp':1000,'toi_ro':1000,'toi_ch':1000,
+'chinj':0,'chinj_on':1,'chinj_of':1,
+'id_wid':100,'id_dly':1500,'chin_dly':0,
+'s_tpump':0,'s_tpmod':23,
+'v_tpump':0,'v_tpmod':123,'s_tp_cnt':1000,'v_tp_cnt':1000,
+'dwell_v':0,'dwell_s':0,
+'exptime':0,'shuttr':1,
+'e_shuttr':0,
+'mirr_on':0,'mirr_pos':70,
+'wave':4,
+'motr_on':0,'motr_cnt':2,'motr_siz':50,'source':'flat',
+'operator':'cpf',
+'sn_ccd1':'CCD273-XX-X-XXX','sn_ccd2':'CCD273-XX-X-XXX',
+'sn_ccd3':'CCD273-XX-X-XXX','sn_roe':'ROEXX','sn_rpsu':'RPSUXX',
+'comments':''
+}
+
+
 
 
 def update_structdict(sdict,commvalues,diffvalues):
     """Updates an script structure with common values and differential values.
+    
     :param sdict: dict, dictionary with script structure. Takes precedence over
                   commvalues.
     :param commvalues: dict, dictionary with common values to update sdict.
@@ -236,7 +218,7 @@ def update_structdict(sdict,commvalues,diffvalues):
 class Script(object):
     """Core Class that provides automatic test script generation and validation."""
     
-    def __init__(self,defaults={},structure={},elvis='6.0.0'):
+    def __init__(self,defaults={},structure={},elvis='6.3.X'):
         """Initialization.
         
         :param defaults: dict, default values.
@@ -256,21 +238,22 @@ class Script(object):
         """Updates 'cargo' attribute.
         'cargo': list of lists, each corresponding to a column in the script.
                  Each element in the inner lists is a register value.
-                 The first column corresponds to the aliases column.
+                 The first column corresponds to the column with key names.
         
         Note: the number of frames is accumuled across columns, as ELVIS expects.
         
         """
         dictio = script_dictionary[self.elvis]
         keys = dictio['keys']
-        aliases = dictio['alias']
+        #aliases = dictio['alias']
         
         stru = self.structure
         defaults = self.defaults
         
         self.cargo = []
         
-        self.cargo.append([aliases[key] for key in keys]) # first column, aliases
+        #self.cargo.append([aliases[key] for key in keys]) # first column, aliases
+        self.cargo.append(keys) # first column, aliases
         
         cols = ['col%i' % (i+1,) for i in range(stru['Ncols'])]
         
@@ -329,7 +312,7 @@ class Script(object):
 
         return None
     
-    def load(self,scriptname,elvis='6.0.0'):
+    def load(self,scriptname,elvis='6.3.0'):
         """Loads an script from an excel file.
         
         :param scriptname: char, script to load
@@ -346,11 +329,10 @@ class Script(object):
         
         sdict = script_dictionary[self.elvis]
         keys = sdict['keys']
-        alias = sdict['alias']
-        aliaslist = [alias[key] for key in keys]
+        #alias = sdict['alias']
+        #aliaslist = [alias[key] for key in keys]
         
-
-        assert np.all(cargo[0] == aliaslist)
+        assert np.all(cargo[0] == keys)
         
         for ixc in df.columns:
             if ixc == 'Frames':
@@ -375,7 +357,7 @@ class Script(object):
         
     
     
-    def validate(self,defaults,structure,elvis='6.0.0'):
+    def validate(self,defaults,structure,elvis='6.3.0'):
         """Not sure 'validation' will work like as implemented...
         TODO: validate self.validate"""
         
@@ -396,7 +378,7 @@ class Script(object):
 def test0():
     """ """
     
-    scriptname = '../../../../CALIBRATION/CAMPAIGN/ELVIS/ELVIS_6.0.0_27Jan17/EUCLID_QM_ELVIS_script_v6.0.0.xlsx'
+    scriptname = '../../../../CALIBRATION/CAMPAIGN/ELVIS/ELVIS_6.3.0_27Jan17/EUCLID_QM_ELVIS_script_v6.3.0.xlsx'
     
     script = Script()
     script.load(scriptname)

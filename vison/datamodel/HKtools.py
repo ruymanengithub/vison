@@ -92,7 +92,7 @@ allHK_keys['6.0.0'] = ['TimeStamp','HK_OD_Top_CCD1','HK_OD_Bottom_CCD1',
 
 allHK_keys['6.1.0'] = allHK_keys['6.0.0']
 
-allHK_keys['6.2.X'] = ['TimeStamp',
+allHK_keys['6.3.0'] = ['TimeStamp',
 'CCD1_OD_T','CCD2_OD_T','CCD3_OD_T','COMM_RD_T',
 'CCD2_IG1_T','CCD3_IG1_T','CCD1_TEMP_T','CCD2_TEMP_T','CCD3_TEMP_T',
 'CCD1_IG1_T','COMM_IG2_T','VID_PCB_TEMP_T','FPGA_PCB_TEMP_T','CCD1_OD_B',
@@ -165,7 +165,7 @@ def loadHK_QFM(filename,elvis='5.8.X'):
     return data
 
 
-def iniHK_QFM(elvis='6.0.0',length=0):
+def iniHK_QFM(elvis='6.3.0',length=0):
     """ """
     columns = allHK_keys[elvis]    
     
