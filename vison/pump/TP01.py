@@ -31,7 +31,6 @@ isthere = os.path.exists
 IG1=6
 IG2=5
 
-
 TP01_commvalues = dict(program='CALCAMP',test='TP01',
   flushes=7,exptime=0.,shuttr=0,
   e_shuttr=0,vstart=1,vend=2066,

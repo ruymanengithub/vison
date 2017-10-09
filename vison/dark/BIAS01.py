@@ -46,7 +46,7 @@ HKKeys = []
 
 BIAS01_commvalues = dict(program='CALCAMP',test='BIAS01',
   flushes=7,exptime=0.,shuttr=1,
-  e_shuttr=0,vstart=1,vend=2066,
+  e_shuttr=0,vstart=1,vend=2086,
   siflush=0,#sinvflushp=500,
   chinj=0,
   s_tpump=0,
@@ -71,13 +71,13 @@ def build_BIAS01_scriptdict(N,diffvalues=dict(),elvis='6.3.0'):
 
     Ncols = len(BIAS01_sdict.keys())    
     BIAS01_sdict['Ncols'] = Ncols
-    
+
                 
     commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
     commvalues.update(BIAS01_commvalues)
     
     BIAS01_sdict = sc.update_structdict(BIAS01_sdict,commvalues,diffvalues)
-    
+
     return BIAS01_sdict
 
 

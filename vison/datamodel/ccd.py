@@ -586,7 +586,7 @@ class CCD(object):
         """ """
         
         mask = np.ones((self.NAXIS1/2,self.NAXIS2/2),dtype='int8')
-        mask[:,vstart:vend+1] = 0
+        mask[:,vstart:vend] = 0
         
         for Q in Quads:            
             qdata = self.get_quad(Q,canonical=True,extension=extension)

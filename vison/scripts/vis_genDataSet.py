@@ -79,6 +79,7 @@ def genExpLog(toGen,explogf,equipment,elvis='6.3.0'):
                         date=date0)
     
     
+    
     # DARKS
     
     Ndark01 = 4
@@ -590,17 +591,17 @@ if __name__ =='__main__':
         
     
     doGenExplog = False
-    doGenHK = False
+    doGenHK = True
     doGenFITS = True
-    Nrows = 0
+    Nrows = -1
     
     #date0 = pilib.dtobj_default 
     date0 = datetime.datetime(1980,2,23,7,0,0) # early riser
     elvis = '6.3.0'
     
     TestsSelector = dict(BIAS01=1,DARK01=1,CHINJ01=1,CHINJ02=1,
-                      FLAT01=1,FLAT02=1,PTC01=1,PTC02WAVE=0,PTC02TEMP=0,NL01=1,
-                      PSF01=1,PSF02=0,
+                      FLAT01=1,FLAT02=1,PTC01=1,PTC02WAVE=1,PTC02TEMP=1,NL01=1,
+                      PSF01=1,PSF02=1,
                       TP01=1,TP02=1,
                       PERSIST01=1,FOCUS00=1)
     

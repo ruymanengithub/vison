@@ -268,8 +268,8 @@ def _add_ron_window_round(ccdobj,vstart,vend):
     ccdobj.simadd_ron()
     ccdobj.extensions[-1].data = np.round(ccdobj.extensions[-1].data).astype('int32')    
     
-    if vstart != 0 or vend != 2066:
-        ccdobj.sim_window(vstart,vend)
+    if vstart != 1 or vend != ccd.NAXIS2/2:
+        ccdobj.sim_window(vstart-1,vend)
     
     return ccdobj
 
@@ -298,7 +298,7 @@ def IMG_flat_gen(ccdobj,ELdict):
     waveID = ELdict['wave']
     exptime = ELdict['exptime']
     
-    tsatur = ogse.tFWC_flat[ogse.FW['F%i' % waveID]]
+    tsatur = ogse.tFWC_flat['nm%i' % ogse.FW['F%i' % waveID]]
     
     fluence = 2.**16 * exptime / tsatur
     
@@ -340,7 +340,8 @@ def IMG_chinj_gen(ccdobj,ELdict,):
     
     if doInject:
         
-        injlevel = 2000. - max(0,IG1-IG2)/0.5*2000.
+        
+        injlevel = 2000. + max(0,IG2-IG1)/0.5*2000.
         
         injlevels = dict(E=injlevel,F=injlevel,G=injlevel,H=injlevel)
                               
@@ -365,18 +366,18 @@ def IMG_point_gen(ccdobj,ELdict):
     vend = ELdict['vend']
     
     waveID = ELdict['wave']
-    wave = ogse.FW['F%i' % waveID]
+    wavenm = ogse.FW['F%i' % waveID]
     exptime = ELdict['exptime']
     mirror = ELdict['mirr_pos']
     iCCD = ELdict['CCD']
     
     mirror_nom = polib.mirror_nom['F%i' % waveID]    
-    tsatur = ogse.tFWC_flat[wave]
+    tsatur = ogse.tFWC_point['nm%i' % wavenm]
     
      
     fluence = 2.*2.**16 * exptime / tsatur
     
-    fwhm = ogse.fwhm_lambda[wave] * (1.+((mirror-mirror_nom)/0.2)**2.)
+    fwhm = ogse.fwhm_lambda['nm%i' % wavenm] * (1.+((mirror-mirror_nom)/0.2)**2.)
     
     ccdobj.simadd_points(fluence,fwhm,CCDID=iCCD,dx=0,dy=0)
 
@@ -393,7 +394,7 @@ def IMG_point_gen(ccdobj,ELdict):
 def generate_FITS(ELdict,funct,filename='',elvis='6.3.0'):
     """ """
     
-    NAXIS1,NAXIS2 = 4238,4132
+    NAXIS1,NAXIS2 = ccd.NAXIS1,ccd.NAXIS2
         
     waivedkeys = ['File_name','fl_rdout','ci_rdout',
                   'wave']
