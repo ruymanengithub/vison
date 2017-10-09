@@ -502,12 +502,13 @@ class ExpLogDisplay(tk.Toplevel):
 class Eyegore(tk.Tk):
     """ """
     
-    def __init__(self,path,interval=3000):
+    def __init__(self,path,broadcast,interval=3000):
         """ """
         tk.Tk.__init__(self)
         
         self.path = path
         self.interval = interval
+        self.broadcast = broadcast
         
         self.run()
         
@@ -535,6 +536,7 @@ if __name__ == '__main__':
     
     parser = OptionParser()
     parser.add_option("-p","--path",dest="path",default='',help="day-path to be monitored.")
+    parser.add_option("-B","--broadcast",dest="broadcast",action='store_true',help="")
     
     (options, args) = parser.parse_args()
     
@@ -543,6 +545,7 @@ if __name__ == '__main__':
         sys.exit()
         
     path = options.path
+    broadcast = options.broadcast
     
     if not os.path.exists(path):
         sys.exit('HKmonitory.py: %s does not exist' % path)
@@ -560,7 +563,7 @@ if __name__ == '__main__':
         print header % path
     
     
-    app = Eyegore(path)
+    app = Eyegore(path,broadcast=broadcast)
 
     
     
