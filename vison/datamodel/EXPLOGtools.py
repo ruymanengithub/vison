@@ -9,6 +9,7 @@ from astropy.table import Table, Column
 import os
 from copy import copy
 import numpy as np
+from vison.support import time as vistime
 
 
 # END IMPORT
@@ -206,9 +207,11 @@ class ExpLogClass():
     def __init__(self,elvis='5.7.04'):
         """ """
         self.elvis = elvis
+        self.infile = ''
         
-    def loadfromfile(self,expfile,elvis='5.7.04'):
+    def loadfromfile(self,expfile):
         
+        self.infile = expfile
         self.explog = loadExpLog(expfile,self.elvis)
     
     def writeto(self,outfile):
@@ -224,6 +227,38 @@ class ExpLogClass():
         """ """
         self.explog.add_row(row.as_void().tolist())
     
+    def summary(self):
+        """ """
+        try: nentries = len(self.explog)
+        except AttributeError: 
+            return None
+        ObsID = self.explog['ObsID'].copy()
+        nObsID = len(np.unique(ObsID))
+        ObsIDextrema = np.min(ObsID),np.max(ObsID)
+        
+        tests = np.unique(self.explog['test'])
+        ntests = len(tests)
+        
+        durations = []
+        for test in tests:
+            ixsel = np.where(self.explog['test'] == test)
+            ixlast = ixsel[0][-1]
+            ixfirst = max(0,ixsel[0][0]-1)
+            subdates = (self.explog['date'][ixfirst],self.explog['date'][ixlast])
+            subdts = map(vistime.get_dtobj,subdates)
+            dtmin = (subdts[-1]-subdts[0]).seconds / 60.
+            durations.append(dtmin)
+        
+        print '\nSummary: %s' % self.infile
+        print 'Nr. of entries = %i' % nentries
+        print 'ObsIDs = (%i,%i): %i' % (ObsIDextrema+(nObsID,))
+        print 'Nr. Tests: %i' % ntests
+        
+        for it,test in enumerate(tests):
+            print '%s\t %.2f min' % (test,durations[it])
+        
+        
+        
 
 
 def test():

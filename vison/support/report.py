@@ -16,7 +16,7 @@ Created on Wed Jan 25 16:58:33 2017
 # IMPORT STUFF
 from pdb import set_trace as stop
 import os
-from vison.pipe.lib import get_time_tag
+from vison.support import time as vistime
 from latex import generate_header, generate_preamble
 from vison import data as visondata
 
@@ -188,7 +188,7 @@ class Report(object):
         
         self.TestName = TestName
         self.Model = Model
-        self.timestamp = get_time_tag()
+        self.timestamp = vistime.get_time_tag()
         
         self.Texheader = Texheader
         self.Texbody = Texbody

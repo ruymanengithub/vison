@@ -19,6 +19,7 @@ from vison.datamodel import HKtools
 from vison.datamodel import ccd
 from vison.pipe import lib as pilib
 from vison.point import lib as polib
+from vison.support import time as vistime
 import datetime
 import os
 import string as st
@@ -91,7 +92,7 @@ def _update_fromscript(rowdict,scriptcol):
     return rowdict
     
 def generate_Explog(scrdict,defaults,elvis='6.3.0',explog=None,OBSID0=1000,
-                        date=pilib.dtobj_default):
+                        date=vistime.dtobj_default):
     """ 
     
     Generates a fake ExposureLog from a test structure dictionary.
@@ -243,7 +244,7 @@ def generate_HK(explog,vals,datapath='',elvis='6.3.0'):
     """ """
     
     date0 = explog['date'][0]
-    dtobj0 = pilib.get_dtobj(date0)
+    dtobj0 = vistime.get_dtobj(date0)
     
     masterHKf = 'HK_%s_ROE1.txt' % (dtobj0.strftime('%d-%m-%y'),)
     masterHKf = os.path.join(datapath,masterHKf)
@@ -262,7 +263,7 @@ def generate_HK(explog,vals,datapath='',elvis='6.3.0'):
         
         idate = explog['date'][ixobs]
         
-        idtobj = pilib.get_dtobj(idate)
+        idtobj = vistime.get_dtobj(idate)
         
         HKfilef = 'HK_%s_%s_ROE1.txt' % (obsid,idate)
         

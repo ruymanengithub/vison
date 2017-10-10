@@ -46,7 +46,7 @@ from vison.datamodel import generator
 from vison.datamodel import scriptic as sc
 from vison.point.spot import Spot
 from vison.point import display as pdspl
-import datetime
+from vison.support import time as vistime
 from copy import deepcopy
 
 import FOCUS00_lib as Flib
@@ -58,7 +58,7 @@ isthere = os.path.exists
 HKKeys_FOCUS00 = ['HK_temp_top_CCD1','HK_temp_bottom_CCD1','HK_temp_top_CCD2',
 'HK_temp_bottom_CCD2','HK_temp_top_CCD3','HK_temp_bottom_CCD3'] # TESTS
 
-dtobj_default = datetime.datetime(1980,2,21,7,0,0) # early riser
+dtobj_default = vistime.dtobj_default
 
 stampw = 25
 
@@ -197,7 +197,7 @@ def filterexposures_FOCUS00(inwavelength,explogf,datapath,OBSID_lims,structure=F
         for key in explog.colnames:
             DataDict[CCDkey][key] = explog[key][CCDselbool].data.copy()
         
-        DataDict[CCDkey]['time'] = np.array(map(pilib.get_dtobj,DataDict[CCDkey]['DATE'])).copy()
+        DataDict[CCDkey]['time'] = np.array(map(vistime.get_dtobj,DataDict[CCDkey]['DATE'])).copy()
         
         
         Mirr_pos = DataDict[CCDkey]['Mirr_pos'].copy()
@@ -838,7 +838,7 @@ def generate_FITS_FOCUS00(wavelength,explog,datapath,elvis='6.3.0'):
         
         #if iexptime == 0.: continue # TESTS
         
-        idtobj = pilib.get_dtobj(idate)
+        idtobj = vistime.get_dtobj(idate)
         
         dmy = idtobj.strftime('%d%m%y')
         HMS = idtobj.strftime('%H%M%S')

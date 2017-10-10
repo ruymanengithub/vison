@@ -48,6 +48,7 @@ from vison.flat import NL01, PTC0X, FLAT0X
 from vison.inject import CHINJ01,CHINJ02
 from vison.pump import TP01, TP02
 from vison.other import PERSIST01 as PER01
+from vison.support import time as vistime
 #from lib import get_time_tag
 from vison.pipe import lib as pilib
 
@@ -85,7 +86,7 @@ class Pipe(object):
         self.tasks = self.inputs['tasks']
         self.BLOCKID=self.inputs['BLOCKID'] # BLOCK (ROE+RPSU+CCDs) under test
         self.CHAMBER=self.inputs['CHAMBER']
-        self.ID = 'FM%s' % pilib.get_time_tag()  # ID of the analysis "session"
+        self.ID = 'FM%s' % vistime.get_time_tag()  # ID of the analysis "session"
 
         if dolog:
             self.logf = 'Calib_%s.log' % self.ID
@@ -271,7 +272,7 @@ class Pipe(object):
             
             # Adding Time Axis            
             
-            explog['time'] = np.array(map(pilib.get_dtobj,explog['DATE'])).copy()
+            explog['time'] = np.array(map(vistime.get_dtobj,explog['DATE'])).copy()
 
             # Filling in the .fits extension
             
