@@ -592,7 +592,7 @@ if __name__ =='__main__':
     
     doGenExplog = False
     doGenHK = True
-    doGenFITS = True
+    doGenFITS = False
     Nrows = -1
     
     #date0 = pilib.dtobj_default 

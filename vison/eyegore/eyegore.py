@@ -197,7 +197,7 @@ class HKDisplay(tk.Toplevel):
     def search_HKfile(self):
         """ """
         
-        struct_date = time.strptime(st.replace(self.path,'_',''),'%d%b%y')
+        struct_date = time.strptime(os.path.split(st.replace(self.path,'_',''))[-1],'%d%b%y')
         date_infile = time.strftime('%d-%m-%y',struct_date)
         
         self.date = date_infile
@@ -373,7 +373,7 @@ class ExpLogDisplay(tk.Toplevel):
     def search_EXPLOG(self):
         """ """
         
-        struct_date = time.strptime(st.replace(self.path,'_',''),'%d%b%y')
+        struct_date = time.strptime(os.path.split(st.replace(self.path,'_',''))[-1],'%d%b%y')
         date_infile = time.strftime('%d%m%y',struct_date)
         
         self.date = date_infile
@@ -506,6 +506,8 @@ class Eyegore(tk.Tk):
         """ """
         tk.Tk.__init__(self)
         
+        if path[-1] == os.path.sep:
+            path = path[:-1]
         self.path = path
         self.interval = interval
         self.broadcast = broadcast
@@ -521,13 +523,14 @@ class Eyegore(tk.Tk):
         Ds = dict(image=ImageDisplay,hk=HKDisplay,explog=ExpLogDisplay)
         dkeys = ['image','hk','explog']
         
-        display1 = Ds[dkeys[0]](self,path)        
+        display1 = Ds[dkeys[0]](self,self.path)        
         ani = display1.start_updating(self.interval)
        
-        display2 = Ds[dkeys[1]](self,path)
+        display2 = Ds[dkeys[1]](self,self.path)
         ani = display2.start_updating(self.interval)
             
-        display3 = Ds[dkeys[2]](self,path)
+        display3 = Ds[dkeys[2]](self,self.path)
+        ani = display3.start_updating(self.interval)
         
         self.mainloop()
 
@@ -554,8 +557,8 @@ if __name__ == '__main__':
         header = '\n\n#########################################################\n'+\
                  '#                                                       #\n'+\
                  '#                                                       #\n'+\
-                 '#       starting EYEGORE on path:                        #\n'+\
-                 '            %s                                           \n'+\
+                 '#       starting EYEGORE on path:                       #\n'+\
+                 '#            %s                                         \n'+\
                  '#                                                       #\n'+\
                  '#                                                       #\n'+\
                  '#########################################################\n'

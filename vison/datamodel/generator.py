@@ -218,13 +218,40 @@ def _fill_HKcols(HKfile,row,vals):
             HKfile[key] = val * unity
                    
     return HKfile
-        
+
+def merge_HKfiles(HKfilefs,masterHKf):
+    """ """
+    
+    hdr = open(HKfilefs[0],'r').readlines()[0][:-1]
+    
+    body = []
+    
+    for HKfilef in HKfilefs:
+        lines = open(HKfilef,'r').readlines()[1:]
+        body += lines
+    
+    
+    f = open(masterHKf,'w')
+    print >> f, hdr
+    for line in body:
+        print >> f, line[:-1]
+    f.close()
+    
+
 
 def generate_HK(explog,vals,datapath='',elvis='6.3.0'):
     """ """
     
+    date0 = explog['date'][0]
+    dtobj0 = pilib.get_dtobj(date0)
+    
+    masterHKf = 'HK_%s_ROE1.txt' % (dtobj0.strftime('%d-%m-%y'),)
+    masterHKf = os.path.join(datapath,masterHKf)
+    
+    skip = False #True for some TESTS
         
     doneObsids = []
+    HKfilefs = []
     
     t0 = time()
     
@@ -240,20 +267,26 @@ def generate_HK(explog,vals,datapath='',elvis='6.3.0'):
         HKfilef = 'HK_%s_%s_ROE1.txt' % (obsid,idate)
         
         HKfilef = os.path.join(datapath,HKfilef)
+        HKfilefs.append(HKfilef)
         
-        HKfile = HKtools.iniHK_QFM(elvis,length=int(rdouttime))
-
-        TimeStamp = np.array([idtobj+datetime.timedelta(seconds=sec) for sec in np.arange(int(rdouttime))])        
+        if not skip:
         
-        HKfile['TimeStamp'] = TimeStamp
-        
-        HKfile = _fill_HKcols(HKfile,explog[ixobs],vals)
-        
-        
-        HKfile.write(HKfilef,format='ascii',overwrite=True,delimiter='\t')
+            HKfile = HKtools.iniHK_QFM(elvis,length=int(rdouttime))
+    
+            TimeStamp = np.array([idtobj+datetime.timedelta(seconds=sec) for sec in np.arange(int(rdouttime))])        
+            
+            HKfile['TimeStamp'] = TimeStamp
+            
+            HKfile = _fill_HKcols(HKfile,explog[ixobs],vals)
+            
+            
+            HKfile.write(HKfilef,format='ascii',overwrite=True,delimiter='\t')
         
         doneObsids.append(obsid)
-        
+    
+    
+    merge_HKfiles(HKfilefs,masterHKf)
+    
     t1 = time()
     dtmin = (t1-t0)/60.
     nobs = len(doneObsids)
@@ -438,6 +471,7 @@ def generate_FITS_fromExpLog(explog,datapath,elvis='6.3.0'):
     Nfiles = len(explog)
     
     #explog = explog[0:100] # tests
+    #explog = explog[3195:] # tests
     
     for ixrow,obsid in enumerate(explog['ObsID']):
         

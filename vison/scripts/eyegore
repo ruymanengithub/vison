@@ -1,0 +1,43 @@
+#! $HOME/SOFTWARE/anaconda2/envs/vison/bin/ python
+
+
+# IMPORT STUFF
+import sys, os
+from optparse import OptionParser
+from vison.eyegore.eyegore import Eyegore
+# END IMPORT
+
+
+if __name__ == '__main__':
+    
+    parser = OptionParser()
+    parser.add_option("-p","--path",dest="path",default='',help="day-path to be monitored.")
+    parser.add_option("-B","--broadcast",dest="broadcast",action='store_true',help="")
+    
+    (options, args) = parser.parse_args()
+    
+    if options.path == '':
+        parser.print_help()
+        sys.exit()
+        
+    path = options.path
+    broadcast = options.broadcast
+    
+    if not os.path.exists(path):
+        sys.exit('HKmonitory.py: %s does not exist' % path)
+    else:
+        
+        header = '\n\n#########################################################\n'+\
+                 '#                                                       #\n'+\
+                 '#                                                       #\n'+\
+                 '#       starting EYEGORE on path:                        #\n'+\
+                 '            %s                                           \n'+\
+                 '#                                                       #\n'+\
+                 '#                                                       #\n'+\
+                 '#########################################################\n'
+        
+        print header % path
+    
+    
+    app = Eyegore(path,broadcast=broadcast)
+
