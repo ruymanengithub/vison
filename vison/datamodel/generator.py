@@ -256,6 +256,7 @@ def generate_HK(explog,vals,datapath='',elvis='6.3.0'):
     
     t0 = time()
     
+    
     for ixobs,obsid in enumerate(explog['ObsID']):
         
         if obsid in doneObsids: continue # to avoid duplications 
@@ -274,7 +275,8 @@ def generate_HK(explog,vals,datapath='',elvis='6.3.0'):
         
             HKfile = HKtools.iniHK_QFM(elvis,length=int(rdouttime))
     
-            TimeStamp = np.array([idtobj+datetime.timedelta(seconds=sec) for sec in np.arange(int(rdouttime))])        
+            TimeStampRaw = np.array([idtobj+datetime.timedelta(seconds=sec) for sec in np.arange(int(rdouttime))])
+            TimeStamp = [item.strftime('%d-%m-%y_%H:%M:%S') for item in TimeStampRaw]
             
             HKfile['TimeStamp'] = TimeStamp
             
@@ -284,8 +286,10 @@ def generate_HK(explog,vals,datapath='',elvis='6.3.0'):
             HKfile.write(HKfilef,format='ascii',overwrite=True,delimiter='\t')
         
         doneObsids.append(obsid)
+        if len(doneObsids) == True:
+            break
     
-    
+    #HKfilefs = HKfilefs[0:10]
     merge_HKfiles(HKfilefs,masterHKf)
     
     t1 = time()

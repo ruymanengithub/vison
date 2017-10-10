@@ -118,9 +118,9 @@ class ImageDisplay(tk.Toplevel):
         self.do_update = False
     
     
-    def get_animator(self):
-        f = self.f
-        render = self.gen_render()
+    #def get_animator(self):
+    #    f = self.f
+    #    render = self.gen_render()
         
 
 class HKDisplay(tk.Toplevel):
@@ -249,9 +249,11 @@ class HKDisplay(tk.Toplevel):
         
         HK = HKtools.loadHK_QFM(self.HKfile,elvis=self.elvis)
         
-        dtobjarr = np.array([datetime.datetime.strptime('%s_%s'  % (self.date,item),'%d-%m-%y_%H:%M:%S') \
-                             for item in HK['TimeStamp']])
-        
+        #dtobjarr = np.array([datetime.datetime.strptime('%s_%s'  % (self.date,item),'%d-%m-%y_%H:%M:%S') \
+        #                     for item in HK['TimeStamp']])
+        dtobjarr = np.array([datetime.datetime.strptime(item,'%d-%m-%y_%H:%M:%S') \
+                             for item in HK['TimeStamp']])        
+    
         pHK = dict(time = dtobjarr)
         
         subKeys = [Key for Key in HK.keys() if Key != 'TimeStamp']
@@ -293,7 +295,8 @@ class HKDisplay(tk.Toplevel):
                 else:
                     ax.plot(x,y)
                 
-                ax.set_title(HKname)
+                HKtitle = '$%s$' % HKname.replace('_','\_')
+                ax.set_title(HKtitle)
                 
                 try:
                     for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +\
@@ -353,22 +356,25 @@ class ExpLogDisplay(tk.Toplevel):
         """
         
         elementHeader = self.EXPLOG.colnames
+        self.elementHeader = elementHeader
         
+        self.build_elementList()
+        self.setupWidgets()
+        
+        self.buildTree()
+    
+    def build_elementList(self):
+        """ """
+    
         elementList = []
         
         for ix in range(len(self.EXPLOG)):            
             row = []
-            for jx,colname in enumerate(elementHeader):
+            for jx,colname in enumerate(self.elementHeader):
                 row.append(self.EXPLOG[colname][ix])
             elementList.append(tuple(row))
         
-        self.elementList = elementList
-        self.elementHeader = elementHeader
-        
-        self.setupWidgets()
-        #stop()
-        self.buildTree()
-        
+        self.elementList = elementList    
         
     def search_EXPLOG(self):
         """ """
@@ -405,7 +411,7 @@ class ExpLogDisplay(tk.Toplevel):
     
         EXPLOG = ELtools.loadExpLog(self.explogf,elvis=self.elvis)
         
-        self.EXPLOG = EXPLOG
+        self.EXPLOG = EXPLOG[-100:]
         
         return self.EXPLOG
 
@@ -497,7 +503,17 @@ class ExpLogDisplay(tk.Toplevel):
         # switch the heading so that it will sort in the opposite direction
         tree.heading(col,
             command=lambda col=col: self.sortBy(tree, col, int(not descending)))
-   
+
+
+#    def start_updating(self,interval):
+#        #self.do_update = True
+#        
+#        f = self.f
+#        render = self.gen_render()
+#        #while self.do_update:
+#        return animation.FuncAnimation(f, render,self.get_data,interval=interval)
+
+
 
 class Eyegore(tk.Tk):
     """ """
@@ -530,7 +546,7 @@ class Eyegore(tk.Tk):
         ani = display2.start_updating(self.interval)
             
         display3 = Ds[dkeys[2]](self,self.path)
-        ani = display3.start_updating(self.interval)
+        #ani = display3.start_updating(self.interval)
         
         self.mainloop()
 
