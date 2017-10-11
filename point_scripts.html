@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Point-Source Scripts &#8212; vison 0.2+33.gab041b4 documentation</title>
+    <title>Point-Source Scripts &#8212; vison 0.2+54.g66432a0 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2+33.gab041b4',
+        VERSION:     '0.2+54.g66432a0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="flat_scripts.html" title="Flat-Illumination Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+33.gab041b4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+54.g66432a0 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -114,7 +114,7 @@ TEST: FOCUS00</p>
 
 <dl class="function">
 <dt id="vison.point.FOCUS00.build_FOCUS00_scriptdict">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">build_FOCUS00_scriptdict</code><span class="sig-paren">(</span><em>wavelength</em>, <em>exptime</em>, <em>diffvalues={}</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.build_FOCUS00_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">build_FOCUS00_scriptdict</code><span class="sig-paren">(</span><em>wavelength</em>, <em>exptime</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.build_FOCUS00_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds FOCUS00 script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -133,7 +133,7 @@ TEST: FOCUS00</p>
 
 <dl class="function">
 <dt id="vison.point.FOCUS00.filterexposures_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">filterexposures_FOCUS00</code><span class="sig-paren">(</span><em>inwavelength</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>structure={'Ncols': 6</em>, <em>'col6': {'Mirr_pos': 70.2</em>, <em>'Exptime': 10.0</em>, <em>'N': 2}</em>, <em>'col4': {'Mirr_pos': 70.0</em>, <em>'Exptime': 10.0</em>, <em>'N': 2}</em>, <em>'col5': {'Mirr_pos': 70.1</em>, <em>'Exptime': 10.0</em>, <em>'N': 2}</em>, <em>'col2': {'Mirr_pos': 69.8</em>, <em>'Exptime': 10.0</em>, <em>'N': 2}</em>, <em>'col3': {'Mirr_pos': 69.9</em>, <em>'Exptime': 10.0</em>, <em>'N': 2}</em>, <em>'col1': {'Mirr_pos': 69.8</em>, <em>'Exptime': 0</em>, <em>'N': 5}}</em>, <em>elvis='5.7.04'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.filterexposures_FOCUS00" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">filterexposures_FOCUS00</code><span class="sig-paren">(</span><em>inwavelength</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>structure={'Ncols': 6</em>, <em>'col6': {'frames': 2</em>, <em>'mirr_pos': 70.2</em>, <em>'exptime': 10.0}</em>, <em>'col4': {'frames': 2</em>, <em>'mirr_pos': 70.0</em>, <em>'exptime': 10.0}</em>, <em>'col5': {'frames': 2</em>, <em>'mirr_pos': 70.1</em>, <em>'exptime': 10.0}</em>, <em>'col2': {'frames': 2</em>, <em>'mirr_pos': 69.8</em>, <em>'exptime': 10.0}</em>, <em>'col3': {'frames': 2</em>, <em>'mirr_pos': 69.9</em>, <em>'exptime': 10.0}</em>, <em>'col1': {'frames': 5</em>, <em>'mirr_pos': 69.8</em>, <em>'exptime': 0}}</em>, <em>elvis='5.7.04'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.filterexposures_FOCUS00" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a list of Exposure Logs and selects exposures from test FOCUS00.</p>
 <p>The filtering takes into account an expected structure for the 
 acquisition script.</p>
@@ -144,12 +144,12 @@ date-folders.</p>
 
 <dl class="function">
 <dt id="vison.point.FOCUS00.generate_Explog_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">generate_Explog_FOCUS00</code><span class="sig-paren">(</span><em>wavelength</em>, <em>struct</em>, <em>elvis='6.0.0'</em>, <em>date=datetime.datetime(1980</em>, <em>2</em>, <em>21</em>, <em>7</em>, <em>0)</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.generate_Explog_FOCUS00" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">generate_Explog_FOCUS00</code><span class="sig-paren">(</span><em>wavelength</em>, <em>struct</em>, <em>elvis='6.3.0'</em>, <em>date=datetime.datetime(1980</em>, <em>2</em>, <em>21</em>, <em>7</em>, <em>0)</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.generate_Explog_FOCUS00" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="vison.point.FOCUS00.generate_FITS_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">generate_FITS_FOCUS00</code><span class="sig-paren">(</span><em>wavelength</em>, <em>explog</em>, <em>datapath</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.generate_FITS_FOCUS00" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">generate_FITS_FOCUS00</code><span class="sig-paren">(</span><em>wavelength</em>, <em>explog</em>, <em>datapath</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.generate_FITS_FOCUS00" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -160,7 +160,7 @@ date-folders.</p>
 
 <dl class="function">
 <dt id="vison.point.FOCUS00.generate_HK_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">generate_HK_FOCUS00</code><span class="sig-paren">(</span><em>explog</em>, <em>datapath</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.generate_HK_FOCUS00" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">generate_HK_FOCUS00</code><span class="sig-paren">(</span><em>explog</em>, <em>datapath</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.generate_HK_FOCUS00" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -293,7 +293,7 @@ PSF02 - alternative temperatures</dd>
 
 <dl class="function">
 <dt id="vison.point.PSF0X.build_PSF0X_scriptdict">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">build_PSF0X_scriptdict</code><span class="sig-paren">(</span><em>exptimes</em>, <em>frames</em>, <em>wavelength=800</em>, <em>diffvalues={}</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.build_PSF0X_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.point.PSF0X.</code><code class="descname">build_PSF0X_scriptdict</code><span class="sig-paren">(</span><em>exptimes</em>, <em>frames</em>, <em>wavelength=800</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.build_PSF0X_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds PSF0X script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -313,7 +313,7 @@ PSF02 - alternative temperatures</dd>
 
 <dl class="function">
 <dt id="vison.point.PSF0X.filterexposures_PSF0X">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">filterexposures_PSF0X</code><span class="sig-paren">(</span><em>inwavelength</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>structure={'Ncols': 6</em>, <em>'col6': {'Exptime': 18.0</em>, <em>'N': 3}</em>, <em>'col4': {'Exptime': 10.0</em>, <em>'N': 10}</em>, <em>'col5': {'Exptime': 15.0</em>, <em>'N': 4}</em>, <em>'col2': {'Exptime': 1.0</em>, <em>'N': 20}</em>, <em>'col3': {'Exptime': 5.0</em>, <em>'N': 18}</em>, <em>'col1': {'Exptime': 0</em>, <em>'N': 5}}</em>, <em>elvis='5.7.04'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.filterexposures_PSF0X" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.point.PSF0X.</code><code class="descname">filterexposures_PSF0X</code><span class="sig-paren">(</span><em>inwavelength</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>structure={'Ncols': 6</em>, <em>'col6': {'frames': 3</em>, <em>'exptime': 18.0}</em>, <em>'col4': {'frames': 10</em>, <em>'exptime': 10.0}</em>, <em>'col5': {'frames': 4</em>, <em>'exptime': 15.0}</em>, <em>'col2': {'frames': 20</em>, <em>'exptime': 1.0}</em>, <em>'col3': {'frames': 18</em>, <em>'exptime': 5.0}</em>, <em>'col1': {'frames': 5</em>, <em>'exptime': 0}}</em>, <em>elvis='5.7.04'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.filterexposures_PSF0X" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a list of Exposure Logs and selects exposures from test PSF0X.</p>
 <p>The filtering takes into account an expected structure for the 
 acquisition script.</p>
@@ -404,7 +404,7 @@ data quality is enough.</p>
         <li class="right" >
           <a href="flat_scripts.html" title="Flat-Illumination Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+33.gab041b4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+54.g66432a0 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
