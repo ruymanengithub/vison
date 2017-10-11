@@ -20,12 +20,13 @@ from vison.datamodel import EXPLOGtools as ELtools
 from vison.datamodel import generator as gen
 from vison.datamodel import scriptic as sc
 from vison.pipe import lib as pilib
-from vison.point import FOCUS00,PSF0X
-from vison.dark import BIAS01,DARK01
-from vison.flat import NL01, PTC0X, FLAT0X
-from vison.inject import CHINJ01,CHINJ02
-from vison.pump import TP01, TP02
-from vison.other import PERSIST01 as PER01
+from vison.pipe import campaign
+#from vison.point import FOCUS00,PSF0X
+#from vison.dark import BIAS01,DARK01
+#from vison.flat import NL01, PTC0X, FLAT0X
+#from vison.inject import CHINJ01,CHINJ02
+#from vison.pump import TP01, TP02
+#from vison.other import PERSIST01 as PER01
 
 from vison.point import lib as polib
 
@@ -42,447 +43,24 @@ def genExpLog(toGen,explogf,equipment,elvis='6.3.0'):
     
     OBSID0 = 1000
 
-    operator = equipment['operator']
-    sn_ccd1 = equipment['sn_ccd1']
-    sn_ccd2 = equipment['sn_ccd2']
-    sn_ccd3 = equipment['sn_ccd3']
-    sn_roe =  equipment['sn_roe']
-    sn_rpsu = equipment['sn_rpsu']    
-    
-    
-    
     logdefaults = {'egse_ver':elvis,'con_file':'vis_roe_config_cotsqm_273_vn.txt',
         'fl_rdout':0,'ci_rdout':0,
         'fpga_ver':'2AC',
         'R1C1_TT':-153.,'R1C2_TT':-153.,'R1C3_TT':-153.,
         'R1C1_TB':-153.,'R1C2_TB':-153.,'R1C3_TB':-153.,}
     
+    test_sequence = campaign.generate_test_sequence(equipment,toGen,elvis=elvis)
     
-    # BIAS
-    
-    Nbias01 = 25
-    #fileBIAS01 = 'vis_CalCamp_BIAS01_%s_v%s.xlsx' % (datetag,elvis)
-    diffBIAS01 = dict(sn_ccd1=sn_ccd1,
-                      sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-                      sn_rpsu=sn_rpsu,operator=operator)
-    
+    tests = test_sequence.keys()
     explog = None
     
-    
-    if toGen['BIAS01']:
-        
-        print 'BIAS01...'
-        
-        structBIAS01 = BIAS01.build_BIAS01_scriptdict(Nbias01,
-                                    diffvalues=diffBIAS01,elvis=elvis)
-        explog = gen.generate_Explog(structBIAS01,logdefaults,elvis=elvis,explog=explog,OBSID0=OBSID0,
+    structtest0 = test_sequence[tests[0]]
+    explog = gen.generate_Explog(structtest0,logdefaults,elvis=elvis,explog=explog,OBSID0=OBSID0,
                         date=date0)
     
-    
-    
-    # DARKS
-    
-    Ndark01 = 4
-    exptime_dark01 = 565. # s
-    #fileDARK01 = 'vis_CalCamp_DARK01_%s_v%s.xlsx' % (datetag,elvis)
-    diffDARK01 = dict(sn_ccd1=sn_ccd1,
-                      sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-                      sn_rpsu=sn_rpsu,operator=operator)
-    
-    if toGen['DARK01']: 
-        
-        print 'DARK01...'
-        
-        structDARK01 = DARK01.build_DARK01_scriptdict(Ndark01,exptime_dark01,
-                    diffvalues=diffDARK01,elvis=elvis)
-        
-        explog = gen.generate_Explog(structDARK01,logdefaults,elvis=elvis,explog=explog)
-    
-
-    # CHARGE INJECTION
-    
-    # CHINJ01
-    
-    IDL = 11.
-    IDH = 18.
-    IG1s = [2.,6.]
-    toi_chinj01 = 500
-    id_delays = [toi_chinj01*3,toi_chinj01*2]
-    
-    #fileCHINJ01 = 'vis_CalCamp_CHINJ01_%s_v%s.xlsx' % (datetag,elvis)
-    diffCHINJ01 = dict(mirr_on=0,sn_ccd1=sn_ccd1,
-                      sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-                      sn_rpsu=sn_rpsu,operator=operator)
-    
-    if toGen['CHINJ01']: 
-        
-        print 'CHINJ01...'
-        
-        structCHINJ01 = CHINJ01.build_CHINJ01_scriptdict(IDL,IDH,IG1s,id_delays,
-                    toi_chinj01,diffvalues=diffCHINJ01,elvis=elvis)
-        explog = gen.generate_Explog(structCHINJ01,logdefaults,elvis=elvis,explog=explog)
-
-    
-    # CHINJ02
-    
-    IDLs = [13.,16.]
-    IDH = 18.
-    #IG1s = [2000,6000]
-    toi_chinj02 = 500
-    id_delays = [toi_chinj02*3,toi_chinj02*2]
-    #fileCHINJ02 = 'vis_CalCamp_CHINJ02_%s_v%s.xlsx' % (datetag,elvis)
-    diffCHINJ02 = dict(pos_cal_mirror=polib.mirror_nom['F4'],sn_ccd1=sn_ccd1,
-                      sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-                      sn_rpsu=sn_rpsu,operator=operator)
-    
-    if toGen['CHINJ02']: 
-        
-        print 'CHINJ02...'
-        
-        structCHINJ02 = CHINJ02.build_CHINJ02_scriptdict(IDLs,IDH,id_delays,toi_chinj02,
-                            diffvalues=diffCHINJ02,elvis=elvis)
-        explog = gen.generate_Explog(structCHINJ02,logdefaults,elvis=elvis,explog=explog)
-
-
-    # TRAP-PUMPING
-
-    # TP01
-    
-    
-    TOI_TPv = [200,1000,2000,4000,8000]
-    toi_chinjTP01 = 250 # quick injection
-    id_delays_TP01 = np.array([3.,2.])*toi_chinjTP01
-                           
-    #fileTP01 = 'vis_CalCamp_TP01_%s_v%s.xlsx' % (datetag,elvis)
-    diffTP01 = dict(sn_ccd1=sn_ccd1,
-                      sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-                      sn_rpsu=sn_rpsu,operator=operator,toi_chinj=toi_chinjTP01)
-
-    if toGen['TP01']: 
-        
-        print 'TP01...'
-   
-        structTP01 = TP01.build_TP01_scriptdict(Nshuffles_V=5000,TOI_TPv=TOI_TPv,id_delays=id_delays_TP01,
-                                   diffvalues=diffTP01,elvis=elvis)
-        
-        explog = gen.generate_Explog(structTP01,logdefaults,elvis=elvis,explog=explog)
-
-    
-    # TP02
-    
-    dwell_sv = [0.,4.75,14.3,28.6] # us
-    toi_chinjTP02 = 250 # quick injection
-    id_delays_TP02 = np.array([3.,2.])*toi_chinjTP02
-          
-    #fileTP02 = 'vis_CalCamp_TP02_%s_v%s.xlsx' % (datetag,elvis)
-    diffTP02 = dict(sn_ccd1=sn_ccd1,
-                      sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-                      sn_rpsu=sn_rpsu,operator=operator,toi_chinj=toi_chinjTP02)
-
-    if toGen['TP02']: 
-        
-        print 'TP02...'
-    
-        structTP02 = TP02.build_TP02_scriptdict(Nshuffles_H=5000,dwell_sv=dwell_sv,
-            id_delays=id_delays_TP02,diffvalues=diffTP02,elvis=elvis)
-        
-        explog = gen.generate_Explog(structTP02,logdefaults,elvis=elvis,explog=explog)
-
-    
-    # FLATS
-    
-    t_dummy = np.array([25.,50.,75])/100.
-                      
-    exptimes_FLAT0X = dict(nm590=t_dummy * tFWC_flat['nm590'],
-                           nm640=t_dummy * tFWC_flat['nm640'],
-                           nm730=t_dummy * tFWC_flat['nm730'],
-                           nm800=t_dummy * tFWC_flat['nm800'],
-                           nm880=t_dummy * tFWC_flat['nm880']) 
-    
-    # FLAT-01
-
-    exptimesF01 = exptimes_FLAT0X['nm800'] # s
-    
-    #fileFLAT01 = 'vis_CalCamp_FLAT01_%s_v%s.xlsx' % (datetag,elvis)
-    diffFLAT01 = dict(sn_ccd1=sn_ccd1,
-                      sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-                      sn_rpsu=sn_rpsu,operator=operator,
-                      test='FLAT01_800')
-    
-    if toGen['FLAT01']: 
-        
-        print 'FLAT01...'
-
-        structFLAT01 = FLAT0X.build_FLAT0X_scriptdict(exptimesF01,
-                    diffvalues=diffFLAT01,elvis=elvis)
-        explog = gen.generate_Explog(structFLAT01,logdefaults,elvis=elvis,explog=explog)
-
-    
-    # FLAT-02
-    
-    #wavesFLAT02 = [590,640,730,880]
-    wavesFLAT02 = [590,640,880]
-    
-
-    diffFLAT02 = dict(sn_ccd1=sn_ccd1,
-                      sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-                      sn_rpsu=sn_rpsu,operator=operator)
-    
-    if toGen['FLAT02']: 
-    
-        for iw, wave in enumerate(wavesFLAT02):
-            
-            
-            
-            iexptimes = exptimes_FLAT0X['nm%i' % wave]
-            
-            #ifileFLAT02 = 'vis_CalCamp_FLAT02_%inm_%s_v%s.xlsx' % (wave,datetag,elvis)
-            
-            itestkey = 'FLAT02_%i' % wave
-        
-            print '%s...' % itestkey
-        
-            istructFLAT02 = FLAT0X.build_FLAT0X_scriptdict(iexptimes,wavelength=wave,
-                                testkey=itestkey,diffvalues=diffFLAT02,elvis=elvis)
-            
-            explog = gen.generate_Explog(istructFLAT02,logdefaults,elvis=elvis,explog=explog)
-
-        
-    # PTC
-    
-    # PTC-01
-    
-    #filePTC01 = 'vis_CalCamp_PTC01_%s_v%s.xlsx' % (datetag,elvis)
-    diffPTC01 = dict(test='PTC01',
-                     vstart=1,
-                     vend=2086,
-                     sn_ccd1=sn_ccd1,
-                     sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-                     sn_rpsu=sn_rpsu,operator=operator)
-        
-    # 5%, 10%, 20%, 30%, 50%, 70%, 80%, 90%, 100%, 110%, 120%
-    exptsPTC01 = np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100.*tFWC_flat['nm800'] # ms
-    frsPTC01 = [10,10,10,10,10,10,10,10,4,4,4]
-    
-    if toGen['PTC01']: 
-        
-        print 'PTC01...'
-    
-        structPTC01 = PTC0X.build_PTC0X_scriptdict(exptsPTC01,frsPTC01,
-                            wavelength=800,diffvalues=diffPTC01,elvis=elvis)
-        explog = gen.generate_Explog(structPTC01,logdefaults,elvis=elvis,explog=explog)
-
-    
-    # PTC-02 - wavelength
-    
-    wavesPTC02w = [590,640,730,880]
-    
-    diffPTC02w = dict(sn_ccd1=sn_ccd1,
-                      sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-                      sn_rpsu=sn_rpsu,operator=operator)
-    
-    if toGen['PTC02WAVE']: 
-    
-        for iw, wave in enumerate(wavesPTC02w):
-            
-            # 10%, 30%, 50%, 70%, 80%, 90% x FWC. 4 frames per fluence.
-            
-            exptsPTC02w = np.array([10.,30.,50.,70.,80.,90.])/100.*tFWC_flat['nm%i' % wave]
-            frsPTC02w = [4,4,4,4,4,4]
-            
-            #ifilePTC02w = 'vis_CalCamp_PT0C2_%inm_%s_v%s.xlsx' % (wave,datetag,elvis)
-            
-            itestkey = 'PTC02_%i' % wave
-            
-            diffPTC02w['test'] = itestkey
-            
-            print '%s...' % itestkey
-        
-            istructPTC02w = PTC0X.build_PTC0X_scriptdict(exptsPTC02w,frsPTC02w,
-                        wavelength=wave,diffvalues=diffPTC02w,elvis=elvis)
-            
-            explog = gen.generate_Explog(istructPTC02w,logdefaults,elvis=elvis,explog=explog)
-
-           
-    
-   # PTC-02 - Temp.
-
-    wavePTC02T = 800
-    TempsPTC02T = [150.,156.]
-    
-    diffPTC02T = dict(sn_ccd1=sn_ccd1,
-                      sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-                      sn_rpsu=sn_rpsu,operator=operator)
-
-    # 10%, 30%, 50%, 70%, 80%, 90% x FWC. 4 frames per fluence.
-    exptsPTC02T = np.array([10.,30.,50.,70.,80.,90.])/100.*tFWC_flat['nm%i' % wavePTC02T]
-    frsPTC02T = [4,4,4,4,4,4]
-
-    if toGen['PTC02TEMP']: 
-   
-        for it,T in enumerate(TempsPTC02T):    
-            
-            #ifilePTC02T = 'vis_CalCamp_PT0C2_T%i_%s_v%s.xlsx' % (T,datetag,elvis)
-            
-            itestkey = 'PTC02_%iK' % T
-                        
-            diffPTC02T['test'] = itestkey
-                      
-            print '%s...' % itestkey
-        
-            istructPTC02T = PTC0X.build_PTC0X_scriptdict(exptsPTC02T,frsPTC02T,
-                                wavelength=wavePTC02T,diffvalues=diffPTC02T,elvis=elvis)
-            
-            explog = gen.generate_Explog(istructPTC02T,logdefaults,elvis=elvis,explog=explog)
-
-    
-    # NL-01
-
-    #fileNL01 = 'vis_CalCamp_NL01_%s_v%s.xlsx' % (datetag,elvis)
-    diffNL01 = dict(test='NL01',sn_ccd1=sn_ccd1,
-                      sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-                      sn_rpsu=sn_rpsu,operator=operator)
-    
-    # 5 frames per fluence: 1%, 2%, 3%, 5%, 10%, 20%,30%, 50%,70%,80%,85%,90%,95%
-    exptsNL01 = np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100.*tFWC_flat['ND'] # ms
-    exptinterNL01 = 0.5 * tFWC_flat['ND']
-    frsNL01 = np.ones(11,dtype='int32')*5
-
-    if toGen['NL01']: 
-        
-        print 'NL01...'
-    
-        structNL01 = NL01.build_NL01_scriptdict(exptsNL01,exptinterNL01,frsNL01,wavelength=0,
-                            diffvalues=diffNL01,elvis=elvis)
-        explog = gen.generate_Explog(structNL01,logdefaults,elvis=elvis,explog=explog)
-
-
-    # FOCUS
-    
-    #wavesFOCUS00w = [590,640,730,800,880]
-    wavesFOCUS00w = [800]
-    
-    diffFOCUS00w = dict(sn_ccd1=sn_ccd1,
-                      sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-                      sn_rpsu=sn_rpsu,operator=operator)
-    
-
-    if toGen['FOCUS00']: 
-
-        for iw, wave in enumerate(wavesFOCUS00w):
-            
-            
-            iexptimeF00 = 60./100. * tFWC_point['nm%i' % wave]
-            
-            
-            itestkey = 'FOCUS00_%i' % wave
-            
-            diffFOCUS00w['test'] = itestkey
-                        
-            print '%s...' % itestkey
-        
-            istructFOCUS00w = FOCUS00.build_FOCUS00_scriptdict(wave,iexptimeF00,
-                            diffvalues=diffFOCUS00w,elvis=elvis)
-            
-            explog = gen.generate_Explog(istructFOCUS00w,logdefaults,elvis=elvis,explog=explog)
-
-
-    
-    # PSF
-    
-    # PSF01-800nm
-    
-    #wavesPSF01w = [590,640,730,800,880]
-    wavesPSF01w = [590,640,800,880]
-    
-    diffPSF01w = dict(sn_ccd1=sn_ccd1,
-                      sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-                      sn_rpsu=sn_rpsu,operator=operator)
-
-    if toGen['PSF01']: 
-
-        for iw, wave in enumerate(wavesPSF01w):
-            
-            # 10%, 30%, 50%, 70%, 80%, 90% x FWC. 4 frames per fluence.
-            
-            exptsPSF01w = np.array([5.,25.,50.,75.,90.])/100.*tFWC_point['nm%i' % wave]
-            frsPSF01w = [20,15,10,4,3]
-            
-            #ifilePSF01w = 'vis_CalCamp_PSF01_%inm_%s_v%s.xlsx' % (wave,datetag,elvis)
-            
-            itestkey = 'PSF01_%i' % wave
-            diffPSF01w['test'] = itestkey
-                      
-            print '%s...' % itestkey
-        
-            istructPSF01w = PSF0X.build_PSF0X_scriptdict(exptsPSF01w,frsPSF01w,
-                                wavelength=wave,diffvalues=diffPSF01w,elvis=elvis)
-            
-            explog = gen.generate_Explog(istructPSF01w,logdefaults,elvis=elvis,explog=explog)
-
-        
-    # PSF02
-    
-    wPSF02 = 800
-    temps_PSF02 = [150,156]
-    
-    
-    exptsPSF02 = np.array([5.,25.,50.,75.,90.])/100.*tFWC_point['nm%i' % wPSF02]
-    frsPSF02 = [20,15,10,4,3]
-    
-    diffPSF02 = dict(sn_ccd1=sn_ccd1,
-                      sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-                      sn_rpsu=sn_rpsu,operator=operator)
-    
-    
-    if toGen['PSF02']: 
-
-    
-        for it,temp in enumerate(temps_PSF02):
-            
-            
-            #ifilePSF02 = 'vis_CalCamp_PSF02_%iK_%s_v%s.xlsx' % (temp,datetag,elvis)
-            
-            itestkey = 'PSF02_%iK' % temp
-            
-            diffPSF02['test'] = itestkey
-                     
-            print '%s...' % itestkey
-        
-            istructPSF02 = PSF0X.build_PSF0X_scriptdict(exptsPSF02,frsPSF02,
-                                wavelength=wPSF02,diffvalues=diffPSF02,elvis=elvis)
-            
-            explog = gen.generate_Explog(istructPSF02,logdefaults,elvis=elvis,explog=explog)
-
-            
-    
-
-
-    
-    # OTHER
-    
-    # PERSIST
-    
-    exptPER01_SATUR = 15.   # s
-    exptPER01_LATEN = 565. # s
-    
-    diffPER01 = dict(sn_ccd1=sn_ccd1,
-                      sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-                      sn_rpsu=sn_rpsu,operator=operator)
-    
-    #filePER01 = 'vis_CalCamp_PERSIST01_%s_v%s.xlsx' % (datetag,elvis)
-    
-    if toGen['PERSIST01']: 
-        
-        print 'PERSIST01...'
-    
-        structPER01 = PER01.build_PER01_scriptdict(exptPER01_SATUR,exptPER01_LATEN,
-                    diffvalues=diffPER01,elvis=elvis)
-        
-        explog = gen.generate_Explog(structPER01,logdefaults,elvis=elvis,explog=explog)
-
-   
-
+    for test in tests[1:]:
+        structtest = test_sequence[test]
+        explog = gen.generate_Explog(structtest,logdefaults,elvis=elvis,explog=explog)
      
     # WRITING EXPOSURE LOG
     
@@ -517,7 +95,7 @@ def datasetGenerator(TestsSelector,doGenExplog,doGenHK,doGenFITS,outpath,elvis,
     else:
         explog = ELtools.loadExpLog(explogf,elvis=elvis)
     
-    
+    stop()
     
     if doGenHK:
         
@@ -590,8 +168,8 @@ def datasetGenerator(TestsSelector,doGenExplog,doGenHK,doGenFITS,outpath,elvis,
 if __name__ =='__main__':
         
     
-    doGenExplog = False
-    doGenHK = True
+    doGenExplog = True
+    doGenHK = False
     doGenFITS = False
     Nrows = -1
     
