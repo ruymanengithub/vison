@@ -340,28 +340,58 @@ class ExpLogDisplay(tk.Toplevel):
         self.elementList = []
         self.info = ""
         self.tree = None
-
-        self.search_EXPLOG()
-        self.get_data()
         
         tk.Toplevel.__init__(self,parent)
         
         self.minsize(width=850,height=500)
         
-        self.wm_title('EXP-LOG')
+        #self.wm_title('EXP-LOG')
         
         self.info = """\
         Click on header to sort by that column.
         To change width of column drag boundary.
         """
         
+        self.wm_title('EXP-LOG')
+        
+        self.search_EXPLOG()
+        self.get_data()        
+        
         elementHeader = self.EXPLOG.colnames
+        
         self.elementHeader = elementHeader
         
         self.build_elementList()
         self.setupWidgets()
         
         self.buildTree()
+
+    
+    def get_updater(self):
+        
+        def updater():
+        
+            t = datetime.datetime.now()
+            s = t.strftime('%H:%M:%S')
+        
+            self.wm_title('EXP-LOG [%s]' % s)            
+            #updater()
+
+        #self.search_EXPLOG()
+        #self.get_data()        
+        
+        #elementHeader = self.EXPLOG.colnames
+        #self.elementHeader = elementHeader
+        
+        #self.build_elementList()
+        #self.setupWidgets()
+        
+        #self.buildTree()
+        
+        #self.updater()
+        
+        return updater
+        
     
     def build_elementList(self):
         """ """
@@ -546,7 +576,9 @@ class Eyegore(tk.Tk):
         ani = display2.start_updating(self.interval)
             
         display3 = Ds[dkeys[2]](self,self.path)
-        #ani = display3.start_updating(self.interval)
+        updater3 = display3.get_updater()
+        self.after(self.interval,updater3)
+        
         
         self.mainloop()
 
