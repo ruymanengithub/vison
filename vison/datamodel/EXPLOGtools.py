@@ -236,7 +236,11 @@ class ExpLogClass():
         nObsID = len(np.unique(ObsID))
         ObsIDextrema = np.min(ObsID),np.max(ObsID)
         
-        tests = np.unique(self.explog['test'])
+        tests = []
+        for test in self.explog['test']: 
+            if test not in tests: 
+                tests.append(test)
+
         ntests = len(tests)
         
         durations = []
@@ -249,6 +253,8 @@ class ExpLogClass():
             dtmin = (subdts[-1]-subdts[0]).seconds / 60.
             durations.append(dtmin)
         
+        totdurh = np.sum(durations) / 60.
+        
         print '\nSummary: %s' % self.infile
         print 'Nr. of entries = %i' % nentries
         print 'ObsIDs = (%i,%i): %i' % (ObsIDextrema+(nObsID,))
@@ -257,6 +263,7 @@ class ExpLogClass():
         for it,test in enumerate(tests):
             print '%s\t %.2f min' % (test,durations[it])
         
+        print 'Total Run Time = %.2f h' % totdurh
         
         
 

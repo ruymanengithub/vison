@@ -134,9 +134,9 @@ def generate_Explog(scrdict,defaults,elvis='6.3.0',explog=None,OBSID0=1000,
         
         datelast = HKtools.parseDTstr(explog['date'][-1])
         
-        exptsec = explog['exptime'][-1]
+        #exptsec = explog['exptime'][-1]
         
-        date = datelast + datetime.timedelta(seconds=5.+72.+exptsec)
+        date = datelast #+ datetime.timedelta(seconds=4.+rdouttime+exptsec)
     
     
     
@@ -169,6 +169,12 @@ def generate_Explog(scrdict,defaults,elvis='6.3.0',explog=None,OBSID0=1000,
                    
             exptsec = scriptcol['exptime']
             
+            optime = 0.
+            if (scriptcol['chinj'] == 1) or (scriptcol['v_tpump'] == 1) or (scriptcol['s_tpump'] == 1):
+                optime = rdouttime
+            
+            date = date + datetime.timedelta(seconds= 4.+rdouttime + optime + exptsec)
+            
             for ixCCD in range(1,4):
                 
                 dmy = date.strftime('%d%m%y')
@@ -183,7 +189,6 @@ def generate_Explog(scrdict,defaults,elvis='6.3.0',explog=None,OBSID0=1000,
                 try: explog.add_row(vals=[rowdict[key] for key in expcolkeys])
                 except: stop()
                 
-            date = date + datetime.timedelta(seconds= 75. + exptsec)
             
             ixObsID += 1
                     

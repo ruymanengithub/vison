@@ -108,12 +108,13 @@ def build_FOCUS00_scriptdict(wavelength,exptime,
     mirror_nom = polib.mirror_nom[FW_ID]
     
     
-    FOCUS00_sdict = dict(col1=dict(frames=5,wave=FW_IDX,exptime=0,
-                                   mirr_pos=mirror_nom-5,
-                                   comments='BGD'))
+    #FOCUS00_sdict = dict(col1=dict(frames=5,wave=FW_IDX,exptime=0,
+    #                               mirr_pos=mirror_nom-5,
+    #                               comments='BGD'))
     
+    FOCUS00_sdict = dict()
     
-    for i,j in enumerate(range(-5,6,1)):
+    for i,j in enumerate(range(-3,4,1)):
         FOCUS00_sdict['col%i' % (i+1,)] = dict(frames=2,exptime=exptime,
                       mirr_pos=mirror_nom+float(j),
                       wave=FW_IDX,

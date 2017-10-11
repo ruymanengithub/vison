@@ -48,7 +48,7 @@ FLAT0X_commvalues = dict(program='CALCAMP',
   
 
 
-def build_FLAT0X_scriptdict(exptimes,wavelength=800,testkey='FLAT0X',
+def build_FLAT0X_scriptdict(exptimes,frames,flags,wavelength=800,testkey='FLAT0X',
                             diffvalues=dict(),elvis='6.3.0'):
     """Builds FLAT0X script structure dictionary.
     
@@ -65,10 +65,12 @@ def build_FLAT0X_scriptdict(exptimes,wavelength=800,testkey='FLAT0X',
     FLAT0X_commvalues['wave'] = FW_IDX
     FLAT0X_commvalues['test'] = testkey
     
+    assert len(exptimes) == len(frames)
+    assert len(exptimes) == len(flags)
     
-    FLAT0X_sdict = dict(col1=dict(frames=80,exptime=exptimes[0],comments='25pc'),
-                        col2=dict(frames=60,exptime=exptimes[1],comments='50pc'),
-                        col3=dict(frames=30,exptime=exptimes[2],comments='75pc'))
+    FLAT0X_sdict = dict()
+    for i,exptime in enumerate(exptimes):
+        FLAT0X_sdict['col%i' % (i+1,)] = dict(frames=frames[i],exptime=exptimes[i],comments=flags[i])
 
     Ncols = len(FLAT0X_sdict.keys())    
     FLAT0X_sdict['Ncols'] = Ncols

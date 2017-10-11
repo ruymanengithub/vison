@@ -52,6 +52,7 @@ def genExpLog(toGen,explogf,equipment,elvis='6.3.0'):
     test_sequence = campaign.generate_test_sequence(equipment,toGen,elvis=elvis)
     
     tests = test_sequence.keys()
+
     explog = None
     
     structtest0 = test_sequence[tests[0]]
@@ -95,7 +96,6 @@ def datasetGenerator(TestsSelector,doGenExplog,doGenHK,doGenFITS,outpath,elvis,
     else:
         explog = ELtools.loadExpLog(explogf,elvis=elvis)
     
-    stop()
     
     if doGenHK:
         
@@ -169,8 +169,8 @@ if __name__ =='__main__':
         
     
     doGenExplog = True
-    doGenHK = False
-    doGenFITS = False
+    doGenHK = True
+    doGenFITS = True
     Nrows = -1
     
     #date0 = pilib.dtobj_default 
@@ -178,7 +178,7 @@ if __name__ =='__main__':
     elvis = '6.3.0'
     
     TestsSelector = dict(BIAS01=1,DARK01=1,CHINJ01=1,CHINJ02=1,
-                      FLAT01=1,FLAT02=1,PTC01=1,PTC02WAVE=1,PTC02TEMP=1,NL01=1,
+                      FLAT01=1,FLAT02=1,PTC01=1,PTC02WAVE=0,PTC02TEMP=0,NL01=1,
                       PSF01=1,PSF02=1,
                       TP01=1,TP02=1,
                       PERSIST01=1,FOCUS00=1)

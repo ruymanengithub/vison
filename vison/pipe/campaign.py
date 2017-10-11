@@ -170,13 +170,13 @@ def generate_test_sequence(equipment,toGen,elvis='6.3.0'):
     
     # FLATS
     
-    t_dummy = np.array([25.,50.,75])/100.
+    
                       
-    exptimes_FLAT0X = dict(nm590=t_dummy * ogse.tFWC_flat['nm590'],
-                           nm640=t_dummy * ogse.tFWC_flat['nm640'],
-                           nm730=t_dummy * ogse.tFWC_flat['nm730'],
-                           nm800=t_dummy * ogse.tFWC_flat['nm800'],
-                           nm880=t_dummy * ogse.tFWC_flat['nm880']) 
+    exptimes_FLAT0X = dict(nm590=ogse.tFWC_flat['nm590'],
+                           nm640=ogse.tFWC_flat['nm640'],
+                           nm730=ogse.tFWC_flat['nm730'],
+                           nm800=ogse.tFWC_flat['nm800'],
+                           nm880=ogse.tFWC_flat['nm880']) 
     
     # FLAT-01
 
@@ -186,7 +186,11 @@ def generate_test_sequence(equipment,toGen,elvis='6.3.0'):
         
         print 'FLAT01...'
         
-        exptimesF01 = exptimes_FLAT0X['nm800'] # s
+        t_dummy_F01 = np.array([25.,50.,75])/100.
+        
+        exptimesF01 = exptimes_FLAT0X['nm800'] * t_dummy_F01# s
+        framesF01 = [80,60,30]
+        flagsF01 = ['25pc','50pc','75pc']
         
         diffFLAT01 = dict(sn_ccd1=sn_ccd1,
                           sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
@@ -194,6 +198,7 @@ def generate_test_sequence(equipment,toGen,elvis='6.3.0'):
                           test='FLAT01_800')        
 
         structFLAT01 = FLAT0X.build_FLAT0X_scriptdict(exptimesF01,
+                    framesF01,flagsF01,
                     diffvalues=diffFLAT01,elvis=elvis)
         
         
@@ -207,6 +212,11 @@ def generate_test_sequence(equipment,toGen,elvis='6.3.0'):
     if toGen['FLAT02']: 
         
         wavesFLAT02 = [590,640,880]
+        
+        t_dummy_F02 = np.array([25.,75])/100.
+        
+        framesF02 = [80,30]
+        flagsF02 = ['25pc','75pc']
     
 
         diffFLAT02 = dict(sn_ccd1=sn_ccd1,
@@ -216,13 +226,16 @@ def generate_test_sequence(equipment,toGen,elvis='6.3.0'):
         for iw, wave in enumerate(wavesFLAT02):
             
             
-            iexptimes = exptimes_FLAT0X['nm%i' % wave]
+            iexptimesF02 = exptimes_FLAT0X['nm%i' % wave] * t_dummy_F02
+            
             
             itestkey = 'FLAT02_%i' % wave
         
             print '%s...' % itestkey
         
-            istructFLAT02 = FLAT0X.build_FLAT0X_scriptdict(iexptimes,wavelength=wave,
+            istructFLAT02 = FLAT0X.build_FLAT0X_scriptdict(iexptimesF02,
+                                framesF02,flagsF02,
+                                wavelength=wave,
                                 testkey=itestkey,diffvalues=diffFLAT02,elvis=elvis)
             
             test_sequence[itestkey] = istructFLAT02
