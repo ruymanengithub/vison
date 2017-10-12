@@ -168,9 +168,9 @@ def datasetGenerator(TestsSelector,doGenExplog,doGenHK,doGenFITS,outpath,elvis,
 if __name__ =='__main__':
         
     
-    doGenExplog = True
+    doGenExplog = False
     doGenHK = True
-    doGenFITS = True
+    doGenFITS = False
     Nrows = -1
     
     #date0 = pilib.dtobj_default 

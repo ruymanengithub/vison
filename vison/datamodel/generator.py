@@ -287,12 +287,10 @@ def generate_HK(explog,vals,datapath='',elvis='6.3.0'):
             
             HKfile = _fill_HKcols(HKfile,explog[ixobs],vals)
             
-            
             HKfile.write(HKfilef,format='ascii',overwrite=True,delimiter='\t')
         
         doneObsids.append(obsid)
-        if len(doneObsids) == True:
-            break
+
     
     #HKfilefs = HKfilefs[0:10]
     merge_HKfiles(HKfilefs,masterHKf)

@@ -334,6 +334,7 @@ class ExpLogDisplay(tk.Toplevel):
         self.path = path
         self.explogf = None
         self.EXPLOG = dict()
+        self.ix0 = 1
         self.nEL = 1
 
         self.elementHeader = []
@@ -363,35 +364,41 @@ class ExpLogDisplay(tk.Toplevel):
         
         self.build_elementList()
         self.setupWidgets()
-        
-        self.buildTree()
-
-    
-    def get_updater(self):
-        
-        def updater():
-        
-            t = datetime.datetime.now()
-            s = t.strftime('%H:%M:%S')
-        
-            self.wm_title('EXP-LOG [%s]' % s)            
-            #updater()
-
-        #self.search_EXPLOG()
-        #self.get_data()        
-        
-        #elementHeader = self.EXPLOG.colnames
-        #self.elementHeader = elementHeader
-        
-        #self.build_elementList()
-        #self.setupWidgets()
+        #stop()
+        #self.mainloop()
         
         #self.buildTree()
         
-        #self.updater()
+        self.update()
+    
+    def update(self):
         
-        return updater
+        self.search_EXPLOG()
+        self.get_data()      
+        self.build_elementList()
+        self.buildTree()
         
+        self.ix0 += 1
+        #print self.ix0
+        self.tree.yview_scroll(1,'units')
+        
+        self.after(5000,self.update)
+    
+    def get_updater(self,interval):
+        
+        def update(self):
+            self.search_EXPLOG()
+            self.get_data()      
+            self.build_elementList()
+            self.buildTree()
+            
+            self.ix0 += 1
+            #print self.ix0
+            self.tree.yview_scroll(1,'units')
+            
+            self.after(5000,update)
+
+        return update
     
     def build_elementList(self):
         """ """
@@ -403,6 +410,7 @@ class ExpLogDisplay(tk.Toplevel):
             for jx,colname in enumerate(self.elementHeader):
                 row.append(self.EXPLOG[colname][ix])
             elementList.append(tuple(row))
+        
         
         self.elementList = elementList    
         
@@ -429,21 +437,22 @@ class ExpLogDisplay(tk.Toplevel):
         """ """
         
         if self.explogf is None:
-            return self.EXPLOG
+            return
         
         with open(self.explogf) as f:
             nEL = len(f.readlines())
     
-        if nEL <= self.nEL:
-            return  self.EXPLOG
+        #if nEL <= self.nEL:   # COMMENTED ON TESTS
+        #    return
     
         self.nEL = nEL
     
         EXPLOG = ELtools.loadExpLog(self.explogf,elvis=self.elvis)
         
-        self.EXPLOG = EXPLOG[-100:]
+        self.EXPLOG = EXPLOG[self.ix0:self.ix0+100]
+        #print self.ix0
         
-        return self.EXPLOG
+        #return self.EXPLOG
 
 
     def setupWidgets(self):
@@ -468,12 +477,16 @@ class ExpLogDisplay(tk.Toplevel):
         frame.grid_rowconfigure(0, weight=1)
 
     def buildTree(self):
-
+        
+        
+        
+        # add possibility to sort by each column
         for col in self.elementHeader:
-            self.tree.heading(col, text=col.title(),
+            self.tree.heading(col, text=col,
                 command=lambda c=col: self.sortBy(self.tree, c, 0))
             # adjust the column's width to the header string
-            self.tree.column(col, width=tkFont.Font().measure(col.title()))
+            self.tree.column(col, width=tkFont.Font().measure(col)*3)
+            
 
         for i,item in enumerate(self.elementList):
             if i % 2 == 0: parity = 'pair'
@@ -481,14 +494,17 @@ class ExpLogDisplay(tk.Toplevel):
             self.tree.insert('', 'end', values=item, tags=(parity,))
 
             # adjust column's width if necessary to fit each value
-            for ix, val in enumerate(item):
-                col_w = tkFont.Font().measure(val)
-                if self.tree.column(self.elementHeader[ix], width=None) < col_w:
-                    self.tree.column(self.elementHeader[ix], width=col_w)
+#            for ix, val in enumerate(item):
+#                col_w = tkFont.Font().measure(val)
+#                if self.tree.column(self.elementHeader[ix], width=None) < col_w:
+#                    self.tree.column(self.elementHeader[ix], width=col_w)
 
         self.tree.tag_configure('pair',background='#B6D2D2')
         self.tree.tag_configure('odd',background='#AFE0B5')
+        
         self.tree.bind("<Double-1>",self.OnDoubleClick)
+        
+        
     
     def OnDoubleClick(self,event):
         #item = self.tree.selection()[0]
@@ -544,6 +560,7 @@ class ExpLogDisplay(tk.Toplevel):
 #        return animation.FuncAnimation(f, render,self.get_data,interval=interval)
 
 
+    
 
 class Eyegore(tk.Tk):
     """ """
@@ -576,9 +593,7 @@ class Eyegore(tk.Tk):
         ani = display2.start_updating(self.interval)
             
         display3 = Ds[dkeys[2]](self,self.path)
-        updater3 = display3.get_updater()
-        self.after(self.interval,updater3)
-        
+        updater3 = display3.get_updater(self.interval)
         
         self.mainloop()
 
