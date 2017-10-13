@@ -32,6 +32,7 @@ import datetime
 
 from vison.datamodel import HKtools 
 from vison.datamodel import EXPLOGtools as ELtools
+from vison import data as vdata
 #import loadHK_QFM,allHK_keys
 
 #from multiprocessing.dummy import Pool
@@ -39,563 +40,74 @@ from vison.datamodel import EXPLOGtools as ELtools
 import Tkinter as tk
 import ttk
 import tkFont as tkFont
+from PIL import Image, ImageTk
 
+from eyeHK import HKDisplay,HKFlags
+from eyeCCDs import ImageDisplay
+from eyeObs import ExpLogDisplay
 # END IMPORT
 
 
 LARGE_FONT = ("Helvetica", 12)
 small_font = ("Verdana", 8)
 
-
-class ImageDisplay(tk.Toplevel):
-    """ """
-    
-    def __init__(self,parent,path):
-        """ """
-        tk.Toplevel.__init__(self,parent)
-        self.parent = parent
-        self.path = path
-        self.wm_title('Image Display')
-        
-        self.minsize(width=850,height=400)
-        
-        
-        f1 = plt.figure(figsize=(8,4),dpi=100)
-        ax1 = f1.add_subplot(111)
-        
-        self.f = f1
-        self.axs = [ax1]
-        
-        canvas = FigureCanvasTkAgg(f1, self)
-        canvas.show()
-        canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
-
-        toolbar = NavigationToolbar2TkAgg(canvas, self)
-        toolbar.update()
-        canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        
-        #self.gen_render()(0)
-        
-        #self.start_updating()
-        #self.mainloop()
-
-    
-    def get_data(self):
-        """PENDING"""
-        t=datetime.datetime.now().second
-        #print t
-        yield t
-    
-    
-    def gen_render(self):
-        """ """
-        def render(image):
-            
-            t = datetime.datetime.now()
-            s = t.strftime('%H:%M:%S')
-            
-            #ax = f.add_subplot(111)
-            x = np.arange(10)
-            y = x**2.+image
-
-            self.axs[0].clear()
-            self.axs[0].plot(x,y)
-            self.axs[0].set_title('%s' % s)
-            self.axs[0].set_ylim([0,140])
-
-        return render
-    
-    def start_updating(self,interval=5000):
-        #self.do_update = True
-        
-        f = self.f
-        render = self.gen_render()
-        #while self.do_update:
-        return animation.FuncAnimation(f, render,self.get_data,interval=interval)
-        
-    
-    def stop_updating(self):
-        self.do_update = False
-    
-    
-    #def get_animator(self):
-    #    f = self.f
-    #    render = self.gen_render()
-        
-
-class HKDisplay(tk.Toplevel):
-    """ """
-    def __init__(self,parent,path,elvis='6.3.0'):
-        
-        self.elvis = elvis
-        self.date = '21-02-80'
-        self.HKfile = None
-        self.HK = dict()
-        self.page = 1
-        self.path = path
-        self.nHKlines = 1
-        
-        self.HKkeys = HKtools.allHK_keys[elvis]
-        
-        self.search_HKfile()
-        
-        tk.Toplevel.__init__(self,parent)
-        
-        self.minsize(width=700,height=925)
-        
-        self.wm_title('HK Display')
-        
-        #label = tk.Label(self, text="HK Display", font=LARGE_FONT)
-        #label.pack(side=tk.TOP,pady=10,padx=10)
-        #label.grid(row=0,pady=10,padx=10,columnspan=2)
-        
-        frame = tk.Frame(self)
-        l1 = tk.Label(frame,text="Page: ",font=LARGE_FONT)
-        l1.pack(side="left")
-        
-        pvar = tk.StringVar() 
-        pvar.set('1')
-        pentry = tk.Entry(frame,textvariable=pvar)
-        
-        pentry.pack(side="left")
-        frame.pack(side="top")
-        
-        def update_page(event):
-            try:
-                self.page = int(pvar.get())
-            except ValueError:
-                self.page = 1
-        
-        pentry.bind('<Return>',update_page)
-        
-        f = plt.figure(figsize=(4,8),dpi=100)
-        
-        axs = []
-        
-        for i in range(9):
-            
-            ax = f.add_subplot(3,3,i+1)            
-            axs.append(ax)
-        
-        self.f = f
-        self.axs = axs
-        #self.f.autofmt_xdate()
-        
-        canvas = FigureCanvasTkAgg(self.f, self)
-        plt.tight_layout(rect=[0, 0, 1, 1])
-        canvas.show()
-        canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
-        #cw = canvas.get_tk_widget()
-        #cw.grid(row=3,sticky=tk.S,columnspan=2)
-
-        toolbar = NavigationToolbar2TkAgg(canvas, self)
-        toolbar.update()
-        canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        #canvas._tkcanvas.grid(row=3,sticky=tk.S,columnspan=2)
-    
-    
-    def search_HKfile(self):
-        """ """
-        
-        struct_date = time.strptime(os.path.split(st.replace(self.path,'_',''))[-1],'%d%b%y')
-        date_infile = time.strftime('%d-%m-%y',struct_date)
-        
-        self.date = date_infile
-
-        tmp_HK = 'HK_%s_ROE1.txt' % date_infile
-        tmp_HK = os.path.join(self.path,tmp_HK)
-        
-        isthere = os.path.exists(tmp_HK)
-        if isthere:
-            self.HKfile = tmp_HK
-        else:
-            print 'HKfile %s not found' % tmp_HK
-            self.HKfile = None
-    
-    def select_HKkeys(self):
-        """ """
-        
-        allHKkeys = self.HKkeys
-        nkeys = len(allHKkeys)-1
-        page = self.page
-        #print page
-        
-        if page * 9 > nkeys-1:
-            return
-        
-        ix0 = (page-1)*9
-        ix1 = ix0 + 9 if ix0+9<=nkeys else None
-        
-        HKkeys_to_plot = allHKkeys[1:][ix0:ix1]
-        
-        self.HKkeys_to_plot = HKkeys_to_plot
-        
-    
-    def get_data(self):
-        """ """
-        
-        self.select_HKkeys()
-        
-        if self.HKfile is None:
-            yield self.HK
-        
-        with open(self.HKfile) as f:
-            nHKlines = len(f.readlines())
-        
-        if nHKlines <= self.nHKlines:
-            yield self.HK
-        
-        self.nHKlines = nHKlines
-        
-        HK = HKtools.loadHK_QFM(self.HKfile,elvis=self.elvis)
-        
-        #dtobjarr = np.array([datetime.datetime.strptime('%s_%s'  % (self.date,item),'%d-%m-%y_%H:%M:%S') \
-        #                     for item in HK['TimeStamp']])
-        dtobjarr = np.array([datetime.datetime.strptime(item,'%d-%m-%y_%H:%M:%S') \
-                             for item in HK['TimeStamp']])        
-    
-        pHK = dict(time = dtobjarr)
-        
-        subKeys = [Key for Key in HK.keys() if Key != 'TimeStamp']
-        
-        for key in subKeys:
-            pHK[key] = HK[key].copy()
-        
-        self.HK = pHK
-        
-        yield pHK
-        
-    
-    def gen_render(self):
-        
-        def render(pHK):
-            
-            nHK = len(self.HKkeys_to_plot)
-            
-            for i in range(nHK):
-                
-                ax = self.axs[i]
-                
-                HKname = self.HKkeys_to_plot[i]
-                
-                try:
-                    x = pHK['time'].copy()
-                    y = pHK[HKname].copy()
-                except KeyError:
-                    x = np.array([0,1])
-                    y = np.array([0,1])
-                                
-                ax.clear()
-                
-                if np.any(np.isnan(y)):
-                    yp = y.copy()
-                    yp[np.isnan(y)] = 0
-                    ax.plot(x,yp)
-                    ax.plot(x[np.isnan(y)],yp[np.isnan(y)],'ro-')                    
-                else:
-                    ax.plot(x,y)
-                
-                HKtitle = '$%s$' % HKname.replace('_','\_')
-                ax.set_title(HKtitle)
-                
-                try:
-                    for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +\
-                        ax.get_xticklabels() + ax.get_yticklabels()):
-                        item.set_fontsize(10)
-                except:
-                    pass
-            
-            #plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(HKtools.format_date)) 
-            try: self.f.autofmt_xdate()
-            except:
-                pass
-            #plt.tight_layout(rect=[0, 0, 1, 1])
-
-        return render
-        
-
-    def start_updating(self,interval):
-        #self.do_update = True
-        
-        f = self.f
-        render = self.gen_render()
-        #while self.do_update:
-        return animation.FuncAnimation(f, render,self.get_data,interval=interval)
-
-
-
-class ExpLogDisplay(tk.Toplevel):
-    """ """
-    
-    def __init__(self,parent,path,elvis='6.3.0'):
-        
-        self.elvis = elvis
-        self.date = '21-02-80'
-        self.path = path
-        self.explogf = None
-        self.EXPLOG = dict()
-        self.ix0 = 1
-        self.nEL = 1
-
-        self.elementHeader = []
-        self.elementList = []
-        self.info = ""
-        self.tree = None
-        
-        tk.Toplevel.__init__(self,parent)
-        
-        self.minsize(width=850,height=500)
-        
-        #self.wm_title('EXP-LOG')
-        
-        self.info = """\
-        Click on header to sort by that column.
-        To change width of column drag boundary.
-        """
-        
-        self.wm_title('EXP-LOG')
-        
-        self.search_EXPLOG()
-        self.get_data()        
-        
-        elementHeader = self.EXPLOG.colnames
-        
-        self.elementHeader = elementHeader
-        
-        self.build_elementList()
-        self.setupWidgets()
-        #stop()
-        #self.mainloop()
-        
-        #self.buildTree()
-        
-        self.update()
-    
-    def update(self):
-        
-        self.search_EXPLOG()
-        self.get_data()      
-        self.build_elementList()
-        self.buildTree()
-        
-        self.ix0 += 1
-        #print self.ix0
-        self.tree.yview_scroll(1,'units')
-        
-        self.after(5000,self.update)
-    
-    def get_updater(self,interval):
-        
-        def update(self):
-            self.search_EXPLOG()
-            self.get_data()      
-            self.build_elementList()
-            self.buildTree()
-            
-            self.ix0 += 1
-            #print self.ix0
-            self.tree.yview_scroll(1,'units')
-            
-            self.after(5000,update)
-
-        return update
-    
-    def build_elementList(self):
-        """ """
-    
-        elementList = []
-        
-        for ix in range(len(self.EXPLOG)):            
-            row = []
-            for jx,colname in enumerate(self.elementHeader):
-                row.append(self.EXPLOG[colname][ix])
-            elementList.append(tuple(row))
-        
-        
-        self.elementList = elementList    
-        
-    def search_EXPLOG(self):
-        """ """
-        
-        struct_date = time.strptime(os.path.split(st.replace(self.path,'_',''))[-1],'%d%b%y')
-        date_infile = time.strftime('%d%m%y',struct_date)
-        
-        self.date = date_infile
-        
-        tmp_EL = 'EXP_LOG_%s.txt' % date_infile
-        tmp_EL = os.path.join(self.path,tmp_EL)
-        
-        isthere = os.path.exists(tmp_EL)
-        if isthere:
-            self.explogf = tmp_EL
-        else:
-            print 'EXPLOG %s not found' % tmp_EL
-            self.explogf = None
-        
-        
-    def get_data(self):
-        """ """
-        
-        if self.explogf is None:
-            return
-        
-        with open(self.explogf) as f:
-            nEL = len(f.readlines())
-    
-        #if nEL <= self.nEL:   # COMMENTED ON TESTS
-        #    return
-    
-        self.nEL = nEL
-    
-        EXPLOG = ELtools.loadExpLog(self.explogf,elvis=self.elvis)
-        
-        self.EXPLOG = EXPLOG[self.ix0:self.ix0+100]
-        #print self.ix0
-        
-        #return self.EXPLOG
-
-
-    def setupWidgets(self):
-        
-        msg = ttk.Label(self,wraplength="4i", justify="left", anchor="n",
-            padding=(10, 2, 10, 6), text=self.info)
-        msg.pack(fill='x')
-        
-        frame = ttk.Frame(self)
-        frame.pack(fill='both', expand=True)
-
-        # create a treeview with dual scrollbars
-        self.tree = ttk.Treeview(self,columns=self.elementHeader, show="headings")
-        vsb = ttk.Scrollbar(self,orient="vertical", command=self.tree.yview)
-        hsb = ttk.Scrollbar(self,orient="horizontal", command=self.tree.xview)
-        self.tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
-        self.tree.grid(column=0, row=0, sticky='nsew', in_=frame)
-        vsb.grid(column=1, row=0, sticky='ns', in_=frame)
-        hsb.grid(column=0, row=1, sticky='ew', in_=frame)
-
-        frame.grid_columnconfigure(0, weight=1)
-        frame.grid_rowconfigure(0, weight=1)
-
-    def buildTree(self):
-        
-        
-        
-        # add possibility to sort by each column
-        for col in self.elementHeader:
-            self.tree.heading(col, text=col,
-                command=lambda c=col: self.sortBy(self.tree, c, 0))
-            # adjust the column's width to the header string
-            self.tree.column(col, width=tkFont.Font().measure(col)*3)
-            
-
-        for i,item in enumerate(self.elementList):
-            if i % 2 == 0: parity = 'pair'
-            elif i % 2 !=0: parity = 'odd'
-            self.tree.insert('', 'end', values=item, tags=(parity,))
-
-            # adjust column's width if necessary to fit each value
-#            for ix, val in enumerate(item):
-#                col_w = tkFont.Font().measure(val)
-#                if self.tree.column(self.elementHeader[ix], width=None) < col_w:
-#                    self.tree.column(self.elementHeader[ix], width=col_w)
-
-        self.tree.tag_configure('pair',background='#B6D2D2')
-        self.tree.tag_configure('odd',background='#AFE0B5')
-        
-        self.tree.bind("<Double-1>",self.OnDoubleClick)
-        
-        
-    
-    def OnDoubleClick(self,event):
-        #item = self.tree.selection()[0]
-        item = self.tree.identify('item',event.x,event.y)
-        print "you clicked on", self.tree.item(item,"value")
-    
-    def isNumeric(self, s):
-        """
-        test if a string s is numeric
-        """
-        for c in s:
-            if c in "1234567890-.+":
-                numeric = True
-            else:
-                return False
-        return numeric
-
-    def changeNumeric(self, data):
-        """
-        if the data to be sorted is numeric change to float
-        """
-        new_data = []
-        if self.isNumeric(data[0][0]):
-            # change child to a float
-            for child, col in data:
-                new_data.append((float(child), col))
-            return new_data
-        return data
-
-    def sortBy(self, tree, col, descending):
-        """
-        sort tree contents when a column header is clicked
-        """
-        # grab values to sort
-        data = [(tree.set(child, col), child) for child in tree.get_children('')]
-        # if the data to be sorted is numeric change to float
-        data =  self.changeNumeric(data)
-        # now sort the data in place
-        data.sort(reverse=descending)
-        for ix, item in enumerate(data):
-            tree.move(item[1], '', ix)
-        # switch the heading so that it will sort in the opposite direction
-        tree.heading(col,
-            command=lambda col=col: self.sortBy(tree, col, int(not descending)))
-
-
-#    def start_updating(self,interval):
-#        #self.do_update = True
-#        
-#        f = self.f
-#        render = self.gen_render()
-#        #while self.do_update:
-#        return animation.FuncAnimation(f, render,self.get_data,interval=interval)
-
-
-    
-
 class Eyegore(tk.Tk):
     """ """
     
-    def __init__(self,path,broadcast,interval=3000):
+    def __init__(self,path,broadcast,intervals=[1000,10000]):
         """ """
         tk.Tk.__init__(self)
         
         if path[-1] == os.path.sep:
             path = path[:-1]
         self.path = path
-        self.interval = interval
+        self.intervals = intervals
         self.broadcast = broadcast
+        
+        self.withdraw()
+        
+        fr = tk.Frame(self)
+        fr.pack(fill='both',expand=True)
+        
+        eyegoregif = os.path.join(vdata.__path__[0],'Eyegore.gif')
+        im = Image.open(eyegoregif)
+        
+        self.tkimg = ImageTk.PhotoImage(im)
+        
+        self.label = tk.Label(self,image=self.tkimg)
+        self.label.grid(row=1,column=0,columnspan=2,sticky='nsew',in_=fr)
+        
+        end_button = tk.Button(self, text="EXIT", 
+                              command=self.kill)
+        end_button.grid(column=0,row=0,sticky='w',padx=0,in_=fr)
+
+        fr.grid_columnconfigure(0, weight=1)
+        fr.grid_rowconfigure(0, weight=1)
         
         self.run()
         
                 
     def run(self):
         
-
-        self.withdraw()
+        Ds = dict(image=ImageDisplay,hk=HKDisplay,
+                  hkflags=HKFlags,explog=ExpLogDisplay)
+        dkeys = ['image','hk','hkflags','explog']
         
-        Ds = dict(image=ImageDisplay,hk=HKDisplay,explog=ExpLogDisplay)
-        dkeys = ['image','hk','explog']
-        
-        display1 = Ds[dkeys[0]](self,self.path)        
-        ani = display1.start_updating(self.interval)
+        #display1 = Ds[dkeys[0]](self,self.path)        
+        #ani1 = display1.start_updating(self.intervals[1])
        
         display2 = Ds[dkeys[1]](self,self.path)
-        ani = display2.start_updating(self.interval)
-            
-        display3 = Ds[dkeys[2]](self,self.path)
-        updater3 = display3.get_updater(self.interval)
+        ani2 = display2.start_updating(self.intervals[0])
+        
+        display2b = Ds[dkeys[2]](self,display2,self.intervals[0])
+
+        #display4 = Ds[dkeys[3]](self,self.path,self.intervals[1])
+        #updater4 = display4.get_updater(self.intervals[1])
         
         self.mainloop()
+        
+    def kill(self):
+        self.destroy()
 
 
 if __name__ == '__main__':

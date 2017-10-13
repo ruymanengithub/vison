@@ -109,6 +109,36 @@ allHK_keys['6.3.0'] = ['TimeStamp',
 'VccdErrFlg','VclkErrFlg','VanErrFlg','stRamErr','hkRamErr','ADC_BSY_ERR_CNT',
 'SPW_STATUS_REG']
 
+HKlims = {}
+HKlims['6.3.0'] = {'CCD1_OD_T':[25.,27],'CCD2_OD_T':[25.,27],'CCD3_OD_T':[25.,27],
+'CCD1_OD_B':[25.,27.],'CCD2_OD_B':[25.,27.],'CCD3_OD_B':[25.,27.],
+'COMM_RD_T':[15.,17],'COMM_RD_B':[15.,17.],
+'CCD1_IG1_T':[0.,12.],'CCD2_IG1_T':[0.,12.],'CCD3_IG1_T':[0.,12.],
+'CCD2_IG1_B':[0.,12.],'CCD3_IG1_B':[0.,12.],'CCD1_IG1_B':[0.,12.],
+'COMM_IG2_T':[0.,12.],'COMM_IG2_B':[0.,12.],
+'CCD1_TEMP_T':[-130.,-110.],'CCD2_TEMP_T':[-130,-110.],'CCD3_TEMP_T':[-130.,-110.],
+'CCD1_TEMP_B':[-130.,-110.],'CCD2_TEMP_B':[-130.,-110.],'CCD3_TEMP_B':[-130.,-110.],
+'VID_PCB_TEMP_T':[20.,70.],'FPGA_PCB_TEMP_T':[20.,70.],
+'VID_PCB_TEMP_B':[20.,70.],'FPGA_PCB_TEMP_B':[20.,70.],
+'FPGA_BIAS_DD':[22.,26.],'FPGA_BIAS_OG':[-1.,3.],
+'FPGA_BIAS_ID1':[-1.,1.],'FPGA_BIAS_ID2':[-1.,1.],
+'FPGA_BIAS_ID_T':[0.,20.],'FPGA_BIAS_ID_B':[0.,20.],
+'FPGA_VRCLK_V':[8.,12.],'FPGA_10VA_P_V':[8.,12.],
+'FPGA_VICLK_V':[-1.,1.],'FPGA_5VA_P_V':[4.,6.],'FPGA_5VREF_V':[4.,6.],
+'FPGA_VCCD_V':[31.,33.],'FPGA_1V5VD_P_V':[1.,2.],
+'FPGA_3V2_N_V':[-4.,-2.],'FPGA_5VA_N_V':[-6.,-4.],
+'RPSU_VCCD_V':[49.,51.],'RPSU_VCLK_V':[19.,21.],'RPSU_VAN_P_V':[9.,11.],
+'RPSU_VAN_N_V':[9.,11.],'RPSU_3V3VD_V':[6.,8.],'RPSU_1V5VD_V':[3.,5.],
+'RPSU_28V_PRI_V':[27.,29.],'RPSU_TEMP1':[10.,70.],
+'RPSU_VCCD_I':[-1.,1.],'RPSU_VCLK_I':[18.,21.],'RPSU_VAN_P_I':[2.5,4.],
+'RPSU_VAN_N_I':[2.5,4.],'RPSU_3V3VD_I':[2.5,4.],'RPSU_1V5VD_I':[2.5,4.],
+'RPSU_28V_PRI_I':[2.5,4.],'RPSU_TEMP_2':[9.,11.],
+'stTMRErrFlg':[0],'hkTMRErrFlg':[0],
+'spwTmTOFlg':[0],'CDPUClkSt':[0],'fpgaSpwErr':[0],'V3v3ProtCnt':[0],'V5ProtCnt':[0],
+'VccdErrFlg':[0],'VclkErrFlg':[0],'VanErrFlg':[0],'stRamErr':[0],'hkRamErr':[0],
+'ADC_BSY_ERR_CNT':[0],
+'SPW_STATUS_REG':[0]}
+
 
 allstats = ['mean','std','min','max']
 
