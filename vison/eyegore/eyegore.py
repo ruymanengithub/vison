@@ -51,10 +51,18 @@ from eyeObs import ExpLogDisplay
 LARGE_FONT = ("Helvetica", 12)
 small_font = ("Verdana", 8)
 
+def rsync_to_remote(path):
+    """ """
+    extpath = os.path.join(os.sep,'data2','gaia','usdownloads','EuclidCaldata','Quarantine',path)
+    command = "rsync -avzq %s raf@msslus.ac.uk:%s" % (path,extpath)
+    #command = "rsync -avqz TEST_DATA/24_Feb_80 /home/raf/Desktop/24_Feb_80"
+    #print command
+    os.system(command)
+
 class Eyegore(tk.Tk):
     """ """
     
-    def __init__(self,path,broadcast,intervals=[1000,10000]):
+    def __init__(self,path,broadcast,intervals=[2000,10000]):
         """ """
         tk.Tk.__init__(self)
         
@@ -64,27 +72,45 @@ class Eyegore(tk.Tk):
         self.intervals = intervals
         self.broadcast = broadcast
         
-        self.withdraw()
+        #self.withdraw()
+        
+        self.setup_MasterWG()
+        
+        self.run()
+        #self.mainloop()
+    
+    def setup_MasterWG(self):
+        """ """
+        
+        self.wm_title('EYEGORE')
         
         fr = tk.Frame(self)
         fr.pack(fill='both',expand=True)
         
         eyegoregif = os.path.join(vdata.__path__[0],'Eyegore.gif')
         im = Image.open(eyegoregif)
-        
         self.tkimg = ImageTk.PhotoImage(im)
         
-        self.label = tk.Label(self,image=self.tkimg)
-        self.label.grid(row=1,column=0,columnspan=2,sticky='nsew',in_=fr)
+        l1 = tk.Label(self,text="Path: ",font=LARGE_FONT)
+        l1.grid(column=0,row=0,sticky='w',in_=fr)
+        v1 = tk.Label(self,text=self.path,font=LARGE_FONT,bg='white',fg='black')
+        v1.grid(column=1,row=0,sticky='w',in_=fr)
         
+        l2 = tk.Label(self,text="Broadcasting: ",font=LARGE_FONT)
+        l2.grid(column=0,row=1,sticky='w',in_=fr)
+        v2 = tk.Label(self,text='%s' % self.broadcast,font=LARGE_FONT,bg='white',fg='black')
+        v2.grid(column=1,row=1,sticky='w',in_=fr)
+
         end_button = tk.Button(self, text="EXIT", 
                               command=self.kill)
-        end_button.grid(column=0,row=0,sticky='w',padx=0,in_=fr)
+        end_button.grid(column=0,row=2,sticky='w',padx=0,in_=fr)
 
+        
+        self.label = tk.Label(self,image=self.tkimg)
+        self.label.grid(row=3,column=0,columnspan=2,sticky='nsew',in_=fr)
+        
         fr.grid_columnconfigure(0, weight=1)
         fr.grid_rowconfigure(0, weight=1)
-        
-        self.run()
         
                 
     def run(self):
@@ -96,25 +122,37 @@ class Eyegore(tk.Tk):
         #display1 = Ds[dkeys[0]](self,self.path)        
         #ani1 = display1.start_updating(self.intervals[1])
        
-        display2 = Ds[dkeys[1]](self,self.path)
-        ani2 = display2.start_updating(self.intervals[0])
+        #display2 = Ds[dkeys[1]](self,self.path,self.intervals[0])
+        #ani2 = display2.start_updating(self.intervals[0])
         
-        display2b = Ds[dkeys[2]](self,display2,5000)
+        #display2b = Ds[dkeys[2]](self,display2,5000)
 
-        #display4 = Ds[dkeys[3]](self,self.path,self.intervals[1])
-        #updater4 = display4.get_updater(self.intervals[1])
+        display4 = Ds[dkeys[3]](self,self.path,self.intervals[1])
+        
+        self.update()
         
         self.mainloop()
         
+        
     def kill(self):
         self.destroy()
+        sys.exit()
+        
+    def update(self):
+
+        if self.broadcast:
+            rsync_to_remote(self.path)
+
+        self.after(self.intervals[0],self.update)
+
+        
 
 
 if __name__ == '__main__':
     
     parser = OptionParser()
     parser.add_option("-p","--path",dest="path",default='',help="day-path to be monitored.")
-    parser.add_option("-B","--broadcast",dest="broadcast",action='store_true',help="")
+    parser.add_option("-B","--broadcast",dest="broadcast",action='store_true',default=False,help="")
     
     (options, args) = parser.parse_args()
     
@@ -123,7 +161,7 @@ if __name__ == '__main__':
         sys.exit()
         
     path = options.path
-    broadcast = options.broadcast
+    broadcast = bool(options.broadcast)
     
     if not os.path.exists(path):
         sys.exit('HKmonitory.py: %s does not exist' % path)

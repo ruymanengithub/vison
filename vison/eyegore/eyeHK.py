@@ -286,14 +286,16 @@ class HKFlags(tk.Toplevel):
 
 class HKDisplay(tk.Toplevel):
     """ """
-    def __init__(self,root,path,elvis='6.3.0'):
+    def __init__(self,root,path,interval,elvis='6.3.0'):
         
+        self.path = path
+        self.interval = interval
         self.elvis = elvis
         self.date = '21-02-80'
         self.HKfile = None
         self.HK = dict()
         self.page = 1
-        self.path = path
+        
         self.nHKlines = 1
         self.root = root
         
@@ -328,6 +330,7 @@ class HKDisplay(tk.Toplevel):
         pentry.bind('<Return>',update_page)
         
         self.setup_plotgrid()
+        
     
     def setup_plotgrid(self):
         
