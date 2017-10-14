@@ -14,6 +14,7 @@ matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 import matplotlib.animation as animation
 from matplotlib import pyplot as plt
+import glob
 
 
 from pdb import set_trace as stop
@@ -34,15 +35,17 @@ from vison import data as vdata
 import Tkinter as tk
 import ttk
 import tkFont as tkFont
-from PIL import Image, ImageTk
 
-from eyeHK import HKDisplay
-from eyeCCDs import ImageDisplay
+import pyds9
+
+
 # END IMPORT
 
 
 LARGE_FONT = ("Helvetica", 12)
 small_font = ("Verdana", 8)
+
+
 
 
 
@@ -235,7 +238,22 @@ class ExpLogDisplay(tk.Toplevel):
     def OnDoubleClick(self,event):
         #item = self.tree.selection()[0]
         item = self.tree.identify('item',event.x,event.y)
-        print "you clicked on", self.tree.item(item,"value")
+        values = self.tree.item(item,"value")
+        ObsID = int(values[0])
+        
+        d = pyds9.DS9()
+        
+        for CCD in [1,2,3]:
+            tmpfits = os.path.join(self.path,'EUC_%i_*D_*T_ROE1_CCD%i.fits' % (ObsID,CCD))
+            try: iFITSf = glob.glob(tmpfits)[0]
+            except IndexError: iFITSf = None
+            
+            if iFITSf is not None:
+                d.set("frame %i" % CCD)
+                d.set("file %s" % iFITSf)
+                d.set("zoom to fit")
+                d.set("scale mode zscale")
+        
     
     def isNumeric(self, s):
         """
