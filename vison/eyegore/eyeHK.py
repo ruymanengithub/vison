@@ -35,6 +35,105 @@ from vison.datamodel import HKtools
 LARGE_FONT = ("Helvetica", 12)
 small_font = ("Verdana", 8)
 
+
+def _ax_render_HK(ax,x,y,HKlims,HKkey):
+    """ """
+    
+        
+    max_xticks = 6
+    xloc = plt.MaxNLocator(max_xticks)            
+        
+    ax.clear()
+        
+                                
+    if np.any(np.isnan(y)):
+        yp = y.copy()
+        yp[np.isnan(y)] = 0
+        ax.plot(x,yp)
+        ax.plot(x[np.isnan(y)],yp[np.isnan(y)],'ro-')                    
+    else:
+        ax.plot(x,y)
+        
+    if len(HKlims) == 0:
+        ax.axhline(y=HKlims[0],ls='--',lw=2,color='r')
+    elif len(HKlims) == 2:
+        for ik in range(2):
+            ax.axhline(y=HKlims[ik],ls='--',lw=2,color='r')
+        
+    HKtitle = '$%s$' % HKkey.replace('_','\_')
+    ax.set_title(HKtitle)
+    
+    try:
+        for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +\
+            ax.get_xticklabels() + ax.get_yticklabels()):
+            item.set_fontsize(10)
+    except:
+        pass
+    
+    ax.xaxis.set_major_locator(xloc)
+    
+    return ax
+        
+
+
+
+class SingleHKplot(tk.Toplevel):
+    """ """
+    
+    def __init__(self,root):
+        """ """
+        
+        tk.Toplevel.__init__(self,root)
+        
+        self.wm_title('HK Parameter')
+        
+        self.minsize(width=450,height=400)
+        
+        
+        #frame = tk.Frame(self)
+        
+        self.f = plt.figure(figsize=(4,4),dpi=100)
+        self.ax = self.f.add_subplot(111)
+        
+        canvas = FigureCanvasTkAgg(self.f, self)
+        plt.tight_layout(rect=[0, 0, 1, 1])
+        canvas.show()
+        canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+
+        toolbar = NavigationToolbar2TkAgg(canvas, self)
+        toolbar.update()
+        canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+    
+    def render(self,HKkey,HKlims,x,y):
+        
+        ax = _ax_render_HK(self.ax,x,y,HKlims,HKkey)
+        
+        try: self.f.autofmt_xdate()
+        except:
+            pass
+        plt.tight_layout(rect=[0, 0, 1, 1])
+        
+          
+
+
+
+class HKButton(tk.Button,object):
+    
+    def __init__(self,master=None,**options):
+        """ """
+        
+        ix = options.pop('ix') 
+        ic = options.pop('ic') 
+        ir = options.pop('ir')
+        
+        super(HKButton,self).__init__(master,options)
+        
+        self.ix = ix
+        self.ir = ir
+        self.ic = ic
+        self.text = options['text']
+
+
 class HKFlags(tk.Toplevel):
     """ """
     
@@ -76,9 +175,68 @@ class HKFlags(tk.Toplevel):
                 except:
                     break
                 
-                self.HKflags.append(tk.Button(self, text=HKkey,font=small_font,bg='green'))
+                #self.setup_Flag(HKkey,'green',ix,ic,ir)
+                
+                self.HKflags.append(HKButton(self, text=HKkey,font=small_font,bg='green',
+                                             ix=ix,ic=ic,ir=ir))
                 self.HKflags[-1].grid(column=ic,row=ir,sticky='nsew',\
                      in_=self.HKframe)
+                
+                self.HKflags[-1].bind("<Button 1>",self.ResetFlag)
+                self.HKflags[-1].bind("<Button 3>",self.showHK)
+        
+        if ic < ncols-1:
+            icr = ic+1
+            irr = ir
+        else:
+            icr = 0
+            irr = ir+1
+        
+        self.resetButton = HKButton(self, text='RESET ALL',font=small_font,bg='blue',
+                                             ix=-1,ic=icr,ir=irr)
+        self.resetButton.grid(column=icr,row=irr,sticky='nsew',\
+                     in_=self.HKframe)
+                
+        self.resetButton.bind("<Button 1>",self.ResetAllFlags)
+    
+    def setup_Flag(self,text,color,ix,ic,ir):
+        try:
+            HKflag = self.HKflags[ix]
+        except IndexError:
+            self.HKflags.append(HKButton(self,text=text,font=small_font,bg=color,
+                                         ix=ix,ic=ic,ir=ir))
+            HKflag = self.HKflags[ix]
+        try: HKflag.grid(column=ic,row=ir,sticky='nsew',in_=self.HKframe)
+        except: stop()
+        HKflag.bind("<Button 1>", self.ResetFlag)
+        HKflag.bind("<Button 3>)", self.showHK)
+    
+    def ResetFlag(self,event):
+        """ """
+
+        button = event.widget
+        ix = button.ix
+        
+        self.changeColor(ix,'green')
+    
+    def ResetAllFlags(self,event):
+        
+        for HKflag in self.HKflags:
+            ix = HKflag.ix
+            self.changeColor(ix,'green')
+            
+    def showHK(self,event):
+        
+        HKflag = event.widget
+        ix = HKflag.ix
+        HKkey = self.HKkeys[ix]
+        HKlim = self.parent.HKlims[HKkey]
+        t = self.parent.HK['time'].copy()
+        y = self.parent.HK[HKkey].copy()
+        
+        window = SingleHKplot(self.parent.root)
+        window.render(HKkey,HKlim,t,y)
+        
     
     def update(self):
         
@@ -90,20 +248,13 @@ class HKFlags(tk.Toplevel):
         
         HKkeys = self.HKkeys
         
-        ncols = self.ncols
-        nrows = int(np.ceil(len(HKkeys)/(ncols*1.)))
-        
-        for ir in range(nrows):
-            for ic in range(ncols):
-                ix = ir * ncols + ic
-                if ix == len(HKkeys): break
+        for ix in range(len(HKkeys)):
+            HKlim = self.parent.HKlims[HKkeys[ix]]
+            lastval = self.parent.HK[HKkeys[ix]][-1]
+            isWithin = self.validate(lastval,HKlim)
+            if isWithin: continue
             
-                HKlim = self.parent.HKlims[HKkeys[ix]]
-                lastval = self.parent.HK[HKkeys[ix]][-1]
-                isWithin = self.validate(lastval,HKlim)
-                if isWithin: continue
-                
-                self.changeColor('red',ix,ic,ir)
+            self.changeColor(ix,'red')
     
 
     def validate(self,val,HKlim):
@@ -116,13 +267,22 @@ class HKFlags(tk.Toplevel):
                 return True
         return False
     
-    def changeColor(self,color,ix,ic,ir):
+    def changeColor(self,ix,color):
         
+        ic = self.HKflags[ix].ic
+        ir = self.HKflags[ix].ir
+        text = self.HKflags[ix].text
         self.HKflags[ix].destroy()
-        self.HKflags[ix] = tk.Button(self, text=self.HKkeys[ix],font=small_font,bg=color)
+        self.HKflags[ix] = HKButton(self, text=text,font=small_font,bg=color,
+                                             ix=ix,ic=ic,ir=ir)
         self.HKflags[ix].grid(column=ic,row=ir,sticky='nsew',\
-                     in_=self.HKframe)
-
+                in_=self.HKframe)
+                
+        self.HKflags[ix].bind("<Button 1>",self.ResetFlag)
+        self.HKflags[ix].bind("<Button 3>",self.showHK)
+        
+        #self.setup_Flag(text,color,ix,ic,ir)
+        
 
 class HKDisplay(tk.Toplevel):
     """ """
@@ -267,9 +427,8 @@ class HKDisplay(tk.Toplevel):
         
         HKlims = self.HKlims
         
-        
-        
         def render(pHK):
+            
             
             max_xticks = 6
             xloc = plt.MaxNLocator(max_xticks)            
@@ -292,42 +451,16 @@ class HKDisplay(tk.Toplevel):
                 HKname = self.HKkeys_to_plot[i]
                 _HKlims = HKlims[HKname]
                 
+                
                 try:
                     x = pHK['time'].copy()
                     y = pHK[HKname].copy()
                 except KeyError:
                     x = np.array([0,1])
                     y = np.array([0,1])
-                                
                 
-                if np.any(np.isnan(y)):
-                    yp = y.copy()
-                    yp[np.isnan(y)] = 0
-                    ax.plot(x,yp)
-                    ax.plot(x[np.isnan(y)],yp[np.isnan(y)],'ro-')                    
-                else:
-                    ax.plot(x,y)
-                    
-                if len(_HKlims) == 0:
-                    ax.axhline(y=_HKlims[0],ls='--',lw=2,color='r')
-                elif len(_HKlims) == 2:
-                    for ik in range(2):
-                        ax.axhline(y=_HKlims[ik],ls='--',lw=2,color='r')
-                    
+                ax = _ax_render_HK(ax,x,y,_HKlims,HKname)
                 
-                HKtitle = '$%s$' % HKname.replace('_','\_')
-                ax.set_title(HKtitle)
-                
-                try:
-                    for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +\
-                        ax.get_xticklabels() + ax.get_yticklabels()):
-                        item.set_fontsize(10)
-                except:
-                    pass
-                
-                ax.xaxis.set_major_locator(xloc)
-            
-            
             try: self.f.autofmt_xdate()
             except:
                 pass

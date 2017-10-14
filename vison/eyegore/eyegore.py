@@ -99,7 +99,7 @@ class Eyegore(tk.Tk):
         display2 = Ds[dkeys[1]](self,self.path)
         ani2 = display2.start_updating(self.intervals[0])
         
-        display2b = Ds[dkeys[2]](self,display2,self.intervals[0])
+        display2b = Ds[dkeys[2]](self,display2,5000)
 
         #display4 = Ds[dkeys[3]](self,self.path,self.intervals[1])
         #updater4 = display4.get_updater(self.intervals[1])
