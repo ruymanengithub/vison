@@ -46,7 +46,7 @@ from vison.datamodel import generator
 from vison.datamodel import scriptic as sc
 from vison.point.spot import Spot
 from vison.point import display as pdspl
-from vison.support import time as vistime
+from vison.support import vistime
 from copy import deepcopy
 
 import FOCUS00_lib as Flib

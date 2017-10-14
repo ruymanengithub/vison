@@ -48,7 +48,7 @@ from vison.flat import NL01, PTC0X, FLAT0X
 from vison.inject import CHINJ01,CHINJ02
 from vison.pump import TP01, TP02
 from vison.other import PERSIST01 as PER01
-from vison.support import time as vistime
+from vison.support import vistime
 #from lib import get_time_tag
 from vison.pipe import lib as pilib
 

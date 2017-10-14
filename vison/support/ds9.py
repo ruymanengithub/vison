@@ -1,5 +1,3 @@
-#! /usr/bin/env python
-
 """
 
 NEEDS REVISION
@@ -21,6 +19,7 @@ import os
 import string
 import time
 import numpy as np
+import os
 # END IMPORT
 
 
@@ -37,8 +36,8 @@ class ds9class(object):
 
         
         os.system('ds9 &')
-        
         startTime = time.time()
+        
         while True:
             time.sleep(self.OpenCheckInterval)
             if self.isOpen():
@@ -60,9 +59,7 @@ class ds9class(object):
 
     def xpaset(self,cmd):
         """Executes xpaset."""
-        # IMPORT STUFF
-        import os
-        # END IMPORT
+
         execline = 'xpaset -p %s %s' % (self.ego,cmd)
         os.system(execline)
 
@@ -90,3 +87,10 @@ class ds9class(object):
             if (not np.isnan(x)) and (not np.isnan(y)):
 	        self.xpaset('pan to %i %i' % (x,y))
         except RuntimeError : return
+
+if __name__ == '__main__':
+    
+    ds9 = ds9class()
+    ds9.isOpen()
+    ds9.launch()
+    

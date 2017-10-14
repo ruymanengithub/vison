@@ -19,7 +19,7 @@ from vison.datamodel import HKtools
 from vison.datamodel import ccd
 from vison.pipe import lib as pilib
 from vison.point import lib as polib
-from vison.support import time as vistime
+from vison.support import vistime
 import datetime
 import os
 import string as st

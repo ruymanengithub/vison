@@ -9,7 +9,7 @@ from astropy.table import Table, Column
 import os
 from copy import copy
 import numpy as np
-from vison.support import time as vistime
+from vison.support import vistime
 
 
 # END IMPORT

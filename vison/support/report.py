@@ -16,7 +16,7 @@ Created on Wed Jan 25 16:58:33 2017
 # IMPORT STUFF
 from pdb import set_trace as stop
 import os
-from vison.support import time as vistime
+from vison.support import vistime
 from latex import generate_header, generate_preamble
 from vison import data as visondata
 
