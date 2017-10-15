@@ -240,7 +240,9 @@ class HKFlags(tk.Toplevel):
     
     def update(self):
         
-        self.find_offlims()
+        try: self.find_offlims()
+        except: pass
+    
         self.after(self.interval,self.update)
             
     
@@ -251,6 +253,7 @@ class HKFlags(tk.Toplevel):
         for ix in range(len(HKkeys)):
             HKlim = self.parent.HKlims[HKkeys[ix]]
             lastval = self.parent.HK[HKkeys[ix]][-1]
+            
             isWithin = self.validate(lastval,HKlim)
             if isWithin: continue
             

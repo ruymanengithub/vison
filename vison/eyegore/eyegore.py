@@ -37,6 +37,7 @@ from vison import data as vdata
 
 #from multiprocessing.dummy import Pool
 
+import time
 import Tkinter as tk
 import ttk
 import tkFont as tkFont
@@ -62,7 +63,7 @@ def rsync_to_remote(path):
 class Eyegore(tk.Tk):
     """ """
     
-    def __init__(self,path,broadcast,intervals=[2000,10000]):
+    def __init__(self,path,broadcast,intervals=[2000,5000,5000,10000,10000,15000]):
         """ """
         tk.Tk.__init__(self)
         
@@ -119,15 +120,15 @@ class Eyegore(tk.Tk):
                   hkflags=HKFlags,explog=ExpLogDisplay)
         dkeys = ['image','hk','hkflags','explog']
         
-        #display1 = Ds[dkeys[0]](self,self.path)        
-        #ani1 = display1.start_updating(self.intervals[1])
+        display1 = Ds[dkeys[0]](self,self.path)        
+        ani1 = display1.start_updating(self.intervals[1])
        
-        #display2 = Ds[dkeys[1]](self,self.path,self.intervals[0])
-        #ani2 = display2.start_updating(self.intervals[0])
+        display2 = Ds[dkeys[1]](self,self.path,self.intervals[2])
+        ani2 = display2.start_updating(self.intervals[3])
         
-        #display2b = Ds[dkeys[2]](self,display2,5000)
+        display2b = Ds[dkeys[2]](self,display2,self.intervals[4])
 
-        display4 = Ds[dkeys[3]](self,self.path,self.intervals[1])
+        display4 = Ds[dkeys[3]](self,self.path,self.intervals[5])
         
         self.update()
         

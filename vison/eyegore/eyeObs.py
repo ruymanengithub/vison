@@ -61,9 +61,7 @@ class ExpLogDisplay(tk.Toplevel):
         self.interval = interval
         self.explogf = None
         self.EXPLOG = dict()
-        self.ix0 = 1
-        self.nEL = 1
-        
+        self.nEL = 0 
         
         self.labels = {}
         self.elementHeader = []
@@ -73,9 +71,7 @@ class ExpLogDisplay(tk.Toplevel):
         
         tk.Toplevel.__init__(self,parent)
         
-        self.minsize(width=850,height=500)
-        
-        #self.wm_title('EXP-LOG')
+        #self.minsize(width=850,height=500)
         
         self.info = """\
         Click on header to sort by that column. To change width of column drag boundary.
@@ -83,74 +79,85 @@ class ExpLogDisplay(tk.Toplevel):
         
         self.wm_title('EXP-LOG')
         
-        self.frame = tk.Frame(self)
-        self.frame.pack(fill='both', expand=False)
+        self.fr0 = tk.Frame(self)
+        self.fr0.pack(fill='both', expand=False)
+        #self.fr0.grid()
         
         #msg = ttk.Label(self,wraplength="4i", justify="left", anchor="n",
         #    padding=(10, 2, 10, 6), text=self.info)
         #msg.grid(row=0,column=0,columnspan=2,in_=self.frame)        
         
-        self.labels['NObsID'] = tk.Label(self, text="NObs = 0", font=LARGE_FONT)
-        self.labels['NObsID'].grid(row=0,column=0,in_=self.frame,sticky='nsew')
-        self.labels['NEntries'] = tk.Label(self, text="NEntries = 0", font=LARGE_FONT)
-        self.labels['NEntries'].grid(row=0,column=1,in_=self.frame)
+        self.fr1 = tk.Frame(self)
+        self.fr1.grid(row=0,in_=self.fr0)
+                
+        self.labels['NObsID'] = tk.Label(self, text="NObs = 0", font=small_font)
+        self.labels['NObsID'].grid(row=0,column=0,in_=self.fr1,sticky='w')
+        self.labels['NEntries'] = tk.Label(self, text="NEntries = 0", font=small_font)
+        self.labels['NEntries'].grid(row=0,column=1,in_=self.fr1,sticky='w')
+        
+        self.fr1.grid_columnconfigure(0, weight=1)
+        self.fr1.grid_rowconfigure(0, weight=1)
+
         
         self.search_EXPLOG()
-        self.get_data()        
+        self.get_data()
         
         self.elementHeader = self.EXPLOG.colnames
         
         self.build_elementList()
         self.createScrollableTreeview()
 
-        self.frame.grid_columnconfigure(0, weight=1)
-        self.frame.grid_rowconfigure(0, weight=1)
+        self.fr0.grid_columnconfigure(0, weight=1)
+        self.fr0.grid_rowconfigure(0, weight=1)
         
         self.update()
     
     def update(self):
-        
-        self.search_EXPLOG()
-        self.get_data()      
+                
+        self.tree.yview_moveto(1)
+    
+        self.get_data()
         self.build_elementList()
+                
         self.buildTree()
         
-        self.ix0 += 1
-        #print self.ix0
-        self.tree.yview_scroll(1,'units')
+        self.tree.yview_moveto(1)
         
         self.after(self.interval,self.update)
 
 
-#    def get_updater(self,interval):
-#        
-#        def update(self):
-#            self.search_EXPLOG()
-#            self.get_data()      
-#            self.build_elementList()
-#            self.buildTree()
-#            
-#            self.ix0 += 1
-#            #print self.ix0
-#            self.tree.yview_scroll(1,'units')
-#            
-#            self.after(5000,update)
-#
-#        return update
+    def createScrollableTreeview(self):
+
+        # create a treeview with dual scrollbars
+        self.fr2 = tk.Frame(self) 
+        #self.subframe.pack(fill='both', expand=True)
+        self.fr2.grid(row=1,column=0, in_=self.fr0)
+        self.tree = ttk.Treeview(self,columns=self.elementHeader, show="headings")
+        vsb = ttk.Scrollbar(self,orient="vertical", command=self.tree.yview)
+        hsb = ttk.Scrollbar(self,orient="horizontal", command=self.tree.xview)
+        self.tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
+        
+        self.tree.grid(column=0, row=0, sticky='nsew', in_=self.fr2)
+        vsb.grid(column=1, row=0, sticky='ns', in_=self.fr2)
+        hsb.grid(column=0, row=1, sticky='ew', in_=self.fr2)
+
+        #self.tree.yview_scroll(-1,'units')
+        #self.tree.yview_moveto(0.5)
+        
+        self.tree['height'] = 20
+        
+        self.fr2.grid_columnconfigure(0, weight=1)
+        self.fr2.grid_rowconfigure(0, weight=1)
+
     
     def build_elementList(self):
         """ """
-    
-        elementList = []
-        
+
         for ix in range(len(self.EXPLOG)):            
             row = []
             for jx,colname in enumerate(self.elementHeader):
                 row.append(self.EXPLOG[colname][ix])
-            elementList.append(tuple(row))
-        
-        
-        self.elementList = elementList    
+            self.elementList.append(tuple(row))
         
     def search_EXPLOG(self):
         """ """
@@ -178,33 +185,33 @@ class ExpLogDisplay(tk.Toplevel):
             return
         
         with open(self.explogf) as f:
-            nEL = len(f.readlines())
-    
-        #if nEL <= self.nEL:   # COMMENTED ON TESTS
-        #    return
-    
-        self.nEL = nEL
+            #nEL = len(f.readlines()) # TESTS
+            nEL = self.nEL + 5 # TESTS
+            
+        if nEL <= self.nEL:   # COMMENTED ON TESTS
+            return
     
         EXPLOG = ELtools.loadExpLog(self.explogf,elvis=self.elvis)
+        self.EXPLOG = EXPLOG[self.nEL:nEL]
         
-        self.EXPLOG = EXPLOG[self.ix0:self.ix0+100]
+        self.nEL = nEL
+        
+    
+    def growTree(self):
+        
 
+        for i,item in enumerate(self.elementList):
+            if (i+self.nEL) % 2 == 0: parity = 'pair'
+            elif (i+self.nEL) % 2 !=0: parity = 'odd'
+            self.tree.insert('', 'end', values=item, tags=(parity,))
+        
+            # adjust column's width if necessary to fit each value
+#            for ix, val in enumerate(item):
+#                col_w = tkFont.Font().measure(val)
+#                if self.tree.column(self.elementHeader[ix], width=None) < col_w:
+#                    self.tree.column(self.elementHeader[ix], width=col_w)
 
-    def createScrollableTreeview(self):
-
-        # create a treeview with dual scrollbars
-        self.subframe = tk.Frame(self.frame) 
-        #self.subframe.pack(fill='both', expand=True)
-        self.subframe.grid(row=1,column=0, columnspan=2)
-        self.tree = ttk.Treeview(self,columns=self.elementHeader, show="headings")
-        vsb = ttk.Scrollbar(self,orient="vertical", command=self.tree.yview)
-        hsb = ttk.Scrollbar(self,orient="horizontal", command=self.tree.xview)
-        self.tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
-        self.tree.grid(column=0, row=0, sticky='nsew', in_=self.subframe)
-        vsb.grid(column=1, row=0, sticky='ns', in_=self.subframe)
-        hsb.grid(column=0, row=1, sticky='ew', in_=self.subframe)
-        self.subframe.grid_columnconfigure(0, weight=1)
-        self.subframe.grid_rowconfigure(0, weight=1)
+        self.elementList = []
 
 
     def buildTree(self):
@@ -215,18 +222,13 @@ class ExpLogDisplay(tk.Toplevel):
                 command=lambda c=col: self.sortBy(self.tree, c, 0))
             # adjust the column's width to the header string
             self.tree.column(col, width=int(tkFont.Font(font='Helvetica',size=12).measure(col)*1.5))
-            
-
-        for i,item in enumerate(self.elementList):
-            if i % 2 == 0: parity = 'pair'
-            elif i % 2 !=0: parity = 'odd'
-            self.tree.insert('', 'end', values=item, tags=(parity,))
-
-            # adjust column's width if necessary to fit each value
-#            for ix, val in enumerate(item):
-#                col_w = tkFont.Font().measure(val)
-#                if self.tree.column(self.elementHeader[ix], width=None) < col_w:
-#                    self.tree.column(self.elementHeader[ix], width=col_w)
+        
+        self.growTree()
+        
+        self.tree.yview_moveto(1)
+        
+        #for i in range(1,2*growth+1):
+        #    self.tree.yview_scroll(1,'units')
 
         self.tree.tag_configure('pair',background='#B6D2D2')
         self.tree.tag_configure('odd',background='#AFE0B5')
