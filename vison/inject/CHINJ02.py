@@ -104,3 +104,124 @@ def build_CHINJ02_scriptdict(IDLs,IDH,id_delays,toi_chinj,diffvalues=dict(),
     CHINJ02_sdict = sc.update_structdict(CHINJ02_sdict,commvalues,diffvalues)
     
     return CHINJ02_sdict
+
+
+def check_data(DataDict,report,inputs,log=None):
+    """ 
+
+    CHINJ02: Checks quality of ingested data.
+    
+
+    **METACODE**
+    
+    ::
+
+        check common HK values are within safe / nominal margins
+        check voltages in HK match commanded voltages, within margins
+    
+        f.e.ObsID:
+            f.e.CCD:
+                f.e.Q.:
+                    measure offsets in pre-, img-, over-
+                    measure std in pre-, img-, over-
+                    extract 2D chinj-pattern:
+                        measure average level of injection
+                        measure average level of non-injection
+        
+        assess std in pre- is within allocated margins
+        assess offsets in pre-, and over- are equal, within allocated  margins
+        assess offsets are within allocated margins
+        assess non-injection level is within expected margins
+        [assess injection level is within expected margins]
+    
+        [plot offsets vs. time]
+        [plot std vs. time]
+        plot injected level vs. IDL for each half
+    
+    
+        issue any warnings to log
+        issue update to report          
+
+    
+    """
+    
+
+    
+    return DataDict, report
+    
+
+def extract_data(DataDict,report,inputs,log=None):
+    """
+    
+    **NEEDED?** Could be merged with basic_analysis
+    
+    **METACODE**
+    
+    ::
+    
+        Preparation of data for further analysis:
+
+        f.e. ObsID:
+            f.e.CCD:
+                f.e.Q:
+                    subtract offset
+                    extract average 2D injection pattern and save
+
+    
+    """
+    
+    return DataDict,report
+    
+def basic_analysis(DataDict,report,inputs,log=None):
+    """ 
+
+    Basic analysis of data.
+    AS IT IS, REPEATS WHAT'S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
+
+    **METACODE**
+    
+    ::
+
+        f. e. ObsID:
+            f.e.CCD:
+                f.e.Q:
+                    load average 2D injection pattern
+                    produce average profile along lines
+                    [measure charge-inj. non-uniformity]
+                    [produce average profile across lines]
+                    [measure charge spillover into non-injection]
+                    measure stats of injection (mean, med, std, min/max, percentiles)
+                    
+        [plot average inj. profiles along lines f. each CCD, Q and IG1]
+        [    save as a rationalized set of curves]
+        [plot average inj. profiles across lines f. each CCD, Q and IG1]
+        [    save as a rationalized set of  curves]
+        
+        save&plot charge injection vs. IDL
+        report injection stats as a table
+    
+    """
+    
+   
+    
+    return DataDict,report
+    
+def meta_analysis(DataDict,report,inputs,log=None):
+    """ 
+    
+    Finds the Injection Threshold for each CCD half.
+    
+    **METACODE**
+    
+    ::
+        
+        f.e.CCD:
+            f.e.Q:
+                load injection vs. IDL cuve
+                find&save injection threshold on curve
+
+        report injection threshold as a table
+    
+    """
+    
+    return DataDict,report

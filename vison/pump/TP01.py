@@ -105,3 +105,111 @@ def build_TP01_scriptdict(Nshuffles_V,TOI_TPv,id_delays,
     TP01_sdict = sc.update_structdict(TP01_sdict,commvalues,diffvalues)
     
     return TP01_sdict
+
+
+
+def check_data(DataDict,report,inputs,log=None):
+    """ 
+
+    TP01: Checks quality of ingested data.
+    
+
+    **METACODE**
+    
+    ::
+
+        check common HK values are within safe / nominal margins
+        check voltages in HK match commanded voltages, within margins
+    
+        f.e.ObsID:
+            f.e.CCD:
+                f.e.Q.:
+                    measure offsets in pre-, img-, over-
+                    measure std in pre-, img-, over-
+                    measure offsets/means in pre-, img-, over-
+        
+        assess std in pre- is within allocated margins
+        assess offsets in pre-, and over- are equal, within allocated  margins
+        assess offsets are within allocated margins
+        assess injection level is within expected margins
+    
+        plot histogram of injected levels for each Q
+        [plot std vs. time]
+    
+        issue any warnings to log
+        issue update to report          
+
+    
+    """
+
+def prep_data(DataDict,report,inputs,log=None):
+    """
+    
+    **METACODE**
+    
+    ::
+    
+        Preparation of data for further analysis:
+
+        f.e. ObsID [images with TPing only]:
+            f.e.CCD:
+                f.e.Q:
+                    subtract offset
+                    [subtract /? divide by reference image wo TPing]
+                    save raw map of dipoles
+
+    
+    """
+    
+    return DataDict,report
+
+def basic_analysis():
+    """
+    
+    Basic analysis of data.
+
+    **METACODE**
+    
+    ::
+
+        f. e. ObsID [there are different TOI_TP and TP-patterns]:
+            f.e.CCD:
+                f.e.Q:
+                    load raw map of dipoles (from extract_data)
+                    identify dipoles:
+                        x, y, rel-amplitude, orientation
+
+        produce & report:  
+            map location of dipoles
+            PDF of dipole amplitudes (for N-S and S-N)
+            Counts of dipoles (and N-S vs. S-N)
+    
+    """
+    
+def meta_analysis():
+    """
+    
+    Meta-analysis of data:
+        
+        Try to identify tau and pixel-phase location for each trap.
+        Need to associate dipoles across TOI_TPs and TP-patterns
+        
+        
+        NEED ADVICE FROM O.U. - ask Jesper, Ben, Julia
+
+
+    **METACODE**
+    
+    ::
+        
+        across TOI_TP, patterns:
+            build catalog of unique dipoles / traps
+            get amplitude vs. TOI -> P(tau)
+            location of trap within pixel I-PHASE
+            
+        DON'T KNOW HOW TO DEAL WITH DIFFERENT PATTERNS, NOR HOW TO 
+        PRODUCE A USEFUL MAP OF TRAP LOCATIONS (X,Y,I-PHASE), P(TAU)
+    
+
+    """
+    

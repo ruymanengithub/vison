@@ -147,7 +147,7 @@ def check_data(DataDict,report,inputs,log=None):
     
         [plot offsets vs. time]
         [plot std vs. time]
-        plot injected level vs. IG1
+        plot injected level vs. IG1 for each half
     
     
         issue any warnings to log
@@ -161,7 +161,7 @@ def check_data(DataDict,report,inputs,log=None):
     return DataDict, report
     
 
-def prep_data(DataDict,report,inputs,log=None):
+def extract_data(DataDict,report,inputs,log=None):
     """
     
     **NEEDED?** Could be merged with basic_analysis
