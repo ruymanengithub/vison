@@ -297,9 +297,10 @@ class HKDisplay(tk.Toplevel):
         self.date = '21-02-80'
         self.HKfile = None
         self.HK = dict()
+        self.sizeHK = 0 # size in bytes of HK file
         self.page = 1
         
-        self.nHKlines = 1
+        #self.nHKlines = 1
         self.root = root
         
         self.HKkeys = HKtools.allHK_keys[elvis]
@@ -403,13 +404,20 @@ class HKDisplay(tk.Toplevel):
         if self.HKfile is None:
             yield self.HK
         
-        with open(self.HKfile) as f:
-            nHKlines = len(f.readlines())
+        #with open(self.HKfile) as f:
+        #    nHKlines = len(f.readlines())
         
-        if nHKlines <= self.nHKlines:
+        #if nHKlines <= self.nHKlines:
+        #    yield self.HK
+        
+        statinfo = os.stat(self.HKfile)
+        sizeHK = statinfo.st_size
+        
+        if sizeHK <= self.sizeHK:
             yield self.HK
         
-        self.nHKlines = nHKlines
+        self.sizeHK = sizeHK
+        #self.nHKlines = nHKlines
         
         HK = HKtools.loadHK_QFM(self.HKfile,elvis=self.elvis)
         

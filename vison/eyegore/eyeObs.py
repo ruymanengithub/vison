@@ -61,7 +61,8 @@ class ExpLogDisplay(tk.Toplevel):
         self.interval = interval
         self.explogf = None
         self.EXPLOG = dict()
-        self.nEL = 0 
+        self.nEL = 0 # Nr. lines in EXPLOG
+        self.sEL = 0 # size of EXPLOG, bytes
         
         self.labels = {}
         self.elementHeader = []
@@ -184,17 +185,20 @@ class ExpLogDisplay(tk.Toplevel):
         if self.explogf is None:
             return
         
-        with open(self.explogf) as f:
-            #nEL = len(f.readlines()) # TESTS
-            nEL = self.nEL + 5 # TESTS
-            
-        if nEL <= self.nEL:   # COMMENTED ON TESTS
+        statinfo = os.stat(self.explogf)
+        sEL = statinfo.st_size # commented on TESTS
+        #sEL = self.sEL + 1 # TESTS
+        
+        if sEL <= self.sEL:
             return
     
         EXPLOG = ELtools.loadExpLog(self.explogf,elvis=self.elvis)
+        nEL = len(EXPLOG) # commented on TESTS
+        #nEL = self.nEL + 5 # TESTS
         self.EXPLOG = EXPLOG[self.nEL:nEL]
         
         self.nEL = nEL
+        self.sEL = self.sEL
         
     
     def growTree(self):
