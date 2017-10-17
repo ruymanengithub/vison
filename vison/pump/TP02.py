@@ -104,3 +104,75 @@ def build_TP02_scriptdict(Nshuffles_H,dwell_sv,id_delays,
     TP02_sdict = sc.update_structdict(TP02_sdict,commvalues,diffvalues)
     
     return TP02_sdict
+
+
+def prep_data(DataDict,report,inputs,log=None):
+    """
+    
+    **METACODE**
+    
+    ::
+    
+        Preparation of data for further analysis:
+
+        f.e. ObsID [images with TPing only]:
+            f.e.CCD:
+                f.e.Q:
+                    subtract offset
+                    [subtract /? divide by reference image wo TPing]
+                    save raw 1D map of dipoles
+
+    
+    """
+    
+    return DataDict,report
+
+def basic_analysis():
+    """
+    
+    Basic analysis of data.
+
+    **METACODE**
+    
+    ::
+
+        f. e. ObsID [there are different TOI_TP and TP-patterns]:
+            f.e.CCD:
+                f.e.Q:
+                    load raw 1D map of dipoles (from extract_data)
+                    identify dipoles:
+                        x, rel-amplitude, orientation (E or W)
+
+        produce & report:  
+            map location of dipoles
+            PDF of dipole amplitudes (for E and W)
+            Counts of dipoles (and E vs. W)
+    
+    """
+    
+def meta_analysis():
+    """
+    
+    Meta-analysis of data:
+        
+        Try to identify tau and pixel-phase location for each trap.
+        Need to associate dipoles across TOI_TPs and TP-patterns        
+        
+        NEED ADVICE FROM O.U. - ask Jesper, Ben, Julia
+
+
+    **METACODE**
+    
+    ::
+        
+        across TOI_TP, patterns:
+            build catalog of unique dipoles / traps
+            get amplitude vs. TOI -> P(tau)
+            location of trap within pixel I-PHASE
+            
+        DON'T KNOW HOW TO DEAL WITH DIFFERENT PATTERNS, NOR HOW TO 
+        PRODUCE A USEFUL MAP OF TRAP LOCATIONS (X,Y,I-PHASE), P(TAU)
+    
+
+    """
+    

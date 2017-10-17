@@ -181,8 +181,8 @@ def basic_analysis():
 
         produce & report:  
             map location of dipoles
-            PDF of dipole amplitudes (for N-S and S-N)
-            Counts of dipoles (and N-S vs. S-N)
+            PDF of dipole amplitudes (for N and S)
+            Counts of dipoles (and N vs. S)
     
     """
     

@@ -63,7 +63,7 @@ def rsync_to_remote(path):
 class Eyegore(tk.Tk):
     """ """
     
-    def __init__(self,path,broadcast,intervals=[2000,3000,3000,1000,1000,5000]):
+    def __init__(self,path,broadcast,intervals=[20000,20000,1000,20000,20000,20000]):
         """ """
         tk.Tk.__init__(self)
         
