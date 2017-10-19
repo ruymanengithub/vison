@@ -106,6 +106,40 @@ def build_TP02_scriptdict(Nshuffles_H,dwell_sv,id_delays,
     return TP02_sdict
 
 
+def check_data(DataDict,report,inputs,log=None):
+    """ 
+
+    TP02: Checks quality of ingested data.
+    
+
+    **METACODE**
+    
+    ::
+
+        check common HK values are within safe / nominal margins
+        check voltages in HK match commanded voltages, within margins
+    
+        f.e.ObsID:
+            f.e.CCD:
+                f.e.Q.:
+                    measure offsets in pre-, over-
+                    measure std in pre-, over-
+                    measure mean in img-
+        
+        assess std in pre- (~RON) is within allocated margins
+        assess offsets in pre-, and over- are equal, within allocated margins
+        assess offsets are within allocated margins
+        assess injection level is within expected margins
+    
+        plot histogram of injected levels for each Q
+        [plot std vs. time]
+    
+        issue any warnings to log
+        issue update to report          
+
+    
+    """
+
 def prep_data(DataDict,report,inputs,log=None):
     """
     

@@ -71,3 +71,95 @@ def build_PER01_scriptdict(exptSATUR,exptLATEN,
     PER01_sdict = sc.update_structdict(PER01_sdict,commvalues,diffvalues)
     
     return PER01_sdict
+
+
+def check_data(DataDict,report,inputs,log=None):
+    """ 
+
+    PERSIST01: Checks quality of ingested data.
+    
+
+    **METACODE**
+    
+    ::
+
+        check common HK values are within safe / nominal margins
+        check voltages in HK match commanded voltages, within margins
+    
+        f.e.ObsID:
+            f.e.CCD:
+                f.e.Q.:
+                    measure offsets in pre-, over-
+                    measure std in pre-, over-
+                    measure fluence in apertures around Point Sources
+        
+        assess std in pre- (~RON) is within allocated margins
+        assess offsets in pre-, and over- are equal, within allocated  margins
+        assess fluence is ~expected within apertures (PS) for each frame (pre-satur, satur, post-satur)
+        
+    
+        plot point source fluence vs. OBSID, all sources
+        [plot std vs. time]
+    
+        issue any warnings to log
+        issue update to report          
+
+    
+    """
+
+def prep_data(DataDict,report,inputs,log=None):
+    """
+    
+    **METACODE**
+    
+    ::
+    
+        Preparation of data for further analysis:
+
+        f.e. ObsID [images with TPing only]:
+            f.e.CCD:
+                f.e.Q:
+                    subtract offset
+
+    """
+    
+    return DataDict,report
+
+def basic_analysis():
+    """
+    
+    Basic analysis of data.
+
+    **METACODE**
+    
+    ::
+
+        f.e.CCD:
+            f.e.Q:
+                use SATURATED frame to generate pixel saturation MASK
+                measure stats in pix satur MASK across OBSIDs 
+                 (pre-satur, satur, post-satur)
+
+    
+    """
+    
+def meta_analysis():
+    """
+    
+    Meta-analysis of data.
+
+    **METACODE**
+    
+    ::
+        
+        
+        f.e.CCD:
+            f.e.Q:
+                estimate delta-charge_0 and decay tau from time-series
+
+        report:  
+            persistence level (delta-charge_0) and time constant
+        
+
+    """
+    

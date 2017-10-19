@@ -124,12 +124,12 @@ def check_data(DataDict,report,inputs,log=None):
         f.e.ObsID:
             f.e.CCD:
                 f.e.Q.:
-                    measure offsets in pre-, img-, over-
-                    measure std in pre-, img-, over-
-                    measure offsets/means in pre-, img-, over-
+                    measure offsets in pre-, over-
+                    measure std in pre-, over-
+                    measure mean in img-
         
-        assess std in pre- is within allocated margins
-        assess offsets in pre-, and over- are equal, within allocated  margins
+        assess std in pre- (~RON) is within allocated margins
+        assess offsets in pre-, and over- are equal, within allocated margins
         assess offsets are within allocated margins
         assess injection level is within expected margins
     
