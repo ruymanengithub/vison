@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Monitoring (“Eyegore”) &#8212; vison 0.2+54.g66432a0 documentation</title>
+    <title>Monitoring (“Eyegore”) &#8212; vison 0.2+71.gbd685c7 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2+54.g66432a0',
+        VERSION:     '0.2+71.gbd685c7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="image.html" title="Image Analysis"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+54.g66432a0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+71.gbd685c7 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -76,83 +76,19 @@
 </tbody>
 </table>
 <dl class="class">
-<dt id="vison.eyegore.eyegore.ExpLogDisplay">
-<em class="property">class </em><code class="descclassname">vison.eyegore.eyegore.</code><code class="descname">ExpLogDisplay</code><span class="sig-paren">(</span><em>parent</em>, <em>path</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.ExpLogDisplay" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="vison.eyegore.eyegore.ExpLogDisplay.build_elementList">
-<code class="descname">build_elementList</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.ExpLogDisplay.build_elementList" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vison.eyegore.eyegore.ExpLogDisplay.changeNumeric">
-<code class="descname">changeNumeric</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.ExpLogDisplay.changeNumeric" title="Permalink to this definition">¶</a></dt>
-<dd><p>if the data to be sorted is numeric change to float</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.eyegore.eyegore.ExpLogDisplay.get_data">
-<code class="descname">get_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.ExpLogDisplay.get_data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vison.eyegore.eyegore.ExpLogDisplay.isNumeric">
-<code class="descname">isNumeric</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.ExpLogDisplay.isNumeric" title="Permalink to this definition">¶</a></dt>
-<dd><p>test if a string s is numeric</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.eyegore.eyegore.ExpLogDisplay.search_EXPLOG">
-<code class="descname">search_EXPLOG</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.ExpLogDisplay.search_EXPLOG" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vison.eyegore.eyegore.ExpLogDisplay.sortBy">
-<code class="descname">sortBy</code><span class="sig-paren">(</span><em>tree</em>, <em>col</em>, <em>descending</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.ExpLogDisplay.sortBy" title="Permalink to this definition">¶</a></dt>
-<dd><p>sort tree contents when a column header is clicked</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
 <dt id="vison.eyegore.eyegore.Eyegore">
-<em class="property">class </em><code class="descclassname">vison.eyegore.eyegore.</code><code class="descname">Eyegore</code><span class="sig-paren">(</span><em>path</em>, <em>broadcast</em>, <em>interval=3000</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.Eyegore" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="class">
-<dt id="vison.eyegore.eyegore.HKDisplay">
-<em class="property">class </em><code class="descclassname">vison.eyegore.eyegore.</code><code class="descname">HKDisplay</code><span class="sig-paren">(</span><em>parent</em>, <em>path</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.HKDisplay" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.eyegore.eyegore.</code><code class="descname">Eyegore</code><span class="sig-paren">(</span><em>path, broadcast, intervals=[20000, 20000, 1000, 20000, 20000, 20000]</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.Eyegore" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="vison.eyegore.eyegore.HKDisplay.get_data">
-<code class="descname">get_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.HKDisplay.get_data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vison.eyegore.eyegore.HKDisplay.search_HKfile">
-<code class="descname">search_HKfile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.HKDisplay.search_HKfile" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vison.eyegore.eyegore.HKDisplay.select_HKkeys">
-<code class="descname">select_HKkeys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.HKDisplay.select_HKkeys" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.eyegore.eyegore.Eyegore.setup_MasterWG">
+<code class="descname">setup_MasterWG</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.Eyegore.setup_MasterWG" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="vison.eyegore.eyegore.ImageDisplay">
-<em class="property">class </em><code class="descclassname">vison.eyegore.eyegore.</code><code class="descname">ImageDisplay</code><span class="sig-paren">(</span><em>parent</em>, <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.ImageDisplay" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="vison.eyegore.eyegore.ImageDisplay.gen_render">
-<code class="descname">gen_render</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.ImageDisplay.gen_render" title="Permalink to this definition">¶</a></dt>
+<dl class="function">
+<dt id="vison.eyegore.eyegore.rsync_to_remote">
+<code class="descclassname">vison.eyegore.eyegore.</code><code class="descname">rsync_to_remote</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.rsync_to_remote" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="method">
-<dt id="vison.eyegore.eyegore.ImageDisplay.get_data">
-<code class="descname">get_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.ImageDisplay.get_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>PENDING</p>
-</dd></dl>
-
-</dd></dl>
 
 </div>
 </div>
@@ -216,7 +152,7 @@
         <li class="right" >
           <a href="image.html" title="Image Analysis"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+54.g66432a0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+71.gbd685c7 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

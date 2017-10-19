@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Trap-Pumping Scripts &#8212; vison 0.2+54.g66432a0 documentation</title>
+    <title>Trap-Pumping Scripts &#8212; vison 0.2+71.gbd685c7 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2+54.g66432a0',
+        VERSION:     '0.2+71.gbd685c7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="point_scripts.html" title="Point-Source Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+54.g66432a0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+71.gbd685c7 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -73,9 +73,97 @@ TEST: TP01</p>
 </tbody>
 </table>
 <dl class="function">
+<dt id="vison.pump.TP01.basic_analysis">
+<code class="descclassname">vison.pump.TP01.</code><code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.basic_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic analysis of data.</p>
+<p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span> <span class="p">[</span><span class="n">there</span> <span class="n">are</span> <span class="n">different</span> <span class="n">TOI_TP</span> <span class="ow">and</span> <span class="n">TP</span><span class="o">-</span><span class="n">patterns</span><span class="p">]:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
+            <span class="n">load</span> <span class="s2">&quot;map of relative pumping&quot;</span>
+            <span class="n">find_dipoles</span><span class="p">:</span>
+                <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rel</span><span class="o">-</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">orientation</span>
+
+<span class="n">produce</span> <span class="o">&amp;</span> <span class="n">report</span><span class="p">:</span>  
+    <span class="nb">map</span> <span class="n">location</span> <span class="n">of</span> <span class="n">dipoles</span>
+    <span class="n">PDF</span> <span class="n">of</span> <span class="n">dipole</span> <span class="n">amplitudes</span> <span class="p">(</span><span class="k">for</span> <span class="n">N</span> <span class="ow">and</span> <span class="n">S</span><span class="p">)</span>
+    <span class="n">Counts</span> <span class="n">of</span> <span class="n">dipoles</span> <span class="p">(</span><span class="ow">and</span> <span class="n">N</span> <span class="n">vs</span><span class="o">.</span> <span class="n">S</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
 <dt id="vison.pump.TP01.build_TP01_scriptdict">
 <code class="descclassname">vison.pump.TP01.</code><code class="descname">build_TP01_scriptdict</code><span class="sig-paren">(</span><em>Nshuffles_V</em>, <em>TOI_TPv</em>, <em>id_delays</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.build_TP01_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.TP01.check_data">
+<code class="descclassname">vison.pump.TP01.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.check_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>TP01: Checks quality of ingested data.</p>
+<p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
+<span class="n">check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
+
+<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
+            <span class="n">measure</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
+            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
+            <span class="n">measure</span> <span class="n">mean</span> <span class="ow">in</span> <span class="n">img</span><span class="o">-</span>
+
+<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="p">(</span><span class="o">~</span><span class="n">RON</span><span class="p">)</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
+<span class="n">assess</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="ow">and</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
+<span class="n">assess</span> <span class="n">offsets</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
+<span class="n">assess</span> <span class="n">injection</span> <span class="n">level</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">expected</span> <span class="n">margins</span>
+
+<span class="n">plot</span> <span class="n">histogram</span> <span class="n">of</span> <span class="n">injected</span> <span class="n">levels</span> <span class="k">for</span> <span class="n">each</span> <span class="n">Q</span>
+<span class="p">[</span><span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
+
+<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
+<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>          
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.TP01.meta_analysis">
+<code class="descclassname">vison.pump.TP01.</code><code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Meta-analysis of data:</p>
+<blockquote>
+<div>Try to identify tau and pixel-phase location for each trap.
+Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
+<p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">across</span> <span class="n">TOI_TP</span><span class="p">,</span> <span class="n">patterns</span><span class="p">:</span>
+    <span class="n">build</span> <span class="n">catalog</span> <span class="n">of</span> <span class="n">traps</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">I</span><span class="o">-</span><span class="n">phase</span><span class="p">,</span> <span class="n">Amp</span>
+    <span class="kn">from</span> <span class="nn">Amp</span><span class="p">(</span><span class="n">TOI</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tau</span><span class="p">,</span> <span class="n">Pc</span>
+
+<span class="n">Report</span> <span class="n">on</span> <span class="p">:</span>
+    <span class="n">Histogram</span> <span class="n">of</span> <span class="n">Taus</span>
+    <span class="n">Histogram</span> <span class="n">of</span> <span class="n">Pc</span> <span class="p">(</span><span class="n">capture</span> <span class="n">probability</span><span class="p">)</span>
+    <span class="n">Histogram</span> <span class="n">of</span> <span class="n">I</span><span class="o">-</span><span class="n">phases</span> <span class="p">(</span><span class="n">larger</span> <span class="n">phases</span> <span class="n">should</span> <span class="n">have</span> <span class="n">more</span> <span class="n">traps</span><span class="p">,</span> 
+                      <span class="n">statistically</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">check</span>
+
+    <span class="n">Total</span> <span class="n">Count</span> <span class="n">of</span> <span class="n">Traps</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.TP01.prep_data">
+<code class="descclassname">vison.pump.TP01.</code><code class="descname">prep_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.prep_data" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Preparation</span> <span class="n">of</span> <span class="n">data</span> <span class="k">for</span> <span class="n">further</span> <span class="n">analysis</span><span class="p">:</span>
+
+<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span> <span class="p">[</span><span class="n">images</span> <span class="k">with</span> <span class="n">TPing</span> <span class="n">only</span><span class="p">]:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
+            <span class="n">subtract</span> <span class="n">offset</span>
+            <span class="n">divide</span> <span class="n">by</span> <span class="n">reference</span> <span class="n">image</span> <span class="n">wo</span> <span class="n">TPing</span>
+            <span class="n">save</span> <span class="s2">&quot;map of relative pumping&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
 
 </div>
 <div class="section" id="module-vison.pump.TP02">
@@ -95,9 +183,97 @@ TEST: TP01</p>
 </tbody>
 </table>
 <dl class="function">
+<dt id="vison.pump.TP02.basic_analysis">
+<code class="descclassname">vison.pump.TP02.</code><code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.basic_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic analysis of data.</p>
+<p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span> <span class="p">[</span><span class="n">there</span> <span class="n">are</span> <span class="n">different</span> <span class="n">TOI_TP</span> <span class="ow">and</span> <span class="n">TP</span><span class="o">-</span><span class="n">patterns</span><span class="p">]:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
+            <span class="n">load</span> <span class="n">raw</span> <span class="mi">1</span><span class="n">D</span> <span class="nb">map</span> <span class="n">of</span> <span class="n">relative</span> <span class="n">pumping</span> <span class="p">(</span><span class="kn">from</span> <span class="nn">extract_data</span><span class="p">)</span>
+            <span class="n">identify</span> <span class="n">dipoles</span><span class="p">:</span>
+                <span class="n">x</span><span class="p">,</span> <span class="n">rel</span><span class="o">-</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">orientation</span> <span class="p">(</span><span class="n">E</span> <span class="ow">or</span> <span class="n">W</span><span class="p">)</span>
+
+<span class="n">produce</span> <span class="o">&amp;</span> <span class="n">report</span><span class="p">:</span>  
+    <span class="nb">map</span> <span class="n">location</span> <span class="n">of</span> <span class="n">dipoles</span>
+    <span class="n">PDF</span> <span class="n">of</span> <span class="n">dipole</span> <span class="n">amplitudes</span> <span class="p">(</span><span class="k">for</span> <span class="n">E</span> <span class="ow">and</span> <span class="n">W</span><span class="p">)</span>
+    <span class="n">Counts</span> <span class="n">of</span> <span class="n">dipoles</span> <span class="p">(</span><span class="ow">and</span> <span class="n">E</span> <span class="n">vs</span><span class="o">.</span> <span class="n">W</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
 <dt id="vison.pump.TP02.build_TP02_scriptdict">
 <code class="descclassname">vison.pump.TP02.</code><code class="descname">build_TP02_scriptdict</code><span class="sig-paren">(</span><em>Nshuffles_H</em>, <em>dwell_sv</em>, <em>id_delays</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.build_TP02_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>MISSING: different starting points (not implemented in ELVIS yet).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.TP02.check_data">
+<code class="descclassname">vison.pump.TP02.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.check_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>TP02: Checks quality of ingested data.</p>
+<p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
+<span class="n">check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
+
+<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
+            <span class="n">measure</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
+            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
+            <span class="n">measure</span> <span class="n">mean</span> <span class="ow">in</span> <span class="n">img</span><span class="o">-</span>
+
+<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="p">(</span><span class="o">~</span><span class="n">RON</span><span class="p">)</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
+<span class="n">assess</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="ow">and</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
+<span class="n">assess</span> <span class="n">offsets</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
+<span class="n">assess</span> <span class="n">injection</span> <span class="n">level</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">expected</span> <span class="n">margins</span>
+
+<span class="n">plot</span> <span class="n">histogram</span> <span class="n">of</span> <span class="n">injected</span> <span class="n">levels</span> <span class="k">for</span> <span class="n">each</span> <span class="n">Q</span>
+<span class="p">[</span><span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
+
+<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
+<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>          
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.TP02.meta_analysis">
+<code class="descclassname">vison.pump.TP02.</code><code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Meta-analysis of data:</p>
+<blockquote>
+<div>Try to identify tau and pixel-phase location for each trap.
+Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
+<p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">across</span> <span class="n">TOI_TP</span><span class="p">,</span> <span class="n">patterns</span><span class="p">:</span>
+    <span class="n">build</span> <span class="n">catalog</span> <span class="n">of</span> <span class="n">traps</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">R</span><span class="o">-</span><span class="n">phase</span><span class="p">,</span> <span class="n">amp</span><span class="p">(</span><span class="n">dwell</span><span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">Amp</span><span class="p">(</span><span class="n">dwell</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tau</span><span class="p">,</span> <span class="n">Pc</span>
+    
+<span class="n">Report</span> <span class="n">on</span> <span class="p">:</span>
+   <span class="n">Histogram</span> <span class="n">of</span> <span class="n">Taus</span>
+   <span class="n">Histogram</span> <span class="n">of</span> <span class="n">Pc</span> <span class="p">(</span><span class="n">capture</span> <span class="n">probability</span><span class="p">)</span>
+   <span class="n">Histogram</span> <span class="n">of</span> <span class="n">R</span><span class="o">-</span><span class="n">phases</span>
+
+   <span class="n">Total</span> <span class="n">Count</span> <span class="n">of</span> <span class="n">Traps</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.TP02.prep_data">
+<code class="descclassname">vison.pump.TP02.</code><code class="descname">prep_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.prep_data" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Preparation</span> <span class="n">of</span> <span class="n">data</span> <span class="k">for</span> <span class="n">further</span> <span class="n">analysis</span><span class="p">:</span>
+
+<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span> <span class="p">[</span><span class="n">images</span> <span class="k">with</span> <span class="n">TPing</span> <span class="n">only</span><span class="p">]:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
+            <span class="n">subtract</span> <span class="n">offset</span>
+            <span class="n">divide</span> <span class="n">by</span> <span class="n">reference</span> <span class="n">image</span> <span class="n">wo</span> <span class="n">TPing</span>
+            <span class="n">average</span> <span class="n">across</span> <span class="n">readout</span> <span class="n">lines</span> <span class="p">(</span><span class="n">iterations</span><span class="p">)</span>
+            <span class="n">save</span> <span class="n">raw</span> <span class="mi">1</span><span class="n">D</span> <span class="nb">map</span> <span class="n">of</span> <span class="n">relative</span> <span class="n">pumping</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
@@ -163,7 +339,7 @@ TEST: TP01</p>
         <li class="right" >
           <a href="point_scripts.html" title="Point-Source Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+54.g66432a0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+71.gbd685c7 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
