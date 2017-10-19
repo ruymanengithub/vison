@@ -1,10 +1,10 @@
 Flat-Illumination Scripts
 =========================
 
-.. currentmodule::
+.. currentmodule:: flat
 
 FLAT0X
-----
+------
 
 .. automodule:: vison.flat.FLAT0X
     :members:
