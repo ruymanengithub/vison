@@ -119,8 +119,9 @@ def prep_data(DataDict,report,inputs,log=None):
             f.e.CCD:
                 f.e.Q:
                     subtract offset
-                    [subtract /? divide by reference image wo TPing]
-                    save raw 1D map of dipoles
+                    divide by reference image wo TPing
+                    average across readout lines (iterations)
+                    save raw 1D map of relative pumping
 
     
     """
@@ -139,7 +140,7 @@ def basic_analysis():
         f. e. ObsID [there are different TOI_TP and TP-patterns]:
             f.e.CCD:
                 f.e.Q:
-                    load raw 1D map of dipoles (from extract_data)
+                    load raw 1D map of relative pumping (from extract_data)
                     identify dipoles:
                         x, rel-amplitude, orientation (E or W)
 
@@ -158,20 +159,22 @@ def meta_analysis():
         Try to identify tau and pixel-phase location for each trap.
         Need to associate dipoles across TOI_TPs and TP-patterns        
         
-        NEED ADVICE FROM O.U. - ask Jesper, Ben, Julia
-
-
+ 
     **METACODE**
     
     ::
         
         across TOI_TP, patterns:
-            build catalog of unique dipoles / traps
-            get amplitude vs. TOI -> P(tau)
-            location of trap within pixel I-PHASE
+            build catalog of traps: x,y,R-phase, amp(dwell)
+            from Amp(dwell) -> tau, Pc
             
-        DON'T KNOW HOW TO DEAL WITH DIFFERENT PATTERNS, NOR HOW TO 
-        PRODUCE A USEFUL MAP OF TRAP LOCATIONS (X,Y,I-PHASE), P(TAU)
+        Report on :
+           Histogram of Taus
+           Histogram of Pc (capture probability)
+           Histogram of R-phases
+
+           Total Count of Traps
+
     
 
     """
