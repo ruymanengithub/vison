@@ -24,7 +24,7 @@ from vison.pipe import lib as pilib
 
 
 
-class Index():
+class Index(object):
     """ """
     
     def __init__(self,name,vals=[],N=0):
@@ -41,7 +41,10 @@ class Index():
     def __str__(self):
         return '"%s": %i' % (self.name,self.len)
 
-class Column():
+
+
+
+class Column(object):
     """ """
     
     def __init__(self,array,name,indices):
@@ -160,10 +163,10 @@ def useCases():
     
     """
     
-    dpath = '/home/raf/WORK/EUCLID/CALIBRATION/PipelineDevel/TEST_DATA/ELVIS_6.0.0/'
-    explogf = os.path.join(dpath,'EXP_LOG_270117.txt')
+    dpath = '/home/raf/WORK/EUCLID/CALIBRATION/PipelineDevel/TEST_DATA/24_Feb_80/'
+    explogf = os.path.join(dpath,'EXP_LOG_240280.txt')
     
-    explog = pilib.loadexplogs(explogf,elvis='6.0.0',addpedigree=False,datapath=None)
+    explog = pilib.loadexplogs(explogf,elvis='6.3.0',addpedigree=False,datapath=None)
     
     dd = DataDict()
     
