@@ -18,6 +18,7 @@ import numpy as np
 from pdb import set_trace as stop
 import os
 from collections import OrderedDict
+from copy import deepcopy
 
 from vison.pipe import lib as pilib
 # END IMPORT
@@ -55,14 +56,26 @@ class Column(object):
         assert isinstance(indices,list)
         for index in indices:
             assert isinstance(index,Index)
-            
+        
         assert len(self.shape) == len(indices)
+        
         for i in range(len(self.shape)):
             assert self.shape[i] == indices[i].len, stop()
                 
         self.indices = indices 
+        self.get_index_names()
         self.name = name
     
+    def name_indices(self):
+        """ """      
+        for index in self.indices:
+            print index
+
+    def get_index_names(self):
+        
+        self.indicesnames = []
+        for index in self.indices:
+            self.indicesnames.append(index.name)
     
     def __call__(self):
         return self.array
@@ -73,7 +86,7 @@ class Column(object):
     #def __str__(self):
     #    return self.name
 
-class DataDict():
+class DataDict(object):
     """ """
     
     
@@ -84,6 +97,7 @@ class DataDict():
         self.mx = OrderedDict()
         self.colnames = []
         self.indices = []
+        self.indicesnames = []
         self.products = dict() # data products
         
     def loadExpLog(self,explog):
@@ -113,10 +127,10 @@ class DataDict():
                 arrlist.append(explog[key].data[np.where(ccdcol==CCDkey)])
             array = np.array(arrlist).transpose() 
             self.addColumn(array,key,commIndices)
-                    
-        return None
         
-
+        return None
+    
+    
     
     def addColumn(self,array,name,indices):
         """ """
@@ -127,7 +141,9 @@ class DataDict():
         self.colnames.append(column.name)
         colindices = column.indices
         
-        selfindnames = [index.name for index in self.indices]
+        selfindnames = self.indicesnames
+        
+        
         
         for ic,index in enumerate(colindices):
             if index.name in selfindnames:
@@ -137,10 +153,30 @@ class DataDict():
             else:
                 self.indices.append(index)
         
+        self.get_index_names()
+        
+    
+    def name_indices(self):
+        """ """
+        for index in self.indices:
+            print index
+    
+    def get_index_names(self):
+        
+        self.indicesnames = []
+        for index in self.indices:
+            self.indicesnames.append(index.name)
+    
+    def col_has_index(self,colname,indexname):
+        """ """
+        assert colname in self.colnames
+        assert indexname in self.indicesnames
+        if indexname in self.mx[colname].indicesnames: return True
+        return False
+    
         
     def dropColumn(self,):
         """ """
-        
         
     
     def saveToFile(self,):
@@ -172,9 +208,40 @@ def useCases():
     
     dd.loadExpLog(explog)
     
+    print 'dd.name_indices()'
+    dd.name_indices()
+    
+    ans1 = dd.col_has_index('ObsID','ix')
+    print 'ix in ObsID: %s' % ans1
+    ans2 = dd.col_has_index('ObsID','CCD')
+    print 'CCD in ObsID: %s' % ans2
+    
+    
+    Xindices = deepcopy(dd.indices)
+    Xindices.append(Index('Quad',vals=['E','F','G','H']))
+    
+    ArrShape = []
+    for index in Xindices: ArrShape.append(index.len)
+    ArrShape = tuple(ArrShape)
+    
+    
+    spot_fluence = np.zeros(ArrShape,dtype='float32')
+    
+    dd.addColumn(spot_fluence,'spot_fluence',Xindices)
+    
+    print 'dd indices = '
+    dd.name_indices()
+    
+    ans3 = dd.col_has_index('spot_fluence','Quad')
+    print 'Quad in spot_fluence: %s' % ans3
+    
+    all_checker = lambda key: dd.col_has_index(key,'Quad')
+    
+    ans4 = np.any(map(all_checker,[colname for colname in dd.colnames if colname != 'spot_fluence']))
+    print 'Quad in colnames != spot_fluence: %s' % ans4
+    
     
     stop()
-    
 
 
 if __name__ == '__main__':
