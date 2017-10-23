@@ -44,6 +44,36 @@ class Index(object):
 
 
 
+class MultiIndex(list,object):
+    
+    def __init__(self,IndexList=[]):
+        
+        self += IndexList
+        self.names = self.get_names()
+    
+    def get_names(self):
+        """ """
+        names = []
+        for item in self:
+            names.append(item.name)
+        return names
+    
+    def update_names(self):
+        self.names = self.get_names()
+    
+    def append(self,*args):
+        super(MultiIndex,self).append(*args)
+        self.update_names()
+    
+    def __add__(self,*args):
+        super(MultiIndex,self).__add__(*args)
+        self.update_names()
+    
+    def pop(self,*args):
+        super(MultiIndex,self).pop(*args)
+        self.update_names()
+        
+        
 
 class Column(object):
     """ """
@@ -53,7 +83,7 @@ class Column(object):
         
         self.array = array.copy()
         self.shape = self.array.shape
-        assert isinstance(indices,list)
+        assert ((isinstance(indices,list)) or (isinstance(indices,MultiIndex)))
         for index in indices:
             assert isinstance(index,Index)
         
@@ -61,21 +91,17 @@ class Column(object):
         
         for i in range(len(self.shape)):
             assert self.shape[i] == indices[i].len, stop()
-                
-        self.indices = indices 
-        self.get_index_names()
+            
+        if isinstance(indices,list):
+            self.indices = MultiIndex(indices)
+        else:
+            self.indices = indices
         self.name = name
     
     def name_indices(self):
         """ """      
-        for index in self.indices:
-            print index
+        print self.indices.names
 
-    def get_index_names(self):
-        
-        self.indicesnames = []
-        for index in self.indices:
-            self.indicesnames.append(index.name)
     
     def __call__(self):
         return self.array
@@ -83,8 +109,6 @@ class Column(object):
     def __str__(self):
         return '%s: %s' % (self.name,self.array.__str__())
     
-    #def __str__(self):
-    #    return self.name
 
 class DataDict(object):
     """ """
@@ -96,8 +120,7 @@ class DataDict(object):
         self.meta = meta
         self.mx = OrderedDict()
         self.colnames = []
-        self.indices = []
-        self.indicesnames = []
+        self.indices = MultiIndex()
         self.products = dict() # data products
         
     def loadExpLog(self,explog):
@@ -141,8 +164,7 @@ class DataDict(object):
         self.colnames.append(column.name)
         colindices = column.indices
         
-        selfindnames = self.indicesnames
-        
+        selfindnames = self.indices.names
         
         
         for ic,index in enumerate(colindices):
@@ -153,36 +175,31 @@ class DataDict(object):
             else:
                 self.indices.append(index)
         
-        self.get_index_names()
-        
     
     def name_indices(self):
         """ """
-        for index in self.indices:
-            print index
-    
-    def get_index_names(self):
-        
-        self.indicesnames = []
-        for index in self.indices:
-            self.indicesnames.append(index.name)
+        print self.indices.names
     
     def col_has_index(self,colname,indexname):
         """ """
         assert colname in self.colnames
-        assert indexname in self.indicesnames
-        if indexname in self.mx[colname].indicesnames: return True
+        assert indexname in self.indices.names
+        if indexname in self.mx[colname].indices.names: return True
         return False
     
         
-    def dropColumn(self,):
+    def dropColumn(self,colname):
         """ """
+        
+        PENDING
+        colindices = self.mx[colname].indices
+        
+        
         
     
     def saveToFile(self,):
         """ """
-        
-    
+           
     
     
 def useCases():
@@ -208,13 +225,13 @@ def useCases():
     
     dd.loadExpLog(explog)
     
-    print 'dd.name_indices()'
-    dd.name_indices()
+    print 'dd.indices.get_names()'
+    print dd.indices.get_names()
     
     ans1 = dd.col_has_index('ObsID','ix')
-    print 'ix in ObsID: %s' % ans1
+    print 'ix in ObsID-col: %s' % ans1
     ans2 = dd.col_has_index('ObsID','CCD')
-    print 'CCD in ObsID: %s' % ans2
+    print 'CCD in ObsID-col: %s' % ans2
     
     
     Xindices = deepcopy(dd.indices)
@@ -239,6 +256,13 @@ def useCases():
     
     ans4 = np.any(map(all_checker,[colname for colname in dd.colnames if colname != 'spot_fluence']))
     print 'Quad in colnames != spot_fluence: %s' % ans4
+    
+    
+    print 'Dropping spot_fluence'
+    dd.dropColumn('spot_fluence')
+    
+    print 'Columns: ', dd.colnames
+    print 'Indices: ', dd.indices.names
     
     
     stop()
