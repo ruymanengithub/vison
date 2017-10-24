@@ -19,8 +19,12 @@ from pdb import set_trace as stop
 import os
 from collections import OrderedDict
 from copy import deepcopy
+import string as st
+import astropy as ast
+import itertools
 
 from vison.pipe import lib as pilib
+from vison.support.files import cPickleDumpDictionary,cPickleRead
 # END IMPORT
 
 
@@ -48,8 +52,12 @@ class MultiIndex(list,object):
     
     def __init__(self,IndexList=[]):
         
-        self += IndexList
+        #assert (isinstance(IndexList,list) or isinstance(IndexList,MultiIndex))
+        
+        try: self += IndexList
+        except TypeError: self += [IndexList]
         self.names = self.get_names()
+        self.shape = self.get_shape()
     
     def get_names(self):
         """ """
@@ -58,23 +66,47 @@ class MultiIndex(list,object):
             names.append(item.name)
         return names
     
+    def get_shape(self):
+        shape = []
+        for item in self:
+            shape.append(item.len)
+        return tuple(shape)
+    
+    
     def update_names(self):
         self.names = self.get_names()
+        
+    def update_shape(self):
+        self.shape = self.get_shape()
     
     def append(self,*args):
         super(MultiIndex,self).append(*args)
         self.update_names()
+        self.update_shape()
     
     def __add__(self,*args):
         super(MultiIndex,self).__add__(*args)
         self.update_names()
+        self.update_shape()
+        
     
     def pop(self,*args):
         super(MultiIndex,self).pop(*args)
         self.update_names()
+        self.update_shape()
+    
+    
+    def __getslice__(self,i,j):
+        return MultiIndex(super(MultiIndex,self).__getslice__(i,j))
+    
+    #def __getitem__(self,key):
+    #    return MultiIndex(super(MultiIndex,self).__getitem__(key))
+    
+    def __str__(self):
+        inside = st.join(['%s' % item.__str__() for item in self],',')
+        return '[%s]' % inside
         
-        
-
+    
 class Column(object):
     """ """
     
@@ -99,7 +131,7 @@ class Column(object):
         self.name = name
     
     def name_indices(self):
-        """ """      
+        """ """
         print self.indices.names
 
     
@@ -135,7 +167,7 @@ class DataDict(object):
         ccdcol = explog['CCD']
         
         ObsIndex = Index('ix',N=Nobs)
-        commIndices = [ObsIndex,Index('CCD',CCDs)]
+        commIndices = MultiIndex([ObsIndex,Index('CCD',CCDs)])
         
         self.addColumn(uObsID,'ObsID',[ObsIndex])
         
@@ -154,6 +186,16 @@ class DataDict(object):
         return None
     
     
+    def initColumn(self,name,indices,dtype='float32',valini=0.):
+        """ """
+        
+        assert isinstance(indices,MultiIndex)
+        
+        shape = indices.shape
+        array = np.zeros(shape,dtype=dtype) + valini
+        self.addColumn(array,name,indices)
+        
+        
     
     def addColumn(self,array,name,indices):
         """ """
@@ -189,17 +231,57 @@ class DataDict(object):
     
         
     def dropColumn(self,colname):
-        """ """
+        """ """      
         
-        PENDING
+        assert colname in self.colnames
+        
         colindices = self.mx[colname].indices
+        colnames = self.colnames
         
+        indexescounter = []
+        for colindex in colindices:            
+            indexescounter.append(len([1 for icolname in colnames if \
+                                       colindex.name in self.mx[icolname].indices.names]))
         
+        ixunique = np.where(np.array(indexescounter) == 1)
+        for ixix in ixunique[0]:
+            self.indices.pop(ixix)
         
-    
-    def saveToFile(self,):
+        self.mx.pop(colname)
+        self.colnames.pop(self.colnames.index(colname))
+
+    def saveToFile(self,outfile,format='ascii.commented_header'):
         """ """
-           
+        
+        t = ast.table.Table()
+        
+        
+        for col in self.mx:
+            cindex = self.mx[col].indices
+            carray = self.mx[col]().copy()
+            if len(cindex) == 1:
+                t[col] = ast.table.Column(carray)
+            elif len(cindex) > 1:
+                _names = cindex[1:].names
+                _vals = [item.vals for item in cindex[1:]]
+                _ixix = [range(item.len) for item in cindex[1:]]
+                prod_vals = list(itertools.product(*_vals))
+                prod_ixix = list(itertools.product(*_ixix))
+                tmp_suf = st.join([('_%s' % item)+'%s' for item in _names],'')
+                
+                nix0 = cindex[0].len
+                
+                for i in range(len(prod_vals)):
+                    suf = tmp_suf % prod_vals[i]
+                    key = col+suf
+                    jxx = [tuple([jx] + list(prod_ixix[i])) for jx in range(nix0)]
+                    
+                    carray = np.array([self.mx[col]()[_jxx] for _jxx in jxx])
+                
+                    t[key] = ast.table.Column(carray)
+                
+        t.write(outfile,format=format)
+        
     
     
 def useCases():
@@ -210,9 +292,9 @@ def useCases():
         # create a DataDict object from an exposure log.
         # add a column indexed by ObsID, CCD and Quad
         # drop a column
-        # save to a text / excel file
         # create a column from an operation on several columns with different dimensions
-        
+        # save to a text / excel file
+        # save to a pickle file
     
     """
     
@@ -225,8 +307,8 @@ def useCases():
     
     dd.loadExpLog(explog)
     
-    print 'dd.indices.get_names()'
-    print dd.indices.get_names()
+    print 'dd.indices'
+    print dd.indices
     
     ans1 = dd.col_has_index('ObsID','ix')
     print 'ix in ObsID-col: %s' % ans1
@@ -241,13 +323,14 @@ def useCases():
     for index in Xindices: ArrShape.append(index.len)
     ArrShape = tuple(ArrShape)
     
+    print 'Adding spot_fluence'
     
     spot_fluence = np.zeros(ArrShape,dtype='float32')
     
     dd.addColumn(spot_fluence,'spot_fluence',Xindices)
     
     print 'dd indices = '
-    dd.name_indices()
+    print dd.indices
     
     ans3 = dd.col_has_index('spot_fluence','Quad')
     print 'Quad in spot_fluence: %s' % ans3
@@ -262,7 +345,47 @@ def useCases():
     dd.dropColumn('spot_fluence')
     
     print 'Columns: ', dd.colnames
-    print 'Indices: ', dd.indices.names
+    print 'Indices: ', dd.indices
+    
+    
+    OCQindices = Xindices
+    
+    OCindices = Xindices[0:2]
+    
+    dd.initColumn('gain',OCindices,dtype='float32',valini=1.)
+    dd.mx['gain']()[:,0] = 1.
+    dd.mx['gain']()[:,1] = 2.
+    dd.mx['gain']()[:,2] = 3.
+    
+    
+    dd.initColumn('spot_fwhm',OCQindices,dtype='float32',valini=0.)
+    
+    
+    nObs = dd.indices[dd.indices.names.index('ix')].len
+    nCCD = dd.indices[dd.indices.names.index('CCD')].len
+    nQuad = dd.indices[dd.indices.names.index('Quad')].len
+    
+    for iObs in range(nObs):
+        for jCCD in range(nCCD):
+            for kQ in range(nQuad):
+                
+                dd.mx['spot_fwhm']()[iObs,jCCD,kQ] = (dd.mx['ObsID']()[iObs] + \
+                    dd.mx['gain']()[iObs,jCCD]*1.e4) * (-1.)**kQ
+    
+    # PICKLING
+    
+    pickf = 'test_DD.pick'
+    data = dict(dd=dd)
+    cPickleDumpDictionary(data,output=pickf)
+    
+    res = cPickleRead(pickf)
+    
+    ddret = res['dd']
+    
+    
+    outf = 'test_DD.txt'
+    
+    dd.saveToFile(outf,format='ascii')
     
     
     stop()
