@@ -167,7 +167,6 @@ def check_data(dd,report,inputs,log=None):
     
     bypass = True # TESTS
     
-    stop()
     
     # CHECK AND CROSS-CHECK HK: PENDING
     pass
@@ -223,6 +222,7 @@ def check_data(dd,report,inputs,log=None):
     # Assess metrics are within allocated boundaries
 
     offset_lims = [1000.,3500.]
+    offset_diffs = dict(img=[-1.,+5.],ove=[-1.,+6.])
     
     std_lims = [0.5,2.]
     
@@ -230,29 +230,38 @@ def check_data(dd,report,inputs,log=None):
     
     compliance_offsets = dict()
     for reg in ['pre','img','ove']:
-        compliance_offsets[reg] = ((dd.mx['offset_%s' % reg][:] >= offset_lims[0]) &\
-                      (dd.mx['offset_%s' % reg][:] <= offset_lims[1]))
+        
+        test = ((dd.mx['offset_%s' % reg][:] <= offset_lims[0]) |\
+                      (dd.mx['offset_%s' % reg][:] >= offset_lims[1]))
+        compliance_offsets[reg] = np.any(test,axis=(1,2)).sum()
+    
     
     # cross-check of offsets
-    
-    
-    
+        
+    xcheck_offsets = dict()
+    for reg in ['img','ove']:
+        
+        test = dd.mx['offsets_%s' % reg][:]-dd.mx['offsets_pre'][:]
+        
+        testBool = (test <= offset_diffs[reg][0]) | \
+               (test >= offset_diffs[reg][1])
+        xcheck_offsets['img'] = np.any(testBool,axis=(1,2)).sum()
     
     # absolute value of std
         
     compliance_std = dict()
-    for reg in ['pre','img','ove']:
-        compliance_std[reg] = ((dd.mx['std_%s' % reg][:] >= std_lims[0]) &\
-                      (dd.mx['std_%s' % reg][:] <= std_lims[1]))
+    for reg in ['pre']:
         
-    # cross-check of stds
-    
-    
+        test = ((dd.mx['std_%s' % reg][:] <= std_lims[0]) |\
+                      (dd.mx['std_%s' % reg][:] >= std_lims[1]))
+        compliance_std[reg] = np.any(test,axis=(1,2)).sum()
     
     # Do some Plots
     
     # offsets vs. time
     # std vs. time
+    
+    
     
     # Update Report, raise flags, fill-in log
     
