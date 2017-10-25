@@ -24,8 +24,9 @@ import astropy as ast
 import itertools
 import tempfile
 
-from vison.pipe import lib as pilib
+from vison.datamodel import EXPLOGtools as ELtools
 from vison.support.files import cPickleDumpDictionary,cPickleRead
+from vison.support import flags
 # END IMPORT
 
 
@@ -168,6 +169,7 @@ class DataDict(object):
         self.colnames = []
         self.indices = vMultiIndex()
         self.products = dict() # data products
+        self.flags = flags.Flags()
         
     def loadExpLog(self,explog):
         """ """
@@ -317,7 +319,7 @@ def useCases():
     dpath = '/home/raf/WORK/EUCLID/CALIBRATION/PipelineDevel/TEST_DATA/24_Feb_80/'
     explogf = os.path.join(dpath,'EXP_LOG_240280.txt')
     
-    explog = pilib.loadexplogs(explogf,elvis='6.3.0',addpedigree=False,datapath=None)
+    explog = ELtools.loadExpLog(explogf,elvis=elvis)
     
     dd = DataDict()
     

@@ -14,6 +14,7 @@ Created on Wed Jan 25 16:58:33 2017
 """
 
 # IMPORT STUFF
+import sys
 from pdb import set_trace as stop
 import os
 from vison.support import vistime
@@ -63,9 +64,9 @@ class Section(Content):
     
     def __init__(self,Title='',level=0):
         
-        levelnames = ['section','subsection','subsubsection']
+        self.levelnames = ['section','subsection','subsubsection']
         
-        self.type = levelnames[level]
+        self.type = self.levelnames[level]
         self.Title = Title
         
     def generate_Latex(self):
@@ -221,7 +222,9 @@ class Report(object):
     def add_Section(self,Title='',level=0):
         """ """
         self.Contents.append(Section(Title,level))
-        
+    
+    def drop_Section(self,Title,level):
+        sys.exit('Not Implemented')
         
     def add_Figure(self,figpath,texfraction=0.7,caption=None,label=None):
         """ """

@@ -256,7 +256,7 @@ class Pipe(object):
             
             # Filter Exposures that belong to the test
         
-            #DataDict, isconsistent = Test.filterexposures(structure,explogf,datapath,OBSID_lims,
+            #dd, isconsistent = Test.filterexposures(structure,explogf,datapath,OBSID_lims,
             #                             elvis)
 
             explog, checkreport = Test.filterexposures(structure,explogf,datapath,OBSID_lims,
@@ -284,20 +284,20 @@ class Pipe(object):
             # Building DataDict 
             
             
-            DataDict = pilib.DataDict_builder(explog,inputs,structure)
+            dd = pilib.DataDict_builder(explog,inputs,structure)
             
             
             HKKeys = Test.HKKeys
             
             # Add HK information
-            DataDict = pilib.addHK(DataDict,HKKeys,elvis=elvis)
+            dd = pilib.addHK(dd,HKKeys,elvis=elvis)
             
             
-            pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)
+            pilib.save_progress(dd,reportobj,DataDictFile,reportobjFile)
             
         else:
             
-            DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
+            dd, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
         
         # DATA-WORK and ANALYSIS        
         
@@ -306,10 +306,10 @@ class Pipe(object):
             subtaskname, subtaskfunc = subtask
             
             if todo_flags[subtaskname]:
-                DataDict,reportobj = subtaskfunc(DataDict,reportobj,inputs,self.log)
-                pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)
+                dd,reportobj = subtaskfunc(dd,reportobj,inputs,self.log)
+                pilib.save_progress(dd,reportobj,DataDictFile,reportobjFile)
             else:
-                DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
+                dd, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
         
 
         # Write automatic Report of Results
@@ -323,7 +323,7 @@ class Pipe(object):
                 os.system('mv %s %s/' % (outfile,resultspath))
         
 
-        pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)
+        pilib.save_progress(dd,reportobj,DataDictFile,reportobjFile)
         
         if self.log is not None:
             self.log.info('Finished %s' % taskname)

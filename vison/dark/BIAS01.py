@@ -30,7 +30,8 @@ from vison.datamodel import HKtools
 from vison.datamodel import ccd
 from vison.datamodel import generator
 import datetime
-from copy import deepcopy
+import copy
+from vison.datamodel import core
 
 
 #from vison.support.report import Report
@@ -41,7 +42,11 @@ from copy import deepcopy
 isthere = os.path.exists
 
 
-HKKeys = []
+HKKeys = ['CCD1_OD_T','CCD2_OD_T','CCD3_OD_T','COMM_RD_T',
+'CCD2_IG1_T','CCD3_IG1_T','CCD1_TEMP_T','CCD2_TEMP_T','CCD3_TEMP_T',
+'CCD1_IG1_T','COMM_IG2_T','FPGA_PCB_TEMP_T','CCD1_OD_B',
+'CCD2_OD_B','CCD3_OD_B','COMM_RD_B','CCD2_IG1_B','CCD3_IG1_B','CCD1_TEMP_B',
+'CCD2_TEMP_B','CCD3_TEMP_B','CCD1_IG1_B','COMM_IG2_B']
 
 
 BIAS01_commvalues = dict(program='CALCAMP',test='BIAS01',
@@ -73,7 +78,7 @@ def build_BIAS01_scriptdict(N,diffvalues=dict(),elvis='6.3.0'):
     BIAS01_sdict['Ncols'] = Ncols
 
                 
-    commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+    commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
     commvalues.update(BIAS01_commvalues)
     
     BIAS01_sdict = sc.update_structdict(BIAS01_sdict,commvalues,diffvalues)
@@ -96,7 +101,6 @@ def filterexposures(structure,explogf,datapath,OBSID_lims,elvis):
     
     explog = pilib.loadexplogs(explogf,elvis=elvis,addpedigree=True,datapath=datapath)
     
-        
     # SELECTION OF OBSIDS
     
     selbool = (explog['test']=='BIAS01') & \
@@ -106,21 +110,18 @@ def filterexposures(structure,explogf,datapath,OBSID_lims,elvis):
     explog = explog[selbool]
 
     
-    # Assess structure
-    
+    # Assess structure    
     checkreport = pilib.check_test_structure(explog,structure,CCDs=[1,2,3],
                                            wavedkeys=wavedkeys)
     
     # Labeling of exposures [optional]
-    
     explog['label'] = np.array(['bias']*len(explog))
-    
     
     
     return explog, checkreport
 
 
-def check_data(DataDict,report,inputs,log=None):
+def check_data(dd,report,inputs,log=None):
     """ 
     
     BIAS01: Checks quality of ingested data.
@@ -159,12 +160,108 @@ def check_data(DataDict,report,inputs,log=None):
     
     """
     
-
+    if log is not None:
+        log.info('BIAS01.check_data')
     
-    return DataDict, report
+    report.add_Section(Title='CHECK\_DATA',level=0)
+    
+    bypass = True # TESTS
+    
+    stop()
+    
+    # CHECK AND CROSS-CHECK HK: PENDING
+    pass
+
+    # Initialize new columns
+
+    Xindices = copy.deepcopy(dd.indices)
+    
+    if 'Quad' not in Xindices.names:
+        Xindices.append(core.vIndex('Quad',vals=pilib.Quads))
+    
+    dummyOffset = 2000.
+    dummystd = 1.3
+    
+    newcolnames_off = ['offset_pre','offset_img','offset_ove']
+    for newcolname_off in newcolnames_off:
+        if newcolname_off in dd.colnames:
+            dd.dropColumn(newcolname_off)
+        dd.initColumn(newcolname_off,Xindices,dtype='float32',valini=dummyOffset)
+    
+    newcolnames_std = ['std_pre','std_img','std_ove']
+    for newcolname_std in newcolnames_std:
+        if newcolname_std in dd.colnames:
+            dd.dropColumn(newcolname_std)
+        dd.initColumn(newcolname_std,Xindices,dtype='float32',valini=dummystd)
+    
+    
+    nObs,nCCD,nQuad = Xindices.shape
+    Quads = Xindices[2].vals
+    
+    # Get statistics in different regions
+    
+    if not bypass:
+    
+        for iObs in range(nObs):
+            
+            for jCCD in range(nCCD):
+                
+                dpath = dd.mx['datapath'][iObs,jCCD]
+                ffits = os.path.join(dpath,dd.mx['Files'][iObs,jCCD])
+                
+                ccdobj = ccd.CCD(ffits)
+                
+                for kQ in range(nQuad):
+                    Quad = Quads[kQ]
+                    
+                    for reg in ['pre','img', 'ove']:
+                        stats = ccdobj.get_stats(Quad,sector=reg,statkeys=['mean','std'],trimscan=[5,5],
+                                ignore_pover=True,extension=-1)
+                        dd.mx['offset_%s' % reg][iObs,jCCD,kQ] = stats[0]
+                        dd.mx['std_%s' % reg][iObs,jCCD,kQ] = stats[1]
+                
+    # Assess metrics are within allocated boundaries
+
+    offset_lims = [1000.,3500.]
+    
+    std_lims = [0.5,2.]
+    
+    # absolute value of offsets
+    
+    compliance_offsets = dict()
+    for reg in ['pre','img','ove']:
+        compliance_offsets[reg] = ((dd.mx['offset_%s' % reg][:] >= offset_lims[0]) &\
+                      (dd.mx['offset_%s' % reg][:] <= offset_lims[1]))
+    
+    # cross-check of offsets
+    
+    
+    
+    
+    # absolute value of std
+        
+    compliance_std = dict()
+    for reg in ['pre','img','ove']:
+        compliance_std[reg] = ((dd.mx['std_%s' % reg][:] >= std_lims[0]) &\
+                      (dd.mx['std_%s' % reg][:] <= std_lims[1]))
+        
+    # cross-check of stds
+    
+    
+    
+    # Do some Plots
+    
+    # offsets vs. time
+    # std vs. time
+    
+    # Update Report, raise flags, fill-in log
+    
+    
+    
+    return dd, report
     
 
-def prep_data(DataDict,report,inputs,log=None):
+def prep_data(dd,report,inputs,log=None):
     """
     
     BIAS01: Preparation of data for further analysis.
@@ -175,15 +272,17 @@ def prep_data(DataDict,report,inputs,log=None):
         f.e. ObsID:
             f.e.CCD:
                 f.e.Q:
-                    subtract offset: save to FITS, update filename
+                    subtract offset: save to FITS, UPDATE filename
     
     """
     
+    if log is not None:
+        log.info('BIAS01.prep_data')
     
     
-    return DataDict,report
+    return dd,report
     
-def basic_analysis(DataDict,report,inputs,log=None):
+def basic_analysis(dd,report,inputs,log=None):
     """ 
     
     BIAS01: Basic analysis of data.
@@ -206,11 +305,13 @@ def basic_analysis(DataDict,report,inputs,log=None):
     
     """
     
+    if log is not None:
+        log.info('BIAS01.basic_analysis')
    
     
-    return DataDict,report
+    return dd,report
     
-def meta_analysis(DataDict,report,inputs,log=None):
+def meta_analysis(dd,report,inputs,log=None):
     """
     
     **METACODE**
@@ -229,7 +330,11 @@ def meta_analysis(DataDict,report,inputs,log=None):
         
     """
     
-    return DataDict,report
+    if log is not None:
+        log.info('BIAS01.meta_analysis')
+    
+    
+    return dd,report
 
 
 def feeder(inputs,elvis='6.3.0'):
