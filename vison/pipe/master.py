@@ -64,18 +64,17 @@ waittime = 120 # seconds
 class Pipe(object):
     """Master Class of FM-analysis """
     
-    from vison.dark import BIAS01
-    #from vison.dark.DARK01 import dark01
-    #from vison.inject.CHINJ01 import chinj01
-    #from vison.inject.CHINJ02 import chinj02
-    #from vison.flat.FLAT0X import flat0x
-    #from vison.flat.NL01 import nl01
-    #from vison.flat.PTC0X import ptc0x
-    #from vison.pump.TP01 import tp01
-    #from vison.pumpTP02 import tp02
-    #from vison.other.PERSIST01 import persist01
+    from vison.dark import BIAS01, DARK01
+    from vison.flat import NL01, FLAT0X, PTC0X
+    from vison.inject import CHINJ01, CHINJ02
+    from vison.pump import TP01, TP02
+    from vison.other import PERSIST01
     
-    Test_dict = dict(BIAS01=BIAS01)
+    Test_dict = dict(BIAS01=BIAS01,DARK01=DARK01,
+                     NL01=NL01,FLAT0X=FLAT0X,PTC0X=PTC0X,
+                     CHINJ01=CHINJ01,CHINJ02=CHINJ02,
+                     TP01=TP01,TP02=TP02,
+                     PERSIST01=PERSIST01)
     
     
     def __init__(self,inputdict,dolog=True):
@@ -259,9 +258,10 @@ class Pipe(object):
         
             #DataDict, isconsistent = Test.filterexposures(structure,explogf,datapath,OBSID_lims,
             #                             elvis)
-            
+
             explog, checkreport = Test.filterexposures(structure,explogf,datapath,OBSID_lims,
                                          elvis)
+            
     
             if self.log is not None:
                 self.log.info('%s acquisition consistent with expectations: %s' % (testkey,checkreport['checksout']))
@@ -272,7 +272,7 @@ class Pipe(object):
             
             # Adding Time Axis            
             
-            explog['time'] = np.array(map(vistime.get_dtobj,explog['DATE'])).copy()
+            explog['time'] = np.array(map(vistime.get_dtobj,explog['date'])).copy()
 
             # Filling in the .fits extension
             

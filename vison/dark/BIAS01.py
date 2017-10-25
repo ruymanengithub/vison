@@ -99,7 +99,7 @@ def filterexposures(structure,explogf,datapath,OBSID_lims,elvis):
         
     # SELECTION OF OBSIDS
     
-    selbool = (explog['TEST']=='BIAS01') & \
+    selbool = (explog['test']=='BIAS01') & \
         (explog['ObsID'] >= OBSID_lims[0]) & \
         (explog['ObsID'] <= OBSID_lims[1]) 
     
