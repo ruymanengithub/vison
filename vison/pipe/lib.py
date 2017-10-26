@@ -14,6 +14,7 @@ Created on Wed Nov 30 11:11:27 2016
 from pdb import set_trace as stop
 
 import copy
+from vison import __version__
 from vison.datamodel import core
 from vison.datamodel.ccd import CCD
 from vison.datamodel import EXPLOGtools as ELtools
@@ -177,7 +178,7 @@ def DataDict_builder(explog,inputs,structure):
     
     dd = core.DataDict()
     # Load Metadata
-    dd.meta = dict(inputs=inputs,structure=structure)
+    dd.meta = dict(inputs=inputs,structure=structure,vison=__version__)
     # Load Exposure Log
     dd.loadExpLog(explog)
     

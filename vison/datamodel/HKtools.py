@@ -16,6 +16,7 @@ from pdb import set_trace as stop
 import os
 from glob import glob
 import datetime
+import sys
 
 from matplotlib import pyplot as plt
 import pylab
@@ -109,35 +110,95 @@ allHK_keys['6.3.0'] = ['TimeStamp',
 'VccdErrFlg','VclkErrFlg','VanErrFlg','stRamErr','hkRamErr','ADC_BSY_ERR_CNT',
 'SPW_STATUS_REG']
 
+# HKlims = dict(Performance=dict(key=[Relative/Absolute/Identity,min,max]))
+
 HKlims = {}
-HKlims['6.3.0'] = {'CCD1_OD_T':[25.,27],'CCD2_OD_T':[25.,27],'CCD3_OD_T':[25.,27],
-'CCD1_OD_B':[25.,27.],'CCD2_OD_B':[25.,27.],'CCD3_OD_B':[25.,27.],
-'COMM_RD_T':[15.,17],'COMM_RD_B':[15.,17.],
-'CCD1_IG1_T':[0.,12.],'CCD2_IG1_T':[0.,12.],'CCD3_IG1_T':[0.,12.],
-'CCD2_IG1_B':[0.,12.],'CCD3_IG1_B':[0.,12.],'CCD1_IG1_B':[0.,12.],
-'COMM_IG2_T':[0.,12.],'COMM_IG2_B':[0.,12.],
-'CCD1_TEMP_T':[-130.,-110.],'CCD2_TEMP_T':[-130,-110.],'CCD3_TEMP_T':[-130.,-110.],
-'CCD1_TEMP_B':[-130.,-110.],'CCD2_TEMP_B':[-130.,-110.],'CCD3_TEMP_B':[-130.,-110.],
-'VID_PCB_TEMP_T':[20.,70.],'FPGA_PCB_TEMP_T':[20.,70.],
-'VID_PCB_TEMP_B':[20.,70.],'FPGA_PCB_TEMP_B':[20.,70.],
-'FPGA_BIAS_DD':[22.,26.],'FPGA_BIAS_OG':[-1.,3.],
-'FPGA_BIAS_ID1':[-1.,1.],'FPGA_BIAS_ID2':[-1.,1.],
-'FPGA_BIAS_ID_T':[0.,20.],'FPGA_BIAS_ID_B':[0.,20.],
-'FPGA_VRCLK_V':[8.,12.],'FPGA_10VA_P_V':[8.,12.],
-'FPGA_VICLK_V':[-1.,1.],'FPGA_5VA_P_V':[4.,6.],'FPGA_5VREF_V':[4.,6.],
-'FPGA_VCCD_V':[31.,33.],'FPGA_1V5VD_P_V':[1.,2.],
-'FPGA_3V2_N_V':[-4.,-2.],'FPGA_5VA_N_V':[-6.,-4.],
-'RPSU_VCCD_V':[49.,51.],'RPSU_VCLK_V':[19.,21.],'RPSU_VAN_P_V':[9.,11.],
-'RPSU_VAN_N_V':[9.,11.],'RPSU_3V3VD_V':[6.,8.],'RPSU_1V5VD_V':[3.,5.],
-'RPSU_28V_PRI_V':[27.,29.],'RPSU_TEMP1':[10.,70.],
-'RPSU_VCCD_I':[-1.,1.],'RPSU_VCLK_I':[18.,21.],'RPSU_VAN_P_I':[2.5,4.],
-'RPSU_VAN_N_I':[2.5,4.],'RPSU_3V3VD_I':[2.5,4.],'RPSU_1V5VD_I':[2.5,4.],
-'RPSU_28V_PRI_I':[2.5,4.],'RPSU_TEMP_2':[9.,11.],
-'stTMRErrFlg':[0],'hkTMRErrFlg':[0],
-'spwTmTOFlg':[0],'CDPUClkSt':[0],'fpgaSpwErr':[0],'V3v3ProtCnt':[0],'V5ProtCnt':[0],
-'VccdErrFlg':[0],'VclkErrFlg':[0],'VanErrFlg':[0],'stRamErr':[0],'hkRamErr':[0],
-'ADC_BSY_ERR_CNT':[0],
-'SPW_STATUS_REG':[0]}
+HKlims['6.3.0'] = dict(P={'CCD1_OD_T':['R',-0.2,+0.2],'CCD2_OD_T':['R',-0.2,+0.2],'CCD3_OD_T':['R',-0.2,+0.2],
+'CCD1_OD_B':['R',-0.2,+0.2],'CCD2_OD_B':['R',-0.2,+0.2],'CCD3_OD_B':['R',-0.2,+0.2],
+'COMM_RD_T':['R',-0.2,+0.2],'COMM_RD_B':['R',-0.2,+0.2],
+'CCD1_IG1_T':['R',-0.2,+0.2],'CCD2_IG1_T':['R',-0.2,+0.2],'CCD3_IG1_T':['R',-0.2,+0.2],
+'CCD2_IG1_B':['R',-0.2,+0.2],'CCD3_IG1_B':['R',-0.2,+0.2],'CCD1_IG1_B':['R',-0.2,+0.2],
+'COMM_IG2_T':['R',-0.2,+0.2],'COMM_IG2_B':['R',-0.2,+0.2],
+'CCD1_TEMP_T':['A',-121.,-119.],'CCD2_TEMP_T':['A',-121.,-119.],'CCD3_TEMP_T':['A',-121.,-119.],
+'CCD1_TEMP_B':['A',-121.,-119.],'CCD2_TEMP_B':['A',-121.,-119.],'CCD3_TEMP_B':['A',-121.,-119.],
+'VID_PCB_TEMP_T':['A',-10.,+40.],'FPGA_PCB_TEMP_T':['A',-10.,+40.],
+'VID_PCB_TEMP_B':['A',-10.,+40.],'FPGA_PCB_TEMP_B':['A',-10.,+40.],
+'FPGA_BIAS_DD':['A',21.8,22.2],'FPGA_BIAS_OG':['A',1.8,2.2],
+'FPGA_BIAS_ID1':['R',-0.2,+0.2],'FPGA_BIAS_ID2':['R',-0.2,+0.2],
+'FPGA_BIAS_ID_T':['A',-0.3,+25.],'FPGA_BIAS_ID_B':['A',-0.3,+25.],
+'FPGA_VRCLK_V':['A',9.,11.],'FPGA_10VA_P_V':['A',9.,11.],
+'FPGA_VICLK_V':['A',7.2,8.8],'FPGA_5VA_P_V':['A',4.75,5.25],'FPGA_5VREF_V':['A',4.9,5.1],
+'FPGA_VCCD_V':['A',29.5,30.5],'FPGA_1V5VD_P_V':['A',1.45,1.55],
+'FPGA_3V2_N_V':['A',-3.7,-2.7],'FPGA_5VA_N_V':['A',-5.9,-4.9],
+'RPSU_VCCD_V':['A',31.6,36.],'RPSU_VCLK_V':['A',11.5,14.],'RPSU_VAN_P_V':['A',6.0,8.2],
+'RPSU_VAN_N_V':['A',-6.,-8.2],'RPSU_3V3VD_V':['A',3.1,3.6],'RPSU_1V5VD_V':['A',1.435,1.575],
+'RPSU_28V_PRI_V':['A',26.,29.],'RPSU_TEMP1':['A',-10.,50.],
+'RPSU_VCCD_I':['A',0.,0.1],'RPSU_VCLK_I':['A',0.,0.1],'RPSU_VAN_P_I':['A',0.,0.6],
+'RPSU_VAN_N_I':[0.0,0.6,'A'],'RPSU_3V3VD_I':[0.,0.150,'A'],'RPSU_1V5VD_I':['A',0.0,0.150],
+'RPSU_28V_PRI_I':['A',0.35,0.5],'RPSU_TEMP_2':['A',-10.,40.],
+'stTMRErrFlg':['I',0],'hkTMRErrFlg':['I',0],
+'spwTmTOFlg':['I',0],'CDPUClkSt':['I',0],'fpgaSpwErr':['I',0],'V3v3ProtCnt':['I',0],'V5ProtCnt':['I',0],
+'VccdErrFlg':['I',0],'VclkErrFlg':['I',0],'VanErrFlg':['I',0],'stRamErr':['I',0],'hkRamErr':['I',0],
+'ADC_BSY_ERR_CNT':['I',0],
+'SPW_STATUS_REG':['I','2FA0']},
+    S={'CCD1_OD_T':['A',-0.3,+30.],'CCD2_OD_T':['A',-0.3,+30.],'CCD3_OD_T':['A',-0.3,+30.],
+'CCD1_OD_B':['A',-0.3,+30.],'CCD2_OD_B':['A',-0.3,+30.],'CCD3_OD_B':['A',-0.3,+30.],
+'COMM_RD_T':['A',-0.3,+25.],'COMM_RD_B':['A',-0.3,+25.],
+'CCD1_IG1_T':['A',-20.,+20.],'CCD2_IG1_T':['A',-20.,+20.],'CCD3_IG1_T':['A',-20.,+20.],
+'CCD2_IG1_B':['A',-20.,+20.],'CCD3_IG1_B':['A',-20.,+20.],'CCD1_IG1_B':['A',-20.,+20.],
+'COMM_IG2_T':['A',-20.,+20.],'COMM_IG2_B':['A',-20.,+20.],
+'CCD1_TEMP_T':['A',-133.,35.],'CCD2_TEMP_T':['A',-133.,35.],'CCD3_TEMP_T':['A',-133.,35.],
+'CCD1_TEMP_B':['A',-133.,35.],'CCD2_TEMP_B':['A',-133.,35.],'CCD3_TEMP_B':['A',-133.,35.],
+'VID_PCB_TEMP_T':['A',-10.,+40.],'FPGA_PCB_TEMP_T':['A',-10.,+40.],
+'VID_PCB_TEMP_B':['A',-10.,+40.],'FPGA_PCB_TEMP_B':['A',-10.,+40.],
+'FPGA_BIAS_DD':['A',-0.3,30.],'FPGA_BIAS_OG':['A',-20.,20.],
+'FPGA_BIAS_ID1':['A',-0.3,+25.],'FPGA_BIAS_ID2':['A',-0.3,+25.],
+'FPGA_BIAS_ID_T':['A',-0.3,+25.],'FPGA_BIAS_ID_B':['A',-0.3,+25.],
+'FPGA_VRCLK_V':['A',9.,11.],'FPGA_10VA_P_V':['A',9.,11.],
+'FPGA_VICLK_V':['A',7.2,8.8],'FPGA_5VA_P_V':['A',4.75,5.25],'FPGA_5VREF_V':['A',4.9,5.1],
+'FPGA_VCCD_V':['A',29.5,30.5],'FPGA_1V5VD_P_V':['A',1.45,1.55],
+'FPGA_3V2_N_V':['A',-3.7,-2.7],'FPGA_5VA_N_V':['A',-5.9,-4.9],
+'RPSU_VCCD_V':['A',31.6,36.],'RPSU_VCLK_V':['A',11.5,14.],'RPSU_VAN_P_V':['A',6.0,8.2],
+'RPSU_VAN_N_V':['A',-6.,-8.2],'RPSU_3V3VD_V':['A',3.1,3.6],'RPSU_1V5VD_V':['A',1.435,1.575],
+'RPSU_28V_PRI_V':['A',26.,29.],'RPSU_TEMP1':['A',-10.,50.],
+'RPSU_VCCD_I':['A',0.,0.1],'RPSU_VCLK_I':['A',0.,0.1],'RPSU_VAN_P_I':['A',0.,0.6],
+'RPSU_VAN_N_I':[0.0,0.6,'A'],'RPSU_3V3VD_I':[0.,0.150,'A'],'RPSU_1V5VD_I':['A',0.0,0.150],
+'RPSU_28V_PRI_I':['A',0.35,0.5],'RPSU_TEMP_2':['A',-10.,40.],
+'stTMRErrFlg':['I',0],'hkTMRErrFlg':['I',0],
+'spwTmTOFlg':['I',0],'CDPUClkSt':['I',0],'fpgaSpwErr':['I',0],'V3v3ProtCnt':['I',0],'V5ProtCnt':['I',0],
+'VccdErrFlg':['I',0],'VclkErrFlg':['I',0],'VanErrFlg':['I',0],'stRamErr':['I',0],'hkRamErr':['I',0],
+'ADC_BSY_ERR_CNT':['I',0],
+'SPW_STATUS_REG':['I','2FA0']})
+
+HKcorr = {}
+HKcorr['6.3.0'] = {'CCD1_OD_T':'OD_1_T','CCD2_OD_T':'OD_2_T','CCD3_OD_T':'OD_3_T',
+'CCD1_OD_B':'OD_1_B','CCD2_OD_B':'OD_2_B','CCD3_OD_B':'OD_3_B',
+'COMM_RD_T':'RD_T','COMM_RD_B':'RD_B',
+'CCD1_IG1_T':'IG1_1_T','CCD2_IG1_T':'IG1_2_T','CCD3_IG1_T':'IG1_3_T',
+'CCD2_IG1_B':'IG1_2_T','CCD3_IG1_B':'IG1_3_T','CCD1_IG1_B':'IG1_1_B',
+'COMM_IG2_T':'IG2_T','COMM_IG2_B':'IG2_B',
+'CCD1_TEMP_T':None,'CCD2_TEMP_T':None,'CCD3_TEMP_T':None,
+'CCD1_TEMP_B':None,'CCD2_TEMP_B':None,'CCD3_TEMP_B':None,
+'VID_PCB_TEMP_T':None,'FPGA_PCB_TEMP_T':None,
+'VID_PCB_TEMP_B':None,'FPGA_PCB_TEMP_B':None,
+'FPGA_BIAS_DD':None,'FPGA_BIAS_OG':None,
+'FPGA_BIAS_ID1':'IDH','FPGA_BIAS_ID2':'IDL',
+'FPGA_BIAS_ID_T':None,'FPGA_BIAS_ID_B':None,
+'FPGA_VRCLK_V':None,'FPGA_10VA_P_V':None,
+'FPGA_VICLK_V':None,'FPGA_5VA_P_V':None,'FPGA_5VREF_V':None,
+'FPGA_VCCD_V':None,'FPGA_1V5VD_P_V':None,
+'FPGA_3V2_N_V':None,'FPGA_5VA_N_V':None,
+'RPSU_VCCD_V':None,'RPSU_VCLK_V':None,'RPSU_VAN_P_V':None,
+'RPSU_VAN_N_V':None,'RPSU_3V3VD_V':None,'RPSU_1V5VD_V':None,
+'RPSU_28V_PRI_V':None,'RPSU_TEMP1':None,
+'RPSU_VCCD_I':None,'RPSU_VCLK_I':None,'RPSU_VAN_P_I':None,
+'RPSU_VAN_N_I':None,'RPSU_3V3VD_I':None,'RPSU_1V5VD_I':None,
+'RPSU_28V_PRI_I':None,'RPSU_TEMP_2':None,
+'stTMRErrFlg':None,'hkTMRErrFlg':None,
+'spwTmTOFlg':None,'CDPUClkSt':None,'fpgaSpwErr':None,'V3v3ProtCnt':None,'V5ProtCnt':None,
+'VccdErrFlg':None,'VclkErrFlg':None,'VanErrFlg':None,'stRamErr':None,'hkRamErr':None,
+'ADC_BSY_ERR_CNT':None,
+'SPW_STATUS_REG':None}
 
 
 allstats = ['mean','std','min','max']
@@ -460,6 +521,43 @@ def HKplot(allHKdata,keylist,key,dtobjs,filename='',stat='mean'):
    
         
     plt.close()
+
+
+def check_HK_vs_comm(HKKeys,dd,limits='P',elvis='6.3.0'):
+    """ """
+    
+    sys.exit('Not Implemented')
+    
+    report = dict()
+    
+    for HKKey in HKKeys:
+        
+        HKlim = HKlims[elvis][limits][HKKey]
+        
+        ELKey = HKcorr[elvis][HKKey]
+        if ELKey is None:
+            report[HKKey] = True
+            continue
+        ELdata = dd.mx[ELKey][:]
+        HKdata = dd.mx['HK_%s' % HKKey][:,np.newaxis]
+        test = HKdata - ELdata
+        
+        stop()
+        
+        
+        report[ELKey] = np.any(test)
+        stop()
+    
+    return report
+
+def check_HK_abs(HKKeys,dd,limits='P',elvis='6.3.0'):
+    """ """
+    
+    sys.exit('Not Implemented')
+    
+    report = dict()
+    return report
+
 
 def test():
     
