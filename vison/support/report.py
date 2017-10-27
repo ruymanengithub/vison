@@ -224,7 +224,7 @@ class Report(object):
         self.Contents.append(Section(Title,level))
     
     def drop_Section(self,Title,level):
-        sys.exit('Not Implemented')
+        raise NotImplementedError
         
     def add_Figure(self,figpath,texfraction=0.7,caption=None,label=None):
         """ """

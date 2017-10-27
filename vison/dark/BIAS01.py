@@ -170,7 +170,7 @@ def check_data(dd,report,inputs,log=None):
     
     # CHECK AND CROSS-CHECK HK: PENDING
     
-    report_HK_perf = HKtools.check_HK_vs_comm(HKKeys,dd,limits='P',elvis=inputs['elvis'])
+    report_HK_perf = HKtools.check_HK_vs_command(HKKeys,dd,limits='P',elvis=inputs['elvis'])
     report_HK_safe = HKtools.check_HK_abs(HKKeys,dd,limits='S',elvis=inputs['elvis'])
     
     stop()

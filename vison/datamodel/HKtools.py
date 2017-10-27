@@ -523,39 +523,52 @@ def HKplot(allHKdata,keylist,key,dtobjs,filename='',stat='mean'):
     plt.close()
 
 
-def check_HK_vs_comm(HKKeys,dd,limits='P',elvis='6.3.0'):
+def check_HK_vs_command(HKKeys,dd,limits='P',elvis='6.3.0'):
     """ """
     
-    sys.exit('Not Implemented')
+    #raise NotImplementedError
     
     report = dict()
     
     for HKKey in HKKeys:
         
         HKlim = HKlims[elvis][limits][HKKey]
+        limtype = HKlim[0]
+        limval = HKlim[1:]
         
         ELKey = HKcorr[elvis][HKKey]
         if ELKey is None:
             report[HKKey] = True
             continue
+        
         ELdata = dd.mx[ELKey][:]
         HKdata = dd.mx['HK_%s' % HKKey][:,np.newaxis]
-        test = HKdata - ELdata
         
-        stop()
+        if limtype == 'R':
+            test = HKdata - ELdata
+            testBool = (test >= limval[0]) & (test <= limval[1])
+            report[ELKey] = np.any(testBool)
+        elif limtype == 'A':
+            testBool = (HKdata >= limval[0]) & (test <= limval[1])
+            report[ELKey] = np.any(testBool)
+        elif limtype == 'A':
+            testBool = HKdata != limval[0]
+            report[ELKey] = np.all(test)
         
-        
-        report[ELKey] = np.any(test)
-        stop()
+        print HKKey, limtype, test.mean()
+    
     
     return report
 
 def check_HK_abs(HKKeys,dd,limits='P',elvis='6.3.0'):
     """ """
     
-    sys.exit('Not Implemented')
     
     report = dict()
+    
+    
+    
+    
     return report
 
 
