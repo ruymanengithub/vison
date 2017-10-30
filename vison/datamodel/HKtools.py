@@ -524,7 +524,22 @@ def HKplot(allHKdata,keylist,key,dtobjs,filename='',stat='mean'):
 
 
 def check_HK_vs_command(HKKeys,dd,limits='P',elvis='6.3.0'):
-    """ """
+    """
+    Returns report on HK parameters, in DataDict (dd), comparing inputs (commanded)
+    vs. output (HK data).
+    
+    HK Keys which do not correspond to commanded voltages always return 'True'.
+    
+    :param HKKeys: list of HK parameters, as named in HK files (without HK_ suffix)
+    :param dd: DataDict object
+    :param limits: type of limits to use, either "P" (Performance) or "S" (Safe)
+    :param elvis: ELVIS version to find correspondence between HK key and 
+                 Exposure Log input (commanded voltage).
+    :returns report: dictionary with pairs of HK-key : Bool.
+                 True = All values are within limits, referred to commanded value.
+                 False = At least one value is outside limits, referred to commanded value.
+    
+    """
     
     #raise NotImplementedError
     
@@ -546,27 +561,43 @@ def check_HK_vs_command(HKKeys,dd,limits='P',elvis='6.3.0'):
         
         if limtype == 'R':
             test = HKdata - ELdata
-            testBool = (test >= limval[0]) & (test <= limval[1])
-            report[HKKey] = np.any(testBool)
+            testBool = ((test <= limval[0]) | (test >= limval[1]))
+            report[HKKey] = not np.any(testBool)
         elif limtype == 'A':
-            testBool = (HKdata >= limval[0]) & (test <= limval[1])
-            report[HKKey] = np.any(testBool)
-        elif limtype == 'A':
+            testBool = ((HKdata <= limval[0]) | (test >= limval[1]))
+            report[HKKey] = not np.any(testBool)
+        elif limtype == 'I':
             testBool = HKdata != limval[0]
-            report[HKKey] = np.all(test)
+            report[HKKey] = not np.all(test)
         
-        print HKKey, limtype, test.mean(), report[HKKey] # TESTS
+        #print HKKey, limtype, test.mean(), report[HKKey] # TESTS
     
     
     return report
 
-def check_HK_abs(HKKeys,dd,limits='P',elvis='6.3.0'):
-    """ """
+def check_HK_abs(HKKeys,dd,limits='S',elvis='6.3.0'):
+    """ 
+
+    Returns report on HK parameters, in DataDict (dd), compared to absolute
+    limits.
     
+    HK Keys which have "relative" limits, always return False.
+    
+    :param HKKeys: list of HK parameters, as named in HK files (without HK_ suffix)
+    :param dd: DataDict object
+    :param limits: type of limits to use, either "P" (Performance) or "S" (Safe)
+    :param elvis: ELVIS version to find correspondence between HK key and 
+                 Exposure Log input (commanded voltage).
+    :returns report: dictionary with pairs of HK-key : Bool.
+                 True = All values for given key are within limits.
+                 False = At least one value for given key is outside limits.    
+    
+    
+    """
     
     report = dict()
     
-   
+    
     for HKKey in HKKeys:
         
         HKlim = HKlims[elvis][limits][HKKey]
@@ -578,16 +609,15 @@ def check_HK_abs(HKKeys,dd,limits='P',elvis='6.3.0'):
         if limtype == 'R':
             report[HKKey] = False
         elif limtype == 'A':
-            testBool = (HKdata >= limval[0]) & (test <= limval[1])
-            report[HKKey] = np.any(testBool)
-            stop()
-        elif limtype == 'A':
+            testBool = (HKdata <= limval[0]) | (HKdata >= limval[1])
+            report[HKKey] = not np.any(testBool)
+        elif limtype == 'I':
             testBool = HKdata != limval[0]
-            report[HKKey] = np.all(test)
+            report[HKKey] = not np.all(test)
         
-        print HKKey, limtype, report[HKKey] # TESTS
-     
-    
+        #print HKKey, limtype, report[HKKey] # TESTS
+        
+        
     
     return report
 

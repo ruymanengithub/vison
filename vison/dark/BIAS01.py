@@ -170,10 +170,11 @@ def check_data(dd,report,inputs,log=None):
     
     # CHECK AND CROSS-CHECK HK: PENDING
     
+    #print 'HK-perf' # TESTS
     report_HK_perf = HKtools.check_HK_vs_command(HKKeys,dd,limits='P',elvis=inputs['elvis'])
+    #print 'HK-safe' # TESTS
     report_HK_safe = HKtools.check_HK_abs(HKKeys,dd,limits='S',elvis=inputs['elvis'])
     
-    stop()
 
     # Initialize new columns
 
@@ -225,10 +226,10 @@ def check_data(dd,report,inputs,log=None):
                 
     # Assess metrics are within allocated boundaries
 
-    offset_lims = [1000.,3500.]
-    offset_diffs = dict(img=[-1.,+5.],ove=[-1.,+6.])
+    offset_lims = [1000.,3500.] # TESTS, should be in common limits file
+    offset_diffs = dict(img=[-1.,+5.],ove=[-1.,+6.]) # TESTS, should be in common limits file
     
-    std_lims = [0.5,2.]
+    std_lims = [0.5,2.] # TESTS, should be in common limits file
     
     # absolute value of offsets
     
@@ -245,7 +246,7 @@ def check_data(dd,report,inputs,log=None):
     xcheck_offsets = dict()
     for reg in ['img','ove']:
         
-        test = dd.mx['offsets_%s' % reg][:]-dd.mx['offsets_pre'][:]
+        test = dd.mx['offset_%s' % reg][:]-dd.mx['offset_pre'][:]
         
         testBool = (test <= offset_diffs[reg][0]) | \
                (test >= offset_diffs[reg][1])
@@ -265,10 +266,13 @@ def check_data(dd,report,inputs,log=None):
     # offsets vs. time
     # std vs. time
     
-    
+    if log is not None:
+        log.info('Plotting MISSING in BIAS01.check_data')
     
     # Update Report, raise flags, fill-in log
-    
+
+    if log is not None:
+        log.info('Reporting and Flagging MISSING in BIAS01.check_data')    
     
     
     return dd, report
@@ -278,20 +282,69 @@ def prep_data(dd,report,inputs,log=None):
     """
     
     BIAS01: Preparation of data for further analysis.
+    applies a mask
     
     **METACODE**
     
     ::
         f.e. ObsID:
-            f.e.CCD:
-                f.e.Q:
-                    subtract offset: save to FITS, UPDATE filename
+            f.e.CCD:                
+                apply cosmetic mask, if available                
+                f.e.Q:    
+                    subtract offset
+                save file as a datamodel.ccd.CCD object.
     
     """
     
     if log is not None:
         log.info('BIAS01.prep_data')
     
+    
+    bypass = True # TESTS
+    
+    # Initialize new columns
+
+    Xindices = copy.deepcopy(dd.mx['File_name'].indices)
+    
+    
+    dd.initColumn('ccdobj_name',Xindices,dtype='S100',valini='None')
+    
+    DDindices = copy.deepcopy(dd.indices)
+    
+    nObs,nCCD,nQuad = DDindices.shape
+    Quads = DDindices[2].vals
+    
+    if not bypass:
+    
+        for iObs in range(nObs):
+            
+            for jCCD in range(nCCD):
+                
+                ccdobj_name = '%s_proc' % dd.mx['File_name'][iObs,jCCD]
+                
+                dpath = dd.mx['datapath'][iObs,jCCD]
+                infits = os.path.join(dpath,'%s.fits' % dd.mx['File_name'][iObs,jCCD])
+                
+                ccdobj = ccd.CCD(infits)
+                
+                rpath = dd.meta['inputs']['resultspath']      
+                fullccdobj_name = os.path.join(rpath,'%s.pick' % dd.mx['ccdobj_name'][iObs,jCCD]) 
+                
+                
+                if 'mask' in dd.meta['inputs']:    
+                    calpath = dd.meta['inputs']['calpath']
+                    maskf = os.path.join(calpath,dd.meta['inputs']['mask'])
+                    ccdobj.get_mask(ccd.CCD(maskf).data)
+                
+                for kQ in range(nQuad):
+                    Quad = Quads[kQ]
+                    ccdobj.sub_offset(Quad,method='median',scan='pre',trims=[5,5],
+                                      ignore_pover=False)
+                
+                ccdobj.writeto(fullccdobj_name,clobber=True)
+                
+                dd.mx['ccdobj_name'][iObs,jCCD] = ccdobj_name
+
     
     return dd,report
     
@@ -306,7 +359,10 @@ def basic_analysis(dd,report,inputs,log=None):
 
         f. e. ObsID:
            f.e.CCD:
-               f.e.Q:
+               
+               load ccdobj of ObsID, CCD
+               
+               with ccdobj, f.e.Q:
                    produce a 2D poly model of bias, save coefficients
                    produce average profile along rows
                    produce average profile along cols

@@ -208,7 +208,12 @@ class DataDict(object):
         assert isinstance(indices,vMultiIndex)
         
         shape = indices.shape
-        array = np.zeros(shape,dtype=dtype) + valini
+        if dtype[0] != 'S':
+            array = np.zeros(shape,dtype=dtype) + valini
+        else:
+            array = np.zeros(shape,dtype=dtype)
+            array[:] = valini
+            
         self.addColumn(array,name,indices)
         
         

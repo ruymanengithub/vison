@@ -414,7 +414,8 @@ class CCD(object):
         
         assert self.shape == superbias.shape
         self.extensions[extension].data -= superbias
-        self.add_to_hist('sub_bias',extension,vison=__version__,params=dict())
+        self.add_to_hist('sub_bias',extension,vison=__version__,
+                         params=dict(superbias=superbias))
     
     def divide_by_flatfield(self,FF,extension=-1):
         """Divides by a Flat-field"""
@@ -422,7 +423,8 @@ class CCD(object):
         assert self.shape == FF.shape
         self.extensions[extension].data /= FF
         
-        self.add_to_hist('divide_by_flatfield',extension,vison=__version__,params=dict())
+        self.add_to_hist('divide_by_flatfield',extension,vison=__version__,
+                         params=dict(FF=FF))
         
     def add_to_hist(self,action,extension=-1,vison=__version__,params=dict()):
         """ """

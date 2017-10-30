@@ -274,15 +274,8 @@ class Pipe(object):
             
             explog['time'] = np.array(map(vistime.get_dtobj,explog['date'])).copy()
 
-            # Filling in the .fits extension
-            
-            rootFile_name = explog['File_name'].copy()
-            File_name  = ['%s.fits' % item for item in rootFile_name]
-            explog['Files'] = np.array(File_name).copy()
-            
             
             # Building DataDict 
-            
             
             dd = pilib.DataDict_builder(explog,inputs,structure)
             
