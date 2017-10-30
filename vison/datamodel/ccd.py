@@ -14,6 +14,8 @@ import numpy as np
 import os
 from pdb import set_trace as stop
 import sys
+import datetime
+from vison import __version__
 # END IMPORT
 
 isthere = os.path.exists
@@ -173,6 +175,8 @@ class CCD(object):
         self.QuadBound = QuadBound 
         
         self.masked = False
+        
+        self.historial = []
     
     
     def loadfromFITS(self,fitsfile,extensions=[-1],getallextensions=False):
@@ -398,6 +402,9 @@ class CCD(object):
         B = self.QuadBound[Quad]
         self.extensions[extension].data[B[0]:B[1],B[2]:B[3]] = self.flip_tocanonical(quaddata,Quad).copy()
         
+        params = dict(Quad=Quad,method=method,scan=scan,trimscan=trimscan,
+                   ignore_pover=ignore_pover,extension=extension)
+        self.add_to_hist('sub_offset',extension,params=params)
 
         return offsets
         
@@ -407,13 +414,22 @@ class CCD(object):
         
         assert self.shape == superbias.shape
         self.extensions[extension].data -= superbias
-        
+        self.add_to_hist('sub_bias',extension,vison=__version__,params=dict())
     
     def divide_by_flatfield(self,FF,extension=-1):
         """Divides by a Flat-field"""
         print 'TODO: ccd.CCD.divide_by_flatfield needs improvements: handling of masked values'
         assert self.shape == FF.shape
         self.extensions[extension].data /= FF
+        
+        self.add_to_hist('divide_by_flatfield',extension,vison=__version__,params=dict())
+        
+    def add_to_hist(self,action,extension=-1,vison=__version__,params=dict()):
+        """ """
+        tstamp = (datetime.datetime.now()).strftime('%d%m%yD%H%M%ST')
+        hist = [dict(timestamp=tstamp,action=action,extension=extension,
+                     vison=vison,params=params)]
+        self.historial += hist
         
     
     def flip_tocanonical(self,array,Quad):
