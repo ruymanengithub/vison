@@ -547,15 +547,15 @@ def check_HK_vs_command(HKKeys,dd,limits='P',elvis='6.3.0'):
         if limtype == 'R':
             test = HKdata - ELdata
             testBool = (test >= limval[0]) & (test <= limval[1])
-            report[ELKey] = np.any(testBool)
+            report[HKKey] = np.any(testBool)
         elif limtype == 'A':
             testBool = (HKdata >= limval[0]) & (test <= limval[1])
-            report[ELKey] = np.any(testBool)
+            report[HKKey] = np.any(testBool)
         elif limtype == 'A':
             testBool = HKdata != limval[0]
-            report[ELKey] = np.all(test)
+            report[HKKey] = np.all(test)
         
-        print HKKey, limtype, test.mean()
+        print HKKey, limtype, test.mean(), report[HKKey] # TESTS
     
     
     return report
@@ -566,7 +566,27 @@ def check_HK_abs(HKKeys,dd,limits='P',elvis='6.3.0'):
     
     report = dict()
     
-    
+   
+    for HKKey in HKKeys:
+        
+        HKlim = HKlims[elvis][limits][HKKey]
+        limtype = HKlim[0]
+        limval = HKlim[1:]
+        
+        HKdata = dd.mx['HK_%s' % HKKey][:,np.newaxis]
+        
+        if limtype == 'R':
+            report[HKKey] = False
+        elif limtype == 'A':
+            testBool = (HKdata >= limval[0]) & (test <= limval[1])
+            report[HKKey] = np.any(testBool)
+            stop()
+        elif limtype == 'A':
+            testBool = HKdata != limval[0]
+            report[HKKey] = np.all(test)
+        
+        print HKKey, limtype, report[HKKey] # TESTS
+     
     
     
     return report
