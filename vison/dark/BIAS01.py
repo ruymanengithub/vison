@@ -86,8 +86,7 @@ def build_BIAS01_scriptdict(N,diffvalues=dict(),elvis='6.3.0'):
     return BIAS01_sdict
 
 
-
-def filterexposures(structure,explogf,datapath,OBSID_lims,elvis):
+def filterexposures(structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
     """ """
     
     wavedkeys = []
@@ -115,7 +114,7 @@ def filterexposures(structure,explogf,datapath,OBSID_lims,elvis):
                                            wavedkeys=wavedkeys)
     
     # Labeling of exposures [optional]
-    explog['label'] = np.array(['bias']*len(explog))
+    explog['label'] = np.array(['col1']*len(explog))
     
     
     return explog, checkreport

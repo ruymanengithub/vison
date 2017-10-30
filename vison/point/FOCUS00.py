@@ -49,7 +49,7 @@ from vison.point import display as pdspl
 from vison.support import vistime
 from copy import deepcopy
 
-import FOCUS00_lib as Flib
+import FOCUS00_lib as F00lib
 
 # END IMPORT
 
@@ -739,7 +739,7 @@ def meta_analysis_FOCUS00(DataDict,Report,inputs,log=None):
                     
                     if key in keys_to_fit:
                         
-                        pfit = Flib.fit_focus_single(shape_seq[CCDkey]['Mirr_pos'],
+                        pfit = F00lib.fit_focus_single(shape_seq[CCDkey]['Mirr_pos'],
                                                      val,yerror=erval,
                                                      degree=2,doplot=False)
                         shape_seq[CCDkey][spkey]['coeffs'] = pfit['coeffs']
@@ -747,9 +747,9 @@ def meta_analysis_FOCUS00(DataDict,Report,inputs,log=None):
                         shape_seq[CCDkey][spkey]['focus'] = pfit['focus']
         
             
-    Flib.fit_focus_all(shape_seq,doplot=True)
+    F00lib.fit_focus_all(shape_seq,doplot=True)
     
-    Flib.inspect_focus_all(shape_seq,doplot=True)
+    F00lib.inspect_focus_all(shape_seq,doplot=True)
     
 
 

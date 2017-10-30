@@ -67,15 +67,30 @@ class Pipe(object):
     from vison.dark import BIAS01, DARK01
     from vison.flat import NL01, FLAT0X, PTC0X
     from vison.inject import CHINJ01, CHINJ02
-    from vison.pump import TP01, TP02
     from vison.other import PERSIST01
+    from vison.point import PSF0X, FOCUS00
+    from vison.pump import TP01, TP02
+    
     
     Test_dict = dict(BIAS01=BIAS01,DARK01=DARK01,
-                     NL01=NL01,FLAT0X=FLAT0X,PTC0X=PTC0X,
+                     NL01=NL01,FLAT01=FLAT0X,
+                     PTC01=PTC0X,
                      CHINJ01=CHINJ01,CHINJ02=CHINJ02,
                      TP01=TP01,TP02=TP02,
                      PERSIST01=PERSIST01)
     
+    for wave in [590,640,880]:
+        Test_dict['FLAT02_%i' % wave] = FLAT0X
+    for wave in [590,640,730,880]:
+        Test_dict['PTC02_%i' % wave] = PTC0X
+    for temp in [150,156]:
+        Test_dict['PTC02_%iK' % temp] = PTC0X
+    for wave in [590,640,730,800,880]:
+        Test_dict['FOCUS00_%i' % wave] = FOCUS00
+    for wave in [590,640,800,880]:
+        Test_dict['PSF01_%i' % wave] = PSF0X
+    for temp in [150,156]:
+        Test_dict['PSF02_%iK' % temp] = PSF0X
     
     def __init__(self,inputdict,dolog=True):
         """ """
@@ -166,7 +181,6 @@ class Pipe(object):
             
             Test = self.Test_dict[taskname]
             taskinputs = Test.feeder(taskinputs)            
-            
             
             structure = taskinputs['structure']
             

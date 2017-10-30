@@ -50,13 +50,6 @@ isthere = os.path.exists
 HKKeys_PSF0X = ['HK_temp_top_CCD1','HK_temp_bottom_CCD1','HK_temp_top_CCD2',
 'HK_temp_bottom_CCD2','HK_temp_top_CCD3','HK_temp_bottom_CCD3'] # TESTS
 
-PSF0X_structure = dict(col1=dict(frames=5,exptime=0),
-                          col2=dict(frames=20,exptime=1.),
-                          col3=dict(frames=18,exptime=5.),
-                          col4=dict(frames=10,exptime=10.),
-                          col5=dict(frames=4,exptime=15.),
-                          col6=dict(frames=3,exptime=18.),
-                   Ncols=6)
 
 PSF0X_commvalues = dict(program='CALCAMP',
   IPHI1=1,IPHI2=1,IPHI3=1,IPHI4=0,
@@ -114,8 +107,7 @@ def build_PSF0X_scriptdict(exptimes,frames,wavelength=800,
     return PSF0X_sdict
 
 
-
-def filterexposures_PSF0X(inwavelength,explogf,datapath,OBSID_lims,structure=PSF0X_structure,elvis='5.7.04'):
+def filterexposures(structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
     """Loads a list of Exposure Logs and selects exposures from test PSF0X.
     
     The filtering takes into account an expected structure for the 
@@ -129,92 +121,34 @@ def filterexposures_PSF0X(inwavelength,explogf,datapath,OBSID_lims,structure=PSF
     """
     
     # load exposure log(s)
-    explog = pilib.loadexplogs(explogf,elvis=elvis,addpedigree=True)
+    explog = pilib.loadexplogs(explogf,elvis=elvis,addpedigree=True,
+                               datapath=datapath)
     
-    # add datapath(s)
+
+    Filter = ogse.get_FW_ID(structure['wave'])
     
-    if isinstance(datapath,list):
-        longestdatapathname = max([len(item) for item in datapath])
-        explog['datapath'] = np.zeros(len(explog),dtype='S%i' % longestdatapathname)
-        explognumber=explog['explognumber']
-        for idata in range(len(datapath)):
-            explog['datapath'][explognumber == idata] = datapath[idata]
-    
-    #OBSIDs = np.array(explog['ObsID'].copy())
-    #Exptime = np.array(explog['Exptime'].copy())
-    rootFile_name = explog['File_name'].copy()
-    #TEST = np.array(explog['TEST'].copy())
-    #Wavelength = np.array(explog['Wavelength'].copy())
-    #CCD = np.array(explog['CCD'].copy())
-    
-    
-    DataDict = {}
-        
-    
-    for key in pilib.FW.keys():
-        if pilib.FW[key] == '%inm' % inwavelength: Filter = key
-    
-    Filter = '%i' % inwavelength # TESTS
-    
-    selbool = (['PSF02' in item for item in explog['TEST']]) & \
+    selbool = (explog['test'] == structure['test']) & \
         (explog['ObsID'] >= OBSID_lims[0]) & \
         (explog['ObsID'] <= OBSID_lims[1]) & \
-        (explog['Wavelength'] == Filter) # TESTS
+        (explog['wave'] == Filter) # TESTS
     
     
     # Assess structure
     
-    isconsistent = pilib.check_test_structure(explog,selbool,structure)
+    checkreport = pilib.check_test_structure(explog,selbool,structure)
     
+    # Labeling of exposures
     
-    # Build DataDict
+    stop()
     
-    DataDict = dict(meta = dict(inwavelength=inwavelength,structure=structure))
+    return explog, checkreport
     
-    for CCDindex in [1,2,3]:
-        
-        CCDkey = 'CCD%i' % CCDindex
-        
-        DataDict[CCDkey] = dict()
-        
-        CCDselbool = selbool & (explog['CCD'] == CCDkey)
-        
-        if len(np.where(CCDselbool)[0]) == 0:
-            continue
-        
-        Nobs = len(np.where(CCDselbool)[0])
-        
-        for key in explog.colnames:
-            DataDict[CCDkey][key] = explog[key][CCDselbool]
-        
-        
-        Exptime = DataDict[CCDkey]['Exptime'].copy()
-        
-        label = np.zeros(Nobs,dtype='40str')
-        
-        uexptimes = np.sort(np.unique(Exptime))
-        
-        
-        for ixflu,uexptime in enumerate(uexptimes):
-            
-            ixsel = np.where(Exptime == uexptime)
-            
-            label[ixsel] = 'fluence_%i' % ixflu
-        
-        DataDict[CCDkey]['label'] = label.copy()
-        
-        
-        rootFile_name = DataDict[CCDkey]['File_name'].copy()
-        
-        File_name  = ['%s.fits' % item for item in rootFile_name]
-        
-        DataDict[CCDkey]['Files'] = np.array(File_name).copy()
-        
-    
-    return DataDict, isconsistent
-    
-    
-def prep_data_PSF0X(DataDict,RepDict,inputs,log=None):
+
+def check_data():
+    """ """
+
+
+def prep_data(DataDict,RepDict,inputs,log=None):
     """Takes Raw Data and prepares it for further analysis. Also checks that
     data quality is enough."""
     
@@ -295,12 +229,12 @@ def prep_data_PSF0X(DataDict,RepDict,inputs,log=None):
     return DataDict, RepDict
 
 
-def basic_analysis_PSF0X(DataDict,RepDict,inputs,log=None):
+def basic_analysis(DataDict,RepDict,inputs,log=None):
     """Performs basic analysis on spots:
          - Gaussian Fits: peak, position, width_x, width_y
     """
     
-def bayes_analysis_PSF0X(DataDict,RepDict,inputs,log=None):
+def bayes_analysis(DataDict,RepDict,inputs,log=None):
     """ 
     Performs bayesian decomposition of the spot images:
         - optomechanic PSF and detector PSF.
@@ -308,7 +242,7 @@ def bayes_analysis_PSF0X(DataDict,RepDict,inputs,log=None):
     """
     
 
-def meta_analysis_PSF0X(DataDict,RepDict,inputs,log=None):
+def meta_analysis(DataDict,RepDict,inputs,log=None):
     """
     
     Analyzes the relation between detector PSF and fluence.
@@ -449,3 +383,30 @@ def run(inputs,log=None):
     if log is not None:
         log.info('Finished PSF0X')
     
+
+def feeder(inputs,elvis='6.3.0'):
+    """ """
+    
+    subtasks = [('check',check_data),('prep',prep_data),
+                ('basic',basic_analysis),('bayes',bayes_analysis),
+                ('meta',meta_analysis)]
+    
+    exptimes = inputs['exptimes']
+    frames = inputs['frames']
+    wavelength = inputs['wavelength']
+    if 'elvis' in inputs:
+        elvis = inputs['elvis']
+    if 'diffvalues' in inputs:
+        diffvalues = inputs['diffvalues']
+    else:
+        diffvalues = {}
+    
+    
+    scriptdict = build_PSF0X_scriptdict(exptimes,frames,wavelength,
+                                        diffvalues,elvis=elvis)
+    
+    inputs['structure'] = scriptdict
+    inputs['subtasks'] = subtasks
+    
+    
+    return inputs
