@@ -393,7 +393,8 @@ def generate_test_sequence(equipment,toGen,elvis='6.3.0'):
 
         print 'PSF01...'
         
-        wavesPSF01w = [590,640,800,880]
+        #wavesPSF01w = [590,640,800,880]        
+        wavesPSF01w = PSF0X.testdefaults['PSF01']['waves']
         
         diffPSF01w = dict(sn_ccd1=sn_ccd1,
                           sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
@@ -403,8 +404,10 @@ def generate_test_sequence(equipment,toGen,elvis='6.3.0'):
             
             # 10%, 30%, 50%, 70%, 80%, 90% x FWC. 4 frames per fluence.
             
-            exptsPSF01w = np.array([5.,25.,50.,75.,90.])/100.*ogse.tFWC_point['nm%i' % wave]
-            frsPSF01w = [20,15,10,4,3]
+            #exptsPSF01w = np.array([5.,25.,50.,75.,90.])/100.*ogse.tFWC_point['nm%i' % wave]
+            exptsPSF01w = PSF0X.testdefaults['PSF01']['exptimes']#*ogse.tFWC_point['nm%i' % wave]
+            #frsPSF01w = [20,15,10,4,3]
+            frsPSF01w = PSF0X.testdefaults['PSF01']['frames']
             
             
             itestkey = 'PSF01_%i' % wave
