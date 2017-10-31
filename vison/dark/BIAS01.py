@@ -182,20 +182,18 @@ def check_data(dd,report,inputs,log=None):
     if 'Quad' not in Xindices.names:
         Xindices.append(core.vIndex('Quad',vals=pilib.Quads))
     
-    dummyOffset = 2000.
-    dummystd = 1.3
     
     newcolnames_off = ['offset_pre','offset_img','offset_ove']
     for newcolname_off in newcolnames_off:
         if newcolname_off in dd.colnames:
             dd.dropColumn(newcolname_off)
-        dd.initColumn(newcolname_off,Xindices,dtype='float32',valini=dummyOffset)
+        dd.initColumn(newcolname_off,Xindices,dtype='float32',valini=np.nan)
     
     newcolnames_std = ['std_pre','std_img','std_ove']
     for newcolname_std in newcolnames_std:
         if newcolname_std in dd.colnames:
             dd.dropColumn(newcolname_std)
-        dd.initColumn(newcolname_std,Xindices,dtype='float32',valini=dummystd)
+        dd.initColumn(newcolname_std,Xindices,dtype='float32',valini=np.nan)
     
     
     nObs,nCCD,nQuad = Xindices.shape

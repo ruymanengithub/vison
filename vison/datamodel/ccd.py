@@ -29,6 +29,7 @@ overscan = 20
 RON = 1.4
 gain = 3.1 # e/adu
 
+
 QuadBound = dict(E=[0,NAXIS1/2,NAXIS2/2,NAXIS2],\
                F=[NAXIS1/2,NAXIS1,NAXIS2/2,NAXIS2],\
                G=[NAXIS1/2,NAXIS1,0,NAXIS2/2],\
