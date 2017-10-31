@@ -170,100 +170,270 @@ def filterexposures(structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
 
 def check_data(dd,report,inputs,log=None):
     """ 
+
+    PSF0X: Checks quality of ingested data.
+    
+    **METACODE**
     
     
+    ::
+      
+      check common HK values are within safe / nominal margins
+      check voltages in HK match commanded voltages, within margins
+    
+      f.e.ObsID:
+          f.e.CCD: 
+              f.e.Q.:
+                  measure offsets in pre-,and over-
+                  measure std in pre-, over-
+                  measure median in img area, excluding spots (bgd)
+                  measure (bgd-sub'd-) fluence of spots
+                  measure size of spots
+                  
+      assess std in pre- (~RON) is within allocated margins
+      assess offsets in pre-, img-, over- are equal, within allocated  margins
+      assess offsets are within allocated margins
+      assess median-img is within allocated margins
+      assess fluences of spots are within allocated margins
+      assess sizes of spots are within allocated margins
+    
+      plot offsets vs. time
+      plot std vs. time
+      plot spot fluences vs. time
+      plot spot size vs. time
+          
+      issue any warnings to log
+      issue update to report
+      update flags as needed
+    
+    """
+    
+    if log is not None:
+        log.info('PSF0X.check_data')
+    
+    report.add_Section(Title='CHECK\_DATA',level=0)
+    
+    
+    
+    #bypass = True # TESTS
+    
+    
+    # CHECK AND CROSS-CHECK HK
+    
+    #print 'HK-perf' # TESTS
+    report_HK_perf = HKtools.check_HK_vs_command(HKKeys,dd,limits='P',elvis=inputs['elvis'])
+    #print 'HK-safe' # TESTS
+    report_HK_safe = HKtools.check_HK_abs(HKKeys,dd,limits='S',elvis=inputs['elvis'])
+    
+
+    # Initialize new columns
+
+#    Xindices = copy.deepcopy(dd.indices)
+#    
+#    if 'Quad' not in Xindices.names:
+#        Xindices.append(core.vIndex('Quad',vals=pilib.Quads))
+#    
+#    dummyOffset = 2000.
+#    dummystd = 1.3
+#    
+#    newcolnames_off = ['offset_pre','offset_img','offset_ove']
+#    for newcolname_off in newcolnames_off:
+#        if newcolname_off in dd.colnames:
+#            dd.dropColumn(newcolname_off)
+#        dd.initColumn(newcolname_off,Xindices,dtype='float32',valini=dummyOffset)
+#    
+#    newcolnames_std = ['std_pre','std_img','std_ove']
+#    for newcolname_std in newcolnames_std:
+#        if newcolname_std in dd.colnames:
+#            dd.dropColumn(newcolname_std)
+#        dd.initColumn(newcolname_std,Xindices,dtype='float32',valini=dummystd)
+#    
+#    
+#    nObs,nCCD,nQuad = Xindices.shape
+#    Quads = Xindices[2].vals
+#    
+#    # Get statistics in different regions
+#    
+#    if not bypass:
+#    
+#        for iObs in range(nObs):
+#            
+#            for jCCD in range(nCCD):
+#                
+#                dpath = dd.mx['datapath'][iObs,jCCD]
+#                ffits = os.path.join(dpath,dd.mx['Files'][iObs,jCCD])
+#                
+#                ccdobj = ccd.CCD(ffits)
+#                
+#                for kQ in range(nQuad):
+#                    Quad = Quads[kQ]
+#                    
+#                    for reg in ['pre','img', 'ove']:
+#                        stats = ccdobj.get_stats(Quad,sector=reg,statkeys=['mean','std'],trimscan=[5,5],
+#                                ignore_pover=True,extension=-1)
+#                        dd.mx['offset_%s' % reg][iObs,jCCD,kQ] = stats[0]
+#                        dd.mx['std_%s' % reg][iObs,jCCD,kQ] = stats[1]
+#                
+#    # Assess metrics are within allocated boundaries
+#
+#    offset_lims = [1000.,3500.] # TESTS, should be in common limits file
+#    offset_diffs = dict(img=[-1.,+5.],ove=[-1.,+6.]) # TESTS, should be in common limits file
+#    
+#    std_lims = [0.5,2.] # TESTS, should be in common limits file
+#    
+#    # absolute value of offsets
+#    
+#    compliance_offsets = dict()
+#    for reg in ['pre','img','ove']:
+#        
+#        test = ((dd.mx['offset_%s' % reg][:] <= offset_lims[0]) |\
+#                      (dd.mx['offset_%s' % reg][:] >= offset_lims[1]))
+#        compliance_offsets[reg] = np.any(test,axis=(1,2)).sum()
+#    
+#    
+#    # cross-check of offsets
+#        
+#    xcheck_offsets = dict()
+#    for reg in ['img','ove']:
+#        
+#        test = dd.mx['offset_%s' % reg][:]-dd.mx['offset_pre'][:]
+#        
+#        testBool = (test <= offset_diffs[reg][0]) | \
+#               (test >= offset_diffs[reg][1])
+#        xcheck_offsets['img'] = np.any(testBool,axis=(1,2)).sum()
+#    
+#    # absolute value of std
+#        
+#    compliance_std = dict()
+#    for reg in ['pre']:
+#        
+#        test = ((dd.mx['std_%s' % reg][:] <= std_lims[0]) |\
+#                      (dd.mx['std_%s' % reg][:] >= std_lims[1]))
+#        compliance_std[reg] = np.any(test,axis=(1,2)).sum()
+#    
+#    # Do some Plots
+#    
+#    # offsets vs. time
+#    # std vs. time
+#    
+#    if log is not None:
+#        log.info('Plotting MISSING in BIAS01.check_data')
+#    
+#    # Update Report, raise flags, fill-in log
+#
+#    if log is not None:
+#        log.info('Reporting and Flagging MISSING in BIAS01.check_data')    
+#    
+#    
+#    return dd, report
+#    
+    
+
+
+def prep_data(dd,report,inputs,log=None):
+    """
+    
+    PSF0X: Preparation of data for further analysis.
+    
+    **METACODE**
+    
+    ::
+        f.e. ObsID:
+            f.e.CCD:                
+                apply cosmetic mask, if available
+                f.e.Q:
+                    subtract offset
+                subtract superbias, if available
+                divide by flat-field, if available
+                
+                save image as a datamodel.ccd.CCD object.                
+                cuts-out and saves stamps of pre-processed spots for further analysis.
     
     """
     
     raise NotImplementedError
     
-
-
-def prep_data(dd,report,inputs,log=None):
-    """Takes Raw Data and prepares it for further analysis. Also checks that
-    data quality is enough."""
-    
-    raise NotImplementedError
-    
-    # Inputs un-packing
-    
-    FFs = inputs['FFs'] # flat-fields for each CCD (1,2,3)
-    
-    # Load Flat-Field data for each CCD
-    
-    FFdata = dict()
-    for CCDindex in range(1,4):
-        CCDkey = 'CCD%i' % CCDindex
-        if CCDkey in FFs.keys():
-            FFdata[CCDkey] = FFing.FlatField(fitsfile=FFs[CCDkey])
-        
-    RepDict['prepPSF0X'] = dict(Title='Data Pre-Processing and QA',items=[])
-    
-    
-    # Loop over CCDs
-    
-    for CCDindex in range(1,4):
-        
-        CCDkey = 'CCD%i' % CCDindex
-        
-        if CCDkey in DataDict:
-            
-            # Loop over ObsIDs
-            
-            ObsIDs = DataDict[CCDkey]['ObsID'].copy()
-            label = DataDict[CCDkey]['label'].copy()
-            Nobs = len(ObsID)
-            
-            
-            for iObs, ObsID in enumerate(ObsIDs):
-                
-                ilabel = label[iObs]
-                
-                stop()
-                
-                # log object being analyzed: ObsID
-                
-                # retrieve FITS file and open it
-                
-                # subtract offset and add to DataDict
-                # measure STD in pre and over-scan and add to DataDict
-                
-                # Divide by flat-field
-                
-                for spotID in spotIDs[CCDkey]:
-                    
-                    if log is not None: log.info('ObsID - spotID = %s-%s' % (ObsID,spotID))
-                    
-                    # get coordinates of spotID
-                    
-                    # Cut-out stamp of the spot
-                    
-                    # Measure background locally and add to DataDict
-                    
-                    # if ilabel != fluence_0:
-                    #   do basic measurements on each spot and add to DataDict
-                    #     peak fluence, peak position (CCD coordinates), FWHM
-                    #     quadrupole moments, ellipticity, R2
-                    #
-                
-                    # save spot-data to a hard-file and add path to DataDict
-    
-            # Data Quality Assessment:
-            
-            # plot peak fluence, fwhm, ellipticity, vs. Exposure time
-            #    save plots as hard-files, keep file name in RepDict
-            #
-            # Check all parameters are within expected ranges:
-            #    offsets, STDs, peak fluence, fwhm, ellipticity
-            #    save reports to RepDict
-    
-       
-    return DataDict, RepDict
+#    # Inputs un-packing
+#    
+#    FFs = inputs['FFs'] # flat-fields for each CCD (1,2,3)
+#    
+#    # Load Flat-Field data for each CCD
+#    
+#    FFdata = dict()
+#    for CCDindex in range(1,4):
+#        CCDkey = 'CCD%i' % CCDindex
+#        if CCDkey in FFs.keys():
+#            FFdata[CCDkey] = FFing.FlatField(fitsfile=FFs[CCDkey])
+#        
+#    RepDict['prepPSF0X'] = dict(Title='Data Pre-Processing and QA',items=[])
+#    
+#    
+#    # Loop over CCDs
+#    
+#    for CCDindex in range(1,4):
+#        
+#        CCDkey = 'CCD%i' % CCDindex
+#        
+#        if CCDkey in DataDict:
+#            
+#            # Loop over ObsIDs
+#            
+#            ObsIDs = DataDict[CCDkey]['ObsID'].copy()
+#            label = DataDict[CCDkey]['label'].copy()
+#            Nobs = len(ObsID)
+#            
+#            
+#            for iObs, ObsID in enumerate(ObsIDs):
+#                
+#                ilabel = label[iObs]
+#                
+#                stop()
+#                
+#                # log object being analyzed: ObsID
+#                
+#                # retrieve FITS file and open it
+#                
+#                # subtract offset and add to DataDict
+#                # measure STD in pre and over-scan and add to DataDict
+#                
+#                # Divide by flat-field
+#                
+#                for spotID in spotIDs[CCDkey]:
+#                    
+#                    if log is not None: log.info('ObsID - spotID = %s-%s' % (ObsID,spotID))
+#                    
+#                    # get coordinates of spotID
+#                    
+#                    # Cut-out stamp of the spot
+#                    
+#                    # Measure background locally and add to DataDict
+#                    
+#                    # if ilabel != fluence_0:
+#                    #   do basic measurements on each spot and add to DataDict
+#                    #     peak fluence, peak position (CCD coordinates), FWHM
+#                    #     quadrupole moments, ellipticity, R2
+#                    #
+#                
+#                    # save spot-data to a hard-file and add path to DataDict
+#    
+#            # Data Quality Assessment:
+#            
+#            # plot peak fluence, fwhm, ellipticity, vs. Exposure time
+#            #    save plots as hard-files, keep file name in RepDict
+#            #
+#            # Check all parameters are within expected ranges:
+#            #    offsets, STDs, peak fluence, fwhm, ellipticity
+#            #    save reports to RepDict
+#    
+#       
+#    return dd, report
 
 
 def basic_analysis(dd,report,inputs,log=None):
     """Performs basic analysis on spots:
-         - Gaussian Fits: peak, position, width_x, width_y
+         - shape from moments
+         - Gaussian fitting: peak intensity, position, width_x, width_y
+         
     """
     
     raise NotImplementedError

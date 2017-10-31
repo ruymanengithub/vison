@@ -167,7 +167,7 @@ def check_data(dd,report,inputs,log=None):
     bypass = True # TESTS
     
     
-    # CHECK AND CROSS-CHECK HK: PENDING
+    # CHECK AND CROSS-CHECK HK
     
     #print 'HK-perf' # TESTS
     report_HK_perf = HKtools.check_HK_vs_command(HKKeys,dd,limits='P',elvis=inputs['elvis'])
