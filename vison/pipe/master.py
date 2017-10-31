@@ -174,7 +174,7 @@ class Pipe(object):
             
             taskinputs = self.inputs[taskname]
             
-            testkey = taskinputs['testkey']
+            testkey = taskinputs['test']
             taskinputs['resultspath'] = os.path.join(resultsroot,taskinputs['resultspath'])
             taskinputs['explogf'] = explogf
             taskinputs['elvis'] = elvis            
@@ -222,7 +222,7 @@ class Pipe(object):
     
     def dotask(self,taskname,inputs):
         """Generic test master function."""
-    
+        
         # INPUTS
         
         #todo_flags = dict(init=True,prep=True,basic=True,meta=True,report=True)
@@ -237,7 +237,7 @@ class Pipe(object):
         datapath = inputs['datapath']
         resultspath = inputs['resultspath']
         elvis = inputs['elvis']
-        testkey = inputs['testkey']
+        testkey = inputs['test']
         
         DataDictFile = os.path.join(resultspath,'%s_DataDict.pick' % testkey)
         reportobjFile = os.path.join(resultspath,'%s_Report.pick' % testkey)

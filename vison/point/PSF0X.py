@@ -47,9 +47,11 @@ from copy import deepcopy
 
 isthere = os.path.exists
 
-HKKeys_PSF0X = ['HK_temp_top_CCD1','HK_temp_bottom_CCD1','HK_temp_top_CCD2',
-'HK_temp_bottom_CCD2','HK_temp_top_CCD3','HK_temp_bottom_CCD3'] # TESTS
-
+HKKeys = ['CCD1_OD_T','CCD2_OD_T','CCD3_OD_T','COMM_RD_T',
+'CCD2_IG1_T','CCD3_IG1_T','CCD1_TEMP_T','CCD2_TEMP_T','CCD3_TEMP_T',
+'CCD1_IG1_T','COMM_IG2_T','FPGA_PCB_TEMP_T','CCD1_OD_B',
+'CCD2_OD_B','CCD3_OD_B','COMM_RD_B','CCD2_IG1_B','CCD3_IG1_B','CCD1_TEMP_B',
+'CCD2_TEMP_B','CCD3_TEMP_B','CCD1_IG1_B','COMM_IG2_B']
 
 PSF0X_commvalues = dict(program='CALCAMP',
   IPHI1=1,IPHI2=1,IPHI3=1,IPHI4=0,
@@ -62,6 +64,13 @@ PSF0X_commvalues = dict(program='CALCAMP',
   mirr_on=1,
   wave=4,mirr_pos=polib.mirror_nom['F4'],
   comments='')
+
+testdefaults = dict(PSF01=dict(waves=[590,640,800,880],
+                               exptimes=dict(),
+                               frames=[20,15,10,4,3]))
+
+for w in testdefaults['PSF01']['waves']:
+    testdefaults['PSF01']['exptimes']['nm%i' % w] = np.array([5.,25.,50.,75.,90.])/100.*ogse.tFWC_point['nm%i' % w]
 
 
 
@@ -104,6 +113,7 @@ def build_PSF0X_scriptdict(exptimes,frames,wavelength=800,
                
     PSF0X_sdict = sc.update_structdict(PSF0X_sdict,commvalues,diffvalues)
     
+    
     return PSF0X_sdict
 
 
@@ -123,39 +133,61 @@ def filterexposures(structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
     # load exposure log(s)
     explog = pilib.loadexplogs(explogf,elvis=elvis,addpedigree=True,
                                datapath=datapath)
+    Ncols = structure['Ncols']
     
-
-    Filter = ogse.get_FW_ID(structure['wave'])
+    Filters = [structure['col%i' % i]['wave'] for i in range(1,Ncols+1)]
+    Filter = Filters[0]
+    assert np.all(np.array(Filters) == Filter)
     
-    selbool = (explog['test'] == structure['test']) & \
+    
+    testkey = structure['col1']['test']
+    
+    selbool = (explog['test'] == testkey) & \
         (explog['ObsID'] >= OBSID_lims[0]) & \
         (explog['ObsID'] <= OBSID_lims[1]) & \
         (explog['wave'] == Filter) # TESTS
-    
-    
+        
+    explog = explog[selbool]
+
     # Assess structure
-    
-    checkreport = pilib.check_test_structure(explog,selbool,structure)
+        
+    checkreport = pilib.check_test_structure(explog,structure,CCDs=[1,2,3],
+                                           wavedkeys=[])
     
     # Labeling of exposures
+    explog['label'] = np.array(['None']*len(explog))
     
-    stop()
+    frcounter = 0
+    for ic in range(1,Ncols+1):
+        _frames = structure['col%i' % ic]['frames']
+        #print frcounter,frcounter+_frames*3
+        explog['label'][frcounter:frcounter+_frames*3] = 'col%i' % ic
+        frcounter += _frames*3
+    
     
     return explog, checkreport
     
 
-def check_data():
-    """ """
+def check_data(dd,report,inputs,log=None):
+    """ 
+    
+    
+    
+    """
+    
+    raise NotImplementedError
+    
 
 
-def prep_data(DataDict,RepDict,inputs,log=None):
+def prep_data(dd,report,inputs,log=None):
     """Takes Raw Data and prepares it for further analysis. Also checks that
     data quality is enough."""
+    
+    raise NotImplementedError
     
     # Inputs un-packing
     
     FFs = inputs['FFs'] # flat-fields for each CCD (1,2,3)
-    
     
     # Load Flat-Field data for each CCD
     
@@ -229,159 +261,37 @@ def prep_data(DataDict,RepDict,inputs,log=None):
     return DataDict, RepDict
 
 
-def basic_analysis(DataDict,RepDict,inputs,log=None):
+def basic_analysis(dd,report,inputs,log=None):
     """Performs basic analysis on spots:
          - Gaussian Fits: peak, position, width_x, width_y
     """
     
-def bayes_analysis(DataDict,RepDict,inputs,log=None):
+    raise NotImplementedError
+    
+    return dd,report
+
+    
+def bayes_analysis(dd,report,inputs,log=None):
     """ 
     Performs bayesian decomposition of the spot images:
         - optomechanic PSF and detector PSF.
     Also measures R2, fwhm and ellipticity of "extracted" detector PSF.
     """
     
+    raise NotImplementedError
+    
+    return dd,report
 
-def meta_analysis(DataDict,RepDict,inputs,log=None):
+def meta_analysis(dd,report,inputs,log=None):
     """
     
     Analyzes the relation between detector PSF and fluence.
     
     """
     
-
-
-def run(inputs,log=None):
-    """Test PSF0X master function."""
+    raise NotImplementedError
     
-    
-    # INPUTS
-    
-    todo_flags = dict(init=True,prep=True,basic=True,bayes=True,meta=True,report=True)
-    
-    OBSID_lims = inputs['OBSID_lims']
-    explogf = inputs['explogf']
-    datapath = inputs['datapath']
-    resultspath = inputs['resultspath']
-    wavelength = inputs['wavelength']
-    elvis = inputs['elvis']
-    
-    DataDictFile = os.path.join(resultspath,'PSF0X_%snm_DataDict.pick' % wavelength)
-    reportobjFile = os.path.join(resultspath,'PSF0X_%snm_Report.pick' % wavelength)
-    
-    if not isthere(resultspath):
-        os.system('mkdir %s' % resultspath)
-    
-    try: 
-        structure = inputs['structure']
-    except: 
-        structure = PSF0X_structure
-        
-    try: reportroot = inputs['reportroot']
-    except KeyError: reportroot = 'PSF0X_%inm_report' % wavelength
-    
-    try: cleanafter = inputs['cleanafter']
-    except KeyError: cleanafter = False
-    
-    if 'todo_flags' in inputs: todo_flags.update(inputs['todo_flags'])
-    
-    doIndivs = []
-    for key in ['basic','bayes']:
-        if todo_flags[key] == True: doIndivs.append(True)
-    
-    resindivpath = '%s_indiv' % resultspath
-    
-    if not isthere(resindivpath) and np.any(doIndivs):
-        os.system('mkdir %s' % resindivpath)
-    
-    
-    if todo_flags['init']:
-    
-        # Initialising Report Object
-    
-        if todo_flags['report']:
-            reportobj = Report(TestName='PSF0X: %s nm' % wavelength)
-        else:
-            reportobj = None
-    
-        # META-DATA WORK
-        
-    
-        # Filter Exposures that belong to the test
-    
-        DataDict, isconsistent = filterexposures_PSF0X(wavelength,explogf,datapath,OBSID_lims,
-                                     structure,elvis)
-    
-        if log is not None:
-            log.info('PSF0X acquisition is consistent with expectations: %s' % isconsistent)
-    
-   
-        # Add HK information
-        DataDict = pilib.addHK(DataDict,HKKeys_PSF0X,elvis=elvis)
-        pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)
-        
-    else:
-        
-        DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
-        
-    # DATA-WORK
-    
-    # Prepare Data for further analysis (subtract offsets, divide by FFF, trim snapshots). 
-    # Check Data has enough quality:
-    #     median levels in pre-scan, image-area, overscan
-    #     fluences and spot-sizes (coarse measure) match expectations for all spots
-    #     
-    
-    if todo_flags['prep']:
-    
-        DataDict, reportobj = prep_data_PSF0X(DataDict,reportobj,inputs,log)
-        pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)        
-    else:
-        DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
-    
-    # Optional
-    # Perform Basic Analysis : Gaussian fits and Moments
-    
-    if todo_flags['basic']:
-        
-        DataDict, reportobj = basic_analysis_PSF0X(DataDict,reportobj,inputs,log)
-        pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)        
-    else:
-        DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
-    
-    # Optional
-    # Perform Bayesian Analysis
-    
-    
-    if todo_flags['bayes']:
-        DataDict, reportobj = bayes_analysis_PSF0X(DataDict,reportobj,inputs,log)
-        pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)  
-    else:
-        DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
-        
-    
-    # Optional
-    # Produce Summary Figures and Tables
-    
-    if todo_flags['meta']:
-        DataDict, reportobj = meta_analysis_PSF0X(DataDict,reportobj,inputs,log)
-        pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)  
-    else:
-        DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
-    
-    # Write automatic Report of Results
-    
-    if todo_flags['report']:
-        reportobj.generate_Texbody()
-        outfiles = reportobj.writeto(reportroot,cleanafter)
-        
-        for outfile in outfiles:
-            os.system('mv %s %s/' % (outfile,resultspath))
-    
-    pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)
-    
-    if log is not None:
-        log.info('Finished PSF0X')
+    return dd, report
     
 
 def feeder(inputs,elvis='6.3.0'):
@@ -391,9 +301,21 @@ def feeder(inputs,elvis='6.3.0'):
                 ('basic',basic_analysis),('bayes',bayes_analysis),
                 ('meta',meta_analysis)]
     
-    exptimes = inputs['exptimes']
-    frames = inputs['frames']
     wavelength = inputs['wavelength']
+    
+    
+    testkey = inputs['test']
+    if 'PSF01' in testkey: _testkey = 'PSF01'
+    
+    if 'exptimes' in inputs:
+        exptimes = inputs['exptimes']
+    else:
+        exptimes = testdefaults[_testkey]['exptimes']['nm%i' % wavelength]
+    if 'frames' in inputs:
+        frames = inputs['frames']
+    else:
+        frames = testdefaults[_testkey]['frames']
+        
     if 'elvis' in inputs:
         elvis = inputs['elvis']
     if 'diffvalues' in inputs:
@@ -401,12 +323,11 @@ def feeder(inputs,elvis='6.3.0'):
     else:
         diffvalues = {}
     
-    
+    diffvalues['test'] = testkey    
     scriptdict = build_PSF0X_scriptdict(exptimes,frames,wavelength,
                                         diffvalues,elvis=elvis)
     
     inputs['structure'] = scriptdict
     inputs['subtasks'] = subtasks
-    
     
     return inputs

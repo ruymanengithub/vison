@@ -88,6 +88,7 @@ def check_test_structure(explog,structure,CCDs=[1,2,3],selbool=True,wavedkeys=[]
     from vison.datamodel.generator import _update_fromscript
     
     isconsistent = True
+
     
     Ncols = structure['Ncols']
     
@@ -121,7 +122,6 @@ def check_test_structure(explog,structure,CCDs=[1,2,3],selbool=True,wavedkeys=[]
                 failedcols.append(iC)
                 continue
 
-            
             try:
                 ixsubsel = np.where(cselbool)[0][ix0:ix1]
             except IndexError:
@@ -133,7 +133,10 @@ def check_test_structure(explog,structure,CCDs=[1,2,3],selbool=True,wavedkeys=[]
             for key in rowdict:
                 val = rowdict[key]
                 if val is None or key in wavedkeys: continue
-                checksout = np.all(explog[key][ixsubsel] == val)                
+                try: 
+                    checksout = np.all(np.isclose(explog[key][ixsubsel],val))      
+                except TypeError:
+                    checksout = np.all(explog[key][ixsubsel]==val)
                 isconsistent &= checksout
                 if ~checksout:
                     failedkeys.append(key)
