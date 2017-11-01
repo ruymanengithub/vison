@@ -35,14 +35,17 @@ Created on Thu Dec 29 15:01:07 2016
 import numpy as np
 from pdb import set_trace as stop
 import os
+from vison.datamodel import core
+from vison.datamodel import ccd
 from vison.pipe import lib as pilib
 from vison.ogse import ogse
+from vison.datamodel import HKtools
 from vison.datamodel import scriptic as sc
 from vison.flat import FlatFielding as FFing
 from vison.point import lib as polib
 from vison.support.report import Report
 from vison.support import files
-from copy import deepcopy
+import copy
 # END IMPORT
 
 isthere = os.path.exists
@@ -72,6 +75,7 @@ testdefaults = dict(PSF01=dict(waves=[590,640,800,880],
 for w in testdefaults['PSF01']['waves']:
     testdefaults['PSF01']['exptimes']['nm%i' % w] = np.array([5.,25.,50.,75.,90.])/100.*ogse.tFWC_point['nm%i' % w]
 
+stampw = polib.stampw
 
 
 def build_PSF0X_scriptdict(exptimes,frames,wavelength=800,
@@ -108,7 +112,7 @@ def build_PSF0X_scriptdict(exptimes,frames,wavelength=800,
     Ncols = len(PSF0X_sdict.keys())    
     PSF0X_sdict['Ncols'] = Ncols
     
-    commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+    commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
     commvalues.update(PSF0X_commvalues)               
                
     PSF0X_sdict = sc.update_structdict(PSF0X_sdict,commvalues,diffvalues)
@@ -215,7 +219,7 @@ def check_data(dd,report,inputs,log=None):
     
     
     
-    #bypass = True # TESTS
+    bypass = False # TESTS
     
     
     # CHECK AND CROSS-CHECK HK
@@ -228,51 +232,95 @@ def check_data(dd,report,inputs,log=None):
 
     # Initialize new columns
 
-#    Xindices = copy.deepcopy(dd.indices)
-#    
-#    if 'Quad' not in Xindices.names:
-#        Xindices.append(core.vIndex('Quad',vals=pilib.Quads))
-#    
-#    dummyOffset = 2000.
-#    dummystd = 1.3
-#    
-#    newcolnames_off = ['offset_pre','offset_img','offset_ove']
-#    for newcolname_off in newcolnames_off:
-#        if newcolname_off in dd.colnames:
-#            dd.dropColumn(newcolname_off)
-#        dd.initColumn(newcolname_off,Xindices,dtype='float32',valini=dummyOffset)
-#    
-#    newcolnames_std = ['std_pre','std_img','std_ove']
-#    for newcolname_std in newcolnames_std:
-#        if newcolname_std in dd.colnames:
-#            dd.dropColumn(newcolname_std)
-#        dd.initColumn(newcolname_std,Xindices,dtype='float32',valini=dummystd)
-#    
-#    
-#    nObs,nCCD,nQuad = Xindices.shape
-#    Quads = Xindices[2].vals
-#    
-#    # Get statistics in different regions
-#    
-#    if not bypass:
-#    
-#        for iObs in range(nObs):
-#            
-#            for jCCD in range(nCCD):
-#                
-#                dpath = dd.mx['datapath'][iObs,jCCD]
-#                ffits = os.path.join(dpath,dd.mx['Files'][iObs,jCCD])
-#                
-#                ccdobj = ccd.CCD(ffits)
-#                
-#                for kQ in range(nQuad):
-#                    Quad = Quads[kQ]
-#                    
-#                    for reg in ['pre','img', 'ove']:
-#                        stats = ccdobj.get_stats(Quad,sector=reg,statkeys=['mean','std'],trimscan=[5,5],
-#                                ignore_pover=True,extension=-1)
-#                        dd.mx['offset_%s' % reg][iObs,jCCD,kQ] = stats[0]
-#                        dd.mx['std_%s' % reg][iObs,jCCD,kQ] = stats[1]
+    Qindices = copy.deepcopy(dd.indices)
+    
+    if 'Quad' not in Qindices.names:
+        Qindices.append(core.vIndex('Quad',vals=pilib.Quads))
+
+    
+    Sindices = copy.deepcopy(Qindices)
+    if 'Spot' not in Sindices.names:
+        Sindices.append(core.vIndex('Spot',vals=polib.Point_CooNom['names']))
+    
+
+    newcolnames_off = ['offset_pre','offset_ove']
+    for newcolname_off in newcolnames_off:
+        dd.initColumn(newcolname_off,Qindices,dtype='float32',valini=np.nan)
+    
+    newcolnames_std = ['std_pre','std_ove']
+    for newcolname_std in newcolnames_std:
+        dd.initColumn(newcolname_std,Qindices,dtype='float32',valini=np.nan)
+    
+
+    dd.initColumn('bgd_img',Qindices,dtype='float32',valini=np.nan)
+    
+    SpotNames = Sindices[3].vals
+    nSpot = len(SpotNames)
+    
+    dd.initColumn('sp_coa_fluence',Sindices,dtype='float32',valini=np.nan)
+    dd.initColumn('sp_coa_fwhm',Sindices,dtype='float32',valini=np.nan)
+        
+    
+    nObs,nCCD,nQuad = Qindices.shape
+    Quads = Qindices[2].vals
+    CCDs = Qindices[1].vals
+    
+    # Get statistics in different regions
+    
+    if not bypass:
+    
+        for iObs in range(nObs):
+            
+            for jCCD in range(nCCD):
+                
+                CCD = CCDs[jCCD]
+                
+                dpath = dd.mx['datapath'][iObs,jCCD]
+                ffits = os.path.join(dpath,'%s.fits' % dd.mx['File_name'][iObs,jCCD])
+                
+                ccdobj = ccd.CCD(ffits)
+                
+                for kQ in range(nQuad):
+                    Quad = Quads[kQ]
+                    
+                    for reg in ['pre', 'ove']:
+                        altstats = ccdobj.get_stats(Quad,sector=reg,statkeys=['mean','std'],trimscan=[5,5],
+                                ignore_pover=True,extension=-1)
+                        dd.mx['offset_%s' % reg][iObs,jCCD,kQ] = altstats[0]
+                        dd.mx['std_%s' % reg][iObs,jCCD,kQ] = altstats[1]
+                    
+                    
+                    # To measure the background we mask out the sources
+                    
+                    alt_ccdobj = copy.deepcopy(ccdobj)
+                    
+                    mask_sources = polib.gen_point_mask(CCD,Quad,width=stampw,sources='all')
+                    
+                    alt_ccdobj.get_mask(mask_sources)
+                    
+                    imgstats = alt_ccdobj.get_stats(Quad,sector='img',statkeys=['median'],trimscan=[5,5],
+                                ignore_pover=True,extension=-1)
+                    
+                    dd.mx['bgd_img'][iObs,jCCD,kQ] = imgstats[0]
+                    
+                    alt_ccdobj = None
+                    
+                    
+                    for xSpot in range(nSpot):
+                        SpotName = SpotNames[xSpot]
+                        
+                        cooNom = polib.Point_CooNom['CCD%i' % CCD][Quad][SpotName]
+                        
+                        spot = polib.extract_spot(ccdobj,cooNom,Quad,SpotName,log=log,
+                                                  stampw=stampw)
+                        
+                        res_bas = spot.measure_basic(rin=10,rap=10,rout=-1)
+                        
+                        stop()
+                    
+                    
+                    stop()
+                    
 #                
 #    # Assess metrics are within allocated boundaries
 #
