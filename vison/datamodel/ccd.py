@@ -149,7 +149,7 @@ class CCD(object):
         if infits is not None:
         
             assert type(infits) is str, "'%s' can't be a name for a file!" % infits
-            assert isthere(infits), 'infits is just not there :-('
+            assert isthere(infits), 'infits:%s is just not there :-(' % infits
                         
             self.loadfromFITS(infits,extensions,getallextensions)
 

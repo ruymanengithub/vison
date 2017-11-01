@@ -213,7 +213,10 @@ class DataDict(object):
         else:
             array = np.zeros(shape,dtype=dtype)
             array[:] = valini
-            
+        
+        if name in self.colnames:
+            self.dropColumn(name)
+        
         self.addColumn(array,name,indices)
         
         

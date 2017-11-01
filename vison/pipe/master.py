@@ -34,7 +34,7 @@ Created on Wed Jul 27 12:16:40 2016
 
 # IMPORT STUFF
 from pdb import  set_trace as stop
-from copy import copy
+import copy
 import os
 import numpy as np
 from time import sleep
@@ -101,6 +101,8 @@ class Pipe(object):
         self.BLOCKID=self.inputs['BLOCKID'] # BLOCK (ROE+RPSU+CCDs) under test
         self.CHAMBER=self.inputs['CHAMBER']
         self.ID = 'FM%s' % vistime.get_time_tag()  # ID of the analysis "session"
+        
+        self.inputs['ID'] = self.ID
 
         if dolog:
             self.logf = 'Calib_%s.log' % self.ID
@@ -118,6 +120,12 @@ class Pipe(object):
         """ """
         
         taskinputs = self.inputs[taskname]
+        
+        inputs =copy.deepcopy(self.inputs)
+        alltasks = inputs['tasks']
+        inputs.pop('tasks')
+        for taskname in alltasks: inputs.pop(taskname)
+        taskinputs.update(inputs)        
             
         msg = ['\n\nRunning Task: %s\n' % taskname]
         msg += ['Inputs:']
@@ -138,12 +146,11 @@ class Pipe(object):
         if not os.path.exists(resultsroot):
             os.system('mkdir %s' % resultsroot)
         
-        
         if self.log is not None: self.log.info('\n\nResults will be saved in: %s\n' % resultsroot)
         
         for taskname in tasknames:
             
-            taskinputs = self.inputs[taskname]            
+            taskinputs = self.inputs[taskname]
             taskinputs['resultspath'] = os.path.join(resultsroot,taskinputs['resultspath'])
             
             if explogf is not None:
@@ -154,16 +161,15 @@ class Pipe(object):
             self.inputs[taskname] = taskinputs
             
             self.launchtask(taskname)
-
+    
     def wait_and_run(self,explogf,elvis='6.1.0'):
         """ """
-        
         
         tasknames = self.tasks
         resultsroot = self.inputs['resultsroot']
         if not os.path.exists(resultsroot):
             os.system('mkdir %s' % resultsroot)
-                
+        
         if self.log is not None: self.log.info('\n\nResults will be saved in: %s\n' % resultsroot)
         
         # Learn how many ObsIDs will generate each task
@@ -238,6 +244,7 @@ class Pipe(object):
         resultspath = inputs['resultspath']
         elvis = inputs['elvis']
         testkey = inputs['test']
+        
         
         DataDictFile = os.path.join(resultspath,'%s_DataDict.pick' % testkey)
         reportobjFile = os.path.join(resultspath,'%s_Report.pick' % testkey)

@@ -185,14 +185,10 @@ def check_data(dd,report,inputs,log=None):
     
     newcolnames_off = ['offset_pre','offset_img','offset_ove']
     for newcolname_off in newcolnames_off:
-        if newcolname_off in dd.colnames:
-            dd.dropColumn(newcolname_off)
         dd.initColumn(newcolname_off,Xindices,dtype='float32',valini=np.nan)
     
     newcolnames_std = ['std_pre','std_img','std_ove']
     for newcolname_std in newcolnames_std:
-        if newcolname_std in dd.colnames:
-            dd.dropColumn(newcolname_std)
         dd.initColumn(newcolname_std,Xindices,dtype='float32',valini=np.nan)
     
     
