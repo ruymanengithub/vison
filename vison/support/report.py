@@ -50,29 +50,83 @@ default_header = [
 '\\addtolength{\\textwidth}{1.5cm}',\
 '\n']
 
-
-class Content(dict):
+class Content(object):
     """ """
     
     def __init__(self,contenttype=''):
         """ """
         self.type=contenttype
-        
+    
+    def __str__(self):
+        """ """
+        return self.type
 
-class Section(Content):
+class Container(Content,object):
     """ """
     
-    def __init__(self,Title='',level=0):
+    def __init__(self):
+        """ """
+        self.Contents = []
+        
+    def __str__(self):
+        """ """
+        txt = ''
+        for item in self.Contents:
+            txt += self.Contents.__str__()
+        return txt
+    
+    def add_to_Contents(self,item):
+        """ """
+        
+        try:
+            if len(self.Contents)>0:
+                lastCont = self.Contents[-1]
+                if not isinstance(lastCont,Section):
+                    self.Contents.append(item)
+                if isinstance(item,Section):
+                    lastlevel = lastCont.level
+                    itemlevel = item.level
+                    if itemlevel > lastlevel:
+                        self.Contents[-1].add_to_Contents(item)
+                    else:
+                        self.Contents.append(item)
+                else:
+                    self.Contents[-1].add_to_Contents(item)
+            else:
+                self.Contents.append(item)
+        except AttributeError:
+            self.Contents.append(item)
+        
+        return None
+
+class Section(Container):
+    """ """
+    
+    def __init__(self,keyword,Title='',level=0):
         
         self.levelnames = ['section','subsection','subsubsection']
         
         self.type = self.levelnames[level]
+        self.level = level
         self.Title = Title
+        self.keyword = keyword
+        self.Contents = []
         
     def generate_Latex(self):
         """ """
         tex = ['\%s{%s}' % (self.type,self.Title),'\n']
+        
+        for item in self.Contents:            
+            tex += item.generate_Latex()
+        
         return tex
+    
+    def __str__(self):
+        
+        txt = '%s (%s) ' % (self.type, self.keyword)
+        for item in self.Contents:
+            txt += item.__str__()
+        return txt
 
 class Figure(Content):
     """ """
@@ -180,7 +234,7 @@ class Text(Content):
         
         return tex
 
-class Report(object):
+class Report(Container):
     
     
     def __init__(self,TestName='Test',Model='XM',Contents=[],Texheader=default_header,
@@ -197,6 +251,7 @@ class Report(object):
         
         self.Contents = Contents
     
+        
     
     def generate_Header(self,author='Ruyman Azzollini'):
         
@@ -219,25 +274,54 @@ class Report(object):
                         
         self.Texbody = Texbody
     
-    def add_Section(self,Title='',level=0):
+    def add_Section(self,keyword='',Title='',level=0):
         """ """
-        self.Contents.append(Section(Title,level))
+        self.add_to_Contents(Section(keyword,Title,level))
     
-    def drop_Section(self,Title,level):
-        raise NotImplementedError
+    def drop_Section(self,keyword):
         
+        ix2remove = []
+        
+        Ncont = len(self.Contents)
+        
+        for ix,item in enumerate(self.Contents):
+            if isinstance(item,Section):
+                if item.keyword == keyword:
+                    ix2remove.append(ix)
+                    
+                    children = range(ix,Ncont-1)
+                    
+                    if len(children) == 0: break
+                    
+                    for j in range(len(children)):
+                        _item = self.Contents[children[j]]
+                        if isinstance(_item,Section):
+                            if _item.level > self.Contents[ix].level:
+                                ix2remove.append(children[j])
+                            else:
+                                break
+                        else:
+                            break
+                    
+        for ix in ix2remove:
+            self.Contents.pop(ix)
+        
+        
+    
     def add_Figure(self,figpath,texfraction=0.7,caption=None,label=None):
         """ """
-        self.Contents.append(Figure(figpath,texfraction,caption,label))
-        
+        self.add_to_Contents(Figure(figpath,texfraction,caption,label))
+    
+    
     def add_Table(self,tableDict,formats=dict(),names=[],caption=''):
         """ """
         # tableDict,formats=dict(),names=[],caption=None
-        self.Contents.append(Table(tableDict,formats,names,caption))
-        
+        self.add_to_Contents(Table(tableDict,formats,names,caption))
+    
+    
     def add_text(self,text):
         """ """
-        self.Contents.append(Text(text))
+        self.add_to_Contents(Text(text))
     
     
     def doreport(self,reportname,cleanafter=False):
@@ -306,3 +390,27 @@ class Report(object):
         os.system('rm %s' % deluxetablesty)
         
         return outfiles
+    
+    
+if __name__ == '__main__':
+    
+    report = Report(TestName='Dummy',Model='QM')
+    
+    outpath = './'
+    if not os.path.exists(outpath):
+        os.system('mkdir %s' % outpath)
+    outfile = os.path.join(outpath,'Test_Report')
+    
+    report.add_Section('s1','Intro',level=0)
+    report.add_text('this is a section')
+    report.add_Section('s11','Sub-Intro',level=1)
+    report.add_text('this is a sub-section')
+    report.add_Section('s2','First Section',level=0)
+    report.add_text('this is inside First Section')
+    report.add_Section('s21','First Section Subsection',level=1)
+    report.add_text('this is inside First Section Subsection')
+    report.add_Section('s3','Second Section',level=0)
+    report.add_text('this is inside Second Section')
+    report.drop_Section('s2')
+    
+    report.doreport('Test_Report',cleanafter=False)
