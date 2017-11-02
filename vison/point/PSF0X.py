@@ -45,6 +45,7 @@ from vison.flat import FlatFielding as FFing
 from vison.point import lib as polib
 from vison.support.report import Report
 from vison.support import files
+from vison.image import calibration
 import copy
 # END IMPORT
 
@@ -215,9 +216,7 @@ def check_data(dd,report,inputs,log=None):
     if log is not None:
         log.info('PSF0X.check_data')
     
-    report.add_Section(Title='CHECK\_DATA',level=0)
-    
-    stop()
+    report.add_Section(keyword='check_data',Title='Data Validation',level=0)
 
     
     bypass = True # TESTS
@@ -314,9 +313,9 @@ def check_data(dd,report,inputs,log=None):
                     for xSpot in range(nSpot):
                         SpotName = SpotNames[xSpot]
                         
-                        cooNom = polib.Point_CooNom['CCD%i' % CCD][Quad][SpotName]
-                        
-                        spot = polib.extract_spot(ccdobj,cooNom,Quad,SpotName,log=log,
+                        coo = polib.Point_CooNom['CCD%i' % CCD][Quad][SpotName]
+
+                        spot = polib.extract_spot(ccdobj,Quad,coo,log=log,
                                                   stampw=stampw)
                         
                         res_bas = spot.measure_basic(rin=10,rap=10,rout=-1)
@@ -377,12 +376,12 @@ def check_data(dd,report,inputs,log=None):
 #    
 #    # Update Report, raise flags, fill-in log
 #
-#    if log is not None:
-#        log.info('Reporting and Flagging MISSING in BIAS01.check_data')    
-#    
-#    
-#    return dd, report
-#    
+    if log is not None:
+        log.info('Reporting and Flagging MISSING in PSF0X.check_data')    
+    
+    
+    return dd, report
+    
     
 
 
@@ -403,86 +402,121 @@ def prep_data(dd,report,inputs,log=None):
                 divide by flat-field, if available
                 
                 save image as a datamodel.ccd.CCD object.                
-                cuts-out and saves stamps of pre-processed spots for further analysis.
+                cuts-out and save stamps of pre-processed spots for further analysis.
     
     """
     
-    raise NotImplementedError
+    report.add_Section(keyword='prep_data',Title='Data Pre-Processing',level=0)
     
-#    # Inputs un-packing
-#    
-#    FFs = inputs['FFs'] # flat-fields for each CCD (1,2,3)
-#    
-#    # Load Flat-Field data for each CCD
-#    
-#    FFdata = dict()
-#    for CCDindex in range(1,4):
-#        CCDkey = 'CCD%i' % CCDindex
-#        if CCDkey in FFs.keys():
-#            FFdata[CCDkey] = FFing.FlatField(fitsfile=FFs[CCDkey])
-#        
-#    RepDict['prepPSF0X'] = dict(Title='Data Pre-Processing and QA',items=[])
-#    
-#    
-#    # Loop over CCDs
-#    
-#    for CCDindex in range(1,4):
-#        
-#        CCDkey = 'CCD%i' % CCDindex
-#        
-#        if CCDkey in DataDict:
-#            
-#            # Loop over ObsIDs
-#            
-#            ObsIDs = DataDict[CCDkey]['ObsID'].copy()
-#            label = DataDict[CCDkey]['label'].copy()
-#            Nobs = len(ObsID)
-#            
-#            
-#            for iObs, ObsID in enumerate(ObsIDs):
-#                
-#                ilabel = label[iObs]
-#                
-#                stop()
-#                
-#                # log object being analyzed: ObsID
-#                
-#                # retrieve FITS file and open it
-#                
-#                # subtract offset and add to DataDict
-#                # measure STD in pre and over-scan and add to DataDict
-#                
-#                # Divide by flat-field
-#                
-#                for spotID in spotIDs[CCDkey]:
-#                    
-#                    if log is not None: log.info('ObsID - spotID = %s-%s' % (ObsID,spotID))
-#                    
-#                    # get coordinates of spotID
-#                    
-#                    # Cut-out stamp of the spot
-#                    
-#                    # Measure background locally and add to DataDict
-#                    
-#                    # if ilabel != fluence_0:
-#                    #   do basic measurements on each spot and add to DataDict
-#                    #     peak fluence, peak position (CCD coordinates), FWHM
-#                    #     quadrupole moments, ellipticity, R2
-#                    #
-#                
-#                    # save spot-data to a hard-file and add path to DataDict
-#    
-#            # Data Quality Assessment:
-#            
-#            # plot peak fluence, fwhm, ellipticity, vs. Exposure time
-#            #    save plots as hard-files, keep file name in RepDict
-#            #
-#            # Check all parameters are within expected ranges:
-#            #    offsets, STDs, peak fluence, fwhm, ellipticity
-#            #    save reports to RepDict
-#    
-#       
-#    return dd, report
+    bypass = True # TESTS
+    
+    # Inputs un-packing
+    
+    doMask = False
+    doBias = False
+    doOffset = True
+    doFlats = False
+    
+    if 'mask' in inputs['inCDPs']:
+        Maskdata = calibration.load_CDPs(inputs['inCDPs']['Mask'],ccd.CCD)
+        doMask = True
+        
+        
+    if 'bias' in inputs['inCDPs']:
+        Biasdata = calibration.load_CDPs(inputs['inCDPs']['Bias'],ccd.CCD)
+        doBias = True
+    
+    
+    if 'FF' in inputs['inCDPs']:
+        FFdata = calibration.load_CDPs(inputs['inCDPs']['FF'],FFing.FlatField)
+        doFlats = True
+    
+    # INDEX HANDLING
+    
+    dIndices = copy.deepcopy(dd.indices)
+    
+    CCDs = dIndices[dIndices.names.index('CCD')].vals
+    #nCCD = len(CCDs)
+    Quads = dIndices[dIndices.names.index('Quad')].vals
+    nQuads = len(Quads)
+    nObs = dIndices[dIndices.names.index('ix')].len
+    SpotNames = dIndices[dIndices.names.index('Spot')].vals
+    nSpots = len(SpotNames)
+    
+    CIndices = copy.deepcopy(dIndices)
+    CIndices.pop(CIndices.names.index('Quad'))
+    CIndices.pop(CIndices.names.index('Spot'))
+    
+    # INITIALIZATIONS
+    
+    dd.initColumn('ccdobj_name',CIndices,dtype='S100',valini='None')
+    dd.initColumn('spots_name',CIndices,dtype='S100',valini='None')
+    
+    if not bypass:
+        
+        rpath = dd.meta['inputs']['resultspath']      
+        
+        for iObs in range(nObs):
+            
+            for jCCD,CCD in enumerate(CCDs):
+                
+                CCDkey = 'CCD%i' % CCD
+                
+                dd.mx['ccdobj_name'][iObs,jCCD] = '%s_proc' % dd.mx['File_name'][iObs,jCCD]
+                
+                dpath = dd.mx['datapath'][iObs,jCCD]
+                infits = os.path.join(dpath,'%s.fits' % dd.mx['File_name'][iObs,jCCD])
+                
+                ccdobj = ccd.CCD(infits)
+                
+                fullccdobj_name = os.path.join(rpath,'%s.pick' % dd.mx['ccdobj_name'][iObs,jCCD]) 
+                
+                if doMask:
+                    ccdobj.get_mask(Maskdata[CCDkey].extensions[-1])
+                
+                if doOffset:
+                    for Quad in Quads:
+                        ccdobj.sub_offset(Quad,method='median',scan='pre',trims=[5,5],
+                                          ignore_pover=False)
+                if doBias:
+                    ccdobj.sub_bias(Biasdata[CCDkey].extensions[-1],extension=-1)
+                
+                if doFlats:
+                    ccdobj.divide_by_flatfield(FFdata[CCDkey].extensions[1],extension=-1)
+                
+                ccdobj.writeto(fullccdobj_name,clobber=True)
+                
+                
+                # Cut-out "spots"
+                
+                spots_array = np.zeros((nQuads,nSpots),dtype=object)
+                
+                for kQ,Quad in enumerate(Quads):
+                    
+                    for lS,SpotName in enumerate(SpotNames):
+                    
+                        coo = polib.Point_CooNom[CCDkey][Quad][SpotName]
+                        lSpot = polib.extract_spot(ccdobj,Quad,coo,stampw=stampw)
+                        
+                        spots_array[kQ,lS] = copy.deepcopy(lSpot)
+                
+                
+                # save "spots" to a separate file and keep name in dd
+                
+                dd.mx['spots_name'][iObs,jCCD] = '%s_spots' % dd.mx['File_name'][iObs,jCCD]
+                
+                fullspots_name = os.path.join(rpath,'%s.pick' % dd.mx['spots_name'][iObs,jCCD])
+                
+                spotsdict = dict(spots=spots_array)
+                
+                files.cPickleDumpDictionary(spotsdict,fullspots_name)
+                
+                
+                
+    
+    return dd,report
+
+
 
 
 def basic_analysis(dd,report,inputs,log=None):

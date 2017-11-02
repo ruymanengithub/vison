@@ -64,7 +64,7 @@ for iCCD in range(2,4):
         Point_CooNom['CCD%i' % iCCD][Q] = copy.deepcopy(Point_CooNom['CCD1'][Q])
 
 
-def extract_spot(ccdobj,coo,Quad,SpotName,log=None,stampw=25):
+def extract_spot(ccdobj,coo,Quad,log=None,stampw=25):
     """ """
     
     B = ccdobj.QuadBound[Quad]

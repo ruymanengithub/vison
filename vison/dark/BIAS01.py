@@ -297,10 +297,10 @@ def prep_data(dd,report,inputs,log=None):
     
     # Initialize new columns
 
-    Xindices = copy.deepcopy(dd.mx['File_name'].indices)
+    Cindices = copy.deepcopy(dd.mx['File_name'].indices)
     
     
-    dd.initColumn('ccdobj_name',Xindices,dtype='S100',valini='None')
+    dd.initColumn('ccdobj_name',Cindices,dtype='S100',valini='None')
     
     DDindices = copy.deepcopy(dd.indices)
     
@@ -308,6 +308,8 @@ def prep_data(dd,report,inputs,log=None):
     Quads = DDindices[2].vals
     
     if not bypass:
+        
+        rpath = dd.meta['inputs']['resultspath']      
     
         for iObs in range(nObs):
             
@@ -320,7 +322,6 @@ def prep_data(dd,report,inputs,log=None):
                 
                 ccdobj = ccd.CCD(infits)
                 
-                rpath = dd.meta['inputs']['resultspath']      
                 fullccdobj_name = os.path.join(rpath,'%s.pick' % dd.mx['ccdobj_name'][iObs,jCCD]) 
                 
                 

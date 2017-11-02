@@ -139,7 +139,7 @@ class CCD(object):
     
     """
     
-    def __init__(self,infits=None,extensions=[-1],getallextensions=False):
+    def __init__(self,infits=None,extensions=[-1],getallextensions=False,withpover=True):
         """ """
         
         self.extnames = []
@@ -161,15 +161,18 @@ class CCD(object):
         self.nextensions = len(self.extensions)
         
         self.NAXIS1 = NAXIS1
-        self.NAXIS2 = NAXIS2        
-        self.shape = (NAXIS1,NAXIS2)
+        if withpover: self.NAXIS2 = NAXIS2
+        else: self.NAXIS2 = NAXIS2-40
+
+        self.shape = (self.NAXIS1,self.NAXIS2)
         
         for iext in range(self.nextensions):
             if self.extensions[iext].data is not None:
-                assert self.shape == self.extensions[iext].data.shape                
+                assert self.shape == self.extensions[iext].data.shape        
         
         self.prescan = prescan
         self.overscan = overscan
+        
         self.gain = dict(E=3.1,F=3.1,G=3.1,H=3.1)
         self.rn = dict(E=4.5,F=4.5,G=4.5,H=4.5)
         
