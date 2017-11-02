@@ -274,8 +274,18 @@ class Report(Container):
                         
         self.Texbody = Texbody
     
-    def add_Section(self,keyword='',Title='',level=0):
+    def has_Section(self,keyword):
+        
+        for item in self.Contents:
+            if isinstance(item,Section):
+                if item.keyword == keyword: return True
+        
+        return False
+    
+    def add_Section(self,keyword='',Title='',level=0,overwrite=True):
         """ """
+        if overwrite and self.has_Section(keyword):
+            self.drop_Section(keyword)
         self.add_to_Contents(Section(keyword,Title,level))
     
     def drop_Section(self,keyword):
