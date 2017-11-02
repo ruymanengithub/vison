@@ -355,19 +355,19 @@ class FlatField(ccdmodule.CCD,object):
 #    What about a Mask?: Extension 3: Mask
 
 
-    def __init__(self,fitsfile='',data=dict(),meta=dict()):
+    def __init__(self,fitsfile='',data=dict(),meta=dict(),withpover=False):
         """ """
         
         #super(FlatField,self).__init__(infits=None)        
         print 'TODO: FlatFielding.FlatField needs improvemenents: masking'
         
         if fitsfile != '':
-            super(FlatField,self).__init__(infits=fitsfile,getallextensions=True)
+            super(FlatField,self).__init__(infits=fitsfile,getallextensions=True,withpover=withpover)
             #self.loadfromFITS(fitsfile=fitsfile,getallextensions=True)            
             self.parse_fits()
             
         else:
-            super(FlatField,self).__init__(infits=None)
+            super(FlatField,self).__init__(infits=None,withpover=False)
             
             assert isinstance(data,dict)
             assert 'Flat' in data.keys()
@@ -395,12 +395,16 @@ class FlatField(ccdmodule.CCD,object):
         assert self.nextensions >= 3
         
         self.ncomb = self.extensions[0].header['NCOMB']
-        self.wavelength = self.extensions[0].header['WAVEL']
-        
+        try: self.wavelength = self.extensions[0].header['WAVEL']
+        except KeyError:
+            warnings.warn('FlatFielding.FlatField: WAVEL not in header: ignoring')
+            self.wavelength = None
         assert self.extensions[1].label.upper() == 'FLAT'
         self.Flat = self.extensions[1].data
         
-        assert self.extensions[2].label.upper() == 'EFLAT'
+        ekey = self.extensions[2].label.upper()
+        warnings.warn('FlatFielding.FlatField: uncertainty label should be EFLAT, ignoring')
+        assert ((ekey == 'EFLAT') or (ekey == 'UNCERTAINTY'))
         self.eFlat = self.extensions[2].data
         
         if self.nextensions >3:
