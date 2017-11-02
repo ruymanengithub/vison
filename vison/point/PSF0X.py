@@ -217,9 +217,10 @@ def check_data(dd,report,inputs,log=None):
     
     report.add_Section(Title='CHECK\_DATA',level=0)
     
+    stop()
+
     
-    
-    bypass = False # TESTS
+    bypass = True # TESTS
     
     
     # CHECK AND CROSS-CHECK HK
@@ -257,9 +258,14 @@ def check_data(dd,report,inputs,log=None):
     SpotNames = Sindices[3].vals
     nSpot = len(SpotNames)
     
-    dd.initColumn('sp_coa_fluence',Sindices,dtype='float32',valini=np.nan)
-    dd.initColumn('sp_coa_fwhm',Sindices,dtype='float32',valini=np.nan)
-        
+    dd.initColumn('chk_x',Sindices,dtype='float32',valini=np.nan)
+    dd.initColumn('chk_y',Sindices,dtype='float32',valini=np.nan)
+    dd.initColumn('chk_peak',Sindices,dtype='float32',valini=np.nan)
+    dd.initColumn('chk_fluence',Sindices,dtype='float32',valini=np.nan)
+    dd.initColumn('chk_fwhmx',Sindices,dtype='float32',valini=np.nan)
+    dd.initColumn('chk_fwhmy',Sindices,dtype='float32',valini=np.nan)
+    
+    chkkeycorr = dict(chk_x='x',chk_y='y',chk_peak='peak',chk_fwhmx='fwhmx',chk_fwhmy='fwhmy')
     
     nObs,nCCD,nQuad = Qindices.shape
     Quads = Qindices[2].vals
@@ -305,7 +311,6 @@ def check_data(dd,report,inputs,log=None):
                     
                     alt_ccdobj = None
                     
-                    
                     for xSpot in range(nSpot):
                         SpotName = SpotNames[xSpot]
                         
@@ -316,14 +321,17 @@ def check_data(dd,report,inputs,log=None):
                         
                         res_bas = spot.measure_basic(rin=10,rap=10,rout=-1)
                         
-                        stop()
-                    
-                    
+                        for chkkey in chkkeycorr:
+                            dd.mx[chkkey][iObs,jCCD,kQ,xSpot] = res_bas[chkkeycorr[chkkey]]
+                        
+
                     stop()
                     
-#                
-#    # Assess metrics are within allocated boundaries
-#
+                
+    # Assess metrics are within allocated boundaries
+    
+    
+
 #    offset_lims = [1000.,3500.] # TESTS, should be in common limits file
 #    offset_diffs = dict(img=[-1.,+5.],ove=[-1.,+6.]) # TESTS, should be in common limits file
 #    
