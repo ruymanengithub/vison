@@ -18,7 +18,8 @@ import sys
 from pdb import set_trace as stop
 import os
 from vison.support import vistime
-from latex import generate_header, generate_preamble
+#from latex import generate_header, generate_preamble
+import latex as lx
 from vison import data as visondata
 
 from astropy import table as astable
@@ -241,7 +242,7 @@ class Report(Container):
                  Texbody=['\\begin{document}']):
         """ """
         
-        self.TestName = TestName
+        self.TestName = st.replace(TestName,'_','\_')
         self.Model = Model
         self.timestamp = vistime.get_time_tag()
         
@@ -258,7 +259,7 @@ class Report(Container):
         test = self.TestName
         model = self.Model
         
-        headerList = generate_header(test,model,author)        
+        headerList = lx.generate_header(test,model,author)        
         self.Texheader = headerList
         
     
@@ -267,7 +268,7 @@ class Report(Container):
         model = self.Model
         test = self.TestName
         
-        Texbody = generate_preamble(model,test,custodian)
+        Texbody = lx.generate_preamble(model,test,custodian)
         
         for item in self.Contents:            
             Texbody += item.generate_Latex()
