@@ -25,6 +25,7 @@ NrowsCCD = 2066
 NAXIS2 = (NrowsCCD+20)*2 # 4132
 prescan = 51
 overscan = 20
+voverscan = 20
 #imgarea = [2048,2066]
 RON = 1.4
 gain = 3.1 # e/adu
@@ -168,10 +169,11 @@ class CCD(object):
         
         for iext in range(self.nextensions):
             if self.extensions[iext].data is not None:
-                assert self.shape == self.extensions[iext].data.shape        
+                assert self.shape == self.extensions[iext].data.shape
         
         self.prescan = prescan
         self.overscan = overscan
+        self.voverscan = voverscan
         
         self.gain = dict(E=3.1,F=3.1,G=3.1,H=3.1)
         self.rn = dict(E=4.5,F=4.5,G=4.5,H=4.5)
@@ -423,7 +425,8 @@ class CCD(object):
     
     def divide_by_flatfield(self,FF,extension=-1):
         """Divides by a Flat-field"""
-        print 'TODO: ccd.CCD.divide_by_flatfield needs improvements: handling of masked values'
+        print 'TODO: ccd.CCD.divide_by_flatfield needs improvements: handling of masked values, overscans (V & H)'
+        
         assert self.shape == FF.shape
         self.extensions[extension].data /= FF
         

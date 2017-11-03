@@ -35,6 +35,8 @@ Created on Thu Dec 29 15:01:07 2016
 import numpy as np
 from pdb import set_trace as stop
 import os
+import string as st
+
 from vison.datamodel import core
 from vison.datamodel import ccd
 from vison.pipe import lib as pilib
@@ -216,8 +218,8 @@ def check_data(dd,report,inputs,log=None):
     if log is not None:
         log.info('PSF0X.check_data')
     
-    report.add_Section(keyword='check_data',Title='Data Validation',level=0)
-
+    if report is not None: report.add_Section(keyword='check_data',Title='Data Validation',level=0)
+    
     
     bypass = True # TESTS
     
@@ -269,6 +271,7 @@ def check_data(dd,report,inputs,log=None):
     nObs,nCCD,nQuad = Qindices.shape
     Quads = Qindices[2].vals
     CCDs = Qindices[1].vals
+    
     
     # Get statistics in different regions
     
@@ -406,10 +409,10 @@ def prep_data(dd,report,inputs,log=None):
     
     """
     
-    report.add_Section(keyword='prep_data',Title='Data Pre-Processing',level=0)
+    if report is not None: report.add_Section(keyword='prep_data',Title='Data Pre-Processing',level=0)
     
     bypass = True # TESTS
-    
+        
     # Inputs un-packing
     
     doMask = False
@@ -420,20 +423,35 @@ def prep_data(dd,report,inputs,log=None):
     if 'mask' in inputs['inCDPs']:
         Maskdata = calibration.load_CDPs(inputs['inCDPs']['Mask'],ccd.CCD)
         doMask = True
-        
-        
+        if log is not None:
+            masksstr = inputs['inCDPs']['Mask'].__str__()
+            masksstr = st.replace(masksstr,',',',\n')
+            log.info('Applying cosmetics mask')
+            log.info(masksstr)
+    
     if 'bias' in inputs['inCDPs']:
         Biasdata = calibration.load_CDPs(inputs['inCDPs']['Bias'],ccd.CCD)
         doBias = True
+        if log is not None:
+            biasstr = inputs['inCDPs']['Bias'].__str__()
+            biasstr = st.replace(biasstr,',',',\n')
+            log.info('Subtracting Bias')
+            log.info(biasstr)
     
     
     if 'FF' in inputs['inCDPs']:
         FFdata = calibration.load_CDPs(inputs['inCDPs']['FF'],FFing.FlatField)
         doFlats = True
+        if log is not None:
+            FFstr = inputs['inCDPs']['FF'].__str__()
+            FFstr = st.replace(FFstr,',',',\n')
+            log.info('Dividing by Flat-Fields')
+            log.info(FFstr)
     
     # INDEX HANDLING
     
     dIndices = copy.deepcopy(dd.indices)
+    
     
     CCDs = dIndices[dIndices.names.index('CCD')].vals
     #nCCD = len(CCDs)
@@ -454,7 +472,9 @@ def prep_data(dd,report,inputs,log=None):
     
     if not bypass:
         
-        rpath = dd.meta['inputs']['resultspath']      
+        rpath = inputs['resultspath']
+        picklespath = inputs['subpaths']['pickles']
+        spotspath = inputs['subpaths']['spots']
         
         for iObs in range(nObs):
             
@@ -469,20 +489,20 @@ def prep_data(dd,report,inputs,log=None):
                 
                 ccdobj = ccd.CCD(infits)
                 
-                fullccdobj_name = os.path.join(rpath,'%s.pick' % dd.mx['ccdobj_name'][iObs,jCCD]) 
+                fullccdobj_name = os.path.join(picklespath,'%s.pick' % dd.mx['ccdobj_name'][iObs,jCCD]) 
                 
                 if doMask:
                     ccdobj.get_mask(Maskdata[CCDkey].extensions[-1])
                 
                 if doOffset:
                     for Quad in Quads:
-                        ccdobj.sub_offset(Quad,method='median',scan='pre',trims=[5,5],
+                        ccdobj.sub_offset(Quad,method='median',scan='pre',trimscan=[5,5],
                                           ignore_pover=False)
                 if doBias:
                     ccdobj.sub_bias(Biasdata[CCDkey].extensions[-1],extension=-1)
                 
                 if doFlats:
-                    ccdobj.divide_by_flatfield(FFdata[CCDkey].extensions[1],extension=-1)
+                    ccdobj.divide_by_flatfield(FFdata[CCDkey].extensions[1].data,extension=-1)
                 
                 ccdobj.writeto(fullccdobj_name,clobber=True)
                 
@@ -496,7 +516,7 @@ def prep_data(dd,report,inputs,log=None):
                     for lS,SpotName in enumerate(SpotNames):
                     
                         coo = polib.Point_CooNom[CCDkey][Quad][SpotName]
-                        lSpot = polib.extract_spot(ccdobj,Quad,coo,stampw=stampw)
+                        lSpot = polib.extract_spot(ccdobj,coo,Quad,stampw=stampw)
                         
                         spots_array[kQ,lS] = copy.deepcopy(lSpot)
                 
@@ -505,14 +525,13 @@ def prep_data(dd,report,inputs,log=None):
                 
                 dd.mx['spots_name'][iObs,jCCD] = '%s_spots' % dd.mx['File_name'][iObs,jCCD]
                 
-                fullspots_name = os.path.join(rpath,'%s.pick' % dd.mx['spots_name'][iObs,jCCD])
+                fullspots_name = os.path.join(spotspath,'%s.pick' % dd.mx['spots_name'][iObs,jCCD])
                 
                 spotsdict = dict(spots=spots_array)
                 
                 files.cPickleDumpDictionary(spotsdict,fullspots_name)
-                
-                
-                
+    
+    if log is not None: log.info('Saved spot "bag" files to %s' % rpath)            
     
     return dd,report
 
@@ -589,5 +608,9 @@ def feeder(inputs,elvis='6.3.0'):
     
     inputs['structure'] = scriptdict
     inputs['subtasks'] = subtasks
+    
+    inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles',spots='spots')
+    
+    
     
     return inputs

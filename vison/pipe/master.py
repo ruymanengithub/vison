@@ -242,6 +242,8 @@ class Pipe(object):
         explogf = inputs['explogf']
         datapath = inputs['datapath']
         resultspath = inputs['resultspath']
+        try: _paths = inputs['subpaths']
+        except: _paths = dict()
         elvis = inputs['elvis']
         testkey = inputs['test']
         
@@ -251,6 +253,13 @@ class Pipe(object):
         
         if not isthere(resultspath):
             os.system('mkdir %s' % resultspath)
+        
+        for _pathkey in _paths:
+            subpath = os.path.join(resultspath,_paths[_pathkey])            
+            if not isthere(subpath): os.system('mkdir %s' % subpath)
+            _paths[_pathkey] = subpath
+        
+        inputs['subpaths'] = _paths
         
         structure = inputs['structure']
             
@@ -264,6 +273,15 @@ class Pipe(object):
         
         
         if todo_flags['init']:
+            
+            
+            # Let's start from scratch
+            
+            if os.path.exists(DataDictFile): os.system('rm %s' % DataDictFile)
+            if os.path.exists(reportobjFile): os.system('rm %s' % reportobjFile)
+            
+            os.system('rm -r %s/*' % inputs['resultspath'])
+            
         
             # Initialising Report Object
         
@@ -313,6 +331,8 @@ class Pipe(object):
             
             dd, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
         
+        
+        
         # DATA-WORK and ANALYSIS        
         
         for subtask in subtasks:
@@ -329,7 +349,6 @@ class Pipe(object):
         # Write automatic Report of Results
 
         if todo_flags['report']:
-            
             reportobj.doreport(reportroot,cleanafter)
             outfiles = reportobj.writeto(reportroot,cleanafter)
             
