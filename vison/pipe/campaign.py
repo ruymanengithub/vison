@@ -260,7 +260,7 @@ def generate_test_sequence(equipment,toGen,elvis='6.3.0'):
         exptsPTC01 = np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100.*ogse.tFWC_flat['nm800'] # ms
         frsPTC01 = [10,10,10,10,10,10,10,10,4,4,4]
     
-        structPTC01 = PTC0X.build_PTC0X_scriptdict(exptsPTC01,frsPTC01,
+        structPTC01 = PTC0X.build_PTC0X_scriptdict('PTC01',exptsPTC01,frsPTC01,
                             wavelength=800,diffvalues=diffPTC01,elvis=elvis)
         
         test_sequence['PTC01'] = structPTC01
@@ -294,7 +294,7 @@ def generate_test_sequence(equipment,toGen,elvis='6.3.0'):
             
             print '%s...' % itestkey
         
-            istructPTC02w = PTC0X.build_PTC0X_scriptdict(exptsPTC02w,frsPTC02w,
+            istructPTC02w = PTC0X.build_PTC0X_scriptdict(itestkey,exptsPTC02w,frsPTC02w,
                         wavelength=wave,diffvalues=diffPTC02w,elvis=elvis)
             
             test_sequence[itestkey] = istructPTC02w
@@ -326,7 +326,7 @@ def generate_test_sequence(equipment,toGen,elvis='6.3.0'):
                       
             print '%s...' % itestkey
         
-            istructPTC02T = PTC0X.build_PTC0X_scriptdict(exptsPTC02T,frsPTC02T,
+            istructPTC02T = PTC0X.build_PTC0X_scriptdict(itestkey,exptsPTC02T,frsPTC02T,
                                 wavelength=wavePTC02T,diffvalues=diffPTC02T,elvis=elvis)
             
             test_sequence[itestkey] = istructPTC02T

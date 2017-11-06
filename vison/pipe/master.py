@@ -339,6 +339,9 @@ class Pipe(object):
             
             subtaskname, subtaskfunc = subtask
             
+            if self.log is not None:
+                self.log.info('%s: %s' % (subtaskname,subtaskfunc.__module__))
+            
             if todo_flags[subtaskname]:
                 dd,reportobj = subtaskfunc(dd,reportobj,inputs,self.log)
                 pilib.save_progress(dd,reportobj,DataDictFile,reportobjFile)
