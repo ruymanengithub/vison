@@ -18,6 +18,10 @@ Created on Tue Aug 29 16:53:40 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
+import datetime
+import copy
+import string as st
+
 from vison.pipe import lib as pilib
 from vison.point import lib as polib
 from vison.datamodel import  scriptic as sc
@@ -29,8 +33,7 @@ from vison.datamodel import EXPLOGtools as ELtools
 from vison.datamodel import HKtools
 from vison.datamodel import ccd
 from vison.datamodel import generator
-import datetime
-import copy
+from vison.image import calibration
 from vison.datamodel import core
 
 
@@ -88,36 +91,9 @@ def build_BIAS01_scriptdict(N,diffvalues=dict(),elvis='6.3.0'):
 
 def filterexposures(structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
     """ """
-    
     wavedkeys = []
-
-
-    # The filtering takes into account an expected structure for the 
-    # acquisition script.
-
-    
-    # load exposure log(s)
-    
-    explog = pilib.loadexplogs(explogf,elvis=elvis,addpedigree=True,datapath=datapath)
-    
-    # SELECTION OF OBSIDS
-    
-    selbool = (explog['test']=='BIAS01') & \
-        (explog['ObsID'] >= OBSID_lims[0]) & \
-        (explog['ObsID'] <= OBSID_lims[1]) 
-    
-    explog = explog[selbool]
-
-    
-    # Assess structure    
-    checkreport = pilib.check_test_structure(explog,structure,CCDs=[1,2,3],
-                                           wavedkeys=wavedkeys)
-    
-    # Labeling of exposures [optional]
-    explog['label'] = np.array(['col1']*len(explog))
-    
-    
-    return explog, checkreport
+    return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
+                          wavedkeys=wavedkeys,elvis=elvis)
 
 
 def check_data(dd,report,inputs,log=None):
@@ -158,12 +134,9 @@ def check_data(dd,report,inputs,log=None):
       update flags as needed
     
     """
-    
-    if log is not None:
-        log.info('BIAS01.check_data')
-    
-    report.add_Section(Title='CHECK\_DATA',level=0)
-    
+
+    if report is not None: report.add_Section(keyword='check_data',Title='Data Validation',level=0)
+
     bypass = True # TESTS
     
     
@@ -289,11 +262,22 @@ def prep_data(dd,report,inputs,log=None):
     
     """
     
-    if log is not None:
-        log.info('BIAS01.prep_data')
+    if report is not None: report.add_Section(keyword='prep_data',Title='Data Pre-Processing',level=0)
     
     
     bypass = True # TESTS
+    
+    doMask = True
+    doOffset = True
+    
+    if 'mask' in inputs['inCDPs']:
+        Maskdata = calibration.load_CDPs(inputs['inCDPs']['Mask'],ccd.CCD)
+        doMask = True
+        if log is not None:
+            masksstr = inputs['inCDPs']['Mask'].__str__()
+            masksstr = st.replace(masksstr,',',',\n')
+            log.info('Applying cosmetics mask')
+            log.info(masksstr)    
     
     # Initialize new columns
 
@@ -306,14 +290,18 @@ def prep_data(dd,report,inputs,log=None):
     
     nObs,nCCD,nQuad = DDindices.shape
     Quads = DDindices[2].vals
+    CCDs = DDindices[DDindices.names.index('CCD')].vals
     
     if not bypass:
         
-        rpath = dd.meta['inputs']['resultspath']      
-    
+        picklespath = inputs['subpaths']['pickles']
+        
+        
         for iObs in range(nObs):
             
-            for jCCD in range(nCCD):
+            for jCCD,CCD in enumerate(CCDs):
+                
+                CCDkey = 'CCD%i' % CCD
                 
                 ccdobj_name = '%s_proc' % dd.mx['File_name'][iObs,jCCD]
                 
@@ -322,18 +310,16 @@ def prep_data(dd,report,inputs,log=None):
                 
                 ccdobj = ccd.CCD(infits)
                 
-                fullccdobj_name = os.path.join(rpath,'%s.pick' % dd.mx['ccdobj_name'][iObs,jCCD]) 
+                fullccdobj_name = os.path.join(picklespath,'%s.pick' % dd.mx['ccdobj_name'][iObs,jCCD]) 
                 
+                if doMask:
+                    ccdobj.get_mask(Maskdata[CCDkey].extensions[-1])
                 
-                if 'mask' in dd.meta['inputs']:    
-                    calpath = dd.meta['inputs']['calpath']
-                    maskf = os.path.join(calpath,dd.meta['inputs']['mask'])
-                    ccdobj.get_mask(ccd.CCD(maskf).data)
-                
-                for kQ in range(nQuad):
-                    Quad = Quads[kQ]
-                    ccdobj.sub_offset(Quad,method='median',scan='pre',trims=[5,5],
-                                      ignore_pover=False)
+                if doOffset:
+                    
+                    for Quad in Quads:
+                        ccdobj.sub_offset(Quad,method='median',scan='pre',trimscan=[5,5],
+                                          ignore_pover=False)
                 
                 ccdobj.writeto(fullccdobj_name,clobber=True)
                 
@@ -368,8 +354,7 @@ def basic_analysis(dd,report,inputs,log=None):
     
     """
     
-    if log is not None:
-        log.info('BIAS01.basic_analysis')
+    raise NotImplementedError
    
     
     return dd,report
@@ -393,9 +378,7 @@ def meta_analysis(dd,report,inputs,log=None):
         
     """
     
-    if log is not None:
-        log.info('BIAS01.meta_analysis')
-    
+    raise NotImplementedError
     
     return dd,report
 

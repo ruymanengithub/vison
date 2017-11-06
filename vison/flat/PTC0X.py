@@ -34,7 +34,7 @@ Created on Mon Apr  3 17:00:24 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
-#from vison.pipe import lib as pilib
+from vison.pipe import lib as pilib
 from vison.ogse import ogse
 from vison.point import lib as polib
 from vison.datamodel import scriptic as sc
@@ -46,10 +46,11 @@ from copy import deepcopy
 
 isthere = os.path.exists
 
-HKKeys_PTC0X = ['HK_temp_top_CCD1','HK_temp_bottom_CCD1','HK_temp_top_CCD2',
-'HK_temp_bottom_CCD2','HK_temp_top_CCD3','HK_temp_bottom_CCD3'] # TESTS
-
-
+HKKeys = ['CCD1_OD_T','CCD2_OD_T','CCD3_OD_T','COMM_RD_T',
+'CCD2_IG1_T','CCD3_IG1_T','CCD1_TEMP_T','CCD2_TEMP_T','CCD3_TEMP_T',
+'CCD1_IG1_T','COMM_IG2_T','FPGA_PCB_TEMP_T','CCD1_OD_B',
+'CCD2_OD_B','CCD3_OD_B','COMM_RD_B','CCD2_IG1_B','CCD3_IG1_B','CCD1_TEMP_B',
+'CCD2_TEMP_B','CCD3_TEMP_B','CCD1_IG1_B','COMM_IG2_B']
 
 PTC0X_commvalues = dict(program='CALCAMP',
   flushes=7,exptime=0.,shuttr=1,
@@ -58,9 +59,26 @@ PTC0X_commvalues = dict(program='CALCAMP',
   source='flat',
   comments='')
   
+PTC01_exptimes = np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100.*ogse.tFWC_flat['nm800'] # ms
+PTC02waves = [590,640,730,880]
+PTC02TEMP_exptimes = exptimes=np.array([10.,30.,50.,70.,80.,90.])/100.*ogse.tFWC_flat['nm800']
 
 
-def build_PTC0X_scriptdict(exptimes,frames,wavelength=800,diffvalues=dict(),
+testdefaults = dict(PTC01=dict(exptimes=PTC01_exptimes,
+                         frames=[10,10,10,10,10,10,10,10,4,4,4]),
+                    PTC02WAVE=dict(waves=PTC02waves,
+                                   frames=[4,4,4,4,4,4],
+                                   exptimes=dict()),
+                    PTC02TEMP=dict(frames=[4,4,4,4,4,4]),
+                                   exptimes=PTC02TEMP_exptimes)
+                    
+
+for w in testdefaults['PTC02WAVE']['waves']:
+    testdefaults['PTC02WAVE']['exptimes']['nm%i' % w] = np.array([10.,30.,50.,70.,80.,90.])/100.*ogse.tFWC_flat['nm%i' % w]
+    
+
+
+def build_PTC0X_scriptdict(testkey,exptimes,frames,wavelength=800,diffvalues=dict(),
                            elvis='6.3.0'):
     """Builds PTC0X script structure dictionary.
     
@@ -76,10 +94,8 @@ def build_PTC0X_scriptdict(exptimes,frames,wavelength=800,diffvalues=dict(),
     FW_ID = ogse.get_FW_ID(wavelength)
     FW_IDX = int(FW_ID[-1])
     
-    if wavelength == 800: subtest = '01'
-    else: subtest = '02'
-    
-    PTC0X_commvalues['test'] = 'PTC%s_%i' % (subtest,wavelength)
+
+    PTC0X_commvalues['test'] = testkey
     PTC0X_commvalues['wave'] = FW_IDX
 
     PTC0X_sdict = dict()
@@ -104,18 +120,14 @@ def build_PTC0X_scriptdict(exptimes,frames,wavelength=800,diffvalues=dict(),
 
 
 
-def filterexposures_PTC0X():
-    """Loads a list of Exposure Logs and selects exposures from test PSF0X.
-    
-    The filtering takes into account an expected structure for the 
-    acquisition script.
-
-    The datapath becomes another column in DataDict. This helps dealing
-    with tests that run overnight and for which the input data is in several
-    date-folders.
-
-    
+def filterexposures(structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
     """
+    
+    """    
+    wavedkeys = []
+    return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,
+                          wavedkeys=wavedkeys,elvis=elvis)
+    
 
 
 def check_data(DataDict,RepDict,inputs,log=None):
@@ -147,6 +159,8 @@ def check_data(DataDict,RepDict,inputs,log=None):
     
     """
     
+    raise NotImplementedError
+    
 
 
 def extract_PTC(DataDict,RepDict,inputs,log=None):
@@ -173,7 +187,8 @@ def extract_PTC(DataDict,RepDict,inputs,log=None):
                         measure variance
     
     """
-
+    
+    raise NotImplementedError
 
 
 def meta_analysis(DataDict,RepDict,inputs,log=None):
@@ -199,6 +214,8 @@ def meta_analysis(DataDict,RepDict,inputs,log=None):
         report on blooming limits (table)
     
     """
+    
+    raise NotImplementedError
 
 
 def feeder(inputs,elvis='6.3.0'):
@@ -207,10 +224,28 @@ def feeder(inputs,elvis='6.3.0'):
     subtasks = [('check',check_data),('extract',extract_PTC),
                 ('meta',meta_analysis)]
     
-    
-    exptimes = inputs['exptimes']
-    frames = inputs['frames']
     wavelength = inputs['wavelength']
+    testkey = inputs['test']
+    
+    if testkey == 'PTC01': 
+        _testkey = 'PTC01'
+    if 'PTC02' in testkey:
+        if testkey[-1] == 'K': _testkey = 'PTCTSEMP'
+        else: _testkey = 'PTCWAVE'
+    
+    
+    if 'exptimes' in inputs: 
+        exptimes = inputs['exptimes']
+    else:
+        if _testkey == 'PTC02WAVE':
+            exptimes = testdefaults[_testkey]['exptimes']['%nm%i' % wavelength]
+        else:
+            exptimes = testdefaults[_testkey]['exptimes']
+    
+    if 'frames' in inputs: frames = inputs['frames']
+    else: frames = testdefaults[_testkey]['frames']
+    
+    
     if 'elvis' in inputs:
         elvis = inputs['elvis']
     if 'diffvalues' in inputs:
@@ -218,7 +253,7 @@ def feeder(inputs,elvis='6.3.0'):
     else:
         diffvalues = {}
         
-    scriptdict = build_PTC0X_scriptdict(exptimes,frames,wavelength=wavelength,
+    scriptdict = build_PTC0X_scriptdict(testkey,exptimes,frames,wavelength=wavelength,
                            diffvalues=diffvalues,
                            elvis=elvis)
     

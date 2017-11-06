@@ -125,55 +125,12 @@ def build_PSF0X_scriptdict(exptimes,frames,wavelength=800,
 
 
 def filterexposures(structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
-    """Loads a list of Exposure Logs and selects exposures from test PSF0X.
-    
-    The filtering takes into account an expected structure for the 
-    acquisition script.
-
-    The datapath becomes another column in DataDict. This helps dealing
-    with tests that run overnight and for which the input data is in several
-    date-folders.
-
-    
     """
-    
-    # load exposure log(s)
-    explog = pilib.loadexplogs(explogf,elvis=elvis,addpedigree=True,
-                               datapath=datapath)
-    Ncols = structure['Ncols']
-    
-    Filters = [structure['col%i' % i]['wave'] for i in range(1,Ncols+1)]
-    Filter = Filters[0]
-    assert np.all(np.array(Filters) == Filter)
-    
-    
-    testkey = structure['col1']['test']
-    
-    selbool = (explog['test'] == testkey) & \
-        (explog['ObsID'] >= OBSID_lims[0]) & \
-        (explog['ObsID'] <= OBSID_lims[1]) & \
-        (explog['wave'] == Filter) # TESTS
-        
-    explog = explog[selbool]
+    """
 
-    # Assess structure
-        
-    checkreport = pilib.check_test_structure(explog,structure,CCDs=[1,2,3],
-                                           wavedkeys=[])
-    
-    # Labeling of exposures
-    explog['label'] = np.array(['None']*len(explog))
-    
-    frcounter = 0
-    for ic in range(1,Ncols+1):
-        _frames = structure['col%i' % ic]['frames']
-        #print frcounter,frcounter+_frames*3
-        explog['label'][frcounter:frcounter+_frames*3] = 'col%i' % ic
-        frcounter += _frames*3
-    
-    
-    return explog, checkreport
-    
+    wavedkeys = []
+    return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,
+                          wavedkeys=wavedkeys,elvis=elvis)    
 
 def check_data(dd,report,inputs,log=None):
     """ 
@@ -215,8 +172,6 @@ def check_data(dd,report,inputs,log=None):
     
     """
     
-    if log is not None:
-        log.info('PSF0X.check_data')
     
     if report is not None: report.add_Section(keyword='check_data',Title='Data Validation',level=0)
     
@@ -408,6 +363,8 @@ def prep_data(dd,report,inputs,log=None):
                 cuts-out and save stamps of pre-processed spots for further analysis.
     
     """
+    
+    
     
     if report is not None: report.add_Section(keyword='prep_data',Title='Data Pre-Processing',level=0)
     
