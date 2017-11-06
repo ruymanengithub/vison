@@ -173,7 +173,8 @@ class CCD(object):
         
         self.prescan = prescan
         self.overscan = overscan
-        self.voverscan = voverscan
+        if withpover: self.voverscan = voverscan
+        else: self.voverscan = 0
         
         self.gain = dict(E=3.1,F=3.1,G=3.1,H=3.1)
         self.rn = dict(E=4.5,F=4.5,G=4.5,H=4.5)
@@ -251,7 +252,34 @@ class CCD(object):
         
         
         return Qdata
+    
+    
+    def get_tiles(self,Quadrant,wpx,hpx):
+        """ """
         
+        tiles_dict = dict()
+        
+        Qedges = self.QuadBound[Quadrant]
+        _prestarth,_preendh,_imgstarth,_imgendh,_ovstarth,_ovendh = self.getsectioncollims(Quadrant)
+        
+        _imgstartv,_imgendv, _ovstartv, _ovendv = self.getsectionrowlims(Quadrant)
+        
+        imglims = [Qedges[0]+_imgstarth,Qedges[0]+_imgendh,
+                   Qedges[2]+_imgstartv,Qedges[2]+_imgendv]
+        
+        #print 'IMG = %i x %i' % (imglims[1]-imglims[0]+1,imglims[3]-imglims[2]+1)
+        
+        xsamp = np.arange(imglims[0],imglims[1],step=wpx)
+        ysamp = np.arange(imglims[2],imglims[3],step=hpx)
+        
+        
+        
+        stop()
+        
+        
+        return tiles_dict
+    
+    
     def get_cutout(self,corners,Quadrant,canonical=False,extension=-1):
         """Returns a cutout from the CCD image, either in 
         canonical or non-canonical orientation.
@@ -301,7 +329,7 @@ class CCD(object):
 
 
     def getsectioncollims(self,QUAD):
-        """Returns limits of sections: prescan, image and overscan"""
+        """Returns limits of [HORIZONTAL] sections: prescan, image and overscan"""
         
         semiNAXIS1 = self.NAXIS1/2
         
@@ -324,6 +352,37 @@ class CCD(object):
             imgend = prestart-1
                 
         return (prestart,preend,imgstart,imgend,ovstart,ovend)
+
+
+    def getsectionrowlims(self,QUAD):
+        """Returns limits of [VERTICAL] sections: image [and overscan]"""
+        
+        semiNAXIS2 = self.NAXIS2/2
+        
+        if QUAD in ['E','F']:
+            
+            imgstart = self.voverscan - 1
+            imgend = imgstart + NrowsCCD - 1
+            
+            if self.voverscan != 0:
+                ovstart = 0
+                ovend = ovstart + self.voverscan - 1
+            else:
+                ovstart = None; ovend = None
+            
+        elif QUAD in ['G','H']:
+            
+            imgstart = 0
+            imgend = NrowsCCD - 1
+            
+            if self.voverscan !=0:
+                ovstart = imgend
+                ovend = imgend+self.voverscan - 1
+            else:
+                ovstart = None; ovend=None
+                        
+                
+        return (imgstart,imgend,ovstart,ovend)
 
 
    

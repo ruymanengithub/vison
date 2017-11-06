@@ -76,3 +76,5 @@ def fitPTC(means,var): #,doplot=False,savefig=''):
 #        plt.close('all')
 
     return fitresults
+
+

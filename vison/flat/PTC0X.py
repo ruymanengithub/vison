@@ -34,6 +34,8 @@ Created on Mon Apr  3 17:00:24 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
+import warnings
+
 from vison.pipe import lib as pilib
 from vison.ogse import ogse
 from vison.point import lib as polib
@@ -159,7 +161,121 @@ def check_data(DataDict,RepDict,inputs,log=None):
     
     """
     
-    raise NotImplementedError
+    if report is not None: report.add_Section(keyword='check_data',Title='Data Validation',level=0)
+    
+    
+    bypass = True # TESTS
+    
+    # CHECK AND CROSS-CHECK HK
+    
+    #print 'HK-perf' # TESTS
+    report_HK_perf = HKtools.check_HK_vs_command(HKKeys,dd,limits='P',elvis=inputs['elvis'])
+    #print 'HK-safe' # TESTS
+    report_HK_safe = HKtools.check_HK_abs(HKKeys,dd,limits='S',elvis=inputs['elvis'])
+    
+
+    # Initialize new columns
+
+    Qindices = copy.deepcopy(dd.indices)
+    
+    if 'Quad' not in Qindices.names:
+        Qindices.append(core.vIndex('Quad',vals=pilib.Quads))
+
+    
+    Sindices = copy.deepcopy(Qindices)
+    if 'Sector' not in Sindices.names:
+        Sindices.append(core.vIndex('Sector',vals=Sectors))
+    
+
+    newcolnames_off = ['offset_pre','offset_ove']
+    for newcolname_off in newcolnames_off:
+        dd.initColumn(newcolname_off,Qindices,dtype='float32',valini=np.nan)
+    
+    newcolnames_std = ['std_pre','std_ove']
+    for newcolname_std in newcolnames_std:
+        dd.initColumn(newcolname_std,Qindices,dtype='float32',valini=np.nan)
+    
+
+    dd.initColumn('bgd_img',Qindices,dtype='float32',valini=np.nan)
+    
+    SpotNames = Sindices[3].vals
+    nSpot = len(SpotNames)
+    
+    dd.initColumn('chk_x',Sindices,dtype='float32',valini=np.nan)
+    dd.initColumn('chk_y',Sindices,dtype='float32',valini=np.nan)
+    dd.initColumn('chk_peak',Sindices,dtype='float32',valini=np.nan)
+    dd.initColumn('chk_fluence',Sindices,dtype='float32',valini=np.nan)
+    dd.initColumn('chk_fwhmx',Sindices,dtype='float32',valini=np.nan)
+    dd.initColumn('chk_fwhmy',Sindices,dtype='float32',valini=np.nan)
+    
+    chkkeycorr = dict(chk_x='x',chk_y='y',chk_peak='peak',chk_fwhmx='fwhmx',chk_fwhmy='fwhmy')
+    
+    nObs,nCCD,nQuad = Qindices.shape
+    Quads = Qindices[2].vals
+    CCDs = Qindices[1].vals
+    
+    
+    # Get statistics in different regions
+    
+    if not bypass:
+    
+        for iObs in range(nObs):
+            
+            for jCCD in range(nCCD):
+                
+                CCD = CCDs[jCCD]
+                
+                dpath = dd.mx['datapath'][iObs,jCCD]
+                ffits = os.path.join(dpath,'%s.fits' % dd.mx['File_name'][iObs,jCCD])
+                
+                ccdobj = ccd.CCD(ffits)
+                
+                for kQ in range(nQuad):
+                    Quad = Quads[kQ]
+                    
+                    for reg in ['pre', 'ove']:
+                        altstats = ccdobj.get_stats(Quad,sector=reg,statkeys=['mean','std'],trimscan=[5,5],
+                                ignore_pover=True,extension=-1)
+                        dd.mx['offset_%s' % reg][iObs,jCCD,kQ] = altstats[0]
+                        dd.mx['std_%s' % reg][iObs,jCCD,kQ] = altstats[1]
+                    
+                    
+                    # To measure the background we mask out the sources
+                    
+                    alt_ccdobj = copy.deepcopy(ccdobj)
+                    
+                    mask_sources = polib.gen_point_mask(CCD,Quad,width=stampw,sources='all')
+                    
+                    alt_ccdobj.get_mask(mask_sources)
+                    
+                    imgstats = alt_ccdobj.get_stats(Quad,sector='img',statkeys=['median'],trimscan=[5,5],
+                                ignore_pover=True,extension=-1)
+                    
+                    dd.mx['bgd_img'][iObs,jCCD,kQ] = imgstats[0]
+                    
+                    alt_ccdobj = None
+                    
+                    for xSpot in range(nSpot):
+                        SpotName = SpotNames[xSpot]
+                        
+                        coo = polib.Point_CooNom['CCD%i' % CCD][Quad][SpotName]
+
+                        spot = polib.extract_spot(ccdobj,Quad,coo,log=log,
+                                                  stampw=stampw)
+                        
+                        res_bas = spot.measure_basic(rin=10,rap=10,rout=-1)
+                        
+                        for chkkey in chkkeycorr:
+                            dd.mx[chkkey][iObs,jCCD,kQ,xSpot] = res_bas[chkkeycorr[chkkey]]
+                        
+
+                    stop()
+                    
+                
+    # Assess metrics are within allocated boundaries
+    
+    warnings.warn('NOT FINISHED')
+    
     
 
 
