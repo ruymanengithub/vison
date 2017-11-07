@@ -15,6 +15,7 @@ import os
 from pdb import set_trace as stop
 import sys
 import datetime
+import itertools
 from vison import __version__
 # END IMPORT
 
@@ -254,30 +255,50 @@ class CCD(object):
         return Qdata
     
     
-    def get_tiles(self,Quadrant,wpx,hpx):
+    def get_tile_coos(self,Quadrant,wpx,hpx):
         """ """
         
         tiles_dict = dict()
         
-        Qedges = self.QuadBound[Quadrant]
+        #Qedges = self.QuadBound[Quadrant]
         _prestarth,_preendh,_imgstarth,_imgendh,_ovstarth,_ovendh = self.getsectioncollims(Quadrant)
         
         _imgstartv,_imgendv, _ovstartv, _ovendv = self.getsectionrowlims(Quadrant)
         
-        imglims = [Qedges[0]+_imgstarth,Qedges[0]+_imgendh,
-                   Qedges[2]+_imgstartv,Qedges[2]+_imgendv]
+        #imglims = [Qedges[0]+_imgstarth,Qedges[0]+_imgendh,
+        #           Qedges[2]+_imgstartv,Qedges[2]+_imgendv]
+        
+        imglims = [_imgstarth,_imgendh,
+                   _imgstartv,_imgendv]
         
         #print 'IMG = %i x %i' % (imglims[1]-imglims[0]+1,imglims[3]-imglims[2]+1)
         
         xsamp = np.arange(imglims[0],imglims[1],step=wpx)
         ysamp = np.arange(imglims[2],imglims[3],step=hpx)
         
+        llpix = list(itertools.product(xsamp,ysamp))
+        Nsamps = len(llpix)
+        ccpix = [(llpix[i][0]+wpx/2.,llpix[i][1]+hpx/2.) for i in range(Nsamps)]
         
-        
-        stop()
+        tiles_dict = dict(wpx=wpx,hpx=hpx,llpix=llpix,ccpix=ccpix,Nsamps=Nsamps)
         
         
         return tiles_dict
+    
+    def get_tiles(self,Quadrant,tile_coos,extension=-1):
+        """ """
+        
+        tiles = []
+        Nsamps = tile_coos['Nsamps']
+        wpx = tile_coos['wpx']
+        hpx = tile_coos['hpx']
+        for i in range(Nsamps):
+            llx = tile_coos['llpix'][i][0]
+            lly = tile_coos['llpix'][i][1]
+            cc = [llx,llx+wpx+1,lly,lly+hpx+1]
+
+            tiles.append(self.get_cutout(cc,Quadrant,canonical=False,extension=extension))
+        return tiles
     
     
     def get_cutout(self,corners,Quadrant,canonical=False,extension=-1):
