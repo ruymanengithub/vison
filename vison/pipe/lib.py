@@ -340,15 +340,15 @@ def filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,waved
         (explog['ObsID'] >= OBSID_lims[0]) & \
         (explog['ObsID'] <= OBSID_lims[1]) 
     
-    explog = explog[selbool]
-
+    explog = explog[np.where(selbool)]
+    
     # Assess structure
-        
+    
     checkreport = check_test_structure(explog,structure,CCDs=[1,2,3],
                                            wavedkeys=wavedkeys)
     
     # Labeling of exposures
-    explog['label'] = np.array(['None']*len(explog))
+    explog['label'] = np.array(['NoneNoneNone']*len(explog))
     
     frcounter = 0
     for ic in range(1,Ncols+1):
