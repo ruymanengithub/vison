@@ -35,15 +35,19 @@ import numpy as np
 from pdb import set_trace as stop
 import os
 import warnings
+import copy
+import string as st
 
 from vison.pipe import lib as pilib
 from vison.ogse import ogse
 from vison.point import lib as polib
 from vison.datamodel import scriptic as sc
+from vison.datamodel import HKtools
+from vison.datamodel import core, ccd
+from vison.image import calibration
 #from vison.pipe import FlatFielding as FFing
 #from vison.support.report import Report
 #from vison.support import files
-from copy import deepcopy
 # END IMPORT
 
 isthere = os.path.exists
@@ -112,7 +116,7 @@ def build_PTC0X_scriptdict(testkey,exptimes,frames,wavelength=800,diffvalues=dic
     Ncols = len(PTC0X_sdict.keys())    
     PTC0X_sdict['Ncols'] = Ncols
                
-    commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+    commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
     commvalues.update(PTC0X_commvalues)
     
     PTC0X_sdict = sc.update_structdict(PTC0X_sdict,commvalues,diffvalues)
@@ -132,7 +136,7 @@ def filterexposures(structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
     
 
 
-def check_data(DataDict,RepDict,inputs,log=None):
+def check_data(dd,report,inputs,log=None):
     """
     
     Checks quality of ingested data.
@@ -180,41 +184,25 @@ def check_data(DataDict,RepDict,inputs,log=None):
     
     if 'Quad' not in Qindices.names:
         Qindices.append(core.vIndex('Quad',vals=pilib.Quads))
-
-    
-    Sindices = copy.deepcopy(Qindices)
-    if 'Sector' not in Sindices.names:
-        Sindices.append(core.vIndex('Sector',vals=Sectors))
     
 
     newcolnames_off = ['offset_pre','offset_ove']
     for newcolname_off in newcolnames_off:
         dd.initColumn(newcolname_off,Qindices,dtype='float32',valini=np.nan)
     
-    newcolnames_std = ['std_pre','std_ove']
+    newcolnames_std = ['std_pre','std_img','std_ove']
     for newcolname_std in newcolnames_std:
         dd.initColumn(newcolname_std,Qindices,dtype='float32',valini=np.nan)
     
 
-    dd.initColumn('bgd_img',Qindices,dtype='float32',valini=np.nan)
+    dd.initColumn('chk_flu_img',Qindices,dtype='float32',valini=np.nan)
     
-    SpotNames = Sindices[3].vals
-    nSpot = len(SpotNames)
-    
-    dd.initColumn('chk_x',Sindices,dtype='float32',valini=np.nan)
-    dd.initColumn('chk_y',Sindices,dtype='float32',valini=np.nan)
-    dd.initColumn('chk_peak',Sindices,dtype='float32',valini=np.nan)
-    dd.initColumn('chk_fluence',Sindices,dtype='float32',valini=np.nan)
-    dd.initColumn('chk_fwhmx',Sindices,dtype='float32',valini=np.nan)
-    dd.initColumn('chk_fwhmy',Sindices,dtype='float32',valini=np.nan)
-    
-    chkkeycorr = dict(chk_x='x',chk_y='y',chk_peak='peak',chk_fwhmx='fwhmx',chk_fwhmy='fwhmy')
+        
     
     nObs,nCCD,nQuad = Qindices.shape
     Quads = Qindices[2].vals
     CCDs = Qindices[1].vals
-    
-    
+        
     # Get statistics in different regions
     
     if not bypass:
@@ -223,7 +211,7 @@ def check_data(DataDict,RepDict,inputs,log=None):
             
             for jCCD in range(nCCD):
                 
-                CCD = CCDs[jCCD]
+                #CCD = CCDs[jCCD]
                 
                 dpath = dd.mx['datapath'][iObs,jCCD]
                 ffits = os.path.join(dpath,'%s.fits' % dd.mx['File_name'][iObs,jCCD])
@@ -235,51 +223,24 @@ def check_data(DataDict,RepDict,inputs,log=None):
                     
                     for reg in ['pre', 'ove']:
                         altstats = ccdobj.get_stats(Quad,sector=reg,statkeys=['mean','std'],trimscan=[5,5],
-                                ignore_pover=True,extension=-1)
+                                ignore_pover=False,extension=-1)
                         dd.mx['offset_%s' % reg][iObs,jCCD,kQ] = altstats[0]
                         dd.mx['std_%s' % reg][iObs,jCCD,kQ] = altstats[1]
                     
-                    
-                    # To measure the background we mask out the sources
-                    
-                    alt_ccdobj = copy.deepcopy(ccdobj)
-                    
-                    mask_sources = polib.gen_point_mask(CCD,Quad,width=stampw,sources='all')
-                    
-                    alt_ccdobj.get_mask(mask_sources)
-                    
-                    imgstats = alt_ccdobj.get_stats(Quad,sector='img',statkeys=['median'],trimscan=[5,5],
+                    imgstats = ccdobj.get_stats(Quad,sector=reg,statkeys=['median','std'],trimscan=[5,5],
                                 ignore_pover=True,extension=-1)
-                    
-                    dd.mx['bgd_img'][iObs,jCCD,kQ] = imgstats[0]
-                    
-                    alt_ccdobj = None
-                    
-                    for xSpot in range(nSpot):
-                        SpotName = SpotNames[xSpot]
-                        
-                        coo = polib.Point_CooNom['CCD%i' % CCD][Quad][SpotName]
-
-                        spot = polib.extract_spot(ccdobj,Quad,coo,log=log,
-                                                  stampw=stampw)
-                        
-                        res_bas = spot.measure_basic(rin=10,rap=10,rout=-1)
-                        
-                        for chkkey in chkkeycorr:
-                            dd.mx[chkkey][iObs,jCCD,kQ,xSpot] = res_bas[chkkeycorr[chkkey]]
-                        
-
-                    stop()
+                    dd.mx['chk_flu_img'][iObs,jCCD,kQ] = imgstats[0]
+                    dd.mx['std_img'][iObs,jCCD,kQ] = imgstats[1]
                     
                 
     # Assess metrics are within allocated boundaries
     
     warnings.warn('NOT FINISHED')
     
-    
+    return dd, report
 
 
-def extract_PTC(DataDict,RepDict,inputs,log=None):
+def extract_PTC(dd,report,inputs,log=None):
     """
     
     Performs basic analysis of images:
@@ -288,11 +249,11 @@ def extract_PTC(DataDict,RepDict,inputs,log=None):
     **METACODE**
     
     ::
-    
+        
         create list of OBSID pairs
-    
+        
         create segmentation map given grid parameters
-    
+        
         f.e. OBSID pair:
             CCD:
                 Q:
@@ -301,13 +262,122 @@ def extract_PTC(DataDict,RepDict,inputs,log=None):
                     f.e. segment:
                         measure central value
                         measure variance
-    
+        
     """
     
-    raise NotImplementedError
+    if report is not None: report.add_Section(keyword='extract',Title='PTC Extraction',level=0)    
+    
+    bypass = False
+    
+    # HARDWIRED VALUES
+    wpx = 300
+    hpx = 300
+    
+    doMask = False
+    
+    if 'mask' in inputs['inCDPs']:
+        Maskdata = calibration.load_CDPs(inputs['inCDPs']['Mask'],ccd.CCD)
+        doMask = True
+        if log is not None:
+            masksstr = inputs['inCDPs']['Mask'].__str__()
+            masksstr = st.replace(masksstr,',',',\n')
+            log.info('Applying cosmetics mask')
+            log.info(masksstr)    
+    
+    
+    label = dd.mx['label'][:,0].copy() # labels should be the same accross CCDs. PATCH.
+    ObsIDs = dd.mx['ObsID'][:].copy()
+    
+    indices = copy.deepcopy(dd.indices)
+    
+    nObs,nCCD,nQuad = indices.shape
+    Quads = indices[indices.names.index('Quad')].vals
+    CCDs = indices[indices.names.index('CCD')].vals
+    
+    emptyccdobj = ccd.CCD()    
+    tile_coos = dict()
+    for Quad in Quads:
+        tile_coos[Quad] = emptyccdobj.get_tile_coos(Quad,wpx,hpx)
+    Nsectors = tile_coos[Quads[0]]['Nsamps']    
+    sectornames = np.arange(Nsectors)
+    
+    
+    Sindices = copy.deepcopy(dd.indices)
+    if 'Sector' not in Sindices.names:
+        Sindices.append(core.vIndex('Sector',vals=sectornames))
+    
+    dd.initColumn('sec_med',Sindices,dtype='float32',valini=np.nan)
+    dd.initColumn('sec_var',Sindices,dtype='float32',valini=np.nan)
+    
+    # Pairing ObsIDs
+    
+    dd.initColumn('ObsID_pair',dd.mx['ObsID'].indices,dtype='int64',valini=np.nan)
+    
+    ulabels = np.unique(label)
+    
+    for ulabel in ulabels:
+        six = np.where(label == ulabel)
+        nsix = len(six[0])
+        ixeven = np.arange(0,nsix,2)
+        ixodd = np.arange(1,nsix,2)
+        
+        dd.mx['ObsID_pair'][six[0][ixeven]] = ObsIDs[six[0][ixodd]]
+        
+        
+    if not bypass:
+        
+        if doMask:
+            estimators = dict(median=np.ma.median,std=np.ma.std)
+        else:
+            estimators = dict(median=np.median,std=np.std)
+        
+        for iObs in range(nObs):
+            
+            _ObsID_pair = dd.mx['ObsID_pair'][iObs]
+            if np.isnan(_ObsID_pair): continue
+            iObs_pair = np.where(ObsIDs == _ObsID_pair)[0][0]
+            
+            
+            for jCCD,CCD in enumerate(CCDs):
+                
+                CCDkey = 'CCD%i' % CCD
+                
+                dpathodd = dd.mx['datapath'][iObs,jCCD]
+                dpatheve = dd.mx['datapath'][iObs_pair,jCCD]
+                
+                ffits_odd = os.path.join(dpathodd,'%s.fits' % dd.mx['File_name'][iObs,jCCD])
+                ffits_eve = os.path.join(dpatheve,'%s.fits' % dd.mx['File_name'][iObs_pair,jCCD])
+                
+                ccdobj_odd = ccd.CCD(ffits_odd)
+                ccdobj_eve = ccd.CCD(ffits_eve)
+                
+                evedata = ccdobj_eve.extensions[-1].data.copy()
+                
+                ccdobj_odd.sub_bias(evedata,extension=-1)
+                
+                if doMask:
+                    ccdobj_odd.get_mask(Maskdata[CCDkey].extensions[-1])
+                
+                for kQ in range(nQuad):
+                    
+                    Quad = Quads[kQ]
+                    
+                    _tile_coos = tile_coos[Quad]
+                    
+                    _tiles = ccdobj_odd.get_tiles(Quad,_tile_coos,extension=-1)
+                    
+                    _meds = np.array(map(estimators['median'],_tiles))
+                    _vars = np.array(map(estimators['std'],_tiles))**2.
+                    
+                    dd.mx['sec_med'][iObs,jCCD,kQ,:] = _meds.copy()
+                    dd.mx['sec_var'][iObs,jCCD,kQ,:] = _vars.copy()
+                    
+    
+    return dd, report
 
 
-def meta_analysis(DataDict,RepDict,inputs,log=None):
+
+def meta_analysis(dd,report,inputs,log=None):
     """
 
     Analyzes the variance and fluence:

@@ -38,6 +38,7 @@ import copy
 import os
 import numpy as np
 from time import sleep
+import datetime
 
 from vison import __version__
 from vison.support import logger as lg
@@ -133,8 +134,15 @@ class Pipe(object):
             msg += ['%s = %s' % (key,str(taskinputs[key]))]
             
         if self.log is not None: self.log.info(msg)
+
+        tini = datetime.datetime.now()
         
         self.dotask(taskname,taskinputs)
+        
+        tend = datetime.datetime.now()
+        dtm = ((tend-tini).seconds)/60.
+        if self.log is not None: 
+            self.log.info('%.1f minutes in running Task: %s' % (dtm,taskname))
         
         
     
@@ -343,7 +351,14 @@ class Pipe(object):
                 self.log.info('%s: %s' % (subtaskname,subtaskfunc.__module__))
             
             if todo_flags[subtaskname]:
+                
+                tini = datetime.datetime.now()
                 dd,reportobj = subtaskfunc(dd,reportobj,inputs,self.log)
+                tend = datetime.datetime.now()
+                dtm = ((tend-tini).seconds)/60.
+                if self.log is not None: 
+                    self.log.info('%.1f minutes in running Sub-task: %s' % (dtm,subtaskname))
+                
                 pilib.save_progress(dd,reportobj,DataDictFile,reportobjFile)
             else:
                 dd, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
