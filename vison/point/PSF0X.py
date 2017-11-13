@@ -36,6 +36,7 @@ import numpy as np
 from pdb import set_trace as stop
 import os
 import string as st
+import warnings
 
 from vison.datamodel import core
 from vison.datamodel import ccd
@@ -282,58 +283,12 @@ def check_data(dd,report,inputs,log=None):
                             dd.mx[chkkey][iObs,jCCD,kQ,xSpot] = res_bas[chkkeycorr[chkkey]]
                         
 
-                    stop()
-                    
                 
     # Assess metrics are within allocated boundaries
     
-    
+    warnings.warn('NOT FINISHED')
 
-#    offset_lims = [1000.,3500.] # TESTS, should be in common limits file
-#    offset_diffs = dict(img=[-1.,+5.],ove=[-1.,+6.]) # TESTS, should be in common limits file
-#    
-#    std_lims = [0.5,2.] # TESTS, should be in common limits file
-#    
-#    # absolute value of offsets
-#    
-#    compliance_offsets = dict()
-#    for reg in ['pre','img','ove']:
-#        
-#        test = ((dd.mx['offset_%s' % reg][:] <= offset_lims[0]) |\
-#                      (dd.mx['offset_%s' % reg][:] >= offset_lims[1]))
-#        compliance_offsets[reg] = np.any(test,axis=(1,2)).sum()
-#    
-#    
-#    # cross-check of offsets
-#        
-#    xcheck_offsets = dict()
-#    for reg in ['img','ove']:
-#        
-#        test = dd.mx['offset_%s' % reg][:]-dd.mx['offset_pre'][:]
-#        
-#        testBool = (test <= offset_diffs[reg][0]) | \
-#               (test >= offset_diffs[reg][1])
-#        xcheck_offsets['img'] = np.any(testBool,axis=(1,2)).sum()
-#    
-#    # absolute value of std
-#        
-#    compliance_std = dict()
-#    for reg in ['pre']:
-#        
-#        test = ((dd.mx['std_%s' % reg][:] <= std_lims[0]) |\
-#                      (dd.mx['std_%s' % reg][:] >= std_lims[1]))
-#        compliance_std[reg] = np.any(test,axis=(1,2)).sum()
-#    
-#    # Do some Plots
-#    
-#    # offsets vs. time
-#    # std vs. time
-#    
-#    if log is not None:
-#        log.info('Plotting MISSING in BIAS01.check_data')
-#    
-#    # Update Report, raise flags, fill-in log
-#
+    
     if log is not None:
         log.info('Reporting and Flagging MISSING in PSF0X.check_data')    
     

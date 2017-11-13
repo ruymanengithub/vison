@@ -238,6 +238,10 @@ def check_data(dd,report,inputs,log=None):
     # Assess metrics are within allocated boundaries
     
     warnings.warn('NOT FINISHED')
+
+    if log is not None:
+        log.info('Reporting and Flagging MISSING in PTC0X.check_data')    
+
     
     return dd, report
 
