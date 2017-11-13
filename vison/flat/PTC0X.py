@@ -37,6 +37,7 @@ import os
 import warnings
 import copy
 import string as st
+from collections import OrderedDict
 
 from vison.pipe import lib as pilib
 from vison.ogse import ogse
@@ -45,6 +46,7 @@ from vison.datamodel import scriptic as sc
 from vison.datamodel import HKtools
 from vison.datamodel import core, ccd
 from vison.image import calibration
+import ptc as ptclib
 #from vison.pipe import FlatFielding as FFing
 #from vison.support.report import Report
 #from vison.support import files
@@ -393,7 +395,8 @@ def meta_analysis(dd,report,inputs,log=None):
                 fit PTC to quadratic model
                 solve for gain
                 solve for alpha (pixel-correls, Guyonnet+15)
-                solve for blooming limit
+                solve for blooming limit (ADU)
+                    convert bloom limit to electrons, using gain
     
         plot PTC curves with best-fit f.e. CCD, Q
         report on gain estimates f. e. CCD, Q (table)
@@ -401,8 +404,87 @@ def meta_analysis(dd,report,inputs,log=None):
     
     """
     
-    raise NotImplementedError
+    if report is not None: report.add_Section(keyword='meta',Title='PTC Analysis',level=0)
+    
+    dIndices = copy.deepcopy(dd.indices)
+    
+    CCDs = dIndices[dIndices.names.index('CCD')].vals
+    Quads = dIndices[dIndices.names.index('Quad')].vals    
+    
+    # Initializations of output data-products
+    
+    gain_mx = OrderedDict()
+    
+    g_tmp_keys = ['a0','ea0','a1','ea1','a2','ea2','gain','egain','alpha','rn']
+    
+    for CCD in CCDs:
+        CCDkey = 'CCD%i' % CCD
+        gain_mx[CCDkey] = dict()
+        for Quad in Quads:
+            gain_mx[CCDkey][Quad] = dict()
+            for key in g_tmp_keys:
+                gain_mx[CCDkey][Quad][key] = np.nan
+    
+    b_tmp_keys = ['bloom_ADU','bloom_e']
+    
+    bloom_mx = OrderedDict()
 
+    for CCD in CCDs:
+        CCDkey = 'CCD%i' % CCD
+        bloom_mx[CCDkey] = dict()
+        for Quad in Quads:
+            bloom_mx[CCDkey][Quad] = dict()
+            for key in b_tmp_keys:
+                bloom_mx[CCDkey][Quad][key] = np.nan
+    
+    # fitting the PTCs
+
+    
+    for iCCD, CCD in enumerate(CCDs):
+        
+        
+        CCDkey = 'C%i' % CCD
+        
+        for jQ, Q in enumerate(Quads):
+            
+            
+            raw_var = dd.mx['sec_var'][:,iCCD,jQ,:]
+            raw_med = dd.mx['sec_med'][:,iCCD,jQ,:]
+            
+            ixnonan = np.where(~np.isnan(raw_var) & ~np.isnan(raw_med))
+            var = raw_var[ixnonan]
+            med = raw_med[ixnonan]
+            
+            #fitresults = dict(fit=p,efit=ep,gain=g,cuadterm=cuadterm,rn=rn,badresult=badresult)
+            
+            _fitresults = ptclib.fitPTC(med,var)
+            
+            for zx in range(2):
+                gain_mx[CCDkey][Q]['a%i' % zx] = _fitresults['fit'][2-zx]
+                gain_mx[CCDkey][Q]['ea%i' % zx] = _fitresults['efit'][2-zx]
+                
+            gain_mx[CCDkey][Q]['gain'] = _fitresults['gain']
+            gain_mx[CCDkey][Q]['rn'] = _fitresults['rn']
+            gain_mx[CCDkey][Q]['quality'] = _fitresults['quality']
+            
+            
+            _bloom = ptclib.foo_bloom(med,var)
+            
+            bloom_mx[CCDkey][Q]['bloom_ADU'] = _bloom['bloom']
+            bloom_mx[CCDkey][Q]['bloom_ADU'] = _bloom['bloom']
+    
+
+    dd.products['gain'] = copy.deepcopy(gain_mx)
+    dd.products['bloom'] = copy.deepcopy(bloom_mx)
+    
+    # Build Tables
+    
+    # Do plots
+    
+    # Add rerts
+    
+    
+    return dd, report
 
 def feeder(inputs,elvis='6.3.0'):
     """ """

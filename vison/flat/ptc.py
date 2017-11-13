@@ -18,9 +18,8 @@ from pdb import set_trace as stop
 import numpy as np
 #END IMPORT
 
-def fitPTC(means,var): #,doplot=False,savefig=''):
+def fitPTC(means,var): 
     """ """
-    
     
     order = np.argsort(means)
     means = np.array(means)[order]
@@ -44,37 +43,15 @@ def fitPTC(means,var): #,doplot=False,savefig=''):
     cuadterm = p[0]
     rn = p[2]
     
-    badresult=False
-    dynrange = fmeans.max()/fmeans.min()
-    if (dynrange < 3) or fmeans.max()<2.E4:
-        badresult=True
+    # Bad results flagging MISSING!
+    quality=0
     
-    fitresults = dict(fit=p,efit=ep,gain=g,cuadterm=cuadterm,rn=rn,badresult=badresult)
+    fitresults = dict(fit=p,efit=ep,gain=g,cuadterm=cuadterm,rn=rn,quality=quality)
     
-#    pmeans = np.linspace(0,fmeans.max(),100)
-#    pvar  = np.polyval(p,pmeans)
-#    
-#    if doplot: 
-#        fig = plt.figure(1)
-#        ax = fig.add_subplot(111)
-#        ax.plot(means,var,'ro')
-#        ax.plot(fmeans,fvar,'bo')
-#        ax.plot(pmeans,pvar,'b--')
-#        ax.set_xlabel('mean [ADU]')
-#        ax.set_ylabel('var [ADU^2]')
-#        ax.set_title(savefig)
-#        ax.set_xlim((0,50000.))
-#        ax.set_ylim((0.,20000.))
-#        for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
-#             ax.get_xticklabels() + ax.get_yticklabels()):
-#            item.set_fontsize(16)
-#        plt.tight_layout()
-#        if savefig != '':
-#            plt.savefig(savefig)
-#        else:
-#            plt.show()
-#        plt.close('all')
 
     return fitresults
 
 
+def foo_bloom(means,var):
+    res = dict(bloom = np.nan)
+    return res
