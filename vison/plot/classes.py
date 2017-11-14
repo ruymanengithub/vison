@@ -14,6 +14,7 @@ Created on Mon Nov 13 17:54:08 2017
 from pdb import set_trace as stop
 import numpy as np
 from collections import OrderedDict
+from vison.datamodel.HKtools import format_date
 
 from matplotlib import pyplot as plt
 import matplotlib
@@ -30,9 +31,17 @@ from mpl_toolkits.mplot3d import Axes3D
 # END IMPORT
 
 
-class PData(object):
-    """ """
+class Fig(object):
     
+    def __init__(self,filename=''):
+        
+        self.filename = filename
+        self.texfraction = 1.0
+        self.caption = ''
+    
+    def plot(self,*args,**kwargs):
+        """ """
+        raise NotImplementedError('Subclass implements abstract method')
     
 
 class BasicPlot(object):
@@ -74,7 +83,8 @@ class CCD2DPlot(BasicPlot):
         super(CCD2DPlot,self).__init__(**kwargs)
         
         defaults = dict(suptitle='',qtitles=dict(E='E',F='F',G='G',H='H'),
-                        doLegend=False)
+                        doLegend=False,
+                        doNiceXDate=False)
         
         if 'meta' in kwargs: meta = kwargs['meta']
         else: meta = dict()
@@ -111,7 +121,8 @@ class CCD2DPlot(BasicPlot):
                 
                 for key in xkeys:
                     xarr = self.data[Q]['x'][key]
-                    yarr = self.data[Q]['y'][key]                    
+                    yarr = np.ones_like(self.data[Q]['y'][key])
+                    
                     handle = self.axs[-1].plot(xarr,yarr,label=key)
                     if iQ==0:
                         self.handles += handle
@@ -127,6 +138,13 @@ class CCD2DPlot(BasicPlot):
         
         if self.meta['doLegend']:
             plt.figlegend(self.handles,self.labels,loc='center right')
+        
+        
+        if self.meta['doNiceXDate']:
+            
+            plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))   
+            self.fig.autofmt_xdate()
+        
         
         plt.suptitle(self.meta['suptitle'])
         plt.tight_layout()

@@ -175,14 +175,36 @@ class Task(object):
 
    
     def addHK_2_dd(self):
+        """ """
         self.dd = pilib.addHK(self.dd,self.HKKeys,elvis=self.elvis)
        
     def save_progress(self,DataDictFile,reportobjFile):
+        """ """
         files.cPickleDumpDictionary(self.dd,DataDictFile)
         files.cPickleDump(self.report,reportobjFile)
         
         
     def recover_progress(self,DataDictFile,reportobjFile):
+        """ """
         self.dd = files.cPickleRead(DataDictFile)
         self.report = files.cPickleRead(reportobjFile)
+    
+    
+    def addFigure2Report(self,figkey):
+        """ """
+        figobj = self.figdict[figkey]
+        figname = figobj.figname
+        texfraction = figobj.texfraction
+        caption = figobj.caption
+        
+        assert os.path.exists(figname)
+        epsname = '%s.eps' % os.path.splitext(figname)[0]
+        os.system('convert %s %s' % (figname,epsname))
+        self.report.add_Figure(epsname,texfraction=texfraction,
+                               caption=caption,label=figkey)
+        
+    def doPlot(self,figkey,**kwargs):
+        """ """
+        figobj = self.figdict[figkey]
+        figobj.plot(self,**kwargs)
         

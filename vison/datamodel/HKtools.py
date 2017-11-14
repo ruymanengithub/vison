@@ -507,8 +507,7 @@ def HKplot(allHKdata,keylist,key,dtobjs,filename='',stat='mean'):
     #if key == 'HK_temp_top_CCD1': stop()
         
     #if dtobjs[0] != 0:
-    plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date)) 
-        
+    plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))   
     fig.autofmt_xdate()
     
     
