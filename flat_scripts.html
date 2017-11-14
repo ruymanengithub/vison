@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Flat-Illumination Scripts &#8212; vison 0.2+72.gce81649.dirty documentation</title>
+    <title>Flat-Illumination Scripts &#8212; vison 0.2+115.gf75dcaf.dirty documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2+72.gce81649.dirty',
+        VERSION:     '0.2+115.gf75dcaf.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="dark_scripts.html" title="“Dark Acquisitions” Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+72.gce81649.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -395,7 +395,7 @@ variance(binned difference-frames) vs. fluence</dd>
 </table>
 <dl class="function">
 <dt id="vison.flat.PTC0X.build_PTC0X_scriptdict">
-<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">build_PTC0X_scriptdict</code><span class="sig-paren">(</span><em>exptimes</em>, <em>frames</em>, <em>wavelength=800</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.build_PTC0X_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">build_PTC0X_scriptdict</code><span class="sig-paren">(</span><em>testkey</em>, <em>exptimes</em>, <em>frames</em>, <em>wavelength=800</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.build_PTC0X_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds PTC0X script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -415,7 +415,7 @@ variance(binned difference-frames) vs. fluence</dd>
 
 <dl class="function">
 <dt id="vison.flat.PTC0X.check_data">
-<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.check_data" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.check_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks quality of ingested data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
@@ -441,7 +441,7 @@ variance(binned difference-frames) vs. fluence</dd>
 
 <dl class="function">
 <dt id="vison.flat.PTC0X.extract_PTC">
-<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">extract_PTC</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.extract_PTC" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">extract_PTC</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.extract_PTC" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
 <dt>Performs basic analysis of images:</dt>
 <dd><ul class="first last simple">
@@ -472,19 +472,13 @@ variance(binned difference-frames) vs. fluence</dd>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="vison.flat.PTC0X.filterexposures_PTC0X">
-<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">filterexposures_PTC0X</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.filterexposures_PTC0X" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads a list of Exposure Logs and selects exposures from test PSF0X.</p>
-<p>The filtering takes into account an expected structure for the 
-acquisition script.</p>
-<p>The datapath becomes another column in DataDict. This helps dealing
-with tests that run overnight and for which the input data is in several
-date-folders.</p>
-</dd></dl>
+<dt id="vison.flat.PTC0X.filterexposures">
+<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.filterexposures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="vison.flat.PTC0X.meta_analysis">
-<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">meta_analysis</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.flat.PTC0X.</code><code class="descname">meta_analysis</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.meta_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Analyzes the variance and fluence:
 gain, and gain(fluence)</p>
 <p>METACODE</p>
@@ -494,7 +488,8 @@ gain, and gain(fluence)</p>
         <span class="n">fit</span> <span class="n">PTC</span> <span class="n">to</span> <span class="n">quadratic</span> <span class="n">model</span>
         <span class="n">solve</span> <span class="k">for</span> <span class="n">gain</span>
         <span class="n">solve</span> <span class="k">for</span> <span class="n">alpha</span> <span class="p">(</span><span class="n">pixel</span><span class="o">-</span><span class="n">correls</span><span class="p">,</span> <span class="n">Guyonnet</span><span class="o">+</span><span class="mi">15</span><span class="p">)</span>
-        <span class="n">solve</span> <span class="k">for</span> <span class="n">blooming</span> <span class="n">limit</span>
+        <span class="n">solve</span> <span class="k">for</span> <span class="n">blooming</span> <span class="n">limit</span> <span class="p">(</span><span class="n">ADU</span><span class="p">)</span>
+            <span class="n">convert</span> <span class="n">bloom</span> <span class="n">limit</span> <span class="n">to</span> <span class="n">electrons</span><span class="p">,</span> <span class="n">using</span> <span class="n">gain</span>
 
 <span class="n">plot</span> <span class="n">PTC</span> <span class="n">curves</span> <span class="k">with</span> <span class="n">best</span><span class="o">-</span><span class="n">fit</span> <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span>
 <span class="n">report</span> <span class="n">on</span> <span class="n">gain</span> <span class="n">estimates</span> <span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span> <span class="p">(</span><span class="n">table</span><span class="p">)</span>
@@ -567,7 +562,7 @@ gain, and gain(fluence)</p>
         <li class="right" >
           <a href="dark_scripts.html" title="“Dark Acquisitions” Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+72.gce81649.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

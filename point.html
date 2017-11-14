@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Point-Source Analysis &#8212; vison 0.2+72.gce81649.dirty documentation</title>
+    <title>Point-Source Analysis &#8212; vison 0.2+115.gf75dcaf.dirty documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2+72.gce81649.dirty',
+        VERSION:     '0.2+115.gf75dcaf.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -27,7 +27,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Scripts" href="scripts.html" />
-    <link rel="prev" title="OGSE Tools" href="ogse.html" /> 
+    <link rel="prev" title="Plotting" href="plot.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -43,9 +43,9 @@
           <a href="scripts.html" title="Scripts"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="ogse.html" title="OGSE Tools"
+          <a href="plot.html" title="Plotting"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+72.gce81649.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -430,6 +430,57 @@ Aimed at basic analysis:</p>
 </tbody>
 </table>
 <p>Settings dictionary contains all parameter values needed.</p>
+<dl class="method">
+<dt id="vison.point.spot.Spot.get_photom">
+<code class="descname">get_photom</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot.get_photom" title="Permalink to this definition">¶</a></dt>
+<dd><p>measurements:&#8217;apflu&#8217;,&#8217;eapflu&#8217;,&#8217;bgd&#8217;,&#8217;ebgd&#8217;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.point.spot.Spot.get_shape_Gauss">
+<code class="descname">get_shape_Gauss</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot.get_shape_Gauss" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">res = dict(i0,ei0,x,ex,y,ey,
+sigma_x,esigma_x,sigmay,esigma_y,
+fwhm_x,efwhm_x,
+fwhm_y,efwhm_y,
+fluence,efluence)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.point.spot.Spot.get_shape_Moments">
+<code class="descname">get_shape_Moments</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot.get_shape_Moments" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">res = dict(x,y,ellip,e1,e2,a,b)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.point.spot.Spot.get_shape_easy">
+<code class="descname">get_shape_easy</code><span class="sig-paren">(</span><em>method='G'</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot.get_shape_easy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.point.spot.Spot.measure_basic">
+<code class="descname">measure_basic</code><span class="sig-paren">(</span><em>rin=10</em>, <em>rap=10</em>, <em>rout=-1</em>, <em>gain=3.1</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot.measure_basic" title="Permalink to this definition">¶</a></dt>
+<dd><p># TODO:
+#   get basic statistics, measure and subtract background
+#   update centroid
+#   do aperture photometry
+#   pack-up results and return</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -443,65 +494,21 @@ imaging data.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini (except where indicated)</td>
 </tr>
 <tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
 </tr>
 </tbody>
 </table>
 <dl class="function">
-<dt id="vison.point.lib.fwcentroid">
-<code class="descclassname">vison.point.lib.</code><code class="descname">fwcentroid</code><span class="sig-paren">(</span><em>image</em>, <em>checkbox=1</em>, <em>maxiterations=30</em>, <em>threshold=1e-05</em>, <em>halfwidth=35</em>, <em>verbose=False</em>, <em>full=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.lib.fwcentroid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Implement the Floating-window first moment centroid algorithm
-chosen for JWST target acquisition.</p>
-<p>See JWST-STScI-001117 and JWST-STScI-001134 for details.</p>
-<p>This code makes no attempt to vectorize or optimize for speed;
-it&#8217;s pretty much just a straight verbatim implementation of the
-IDL-like pseudocode provided in JWST-STScI-001117</p>
-<dl class="docutils">
-<dt>image</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">array_like</span><dd>image to centroid</dd>
-<dt>checkbox</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>size of moving checkbox for initial peak pixel guess. Default 1</dd>
-<dt>maxiterations</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>Max number of loops. Default 30</dd>
-<dt>halfwidth</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>Half width of the centroid box size (less 1). Specify as a scalar, or a tuple Xhalfwidth, Yhalfwidth.
-Empirical tests suggest this parameter should be at <em>least</em> the PSF FWHM for convergence,
-preferably some small factor larger</dd>
-<dt>threshold</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">float</span><dd>Position threshold for convergence</dd>
-</dl>
-<dl class="docutils">
-<dt>(ycen, xcen)</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">float tuple</span><dd>Measured centroid position. Note that this is returned in Pythonic
-Y,X order for use as array indices, etc.</dd>
-</dl>
-<p>-Marshall Perrin 2011-02-11</p>
-</dd></dl>
+<dt id="vison.point.lib.extract_spot">
+<code class="descclassname">vison.point.lib.</code><code class="descname">extract_spot</code><span class="sig-paren">(</span><em>ccdobj</em>, <em>coo</em>, <em>Quad</em>, <em>log=None</em>, <em>stampw=25</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.lib.extract_spot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="function">
-<dt id="vison.point.lib.get_Gauss_spot">
-<code class="descclassname">vison.point.lib.</code><code class="descname">get_Gauss_spot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.lib.get_Gauss_spot" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>measurements:&#8217;i0_G&#8217;,&#8217;ei0_G&#8217;,&#8217;flu_G&#8217;,&#8217;eflu_G&#8217;,</dt>
-<dd>&#8216;x0_G&#8217;,&#8217;ex0_G&#8217;,&#8217;y0_G&#8217;,&#8217;ey0_G&#8217;,
-&#8216;sx_G&#8217;,&#8217;esx_G&#8217;,&#8217;sy_G&#8217;,&#8217;esy_G&#8217;,
-&#8216;e1&#8217;,&#8217;e2&#8217;,&#8217;e&#8217;,&#8217;R2&#8217;</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.lib.get_Quadrupoles_spot">
-<code class="descclassname">vison.point.lib.</code><code class="descname">get_Quadrupoles_spot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.lib.get_Quadrupoles_spot" title="Permalink to this definition">¶</a></dt>
-<dd><p>measurements:&#8217;e1&#8217;,&#8217;e2&#8217;,&#8217;e&#8217;,&#8217;R2&#8217;</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.lib.get_photom_spot">
-<code class="descclassname">vison.point.lib.</code><code class="descname">get_photom_spot</code><span class="sig-paren">(</span><em>stamp</em>, <em>x0</em>, <em>y0</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.lib.get_photom_spot" title="Permalink to this definition">¶</a></dt>
-<dd><p>measurements:&#8217;apflu&#8217;,&#8217;eapflu&#8217;,&#8217;bgd&#8217;,&#8217;ebgd&#8217;</p>
-</dd></dl>
+<dt id="vison.point.lib.gen_point_mask">
+<code class="descclassname">vison.point.lib.</code><code class="descname">gen_point_mask</code><span class="sig-paren">(</span><em>CCD</em>, <em>Quad</em>, <em>width=25</em>, <em>sources='all'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.lib.gen_point_mask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 </div>
@@ -546,8 +553,8 @@ Y,X order for use as array indices, etc.</dd>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="ogse.html"
-                        title="previous chapter">OGSE Tools</a></p>
+  <p class="topless"><a href="plot.html"
+                        title="previous chapter">Plotting</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="scripts.html"
                         title="next chapter">Scripts</a></p>
@@ -585,9 +592,9 @@ Y,X order for use as array indices, etc.</dd>
           <a href="scripts.html" title="Scripts"
              >next</a> |</li>
         <li class="right" >
-          <a href="ogse.html" title="OGSE Tools"
+          <a href="plot.html" title="Plotting"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+72.gce81649.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

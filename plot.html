@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Charge Injection Tools &#8212; vison 0.2+115.gf75dcaf.dirty documentation</title>
+    <title>Plotting &#8212; vison 0.2+115.gf75dcaf.dirty documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -26,8 +26,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="“Flat” Acq. Analysis Tools" href="flat.html" />
-    <link rel="prev" title="Analysis (Shared)" href="analysis.html" /> 
+    <link rel="next" title="Point-Source Analysis" href="point.html" />
+    <link rel="prev" title="OGSE Tools" href="ogse.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -40,10 +40,10 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="flat.html" title="“Flat” Acq. Analysis Tools"
+          <a href="point.html" title="Point-Source Analysis"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="analysis.html" title="Analysis (Shared)"
+          <a href="ogse.html" title="OGSE Tools"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
       </ul>
@@ -54,29 +54,12 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="charge-injection-tools">
-<h1>Charge Injection Tools<a class="headerlink" href="#charge-injection-tools" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-vison.inject.lib">
-<span id="lib-py"></span><h2>lib.py<a class="headerlink" href="#module-vison.inject.lib" title="Permalink to this headline">¶</a></h2>
-<p>NEEDSREVISION</p>
-<p>Module to provide common tools for analysis of Charge Injection acquisitions.</p>
-<p>Created on Thu Sep 14 15:32:10 2017</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini__at__ucl.ac.uk</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="module-vison.inject.plot">
-<span id="plot-py"></span><h2>plot.py<a class="headerlink" href="#module-vison.inject.plot" title="Permalink to this headline">¶</a></h2>
-<p>NEEDSREVISION</p>
-<p>Charge Injection Plotting Tools.</p>
-<p>Created on Thu Sep 14 15:39:34 2017</p>
+  <div class="section" id="plotting">
+<h1>Plotting<a class="headerlink" href="#plotting" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-vison.plot.classes">
+<span id="classes-py"></span><h2>classes.py<a class="headerlink" href="#module-vison.plot.classes" title="Permalink to this headline">¶</a></h2>
+<p>vison pipeline: Classes to do plots.</p>
+<p>Created on Mon Nov 13 17:54:08 2017</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -87,6 +70,21 @@
 </tr>
 </tbody>
 </table>
+<dl class="class">
+<dt id="vison.plot.classes.PData">
+<em class="property">class </em><code class="descclassname">vison.plot.classes.</code><code class="descname">PData</code><a class="headerlink" href="#vison.plot.classes.PData" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="vison.plot.classes.BasicPlot">
+<em class="property">class </em><code class="descclassname">vison.plot.classes.</code><code class="descname">BasicPlot</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.classes.BasicPlot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="vison.plot.classes.CCD2DPlot">
+<em class="property">class </em><code class="descclassname">vison.plot.classes.</code><code class="descname">CCD2DPlot</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.classes.CCD2DPlot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 </div>
 
@@ -101,23 +99,22 @@
             </a></p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Charge Injection Tools</a><ul>
-<li><a class="reference internal" href="#module-vison.inject.lib">lib.py</a></li>
-<li><a class="reference internal" href="#module-vison.inject.plot">plot.py</a></li>
+<li><a class="reference internal" href="#">Plotting</a><ul>
+<li><a class="reference internal" href="#module-vison.plot.classes">classes.py</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="analysis.html"
-                        title="previous chapter">Analysis (Shared)</a></p>
+  <p class="topless"><a href="ogse.html"
+                        title="previous chapter">OGSE Tools</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="flat.html"
-                        title="next chapter">&#8220;Flat&#8221; Acq. Analysis Tools</a></p>
+  <p class="topless"><a href="point.html"
+                        title="next chapter">Point-Source Analysis</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/inject.rst.txt"
+      <li><a href="_sources/plot.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -145,10 +142,10 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="flat.html" title="“Flat” Acq. Analysis Tools"
+          <a href="point.html" title="Point-Source Analysis"
              >next</a> |</li>
         <li class="right" >
-          <a href="analysis.html" title="Analysis (Shared)"
+          <a href="ogse.html" title="OGSE Tools"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
       </ul>

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>“Dark Acquisitions” Scripts &#8212; vison 0.2+72.gce81649.dirty documentation</title>
+    <title>“Dark Acquisitions” Scripts &#8212; vison 0.2+115.gf75dcaf.dirty documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2+72.gce81649.dirty',
+        VERSION:     '0.2+115.gf75dcaf.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="chinj_scripts.html" title="Charge Injection Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+72.gce81649.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -74,12 +74,15 @@ TEST: BIAS01</p>
 </table>
 <dl class="function">
 <dt id="vison.dark.BIAS01.basic_analysis">
-<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">basic_analysis</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.basic_analysis" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">basic_analysis</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.basic_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>BIAS01: Basic analysis of data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-       <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
+       
+       <span class="n">load</span> <span class="n">ccdobj</span> <span class="n">of</span> <span class="n">ObsID</span><span class="p">,</span> <span class="n">CCD</span>
+       
+       <span class="k">with</span> <span class="n">ccdobj</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
            <span class="n">produce</span> <span class="n">a</span> <span class="mi">2</span><span class="n">D</span> <span class="n">poly</span> <span class="n">model</span> <span class="n">of</span> <span class="n">bias</span><span class="p">,</span> <span class="n">save</span> <span class="n">coefficients</span>
            <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">rows</span>
            <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">cols</span>
@@ -112,7 +115,7 @@ TEST: BIAS01</p>
 
 <dl class="function">
 <dt id="vison.dark.BIAS01.check_data">
-<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.check_data" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.check_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>BIAS01: Checks quality of ingested data.</p>
 <p><strong>METACODE</strong></p>
 <dl class="docutils">
@@ -152,12 +155,12 @@ log and report.</dd>
 
 <dl class="function">
 <dt id="vison.dark.BIAS01.filterexposures">
-<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>elvis</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.filterexposures" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="vison.dark.BIAS01.meta_analysis">
-<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">meta_analysis</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">meta_analysis</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.meta_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">:</span>
    <span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">Q</span><span class="p">:</span>
@@ -174,19 +177,21 @@ log and report.</dd>
 
 <dl class="function">
 <dt id="vison.dark.BIAS01.prep_data">
-<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">prep_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.prep_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>BIAS01: Preparation of data for further analysis.</p>
+<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">prep_data</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.prep_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>BIAS01: Preparation of data for further analysis.
+applies a mask</p>
 <p><strong>METACODE</strong></p>
 <dl class="docutils">
 <dt>::</dt>
 <dd><dl class="first last docutils">
 <dt>f.e. ObsID:</dt>
 <dd><dl class="first last docutils">
-<dt>f.e.CCD:</dt>
-<dd><dl class="first last docutils">
-<dt>f.e.Q:</dt>
-<dd>subtract offset: save to FITS, update filename</dd>
-</dl>
+<dt>f.e.CCD:                </dt>
+<dd><p class="first">apply cosmetic mask, if available                
+f.e.Q:</p>
+<blockquote>
+<div>subtract offset</div></blockquote>
+<p class="last">save file as a datamodel.ccd.CCD object.</p>
 </dd>
 </dl>
 </dd>
@@ -380,7 +385,7 @@ TEST: DARK01</p>
         <li class="right" >
           <a href="chinj_scripts.html" title="Charge Injection Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+72.gce81649.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

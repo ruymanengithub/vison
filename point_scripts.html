@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Point-Source Scripts &#8212; vison 0.2+72.gce81649.dirty documentation</title>
+    <title>Point-Source Scripts &#8212; vison 0.2+115.gf75dcaf.dirty documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2+72.gce81649.dirty',
+        VERSION:     '0.2+115.gf75dcaf.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="flat_scripts.html" title="Flat-Illumination Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+72.gce81649.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -251,15 +251,16 @@ PSF02 - alternative temperatures</dd>
 </tbody>
 </table>
 <dl class="function">
-<dt id="vison.point.PSF0X.basic_analysis_PSF0X">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">basic_analysis_PSF0X</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.basic_analysis_PSF0X" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.point.PSF0X.basic_analysis">
+<code class="descclassname">vison.point.PSF0X.</code><code class="descname">basic_analysis</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.basic_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs basic analysis on spots:
-- Gaussian Fits: peak, position, width_x, width_y</p>
+- shape from moments
+- Gaussian fitting: peak intensity, position, width_x, width_y</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="vison.point.PSF0X.bayes_analysis_PSF0X">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">bayes_analysis_PSF0X</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.bayes_analysis_PSF0X" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.point.PSF0X.bayes_analysis">
+<code class="descclassname">vison.point.PSF0X.</code><code class="descname">bayes_analysis</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.bayes_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
 <dt>Performs bayesian decomposition of the spot images:</dt>
 <dd><ul class="first last simple">
@@ -291,33 +292,82 @@ PSF02 - alternative temperatures</dd>
 </dd></dl>
 
 <dl class="function">
-<dt id="vison.point.PSF0X.filterexposures_PSF0X">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">filterexposures_PSF0X</code><span class="sig-paren">(</span><em>inwavelength</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>structure={'Ncols': 6</em>, <em>'col6': {'frames': 3</em>, <em>'exptime': 18.0}</em>, <em>'col4': {'frames': 10</em>, <em>'exptime': 10.0}</em>, <em>'col5': {'frames': 4</em>, <em>'exptime': 15.0}</em>, <em>'col2': {'frames': 20</em>, <em>'exptime': 1.0}</em>, <em>'col3': {'frames': 18</em>, <em>'exptime': 5.0}</em>, <em>'col1': {'frames': 5</em>, <em>'exptime': 0}}</em>, <em>elvis='5.7.04'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.filterexposures_PSF0X" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads a list of Exposure Logs and selects exposures from test PSF0X.</p>
-<p>The filtering takes into account an expected structure for the 
-acquisition script.</p>
-<p>The datapath becomes another column in DataDict. This helps dealing
-with tests that run overnight and for which the input data is in several
-date-folders.</p>
+<dt id="vison.point.PSF0X.check_data">
+<code class="descclassname">vison.point.PSF0X.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.check_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>PSF0X: Checks quality of ingested data.</p>
+<p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
+<span class="n">check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
+
+<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span> 
+        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
+            <span class="n">measure</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span><span class="ow">and</span> <span class="n">over</span><span class="o">-</span>
+            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
+            <span class="n">measure</span> <span class="n">median</span> <span class="ow">in</span> <span class="n">img</span> <span class="n">area</span><span class="p">,</span> <span class="n">excluding</span> <span class="n">spots</span> <span class="p">(</span><span class="n">bgd</span><span class="p">)</span>
+            <span class="n">measure</span> <span class="p">(</span><span class="n">bgd</span><span class="o">-</span><span class="n">sub</span><span class="s1">&#39;d-) fluence of spots</span>
+            <span class="n">measure</span> <span class="n">size</span> <span class="n">of</span> <span class="n">spots</span>
+            
+<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="p">(</span><span class="o">~</span><span class="n">RON</span><span class="p">)</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
+<span class="n">assess</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span>  <span class="n">margins</span>
+<span class="n">assess</span> <span class="n">offsets</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
+<span class="n">assess</span> <span class="n">median</span><span class="o">-</span><span class="n">img</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
+<span class="n">assess</span> <span class="n">fluences</span> <span class="n">of</span> <span class="n">spots</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
+<span class="n">assess</span> <span class="n">sizes</span> <span class="n">of</span> <span class="n">spots</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
+
+<span class="n">plot</span> <span class="n">offsets</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
+<span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
+<span class="n">plot</span> <span class="n">spot</span> <span class="n">fluences</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
+<span class="n">plot</span> <span class="n">spot</span> <span class="n">size</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
+    
+<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
+<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>
+<span class="n">update</span> <span class="n">flags</span> <span class="k">as</span> <span class="n">needed</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
-<dt id="vison.point.PSF0X.meta_analysis_PSF0X">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">meta_analysis_PSF0X</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.meta_analysis_PSF0X" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.point.PSF0X.feeder">
+<code class="descclassname">vison.point.PSF0X.</code><code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.feeder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.point.PSF0X.filterexposures">
+<code class="descclassname">vison.point.PSF0X.</code><code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.filterexposures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.point.PSF0X.meta_analysis">
+<code class="descclassname">vison.point.PSF0X.</code><code class="descname">meta_analysis</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.meta_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Analyzes the relation between detector PSF and fluence.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="vison.point.PSF0X.prep_data_PSF0X">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">prep_data_PSF0X</code><span class="sig-paren">(</span><em>DataDict</em>, <em>RepDict</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.prep_data_PSF0X" title="Permalink to this definition">¶</a></dt>
-<dd><p>Takes Raw Data and prepares it for further analysis. Also checks that
-data quality is enough.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.PSF0X.run">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">run</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test PSF0X master function.</p>
+<dt id="vison.point.PSF0X.prep_data">
+<code class="descclassname">vison.point.PSF0X.</code><code class="descname">prep_data</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.prep_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>PSF0X: Preparation of data for further analysis.</p>
+<p><strong>METACODE</strong></p>
+<dl class="docutils">
+<dt>::</dt>
+<dd><dl class="first last docutils">
+<dt>f.e. ObsID:</dt>
+<dd><dl class="first last docutils">
+<dt>f.e.CCD:                </dt>
+<dd><p class="first">apply cosmetic mask, if available
+f.e.Q:</p>
+<blockquote>
+<div>subtract offset</div></blockquote>
+<p>subtract superbias, if available
+divide by flat-field, if available</p>
+<p class="last">save image as a datamodel.ccd.CCD object.                
+cuts-out and save stamps of pre-processed spots for further analysis.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -383,7 +433,7 @@ data quality is enough.</p>
         <li class="right" >
           <a href="flat_scripts.html" title="Flat-Illumination Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+72.gce81649.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

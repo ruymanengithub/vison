@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Data Model &#8212; vison 0.2+72.gce81649.dirty documentation</title>
+    <title>Data Model &#8212; vison 0.2+115.gf75dcaf.dirty documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2+72.gce81649.dirty',
+        VERSION:     '0.2+115.gf75dcaf.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="pipe.html" title="Pipeline"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+72.gce81649.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -70,7 +70,7 @@
 </table>
 <dl class="class">
 <dt id="vison.datamodel.ccd.CCD">
-<em class="property">class </em><code class="descclassname">vison.datamodel.ccd.</code><code class="descname">CCD</code><span class="sig-paren">(</span><em>infits=None, extensions=[-1], getallextensions=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.datamodel.ccd.</code><code class="descname">CCD</code><span class="sig-paren">(</span><em>infits=None, extensions=[-1], getallextensions=False, withpover=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class of CCD objects. 
 Euclid Images as acquired by ELVIS software (Euclid LabView Imaging Software).</p>
 <p>The class has been extended to handle multi-extension images. This is useful
@@ -78,6 +78,11 @@ to also &#8220;host&#8221; calibration data-products, such as Flat-Fields.</p>
 <dl class="method">
 <dt id="vison.datamodel.ccd.CCD.add_extension">
 <code class="descname">add_extension</code><span class="sig-paren">(</span><em>data</em>, <em>header=None</em>, <em>label=None</em>, <em>headerdict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.add_extension" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.add_to_hist">
+<code class="descname">add_to_hist</code><span class="sig-paren">(</span><em>action</em>, <em>extension=-1</em>, <em>vison=u'0.2+115.gf75dcaf.dirty'</em>, <em>params={}</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.add_to_hist" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -156,9 +161,25 @@ Non-Canonical [False] = with readout-node at corner matching placement of quadra
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="vison.datamodel.ccd.CCD.get_tile_coos">
+<code class="descname">get_tile_coos</code><span class="sig-paren">(</span><em>Quadrant</em>, <em>wpx</em>, <em>hpx</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.get_tile_coos" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.get_tiles">
+<code class="descname">get_tiles</code><span class="sig-paren">(</span><em>Quadrant</em>, <em>tile_coos</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.get_tiles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="vison.datamodel.ccd.CCD.getsectioncollims">
 <code class="descname">getsectioncollims</code><span class="sig-paren">(</span><em>QUAD</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.getsectioncollims" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns limits of sections: prescan, image and overscan</p>
+<dd><p>Returns limits of [HORIZONTAL] sections: prescan, image and overscan</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.getsectionrowlims">
+<code class="descname">getsectionrowlims</code><span class="sig-paren">(</span><em>QUAD</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.getsectionrowlims" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns limits of [VERTICAL] sections: image [and overscan]</p>
 </dd></dl>
 
 <dl class="method">
@@ -316,6 +337,62 @@ Non-Canonical [False] = with readout-node at corner matching placement of quadra
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None!!</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.HKtools.check_HK_abs">
+<code class="descclassname">vison.datamodel.HKtools.</code><code class="descname">check_HK_abs</code><span class="sig-paren">(</span><em>HKKeys</em>, <em>dd</em>, <em>limits='S'</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.HKtools.check_HK_abs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns report on HK parameters, in DataDict (dd), compared to absolute
+limits.</p>
+<p>HK Keys which have &#8220;relative&#8221; limits, always return False.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>HKKeys</strong> &#8211; list of HK parameters, as named in HK files (without <a href="#id1"><span class="problematic" id="id2">HK_</span></a> suffix)</li>
+<li><strong>dd</strong> &#8211; DataDict object</li>
+<li><strong>limits</strong> &#8211; type of limits to use, either &#8220;P&#8221; (Performance) or &#8220;S&#8221; (Safe)</li>
+<li><strong>elvis</strong> &#8211; ELVIS version to find correspondence between HK key and 
+Exposure Log input (commanded voltage).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns report:</th><td class="field-body"><p class="first last">dictionary with pairs of HK-key : Bool.
+True = All values for given key are within limits.
+False = At least one value for given key is outside limits.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.HKtools.check_HK_vs_command">
+<code class="descclassname">vison.datamodel.HKtools.</code><code class="descname">check_HK_vs_command</code><span class="sig-paren">(</span><em>HKKeys</em>, <em>dd</em>, <em>limits='P'</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.HKtools.check_HK_vs_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns report on HK parameters, in DataDict (dd), comparing inputs (commanded)
+vs. output (HK data).</p>
+<p>HK Keys which do not correspond to commanded voltages always return &#8216;True&#8217;.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>HKKeys</strong> &#8211; list of HK parameters, as named in HK files (without <a href="#id3"><span class="problematic" id="id4">HK_</span></a> suffix)</li>
+<li><strong>dd</strong> &#8211; DataDict object</li>
+<li><strong>limits</strong> &#8211; type of limits to use, either &#8220;P&#8221; (Performance) or &#8220;S&#8221; (Safe)</li>
+<li><strong>elvis</strong> &#8211; ELVIS version to find correspondence between HK key and 
+Exposure Log input (commanded voltage).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns report:</th><td class="field-body"><p class="first last">dictionary with pairs of HK-key : Bool.
+True = All values are within limits, referred to commanded value.
+False = At least one value is outside limits, referred to commanded value.</p>
 </td>
 </tr>
 </tbody>
@@ -574,7 +651,7 @@ HK dictionaries (output from loadHK).</p>
         <li class="right" >
           <a href="pipe.html" title="Pipeline"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+72.gce81649.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
