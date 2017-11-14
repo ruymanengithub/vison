@@ -20,7 +20,7 @@ from vison.datamodel.ccd import CCD
 from vison.datamodel import EXPLOGtools as ELtools
 from vison.datamodel import HKtools
 from vison.support import files
-from vison.support import time as vistime
+from vison.support import vistime
 from glob import glob
 import os
 import numpy as np

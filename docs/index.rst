@@ -123,6 +123,16 @@ OGSE stands for Optical Ground Support Equipment.
 
     ogse
 
+Plotting
+========
+
+General use plotting facilities.
+
+.. toctree::
+    :maxdepth: 4
+
+    plot
+
 Point-Source Analysis
 =====================
 

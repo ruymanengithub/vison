@@ -230,6 +230,17 @@ def check_data(dd,report,inputs,log=None):
     # Do some Plots
     
     # offsets vs. time
+    # TO-DO: decide:
+    #    where to create fig-generator
+    #    where to create fig-name
+    #    where to store fig-name
+    #    include fig to report
+    #
+    # dd > data, dd < figname, report < fig
+    
+    
+    
+    
     # std vs. time
     
     if log is not None:
