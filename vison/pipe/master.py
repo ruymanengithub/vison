@@ -65,7 +65,8 @@ waittime = 120 # seconds
 class Pipe(object):
     """Master Class of FM-analysis """
     
-    from vison.dark import BIAS01, DARK01
+    from vison.dark.BIAS01 import BIAS01
+    from vison.dark import DARK01
     from vison.flat import NL01, FLAT0X, PTC0X
     from vison.inject import CHINJ01, CHINJ02
     from vison.other import PERSIST01
@@ -122,7 +123,7 @@ class Pipe(object):
         
         taskinputs = self.inputs[taskname]
         
-        inputs =copy.deepcopy(self.inputs)
+        inputs = copy.deepcopy(self.inputs)
         alltasks = inputs['tasks']
         inputs.pop('tasks')
         for taskname in alltasks: inputs.pop(taskname)
@@ -155,6 +156,8 @@ class Pipe(object):
             os.system('mkdir %s' % resultsroot)
         
         if self.log is not None: self.log.info('\n\nResults will be saved in: %s\n' % resultsroot)
+        
+        
         
         for taskname in tasknames:
             
@@ -237,147 +240,8 @@ class Pipe(object):
     def dotask(self,taskname,inputs):
         """Generic test master function."""
         
-        # INPUTS
-        
-        #todo_flags = dict(init=True,prep=True,basic=True,meta=True,report=True)
-        
-        #self.Test_dict[taskname].feeder(inputs)
-        Test = self.Test_dict[taskname]
-        inputs = Test.feeder(inputs)
-        
-        subtasks = inputs['subtasks']
-        OBSID_lims = inputs['OBSID_lims']
-        explogf = inputs['explogf']
-        datapath = inputs['datapath']
-        resultspath = inputs['resultspath']
-        try: _paths = inputs['subpaths']
-        except: _paths = dict()
-        elvis = inputs['elvis']
-        testkey = inputs['test']
-        
-        
-        DataDictFile = os.path.join(resultspath,'%s_DataDict.pick' % testkey)
-        reportobjFile = os.path.join(resultspath,'%s_Report.pick' % testkey)
-        
-        if not isthere(resultspath):
-            os.system('mkdir %s' % resultspath)
-        
-        for _pathkey in _paths:
-            subpath = os.path.join(resultspath,_paths[_pathkey])            
-            if not isthere(subpath): os.system('mkdir %s' % subpath)
-            _paths[_pathkey] = subpath
-        
-        inputs['subpaths'] = _paths
-        
-        structure = inputs['structure']
-            
-        try: reportroot = inputs['reportroot']
-        except KeyError: reportroot = '%s_report' % testkey
-        
-        try: cleanafter = inputs['cleanafter']
-        except KeyError: cleanafter = False
-        
-        todo_flags = inputs['todo_flags']
-        
-        
-        if todo_flags['init']:
-            
-            
-            # Let's start from scratch
-            
-            if os.path.exists(DataDictFile): os.system('rm %s' % DataDictFile)
-            if os.path.exists(reportobjFile): os.system('rm %s' % reportobjFile)
-            
-            os.system('rm -r %s/*' % inputs['resultspath'])
-            
-        
-            # Initialising Report Object
-        
-            if todo_flags['report']:
-                reportobj = Report(TestName=taskname)
-            else:
-                reportobj = None
-        
-            # META-DATA WORK
-            
-            
-            # Filter Exposures that belong to the test
-        
-            #dd, isconsistent = Test.filterexposures(structure,explogf,datapath,OBSID_lims,
-            #                             elvis)
-
-            explog, checkreport = Test.filterexposures(structure,explogf,datapath,OBSID_lims,
-                                         elvis)
-            
-    
-            if self.log is not None:
-                self.log.info('%s acquisition consistent with expectations: %s' % (testkey,checkreport['checksout']))
-                if len(checkreport['failedcols'])>0:
-                    self.log.info('%s failed columns: %s' % (testkey,checkreport['failedcols']))
-                if len(checkreport['failedkeys'])>0:
-                    self.log.info('%s failed keys: %s' % (testkey,checkreport['failedkeys']))
-            
-            # Adding Time Axis            
-            
-            explog['time'] = np.array(map(vistime.get_dtobj,explog['date'])).copy()
-
-            
-            # Building DataDict 
-            
-            dd = pilib.DataDict_builder(explog,inputs,structure)
-            
-            
-            HKKeys = Test.HKKeys
-            
-            # Add HK information
-            dd = pilib.addHK(dd,HKKeys,elvis=elvis)
-            
-            
-            pilib.save_progress(dd,reportobj,DataDictFile,reportobjFile)
-            
-        else:
-            
-            dd, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
-        
-        
-        
-        # DATA-WORK and ANALYSIS        
-        
-        for subtask in subtasks:
-            
-            subtaskname, subtaskfunc = subtask
-            
-            if self.log is not None:
-                self.log.info('%s: %s' % (subtaskname,subtaskfunc.__module__))
-            
-            if todo_flags[subtaskname]:
-                
-                tini = datetime.datetime.now()
-                dd,reportobj = subtaskfunc(dd,reportobj,inputs,self.log)
-                tend = datetime.datetime.now()
-                dtm = ((tend-tini).seconds)/60.
-                if self.log is not None: 
-                    self.log.info('%.1f minutes in running Sub-task: %s' % (dtm,subtaskname))
-                
-                pilib.save_progress(dd,reportobj,DataDictFile,reportobjFile)
-            else:
-                dd, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
-        
-
-        # Write automatic Report of Results
-
-        if todo_flags['report']:
-            reportobj.doreport(reportroot,cleanafter)
-            outfiles = reportobj.writeto(reportroot,cleanafter)
-            
-            for outfile in outfiles:
-                os.system('mv %s %s/' % (outfile,resultspath))
-        
-
-        pilib.save_progress(dd,reportobj,DataDictFile,reportobjFile)
-        
-        if self.log is not None:
-            self.log.info('Finished %s' % taskname)
+        Test = self.Test_dict[taskname](inputs,self.log)
+        Test()
         
         
 

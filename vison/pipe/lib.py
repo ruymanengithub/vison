@@ -188,43 +188,6 @@ def DataDict_builder(explog,inputs,structure):
     return dd
 
 
-#def oldaddHK(dd,HKKeys,elvis='5.8.X'):
-#    """Adds HK information to a DataDict object."""
-#    
-#    
-#    if len(HKKeys) == 0:
-#        return dd
-#    
-#    for ixCCD in [1,2,3]:
-#        CCDkey = 'CCD%i' % ixCCD
-#        
-#        if CCDkey in dd:
-#            ObsIDs = dd[CCDkey]['ObsID'].copy()            
-#            datapaths = dd[CCDkey]['datapath'].copy()
-#            
-#            HKlist = []
-#            
-#            for iOBS,ObsID in enumerate(ObsIDs):
-#                tmp = os.path.join(datapaths[iOBS],'HK_%s_*_ROE1.txt' % ObsID)
-#                
-#                HKs = glob(tmp)
-#                
-#                if len(HKs) == 1:
-#                    HKlist.append(HKs[0])
-#                elif len(HKs)>1:
-#                    print 'More than one HK file for ObsID %i' % ObsID
-#                    print HKs
-#                elif len(HKs) ==0:
-#                    print 'HK file for ObsID %i not found' % ObsID
-#            
-#
-#            obsids, dtobjs, tdeltasec, readHKKeys, HKdata = HKtools.parseHKfiles(HKlist,elvis=elvis)
-#            
-#            for HKKey in HKKeys:
-#                ixkey = readHKKeys.index(HKKey)
-#                dd[CCDkey][HKKey] = HKdata[:,0,ixkey]
-#    
-#    return dd
 
 
 def addHK(dd,HKKeys,elvis='5.8.X'):
@@ -291,16 +254,16 @@ def coarsefindTestinExpLog(explog,testkey,Nframes):
     return wasacquired
 
 
-def save_progress(DataDict,reportobj,DataDictFile,reportobjFile):        
-    files.cPickleDumpDictionary(DataDict,DataDictFile)
-    files.cPickleDump(reportobj,reportobjFile)
-
-
-def recover_progress(DataDictFile,reportobjFile):
-    DataDict = files.cPickleRead(DataDictFile)
-    reportobj = files.cPickleRead(reportobjFile)
-    return DataDict,reportobj
-
+#def save_progress(DataDict,reportobj,DataDictFile,reportobjFile):        
+#    files.cPickleDumpDictionary(DataDict,DataDictFile)
+#    files.cPickleDump(reportobj,reportobjFile)
+#
+#
+#def recover_progress(DataDictFile,reportobjFile):
+#    DataDict = files.cPickleRead(DataDictFile)
+#    reportobj = files.cPickleRead(reportobjFile)
+#    return DataDict,reportobj
+#
 
 
 
@@ -323,19 +286,20 @@ def filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,waved
                                datapath=datapath)
     Ncols = structure['Ncols']
     
+    testkey = structure['col1']['test']
+    
     if not colorblind:
     
         Filters = [structure['col%i' % i]['wave'] for i in range(1,Ncols+1)]
         Filter = Filters[0]
         assert np.all(np.array(Filters) == Filter)
-        
-        testkey = structure['col1']['test']
-        
+                
         selbool = (explog['test'] == testkey) & \
             (explog['ObsID'] >= OBSID_lims[0]) & \
             (explog['ObsID'] <= OBSID_lims[1]) & \
             (explog['wave'] == Filter) # TESTS
     else:
+        
         selbool = (explog['test']==testkey) & \
         (explog['ObsID'] >= OBSID_lims[0]) & \
         (explog['ObsID'] <= OBSID_lims[1]) 
