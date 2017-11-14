@@ -35,6 +35,8 @@ from vison.datamodel import ccd
 from vison.datamodel import generator
 from vison.image import calibration
 from vison.datamodel import core
+import B01aux
+from vison.support import files
 
 
 #from vison.support.report import Report
@@ -230,6 +232,7 @@ def check_data(dd,report,inputs,log=None):
     # Do some Plots
     
     # offsets vs. time
+    # 
     # TO-DO: decide:
     #    where to create fig-generator
     #    where to create fig-name
@@ -238,8 +241,12 @@ def check_data(dd,report,inputs,log=None):
     #
     # dd > data, dd < figname, report < fig
     
+    offsetfig = os.path.join(inputs['subpaths']['fig'],'BIAS01_offset_vs_time.png')
     
-    
+    B01aux.plot_offset_vs_time(dd,report,figname=offsetfig)
+    offseteps = files.convert_fig_to_eps(offsetfig)
+    report.add_Figure(offseteps,texfraction=0.8,caption='caption',
+                      label='B01offsets')
     
     # std vs. time
     
@@ -415,6 +422,7 @@ def feeder(inputs,elvis='6.3.0'):
     inputs['structure'] = scriptdict
     inputs['subtasks'] = subtasks
     
+    inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
     
     return inputs
 

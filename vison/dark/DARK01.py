@@ -112,7 +112,7 @@ def prep_data(DataDict,report,inputs,log=None):
         f.e. ObsID:
             f.e.CCD:
                 f.e.Q:
-                    subtract offset: save to FITS, update filename
+                    subtract offset: save to pick, update filename
 
     
     """
@@ -162,8 +162,8 @@ def meta_analysis(DataDict,report,inputs,log=None):
                 measure average profile along rows
                 measure average profile along cols
         
-        plot average profiles of Master Bias f. each Q
-        show Master Dark (image), include in report
+        plot average profiles of Master Bias f. each CCD,Q
+        show Master Dark (images), include in report
         report stats of defects, include in report
         save name of MasterDark to DataDict, report
         save name of Defects in Darkness Mask to DD, report

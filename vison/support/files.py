@@ -47,6 +47,14 @@ def cPickleDump(data, output):
     cPickle.dump(data, out)
     out.close()
 
+def convert_fig_to_eps(figname):
+    """Converts a figure to .eps. Returns new file name."""
+    root = os.path.splitext(figname)
+    epsname = '%s.eps' % root
+    os.system('convert %s %s' % (figname,epsname))
+    return epsname
+
+
 
 def test():
     
@@ -56,6 +64,8 @@ def test():
     cPickleDump(data,picklef)
     data = cPickleRead(picklef)
     stop()
+    
+    
     
 if __name__ == '__main__':
     test()
