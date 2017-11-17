@@ -84,15 +84,16 @@ class Container(Content,object):
                 lastCont = self.Contents[-1]
                 if not isinstance(lastCont,Section):
                     self.Contents.append(item)
-                if isinstance(item,Section):
-                    lastlevel = lastCont.level
-                    itemlevel = item.level
-                    if itemlevel > lastlevel:
-                        self.Contents[-1].add_to_Contents(item)
-                    else:
-                        self.Contents.append(item)
                 else:
-                    self.Contents[-1].add_to_Contents(item)
+                    if isinstance(item,Section):
+                        lastlevel = lastCont.level
+                        itemlevel = item.level
+                        if itemlevel > lastlevel:
+                            self.Contents[-1].add_to_Contents(item)
+                        else:
+                            self.Contents.append(item)
+                    else:
+                        self.Contents[-1].add_to_Contents(item)
             else:
                 self.Contents.append(item)
         except AttributeError:
@@ -380,6 +381,7 @@ class Report(Container):
         
         execline1 = 'latex %s.tex' % fileroot
         os.system(execline1)
+        os.system(execline1) # do it twice to get references right!
         execline2 = 'dvipdf %s.dvi %s.pdf' % tuple([fileroot]*2)
         os.system(execline2)
         os.system(execline2) # twice to get all references
