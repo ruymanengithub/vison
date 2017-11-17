@@ -38,6 +38,7 @@ from vison.datamodel import core
 import B01aux
 from vison.support import files
 from vison.pipe.task import Task
+from vison.image import performance
 
 #from vison.support.report import Report
 
@@ -74,6 +75,9 @@ class BIAS01(Task):
         self.name = 'BIAS01'
         self.HKKeys = HKKeys
         self.figdict = B01aux.B01figs
+        
+        self.performance = dict()
+        self.performance.update(performance.perf_rdout)
         
 
     def build_scriptdict(self,N,diffvalues=dict(),elvis='6.3.0'):
@@ -144,25 +148,28 @@ class BIAS01(Task):
           update flags as needed
         
         """
-    
-        if self.report is not None: 
-            self.report.add_Section(keyword='check_data',Title='Data Validation',level=0)
-    
-        bypass = True # TESTS
         
         # ALIASES
         dd = self.dd
         report = self.report
         inputs = self.inputs
+    
+        if report is not None: report.add_Section(keyword='check_data',Title='Data Validation',level=0)
+        
+        bypass = True # TESTS
         
         # CHECK AND CROSS-CHECK HK
         
-        #print 'HK-perf' # TESTS
-        report_HK_perf = HKtools.check_HK_vs_command(HKKeys,dd,limits='P',elvis=self.elvis)
-        #print 'HK-safe' # TESTS
-        report_HK_safe = HKtools.check_HK_abs(HKKeys,dd,limits='S',elvis=self.elvis)
+        if report is not None: report.add_Section(keyword='check_HK',Title='HK',level=1)
         
-    
+        report_HK_perf = HKtools.check_HK_vs_command(HKKeys,dd,limits='P',elvis=self.elvis)         
+        msg_HK_perf = self.add_checkHK_report(report_HK_perf,tag='Performance')
+        
+
+        report_HK_safe = HKtools.check_HK_abs(HKKeys,dd,limits='S',elvis=self.elvis)
+        msg_HK_safe = self.add_checkHK_report(report_HK_safe,tag='Safe')
+        
+        
         # Initialize new columns
     
         Xindices = copy.deepcopy(dd.indices)
@@ -213,7 +220,7 @@ class BIAS01(Task):
         
         std_lims = [0.5,2.] # TESTS, should be in common limits file
         
-        stop()
+        if report is not None: report.add_Section(keyword='check_ronoffset',Title='Offsets and RON',level=1)
         
         # absolute value of offsets
         
@@ -245,7 +252,7 @@ class BIAS01(Task):
                           (dd.mx['std_%s' % reg][:] >= std_lims[1]))
             compliance_std[reg] = np.any(test,axis=(1,2)).sum()
         
-        stop()
+        if report is not None: report.add_Section(keyword='check_plots',Title='Plots',level=1)
         
         # Plot offsets vs. time
         
@@ -261,9 +268,9 @@ class BIAS01(Task):
         
         for CCD in CCDs:
             pmeta = dict(CCD=CCD,path = inputs['subpaths']['figs'])
-            try:
-                self.doPlot('B01stds_CCD%i' % CCD,**pmeta)
-            except: pass
+            #try:
+            self.doPlot('B01stds_CCD%i' % CCD,**pmeta)
+            #except: pass
             self.addFigure2Report('B01stds_CCD%i' % CCD)
         
         

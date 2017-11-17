@@ -29,6 +29,8 @@ isthere = os.path.exists
 class Task(object):
     """ """
     
+    from task_lib import add_checkHK_report
+    
     def __init__(self,inputs,log=None):
         """ """
         

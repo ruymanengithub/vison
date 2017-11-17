@@ -28,7 +28,7 @@ class plB01offsets(Fig):
         self.CCD = 0
         self.figname = 'BIAS01_offset_vs_time_CCD%i.png' 
         self.caption = 'CCD%i: Some Caption' 
-        self.texfraction = 0.8
+        self.texfraction = 0.7
         self.data = dict()
     
     def configure(self,**kwargs):
@@ -73,6 +73,39 @@ class plB01offsets(Fig):
         plotobj = CCD2DPlot(self.data,meta=meta)
         plotobj.render(self.figname)
 
+class plB01stds(plB01offsets):
+        
+    def __init__(self):
+    
+        super(plB01stds,self).__init__()
+        
+        self.CCD = 0
+        self.figname = 'BIAS01_std_vs_time_CCD%i.png' 
+        self.caption = 'CCD%i: Some Caption' 
+        self.texfraction = 0.7
+        self.data = dict()
+    
+    def build_data(self,parent):
+        """ """
+        
+        dd = parent.dd
+        
+        indices = parent.dd.indices
+        CCDs = indices[indices.names.index('CCD')].vals
+        Quads = indices[indices.names.index('Quad')].vals
+        
+        data = dict()
+        for Q in ['E','F','G','H']:
+            ixQ = Quads.index(Q)
+            ixCCD = CCDs.index(self.CCD)
+            data[Q] = dict()
+            data[Q]['x'] = dict()
+            data[Q]['y'] = dict()
+            for sec in ['pre','img','ove']:
+                data[Q]['x'][sec] = dd.mx['time'][:,ixCCD].copy()
+                data[Q]['y'][sec] = dd.mx['std_%s' % sec][:,ixCCD,ixQ].copy()
+        self.data = data
 
 B01figs = dict()
 for CCD in [1,2,3]: B01figs['B01offsets_CCD%i' % CCD] = plB01offsets
+for CCD in [1,2,3]: B01figs['B01stds_CCD%i' % CCD] = plB01stds
