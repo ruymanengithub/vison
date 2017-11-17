@@ -213,6 +213,8 @@ class BIAS01(Task):
         
         std_lims = [0.5,2.] # TESTS, should be in common limits file
         
+        stop()
+        
         # absolute value of offsets
         
         compliance_offsets = dict()
@@ -232,7 +234,7 @@ class BIAS01(Task):
             
             testBool = (test <= offset_diffs[reg][0]) | \
                    (test >= offset_diffs[reg][1])
-            xcheck_offsets['img'] = np.any(testBool,axis=(1,2)).sum()
+            xcheck_offsets[reg] = np.any(testBool,axis=(1,2)).sum()
         
         # absolute value of std
             
@@ -243,22 +245,27 @@ class BIAS01(Task):
                           (dd.mx['std_%s' % reg][:] >= std_lims[1]))
             compliance_std[reg] = np.any(test,axis=(1,2)).sum()
         
-        # Do some Plots
+        stop()
+        
+        # Plot offsets vs. time
         
         for CCD in CCDs:
-            offsetfig = os.path.join(inputs['subpaths']['figs'],
-                    self.figdict['B01offsets_CCD%i' % CCD].figname)
-            try: self.doPlot('B01offsets_CCD%i' % CCD,figname= '') # figname=offsetfig)
+            pmeta = dict(CCD=CCD,path = inputs['subpaths']['figs'])
+            try:
+                self.doPlot('B01offsets_CCD%i' % CCD,**pmeta)
             except: pass
-            
-           # self.addFigure2Report('B01offsets_CCD%i' % CCD)
+            self.addFigure2Report('B01offsets_CCD%i' % CCD)
         
         
         # std vs. time
         
-        #stdfig = os.path.join(inputs['subpaths']['figs'],'BIAS01_std_vs_time.png')
-        #self.doplot('B01std',figname=stdfig)
-        #self.addFigure2Report('B01std')
+        for CCD in CCDs:
+            pmeta = dict(CCD=CCD,path = inputs['subpaths']['figs'])
+            try:
+                self.doPlot('B01stds_CCD%i' % CCD,**pmeta)
+            except: pass
+            self.addFigure2Report('B01stds_CCD%i' % CCD)
+        
         
         # Update Report, raise flags, fill-in log
     

@@ -38,8 +38,13 @@ class Fig(object):
         self.filename = filename
         self.texfraction = 1.0
         self.caption = ''
+        
+    def configure(self,**kwargs):
+        """ """
+        raise NotImplementedError('Subclass implements abstract method')
+        
     
-    def plot(self,*args,**kwargs):
+    def plot(self,figname=''):
         """ """
         raise NotImplementedError('Subclass implements abstract method')
     

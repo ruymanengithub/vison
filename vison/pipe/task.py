@@ -36,8 +36,7 @@ class Task(object):
         self.log = log
         self.name = ''
         self.HKKeys = []
-        
-        
+                
     def __call__(self):
         """Generic test master function."""
         
@@ -67,6 +66,7 @@ class Task(object):
         
         self.inputs['subpaths'] = _paths
         
+        
         structure = self.inputs['structure']
             
         try: reportroot = self.inputs['reportroot']
@@ -86,7 +86,11 @@ class Task(object):
             if os.path.exists(DataDictFile): os.system('rm %s' % DataDictFile)
             if os.path.exists(reportobjFile): os.system('rm %s' % reportobjFile)
             
-            os.system('rm -r %s/*' % self.inputs['resultspath'])
+            os.system('rm %s/*' % self.inputs['resultspath'])
+            if 'subpaths' in self.inputs:
+                for _pathkey in self.inputs['subpaths'].keys():
+                    subpath = self.inputs['subpaths'][_pathkey]
+                    os.system('rm %s/*' % subpath)
             
         
             # Initialising Report Object
@@ -205,6 +209,10 @@ class Task(object):
         
     def doPlot(self,figkey,**kwargs):
         """ """
-        figobj = self.figdict[figkey]
-        figobj.plot(self,**kwargs)
+        figobj = self.figdict[figkey]()
+        figobj.configure(**kwargs)
+        figobj.build_data(self)
+        figobj.plot()
+        self.figdict[figkey] = figobj
+         
         
