@@ -252,6 +252,8 @@ class BIAS01(Task):
                           (dd.mx['std_%s' % reg][:] >= std_lims[1]))
             compliance_std[reg] = np.any(test,axis=(1,2)).sum()
         
+        
+        
         if report is not None: report.add_Section(keyword='check_plots',Title='Plots',level=1)
         
         # Plot offsets vs. time
