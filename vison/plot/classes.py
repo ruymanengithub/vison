@@ -156,7 +156,103 @@ class CCD2DPlot(BasicPlot):
         plt.subplots_adjust(top=0.90)
         if self.meta['doLegend']:
             plt.subplots_adjust(right=0.85)
+
+class Beam2DPlot(BasicPlot):
+    
+    
+    def __init__(self,data,**kwargs):
         
+        super(Beam2DPlot,self).__init__(**kwargs)
+        
+        defaults = dict(suptitle='',ccdtitles=dict(CCD1='CCD1',CCD2='CCD2',CCD3='CCD3'),
+                        doLegend=False,
+                        doNiceXDate=False)
+        
+        if 'meta' in kwargs: meta = kwargs['meta']
+        else: meta = dict()
+        
+        self.figsize=(12,8)
+        self.Quads = ['E','F','H','G']
+        self.CCDs = [1,2,3]
+        self.data = data
+        self.meta = dict()
+        self.meta.update(defaults)
+        self.meta.update(meta)
+    
+        self.handles = []
+        self.labels = []
+    
+    
+    def axmethod(self):
+        """ 
+        
+        TODO:
+            3 CCDs with 4 Quadrants each
+            share x and y axes within CCDs, but with gaps between CCDs
+            allow for optional legend
+            allow for optional "nice" date x-axis
+        
+        
+        """
+        qtitles = self.meta['qtitles']
+        
+        self.axs = []
+        
+        
+        
+        for iQ, Q in enumerate(self.Quads):
+            
+            self.axs.append(self.fig.add_subplot(2,2,iQ+1))
+            
+            try: 
+                xkeys = self.data[Q]['x'].keys()
+            except AttributeError:
+                xkeys = None
+                
+            if xkeys is not None:
+                ykeys = self.data[Q]['y'].keys()
+                isconsistent = np.all([xkeys[i] == ykeys[i] for i in range(len(xkeys))])
+                assert (len(xkeys) == len(ykeys)) and isconsistent
+                
+                for key in xkeys:
+                    xarr = self.data[Q]['x'][key]
+                    yarr = np.ones_like(self.data[Q]['y'][key])
+                    
+                    handle = self.axs[-1].plot(xarr,yarr,label=key)
+                    if iQ==0:
+                        self.handles += handle
+                        self.labels.append(key)
+            else:
+                xarr = self.data[Q]['x']
+                yarr = self.data[Q]['y']
+                self.axs[-1].plot(xarr,yarr)
+            
+            self.axs[-1].set_title(qtitles[Q])
+        
+    def plt_trimmer(self):
+        
+        if self.meta['doLegend']:
+            plt.figlegend(self.handles,self.labels,loc='center right')
+        
+        
+        if self.meta['doNiceXDate']:
+            
+            plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))   
+            self.fig.autofmt_xdate()
+        
+        
+        plt.suptitle(self.meta['suptitle'])
+        plt.tight_layout()
+        plt.subplots_adjust(top=0.90)
+        if self.meta['doLegend']:
+            plt.subplots_adjust(right=0.85)
+
+
+
+
+
+
+
     
 def test():
     
