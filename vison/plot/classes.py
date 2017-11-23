@@ -16,6 +16,7 @@ import numpy as np
 from collections import OrderedDict
 from vison.datamodel.HKtools import format_date
 import copy
+import itertools
 
 from matplotlib import pyplot as plt
 import matplotlib
@@ -30,6 +31,12 @@ matplotlib.rcParams['image.interpolation'] = 'none'
 import matplotlib.cm as cm
 from mpl_toolkits.mplot3d import Axes3D
 # END IMPORT
+
+
+def _squiggle_xy(a, b, c, d, i=np.arange(0.0, 2*np.pi, 0.05)):
+    """Dummy function used for Tests only."""
+    return np.sin(i*a)*np.cos(i*b), np.sin(i*c)*np.cos(i*d)
+
 
 
 class Fig(object):
@@ -184,6 +191,85 @@ class Beam2DPlot(BasicPlot):
         self.labels = []
     
     
+#    def demoted_axmethod(self):
+#        """ 
+#        
+#        TODO:
+#            3 CCDs with 4 Quadrants each
+#            share x and y axes within CCDs, but with gaps between CCDs
+#            allow for optional legend
+#            allow for optional "nice" date x-axis
+#        
+#        
+#        """
+#        #qtitles = self.meta['qtitles']
+#        
+#        self.axs = dict()
+#        
+#        gss = dict()
+#        
+#        gss['CCD1'] = plt.GridSpec(2,6,hspace=0,wspace=0,left=0.01,right=0.30,top=0.85,bottom=0.15)
+#        gss['CCD2']  = plt.GridSpec(2,6,hspace=0,wspace=0,left=0.31,right=0.6,top=0.85,bottom=0.15)
+#        gss['CCD3']  = plt.GridSpec(2,6,hspace=0,wspace=0,left=0.61,right=0.90,top=0.85,bottom=0.15)
+#        
+#        vQs = (['E','F'],['G','H'])
+#        hQs = (['E','H'],['F','G'])
+#        
+#        for iCCD,CCD in enumerate(self.CCDs):
+#            
+#            CCDkey = 'CCD%i' % CCD
+#            
+#            self.axs[CCDkey] = dict()
+#            
+#            
+#            for iQ, Q in enumerate(self.Quads):
+#                
+#                ip = [ix for ix in range(2) if Q in vQs[ix]][0]
+#                jp = [ix for ix in range(2) if Q in hQs[ix]][0]
+#                
+#                if (Q == 'E') and (CCD == 1):
+#                    shareax = None
+#                else:
+#                    shareax = self.axs['CCD1']['E']
+#                    
+#                
+#                self.axs[CCDkey][Q] = self.fig.add_subplot(gss[CCDkey][ip,jp],sharex=shareax,sharey=shareax)
+#                
+#                try: 
+#                    xkeys = self.data[CCDkey][Q]['x'].keys()
+#                except AttributeError:
+#                    xkeys = None
+#                    
+#                if xkeys is not None:
+#                    ykeys = self.data[CCDkey][Q]['y'].keys()
+#                    isconsistent = np.all([xkeys[i] == ykeys[i] for i in range(len(xkeys))])
+#                    assert (len(xkeys) == len(ykeys)) and isconsistent
+#                    
+#                    for key in xkeys:
+#                        xarr = self.data[CCDkey][Q]['x'][key]
+#                        yarr = np.ones_like(self.data[CCDkey][Q]['y'][key])
+#                        
+#                        handle = self.axs[CCDkey][Q].plot(xarr,yarr,label=key)
+#                        if Q=='E' and CCD==1:
+#                            self.handles += handle
+#                            self.labels.append(key)
+#                else:
+#                    xarr = self.data[CCDkey][Q]['x']
+#                    yarr = self.data[CCDkey][Q]['y']
+#                    self.axs[CCDkey][Q].plot(xarr,yarr)
+#                
+#                if Q in ['E','H']:
+#                    self.axs[CCDkey][Q].text(0.05,0.9,Q,horizontalalignment='left',
+#                            transform=self.axs[CCDkey][Q].transAxes)
+#                else:
+#                    self.axs[CCDkey][Q].text(0.90,0.9,Q,horizontalalignment='left',
+#                            transform=self.axs[CCDkey][Q].transAxes)
+#                
+#                if Q == 'E': self.axs[CCDkey][Q].set_title(CCDkey,x=1)
+#                
+#                
+#                #self.axs[-1].set_title(qtitles[Q])
+
     def axmethod(self):
         """ 
         
@@ -196,60 +282,61 @@ class Beam2DPlot(BasicPlot):
         
         """
         #qtitles = self.meta['qtitles']
+        plt.close('all')
+        self.fig = None
+        
+        fig, axsarr = plt.subplots(2,6,sharex=True,sharey=True,figsize=self.figsize)
+        self.fig = fig
         
         self.axs = dict()
         
-        gss = dict()
+        # initialisation of self.axs
         
-        gss['CCD1'] = plt.GridSpec(2,6,hspace=0,wspace=0,left=0.01,right=0.30,top=0.85,bottom=0.15)
-        gss['CCD2']  = plt.GridSpec(2,6,hspace=0,wspace=0,left=0.31,right=0.6,top=0.85,bottom=0.15)
-        gss['CCD3']  = plt.GridSpec(2,6,hspace=0,wspace=0,left=0.61,right=0.90,top=0.85,bottom=0.15)
-        
-        vQs = (['E','F'],['G','H'])
-        hQs = (['E','H'],['F','G'])
-        
-        for iCCD,CCD in enumerate(self.CCDs):
-            
+        for CCD in self.CCDs:
             CCDkey = 'CCD%i' % CCD
-            
             self.axs[CCDkey] = dict()
+            for Q in self.Quads:
+                self.axs[CCDkey][Q] = None
+        
+        self.axs['CCD1']['E'] = axsarr[0,0]
+        
+        
+        plotlist = [item for item in itertools.product(self.CCDs,['E','F'])] +\
+                   [item for item in itertools.product(self.CCDs,['H','G'])]
+                   
+        
+        for k in range(1,len(plotlist)+1):
             
+            CCD = plotlist[k-1][0]
+            CCDkey = 'CCD%i' % CCD
+            Q = plotlist[k-1][1]
             
-            for iQ, Q in enumerate(self.Quads):
+            if k>1:    
+                #self.axs[CCDkey][Q] = self.fig.add_subplot(2,6,k,sharex=self.axs['CCD1']['E'],
+                #        sharey=self.axs['CCD1']['E'])
+                self.axs[CCDkey][Q] = axsarr.flatten()[k-1]
                 
-                ip = [ix for ix in range(2) if Q in vQs[ix]][0]
-                jp = [ix for ix in range(2) if Q in hQs[ix]][0]
+            try: 
+                xkeys = self.data[CCDkey][Q]['x'].keys()
+            except AttributeError:
+                xkeys = None
                 
-                if (Q == 'E') and (CCD == 1):
-                    shareax = None
-                else:
-                    shareax = self.axs['CCD1']['E']
-                    
+            if xkeys is not None:
+                ykeys = self.data[CCDkey][Q]['y'].keys()
+                isconsistent = np.all([xkeys[i] == ykeys[i] for i in range(len(xkeys))])
+                assert (len(xkeys) == len(ykeys)) and isconsistent
                 
-                self.axs[CCDkey][Q] = self.fig.add_subplot(gss[CCDkey][ip,jp],sharex=shareax,sharey=shareax)
-                
-                try: 
-                    xkeys = self.data[CCDkey][Q]['x'].keys()
-                except AttributeError:
-                    xkeys = None
-                    
-                if xkeys is not None:
-                    ykeys = self.data[CCDkey][Q]['y'].keys()
-                    isconsistent = np.all([xkeys[i] == ykeys[i] for i in range(len(xkeys))])
-                    assert (len(xkeys) == len(ykeys)) and isconsistent
-                    
-                    for key in xkeys:
-                        xarr = self.data[CCDkey][Q]['x'][key]
-                        yarr = np.ones_like(self.data[CCDkey][Q]['y'][key])
-                        
-                        handle = self.axs[CCDkey][Q].plot(xarr,yarr,label=key)
-                        if Q=='E' and CCD==1:
-                            self.handles += handle
-                            self.labels.append(key)
-                else:
-                    xarr = self.data[CCDkey][Q]['x']
-                    yarr = self.data[CCDkey][Q]['y']
-                    self.axs[CCDkey][Q].plot(xarr,yarr)
+                for key in xkeys:
+                    xarr = self.data[CCDkey][Q]['x'][key]
+                    yarr = self.data[CCDkey][Q]['y'][key]
+                    handle = self.axs[CCDkey][Q].plot(xarr,yarr,label=key)
+                    if Q=='E' and CCD==1:
+                        self.handles += handle
+                        self.labels.append(key)
+            else:
+                xarr = self.data[CCDkey][Q]['x']
+                yarr = self.data[CCDkey][Q]['y']
+                self.axs[CCDkey][Q].plot(xarr,yarr)
                 
                 if Q in ['E','H']:
                     self.axs[CCDkey][Q].text(0.05,0.9,Q,horizontalalignment='left',
@@ -259,9 +346,19 @@ class Beam2DPlot(BasicPlot):
                             transform=self.axs[CCDkey][Q].transAxes)
                 
                 if Q == 'E': self.axs[CCDkey][Q].set_title(CCDkey,x=1)
-                
-                
-                #self.axs[-1].set_title(qtitles[Q])
+            
+            
+            if Q in ['E','H']:
+                self.axs[CCDkey][Q].text(0.05,0.9,Q,horizontalalignment='left',
+                        transform=self.axs[CCDkey][Q].transAxes)
+            elif Q in ['F','G']:
+                self.axs[CCDkey][Q].text(0.9,0.9,Q,horizontalalignment='right',
+                        transform=self.axs[CCDkey][Q].transAxes)
+            
+            if Q == 'E':
+                self.axs[CCDkey][Q].set_title(CCDkey,x=1)
+            
+            
         
     def plt_trimmer(self):
         
@@ -269,8 +366,12 @@ class Beam2DPlot(BasicPlot):
         for CCD in self.CCDs:
             for Q in ['E','F']:
                 plt.setp(self.axs['CCD%i' % CCD][Q].get_xticklabels(),visible=False)
-            for Q in ['F','G']:
-                plt.setp(self.axs['CCD%i' % CCD][Q].get_yticklabels(),visible=False)
+            if CCD != 1:
+                for Q in self.Quads: 
+                    plt.setp(self.axs['CCD%i' % CCD][Q].get_yticklabels(),visible=False)
+            else:
+                for Q in ['F','G']:
+                    plt.setp(self.axs['CCD%i' % CCD][Q].get_yticklabels(),visible=False)
         
         if self.meta['doLegend']:
             plt.figlegend(self.handles,self.labels,loc='center right')
@@ -284,33 +385,26 @@ class Beam2DPlot(BasicPlot):
         
         plt.locator_params(axis='y',nticks=6,prune='both')
         plt.locator_params(axis='x',nticks=4,prune='both')
+
+        plt.subplots_adjust(hspace=0.0)
+        plt.subplots_adjust(wspace=0.0)
         
         plt.suptitle(self.meta['suptitle'])
         #plt.tight_layout()
-        #plt.subplots_adjust(top=0.90)
-        #if self.meta['doLegend']:
-        #    plt.subplots_adjust(right=0.85)
+        plt.subplots_adjust(top=0.90)
+        if self.meta['doLegend']:
+            plt.subplots_adjust(right=0.85)
 
 
     
 def testBeam2DPlot():
     
-    x = np.arange(10,dtype='float32')
-    yE = x*2.
-    yF = x*3.
-    yG = x*4.
-    yH = x*5.
-    
-    xdict = OrderedDict(foo=x,bar=x)
-    yEdict = OrderedDict(foo=yE,bar=yE+5.)
-    yFdict = OrderedDict(foo=yF,bar=yF+5.)
-    yGdict = OrderedDict(foo=yG,bar=yG+5.)
-    yHdict = OrderedDict(foo=yH,bar=yH+5.)
-    
-    ccddict = dict(E=dict(x=xdict,y=yEdict),
-                F=dict(x=xdict,y=yFdict),
-                G=dict(x=xdict,y=yGdict),
-                H=dict(x=xdict,y=yHdict))
+    ccddict = dict()
+    for iQ,Q in enumerate(['E','F','G','H']):
+        _x,_y = _squiggle_xy(iQ+1,iQ+1,iQ+2,iQ+2)
+        xdict = OrderedDict(foo=_x,bar=_x*2.)
+        ydict = OrderedDict(foo=_y,bar=_y*2.)
+        ccddict[Q] = dict(x=copy.deepcopy(xdict),y=copy.deepcopy(ydict))
     
     data = dict(CCD1=copy.deepcopy(ccddict),
                 CCD2=copy.deepcopy(ccddict),
