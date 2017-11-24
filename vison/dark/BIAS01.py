@@ -76,8 +76,7 @@ class BIAS01(Task):
         self.HKKeys = HKKeys
         self.figdict = B01aux.B01figs
         
-        self.performance = dict()
-        self.performance.update(performance.perf_rdout)
+        self.perflimits.update(performance.perf_rdout)
         
 
     def build_scriptdict(self,N,diffvalues=dict(),elvis='6.3.0'):
@@ -164,10 +163,11 @@ class BIAS01(Task):
         
         report_HK_perf = HKtools.check_HK_vs_command(HKKeys,dd,limits='P',elvis=self.elvis)         
         msg_HK_perf = self.add_checkHK_report(report_HK_perf,tag='Performance')
-        
-
+        if self.log is not None: self.log.info(msg_HK_perf)
+                
         report_HK_safe = HKtools.check_HK_abs(HKKeys,dd,limits='S',elvis=self.elvis)
         msg_HK_safe = self.add_checkHK_report(report_HK_safe,tag='Safe')
+        if self.log is not None: self.log.info(msg_HK_safe)
         
         
         # Initialize new columns
@@ -214,31 +214,33 @@ class BIAS01(Task):
                             dd.mx['std_%s' % reg][iObs,jCCD,kQ] = stats[1]
                     
         # Assess metrics are within allocated boundaries
-    
-        offset_lims = [1000.,3500.] # TESTS, should be in common limits file
-        offset_diffs = dict(img=[-1.,+5.],ove=[-1.,+6.]) # TESTS, should be in common limits file
         
-        std_lims = [0.5,2.] # TESTS, should be in common limits file
+        
+        #std_lims = [0.5,2.] # TESTS, should be in common limits file
         
         if report is not None: report.add_Section(keyword='check_ronoffset',Title='Offsets and RON',level=1)
         
         # absolute value of offsets
         
         compliance_offsets = dict()
-        for reg in ['pre','img','ove']:
-            
-            test = ((dd.mx['offset_%s' % reg][:] <= offset_lims[0]) |\
-                          (dd.mx['offset_%s' % reg][:] >= offset_lims[1]))
-            compliance_offsets[reg] = np.any(test,axis=(1,2)).sum()
+        nom_offsets = self.perflims['offsets']
+        offset_margins = self.perflims['offsets_margins']
+        for CCD in CCDs:
+            CCDkey = 'CCD%i' % CCD
+            compliance_offsets[CCDkey] = dict()
+            _nom_offset = nom_offsets[CCDkey]
+            off_lims = _nom_offset+np.array(offset_margins)
+            for reg in ['pre','img','ove']:
+                test = ((dd.mx['offset_%s' % reg][:] <= off_lims[0]) |\
+                              (dd.mx['offset_%s' % reg][:] >= off_lims[1]))
+                compliance_offsets[CCDkey][reg] = np.any(test,axis=(1,2)).sum()
         
         
         # cross-check of offsets
             
         xcheck_offsets = dict()
         for reg in ['img','ove']:
-            
             test = dd.mx['offset_%s' % reg][:]-dd.mx['offset_pre'][:]
-            
             testBool = (test <= offset_diffs[reg][0]) | \
                    (test >= offset_diffs[reg][1])
             xcheck_offsets[reg] = np.any(testBool,axis=(1,2)).sum()
@@ -247,10 +249,10 @@ class BIAS01(Task):
             
         compliance_std = dict()
         for reg in ['pre']:
-            
             test = ((dd.mx['std_%s' % reg][:] <= std_lims[0]) |\
                           (dd.mx['std_%s' % reg][:] >= std_lims[1]))
             compliance_std[reg] = np.any(test,axis=(1,2)).sum()
+        
         
         
         
@@ -442,6 +444,9 @@ class BIAS01(Task):
         
         inputs['structure'] = scriptdict        
         inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
+        
+        if 'perflimits' in inputs:
+            self.perflimits.update(inputs['perflimits'])
         
         return inputs
 

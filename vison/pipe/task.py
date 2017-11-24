@@ -38,7 +38,8 @@ class Task(object):
         self.log = log
         self.name = ''
         self.HKKeys = []
-                
+        self.perflimits = dict()
+        
     def __call__(self):
         """Generic test master function."""
         

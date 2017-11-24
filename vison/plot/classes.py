@@ -158,10 +158,11 @@ class CCD2DPlot(BasicPlot):
             plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))   
             self.fig.autofmt_xdate()
         
-        
+        plt.subplots_adjust(top=0.80)
         plt.suptitle(self.meta['suptitle'])
+        
         plt.tight_layout()
-        plt.subplots_adjust(top=0.90)
+        
         if self.meta['doLegend']:
             plt.subplots_adjust(right=0.85)
 
@@ -191,85 +192,6 @@ class Beam2DPlot(BasicPlot):
         self.labels = []
     
     
-#    def demoted_axmethod(self):
-#        """ 
-#        
-#        TODO:
-#            3 CCDs with 4 Quadrants each
-#            share x and y axes within CCDs, but with gaps between CCDs
-#            allow for optional legend
-#            allow for optional "nice" date x-axis
-#        
-#        
-#        """
-#        #qtitles = self.meta['qtitles']
-#        
-#        self.axs = dict()
-#        
-#        gss = dict()
-#        
-#        gss['CCD1'] = plt.GridSpec(2,6,hspace=0,wspace=0,left=0.01,right=0.30,top=0.85,bottom=0.15)
-#        gss['CCD2']  = plt.GridSpec(2,6,hspace=0,wspace=0,left=0.31,right=0.6,top=0.85,bottom=0.15)
-#        gss['CCD3']  = plt.GridSpec(2,6,hspace=0,wspace=0,left=0.61,right=0.90,top=0.85,bottom=0.15)
-#        
-#        vQs = (['E','F'],['G','H'])
-#        hQs = (['E','H'],['F','G'])
-#        
-#        for iCCD,CCD in enumerate(self.CCDs):
-#            
-#            CCDkey = 'CCD%i' % CCD
-#            
-#            self.axs[CCDkey] = dict()
-#            
-#            
-#            for iQ, Q in enumerate(self.Quads):
-#                
-#                ip = [ix for ix in range(2) if Q in vQs[ix]][0]
-#                jp = [ix for ix in range(2) if Q in hQs[ix]][0]
-#                
-#                if (Q == 'E') and (CCD == 1):
-#                    shareax = None
-#                else:
-#                    shareax = self.axs['CCD1']['E']
-#                    
-#                
-#                self.axs[CCDkey][Q] = self.fig.add_subplot(gss[CCDkey][ip,jp],sharex=shareax,sharey=shareax)
-#                
-#                try: 
-#                    xkeys = self.data[CCDkey][Q]['x'].keys()
-#                except AttributeError:
-#                    xkeys = None
-#                    
-#                if xkeys is not None:
-#                    ykeys = self.data[CCDkey][Q]['y'].keys()
-#                    isconsistent = np.all([xkeys[i] == ykeys[i] for i in range(len(xkeys))])
-#                    assert (len(xkeys) == len(ykeys)) and isconsistent
-#                    
-#                    for key in xkeys:
-#                        xarr = self.data[CCDkey][Q]['x'][key]
-#                        yarr = np.ones_like(self.data[CCDkey][Q]['y'][key])
-#                        
-#                        handle = self.axs[CCDkey][Q].plot(xarr,yarr,label=key)
-#                        if Q=='E' and CCD==1:
-#                            self.handles += handle
-#                            self.labels.append(key)
-#                else:
-#                    xarr = self.data[CCDkey][Q]['x']
-#                    yarr = self.data[CCDkey][Q]['y']
-#                    self.axs[CCDkey][Q].plot(xarr,yarr)
-#                
-#                if Q in ['E','H']:
-#                    self.axs[CCDkey][Q].text(0.05,0.9,Q,horizontalalignment='left',
-#                            transform=self.axs[CCDkey][Q].transAxes)
-#                else:
-#                    self.axs[CCDkey][Q].text(0.90,0.9,Q,horizontalalignment='left',
-#                            transform=self.axs[CCDkey][Q].transAxes)
-#                
-#                if Q == 'E': self.axs[CCDkey][Q].set_title(CCDkey,x=1)
-#                
-#                
-#                #self.axs[-1].set_title(qtitles[Q])
-
     def axmethod(self):
         """ 
         
@@ -383,7 +305,7 @@ class Beam2DPlot(BasicPlot):
             self.fig.autofmt_xdate()
         
         
-        plt.locator_params(axis='y',nticks=6,prune='both')
+        plt.locator_params(axis='y',nticks=7,prune='both')
         plt.locator_params(axis='x',nticks=4,prune='both')
 
         plt.subplots_adjust(hspace=0.0)
@@ -391,7 +313,7 @@ class Beam2DPlot(BasicPlot):
         
         plt.suptitle(self.meta['suptitle'])
         #plt.tight_layout()
-        plt.subplots_adjust(top=0.90)
+        plt.subplots_adjust(top=0.85)
         if self.meta['doLegend']:
             plt.subplots_adjust(right=0.85)
 
