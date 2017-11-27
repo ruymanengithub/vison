@@ -219,9 +219,7 @@ class BIAS01(Task):
                     
         # Assess metrics are within allocated boundaries
         
-        
-        #std_lims = [0.5,2.] # TESTS, should be in common limits file
-        
+               
         if report is not None: report.add_Section(keyword='check_ronoffset',Title='Offsets and RON',level=1)
         
         # absolute value of offsets
@@ -290,6 +288,7 @@ class BIAS01(Task):
         if self.log is not None: self.addComplianceMatrix2Log(compliance_std,label='COMPLIANCE RON:')        
         if self.report is not None: self.addComplianceMatrix2Report(compliance_std,label='COMPLIANCE RON:')        
                 
+        #### PLOTS
         
         if report is not None: report.add_Section(keyword='check_plots',Title='Plots',level=1)
         
