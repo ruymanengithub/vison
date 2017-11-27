@@ -15,7 +15,8 @@ from pdb import set_trace as stop
 import os
 import numpy as np
 import datetime
-
+import string as st
+from collections import OrderedDict
 
 from vison.support.report import Report
 from vison.support import vistime
@@ -29,7 +30,7 @@ isthere = os.path.exists
 class Task(object):
     """ """
     
-    from task_lib import add_checkHK_report
+    from task_lib import check_HK
     
     def __init__(self,inputs,log=None):
         """ """
@@ -129,6 +130,7 @@ class Task(object):
             
             self.dd = pilib.DataDict_builder(explog,self.inputs,structure)
             
+            if not checkreport['checksout']:self.dd.flags.add('MISSDATA')
             
             # Add HK information
             self.addHK_2_dd()
@@ -218,4 +220,50 @@ class Task(object):
         figobj.plot()
         self.figdict[figkey] = figobj
          
+    def addComplianceMatrix2Log(self,complidict,label=''):
+        """ """
+        st_compl = complidict.__str__()
+        self.log.info('%s\n%s' % (label,st_compl))
+                
+    
+    def addComplianceMatrix2Report(self,complidict,label=''):
+        """ """
+        nicelabel = st.replace(label,' ','\ ')
+        st_compl = complidict.__str__()
+        nice_st_compl = st.replace(st_compl,'False','$\\textcolor{red}{\\bf{False}}$')
+        msgList = ['$\\bf{%s}$' % nicelabel,
+        '%s' % nice_st_compl,
+        '\\']
+        self.report.add_Text(msgList)
         
+    def IsComplianceMatrixOK(self,complidict):
+        """ """
+
+        def traverse_tree(dictionary,isOK):
+        
+            for key,value in dictionary.items():
+                #print 'Upper: %s' % key
+                if isinstance(value,(dict,OrderedDict)):
+                    #print key,value
+                    isOK = isOK and traverse_tree(value,isOK)
+                else:
+                    #print key,value
+                    isOK = isOK and value
+            return isOK
+        
+        isOK = traverse_tree(complidict,True)
+        
+        return isOK
+        
+        
+    def addFlagsToLog(self):
+        """ """
+        flagstxt = st.join(self.dd.flags.getFlagsOnList(),', ')
+        self.log.info('FLAGS ON}:\n%s' % flagstxt)
+    
+    def addFlagsToReport(self):
+        """ """
+        niceflagnames = [st.replace(item,'_','\_') for item in self.dd.flags.getFlagsOnList()]
+        flagstxt = st.join(niceflagnames,', ')
+        msgList = ['$\\bf{FLAGS\ ON}$: ',flagstxt]
+        self.report.add_Text(msgList)

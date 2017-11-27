@@ -21,6 +21,7 @@ import os
 import datetime
 import copy
 import string as st
+from collections import OrderedDict
 
 from vison.pipe import lib as pilib
 from vison.point import lib as polib
@@ -120,11 +121,7 @@ class BIAS01(Task):
         **TODO**: consider to raise an exception that
               would halt execution of task if 
               processing data could be just a waste of time.
-              
-        **TODO**: consider add a common binary "flags" variable as 
-              input/output. It could go in DataDict, and reported in 
-              log and report.
-        
+                      
         ::
           
           check common HK values are within safe / nominal margins
@@ -159,16 +156,23 @@ class BIAS01(Task):
         
         # CHECK AND CROSS-CHECK HK
         
-        if report is not None: report.add_Section(keyword='check_HK',Title='HK',level=1)
+        if report is not None: 
+            report.add_Section(keyword='check_HK',Title='HK',level=1)
         
-        report_HK_perf = HKtools.check_HK_vs_command(HKKeys,dd,limits='P',elvis=self.elvis)         
-        msg_HK_perf = self.add_checkHK_report(report_HK_perf,tag='Performance')
-        if self.log is not None: self.log.info(msg_HK_perf)
-                
-        report_HK_safe = HKtools.check_HK_abs(HKKeys,dd,limits='S',elvis=self.elvis)
-        msg_HK_safe = self.add_checkHK_report(report_HK_safe,tag='Safe')
-        if self.log is not None: self.log.info(msg_HK_safe)
+        report_HK_perf = self.check_HK(HKKeys,reference='command',limits='P',tag='Performance',
+                      doReport=self.report is not None,
+                                 doLog=self.log is not None)
         
+        
+        HK_perf_ok = np.all([value for key,value in report_HK_perf.iteritems()])
+        
+        report_HK_safe = self.check_HK(HKKeys,reference='abs',limits='S',tag='Safe',
+                      doReport = self.report is not None,
+                          doLog = self.log is not None)
+        
+        HK_safe_ok = np.all([value for ke,value in report_HK_safe.iteritems()])
+        
+        if (not HK_perf_ok) or (not HK_safe_ok): self.dd.flags.add('HK_OOL')
         
         # Initialize new columns
     
@@ -200,7 +204,7 @@ class BIAS01(Task):
                 for jCCD in range(nCCD):
                     
                     dpath = dd.mx['datapath'][iObs,jCCD]
-                    ffits = os.path.join(dpath,dd.mx['Files'][iObs,jCCD])
+                    ffits = os.path.join(dpath,'%s.fits' % dd.mx['File_name'][iObs,jCCD])
                     
                     ccdobj = ccd.CCD(ffits)
                     
@@ -222,39 +226,70 @@ class BIAS01(Task):
         
         # absolute value of offsets
         
-        compliance_offsets = dict()
-        nom_offsets = self.perflims['offsets']
-        offset_margins = self.perflims['offsets_margins']
+        compliance_offsets = OrderedDict()
+        nom_offsets = self.perflimits['offsets']
+        offset_margins = self.perflimits['offsets_margins']
         for CCD in CCDs:
             CCDkey = 'CCD%i' % CCD
-            compliance_offsets[CCDkey] = dict()
+            compliance_offsets[CCDkey] = OrderedDict()
             _nom_offset = nom_offsets[CCDkey]
             off_lims = _nom_offset+np.array(offset_margins)
             for reg in ['pre','img','ove']:
-                test = ((dd.mx['offset_%s' % reg][:] <= off_lims[0]) |\
+                test = (np.isnan(dd.mx['offset_%s' % reg][:]) |\
+                        (dd.mx['offset_%s' % reg][:] <= off_lims[0]) |\
                               (dd.mx['offset_%s' % reg][:] >= off_lims[1]))
-                compliance_offsets[CCDkey][reg] = np.any(test,axis=(1,2)).sum()
+                
+                compliance_offsets[CCDkey][reg] = not np.any(test,axis=(1,2)).sum()
         
+        if not self.IsComplianceMatrixOK(compliance_offsets): self.dd.flags.add('POORQUALDATA')
+        if self.log is not None: self.addComplianceMatrix2Log(compliance_offsets,label='COMPLIANCE OFFSETS:')        
+        if self.report is not None: self.addComplianceMatrix2Report(compliance_offsets,label='COMPLIANCE OFFSETS:')
         
-        # cross-check of offsets
-            
-        xcheck_offsets = dict()
-        for reg in ['img','ove']:
-            test = dd.mx['offset_%s' % reg][:]-dd.mx['offset_pre'][:]
-            testBool = (test <= offset_diffs[reg][0]) | \
-                   (test >= offset_diffs[reg][1])
-            xcheck_offsets[reg] = np.any(testBool,axis=(1,2)).sum()
+
+        # cross-check of offsets: referred to pre-scan
+
+        offsets_gradients = self.perflimits['offsets_gradients']
+        
+        xcheck_offsets = OrderedDict()
+        for CCD in CCDs:
+            CCDkey = 'CCD%i' % CCD
+            xcheck_offsets[CCDkey] = OrderedDict()
+            _nom_grad = offsets_gradients[CCDkey]
+            for ireg,reg in enumerate(['img','ove']):
+                test = dd.mx['offset_%s' % reg][:]-dd.mx['offset_pre'][:]
+                
+                testBool = (np.isnan(test)) | \
+                       (test <= _nom_grad[ireg+1][0]) | \
+                       (test >= _nom_grad[ireg+1][1])
+                xcheck_offsets[CCDkey][reg] = not np.any(testBool,axis=(1,2)).sum()
+        
+        if not self.IsComplianceMatrixOK(compliance_offsets): self.dd.flags.add('POORQUALDATA')
+        if self.log is not None: self.addComplianceMatrix2Log(xcheck_offsets,label='OFFSET GRADIENTS COMPLIANCE:')        
+        if self.report is not None: self.addComplianceMatrix2Report(xcheck_offsets,label='OFFSET GRADIENTS COMPLIANCE:')        
         
         # absolute value of std
+        
+        nomRONs = self.perflimits['RONs']
+        RON_rellims = self.perflimits['RONs_margins']
+        
+        compliance_std = OrderedDict()
+        for CCD in CCDs:
+            CCDkey = 'CCD%i' % CCD
+            compliance_std[CCDkey] = OrderedDict()
+            RON_lims = nomRONs[CCDkey]+np.array(RON_rellims)
             
-        compliance_std = dict()
-        for reg in ['pre']:
-            test = ((dd.mx['std_%s' % reg][:] <= std_lims[0]) |\
-                          (dd.mx['std_%s' % reg][:] >= std_lims[1]))
-            compliance_std[reg] = np.any(test,axis=(1,2)).sum()
+            for reg in ['pre']:
+                test = (np.isnan(dd.mx['std_%s' % reg][:]) |\
+                        (dd.mx['std_%s' % reg][:] <= RON_lims[0]) |\
+                              (dd.mx['std_%s' % reg][:] >= RON_lims[1]))
+                compliance_std[CCDkey][reg] = not np.any(test,axis=(1,2)).sum()
         
-        
-        
+        if not self.IsComplianceMatrixOK(compliance_offsets): 
+            self.dd.flags.add('POORQUALDATA')
+            self.dd.flags.add('RON_OOL')
+        if self.log is not None: self.addComplianceMatrix2Log(compliance_std,label='COMPLIANCE RON:')        
+        if self.report is not None: self.addComplianceMatrix2Report(compliance_std,label='COMPLIANCE RON:')        
+                
         
         if report is not None: report.add_Section(keyword='check_plots',Title='Plots',level=1)
         
@@ -278,11 +313,14 @@ class BIAS01(Task):
             self.addFigure2Report('B01stds_CCD%i' % CCD)
         
         
-        # Update Report, raise flags, fill-in log
+        # Update Report, raise flags, fill-in
+        
     
         if self.log is not None:
-            self.log.info('Reporting and Flagging MISSING in BIAS01.check_data')    
+            self.addFlagsToLog()
         
+        if self.report is not None:
+            self.addFlagsToReport()
         
         
     

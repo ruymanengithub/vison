@@ -331,7 +331,7 @@ class Report(Container):
         self.add_to_Contents(Table(tableDict,formats,names,caption))
     
     
-    def add_text(self,text):
+    def add_Text(self,text):
         """ """
         self.add_to_Contents(Text(text))
     
@@ -415,15 +415,15 @@ if __name__ == '__main__':
     outfile = os.path.join(outpath,'Test_Report')
     
     report.add_Section('s1','Intro',level=0)
-    report.add_text('this is a section')
+    report.add_Text('this is a section')
     report.add_Section('s11','Sub-Intro',level=1)
-    report.add_text('this is a sub-section')
+    report.add_Text('this is a sub-section')
     report.add_Section('s2','First Section',level=0)
-    report.add_text('this is inside First Section')
+    report.add_Text('this is inside First Section')
     report.add_Section('s21','First Section Subsection',level=1)
-    report.add_text('this is inside First Section Subsection')
+    report.add_Text('this is inside First Section Subsection')
     report.add_Section('s3','Second Section',level=0)
-    report.add_text('this is inside Second Section')
+    report.add_Text('this is inside Second Section')
     report.drop_Section('s2')
     
     report.doreport('Test_Report',cleanafter=False)

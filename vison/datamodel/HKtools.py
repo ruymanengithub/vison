@@ -616,7 +616,6 @@ def check_HK_abs(HKKeys,dd,limits='S',elvis='6.3.0'):
         
         #print HKKey, limtype, report[HKKey] # TESTS
         
-        
     
     return report
 
