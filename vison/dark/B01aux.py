@@ -15,97 +15,122 @@ Created on Tue Nov 14 13:54:34 2017
 from pdb import set_trace as stop
 import numpy as np
 import os
+from collections import OrderedDict
 
-from vison.plot.classes import Fig, CCD2DPlot
+from vison.plot import classes as plclasses
+
 # END IMPORT
 
-
-class plB01offsets(Fig):
+class plB01check(plclasses.Fig):
     
     def __init__(self):
-        super(plB01offsets,self).__init__()
+        super(plB01check,self).__init__()
         
-        self.CCD = 0
-        self.figname = 'BIAS01_offset_vs_time_CCD%i.png' 
-        self.caption = 'CCD%i: Some Caption' 
-        self.texfraction = 0.7
+        self.figname = 'BIAS01_%s_vs_time.png' 
+        self.caption = 'BIAS01: %s vs. time.' 
+        self.texfraction = 1.1
+        self.stat = ''
+        self.suptitle = ''
         self.data = dict()
     
     def configure(self,**kwargs):
         """ """
-        
-        defaults = dict(path='./',CCD=0)
+        defaults = dict(path='./',stat='offset')
         defaults.update(kwargs)
-        
-        self.CCD = kwargs['CCD']
-        self.figname = self.figname % self.CCD
-        self.caption = self.caption % self.CCD
-        
-        path = kwargs['path']
+        self.stat = defaults['stat']
+        self.figname = self.figname % self.stat
+        self.caption = self.caption % self.stat
+        path = defaults['path']
         self.figname = os.path.join(path,self.figname)
+        self.suptitle = 'BIAS01-checks: %s' % self.stat
         
     def build_data(self,parent):
         """ """
         
         dd = parent.dd
-        
         indices = parent.dd.indices
         CCDs = indices[indices.names.index('CCD')].vals
         Quads = indices[indices.names.index('Quad')].vals
         
-        data = dict()
-        for Q in ['E','F','G','H']:
-            ixQ = Quads.index(Q)
-            ixCCD = CCDs.index(self.CCD)
-            data[Q] = dict()
-            data[Q]['x'] = dict()
-            data[Q]['y'] = dict()
-            for sec in ['pre','img','ove']:
-                data[Q]['x'][sec] = dd.mx['time'][:,ixCCD].copy()
-                data[Q]['y'][sec] = dd.mx['offset_%s' % sec][:,ixCCD,ixQ].copy()
-
+        data = OrderedDict()
+        for ixCCD,CCD in enumerate(CCDs):
+            CCDkey = 'CCD%i' % CCD
+            data[CCDkey] = OrderedDict()
+            for iQ,Q in enumerate(Quads):
+                data[CCDkey][Q] = OrderedDict()
+                data[CCDkey][Q]['x'] = OrderedDict()
+                data[CCDkey][Q]['y'] = OrderedDict()
+                for sec in ['pre','img','ove']:
+                    data[CCDkey][Q]['x'][sec] = dd.mx['time'][:,ixCCD].copy()
+                    #data[CCDkey][Q]['x'][sec] = np.arange(len(dd.mx['time'][:,ixCCD])) # dd.mx['time'][:,ixCCD].copy()
+                    data[CCDkey][Q]['y'][sec] = dd.mx['%s_%s' % (self.stat,sec)][:,ixCCD,iQ].copy()
+        
         self.data = data
         
         
     def plot(self,**kwargs):
         """ """
-        meta = dict(suptitle='CCD %i' % self.CCD,doNiceXDate=True)
-        plotobj = CCD2DPlot(self.data,meta=meta)
+        meta = dict(suptitle=self.suptitle,
+                    doNiceXDate=True,doLegend=True)
+        plotobj = plclasses.Beam2DPlot(self.data,meta=meta)
         plotobj.render(self.figname)
 
-class plB01stds(plB01offsets):
-        
-    def __init__(self):
-    
-        super(plB01stds,self).__init__()
-        
-        self.CCD = 0
-        self.figname = 'BIAS01_std_vs_time_CCD%i.png' 
-        self.caption = 'CCD%i: Some Caption' 
-        self.texfraction = 0.7
-        self.data = dict()
-    
-    def build_data(self,parent):
-        """ """
-        
-        dd = parent.dd
-        
-        indices = parent.dd.indices
-        CCDs = indices[indices.names.index('CCD')].vals
-        Quads = indices[indices.names.index('Quad')].vals
-        
-        data = dict()
-        for Q in ['E','F','G','H']:
-            ixQ = Quads.index(Q)
-            ixCCD = CCDs.index(self.CCD)
-            data[Q] = dict()
-            data[Q]['x'] = dict()
-            data[Q]['y'] = dict()
-            for sec in ['pre','img','ove']:
-                data[Q]['x'][sec] = dd.mx['time'][:,ixCCD].copy()
-                data[Q]['y'][sec] = dd.mx['std_%s' % sec][:,ixCCD,ixQ].copy()
-        self.data = data
+
+#class plB01offsetsCCD(Fig):
+#    
+#    def __init__(self):
+#        super(plB01offsets,self).__init__()
+#        
+#        self.CCD = 0
+#        self.figname = 'BIAS01_offset_vs_time_CCD%i.png' 
+#        self.caption = 'CCD%i: Some Caption' 
+#        self.texfraction = 0.7
+#        self.data = dict()
+#    
+#    def configure(self,**kwargs):
+#        """ """
+#        
+#        defaults = dict(path='./',CCD=0)
+#        defaults.update(kwargs)
+#        
+#        self.CCD = kwargs['CCD']
+#        self.figname = self.figname % self.CCD
+#        self.caption = self.caption % self.CCD
+#        
+#        path = kwargs['path']
+#        self.figname = os.path.join(path,self.figname)
+#        
+#    def build_data(self,parent):
+#        """ """
+#        
+#        dd = parent.dd
+#        
+#        indices = parent.dd.indices
+#        CCDs = indices[indices.names.index('CCD')].vals
+#        Quads = indices[indices.names.index('Quad')].vals
+#        
+#        data = dict()
+#        for Q in ['E','F','G','H']:
+#            ixQ = Quads.index(Q)
+#            ixCCD = CCDs.index(self.CCD)
+#            data[Q] = dict()
+#            data[Q]['x'] = dict()
+#            data[Q]['y'] = dict()
+#            for sec in ['pre','img','ove']:
+#                data[Q]['x'][sec] = dd.mx['time'][:,ixCCD].copy()
+#                data[Q]['y'][sec] = dd.mx['offset_%s' % sec][:,ixCCD,ixQ].copy()
+#
+#        self.data = data
+#        
+#        
+#    def plot(self,**kwargs):
+#        """ """
+#        meta = dict(suptitle='CCD %i' % self.CCD,doNiceXDate=True)
+#        plotobj = CCD2DPlot(self.data,meta=meta)
+#        plotobj.render(self.figname)
+#
 
 B01figs = dict()
-for CCD in [1,2,3]: B01figs['B01offsets_CCD%i' % CCD] = plB01offsets
-for CCD in [1,2,3]: B01figs['B01stds_CCD%i' % CCD] = plB01stds
+B01figs['B01checks_offsets'] = plB01check
+B01figs['B01checks_stds'] = plB01check
+B01figs['BlueScreen'] = plclasses.BlueScreen

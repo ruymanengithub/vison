@@ -16,6 +16,7 @@ import os
 import numpy as np
 import datetime
 import string as st
+import copy
 from collections import OrderedDict
 
 from vison.support.report import Report
@@ -219,13 +220,13 @@ class Task(object):
         figobj.build_data(self)
         figobj.plot()
         self.figdict[figkey] = figobj
-         
+        
     def addComplianceMatrix2Log(self,complidict,label=''):
         """ """
         st_compl = complidict.__str__()
         self.log.info('%s\n%s' % (label,st_compl))
-                
-    
+        
+        
     def addComplianceMatrix2Report(self,complidict,label=''):
         """ """
         nicelabel = st.replace(label,' ','\ ')
@@ -267,3 +268,13 @@ class Task(object):
         flagstxt = st.join(niceflagnames,', ')
         msgList = ['$\\bf{FLAGS\ ON}$: ',flagstxt]
         self.report.add_Text(msgList)
+        
+    def skipMissingPlot(self,key,ref):
+        
+        self.figdict[key] = copy.deepcopy(self.figdict['BlueScreen'])
+        figobj = self.figdict[ref]()
+        stop()
+        pmeta = dict(path = self.inputs['subpaths']['figs'],
+                     caption = '$\\bf{MISSING}:$ %s' % figobj.caption)
+        self.doPlot(key,**pmeta)
+        self.addFigure2Report(key)

@@ -17,6 +17,7 @@ from collections import OrderedDict
 from vison.datamodel.HKtools import format_date
 import copy
 import itertools
+import os
 
 from matplotlib import pyplot as plt
 import matplotlib
@@ -300,13 +301,13 @@ class Beam2DPlot(BasicPlot):
         
         
         if self.meta['doNiceXDate']:
-            
             plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))   
             self.fig.autofmt_xdate()
         
         
         plt.locator_params(axis='y',nticks=7,prune='both')
-        plt.locator_params(axis='x',nticks=4,prune='both')
+        if not self.meta['doNiceXDate']:
+            plt.locator_params(axis='x',nticks=4,prune='both')
 
         plt.subplots_adjust(hspace=0.0)
         plt.subplots_adjust(wspace=0.0)
@@ -317,6 +318,71 @@ class Beam2DPlot(BasicPlot):
         if self.meta['doLegend']:
             plt.subplots_adjust(right=0.85)
 
+class ImgShow(BasicPlot):
+    
+    
+    def __init__(self,data,**kwargs):
+        
+        super(ImgShow,self).__init__(**kwargs)
+        
+        defaults = dict(title='')
+        
+        if 'meta' in kwargs: meta = kwargs['meta']
+        else: meta = dict()
+        
+        self.figsize=(7,7)
+        self.data = data
+        self.meta = dict()
+        self.meta.update(defaults)
+        self.meta.update(meta)
+        
+    def axmethod(self):
+        """ """
+        self.axs = self.fig.add_subplot(111)
+        self.axs.imshow(self.data)
+        self.axs.set_title(self.meta['title'])
+
+
+    def plt_trimmer(self):
+        """ """
+        pass
+
+
+
+class BlueScreen(Fig):
+    """ """
+    
+    def __init__(self):
+        from vison import data as vdata
+        
+        super(BlueScreen,self).__init__()
+        
+        self.rootfigure = os.path.join(vdata.__path__[0],'BlueScreenErrorWindows.png')
+        self.figname = 'BlueScreen%s.png' 
+        self.caption = '' 
+        self.texfraction = 0.5
+        self.title = ''
+    
+    def configure(self,**kwargs):
+        """ """
+        defaults = dict(path='./',title='',
+                        caption='',tag='')
+        defaults.update(kwargs)        
+        self.caption = defaults['caption']
+        path = defaults['path']
+        self.figname = os.path.join(path,self.figname % defaults['tag'])
+        self.title = defaults['title']
+        
+    def build_data(self,parent):
+        """ """        
+        self.data = plt.imread(self.rootfigure)
+        
+    def plot(self,**kwargs):
+        """ """
+        meta = dict(title=self.title)
+        plotobj = ImgShow(self.data,meta=meta)
+        plotobj.render(self.figname)
+    
 
     
 def testBeam2DPlot():

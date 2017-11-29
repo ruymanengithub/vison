@@ -145,19 +145,16 @@ class BIAS01(Task):
         
         """
         
-        # ALIASES
-        dd = self.dd
-        report = self.report
-        inputs = self.inputs
     
-        if report is not None: report.add_Section(keyword='check_data',Title='Data Validation',level=0)
+        if self.report is not None: 
+            self.report.add_Section(keyword='check_data',Title='Data Validation',level=0)
         
         bypass = True # TESTS
         
         # CHECK AND CROSS-CHECK HK
         
-        if report is not None: 
-            report.add_Section(keyword='check_HK',Title='HK',level=1)
+        if self.report is not None: 
+            self.report.add_Section(keyword='check_HK',Title='HK',level=1)
         
         report_HK_perf = self.check_HK(HKKeys,reference='command',limits='P',tag='Performance',
                       doReport=self.report is not None,
@@ -176,7 +173,7 @@ class BIAS01(Task):
         
         # Initialize new columns
     
-        Xindices = copy.deepcopy(dd.indices)
+        Xindices = copy.deepcopy(self.dd.indices)
         
         if 'Quad' not in Xindices.names:
             Xindices.append(core.vIndex('Quad',vals=pilib.Quads))
@@ -184,11 +181,11 @@ class BIAS01(Task):
         
         newcolnames_off = ['offset_pre','offset_img','offset_ove']
         for newcolname_off in newcolnames_off:
-            dd.initColumn(newcolname_off,Xindices,dtype='float32',valini=np.nan)
+            self.dd.initColumn(newcolname_off,Xindices,dtype='float32',valini=np.nan)
         
         newcolnames_std = ['std_pre','std_img','std_ove']
         for newcolname_std in newcolnames_std:
-            dd.initColumn(newcolname_std,Xindices,dtype='float32',valini=np.nan)
+            self.dd.initColumn(newcolname_std,Xindices,dtype='float32',valini=np.nan)
         
         
         nObs,nCCD,nQuad = Xindices.shape
@@ -203,8 +200,9 @@ class BIAS01(Task):
                 
                 for jCCD in range(nCCD):
                     
-                    dpath = dd.mx['datapath'][iObs,jCCD]
-                    ffits = os.path.join(dpath,'%s.fits' % dd.mx['File_name'][iObs,jCCD])
+                    dpath = self.dd.mx['datapath'][iObs,jCCD]
+                    ffits = os.path.join(dpath,'%s.fits' % \
+                                         self.dd.mx['File_name'][iObs,jCCD])
                     
                     ccdobj = ccd.CCD(ffits)
                     
@@ -214,13 +212,14 @@ class BIAS01(Task):
                         for reg in ['pre','img', 'ove']:
                             stats = ccdobj.get_stats(Quad,sector=reg,statkeys=['mean','std'],trimscan=[5,5],
                                     ignore_pover=True,extension=-1)
-                            dd.mx['offset_%s' % reg][iObs,jCCD,kQ] = stats[0]
-                            dd.mx['std_%s' % reg][iObs,jCCD,kQ] = stats[1]
+                            self.dd.mx['offset_%s' % reg][iObs,jCCD,kQ] = stats[0]
+                            self.dd.mx['std_%s' % reg][iObs,jCCD,kQ] = stats[1]
                     
         # Assess metrics are within allocated boundaries
         
                
-        if report is not None: report.add_Section(keyword='check_ronoffset',Title='Offsets and RON',level=1)
+        if self.report is not None: 
+            self.report.add_Section(keyword='check_ronoffset',Title='Offsets and RON',level=1)
         
         # absolute value of offsets
         
@@ -233,9 +232,9 @@ class BIAS01(Task):
             _nom_offset = nom_offsets[CCDkey]
             off_lims = _nom_offset+np.array(offset_margins)
             for reg in ['pre','img','ove']:
-                test = (np.isnan(dd.mx['offset_%s' % reg][:]) |\
-                        (dd.mx['offset_%s' % reg][:] <= off_lims[0]) |\
-                              (dd.mx['offset_%s' % reg][:] >= off_lims[1]))
+                test = (np.isnan(self.dd.mx['offset_%s' % reg][:]) |\
+                        (self.dd.mx['offset_%s' % reg][:] <= off_lims[0]) |\
+                              (self.dd.mx['offset_%s' % reg][:] >= off_lims[1]))
                 
                 compliance_offsets[CCDkey][reg] = not np.any(test,axis=(1,2)).sum()
         
@@ -254,7 +253,7 @@ class BIAS01(Task):
             xcheck_offsets[CCDkey] = OrderedDict()
             _nom_grad = offsets_gradients[CCDkey]
             for ireg,reg in enumerate(['img','ove']):
-                test = dd.mx['offset_%s' % reg][:]-dd.mx['offset_pre'][:]
+                test = self.dd.mx['offset_%s' % reg][:]-self.dd.mx['offset_pre'][:]
                 
                 testBool = (np.isnan(test)) | \
                        (test <= _nom_grad[ireg+1][0]) | \
@@ -277,9 +276,9 @@ class BIAS01(Task):
             RON_lims = nomRONs[CCDkey]+np.array(RON_rellims)
             
             for reg in ['pre']:
-                test = (np.isnan(dd.mx['std_%s' % reg][:]) |\
-                        (dd.mx['std_%s' % reg][:] <= RON_lims[0]) |\
-                              (dd.mx['std_%s' % reg][:] >= RON_lims[1]))
+                test = (np.isnan(self.dd.mx['std_%s' % reg][:]) |\
+                        (self.dd.mx['std_%s' % reg][:] <= RON_lims[0]) |\
+                              (self.dd.mx['std_%s' % reg][:] >= RON_lims[1]))
                 compliance_std[CCDkey][reg] = not np.any(test,axis=(1,2)).sum()
         
         if not self.IsComplianceMatrixOK(compliance_offsets): 
@@ -290,27 +289,28 @@ class BIAS01(Task):
                 
         #### PLOTS
         
-        if report is not None: report.add_Section(keyword='check_plots',Title='Plots',level=1)
+        if self.report is not None: self.report.add_Section(keyword='check_plots',Title='Plots',level=1)
         
         # Plot offsets vs. time
-        
-        for CCD in CCDs:
-            pmeta = dict(CCD=CCD,path = inputs['subpaths']['figs'])
-            try:
-                self.doPlot('B01offsets_CCD%i' % CCD,**pmeta)
-            except: pass
-            self.addFigure2Report('B01offsets_CCD%i' % CCD)
-        
-        
+                
+        try:
+            pmeta = dict(path = self.inputs['subpaths']['figs'],
+                     stat='offset')
+            self.doPlot('B01checks_offsets',**pmeta)
+            self.addFigure2Report('B01checks_offsets')
+        except:
+            self.skipMissingPlot('BS_checkoffsets',ref='B01checks_offsets')
+
         # std vs. time
         
-        for CCD in CCDs:
-            pmeta = dict(CCD=CCD,path = inputs['subpaths']['figs'])
-            #try:
-            self.doPlot('B01stds_CCD%i' % CCD,**pmeta)
-            #except: pass
-            self.addFigure2Report('B01stds_CCD%i' % CCD)
-        
+        try:
+            pmeta = dict(path = self.inputs['subpaths']['figs'],
+                     stat='std')
+            self.doPlot('B01checks_stds',**pmeta)
+            self.addFigure2Report('B01checks_stds')
+        except:
+            self.skipMissingPlot('BS_checkstds',ref='B01checks_stds')
+            
         
         # Update Report, raise flags, fill-in
         
