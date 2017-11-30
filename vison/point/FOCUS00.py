@@ -32,6 +32,8 @@ Created on Mon Apr 03 16:21:00 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
+from copy import deepcopy
+
 from vison.pipe import lib as pilib
 from vison.ogse import ogse
 from vison.flat import FlatFielding as FFing
@@ -47,8 +49,7 @@ from vison.datamodel import scriptic as sc
 from vison.point.spot import Spot
 from vison.point import display as pdspl
 from vison.support import vistime
-from copy import deepcopy
-
+from vison.pipe.task import Task
 import FOCUS00_lib as F00lib
 
 # END IMPORT
@@ -61,6 +62,9 @@ HKKeys_FOCUS00 = ['HK_temp_top_CCD1','HK_temp_bottom_CCD1','HK_temp_top_CCD2',
 dtobj_default = vistime.dtobj_default
 
 stampw = 25
+
+class FOCUS00(Task):
+    """ """
 
 def get_FOCUS00_structure(wavelength):
     """ """

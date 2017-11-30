@@ -306,14 +306,82 @@ class PSF0X(Task):
                             for chkkey in chkkeycorr:
                                 self.dd.mx[chkkey][iObs,jCCD,kQ,xSpot] = res_bas[chkkeycorr[chkkey]]
         
-                    
+        # METRICS ASSESSMENT
         # Assess metrics are within allocated boundaries
         
-        warnings.warn('NOT FINISHED')
-    
+        if self.report is not None:
+            self.report.add_Section(keyword='check_metrics',Title='Checking Basic Metrics',level=1)
+        
+        # absolute value of offset
+        
+        offsets_lims = self.perflimits['offsets_lims']
+        compliance_offsets = self.check_stat_perCCD(self.dd.mx['offset_pre'],offsets_lims,CCDs)
+        if not self.IsComplianceMatrixOK(compliance_offsets): self.dd.flags.add('POORQUALDATA')
+        if self.log is not None: self.addComplianceMatrix2Log(compliance_offsets,label='COMPLIANCE OFFSETS [OVE]:')        
+        if self.report is not None: self.addComplianceMatrix2Report(compliance_offsets,label='COMPLIANCE OFFSETS [OVE]:')
+
+        # cross-check of offsets: referred to pre-scan
+
+        offsets_gradients = self.perflimits['offsets_gradients']
+        _lims = dict()
+        for CCD in CCDs: _lims['CCD%i'%CCD] = offsets_gradients['CCD%i'%CCD][2]
+        arr = self.dd.mx['offset_ove' % reg][:]-self.dd.mx['offset_pre'][:]
+        xcheck_offsets = self.check_stat_perCCD(arr,_lims,CCDs)
+        
+        if not self.IsComplianceMatrixOK(xcheck_offsets): self.dd.flags.add('POORQUALDATA')
+        if self.log is not None: self.addComplianceMatrix2Log(xcheck_offsets,label='OFFSET GRAD [OVE-PRE] COMPLIANCE:')        
+        if self.report is not None: self.addComplianceMatrix2Report(xcheck_offsets,label='OFFSET GRAD [OVE-PRE] COMPLIANCE:')        
+
+        # absolute value of std
+        
+        RONs_lims = self.perflimits['RONs_lims']
+        compliance_std = self.check_stat_perCCD(self.dd.mx['std_ove'],RONs_lims,CCDs)
+        if not self.IsComplianceMatrixOK(compliance_std): 
+            self.dd.flags.add('POORQUALDATA')
+            self.dd.flags.add('RON_OOL')
+        if self.log is not None: self.addComplianceMatrix2Log(compliance_std,label='COMPLIANCE RON [OVE]:')        
+        if self.report is not None: self.addComplianceMatrix2Report(compliance_std,label='COMPLIANCE RON [OVE]:')
+        
+        # MISSING: ASSESS SPOT METRICS!
+        # chk_fluence, chk_peak, chk_fwhmx, chk_fwhmy
+
+
+        #### PLOTS
+        
+        if self.report is not None: self.report.add_Section(keyword='check_plots',Title='Plots',level=1)
+        
+        
+        
+        # Plot offsets vs. time
+        
+        try:
+            pmeta = dict(path = self.inputs['subpaths']['figs'],
+                     stat='offset')
+            self.doPlot('P0Xchecks_offsets',**pmeta)
+            self.addFigure2Report('P0Xchecks_offsets')
+        except:
+            self.skipMissingPlot('BS_checkoffsets',ref='P0Xchecks_offsets')
+        
+        # Plot noise vs. time
+        
+        try:
+            pmeta = dict(path = self.inputs['subpaths']['figs'],
+                     stat='std')
+            self.doPlot('P0Xchecks_stds',**pmeta)
+            self.addFigure2Report('P0Xchecks_stds')
+        except:
+            self.skipMissingPlot('BS_checkstds',ref='P0Xchecks_stds')
+        
+        # MISSING: Plot fluence vs. exposure-time
+        
+        
+        # MISSING: Plot fwhmx/y vs. time
+        
         
         if self.log is not None:
-            self.log.info('Reporting and Flagging MISSING in PSF0X.check_data')    
+            self.addFlagsToLog()
+        if self.report is not None:
+            self.addFlagsToReport()
         
     
     #def prep_data(dd,report,inputs,log=None):

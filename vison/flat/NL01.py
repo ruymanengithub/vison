@@ -32,6 +32,8 @@ Created on Mon Apr  3 17:38:00 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
+from copy import deepcopy
+
 #from vison.pipe import lib as pilib
 from vison.ogse import ogse
 from vison.point import lib as polib
@@ -39,7 +41,7 @@ from vison.datamodel import  scriptic as sc
 import FlatFielding as FFing
 from vison.support.report import Report
 from vison.support import files
-from copy import deepcopy
+from vison.pipe.task import Task
 # END IMPORT
 
 isthere = os.path.exists
@@ -57,6 +59,9 @@ NL01_commvalues = dict(program='CALCAMP',
   source='flat',
   comments='')
 
+
+class NL01(Task):
+    """ """
 
 def build_NL01_scriptdict(expts,exptinter,frames,wavelength=0,
                           diffvalues=dict(),elvis='6.3.0'):

@@ -50,6 +50,7 @@ import ptc as ptclib
 #from vison.pipe import FlatFielding as FFing
 #from vison.support.report import Report
 #from vison.support import files
+from vison.pipe.task import Task
 # END IMPORT
 
 isthere = os.path.exists
@@ -84,6 +85,9 @@ testdefaults = dict(PTC01=dict(exptimes=PTC01_exptimes,
 for w in testdefaults['PTC02WAVE']['waves']:
     testdefaults['PTC02WAVE']['exptimes']['nm%i' % w] = np.array([10.,30.,50.,70.,80.,90.])/100.*ogse.tFWC_flat['nm%i' % w]
     
+
+class PTC0X(Task):
+    """ """
 
 
 def build_PTC0X_scriptdict(testkey,exptimes,frames,wavelength=800,diffvalues=dict(),

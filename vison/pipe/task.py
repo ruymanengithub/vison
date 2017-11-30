@@ -33,7 +33,7 @@ class Task(object):
     
     from task_lib import check_HK
     
-    def __init__(self,inputs,log=None):
+    def __init__(self,inputs,log=None,drill=False):
         """ """
         
         self.inputs = self.feeder(inputs)
@@ -41,6 +41,7 @@ class Task(object):
         self.name = ''
         self.HKKeys = []
         self.perflimits = dict()
+        self.drill = drill
         
     def __call__(self):
         """Generic test master function."""
@@ -270,7 +271,7 @@ class Task(object):
         self.report.add_Text(msgList)
         
     def skipMissingPlot(self,key,ref):
-        
+        """ """
         self.figdict[key] = copy.deepcopy(self.figdict['BlueScreen'])
         niceref = st.replace(ref,'_','\_')
         pmeta = dict(path = self.inputs['subpaths']['figs'],
@@ -278,3 +279,16 @@ class Task(object):
                      title=niceref)
         self.doPlot(key,**pmeta)
         self.addFigure2Report(key)
+    
+    
+    def check_stat_perCCD(self,arr,CCDlims,CCDs=[1,2,3]):
+        """ """
+        compliance = OrderedDict()
+        for iCCD,CCD in enumerate(CCDs):
+            CCDkey = 'CCD%i' % CCD
+            #compliance[CCDkey] = OrderedDict()
+            _lims = CCDlims[CCDkey]
+            test = (np.isnan(arr[:,iCCD,...]) |\
+                    (arr[:,iCCD,...] <= _lims[0]) | (arr[:,iCCD,...] >= _lims[1]))
+            compliance[CCDkey] = not np.any(test,axis=(0,1)).sum()
+        return compliance

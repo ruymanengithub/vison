@@ -27,162 +27,164 @@ Created on Fri Nov 25 19:14:12 2016
 import numpy as np
 from pdb import set_trace as stop
 import os
-from glob import glob
-from copy import copy
-import sys
+from collections import OrderedDict
 
-from vissim.datamodel import ccd as ccdmod
-from vissim.charact import FlatFielding as FFmod
-from vissim.support.files import cPickleDumpDictionary, cPickleRead
-from vissim.datamodel import EXPLOGtools as ELtools
-from vissim.FMcalib import lib as FMlib
+from vison.plot import classes as plclasses
 
-from matplotlib import pyplot as plt
-from astropy.io import fits as fts
-from astropy import stats
 # END IMPORT
 
-
-def subbgd(stamp):
+class genplot_stats_beam:
     """ """
-    
-    if isinstance(stamp,np.ma.masked_array):
-        stamp = stamp.data
-    
-    bgd = np.nanmedian(stats.sigma_clip(stamp,sigma=6))
-    stamp_mbgd = stamp - bgd
-    
-    return stamp_mbgd
 
 
-def showstamp(stamp,title='',outfile=None):
-    """ """
-    
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    vmin = np.nanmedian(stamp)
-    vmax = np.max(stamp)
-    cax = ax.imshow(stamp.transpose(),origin='lower left',
-                    vmin=vmin,vmax=vmax)
-    cax.set_cmap('spectral')
-    ax.set_title(title)
-    cbar = fig.colorbar(cax,orientation='vertical')
-    if outfile is not None:
-        plt.savefig(outfile)
-    else:
-        plt.show()
-    plt.close()
-    
-def process_exposures_PSF0X(DataDict,box,Quad,mask_fits,flatfields_dict,VSCAN=[500-1,800-1],doshow=False):
-    """ 
-    Flow:
-    
 
-     - load (wavelength-matching) FF
-     
-     - for each exposure:
-          subtract offset level (from overscan)
-          divide by FF
-          cut stamp
-          save stamp with its metadata
-          
-     - return updated DataDict
-    
-    """
-    
-    wavelength = DataDict['wavelength']
-    wavekey = 'nm%i' % wavelength
-    
-    # Windowing
-    
-    dumbccd = ccdmod.CCD()
-    VscanMask = dumbccd.do_Vscan_Mask(VSCAN[0],VSCAN[1]).copy()
-    
-    
-    # LOAD MASK
-    
-    mask = fts.getdata(mask_fits).transpose().astype('bool')
-    
-    mask = mask | VscanMask    
+PSF0Xfigs = dict()
+PSF0Xfigs['P0Xchecks_offsets'] = genplot_stats_beam
+PSF0Xfigs['P0Xchecks_stds'] = genplot_stats_beam
+PSF0Xfigs['BlueScreen'] = plclasses.BlueScreen
 
-    
-    # LOAD FF
-    
 
-    FF_fits = flatfields_dict[wavekey]
-    FF = fts.getdata(FF_fits).transpose() # [:,:,0]
 
-    # Exposure by Exposure Processing
-        
-    uexptime = DataDict['uexptime']
-    
-    expkeys = ['ms%i' % item for item in uexptime]
-    
-    for iexp,expkey in enumerate(expkeys):
-        
-        print '%s-%s... %i/%i exposure times' % (wavekey,expkey,iexp+1,len(expkeys))
-        
-        Files = DataDict[expkey]['Files']
-        OBSIDS = DataDict[expkey]['OBSIDS']
-        Exptime = DataDict[expkey]['Exptime']
-        
-        DataDict[expkey]['SHUTTER'] = np.zeros_like(Files,dtype='bool')
-        DataDict[expkey]['PICKLES'] = np.zeros_like(Files,dtype='40str')
-        
-        
-        for iobs,iinfits in enumerate(Files):
-            
-            print 'Exposure %i / %i' % (iobs+1,len(Files))
-            
-            #if OBSIDS[iobs] != 2591: continue
-            
-            OBSID = OBSIDS[iobs]  
-            exptime = Exptime[iobs]
-            iinfits = os.path.join(datapath,iinfits)
-    
-            imgobj = ccdmod.CCD(iinfits)
-            
-            # Masking
-            imgobj.get_mask(mask)
-            
-            
-            # Offset subtraction
-            
-            for Q in Quads:
-                imgobj.sub_offset(Q,method='median',scan='ove',trimscan=[4,3])
-            
-            
-            # FF Division
-
-            imgobj.data /= FF
-            
-    
-            imgdata = imgobj.get_quad(Quad,canonical=False)
-            stamp = imgdata[box[0]:box[1],box[2]:box[3]]
-            if doshow: showstamp(stamp,title='%i:%s' % (OBSID,Quad))
-            
-            # BACKGROUND SUBTRACTION
-    
-            stamp_nobgd = subbgd(stamp) 
-            
-            # SAVING
-    
-            outfile = 'PSF0X_%i_Q%s_CCD%i_ofsflfbgd.cpickle' % (OBSID,Quad,CCD)
-            outfile = os.path.join(resultspath,outfile)
-            
-            FAILED = stamp_nobgd.max() < 1.E2 # failed exposure, no source
-
-            results = dict(img=stamp_nobgd,box=box,\
-              FF=os.path.split(flatfields_dict[wavekey])[-1],
-              MASK=os.path.split(mask_fits)[-1],
-              RON=FMlib.RON,gain=FMlib.gain,exptime=exptime,FAILED=FAILED) 
-    
-            cPickleDumpDictionary(results,outfile)
-            
-            DataDict[expkey]['SHUTTER'][iobs] = ~FAILED
-            DataDict[expkey]['PICKLES'][iobs] = os.path.split(outfile)[-1]
-    
-    return DataDict
+#def subbgd(stamp):
+#    """ """
+#    
+#    if isinstance(stamp,np.ma.masked_array):
+#        stamp = stamp.data
+#    
+#    bgd = np.nanmedian(stats.sigma_clip(stamp,sigma=6))
+#    stamp_mbgd = stamp - bgd
+#    
+#    return stamp_mbgd
+#
+#
+#def showstamp(stamp,title='',outfile=None):
+#    """ """
+#    
+#    fig = plt.figure()
+#    ax = fig.add_subplot(111)
+#    vmin = np.nanmedian(stamp)
+#    vmax = np.max(stamp)
+#    cax = ax.imshow(stamp.transpose(),origin='lower left',
+#                    vmin=vmin,vmax=vmax)
+#    cax.set_cmap('spectral')
+#    ax.set_title(title)
+#    cbar = fig.colorbar(cax,orientation='vertical')
+#    if outfile is not None:
+#        plt.savefig(outfile)
+#    else:
+#        plt.show()
+#    plt.close()
+#    
+#def process_exposures_PSF0X(DataDict,box,Quad,mask_fits,flatfields_dict,VSCAN=[500-1,800-1],doshow=False):
+#    """ 
+#    Flow:
+#    
+#
+#     - load (wavelength-matching) FF
+#     
+#     - for each exposure:
+#          subtract offset level (from overscan)
+#          divide by FF
+#          cut stamp
+#          save stamp with its metadata
+#          
+#     - return updated DataDict
+#    
+#    """
+#    
+#    wavelength = DataDict['wavelength']
+#    wavekey = 'nm%i' % wavelength
+#    
+#    # Windowing
+#    
+#    dumbccd = ccdmod.CCD()
+#    VscanMask = dumbccd.do_Vscan_Mask(VSCAN[0],VSCAN[1]).copy()
+#    
+#    
+#    # LOAD MASK
+#    
+#    mask = fts.getdata(mask_fits).transpose().astype('bool')
+#    
+#    mask = mask | VscanMask    
+#
+#    
+#    # LOAD FF
+#    
+#
+#    FF_fits = flatfields_dict[wavekey]
+#    FF = fts.getdata(FF_fits).transpose() # [:,:,0]
+#
+#    # Exposure by Exposure Processing
+#        
+#    uexptime = DataDict['uexptime']
+#    
+#    expkeys = ['ms%i' % item for item in uexptime]
+#    
+#    for iexp,expkey in enumerate(expkeys):
+#        
+#        print '%s-%s... %i/%i exposure times' % (wavekey,expkey,iexp+1,len(expkeys))
+#        
+#        Files = DataDict[expkey]['Files']
+#        OBSIDS = DataDict[expkey]['OBSIDS']
+#        Exptime = DataDict[expkey]['Exptime']
+#        
+#        DataDict[expkey]['SHUTTER'] = np.zeros_like(Files,dtype='bool')
+#        DataDict[expkey]['PICKLES'] = np.zeros_like(Files,dtype='40str')
+#        
+#        
+#        for iobs,iinfits in enumerate(Files):
+#            
+#            print 'Exposure %i / %i' % (iobs+1,len(Files))
+#            
+#            #if OBSIDS[iobs] != 2591: continue
+#            
+#            OBSID = OBSIDS[iobs]  
+#            exptime = Exptime[iobs]
+#            iinfits = os.path.join(datapath,iinfits)
+#    
+#            imgobj = ccdmod.CCD(iinfits)
+#            
+#            # Masking
+#            imgobj.get_mask(mask)
+#            
+#            
+#            # Offset subtraction
+#            
+#            for Q in Quads:
+#                imgobj.sub_offset(Q,method='median',scan='ove',trimscan=[4,3])
+#            
+#            
+#            # FF Division
+#
+#            imgobj.data /= FF
+#            
+#    
+#            imgdata = imgobj.get_quad(Quad,canonical=False)
+#            stamp = imgdata[box[0]:box[1],box[2]:box[3]]
+#            if doshow: showstamp(stamp,title='%i:%s' % (OBSID,Quad))
+#            
+#            # BACKGROUND SUBTRACTION
+#    
+#            stamp_nobgd = subbgd(stamp) 
+#            
+#            # SAVING
+#    
+#            outfile = 'PSF0X_%i_Q%s_CCD%i_ofsflfbgd.cpickle' % (OBSID,Quad,CCD)
+#            outfile = os.path.join(resultspath,outfile)
+#            
+#            FAILED = stamp_nobgd.max() < 1.E2 # failed exposure, no source
+#
+#            results = dict(img=stamp_nobgd,box=box,\
+#              FF=os.path.split(flatfields_dict[wavekey])[-1],
+#              MASK=os.path.split(mask_fits)[-1],
+#              RON=FMlib.RON,gain=FMlib.gain,exptime=exptime,FAILED=FAILED) 
+#    
+#            cPickleDumpDictionary(results,outfile)
+#            
+#            DataDict[expkey]['SHUTTER'][iobs] = ~FAILED
+#            DataDict[expkey]['PICKLES'][iobs] = os.path.split(outfile)[-1]
+#    
+#    return DataDict
 
 #def filter_exposuresPSF01(explog,OBSID_lims,inwavelength,inCCD):
 #    """ """

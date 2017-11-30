@@ -19,6 +19,8 @@ Created on Tue Aug 29 17:36:00 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
+from copy import deepcopy
+
 from vison.pipe import lib as pilib
 from vison.point import lib as polib
 from vison.datamodel import ccd
@@ -28,12 +30,14 @@ from vison.datamodel import scriptic as sc
 #from vison.datamodel import ccd
 #from vison.datamodel import generator
 #import datetime
-from copy import deepcopy
+from vison.pipe.task import Task
 # END IMPORT
 
 isthere = os.path.exists
 
 
+class CHINJ01(Task):
+    """ """
 
 CHINJ01_commvalues = dict(program='CALCAMP',test='CHINJ01',
   IG2_T=5.5,IG2_B=5.5,

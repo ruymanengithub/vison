@@ -18,6 +18,9 @@ Created on Tue Aug 29 17:32:52 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
+import datetime
+from copy import deepcopy
+
 from vison.pipe import lib as pilib
 from vison.ogse import ogse
 from vison.point import lib as polib
@@ -30,9 +33,7 @@ from vison.datamodel import EXPLOGtools as ELtools
 from vison.datamodel import HKtools
 from vison.datamodel import ccd
 from vison.datamodel import generator
-import datetime
-from copy import deepcopy
-
+from vison.pipe.task import Task
 # END IMPORT
 
 isthere = os.path.exists
@@ -47,6 +48,8 @@ FLAT0X_commvalues = dict(program='CALCAMP',
   comments='')
   
 
+class FLAT0X(Task):
+    """ """
 
 def build_FLAT0X_scriptdict(exptimes,frames,flags,wavelength=800,testkey='FLAT0X',
                             diffvalues=dict(),elvis='6.3.0'):

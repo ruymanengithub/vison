@@ -18,6 +18,9 @@ Created on Tue Aug 29 17:21:00 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
+import datetime
+from copy import deepcopy
+
 from vison.pipe import lib as pilib
 from vison.point import  lib as polib
 from vison.datamodel import scriptic as sc
@@ -29,13 +32,10 @@ from vison.datamodel import EXPLOGtools as ELtools
 from vison.datamodel import HKtools
 from vison.datamodel import ccd
 from vison.datamodel import generator
-import datetime
-from copy import deepcopy
+from vison.pipe.task import Task
 # END IMPORT
 
 isthere = os.path.exists
-
-
 
 
 DARK01_commvalues = dict(program='CALCAMP',test='DARK01',
@@ -44,6 +44,8 @@ DARK01_commvalues = dict(program='CALCAMP',test='DARK01',
   comments='DARK')
   
 
+class DARK01(Task):
+    """ """
 
 def build_DARK01_scriptdict(N,exptime,diffvalues=dict(),elvis='6.3.0'):
     """Builds DARK01 script structure dictionary.

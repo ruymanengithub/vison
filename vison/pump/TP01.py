@@ -18,12 +18,13 @@ Created on Tue Aug 29 17:37:00 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
+from copy import deepcopy
+
 from vison.pipe import lib as pilib
 from vison.point import lib as polib
 from vison.datamodel import ccd
 from vison.datamodel import scriptic as sc
-
-from copy import deepcopy
+from vison.pipe.task import Task
 # END IMPORT 
 
 isthere = os.path.exists
@@ -48,6 +49,8 @@ TP01_commvalues = dict(program='CALCAMP',test='TP01',
   comments='')
   
 
+class TP01(Task):
+    """ """
 
 def build_TP01_scriptdict(Nshuffles_V,TOI_TPv,id_delays,
                     diffvalues=dict(),elvis='6.3.0'):

@@ -18,6 +18,9 @@ Created on Tue Aug 29 17:39:00 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
+import datetime
+from copy import deepcopy
+
 from vison.pipe import lib as pilib
 from vison.point import lib as polib
 from vison.datamodel import  scriptic as sc
@@ -29,9 +32,7 @@ from vison.datamodel import EXPLOGtools as ELtools
 from vison.datamodel import HKtools
 from vison.datamodel import ccd
 from vison.datamodel import generator
-import datetime
-from copy import deepcopy
-
+from vison.pipe.task import Task
 # END IMPORT
 
 
@@ -45,6 +46,9 @@ PER01_commvalues = dict(program='CALCAMP',test='PERSIST01',
   mirr_on=1,
   comments='')
   
+
+class PERSIST01(Task):
+    """ """
 
 def build_PER01_scriptdict(exptSATUR,exptLATEN,
                 diffvalues=dict(),elvis='6.0.0'):

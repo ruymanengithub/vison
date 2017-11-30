@@ -43,12 +43,6 @@ import datetime
 from vison import __version__
 from vison.support import logger as lg
 from vison.support.report import Report
-from vison.dark import BIAS01,DARK01
-from vison.point import FOCUS00,PSF0X
-from vison.flat import NL01, PTC0X, FLAT0X
-from vison.inject import CHINJ01,CHINJ02
-from vison.pump import TP01, TP02
-from vison.other import PERSIST01 as PER01
 from vison.support import vistime
 #from lib import get_time_tag
 from vison.pipe import lib as pilib
@@ -66,12 +60,18 @@ class Pipe(object):
     """Master Class of FM-analysis """
     
     from vison.dark.BIAS01 import BIAS01
-    from vison.dark import DARK01
-    from vison.flat import NL01, FLAT0X, PTC0X
-    from vison.inject import CHINJ01, CHINJ02
-    from vison.other import PERSIST01
-    from vison.point import PSF0X, FOCUS00
-    from vison.pump import TP01, TP02
+    from vison.dark.DARK01 import DARK01
+    from vison.flat.NL01 import NL01
+    from vison.flat.FLAT0X import FLAT0X
+    from vison.flat.PTC0X import PTC0X
+    from vison.inject.CHINJ01 import CHINJ01
+    from vison.inject.CHINJ02 import CHINJ02
+    from vison.other.PERSIST01 import PERSIST01
+    from vison.point.PSF0X import PSF0X
+    from vison.point.FOCUS00 import FOCUS00
+    from vison.point.PSF01_PANCHRO import PSF01_PANCHRO
+    from vison.pump.TP01 import TP01
+    from vison.pump.TP02 import TP02
     
     
     Test_dict = dict(BIAS01=BIAS01,DARK01=DARK01,
@@ -79,7 +79,8 @@ class Pipe(object):
                      PTC01=PTC0X,
                      CHINJ01=CHINJ01,CHINJ02=CHINJ02,
                      TP01=TP01,TP02=TP02,
-                     PERSIST01=PERSIST01)
+                     PERSIST01=PERSIST01,
+                     PSF01_PANCHRO=PSF01_PANCHRO)
     
     for wave in [590,640,880]:
         Test_dict['FLAT02_%i' % wave] = FLAT0X
@@ -125,11 +126,11 @@ class Pipe(object):
         
         taskinputs = self.inputs[taskname]
         
-        inputs = copy.deepcopy(self.inputs)
-        alltasks = inputs['tasks']
-        inputs.pop('tasks')
-        for taskname in alltasks: inputs.pop(taskname)
-        taskinputs.update(inputs)        
+        extinputs = copy.deepcopy(self.inputs)
+        alltasks = extinputs['tasks']
+        extinputs.pop('tasks')
+        for _taskname in alltasks: extinputs.pop(_taskname)
+        taskinputs.update(extinputs)
             
         msg = ['\n\nRunning Task: %s\n' % taskname]
         msg += ['Inputs:']
@@ -147,7 +148,6 @@ class Pipe(object):
         if self.log is not None: 
             self.log.info('%.1f minutes in running Task: %s' % (dtm,taskname))
         
-        
     
     def run(self,explogf=None,elvis=None):
         """ """
@@ -158,7 +158,6 @@ class Pipe(object):
             os.system('mkdir %s' % resultsroot)
         
         if self.log is not None: self.log.info('\n\nResults will be saved in: %s\n' % resultsroot)
-        
         
         
         for taskname in tasknames:
@@ -240,7 +239,8 @@ class Pipe(object):
 
     
     def dotask(self,taskname,inputs,drill=False):
-        """Generic test master function."""        
+        """Generic test master function."""
+        
         Test = self.Test_dict[taskname](inputs,self.log,drill)
         Test()
         
