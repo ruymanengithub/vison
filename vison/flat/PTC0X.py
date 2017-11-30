@@ -168,10 +168,7 @@ def check_data(dd,report,inputs,log=None):
     """
     
     if report is not None: report.add_Section(keyword='check_data',Title='Data Validation',level=0)
-    
-    
-    bypass = True # TESTS
-    
+        
     # CHECK AND CROSS-CHECK HK
     
     #print 'HK-perf' # TESTS
@@ -207,7 +204,7 @@ def check_data(dd,report,inputs,log=None):
         
     # Get statistics in different regions
     
-    if not bypass:
+    if not self.drill:
     
         for iObs in range(nObs):
             
@@ -273,8 +270,6 @@ def extract_PTC(dd,report,inputs,log=None):
     
     if report is not None: report.add_Section(keyword='extract',Title='PTC Extraction',level=0)    
     
-    bypass = False
-    
     # HARDWIRED VALUES
     wpx = 300
     hpx = 300
@@ -330,7 +325,7 @@ def extract_PTC(dd,report,inputs,log=None):
         dd.mx['ObsID_pair'][six[0][ixeven]] = ObsIDs[six[0][ixodd]]
         
         
-    if not bypass:
+    if not self.drill:
         
         if doMask:
             estimators = dict(median=np.ma.median,std=np.ma.std)

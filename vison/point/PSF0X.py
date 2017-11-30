@@ -174,11 +174,7 @@ def check_data(dd,report,inputs,log=None):
     """
     
     
-    if report is not None: report.add_Section(keyword='check_data',Title='Data Validation',level=0)
-    
-    
-    bypass = True # TESTS
-    
+    if report is not None: report.add_Section(keyword='check_data',Title='Data Validation',level=0)    
     
     # CHECK AND CROSS-CHECK HK
     
@@ -231,7 +227,7 @@ def check_data(dd,report,inputs,log=None):
     
     # Get statistics in different regions
     
-    if not bypass:
+    if not self.drill:
     
         for iObs in range(nObs):
             
@@ -323,8 +319,6 @@ def prep_data(dd,report,inputs,log=None):
     
     if report is not None: report.add_Section(keyword='prep_data',Title='Data Pre-Processing',level=0)
     
-    bypass = True # TESTS
-        
     # Inputs un-packing
     
     doMask = False
@@ -382,7 +376,7 @@ def prep_data(dd,report,inputs,log=None):
     dd.initColumn('ccdobj_name',CIndices,dtype='S100',valini='None')
     dd.initColumn('spots_name',CIndices,dtype='S100',valini='None')
     
-    if not bypass:
+    if not self.drill:
         
         rpath = inputs['resultspath']
         picklespath = inputs['subpaths']['pickles']

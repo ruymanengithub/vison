@@ -426,11 +426,9 @@ def forwardModel(log, img, stampkey='Unknown', modeltype='gauss', gain=3.1, size
     
     for ip in range(1,ndim):
         p0[:,ip] = np.random.uniform(priors[ip][0],priors[ip][1],nwalkers)
+        
     
-    bypass = False # TESTS
-    
-    
-    if not bypass:
+    if not self.drill:
         #stop()
         #initiate sampler
         
@@ -510,7 +508,7 @@ def forwardModel(log, img, stampkey='Unknown', modeltype='gauss', gain=3.1, size
     
     results['GoF'] = gof
     
-    if not bypass:
+    if not self.drill:
         
         #plot
         samples = sampler.chain.reshape((-1, ndim))

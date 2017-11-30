@@ -149,7 +149,6 @@ class BIAS01(Task):
         if self.report is not None: 
             self.report.add_Section(keyword='check_data',Title='Data Validation',level=0)
         
-        bypass = True # TESTS
         
         # CHECK AND CROSS-CHECK HK
         
@@ -194,7 +193,8 @@ class BIAS01(Task):
         
         # Get statistics in different regions
         
-        if not bypass:
+        if not self.drill:
+            
             for iObs in range(nObs):
                 for jCCD in range(nCCD):
                     dpath = self.dd.mx['datapath'][iObs,jCCD]
@@ -340,9 +340,7 @@ class BIAS01(Task):
         if self.report is not None: 
             self.report.add_Section(keyword='prep_data',Title='Data Pre-Processing',level=0)
         
-        
-        bypass = True # TESTS
-        
+                
         doMask = True
         doOffset = True
         
@@ -368,7 +366,7 @@ class BIAS01(Task):
         Quads = DDindices[2].vals
         CCDs = DDindices[DDindices.names.index('CCD')].vals
         
-        if not bypass:
+        if not self.drill:
             
             picklespath = self.inputs['subpaths']['pickles']
             
