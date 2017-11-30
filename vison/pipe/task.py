@@ -272,9 +272,9 @@ class Task(object):
     def skipMissingPlot(self,key,ref):
         
         self.figdict[key] = copy.deepcopy(self.figdict['BlueScreen'])
-        figobj = self.figdict[ref]()
-        stop()
+        niceref = st.replace(ref,'_','\_')
         pmeta = dict(path = self.inputs['subpaths']['figs'],
-                     caption = '$\\bf{MISSING}:$ %s' % figobj.caption)
+                     caption = '$\\bf{MISSING}:$ %s' % niceref,
+                     title=niceref)
         self.doPlot(key,**pmeta)
         self.addFigure2Report(key)

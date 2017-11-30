@@ -195,15 +195,11 @@ class BIAS01(Task):
         # Get statistics in different regions
         
         if not bypass:
-        
             for iObs in range(nObs):
-                
                 for jCCD in range(nCCD):
-                    
                     dpath = self.dd.mx['datapath'][iObs,jCCD]
                     ffits = os.path.join(dpath,'%s.fits' % \
-                                         self.dd.mx['File_name'][iObs,jCCD])
-                    
+                                         self.dd.mx['File_name'][iObs,jCCD])                    
                     ccdobj = ccd.CCD(ffits)
                     
                     for kQ in range(nQuad):

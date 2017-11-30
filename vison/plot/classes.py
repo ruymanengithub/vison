@@ -360,7 +360,7 @@ class BlueScreen(Fig):
         self.rootfigure = os.path.join(vdata.__path__[0],'BlueScreenErrorWindows.png')
         self.figname = 'BlueScreen%s.png' 
         self.caption = '' 
-        self.texfraction = 0.5
+        self.texfraction = 0.7
         self.title = ''
     
     def configure(self,**kwargs):
