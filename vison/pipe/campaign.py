@@ -52,7 +52,7 @@ def generate_test_sequence(equipment,toGen,elvis='6.3.0'):
                       sn_rpsu=sn_rpsu,operator=operator)
         
         
-        structBIAS01 = BIAS01.build_BIAS01_scriptdict(Nbias01,
+        structBIAS01 = BIAS01.BIAS01().build_BIAS01_scriptdict(Nbias01,
                                     diffvalues=diffBIAS01,elvis=elvis)
         
         test_sequence['BIAS01'] = structBIAS01

@@ -71,15 +71,16 @@ class BIAS01(Task):
         self.perflimits.update(performance.perf_rdout)
         
 
-    def build_scriptdict(self,N,diffvalues=dict(),elvis='6.3.0'):
+    def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
         """Builds BIAS01 script structure dictionary.
         
-        :param N: integer, number of frames to acquire.
+        ###:param N: integer, number of frames to acquire.
         :param diffvalues: dict, opt, differential values.
         :param elvis: char, ELVIS version.
         
         """
         
+        N = self.inputs['N']
         BIAS01_sdict = dict(col1=dict(frames=N,exptime=0))
     
         Ncols = len(BIAS01_sdict.keys())    
@@ -425,7 +426,10 @@ class BIAS01(Task):
                     ('basic',self.basic_analysis),
                     ('meta',self.meta_analysis)]
         
-        N = inputs['N']
+        defaults = dict(N=25)
+        defaults.update(inputs)
+        
+        #N = defaults['N']
         if 'elvis' in inputs:
             self.elvis = inputs['elvis']
         else: self.elvis=elvis
@@ -435,7 +439,7 @@ class BIAS01(Task):
             diffvalues = {}
         
         
-        scriptdict = self.build_scriptdict(N,diffvalues,elvis=self.elvis)
+        scriptdict = self.build_scriptdict(diffvalues,elvis=self.elvis)
         
         inputs['structure'] = scriptdict        
         inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
