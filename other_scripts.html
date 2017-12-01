@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Other Scripts &#8212; vison 0.2+115.gf75dcaf.dirty documentation</title>
+    <title>Other Scripts &#8212; vison 0.3 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2+115.gf75dcaf.dirty',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -41,7 +41,7 @@
         <li class="right" >
           <a href="tp_scripts.html" title="Trap-Pumping Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -68,9 +68,12 @@ TEST: PERSIST01</p>
 </tr>
 </tbody>
 </table>
-<dl class="function">
-<dt id="vison.other.PERSIST01.basic_analysis">
-<code class="descclassname">vison.other.PERSIST01.</code><code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.basic_analysis" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="vison.other.PERSIST01.PERSIST01">
+<em class="property">class </em><code class="descclassname">vison.other.PERSIST01.</code><code class="descname">PERSIST01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.other.PERSIST01.PERSIST01.basic_analysis">
+<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01.basic_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Basic analysis of data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
@@ -82,9 +85,9 @@ TEST: PERSIST01</p>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.other.PERSIST01.build_PER01_scriptdict">
-<code class="descclassname">vison.other.PERSIST01.</code><code class="descname">build_PER01_scriptdict</code><span class="sig-paren">(</span><em>exptSATUR</em>, <em>exptLATEN</em>, <em>diffvalues={}</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.build_PER01_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.other.PERSIST01.PERSIST01.build_scriptdict">
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>exptSATUR</em>, <em>exptLATEN</em>, <em>diffvalues={}</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds PERSISTENCE01 script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -101,9 +104,9 @@ TEST: PERSIST01</p>
 </table>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.other.PERSIST01.check_data">
-<code class="descclassname">vison.other.PERSIST01.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.check_data" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.other.PERSIST01.PERSIST01.check_data">
+<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01.check_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>PERSIST01: Checks quality of ingested data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
@@ -130,9 +133,9 @@ TEST: PERSIST01</p>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.other.PERSIST01.meta_analysis">
-<code class="descclassname">vison.other.PERSIST01.</code><code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.other.PERSIST01.PERSIST01.meta_analysis">
+<code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01.meta_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Meta-analysis of data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
@@ -145,9 +148,9 @@ TEST: PERSIST01</p>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.other.PERSIST01.prep_data">
-<code class="descclassname">vison.other.PERSIST01.</code><code class="descname">prep_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.prep_data" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.other.PERSIST01.PERSIST01.prep_data">
+<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01.prep_data" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Preparation</span> <span class="n">of</span> <span class="n">data</span> <span class="k">for</span> <span class="n">further</span> <span class="n">analysis</span><span class="p">:</span>
 
@@ -157,6 +160,8 @@ TEST: PERSIST01</p>
             <span class="n">subtract</span> <span class="n">offset</span>
 </pre></div>
 </div>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -215,7 +220,7 @@ TEST: PERSIST01</p>
         <li class="right" >
           <a href="tp_scripts.html" title="Trap-Pumping Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

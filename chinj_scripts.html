@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Charge Injection Scripts &#8212; vison 0.2+115.gf75dcaf.dirty documentation</title>
+    <title>Charge Injection Scripts &#8212; vison 0.3 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2+115.gf75dcaf.dirty',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="support.html" title="Support Code"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -75,9 +75,12 @@ TEST: CHINJ01</p>
 </tr>
 </tbody>
 </table>
-<dl class="function">
-<dt id="vison.inject.CHINJ01.basic_analysis">
-<code class="descclassname">vison.inject.CHINJ01.</code><code class="descname">basic_analysis</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.basic_analysis" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="vison.inject.CHINJ01.CHINJ01">
+<em class="property">class </em><code class="descclassname">vison.inject.CHINJ01.</code><code class="descname">CHINJ01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.inject.CHINJ01.CHINJ01.basic_analysis">
+<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01.basic_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Basic analysis of data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
@@ -101,9 +104,9 @@ TEST: CHINJ01</p>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.inject.CHINJ01.build_CHINJ01_scriptdict">
-<code class="descclassname">vison.inject.CHINJ01.</code><code class="descname">build_CHINJ01_scriptdict</code><span class="sig-paren">(</span><em>IDL</em>, <em>IDH</em>, <em>IG1s</em>, <em>id_delays</em>, <em>toi_chinj</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.build_CHINJ01_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.inject.CHINJ01.CHINJ01.build_scriptdict">
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>IDL</em>, <em>IDH</em>, <em>IG1s</em>, <em>id_delays</em>, <em>toi_chinj</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds CHINJ01 script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -123,9 +126,9 @@ TEST: CHINJ01</p>
 </table>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.inject.CHINJ01.check_data">
-<code class="descclassname">vison.inject.CHINJ01.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.check_data" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.inject.CHINJ01.CHINJ01.check_data">
+<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01.check_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>CHINJ01: Checks quality of ingested data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
@@ -157,9 +160,9 @@ TEST: CHINJ01</p>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.inject.CHINJ01.extract_data">
-<code class="descclassname">vison.inject.CHINJ01.</code><code class="descname">extract_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.extract_data" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.inject.CHINJ01.CHINJ01.extract_data">
+<code class="descname">extract_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01.extract_data" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>NEEDED?</strong> Could be merged with basic_analysis</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Preparation</span> <span class="n">of</span> <span class="n">data</span> <span class="k">for</span> <span class="n">further</span> <span class="n">analysis</span><span class="p">:</span>
@@ -171,6 +174,13 @@ TEST: CHINJ01</p>
             <span class="n">extract</span> <span class="n">average</span> <span class="mi">2</span><span class="n">D</span> <span class="n">injection</span> <span class="n">pattern</span> <span class="ow">and</span> <span class="n">save</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.inject.CHINJ01.CHINJ01.feeder">
+<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01.feeder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>
@@ -193,9 +203,12 @@ TEST: CHINJ02</p>
 </tr>
 </tbody>
 </table>
-<dl class="function">
-<dt id="vison.inject.CHINJ02.basic_analysis">
-<code class="descclassname">vison.inject.CHINJ02.</code><code class="descname">basic_analysis</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.basic_analysis" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="vison.inject.CHINJ02.CHINJ02">
+<em class="property">class </em><code class="descclassname">vison.inject.CHINJ02.</code><code class="descname">CHINJ02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.inject.CHINJ02.CHINJ02.basic_analysis">
+<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02.basic_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Basic analysis of data.
 AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING</p>
 <p><strong>METACODE</strong></p>
@@ -220,9 +233,9 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.inject.CHINJ02.build_CHINJ02_scriptdict">
-<code class="descclassname">vison.inject.CHINJ02.</code><code class="descname">build_CHINJ02_scriptdict</code><span class="sig-paren">(</span><em>IDLs</em>, <em>IDH</em>, <em>id_delays</em>, <em>toi_chinj</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.build_CHINJ02_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.inject.CHINJ02.CHINJ02.build_scriptdict">
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>IDLs</em>, <em>IDH</em>, <em>id_delays</em>, <em>toi_chinj</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds CHINJ02 script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -241,9 +254,9 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 </table>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.inject.CHINJ02.check_data">
-<code class="descclassname">vison.inject.CHINJ02.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.check_data" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.inject.CHINJ02.CHINJ02.check_data">
+<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02.check_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>CHINJ02: Checks quality of ingested data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
@@ -275,9 +288,9 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.inject.CHINJ02.extract_data">
-<code class="descclassname">vison.inject.CHINJ02.</code><code class="descname">extract_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.extract_data" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.inject.CHINJ02.CHINJ02.extract_data">
+<code class="descname">extract_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02.extract_data" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>NEEDED?</strong> Could be merged with basic_analysis</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Preparation</span> <span class="n">of</span> <span class="n">data</span> <span class="k">for</span> <span class="n">further</span> <span class="n">analysis</span><span class="p">:</span>
@@ -291,9 +304,14 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.inject.CHINJ02.meta_analysis">
-<code class="descclassname">vison.inject.CHINJ02.</code><code class="descname">meta_analysis</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.inject.CHINJ02.CHINJ02.feeder">
+<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02.feeder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.inject.CHINJ02.CHINJ02.meta_analysis">
+<code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02.meta_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds the Injection Threshold for each CCD half.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
@@ -304,6 +322,8 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 <span class="n">report</span> <span class="n">injection</span> <span class="n">threshold</span> <span class="k">as</span> <span class="n">a</span> <span class="n">table</span>
 </pre></div>
 </div>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -369,7 +389,7 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
         <li class="right" >
           <a href="support.html" title="Support Code"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

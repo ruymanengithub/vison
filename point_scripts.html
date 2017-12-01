@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Point-Source Scripts &#8212; vison 0.2+115.gf75dcaf.dirty documentation</title>
+    <title>Point-Source Scripts &#8212; vison 0.3 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2+115.gf75dcaf.dirty',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="flat_scripts.html" title="Flat-Illumination Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -104,6 +104,11 @@ TEST: FOCUS00</p>
 </tr>
 </tbody>
 </table>
+<dl class="class">
+<dt id="vison.point.FOCUS00.FOCUS00">
+<em class="property">class </em><code class="descclassname">vison.point.FOCUS00.</code><code class="descname">FOCUS00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="function">
 <dt id="vison.point.FOCUS00.basic_analysis_FOCUS00">
 <code class="descclassname">vison.point.FOCUS00.</code><code class="descname">basic_analysis_FOCUS00</code><span class="sig-paren">(</span><em>DataDict</em>, <em>Report</em>, <em>inputs</em>, <em>log=None</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.basic_analysis_FOCUS00" title="Permalink to this definition">¶</a></dt>
@@ -250,126 +255,6 @@ PSF02 - alternative temperatures</dd>
 </tr>
 </tbody>
 </table>
-<dl class="function">
-<dt id="vison.point.PSF0X.basic_analysis">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">basic_analysis</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.basic_analysis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Performs basic analysis on spots:
-- shape from moments
-- Gaussian fitting: peak intensity, position, width_x, width_y</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.PSF0X.bayes_analysis">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">bayes_analysis</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.bayes_analysis" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Performs bayesian decomposition of the spot images:</dt>
-<dd><ul class="first last simple">
-<li>optomechanic PSF and detector PSF.</li>
-</ul>
-</dd>
-</dl>
-<p>Also measures R2, fwhm and ellipticity of &#8220;extracted&#8221; detector PSF.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.PSF0X.build_PSF0X_scriptdict">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">build_PSF0X_scriptdict</code><span class="sig-paren">(</span><em>exptimes</em>, <em>frames</em>, <em>wavelength=800</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.build_PSF0X_scriptdict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Builds PSF0X script structure dictionary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>exptimes</strong> &#8211; list of ints, [ms], exposure times.</li>
-<li><strong>frames</strong> &#8211; list of frame numbers. Same length as exptimes.</li>
-<li><strong>wavelength</strong> &#8211; int, [nm], wavelength.</li>
-<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.PSF0X.check_data">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.check_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>PSF0X: Checks quality of ingested data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
-<span class="n">check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span> 
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
-            <span class="n">measure</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span><span class="ow">and</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">median</span> <span class="ow">in</span> <span class="n">img</span> <span class="n">area</span><span class="p">,</span> <span class="n">excluding</span> <span class="n">spots</span> <span class="p">(</span><span class="n">bgd</span><span class="p">)</span>
-            <span class="n">measure</span> <span class="p">(</span><span class="n">bgd</span><span class="o">-</span><span class="n">sub</span><span class="s1">&#39;d-) fluence of spots</span>
-            <span class="n">measure</span> <span class="n">size</span> <span class="n">of</span> <span class="n">spots</span>
-            
-<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="p">(</span><span class="o">~</span><span class="n">RON</span><span class="p">)</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span>  <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">median</span><span class="o">-</span><span class="n">img</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">fluences</span> <span class="n">of</span> <span class="n">spots</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">sizes</span> <span class="n">of</span> <span class="n">spots</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-
-<span class="n">plot</span> <span class="n">offsets</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
-<span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
-<span class="n">plot</span> <span class="n">spot</span> <span class="n">fluences</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
-<span class="n">plot</span> <span class="n">spot</span> <span class="n">size</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
-    
-<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>
-<span class="n">update</span> <span class="n">flags</span> <span class="k">as</span> <span class="n">needed</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.PSF0X.feeder">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.feeder" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="vison.point.PSF0X.filterexposures">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.filterexposures" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="vison.point.PSF0X.meta_analysis">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">meta_analysis</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.meta_analysis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Analyzes the relation between detector PSF and fluence.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.PSF0X.prep_data">
-<code class="descclassname">vison.point.PSF0X.</code><code class="descname">prep_data</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.prep_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>PSF0X: Preparation of data for further analysis.</p>
-<p><strong>METACODE</strong></p>
-<dl class="docutils">
-<dt>::</dt>
-<dd><dl class="first last docutils">
-<dt>f.e. ObsID:</dt>
-<dd><dl class="first last docutils">
-<dt>f.e.CCD:                </dt>
-<dd><p class="first">apply cosmetic mask, if available
-f.e.Q:</p>
-<blockquote>
-<div>subtract offset</div></blockquote>
-<p>subtract superbias, if available
-divide by flat-field, if available</p>
-<p class="last">save image as a datamodel.ccd.CCD object.                
-cuts-out and save stamps of pre-processed spots for further analysis.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
 </div>
 </div>
 
@@ -433,7 +318,7 @@ cuts-out and save stamps of pre-processed spots for further analysis.</p>
         <li class="right" >
           <a href="flat_scripts.html" title="Flat-Illumination Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

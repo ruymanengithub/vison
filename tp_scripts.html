@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Trap-Pumping Scripts &#8212; vison 0.2+115.gf75dcaf.dirty documentation</title>
+    <title>Trap-Pumping Scripts &#8212; vison 0.3 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2+115.gf75dcaf.dirty',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="point_scripts.html" title="Point-Source Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -72,9 +72,12 @@ TEST: TP01</p>
 </tr>
 </tbody>
 </table>
-<dl class="function">
-<dt id="vison.pump.TP01.basic_analysis">
-<code class="descclassname">vison.pump.TP01.</code><code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.basic_analysis" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="vison.pump.TP01.TP01">
+<em class="property">class </em><code class="descclassname">vison.pump.TP01.</code><code class="descname">TP01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.TP01" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.pump.TP01.TP01.basic_analysis">
+<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.TP01.basic_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Basic analysis of data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span> <span class="p">[</span><span class="n">there</span> <span class="n">are</span> <span class="n">different</span> <span class="n">TOI_TP</span> <span class="ow">and</span> <span class="n">TP</span><span class="o">-</span><span class="n">patterns</span><span class="p">]:</span>
@@ -92,14 +95,14 @@ TEST: TP01</p>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.pump.TP01.build_TP01_scriptdict">
-<code class="descclassname">vison.pump.TP01.</code><code class="descname">build_TP01_scriptdict</code><span class="sig-paren">(</span><em>Nshuffles_V</em>, <em>TOI_TPv</em>, <em>id_delays</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.build_TP01_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.pump.TP01.TP01.build_scriptdict">
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>Nshuffles_V</em>, <em>TOI_TPv</em>, <em>id_delays</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.TP01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="vison.pump.TP01.check_data">
-<code class="descclassname">vison.pump.TP01.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.check_data" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.pump.TP01.TP01.check_data">
+<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.TP01.check_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>TP01: Checks quality of ingested data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
@@ -126,9 +129,14 @@ TEST: TP01</p>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.pump.TP01.meta_analysis">
-<code class="descclassname">vison.pump.TP01.</code><code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.pump.TP01.TP01.feeder">
+<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.TP01.feeder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pump.TP01.TP01.meta_analysis">
+<code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.TP01.meta_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Meta-analysis of data:</p>
 <blockquote>
 <div>Try to identify tau and pixel-phase location for each trap.
@@ -149,9 +157,9 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.pump.TP01.prep_data">
-<code class="descclassname">vison.pump.TP01.</code><code class="descname">prep_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.prep_data" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.pump.TP01.TP01.prep_data">
+<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.TP01.prep_data" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Preparation</span> <span class="n">of</span> <span class="n">data</span> <span class="k">for</span> <span class="n">further</span> <span class="n">analysis</span><span class="p">:</span>
 
@@ -163,6 +171,8 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
             <span class="n">save</span> <span class="s2">&quot;map of relative pumping&quot;</span>
 </pre></div>
 </div>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -182,9 +192,12 @@ TEST: TP01</p>
 </tr>
 </tbody>
 </table>
-<dl class="function">
-<dt id="vison.pump.TP02.basic_analysis">
-<code class="descclassname">vison.pump.TP02.</code><code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.basic_analysis" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="vison.pump.TP02.TP02">
+<em class="property">class </em><code class="descclassname">vison.pump.TP02.</code><code class="descname">TP02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.TP02" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.pump.TP02.TP02.basic_analysis">
+<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.TP02.basic_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Basic analysis of data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span> <span class="p">[</span><span class="n">there</span> <span class="n">are</span> <span class="n">different</span> <span class="n">TOI_TP</span> <span class="ow">and</span> <span class="n">TP</span><span class="o">-</span><span class="n">patterns</span><span class="p">]:</span>
@@ -202,15 +215,15 @@ TEST: TP01</p>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.pump.TP02.build_TP02_scriptdict">
-<code class="descclassname">vison.pump.TP02.</code><code class="descname">build_TP02_scriptdict</code><span class="sig-paren">(</span><em>Nshuffles_H</em>, <em>dwell_sv</em>, <em>id_delays</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.build_TP02_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.pump.TP02.TP02.build_scriptdict">
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>Nshuffles_H</em>, <em>dwell_sv</em>, <em>id_delays</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.TP02.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>MISSING: different starting points (not implemented in ELVIS yet).</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.pump.TP02.check_data">
-<code class="descclassname">vison.pump.TP02.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.check_data" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.pump.TP02.TP02.check_data">
+<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.TP02.check_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>TP02: Checks quality of ingested data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
@@ -237,9 +250,14 @@ TEST: TP01</p>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.pump.TP02.meta_analysis">
-<code class="descclassname">vison.pump.TP02.</code><code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.pump.TP02.TP02.feeder">
+<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.TP02.feeder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pump.TP02.TP02.meta_analysis">
+<code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.TP02.meta_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Meta-analysis of data:</p>
 <blockquote>
 <div>Try to identify tau and pixel-phase location for each trap.
@@ -259,9 +277,9 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.pump.TP02.prep_data">
-<code class="descclassname">vison.pump.TP02.</code><code class="descname">prep_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.prep_data" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.pump.TP02.TP02.prep_data">
+<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.TP02.prep_data" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Preparation</span> <span class="n">of</span> <span class="n">data</span> <span class="k">for</span> <span class="n">further</span> <span class="n">analysis</span><span class="p">:</span>
 
@@ -274,6 +292,8 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
             <span class="n">save</span> <span class="n">raw</span> <span class="mi">1</span><span class="n">D</span> <span class="nb">map</span> <span class="n">of</span> <span class="n">relative</span> <span class="n">pumping</span>
 </pre></div>
 </div>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -339,7 +359,7 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
         <li class="right" >
           <a href="point_scripts.html" title="Point-Source Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

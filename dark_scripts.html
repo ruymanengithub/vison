@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>“Dark Acquisitions” Scripts &#8212; vison 0.2+115.gf75dcaf.dirty documentation</title>
+    <title>“Dark Acquisitions” Scripts &#8212; vison 0.3 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2+115.gf75dcaf.dirty',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="chinj_scripts.html" title="Charge Injection Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -72,134 +72,6 @@ TEST: BIAS01</p>
 </tr>
 </tbody>
 </table>
-<dl class="function">
-<dt id="vison.dark.BIAS01.basic_analysis">
-<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">basic_analysis</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.basic_analysis" title="Permalink to this definition">¶</a></dt>
-<dd><p>BIAS01: Basic analysis of data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
-   <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-       
-       <span class="n">load</span> <span class="n">ccdobj</span> <span class="n">of</span> <span class="n">ObsID</span><span class="p">,</span> <span class="n">CCD</span>
-       
-       <span class="k">with</span> <span class="n">ccdobj</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-           <span class="n">produce</span> <span class="n">a</span> <span class="mi">2</span><span class="n">D</span> <span class="n">poly</span> <span class="n">model</span> <span class="n">of</span> <span class="n">bias</span><span class="p">,</span> <span class="n">save</span> <span class="n">coefficients</span>
-           <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">rows</span>
-           <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">cols</span>
-           <span class="n">save</span> <span class="mi">2</span><span class="n">D</span> <span class="n">model</span> <span class="ow">and</span> <span class="n">profiles</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">pick</span> <span class="n">file</span> <span class="k">for</span> <span class="n">each</span> <span class="n">OBSID</span><span class="o">-</span><span class="n">CCD</span>
-           <span class="n">measure</span> <span class="ow">and</span> <span class="n">save</span> <span class="n">RON</span> <span class="n">after</span> <span class="n">subtracting</span> <span class="n">large</span> <span class="n">scale</span> <span class="n">structure</span>
-<span class="n">plot</span> <span class="n">RON</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span> <span class="ow">and</span> <span class="n">Q</span>
-<span class="n">plot</span> <span class="n">average</span> <span class="n">profiles</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span> <span class="ow">and</span> <span class="n">Q</span> <span class="p">(</span><span class="n">color</span> <span class="n">coded</span> <span class="n">by</span> <span class="n">time</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.dark.BIAS01.build_BIAS01_scriptdict">
-<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">build_BIAS01_scriptdict</code><span class="sig-paren">(</span><em>N</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.build_BIAS01_scriptdict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Builds BIAS01 script structure dictionary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>N</strong> &#8211; integer, number of frames to acquire.</li>
-<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
-<li><strong>elvis</strong> &#8211; char, ELVIS version.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.dark.BIAS01.check_data">
-<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.check_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>BIAS01: Checks quality of ingested data.</p>
-<p><strong>METACODE</strong></p>
-<dl class="docutils">
-<dt><strong>TODO</strong>: consider to raise an exception that</dt>
-<dd>would halt execution of task if 
-processing data could be just a waste of time.</dd>
-<dt><strong>TODO</strong>: consider add a common binary &#8220;flags&#8221; variable as </dt>
-<dd>input/output. It could go in DataDict, and reported in 
-log and report.</dd>
-</dl>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
-<span class="n">check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span> 
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
-            <span class="n">measure</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span>  <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-
-<span class="n">plot</span> <span class="n">offsets</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
-<span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
-
-<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>
-<span class="n">update</span> <span class="n">flags</span> <span class="k">as</span> <span class="n">needed</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.dark.BIAS01.feeder">
-<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.feeder" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="vison.dark.BIAS01.filterexposures">
-<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.filterexposures" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="vison.dark.BIAS01.meta_analysis">
-<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">meta_analysis</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.meta_analysis" title="Permalink to this definition">¶</a></dt>
-<dd><p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">:</span>
-   <span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">Q</span><span class="p">:</span>
-       <span class="n">stack</span> <span class="nb">all</span> <span class="n">ObsIDs</span> <span class="n">to</span> <span class="n">produce</span> <span class="n">Master</span> <span class="n">Bias</span>
-       <span class="n">measure</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">rows</span>
-       <span class="n">measure</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">cols</span>
-<span class="n">plot</span> <span class="n">average</span> <span class="n">profiles</span> <span class="n">of</span> <span class="n">Master</span> <span class="n">Bias</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">Q</span>
-<span class="n">produce</span> <span class="n">table</span> <span class="k">with</span> <span class="n">summary</span> <span class="n">of</span> <span class="n">results</span><span class="p">,</span> <span class="n">include</span> <span class="ow">in</span> <span class="n">report</span>
-<span class="n">show</span> <span class="n">Master</span> <span class="n">Bias</span> <span class="p">(</span><span class="n">image</span><span class="p">),</span> <span class="n">include</span> <span class="ow">in</span> <span class="n">report</span>
-<span class="n">save</span> <span class="n">name</span> <span class="n">of</span> <span class="n">MasterBias</span> <span class="n">to</span> <span class="n">DataDict</span><span class="p">,</span> <span class="n">report</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.dark.BIAS01.prep_data">
-<code class="descclassname">vison.dark.BIAS01.</code><code class="descname">prep_data</code><span class="sig-paren">(</span><em>dd</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.BIAS01.prep_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>BIAS01: Preparation of data for further analysis.
-applies a mask</p>
-<p><strong>METACODE</strong></p>
-<dl class="docutils">
-<dt>::</dt>
-<dd><dl class="first last docutils">
-<dt>f.e. ObsID:</dt>
-<dd><dl class="first last docutils">
-<dt>f.e.CCD:                </dt>
-<dd><p class="first">apply cosmetic mask, if available                
-f.e.Q:</p>
-<blockquote>
-<div>subtract offset</div></blockquote>
-<p class="last">save file as a datamodel.ccd.CCD object.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
 </div>
 <div class="section" id="module-vison.dark.DARK01">
 <span id="dark01"></span><h2>DARK01<a class="headerlink" href="#module-vison.dark.DARK01" title="Permalink to this headline">¶</a></h2>
@@ -217,9 +89,12 @@ TEST: DARK01</p>
 </tr>
 </tbody>
 </table>
-<dl class="function">
-<dt id="vison.dark.DARK01.basic_analysis">
-<code class="descclassname">vison.dark.DARK01.</code><code class="descname">basic_analysis</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.basic_analysis" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="vison.dark.DARK01.DARK01">
+<em class="property">class </em><code class="descclassname">vison.dark.DARK01.</code><code class="descname">DARK01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.DARK01" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.dark.DARK01.DARK01.basic_analysis">
+<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.DARK01.basic_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>DARK01: Basic analysis of data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
@@ -238,9 +113,9 @@ TEST: DARK01</p>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.dark.DARK01.build_DARK01_scriptdict">
-<code class="descclassname">vison.dark.DARK01.</code><code class="descname">build_DARK01_scriptdict</code><span class="sig-paren">(</span><em>N</em>, <em>exptime</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.build_DARK01_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.dark.DARK01.DARK01.build_scriptdict">
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>N</em>, <em>exptime</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.DARK01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds DARK01 script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -257,9 +132,9 @@ TEST: DARK01</p>
 </table>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.dark.DARK01.check_data">
-<code class="descclassname">vison.dark.DARK01.</code><code class="descname">check_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.check_data" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.dark.DARK01.DARK01.check_data">
+<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.DARK01.check_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>DARK0: Checks quality of ingested data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
@@ -283,14 +158,14 @@ TEST: DARK01</p>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.dark.DARK01.feeder">
-<code class="descclassname">vison.dark.DARK01.</code><code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.feeder" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.dark.DARK01.DARK01.feeder">
+<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.DARK01.feeder" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="vison.dark.DARK01.meta_analysis">
-<code class="descclassname">vison.dark.DARK01.</code><code class="descname">meta_analysis</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.dark.DARK01.DARK01.meta_analysis">
+<code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.DARK01.meta_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">Q</span><span class="p">:</span>
@@ -300,8 +175,8 @@ TEST: DARK01</p>
         <span class="n">measure</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">rows</span>
         <span class="n">measure</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">cols</span>
 
-<span class="n">plot</span> <span class="n">average</span> <span class="n">profiles</span> <span class="n">of</span> <span class="n">Master</span> <span class="n">Bias</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">Q</span>
-<span class="n">show</span> <span class="n">Master</span> <span class="n">Dark</span> <span class="p">(</span><span class="n">image</span><span class="p">),</span> <span class="n">include</span> <span class="ow">in</span> <span class="n">report</span>
+<span class="n">plot</span> <span class="n">average</span> <span class="n">profiles</span> <span class="n">of</span> <span class="n">Master</span> <span class="n">Bias</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">,</span><span class="n">Q</span>
+<span class="n">show</span> <span class="n">Master</span> <span class="n">Dark</span> <span class="p">(</span><span class="n">images</span><span class="p">),</span> <span class="n">include</span> <span class="ow">in</span> <span class="n">report</span>
 <span class="n">report</span> <span class="n">stats</span> <span class="n">of</span> <span class="n">defects</span><span class="p">,</span> <span class="n">include</span> <span class="ow">in</span> <span class="n">report</span>
 <span class="n">save</span> <span class="n">name</span> <span class="n">of</span> <span class="n">MasterDark</span> <span class="n">to</span> <span class="n">DataDict</span><span class="p">,</span> <span class="n">report</span>
 <span class="n">save</span> <span class="n">name</span> <span class="n">of</span> <span class="n">Defects</span> <span class="ow">in</span> <span class="n">Darkness</span> <span class="n">Mask</span> <span class="n">to</span> <span class="n">DD</span><span class="p">,</span> <span class="n">report</span>
@@ -309,17 +184,19 @@ TEST: DARK01</p>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.dark.DARK01.prep_data">
-<code class="descclassname">vison.dark.DARK01.</code><code class="descname">prep_data</code><span class="sig-paren">(</span><em>DataDict</em>, <em>report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.prep_data" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.dark.DARK01.DARK01.prep_data">
+<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.dark.DARK01.DARK01.prep_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>DARK01: Preparation of data for further analysis.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">subtract</span> <span class="n">offset</span><span class="p">:</span> <span class="n">save</span> <span class="n">to</span> <span class="n">FITS</span><span class="p">,</span> <span class="n">update</span> <span class="n">filename</span>
+            <span class="n">subtract</span> <span class="n">offset</span><span class="p">:</span> <span class="n">save</span> <span class="n">to</span> <span class="n">pick</span><span class="p">,</span> <span class="n">update</span> <span class="n">filename</span>
 </pre></div>
 </div>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -385,7 +262,7 @@ TEST: DARK01</p>
         <li class="right" >
           <a href="chinj_scripts.html" title="Charge Injection Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.2+115.gf75dcaf.dirty documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
