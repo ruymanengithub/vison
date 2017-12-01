@@ -39,6 +39,7 @@ import os
 import numpy as np
 from time import sleep
 import datetime
+import sys,traceback
 
 from vison import __version__
 from vison.support import logger as lg
@@ -133,7 +134,7 @@ class Pipe(object):
         taskinputs.update(extinputs)
             
         msg = ['\n\nRunning Task: %s\n' % taskname]
-        msg += ['Inputs:']
+        msg += ['Inputs:\n']
         for key in taskinputs:
             msg += ['%s = %s' % (key,str(taskinputs[key]))]
             
@@ -241,8 +242,23 @@ class Pipe(object):
     def dotask(self,taskname,inputs,drill=False):
         """Generic test master function."""
         
-        Test = self.Test_dict[taskname](inputs,self.log,drill)
-        Test()
+        try:
+            Test = self.Test_dict[taskname](inputs,self.log,drill)
+            Test()
+        except:
+            self.catchtraceback()
+            if self.log is not None:
+                self.log.info('TASK "%s@%s" FAILED, QUITTING!' % (taskname,self.Test_dict[taskname].__module__))
+    
+    def catchtraceback(self):
+        """ """
+        exc_type,exc_value,exc_traceback = sys.exc_info()
         
+        msg_trbk = traceback.format_tb(exc_traceback)
+        if self.log is not None:
+            self.log.info(msg_trbk)
+        else:
+            for line in msg_trbk: print line
+
         
 

@@ -89,7 +89,7 @@ stampw = polib.stampw
 class PSF0X(Task):
     
     
-    def __init__(self,inputs,log=None):
+    def __init__(self,inputs,log=None,drill=False):
         """ """
         super(PSF0X,self).__init__(inputs,log)
         self.name = 'PSF0X'

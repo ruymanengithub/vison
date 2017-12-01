@@ -18,6 +18,7 @@ import datetime
 import string as st
 import copy
 from collections import OrderedDict
+import sys,traceback
 
 from vison.support.report import Report
 from vison.support import vistime
@@ -158,13 +159,20 @@ class Task(object):
             if todo_flags[subtaskname]:
                 
                 tini = datetime.datetime.now()
-                subtaskmethod()
-                tend = datetime.datetime.now()
-                dtm = ((tend-tini).seconds)/60.
-                if self.log is not None: 
-                    self.log.info('%.1f minutes in running Sub-task: %s' % (dtm,subtaskname))
+                try: 
+                    subtaskmethod()
+                    tend = datetime.datetime.now()
+                    dtm = ((tend-tini).seconds)/60.
+                    if self.log is not None: 
+                        self.log.info('%.1f minutes in running Sub-task: %s' % (dtm,subtaskname))
+                    self.save_progress(DataDictFile,reportobjFile)
+                except:
+                    self.catchtraceback()
+                    self.save_progress(DataDictFile,reportobjFile)
+                    if self.log is not None:
+                        self.log.info('SUBTASK "%s:%s" FAILED, QUITTING!' % (subtaskname,subtaskmethod.__name__))
+                    break
                 
-                self.save_progress(DataDictFile,reportobjFile)
             else:
                 self.recover_progress(DataDictFile,reportobjFile)
         
@@ -184,7 +192,18 @@ class Task(object):
         if self.log is not None:
             self.log.info('Finished %s' % self.name)
 
-   
+    def catchtraceback(self):
+        """ """
+        exc_type,exc_value,exc_traceback = sys.exc_info()
+        
+        msg_trbk = traceback.format_tb(exc_traceback)
+        if self.log is not None:
+            self.log.info(msg_trbk)
+        else:
+            for line in msg_trbk: print line
+        
+    
+    
     def addHK_2_dd(self):
         """ """
         self.dd = pilib.addHK(self.dd,self.HKKeys,elvis=self.elvis)

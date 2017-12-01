@@ -136,6 +136,7 @@ class BIAS01(Task):
         
         """
         
+        #raise RunTimeError # TEST        
     
         if self.report is not None: 
             self.report.add_Section(keyword='check_data',Title='Data Validation',level=0)
