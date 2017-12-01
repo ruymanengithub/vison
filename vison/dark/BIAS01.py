@@ -428,13 +428,14 @@ class BIAS01(Task):
         N = inputs['N']
         if 'elvis' in inputs:
             self.elvis = inputs['elvis']
+        else: self.elvis=elvis
         if 'diffvalues' in inputs:
             diffvalues = inputs['diffvalues']
         else:
             diffvalues = {}
         
         
-        scriptdict = self.build_scriptdict(N,diffvalues,elvis=elvis)
+        scriptdict = self.build_scriptdict(N,diffvalues,elvis=self.elvis)
         
         inputs['structure'] = scriptdict        
         inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')

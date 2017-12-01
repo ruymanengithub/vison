@@ -25,10 +25,12 @@ from vison.point import lib as polib
 from vison.datamodel import ccd
 from vison.datamodel import scriptic as sc
 from vison.pipe.task import Task
+from vison.image import performance
 # END IMPORT 
 
 isthere = os.path.exists
 
+HKKeys = []
 
 IG1=6
 IG2=5
@@ -50,169 +52,211 @@ TP02_commvalues = dict(program='CALCAMP',test='TP02',
 
 class TP02(Task):
     """ """
-
-def build_TP02_scriptdict(Nshuffles_H,dwell_sv,id_delays,
-                diffvalues=dict(),elvis='6.3.0'):
-    """MISSING: different starting points (not implemented in ELVIS yet)."""
-    
-    assert len(id_delays) == 2
-    
-    sermodes = [23,31]
-              
-    TP02_sdict = dict()
-    
-    TP02_commvalues['ser_shuffles'] = Nshuffles_H
-    
-    # First Injection Drain Delay
-    
-    TP02_sdict['col1'] = dict(frames=1,v_tpump=0,s_tpump=0,
-              comments='BGD',id_dly=id_delays[0])
-    
-    colcounter = 2
-    for i,dwell_s in enumerate(dwell_sv):
+    def __init__(self,inputs,log=None,drill=False):
+        """ """
+        super(TP02,self).__init__(inputs,log,drill)
+        self.name = 'TP02'
+        self.HKKeys = HKKeys
+        self.figdict = dict()
         
-        for k,sermode in enumerate(sermodes):
-            colkey = 'col%i' % colcounter
-            TP02_sdict[colkey] = dict(frames=1,dwell_s=dwell_s,
-                     id_dly=id_delays[0],s_tpmod=sermode)
+        self.perflimits.update(performance.perf_rdout)
+    
+    
+    def build_scriptdict(self,Nshuffles_H,dwell_sv,id_delays,
+                    diffvalues=dict(),elvis='6.3.0'):
+        """MISSING: different starting points (not implemented in ELVIS yet)."""
+        
+        assert len(id_delays) == 2
+        
+        sermodes = [23,31]
+                  
+        TP02_sdict = dict()
+        
+        TP02_commvalues['ser_shuffles'] = Nshuffles_H
+        
+        # First Injection Drain Delay
+        
+        TP02_sdict['col1'] = dict(frames=1,v_tpump=0,s_tpump=0,
+                  comments='BGD',id_dly=id_delays[0])
+        
+        colcounter = 2
+        for i,dwell_s in enumerate(dwell_sv):
             
-            colcounter += 1
-    
-    
-    # Second Injection Drain Delay
-    
-    TP02_sdict['col%i' % colcounter] = dict(frames=1,v_tpump=0,s_tpump=0,
-              comments='BGD',id_dly=id_delays[1])
-    colcounter += 1 
-    
-
-    for j,dwell_s in enumerate(dwell_sv):
+            for k,sermode in enumerate(sermodes):
+                colkey = 'col%i' % colcounter
+                TP02_sdict[colkey] = dict(frames=1,dwell_s=dwell_s,
+                         id_dly=id_delays[0],s_tpmod=sermode)
+                
+                colcounter += 1
         
-        for k,sermode in enumerate(sermodes):
         
-            colkey = 'col%i' % colcounter
-            #print colkey
-            TP02_sdict[colkey] = dict(frames=1,dwell_s=dwell_s,
-                         id_dly=id_delays[1],s_tpmod=sermode)    
+        # Second Injection Drain Delay
+        
+        TP02_sdict['col%i' % colcounter] = dict(frames=1,v_tpump=0,s_tpump=0,
+                  comments='BGD',id_dly=id_delays[1])
+        colcounter += 1 
+        
+    
+        for j,dwell_s in enumerate(dwell_sv):
             
-            colcounter += 1
+            for k,sermode in enumerate(sermodes):
             
-    
-    Ncols = len(TP02_sdict.keys())    
-    TP02_sdict['Ncols'] = Ncols
-              
-    commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
-    commvalues.update(TP02_commvalues)
-    
-    TP02_sdict = sc.update_structdict(TP02_sdict,commvalues,diffvalues)
-    
-    return TP02_sdict
-
-
-def check_data(DataDict,report,inputs,log=None):
-    """ 
-
-    TP02: Checks quality of ingested data.
-    
-
-    **METACODE**
-    
-    ::
-
-        check common HK values are within safe / nominal margins
-        check voltages in HK match commanded voltages, within margins
-    
-        f.e.ObsID:
-            f.e.CCD:
-                f.e.Q.:
-                    measure offsets in pre-, over-
-                    measure std in pre-, over-
-                    measure mean in img-
+                colkey = 'col%i' % colcounter
+                #print colkey
+                TP02_sdict[colkey] = dict(frames=1,dwell_s=dwell_s,
+                             id_dly=id_delays[1],s_tpmod=sermode)    
+                
+                colcounter += 1
+                
         
-        assess std in pre- (~RON) is within allocated margins
-        assess offsets in pre-, and over- are equal, within allocated margins
-        assess offsets are within allocated margins
-        assess injection level is within expected margins
-    
-        plot histogram of injected levels for each Q
-        [plot std vs. time]
-    
-        issue any warnings to log
-        issue update to report          
-
-    
-    """
-
-def prep_data(DataDict,report,inputs,log=None):
-    """
-    
-    **METACODE**
-    
-    ::
-    
-        Preparation of data for further analysis:
-
-        f.e. ObsID [images with TPing only]:
-            f.e.CCD:
-                f.e.Q:
-                    subtract offset
-                    divide by reference image wo TPing
-                    average across readout lines (iterations)
-                    save raw 1D map of relative pumping
-
-    
-    """
-    
-    return DataDict,report
-
-def basic_analysis():
-    """
-    
-    Basic analysis of data.
-
-    **METACODE**
-    
-    ::
-
-        f. e. ObsID [there are different TOI_TP and TP-patterns]:
-            f.e.CCD:
-                f.e.Q:
-                    load raw 1D map of relative pumping (from extract_data)
-                    identify dipoles:
-                        x, rel-amplitude, orientation (E or W)
-
-        produce & report:  
-            map location of dipoles
-            PDF of dipole amplitudes (for E and W)
-            Counts of dipoles (and E vs. W)
-    
-    """
-    
-def meta_analysis():
-    """
-    
-    Meta-analysis of data:
+        Ncols = len(TP02_sdict.keys())    
+        TP02_sdict['Ncols'] = Ncols
+                  
+        commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+        commvalues.update(TP02_commvalues)
         
-        Try to identify tau and pixel-phase location for each trap.
-        Need to associate dipoles across TOI_TPs and TP-patterns        
+        TP02_sdict = sc.update_structdict(TP02_sdict,commvalues,diffvalues)
         
- 
-    **METACODE**
+        return TP02_sdict
     
-    ::
+    
+    def check_data(self):
+        """ 
+    
+        TP02: Checks quality of ingested data.
         
-        across TOI_TP, patterns:
-            build catalog of traps: x,y,R-phase, amp(dwell)
-            from Amp(dwell) -> tau, Pc
+    
+        **METACODE**
+        
+        ::
+    
+            check common HK values are within safe / nominal margins
+            check voltages in HK match commanded voltages, within margins
+        
+            f.e.ObsID:
+                f.e.CCD:
+                    f.e.Q.:
+                        measure offsets in pre-, over-
+                        measure std in pre-, over-
+                        measure mean in img-
             
-        Report on :
-           Histogram of Taus
-           Histogram of Pc (capture probability)
-           Histogram of R-phases
-
-           Total Count of Traps
-
+            assess std in pre- (~RON) is within allocated margins
+            assess offsets in pre-, and over- are equal, within allocated margins
+            assess offsets are within allocated margins
+            assess injection level is within expected margins
+        
+            plot histogram of injected levels for each Q
+            [plot std vs. time]
+        
+            issue any warnings to log
+            issue update to report          
     
-
-    """
+        
+        """
+        raise NotImplementedError
+    
+    def prep_data(self):
+        """
+        
+        **METACODE**
+        
+        ::
+        
+            Preparation of data for further analysis:
+    
+            f.e. ObsID [images with TPing only]:
+                f.e.CCD:
+                    f.e.Q:
+                        subtract offset
+                        divide by reference image wo TPing
+                        average across readout lines (iterations)
+                        save raw 1D map of relative pumping
+    
+        
+        """
+        
+        raise NotImplementedError
+        
+    
+    def basic_analysis(self):
+        """
+        
+        Basic analysis of data.
+    
+        **METACODE**
+        
+        ::
+    
+            f. e. ObsID [there are different TOI_TP and TP-patterns]:
+                f.e.CCD:
+                    f.e.Q:
+                        load raw 1D map of relative pumping (from extract_data)
+                        identify dipoles:
+                            x, rel-amplitude, orientation (E or W)
+    
+            produce & report:  
+                map location of dipoles
+                PDF of dipole amplitudes (for E and W)
+                Counts of dipoles (and E vs. W)
+        
+        """
+        raise NotImplementedError
+        
+    def meta_analysis(self):
+        """
+        
+        Meta-analysis of data:
+            
+            Try to identify tau and pixel-phase location for each trap.
+            Need to associate dipoles across TOI_TPs and TP-patterns        
+            
+     
+        **METACODE**
+        
+        ::
+            
+            across TOI_TP, patterns:
+                build catalog of traps: x,y,R-phase, amp(dwell)
+                from Amp(dwell) -> tau, Pc
+                
+            Report on :
+               Histogram of Taus
+               Histogram of Pc (capture probability)
+               Histogram of R-phases
+    
+               Total Count of Traps
+    
+        
+    
+        """
+        raise NotImplementedError
+        
+        
+    def feeder(self,inputs,elvis='6.3.0'):
+        """ """
+        
+        self.subtasks = [('check',self.check_data),('prep',self.prep_data),
+                    ('basic',self.basic_analysis),
+                    ('meta',self.meta_analysis)]
+        
+        N = inputs['N']
+        if 'elvis' in inputs:
+            self.elvis = inputs['elvis']
+        else: self.elvis=elvis
+        if 'diffvalues' in inputs:
+            diffvalues = inputs['diffvalues']
+        else:
+            diffvalues = {}
+        
+        
+        scriptdict = self.build_scriptdict(N,diffvalues,elvis=self.elvis)
+        
+        inputs['structure'] = scriptdict        
+        inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
+        
+        if 'perflimits' in inputs:
+            self.perflimits.update(inputs['perflimits'])
+        
+        return inputs
+    
     

@@ -31,10 +31,16 @@ from vison.datamodel import scriptic as sc
 #from vison.datamodel import generator
 #import datetime
 from vison.pipe.task import Task
+from vison.image import performance
 # END IMPORT
 
 isthere = os.path.exists
 
+HKKeys = ['CCD1_OD_T','CCD2_OD_T','CCD3_OD_T','COMM_RD_T',
+'CCD2_IG1_T','CCD3_IG1_T','CCD1_TEMP_T','CCD2_TEMP_T','CCD3_TEMP_T',
+'CCD1_IG1_T','COMM_IG2_T','FPGA_PCB_TEMP_T','CCD1_OD_B',
+'CCD2_OD_B','CCD3_OD_B','COMM_RD_B','CCD2_IG1_B','CCD3_IG1_B','CCD1_TEMP_B',
+'CCD2_TEMP_B','CCD3_TEMP_B','CCD1_IG1_B','COMM_IG2_B']
 
 IG1comm = 6.
 IG2comm = 4.
@@ -57,175 +63,187 @@ CHINJ02_commvalues = dict(program='CALCAMP',test='CHINJ02',
 class CHINJ02(Task):
     """ """
 
-
-def build_CHINJ02_scriptdict(IDLs,IDH,id_delays,toi_chinj,diffvalues=dict(),
-                             elvis='6.3.0'):
-    """ 
-    Builds CHINJ02 script structure dictionary.
-    
-    :param IDLs: list of 2 ints, [mV], [min,max] values of IDL (Inject. Drain Low).
-    :param IDH: int, [mV], Injection Drain High.
-    :param id_delays: list of 2 ints, [mV], injection drain delays (2).
-    :param toi_chinj: int, [us], TOI-charge injection.
-    :param diffvalues: dict, opt, differential values.
-    
-    """
+    def __init__(self,inputs,log=None,drill=False):
+        """ """
+        super(CHINJ02,self).__init__(inputs,log,drill)
+        self.name = 'CHINJ02'
+        self.HKKeys = HKKeys
+        self.figdict = dict()
         
-    assert len(IDLs) == 2
-    assert len(id_delays) == 2
-    
-    dIDL = 0.25 # V
-    NIDL = (IDLs[1]-IDLs[0])/dIDL+1
-    IDLv = np.arange(NIDL)*dIDL+IDLs[0]
-    
-    CHINJ02_sdict = dict()
-    
-    
-    # First Injection Drain Delay
-    
-    colcounter = 1
-    for i,IDL in enumerate(IDLv):
-        colkey = 'col%i' % (i+1,)
-        CHINJ02_sdict[colkey] = dict(frames=1,IDL=IDL,IDH=IDH,
-                     id_dly=id_delays[0],toi_ch=toi_chinj)
-        colcounter += 1
-    
-    # Second Injection Drain Delay
-    
-    colstart  = colcounter
+        self.perflimits.update(performance.perf_rdout)
 
-    for j,IDL in enumerate(IDLv):
-        colkey = 'col%i' % (colstart+j,)
-        CHINJ02_sdict[colkey] = dict(frames=1,IDL=IDL,IDH=IDH,
-                     id_dly=id_delays[1],toi_ch=toi_chinj)
-    
-    Ncols = len(CHINJ02_sdict.keys())    
-    CHINJ02_sdict['Ncols'] = Ncols
-    
-    commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
-    commvalues.update(CHINJ02_commvalues)
-                 
-    CHINJ02_sdict = sc.update_structdict(CHINJ02_sdict,commvalues,diffvalues)
-    
-    return CHINJ02_sdict
-
-
-def check_data(DataDict,report,inputs,log=None):
-    """ 
-
-    CHINJ02: Checks quality of ingested data.
-    
-
-    **METACODE**
-    
-    ::
-
-        check common HK values are within safe / nominal margins
-        check voltages in HK match commanded voltages, within margins
-    
-        f.e.ObsID:
-            f.e.CCD:
-                f.e.Q.:
-                    measure offsets in pre-, img-, over-
-                    measure std in pre-, img-, over-
-                    extract 2D chinj-pattern:
-                        measure average level of injection
-                        measure average level of non-injection
+    def build_scriptdict(self,IDLs,IDH,id_delays,toi_chinj,diffvalues=dict(),
+                                 elvis='6.3.0'):
+        """ 
+        Builds CHINJ02 script structure dictionary.
         
-        assess std in pre- is within allocated margins
-        assess offsets in pre-, and over- are equal, within allocated  margins
-        assess offsets are within allocated margins
-        assess non-injection level is within expected margins
-        [assess injection level is within expected margins]
+        :param IDLs: list of 2 ints, [mV], [min,max] values of IDL (Inject. Drain Low).
+        :param IDH: int, [mV], Injection Drain High.
+        :param id_delays: list of 2 ints, [mV], injection drain delays (2).
+        :param toi_chinj: int, [us], TOI-charge injection.
+        :param diffvalues: dict, opt, differential values.
+        
+        """
+            
+        assert len(IDLs) == 2
+        assert len(id_delays) == 2
+        
+        dIDL = 0.25 # V
+        NIDL = (IDLs[1]-IDLs[0])/dIDL+1
+        IDLv = np.arange(NIDL)*dIDL+IDLs[0]
+        
+        CHINJ02_sdict = dict()
+        
+        
+        # First Injection Drain Delay
+        
+        colcounter = 1
+        for i,IDL in enumerate(IDLv):
+            colkey = 'col%i' % (i+1,)
+            CHINJ02_sdict[colkey] = dict(frames=1,IDL=IDL,IDH=IDH,
+                         id_dly=id_delays[0],toi_ch=toi_chinj)
+            colcounter += 1
+        
+        # Second Injection Drain Delay
+        
+        colstart  = colcounter
     
-        [plot offsets vs. time]
-        [plot std vs. time]
-        plot injected level vs. IDL for each half
-    
-    
-        issue any warnings to log
-        issue update to report          
+        for j,IDL in enumerate(IDLv):
+            colkey = 'col%i' % (colstart+j,)
+            CHINJ02_sdict[colkey] = dict(frames=1,IDL=IDL,IDH=IDH,
+                         id_dly=id_delays[1],toi_ch=toi_chinj)
+        
+        Ncols = len(CHINJ02_sdict.keys())    
+        CHINJ02_sdict['Ncols'] = Ncols
+        
+        commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+        commvalues.update(CHINJ02_commvalues)
+                     
+        CHINJ02_sdict = sc.update_structdict(CHINJ02_sdict,commvalues,diffvalues)
+        
+        return CHINJ02_sdict
 
+
+    def check_data(self):
+        """ 
     
-    """
+        CHINJ02: Checks quality of ingested data.
+        
+    
+        **METACODE**
+        
+        ::
+    
+            check common HK values are within safe / nominal margins
+            check voltages in HK match commanded voltages, within margins
+        
+            f.e.ObsID:
+                f.e.CCD:
+                    f.e.Q.:
+                        measure offsets in pre-, img-, over-
+                        measure std in pre-, img-, over-
+                        extract 2D chinj-pattern:
+                            measure average level of injection
+                            measure average level of non-injection
+            
+            assess std in pre- is within allocated margins
+            assess offsets in pre-, and over- are equal, within allocated  margins
+            assess offsets are within allocated margins
+            assess non-injection level is within expected margins
+            [assess injection level is within expected margins]
+        
+            [plot offsets vs. time]
+            [plot std vs. time]
+            plot injected level vs. IDL for each half
+        
+        
+            issue any warnings to log
+            issue update to report          
+    
+        
+        """
+        
+    
+        
+        raise NotImplementedError
     
 
+    def extract_data(self):
+        """
+        
+        **NEEDED?** Could be merged with basic_analysis
+        
+        **METACODE**
+        
+        ::
+        
+            Preparation of data for further analysis:
     
-    return DataDict, report
+            f.e. ObsID:
+                f.e.CCD:
+                    f.e.Q:
+                        subtract offset
+                        extract average 2D injection pattern and save
     
-
-def extract_data(DataDict,report,inputs,log=None):
-    """
+        
+        """
+        
+        raise NotImplementedError
     
-    **NEEDED?** Could be merged with basic_analysis
+    def basic_analysis(self):
+        """ 
     
-    **METACODE**
+        Basic analysis of data.
+        AS IT IS, REPEATS WHAT'S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
     
-    ::
+        **METACODE**
+        
+        ::
     
-        Preparation of data for further analysis:
-
-        f.e. ObsID:
+            f. e. ObsID:
+                f.e.CCD:
+                    f.e.Q:
+                        load average 2D injection pattern
+                        produce average profile along lines
+                        [measure charge-inj. non-uniformity]
+                        [produce average profile across lines]
+                        [measure charge spillover into non-injection]
+                        measure stats of injection (mean, med, std, min/max, percentiles)
+                        
+            [plot average inj. profiles along lines f. each CCD, Q and IG1]
+            [    save as a rationalized set of curves]
+            [plot average inj. profiles across lines f. each CCD, Q and IG1]
+            [    save as a rationalized set of  curves]
+            
+            save&plot charge injection vs. IDL
+            report injection stats as a table
+        
+        """
+        
+       
+        
+        raise NotImplementedError
+    
+    def meta_analysis(self):
+        """ 
+        
+        Finds the Injection Threshold for each CCD half.
+        
+        **METACODE**
+        
+        ::
+            
             f.e.CCD:
                 f.e.Q:
-                    subtract offset
-                    extract average 2D injection pattern and save
-
+                    load injection vs. IDL cuve
+                    find&save injection threshold on curve
     
-    """
-    
-    return DataDict,report
-    
-def basic_analysis(DataDict,report,inputs,log=None):
-    """ 
-
-    Basic analysis of data.
-    AS IT IS, REPEATS WHAT'S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
-
-    **METACODE**
-    
-    ::
-
-        f. e. ObsID:
-            f.e.CCD:
-                f.e.Q:
-                    load average 2D injection pattern
-                    produce average profile along lines
-                    [measure charge-inj. non-uniformity]
-                    [produce average profile across lines]
-                    [measure charge spillover into non-injection]
-                    measure stats of injection (mean, med, std, min/max, percentiles)
-                    
-        [plot average inj. profiles along lines f. each CCD, Q and IG1]
-        [    save as a rationalized set of curves]
-        [plot average inj. profiles across lines f. each CCD, Q and IG1]
-        [    save as a rationalized set of  curves]
+            report injection threshold as a table
         
-        save&plot charge injection vs. IDL
-        report injection stats as a table
-    
-    """
-    
-   
-    
-    return DataDict,report
-    
-def meta_analysis(DataDict,report,inputs,log=None):
-    """ 
-    
-    Finds the Injection Threshold for each CCD half.
-    
-    **METACODE**
-    
-    ::
+        """
         
-        f.e.CCD:
-            f.e.Q:
-                load injection vs. IDL cuve
-                find&save injection threshold on curve
-
-        report injection threshold as a table
+        raise NotImplementedError
     
-    """
-    
-    return DataDict,report
+    def feeder(self,inputs,elvis='6.3.0'):
+        """ """
+        raise NotImplementedError

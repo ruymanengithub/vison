@@ -142,7 +142,6 @@ class Task(object):
             self.save_progress(DataDictFile,reportobjFile)
             
         else:
-            
             #dd, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
             self.recover_progres(DataDictFile,reportobjFile)
         
@@ -192,16 +191,14 @@ class Task(object):
         if self.log is not None:
             self.log.info('Finished %s' % self.name)
 
+
     def catchtraceback(self):
         """ """
-        exc_type,exc_value,exc_traceback = sys.exc_info()
-        
-        msg_trbk = traceback.format_tb(exc_traceback)
+        msg_trbk = traceback.format_exc()
         if self.log is not None:
             self.log.info(msg_trbk)
         else:
-            for line in msg_trbk: print line
-        
+            print msg_trbk
     
     
     def addHK_2_dd(self):

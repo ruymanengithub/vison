@@ -99,7 +99,7 @@ class PSF0X(Task):
         self.perflimits.update(performance.perf_rdout)
 
 
-    def build_PSF0X_scriptdict(self,exptimes,frames,wavelength=800,
+    def build_scriptdict(self,exptimes,frames,wavelength=800,
             diffvalues=dict(),elvis='6.3.0'):
         """ 
         
@@ -583,7 +583,8 @@ class PSF0X(Task):
             frames = testdefaults[_testkey]['frames']
             
         if 'elvis' in inputs:
-            elvis = inputs['elvis']
+            self.elvis = inputs['elvis']
+        else: self.elvis=elvis
         if 'diffvalues' in inputs:
             diffvalues = inputs['diffvalues']
         else:
@@ -591,7 +592,7 @@ class PSF0X(Task):
         
         diffvalues['test'] = testkey    
         scriptdict = self.build_scriptdict(exptimes,frames,wavelength,
-                                            diffvalues,elvis=elvis)
+                                            diffvalues,elvis=self.elvis)
         
         inputs['structure'] = scriptdict        
         inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles',spots='spots')

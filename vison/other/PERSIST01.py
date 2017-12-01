@@ -33,8 +33,10 @@ from vison.datamodel import HKtools
 from vison.datamodel import ccd
 from vison.datamodel import generator
 from vison.pipe.task import Task
+from vison.image import performance
 # END IMPORT
 
+HKKeys = []
 
 PER01_commvalues = dict(program='CALCAMP',test='PERSIST01',
   rdmode='fwd_bas',
@@ -50,120 +52,134 @@ PER01_commvalues = dict(program='CALCAMP',test='PERSIST01',
 class PERSIST01(Task):
     """ """
 
-def build_PER01_scriptdict(exptSATUR,exptLATEN,
-                diffvalues=dict(),elvis='6.0.0'):
-    """ 
-    Builds PERSISTENCE01 script structure dictionary.
-    
-    :param exptSATUR: int, saturation exposure time.
-    :param exptLATEN: int, latency exposure time.
-    :param diffvalues: dict, opt, differential values.
-    
-    
-    """
-    
-    PER01_sdict = dict(col1=dict(frames=5,exptime=0,comments='REFER.'),
-                       col2=dict(frames=1,exptime=exptSATUR,comments='EXPOSE'),
-                       col3=dict(frames=3,exptime=exptLATEN,comments='LATENT'))   
-    
-    Ncols = len(PER01_sdict.keys())    
-    PER01_sdict['Ncols'] = Ncols
-    
-    commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
-    commvalues.update(PER01_commvalues)               
-               
-    PER01_sdict = sc.update_structdict(PER01_sdict,commvalues,diffvalues)
-    
-    return PER01_sdict
-
-
-def check_data(DataDict,report,inputs,log=None):
-    """ 
-
-    PERSIST01: Checks quality of ingested data.
-    
-
-    **METACODE**
-    
-    ::
-
-        check common HK values are within safe / nominal margins
-        check voltages in HK match commanded voltages, within margins
-    
-        f.e.ObsID:
-            f.e.CCD:
-                f.e.Q.:
-                    measure offsets in pre-, over-
-                    measure std in pre-, over-
-                    measure fluence in apertures around Point Sources
+    def __init__(self,inputs,log=None,drill=False):
+        """ """
+        super(PERSIST01,self).__init__(inputs,log,drill)
+        self.name = 'PERSIST01'
+        self.HKKeys = HKKeys
+        self.figdict = dict() 
         
-        assess std in pre- (~RON) is within allocated margins
-        assess offsets in pre-, and over- are equal, within allocated  margins
-        assess fluence is ~expected within apertures (PS) for each frame (pre-satur, satur, post-satur)
+        self.perflimits.update(performance.perf_rdout)    
+    
+
+    def build_scriptdict(exptSATUR,exptLATEN,
+                    diffvalues=dict(),elvis='6.0.0'):
+        """ 
+        Builds PERSISTENCE01 script structure dictionary.
+        
+        :param exptSATUR: int, saturation exposure time.
+        :param exptLATEN: int, latency exposure time.
+        :param diffvalues: dict, opt, differential values.
+        
+        
+        """
+        
+        PER01_sdict = dict(col1=dict(frames=5,exptime=0,comments='REFER.'),
+                           col2=dict(frames=1,exptime=exptSATUR,comments='EXPOSE'),
+                           col3=dict(frames=3,exptime=exptLATEN,comments='LATENT'))   
+        
+        Ncols = len(PER01_sdict.keys())    
+        PER01_sdict['Ncols'] = Ncols
+        
+        commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+        commvalues.update(PER01_commvalues)               
+                   
+        PER01_sdict = sc.update_structdict(PER01_sdict,commvalues,diffvalues)
+        
+        return PER01_sdict
+    
+    
+    def check_data(self):
+        """ 
+    
+        PERSIST01: Checks quality of ingested data.
         
     
-        plot point source fluence vs. OBSID, all sources
-        [plot std vs. time]
+        **METACODE**
+        
+        ::
     
-        issue any warnings to log
-        issue update to report          
-
+            check common HK values are within safe / nominal margins
+            check voltages in HK match commanded voltages, within margins
+        
+            f.e.ObsID:
+                f.e.CCD:
+                    f.e.Q.:
+                        measure offsets in pre-, over-
+                        measure std in pre-, over-
+                        measure fluence in apertures around Point Sources
+            
+            assess std in pre- (~RON) is within allocated margins
+            assess offsets in pre-, and over- are equal, within allocated  margins
+            assess fluence is ~expected within apertures (PS) for each frame (pre-satur, satur, post-satur)
+            
+        
+            plot point source fluence vs. OBSID, all sources
+            [plot std vs. time]
+        
+            issue any warnings to log
+            issue update to report          
     
-    """
-
-def prep_data(DataDict,report,inputs,log=None):
-    """
+        
+        """
+        raise NotImplementedError
     
-    **METACODE**
+    def prep_data(self):
+        """
+        
+        **METACODE**
+        
+        ::
+        
+            Preparation of data for further analysis:
     
-    ::
+            f.e. ObsID [images with TPing only]:
+                f.e.CCD:
+                    f.e.Q:
+                        subtract offset
     
-        Preparation of data for further analysis:
-
-        f.e. ObsID [images with TPing only]:
+        """
+        
+        raise NotImplementedError
+        
+    
+    def basic_analysis(self):
+        """
+        
+        Basic analysis of data.
+    
+        **METACODE**
+        
+        ::
+    
             f.e.CCD:
                 f.e.Q:
-                    subtract offset
-
-    """
+                    use SATURATED frame to generate pixel saturation MASK
+                    measure stats in pix satur MASK across OBSIDs 
+                     (pre-satur, satur, post-satur)
     
-    return DataDict,report
-
-def basic_analysis():
-    """
-    
-    Basic analysis of data.
-
-    **METACODE**
-    
-    ::
-
-        f.e.CCD:
-            f.e.Q:
-                use SATURATED frame to generate pixel saturation MASK
-                measure stats in pix satur MASK across OBSIDs 
-                 (pre-satur, satur, post-satur)
-
-    
-    """
-    
-def meta_analysis():
-    """
-    
-    Meta-analysis of data.
-
-    **METACODE**
-    
-    ::
         
+        """
         
-        f.e.CCD:
-            f.e.Q:
-                estimate delta-charge_0 and decay tau from time-series
-
-        report:  
-            persistence level (delta-charge_0) and time constant
+        raise NotImplementedError
         
-
-    """
+    def meta_analysis(self):
+        """
+        
+        Meta-analysis of data.
     
+        **METACODE**
+        
+        ::
+            
+            
+            f.e.CCD:
+                f.e.Q:
+                    estimate delta-charge_0 and decay tau from time-series
+    
+            report:  
+                persistence level (delta-charge_0) and time constant
+            
+    
+        """
+        raise NotImplementedError

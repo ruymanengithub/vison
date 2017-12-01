@@ -249,16 +249,16 @@ class Pipe(object):
             self.catchtraceback()
             if self.log is not None:
                 self.log.info('TASK "%s@%s" FAILED, QUITTING!' % (taskname,self.Test_dict[taskname].__module__))
+            else:
+                print 'TASK "%s@%s" FAILED, QUITTING!' % (taskname,self.Test_dict[taskname].__module__)
     
     def catchtraceback(self):
         """ """
-        exc_type,exc_value,exc_traceback = sys.exc_info()
-        
-        msg_trbk = traceback.format_tb(exc_traceback)
+        msg_trbk = traceback.format_exc()
         if self.log is not None:
             self.log.info(msg_trbk)
         else:
-            for line in msg_trbk: print line
+            print msg_trbk
 
         
 

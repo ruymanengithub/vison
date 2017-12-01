@@ -52,9 +52,9 @@ isthere = os.path.exists
 class PSF01_PANCHRO(Task):
     
     
-    def __init__(self,inputs,log=None):
+    def __init__(self,inputs,log=None,drill=False):
         """ """
-        super(PSF01_PANCHRO,self).__init__(inputs,log)
+        super(PSF01_PANCHRO,self).__init__(inputs,log,drill)
         self.name = 'PSF01_PANCHRO'
         #self.HKKeys = HKKeys
         self.figdict = PSF0Xaux.PSF0Xfigs
@@ -72,6 +72,6 @@ class PSF01_PANCHRO(Task):
         """ """
         
         self.subtasks = [('ingest',self.ingest),
-                    ('meta',self.meta_analysis)]
+                    ('meta',self.meta)]
                 
         return inputs
