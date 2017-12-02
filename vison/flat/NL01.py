@@ -47,8 +47,11 @@ from vison.image import performance
 
 isthere = os.path.exists
 
-HKKeys = ['HK_temp_top_CCD1','HK_temp_bottom_CCD1','HK_temp_top_CCD2',
-'HK_temp_bottom_CCD2','HK_temp_top_CCD3','HK_temp_bottom_CCD3'] # TESTS
+HKKeys = ['CCD1_OD_T','CCD2_OD_T','CCD3_OD_T','COMM_RD_T',
+'CCD2_IG1_T','CCD3_IG1_T','CCD1_TEMP_T','CCD2_TEMP_T','CCD3_TEMP_T',
+'CCD1_IG1_T','COMM_IG2_T','FPGA_PCB_TEMP_T','CCD1_OD_B',
+'CCD2_OD_B','CCD3_OD_B','COMM_RD_B','CCD2_IG1_B','CCD3_IG1_B','CCD1_TEMP_B',
+'CCD2_TEMP_B','CCD3_TEMP_B','CCD1_IG1_B','COMM_IG2_B']
 
 
 NL01_commvalues = dict(program='CALCAMP',
@@ -68,25 +71,44 @@ class NL01(Task):
         """ """
         super(NL01,self).__init__(inputs,log,drill)
         self.name = 'NL01'
+        self.subtasks = [('check',self.check_data),('prep',self.prep_data),
+                    ('extract',self.extract_stats),
+                    ('NL',self.produce_NLCs),
+                    ('satCTE',self.do_satCTE)]
         self.HKKeys = HKKeys
         self.figdict = dict() # B01aux.B01figs
+        self.inputs['subpaths'] = dict() # dict(figs='figs',pickles='ccdpickles')
         
-        self.perflimits.update(performance.perf_rdout)
-    
+        
+    def set_inpdefaults(self,**kwargs):
 
-    def build_scriptdict(self,expts,exptinter,frames,wavelength=0,
-                              diffvalues=dict(),elvis='6.3.0'):
+        expts = np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100. * ogse.tFWC_flat['nm0'] # ms
+        self.inpdefaults = dict(exptimes=expts,
+                       exptinter=0.5 * ogse.tFWC_flat['nm0'],
+                       frames=np.ones(11,dtype='int32')*5,           
+                       wavelength=0,
+                       )
+        
+    def set_perfdefaults(self):
+        self.perfdefaults = dict()
+        self.perfdefaults.update(performance.perf_rdout)
+
+    def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
         """Builds NL01 script structure dictionary.
         
-        :param expts: list of ints [ms], exposure times.
-        :param exptinter: int, ms, exposure time of interleaved source-stability exposures.
-        :param frames: list of ints, number of frames for each exposure time.
-        :param wavelength: int, wavelength. Default: 0 (Neutral Density Filter)
+        #:param expts: list of ints [ms], exposure times.
+        #:param exptinter: int, ms, exposure time of interleaved source-stability exposures.
+        #:param frames: list of ints, number of frames for each exposure time.
+        #:param wavelength: int, wavelength. Default: 0 (Neutral Density Filter)
         :param diffvalues: dict, opt, differential values.
         """
-    
-        assert  len(expts) == len(frames)
         
+        expts = self.inputs['exptimes']
+        exptinter = self.inputs['exptinter']
+        frames = self.inputs['frames']
+        wavelength = self.inputs['wavelength']
+        
+        assert  len(expts) == len(frames)    
         
         FW_ID = ogse.get_FW_ID(wavelength)
         FW_IDX = int(FW_ID[-1])
@@ -116,6 +138,9 @@ class NL01(Task):
                   
         commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(NL01_commvalues)
+        
+        if len(diffvalues)==0:
+            diffvalues = self.inputs['diffvalues']        
         
         NL01_sdict = sc.update_structdict(NL01_sdict,commvalues,diffvalues)
         
@@ -234,7 +259,7 @@ class NL01(Task):
         
         """
         
-        raise NotImplentedError
+        raise NotImplementedError
         
     def do_satCTE(self):
         """
@@ -261,40 +286,5 @@ class NL01(Task):
         raise NotImplementedError
         
         
-    def feeder(self,inputs,elvis='6.3.0'):
-        """ """
-        
-        self.subtasks = [('check',self.check_data),('prep',self.prep_data),
-                    ('extract',self.extract_stats),
-                    ('NL',self.produce_NLCs),
-                    ('satCTE',self.do_satCTE)]
-        
-        
-        expts = inputs['exptimes']
-        exptinter = inputs['exptinter']
-        frames = inputs['frames']
-        wavelength = inputs['wavelength']
-        if 'elvis' in inputs:
-            elvis = inputs['elvis']
-        if 'diffvalues' in inputs:
-            diffvalues = inputs['diffvalues']
-        else:
-            diffvalues = {}
-            
-        
-        scriptdict = self.build_scriptdict(expts,exptinter,frames,
-                            wavelength=wavelength,
-                              diffvalues=diffvalues,elvis=elvis)
-        
-    
-        
-        inputs['structure'] = scriptdict
-        inputs['subpaths'] = dict() # dict(figs='figs',pickles='ccdpickles')
-        
-        
-        if 'perflimits' in inputs:
-            self.perflimits.update(inputs['perflimits'])
-        
-        return inputs
 
     

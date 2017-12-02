@@ -86,7 +86,7 @@ if __name__ =='__main__':
     elvis = '6.3.0'
     
     
-    outpath = 'CAL_scripts'
+    outpath = 'CAL_scripts_02DEC'
     
     equipment = dict(operator = 'raf',
     sn_ccd1 = 'CCD1TEST',
@@ -95,7 +95,7 @@ if __name__ =='__main__':
     sn_roe= 'ROETEST',
     sn_rpsu = 'RPSUTEST')
     
-    toWrite = dict(BIAS01=1,DARK01=1,CHINJ01=1,CHINJ02=1,
+    toWrite = dict(BIAS01=1,DARK01=1,CHINJ01=0,CHINJ02=1,
                       FLAT01=1,FLAT02=1,PTC01=1,PTC02WAVE=1,PTC02TEMP=1,NL01=1,
                       PSF01=1,PSF02=1,
                       TP01=1,TP02=1,

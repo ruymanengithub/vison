@@ -59,22 +59,40 @@ class TP01(Task):
         """ """
         super(TP01,self).__init__(inputs,log,drill)
         self.name = 'BIAS01'
+        self.subtasks = [('check',self.check_data),('prep',self.prep_data),
+                    ('basic',self.basic_analysis),
+                    ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
         self.figdict = dict()
-        
-        self.perflimits.update(performance.perf_rdout)
-    
+        self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
 
-    def build_scriptdict(self,Nshuffles_V,TOI_TPv,id_delays,
-                        diffvalues=dict(),elvis='6.3.0'):
+
+    def set_inpdefaults(self,**kwargs):
         """ """
+        
+        toi_chinjTP01 = 250
+        self.inpdefaults(toi_chinj=toi_chinjTP01,
+                         Nshuffles_V=5000,
+                         id_delays=np.array([3.,2.]) * toi_chinjTP01,
+                         toi_tpv=[200,1000,2000,4000,8000],
+                         vpumpmodes = [123,234,341,412])
+        
+    def set_perdefaults(self):
+        self.perfdefaults = dict()
+        self.perfdefaults.update(performance.perf_rdout)
+        
+
+    def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
+        """ """
+        
+        Nshuffles_V = self.inputs['Nshuffles_V']
+        toi_tpv = self.inputs['toi_tpv']
+        id_delays = self.inputs['id_delays']
+        vpumpmodes = self.inputs['vpumpmodes']
         
         assert len(id_delays) == 2
         
-        vpumpmodes = [123,234,341,412]
-                  
         TP01_sdict = dict()
-        
         
         TP01_commvalues['ver_shuffles'] = Nshuffles_V
         
@@ -84,11 +102,11 @@ class TP01(Task):
                   id_delay=id_delays[0])
         
         colcounter = 2
-        for i,TOI_TP in enumerate(TOI_TPv):
+        for i,toi_tp in enumerate(toi_tpv):
             
             for k,vpumpmode in enumerate(vpumpmodes):
                 colkey = 'col%i' % colcounter
-                TP01_sdict[colkey] = dict(frames=1,toi_tp=TOI_TP,
+                TP01_sdict[colkey] = dict(frames=1,toi_tp=toi_tp,
                          id_dly=id_delays[0],v_tpmod=vpumpmode)
                 
                 colcounter += 1
@@ -100,13 +118,13 @@ class TP01(Task):
                   id_delay=id_delays[1])
         colcounter += 1
     
-        for j,TOI_TP in enumerate(TOI_TPv):
+        for j,toi_tp in enumerate(toi_tpv):
             
             for k,vpumpmode in enumerate(vpumpmodes):
             
                 colkey = 'col%i' % colcounter
                 #print colkey
-                TP01_sdict[colkey] = dict(frames=1,toi_tp=TOI_TP,
+                TP01_sdict[colkey] = dict(frames=1,toi_tp=toi_tp,
                              id_dly=id_delays[1],v_tpmod=vpumpmode)    
                 
                 colcounter += 1
@@ -121,8 +139,13 @@ class TP01(Task):
         TP01_sdict = sc.update_structdict(TP01_sdict,commvalues,diffvalues)
         
         return TP01_sdict
-    
-    
+
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
+        """ """
+        wavedkeys = []
+        return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
+                              wavedkeys=wavedkeys,elvis=elvis)
+        
     
     def check_data(self):
         """ 
@@ -234,29 +257,3 @@ class TP01(Task):
         raise NotImplementedError
         
     
-    def feeder(self,inputs,elvis='6.3.0'):
-        """ """
-        
-        self.subtasks = [('check',self.check_data),('prep',self.prep_data),
-                    ('basic',self.basic_analysis),
-                    ('meta',self.meta_analysis)]
-        
-        N = inputs['N']
-        if 'elvis' in inputs:
-            self.elvis = inputs['elvis']
-        else: self.elvis=elvis
-        if 'diffvalues' in inputs:
-            diffvalues = inputs['diffvalues']
-        else:
-            diffvalues = {}
-        
-        
-        scriptdict = self.build_scriptdict(N,diffvalues,elvis=self.elvis)
-        
-        inputs['structure'] = scriptdict        
-        inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
-        
-        if 'perflimits' in inputs:
-            self.perflimits.update(inputs['perflimits'])
-        
-        return inputs

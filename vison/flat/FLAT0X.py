@@ -39,6 +39,11 @@ from vison.image import performance
 
 isthere = os.path.exists
 
+HKKeys = ['CCD1_OD_T','CCD2_OD_T','CCD3_OD_T','COMM_RD_T',
+'CCD2_IG1_T','CCD3_IG1_T','CCD1_TEMP_T','CCD2_TEMP_T','CCD3_TEMP_T',
+'CCD1_IG1_T','COMM_IG2_T','FPGA_PCB_TEMP_T','CCD1_OD_B',
+'CCD2_OD_B','CCD3_OD_B','COMM_RD_B','CCD2_IG1_B','CCD3_IG1_B','CCD1_TEMP_B',
+'CCD2_TEMP_B','CCD3_TEMP_B','CCD1_IG1_B','COMM_IG2_B']
 
 FLAT0X_commvalues = dict(program='CALCAMP',
   IPHI1=1,IPHI2=1,IPHI3=1,IPHI4=0,
@@ -56,41 +61,63 @@ class FLAT0X(Task):
         """ """
         super(FLAT0X,self).__init__(inputs,log,drill)
         self.name = 'FLAT0X'
-        self.HKKeys = []
+        self.subtasks = [('check',self.check_data),('indivflats',self.do_indiv_flats),
+                    ('masterflat',self.do_master_flat),
+                    ('prmask',self.do_prdef_mask)]
+        self.HKKeys = HKKeys
         self.figdict = dict() 
+        self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
         
-        self.perflimits.update(performance.perf_rdout)    
-    
-    
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
+   
+    def set_inpdefaults(self,**kwargs):
         """ """
-        wavedkeys = []
-        return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
-                              wavedkeys=wavedkeys,elvis=elvis)
+        
+        try: wavelength = kwargs['wavelength']
+        except KeyError: wavelength = 800
+        try: test = kwargs['test']
+        except KeyError: test = 'FLAT0X'
+        
+        t_dummy_F0X = np.array([25.,50.,75])/100.
+        exptimesF0X = ogse.tFWC_flat['nm%i' % wavelength] * t_dummy_F0X# s
+        framesF0X = [80,60,30]
+        self.inpdefault = dict(exptimes=exptimesF0X,
+                       frames=framesF0X,
+                       wavelength=wavelength,
+                       test=test)
+        
+    def set_perfdefaults(self):
+        #wavelength = self.inputs['wavelength']        
+        self.perfdefaults = dict()
+        self.perfdefaults.update(performance.perf_rdout)
+    
 
-    def build_FLAT0X_scriptdict(self,exptimes,frames,flags,wavelength=800,testkey='FLAT0X',
-                                diffvalues=dict(),elvis='6.3.0'):
+    def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
         """Builds FLAT0X script structure dictionary.
         
-        :param exptimes: list of ints, exposure times.
-        :param wavelength: int, wavelength.
-        :param testkey: char, test identifier.
+        #:param exptimes: list of ints, exposure times.
+        #:param wavelength: int, wavelength.
+        #:param testkey: char, test identifier.
         :param diffvalues: dict, opt, differential values.
         
         """
+        
+        exptimes = self.inputs['exptimes']
+        frames = self.inputs['frames']
+        wavelength = self.inputs['wavelength']
+        test = self.inputs['test']
         
         FW_ID = ogse.get_FW_ID(wavelength)
         FW_IDX = int(FW_ID[-1])
         
         FLAT0X_commvalues['wave'] = FW_IDX
-        FLAT0X_commvalues['test'] = testkey
-        
+        FLAT0X_commvalues['test'] = test
+                         
         assert len(exptimes) == len(frames)
-        assert len(exptimes) == len(flags)
+        #assert len(exptimes) == len(flags)
         
         FLAT0X_sdict = dict()
         for i,exptime in enumerate(exptimes):
-            FLAT0X_sdict['col%i' % (i+1,)] = dict(frames=frames[i],exptime=exptimes[i],comments=flags[i])
+            FLAT0X_sdict['col%i' % (i+1,)] = dict(frames=frames[i],exptime=exptimes[i]) #,comments=flags[i])
     
         Ncols = len(FLAT0X_sdict.keys())    
         FLAT0X_sdict['Ncols'] = Ncols
@@ -101,7 +128,12 @@ class FLAT0X(Task):
         FLAT0X_sdict = sc.update_structdict(FLAT0X_sdict,commvalues,diffvalues)
         
         return FLAT0X_sdict
-    
+
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
+        """ """
+        wavedkeys = []
+        return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
+                              wavedkeys=wavedkeys,elvis=elvis)
     
     
     def check_data(self):
@@ -135,7 +167,7 @@ class FLAT0X(Task):
         """
         
         
-        return DataDict, report
+        raise NotImplementedError
         
     
     def do_indiv_flats(self):
@@ -210,32 +242,3 @@ class FLAT0X(Task):
         raise NotImplementedError
     
     
-    def feeder(self,inputs,elvis='6.3.0'):
-        """ """
-        
-        self.subtasks = [('check',self.check_data),('indivflats',self.do_indiv_flats),
-                    ('masterflat',self.do_master_flat),
-                    ('prmask',self.do_prdef_mask)]
-        
-        
-        exptimes = inputs['exptimes']
-        wavelength = inputs['wavelength']
-        testkey = inputs['testkey']
-        if 'elvis' in inputs:
-            elvis = inputs['elvis']
-        if 'diffvalues' in inputs:
-            diffvalues = inputs['diffvalues']
-        else:
-            diffvalues = {}
-        
-        scriptdict = self.build_scriptdict(exptimes,wavelength,testkey,
-                                diffvalues=diffvalues,elvis=elvis)
-    
-        
-        inputs['structure'] = scriptdict
-        inputs['subpaths'] = dict() # dict(figs='figs',pickles='ccdpickles')
-        
-        if 'perflimits' in inputs:
-            self.perflimits.update(inputs['perflimits'])
-        
-        return inputs

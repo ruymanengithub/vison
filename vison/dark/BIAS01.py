@@ -61,16 +61,26 @@ BIAS01_commvalues = dict(program='CALCAMP',test='BIAS01',
   
 class BIAS01(Task):
     
+    
     def __init__(self,inputs,log=None,drill=False):
         """ """
         super(BIAS01,self).__init__(inputs,log,drill)
         self.name = 'BIAS01'
+        self.subtasks = [('check',self.check_data),('prep',self.prep_data),
+                    ('basic',self.basic_analysis),
+                    ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
         self.figdict = B01aux.B01figs
+        self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
+    
+    def set_inpdefaults(self,**kwargs):
+        self.inpdefaults = dict(N=25)
         
-        self.perflimits.update(performance.perf_rdout)
+    def set_perfdefaults(self,**kwargs):
+        self.perfdefaults = dict()
+        self.perfdefaults.update(performance.perf_rdout)
         
-
+    
     def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
         """Builds BIAS01 script structure dictionary.
         
@@ -83,12 +93,14 @@ class BIAS01(Task):
         N = self.inputs['N']
         BIAS01_sdict = dict(col1=dict(frames=N,exptime=0))
     
-        Ncols = len(BIAS01_sdict.keys())    
+        Ncols = len(BIAS01_sdict.keys())
         BIAS01_sdict['Ncols'] = Ncols
-    
                     
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(BIAS01_commvalues)
+        
+        if len(diffvalues)==0:
+            diffvalues = self.inputs['diffvalues']
         
         BIAS01_sdict = sc.update_structdict(BIAS01_sdict,commvalues,diffvalues)
     
@@ -419,36 +431,6 @@ class BIAS01(Task):
         
     
     
-    def feeder(self,inputs,elvis='6.3.0'):
-        """ """
-        
-        self.subtasks = [('check',self.check_data),('prep',self.prep_data),
-                    ('basic',self.basic_analysis),
-                    ('meta',self.meta_analysis)]
-        
-        defaults = dict(N=25)
-        defaults.update(inputs)
-        
-        #N = defaults['N']
-        if 'elvis' in inputs:
-            self.elvis = inputs['elvis']
-        else: self.elvis=elvis
-        if 'diffvalues' in inputs:
-            diffvalues = inputs['diffvalues']
-        else:
-            diffvalues = {}
-        
-        
-        scriptdict = self.build_scriptdict(diffvalues,elvis=self.elvis)
-        
-        inputs['structure'] = scriptdict        
-        inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
-        
-        if 'perflimits' in inputs:
-            self.perflimits.update(inputs['perflimits'])
-        
-        return inputs
-
 
 
 

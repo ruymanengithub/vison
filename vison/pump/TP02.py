@@ -56,20 +56,37 @@ class TP02(Task):
         """ """
         super(TP02,self).__init__(inputs,log,drill)
         self.name = 'TP02'
+        self.subtasks = [('check',self.check_data),('prep',self.prep_data),
+                    ('basic',self.basic_analysis),
+                    ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
         self.figdict = dict()
+        self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
         
-        self.perflimits.update(performance.perf_rdout)
-    
-    
-    def build_scriptdict(self,Nshuffles_H,dwell_sv,id_delays,
-                    diffvalues=dict(),elvis='6.3.0'):
-        """MISSING: different starting points (not implemented in ELVIS yet)."""
+    def set_inpdefaults(self,**kwargs):
+        """ """
+        toi_chinj=250
+        self.inpdefaults(toi_chinj=toi_chinj,
+                         Nshuffles_H=5000,
+                         dwell_sv=[0.,4.75,14.3,28.6],
+                         id_delays=np.array([3.,2.])*toi_chinj,
+                         spumpmodes=[23,31])
+        
+    def set_perfdefaults(self,**kwargs):
+        self.perfdefaults = dict()
+        self.perfdefaults.update(performance.perf_rdout)
+
+
+    def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
+        """ """
+        
+        Nshuffles_H = self.inputs['Nshuffles_H']
+        dwell_sv = self.inputs['dwell_sv']
+        id_delays = self.inputs['id_delays']
+        spumpmodes = self.inputs['spumpmodes']
         
         assert len(id_delays) == 2
         
-        sermodes = [23,31]
-                  
         TP02_sdict = dict()
         
         TP02_commvalues['ser_shuffles'] = Nshuffles_H
@@ -82,13 +99,12 @@ class TP02(Task):
         colcounter = 2
         for i,dwell_s in enumerate(dwell_sv):
             
-            for k,sermode in enumerate(sermodes):
+            for k,sermode in enumerate(spumpmodes):
                 colkey = 'col%i' % colcounter
                 TP02_sdict[colkey] = dict(frames=1,dwell_s=dwell_s,
                          id_dly=id_delays[0],s_tpmod=sermode)
                 
                 colcounter += 1
-        
         
         # Second Injection Drain Delay
         
@@ -96,10 +112,9 @@ class TP02(Task):
                   comments='BGD',id_dly=id_delays[1])
         colcounter += 1 
         
-    
         for j,dwell_s in enumerate(dwell_sv):
             
-            for k,sermode in enumerate(sermodes):
+            for k,sermode in enumerate(spumpmodes):
             
                 colkey = 'col%i' % colcounter
                 #print colkey
@@ -119,6 +134,12 @@ class TP02(Task):
         
         return TP02_sdict
     
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
+        """ """
+        wavedkeys = []
+        return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
+                              wavedkeys=wavedkeys,elvis=elvis)
+
     
     def check_data(self):
         """ 
@@ -232,31 +253,5 @@ class TP02(Task):
         raise NotImplementedError
         
         
-    def feeder(self,inputs,elvis='6.3.0'):
-        """ """
-        
-        self.subtasks = [('check',self.check_data),('prep',self.prep_data),
-                    ('basic',self.basic_analysis),
-                    ('meta',self.meta_analysis)]
-        
-        N = inputs['N']
-        if 'elvis' in inputs:
-            self.elvis = inputs['elvis']
-        else: self.elvis=elvis
-        if 'diffvalues' in inputs:
-            diffvalues = inputs['diffvalues']
-        else:
-            diffvalues = {}
-        
-        
-        scriptdict = self.build_scriptdict(N,diffvalues,elvis=self.elvis)
-        
-        inputs['structure'] = scriptdict        
-        inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
-        
-        if 'perflimits' in inputs:
-            self.perflimits.update(inputs['perflimits'])
-        
-        return inputs
     
     

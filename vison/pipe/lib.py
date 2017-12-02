@@ -244,7 +244,7 @@ def coarsefindTestinExpLog(explog,testkey,Nframes):
     
     """
     
-    indices = np.where(explog['TEST'] == testkey)
+    indices = np.where(explog['test'] == testkey)
     ccds = explog['CCD'][indices]
     uccd = np.unique(ccds)
     nccds = len(uccd)

@@ -199,7 +199,9 @@ class Pipe(object):
             taskinputs['elvis'] = elvis            
             
             Test = self.Test_dict[taskname]
-            taskinputs = Test.feeder(taskinputs)            
+            test = Test(taskinputs)
+            taskinputs = copy.deepcopy(test.inputs)
+            
             
             structure = taskinputs['structure']
             

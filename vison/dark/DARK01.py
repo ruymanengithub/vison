@@ -58,27 +58,34 @@ class DARK01(Task):
         """ """
         super(DARK01,self).__init__(inputs,log,drill)
         self.name = 'DARK01'
+        self.subtasks = [('check',self.check_data),('prep',self.prep_data),
+                    ('basic',self.basic_analysis),
+                    ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
         self.figdict = dict()
+        self.inputs['subpaths'] = dict()
+                
+    def set_inpdefaults(self,**kwargs):
+        self.inpdefaults = dict(N=4,exptime=565)
         
-        self.perflimits.update(performance.perf_rdout)
-    
-    
+    def set_perfdefaults(self):
+        self.perfdefaults = dict()
+        self.perfdefaults.update(performance.perf_rdout)
+        
 
-    def build_scriptdict(self,N,exptime,diffvalues=dict(),elvis='6.3.0'):
+    def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
         """Builds DARK01 script structure dictionary.
         
-        :param N: integer, number of frames to acquire.
-        :param exptime: integer, ms, exposure time.
         :param diffvalues: dict, opt, differential values.
         
         """
         
+        N = self.inputs['N']
+        exptime = self.inputs['exptime']
         DARK01_sdict = dict(col1=dict(frames=N,exptime=exptime))
         
         Ncols = len(DARK01_sdict.keys())    
         DARK01_sdict['Ncols'] = Ncols
-        
                     
         commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(DARK01_commvalues)
@@ -87,7 +94,12 @@ class DARK01(Task):
         
         return DARK01_sdict
     
-    
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
+        """ """
+        wavedkeys = []
+        return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
+                              wavedkeys=wavedkeys,elvis=elvis)
+        
     def check_data(self):
         """ 
         DARK0: Checks quality of ingested data.
@@ -197,29 +209,4 @@ class DARK01(Task):
         raise NotImplementedError
     
     
-    def feeder(self,inputs,elvis='6.3.0'):
-        """ """
         
-        self.subtasks = [('check',self.check_data),('prep',self.prep_data),
-                    ('basic',self.basic_analysis),
-                    ('meta',self.meta_analysis)]
-        
-        N = inputs['N']
-        exptime = inputs['exptime']
-        if 'elvis' in inputs:
-            elvis = inputs['elvis']
-        if 'diffvalues' in inputs:
-            diffvalues = inputs['diffvalues']
-        else:
-            diffvalues = {}
-        
-        scriptdict = self.build_scriptdict(N,exptime,diffvalues=diffvalues,elvis=elvis)
-    
-        inputs['structure'] = scriptdict
-        inputs['subpaths'] = dict()
-        
-        if 'perflimits' in inputs:
-            self.perflimits.update(inputs['perflimits'])
-        
-        
-        return inputs

@@ -36,13 +36,38 @@ class Task(object):
     
     def __init__(self,inputs,log=None,drill=False):
         """ """
-        
-        self.inputs = self.feeder(inputs)
+        self.inputs = dict()
+        self.inpdefaults = dict()
+        self.perfdefaults = dict()
+        #self.set_defaults()
+        self.elvis = '6.3.0'
         self.log = log
         self.name = ''
         self.HKKeys = []
+        self.subtasks = [()]
         self.perflimits = dict()
         self.drill = drill
+        
+        self.set_inpdefaults(**inputs)
+        _inputs = self.inpdefaults
+        _inputs.update(inputs)
+        self.inputs.update(_inputs)
+        
+        self.set_perfdefaults()
+        _perfdefaults = self.perfdefaults
+        self.perflimits.update(_perfdefaults)
+        if 'perflimits' in self.inputs:
+            self.perflimits.update(self.inputs['perflimits']) 
+        
+        if 'diffvalues' in inputs: diffvalues = inputs['diffvalues']
+        else: diffvalues = {}
+        
+        self.inputs['structure'] = self.build_scriptdict(diffvalues,elvis=self.elvis)
+    
+    def set_inpdefaults(self):
+        pass
+    def set_perfdefaultls(self):
+        pass
         
     def __call__(self):
         """Generic test master function."""

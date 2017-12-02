@@ -51,9 +51,9 @@ def generate_test_sequence(equipment,toGen,elvis='6.3.0'):
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
         
+        bias01 = BIAS01.BIAS01(inputs=dict(N=Nbias01,diffvalues=diffBIAS01))
         
-        structBIAS01 = BIAS01.BIAS01().build_BIAS01_scriptdict(Nbias01,
-                                    diffvalues=diffBIAS01,elvis=elvis)
+        structBIAS01 = bias01.build_scriptdict(elvis=elvis)
         
         test_sequence['BIAS01'] = structBIAS01
     
@@ -71,8 +71,10 @@ def generate_test_sequence(equipment,toGen,elvis='6.3.0'):
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
         
-        structDARK01 = DARK01.build_DARK01_scriptdict(Ndark01,exptime_dark01,
-                    diffvalues=diffDARK01,elvis=elvis)
+        dark01 = DARK01.DARK01(inputs=dict(N=Ndark01,exptime=exptime_dark01,
+                                           diffvalues=diffDARK01))
+        
+        structDARK01 = dark01.build_scriptdict(elvis=elvis)
         
         test_sequence['DARK01'] = structDARK01
     
@@ -179,29 +181,27 @@ def generate_test_sequence(equipment,toGen,elvis='6.3.0'):
                            nm880=ogse.tFWC_flat['nm880']) 
     
     # FLAT-01
-
-
     
     if toGen['FLAT01']: 
         
         print 'FLAT01...'
         
         t_dummy_F01 = np.array([25.,50.,75])/100.
-        
         exptimesF01 = exptimes_FLAT0X['nm800'] * t_dummy_F01# s
         framesF01 = [80,60,30]
-        flagsF01 = ['25pc','50pc','75pc']
+        
+        inpF01 = dict(exptimes=exptimesF01,
+                      frames=framesF01,
+                      wavelength=800,
+                      test='FLAT01_800')
         
         diffFLAT01 = dict(sn_ccd1=sn_ccd1,
                           sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-                          sn_rpsu=sn_rpsu,operator=operator,
-                          test='FLAT01_800')        
-
-        structFLAT01 = FLAT0X.build_FLAT0X_scriptdict(exptimesF01,
-                    framesF01,flagsF01,
-                    diffvalues=diffFLAT01,elvis=elvis)
+                          sn_rpsu=sn_rpsu,operator=operator)
         
+        flat01 = FLAT0X.FLAT0X(inputs=inpF01)
         
+        structFLAT01 = flat01.build_scriptdict(diffvalues=diffFLAT01,elvis=elvis)
         test_sequence['FLAT01'] = structFLAT01
 
     
@@ -212,31 +212,29 @@ def generate_test_sequence(equipment,toGen,elvis='6.3.0'):
     if toGen['FLAT02']: 
         
         wavesFLAT02 = [590,640,880]
-        
         t_dummy_F02 = np.array([25.,75])/100.
-        
         framesF02 = [80,30]
-        flagsF02 = ['25pc','75pc']
-    
-
+        
+        
         diffFLAT02 = dict(sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                       sn_rpsu=sn_rpsu,operator=operator)
     
         for iw, wave in enumerate(wavesFLAT02):
-            
+
+            itestkey = 'FLAT02_%i' % wave
+            print '%s...' % itestkey
             
             iexptimesF02 = exptimes_FLAT0X['nm%i' % wave] * t_dummy_F02
             
+            inpF02 = dict(exptimes = iexptimesF02,
+                          frames=framesF02,
+                          wavelength = wave,
+                          test=itestkey)
             
-            itestkey = 'FLAT02_%i' % wave
-        
-            print '%s...' % itestkey
-        
-            istructFLAT02 = FLAT0X.build_FLAT0X_scriptdict(iexptimesF02,
-                                framesF02,flagsF02,
-                                wavelength=wave,
-                                testkey=itestkey,diffvalues=diffFLAT02,elvis=elvis)
+            flat02 = FLAT0X.FLAT0X(inputs=inpF02)
+            
+            istructFLAT02 = flat02.build_scriptdict(diffvalues=diffFLAT02,elvis=elvis)
             
             test_sequence[itestkey] = istructFLAT02
 

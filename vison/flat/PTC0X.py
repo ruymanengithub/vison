@@ -73,7 +73,6 @@ PTC01_exptimes = np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100.*
 PTC02waves = [590,640,730,880]
 PTC02TEMP_exptimes = exptimes=np.array([10.,30.,50.,70.,80.,90.])/100.*ogse.tFWC_flat['nm800']
 
-
 testdefaults = dict(PTC01=dict(exptimes=PTC01_exptimes,
                          frames=[10,10,10,10,10,10,10,10,4,4,4]),
                     PTC02WAVE=dict(waves=PTC02waves,
@@ -94,28 +93,64 @@ class PTC0X(Task):
         """ """
         super(PTC0X,self).__init__(inputs,log)
         self.name = 'PTC0X'
+        self.subtasks = [('check',self.check_data),('extract',self.extract_PTC),
+                    ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
         self.figdict = dict() # PTC0Xaux.PTC0Xfigs
+        self.inputs['subpaths'] = dict()  #dict(figs='figs',pickles='ccdpickles')
         
-        self.perflimits.update(performance.perf_rdout)
 
+    def set_inpdefaults(self,**kwargs):
+        """ """
+        
+        try: testkey = kwargs['test']
+        except KeyError: 
+            testkey = 'PTC01'
+        
+        if testkey == 'PTC01': 
+            _testkey = 'PTC01'
+        if 'PTC02' in testkey:
+            if testkey[-1] == 'K': _testkey = 'PTC02TEMP'
+            else: _testkey = 'PTC02WAVE'
+        
+        if _testkey == 'PTCWAVE':
+            try: wavelength = kwargs['wavelength']
+            except KeyError: wavelength=800
+            exptimes = testdefaults[_testkey]['exptimes']['%nm%i' % wavelength]
+        else:
+            exptimes = testdefaults[_testkey]['exptimes']
+            wavelength = testdefaults[_testkey]['wavelength']
+        
+        frames = testdefaults[_testkey]['frames']
+        
+        self.inpdefaults = dict(test=testkey,wavelength=wavelength,
+                                frames=frames,exptimes=exptimes)
+        
 
-    def build_scriptdict(self,testkey,exptimes,frames,wavelength=800,diffvalues=dict(),
-                               elvis='6.3.0'):
+    def set_perfdefaults(self,**kwargs):
+        self.perfdefaults = dict()
+        self.perfdefaults.update(performance.perf_rdout)
+        
+
+    def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
         """Builds PTC0X script structure dictionary.
         
-        :param exptimes: list of ints [ms], exposure times.
-        :param frames: list of ints, number of frames for each exposure time.
-        :param wavelength: int, wavelength. Default: 800 nm.
+        #:param exptimes: list of ints [ms], exposure times.
+        #:param frames: list of ints, number of frames for each exposure time.
+        #:param wavelength: int, wavelength. Default: 800 nm.
         :param diffvalues: dict, opt, differential values.   
             
         """
+        
+        testkey = self.inputs['test']
+        exptimes = self.inputs=['exptimes']
+        frames = self.inputs['frames']
+        wavelength = self.inputs['wavelength']
         
         assert  len(exptimes) == len(frames)
         
         FW_ID = ogse.get_FW_ID(wavelength)
         FW_IDX = int(FW_ID[-1])
-        
     
         PTC0X_commvalues['test'] = testkey
         PTC0X_commvalues['wave'] = FW_IDX
@@ -138,8 +173,6 @@ class PTC0X(Task):
         PTC0X_sdict = sc.update_structdict(PTC0X_sdict,commvalues,diffvalues)
         
         return PTC0X_sdict
-    
-    
     
     
     def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
@@ -208,8 +241,6 @@ class PTC0X(Task):
         
     
         dd.initColumn('chk_flu_img',Qindices,dtype='float32',valini=np.nan)
-        
-            
         
         nObs,nCCD,nQuad = Qindices.shape
         Quads = Qindices[2].vals
@@ -385,12 +416,8 @@ class PTC0X(Task):
                         
                         dd.mx['sec_med'][iObs,jCCD,kQ,:] = _meds.copy()
                         dd.mx['sec_var'][iObs,jCCD,kQ,:] = _vars.copy()
-                        
+
         
-        return dd, report
-    
-    
-    
     def meta_analysis(self):
         """
     
@@ -495,50 +522,4 @@ class PTC0X(Task):
         
         # Add rerts
         
-        
-        return dd, report
-    
-    def feeder(self,inputs,elvis='6.3.0'):
-        """ """
-        
-        self.subtasks = [('check',self.check_data),('extract',self.extract_PTC),
-                    ('meta',self.meta_analysis)]
-        
-        wavelength = inputs['wavelength']
-        testkey = inputs['test']
-        
-        if testkey == 'PTC01': 
-            _testkey = 'PTC01'
-        if 'PTC02' in testkey:
-            if testkey[-1] == 'K': _testkey = 'PTCTSEMP'
-            else: _testkey = 'PTCWAVE'
-        
-        
-        if 'exptimes' in inputs: 
-            exptimes = inputs['exptimes']
-        else:
-            if _testkey == 'PTC02WAVE':
-                exptimes = testdefaults[_testkey]['exptimes']['%nm%i' % wavelength]
-            else:
-                exptimes = testdefaults[_testkey]['exptimes']
-        
-        if 'frames' in inputs: frames = inputs['frames']
-        else: frames = testdefaults[_testkey]['frames']
-        
-        
-        if 'elvis' in inputs:
-            elvis = inputs['elvis']
-        if 'diffvalues' in inputs:
-            diffvalues = inputs['diffvalues']
-        else:
-            diffvalues = {}
-            
-        scriptdict = self.build_scriptdict(testkey,exptimes,frames,wavelength=wavelength,
-                               diffvalues=diffvalues,
-                               elvis=elvis)
-        
-        inputs['structure'] = scriptdict
-        inputs['subpaths'] = dict()  #dict(figs='figs',pickles='ccdpickles')
-        
-        return inputs
         
