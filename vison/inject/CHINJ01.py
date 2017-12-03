@@ -61,26 +61,49 @@ class CHINJ01(Task):
         """ """
         super(CHINJ01,self).__init__(inputs,log,drill)
         self.name = 'CHINJ01'
+        self.subtasks = [('check',self.check_data),('extract',self.extract_data)
+                         ('basic',self.basic_analysis)]
         self.HKKeys = HKKeys
         self.figdict = dict()
         
         self.perflimits.update(performance.perf_rdout)
 
 
+    def set_inpdefaults(self,**kwargs):
+        """ """
+        toi_chinj = 500
+        
+        self.inpdefaults = dict(
+                IDL = 11.,
+                IDH = 18.,
+                IG1s = [2.,6.],
+                id_delays = [toi_chinj*3.,toi_chinj*2.],
+                toi_chinj = toi_chinj
+                )
+        
+        
+    def set_perfdefaults(self,**kwargs):
+        self.perfdefaults = dict()
+        self.perfdefaults.update(performance.perf_rdout)
 
-    def build_scriptdict(self,IDL,IDH,IG1s,id_delays,toi_chinj,diffvalues=dict(),
-                                 elvis='6.3.0'):
+    def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
         """
         Builds CHINJ01 script structure dictionary.
         
-        :param IDL: int, [mV], value of IDL (Inject. Drain Low).
-        :param IDH: int, [mV], Injection Drain High.
-        :param IG1s: list of 2 ints, [mV], [min,max] values of IG1.
-        :param id_delays: list of 2 ints, [mV], injection drain delays (2).
-        :param toi_chinj: int, [us], TOI-charge injection.
+        #:param IDL: int, [mV], value of IDL (Inject. Drain Low).
+        #:param IDH: int, [mV], Injection Drain High.
+        #:param IG1s: list of 2 ints, [mV], [min,max] values of IG1.
+        #:param id_delays: list of 2 ints, [mV], injection drain delays (2).
+        #:param toi_chinj: int, [us], TOI-charge injection.
         :param diffvalues: dict, opt, differential values.
         
         """
+        
+        IDL = self.inputs['IDL']
+        IDH = self.inputs['IDH']
+        IG1s = self.inputs['IG1s']
+        id_delays = self.inputs['id_delays']
+        toi_chinj = self.inputs['toi_chinj']
         
         CCDs = [1,2,3]
         halves = ['T','B']

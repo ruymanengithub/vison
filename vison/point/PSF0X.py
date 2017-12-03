@@ -93,25 +93,47 @@ class PSF0X(Task):
         """ """
         super(PSF0X,self).__init__(inputs,log)
         self.name = 'PSF0X'
+        self.subtasks = [('check',self.check_data),('prep',self.prep_data),
+                         ('basic',self.basic_analysis),('bayes',self.bayes_analysis),
+                         ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
         self.figdict = PSF0Xaux.PSF0Xfigs
+        self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
         
-        self.perflimits.update(performance.perf_rdout)
+    def set_inpdefaults(self,**kwargs):
 
+        wavelength = kwargs['wavelength']
+        testkey = kwargs['test']
+        
+        if 'PSF01' in testkey: _testkey = 'PSF01'
+        exptimes = testdefaults[_testkey]['exptimes']['nm%i' % wavelength]
+        frames = testdefaults[_testkey]['frames']
 
-    def build_scriptdict(self,exptimes,frames,wavelength=800,
-            diffvalues=dict(),elvis='6.3.0'):
+        self.inpdefaults = dict(wavelength=wavelength,
+                                frames=frames,
+                                exptimes=exptimes)
+        
+    def set_perfdefaults(self,**kwargs):
+        self.perfdefaults = dict()
+        self.perfdefaults.update(performance.perf_rdout)    
+    
+    
+    def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
         """ 
         
         Builds PSF0X script structure dictionary.
         
-        :param exptimes: list of ints, [ms], exposure times.
-        :param frames: list of frame numbers. Same length as exptimes.
-        :param wavelength: int, [nm], wavelength.
+        #:param exptimes: list of ints, [ms], exposure times.
+        #:param frames: list of frame numbers. Same length as exptimes.
+        #:param wavelength: int, [nm], wavelength.
         :param diffvalues: dict, opt, differential values.
         :param elvis: char, ELVIS version.
         
         """
+        exptimes = self.inputs['exptimes']
+        frames = self.inputs['frames']
+        wavelength = self.inputs['wavelength']
+        
         
         assert len(exptimes) == len(frames)
         
@@ -560,44 +582,4 @@ class PSF0X(Task):
         """
         raise NotImplementedError
         
-    
-    def feeder(self,inputs,elvis='6.3.0'):
-        """ """
-        
-        self.subtasks = [('check',self.check_data),('prep',self.prep_data),
-                    ('basic',self.basic_analysis),('bayes',self.bayes_analysis),
-                    ('meta',self.meta_analysis)]
-        
-        wavelength = inputs['wavelength']
-        
-        testkey = inputs['test']
-        if 'PSF01' in testkey: _testkey = 'PSF01'
-        
-        if 'exptimes' in inputs:
-            exptimes = inputs['exptimes']
-        else:
-            exptimes = testdefaults[_testkey]['exptimes']['nm%i' % wavelength]
-        if 'frames' in inputs:
-            frames = inputs['frames']
-        else:
-            frames = testdefaults[_testkey]['frames']
-            
-        if 'elvis' in inputs:
-            self.elvis = inputs['elvis']
-        else: self.elvis=elvis
-        if 'diffvalues' in inputs:
-            diffvalues = inputs['diffvalues']
-        else:
-            diffvalues = {}
-        
-        diffvalues['test'] = testkey    
-        scriptdict = self.build_scriptdict(exptimes,frames,wavelength,
-                                            diffvalues,elvis=self.elvis)
-        
-        inputs['structure'] = scriptdict        
-        inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles',spots='spots')
-        
-        if 'perflimits' in inputs:
-            self.perflimits.update(inputs['perflimits'])
-        
-        return inputs
+

@@ -51,38 +51,21 @@ from vison.point import display as pdspl
 from vison.support import vistime
 from vison.pipe.task import Task
 import FOCUS00_lib as F00lib
+from vison.image import performance
 
 # END IMPORT
 
 isthere = os.path.exists
 
-HKKeys_FOCUS00 = ['HK_temp_top_CCD1','HK_temp_bottom_CCD1','HK_temp_top_CCD2',
-'HK_temp_bottom_CCD2','HK_temp_top_CCD3','HK_temp_bottom_CCD3'] # TESTS
+HKKeys = ['CCD1_OD_T','CCD2_OD_T','CCD3_OD_T','COMM_RD_T',
+'CCD2_IG1_T','CCD3_IG1_T','CCD1_TEMP_T','CCD2_TEMP_T','CCD3_TEMP_T',
+'CCD1_IG1_T','COMM_IG2_T','FPGA_PCB_TEMP_T','CCD1_OD_B',
+'CCD2_OD_B','CCD3_OD_B','COMM_RD_B','CCD2_IG1_B','CCD3_IG1_B','CCD1_TEMP_B',
+'CCD2_TEMP_B','CCD3_TEMP_B','CCD1_IG1_B','COMM_IG2_B']
 
 dtobj_default = vistime.dtobj_default
 
 stampw = 25
-
-class FOCUS00(Task):
-    """ """
-
-def get_FOCUS00_structure(wavelength):
-    """ """
-     
-    FilterPos = ogse.get_FW_ID(wavelength)
-    mirror_nom = polib.mirror_nom[FilterPos]
-    
-    FOCUS00_structure = dict(col1=dict(frames=5,exptime=0,mirr_pos=mirror_nom-0.2),
-                          col2=dict(frames=2,exptime=10.,mirr_pos=mirror_nom-0.2),
-                          col3=dict(frames=2,exptime=10.,mirr_pos=mirror_nom-0.1),
-                          col4=dict(frames=2,exptime=10.,mirr_pos=mirror_nom-0.0),
-                          col5=dict(frames=2,exptime=10.,mirr_pos=mirror_nom+0.1),
-                          col6=dict(frames=2,exptime=10.,mirr_pos=mirror_nom+0.2),
-                   Ncols=6)
-
-    return FOCUS00_structure
-
-FOCUS00_structure_wnom = get_FOCUS00_structure(800)
 
 FOCUS00_commvalues = dict(program='CALCAMP',test='FOCUS_%i',
   IPHI1=1,IPHI2=1,IPHI3=1,IPHI4=0,
@@ -93,48 +76,79 @@ FOCUS00_commvalues = dict(program='CALCAMP',test='FOCUS_%i',
   siflsh=0,siflsh_p=500,
   motr_on=0,
   source='point')
-  
 
 
-def build_FOCUS00_scriptdict(wavelength,exptime,
-                diffvalues=dict(),elvis='6.3.0'):
-    """Builds FOCUS00 script structure dictionary.
+class FOCUS00(Task):
+    """ """
     
-    :param wavelength: int, [nm], wavelength.
-    :param exptime: int, [ms], exposure time.
-    :param diffvalues: dict, opt, differential values.
-    
-    
-    """
+    def __init__(self,inputs,log=None,drill=False):
+        """ """
+        super(FOCUS00,self).__init__(inputs,log,drill)
+        self.name = 'FOCUS00'
+        self.subtasks = [('check',self.check_data),('prep',self.prep_data),
+                    ('basic',self.basic_analysis),
+                    ('meta',self.meta_analysis)]
+        self.HKKeys = HKKeys
+        self.figdict = dict()
+        self.inputs['subpaths'] = dict(figs='figs')    
+
+
+    def set_inpdefaults(self,**kwargs):
         
-    FW_ID = ogse.get_FW_ID(wavelength)
-    FW_IDX = int(FW_ID[-1])
-    mirror_nom = polib.mirror_nom[FW_ID]
-    
-    
-    #FOCUS00_sdict = dict(col1=dict(frames=5,wave=FW_IDX,exptime=0,
-    #                               mirr_pos=mirror_nom-5,
-    #                               comments='BGD'))
-    
-    FOCUS00_sdict = dict()
-    
-    for i,j in enumerate(range(-3,4,1)):
-        FOCUS00_sdict['col%i' % (i+1,)] = dict(frames=2,exptime=exptime,
-                      mirr_pos=mirror_nom+float(j),
-                      wave=FW_IDX,
-                      comments='F%.1f' % float(j))
-    
-    Ncols = len(FOCUS00_sdict.keys())    
-    FOCUS00_sdict['Ncols'] = Ncols
-    
-    commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
-    commvalues.update(FOCUS00_commvalues)           
-    
-    FOCUS00_sdict = sc.update_structdict(FOCUS00_sdict,commvalues,diffvalues)
-    
-    
-    return FOCUS00_sdict
+        self.inpdefaults = dict(wavelength=800,
+                                exptime=60./100.*ogse.tFWC_point['nm%i' % 800])
+        
+    def set_perfdefaults(self,**kwargs):
+        self.perfdefaults = dict()
+        self.perfdefaults.update(performance.perf_rdout)
+         
 
+    def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
+        """Builds FOCUS00 script structure dictionary.
+        
+        #:param wavelength: int, [nm], wavelength.
+        #:param exptime: int, [ms], exposure time.
+        :param diffvalues: dict, opt, differential values.
+        
+        
+        """
+        
+        wavelength = self.inputs['wavelength']
+        exptime = self.inputs['exptime']
+        
+            
+        FW_ID = ogse.get_FW_ID(wavelength)
+        FW_IDX = int(FW_ID[-1])
+        mirror_nom = polib.mirror_nom[FW_ID]
+        
+        #FOCUS00_sdict = dict(col1=dict(frames=5,wave=FW_IDX,exptime=0,
+        #                               mirr_pos=mirror_nom-5,
+        #                               comments='BGD'))
+        
+        FOCUS00_sdict = dict()
+        
+        for i,j in enumerate(range(-3,4,1)):
+            FOCUS00_sdict['col%i' % (i+1,)] = dict(frames=2,exptime=exptime,
+                          mirr_pos=mirror_nom+float(j),
+                          wave=FW_IDX,
+                          comments='F%.1f' % float(j))
+        
+        Ncols = len(FOCUS00_sdict.keys())    
+        FOCUS00_sdict['Ncols'] = Ncols
+        
+        commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+        commvalues.update(FOCUS00_commvalues)           
+        
+        FOCUS00_sdict = sc.update_structdict(FOCUS00_sdict,commvalues,diffvalues)
+        
+        
+        return FOCUS00_sdict
+
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
+        """ """
+        wavedkeys = []
+        return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
+                              wavedkeys=wavedkeys,elvis=elvis)
     
 
 def filterexposures_FOCUS00(inwavelength,explogf,datapath,OBSID_lims,structure=FOCUS00_structure_wnom,elvis='5.7.04'):

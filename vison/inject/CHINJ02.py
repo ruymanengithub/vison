@@ -67,24 +67,46 @@ class CHINJ02(Task):
         """ """
         super(CHINJ02,self).__init__(inputs,log,drill)
         self.name = 'CHINJ02'
+        self.subtasks = [('check',self.check_data),('extract',self.extract_data),
+                         ('basic',self.basic_analysis),('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
         self.figdict = dict()
+        self.inputs['subpaths'] = dict(figs='figs')
         
-        self.perflimits.update(performance.perf_rdout)
+    
+    def set_inpdefaults(self,**kwargs):
+        """ """
+        toi_chinj = 500
+        
+        self.inpdefaults = dict(
+        IDLs = [13.,16.],
+        IDH = 18.,
+        id_delays = [toi_chinj*3,toi_chinj*2],
+        toi_chinj = toi_chinj
+                )
+        
+        
+    def set_perfdefaults(self,**kwargs):
+        self.perfdefaults = dict()
+        self.perfdefaults.update(performance.perf_rdout)
 
-    def build_scriptdict(self,IDLs,IDH,id_delays,toi_chinj,diffvalues=dict(),
-                                 elvis='6.3.0'):
+    def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
         """ 
         Builds CHINJ02 script structure dictionary.
         
-        :param IDLs: list of 2 ints, [mV], [min,max] values of IDL (Inject. Drain Low).
-        :param IDH: int, [mV], Injection Drain High.
-        :param id_delays: list of 2 ints, [mV], injection drain delays (2).
-        :param toi_chinj: int, [us], TOI-charge injection.
+        #:param IDLs: list of 2 ints, [mV], [min,max] values of IDL (Inject. Drain Low).
+        #:param IDH: int, [mV], Injection Drain High.
+        #:param id_delays: list of 2 ints, [mV], injection drain delays (2).
+        #:param toi_chinj: int, [us], TOI-charge injection.
         :param diffvalues: dict, opt, differential values.
         
         """
-            
+        
+        IDLs = self.inputs['IDLs']
+        IDH = self.inputs['IDH']
+        id_delays = self.inputs['id_delays']
+        toi_chinj = self.inputs['toi_chinj']
+        
         assert len(IDLs) == 2
         assert len(id_delays) == 2
         
@@ -244,6 +266,3 @@ class CHINJ02(Task):
         
         raise NotImplementedError
     
-    def feeder(self,inputs,elvis='6.3.0'):
-        """ """
-        raise NotImplementedError

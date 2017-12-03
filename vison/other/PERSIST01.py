@@ -58,12 +58,21 @@ class PERSIST01(Task):
         self.name = 'PERSIST01'
         self.HKKeys = HKKeys
         self.figdict = dict() 
-        
-        self.perflimits.update(performance.perf_rdout)    
+        self.inputs['subpaths'] = dict(figs='figs')
     
+    def set_inpdefauls(self,**kwargs):
+        """ """
+        self.inpdefaults = dict(
+                exptSATUR=15.,
+                exptLATEN=565.
+                )
 
-    def build_scriptdict(exptSATUR,exptLATEN,
-                    diffvalues=dict(),elvis='6.0.0'):
+    def set_perfdefaults(self,**kwargs):
+        """ """
+        self.perfdefaults = dict()
+        self.perfdefaults.update(performance.perf_rdout)
+
+    def build_scriptdict(self,diffvalues=dict(),elvis='6.0.0'):
         """ 
         Builds PERSISTENCE01 script structure dictionary.
         
@@ -73,6 +82,8 @@ class PERSIST01(Task):
         
         
         """
+        exptSATUR = self.inputs['exptSATUR']
+        exptLATEN = self.inputs['exptLATEN']
         
         PER01_sdict = dict(col1=dict(frames=5,exptime=0,comments='REFER.'),
                            col2=dict(frames=1,exptime=exptSATUR,comments='EXPOSE'),

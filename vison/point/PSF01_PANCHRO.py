@@ -56,6 +56,8 @@ class PSF01_PANCHRO(Task):
         """ """
         super(PSF01_PANCHRO,self).__init__(inputs,log,drill)
         self.name = 'PSF01_PANCHRO'
+        self.subtasks = [('ingest',self.ingest),('check',self.check_data),
+                         ('meta',self.meta)]
         #self.HKKeys = HKKeys
         self.figdict = PSF0Xaux.PSF0Xfigs
         
@@ -64,14 +66,9 @@ class PSF01_PANCHRO(Task):
     def ingest(self):
         """ """
     
+    def check_data(self):
+        """ """
+    
     def meta(self):
         """ """
-        
     
-    def feeder(self,inputs,elvis='6.3.0'):
-        """ """
-        
-        self.subtasks = [('ingest',self.ingest),
-                    ('meta',self.meta)]
-                
-        return inputs
