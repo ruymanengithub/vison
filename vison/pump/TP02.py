@@ -66,7 +66,7 @@ class TP02(Task):
     def set_inpdefaults(self,**kwargs):
         """ """
         toi_chinj=250
-        self.inpdefaults(toi_chinj=toi_chinj,
+        self.inpdefaults = dict(toi_chinj=toi_chinj,
                          Nshuffles_H=5000,
                          dwell_sv=[0.,4.75,14.3,28.6],
                          id_delays=np.array([3.,2.])*toi_chinj,

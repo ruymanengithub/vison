@@ -138,10 +138,7 @@ class NL01(Task):
                   
         commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(NL01_commvalues)
-        
-        if len(diffvalues)==0:
-            diffvalues = self.inputs['diffvalues']        
-        
+                
         NL01_sdict = sc.update_structdict(NL01_sdict,commvalues,diffvalues)
         
         return NL01_sdict

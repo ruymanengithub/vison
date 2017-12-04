@@ -77,12 +77,12 @@ PSF0X_commvalues = dict(program='CALCAMP',
   wave=4,mirr_pos=polib.mirror_nom['F4'],
   comments='')
 
-testdefaults = dict(PSF01=dict(waves=[590,640,800,880],
+testdefaults = dict(waves=[590,640,800,880],
                                exptimes=dict(),
-                               frames=[20,15,10,4,3]))
+                               frames=[20,15,10,4,3])
 
-for w in testdefaults['PSF01']['waves']:
-    testdefaults['PSF01']['exptimes']['nm%i' % w] = np.array([5.,25.,50.,75.,90.])/100.*ogse.tFWC_point['nm%i' % w]
+for w in testdefaults['waves']:
+    testdefaults['exptimes']['nm%i' % w] = np.array([5.,25.,50.,75.,90.])/100.*ogse.tFWC_point['nm%i' % w]
 
 stampw = polib.stampw
 
@@ -101,13 +101,16 @@ class PSF0X(Task):
         self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
         
     def set_inpdefaults(self,**kwargs):
-
-        wavelength = kwargs['wavelength']
+        
         testkey = kwargs['test']
         
-        if 'PSF01' in testkey: _testkey = 'PSF01'
-        exptimes = testdefaults[_testkey]['exptimes']['nm%i' % wavelength]
-        frames = testdefaults[_testkey]['frames']
+        if 'PSF01' in testkey: 
+            wavelength = kwargs['wavelength']
+        elif 'PSF02' in testkey: 
+            wavelength = 800
+
+        exptimes = testdefaults['exptimes']['nm%i' % wavelength]
+        frames = testdefaults['frames']
 
         self.inpdefaults = dict(wavelength=wavelength,
                                 frames=frames,
@@ -133,7 +136,6 @@ class PSF0X(Task):
         exptimes = self.inputs['exptimes']
         frames = self.inputs['frames']
         wavelength = self.inputs['wavelength']
-        
         
         assert len(exptimes) == len(frames)
         

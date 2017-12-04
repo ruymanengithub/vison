@@ -61,7 +61,7 @@ class CHINJ01(Task):
         """ """
         super(CHINJ01,self).__init__(inputs,log,drill)
         self.name = 'CHINJ01'
-        self.subtasks = [('check',self.check_data),('extract',self.extract_data)
+        self.subtasks = [('check',self.check_data),('extract',self.extract_data),
                          ('basic',self.basic_analysis)]
         self.HKKeys = HKKeys
         self.figdict = dict()

@@ -60,7 +60,7 @@ class PERSIST01(Task):
         self.figdict = dict() 
         self.inputs['subpaths'] = dict(figs='figs')
     
-    def set_inpdefauls(self,**kwargs):
+    def set_inpdefaults(self,**kwargs):
         """ """
         self.inpdefaults = dict(
                 exptSATUR=15.,

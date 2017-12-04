@@ -74,12 +74,14 @@ PTC02waves = [590,640,730,880]
 PTC02TEMP_exptimes = exptimes=np.array([10.,30.,50.,70.,80.,90.])/100.*ogse.tFWC_flat['nm800']
 
 testdefaults = dict(PTC01=dict(exptimes=PTC01_exptimes,
-                         frames=[10,10,10,10,10,10,10,10,4,4,4]),
+                         frames=[10,10,10,10,10,10,10,10,4,4,4],
+                         wavelength=800),
                     PTC02WAVE=dict(waves=PTC02waves,
                                    frames=[4,4,4,4,4,4],
                                    exptimes=dict()),
-                    PTC02TEMP=dict(frames=[4,4,4,4,4,4]),
-                                   exptimes=PTC02TEMP_exptimes)
+                    PTC02TEMP=dict(frames=[4,4,4,4,4,4],
+                                   exptimes=PTC02TEMP_exptimes,
+                                   wavelength=800))
                     
 
 for w in testdefaults['PTC02WAVE']['waves']:
@@ -113,10 +115,10 @@ class PTC0X(Task):
             if testkey[-1] == 'K': _testkey = 'PTC02TEMP'
             else: _testkey = 'PTC02WAVE'
         
-        if _testkey == 'PTCWAVE':
+        if _testkey == 'PTC02WAVE':
             try: wavelength = kwargs['wavelength']
             except KeyError: wavelength=800
-            exptimes = testdefaults[_testkey]['exptimes']['%nm%i' % wavelength]
+            exptimes = testdefaults[_testkey]['exptimes']['nm%i' % wavelength]
         else:
             exptimes = testdefaults[_testkey]['exptimes']
             wavelength = testdefaults[_testkey]['wavelength']
@@ -143,7 +145,7 @@ class PTC0X(Task):
         """
         
         testkey = self.inputs['test']
-        exptimes = self.inputs=['exptimes']
+        exptimes = self.inputs['exptimes']
         frames = self.inputs['frames']
         wavelength = self.inputs['wavelength']
         

@@ -64,9 +64,9 @@ class Task(object):
         
         self.inputs['structure'] = self.build_scriptdict(diffvalues,elvis=self.elvis)
     
-    def set_inpdefaults(self):
+    def set_inpdefaults(self,**kwargs):
         pass
-    def set_perfdefaultls(self):
+    def set_perfdefaultls(self,**kwargs):
         pass
         
     def __call__(self):

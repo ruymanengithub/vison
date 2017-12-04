@@ -71,13 +71,13 @@ class TP01(Task):
         """ """
         
         toi_chinjTP01 = 250
-        self.inpdefaults(toi_chinj=toi_chinjTP01,
+        self.inpdefaults = dict(toi_chinj=toi_chinjTP01,
                          Nshuffles_V=5000,
                          id_delays=np.array([3.,2.]) * toi_chinjTP01,
                          toi_tpv=[200,1000,2000,4000,8000],
                          vpumpmodes = [123,234,341,412])
         
-    def set_perdefaults(self):
+    def set_perfdefaults(self):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
         
