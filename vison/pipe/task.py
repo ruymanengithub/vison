@@ -81,8 +81,10 @@ class Task(object):
         # INPUTS
         
         subtasks = self.subtasks
+        
         OBSID_lims = self.inputs['OBSID_lims']
         explogf = self.inputs['explogf']
+        
         datapath = self.inputs['datapath']
         resultspath = self.inputs['resultspath']
         try: _paths = self.inputs['subpaths']
@@ -137,9 +139,11 @@ class Task(object):
         
             # META-DATA WORK
             
-            
+#            self.ingest(structure,explogf,datapath,OBSID_lims,elvis,testkey)           
+    
+#    def ingest(self,structure,explogf,datapath,OBSID_lims,elvis,testkey):
+#        
             # Filter Exposures that belong to the test
-        
 
             explog, checkreport = self.filterexposures(structure,explogf,datapath,OBSID_lims,
                                          elvis)
