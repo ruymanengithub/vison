@@ -61,6 +61,7 @@ class CHINJ01(Task):
         """ """
         super(CHINJ01,self).__init__(inputs,log,drill)
         self.name = 'CHINJ01'
+        self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('extract',self.extract_data),
                          ('basic',self.basic_analysis)]
         self.HKKeys = HKKeys
@@ -158,6 +159,13 @@ class CHINJ01(Task):
         CHINJ01_sdict = sc.update_structdict(CHINJ01_sdict,commvalues,diffvalues)
         
         return CHINJ01_sdict
+    
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
+        """ """
+        wavedkeys = []
+        return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
+                              wavedkeys=wavedkeys,elvis=elvis)
+    
     
     
     def check_data(self):

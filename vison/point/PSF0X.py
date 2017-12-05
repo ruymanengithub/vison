@@ -93,6 +93,7 @@ class PSF0X(Task):
         """ """
         super(PSF0X,self).__init__(inputs,log)
         self.name = 'PSF0X'
+        self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('prep',self.prep_data),
                          ('basic',self.basic_analysis),('bayes',self.bayes_analysis),
                          ('meta',self.meta_analysis)]

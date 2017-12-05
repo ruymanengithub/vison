@@ -58,6 +58,7 @@ class DARK01(Task):
         """ """
         super(DARK01,self).__init__(inputs,log,drill)
         self.name = 'DARK01'
+        self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('prep',self.prep_data),
                     ('basic',self.basic_analysis),
                     ('meta',self.meta_analysis)]

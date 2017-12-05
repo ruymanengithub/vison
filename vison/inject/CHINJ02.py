@@ -67,6 +67,7 @@ class CHINJ02(Task):
         """ """
         super(CHINJ02,self).__init__(inputs,log,drill)
         self.name = 'CHINJ02'
+        self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('extract',self.extract_data),
                          ('basic',self.basic_analysis),('meta',self.meta_analysis)]
         self.HKKeys = HKKeys

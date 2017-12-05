@@ -56,6 +56,7 @@ class PSF01_PANCHRO(Task):
         """ """
         super(PSF01_PANCHRO,self).__init__(inputs,log,drill)
         self.name = 'PSF01_PANCHRO'
+        self.type = 'Meta'
         self.subtasks = [('ingest',self.ingest),('check',self.check_data),
                          ('meta',self.meta)]
         #self.HKKeys = HKKeys

@@ -43,6 +43,7 @@ class Task(object):
         self.elvis = '6.3.0'
         self.log = log
         self.name = ''
+        self.type = 'Simple'
         self.HKKeys = []
         self.subtasks = [()]
         self.perflimits = dict()
@@ -50,6 +51,7 @@ class Task(object):
         
         self.set_inpdefaults(**inputs)
         _inputs = self.inpdefaults
+        
         _inputs.update(inputs)
         self.inputs.update(_inputs)
         
@@ -66,9 +68,13 @@ class Task(object):
     
     def set_inpdefaults(self,**kwargs):
         pass
-    def set_perfdefaultls(self,**kwargs):
+    def set_perfdefaults(self,**kwargs):
         pass
-        
+    
+    def build_scriptdict(self,diffvalues={},elvis='6.3.0'):
+        """ """
+        return dict()
+    
     def __call__(self):
         """Generic test master function."""
         
@@ -84,7 +90,6 @@ class Task(object):
         elvis = self.inputs['elvis']
         testkey = self.inputs['test']
         
-        
         DataDictFile = os.path.join(resultspath,'%s_DataDict.pick' % testkey)
         reportobjFile = os.path.join(resultspath,'%s_Report.pick' % testkey)
         
@@ -98,7 +103,6 @@ class Task(object):
         
         self.inputs['subpaths'] = _paths
         
-        
         structure = self.inputs['structure']
             
         try: reportroot = self.inputs['reportroot']
@@ -108,7 +112,6 @@ class Task(object):
         except KeyError: cleanafter = False
         
         todo_flags = self.inputs['todo_flags']
-        
         
         if todo_flags['init']:
             
@@ -141,7 +144,6 @@ class Task(object):
             explog, checkreport = self.filterexposures(structure,explogf,datapath,OBSID_lims,
                                          elvis)
             
-    
             if self.log is not None:
                 self.log.info('%s acquisition consistent with expectations: %s' % (testkey,checkreport['checksout']))
                 if len(checkreport['failedcols'])>0:
@@ -179,6 +181,9 @@ class Task(object):
             
             if self.log is not None:
                 self.log.info('%s: %s' % (subtaskname,subtaskmethod.__module__))
+            
+            if subtaskname not in todo_flags:
+                todo_flags[subtaskname] = False
             
             if todo_flags[subtaskname]:
                 

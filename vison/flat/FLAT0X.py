@@ -33,7 +33,8 @@ from vison.datamodel import EXPLOGtools as ELtools
 from vison.datamodel import HKtools
 from vison.datamodel import ccd
 from vison.datamodel import generator
-from vison.pipe.task import Task
+#from vison.pipe.task import Task
+from vison.flat.FlatTask import FlatTask
 from vison.image import performance
 # END IMPORT
 
@@ -54,13 +55,14 @@ FLAT0X_commvalues = dict(program='CALCAMP',
   comments='')
   
 
-class FLAT0X(Task):
+class FLAT0X(FlatTask):
     """ """
 
     def __init__(self,inputs,log=None,drill=False):
         """ """
         super(FLAT0X,self).__init__(inputs,log,drill)
         self.name = 'FLAT0X'
+        self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('indivflats',self.do_indiv_flats),
                     ('masterflat',self.do_master_flat),
                     ('prmask',self.do_prdef_mask)]
@@ -80,10 +82,12 @@ class FLAT0X(Task):
         t_dummy_F0X = np.array([25.,50.,75])/100.
         exptimesF0X = ogse.tFWC_flat['nm%i' % wavelength] * t_dummy_F0X# s
         framesF0X = [80,60,30]
-        self.inpdefault = dict(exptimes=exptimesF0X,
+        
+        self.inpdefaults = dict(exptimes=exptimesF0X,
                        frames=framesF0X,
                        wavelength=wavelength,
                        test=test)
+        
         
     def set_perfdefaults(self):
         #wavelength = self.inputs['wavelength']        

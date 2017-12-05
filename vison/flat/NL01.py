@@ -71,6 +71,7 @@ class NL01(Task):
         """ """
         super(NL01,self).__init__(inputs,log,drill)
         self.name = 'NL01'
+        self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('prep',self.prep_data),
                     ('extract',self.extract_stats),
                     ('NL',self.produce_NLCs),

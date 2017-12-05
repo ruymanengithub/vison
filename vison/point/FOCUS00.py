@@ -85,6 +85,7 @@ class FOCUS00(Task):
         """ """
         super(FOCUS00,self).__init__(inputs,log,drill)
         self.name = 'FOCUS00'
+        self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('prep',self.prep_data),
                     ('basic',self.basic_analysis),
                     ('meta',self.meta_analysis)]

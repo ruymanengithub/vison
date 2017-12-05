@@ -132,7 +132,7 @@ class Pipe(object):
         extinputs.pop('tasks')
         for _taskname in alltasks: extinputs.pop(_taskname)
         taskinputs.update(extinputs)
-            
+        
         msg = ['\n\nRunning Task: %s\n' % taskname]
         msg += ['Inputs:\n']
         for key in taskinputs:

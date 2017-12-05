@@ -66,6 +66,7 @@ class BIAS01(Task):
         """ """
         super(BIAS01,self).__init__(inputs,log,drill)
         self.name = 'BIAS01'
+        self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('prep',self.prep_data),
                     ('basic',self.basic_analysis),
                     ('meta',self.meta_analysis)]

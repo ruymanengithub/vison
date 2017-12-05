@@ -95,6 +95,7 @@ class PTC0X(Task):
         """ """
         super(PTC0X,self).__init__(inputs,log)
         self.name = 'PTC0X'
+        self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('extract',self.extract_PTC),
                     ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys

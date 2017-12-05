@@ -56,6 +56,7 @@ class PERSIST01(Task):
         """ """
         super(PERSIST01,self).__init__(inputs,log,drill)
         self.name = 'PERSIST01'
+        self.type = 'Simple'
         self.HKKeys = HKKeys
         self.figdict = dict() 
         self.inputs['subpaths'] = dict(figs='figs')
