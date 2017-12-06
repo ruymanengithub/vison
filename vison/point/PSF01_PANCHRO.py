@@ -44,6 +44,7 @@ from vison.image import calibration
 from vison.pipe.task import Task
 import PSF0Xaux
 from vison.image import performance
+from vison.support.files import cPickleRead
 # END IMPORT
 
 isthere = os.path.exists
@@ -57,15 +58,24 @@ class PSF01_PANCHRO(Task):
         super(PSF01_PANCHRO,self).__init__(inputs,log,drill)
         self.name = 'PSF01_PANCHRO'
         self.type = 'Meta'
-        self.subtasks = [('ingest',self.ingest),('check',self.check_data),
+        self.subtasks = [('check',self.check_data),
                          ('meta',self.meta)]
         #self.HKKeys = HKKeys
         self.figdict = PSF0Xaux.PSF0Xfigs
-        
         self.perflimits.update(performance.perf_rdout)
 
-    def ingest(self):
+    def ingest_data_MetaTest(self):
         """ """
+        
+        wavelengths = self.inputs['wavelengths']
+        inpath = self.inputs['inpath']
+        
+        self.dd = dict()        
+        for iw,wave in wavelengths:
+            wpath = 'PSF01_%i' % wave
+            iDDpickfile = os.path.join(inpath,wpath,'PSF01_%i_DataDict.pick' % wave)
+            self.dd['nm%i' % wave] = cPickleRead(iDDpickfile)
+        
     
     def check_data(self):
         """ """

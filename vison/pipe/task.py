@@ -82,42 +82,36 @@ class Task(object):
         
         subtasks = self.subtasks
         
-        OBSID_lims = self.inputs['OBSID_lims']
-        explogf = self.inputs['explogf']
         
-        datapath = self.inputs['datapath']
+        # inputs loading
         resultspath = self.inputs['resultspath']
         try: _paths = self.inputs['subpaths']
         except: _paths = dict()
-        elvis = self.inputs['elvis']
         testkey = self.inputs['test']
-        
-        DataDictFile = os.path.join(resultspath,'%s_DataDict.pick' % testkey)
-        reportobjFile = os.path.join(resultspath,'%s_Report.pick' % testkey)
-        
-        if not isthere(resultspath):
-            os.system('mkdir %s' % resultspath)
-        
-        for _pathkey in _paths:
-            subpath = os.path.join(resultspath,_paths[_pathkey])            
-            if not isthere(subpath): os.system('mkdir %s' % subpath)
-            _paths[_pathkey] = subpath
-        
-        self.inputs['subpaths'] = _paths
-        
-        structure = self.inputs['structure']
-            
+        todo_flags = self.inputs['todo_flags']
         try: reportroot = self.inputs['reportroot']
         except KeyError: reportroot = '%s_report' % testkey
-        
         try: cleanafter = self.inputs['cleanafter']
         except KeyError: cleanafter = False
-        
-        todo_flags = self.inputs['todo_flags']
+
+        DataDictFile = os.path.join(resultspath,'%s_DataDict.pick' % testkey)
+        reportobjFile = os.path.join(resultspath,'%s_Report.pick' % testkey)
         
         if todo_flags['init']:
             
             
+            # Creating resultspath
+            if not isthere(resultspath):
+                os.system('mkdir %s' % resultspath)
+            
+            # Creating subresultspath
+            for _pathkey in _paths:
+                subpath = os.path.join(resultspath,_paths[_pathkey])            
+                if not isthere(subpath): os.system('mkdir %s' % subpath)
+                _paths[_pathkey] = subpath
+            
+            self.inputs['subpaths'] = _paths
+
             # Let's start from scratch
             
             if os.path.exists(DataDictFile): os.system('rm %s' % DataDictFile)
@@ -129,45 +123,18 @@ class Task(object):
                     subpath = self.inputs['subpaths'][_pathkey]
                     os.system('rm %s/*' % subpath)
             
-        
             # Initialising Report Object
         
             if todo_flags['report']:
                 self.report = Report(TestName=self.name)
             else:
                 self.report = None
-        
-            # META-DATA WORK
             
-#            self.ingest(structure,explogf,datapath,OBSID_lims,elvis,testkey)           
-    
-#    def ingest(self,structure,explogf,datapath,OBSID_lims,elvis,testkey):
-#        
-            # Filter Exposures that belong to the test
-
-            explog, checkreport = self.filterexposures(structure,explogf,datapath,OBSID_lims,
-                                         elvis)
             
-            if self.log is not None:
-                self.log.info('%s acquisition consistent with expectations: %s' % (testkey,checkreport['checksout']))
-                if len(checkreport['failedcols'])>0:
-                    self.log.info('%s failed columns: %s' % (testkey,checkreport['failedcols']))
-                if len(checkreport['failedkeys'])>0:
-                    self.log.info('%s failed keys: %s' % (testkey,checkreport['failedkeys']))
-            
-            # Adding Time Axis            
-            
-            explog['time'] = np.array(map(vistime.get_dtobj,explog['date'])).copy()
-
-            
-            # Building DataDict 
-            
-            self.dd = pilib.DataDict_builder(explog,self.inputs,structure)
-            
-            if not checkreport['checksout']:self.dd.flags.add('MISSDATA')
-            
-            # Add HK information
-            self.addHK_2_dd()
+            if self.type == 'Simple':
+                self.ingest_data_SimpleTest()           
+            elif self.type == 'Meta':
+                self.ingest_data_MetaTest()
             
             #self.save_progress(dd,reportobj,DataDictFile,reportobjFile)
             self.save_progress(DataDictFile,reportobjFile)
@@ -238,7 +205,47 @@ class Task(object):
     def addHK_2_dd(self):
         """ """
         self.dd = pilib.addHK(self.dd,self.HKKeys,elvis=self.elvis)
-       
+
+    def ingest_data_SimpleTest(self):
+        
+        testkey = self.inputs['test']
+        datapath = self.inputs['datapath']
+        OBSID_lims = self.inputs['OBSID_lims']
+        structure = self.inputs['structure']
+        explogf = self.inputs['explogf']
+        elvis = self.inputs['elvis']
+        
+        # META-DATA WORK
+        
+        explog, checkreport = self.filterexposures(structure,explogf,datapath,OBSID_lims,
+                                     elvis)
+        
+        if self.log is not None:
+            self.log.info('%s acquisition consistent with expectations: %s' % (testkey,checkreport['checksout']))
+            if len(checkreport['failedcols'])>0:
+                self.log.info('%s failed columns: %s' % (testkey,checkreport['failedcols']))
+            if len(checkreport['failedkeys'])>0:
+                self.log.info('%s failed keys: %s' % (testkey,checkreport['failedkeys']))
+        
+        # Adding Time Axis            
+        
+        explog['time'] = np.array(map(vistime.get_dtobj,explog['date'])).copy()
+
+        
+        # Building DataDict 
+        
+        self.dd = pilib.DataDict_builder(explog,self.inputs,structure)
+        
+        if not checkreport['checksout']:self.dd.flags.add('MISSDATA')
+        
+        # Add HK information
+        self.addHK_2_dd()
+
+
+    def ingest_data_MetaTest(self):
+        raise NotImplementedError("Method implemented in child-class")
+    
+    
     def save_progress(self,DataDictFile,reportobjFile):
         """ """
         files.cPickleDumpDictionary(self.dd,DataDictFile)
