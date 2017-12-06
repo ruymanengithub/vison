@@ -30,7 +30,8 @@ from vison.datamodel import scriptic as sc
 #from vison.datamodel import ccd
 #from vison.datamodel import generator
 #import datetime
-from vison.pipe.task import Task
+#from vison.pipe.task import Task
+from InjTask import InjTask
 from vison.image import performance
 # END IMPORT
 
@@ -60,7 +61,7 @@ CHINJ02_commvalues = dict(program='CALCAMP',test='CHINJ02',
   comments='')
   
 
-class CHINJ02(Task):
+class CHINJ02(InjTask):
     """ """
 
     def __init__(self,inputs,log=None,drill=False):

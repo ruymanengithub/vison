@@ -52,7 +52,8 @@ from vison.flat import FlatFielding as FFing
 #from vison.support.report import Report
 from vison.support import files
 from vison.image import calibration
-from vison.pipe.task import Task
+#from vison.pipe.task import Task
+from PointTask import  PointTask
 import PSF0Xaux
 from vison.image import performance
 # END IMPORT
@@ -86,7 +87,7 @@ for w in testdefaults['waves']:
 
 stampw = polib.stampw
 
-class PSF0X(Task):
+class PSF0X(PointTask):
     
     
     def __init__(self,inputs,log=None,drill=False):

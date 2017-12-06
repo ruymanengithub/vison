@@ -49,7 +49,8 @@ from vison.datamodel import scriptic as sc
 from vison.point.spot import Spot
 from vison.point import display as pdspl
 from vison.support import vistime
-from vison.pipe.task import Task
+#from vison.pipe.task import Task
+from PointTask import PointTask
 import FOCUS00_lib as F00lib
 from vison.image import performance
 
@@ -78,7 +79,7 @@ FOCUS00_commvalues = dict(program='CALCAMP',test='FOCUS_%i',
   source='point')
 
 
-class FOCUS00(Task):
+class FOCUS00(PointTask):
     """ """
     
     def __init__(self,inputs,log=None,drill=False):

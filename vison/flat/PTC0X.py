@@ -51,7 +51,8 @@ from vison.image import performance
 #from vison.pipe import FlatFielding as FFing
 #from vison.support.report import Report
 #from vison.support import files
-from vison.pipe.task import Task
+#from vison.pipe.task import Task
+from FlatTask import FlatTask
 # END IMPORT
 
 isthere = os.path.exists
@@ -88,7 +89,7 @@ for w in testdefaults['PTC02WAVE']['waves']:
     testdefaults['PTC02WAVE']['exptimes']['nm%i' % w] = np.array([10.,30.,50.,70.,80.,90.])/100.*ogse.tFWC_flat['nm%i' % w]
     
 
-class PTC0X(Task):
+class PTC0X(FlatTask):
     """ """
     
     def __init__(self,inputs,log=None,drill=False):

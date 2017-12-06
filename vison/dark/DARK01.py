@@ -32,7 +32,8 @@ from vison.datamodel import EXPLOGtools as ELtools
 from vison.datamodel import HKtools
 from vison.datamodel import ccd
 from vison.datamodel import generator
-from vison.pipe.task import Task
+#from vison.pipe.task import Task
+from DarkTask import DarkTask
 from vison.image import performance
 # END IMPORT
 

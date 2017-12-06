@@ -29,7 +29,8 @@ from vison.datamodel import ccd
 from vison.image import calibration
 from vison.datamodel import core
 import B01aux
-from vison.pipe.task import Task
+#from vison.pipe.task import Task
+from DarkTask import DarkTask
 from vison.image import performance
 
 #from vison.support.report import Report
@@ -220,7 +221,7 @@ class BIAS01(Task):
         
         # Assess metrics are within allocated boundaries
         
-               
+        
         if self.report is not None: 
             self.report.add_Section(keyword='check_ronoffset',Title='Offsets and RON',level=1)
         

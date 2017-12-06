@@ -41,7 +41,8 @@ from vison.datamodel import  scriptic as sc
 import FlatFielding as FFing
 from vison.support.report import Report
 from vison.support import files
-from vison.pipe.task import Task
+#from vison.pipe.task import Task
+from FlatTask import FlatTask
 from vison.image import performance
 # END IMPORT
 
@@ -64,7 +65,7 @@ NL01_commvalues = dict(program='CALCAMP',
   comments='')
 
 
-class NL01(Task):
+class NL01(FlatTask):
     """ """
     
     def __init__(self,inputs,log=None,drill=False):
