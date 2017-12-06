@@ -349,3 +349,61 @@ class Task(object):
                     (arr[:,iCCD,...] <= _lims[0]) | (arr[:,iCCD,...] >= _lims[1]))
             compliance[CCDkey] = not np.any(test,axis=(0,1)).sum()
         return compliance
+    
+    def check_data(self,HKKeys):
+        """Generic check_data method"""
+        
+        if self.report is not None: 
+            self.report.add_Section(keyword='check_data',Title='Data Validation',level=0)
+        # CHECK AND CROSS-CHECK HK        
+        self.check_HK_ST()        
+        # OBTAIN METRICS FROM IMAGES        
+        self.get_checkstats_ST()        
+        # METRICS ASSESSMENT        
+        self.check_metrics_ST()
+        # PLOTs
+        if self.report is not None: self.report.add_Section(keyword='check_plots',Title='Plots',level=1)
+        self.addFigures_ST('check_data')
+        # Update Report, raise flags, fill-in
+        if self.log is not None:
+            self.addFlagsToLog()
+        if self.report is not None:
+            self.addFlagsToReport()
+        
+    def check_HK_ST(self):
+        """ """
+        HKKeys = self.HKKeys
+        if self.report is not None: 
+            self.report.add_Section(keyword='check_HK',Title='HK',level=1)        
+        
+        report_HK_perf = self.check_HK(HKKeys,reference='command',limits='P',tag='Performance',
+                      doReport=self.report is not None,
+                                 doLog=self.log is not None)
+        HK_perf_ok = np.all([value for key,value in report_HK_perf.iteritems()])
+        
+        report_HK_safe = self.check_HK(HKKeys,reference='abs',limits='S',tag='Safe',
+                      doReport = self.report is not None,
+                          doLog = self.log is not None)
+        HK_safe_ok = np.all([value for ke,value in report_HK_safe.iteritems()])
+        
+        if (not HK_perf_ok) or (not HK_safe_ok): self.dd.flags.add('HK_OOL')
+        
+    
+    def addFigures_ST(self,subtaskname):
+        """ """
+        
+        raise RuntimeError("Not working... method missplaced, too generic")
+        
+        figkeys = self.STfigdict[subtaskname]
+        for figkey in figkeys:
+            
+            try:
+                pmeta = dict(path = self.inputs['subpaths']['figs'],
+                         stat='offset')
+                self.doPlot('B01checks_offsets',**pmeta)
+                self.addFigure2Report('B01checks_offsets')
+            except:
+                self.skipMissingPlot('BS_checkoffsets',ref='B01checks_offsets')
+
+            
+ 

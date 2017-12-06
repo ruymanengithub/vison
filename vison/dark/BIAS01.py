@@ -287,14 +287,11 @@ class BIAS01(Task):
             
         
         # Update Report, raise flags, fill-in
-        
-    
         if self.log is not None:
             self.addFlagsToLog()
         
         if self.report is not None:
             self.addFlagsToReport()
-        
         
     
     def prep_data(self):
