@@ -57,7 +57,7 @@ class Task(object):
         _inputs.update(inputs)
         self.inputs.update(_inputs)
         
-        self.set_perfdefaults()
+        self.set_perfdefaults(**inputs)
         _perfdefaults = self.perfdefaults
         self.perflimits.update(_perfdefaults)
         if 'perflimits' in self.inputs:
@@ -266,7 +266,6 @@ class Task(object):
         figname = figobj.figname
         texfraction = figobj.texfraction
         caption = figobj.caption
-        
         assert os.path.exists(figname)
         epsname = '%s.eps' % os.path.splitext(figname)[0]
         os.system('convert %s %s' % (figname,epsname))
@@ -279,7 +278,7 @@ class Task(object):
         figobj.configure(**kwargs)
         figobj.build_data(self)
         figobj.plot()
-        self.figdict[figkey] = figobj
+        self.figdict[figkey][0] = copy.deepcopy(figobj)
         
     def addComplianceMatrix2Log(self,complidict,label=''):
         """ """
@@ -333,8 +332,9 @@ class Task(object):
         """ """
         self.figdict[key] = copy.deepcopy(self.figdict['BlueScreen'])
         niceref = st.replace(ref,'_','\_')
-        pmeta = dict(path = self.inputs['subpaths']['figs'],
-                     caption = '$\\bf{MISSING}:$ %s' % niceref,
+        figspath = self.inputs['subpaths']['figs']
+        pmeta = dict(path=figspath,
+                caption = '$\\bf{MISSING}:$ %s' % niceref,
                      title=niceref)
         self.doPlot(key,**pmeta)
         self.addFigure2Report(key)
@@ -395,7 +395,6 @@ class Task(object):
         try: figkeys = kwargs['figkeys']
         except: figkeys=[]
         figspath = self.inputs['subpaths']['figs']
-        
         for figkey in figkeys:
             try:
                 pmeta = self.figdict[figkey][1]
@@ -403,7 +402,7 @@ class Task(object):
                 self.doPlot(figkey,**pmeta)
                 self.addFigure2Report(figkey)
             except:
-                nfigkey = 'BS_%s' % figkey
+                nfigkey = 'BS_%s' % figkey                
                 self.skipMissingPlot(nfigkey,ref=figkey)
 
             

@@ -92,7 +92,7 @@ class PSF0X(PointTask):
     
     def __init__(self,inputs,log=None,drill=False):
         """ """
-        super(PSF0X,self).__init__(inputs,log)
+        super(PSF0X,self).__init__(inputs,log,drill)
         self.name = 'PSF0X'
         self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('prep',self.prep_data),

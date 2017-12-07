@@ -23,9 +23,20 @@ class DarkTask(Task):
     
     def __init__(self,*args,**kwargs):
         super(DarkTask,self).__init__(*args,**kwargs)
+
+    def check_data(self):
+        """ """
+        test = self.inputs['test']
+        if test == 'BIAS01':
+            kwargs = dict()
+        elif test == 'DARK01':
+            kwargs = dict()
+        Task.check_data(self,**kwargs)
         
     def get_checkstats_ST(self,**kwargs):
         """ """
+        
+        #test = self.inputs['test']
         
         # Initialize new columns
     
@@ -33,7 +44,6 @@ class DarkTask(Task):
         
         if 'Quad' not in Xindices.names:
             Xindices.append(core.vIndex('Quad',vals=pilib.Quads))
-        
         
         newcolnames_off = ['offset_pre','offset_img','offset_ove']
         for newcolname_off in newcolnames_off:
@@ -44,44 +54,43 @@ class DarkTask(Task):
             self.dd.initColumn(newcolname_std,Xindices,dtype='float32',valini=np.nan)
         
         
-        nObs,nCCD,nQuad = Xindices.shape
-        #CCDs = Xindices[1].vals
-        Quads = Xindices[2].vals
+        nObs,_,_ = Xindices.shape
+        CCDs = Xindices[Xindices.names.index('CCD')].vals
+        Quads = Xindices[Xindices.names.index('Quad')].vals
         
         # Get statistics in different regions
         
         if not self.drill:
             
             for iObs in range(nObs):
-                for jCCD in range(nCCD):
+                for jCCD,CCD in enumerate(CCDs):
                     dpath = self.dd.mx['datapath'][iObs,jCCD]
                     ffits = os.path.join(dpath,'%s.fits' % \
                                          self.dd.mx['File_name'][iObs,jCCD])                    
                     ccdobj = ccd.CCD(ffits)
                     
-                    for kQ in range(nQuad):
-                        Quad = Quads[kQ]
+                    for kQ,Quad in enumerate(Quads):
+                        
                         
                         for reg in ['pre','img', 'ove']:
-                            stats = ccdobj.get_stats(Quad,sector=reg,statkeys=['mean','std'],trimscan=[5,5],
+                            stats = ccdobj.get_stats(Quad,sector=reg,statkeys=['median','std'],trimscan=[5,5],
                                     ignore_pover=True,extension=-1)
                             self.dd.mx['offset_%s' % reg][iObs,jCCD,kQ] = stats[0]
                             self.dd.mx['std_%s' % reg][iObs,jCCD,kQ] = stats[1]
     
-    def check_data(self):
-        """ """
-        if self.name == 'BIAS01':
-            kwargs = dict(figkeys=['B01checks_offsets','B01checks_stds'])
-        Task.check_data(self,**kwargs)
-
-    def check_metrics_ST(self,*args,**kwargs):
-        """ """
+    def check_metrics_ST(self,**kwargs):
+        """ 
+        
+        """
+        
+        test = self.inputs['test']
         
         Xindices = self.dd.indices
         CCDs = Xindices[Xindices.names.index('CCD')].vals
         
         if self.report is not None: 
             self.report.add_Section(keyword='check_ronoffset',Title='Offsets and RON',level=1)
+        
         
         # absolute value of offsets
         
@@ -109,8 +118,13 @@ class DarkTask(Task):
         
         # absolute value of std
         
+        if test == 'BIAS01':
+            regs_std = ['pre','img','ove']
+        elif test == 'DARK01':
+            regs_std = ['pre','ove']
+        
         RONs_lims = self.perflimits['RONs_lims']
-        for reg in ['pre','img','ove']:
+        for reg in regs_std:
             _compliance_std = self.check_stat_perCCD(self.dd.mx['std_%s' % reg],RONs_lims,CCDs)
         
             if not self.IsComplianceMatrixOK(_compliance_std): 

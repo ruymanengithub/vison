@@ -142,6 +142,7 @@ class Pipe(object):
 
         tini = datetime.datetime.now()
         
+        
         self.dotask(taskname,taskinputs,drill=self.drill)
         
         tend = datetime.datetime.now()

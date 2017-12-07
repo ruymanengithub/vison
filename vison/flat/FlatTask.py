@@ -9,8 +9,15 @@ Created on Mon Dec  4 16:00:10 2017
 """
 
 # IMPORT STUFF
+from pdb import set_trace as stop
+import copy
+import numpy as np
+import os
 
 from vison.pipe.task import Task
+from vison.datamodel import core
+from vison.datamodel import ccd
+from vison.pipe import lib as pilib
 # END IMPORT
 
 class FlatTask(Task):
@@ -20,64 +27,27 @@ class FlatTask(Task):
     
     
     def check_data(self):
-        """ 
+        """ """
+        test = self.inputs['test']
+        if test == 'FLAT01':
+            kwargs = dict()
+        elif 'FLAT02' in test:
+            kwargs = dict()
+        elif test == 'PTC01':
+            kwargs = dict()
+        elif 'PTC02' in test:
+            kwargs = dict()
+        elif test == 'NL01':
+            kwargs = dict()
+            
+        Task.check_data(self,**kwargs)
         
-        BIAS01: Checks quality of ingested data.
-        
-        **METACODE**
-        
-        
-        **TODO**: consider to raise an exception that
-              would halt execution of task if 
-              processing data could be just a waste of time.
-                      
-        ::
-          
-          check common HK values are within safe / nominal margins
-          check voltages in HK match commanded voltages, within margins
-        
-          f.e.ObsID:
-              f.e.CCD: 
-                  f.e.Q.:
-                      measure offsets in pre-, img-, over-
-                      measure std in pre-, img-, over-
-          assess std in pre- is within allocated margins
-          assess offsets in pre-, img-, over- are equal, within allocated  margins
-          assess offsets are within allocated margins
-        
-          plot offsets vs. time
-          plot std vs. time
-        
-          issue any warnings to log
-          issue update to report
-          update flags as needed
-        
-        """
-        
-        #raise RunTimeError # TEST        
     
-        if self.report is not None: 
-            self.report.add_Section(keyword='check_data',Title='Data Validation',level=0)
+    
+    def get_checkstats_ST(self,**kwargs):
+        """ """
         
-        
-        # CHECK AND CROSS-CHECK HK
-        
-        if self.report is not None: 
-            self.report.add_Section(keyword='check_HK',Title='HK',level=1)
-        
-        report_HK_perf = self.check_HK(HKKeys,reference='command',limits='P',tag='Performance',
-                      doReport=self.report is not None,
-                                 doLog=self.log is not None)
-                
-        HK_perf_ok = np.all([value for key,value in report_HK_perf.iteritems()])
-        
-        report_HK_safe = self.check_HK(HKKeys,reference='abs',limits='S',tag='Safe',
-                      doReport = self.report is not None,
-                          doLog = self.log is not None)
-        
-        HK_safe_ok = np.all([value for ke,value in report_HK_safe.iteritems()])
-        
-        if (not HK_perf_ok) or (not HK_safe_ok): self.dd.flags.add('HK_OOL')
+        #test = self.inputs['test']
         
         # Initialize new columns
     
@@ -87,51 +57,71 @@ class FlatTask(Task):
             Xindices.append(core.vIndex('Quad',vals=pilib.Quads))
         
         
-        newcolnames_off = ['offset_pre','offset_img','offset_ove']
+        newcolnames_off = ['offset_pre','offset_ove']
         for newcolname_off in newcolnames_off:
             self.dd.initColumn(newcolname_off,Xindices,dtype='float32',valini=np.nan)
         
-        newcolnames_std = ['std_pre','std_img','std_ove']
+        self.dd.initColumn('flu_med_img',Xindices,dtype='float32',valini=np.nan)
+        self.dd.initColumn('flu_var_img',Xindices,dtype='float32',valini=np.nan)
+        
+        newcolnames_std = ['std_pre','std_ove']
         for newcolname_std in newcolnames_std:
             self.dd.initColumn(newcolname_std,Xindices,dtype='float32',valini=np.nan)
         
-        
-        nObs,nCCD,nQuad = Xindices.shape
-        CCDs = Xindices[1].vals
-        Quads = Xindices[2].vals
+        nObs,_,_ = Xindices.shape
+        CCDs = Xindices[Xindices.names.index('CCD')].vals
+        Quads = Xindices[Xindices.names.index('Quad')].vals
         
         # Get statistics in different regions
+        
         
         if not self.drill:
             
             for iObs in range(nObs):
-                for jCCD in range(nCCD):
+                for jCCD, CCD in enumerate(CCDs):
                     dpath = self.dd.mx['datapath'][iObs,jCCD]
                     ffits = os.path.join(dpath,'%s.fits' % \
                                          self.dd.mx['File_name'][iObs,jCCD])                    
                     ccdobj = ccd.CCD(ffits)
                     
-                    for kQ in range(nQuad):
-                        Quad = Quads[kQ]
+                    for kQ,Quad in enumerate(Quads):
                         
-                        for reg in ['pre','img', 'ove']:
-                            stats = ccdobj.get_stats(Quad,sector=reg,statkeys=['mean','std'],trimscan=[5,5],
+                        for reg in ['pre','ove']:
+                            stats_bias = ccdobj.get_stats(Quad,sector=reg,statkeys=['median','std'],trimscan=[5,5],
                                     ignore_pover=True,extension=-1)
-                            self.dd.mx['offset_%s' % reg][iObs,jCCD,kQ] = stats[0]
-                            self.dd.mx['std_%s' % reg][iObs,jCCD,kQ] = stats[1]
+                            self.dd.mx['offset_%s' % reg][iObs,jCCD,kQ] = stats_bias[0]
+                            self.dd.mx['std_%s' % reg][iObs,jCCD,kQ] = stats_bias[1]
+                            
+                        stats_img = ccdobj.get_stats(Quad,sector='img',statkeys=['median','std'],trimscan=[5,5],
+                                ignore_pover=True,extension=-1)
+                        self.dd.mx['flu_med_img'][iObs,jCCD,kQ] = stats_img[0]
+                        self.dd.mx['flu_var_img'][iObs,jCCD,kQ] = stats_img[1]**2.
+
+    
+    def check_metrics_ST(self,**kwargs):
+        """ 
         
-        #  METRICS ASSESSMENT
+        TODO:
+            - offset levels (pre and over-scan), abs. and relative
+            - RON in pre and overscan
+            - fluence in image area [script-column-dependent]
+            - variance in image area [script-column-dependent]
         
-        # Assess metrics are within allocated boundaries
+        """
         
+        test = self.inputs['test']
+        
+        Xindices = self.dd.indices
+        CCDs = Xindices[Xindices.names.index('CCD')].vals
         
         if self.report is not None: 
             self.report.add_Section(keyword='check_ronoffset',Title='Offsets and RON',level=1)
         
+        
         # absolute value of offsets
         
         offsets_lims = self.perflimits['offsets_lims']
-        for reg in ['pre','img','ove']:
+        for reg in ['pre','ove']:
             arr = self.dd.mx['offset_%s' % reg]
             _compliance_offsets = self.check_stat_perCCD(arr,offsets_lims,CCDs)
             
@@ -142,7 +132,7 @@ class FlatTask(Task):
         # cross-check of offsets: referred to pre-scan
 
         offsets_gradients = self.perflimits['offsets_gradients']
-        for ireg,reg in enumerate(['img','ove']):            
+        for ireg,reg in enumerate(['ove']):            
             _lims = dict()
             for CCD in CCDs: _lims['CCD%i'%CCD] = offsets_gradients['CCD%i'%CCD][ireg+1]
             arr = self.dd.mx['offset_%s' % reg][:]-self.dd.mx['offset_pre'][:]
@@ -154,46 +144,20 @@ class FlatTask(Task):
         
         # absolute value of std
         
+        regs_std = ['pre','ove']
         RONs_lims = self.perflimits['RONs_lims']
-        for reg in ['pre','img','ove']:
+        
+        for reg in regs_std:
             _compliance_std = self.check_stat_perCCD(self.dd.mx['std_%s' % reg],RONs_lims,CCDs)
         
             if not self.IsComplianceMatrixOK(_compliance_std): 
                 self.dd.flags.add('POORQUALDATA')
                 self.dd.flags.add('RON_OOL')
             if self.log is not None: self.addComplianceMatrix2Log(_compliance_std,label='COMPLIANCE RON [%s]:' % reg)        
-            if self.report is not None: self.addComplianceMatrix2Report(_compliance_std,label='COMPLIANCE RON [%s]:' % reg)        
-                
-        #### PLOTS
-        
-        if self.report is not None: self.report.add_Section(keyword='check_plots',Title='Plots',level=1)
-        
-        # Plot offsets vs. time
-                
-        try:
-            pmeta = dict(path = self.inputs['subpaths']['figs'],
-                     stat='offset')
-            self.doPlot('B01checks_offsets',**pmeta)
-            self.addFigure2Report('B01checks_offsets')
-        except:
-            self.skipMissingPlot('BS_checkoffsets',ref='B01checks_offsets')
-
-        # std vs. time
-        
-        try:
-            pmeta = dict(path = self.inputs['subpaths']['figs'],
-                     stat='std')
-            self.doPlot('B01checks_stds',**pmeta)
-            self.addFigure2Report('B01checks_stds')
-        except:
-            self.skipMissingPlot('BS_checkstds',ref='B01checks_stds')
+            if self.report is not None: self.addComplianceMatrix2Report(_compliance_std,label='COMPLIANCE RON [%s]:' % reg)
             
         
-        # Update Report, raise flags, fill-in
+        # IMG FLUENCES
         
-    
-        if self.log is not None:
-            self.addFlagsToLog()
-        
-        if self.report is not None:
-            self.addFlagsToReport()
+        FLU_lims = self.perflimits['FLU_lims'] # dict
+        stop()
