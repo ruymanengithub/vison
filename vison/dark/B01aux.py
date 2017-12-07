@@ -78,6 +78,6 @@ class plB01check(plclasses.Fig):
 
 
 B01figs = dict()
-B01figs['B01checks_offsets'] = plB01check
-B01figs['B01checks_stds'] = plB01check
-B01figs['BlueScreen'] = plclasses.BlueScreen
+B01figs['B01checks_offsets'] = [plB01check,dict(stat='offset')]
+B01figs['B01checks_stds'] = [plB01check,dict(stat='std')]
+B01figs['BlueScreen'] = [plclasses.BlueScreen,dict()]

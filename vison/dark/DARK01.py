@@ -52,7 +52,7 @@ DARK01_commvalues = dict(program='CALCAMP',test='DARK01',
   comments='DARK')
   
 
-class DARK01(Task):
+class DARK01(DarkTask):
     """ """
 
     def __init__(self,inputs,log=None,drill=False):

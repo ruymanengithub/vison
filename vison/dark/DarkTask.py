@@ -9,6 +9,7 @@ Created on Wed Dec  6 15:54:00 2017
 """
 
 # IMPORT STUFF
+from pdb import set_trace as stop
 import copy
 import numpy as np
 import os
@@ -23,7 +24,7 @@ class DarkTask(Task):
     def __init__(self,*args,**kwargs):
         super(DarkTask,self).__init__(*args,**kwargs)
         
-    def get_checkstats_ST(self):
+    def get_checkstats_ST(self,**kwargs):
         """ """
         
         # Initialize new columns
@@ -66,50 +67,55 @@ class DarkTask(Task):
                                     ignore_pover=True,extension=-1)
                             self.dd.mx['offset_%s' % reg][iObs,jCCD,kQ] = stats[0]
                             self.dd.mx['std_%s' % reg][iObs,jCCD,kQ] = stats[1]
-
-
-        def check_metrics_ST(self,*args,**kwargs):
-            """ """
-            
-            Xindices = self.dd.indices
-            CCDs = Xindices[Xindices.names.index('CCD')].vals
-            
-            if self.report is not None: 
-                self.report.add_Section(keyword='check_ronoffset',Title='Offsets and RON',level=1)
-            
-            # absolute value of offsets
-            
-            offsets_lims = self.perflimits['offsets_lims']
-            for reg in ['pre','img','ove']:
-                arr = self.dd.mx['offset_%s' % reg]
-                _compliance_offsets = self.check_stat_perCCD(arr,offsets_lims,CCDs)
-                
-                if not self.IsComplianceMatrixOK(_compliance_offsets): self.dd.flags.add('POORQUALDATA')
-                if self.log is not None: self.addComplianceMatrix2Log(_compliance_offsets,label='COMPLIANCE OFFSETS [%s]:' % reg)        
-                if self.report is not None: self.addComplianceMatrix2Report(_compliance_offsets,label='COMPLIANCE OFFSETS [%s]:' % reg)
     
-            # cross-check of offsets: referred to pre-scan
-    
-            offsets_gradients = self.perflimits['offsets_gradients']
-            for ireg,reg in enumerate(['img','ove']):            
-                _lims = dict()
-                for CCD in CCDs: _lims['CCD%i'%CCD] = offsets_gradients['CCD%i'%CCD][ireg+1]
-                arr = self.dd.mx['offset_%s' % reg][:]-self.dd.mx['offset_pre'][:]
-                _xcheck_offsets = self.check_stat_perCCD(arr,_lims,CCDs)
-                
-                if not self.IsComplianceMatrixOK(_xcheck_offsets): self.dd.flags.add('POORQUALDATA')
-                if self.log is not None: self.addComplianceMatrix2Log(_xcheck_offsets,label='OFFSET GRAD [%s-PRE] COMPLIANCE:' % reg)        
-                if self.report is not None: self.addComplianceMatrix2Report(_xcheck_offsets,label='OFFSET GRAD [%s-PRE] COMPLIANCE:' % reg)        
+    def check_data(self):
+        """ """
+        if self.name == 'BIAS01':
+            kwargs = dict(figkeys=['B01checks_offsets','B01checks_stds'])
+        Task.check_data(self,**kwargs)
+
+    def check_metrics_ST(self,*args,**kwargs):
+        """ """
+        
+        Xindices = self.dd.indices
+        CCDs = Xindices[Xindices.names.index('CCD')].vals
+        
+        if self.report is not None: 
+            self.report.add_Section(keyword='check_ronoffset',Title='Offsets and RON',level=1)
+        
+        # absolute value of offsets
+        
+        offsets_lims = self.perflimits['offsets_lims']
+        for reg in ['pre','img','ove']:
+            arr = self.dd.mx['offset_%s' % reg]
+            _compliance_offsets = self.check_stat_perCCD(arr,offsets_lims,CCDs)
             
-            # absolute value of std
+            if not self.IsComplianceMatrixOK(_compliance_offsets): self.dd.flags.add('POORQUALDATA')
+            if self.log is not None: self.addComplianceMatrix2Log(_compliance_offsets,label='COMPLIANCE OFFSETS [%s]:' % reg)        
+            if self.report is not None: self.addComplianceMatrix2Report(_compliance_offsets,label='COMPLIANCE OFFSETS [%s]:' % reg)
+
+        # cross-check of offsets: referred to pre-scan
+
+        offsets_gradients = self.perflimits['offsets_gradients']
+        for ireg,reg in enumerate(['img','ove']):            
+            _lims = dict()
+            for CCD in CCDs: _lims['CCD%i'%CCD] = offsets_gradients['CCD%i'%CCD][ireg+1]
+            arr = self.dd.mx['offset_%s' % reg][:]-self.dd.mx['offset_pre'][:]
+            _xcheck_offsets = self.check_stat_perCCD(arr,_lims,CCDs)
             
-            RONs_lims = self.perflimits['RONs_lims']
-            for reg in ['pre','img','ove']:
-                _compliance_std = self.check_stat_perCCD(self.dd.mx['std_%s' % reg],RONs_lims,CCDs)
-            
-                if not self.IsComplianceMatrixOK(_compliance_std): 
-                    self.dd.flags.add('POORQUALDATA')
-                    self.dd.flags.add('RON_OOL')
-                if self.log is not None: self.addComplianceMatrix2Log(_compliance_std,label='COMPLIANCE RON [%s]:' % reg)        
-                if self.report is not None: self.addComplianceMatrix2Report(_compliance_std,label='COMPLIANCE RON [%s]:' % reg)        
+            if not self.IsComplianceMatrixOK(_xcheck_offsets): self.dd.flags.add('POORQUALDATA')
+            if self.log is not None: self.addComplianceMatrix2Log(_xcheck_offsets,label='OFFSET GRAD [%s-PRE] COMPLIANCE:' % reg)        
+            if self.report is not None: self.addComplianceMatrix2Report(_xcheck_offsets,label='OFFSET GRAD [%s-PRE] COMPLIANCE:' % reg)        
+        
+        # absolute value of std
+        
+        RONs_lims = self.perflimits['RONs_lims']
+        for reg in ['pre','img','ove']:
+            _compliance_std = self.check_stat_perCCD(self.dd.mx['std_%s' % reg],RONs_lims,CCDs)
+        
+            if not self.IsComplianceMatrixOK(_compliance_std): 
+                self.dd.flags.add('POORQUALDATA')
+                self.dd.flags.add('RON_OOL')
+            if self.log is not None: self.addComplianceMatrix2Log(_compliance_std,label='COMPLIANCE RON [%s]:' % reg)        
+            if self.report is not None: self.addComplianceMatrix2Report(_compliance_std,label='COMPLIANCE RON [%s]:' % reg)        
             

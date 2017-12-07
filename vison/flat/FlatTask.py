@@ -20,9 +20,6 @@ class FlatTask(Task):
     
     
     def check_data(self):
-        """ """
-        
-            def check_data(self):
         """ 
         
         BIAS01: Checks quality of ingested data.

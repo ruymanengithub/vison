@@ -36,6 +36,7 @@ class Task(object):
     
     def __init__(self,inputs,log=None,drill=False):
         """ """
+        self.internals = dict()
         self.inputs = dict()
         self.inpdefaults = dict()
         self.perfdefaults = dict()
@@ -45,6 +46,7 @@ class Task(object):
         self.name = ''
         self.type = 'Simple'
         self.HKKeys = []
+        self.figdict = dict()
         self.subtasks = [()]
         self.perflimits = dict()
         self.drill = drill
@@ -260,7 +262,7 @@ class Task(object):
     
     def addFigure2Report(self,figkey):
         """ """
-        figobj = self.figdict[figkey]
+        figobj = self.figdict[figkey][0]
         figname = figobj.figname
         texfraction = figobj.texfraction
         caption = figobj.caption
@@ -273,7 +275,7 @@ class Task(object):
         
     def doPlot(self,figkey,**kwargs):
         """ """
-        figobj = self.figdict[figkey]()
+        figobj = self.figdict[figkey][0]()
         figobj.configure(**kwargs)
         figobj.build_data(self)
         figobj.plot()
@@ -350,20 +352,19 @@ class Task(object):
             compliance[CCDkey] = not np.any(test,axis=(0,1)).sum()
         return compliance
     
-    def check_data(self,HKKeys):
-        """Generic check_data method"""
-        
+    def check_data(self,**kwargs):
+        """Generic check_data method"""        
         if self.report is not None: 
             self.report.add_Section(keyword='check_data',Title='Data Validation',level=0)
         # CHECK AND CROSS-CHECK HK        
         self.check_HK_ST()        
         # OBTAIN METRICS FROM IMAGES        
-        self.get_checkstats_ST()        
+        self.get_checkstats_ST(**kwargs)        
         # METRICS ASSESSMENT        
-        self.check_metrics_ST()
+        self.check_metrics_ST(**kwargs)
         # PLOTs
         if self.report is not None: self.report.add_Section(keyword='check_plots',Title='Plots',level=1)
-        self.addFigures_ST('check_data')
+        self.addFigures_ST(**kwargs)
         # Update Report, raise flags, fill-in
         if self.log is not None:
             self.addFlagsToLog()
@@ -389,21 +390,21 @@ class Task(object):
         if (not HK_perf_ok) or (not HK_safe_ok): self.dd.flags.add('HK_OOL')
         
     
-    def addFigures_ST(self,subtaskname):
+    def addFigures_ST(self,**kwargs):
         """ """
+        try: figkeys = kwargs['figkeys']
+        except: figkeys=[]
+        figspath = self.inputs['subpaths']['figs']
         
-        raise RuntimeError("Not working... method missplaced, too generic")
-        
-        figkeys = self.STfigdict[subtaskname]
         for figkey in figkeys:
-            
             try:
-                pmeta = dict(path = self.inputs['subpaths']['figs'],
-                         stat='offset')
-                self.doPlot('B01checks_offsets',**pmeta)
-                self.addFigure2Report('B01checks_offsets')
+                pmeta = self.figdict[figkey][1]
+                pmeta['path'] = figspath
+                self.doPlot(figkey,**pmeta)
+                self.addFigure2Report(figkey)
             except:
-                self.skipMissingPlot('BS_checkoffsets',ref='B01checks_offsets')
+                nfigkey = 'BS_%s' % figkey
+                self.skipMissingPlot(nfigkey,ref=figkey)
 
             
  
