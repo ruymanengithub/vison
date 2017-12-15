@@ -395,6 +395,7 @@ class Task(object):
         try: figkeys = kwargs['figkeys']
         except: figkeys=[]
         figspath = self.inputs['subpaths']['figs']
+        
         for figkey in figkeys:
             try:
                 pmeta = self.figdict[figkey][1]

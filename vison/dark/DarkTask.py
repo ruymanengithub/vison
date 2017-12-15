@@ -28,7 +28,7 @@ class DarkTask(Task):
         """ """
         test = self.inputs['test']
         if test == 'BIAS01':
-            kwargs = dict()
+            kwargs = dict(figkeys=['B01checks_offsets','B01checks_stds'])
         elif test == 'DARK01':
             kwargs = dict()
         Task.check_data(self,**kwargs)

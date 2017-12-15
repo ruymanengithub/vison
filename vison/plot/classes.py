@@ -312,6 +312,8 @@ class Beam2DPlot(BasicPlot):
         plt.subplots_adjust(hspace=0.0)
         plt.subplots_adjust(wspace=0.0)
         
+        plt.margins(0.05)
+
         plt.suptitle(self.meta['suptitle'])
         #plt.tight_layout()
         plt.subplots_adjust(top=0.85)
