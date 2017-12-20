@@ -147,41 +147,6 @@ class FLAT0X(FlatTask):
                               wavedkeys=wavedkeys,elvis=elvis)
     
     
-# =============================================================================
-#     def check_data(self):
-#         """ 
-#         
-#         **METACODE**
-#         
-#         ::
-#         
-#             Checks quality of ingested data.
-#         
-#             check common HK values are within safe / nominal margins
-#             check voltages in HK match commanded voltages, within margins
-#         
-#             f.e.ObsID:
-#                 f.e.CCD:
-#                     f.e.Q.:
-#                         measure offsets/means in pre-, img-, over-
-#                         measure std in pre-, img-, over-
-#             assess std in pre- is within allocated margins
-#             assess offsets in pre- and over- are equal, within allocated  margins
-#             assess fluences are within allocated margins
-#             flag saturations if there are.
-#         
-#             plot fluence vs. time for each exptime
-#             plot std-pre vs. time
-#         
-#             issue any warnings to log
-#             issue update to report
-#         
-#         """
-#         
-#         
-#         raise NotImplementedError
-#         
-# =============================================================================
     
     def do_indiv_flats(self):
         """
