@@ -29,7 +29,7 @@ class FlatTask(Task):
     def check_data(self):
         """ """
         test = self.inputs['test']
-        if test == 'FLAT01':
+        if 'FLAT01'in test: # AD-HOC modification of test label
             kwargs = dict()
         elif 'FLAT02' in test:
             kwargs = dict()
@@ -41,7 +41,6 @@ class FlatTask(Task):
             kwargs = dict()
             
         Task.check_data(self,**kwargs)
-        
     
     
     def get_checkstats_ST(self,**kwargs):
@@ -109,7 +108,7 @@ class FlatTask(Task):
         
         """
         
-        test = self.inputs['test']
+        #test = self.inputs['test']
         
         Xindices = self.dd.indices
         CCDs = Xindices[Xindices.names.index('CCD')].vals
@@ -157,7 +156,14 @@ class FlatTask(Task):
             if self.report is not None: self.addComplianceMatrix2Report(_compliance_std,label='COMPLIANCE RON [%s]:' % reg)
             
         
-        # IMG FLUENCES
-        
+        # IMG FLUENCES        
         FLU_lims = self.perflimits['FLU_lims'] # dict
-        stop()
+        
+        _compliance_flu = self.check_stat_perCCDandCol(self.dd.mx['flu_med_img'],FLU_lims,CCDs)
+        
+        if not self.IsComplianceMatrixOK(_compliance_flu): 
+            self.dd.flags.add('POORQUALDATA')
+            self.dd.flags.add('FLUENCE_OOL')
+        if self.log is not None: self.addComplianceMatrix2Log(_compliance_flu,label='COMPLIANCE FLUENCE:')        
+        if self.report is not None: self.addComplianceMatrix2Report(_compliance_flu,label='COMPLIANCE FLUENCE:')
+            

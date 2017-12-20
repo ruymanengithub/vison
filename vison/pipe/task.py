@@ -352,6 +352,23 @@ class Task(object):
             compliance[CCDkey] = not np.any(test,axis=(0,1)).sum()
         return compliance
     
+    def check_stat_perCCDandCol(self,arr,lims,CCDs=[1,2,3]):
+        """ """
+        colnames = lims['CCD%i' % CCDs[0]].keys()
+        
+        compliance = OrderedDict()
+        for iCCD,CCD in enumerate(CCDs):
+            CCDkey = 'CCD%i' % CCD
+            compliance[CCDkey] = OrderedDict()
+            for jcol,colname in enumerate(colnames):            
+                _lims = lims[CCDkey][colname]
+                ixsel = np.where(self.dd.mx['label'] == colname)
+                test = (np.isnan(arr[ixsel,iCCD,...]) |\
+                        (arr[ixsel,iCCD,...] <= _lims[0]) | (arr[ixsel,iCCD,...] >= _lims[1]))
+                compliance[CCDkey][colname] = not np.any(test,axis=(0,1)).sum()
+        return compliance
+    
+    
     def check_data(self,**kwargs):
         """Generic check_data method"""        
         if self.report is not None: 

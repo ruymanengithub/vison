@@ -304,6 +304,7 @@ def filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,waved
         (explog['ObsID'] >= OBSID_lims[0]) & \
         (explog['ObsID'] <= OBSID_lims[1]) 
     
+
     explog = explog[np.where(selbool)]
     
     # Assess structure

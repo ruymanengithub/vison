@@ -53,7 +53,12 @@ FLAT0X_commvalues = dict(program='CALCAMP',
   siflush=0,
   wave=4,
   comments='')
-  
+
+FLU_lims = dict(CCD1= dict(
+                    col1=0.25 * 2**16 * (1.+np.array([-0.10,0.10])),
+                    col2=0.50 * 2**16 * (1.+np.array([-0.10,0.10])),
+                    col3=0.75 * 2**16 * (1.+np.array([-0.10,0.10]))))
+for i in [2,3]: FLU_lims['CCD%i' % i] = deepcopy(FLU_lims['CCD1'])
 
 class FLAT0X(FlatTask):
     """ """
@@ -89,10 +94,12 @@ class FLAT0X(FlatTask):
                        test=test)
         
         
-    def set_perfdefaults(self):
+    def set_perfdefaults(self,**kwargs):
         #wavelength = self.inputs['wavelength']        
         self.perfdefaults = dict()
-        self.perfdefaults.update(performance.perf_rdout)
+        self.perfdefaults.update(performance.perf_rdout)        
+        self.perfdefaults['FLU_lims'] = FLU_lims
+        
     
 
     def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
@@ -140,39 +147,41 @@ class FLAT0X(FlatTask):
                               wavedkeys=wavedkeys,elvis=elvis)
     
     
-    def check_data(self):
-        """ 
-        
-        **METACODE**
-        
-        ::
-        
-            Checks quality of ingested data.
-        
-            check common HK values are within safe / nominal margins
-            check voltages in HK match commanded voltages, within margins
-        
-            f.e.ObsID:
-                f.e.CCD:
-                    f.e.Q.:
-                        measure offsets/means in pre-, img-, over-
-                        measure std in pre-, img-, over-
-            assess std in pre- is within allocated margins
-            assess offsets in pre- and over- are equal, within allocated  margins
-            assess fluences are within allocated margins
-            flag saturations if there are.
-        
-            plot fluence vs. time for each exptime
-            plot std-pre vs. time
-        
-            issue any warnings to log
-            issue update to report
-        
-        """
-        
-        
-        raise NotImplementedError
-        
+# =============================================================================
+#     def check_data(self):
+#         """ 
+#         
+#         **METACODE**
+#         
+#         ::
+#         
+#             Checks quality of ingested data.
+#         
+#             check common HK values are within safe / nominal margins
+#             check voltages in HK match commanded voltages, within margins
+#         
+#             f.e.ObsID:
+#                 f.e.CCD:
+#                     f.e.Q.:
+#                         measure offsets/means in pre-, img-, over-
+#                         measure std in pre-, img-, over-
+#             assess std in pre- is within allocated margins
+#             assess offsets in pre- and over- are equal, within allocated  margins
+#             assess fluences are within allocated margins
+#             flag saturations if there are.
+#         
+#             plot fluence vs. time for each exptime
+#             plot std-pre vs. time
+#         
+#             issue any warnings to log
+#             issue update to report
+#         
+#         """
+#         
+#         
+#         raise NotImplementedError
+#         
+# =============================================================================
     
     def do_indiv_flats(self):
         """
