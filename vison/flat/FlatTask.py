@@ -114,7 +114,7 @@ class FlatTask(Task):
         CCDs = Xindices[Xindices.names.index('CCD')].vals
         
         if self.report is not None: 
-            self.report.add_Section(keyword='check_ronoffset',Title='Offsets and RON',level=1)
+            self.report.add_Section(keyword='check_metrics',Title='Offsets, RON, Fluences',level=1)
         
         
         # absolute value of offsets

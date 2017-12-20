@@ -232,7 +232,6 @@ class Task(object):
         # Adding Time Axis            
         
         explog['time'] = np.array(map(vistime.get_dtobj,explog['date'])).copy()
-
         
         # Building DataDict 
         
@@ -376,7 +375,7 @@ class Task(object):
         # CHECK AND CROSS-CHECK HK        
         self.check_HK_ST()        
         # OBTAIN METRICS FROM IMAGES        
-        self.get_checkstats_ST(**kwargs)        
+        self.get_checkstats_ST(**kwargs)
         # METRICS ASSESSMENT        
         self.check_metrics_ST(**kwargs)
         # PLOTs

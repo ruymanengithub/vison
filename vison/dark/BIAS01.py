@@ -250,9 +250,3 @@ class BIAS01(DarkTask):
         """
         
         raise NotImplementedError
-        
-    
-    
-
-
-

@@ -138,6 +138,7 @@ class PSF0X(PointTask):
         exptimes = self.inputs['exptimes']
         frames = self.inputs['frames']
         wavelength = self.inputs['wavelength']
+        test = self.inputs['test']
         
         assert len(exptimes) == len(frames)
         
@@ -153,17 +154,16 @@ class PSF0X(PointTask):
         
         for ic in range(ncols):
             colid = 'col%i' % (ic+1,)
-        
-            PSF0X_sdict[colid]=dict(frames=frames[ic],exptime=exptimes[ic])
+            PSF0X_sdict[colid]=dict(frames=frames[ic],exptime=exptimes[ic],
+                       test=test)
     
         Ncols = len(PSF0X_sdict.keys())    
         PSF0X_sdict['Ncols'] = Ncols
         
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(PSF0X_commvalues)               
-                   
-        PSF0X_sdict = sc.update_structdict(PSF0X_sdict,commvalues,diffvalues)
         
+        PSF0X_sdict = sc.update_structdict(PSF0X_sdict,commvalues,diffvalues)
         
         return PSF0X_sdict
     
@@ -175,239 +175,240 @@ class PSF0X(PointTask):
         return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,
                               wavedkeys=wavedkeys,elvis=elvis)    
     
-    #def check_data(dd,report,inputs,log=None):
-    def check_data(self):
-        """ 
-    
-        PSF0X: Checks quality of ingested data.
-        
-        **METACODE**
-        
-        
-        ::
-          
-          check common HK values are within safe / nominal margins
-          check voltages in HK match commanded voltages, within margins
-        
-          f.e.ObsID:
-              f.e.CCD: 
-                  f.e.Q.:
-                      measure offsets in pre-,and over-
-                      measure std in pre-, over-
-                      measure median in img area, excluding spots (bgd)
-                      measure (bgd-sub'd-) fluence of spots
-                      measure size of spots
-                      
-          assess std in pre- (~RON) is within allocated margins
-          assess offsets in pre-, img-, over- are equal, within allocated  margins
-          assess offsets are within allocated margins
-          assess median-img is within allocated margins
-          assess fluences of spots are within allocated margins
-          assess sizes of spots are within allocated margins
-        
-          plot offsets vs. time
-          plot std vs. time
-          plot spot fluences vs. time
-          plot spot size vs. time
-              
-          issue any warnings to log
-          issue update to report
-          update flags as needed
-        
-        """
-        
-        
-        if self.report is not None: 
-            self.report.add_Section(keyword='check_data',Title='Data Validation',level=0)    
-        
-        # CHECK AND CROSS-CHECK HK
-        
-        if self.report is not None: 
-            self.report.add_Section(keyword='check_HK',Title='HK',level=1)
-        
-        report_HK_perf = self.check_HK(HKKeys,reference='command',limits='P',tag='Performance',
-                      doReport=self.report is not None,
-                                 doLog=self.log is not None)
-        HK_perf_ok = np.all([value for key,value in report_HK_perf.iteritems()])
-        
-        report_HK_safe = self.check_HK(HKKeys,reference='abs',limits='S',tag='Safe',
-                      doReport = self.report is not None,
-                          doLog = self.log is not None)
-        
-        HK_safe_ok = np.all([value for ke,value in report_HK_safe.iteritems()])
-        
-        if (not HK_perf_ok) or (not HK_safe_ok): self.dd.flags.add('HK_OOL')
-    
-        # Initialize new columns
-        
-        Qindices = copy.deepcopy(self.dd.indices)
-        
-        if 'Quad' not in Qindices.names:
-            Qindices.append(core.vIndex('Quad',vals=pilib.Quads))
-    
-        
-        Sindices = copy.deepcopy(Qindices)
-        if 'Spot' not in Sindices.names:
-            Sindices.append(core.vIndex('Spot',vals=polib.Point_CooNom['names']))
-        
-    
-        newcolnames_off = ['offset_pre','offset_ove']
-        for newcolname_off in newcolnames_off:
-            self.dd.initColumn(newcolname_off,Qindices,dtype='float32',valini=np.nan)
-        
-        newcolnames_std = ['std_pre','std_ove']
-        for newcolname_std in newcolnames_std:
-            self.dd.initColumn(newcolname_std,Qindices,dtype='float32',valini=np.nan)
-        
-    
-        self.dd.initColumn('bgd_img',Qindices,dtype='float32',valini=np.nan)
-        
-        SpotNames = Sindices[3].vals
-        nSpot = len(SpotNames)
-        
-        self.dd.initColumn('chk_x',Sindices,dtype='float32',valini=np.nan)
-        self.dd.initColumn('chk_y',Sindices,dtype='float32',valini=np.nan)
-        self.dd.initColumn('chk_peak',Sindices,dtype='float32',valini=np.nan)
-        self.dd.initColumn('chk_fluence',Sindices,dtype='float32',valini=np.nan)
-        self.dd.initColumn('chk_fwhmx',Sindices,dtype='float32',valini=np.nan)
-        self.dd.initColumn('chk_fwhmy',Sindices,dtype='float32',valini=np.nan)
-        
-        chkkeycorr = dict(chk_x='x',chk_y='y',chk_peak='peak',chk_fwhmx='fwhmx',chk_fwhmy='fwhmy')
-        
-        nObs,nCCD,nQuad = Qindices.shape
-        Quads = Qindices[2].vals
-        CCDs = Qindices[1].vals
-        
-        
-        # Get statistics in different regions
-        
-        if not self.drill:
-        
-            for iObs in range(nObs):
-                
-                for jCCD in range(nCCD):
-                    
-                    CCD = CCDs[jCCD]
-                    
-                    dpath = self.dd.mx['datapath'][iObs,jCCD]
-                    ffits = os.path.join(dpath,'%s.fits' % self.dd.mx['File_name'][iObs,jCCD])
-                    
-                    ccdobj = ccd.CCD(ffits)
-                    
-                    for kQ in range(nQuad):
-                        Quad = Quads[kQ]
-                        
-                        for reg in ['pre', 'ove']:
-                            altstats = ccdobj.get_stats(Quad,sector=reg,statkeys=['mean','std'],trimscan=[5,5],
-                                    ignore_pover=True,extension=-1)
-                            self.dd.mx['offset_%s' % reg][iObs,jCCD,kQ] = altstats[0]
-                            self.dd.mx['std_%s' % reg][iObs,jCCD,kQ] = altstats[1]
-                        
-                        
-                        # To measure the background we mask out the sources
-                        
-                        alt_ccdobj = copy.deepcopy(ccdobj)
-                        
-                        mask_sources = polib.gen_point_mask(CCD,Quad,width=stampw,sources='all')
-                        
-                        alt_ccdobj.get_mask(mask_sources)
-                        
-                        imgstats = alt_ccdobj.get_stats(Quad,sector='img',statkeys=['median'],trimscan=[5,5],
-                                    ignore_pover=True,extension=-1)
-                        
-                        self.dd.mx['bgd_img'][iObs,jCCD,kQ] = imgstats[0]
-                        
-                        alt_ccdobj = None
-                        
-                        for xSpot in range(nSpot):
-                            SpotName = SpotNames[xSpot]
-                            
-                            coo = polib.Point_CooNom['CCD%i' % CCD][Quad][SpotName]
-    
-                            spot = polib.extract_spot(ccdobj,Quad,coo,log=self.log,
-                                                      stampw=stampw)
-                            
-                            res_bas = spot.measure_basic(rin=10,rap=10,rout=-1)
-                            
-                            for chkkey in chkkeycorr:
-                                self.dd.mx[chkkey][iObs,jCCD,kQ,xSpot] = res_bas[chkkeycorr[chkkey]]
-        
-        # METRICS ASSESSMENT
-        # Assess metrics are within allocated boundaries
-        
-        if self.report is not None:
-            self.report.add_Section(keyword='check_metrics',Title='Checking Basic Metrics',level=1)
-        
-        # absolute value of offset
-        
-        offsets_lims = self.perflimits['offsets_lims']
-        compliance_offsets = self.check_stat_perCCD(self.dd.mx['offset_pre'],offsets_lims,CCDs)
-        if not self.IsComplianceMatrixOK(compliance_offsets): self.dd.flags.add('POORQUALDATA')
-        if self.log is not None: self.addComplianceMatrix2Log(compliance_offsets,label='COMPLIANCE OFFSETS [OVE]:')        
-        if self.report is not None: self.addComplianceMatrix2Report(compliance_offsets,label='COMPLIANCE OFFSETS [OVE]:')
-
-        # cross-check of offsets: referred to pre-scan
-
-        offsets_gradients = self.perflimits['offsets_gradients']
-        _lims = dict()
-        for CCD in CCDs: _lims['CCD%i'%CCD] = offsets_gradients['CCD%i'%CCD][2]
-        arr = self.dd.mx['offset_ove' % reg][:]-self.dd.mx['offset_pre'][:]
-        xcheck_offsets = self.check_stat_perCCD(arr,_lims,CCDs)
-        
-        if not self.IsComplianceMatrixOK(xcheck_offsets): self.dd.flags.add('POORQUALDATA')
-        if self.log is not None: self.addComplianceMatrix2Log(xcheck_offsets,label='OFFSET GRAD [OVE-PRE] COMPLIANCE:')        
-        if self.report is not None: self.addComplianceMatrix2Report(xcheck_offsets,label='OFFSET GRAD [OVE-PRE] COMPLIANCE:')        
-
-        # absolute value of std
-        
-        RONs_lims = self.perflimits['RONs_lims']
-        compliance_std = self.check_stat_perCCD(self.dd.mx['std_ove'],RONs_lims,CCDs)
-        if not self.IsComplianceMatrixOK(compliance_std): 
-            self.dd.flags.add('POORQUALDATA')
-            self.dd.flags.add('RON_OOL')
-        if self.log is not None: self.addComplianceMatrix2Log(compliance_std,label='COMPLIANCE RON [OVE]:')        
-        if self.report is not None: self.addComplianceMatrix2Report(compliance_std,label='COMPLIANCE RON [OVE]:')
-        
-        # MISSING: ASSESS SPOT METRICS!
-        # chk_fluence, chk_peak, chk_fwhmx, chk_fwhmy
-
-
-        #### PLOTS
-        
-        if self.report is not None: self.report.add_Section(keyword='check_plots',Title='Plots',level=1)
-        
-        
-        
-        # Plot offsets vs. time
-        
-        try:
-            pmeta = dict(path = self.inputs['subpaths']['figs'],
-                     stat='offset')
-            self.doPlot('P0Xchecks_offsets',**pmeta)
-            self.addFigure2Report('P0Xchecks_offsets')
-        except:
-            self.skipMissingPlot('BS_checkoffsets',ref='P0Xchecks_offsets')
-        
-        # Plot noise vs. time
-        
-        try:
-            pmeta = dict(path = self.inputs['subpaths']['figs'],
-                     stat='std')
-            self.doPlot('P0Xchecks_stds',**pmeta)
-            self.addFigure2Report('P0Xchecks_stds')
-        except:
-            self.skipMissingPlot('BS_checkstds',ref='P0Xchecks_stds')
-        
-        # MISSING: Plot fluence vs. exposure-time
-        
-        
-        # MISSING: Plot fwhmx/y vs. time
-        
-        
-        if self.log is not None:
-            self.addFlagsToLog()
-        if self.report is not None:
-            self.addFlagsToReport()
+# =============================================================================
+#     def check_data(self):
+#         """ 
+#     
+#         PSF0X: Checks quality of ingested data.
+#         
+#         **METACODE**
+#         
+#         
+#         ::
+#           
+#           check common HK values are within safe / nominal margins
+#           check voltages in HK match commanded voltages, within margins
+#         
+#           f.e.ObsID:
+#               f.e.CCD: 
+#                   f.e.Q.:
+#                       measure offsets in pre-,and over-
+#                       measure std in pre-, over-
+#                       measure median in img area, excluding spots (bgd)
+#                       measure (bgd-sub'd-) fluence of spots
+#                       measure size of spots
+#                       
+#           assess std in pre- (~RON) is within allocated margins
+#           assess offsets in pre-, img-, over- are equal, within allocated  margins
+#           assess offsets are within allocated margins
+#           assess median-img is within allocated margins
+#           assess fluences of spots are within allocated margins
+#           assess sizes of spots are within allocated margins
+#         
+#           plot offsets vs. time
+#           plot std vs. time
+#           plot spot fluences vs. time
+#           plot spot size vs. time
+#               
+#           issue any warnings to log
+#           issue update to report
+#           update flags as needed
+#         
+#         """
+#         
+#         
+#         if self.report is not None: 
+#             self.report.add_Section(keyword='check_data',Title='Data Validation',level=0)    
+#         
+#         # CHECK AND CROSS-CHECK HK
+#         
+#         if self.report is not None: 
+#             self.report.add_Section(keyword='check_HK',Title='HK',level=1)
+#         
+#         report_HK_perf = self.check_HK(HKKeys,reference='command',limits='P',tag='Performance',
+#                       doReport=self.report is not None,
+#                                  doLog=self.log is not None)
+#         HK_perf_ok = np.all([value for key,value in report_HK_perf.iteritems()])
+#         
+#         report_HK_safe = self.check_HK(HKKeys,reference='abs',limits='S',tag='Safe',
+#                       doReport = self.report is not None,
+#                           doLog = self.log is not None)
+#         
+#         HK_safe_ok = np.all([value for ke,value in report_HK_safe.iteritems()])
+#         
+#         if (not HK_perf_ok) or (not HK_safe_ok): self.dd.flags.add('HK_OOL')
+#     
+#         # Initialize new columns
+#         
+#         Qindices = copy.deepcopy(self.dd.indices)
+#         
+#         if 'Quad' not in Qindices.names:
+#             Qindices.append(core.vIndex('Quad',vals=pilib.Quads))
+#     
+#         
+#         Sindices = copy.deepcopy(Qindices)
+#         if 'Spot' not in Sindices.names:
+#             Sindices.append(core.vIndex('Spot',vals=polib.Point_CooNom['names']))
+#         
+#     
+#         newcolnames_off = ['offset_pre','offset_ove']
+#         for newcolname_off in newcolnames_off:
+#             self.dd.initColumn(newcolname_off,Qindices,dtype='float32',valini=np.nan)
+#         
+#         newcolnames_std = ['std_pre','std_ove']
+#         for newcolname_std in newcolnames_std:
+#             self.dd.initColumn(newcolname_std,Qindices,dtype='float32',valini=np.nan)
+#         
+#     
+#         self.dd.initColumn('bgd_img',Qindices,dtype='float32',valini=np.nan)
+#         
+#         SpotNames = Sindices[3].vals
+#         nSpot = len(SpotNames)
+#         
+#         self.dd.initColumn('chk_x',Sindices,dtype='float32',valini=np.nan)
+#         self.dd.initColumn('chk_y',Sindices,dtype='float32',valini=np.nan)
+#         self.dd.initColumn('chk_peak',Sindices,dtype='float32',valini=np.nan)
+#         self.dd.initColumn('chk_fluence',Sindices,dtype='float32',valini=np.nan)
+#         self.dd.initColumn('chk_fwhmx',Sindices,dtype='float32',valini=np.nan)
+#         self.dd.initColumn('chk_fwhmy',Sindices,dtype='float32',valini=np.nan)
+#         
+#         chkkeycorr = dict(chk_x='x',chk_y='y',chk_peak='peak',chk_fwhmx='fwhmx',chk_fwhmy='fwhmy')
+#         
+#         nObs,nCCD,nQuad = Qindices.shape
+#         Quads = Qindices[2].vals
+#         CCDs = Qindices[1].vals
+#         
+#         
+#         # Get statistics in different regions
+#         
+#         if not self.drill:
+#         
+#             for iObs in range(nObs):
+#                 
+#                 for jCCD in range(nCCD):
+#                     
+#                     CCD = CCDs[jCCD]
+#                     
+#                     dpath = self.dd.mx['datapath'][iObs,jCCD]
+#                     ffits = os.path.join(dpath,'%s.fits' % self.dd.mx['File_name'][iObs,jCCD])
+#                     
+#                     ccdobj = ccd.CCD(ffits)
+#                     
+#                     for kQ in range(nQuad):
+#                         Quad = Quads[kQ]
+#                         
+#                         for reg in ['pre', 'ove']:
+#                             altstats = ccdobj.get_stats(Quad,sector=reg,statkeys=['mean','std'],trimscan=[5,5],
+#                                     ignore_pover=True,extension=-1)
+#                             self.dd.mx['offset_%s' % reg][iObs,jCCD,kQ] = altstats[0]
+#                             self.dd.mx['std_%s' % reg][iObs,jCCD,kQ] = altstats[1]
+#                         
+#                         
+#                         # To measure the background we mask out the sources
+#                         
+#                         alt_ccdobj = copy.deepcopy(ccdobj)
+#                         
+#                         mask_sources = polib.gen_point_mask(CCD,Quad,width=stampw,sources='all')
+#                         
+#                         alt_ccdobj.get_mask(mask_sources)
+#                         
+#                         imgstats = alt_ccdobj.get_stats(Quad,sector='img',statkeys=['median'],trimscan=[5,5],
+#                                     ignore_pover=True,extension=-1)
+#                         
+#                         self.dd.mx['bgd_img'][iObs,jCCD,kQ] = imgstats[0]
+#                         
+#                         alt_ccdobj = None
+#                         
+#                         for xSpot in range(nSpot):
+#                             SpotName = SpotNames[xSpot]
+#                             
+#                             coo = polib.Point_CooNom['CCD%i' % CCD][Quad][SpotName]
+#     
+#                             spot = polib.extract_spot(ccdobj,Quad,coo,log=self.log,
+#                                                       stampw=stampw)
+#                             
+#                             res_bas = spot.measure_basic(rin=10,rap=10,rout=-1)
+#                             
+#                             for chkkey in chkkeycorr:
+#                                 self.dd.mx[chkkey][iObs,jCCD,kQ,xSpot] = res_bas[chkkeycorr[chkkey]]
+#         
+#         # METRICS ASSESSMENT
+#         # Assess metrics are within allocated boundaries
+#         
+#         if self.report is not None:
+#             self.report.add_Section(keyword='check_metrics',Title='Checking Basic Metrics',level=1)
+#         
+#         # absolute value of offset
+#         
+#         offsets_lims = self.perflimits['offsets_lims']
+#         compliance_offsets = self.check_stat_perCCD(self.dd.mx['offset_pre'],offsets_lims,CCDs)
+#         if not self.IsComplianceMatrixOK(compliance_offsets): self.dd.flags.add('POORQUALDATA')
+#         if self.log is not None: self.addComplianceMatrix2Log(compliance_offsets,label='COMPLIANCE OFFSETS [OVE]:')        
+#         if self.report is not None: self.addComplianceMatrix2Report(compliance_offsets,label='COMPLIANCE OFFSETS [OVE]:')
+# 
+#         # cross-check of offsets: referred to pre-scan
+# 
+#         offsets_gradients = self.perflimits['offsets_gradients']
+#         _lims = dict()
+#         for CCD in CCDs: _lims['CCD%i'%CCD] = offsets_gradients['CCD%i'%CCD][2]
+#         arr = self.dd.mx['offset_ove' % reg][:]-self.dd.mx['offset_pre'][:]
+#         xcheck_offsets = self.check_stat_perCCD(arr,_lims,CCDs)
+#         
+#         if not self.IsComplianceMatrixOK(xcheck_offsets): self.dd.flags.add('POORQUALDATA')
+#         if self.log is not None: self.addComplianceMatrix2Log(xcheck_offsets,label='OFFSET GRAD [OVE-PRE] COMPLIANCE:')        
+#         if self.report is not None: self.addComplianceMatrix2Report(xcheck_offsets,label='OFFSET GRAD [OVE-PRE] COMPLIANCE:')        
+# 
+#         # absolute value of std
+#         
+#         RONs_lims = self.perflimits['RONs_lims']
+#         compliance_std = self.check_stat_perCCD(self.dd.mx['std_ove'],RONs_lims,CCDs)
+#         if not self.IsComplianceMatrixOK(compliance_std): 
+#             self.dd.flags.add('POORQUALDATA')
+#             self.dd.flags.add('RON_OOL')
+#         if self.log is not None: self.addComplianceMatrix2Log(compliance_std,label='COMPLIANCE RON [OVE]:')        
+#         if self.report is not None: self.addComplianceMatrix2Report(compliance_std,label='COMPLIANCE RON [OVE]:')
+#         
+#         # MISSING: ASSESS SPOT METRICS!
+#         # chk_fluence, chk_peak, chk_fwhmx, chk_fwhmy
+# 
+# 
+#         #### PLOTS
+#         
+#         if self.report is not None: self.report.add_Section(keyword='check_plots',Title='Plots',level=1)
+#         
+#         
+#         
+#         # Plot offsets vs. time
+#         
+#         try:
+#             pmeta = dict(path = self.inputs['subpaths']['figs'],
+#                      stat='offset')
+#             self.doPlot('P0Xchecks_offsets',**pmeta)
+#             self.addFigure2Report('P0Xchecks_offsets')
+#         except:
+#             self.skipMissingPlot('BS_checkoffsets',ref='P0Xchecks_offsets')
+#         
+#         # Plot noise vs. time
+#         
+#         try:
+#             pmeta = dict(path = self.inputs['subpaths']['figs'],
+#                      stat='std')
+#             self.doPlot('P0Xchecks_stds',**pmeta)
+#             self.addFigure2Report('P0Xchecks_stds')
+#         except:
+#             self.skipMissingPlot('BS_checkstds',ref='P0Xchecks_stds')
+#         
+#         # MISSING: Plot fluence vs. exposure-time
+#         
+#         
+#         # MISSING: Plot fwhmx/y vs. time
+#         
+#         
+#         if self.log is not None:
+#             self.addFlagsToLog()
+#         if self.report is not None:
+#             self.addFlagsToReport()
+# =============================================================================
         
     
     #def prep_data(dd,report,inputs,log=None):
