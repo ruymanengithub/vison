@@ -55,9 +55,9 @@ TP01_commvalues = dict(program='CALCAMP',test='TP01',
 class TP01(Task):
     """ """
 
-    def __init__(self,inputs,log=None,drill=False):
+    def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
-        super(TP01,self).__init__(inputs,log,drill)
+        super(TP01,self).__init__(inputs,log,drill,debug)
         self.name = 'BIAS01'
         self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('prep',self.prep_data),

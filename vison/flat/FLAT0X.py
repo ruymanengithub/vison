@@ -63,9 +63,9 @@ for i in [2,3]: FLU_lims['CCD%i' % i] = deepcopy(FLU_lims['CCD1'])
 class FLAT0X(FlatTask):
     """ """
 
-    def __init__(self,inputs,log=None,drill=False):
+    def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
-        super(FLAT0X,self).__init__(inputs,log,drill)
+        super(FLAT0X,self).__init__(inputs,log,drill,debug)
         self.name = 'FLAT0X'
         self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('indivflats',self.do_indiv_flats),

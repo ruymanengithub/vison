@@ -37,3 +37,4 @@ perf_rdout = dict(offsets=offsets,offsets_margins=offsets_margins,
                   RONs=RONs,RONs_margins=RONs_margins,
                   RONs_lims=RONs_lims)
 
+gains = dict(CCD1=3.3,CCD2=3.3,CCD3=3.3)

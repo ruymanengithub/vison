@@ -52,9 +52,9 @@ PER01_commvalues = dict(program='CALCAMP',test='PERSIST01',
 class PERSIST01(Task):
     """ """
 
-    def __init__(self,inputs,log=None,drill=False):
+    def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
-        super(PERSIST01,self).__init__(inputs,log,drill)
+        super(PERSIST01,self).__init__(inputs,log,drill,debug)
         self.name = 'PERSIST01'
         self.type = 'Simple'
         self.HKKeys = HKKeys

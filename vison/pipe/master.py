@@ -96,7 +96,7 @@ class Pipe(object):
     for temp in [150,156]:
         Test_dict['PSF02_%iK' % temp] = PSF0X
     
-    def __init__(self,inputdict,dolog=True,drill=False):
+    def __init__(self,inputdict,dolog=True,drill=False,debug=False):
         """ """
         
         self.inputs = defaults
@@ -109,6 +109,7 @@ class Pipe(object):
         self.inputs['ID'] = self.ID
         
         self.drill = drill
+        self.debug = debug
 
         if dolog:
             self.logf = 'Calib_%s.log' % self.ID
@@ -143,7 +144,7 @@ class Pipe(object):
         tini = datetime.datetime.now()
         
         
-        self.dotask(taskname,taskinputs,drill=self.drill)
+        self.dotask(taskname,taskinputs,drill=self.drill,debug=self.debug)
         
         tend = datetime.datetime.now()
         dtm = ((tend-tini).seconds)/60.
@@ -242,11 +243,11 @@ class Pipe(object):
         return None
 
     
-    def dotask(self,taskname,inputs,drill=False):
+    def dotask(self,taskname,inputs,drill=False,debug=False):
         """Generic test master function."""
         
         try:
-            Test = self.Test_dict[taskname](inputs,self.log,drill)
+            Test = self.Test_dict[taskname](inputs,self.log,drill,debug)
             Test()
         except:
             self.catchtraceback()

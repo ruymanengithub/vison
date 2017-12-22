@@ -24,7 +24,7 @@ from vison.support.report import Report
 from vison.support import vistime
 from vison.support import files
 import lib as pilib
-
+from vison.datamodel import ccd
 # END IMPORT
 
 isthere = os.path.exists
@@ -34,7 +34,7 @@ class Task(object):
     
     from task_lib import check_HK
     
-    def __init__(self,inputs,log=None,drill=False):
+    def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
         self.internals = dict()
         self.inputs = dict()
@@ -50,6 +50,7 @@ class Task(object):
         self.subtasks = [()]
         self.perflimits = dict()
         self.drill = drill
+        self.debug = debug
         
         self.set_inpdefaults(**inputs)
         _inputs = self.inpdefaults
@@ -171,9 +172,12 @@ class Task(object):
                 except:
                     self.catchtraceback()
                     self.save_progress(DataDictFile,reportobjFile)
-                    if self.log is not None:
-                        self.log.info('SUBTASK "%s:%s" FAILED, QUITTING!' % (subtaskname,subtaskmethod.__name__))
-                    break
+                    if not self.debug:
+                        if self.log is not None:
+                            self.log.info('SUBTASK "%s:%s" FAILED, QUITTING!' % (subtaskname,subtaskmethod.__name__))
+                        break
+                    else:
+                        sys.exit()
                 
             else:
                 self.recover_progress(DataDictFile,reportobjFile)
@@ -198,7 +202,7 @@ class Task(object):
     def catchtraceback(self):
         """ """
         msg_trbk = traceback.format_exc()
-        if self.log is not None:
+        if self.log is not None and not self.debug:
             self.log.info(msg_trbk)
         else:
             print msg_trbk
@@ -311,7 +315,7 @@ class Task(object):
             return isOK
         
         isOK = traverse_tree(complidict,True)
-        
+                
         return isOK
         
         
@@ -349,6 +353,20 @@ class Task(object):
             test = (np.isnan(arr[:,iCCD,...]) |\
                     (arr[:,iCCD,...] <= _lims[0]) | (arr[:,iCCD,...] >= _lims[1]))
             compliance[CCDkey] = not np.any(test,axis=(0,1)).sum()
+        return compliance
+    
+    def check_stat_perCCDandQ(self,arr,CCDQlims,CCDs=[1,2,3]):
+        """ """
+        compliance = OrderedDict()
+        for iCCD,CCD in enumerate(CCDs):
+            CCDkey = 'CCD%i' % CCD
+            compliance[CCDkey] = OrderedDict()
+            for jQ,Q in enumerate(ccd.Quads):
+                _lims = CCDQlims[CCDkey][Q]
+                test = (np.isnan(arr[:,iCCD,jQ,...]) |\
+                    (arr[:,iCCD,jQ,...] <= _lims[0]) | (arr[:,iCCD,jQ,...] >= _lims[1]))
+                
+                compliance[CCDkey][Q] = not np.any(test).sum()
         return compliance
     
     def check_stat_perCCDandCol(self,arr,lims,CCDs=[1,2,3]):

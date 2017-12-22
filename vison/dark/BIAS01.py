@@ -63,9 +63,9 @@ BIAS01_commvalues = dict(program='CALCAMP',test='BIAS01',
 class BIAS01(DarkTask):
     
     
-    def __init__(self,inputs,log=None,drill=False):
+    def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
-        super(BIAS01,self).__init__(inputs,log,drill)
+        super(BIAS01,self).__init__(inputs,log,drill,debug)
         self.name = 'BIAS01'
         self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('prep',self.prep_data),

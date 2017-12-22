@@ -92,9 +92,9 @@ for w in testdefaults['PTC02WAVE']['waves']:
 class PTC0X(FlatTask):
     """ """
     
-    def __init__(self,inputs,log=None,drill=False):
+    def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
-        super(PTC0X,self).__init__(inputs,log,drill)
+        super(PTC0X,self).__init__(inputs,log,drill,debug)
         self.name = 'PTC0X'
         self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('extract',self.extract_PTC),

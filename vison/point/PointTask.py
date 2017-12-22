@@ -111,6 +111,9 @@ class PointTask(Task):
                         mask_sources = polib.gen_point_mask(CCD,Quad,width=self.stampw,sources='all')
                          
                         alt_ccdobj.get_mask(mask_sources)
+                        
+                        alt_ccdobj.sub_offset(Quad,method='row',scan='pre',trimscan=[5,5],
+                                              ignore_pover=True,extension=-1)
                          
                         imgstats = alt_ccdobj.get_stats(Quad,sector='img',statkeys=['median'],trimscan=[5,5],
                                     ignore_pover=True,extension=-1)
@@ -164,8 +167,8 @@ class PointTask(Task):
                     else:
                         
                         test = (np.isnan(arr[:,iCCD,jQ,kSpot]) |\
-                             (arr[ixsel:,iCCD,jQ,kSpot] <= _lims[0]) | (arr[:,iCCD,jQ,kSpot] >= _lims[1]))
-                        compliance[CCDkey][Q][Spot] = not np.any(test,axis=(0,1)).sum()
+                             (arr[:,iCCD,jQ,kSpot] <= _lims[0]) | (arr[:,iCCD,jQ,kSpot] >= _lims[1]))
+                        compliance[CCDkey][Q][Spot] = not np.any(test).sum()
                 
         return compliance
     
@@ -230,8 +233,8 @@ class PointTask(Task):
         
         # Background Level
         
-        BGD_lims = self.perflimits['BGD_lims'] # dict        
-        _compliance_bgd = self.check_stat_perCCD(self.dd.mx['bgd_img'],BGD_lims,CCDs)
+        BGD_lims = self.perflimits['BGD_lims'] # dict
+        _compliance_bgd = self.check_stat_perCCDandQ(self.dd.mx['bgd_img'],BGD_lims,CCDs)
         
         if not self.IsComplianceMatrixOK(_compliance_bgd): 
             self.dd.flags.add('POORQUALDATA')
@@ -242,7 +245,7 @@ class PointTask(Task):
         # Spot FWHM-(x**2+y**2_)**0.5
         
         FWHM_lims = self.perflimits['FWHM_lims'] # dict
-        chk_fwhm = (self.dd.mx['chk_fwhmx']**2.+self.dd.mx['chk_fwhmy']**2.)**0.5
+        chk_fwhm = (self.dd.mx['chk_fwhmx'][:]**2.+self.dd.mx['chk_fwhmy'][:]**2.)**0.5
         _compliance_fwhm = self.check_stat_perCCDQSpot(chk_fwhm,FWHM_lims,CCDs)
         
         if not self.IsComplianceMatrixOK(_compliance_fwhm): 

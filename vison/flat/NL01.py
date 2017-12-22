@@ -68,9 +68,9 @@ NL01_commvalues = dict(program='CALCAMP',
 class NL01(FlatTask):
     """ """
     
-    def __init__(self,inputs,log=None,drill=False):
+    def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
-        super(NL01,self).__init__(inputs,log,drill)
+        super(NL01,self).__init__(inputs,log,drill,debug)
         self.name = 'NL01'
         self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('prep',self.prep_data),

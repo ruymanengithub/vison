@@ -55,9 +55,9 @@ DARK01_commvalues = dict(program='CALCAMP',test='DARK01',
 class DARK01(DarkTask):
     """ """
 
-    def __init__(self,inputs,log=None,drill=False):
+    def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
-        super(DARK01,self).__init__(inputs,log,drill)
+        super(DARK01,self).__init__(inputs,log,drill,debug)
         self.name = 'DARK01'
         self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('prep',self.prep_data),

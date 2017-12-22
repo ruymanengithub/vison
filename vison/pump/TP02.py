@@ -52,9 +52,9 @@ TP02_commvalues = dict(program='CALCAMP',test='TP02',
 
 class TP02(Task):
     """ """
-    def __init__(self,inputs,log=None,drill=False):
+    def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
-        super(TP02,self).__init__(inputs,log,drill)
+        super(TP02,self).__init__(inputs,log,drill,debug)
         self.name = 'TP02'
         self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('prep',self.prep_data),

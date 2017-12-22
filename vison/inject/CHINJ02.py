@@ -64,9 +64,9 @@ CHINJ02_commvalues = dict(program='CALCAMP',test='CHINJ02',
 class CHINJ02(InjTask):
     """ """
 
-    def __init__(self,inputs,log=None,drill=False):
+    def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
-        super(CHINJ02,self).__init__(inputs,log,drill)
+        super(CHINJ02,self).__init__(inputs,log,drill,debug)
         self.name = 'CHINJ02'
         self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('extract',self.extract_data),

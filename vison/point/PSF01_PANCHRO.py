@@ -53,9 +53,9 @@ isthere = os.path.exists
 class PSF01_PANCHRO(Task):
     
     
-    def __init__(self,inputs,log=None,drill=False):
+    def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
-        super(PSF01_PANCHRO,self).__init__(inputs,log,drill)
+        super(PSF01_PANCHRO,self).__init__(inputs,log,drill,debug)
         self.name = 'PSF01_PANCHRO'
         self.type = 'Meta'
         self.subtasks = [('check',self.check_data),

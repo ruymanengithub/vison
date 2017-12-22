@@ -82,9 +82,9 @@ FOCUS00_commvalues = dict(program='CALCAMP',test='FOCUS_%i',
 class FOCUS00(PointTask):
     """ """
     
-    def __init__(self,inputs,log=None,drill=False):
+    def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
-        super(FOCUS00,self).__init__(inputs,log,drill)
+        super(FOCUS00,self).__init__(inputs,log,drill,debug)
         self.name = 'FOCUS00'
         self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('prep',self.prep_data),
