@@ -24,6 +24,7 @@ from vison.support.report import Report
 from vison.support import vistime
 from vison.support import files
 import lib as pilib
+import task_lib as tlib
 from vison.datamodel import ccd
 # END IMPORT
 
@@ -292,11 +293,12 @@ class Task(object):
     def addComplianceMatrix2Report(self,complidict,label=''):
         """ """
         nicelabel = st.replace(label,' ','\ ')
-        st_compl = complidict.__str__()
-        nice_st_compl = st.replace(st_compl,'False','$\\textcolor{red}{\\bf{False}}$')
-        msgList = ['$\\bf{%s}$' % nicelabel,
-        '%s' % nice_st_compl,
-        '\\']
+        #st_compl = complidict.__str__()
+        st_compl = tlib.convert_compl_to_nesteditemlist(complidict)
+        nice_st_compl = [st.replace(item,'False','$\\textcolor{red}{\\bf{False}}$') for item in st_compl]
+        msgList = ['$\\bf{%s}$' % nicelabel] +\
+                   nice_st_compl + \
+                   ['\\']
         self.report.add_Text(msgList)
         
     def IsComplianceMatrixOK(self,complidict):

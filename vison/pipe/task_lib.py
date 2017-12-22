@@ -11,6 +11,7 @@ Created on Fri Nov 17 19:11:53 2017
 # IMPORT STUFF
 from pdb import set_trace as stop
 import string as st
+from collections import OrderedDict
 from vison.datamodel import HKtools
 # END IMPORT
 
@@ -54,3 +55,24 @@ def add_checkHK_report(self,report_HK,tag):
     
     return msg_HK
 
+
+def convert_compl_to_nesteditemlist(complidict):
+    """ """
+    
+    def traverse_tree(dictionary,nesteditemlist):        
+            for key,value in dictionary.items():
+                if isinstance(value,(dict,OrderedDict)):
+                    nesteditemlist += [
+                    '\item %s:' % key, 
+                    '\\begin{itemize}']
+                    nesteditemlist = traverse_tree(value,nesteditemlist)
+                    nesteditemlist += ['\\end{itemize}']
+                else:
+                    nesteditemlist += [
+                    '\item %s : %s' % (key,value)        
+                            ]
+            return nesteditemlist
+    nesteditemlist = ['\\begin{itemize}']
+    nesteditemlist += traverse_tree(complidict,[])
+    nesteditemlist += ['\\end{itemize}']
+    return nesteditemlist
