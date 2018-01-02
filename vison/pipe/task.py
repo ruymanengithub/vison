@@ -26,6 +26,8 @@ from vison.support import files
 import lib as pilib
 import task_lib as tlib
 from vison.datamodel import ccd
+from vison.image import calibration
+from vison.ogse import ogse
 # END IMPORT
 
 isthere = os.path.exists
@@ -443,4 +445,93 @@ class Task(object):
                 self.skipMissingPlot(nfigkey,ref=figkey)
 
             
- 
+    def prepare_images(self,doExtract=True,doMask=False,doOffset=False,doBias=False,
+                       doFF=False):
+        """ """
+        
+        if self.report is not None: 
+            self.report.add_Section(keyword='prep_data',Title='Images Pre-Processing',level=0)
+        
+        if not doExtract: 
+            self.report.add_Text('Not extracting FITS files: Nothing done.')
+            return
+        
+        def _loadCDP(cdpkey,msg):
+            CDPData = calibration.load_CDPs(self.inputs['inCDPs'][cdpkey],ccd.CCD)
+            if self.log is not None:
+                cdpstr = self.inputs['inCDPs'][cdpkey].__str__()
+                cdpstr = st.replace(cdpstr,',',',\n')
+                self.log.info(msg)
+                self.log.info(cdpstr)
+            return CDPData
+        
+        if doMask and 'mask' in self.inputs['inCDPs']:
+            self.inputs['inCDPs']['Mask']['CCD%i']
+            MaskData = _loadCDP('Mask','Applying cosmetics mask...')
+            
+        offsetkwargs = self.inputs['preprocessing']['offsetkwargs']
+
+        if doBias and 'bias' in self.inputs['inCDPs']:
+            BiasData = _loadCDP('Bias','Substracting Bias Structure...')
+
+        
+        if doFF and 'FF' in self.inputs['inCDPs']:
+            FFData = _loadCDP('FF','Dividing by Flat-Field Map...')
+        
+        # Initialize new columns
+    
+        Cindices = copy.deepcopy(self.dd.mx['File_name'].indices)
+        
+        
+        self.dd.initColumn('ccdobj_name',Cindices,dtype='S100',valini='None')
+        
+        DDindices = copy.deepcopy(self.dd.indices)
+        
+        nObs,nCCD,nQuad = DDindices.shape
+        Quads = DDindices[2].vals
+        CCDs = DDindices[DDindices.names.index('CCD')].vals
+        
+        if not self.drill:
+            
+            picklespath = self.inputs['subpaths']['ccdpickles']
+            
+            for iObs in range(nObs):
+                
+                if doFF:
+                    FW_ID = self.dd.mx['wavelength'][iObs]
+                    wavelength = ogse.FW['F%i' % FW_ID]
+                
+                for jCCD,CCD in enumerate(CCDs):
+                    
+                    CCDkey = 'CCD%i' % CCD
+                    
+                    ccdobj_name = '%s_proc' % self.dd.mx['File_name'][iObs,jCCD]
+                    
+                    dpath = self.dd.mx['datapath'][iObs,jCCD]
+                    infits = os.path.join(dpath,'%s.fits' % self.dd.mx['File_name'][iObs,jCCD])
+                    
+                    ccdobj = ccd.CCD(infits) # converting the FITS file into a CCD Object
+                    
+                    fullccdobj_name = os.path.join(picklespath,'%s.pick' % self.dd.mx['ccdobj_name'][iObs,jCCD]) 
+                    
+                    if doMask:
+                        ccdobj.get_mask(MaskData[CCDkey].extensions[-1])
+                    
+                    if doOffset:
+                        for Quad in Quads:
+                            #ccdobj.sub_offset(Quad,method='median',scan='pre',trimscan=[5,5],
+                            #                  ignore_pover=False)
+                            ccdobj.sub_offsets(Quad,**offsetkwargs)
+                    
+                    if doBias:
+                        ccdobj.sub_bias(BiasData[CCDkey],extension=-1)
+                    
+                    if doFF:
+                        FF = FFData['nm%i' % wavelength][CCDkey]
+                        ccdobj.divide_by_flatfield(FF,extension=-1)
+                    
+                    ccdobj.writeto(fullccdobj_name,clobber=True)                    
+                    self.dd.mx['ccdobj_name'][iObs,jCCD] = ccdobj_name
+    
+        
+        return None

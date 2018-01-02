@@ -109,10 +109,10 @@ class InjTask(Task):
                             self.dd.mx['chk_std_inject'][iObs,jCCD,kQ] = extract_res['stats_injection'][1]
     
     def check_metrics_ST(self,**kwargs):
-            """ 
-            
-            """
-            
-            test = self.inputs['test']
-            
-            stop()
+        """ 
+        
+        """
+        
+        test = self.inputs['test']
+        
+        stop()

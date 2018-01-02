@@ -134,72 +134,74 @@ class BIAS01(DarkTask):
                     save file as a datamodel.ccd.CCD object.
         
         """
+        super(self).prepare_images(doExtract=True,doMask=True,doOffset=True)
         
-        if self.report is not None: 
-            self.report.add_Section(keyword='prep_data',Title='Data Pre-Processing',level=0)
-        
-                
-        doMask = True
-        doOffset = True
-        
-        if 'mask' in self.inputs['inCDPs']:
-            Maskdata = calibration.load_CDPs(self.inputs['inCDPs']['Mask'],ccd.CCD)
-            doMask = True
-            if self.log is not None:
-                masksstr = self.inputs['inCDPs']['Mask'].__str__()
-                masksstr = st.replace(masksstr,',',',\n')
-                self.log.info('Applying cosmetics mask')
-                self.log.info(masksstr)    
-        
-        # Initialize new columns
-    
-        Cindices = copy.deepcopy(self.dd.mx['File_name'].indices)
-        
-        
-        self.dd.initColumn('ccdobj_name',Cindices,dtype='S100',valini='None')
-        
-        DDindices = copy.deepcopy(self.dd.indices)
-        
-        nObs,nCCD,nQuad = DDindices.shape
-        Quads = DDindices[2].vals
-        CCDs = DDindices[DDindices.names.index('CCD')].vals
-        
-        if not self.drill:
-            
-            picklespath = self.inputs['subpaths']['pickles']
-            
-            
-            for iObs in range(nObs):
-                
-                for jCCD,CCD in enumerate(CCDs):
-                    
-                    CCDkey = 'CCD%i' % CCD
-                    
-                    ccdobj_name = '%s_proc' % self.dd.mx['File_name'][iObs,jCCD]
-                    
-                    dpath = self.dd.mx['datapath'][iObs,jCCD]
-                    infits = os.path.join(dpath,'%s.fits' % self.dd.mx['File_name'][iObs,jCCD])
-                    
-                    ccdobj = ccd.CCD(infits)
-                    
-                    fullccdobj_name = os.path.join(picklespath,'%s.pick' % self.dd.mx['ccdobj_name'][iObs,jCCD]) 
-                    
-                    if doMask:
-                        ccdobj.get_mask(Maskdata[CCDkey].extensions[-1])
-                    
-                    if doOffset:
-                        
-                        for Quad in Quads:
-                            ccdobj.sub_offset(Quad,method='median',scan='pre',trimscan=[5,5],
-                                              ignore_pover=False)
-                    
-                    ccdobj.writeto(fullccdobj_name,clobber=True)
-                    
-                    self.dd.mx['ccdobj_name'][iObs,jCCD] = ccdobj_name
-    
-        
-        return None
-        
+#==============================================================================
+#         if self.report is not None: 
+#             self.report.add_Section(keyword='prep_data',Title='Data Pre-Processing',level=0)
+#         
+#                 
+#         doMask = True
+#         doOffset = True
+#         
+#         if 'mask' in self.inputs['inCDPs']:
+#             Maskdata = calibration.load_CDPs(self.inputs['inCDPs']['Mask'],ccd.CCD)
+#             if self.log is not None:
+#                 masksstr = self.inputs['inCDPs']['Mask'].__str__()
+#                 masksstr = st.replace(masksstr,',',',\n')
+#                 self.log.info('Applying cosmetics mask')
+#                 self.log.info(masksstr)    
+#         
+#         # Initialize new columns
+#     
+#         Cindices = copy.deepcopy(self.dd.mx['File_name'].indices)
+#         
+#         
+#         self.dd.initColumn('ccdobj_name',Cindices,dtype='S100',valini='None')
+#         
+#         DDindices = copy.deepcopy(self.dd.indices)
+#         
+#         nObs,nCCD,nQuad = DDindices.shape
+#         Quads = DDindices[2].vals
+#         CCDs = DDindices[DDindices.names.index('CCD')].vals
+#         
+#         if not self.drill:
+#             
+#             picklespath = self.inputs['subpaths']['pickles']
+#             
+#             
+#             for iObs in range(nObs):
+#                 
+#                 for jCCD,CCD in enumerate(CCDs):
+#                     
+#                     CCDkey = 'CCD%i' % CCD
+#                     
+#                     ccdobj_name = '%s_proc' % self.dd.mx['File_name'][iObs,jCCD]
+#                     
+#                     dpath = self.dd.mx['datapath'][iObs,jCCD]
+#                     infits = os.path.join(dpath,'%s.fits' % self.dd.mx['File_name'][iObs,jCCD])
+#                     
+#                     ccdobj = ccd.CCD(infits)
+#                     
+#                     fullccdobj_name = os.path.join(picklespath,'%s.pick' % self.dd.mx['ccdobj_name'][iObs,jCCD]) 
+#                     
+#                     if doMask:
+#                         ccdobj.get_mask(Maskdata[CCDkey].extensions[-1])
+#                     
+#                     if doOffset:
+#                         
+#                         for Quad in Quads:
+#                             ccdobj.sub_offset(Quad,method='median',scan='pre',trimscan=[5,5],
+#                                               ignore_pover=False)
+#                     
+#                     ccdobj.writeto(fullccdobj_name,clobber=True)
+#                     
+#                     self.dd.mx['ccdobj_name'][iObs,jCCD] = ccdobj_name
+#     
+#         
+#         return None
+#         
+#==============================================================================
     def basic_analysis(self):
         """ 
         
