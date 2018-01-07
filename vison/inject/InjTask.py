@@ -15,6 +15,7 @@ import copy
 import os
 
 from vison.inject import extract_injection_lines
+from vison.lib import lineoffsets
 from vison.pipe.task import Task
 from vison.datamodel import core,ccd
 from vison.pipe import lib as pilib
@@ -40,6 +41,9 @@ class InjTask(Task):
         """ """
         
         #test = self.inputs['test']
+        
+        if 'pattern' in kwargs:
+            pattern = kwargs['pattern']
         
         # Initialize new columns
     
@@ -82,9 +86,11 @@ class InjTask(Task):
                     vstart = self.dd.mx['vstart'][iObs][jCCD]
                     vend = self.dd.mx['vend'][iObs][jCCD]
                     dochinj = self.dd.mx['chinj'][iObs][jCCD]
-                    non = self.dd.mx['chinj_on'][iObs][jCCD]
-                    noff = self.dd.mx['chinj_of'][iObs][jCCD]
-                    nrep = (vend-vstart)/(non+noff)+1
+                    if not 'pattern' in locals():
+                        non = self.dd.mx['chinj_on'][iObs][jCCD]
+                        noff = self.dd.mx['chinj_of'][iObs][jCCD]
+                        nrep = (vend-vstart)/(non+noff)+1
+                        pattern = (non,noff,nrep)
                     
                     for kQ,Quad in enumerate(Quads):
                         
@@ -94,15 +100,14 @@ class InjTask(Task):
                                     ignore_pover=True,extension=-1)
                             self.dd.mx['offset_%s' % reg][iObs,jCCD,kQ] = stats[0]
                             self.dd.mx['std_%s' % reg][iObs,jCCD,kQ] = stats[1]
-                                                
+                                              
                         if dochinj:
                         
                             ccdobj.sub_offset(Quad,method='row',scan='pre',trimscan=[5,5],
                                               ignore_pover=True,extension=-1)
-                            quaddata = ccdobj.get_quad(Quad,canonical=True,extension=-1)
-                            pattern = (non,noff,nrep)
+                            quaddata = ccdobj.get_quad(Quad,canonical=True,extension=-1)                            
                             extract_res = extract_injection_lines(quaddata,pattern,VSTART=vstart,
-                                        VEND=vend,suboffmean=False,lineoffset=0)
+                                        VEND=vend,suboffmean=False,lineoffset=lineoffsets[Quad])
                             
                             self.dd.mx['chk_mea_inject'][iObs,jCCD,kQ] = extract_res['avinjection']
                             self.dd.mx['chk_med_inject'][iObs,jCCD,kQ] = extract_res['stats_injection'][0]

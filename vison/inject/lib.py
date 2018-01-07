@@ -21,6 +21,7 @@ from pdb import set_trace as stop
 # END IMPORT
 
 
+lineoffsets = dict(E=0,F=0,G=0,H=0)
 
 def extract_injection_lines(quaddata,pattern,VSTART=1,
             VEND=2066,suboffmean=False,lineoffset=0):

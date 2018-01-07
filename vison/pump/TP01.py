@@ -25,6 +25,7 @@ from vison.point import lib as polib
 from vison.datamodel import ccd
 from vison.datamodel import scriptic as sc
 from vison.pipe.task import Task
+from vison.inject.InjTask import InjTask
 from vison.image import performance
 # END IMPORT 
 
@@ -52,7 +53,7 @@ TP01_commvalues = dict(program='CALCAMP',test='TP01',
   comments='')
   
 
-class TP01(Task):
+class TP01(PumpTask):
     """ """
 
     def __init__(self,inputs,log=None,drill=False,debug=False):
