@@ -148,7 +148,7 @@ twilio==5.7.0
 ujson==1.33
 unicodecsv==0.9.4
 versioneer==0.18
-vison==0.1
+# vison==0.1
 wcwidth==0.1.7
 Werkzeug==0.10.4
 wrapt==1.10.8
