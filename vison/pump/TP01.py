@@ -25,7 +25,7 @@ from vison.point import lib as polib
 from vison.datamodel import ccd
 from vison.datamodel import scriptic as sc
 from vison.pipe.task import Task
-from vison.inject.InjTask import InjTask
+from PumpTask import PumpTask
 from vison.image import performance
 # END IMPORT 
 

@@ -15,7 +15,7 @@ import copy
 import os
 
 from vison.inject import extract_injection_lines
-from vison.lib import lineoffsets
+from lib import lineoffsets
 from vison.pipe.task import Task
 from vison.datamodel import core,ccd
 from vison.pipe import lib as pilib
