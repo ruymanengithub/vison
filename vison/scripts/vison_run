@@ -1,0 +1,70 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
+
+Script to execute the "vison" pipeline in order to process and analyze data 
+acquired during the VIS Ground Calibration Campaign.
+
+The pipeline is meant to be run in several modes:
+    
+    - listening and checking: 
+        waiting for data as it comes out of the chamber, and doing minimal
+        checks on data: consistency, HK, basic quality
+    - acquired data-set / checking:
+        same quick checks as before, but running on an already acquired data-set.
+    - full-analysis and reporting:
+        full-scale processing and analysis on an acquired data-set.
+
+
+
+Created on Wed Jan 10 10:40:40 2018
+
+:author: Ruyman Azzollini
+:contact: r.azzollini_at_ucl.ac.uk
+"""
+
+# IMPORT STUFF
+import os
+from pdb import set_trace as stop
+import numpy as np
+from optparse import OptionParser
+import sys
+import imp
+
+from vison import Pipe
+# END IMPORT
+
+
+
+def openconfigf(configf):
+    f = open(configf)
+    exec f
+    f.close()
+    return inputdict
+
+if __name__ == '__main__':
+
+    usage='usage: %prog [options]'
+    parser = OptionParser(usage)
+    parser.add_option("-c","--config",dest="config",default='',help="Configuration file to run the pipeline.")    
+    parser.add_option("-L","--Listen",dest="listen",action="store_true",default=False,help="Run in 'listening' mode.")
+    parser.add_option("-k","--check",dest="check",action="store_true",default=False,help="Check consistency and basic quality of data only.")   
+    parser.add_option("-l","--log",dest="log",action="store_true",default=False,help="Start an Execution Log.")
+    parser.add_option("-d","--drill",dest="drill",action="store_true", default=False, help="Do a drill execution.")
+    parser.add_option("-g","--debug",dest="debug",action="store_true", default=False, help="Run in 'debug' mode.")
+    
+    (options, args) = parser.parse_args()
+    
+    configf = options.config
+    listen = options.listen
+    docheck = options.check
+    dolog = options.log
+    drill = options.drill
+    debug = options.debug
+        
+    inputdict = openconfigf(configf)
+    
+    stop()
+    pipe = Pipe(inputdict,dolog=dolog,drill=drill,debug=debug)
+    
+    stop()

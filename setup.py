@@ -51,7 +51,8 @@ def configuration():
            'vison/scripts/quickds9.py',
            'vison/scripts/vis_mkscripts.py',
            'vison/scripts/vis_genDataSet.py',
-           'vison/scripts/eyegore'])
+           'vison/scripts/eyegore',
+           'vison/scripts/vison_run'])
    
     return config
 
