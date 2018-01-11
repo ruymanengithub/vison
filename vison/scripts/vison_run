@@ -66,7 +66,7 @@ if __name__ == '__main__':
     usage='usage: %prog [options]'
     parser = OptionParser(usage)
     parser.add_option("-c","--config",dest="config",default='',help="Configuration file to run the pipeline.")    
-    parser.add_option("-e","--explog",dest="explog",default='',help="exposure log. Only needed in 'wait' mode.")
+    parser.add_option("-e","--explog",dest="explogf",default='',help="exposure log. Only needed in 'wait' mode.")
     parser.add_option("-v","--elvis",dest="elvis",default='6.3.0',help="ELVIS vrsion. Only needed in 'wait' mode.")
     parser.add_option("-W","--wait",dest="wait",action="store_true",default=False,help="Run in 'data-waiting/listening' mode.")
     parser.add_option("-k","--check",dest="check",action="store_true",default=False,help="Check consistency and basic quality of data only.")   

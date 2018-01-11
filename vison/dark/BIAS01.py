@@ -32,7 +32,7 @@ import B01aux
 #from vison.pipe.task import Task
 from DarkTask import DarkTask
 from vison.image import performance
-
+from vison.datamodel import inputs
 #from vison.support.report import Report
 
 
@@ -59,9 +59,20 @@ BIAS01_commvalues = dict(program='CALCAMP',test='BIAS01',
   toi_fl=143.,toi_tp=1000.,toi_ro=1000.,toi_ch=1000.,
   wave=4,
   comments='BIAS')
-  
-class BIAS01(DarkTask):
+
+
+class BIAS01_inputs(inputs.Inputs):
+    manifesto = inputs.CommonTaskInputs
+    manifesto.update(OrderedDict(sorted([
+            ('N',(int,'Number of Frame Acquisitions.')),
+            ])))
     
+
+
+class BIAS01(DarkTask):
+    """ """
+    
+    inputsclass = BIAS01_inputs
     
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
@@ -74,9 +85,10 @@ class BIAS01(DarkTask):
         self.HKKeys = HKKeys
         self.figdict = B01aux.B01figs
         self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
-            
+        
+        
     def set_inpdefaults(self,**kwargs):
-        self.inpdefaults = dict(N=25)
+        self.inpdefaults = self.inputsclass(N=25)
         
     def set_perfdefaults(self,**kwargs):
         self.perfdefaults = dict()

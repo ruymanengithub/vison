@@ -40,7 +40,8 @@ class Task(object):
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
         self.internals = dict()
-        self.inputs = dict()
+        #self.inputs = dict()
+        self.inputs = self.inputsclass()
         self.inpdefaults = dict()
         self.perfdefaults = dict()
         #self.set_defaults()
@@ -56,8 +57,7 @@ class Task(object):
         self.debug = debug
         
         self.set_inpdefaults(**inputs)
-        _inputs = self.inpdefaults
-        
+        _inputs = self.inpdefaults        
         _inputs.update(inputs)
         self.inputs.update(_inputs)
         
@@ -74,6 +74,7 @@ class Task(object):
     
     def set_inpdefaults(self,**kwargs):
         pass
+    
     def set_perfdefaults(self,**kwargs):
         pass
     
