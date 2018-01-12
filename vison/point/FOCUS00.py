@@ -33,6 +33,7 @@ import numpy as np
 from pdb import set_trace as stop
 import os
 from copy import deepcopy
+from collections import OrderedDict
 
 from vison.pipe import lib as pilib
 from vison.ogse import ogse
@@ -53,7 +54,7 @@ from vison.support import vistime
 from PointTask import PointTask
 import FOCUS00_lib as F00lib
 from vison.image import performance
-
+from vison.datamodel import inputs
 # END IMPORT
 
 isthere = os.path.exists
@@ -79,8 +80,17 @@ FOCUS00_commvalues = dict(program='CALCAMP',test='FOCUS_%i',
   source='point')
 
 
+class FOCUS00_inputs(inputs.Inputs):
+    manifesto = inputs.CommonTaskInputs
+    manifesto.update(OrderedDict(sorted([
+            ('exptime',([float],'Exposure time.')),
+            ('wavelength',([int],'Wavelength')),
+            ])))
+
 class FOCUS00(PointTask):
     """ """
+    
+    inputsclass = FOCUS00_inputs
     
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """

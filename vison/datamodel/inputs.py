@@ -11,25 +11,26 @@ Created on Thu Jan 11 10:34:43 2018
 # IMPORT STUFF
 from pdb import set_trace as stop
 from collections import OrderedDict
+import numpy as np
 # END IMPORT
 
 CommonTaskInputs = OrderedDict(sorted([
-            ('BLOCKID',(str,'Unique Detection Block Identifier.')),    
-            ('CHAMBER',(str,'Test Chamber.')),
-            ('datapath',(str,'Path to Data.')),
-            ('diffvalues',(dict,'Additional Inputs Dictionary [opt.].')),
-            ('elvis',(str,'ELVIS version.')),
-            ('explogf',(str,'Exposure Log File.')),
-            ('ID',(str,'Pipeline Execution ID.')),
-            ('inCDPs',(dict,'Input Calibration Data Products, used in processing of data.')),
-            ('OBSID_lims',(list,'OBSID Limits to search for frames of Test in Exp-Log.')),
-            ('perf_rdout',(dict,'Readout Performance: RON, BIAS levels, gradients, etc.')),
-            ('resultsroot',(str,'Path to results directory (Pipeline Session Level).')),
-            ('resultspath',(str,'Path to results directory (Task Level).')),
-            ('subpaths',(dict,'Paths to results sub-folders. Relative to resultspath.')),
-            ('structure',(dict,'Test Structure.')),
-            ('test',(str,'Test/Task Name')),
-            ('todo_flags',(dict,'Sub-Tasks to-do indicator.'))
+            ('BLOCKID',([str],'Unique Detection Block Identifier.')),    
+            ('CHAMBER',([str],'Test Chamber.')),
+            ('datapath',([str],'Path to Data.')),
+            ('diffvalues',([dict],'Dictionary with values of variable entries in acq. script (e.g. CCD S/Ns) [opt.].')),
+            ('elvis',([str],'ELVIS version.')),
+            ('explogf',([str],'Exposure Log File.')),
+            ('ID',([str],'Pipeline Execution ID.')),
+            ('inCDPs',([dict],'Input Calibration Data Products, used in processing of data.')),
+            ('OBSID_lims',([list],'OBSID Limits to search for frames of Test in Exp-Log.')),
+            ('perf_rdout',([dict],'Readout Performance: RON, BIAS levels, gradients, etc.')),
+            ('resultsroot',([str],'Path to results directory (Pipeline Session Level).')),
+            ('resultspath',([str],'Path to results directory (Task Level).')),
+            ('subpaths',([dict],'Paths to results sub-folders. Relative to resultspath.')),
+            ('structure',([dict],'Test Structure.')),
+            ('test',([str],'Test/Task Name')),
+            ('todo_flags',([dict],'Sub-Tasks to-do indicator.'))
             ]))
 
 class Inputs(dict):
@@ -51,7 +52,9 @@ class Inputs(dict):
     def assertinputs(self,key,value):
         #return # TESTS
         assert key in self.manifesto, '"%s" not in %s' % (key,self.__class__)
-        assert isinstance(value,self.manifesto[key][0]), \
+        #assert isinstance(value,self.manifesto[key][0]), \
+        #     '"%s" %s does not match expectation: %s' % (key,type(value),self.manifesto[key][0])
+        assert np.any([isinstance(value,item) for item in self.manifesto[key][0]]), \
              '"%s" %s does not match expectation: %s' % (key,type(value),self.manifesto[key][0])
     
     def __setitem__(self,key,value):

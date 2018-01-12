@@ -33,6 +33,7 @@ import numpy as np
 from pdb import set_trace as stop
 import os
 from copy import deepcopy
+from collections import OrderedDict
 
 from vison.pipe import lib as pilib
 from vison.ogse import ogse
@@ -44,6 +45,7 @@ from vison.support import files
 #from vison.pipe.task import Task
 from FlatTask import FlatTask
 from vison.image import performance
+from vison.datamodel import inputs
 # END IMPORT
 
 isthere = os.path.exists
@@ -56,6 +58,7 @@ HKKeys = ['CCD1_OD_T','CCD2_OD_T','CCD3_OD_T','COMM_RD_T',
 
 
 NL01_commvalues = dict(program='CALCAMP',
+  test='NL01',
   IPHI1=1,IPHI2=1,IPHI3=1,IPHI4=0,
   rdmode='fwd_bas',
   flushes=7,exptime=0.,shuttr=1,
@@ -64,9 +67,21 @@ NL01_commvalues = dict(program='CALCAMP',
   source='flat',
   comments='')
 
+class NL01_inputs(inputs.Inputs):
+    manifesto = inputs.CommonTaskInputs
+    manifesto.update(OrderedDict(sorted([
+            ('exptimes',([dict,list],'Exposure times for each fluence.')),
+            ('exptinter',([float],'Exposure time for interleaved fluence stability control frames.')),
+            ('frames',([list],'Number of Frames for each fluence.')),
+            ('wavelength',([int],'Wavelength'))
+            ])))
+
+
 
 class NL01(FlatTask):
     """ """
+    
+    inputsclass = NL01_inputs
     
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
@@ -84,14 +99,14 @@ class NL01(FlatTask):
         
     def set_inpdefaults(self,**kwargs):
 
-        expts = np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100. * ogse.tFWC_flat['nm0'] # ms
+        expts = (np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100. * ogse.tFWC_flat['nm0']).tolist() # ms
         self.inpdefaults = dict(exptimes=expts,
                        exptinter=0.5 * ogse.tFWC_flat['nm0'],
-                       frames=np.ones(11,dtype='int32')*5,           
+                       frames=(np.ones(11,dtype='int32')*5).tolist(),           
                        wavelength=0,
                        )
         
-    def set_perfdefaults(self):
+    def set_perfdefaults(self,**kwargs):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
 

@@ -20,6 +20,7 @@ from pdb import set_trace as stop
 import os
 import datetime
 from copy import deepcopy
+from collections import OrderedDict
 
 from vison.pipe import lib as pilib
 from vison.ogse import ogse
@@ -36,6 +37,7 @@ from vison.datamodel import generator
 #from vison.pipe.task import Task
 from vison.flat.FlatTask import FlatTask
 from vison.image import performance
+from vison.datamodel import inputs
 # END IMPORT
 
 isthere = os.path.exists
@@ -60,8 +62,20 @@ FLU_lims = dict(CCD1= dict(
                     col3=0.75 * 2**16 * (1.+np.array([-0.10,0.10]))))
 for i in [2,3]: FLU_lims['CCD%i' % i] = deepcopy(FLU_lims['CCD1'])
 
+class FLATS0X_inputs(inputs.Inputs):
+    manifesto = inputs.CommonTaskInputs
+    manifesto.update(OrderedDict(sorted([
+            ('exptimes',([list],'Exposure times for each fluence.')),
+            ('frames',([list],'Number of Frames for each fluence.')),
+            ('wavelength',([int],'Wavelength')),
+            ])))
+
+
 class FLAT0X(FlatTask):
     """ """
+    
+    inputsclass = FLATS0X_inputs
+    
 
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
@@ -85,7 +99,7 @@ class FLAT0X(FlatTask):
         except KeyError: test = 'FLAT0X'
         
         t_dummy_F0X = np.array([25.,50.,75])/100.
-        exptimesF0X = ogse.tFWC_flat['nm%i' % wavelength] * t_dummy_F0X# s
+        exptimesF0X = (ogse.tFWC_flat['nm%i' % wavelength] * t_dummy_F0X).tolist() # s
         framesF0X = [80,60,30]
         
         self.inpdefaults = dict(exptimes=exptimesF0X,

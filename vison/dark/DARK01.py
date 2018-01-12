@@ -20,6 +20,7 @@ from pdb import set_trace as stop
 import os
 import datetime
 from copy import deepcopy
+from collections import OrderedDict
 
 from vison.pipe import lib as pilib
 from vison.point import  lib as polib
@@ -35,6 +36,7 @@ from vison.datamodel import generator
 #from vison.pipe.task import Task
 from DarkTask import DarkTask
 from vison.image import performance
+from vison.datamodel import inputs
 # END IMPORT
 
 isthere = os.path.exists
@@ -50,10 +52,18 @@ DARK01_commvalues = dict(program='CALCAMP',test='DARK01',
   flushes=7,shuttr=1,
   siflsh=1,siflsh_p=500,
   comments='DARK')
-  
+
+class DARK01_inputs(inputs.Inputs):
+    manifesto = inputs.CommonTaskInputs
+    manifesto.update(OrderedDict(sorted([
+            ('N',([int],'Number of Frame Acquisitions.')),
+            ('exptime',([int],'Exposure time.')),
+            ])))
 
 class DARK01(DarkTask):
     """ """
+    
+    inputsclass = DARK01_inputs
 
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
@@ -70,7 +80,7 @@ class DARK01(DarkTask):
     def set_inpdefaults(self,**kwargs):
         self.inpdefaults = dict(N=4,exptime=565)
         
-    def set_perfdefaults(self):
+    def set_perfdefaults(self,**kwargs):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
         

@@ -56,6 +56,7 @@ from vison.image import calibration
 from PointTask import  PointTask
 import PSF0Xaux
 from vison.image import performance
+from vison.datamodel import inputs
 # END IMPORT
 
 isthere = os.path.exists
@@ -78,12 +79,12 @@ PSF0X_commvalues = dict(program='CALCAMP',
   wave=4,mirr_pos=polib.mirror_nom['F4'],
   comments='')
 
-testdefaults = dict(waves=[590,640,800,880],
+testdefaults = dict(waves=[590,640,800,890],
                                exptimes=dict(),
                                frames=[20,15,10,4,3])
 
 for w in testdefaults['waves']:
-    testdefaults['exptimes']['nm%i' % w] = np.array([5.,25.,50.,75.,90.])/100.*ogse.tFWC_point['nm%i' % w]
+    testdefaults['exptimes']['nm%i' % w] = (np.array([5.,25.,50.,75.,90.])/100.*ogse.tFWC_point['nm%i' % w]).tolist()
 
 stampw = polib.stampw
 
@@ -115,9 +116,18 @@ BGD_lims = OrderedDict(CCD1=OrderedDict(
 for Q in ['F','G','H']: BGD_lims['CCD1'][Q] = copy.deepcopy(BGD_lims['CCD1']['E'])
 for CCD in [2,3]: BGD_lims['CCD%i' % CCD] = copy.deepcopy(BGD_lims['CCD1'])
 
+class PSF0X_inputs(inputs.Inputs):
+    manifesto = inputs.CommonTaskInputs
+    manifesto.update(OrderedDict(sorted([
+            ('exptimes',([list],'Exposure times for each fluence.')),
+            ('frames',([list],'Number of Frames for each fluence.')),
+            ('wavelength',([int],'Wavelength')),
+            ])))
+
 
 class PSF0X(PointTask):
     
+    inputsclass = PSF0X_inputs
     
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """

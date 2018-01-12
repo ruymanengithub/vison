@@ -22,7 +22,7 @@ tFWC_flat = dict(nm590=2.,
                 nm640=2.,
                 nm730=2.,
                 nm800=2.,
-                nm880=2.,
+                nm890=2.,
                 nm0=200.) 
 
 # saturation exposure times for point-source, ms, orientative
@@ -32,7 +32,7 @@ tFWC_point = dict(nm590=2.,
                 nm640=2.,
                 nm730=2.,
                 nm800=2.,
-                nm880=2.,
+                nm890=2.,
                 nm0=200.) # ms
 
 # FWHM (lambda), in pixels, orientative
@@ -41,14 +41,14 @@ fwhm_lambda = dict(nm590=1.3,
                 nm640=1.4,
                 nm730=1.5,
                 nm800=1.5,
-                nm880=1.6,
+                nm890=1.6,
                 nm0=1.5) # ms
 
 # Filter Wheel Positions
 
 FW = dict(F1=590,F2=640,
           F3=730,F4=800,
-          F5=880,F6=0)
+          F5=890,F6=0)
 
 
 

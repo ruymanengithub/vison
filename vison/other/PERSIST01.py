@@ -20,6 +20,7 @@ from pdb import set_trace as stop
 import os
 import datetime
 from copy import deepcopy
+from collections import OrderedDict
 
 from vison.pipe import lib as pilib
 from vison.point import lib as polib
@@ -34,6 +35,7 @@ from vison.datamodel import ccd
 from vison.datamodel import generator
 from vison.pipe.task import Task
 from vison.image import performance
+from vison.datamodel import inputs
 # END IMPORT
 
 HKKeys = []
@@ -47,16 +49,30 @@ PER01_commvalues = dict(program='CALCAMP',test='PERSIST01',
   wave=4,mirr_pos=polib.mirror_nom['F4'],
   mirr_on=1,
   comments='')
-  
+
+
+class PERSIST01_inputs(inputs.Inputs):
+    manifesto = inputs.CommonTaskInputs
+    manifesto.update(OrderedDict(sorted([
+            ('exptSATUR',([float],'Exposure times to produce latent.')),
+            ('exptLATEN',([float],'Exposure times to quantify latent.')),
+            ])))
+
+
 
 class PERSIST01(Task):
     """ """
+    
+    inputsclass = PERSIST01_inputs
 
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
         super(PERSIST01,self).__init__(inputs,log,drill,debug)
         self.name = 'PERSIST01'
         self.type = 'Simple'
+        self.subtasks = [('check',self.check_data),('prep',self.prep_data),
+                         ('basic',self.basic_analysis),
+                         ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
         self.figdict = dict() 
         self.inputs['subpaths'] = dict(figs='figs')
@@ -100,6 +116,11 @@ class PERSIST01(Task):
         
         return PER01_sdict
     
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
+        """ """
+        wavedkeys = []
+        return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
+                              wavedkeys=wavedkeys,elvis=elvis)
     
     def check_data(self):
         """ 

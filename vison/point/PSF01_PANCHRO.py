@@ -45,13 +45,23 @@ from vison.pipe.task import Task
 import PSF0Xaux
 from vison.image import performance
 from vison.support.files import cPickleRead
+from vison.datamodel import inputs
 # END IMPORT
 
 isthere = os.path.exists
 
 
+class PSF01_PANCHRO_inputs(inputs.Inputs):
+    manifesto = inputs.CommonTaskInputs
+    manifesto.update(OrderedDict(sorted([
+            ('inpath',([str],'Data path.')),
+            ('wavelengths',([list],'Wavelengths.')),
+            ])))
+
+
 class PSF01_PANCHRO(Task):
     
+    inputsclass = PSF01_PANCHRO_inputs
     
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
@@ -71,7 +81,7 @@ class PSF01_PANCHRO(Task):
         inpath = self.inputs['inpath']
         
         self.dd = dict()        
-        for iw,wave in wavelengths:
+        for iw,wave in enumerate(wavelengths):
             wpath = 'PSF01_%i' % wave
             iDDpickfile = os.path.join(inpath,wpath,'PSF01_%i_DataDict.pick' % wave)
             self.dd['nm%i' % wave] = cPickleRead(iDDpickfile)

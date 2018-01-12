@@ -53,6 +53,7 @@ from vison.image import performance
 #from vison.support import files
 #from vison.pipe.task import Task
 from FlatTask import FlatTask
+from vison.datamodel import inputs
 # END IMPORT
 
 isthere = os.path.exists
@@ -70,9 +71,9 @@ PTC0X_commvalues = dict(program='CALCAMP',
   source='flat',
   comments='')
   
-PTC01_exptimes = np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100.*ogse.tFWC_flat['nm800'] # ms
-PTC02waves = [590,640,730,880]
-PTC02TEMP_exptimes = exptimes=np.array([10.,30.,50.,70.,80.,90.])/100.*ogse.tFWC_flat['nm800']
+PTC01_exptimes = (np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100.*ogse.tFWC_flat['nm800']).tolist() # ms
+PTC02waves = [590,640,730,890]
+PTC02TEMP_exptimes = (np.array([10.,30.,50.,70.,80.,90.])/100.*ogse.tFWC_flat['nm800']).tolist()
 
 testdefaults = dict(PTC01=dict(exptimes=PTC01_exptimes,
                          frames=[10,10,10,10,10,10,10,10,4,4,4],
@@ -86,11 +87,22 @@ testdefaults = dict(PTC01=dict(exptimes=PTC01_exptimes,
                     
 
 for w in testdefaults['PTC02WAVE']['waves']:
-    testdefaults['PTC02WAVE']['exptimes']['nm%i' % w] = np.array([10.,30.,50.,70.,80.,90.])/100.*ogse.tFWC_flat['nm%i' % w]
-    
+    testdefaults['PTC02WAVE']['exptimes']['nm%i' % w] = (np.array([10.,30.,50.,70.,80.,90.])/100.*ogse.tFWC_flat['nm%i' % w]).tolist()
+
+
+class PTC0X_inputs(inputs.Inputs):
+    manifesto = inputs.CommonTaskInputs
+    manifesto.update(OrderedDict(sorted([
+            ('exptimes',([dict,list],'Exposure times for each fluence.')),
+            ('frames',([list],'Number of Frames for each fluence.')),
+            ('wavelength',([int],'Wavelength')),
+            ])))
+
 
 class PTC0X(FlatTask):
     """ """
+    
+    inputsclass = PTC0X_inputs
     
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
@@ -139,7 +151,6 @@ class PTC0X(FlatTask):
         try: testkey = kwargs['test']
         except KeyError: 
             testkey = 'PTC01'
-        
         
         FLU_lims = dict()
         self.perfdefaults['FLU_lims'] = FLU_lims # dict

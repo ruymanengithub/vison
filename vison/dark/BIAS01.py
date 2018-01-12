@@ -64,10 +64,8 @@ BIAS01_commvalues = dict(program='CALCAMP',test='BIAS01',
 class BIAS01_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs
     manifesto.update(OrderedDict(sorted([
-            ('N',(int,'Number of Frame Acquisitions.')),
+            ('N',([int],'Number of Frame Acquisitions.')),
             ])))
-    
-
 
 class BIAS01(DarkTask):
     """ """
@@ -126,7 +124,6 @@ class BIAS01(DarkTask):
         wavedkeys = []
         return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
                               wavedkeys=wavedkeys,elvis=elvis)
-    
     
     
     def prep_data(self):
