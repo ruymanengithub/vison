@@ -84,7 +84,7 @@ class TP01(PumpTask):
         self.perfdefaults.update(performance.perf_rdout)
         
 
-    def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
+    def build_scriptdict(self,diffvalues=dict(),elvis=pilib.elvis):
         """ """
         
         Nshuffles_V = self.inputs['Nshuffles_V']
@@ -142,7 +142,7 @@ class TP01(PumpTask):
         
         return TP01_sdict
 
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=pilib.elvis):
         """ """
         wavedkeys = []
         return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,

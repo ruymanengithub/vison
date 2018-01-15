@@ -110,7 +110,7 @@ class NL01(FlatTask):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
 
-    def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
+    def build_scriptdict(self,diffvalues=dict(),elvis=pilib.elvis):
         """Builds NL01 script structure dictionary.
         
         #:param expts: list of ints [ms], exposure times.
@@ -161,7 +161,7 @@ class NL01(FlatTask):
         return NL01_sdict
     
     
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=pilib.elvis):
         """Loads a list of Exposure Logs and selects exposures from test PSF0X.
         
         The filtering takes into account an expected structure for the 

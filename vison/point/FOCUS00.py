@@ -115,7 +115,7 @@ class FOCUS00(PointTask):
         self.perfdefaults.update(performance.perf_rdout)
          
 
-    def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
+    def build_scriptdict(self,diffvalues=dict(),elvis=pilib.elvis):
         """Builds FOCUS00 script structure dictionary.
         
         #:param wavelength: int, [nm], wavelength.
@@ -156,7 +156,7 @@ class FOCUS00(PointTask):
         
         return FOCUS00_sdict
 
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=pilib.elvis):
         """ """
         wavedkeys = []
         return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
@@ -178,103 +178,7 @@ class FOCUS00(PointTask):
         """ """
         raise NotImplementedError
 
-#def filterexposures_FOCUS00(inwavelength,explogf,datapath,OBSID_lims,structure=FOCUS00_structure_wnom,elvis='5.7.04'):
-#    """Loads a list of Exposure Logs and selects exposures from test FOCUS00.
-#    
-#    The filtering takes into account an expected structure for the 
-#    acquisition script.
-#
-#    The datapath becomes another column in DataDict. This helps dealing
-#    with tests that run overnight and for which the input data is in several
-#    date-folders.
-#
-#    
-#    """
-#    
-#    # load exposure log(s)
-#    
-#    explog = pilib.loadexplogs(explogf,elvis=elvis,addpedigree=True)
-#    
-#    # add datapath(s)
-#    
-#    if isinstance(datapath,list):
-#        longestdatapathname = max([len(item) for item in datapath])
-#        explog['datapath'] = np.zeros(len(explog),dtype='S%i' % longestdatapathname)
-#        explognumber=explog['explognumber']
-#        for idata in range(len(datapath)):
-#            explog['datapath'][explognumber == idata] = datapath[idata]
-#    
-#
-#    rootFile_name = explog['File_name'].copy()
-#
-#    
-#    DataDict = {}
-#        
-#
-#    
-#    selbool = (['FOCUS00' in item for item in explog['TEST']]) & \
-#        (explog['ObsID'] >= OBSID_lims[0]) & \
-#        (explog['ObsID'] <= OBSID_lims[1]) & \
-#        (explog['Wavelength'] == inwavelength) # TESTS
-#
-#    
-#    # Assess structure
-#    
-#    isconsistent = pilib.check_test_structure(explog,selbool,structure)
-#    
-#    
-#    # Build DataDict
-#    
-#    DataDict = dict(meta = dict(inwavelength=inwavelength,structure=structure))
-#    
-#    for CCDindex in [1,2,3]:
-#        
-#        CCDkey = 'CCD%i' % CCDindex
-#        
-#        DataDict[CCDkey] = dict()
-#        
-#        CCDselbool = selbool & (explog['CCD'] == CCDkey)
-#        
-#        if len(np.where(CCDselbool)[0]) == 0:
-#            continue
-#        
-#        Nobs = len(np.where(CCDselbool)[0])
-#        
-#        for key in explog.colnames:
-#            DataDict[CCDkey][key] = explog[key][CCDselbool].data.copy()
-#        
-#        DataDict[CCDkey]['time'] = np.array(map(vistime.get_dtobj,DataDict[CCDkey]['DATE'])).copy()
-#        
-#        
-#        Mirr_pos = DataDict[CCDkey]['Mirr_pos'].copy()
-#        Exptime = DataDict[CCDkey]['Exptime'].copy()
-#        
-#        label = np.zeros(Nobs,dtype='40str')
-#        
-#        uMirr_pos = np.sort(np.unique(Mirr_pos))
-#        
-#
-#        for ixMP,iMP in enumerate(uMirr_pos):
-#            
-#            ixselMP = Mirr_pos == iMP
-#            
-#            label[ixselMP & (Exptime > 0)] = 'focus_%i' % ixMP
-#            label[ixselMP & (Exptime ==0)] = 'BGD'
-#            
-#        
-#        DataDict[CCDkey]['label'] = label.copy()
-#
-#        
-#        rootFile_name = DataDict[CCDkey]['File_name'].copy()
-#        
-#        File_name  = ['%s.fits' % item for item in rootFile_name]
-#        
-#        DataDict[CCDkey]['Files'] = np.array(File_name).copy()
-#        
-#    
-#    return DataDict, isconsistent
-#
-#
+
 #def get_basic_spot_FOCUS00(stamp,x0,y0,log=None,debug=False):
 #    """ 
 #    # TODO:
@@ -805,117 +709,3 @@ class FOCUS00(PointTask):
 #    
 #    
 #    
-#def run(inputs,log=None):
-#    """Test FOCUS00 master function."""
-#    
-#    
-#    # INPUTS
-#    
-#    todo_flags = dict(init=True,prep=True,basic=True,meta=True,report=True)
-#    
-#    OBSID_lims = inputs['OBSID_lims']
-#    explogf = inputs['explogf']
-#    datapath = inputs['datapath']
-#    resultspath = inputs['resultspath']
-#    wavelength = inputs['wavelength']
-#    elvis = inputs['elvis']
-#    
-#    DataDictFile = os.path.join(resultspath,'FOCUS00_%snm_DataDict.pick' % wavelength)
-#    reportobjFile = os.path.join(resultspath,'FOCUS00_%snm_Report.pick' % wavelength)
-#    
-#    if not isthere(resultspath):
-#        os.system('mkdir %s' % resultspath)
-#    
-#    try: 
-#        structure = inputs['structure']
-#    except: 
-#        structure = get_FOCUS00_structure(wavelength)
-#        
-#    try: reportroot = inputs['reportroot']
-#    except KeyError: reportroot = 'FOCUS00_%inm_report' % wavelength
-#    
-#    try: cleanafter = inputs['cleanafter']
-#    except KeyError: cleanafter = False
-#    
-#    if 'todo_flags' in inputs: todo_flags.update(inputs['todo_flags'])
-#        
-#    
-#    if todo_flags['init']:
-#    
-#        # Initialising Report Object
-#    
-#        if todo_flags['report']:
-#            reportobj = Report(TestName='FOCUS00: %s nm' % wavelength)
-#        else:
-#            reportobj = None
-#    
-#        # META-DATA WORK
-#        
-#        # Filter Exposures that belong to the test
-#    
-#        DataDict, isconsistent = filterexposures_FOCUS00(wavelength,explogf,datapath,OBSID_lims,
-#                                     structure,elvis)
-#    
-#        if log is not None:
-#            log.info('FOCUS00 acquisition is consistent with expectations: %s' % isconsistent)
-#        
-#        # Add HK information
-#        DataDict = pilib.addHK(DataDict,HKKeys_FOCUS00,elvis=elvis)
-#        pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)
-#        
-#    else:
-#        
-#        DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
-#        
-#    # DATA-WORK
-#    
-#    # Prepare Data for further analysis (subtract offsets, divide by FFF, trim snapshots). 
-#    # Check Data has enough quality:
-#    #     median levels in pre-scan, image-area, overscan
-#    #     fluences and spot-sizes (coarse measure) match expectations for all spots
-#    
-#    debug = False
-#    
-#    if todo_flags['prep']:
-#        DataDict, reportobj = prep_data_FOCUS00(DataDict,reportobj,inputs,log,debug)
-#        pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)        
-#    else:
-#        DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
-#    
-#    # Optional
-#    # Perform Basic Analysis : Gaussian fits and Moments shape measurements of spots
-#    
-#    if todo_flags['basic']:
-#        DataDict, reportobj = basic_analysis_FOCUS00(DataDict,reportobj,inputs,log)
-#        pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)        
-#    else:
-#        DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
-#    
-#    # Optional
-#    # Produce Summary Figures and Tables
-#
-#    if todo_flags['meta']:
-#        DataDict, reportobj = meta_analysis_FOCUS00(DataDict,reportobj,inputs,log)
-#        pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)  
-#    else:
-#        DataDict, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
-#    
-#    # Write automatic Report of Results
-#    
-#    if todo_flags['report']:
-#        
-#        reportobj.doreport(reportroot,cleanafter)
-#        outfiles = reportobj.writeto(reportroot,cleanafter)
-#        
-#        for outfile in outfiles:
-#            os.system('mv %s %s/' % (outfile,resultspath))
-#    
-#    pilib.save_progress(DataDict,reportobj,DataDictFile,reportobjFile)
-#    
-#    if log is not None:
-#        log.info('Finished FOCUS00')
-#
-#
-#if __name__ == '__main__':
-#    
-#    pass

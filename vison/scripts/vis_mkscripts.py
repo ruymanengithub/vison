@@ -28,6 +28,7 @@ from vison.datamodel import scriptic as sc
 #from vison.other import PERSIST01 as PER01
 #from vison.point import lib as polib
 from vison.pipe import campaign, minicampaign
+from vison.pipe import lib as pilib
 
 from vison.ogse.ogse import tFWC_flat,tFWC_point
 
@@ -50,7 +51,7 @@ def f_write_script(struct,filename,outpath,elvis):
     return xsum
 
 
-def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
+def scwriter(toWrite,outpath,equipment,elvis=pilib.elvis):
     """ """
     
     
@@ -84,7 +85,7 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
 if __name__ =='__main__':
     
     
-    elvis = '6.3.0'
+    elvis = '6.5.X'
 
     camptype = 'Mini' # Mini/Full    
     

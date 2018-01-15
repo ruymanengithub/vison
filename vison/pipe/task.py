@@ -45,7 +45,7 @@ class Task(object):
         self.inpdefaults = dict()
         self.perfdefaults = dict()
         #self.set_defaults()
-        self.elvis = '6.3.0'
+        self.elvis = pilib.elvis
         self.log = log
         self.name = ''
         self.type = 'Simple'
@@ -78,7 +78,7 @@ class Task(object):
     def set_perfdefaults(self,**kwargs):
         pass
     
-    def build_scriptdict(self,diffvalues={},elvis='6.3.0'):
+    def build_scriptdict(self,diffvalues={},elvis=pilib.elvis):
         """ """
         return dict()
     

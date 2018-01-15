@@ -157,7 +157,7 @@ class PTC0X(FlatTask):
         
         
 
-    def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
+    def build_scriptdict(self,diffvalues=dict(),elvis=pilib.elvis):
         """Builds PTC0X script structure dictionary.
         
         #:param exptimes: list of ints [ms], exposure times.
@@ -200,7 +200,7 @@ class PTC0X(FlatTask):
         return PTC0X_sdict
     
     
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=pilib.elvis):
         """
         
         """    

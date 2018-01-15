@@ -116,7 +116,7 @@ class FLAT0X(FlatTask):
         
     
 
-    def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
+    def build_scriptdict(self,diffvalues=dict(),elvis=pilib.elvis):
         """Builds FLAT0X script structure dictionary.
         
         #:param exptimes: list of ints, exposure times.
@@ -154,7 +154,7 @@ class FLAT0X(FlatTask):
         
         return FLAT0X_sdict
 
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=pilib.elvis):
         """ """
         wavedkeys = []
         return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,

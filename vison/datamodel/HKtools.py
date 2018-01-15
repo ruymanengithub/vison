@@ -27,6 +27,8 @@ from astropy.io import ascii
 from astropy.table import Table,Column
 import string as st
 import numpy as np
+
+from vison.pipe import lib as pilib
 # END IMPORT
 
 
@@ -282,7 +284,7 @@ def loadHK_preQM(filename,elvis='5.7.07'):
     
     return data
 
-def loadHK_QFM(filename,elvis='5.8.X'):
+def loadHK_QFM(filename,elvis=pilib.elvis):
     """Loads a HK file
     
     Structure: tab separated columns, one per Keyword. First column is a 
@@ -304,7 +306,7 @@ def loadHK_QFM(filename,elvis='5.8.X'):
     return data
 
 
-def iniHK_QFM(elvis='6.3.0',length=0):
+def iniHK_QFM(elvis=pilib.elvis,length=0):
     """ """
     columns = allHK_keys[elvis]    
     
@@ -439,7 +441,7 @@ def parseHKfname(HKfname):
     return obsid,DTobject,ROE
     
 
-def parseHKfiles(HKlist,elvis='5.7.07'):
+def parseHKfiles(HKlist,elvis=pilib.elvis):
     """ 
     
     :param HKlist: list of HK files (path+name).
@@ -574,7 +576,7 @@ def HKplot(allHKdata,keylist,key,dtobjs,filename='',stat='mean'):
     plt.close()
 
 
-def check_HK_vs_command(HKKeys,dd,limits='P',elvis='6.3.0'):
+def check_HK_vs_command(HKKeys,dd,limits='P',elvis=pilib.elvis):
     """
     Returns report on HK parameters, in DataDict (dd), comparing inputs (commanded)
     vs. output (HK data).
@@ -626,7 +628,7 @@ def check_HK_vs_command(HKKeys,dd,limits='P',elvis='6.3.0'):
     
     return report
 
-def check_HK_abs(HKKeys,dd,limits='S',elvis='6.3.0'):
+def check_HK_abs(HKKeys,dd,limits='S',elvis=pilib.elvis):
     """ 
 
     Returns report on HK parameters, in DataDict (dd), compared to absolute

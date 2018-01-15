@@ -28,6 +28,7 @@ import Tkinter as tk
 import ttk
 import tkFont as tkFont
 
+from vison.pipe import lib as pilib
 from vison.datamodel import HKtools
 # END IMPORT
 
@@ -289,7 +290,7 @@ class HKFlags(tk.Toplevel):
 
 class HKDisplay(tk.Toplevel):
     """ """
-    def __init__(self,root,path,interval,elvis='6.3.0'):
+    def __init__(self,root,path,interval,elvis=pilib.elvis):
         
         self.path = path
         self.interval = interval

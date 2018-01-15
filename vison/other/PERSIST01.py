@@ -89,7 +89,7 @@ class PERSIST01(Task):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
 
-    def build_scriptdict(self,diffvalues=dict(),elvis='6.0.0'):
+    def build_scriptdict(self,diffvalues=dict(),elvis=pilib.elvis):
         """ 
         Builds PERSISTENCE01 script structure dictionary.
         
@@ -116,7 +116,7 @@ class PERSIST01(Task):
         
         return PER01_sdict
     
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=pilib.elvis):
         """ """
         wavedkeys = []
         return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,

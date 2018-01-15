@@ -92,7 +92,7 @@ class CHINJ02(InjTask):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
 
-    def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
+    def build_scriptdict(self,diffvalues=dict(),elvis=pilib.elvis):
         """ 
         Builds CHINJ02 script structure dictionary.
         

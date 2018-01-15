@@ -10,7 +10,7 @@ import os
 from copy import copy
 import numpy as np
 from vison.support import vistime
-
+from vison.pipe import lib as pilib
 
 # END IMPORT
 
@@ -176,7 +176,7 @@ def iniExplog(elvis):
     
 
 
-def loadExpLog(expfile,elvis='5.7.04'):
+def loadExpLog(expfile,elvis=pilib.elvis):
     """Loads an Exposure Log from file."""
     explog = ascii.read(expfile,data_start=1,delimiter='\t',guess=False,\
                         names=columnlist[elvis],format='no_header')
@@ -220,7 +220,7 @@ def mergeExpLogs(explogList,addpedigree=False):
 class ExpLogClass():
     """ """
     
-    def __init__(self,elvis='5.7.04'):
+    def __init__(self,elvis=pilib.elvis):
         """ """
         self.elvis = elvis
         self.infile = ''

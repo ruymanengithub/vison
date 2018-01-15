@@ -87,7 +87,7 @@ class CHINJ01(InjTask):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
 
-    def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
+    def build_scriptdict(self,diffvalues=dict(),elvis=pilib.elvis):
         """
         Builds CHINJ01 script structure dictionary.
         
@@ -160,7 +160,7 @@ class CHINJ01(InjTask):
         
         return CHINJ01_sdict
     
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=pilib.elvis):
         """ """
         wavedkeys = []
         return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
@@ -275,7 +275,7 @@ class CHINJ01(InjTask):
     #    
     #    return DataDict,report
 
-    def feeder(self,inputs,elvis='6.3.0'):
+    def feeder(self,inputs,elvis=pilib.elvis):
         """ """
         
         self.subtasks = [('check',self.check_data),('extract',self.extract_data),

@@ -27,9 +27,10 @@ from vison.pump import TP01, TP02
 from vison.other import PERSIST01 as PER01
 from vison.point import lib as polib
 from vison.ogse import ogse
+from vison.pipe import lib as pilib
 # END IMPORT
 
-def generate_reduced_test_sequence(equipment,toGen,elvis='6.3.0'):
+def generate_reduced_test_sequence(equipment,toGen,elvis=pilib.elvis):
     """ """
     
     operator = equipment['operator']
@@ -388,7 +389,7 @@ def generate_reduced_test_sequence(equipment,toGen,elvis='6.3.0'):
         
         print 'FOCUS00...'
 
-        wavesFOCUS00w = [590,640,730,800,890]
+        wavesFOCUS00w = [590,800,890]
     
         diffFOCUS00w = dict(sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,

@@ -91,7 +91,7 @@ def _update_fromscript(rowdict,scriptcol):
     
     return rowdict
     
-def generate_Explog(scrdict,defaults,elvis='6.3.0',explog=None,OBSID0=1000,
+def generate_Explog(scrdict,defaults,elvis=pilib.elvis,explog=None,OBSID0=1000,
                         date=vistime.dtobj_default):
     """ 
     
@@ -245,7 +245,7 @@ def merge_HKfiles(HKfilefs,masterHKf):
     
 
 
-def generate_HK(explog,vals,datapath='',elvis='6.3.0'):
+def generate_HK(explog,vals,datapath='',elvis=pilib.elvis):
     """ """
     
     date0 = explog['date'][0]
@@ -432,7 +432,7 @@ def IMG_point_gen(ccdobj,ELdict):
     return ccdobj
 
 
-def generate_FITS(ELdict,funct,filename='',elvis='6.3.0'):
+def generate_FITS(ELdict,funct,filename='',elvis=pilib.elvis):
     """ """
     
     NAXIS1,NAXIS2 = ccd.NAXIS1,ccd.NAXIS2
@@ -468,7 +468,7 @@ def generate_FITS(ELdict,funct,filename='',elvis='6.3.0'):
 
 
 
-def generate_FITS_fromExpLog(explog,datapath,elvis='6.3.0'):
+def generate_FITS_fromExpLog(explog,datapath,elvis=pilib.elvis):
     """ """    
     
     IMGgens = dict(BIAS=IMG_bias_gen,FLAT=IMG_flat_gen,

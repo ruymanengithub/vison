@@ -28,6 +28,7 @@ import datetime
 from vison.datamodel import HKtools 
 from vison.datamodel import EXPLOGtools as ELtools
 from vison import data as vdata
+from vison.pipe import lib as pilib
 #import loadHK_QFM,allHK_keys
 
 #from multiprocessing.dummy import Pool
@@ -53,7 +54,7 @@ small_font = ("Verdana", 8)
 class ExpLogDisplay(tk.Toplevel):
     """ """
     
-    def __init__(self,parent,path,interval,elvis='6.3.0'):
+    def __init__(self,parent,path,interval,elvis=pilib.elvis):
         
         self.path = path
         self.elvis = elvis

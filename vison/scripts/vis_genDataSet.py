@@ -38,7 +38,7 @@ import datetime
 
     
 
-def genExpLog(toGen,explogf,equipment,elvis='6.3.0'):
+def genExpLog(toGen,explogf,equipment,elvis=pilib.elvis):
     """ """
     
     OBSID0 = 1000

@@ -83,7 +83,7 @@ class Pipe(object):
                      PERSIST01=PERSIST01,
                      PSF01_PANCHRO=PSF01_PANCHRO)
     
-    for wave in [590,640,730,890]:
+    for wave in [0,590,640,730,890]:
         Test_dict['FLAT02_%i' % wave] = FLAT0X
     for wave in [590,640,730,890]:
         Test_dict['PTC02_%i' % wave] = PTC0X
@@ -177,7 +177,7 @@ class Pipe(object):
             
             self.launchtask(taskname)
     
-    def wait_and_run(self,explogf,elvis='6.1.0'):
+    def wait_and_run(self,explogf,elvis=pilib.elvis):
         """ """
         
         tasknames = self.tasks

@@ -165,7 +165,7 @@ class PSF0X(PointTask):
         self.perfdefaults['Flu_lims']  = Flu_lims # ADUs
         self.perfdefaults['FWHM_lims'] = FWHM_lims # Pixels
     
-    def build_scriptdict(self,diffvalues=dict(),elvis='6.3.0'):
+    def build_scriptdict(self,diffvalues=dict(),elvis=pilib.elvis):
         """ 
         
         Builds PSF0X script structure dictionary.
@@ -210,7 +210,7 @@ class PSF0X(PointTask):
         return PSF0X_sdict
     
     
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis='6.3.0'):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=pilib.elvis):
         """
         """
         wavedkeys = []
