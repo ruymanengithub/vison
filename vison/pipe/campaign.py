@@ -81,6 +81,8 @@ def generate_test_sequence(equipment,toGen,elvis='6.3.0'):
 
     # CHARGE INJECTION
     
+    # CHINJ01
+    
     if toGen['CHINJ01']: 
         
         print 'CHINJ01...'
@@ -105,6 +107,11 @@ def generate_test_sequence(equipment,toGen,elvis='6.3.0'):
         
         test_sequence['CHINJ01'] = structCHINJ01
     
+    
+    if toGen['CHINJ00']:
+        
+        print 'CHINJ00... - PENDING'
+        
     
     # CHINJ02
     

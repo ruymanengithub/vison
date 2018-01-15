@@ -27,7 +27,7 @@ from vison.datamodel import scriptic as sc
 #from vison.pump import TP01, TP02
 #from vison.other import PERSIST01 as PER01
 #from vison.point import lib as polib
-from vison.pipe import campaign
+from vison.pipe import campaign, minicampaign
 
 from vison.ogse.ogse import tFWC_flat,tFWC_point
 
@@ -62,7 +62,7 @@ def scwriter(toWrite,outpath,equipment,elvis='6.3.0'):
     if not os.path.exists(outpath):
         os.system('mkdir %s' % outpath)
         
-    test_sequence = campaign.generate_test_sequence(equipment,toWrite,elvis=elvis)    
+    test_sequence = test_generator(equipment,toWrite,elvis=elvis)    
 
     
     for test in test_sequence.keys():
@@ -85,7 +85,8 @@ if __name__ =='__main__':
     
     
     elvis = '6.3.0'
-    
+
+    camptype = 'Mini' # Mini/Full    
     
     outpath = 'CAL_scripts_02DEC'
     
@@ -96,11 +97,23 @@ if __name__ =='__main__':
     sn_roe= 'ROETEST',
     sn_rpsu = 'RPSUTEST')
     
-    toWrite = OrderedDict(BIAS01=1,DARK01=1,CHINJ01=1,CHINJ02=1,
+    
+    if camptype == 'Full':
+        
+        toWrite = OrderedDict(BIAS01=1,DARK01=1,CHINJ01=1,CHINJ02=1,
                       FLAT01=1,FLAT02=1,PTC01=1,PTC02WAVE=1,PTC02TEMP=1,NL01=1,
                       PSF01=1,PSF02=1,
                       TP01=1,TP02=1,
                       PERSIST01=1,FOCUS00=1)
+        
+        test_generator = campaign.generate_test_sequence
+        
+    elif camptype == 'Mini':
+        
+        toWrite = OrderedDict(BIAS01=1,DARK01=1,CHINJ00=1,TP00=1,
+                      FLAT01=1,FLAT02=1,FOCUS00=1)
+        
+        test_generator = minicampaign.generate_reduced_test_sequence
     
-    scwriter(toWrite,outpath,equipment,elvis)
+    scwriter(toWrite,test_generator,outpath,equipment,elvis)
     
