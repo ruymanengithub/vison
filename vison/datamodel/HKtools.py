@@ -112,7 +112,7 @@ allHK_keys['6.3.0'] = ['TimeStamp',
 'SPW_STATUS_REG']
 
 
-allHK_keys['6.5.0'] = ['TimeStamp', 'CCD3_OD_T', 'CCD2_OD_T', 'CCD1_OD_T', 
+allHK_keys['6.5.X'] = ['TimeStamp', 'CCD3_OD_T', 'CCD2_OD_T', 'CCD1_OD_T', 
 'COMM_RD_T', 'CCD2_IG1_T', 'CCD1_IG1_T', 
 'CCD3_TEMP_T', 'CCD2_TEMP_T', 'CCD1_TEMP_T', 'CCD3_IG1_T', 'COMM_IG2_T', 
 'VID_PCB_TEMP_T', 'FPGA_PCB_TEMP_T', 
@@ -196,31 +196,31 @@ HKlims['6.3.0'] = dict(P={'CCD1_OD_T':['R',-0.2,+0.2],'CCD2_OD_T':['R',-0.2,+0.2
 'ADC_BSY_ERR_CNT':['I',0],
 'SPW_STATUS_REG':['I','2FA0']})
 
-HKlims['6.5.0'] = dict()
-HKlims['6.5.0']['P'] = HKlims['6.3.0']['P']
-ignore = map(HKlims['6.5.0']['P'].pop,['stTMRErrFlg','hkTMRErrFlg',
+HKlims['6.5.X'] = dict()
+HKlims['6.5.X']['P'] = HKlims['6.3.0']['P']
+ignore = map(HKlims['6.5.X']['P'].pop,['stTMRErrFlg','hkTMRErrFlg',
 'spwTmTOFlg','CDPUClkSt','fpgaSpwErr','V3v3ProtCnt','V5ProtCnt',
 'VccdErrFlg','VclkErrFlg','VanErrFlg','stRamErr','hkRamErr',
 'ADC_BSY_ERR_CNT','SPW_STATUS_REG'])
 
-HKlims['6.5.0']['P'].update({'ProtOvRideFlg':['I',0], 'hkInvalidFlg':['I',0], 'SPI_Inh_n':['I',0], '3v3ProtErr':['I',0], '5vProtErr':['I',0], 
+HKlims['6.5.X']['P'].update({'ProtOvRideFlg':['I',0], 'hkInvalidFlg':['I',0], 'SPI_Inh_n':['I',0], '3v3ProtErr':['I',0], '5vProtErr':['I',0], 
 'V3v3ProtCnt':['I',0], 'V5ProtCnt':['I',0], 'VccdErrFlg':['I',0], 'VclkErrFlg':['I',0], 'VanErrFlg':['I',0], 
 'hkTmErr':['I',0], 'spwTmTOFlg':['I',0], 'CDPUClkSt':['I',0], 'fpgaSpwErr':['I',0], 'hkRamErr':['I',0], 
 'ADC_BSY_ERR_CNT':['I',0], 'SPW_STATUS_REG':['I',12192], 'Out_of_range':['I',0]})
 
-HKlims['6.5.0']['S'] = HKlims['6.3.0']['S']
-ignore = map(HKlims['6.5.0']['S'].pop,['stTMRErrFlg','hkTMRErrFlg',
+HKlims['6.5.X']['S'] = HKlims['6.3.0']['S']
+ignore = map(HKlims['6.5.X']['S'].pop,['stTMRErrFlg','hkTMRErrFlg',
 'spwTmTOFlg','CDPUClkSt','fpgaSpwErr','V3v3ProtCnt','V5ProtCnt',
 'VccdErrFlg','VclkErrFlg','VanErrFlg','stRamErr','hkRamErr',
 'ADC_BSY_ERR_CNT','SPW_STATUS_REG'])
 
-HKlims['6.5.0']['S'].update({'ProtOvRideFlg':['I',0], 'hkInvalidFlg':['I',0], 'SPI_Inh_n':['I',0], '3v3ProtErr':['I',0], '5vProtErr':['I',0], 
+HKlims['6.5.X']['S'].update({'ProtOvRideFlg':['I',0], 'hkInvalidFlg':['I',0], 'SPI_Inh_n':['I',0], '3v3ProtErr':['I',0], '5vProtErr':['I',0], 
 'V3v3ProtCnt':['I',0], 'V5ProtCnt':['I',0], 'VccdErrFlg':['I',0], 'VclkErrFlg':['I',0], 'VanErrFlg':['I',0], 
 'hkTmErr':['I',0], 'spwTmTOFlg':['I',0], 'CDPUClkSt':['I',0], 'fpgaSpwErr':['I',0], 'hkRamErr':['I',0], 
 'ADC_BSY_ERR_CNT':['I',0], 'SPW_STATUS_REG':['I',12192], 'Out_of_range':['I',0]})
 
 HKcorr = {}
-HKcorr['6.3.0'] = {'CCD1_OD_T':'OD_1_T','CCD2_OD_T':'OD_2_T','CCD3_OD_T':'OD_3_T',
+HKcorr['6.5.X'] = {'CCD1_OD_T':'OD_1_T','CCD2_OD_T':'OD_2_T','CCD3_OD_T':'OD_3_T',
 'CCD1_OD_B':'OD_1_B','CCD2_OD_B':'OD_2_B','CCD3_OD_B':'OD_3_B',
 'COMM_RD_T':'RD_T','COMM_RD_B':'RD_B',
 'CCD1_IG1_T':'IG1_1_T','CCD2_IG1_T':'IG1_2_T','CCD3_IG1_T':'IG1_3_T',

@@ -69,7 +69,7 @@ columnlist['6.3.0'] = ['ObsID','File_name','CCD','ROE','date','program',
 'IG1_1_T','IG1_2_T','IG1_3_T','IG1_1_B','IG1_2_B','IG1_3_B','IG2_T','IG2_B',
 'OD_1_T','OD_2_T','OD_3_T','OD_1_B','OD_2_B','OD_3_B','RD_T','RD_B']
 
-columnlist['6.5.0'] = ['ObsID','File_name','CCD','ROE','date','program',
+columnlist['6.5.X'] = ['ObsID','File_name','CCD','ROE','date','program',
 'test','calscrpt','sn_ccd1','sn_ccd2','sn_ccd3','sn_roe','sn_rpsu',
 'BUNIT','operator','con_file','exptime','fl_rdout','ci_rdout','IPHI',
 'vstart','vend','rdmode','flushes','siflsh','siflsh_p','swellw','swelldly',

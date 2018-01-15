@@ -27,7 +27,7 @@ import numpy as np
 # END IMPORT
 
 
-elvis = '6.3.0'
+elvis = '6.5.X'
 Quads =['E','F','G','H']
 RON = 4.5 # e-
 gain = 3.5 # e-/ADU
