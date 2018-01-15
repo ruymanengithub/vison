@@ -182,7 +182,55 @@ script_dictionary['6.3.0']['defaults'] =  {
 'comments':''
 }
 
+script_dictionary['6.5.X'] = dict()
 
+script_dictionary['6.5.X']['Keys'] = [
+'frames','program','test','IDL','IDH',
+'IG1_1_T','IG1_2_T','IG1_3_T','IG1_1_B','IG1_2_B','IG1_3_B','IG2_T',
+'IG2_B','OD_1_T','OD_1_B','OD_2_T','OD_2_B','OD_3_T','OD_3_B',
+'RD_T','RD_B','IPHI1','IPHI2','IPHI3','IPHI4',
+'rdmode','flushes','siflsh','siflsh_p','swellw','swelldly','inisweep',
+'vstart','vend','toi_fl','toi_tp','toi_ro','toi_ch',
+'chinj','chinj_on','chinj_of','id_wid','id_dly','chin_dly',
+'s_tpump','s_tpmod','v_tpump','v_tpmod','s_tp_cnt','v_tp_cnt','dwell_v',
+'dwell_s','exptime','shuttr','e_shuttr','mirr_on','mirr_pos','wave',
+'motr_on','motr_cnt','motr_siz','source',
+'operator','sn_ccd1','sn_ccd2','sn_ccd3','sn_roe','sn_rpsu',
+'comments','roe-tab']
+script_dictionary['6.5.X']['defaults'] =  {
+'frames':1,'program':'CALCAMP','test':'Test',
+'IDL':13.0,'IDH':18.0,
+'IG1_1_T':6.0,'IG1_2_T':6.0,'IG1_3_T':6.0,
+'IG1_1_B':6.0,'IG1_2_B':6.0,'IG1_3_B':6.0,
+'IG2_T':5.0,'IG2_B':5.0,
+'OD_1_T':26.0,'OD_1_B':26.0,
+'OD_2_T':26.0,'OD_2_B':26.0,
+'OD_3_T':26.0,'OD_3_B':26.0,
+'RD_T':16.0,'RD_B':16.0,
+'IPHI1':1,'IPHI2':1,'IPHI3':1,'IPHI4':0,
+'rdmode':'fwd_bas',
+'flushes':7,'siflsh':0,'siflsh_p':500,
+'swellw':9.425,'swelldly':4.825,
+'inisweep':1,
+'vstart':1,'vend':2086,
+'toi_fl':143,'toi_tp':1000,'toi_ro':1000,'toi_ch':1000,
+'chinj':0,'chinj_on':1,'chinj_of':1,
+'id_wid':100,'id_dly':1500,'chin_dly':0,
+'s_tpump':0,'s_tpmod':23,
+'v_tpump':0,'v_tpmod':123,
+'s_tp_cnt':1000,'v_tp_cnt':1000,
+'dwell_v':0,'dwell_s':0,
+'exptime':0,'shuttr':1,'e_shuttr':0,
+'mirr_on':0,'mirr_pos':70,
+'wave':4,
+'motr_on':0,'motr_cnt':2,'motr_siz':50,
+'source':'flat',
+'operator':'cpf',
+'sn_ccd1':'CCD273-XX-X-XXX','sn_ccd2':'CCD273-XX-X-XXX',
+'sn_ccd3':'CCD273-XX-X-XXX','sn_roe':'ROEXX','sn_rpsu':'RPSUXX',
+'comments':'',
+'roe-tab':'hrdstart'
+}
 
 
 def update_structdict(sdict,commvalues,diffvalues):

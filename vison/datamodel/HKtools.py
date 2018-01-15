@@ -17,6 +17,7 @@ import os
 from glob import glob
 import datetime
 import sys
+from collections import OrderedDict
 
 from matplotlib import pyplot as plt
 import pylab
@@ -110,6 +111,31 @@ allHK_keys['6.3.0'] = ['TimeStamp',
 'VccdErrFlg','VclkErrFlg','VanErrFlg','stRamErr','hkRamErr','ADC_BSY_ERR_CNT',
 'SPW_STATUS_REG']
 
+
+allHK_keys['6.5.0'] = ['TimeStamp', 'CCD3_OD_T', 'CCD2_OD_T', 'CCD1_OD_T', 
+'COMM_RD_T', 'CCD2_IG1_T', 'CCD1_IG1_T', 
+'CCD3_TEMP_T', 'CCD2_TEMP_T', 'CCD1_TEMP_T', 'CCD3_IG1_T', 'COMM_IG2_T', 
+'VID_PCB_TEMP_T', 'FPGA_PCB_TEMP_T', 
+'CCD1_OD_B', 'CCD2_OD_B', 'CCD3_OD_B', 
+'COMM_RD_B', 'CCD2_IG1_B', 'CCD3_IG1_B', 
+'CCD1_TEMP_B', 'CCD2_TEMP_B', 'CCD3_TEMP_B', 
+'CCD1_IG1_B', 'COMM_IG2_B', 
+'VID_PCB_TEMP_B', 'FPGA_PCB_TEMP_B', 
+'FPGA_BIAS_DD', 'FPGA_BIAS_OG', 'FPGA_BIAS_ID1', 'FPGA_BIAS_ID2', 
+'FPGA_BIAS_ID_T', 'FPGA_BIAS_ID_B', 
+'FPGA_VRCLK_V', 'FPGA_10VA_P_V', 'FPGA_VICLK_V', 'FPGA_5VA_P_V', 
+'FPGA_5VREF_V', 'FPGA_VCCD_V', 'FPGA_1V5VD_P_V', 'FPGA_3V2_N_V', 
+'FPGA_5VA_N_V', 
+'RPSU_VCCD_V', 'RPSU_VCLK_V', 'RPSU_VAN_P_V', 'RPSU_VAN_N_V', 'RPSU_3V3VD_V', 
+'RPSU_1V5VD_V', 'RPSU_28V_PRI_V', 'RPSU_TEMP1', 'RPSU_VCCD_I', 'RPSU_VCLK_I', 
+'RPSU_VAN_P_I', 'RPSU_VAN_N_I', 'RPSU_3V3VD_I', 'RPSU_1V5VD_I', 
+'RPSU_28V_PRI_I', 'RPSU_TEMP_2', 
+'ProtOvRideFlg', 'hkInvalidFlg', 'SPI_Inh_n', '3v3ProtErr', '5vProtErr', 
+'V3v3ProtCnt', 'V5ProtCnt', 'VccdErrFlg', 'VclkErrFlg', 'VanErrFlg', 
+'hkTmErr', 'spwTmTOFlg', 'CDPUClkSt', 'fpgaSpwErr', 'hkRamErr', 
+'ADC_BSY_ERR_CNT', 'SPW_STATUS_REG', 'Out_of_range']
+
+
 # HKlims = dict(Performance=dict(key=[Relative/Absolute/Identity,min,max]))
 
 HKlims = {}
@@ -170,6 +196,29 @@ HKlims['6.3.0'] = dict(P={'CCD1_OD_T':['R',-0.2,+0.2],'CCD2_OD_T':['R',-0.2,+0.2
 'ADC_BSY_ERR_CNT':['I',0],
 'SPW_STATUS_REG':['I','2FA0']})
 
+HKlims['6.5.0'] = dict()
+HKlims['6.5.0']['P'] = HKlims['6.3.0']['P']
+ignore = map(HKlims['6.5.0']['P'].pop,['stTMRErrFlg','hkTMRErrFlg',
+'spwTmTOFlg','CDPUClkSt','fpgaSpwErr','V3v3ProtCnt','V5ProtCnt',
+'VccdErrFlg','VclkErrFlg','VanErrFlg','stRamErr','hkRamErr',
+'ADC_BSY_ERR_CNT','SPW_STATUS_REG'])
+
+HKlims['6.5.0']['P'].update({'ProtOvRideFlg':['I',0], 'hkInvalidFlg':['I',0], 'SPI_Inh_n':['I',0], '3v3ProtErr':['I',0], '5vProtErr':['I',0], 
+'V3v3ProtCnt':['I',0], 'V5ProtCnt':['I',0], 'VccdErrFlg':['I',0], 'VclkErrFlg':['I',0], 'VanErrFlg':['I',0], 
+'hkTmErr':['I',0], 'spwTmTOFlg':['I',0], 'CDPUClkSt':['I',0], 'fpgaSpwErr':['I',0], 'hkRamErr':['I',0], 
+'ADC_BSY_ERR_CNT':['I',0], 'SPW_STATUS_REG':['I',12192], 'Out_of_range':['I',0]})
+
+HKlims['6.5.0']['S'] = HKlims['6.3.0']['S']
+ignore = map(HKlims['6.5.0']['S'].pop,['stTMRErrFlg','hkTMRErrFlg',
+'spwTmTOFlg','CDPUClkSt','fpgaSpwErr','V3v3ProtCnt','V5ProtCnt',
+'VccdErrFlg','VclkErrFlg','VanErrFlg','stRamErr','hkRamErr',
+'ADC_BSY_ERR_CNT','SPW_STATUS_REG'])
+
+HKlims['6.5.0']['S'].update({'ProtOvRideFlg':['I',0], 'hkInvalidFlg':['I',0], 'SPI_Inh_n':['I',0], '3v3ProtErr':['I',0], '5vProtErr':['I',0], 
+'V3v3ProtCnt':['I',0], 'V5ProtCnt':['I',0], 'VccdErrFlg':['I',0], 'VclkErrFlg':['I',0], 'VanErrFlg':['I',0], 
+'hkTmErr':['I',0], 'spwTmTOFlg':['I',0], 'CDPUClkSt':['I',0], 'fpgaSpwErr':['I',0], 'hkRamErr':['I',0], 
+'ADC_BSY_ERR_CNT':['I',0], 'SPW_STATUS_REG':['I',12192], 'Out_of_range':['I',0]})
+
 HKcorr = {}
 HKcorr['6.3.0'] = {'CCD1_OD_T':'OD_1_T','CCD2_OD_T':'OD_2_T','CCD3_OD_T':'OD_3_T',
 'CCD1_OD_B':'OD_1_B','CCD2_OD_B':'OD_2_B','CCD3_OD_B':'OD_3_B',
@@ -194,11 +243,11 @@ HKcorr['6.3.0'] = {'CCD1_OD_T':'OD_1_T','CCD2_OD_T':'OD_2_T','CCD3_OD_T':'OD_3_T
 'RPSU_VCCD_I':None,'RPSU_VCLK_I':None,'RPSU_VAN_P_I':None,
 'RPSU_VAN_N_I':None,'RPSU_3V3VD_I':None,'RPSU_1V5VD_I':None,
 'RPSU_28V_PRI_I':None,'RPSU_TEMP_2':None,
-'stTMRErrFlg':None,'hkTMRErrFlg':None,
-'spwTmTOFlg':None,'CDPUClkSt':None,'fpgaSpwErr':None,'V3v3ProtCnt':None,'V5ProtCnt':None,
-'VccdErrFlg':None,'VclkErrFlg':None,'VanErrFlg':None,'stRamErr':None,'hkRamErr':None,
-'ADC_BSY_ERR_CNT':None,
-'SPW_STATUS_REG':None}
+'ProtOvRideFlg':None,'hkInvalidFlg':None,'SPI_Inh_n':None,'3v3ProtErr':None,'5vProtErr':None,
+'V3v3ProtCnt':None,'V5ProtCnt':None,'VccdErrFlg':None,'VclkErrFlg':None,
+'VanErrFlg':None,'hkTmErr':None,'spwTmTOFlg':None,'CDPUClkSt':None,
+'fpgaSpwErr':None,'hkRamErr':None,'ADC_BSY_ERR_CNT':None,
+'SPW_STATUS_REG':None,'Out_of_range':None}
 
 
 allstats = ['mean','std','min','max']
@@ -213,7 +262,6 @@ def loadHK_preQM(filename,elvis='5.7.07'):
     of exposure and HK sampling rate).
     
     :param filename: path to the file to be loaded, including the file itself
-    :param form: format of HK file, given by version of "ELVIS"
     
     :return: dictionary with pairs parameter:[values]
     
@@ -241,14 +289,14 @@ def loadHK_QFM(filename,elvis='5.8.X'):
     timestamp, and there may be a variable number of rows (readings).
     
     :param filename: path to the file to be loaded, including the file itself
-    :param form: format of HK file, given by version of "ELVIS"
+    :param elvis: "ELVIS" version
     
     :return: dictionary with pairs parameter:[values]
     
     """
     
     table = ascii.read(filename)
-    data = dict()
+    data = OrderedDict()
     
     for key in table.keys():
         data[key] = table[key].data.copy()
@@ -395,6 +443,8 @@ def parseHKfiles(HKlist,elvis='5.7.07'):
     """ 
     
     :param HKlist: list of HK files (path+name).
+    :param elvis: "ELVIS" version.
+    
     :return: [obsids],[dtobjs],[tdeltasec],[HK_keys], [data(nfiles,nstats,nHKparams)]
     
     """
@@ -450,10 +500,12 @@ def format_date(x,pos=None):
 def HKplot(allHKdata,keylist,key,dtobjs,filename='',stat='mean'):
     """Plots the values of a HK parameter as a function of time.
     
-    :parameter allHKdata: HKdata = [(nfiles,nstats,nHKparams)]
-    :parameter keylist: list with all HK keys.
-    :parameter key: selected key.
-    :parameter tdeltahour: time axis.
+    :param allHKdata: HKdata = [(nfiles,nstats,nHKparams)]
+    :param keylist: list with all HK keys.
+    :param key: selected key.
+    :param dtobjs: datetime objects time axis.
+    :param filename: file-name to store plot [empty string not to save].
+    :param stat: statistics to plot.
     
     :return: None!!
     
