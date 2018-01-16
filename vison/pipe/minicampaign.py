@@ -19,13 +19,13 @@ from collections import OrderedDict
 from pdb import set_trace as stop
 import numpy as np
 
-from vison.point import FOCUS00,PSF0X
+from vison.point import FOCUS00
 from vison.dark import BIAS01,DARK01
-from vison.flat import NL01, PTC0X, FLAT0X
-from vison.inject import CHINJ01,CHINJ02
-from vison.pump import TP01, TP02
-from vison.other import PERSIST01 as PER01
-from vison.point import lib as polib
+from vison.flat import FLAT0X
+from vison.inject import CHINJ00
+from vison.pump import TP00
+#from vison.other import PERSIST01 as PER01
+#from vison.point import lib as polib
 from vison.ogse import ogse
 #from vison.pipe import lib as pilib
 from vison.support import context
@@ -86,11 +86,31 @@ def generate_reduced_test_sequence(equipment,toGen,elvis=context.elvis):
 
     # CHARGE INJECTION
     
+    # CHINJ00
+    
     if toGen['CHINJ00']:
         
-        print 'CHINJ00... - PENDING'
+        print 'CHINJ00...'
+     
+        IDL = 11.
+        IDH = 18.
+        IG1s = [2.,6.]
+        toi_chinj00 = 500
+        id_delays = [toi_chinj00*3,toi_chinj00*2]
+     
+        diffCHINJ00 = dict(mirr_on=0,sn_ccd1=sn_ccd1,
+                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
+                       sn_rpsu=sn_rpsu,operator=operator)
+         
+        chinj00 = CHINJ00.CHINJ00(inputs=dict(IDL=IDL,IDH=IDH,IG1s=IG1s,
+                                               toi_chinj=toi_chinj00,
+                                               id_delays=id_delays,
+                                               diffvalues=diffCHINJ00))
+        structCHINJ00 = chinj00.build_scriptdict(elvis=elvis)
+         
+        test_sequence['CHINJ00'] = structCHINJ00
     
-    # CHINJ01
+    
     
 #==============================================================================
 #     if toGen['CHINJ01']: 
@@ -145,35 +165,34 @@ def generate_reduced_test_sequence(equipment,toGen,elvis=context.elvis):
 
     # TRAP-PUMPING
 
-    if toGen['TP00']:
+
+    # TP00
+    
+
+    if toGen['TP00']: 
         
-        print 'TP00... - PENDING'
+        print 'TP00...'
 
+        Nshuffles_V = 500
+        TOI_TPv = [200,1000,4000]
+        Nshuffles_S = 500
+        dwell_tpsv = [0,16,32]
+                               
+        diffTP01 = dict(sn_ccd1=sn_ccd1,
+                          sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
+                          sn_rpsu=sn_rpsu,operator=operator)
+        
+        tp00 = TP00.TP00(inputs=dict(toi_tpv=TOI_TPv,
+                                     Nshuffles_V=Nshuffles_V,
+                                     Nshuffles_S=Nshuffles_S,
+                                     dwell_tpsv=dwell_tpsv,
+                                      diffvalues=diffTP01))
+        structTP00 = tp00.build_scriptdict(elvis=elvis)
 
-
+        test_sequence['TP00'] = structTP00
+        
+    
 #==============================================================================
-#     # TP01
-#     
-# 
-#     if toGen['TP01']: 
-#         
-#         print 'TP01...'
-# 
-#         TOI_TPv = [200,1000,2000,4000,8000]
-#         toi_chinjTP01 = 250 # quick injection
-#         id_delays_TP01 = np.array([3.,2.]) * toi_chinjTP01
-#                                
-#         diffTP01 = dict(sn_ccd1=sn_ccd1,
-#                           sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-#                           sn_rpsu=sn_rpsu,operator=operator,toi_chinj=toi_chinjTP01)
-#         tp01 = TP01.TP01(inputs=dict(toi_tp=TOI_TPv,toi_chinj=toi_chinjTP01,
-#                                       id_delays=id_delays_TP01,
-#                                       diffvalues=diffTP01))
-#         structTP01 = tp01.build_scriptdict(elvis=elvis)
-# 
-#         test_sequence['TP01'] = structTP01
-#         
-#     
 #     # TP02
 # 
 #     if toGen['TP02']: 
@@ -198,11 +217,12 @@ def generate_reduced_test_sequence(equipment,toGen,elvis=context.elvis):
 #         
 #         test_sequence['TP02'] = structTP02
 # 
+#     
 #==============================================================================
-    
     # FLATS
                       
-    exptimes_FLAT0X = dict(nm590=ogse.tFWC_flat['nm590'],
+    exptimes_FLAT0X = dict(nm0=ogse.tFWC_flat['nm0'],
+                           nm590=ogse.tFWC_flat['nm590'],
                            nm640=ogse.tFWC_flat['nm640'],
                            nm730=ogse.tFWC_flat['nm730'],
                            nm800=ogse.tFWC_flat['nm800'],
@@ -214,7 +234,7 @@ def generate_reduced_test_sequence(equipment,toGen,elvis=context.elvis):
         print 'FLAT01...'
         
         t_dummy_F01 = np.array([25.,50.,75])/100.
-        exptimesF01 = exptimes_FLAT0X['nm800'] * t_dummy_F01# s
+        exptimesF01 = (exptimes_FLAT0X['nm800'] * t_dummy_F01).tolist() # s
         framesF01 = [1,1,1]
         
         inpF01 = dict(exptimes=exptimesF01,
@@ -250,7 +270,7 @@ def generate_reduced_test_sequence(equipment,toGen,elvis=context.elvis):
             itestkey = 'FLAT02_%i' % wave
             print '%s...' % itestkey
             
-            iexptimesF02 = exptimes_FLAT0X['nm%i' % wave] * t_dummy_F02
+            iexptimesF02 = (exptimes_FLAT0X['nm%i' % wave] * t_dummy_F02).tolist()
             
             inpF02 = dict(exptimes = iexptimesF02,
                           frames=framesF02,
@@ -264,32 +284,34 @@ def generate_reduced_test_sequence(equipment,toGen,elvis=context.elvis):
             test_sequence[itestkey] = istructFLAT02
 
         
-    # PTC
-    
-    # PTC-01
-    
-    if toGen['PTC01']: 
-        
-        print 'PTC01...'
-
-        diffPTC01 = dict(test='PTC01',
-                         vstart=1,
-                         vend=2086,
-                         sn_ccd1=sn_ccd1,
-                         sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-                         sn_rpsu=sn_rpsu,operator=operator)
-            
-        # 5%, 10%, 20%, 30%, 50%, 70%, 80%, 90%, 100%, 110%, 120%
-        exptsPTC01 = np.array([5.,30.,50.,80.,100.,120.])/100.*ogse.tFWC_flat['nm800'] # ms
-        frsPTC01 = [2,2,2,2,2,2]
-        
-        ptc01 = PTC0X.PTC0X(inputs=dict(test='PTC01',exptimes=exptsPTC01,
-                                        frames=frsPTC01,wavelength=800))
-        structPTC01 = ptc01.build_scriptdict(diffvalues=diffPTC01,elvis=elvis)
-        
-        test_sequence['PTC01'] = structPTC01
-        
-    
+#==============================================================================
+#     # PTC
+#     
+#     # PTC-01
+#     
+#     if toGen['PTC01']: 
+#         
+#         print 'PTC01...'
+# 
+#         diffPTC01 = dict(test='PTC01',
+#                          vstart=1,
+#                          vend=2086,
+#                          sn_ccd1=sn_ccd1,
+#                          sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
+#                          sn_rpsu=sn_rpsu,operator=operator)
+#             
+#         # 5%, 10%, 20%, 30%, 50%, 70%, 80%, 90%, 100%, 110%, 120%
+#         exptsPTC01 = np.array([5.,30.,50.,80.,100.,120.])/100.*ogse.tFWC_flat['nm800'] # ms
+#         frsPTC01 = [2,2,2,2,2,2]
+#         
+#         ptc01 = PTC0X.PTC0X(inputs=dict(test='PTC01',exptimes=exptsPTC01,
+#                                         frames=frsPTC01,wavelength=800))
+#         structPTC01 = ptc01.build_scriptdict(diffvalues=diffPTC01,elvis=elvis)
+#         
+#         test_sequence['PTC01'] = structPTC01
+#         
+#     
+#==============================================================================
 #==============================================================================
 #     # PTC-02 - wavelength
 #     

@@ -187,7 +187,7 @@ script_dictionary['6.3.0']['defaults'] =  {
 
 script_dictionary['6.5.X'] = dict()
 
-script_dictionary['6.5.X']['Keys'] = [
+script_dictionary['6.5.X']['keys'] = [
 'frames','program','test','IDL','IDH',
 'IG1_1_T','IG1_2_T','IG1_3_T','IG1_1_B','IG1_2_B','IG1_3_B','IG2_T',
 'IG2_B','OD_1_T','OD_1_B','OD_2_T','OD_2_B','OD_3_T','OD_3_B',

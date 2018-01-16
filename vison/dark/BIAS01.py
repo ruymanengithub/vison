@@ -61,7 +61,6 @@ BIAS01_commvalues = dict(program='CALCAMP',test='BIAS01',
   wave=4,
   comments='BIAS')
 
-
 class BIAS01_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs
     manifesto.update(OrderedDict(sorted([

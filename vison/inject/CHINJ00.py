@@ -3,12 +3,11 @@
 """
 
 VIS Ground Calibration
-TEST: CHINJ01
+TEST: CHINJ00 - used to test charge injection functionality using ELVIS.
+  NOT intended for performance evaluation.
 
-Charge injection calibration (part 1)
-    Injection vs. IG1-IG2
 
-Created on Tue Aug 29 17:36:00 2017
+Created on Tue Jan 13 12:08:00 2018
 
 :author: Ruyman Azzollini
 :contact: r.azzollini__at__ucl.ac.uk
@@ -32,9 +31,9 @@ from vison.datamodel import scriptic as sc
 #from vison.datamodel import ccd
 #from vison.datamodel import generator
 #import datetime
-from vison.datamodel import inputs
 from InjTask import InjTask
 from vison.image import performance
+from vison.datamodel import inputs
 # END IMPORT
 
 isthere = os.path.exists
@@ -45,7 +44,7 @@ HKKeys = ['CCD1_OD_T','CCD2_OD_T','CCD3_OD_T','COMM_RD_T',
 'CCD2_OD_B','CCD3_OD_B','COMM_RD_B','CCD2_IG1_B','CCD3_IG1_B','CCD1_TEMP_B',
 'CCD2_TEMP_B','CCD3_TEMP_B','CCD1_IG1_B','COMM_IG2_B']
 
-CHINJ01_commvalues = dict(program='CALCAMP',test='CHINJ01',
+CHINJ00_commvalues = dict(program='CALCAMP',test='CHINJ00',
   IG2_T=5.5,IG2_B=5.5,
   IPHI1=1,IPHI2=1,IPHI3=1,IPHI4=0,
   rdmode='Normal',
@@ -55,29 +54,28 @@ CHINJ01_commvalues = dict(program='CALCAMP',test='CHINJ01',
   id_wid=60,chin_dly=1,
   operator='who',
   comments='')
+  
 
-class CHINJ01_inputs(inputs.Inputs):
+class CHINJ00_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs
     manifesto.update(OrderedDict(sorted([
-            ('IDL',([float],'Injection Drain Low Voltage.')),
-            ('IG1s',([list],'Injection Gate 1 Voltages.')),
-            ('id_delays',([list],'Injection Drain Delays.')),
-            ('toi_chinj',([int],'TOI Charge Injection.')),
+            ('IDH',([float],'Injection Drain High Voltage.')),
+            ('toi_chinj',([float],'TOI Charge Injection.')),
+            ('chinj_on',([int],'Number of lines injected per cycle.')),
+            ('chinj_of',([int],'Number of lines NON injected per cycle.'))
             ])))
 
-
-class CHINJ01(InjTask):
+class CHINJ00(InjTask):
     """ """
     
-    inputsclass = CHINJ01_inputs
+    inputsclass = CHINJ00_inputs
     
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
-        super(CHINJ01,self).__init__(inputs,log,drill,debug)
-        self.name = 'CHINJ01'
+        super(CHINJ00,self).__init__(inputs,log,drill,debug)
+        self.name = 'CHINJ00'
         self.type = 'Simple'
-        self.subtasks = [('check',self.check_data),('extract',self.extract_data),
-                         ('basic',self.basic_analysis)]
+        self.subtasks = [('check',self.check_data)]
         self.HKKeys = HKKeys
         self.figdict = dict()
         self.inputs['subpaths'] = dict(figs='figs')
@@ -89,12 +87,10 @@ class CHINJ01(InjTask):
         toi_chinj = 500
         
         self.inpdefaults = dict(
-                IDL = 11.,
                 IDH = 18.,
-                IG1s = [2.,6.],
-                id_delays = [toi_chinj*3.,toi_chinj*2.],
-                toi_chinj = toi_chinj
-                )
+                toi_chinj = toi_chinj,
+                chinj_on = 30,
+                chinj_of = 300)
         
         
     def set_perfdefaults(self,**kwargs):
@@ -103,76 +99,72 @@ class CHINJ01(InjTask):
 
     def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
         """
-        Builds CHINJ01 script structure dictionary.
+        Builds CHINJ00 script structure dictionary.
         
-        #:param IDL: int, [mV], value of IDL (Inject. Drain Low).
-        #:param IDH: int, [mV], Injection Drain High.
-        #:param IG1s: list of 2 ints, [mV], [min,max] values of IG1.
-        #:param id_delays: list of 2 ints, [mV], injection drain delays (2).
-        #:param toi_chinj: int, [us], TOI-charge injection.
         :param diffvalues: dict, opt, differential values.
         
         """
         
-        IDL = self.inputs['IDL']
+        id_wid = 60. # us
+        
         IDH = self.inputs['IDH']
-        IG1s = self.inputs['IG1s']
-        id_delays = self.inputs['id_delays']
         toi_chinj = self.inputs['toi_chinj']
+        chinj_on = self.inputs['chinj_on']
+        chinj_off = self.inputs['chinj_of']
+        
+        id_delays = np.array([3.,2.]) * toi_chinj
+        
+        IG1s = [4.,6.,4.,6.]
+        IG2s = [6.,4.,6.,4.]
+        IDLs = [13,13,16.,16.]
         
         CCDs = [1,2,3]
         halves = ['T','B']
-        
-        assert len(IG1s) == 2
+
         assert len(id_delays) == 2
         
+        CHINJ00_sdict = dict()
         
-        dIG1 = 0.25  # V
-        NIG1 = (IG1s[1]-IG1s[0])/dIG1+1
-        IG1v = np.arange(NIG1)*dIG1+IG1s[0]
-        
-        CHINJ01_sdict = dict()
-        
-        # First Injection Drain Delay
         
         colcounter = 1
-        for i,IG1 in enumerate(IG1v):
-            colkey = 'col%i' % colcounter
-            #print colkey
-            CHINJ01_sdict[colkey] = dict(frames=1,IDL=IDL,IDH=IDH,
-                         id_dly=id_delays[0],toi_ch=toi_chinj)
-            
-            for CCD in CCDs:
-                for half in halves:
-                    CHINJ01_sdict[colkey]['IG1_%i_%s' % (CCD,half)] = IG1
-            
-            
-            colcounter += 1
         
-        # Second Injection Drain Delay
-    
-        for j,IG1 in enumerate(IG1v):
-            colkey = 'col%i' % colcounter
-            #print colkey
-            CHINJ01_sdict[colkey] = dict(frames=1,IDL=IDL,IDH=IDH,
-                         id_dly=id_delays[1],toi_ch=toi_chinj)
-            
-            for CCD in CCDs:
+        for j, id_delay in enumerate(id_delays):
+        
+            for i,IG1 in enumerate(IG1s):
+                
+                IDL = IDLs[i]
+                IG2 = IG2s[i]            
+                
+                colkey = 'col%i' % colcounter
+                #print colkey
+                
+                CHINJ00_sdict[colkey] = dict(frames=1,IDL=IDL,IDH=IDH,
+                             id_dly=id_delays[j],
+                             id_wid = id_wid,
+                             toi_ch=toi_chinj,
+                             chinj_on=chinj_on,chinj_off=chinj_off,
+                             comments='del%i_IG1%.1f' % (id_delay,IG1))
+                
+                for CCD in CCDs:
+                    for half in halves:
+                        CHINJ00_sdict[colkey]['IG1_%i_%s' % (CCD,half)] = IG1
                 for half in halves:
-                    CHINJ01_sdict[colkey]['IG1_%i_%s' % (CCD,half)] = IG1
-    
-            colcounter += 1
-                    
-                    
-        Ncols = len(CHINJ01_sdict.keys())    
-        CHINJ01_sdict['Ncols'] = Ncols
+                    CHINJ00_sdict[colkey]['IG2_%s' % (half,)] = IG2
+                
+                
+                colcounter += 1
+        
+        
+        Ncols = len(CHINJ00_sdict.keys())    
+        CHINJ00_sdict['Ncols'] = Ncols
         
         commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
-        commvalues.update(CHINJ01_commvalues)
+        commvalues.update(CHINJ00_commvalues)
         
-        CHINJ01_sdict = sc.update_structdict(CHINJ01_sdict,commvalues,diffvalues)
+        CHINJ00_sdict = sc.update_structdict(CHINJ00_sdict,commvalues,diffvalues)
         
-        return CHINJ01_sdict
+        return CHINJ00_sdict
+    
     
     def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=context.elvis):
         """ """
@@ -226,68 +218,6 @@ class CHINJ01(InjTask):
 #         
 #==============================================================================
     
-    def extract_data(self):
-        """
-        
-        **NEEDED?** Could be merged with basic_analysis
-        
-        **METACODE**
-        
-        ::
-        
-            Preparation of data for further analysis:
-    
-            f.e. ObsID:
-                f.e.CCD:
-                    f.e.Q:
-                        subtract offset
-                        extract average 2D injection pattern and save
-    
-        
-        """
-        
-        raise NotImplementedError
-
-        
-    def basic_analysis(self):
-        """ 
-    
-        Basic analysis of data.
-    
-        **METACODE**
-        
-        ::
-    
-            f. e. ObsID:
-                f.e.CCD:
-                    f.e.Q:
-                        load average 2D injection pattern
-                        produce average profile along lines
-                        measure charge-inj. non-uniformity
-                        produce average profile across lines
-                        measure charge spillover into non-injection
-                        measure stats of injection (mean, med, std, min/max, percentiles)
-                        
-            plot average inj. profiles along lines f. each CCD, Q and IG1
-                save as a rationalized set of curves
-            plot average inj. profiles across lines f. each CCD, Q and IG1
-                save as a rationalized set of  curves
-            
-            plot charge injection vs. IG1
-            report injection stats as a table
-        
-        """
-        
-        raise NotImplementedError
-        
-    #def meta_analysis(DataDict,report,inputs,log=None):
-    #    """ 
-    #    
-    #    CURRENTLY NOT NEEDED
-    #    
-    #    """
-    #    
-    #    return DataDict,report
 
     def feeder(self,inputs,elvis=context.elvis):
         """ """

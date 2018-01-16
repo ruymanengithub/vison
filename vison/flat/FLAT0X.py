@@ -120,9 +120,6 @@ class FLAT0X(FlatTask):
     def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
         """Builds FLAT0X script structure dictionary.
         
-        #:param exptimes: list of ints, exposure times.
-        #:param wavelength: int, wavelength.
-        #:param testkey: char, test identifier.
         :param diffvalues: dict, opt, differential values.
         
         """
@@ -143,7 +140,8 @@ class FLAT0X(FlatTask):
         
         FLAT0X_sdict = dict()
         for i,exptime in enumerate(exptimes):
-            FLAT0X_sdict['col%i' % (i+1,)] = dict(frames=frames[i],exptime=exptimes[i]) #,comments=flags[i])
+            FLAT0X_sdict['col%i' % (i+1,)] = dict(frames=frames[i],exptime=exptimes[i],
+                         comments='EXP%.1e' % exptime) #,comments=flags[i])
     
         Ncols = len(FLAT0X_sdict.keys())    
         FLAT0X_sdict['Ncols'] = Ncols

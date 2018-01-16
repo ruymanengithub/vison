@@ -65,12 +65,14 @@ class Pipe(object):
     from vison.flat.NL01 import NL01
     from vison.flat.FLAT0X import FLAT0X
     from vison.flat.PTC0X import PTC0X
+    from vison.inject.CHINJ00 import CHINJ00
     from vison.inject.CHINJ01 import CHINJ01
     from vison.inject.CHINJ02 import CHINJ02
     from vison.other.PERSIST01 import PERSIST01
     from vison.point.PSF0X import PSF0X
     from vison.point.FOCUS00 import FOCUS00
     from vison.point.PSF01_PANCHRO import PSF01_PANCHRO
+    from vison.pump.TP00 import TP00
     from vison.pump.TP01 import TP01
     from vison.pump.TP02 import TP02
     
@@ -78,7 +80,8 @@ class Pipe(object):
     Test_dict = dict(BIAS01=BIAS01,DARK01=DARK01,
                      NL01=NL01,FLAT01=FLAT0X,
                      PTC01=PTC0X,
-                     CHINJ01=CHINJ01,CHINJ02=CHINJ02,
+                     CHINJ00=CHINJ00,CHINJ01=CHINJ01,CHINJ02=CHINJ02,
+                     TP00=TP00,
                      TP01=TP01,TP02=TP02,
                      PERSIST01=PERSIST01,
                      PSF01_PANCHRO=PSF01_PANCHRO)

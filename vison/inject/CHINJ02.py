@@ -20,6 +20,7 @@ import numpy as np
 from pdb import set_trace as stop
 import os
 from copy import deepcopy
+from collections import OrderedDict
 
 from vison.support import context
 #from vison.pipe import lib as pilib
@@ -32,6 +33,7 @@ from vison.datamodel import scriptic as sc
 #from vison.datamodel import generator
 #import datetime
 #from vison.pipe.task import Task
+from vison.datamodel import inputs
 from InjTask import InjTask
 from vison.image import performance
 # END IMPORT
@@ -60,10 +62,20 @@ CHINJ02_commvalues = dict(program='CALCAMP',test='CHINJ02',
   id_wid=60,
   chin_dly=1,
   comments='')
-  
+
+class CHINJ02_inputs(inputs.Inputs):
+    manifesto = inputs.CommonTaskInputs
+    manifesto.update(OrderedDict(sorted([
+            ('IDLs',([list],'Injection Drain Low Voltages List.')),
+            ('IDH',([float],'Injection Drain High Voltage.')), 
+            ('id_delays',([list],'Injection Drain Delays.')),
+            ('toi_chinj',([int],'TOI Charge Injection.')),
+            ])))
 
 class CHINJ02(InjTask):
     """ """
+    
+    inputsclass = CHINJ02_inputs
 
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """

@@ -60,7 +60,7 @@ class TP01(PumpTask):
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
         super(TP01,self).__init__(inputs,log,drill,debug)
-        self.name = 'BIAS01'
+        self.name = 'TP01'
         self.type = 'Simple'
         self.subtasks = [('check',self.check_data),('prep',self.prep_data),
                     ('basic',self.basic_analysis),
@@ -80,7 +80,7 @@ class TP01(PumpTask):
                          toi_tpv=[200,1000,2000,4000,8000],
                          vpumpmodes = [123,234,341,412])
         
-    def set_perfdefaults(self):
+    def set_perfdefaults(self,**kwargs):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
         

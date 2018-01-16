@@ -51,7 +51,7 @@ def f_write_script(struct,filename,outpath,elvis):
     return xsum
 
 
-def scwriter(toWrite,outpath,equipment,elvis=context.elvis):
+def scwriter(toWrite,test_generator,outpath,equipment,elvis=context.elvis):
     """ """
     
     
@@ -63,8 +63,7 @@ def scwriter(toWrite,outpath,equipment,elvis=context.elvis):
     if not os.path.exists(outpath):
         os.system('mkdir %s' % outpath)
         
-    test_sequence = test_generator(equipment,toWrite,elvis=elvis)    
-
+    test_sequence = test_generator(equipment,toWrite,elvis=elvis)
     
     for test in test_sequence.keys():
         structtest = test_sequence[test]
@@ -111,7 +110,7 @@ if __name__ =='__main__':
         
     elif camptype == 'Mini':
         
-        toWrite = OrderedDict(BIAS01=1,DARK01=1,CHINJ00=0,TP00=0,
+        toWrite = OrderedDict(BIAS01=1,DARK01=1,CHINJ00=1,TP00=1,
                       FLAT01=1,FLAT02=1,FOCUS00=1)
         
         test_generator = minicampaign.generate_reduced_test_sequence
