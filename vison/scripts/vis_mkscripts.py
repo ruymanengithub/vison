@@ -57,7 +57,8 @@ def scwriter(toWrite,test_generator,outpath,equipment,elvis=context.elvis):
     
     datetag = (datetime.datetime.now()).strftime('%d%b%y')
     
-    checksumf = 'CHECK_SUMS.txt'
+    checksumf = 'CHECK_SUMS_%s.txt' % datetag
+    inventoryf = 'TESTS_INVENTORY_%s.txt' % datetag
     checksums = []
     
     if not os.path.exists(outpath):
@@ -65,19 +66,37 @@ def scwriter(toWrite,test_generator,outpath,equipment,elvis=context.elvis):
         
     test_sequence = test_generator(equipment,toWrite,elvis=elvis)
     
+    Nframes = 0
+    
+    f1 = open(os.path.join(outpath,inventoryf),'w')
+    print >> f1, 'Scripst written on %s\n' % datetag
+    
     for test in test_sequence.keys():
         structtest = test_sequence[test]
+        
+        iNcols = structtest['Ncols']
+        frameslist = [structtest['col%i' % i]['frames'] for i in range(1,iNcols+1)]
+        iNframes = np.sum(frameslist)
+        
+        summary = '%s: %i cols: %s' % (test,iNcols,frameslist.__repr__())
+        print >> f1, summary
+        
+        Nframes += iNframes
+        
         ffile = 'vis_CalCamp_%s_%s_v%s.xlsx' % (test,datetag,elvis)
         xsum = f_write_script(structtest,ffile,outpath,elvis)
         checksums.append((ffile,xsum))
     
+    print >> f1, '\n %i Frames Total' % Nframes
+    
+    f1.close()
     
     # WRITING CHECKSUMS
             
-    f = open(os.path.join(outpath,checksumf),'w')
+    f2 = open(os.path.join(outpath,checksumf),'w')
     for item in checksums:
-        print >> f, '%-60s\t%s' % item
-    f.close()
+        print >> f2, '%-60s\t%s' % item
+    f2.close()
 
 
 
