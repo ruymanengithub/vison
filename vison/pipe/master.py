@@ -47,7 +47,7 @@ from vison.support.report import Report
 from vison.support import vistime
 #from lib import get_time_tag
 from vison.pipe import lib as pilib
-
+from vison.support import context
 # END IMPORT
 
 isthere = os.path.exists
@@ -177,7 +177,7 @@ class Pipe(object):
             
             self.launchtask(taskname)
     
-    def wait_and_run(self,explogf,elvis=pilib.elvis):
+    def wait_and_run(self,explogf,elvis=context.elvis):
         """ """
         
         tasknames = self.tasks

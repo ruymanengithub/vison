@@ -21,6 +21,7 @@ from pdb import set_trace as stop
 import os
 from copy import deepcopy
 
+from vison.support import context
 from vison.pipe import lib as pilib
 from vison.point import lib as polib
 from vison.datamodel import ccd
@@ -87,7 +88,7 @@ class CHINJ01(InjTask):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
 
-    def build_scriptdict(self,diffvalues=dict(),elvis=pilib.elvis):
+    def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
         """
         Builds CHINJ01 script structure dictionary.
         
@@ -160,7 +161,7 @@ class CHINJ01(InjTask):
         
         return CHINJ01_sdict
     
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=pilib.elvis):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=context.elvis):
         """ """
         wavedkeys = []
         return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
@@ -275,7 +276,7 @@ class CHINJ01(InjTask):
     #    
     #    return DataDict,report
 
-    def feeder(self,inputs,elvis=pilib.elvis):
+    def feeder(self,inputs,elvis=context.elvis):
         """ """
         
         self.subtasks = [('check',self.check_data),('extract',self.extract_data),

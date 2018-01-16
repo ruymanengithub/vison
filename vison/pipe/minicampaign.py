@@ -27,10 +27,11 @@ from vison.pump import TP01, TP02
 from vison.other import PERSIST01 as PER01
 from vison.point import lib as polib
 from vison.ogse import ogse
-from vison.pipe import lib as pilib
+#from vison.pipe import lib as pilib
+from vison.support import context
 # END IMPORT
 
-def generate_reduced_test_sequence(equipment,toGen,elvis=pilib.elvis):
+def generate_reduced_test_sequence(equipment,toGen,elvis=context.elvis):
     """ """
     
     operator = equipment['operator']

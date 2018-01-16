@@ -21,6 +21,7 @@ import os
 from copy import deepcopy
 
 from vison.pipe import lib as pilib
+from vison.support import context
 from vison.point import lib as polib
 from vison.datamodel import ccd
 from vison.datamodel import scriptic as sc
@@ -79,7 +80,7 @@ class TP02(PumpTask):
         self.perfdefaults.update(performance.perf_rdout)
 
 
-    def build_scriptdict(self,diffvalues=dict(),elvis=pilib.elvis):
+    def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
         """ """
         
         Nshuffles_H = self.inputs['Nshuffles_H']
@@ -136,7 +137,7 @@ class TP02(PumpTask):
         
         return TP02_sdict
     
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=pilib.elvis):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=context.elvis):
         """ """
         wavedkeys = []
         return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,

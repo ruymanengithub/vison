@@ -22,6 +22,7 @@ import datetime
 from copy import deepcopy
 from collections import OrderedDict
 
+from vison.support import context
 from vison.pipe import lib as pilib
 from vison.ogse import ogse
 from vison.point import lib as polib
@@ -116,7 +117,7 @@ class FLAT0X(FlatTask):
         
     
 
-    def build_scriptdict(self,diffvalues=dict(),elvis=pilib.elvis):
+    def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
         """Builds FLAT0X script structure dictionary.
         
         #:param exptimes: list of ints, exposure times.
@@ -154,7 +155,7 @@ class FLAT0X(FlatTask):
         
         return FLAT0X_sdict
 
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=pilib.elvis):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=context.elvis):
         """ """
         wavedkeys = []
         return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,

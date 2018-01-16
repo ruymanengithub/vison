@@ -21,7 +21,9 @@ import os
 from glob import glob
 import string as st
 
-from vison.pipe import lib as pilib
+from vison.support import context
+#from vison.support.latex import LaTeX
+#from vison.pipe import lib as pilib
 from vison.datamodel.HKtools import HKplot,parseHKfiles,allHK_keys
 #from vison.support.latex import LaTeX
 
@@ -42,7 +44,7 @@ if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option("-p","--path",dest="path",default='',help="path where to look for HK files. Search is not recursive.")    
     parser.add_option("-r","--roe",dest="roe",default=None,help="ROE to select")
-    parser.add_option("-e","--elvis",dest="elvis",default=pilib.elvis,help="ELVIS version")
+    parser.add_option("-e","--elvis",dest="elvis",default=context.elvis,help="ELVIS version")
     parser.add_option("-o","--obsid",dest="OBSID",default=None,help="Starting OBSID")
     parser.add_option("-n","--Nobs",dest="Nobs",default=-1,help="Number of OBSIDs to plot")
     

@@ -50,7 +50,6 @@ def configuration():
            'vison/scripts/QLA.py',
            'vison/scripts/quickds9.py',
            'vison/scripts/vis_mkscripts.py',
-           'vison/scripts/vis_mkscripts_MC.py',
            'vison/scripts/vis_genDataSet.py',
            'vison/scripts/eyegore',
            'vison/scripts/vison_run'])

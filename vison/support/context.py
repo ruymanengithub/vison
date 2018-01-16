@@ -1,0 +1,31 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
+
+Common Values which are used by functions and classes throughout pipeline.
+
+
+Created on Tue Jan 16 10:53:40 2018
+
+:author: Ruyman Azzollini
+:contact: r.azzollini_at_ucl.ac.uk
+
+"""
+
+# IMPORT STUFF
+from vison.datamodel.ccd import CCD
+# END IMPORT
+
+elvis = '6.5.X'
+Quads =['E','F','G','H']
+
+ccdobj = CCD()
+prescan = ccdobj.prescan
+overscan = ccdobj.overscan
+imgheight = ccdobj.NAXIS2/2
+quad_width = ccdobj.NAXIS1/2
+imgwidth = quad_width - prescan - overscan
+
+sumwell = dict(fwd_bas=[9.425,4.825],fwd_e2v=[7.475,6.55],
+               rwd_bas_v=[6.5,0.175],rwd_bas_s=[6.5,0.175],
+               rwd_bas_vs=[6.5,0.175])

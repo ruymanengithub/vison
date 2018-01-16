@@ -19,7 +19,7 @@ import os
 from vison.datamodel import EXPLOGtools as ELtools
 from vison.datamodel import generator as gen
 from vison.datamodel import scriptic as sc
-from vison.pipe import lib as pilib
+from vison.support import context
 from vison.pipe import campaign
 #from vison.point import FOCUS00,PSF0X
 #from vison.dark import BIAS01,DARK01
@@ -38,7 +38,7 @@ import datetime
 
     
 
-def genExpLog(toGen,explogf,equipment,elvis=pilib.elvis):
+def genExpLog(toGen,explogf,equipment,elvis=context.elvis):
     """ """
     
     OBSID0 = 1000

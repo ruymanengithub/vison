@@ -18,7 +18,6 @@ import numpy as np
 import os
 from collections import OrderedDict
 
-from vison.datamodel import elvis as elv
 from vison.datamodel import scriptic as sc
 #from vison.point import FOCUS00,PSF0X
 #from vison.dark import BIAS01,DARK01
@@ -28,7 +27,8 @@ from vison.datamodel import scriptic as sc
 #from vison.other import PERSIST01 as PER01
 #from vison.point import lib as polib
 from vison.pipe import campaign, minicampaign
-from vison.pipe import lib as pilib
+#from vison.pipe import lib as pilib
+from vison.support import context
 
 from vison.ogse.ogse import tFWC_flat,tFWC_point
 
@@ -51,7 +51,7 @@ def f_write_script(struct,filename,outpath,elvis):
     return xsum
 
 
-def scwriter(toWrite,outpath,equipment,elvis=pilib.elvis):
+def scwriter(toWrite,outpath,equipment,elvis=context.elvis):
     """ """
     
     
@@ -89,7 +89,7 @@ if __name__ =='__main__':
 
     camptype = 'Mini' # Mini/Full    
     
-    outpath = 'CAL_scripts_02DEC'
+    outpath = 'MiniCal_scripts_16JAN18_E6.5.0'
     
     equipment = dict(operator = 'raf',
     sn_ccd1 = 'CCD1TEST',
@@ -111,7 +111,7 @@ if __name__ =='__main__':
         
     elif camptype == 'Mini':
         
-        toWrite = OrderedDict(BIAS01=1,DARK01=1,CHINJ00=1,TP00=1,
+        toWrite = OrderedDict(BIAS01=1,DARK01=1,CHINJ00=0,TP00=0,
                       FLAT01=1,FLAT02=1,FOCUS00=1)
         
         test_generator = minicampaign.generate_reduced_test_sequence

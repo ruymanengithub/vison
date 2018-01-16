@@ -14,12 +14,13 @@ from pdb import  set_trace as stop
 import copy
 import os
 
+#from vison.support import context
 from vison.inject import extract_injection_lines
 from lib import lineoffsets
 from vison.pipe.task import Task
 from vison.datamodel import core,ccd
 from vison.pipe import lib as pilib
-from vison.pipe.task import Task
+#from vison.pipe.task import Task
 # END IMPORT
 
 class InjTask(Task):

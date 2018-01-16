@@ -14,12 +14,6 @@ Created on Tue Aug 29 11:08:56 2017
 
 # IMPORT STUFF
 from pdb import set_trace as stop
-from vison.datamodel import EXPLOGtools as ELtools
-from vison.datamodel import HKtools
-from vison.datamodel import ccd
-from vison.pipe import lib as pilib
-from vison.point import lib as polib
-from vison.support import vistime
 import datetime
 import os
 import string as st
@@ -28,6 +22,13 @@ from time import time
 import numpy as np
 
 from vison.ogse import ogse
+from vison.datamodel import EXPLOGtools as ELtools
+from vison.datamodel import HKtools
+from vison.datamodel import ccd
+#from vison.pipe import lib as pilib
+from vison.support import context
+from vison.point import lib as polib
+from vison.support import vistime
 
 # END IMPORT
 
@@ -91,7 +92,7 @@ def _update_fromscript(rowdict,scriptcol):
     
     return rowdict
     
-def generate_Explog(scrdict,defaults,elvis=pilib.elvis,explog=None,OBSID0=1000,
+def generate_Explog(scrdict,defaults,elvis=context.elvis,explog=None,OBSID0=1000,
                         date=vistime.dtobj_default):
     """ 
     
@@ -245,7 +246,7 @@ def merge_HKfiles(HKfilefs,masterHKf):
     
 
 
-def generate_HK(explog,vals,datapath='',elvis=pilib.elvis):
+def generate_HK(explog,vals,datapath='',elvis=context.elvis):
     """ """
     
     date0 = explog['date'][0]
@@ -432,7 +433,7 @@ def IMG_point_gen(ccdobj,ELdict):
     return ccdobj
 
 
-def generate_FITS(ELdict,funct,filename='',elvis=pilib.elvis):
+def generate_FITS(ELdict,funct,filename='',elvis=context.elvis):
     """ """
     
     NAXIS1,NAXIS2 = ccd.NAXIS1,ccd.NAXIS2
@@ -468,7 +469,7 @@ def generate_FITS(ELdict,funct,filename='',elvis=pilib.elvis):
 
 
 
-def generate_FITS_fromExpLog(explog,datapath,elvis=pilib.elvis):
+def generate_FITS_fromExpLog(explog,datapath,elvis=context.elvis):
     """ """    
     
     IMGgens = dict(BIAS=IMG_bias_gen,FLAT=IMG_flat_gen,

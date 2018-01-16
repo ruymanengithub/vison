@@ -17,7 +17,8 @@ Created on Wed Apr  5 10:21:05 2017
 from pdb import set_trace as stop
 
 from vison.datamodel import ccd as ccdmod
-from vison.pipe import lib as plib
+#from vison.pipe import lib as plib
+from vison.support import context
 import copy
 import numpy as np
 from vison.point import spot as spotmod
@@ -36,31 +37,31 @@ stampw = 25
 # Positions are CCD-based (not Q-based), and referenced to output node of H Quad (lower left)
 
 Point_CooNom = {'names' : ['ALPHA','BRAVO','CHARLIE','DELTA','ECHO'],
-    'CCD1':{'E':{'ALPHA':(plib.prescan+0.2*plib.imgwidth,plib.imgheight*(1.+0.8)),
-                              'BRAVO':(plib.prescan+0.8*plib.imgwidth,plib.imgheight*(1.+0.8)),
-                             'CHARLIE':(plib.prescan+0.5*plib.imgwidth,plib.imgheight*(1.+0.5)),
-                              'DELTA':(plib.prescan+0.2*plib.imgwidth,plib.imgheight*(1.+0.2)),
-                              'ECHO':(plib.prescan+0.8*plib.imgwidth,plib.imgheight*(1.+0.2))},
-            'F':{'ALPHA':(plib.quad_width+plib.prescan+0.2*plib.imgwidth,plib.imgheight*(1.+0.8)),
-                            'BRAVO':(plib.quad_width+plib.prescan+0.8*plib.imgwidth,plib.imgheight*(1.+0.8)),
-                            'CHARLIE':(plib.quad_width+plib.prescan+0.5*plib.imgwidth,plib.imgheight*(1.+0.5)),
-                            'DELTA':(plib.quad_width+plib.prescan+0.2*plib.imgwidth,plib.imgheight*(1.+0.2)),
-                            'ECHO':(plib.quad_width+plib.prescan+0.8*plib.imgwidth,plib.imgheight*(1.+0.2))},
-            'H':{'ALPHA':(plib.prescan+0.2*plib.imgwidth,plib.imgheight*(0.8)),
-                             'BRAVO':(plib.prescan+0.8*plib.imgwidth,plib.imgheight*(0.8)),
-                            'CHARLIE':(plib.prescan+0.5*plib.imgwidth,plib.imgheight*(0.5)),
-                            'DELTA':(plib.prescan+0.2*plib.imgwidth,plib.imgheight*(0.2)),
-                            'ECHO':(plib.prescan+0.8*plib.imgwidth,plib.imgheight*(0.2))},
-            'G':{'ALPHA':(plib.quad_width+plib.prescan+0.2*plib.imgwidth,plib.imgheight*(0.8)),
-                            'BRAVO':(plib.quad_width+plib.prescan+0.8*plib.imgwidth,plib.imgheight*(0.8)),
-                            'CHARLIE':(plib.quad_width+plib.prescan+0.5*plib.imgwidth,plib.imgheight*(0.5)),
-                            'DELTA':(plib.quad_width+plib.prescan+0.2*plib.imgwidth,plib.imgheight*(0.2)),
-                            'ECHO':(plib.quad_width+plib.prescan+0.8*plib.imgwidth,plib.imgheight*(0.2))}
+    'CCD1':{'E':{'ALPHA':(context.prescan+0.2*context.imgwidth,context.imgheight*(1.+0.8)),
+                              'BRAVO':(context.prescan+0.8*context.imgwidth,context.imgheight*(1.+0.8)),
+                             'CHARLIE':(context.prescan+0.5*context.imgwidth,context.imgheight*(1.+0.5)),
+                              'DELTA':(context.prescan+0.2*context.imgwidth,context.imgheight*(1.+0.2)),
+                              'ECHO':(context.prescan+0.8*context.imgwidth,context.imgheight*(1.+0.2))},
+            'F':{'ALPHA':(context.quad_width+context.prescan+0.2*context.imgwidth,context.imgheight*(1.+0.8)),
+                            'BRAVO':(context.quad_width+context.prescan+0.8*context.imgwidth,context.imgheight*(1.+0.8)),
+                            'CHARLIE':(context.quad_width+context.prescan+0.5*context.imgwidth,context.imgheight*(1.+0.5)),
+                            'DELTA':(context.quad_width+context.prescan+0.2*context.imgwidth,context.imgheight*(1.+0.2)),
+                            'ECHO':(context.quad_width+context.prescan+0.8*context.imgwidth,context.imgheight*(1.+0.2))},
+            'H':{'ALPHA':(context.prescan+0.2*context.imgwidth,context.imgheight*(0.8)),
+                             'BRAVO':(context.prescan+0.8*context.imgwidth,context.imgheight*(0.8)),
+                            'CHARLIE':(context.prescan+0.5*context.imgwidth,context.imgheight*(0.5)),
+                            'DELTA':(context.prescan+0.2*context.imgwidth,context.imgheight*(0.2)),
+                            'ECHO':(context.prescan+0.8*context.imgwidth,context.imgheight*(0.2))},
+            'G':{'ALPHA':(context.quad_width+context.prescan+0.2*context.imgwidth,context.imgheight*(0.8)),
+                            'BRAVO':(context.quad_width+context.prescan+0.8*context.imgwidth,context.imgheight*(0.8)),
+                            'CHARLIE':(context.quad_width+context.prescan+0.5*context.imgwidth,context.imgheight*(0.5)),
+                            'DELTA':(context.quad_width+context.prescan+0.2*context.imgwidth,context.imgheight*(0.2)),
+                            'ECHO':(context.quad_width+context.prescan+0.8*context.imgwidth,context.imgheight*(0.2))}
                             }}
 
 for iCCD in range(2,4):
     Point_CooNom['CCD%i' % iCCD] = dict()
-    for Q in plib.Quads:
+    for Q in context.Quads:
         Point_CooNom['CCD%i' % iCCD][Q] = copy.deepcopy(Point_CooNom['CCD1'][Q])
 
 

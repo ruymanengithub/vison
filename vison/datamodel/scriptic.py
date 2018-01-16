@@ -17,7 +17,8 @@ import pandas as pd
 import string
 import numpy as np
 
-from vison.pipe import lib as pilib
+from vison.support import context
+#from vison.pipe import lib as pilib
 # END IMPORT
 
 
@@ -268,7 +269,7 @@ def update_structdict(sdict,commvalues,diffvalues):
 class Script(object):
     """Core Class that provides automatic test script generation and validation."""
     
-    def __init__(self,defaults={},structure={},elvis=pilib.elvis):
+    def __init__(self,defaults={},structure={},elvis=context.elvis):
         """Initialization.
         
         :param defaults: dict, default values.
@@ -362,7 +363,7 @@ class Script(object):
 
         return None
     
-    def load(self,scriptname,elvis=pilib.elvis):
+    def load(self,scriptname,elvis=context.elvis):
         """Loads an script from an excel file.
         
         :param scriptname: char, script to load
@@ -407,7 +408,7 @@ class Script(object):
         
     
     
-    def validate(self,defaults,structure,elvis=pilib.elvis):
+    def validate(self,defaults,structure,elvis=context.elvis):
         """Not sure 'validation' will work like as implemented...
         TODO: validate self.validate"""
         

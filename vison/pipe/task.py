@@ -24,6 +24,7 @@ from vison.support.report import Report
 from vison.support import vistime
 from vison.support import files
 import lib as pilib
+from vison.support import context
 import task_lib as tlib
 from vison.datamodel import ccd
 from vison.image import calibration
@@ -45,7 +46,7 @@ class Task(object):
         self.inpdefaults = dict()
         self.perfdefaults = dict()
         #self.set_defaults()
-        self.elvis = pilib.elvis
+        self.elvis = context.elvis
         self.log = log
         self.name = ''
         self.type = 'Simple'
@@ -78,7 +79,7 @@ class Task(object):
     def set_perfdefaults(self,**kwargs):
         pass
     
-    def build_scriptdict(self,diffvalues={},elvis=pilib.elvis):
+    def build_scriptdict(self,diffvalues={},elvis=context.elvis):
         """ """
         return dict()
     

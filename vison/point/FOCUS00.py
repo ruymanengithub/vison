@@ -36,6 +36,7 @@ from copy import deepcopy
 from collections import OrderedDict
 
 from vison.pipe import lib as pilib
+from vison.support import context
 from vison.ogse import ogse
 from vison.flat import FlatFielding as FFing
 from vison.support.report import Report
@@ -115,7 +116,7 @@ class FOCUS00(PointTask):
         self.perfdefaults.update(performance.perf_rdout)
          
 
-    def build_scriptdict(self,diffvalues=dict(),elvis=pilib.elvis):
+    def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
         """Builds FOCUS00 script structure dictionary.
         
         #:param wavelength: int, [nm], wavelength.
@@ -156,7 +157,7 @@ class FOCUS00(PointTask):
         
         return FOCUS00_sdict
 
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=pilib.elvis):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=context.elvis):
         """ """
         wavedkeys = []
         return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,

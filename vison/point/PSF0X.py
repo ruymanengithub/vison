@@ -43,6 +43,7 @@ from collections import OrderedDict
 from vison.datamodel import core
 from vison.datamodel import ccd
 from vison.pipe import lib as pilib
+from vison.support import context
 from vison.point import lib as polib
 from vison.ogse import ogse
 #from vison.datamodel import HKtools
@@ -165,7 +166,7 @@ class PSF0X(PointTask):
         self.perfdefaults['Flu_lims']  = Flu_lims # ADUs
         self.perfdefaults['FWHM_lims'] = FWHM_lims # Pixels
     
-    def build_scriptdict(self,diffvalues=dict(),elvis=pilib.elvis):
+    def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
         """ 
         
         Builds PSF0X script structure dictionary.
@@ -210,7 +211,7 @@ class PSF0X(PointTask):
         return PSF0X_sdict
     
     
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=pilib.elvis):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=context.elvis):
         """
         """
         wavedkeys = []

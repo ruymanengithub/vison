@@ -21,9 +21,10 @@ from pdb import set_trace as stop
 import os
 from copy import deepcopy
 
-from vison.pipe import lib as pilib
-from vison.point import lib as polib
-from vison.datamodel import ccd
+from vison.support import context
+#from vison.pipe import lib as pilib
+#from vison.point import lib as polib
+#from vison.datamodel import ccd
 from vison.datamodel import scriptic as sc
 #from vison.datamodel import EXPLOGtools as ELtools
 #from vison.datamodel import HKtools
@@ -92,7 +93,7 @@ class CHINJ02(InjTask):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
 
-    def build_scriptdict(self,diffvalues=dict(),elvis=pilib.elvis):
+    def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
         """ 
         Builds CHINJ02 script structure dictionary.
         

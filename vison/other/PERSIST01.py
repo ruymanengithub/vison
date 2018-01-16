@@ -15,24 +15,25 @@ Created on Tue Aug 29 17:39:00 2017
 """
 
 # IMPORT STUFF
-import numpy as np
+#import numpy as np
 from pdb import set_trace as stop
-import os
-import datetime
+#import os
+#import datetime
 from copy import deepcopy
 from collections import OrderedDict
 
-from vison.pipe import lib as pilib
+from vison.support import context
+#from vison.pipe import lib as pilib
 from vison.point import lib as polib
 from vison.datamodel import  scriptic as sc
 #from vison.pipe import FlatFielding as FFing
 #from vison.support.report import Report
 #from vison.support import files
-from vison.datamodel import ccd
-from vison.datamodel import EXPLOGtools as ELtools
-from vison.datamodel import HKtools
-from vison.datamodel import ccd
-from vison.datamodel import generator
+#from vison.datamodel import ccd
+#from vison.datamodel import EXPLOGtools as ELtools
+#from vison.datamodel import HKtools
+#from vison.datamodel import ccd
+#from vison.datamodel import generator
 from vison.pipe.task import Task
 from vison.image import performance
 from vison.datamodel import inputs
@@ -89,7 +90,7 @@ class PERSIST01(Task):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
 
-    def build_scriptdict(self,diffvalues=dict(),elvis=pilib.elvis):
+    def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
         """ 
         Builds PERSISTENCE01 script structure dictionary.
         
@@ -116,7 +117,7 @@ class PERSIST01(Task):
         
         return PER01_sdict
     
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=pilib.elvis):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=context.elvis):
         """ """
         wavedkeys = []
         return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,

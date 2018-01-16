@@ -14,36 +14,37 @@ Created on Wed Nov 30 11:11:27 2016
 from pdb import set_trace as stop
 
 import copy
-from vison import __version__
-from vison.datamodel import core
-from vison.datamodel.ccd import CCD
-from vison.datamodel import EXPLOGtools as ELtools
-from vison.datamodel import HKtools
-from vison.support import files
-from vison.support import vistime
 from glob import glob
 import os
 import numpy as np
+
+from vison import __version__
+from vison.datamodel import core
+from vison.datamodel import EXPLOGtools as ELtools
+from vison.datamodel import HKtools
+from vison.support import context
+#from vison.support import files
+#from vison.support import vistime
 # END IMPORT
 
 
-elvis = '6.5.X'
-Quads =['E','F','G','H']
-RON = 4.5 # e-
-gain = 3.5 # e-/ADU
+#elvis = '6.5.X'
+#Quads =['E','F','G','H']
+#RON = 4.5 # e-
+#gain = 3.5 # e-/ADU
 
-ccdobj = CCD()
-prescan = ccdobj.prescan
-overscan = ccdobj.overscan
-imgheight = ccdobj.NAXIS2/2
-quad_width = ccdobj.NAXIS1/2
-imgwidth = quad_width - prescan - overscan
+#ccdobj = CCD()
+#prescan = ccdobj.prescan
+#overscan = ccdobj.overscan
+#imgheight = ccdobj.NAXIS2/2
+#quad_width = ccdobj.NAXIS1/2
+#imgwidth = quad_width - prescan - overscan
 
-sumwell = dict(fwd_bas=[9.425,4.825],fwd_e2v=[7.475,6.55],
-               rwd_bas_v=[6.5,0.175],rwd_bas_s=[6.5,0.175],
-               rwd_bas_vs=[6.5,0.175])
+#sumwell = dict(fwd_bas=[9.425,4.825],fwd_e2v=[7.475,6.55],
+#               rwd_bas_v=[6.5,0.175],rwd_bas_s=[6.5,0.175],
+#               rwd_bas_vs=[6.5,0.175])
 
-def loadexplogs(explogfs,elvis='6.3.0',addpedigree=False,datapath=None):
+def loadexplogs(explogfs,elvis=context.elvis,addpedigree=False,datapath=None):
     """loads in memory an explog (text-file) or list of explogs (text-files)."""
     
     if isinstance(explogfs,str):
@@ -190,7 +191,7 @@ def DataDict_builder(explog,inputs,structure):
 
 
 
-def addHK(dd,HKKeys,elvis='5.8.X'):
+def addHK(dd,HKKeys,elvis=context.elvis):
     """Adds HK information to a DataDict object."""
     
     
@@ -268,7 +269,7 @@ def coarsefindTestinExpLog(explog,testkey,Nframes):
 
 
 def filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,wavedkeys=[],
-                    elvis='6.3.0'):
+                    elvis=context.elvis):
     """Loads a list of Exposure Logs and selects exposures from test 'test'.
     
     The filtering takes into account an expected structure for the 

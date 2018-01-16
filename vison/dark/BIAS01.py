@@ -23,6 +23,7 @@ import copy
 import string as st
 from collections import OrderedDict
 
+from vison.support import context
 from vison.pipe import lib as pilib
 from vison.datamodel import  scriptic as sc
 from vison.datamodel import ccd
@@ -93,7 +94,7 @@ class BIAS01(DarkTask):
         self.perfdefaults.update(performance.perf_rdout)
         
     
-    def build_scriptdict(self,diffvalues=dict(),elvis=pilib.elvis):
+    def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
         """Builds BIAS01 script structure dictionary.
         
         ###:param N: integer, number of frames to acquire.
@@ -119,7 +120,7 @@ class BIAS01(DarkTask):
         return BIAS01_sdict
     
     
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=pilib.elvis):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=context.elvis):
         """ """
         wavedkeys = []
         return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,

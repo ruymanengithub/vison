@@ -11,24 +11,25 @@ Created on Fri Oct 13 16:22:36 2017
 # IMPORT STUFF
 import matplotlib
 matplotlib.use("TkAgg")
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
-import matplotlib.animation as animation
-from matplotlib import pyplot as plt
+#from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+#import matplotlib.animation as animation
+#from matplotlib import pyplot as plt
 import glob
 
 
-from pdb import set_trace as stop
-from optparse import OptionParser
-import sys, os
-import numpy as np
+#from pdb import set_trace as stop
+#from optparse import OptionParser
+#import sys, os
+#import numpy as np
 import time
 import string as st
-import datetime
+#import datetime
 
-from vison.datamodel import HKtools 
+#from vison.datamodel import HKtools 
 from vison.datamodel import EXPLOGtools as ELtools
-from vison import data as vdata
-from vison.pipe import lib as pilib
+#from vison import data as vdata
+#from vison.pipe import lib as pilib
+from vison.support import context
 #import loadHK_QFM,allHK_keys
 
 #from multiprocessing.dummy import Pool
@@ -54,7 +55,7 @@ small_font = ("Verdana", 8)
 class ExpLogDisplay(tk.Toplevel):
     """ """
     
-    def __init__(self,parent,path,interval,elvis=pilib.elvis):
+    def __init__(self,parent,path,interval,elvis=context.elvis):
         
         self.path = path
         self.elvis = elvis

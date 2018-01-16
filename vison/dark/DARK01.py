@@ -22,6 +22,7 @@ import datetime
 from copy import deepcopy
 from collections import OrderedDict
 
+from vison.support import context
 from vison.pipe import lib as pilib
 from vison.point import  lib as polib
 from vison.datamodel import scriptic as sc
@@ -85,7 +86,7 @@ class DARK01(DarkTask):
         self.perfdefaults.update(performance.perf_rdout)
         
 
-    def build_scriptdict(self,diffvalues=dict(),elvis=pilib.elvis):
+    def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
         """Builds DARK01 script structure dictionary.
         
         :param diffvalues: dict, opt, differential values.
@@ -106,7 +107,7 @@ class DARK01(DarkTask):
         
         return DARK01_sdict
     
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=pilib.elvis):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=context.elvis):
         """ """
         wavedkeys = []
         return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,

@@ -35,6 +35,7 @@ import os
 from copy import deepcopy
 from collections import OrderedDict
 
+from vison.support import context
 from vison.pipe import lib as pilib
 from vison.ogse import ogse
 from vison.point import lib as polib
@@ -110,7 +111,7 @@ class NL01(FlatTask):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
 
-    def build_scriptdict(self,diffvalues=dict(),elvis=pilib.elvis):
+    def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
         """Builds NL01 script structure dictionary.
         
         #:param expts: list of ints [ms], exposure times.
@@ -161,7 +162,7 @@ class NL01(FlatTask):
         return NL01_sdict
     
     
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=pilib.elvis):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=context.elvis):
         """Loads a list of Exposure Logs and selects exposures from test PSF0X.
         
         The filtering takes into account an expected structure for the 
