@@ -19,6 +19,7 @@ import numpy as np
 from pdb import set_trace as stop
 import os
 from copy import deepcopy
+from collections import OrderedDict
 
 from vison.pipe import lib as pilib
 from vison.support import context
@@ -28,6 +29,7 @@ from vison.datamodel import scriptic as sc
 #from vison.pipe.task import Task
 from PumpTask import PumpTask
 from vison.image import performance
+from vison.datamodel import inputs
 # END IMPORT 
 
 isthere = os.path.exists
@@ -52,8 +54,20 @@ TP02_commvalues = dict(program='CALCAMP',test='TP02',
   comments='')
   
 
+class TP02_inputs(inputs.Inputs):
+    manifesto = inputs.CommonTaskInputs
+    manifesto.update(OrderedDict(sorted([
+            ('Nshuffles_H',([int],'Number of Shuffles, Horizontal/Serial Pumping.')),
+            ('dwell_sv',([list],'Dwell Times list [serial].')),
+            ('id_delays',([list],'Injection Drain Delays [2, one per CCDs section].')),
+            ('spumpmodes',([list],'Horizontal/Serial Pumping Starting points.'))
+            ])))
+
 class TP02(PumpTask):
     """ """
+    
+    inputsclass = TP02_inputs
+    
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
         super(TP02,self).__init__(inputs,log,drill,debug)

@@ -109,11 +109,7 @@ def generate_test_sequence(equipment,toGen,elvis=context.elvis):
         
         test_sequence['CHINJ01'] = structCHINJ01
     
-    
-    if toGen['CHINJ00']:
-        
-        print 'CHINJ00... - PENDING'
-        
+            
     
     # CHINJ02
     
@@ -148,12 +144,12 @@ def generate_test_sequence(equipment,toGen,elvis=context.elvis):
 
         TOI_TPv = [200,1000,2000,4000,8000]
         toi_chinjTP01 = 250 # quick injection
-        id_delays_TP01 = np.array([3.,2.]) * toi_chinjTP01
-                               
+        id_delays_TP01 = (np.array([3.,2.]) * toi_chinjTP01).tolist()
+        
         diffTP01 = dict(sn_ccd1=sn_ccd1,
                           sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                           sn_rpsu=sn_rpsu,operator=operator,toi_chinj=toi_chinjTP01)
-        tp01 = TP01.TP01(inputs=dict(toi_tp=TOI_TPv,toi_chinj=toi_chinjTP01,
+        tp01 = TP01.TP01(inputs=dict(toi_tpv=TOI_TPv,toi_chinj=toi_chinjTP01,
                                       id_delays=id_delays_TP01,
                                       diffvalues=diffTP01))
         structTP01 = tp01.build_scriptdict(elvis=elvis)
@@ -170,7 +166,7 @@ def generate_test_sequence(equipment,toGen,elvis=context.elvis):
         Nshuffles_H=5000
         dwell_sv = [0.,4.75,14.3,28.6] # us
         toi_chinjTP02 = 250 # quick injection
-        id_delays_TP02 = np.array([3.,2.])*toi_chinjTP02
+        id_delays_TP02 = (np.array([3.,2.])*toi_chinjTP02).tolist()
               
         diffTP02 = dict(sn_ccd1=sn_ccd1,
                           sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
@@ -200,7 +196,7 @@ def generate_test_sequence(equipment,toGen,elvis=context.elvis):
         print 'FLAT01...'
         
         t_dummy_F01 = np.array([25.,50.,75])/100.
-        exptimesF01 = exptimes_FLAT0X['nm800'] * t_dummy_F01# s
+        exptimesF01 = (exptimes_FLAT0X['nm800'] * t_dummy_F01).tolist() # s
         framesF01 = [80,60,30]
         
         inpF01 = dict(exptimes=exptimesF01,
@@ -238,7 +234,7 @@ def generate_test_sequence(equipment,toGen,elvis=context.elvis):
             itestkey = 'FLAT02_%i' % wave
             print '%s...' % itestkey
             
-            iexptimesF02 = exptimes_FLAT0X['nm%i' % wave] * t_dummy_F02
+            iexptimesF02 = (exptimes_FLAT0X['nm%i' % wave] * t_dummy_F02).tolist()
             
             inpF02 = dict(exptimes = iexptimesF02,
                           frames=framesF02,
@@ -268,7 +264,7 @@ def generate_test_sequence(equipment,toGen,elvis=context.elvis):
                          sn_rpsu=sn_rpsu,operator=operator)
             
         # 5%, 10%, 20%, 30%, 50%, 70%, 80%, 90%, 100%, 110%, 120%
-        exptsPTC01 = np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100.*ogse.tFWC_flat['nm800'] # ms
+        exptsPTC01 = (np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100.*ogse.tFWC_flat['nm800']).tolist() # ms
         frsPTC01 = [10,10,10,10,10,10,10,10,4,4,4]
         
         ptc01 = PTC0X.PTC0X(inputs=dict(test='PTC01',exptimes=exptsPTC01,
@@ -295,7 +291,7 @@ def generate_test_sequence(equipment,toGen,elvis=context.elvis):
             
             # 10%, 30%, 50%, 70%, 80%, 90% x FWC. 4 frames per fluence.
             
-            exptsPTC02w = np.array([10.,30.,50.,70.,80.,90.])/100.*ogse.tFWC_flat['nm%i' % wave]
+            exptsPTC02w = (np.array([10.,30.,50.,70.,80.,90.])/100.*ogse.tFWC_flat['nm%i' % wave]).tolist()
             frsPTC02w = [4,4,4,4,4,4]
             
             ptc02w = PTC0X.PTC0X(inputs=dict(test='PTC02_%i' % wave,
@@ -327,7 +323,7 @@ def generate_test_sequence(equipment,toGen,elvis=context.elvis):
                           sn_rpsu=sn_rpsu,operator=operator)
     
         # 10%, 30%, 50%, 70%, 80%, 90% x FWC. 4 frames per fluence.
-        exptsPTC02T = np.array([10.,30.,50.,70.,80.,90.])/100.*ogse.tFWC_flat['nm%i' % wavePTC02T]
+        exptsPTC02T = (np.array([10.,30.,50.,70.,80.,90.])/100.*ogse.tFWC_flat['nm%i' % wavePTC02T]).tolist()
         frsPTC02T = [4,4,4,4,4,4]
    
         for it,T in enumerate(TempsPTC02T):    
@@ -359,9 +355,9 @@ def generate_test_sequence(equipment,toGen,elvis=context.elvis):
                           sn_rpsu=sn_rpsu,operator=operator)
         
         # 5 frames per fluence: 1%, 2%, 3%, 5%, 10%, 20%,30%, 50%,70%,80%,85%,90%,95%
-        exptsNL01 = np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100. * ogse.tFWC_flat['nm0'] # ms
+        exptsNL01 = (np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100. * ogse.tFWC_flat['nm0']).tolist() # ms
         exptinterNL01 = 0.5 * ogse.tFWC_flat['nm0']
-        frsNL01 = np.ones(11,dtype='int32')*5
+        frsNL01 = (np.ones(11,dtype='int32')*5).tolist()
         
         nl01 = NL01.NL01(inputs=dict(exptimes=exptsNL01,exptinter=exptinterNL01,
                                      frames=frsNL01,wavelength=0))
@@ -468,7 +464,7 @@ def generate_test_sequence(equipment,toGen,elvis=context.elvis):
             print '%s...' % itestkey
 
             psf02k = PSF0X.PSF0X(inputs=dict(wavelength=800,
-                                             exptimes=exptsPSF02,
+                                             exptimes=exptsPSF02.tolist(),
                                              frames=frsPSF02,
                                              test=itestkey))
             

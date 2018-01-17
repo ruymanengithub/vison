@@ -18,6 +18,7 @@ import numpy as np
 import os
 from collections import OrderedDict
 
+import vison
 from vison.datamodel import scriptic as sc
 #from vison.point import FOCUS00,PSF0X
 #from vison.dark import BIAS01,DARK01
@@ -56,6 +57,7 @@ def scwriter(toWrite,test_generator,outpath,equipment,elvis=context.elvis):
     
     
     datetag = (datetime.datetime.now()).strftime('%d%b%y')
+    versiontag = vison.__version__
     
     checksumf = 'CHECK_SUMS_%s.txt' % datetag
     inventoryf = 'TESTS_INVENTORY_%s.txt' % datetag
@@ -69,7 +71,9 @@ def scwriter(toWrite,test_generator,outpath,equipment,elvis=context.elvis):
     Nframes = 0
     
     f1 = open(os.path.join(outpath,inventoryf),'w')
-    print >> f1, 'Scripst written on %s\n' % datetag
+    print >> f1, 'Scripst written on %s' % datetag
+    print >> f1, 'checksumf: %s' % checksumf
+    print >> f1, 'vison version: %s\n' % versiontag
     
     for test in test_sequence.keys():
         structtest = test_sequence[test]
@@ -105,32 +109,45 @@ if __name__ =='__main__':
     
     elvis = '6.5.X'
 
-    camptype = 'Mini' # Mini/Full    
+    camptype = 'Full' # Mini/Full    
     
-    outpath = 'MiniCal_scripts_16JAN18_E6.5.0'
+    outpath = 'DRYRUN_scripts_17JAN18_E6.5.0'
     
-    equipment = dict(operator = 'raf',
-    sn_ccd1 = 'D00',
-    sn_ccd2 = 'D00',
-    sn_ccd3 = 'D00',
+    equipment = dict(operator = '???',
+    sn_ccd1 = 'EM01',
+    sn_ccd2 = 'EM02',
+    sn_ccd3 = 'EM03',
     sn_roe= 'CQ01',
-    sn_rpsu = 'PSU')
+    sn_rpsu = 'CQ01')
     
+    toWrite_def = OrderedDict(BIAS01=0,DARK01=0,CHINJ00=0,CHINJ01=0,CHINJ02=0,
+                      FLAT01=0,FLAT02=0,PTC01=0,PTC02WAVE=0,PTC02TEMP=0,NL01=0,
+                      PSF01=0,PSF02=0,
+                      TP00=0,TP01=0,TP02=0,
+                      PERSIST01=0,FOCUS00=0)
     
     if camptype == 'Full':
         
+        #toWrite = toWrite_def.copy()
+        #toWrite.update(OrderedDict(BIAS01=1,DARK01=1,CHINJ01=1,CHINJ02=1,
+        #              FLAT01=1,FLAT02=1,PTC01=1,PTC02WAVE=1,PTC02TEMP=1,NL01=1,
+        #              PSF01=1,PSF02=1,
+        #              TP01=1,TP02=1,
+        #              PERSIST01=1,FOCUS00=1))
+        
         toWrite = OrderedDict(BIAS01=1,DARK01=1,CHINJ01=1,CHINJ02=1,
-                      FLAT01=1,FLAT02=1,PTC01=1,PTC02WAVE=1,PTC02TEMP=1,NL01=1,
-                      PSF01=1,PSF02=1,
-                      TP01=1,TP02=1,
-                      PERSIST01=1,FOCUS00=1)
+                     FLAT01=1,FLAT02=1,PTC01=1,PTC02WAVE=1,PTC02TEMP=1,NL01=1,
+                     PSF01=1,PSF02=1,
+                     TP01=1,TP02=1,
+                     PERSIST01=1,FOCUS00=1)
         
         test_generator = campaign.generate_test_sequence
         
     elif camptype == 'Mini':
         
-        toWrite = OrderedDict(BIAS01=1,DARK01=1,CHINJ00=1,TP00=1,
-                      FLAT01=1,FLAT02=1,FOCUS00=1)
+        toWrite = toWrite_def.copy()
+        toWrite.update(OrderedDict(BIAS01=1,DARK01=1,CHINJ00=1,TP00=1,
+                      FLAT01=1,FLAT02=1,FOCUS00=1))
         
         test_generator = minicampaign.generate_reduced_test_sequence
     
