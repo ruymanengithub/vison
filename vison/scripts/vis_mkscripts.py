@@ -110,11 +110,11 @@ if __name__ =='__main__':
     outpath = 'MiniCal_scripts_16JAN18_E6.5.0'
     
     equipment = dict(operator = 'raf',
-    sn_ccd1 = 'CCD1TEST',
-    sn_ccd2 = 'CCD2TEST',
-    sn_ccd3 = 'CCD3TEST',
-    sn_roe= 'ROETEST',
-    sn_rpsu = 'RPSUTEST')
+    sn_ccd1 = 'D00',
+    sn_ccd2 = 'D00',
+    sn_ccd3 = 'D00',
+    sn_roe= 'CQ01',
+    sn_rpsu = 'PSU')
     
     
     if camptype == 'Full':
