@@ -89,13 +89,22 @@ def check_test_structure(explog,structure,CCDs=[1,2,3],selbool=True,wavedkeys=[]
     from vison.datamodel.generator import _update_fromscript
     
     isconsistent = True
-
     
     Ncols = structure['Ncols']
     
     elogkeys = explog.keys()
     
     dummyrowdict = dict([(key,None) for key in elogkeys])
+    
+    if not np.any(selbool) or len(explog)==0:
+        
+        isconsistent = False
+        failedkeys = ['all']
+        failedcols = np.arange(1,Ncols+1).tolist()
+        
+        report = dict(checksout=isconsistent,failedkeys=failedkeys,failedcols=failedcols)
+    
+        return report
     
     failedkeys = []
     failedcols = []
@@ -122,7 +131,6 @@ def check_test_structure(explog,structure,CCDs=[1,2,3],selbool=True,wavedkeys=[]
             if (ix1 is not None) and (ix1-ix0 != frames):
                 failedcols.append(iC)
                 continue
-
             try:
                 ixsubsel = np.where(cselbool)[0][ix0:ix1]
             except IndexError:
@@ -143,6 +151,7 @@ def check_test_structure(explog,structure,CCDs=[1,2,3],selbool=True,wavedkeys=[]
                     failedkeys.append(key)
                     
             ix0 += frames
+            
     
     failedkeys = np.unique(failedkeys)
     failedcols = np.unique(failedcols)
@@ -294,7 +303,7 @@ def filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,waved
         Filters = [structure['col%i' % i]['wave'] for i in range(1,Ncols+1)]
         Filter = Filters[0]
         assert np.all(np.array(Filters) == Filter)
-                
+        
         selbool = (explog['test'] == testkey) & \
             (explog['ObsID'] >= OBSID_lims[0]) & \
             (explog['ObsID'] <= OBSID_lims[1]) & \

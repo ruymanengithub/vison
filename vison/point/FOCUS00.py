@@ -141,7 +141,9 @@ class FOCUS00(PointTask):
         FOCUS00_sdict = dict()
         
         for i,j in enumerate(range(-3,4,1)):
-            FOCUS00_sdict['col%i' % (i+1,)] = dict(frames=2,exptime=exptime,
+            FOCUS00_sdict['col%i' % (i+1,)] = dict(frames=2,
+                          test='FOCUS00_%i' % wavelength,
+                          exptime=exptime,
                           mirr_pos=mirror_nom+float(j),
                           wave=FW_IDX,
                           comments='F%.1f' % float(j))
@@ -160,7 +162,7 @@ class FOCUS00(PointTask):
     def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=context.elvis):
         """ """
         wavedkeys = []
-        return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
+        return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,
                               wavedkeys=wavedkeys,elvis=elvis)
     
     def check_data(self):

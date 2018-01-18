@@ -229,7 +229,7 @@ class Task(object):
         # META-DATA WORK
         
         explog, checkreport = self.filterexposures(structure,explogf,datapath,OBSID_lims,
-                                     elvis)
+                                elvis)
         
         if self.log is not None:
             self.log.info('%s acquisition consistent with expectations: %s' % (testkey,checkreport['checksout']))
