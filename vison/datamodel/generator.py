@@ -415,8 +415,7 @@ def IMG_point_gen(ccdobj,ELdict):
     
     mirror_nom = polib.mirror_nom['F%i' % waveID]    
     tsatur = ogse.tFWC_point['nm%i' % wavenm]
-    
-     
+
     fluence = 2.*2.**16 * exptime / tsatur
     
     fwhm = ogse.fwhm_lambda['nm%i' % wavenm] * (1.+((mirror-mirror_nom)/0.2)**2.)
@@ -436,6 +435,7 @@ def IMG_point_gen(ccdobj,ELdict):
 def generate_FITS(ELdict,funct,filename='',elvis=context.elvis):
     """ """
     
+    
     NAXIS1,NAXIS2 = ccd.NAXIS1,ccd.NAXIS2
         
     waivedkeys = ['File_name','fl_rdout','ci_rdout',
@@ -453,6 +453,7 @@ def generate_FITS(ELdict,funct,filename='',elvis=context.elvis):
     
     
     ccdobj = funct(ccdobj,ELdict)
+    
     
     ccdobj.extensions[-1].header['WAVELENG'] = ELdict['wave']
     

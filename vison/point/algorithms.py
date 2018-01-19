@@ -12,6 +12,7 @@ Created on Wed Nov  1 16:57:31 2017
 
 # IMPORT STUFF
 import numpy as np
+from pdb import set_trace as stop
 # END IMPORT
 
 def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35, 
@@ -51,7 +52,6 @@ def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35
         -Marshall Perrin 2011-02-11
     """
     
-
     if hasattr(halfwidth, '__iter__'):
         XHW, YHW = halfwidth[0:2]
     else:
@@ -83,6 +83,7 @@ def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35
             XLOC = i
             YLOC = j
             SUM += image[j,i]
+            #except: stop()
             XSUM += XLOC * image[j,i]
             XSUM2 += XLOC**2 * image[j,i]
             XSUM3 += XLOC**3 * image[j,i]

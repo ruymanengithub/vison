@@ -168,20 +168,26 @@ def datasetGenerator(TestsSelector,doGenExplog,doGenHK,doGenFITS,outpath,elvis,
 if __name__ =='__main__':
         
     
-    doGenExplog = False
-    doGenHK = True
-    doGenFITS = False
-    Nrows = -1
+    doGenExplog = True
+    doGenHK = False
+    doGenFITS = True
+    Nrows = 5
     
     #date0 = pilib.dtobj_default 
-    date0 = datetime.datetime(1980,2,23,7,0,0) # early riser
+    date0 = datetime.datetime(2018,1,19,7,0,0) # early riser
     elvis = '6.3.0'
     
-    TestsSelector = dict(BIAS01=1,DARK01=1,CHINJ01=1,CHINJ02=1,
-                      FLAT01=1,FLAT02=1,PTC01=1,PTC02WAVE=0,PTC02TEMP=0,NL01=1,
-                      PSF01=1,PSF02=1,
-                      TP01=1,TP02=1,
-                      PERSIST01=1,FOCUS00=1)
+    #TestsSelector = dict(BIAS01=1,DARK01=1,CHINJ01=1,CHINJ02=1,
+    #                  FLAT01=1,FLAT02=1,PTC01=1,PTC02WAVE=0,PTC02TEMP=0,NL01=1,
+    #                  PSF01=1,PSF02=1,
+    #                  TP01=1,TP02=1,
+    #                  PERSIST01=1,FOCUS00=1)
+    
+    TestsSelector = dict(BIAS01=0,DARK01=0,CHINJ01=0,CHINJ02=0,
+                      FLAT01=0,FLAT02=0,PTC01=0,PTC02WAVE=0,PTC02TEMP=0,NL01=0,
+                      PSF01=0,PSF02=0,
+                      TP01=0,TP02=0,
+                      PERSIST01=0,FOCUS00=1)
     
     outpath = os.path.join('TEST_DATA',date0.strftime('%d_%b_%y'))
     
