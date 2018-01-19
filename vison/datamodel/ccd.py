@@ -474,7 +474,6 @@ class CCD(object):
             offsets = []
             for ix in range(self.NAXIS2/2):
                 offset = median(quaddata[hlims[0]:hlims[1],ix])
-                if self.masked : offset = offset.data
                 quaddata[:,ix] -= offset
                 offsets.append(offset)
             
