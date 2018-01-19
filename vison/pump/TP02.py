@@ -151,11 +151,11 @@ class TP02(PumpTask):
         
         return TP02_sdict
     
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=context.elvis):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims):
         """ """
         wavedkeys = []
-        return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
-                              wavedkeys=wavedkeys,elvis=elvis)
+        return super(TP02,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
+                              wavedkeys=wavedkeys)
 
     
     def check_data(self):

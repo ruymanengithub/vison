@@ -11,8 +11,10 @@ Created on Fri Nov 17 19:11:53 2017
 # IMPORT STUFF
 from pdb import set_trace as stop
 import string as st
+import numpy as np
 from collections import OrderedDict
 from vison.datamodel import HKtools
+from vison.pipe import lib as pilib
 # END IMPORT
 
 
@@ -77,3 +79,60 @@ def convert_compl_to_nesteditemlist(complidict):
     nesteditemlist += ['\\end{itemize}']
     return nesteditemlist
 
+
+def filterexposures(self,structure,explogf,datapath,OBSID_lims,colorblind=False,wavedkeys=[]):
+    """Loads a list of Exposure Logs and selects exposures from test 'test'.
+    
+    The filtering takes into account an expected structure for the 
+    acquisition script.
+
+    The datapath becomes another column in DataDict. This helps dealing
+    with tests that run overnight and for which the input data is in several
+    date-folders.
+
+    
+    """
+
+    # load exposure log(s)
+    explog = pilib.loadexplogs(explogf,elvis=self.elvis,addpedigree=True,
+                               datapath=datapath)
+    Ncols = structure['Ncols']
+    
+    testkey = self.inputs['test']
+    #testkey = structure['col1']['test']
+    
+    if not colorblind:
+    
+        Filters = [structure['col%i' % i]['wave'] for i in range(1,Ncols+1)]
+        Filter = Filters[0]
+        assert np.all(np.array(Filters) == Filter)
+        
+        selbool = (explog['test'] == testkey) & \
+            (explog['ObsID'] >= OBSID_lims[0]) & \
+            (explog['ObsID'] <= OBSID_lims[1]) & \
+            (explog['wave'] == Filter) # TESTS
+    else:
+        
+        selbool = (explog['test']==testkey) & \
+        (explog['ObsID'] >= OBSID_lims[0]) & \
+        (explog['ObsID'] <= OBSID_lims[1]) 
+    
+
+    explog = explog[np.where(selbool)]
+    
+    # Assess structure
+    
+    checkreport = pilib.check_test_structure(explog,structure,CCDs=[1,2,3],
+                                           wavedkeys=wavedkeys)
+    
+    # Labeling of exposures
+    explog['label'] = np.array(['NoneNoneNone']*len(explog))
+    
+    frcounter = 0
+    for ic in range(1,Ncols+1):
+        _frames = structure['col%i' % ic]['frames']
+        #print frcounter,frcounter+_frames*3
+        explog['label'][frcounter:frcounter+_frames*3] = 'col%i' % ic
+        frcounter += _frames*3
+    
+    return explog, checkreport

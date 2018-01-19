@@ -119,11 +119,11 @@ class BIAS01(DarkTask):
         return BIAS01_sdict
     
     
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=context.elvis):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims):
         """ """
         wavedkeys = []
-        return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
-                              wavedkeys=wavedkeys,elvis=elvis)
+        return super(BIAS01,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
+                              wavedkeys=wavedkeys)
     
     
     def prep_data(self):

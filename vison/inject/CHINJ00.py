@@ -166,11 +166,11 @@ class CHINJ00(InjTask):
         return CHINJ00_sdict
     
     
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=context.elvis):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims):
         """ """
         wavedkeys = []
-        return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
-                              wavedkeys=wavedkeys,elvis=elvis)
+        return super(CHINJ00,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
+                              wavedkeys=wavedkeys)
     
     
     

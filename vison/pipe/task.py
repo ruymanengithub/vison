@@ -36,7 +36,7 @@ isthere = os.path.exists
 class Task(object):
     """ """
     
-    from task_lib import check_HK
+    from task_lib import check_HK,filterexposures
     
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
@@ -226,13 +226,11 @@ class Task(object):
         OBSID_lims = self.inputs['OBSID_lims']
         structure = self.inputs['structure']
         explogf = self.inputs['explogf']
-        elvis = self.inputs['elvis']
+        #elvis = self.inputs['elvis']
         
         # META-DATA WORK
         
-        explog, checkreport = self.filterexposures(structure,explogf,datapath,OBSID_lims,
-                                elvis)
-        stop()
+        explog, checkreport = self.filterexposures(structure,explogf,datapath,OBSID_lims)
         
         if self.log is not None:
             self.log.info('%s acquisition consistent with expectations: %s' % (testkey,checkreport['checksout']))

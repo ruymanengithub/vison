@@ -153,11 +153,11 @@ class FLAT0X(FlatTask):
         
         return FLAT0X_sdict
 
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=context.elvis):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims):
         """ """
         wavedkeys = []
-        return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
-                              wavedkeys=wavedkeys,elvis=elvis)
+        return super(FLAT0X,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
+                              wavedkeys=wavedkeys)
     
     
     

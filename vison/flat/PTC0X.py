@@ -201,13 +201,13 @@ class PTC0X(FlatTask):
         return PTC0X_sdict
     
     
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims,elvis=context.elvis):
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims):
         """
         
         """    
         wavedkeys = []
-        return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,
-                              wavedkeys=wavedkeys,elvis=elvis)
+        return super(PTC0X,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,
+                              wavedkeys=wavedkeys)
         
     
 # =============================================================================
