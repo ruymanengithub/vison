@@ -19,7 +19,8 @@ from vison.inject import extract_injection_lines
 from lib import lineoffsets
 from vison.pipe.task import Task
 from vison.datamodel import core,ccd
-from vison.pipe import lib as pilib
+#from vison.pipe import lib as pilib
+from vison.support import context
 #from vison.pipe.task import Task
 # END IMPORT
 
@@ -51,7 +52,7 @@ class InjTask(Task):
         Xindices = copy.deepcopy(self.dd.indices)
         
         if 'Quad' not in Xindices.names:
-            Xindices.append(core.vIndex('Quad',vals=pilib.Quads))
+            Xindices.append(core.vIndex('Quad',vals=context.Quads))
         
         newcolnames_off = ['offset_pre','offset_ove']
         for newcolname_off in newcolnames_off:

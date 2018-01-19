@@ -35,7 +35,7 @@ import os
 from copy import deepcopy
 from collections import OrderedDict
 
-from vison.pipe import lib as pilib
+#from vison.pipe import lib as pilib
 from vison.support import context
 from vison.ogse import ogse
 from vison.flat import FlatFielding as FFing

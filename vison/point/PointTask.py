@@ -18,7 +18,8 @@ from collections import OrderedDict
 from vison.pipe.task import Task
 from vison.point import lib as polib
 from vison.datamodel import core, ccd
-from vison.pipe import lib as pilib
+#from vison.pipe import lib as pilib
+from vison.support import context
 # END IMPORT
 
 
@@ -51,7 +52,7 @@ class PointTask(Task):
         Qindices = copy.deepcopy(self.dd.indices)
         
         if 'Quad' not in Qindices.names:
-            Qindices.append(core.vIndex('Quad',vals=pilib.Quads))
+            Qindices.append(core.vIndex('Quad',vals=context.Quads))
         
         
         newcolnames_off = ['offset_pre','offset_ove']

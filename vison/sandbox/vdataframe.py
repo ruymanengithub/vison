@@ -25,13 +25,14 @@ from pdb import set_trace as stop
 import numpy as np
 import pandas as pd
 import datetime
-from vison.pipe import lib as pilib
+#from vison.pipe import lib as pilib
+from vison.support import context
 from vison import data
 
 # END IMPORT
 
 CCDs = [1,2,3]
-Quads = pilib.Quads
+Quads = context.Quads
 
 def run():
     """ """

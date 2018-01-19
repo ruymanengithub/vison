@@ -15,8 +15,9 @@ import numpy as np
 import os
 
 from vison.datamodel import core,ccd
-from vison.pipe import lib as pilib
+#from vison.pipe import lib as pilib
 from vison.pipe.task import Task
+from vison.support import context
 # END IMPORT
 
 class DarkTask(Task):
@@ -43,7 +44,7 @@ class DarkTask(Task):
         Xindices = copy.deepcopy(self.dd.indices)
         
         if 'Quad' not in Xindices.names:
-            Xindices.append(core.vIndex('Quad',vals=pilib.Quads))
+            Xindices.append(core.vIndex('Quad',vals=context.Quads))
         
         newcolnames_off = ['offset_pre','offset_img','offset_ove']
         for newcolname_off in newcolnames_off:

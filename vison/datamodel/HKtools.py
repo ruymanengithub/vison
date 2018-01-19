@@ -223,7 +223,7 @@ HKlims['6.5.X']['S'].update({'ProtOvRideFlg':['I',0], 'hkInvalidFlg':['I',0], 'S
 'ADC_BSY_ERR_CNT':['I',0], 'SPW_STATUS_REG':['I',12192], 'Out_of_range':['I',0]})
 
 HKcorr = {}
-HKcorr['6.5.X'] = {'CCD1_OD_T':'OD_1_T','CCD2_OD_T':'OD_2_T','CCD3_OD_T':'OD_3_T',
+HKcorr['6.3.0'] = {'CCD1_OD_T':'OD_1_T','CCD2_OD_T':'OD_2_T','CCD3_OD_T':'OD_3_T',
 'CCD1_OD_B':'OD_1_B','CCD2_OD_B':'OD_2_B','CCD3_OD_B':'OD_3_B',
 'COMM_RD_T':'RD_T','COMM_RD_B':'RD_B',
 'CCD1_IG1_T':'IG1_1_T','CCD2_IG1_T':'IG1_2_T','CCD3_IG1_T':'IG1_3_T',
@@ -252,6 +252,7 @@ HKcorr['6.5.X'] = {'CCD1_OD_T':'OD_1_T','CCD2_OD_T':'OD_2_T','CCD3_OD_T':'OD_3_T
 'fpgaSpwErr':None,'hkRamErr':None,'ADC_BSY_ERR_CNT':None,
 'SPW_STATUS_REG':None,'Out_of_range':None}
 
+HKcorr['6.5.X'] = HKcorr['6.3.0'].copy()
 
 allstats = ['mean','std','min','max']
 

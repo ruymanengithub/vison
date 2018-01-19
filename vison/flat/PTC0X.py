@@ -40,7 +40,7 @@ import string as st
 from collections import OrderedDict
 
 from vison.support import context
-from vison.pipe import lib as pilib
+#from vison.pipe import lib as pilib
 from vison.ogse import ogse
 from vison.point import lib as polib
 from vison.datamodel import scriptic as sc

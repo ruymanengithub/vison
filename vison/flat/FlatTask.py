@@ -17,7 +17,8 @@ import os
 from vison.pipe.task import Task
 from vison.datamodel import core
 from vison.datamodel import ccd
-from vison.pipe import lib as pilib
+#from vison.pipe import lib as pilib
+from vison.support import context
 # END IMPORT
 
 class FlatTask(Task):
@@ -53,7 +54,7 @@ class FlatTask(Task):
         Xindices = copy.deepcopy(self.dd.indices)
         
         if 'Quad' not in Xindices.names:
-            Xindices.append(core.vIndex('Quad',vals=pilib.Quads))
+            Xindices.append(core.vIndex('Quad',vals=context.Quads))
         
         
         newcolnames_off = ['offset_pre','offset_ove']
