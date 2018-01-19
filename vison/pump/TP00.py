@@ -41,7 +41,7 @@ IG2=5
 
 TP00_commvalues = dict(program='CALCAMP',test='TP00',
   flushes=7,exptime=0.,shuttr=0,
-  e_shuttr=0,vstart=1,vend=20,
+  e_shuttr=0,vstart=0,vend=20,
   siflsh=1,siflsh_p=500,
   IDL=11,IDH=18,
   IG1_1_T=IG1,IG1_2_T=IG1,IG1_3_T=IG1,
@@ -116,7 +116,7 @@ class TP00(PumpTask):
                 
         TP00_sdict = dict()
         
-        TP00_commvalues['vstart'] = 1
+        TP00_commvalues['vstart'] = 0
         TP00_commvalues['vend'] = 20
         TP00_commvalues['toi_ch'] = toi_chinj
         

@@ -51,8 +51,9 @@ HKKeys = ['CCD1_OD_T','CCD2_OD_T','CCD3_OD_T','COMM_RD_T',
 
 FLAT0X_commvalues = dict(program='CALCAMP',
   IPHI1=1,IPHI2=1,IPHI3=1,IPHI4=0,
-  rdmode='Normal',
-  flushes=7,exptime=0.,shuttr=1,
+  rdmode='fwd_bas',
+  flushes=7,vstart=0,vend=2086,
+  exptime=0.,shuttr=1,
   siflush=0,
   wave=4,
   comments='')

@@ -50,8 +50,8 @@ HKKeys = ['CCD1_OD_T','CCD2_OD_T','CCD3_OD_T','COMM_RD_T',
 
 
 BIAS01_commvalues = dict(program='CALCAMP',test='BIAS01',
-  flushes=7,exptime=0.,shuttr=1,
-  e_shuttr=0,vstart=1,vend=2086,
+  flushes=7,exptime=0.,shuttr=0,
+  e_shuttr=0,vstart=0,vend=2086,
   siflush=0,#sinvflushp=500,
   chinj=0,
   s_tpump=0,

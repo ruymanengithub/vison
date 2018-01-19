@@ -257,7 +257,7 @@ def generate_test_sequence(equipment,toGen,elvis=context.elvis):
         print 'PTC01...'
 
         diffPTC01 = dict(test='PTC01',
-                         vstart=1,
+                         vstart=0,
                          vend=2086,
                          sn_ccd1=sn_ccd1,
                          sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,

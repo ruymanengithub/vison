@@ -55,7 +55,6 @@ def f_write_script(struct,filename,outpath,elvis):
 def scwriter(toWrite,test_generator,outpath,equipment,elvis=context.elvis):
     """ """
     
-    
     datetag = (datetime.datetime.now()).strftime('%d%b%y')
     versiontag = vison.__version__
     
@@ -109,16 +108,16 @@ if __name__ =='__main__':
     
     elvis = '6.5.X'
 
-    camptype = 'Full' # Mini/Full    
+    camptype = 'Mini' # Mini/Full    
     
-    outpath = 'DRYRUN_scripts_17JAN18_E6.5.0'
+    outpath = 'MiniCal_scripts_19JAN18_E6.5.0'
     
-    equipment = dict(operator = '???',
-    sn_ccd1 = 'EM01',
-    sn_ccd2 = 'EM02',
-    sn_ccd3 = 'EM03',
-    sn_roe= 'CQ01',
-    sn_rpsu = 'CQ01')
+    equipment = dict(operator = 'cpf',
+    sn_ccd1 = 'D01',
+    sn_ccd2 = 'D02',
+    sn_ccd3 = 'D03',
+    sn_roe= 'SIM?',
+    sn_rpsu = 'PSUs')
     
     toWrite_def = OrderedDict(BIAS01=0,DARK01=0,CHINJ00=0,CHINJ01=0,CHINJ02=0,
                       FLAT01=0,FLAT02=0,PTC01=0,PTC02WAVE=0,PTC02TEMP=0,NL01=0,
@@ -147,7 +146,7 @@ if __name__ =='__main__':
         
         toWrite = toWrite_def.copy()
         toWrite.update(OrderedDict(BIAS01=1,DARK01=1,CHINJ00=1,TP00=1,
-                      FLAT01=1,FLAT02=1,FOCUS00=1))
+                      FLAT01=1,FLAT02=1,FOCUS00=1,PSF01=True))
         
         test_generator = minicampaign.generate_reduced_test_sequence
     

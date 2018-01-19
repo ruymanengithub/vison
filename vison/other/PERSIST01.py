@@ -44,6 +44,7 @@ HKKeys = []
 PER01_commvalues = dict(program='CALCAMP',test='PERSIST01',
   rdmode='fwd_bas',
   flushes=7,#exptime=0.,
+  vstart=0,vend=2086,
   shuttr=1,
   siflsh=1,siflsh_p=500,
   chinj=0,

@@ -16,6 +16,7 @@ from pdb import set_trace as stop
 import pandas as pd
 import string
 import numpy as np
+from collections import OrderedDict
 
 from vison.support import context
 #from vison.pipe import lib as pilib
@@ -93,7 +94,7 @@ ser_tpump=0,ser_tpump_mode='S1&2',
 vertical_clk='?',serial_clk='?',
 flushes=7,exptime=0,
 shutter='Thorlabs SC10',electroshutter=0,
-vstart=1,vend=2066,
+vstart=0,vend=2066,
 sinvflush=0,sinvflushp=500,
 chinj=0,chinj_rows_on=1,chinj_rows_off=1,#chinj_repeat=1,
 id_width=1,id_delay=1,chinj_ser_wait=1,
@@ -167,7 +168,7 @@ script_dictionary['6.3.0']['defaults'] =  {
 'flushes':7,'siflsh':0,'siflsh_p':500,
 'swellw':9.425,'swelldly':4.825,
 'inisweep':1,
-'vstart':1,'vend':2086,
+'vstart':0,'vend':2086,
 'toi_fl':143,'toi_tp':1000,'toi_ro':1000,'toi_ch':1000,
 'chinj':0,'chinj_on':1,'chinj_of':1,
 'id_wid':100,'id_dly':1500,'chin_dly':0,
@@ -215,7 +216,7 @@ script_dictionary['6.5.X']['defaults'] =  {
 'flushes':7,'siflsh':0,'siflsh_p':500,
 'swellw':9.425,'swelldly':4.825,
 'inisweep':1,
-'vstart':1,'vend':2086,
+'vstart':0,'vend':2086,
 'toi_fl':143,'toi_tp':1000,'toi_ro':1000,'toi_ch':1000,
 'chinj':0,'chinj_on':1,'chinj_of':1,
 'id_wid':100,'id_dly':1500,'chin_dly':0,
@@ -363,7 +364,28 @@ class Script(object):
 
         return None
     
-    def load(self,scriptname,elvis=context.elvis):
+    
+    def get_struct_from_cargo(self):
+        """ """
+        Ncols = len(self.cargo[1:])
+        
+        keys = self.cargo[0]
+        
+        structure = dict()
+        structure['Ncols'] = Ncols
+        
+        for i in range(1,Ncols+1):
+            structure['col%i' % i] = dict(zip(keys,self.cargo[i]))
+        
+        return structure
+    
+    def load(self,*args,**kwargs):
+        """alias method. Points to 'load_to_cargo'."""
+        self.load_to_cargo(*args,**kwargs)
+    
+    
+    
+    def load_to_cargo(self,scriptname,elvis=context.elvis):
         """Loads an script from an excel file.
         
         :param scriptname: char, script to load
@@ -372,11 +394,11 @@ class Script(object):
         """
         self.elvis = elvis
         
-        converters = {'Frames':str}
+        converters = {'frames':str}
         df= pd.read_excel(scriptname,header=0,converters=converters)
         
         cargo = []
-        cargo.append(['Frames']+[string.strip(item) for item in df['Frames'].tolist()])
+        cargo.append(['frames']+[string.strip(item) for item in df['frames'].tolist()])
         
         sdict = script_dictionary[self.elvis]
         keys = sdict['keys']
@@ -386,7 +408,7 @@ class Script(object):
         assert np.all(cargo[0] == keys)
         
         for ixc in df.columns:
-            if ixc == 'Frames':
+            if ixc == 'frames':
                 continue
             elif ixc == 'End':
                 break
@@ -405,8 +427,6 @@ class Script(object):
         
         self.scriptname = scriptname
         
-        
-    
     
     def validate(self,defaults,structure,elvis=context.elvis):
         """Not sure 'validation' will work like as implemented...

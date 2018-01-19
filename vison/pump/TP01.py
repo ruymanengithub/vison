@@ -41,7 +41,7 @@ IG2=5
 
 TP01_commvalues = dict(program='CALCAMP',test='TP01',
   flushes=7,exptime=0.,shuttr=0,
-  e_shuttr=0,vstart=1,vend=2066,
+  e_shuttr=0,vstart=0,vend=2066,
   siflsh=1,siflsh_p=500,
   IDL=11,IDH=18,
   IG1_1_T=IG1,IG1_2_T=IG1,IG1_3_T=IG1,

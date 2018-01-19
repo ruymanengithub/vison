@@ -62,7 +62,8 @@ class Task(object):
         _inputs.update(inputs)
         self.inputs.update(_inputs)
         
-        self.elvis = self.inputs['elvis']
+        if 'elvis' in self.inputs:
+             self.elvis = self.inputs['elvis']
         
         self.set_perfdefaults(**inputs)
         _perfdefaults = self.perfdefaults

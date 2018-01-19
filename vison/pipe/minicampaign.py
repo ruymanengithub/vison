@@ -19,7 +19,7 @@ from collections import OrderedDict
 from pdb import set_trace as stop
 import numpy as np
 
-from vison.point import FOCUS00
+from vison.point import FOCUS00,PSF0X
 from vison.dark import BIAS01,DARK01
 from vison.flat import FLAT0X
 from vison.inject import CHINJ00
@@ -57,6 +57,7 @@ def generate_reduced_test_sequence(equipment,toGen,elvis=context.elvis):
                       sn_rpsu=sn_rpsu,operator=operator)
         
         bias01 = BIAS01.BIAS01(inputs=dict(N=Nbias01,diffvalues=diffBIAS01))
+        
         
         structBIAS01 = bias01.build_scriptdict(elvis=elvis)
         
@@ -178,7 +179,7 @@ def generate_reduced_test_sequence(equipment,toGen,elvis=context.elvis):
         Nshuffles_S = 500
         dwell_tpsv = [0,16,32]
                                
-        diffTP01 = dict(sn_ccd1=sn_ccd1,
+        diffTP00 = dict(sn_ccd1=sn_ccd1,
                           sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                           sn_rpsu=sn_rpsu,operator=operator)
         
@@ -186,9 +187,10 @@ def generate_reduced_test_sequence(equipment,toGen,elvis=context.elvis):
                                      Nshuffles_V=Nshuffles_V,
                                      Nshuffles_S=Nshuffles_S,
                                      dwell_tpsv=dwell_tpsv,
-                                      diffvalues=diffTP01))
+                                      diffvalues=diffTP00))
+        
         structTP00 = tp00.build_scriptdict(elvis=elvis)
-
+        
         test_sequence['TP00'] = structTP00
         
     
@@ -294,7 +296,7 @@ def generate_reduced_test_sequence(equipment,toGen,elvis=context.elvis):
 #         print 'PTC01...'
 # 
 #         diffPTC01 = dict(test='PTC01',
-#                          vstart=1,
+#                          vstart=0,
 #                          vend=2086,
 #                          sn_ccd1=sn_ccd1,
 #                          sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
@@ -439,43 +441,36 @@ def generate_reduced_test_sequence(equipment,toGen,elvis=context.elvis):
     # PSF
     
     
+    if toGen['PSF01']: 
+
+        print 'PSF01...'
+        
+        wavePSF01w = 800        
+        
+        diffPSF01w = dict(sn_ccd1=sn_ccd1,
+                          sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
+                          sn_rpsu=sn_rpsu,operator=operator)
+        
+        exptsPSF01w = (np.array([25.,50.,75.])/100.*ogse.tFWC_point['nm%i' % wavePSF01w]).tolist()
+        frsPSF01w = [4,4,4]
+                    
+        itestkey = 'PSF01_%i' % wavePSF01w
+        diffPSF01w['test'] = itestkey
+                  
+        print '%s...' % itestkey
+        
+        psf01w = PSF0X.PSF0X(inputs=dict(wavelength=wave,
+                                         exptimes=exptsPSF01w,
+                                         frames=frsPSF01w,
+                                         test=itestkey))
+        
+        istructPSF01w = psf01w.build_scriptdict(diffvalues=diffPSF01w,
+                                               elvis=elvis)
+                
+        test_sequence[itestkey] = istructPSF01w
+
+        
 #==============================================================================
-#     if toGen['PSF01']: 
-# 
-#         print 'PSF01...'
-#         
-#         #wavesPSF01w = [590,640,800,890]        
-#         wavesPSF01w = PSF0X.testdefaults['waves']
-#         
-#         diffPSF01w = dict(sn_ccd1=sn_ccd1,
-#                           sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
-#                           sn_rpsu=sn_rpsu,operator=operator)
-#         
-#         for iw, wave in enumerate(wavesPSF01w):
-#             
-#             # 10%, 30%, 50%, 70%, 80%, 90% x FWC. 4 frames per fluence.
-#             
-#             #exptsPSF01w = np.array([5.,25.,50.,75.,90.])/100.*ogse.tFWC_point['nm%i' % wave]
-#             exptsPSF01w = PSF0X.testdefaults['exptimes']['nm%i' % wave] #*ogse.tFWC_point['nm%i' % wave]
-#             #frsPSF01w = [20,15,10,4,3]
-#             frsPSF01w = PSF0X.testdefaults['frames']
-#                         
-#             itestkey = 'PSF01_%i' % wave
-#             diffPSF01w['test'] = itestkey
-#                       
-#             print '%s...' % itestkey
-#             
-#             psf01w = PSF0X.PSF0X(inputs=dict(wavelength=wave,
-#                                              exptimes=exptsPSF01w,
-#                                              frames=frsPSF01w,
-#                                              test='PSF01_%i' % wave))
-#             
-#             istructPSF01w = psf01w.build_scriptdict(diffvalues=diffPSF01w,
-#                                                    elvis=elvis)
-#                     
-#             test_sequence[itestkey] = istructPSF01w
-# 
-#         
 #     # PSF02
 #         
 #     
@@ -538,4 +533,7 @@ def generate_reduced_test_sequence(equipment,toGen,elvis=context.elvis):
 #         test_sequence['PERSIST01'] = structPER01
 #         
 #==============================================================================
+
+
+
     return test_sequence
