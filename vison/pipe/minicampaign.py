@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 
-
 VIS Ground Calibration Campaign.
 
 Mini-Campaign Test Set: used to verify functionality of ROE + OGSE 
@@ -12,6 +11,7 @@ Created on Mon Jan 15 15:56:00 2018
 
 :author: Ruyman Azzollini
 :contact: r.azzollini_at_ucl.ac.uk
+
 """
 
 # IMPORT STUFF

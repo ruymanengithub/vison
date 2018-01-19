@@ -23,7 +23,6 @@ from vison.support import context
 # END IMPORT
 
 
-
 class PointTask(Task):
     
     stampw = polib.stampw
@@ -117,7 +116,7 @@ class PointTask(Task):
                         
                         alt_ccdobj.sub_offset(Quad,method='row',scan='pre',trimscan=[5,5],
                                               ignore_pover=True,extension=-1)
-                         
+                        
                         imgstats = alt_ccdobj.get_stats(Quad,sector='img',statkeys=['median'],trimscan=[5,5],
                                     ignore_pover=True,extension=-1)
                          
