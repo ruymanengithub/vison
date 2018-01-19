@@ -219,34 +219,36 @@ class CHINJ00(InjTask):
 #==============================================================================
     
 
-    def feeder(self,inputs,elvis=context.elvis):
-        """ """
-        
-        self.subtasks = [('check',self.check_data),('extract',self.extract_data),
-                    ('basic',self.basic_analysis)]
-        
-        IDL = inputs['IDL']
-        IDH = inputs['IDH']
-        IG1s = inputs['IG1s']
-        id_delays = inputs['id_delays']
-        toi_chinj = inputs['toi_chinj']
-        
-        if 'elvis' in inputs:
-            self.elvis = inputs['elvis']
-        else: self.elvis=elvis
-        if 'diffvalues' in inputs:
-            diffvalues = inputs['diffvalues']
-        else:
-            diffvalues = {}
-        
-        scriptdict = self.build_scriptdict(IDL,IDH,IG1s,id_delays,toi_chinj,
-                        diffvalues=diffvalues,elvis=self.elvis)
-                
-        inputs['structure'] = scriptdict        
-        inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
-        
-        if 'perflimits' in inputs:
-            self.perflimits.update(inputs['perflimits'])
-        
-        return inputs
-
+#==============================================================================
+#     def feeder(self,inputs,elvis=context.elvis):
+#         """ """
+#         
+#         self.subtasks = [('check',self.check_data),('extract',self.extract_data),
+#                     ('basic',self.basic_analysis)]
+#         
+#         IDL = inputs['IDL']
+#         IDH = inputs['IDH']
+#         IG1s = inputs['IG1s']
+#         id_delays = inputs['id_delays']
+#         toi_chinj = inputs['toi_chinj']
+#         
+#         if 'elvis' in inputs:
+#             self.elvis = inputs['elvis']
+#         else: self.elvis=elvis
+#         if 'diffvalues' in inputs:
+#             diffvalues = inputs['diffvalues']
+#         else:
+#             diffvalues = {}
+#         
+#         scriptdict = self.build_scriptdict(IDL,IDH,IG1s,id_delays,toi_chinj,
+#                         diffvalues=diffvalues,elvis=self.elvis)
+#                 
+#         inputs['structure'] = scriptdict        
+#         inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
+#         
+#         if 'perflimits' in inputs:
+#             self.perflimits.update(inputs['perflimits'])
+#         
+#         return inputs
+# 
+#==============================================================================
