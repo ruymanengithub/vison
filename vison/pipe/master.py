@@ -107,15 +107,21 @@ class Pipe(object):
         self.tasks = self.inputs['tasks']
         self.BLOCKID=self.inputs['BLOCKID'] # BLOCK (ROE+RPSU+CCDs) under test
         self.CHAMBER=self.inputs['CHAMBER']
-        self.ID = 'FM%s' % vistime.get_time_tag()  # ID of the analysis "session"
-        
-        self.inputs['ID'] = self.ID
-        
         self.drill = drill
         self.debug = debug
+        
+        if self.debug:
+            self.ID = 'PipeDebug'
+        else:
+            self.ID = 'FM%s' % vistime.get_time_tag()  # ID of the analysis "session"
+        
+        self.inputs['ID'] = self.ID
 
         if dolog:
             self.logf = 'Calib_%s.log' % self.ID
+            
+            if os.path.exists(self.logf): os.system('rm %s' % self.logf)
+            
             self.log = lg.setUpLogger(self.logf)
             self.log.info(['\n\nStarting FM Calib. Pipeline',
                           'Pipeline ID: %s' % self.ID,

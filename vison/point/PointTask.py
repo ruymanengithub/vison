@@ -37,7 +37,9 @@ class PointTask(Task):
             kwargs = dict()
         elif 'PSF02' in test:
             kwargs = dict()
-            
+        elif 'FOCUS00' in test:
+            kwargs = dict()
+        
         Task.check_data(self,**kwargs)
     
     

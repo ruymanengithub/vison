@@ -165,9 +165,6 @@ class FOCUS00(PointTask):
         return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,
                               wavedkeys=wavedkeys,elvis=elvis)
     
-    def check_data(self):
-        """ """
-        raise NotImplementedError
     
     def prep_data(self):
         """ """

@@ -62,6 +62,8 @@ class Task(object):
         _inputs.update(inputs)
         self.inputs.update(_inputs)
         
+        self.elvis = self.inputs['elvis']
+        
         self.set_perfdefaults(**inputs)
         _perfdefaults = self.perfdefaults
         self.perflimits.update(_perfdefaults)
@@ -230,6 +232,7 @@ class Task(object):
         
         explog, checkreport = self.filterexposures(structure,explogf,datapath,OBSID_lims,
                                 elvis)
+        stop()
         
         if self.log is not None:
             self.log.info('%s acquisition consistent with expectations: %s' % (testkey,checkreport['checksout']))

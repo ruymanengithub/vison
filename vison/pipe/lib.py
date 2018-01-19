@@ -296,6 +296,7 @@ def filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,waved
                                datapath=datapath)
     Ncols = structure['Ncols']
     
+    stop()
     testkey = structure['col1']['test']
     
     if not colorblind:
