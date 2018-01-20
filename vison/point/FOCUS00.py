@@ -145,7 +145,7 @@ class FOCUS00(PointTask):
             FOCUS00_sdict['col%i' % (i+1,)] = dict(frames=2,
                           test='FOCUS00_%i' % wavelength,
                           exptime=exptime,
-                          mirr_pos=mirror_nom+float(j),
+                          mirr_pos=mirror_nom+float(j)*0.2,
                           wave=FW_IDX,
                           comments='F%.1f' % float(j))
         

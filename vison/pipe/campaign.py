@@ -372,7 +372,8 @@ def generate_test_sequence(equipment,toGen,elvis=context.elvis):
         
         print 'FOCUS00...'
 
-        wavesFOCUS00w = [590,640,730,800,890]
+        #wavesFOCUS00w = [590,640,730,800,890] # TESTS
+        wavesFOCUS00w = [800]
     
         diffFOCUS00w = dict(sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,

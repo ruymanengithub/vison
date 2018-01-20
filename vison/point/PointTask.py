@@ -96,7 +96,6 @@ class PointTask(Task):
                     dpath = self.dd.mx['datapath'][iObs,jCCD]
                     ffits = os.path.join(dpath,'%s.fits' % \
                                          self.dd.mx['File_name'][iObs,jCCD])                    
-                    stop()
                     
                     ccdobj = ccd.CCD(ffits)
                     

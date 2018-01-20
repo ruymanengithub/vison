@@ -169,9 +169,9 @@ if __name__ =='__main__':
         
     
     doGenExplog = True
-    doGenHK = False
+    doGenHK = True
     doGenFITS = True
-    Nrows = 5
+    Nrows = None
     
     #date0 = pilib.dtobj_default 
     date0 = datetime.datetime(2018,1,19,7,0,0) # early riser
