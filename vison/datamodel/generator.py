@@ -304,16 +304,16 @@ def generate_HK(explog,vals,datapath='',elvis=context.elvis):
     return None   
 
 
-def _add_ron_window_round(ccdobj,vstart,vend):
-    """ """
-    
-    ccdobj.simadd_ron()
-    ccdobj.extensions[-1].data = np.round(ccdobj.extensions[-1].data).astype('int32')    
-    
-    if vstart != 1 or vend != ccd.NAXIS2/2:
-        ccdobj.sim_window(vstart-1,vend)
-    
-    return ccdobj
+#def _add_ron_window_round(ccdobj,vstart,vend):
+#    """ """
+#    
+#    ccdobj.simadd_ron()
+#    ccdobj.extensions[-1].data = np.round(ccdobj.extensions[-1].data).astype('int32')    
+#    
+#    if vstart != 1 or vend != ccd.NAXIS2/2:
+#        ccdobj.sim_window(vstart,vend)
+#    
+#    return ccdobj
 
 
 
@@ -325,9 +325,11 @@ def IMG_bias_gen(ccdobj,ELdict):
 
     ccdobj.simadd_bias(levels=gen_bias_levels)
     
-    ccdobj = _add_ron_window_round(ccdobj,vstart,vend)
-
-    ccdobj.extensions[-1].data = np.round(ccdobj.extensions[-1].data).astype('int32')
+    ccdobj.simadd_ron()
+    ccdobj.extensions[-1].data = np.round(ccdobj.extensions[-1].data).astype('int32')    
+    
+    if vstart != 1 or vend != ccd.NAXIS2/2:
+        ccdobj.sim_window(vstart,vend)
 
     return ccdobj
 
@@ -347,14 +349,23 @@ def IMG_flat_gen(ccdobj,ELdict):
     ilumlevels = dict(E=fluence,F=fluence,G=fluence,H=fluence)
     
     ccdobj.simadd_flatilum(levels=ilumlevels)
-        
+    
+    
     ccdobj.simadd_poisson()
+    
+    if vend>2066: # Only 2066 CCD "real" lines, rest is overscan
+        for Q in Quads:
+            qdata = ccdobj.get_quad(Q,canonical=True,extension=-1)
+            qdata[:,2066:] = 0.
+            ccdobj.set_quad(qdata,Q,canonical=True,extension=-1)
+    
+    ccdobj.simadd_bias(levels=gen_bias_levels) # add bias
 
-    ccdobj.simadd_bias(levels=gen_bias_levels) # add bias    
-
-    ccdobj = _add_ron_window_round(ccdobj,vstart,vend)
-
-    ccdobj.extensions[-1].data = np.round(ccdobj.extensions[-1].data).astype('int32')
+    ccdobj.simadd_ron()
+    ccdobj.extensions[-1].data = np.round(ccdobj.extensions[-1].data).astype('int32')    
+    
+    if vstart != 0 or vend != ccd.NAXIS2/2:
+        ccdobj.sim_window(vstart,vend)
 
     return ccdobj
     
@@ -394,7 +405,11 @@ def IMG_chinj_gen(ccdobj,ELdict,):
 
     ccdobj.simadd_bias(levels=gen_bias_levels) # add bias    
 
-    ccdobj = _add_ron_window_round(ccdobj,vstart,vend)
+    ccdobj.simadd_ron()
+    ccdobj.extensions[-1].data = np.round(ccdobj.extensions[-1].data).astype('int32')    
+    
+    if vstart != 1 or vend != ccd.NAXIS2/2:
+        ccdobj.sim_window(vstart,vend)
 
     ccdobj.extensions[-1].data = np.round(ccdobj.extensions[-1].data).astype('int32')
     
@@ -422,12 +437,22 @@ def IMG_point_gen(ccdobj,ELdict):
     
     ccdobj.simadd_points(fluence,fwhm,CCDID=iCCD,dx=0,dy=0)
 
+    ccdobj.simadd_poisson()
+    
+    if vend>2066: # Only 2066 CCD "real" lines, rest is overscan
+        for Q in Quads:
+            qdata = ccdobj.get_quad(Q,canonical=True,extension=-1)
+            qdata[:,2066:] = 0.
+            ccdobj.set_quad(qdata,Q,canonical=True,extension=-1)
+
+
     ccdobj.simadd_bias(levels=gen_bias_levels) # add bias    
-
-    ccdobj = _add_ron_window_round(ccdobj,vstart,vend)
-
-    ccdobj.extensions[-1].data = np.round(ccdobj.extensions[-1].data).astype('int32')
-
+    
+    ccdobj.simadd_ron()
+    ccdobj.extensions[-1].data = np.round(ccdobj.extensions[-1].data).astype('int32')    
+    
+    if vstart != 1 or vend != ccd.NAXIS2/2:
+        ccdobj.sim_window(vstart,vend)
     
     return ccdobj
 
