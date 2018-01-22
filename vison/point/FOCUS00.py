@@ -32,7 +32,7 @@ Created on Mon Apr 03 16:21:00 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
-from copy import deepcopy
+import copy
 from collections import OrderedDict
 
 #from vison.pipe import lib as pilib
@@ -52,7 +52,8 @@ from vison.point.spot import Spot
 from vison.point import display as pdspl
 from vison.support import vistime
 #from vison.pipe.task import Task
-from PointTask import PointTask
+import PointTask as PT
+#from PointTask import PointTask, BGD_lims
 import FOCUS00_lib as F00lib
 from vison.image import performance
 from vison.datamodel import inputs
@@ -82,14 +83,24 @@ FOCUS00_commvalues = dict(program='CALCAMP',test='FOCUS_%i',
   source='point')
 
 
+FWHM_lims = OrderedDict(CCD1=OrderedDict(E=OrderedDict(ALPHA=[0.5,10.]))) # CCD-Q-Spot, pixels
+for Spotname in polib.Point_CooNom['names'][1:]: FWHM_lims['CCD1']['E'][Spotname] = copy.deepcopy(FWHM_lims['CCD1']['E']['ALPHA'])
+for Q in ['F','G','H']: FWHM_lims['CCD1'][Q] = copy.deepcopy(FWHM_lims['CCD1']['E'])
+for iCCD in [2,3]: FWHM_lims['CCD%i' % iCCD] = copy.deepcopy(FWHM_lims['CCD1'])
+
+Flu_lims = OrderedDict(CCD1=OrderedDict(E=OrderedDict(ALPHA=[2.*40./100.*2.**16,2.*75./100.*2.**16]))) # CCD-Q-Spot
+for Spotname in polib.Point_CooNom['names'][1:]: Flu_lims['CCD1']['E'][Spotname] = copy.deepcopy(Flu_lims['CCD1']['E']['ALPHA'])
+for Q in ['F','G','H']: Flu_lims['CCD1'][Q] = copy.deepcopy(Flu_lims['CCD1']['E'])
+for iCCD in [2,3]: Flu_lims['CCD%i' % iCCD] = copy.deepcopy(Flu_lims['CCD1'])
+
 class FOCUS00_inputs(inputs.Inputs):
-    manifesto = inputs.CommonTaskInputs
+    manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
             ('exptime',([float],'Exposure time.')),
             ('wavelength',([int],'Wavelength')),
             ])))
 
-class FOCUS00(PointTask):
+class FOCUS00(PT.PointTask):
     """ """
     
     inputsclass = FOCUS00_inputs
@@ -104,7 +115,8 @@ class FOCUS00(PointTask):
                     ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
         self.figdict = dict()
-        self.inputs['subpaths'] = dict(figs='figs')    
+        self.inputs['subpaths'] = dict(figs='figs')   
+        
 
 
     def set_inpdefaults(self,**kwargs):
@@ -115,6 +127,9 @@ class FOCUS00(PointTask):
     def set_perfdefaults(self,**kwargs):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
+        self.perfdefaults['BGD_lims'] = copy.deepcopy(PT.BGD_lims)
+        self.perfdefaults['FWHM_lims'] = copy.deepcopy(FWHM_lims)
+        self.perfdefaults['Flu_lims'] = copy.deepcopy(Flu_lims)
          
 
     def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
@@ -152,7 +167,7 @@ class FOCUS00(PointTask):
         Ncols = len(FOCUS00_sdict.keys())    
         FOCUS00_sdict['Ncols'] = Ncols
         
-        commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+        commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(FOCUS00_commvalues)           
         
         FOCUS00_sdict = sc.update_structdict(FOCUS00_sdict,commvalues,diffvalues)

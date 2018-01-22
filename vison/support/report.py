@@ -198,7 +198,11 @@ class Table(Content):
         
         tf = tempfile.TemporaryFile()
         
-        ascii.write(table,output=tf,formats=formats,Writer=ascii.Latex)
+        latexdict = ascii.latex.latexdicts['AA']
+        latexdict.update(dict(tablealign='ht'))
+        
+        ascii.write(table,output=tf,formats=formats,Writer=ascii.Latex,
+                    latexdict=latexdict)
         
         tf.seek(0)
         tex = tf.readlines()
@@ -214,6 +218,7 @@ class Table(Content):
         
         
         tex = [st.replace(item,'_','\_') for item in tex]
+        #tex = [st.replace(item,'_','\_') for item in tex]        
         
         return tex
     

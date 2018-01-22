@@ -257,6 +257,7 @@ class Pipe(object):
         
         try:
             Test = self.Test_dict[taskname](inputs,self.log,drill,debug)
+            Test.ID = self.ID
             Test()
         except:
             self.catchtraceback()

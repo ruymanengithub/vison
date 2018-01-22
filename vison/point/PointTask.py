@@ -22,6 +22,9 @@ from vison.datamodel import core, ccd
 from vison.support import context
 # END IMPORT
 
+BGD_lims = OrderedDict(CCD1=OrderedDict(E=[-5.,10.]))
+for Q in ['F','G','H']: BGD_lims['CCD1'][Q] = copy.deepcopy(BGD_lims['CCD1']['E'])
+for iCCD in [2,3]: BGD_lims['CCD%i' % iCCD] = copy.deepcopy(BGD_lims['CCD1'])
 
 class PointTask(Task):
     

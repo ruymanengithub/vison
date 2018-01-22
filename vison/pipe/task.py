@@ -40,6 +40,7 @@ class Task(object):
     
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
+        self.ID = None
         self.internals = dict()
         #self.inputs = dict()
         self.inputs = self.inputsclass()
@@ -138,6 +139,8 @@ class Task(object):
         
             if todo_flags['report']:
                 self.report = Report(TestName=self.name)
+                self.report.add_Section(keyword='init',Title='Inputs \& Data Ingestion',level=0)
+                self.add_inputs_to_report()                
             else:
                 self.report = None
             
@@ -240,6 +243,17 @@ class Task(object):
             if len(checkreport['failedkeys'])>0:
                 self.log.info('%s failed keys: %s' % (testkey,checkreport['failedkeys']))
         
+        if self.report is not None:
+            ntestkey = st.replace(testkey,'_','\_')
+            nchecksout = ['\\bf{%s}' % checkreport['checksout']]
+            nchecksout = [st.replace(item,'False','$\\textcolor{red}{\\bf{False}}$') for item in nchecksout][0]
+            self.report.add_Text('%s acquisition consistent with expectations: %s' % (ntestkey,nchecksout))
+            
+            if (checkreport['failedcols'])>0:
+                self.report.add_Text('%s failed columns: %s' % (ntestkey,checkreport['failedcols']))
+            if len(checkreport['failedkeys'])>0:
+                self.report.add_Text('%s failed keys: %s' % (ntestkey,checkreport['failedkeys']))
+        
         # Adding Time Axis            
         
         explog['time'] = np.array(map(vistime.get_dtobj,explog['date'])).copy()
@@ -303,8 +317,12 @@ class Task(object):
         st_compl = tlib.convert_compl_to_nesteditemlist(complidict)
         nice_st_compl = [st.replace(item,'False','$\\textcolor{red}{\\bf{False}}$') for item in st_compl]
         msgList = ['$\\bf{%s}$' % nicelabel] +\
-                   nice_st_compl + \
-                   ['\\']
+                  ['\\begingroup'] +\
+                  ['\\scriptsize'] +\
+                  nice_st_compl +\
+                  ['\endgroup']
+#                   ['\\\\']+\
+                   
         self.report.add_Text(msgList)
         
     def IsComplianceMatrixOK(self,complidict):
@@ -436,6 +454,7 @@ class Task(object):
         """ """
         try: figkeys = kwargs['figkeys']
         except: figkeys=[]
+        
         figspath = self.inputs['subpaths']['figs']
         
         for figkey in figkeys:
@@ -539,3 +558,31 @@ class Task(object):
     
         
         return None
+    
+    def add_inputs_to_report(self):
+        """ """
+        
+        self.report.add_Text('\\textbf{Test Inputs}')
+        
+        caption = 'Inputs of Task %s , Test $%s$' % (self.name,self.inputs['test'])
+        #ncaption = st.replace(caption,'_','\\_')
+        
+        names = ['Parameter','Value']
+        
+        keys = self.inputs.manifesto.keys()
+        values = []
+        for key in keys:
+            _val = self.inputs[key]
+            if isinstance(_val,dict):
+                values.append('dict()')
+            else:
+                _val = _val.__repr__()
+                #n_val = st.replace(_val,'_','\\_')
+                n_val = st.replace(_val,'&','\\&')
+                values.append(n_val)
+                
+        tDict = OrderedDict(Parameter=keys,Value=values)
+        formats = dict(Parameter='s',Value='char')
+        
+        self.report.add_Table(tDict,names=names,caption=caption)
+        
