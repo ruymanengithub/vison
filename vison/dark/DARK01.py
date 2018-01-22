@@ -55,7 +55,7 @@ DARK01_commvalues = dict(program='CALCAMP',test='DARK01',
   comments='DARK')
 
 class DARK01_inputs(inputs.Inputs):
-    manifesto = inputs.CommonTaskInputs
+    manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
             ('N',([int],'Number of Frame Acquisitions.')),
             ('exptime',([int],'Exposure time.')),

@@ -58,7 +58,7 @@ TP00_commvalues = dict(program='CALCAMP',test='TP00',
 
 
 class TP00_inputs(inputs.Inputs):
-    manifesto = inputs.CommonTaskInputs
+    manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
             ('Nshuffles_V',([int],'Number of Shuffles, Vertical Pumping.')),
             ('toi_tpv',([list],'Vector of TOI TP-V values.')),

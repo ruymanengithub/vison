@@ -57,7 +57,7 @@ TP01_commvalues = dict(program='CALCAMP',test='TP01',
 
 
 class TP01_inputs(inputs.Inputs):
-    manifesto = inputs.CommonTaskInputs
+    manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
             ('Nshuffles_V',([int],'Number of Shuffles, Vertical/Parallel Pumping.')),
             ('id_delays',([list],'Injection Drain Delays [2, one per CCDs section].')),

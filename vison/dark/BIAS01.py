@@ -62,7 +62,7 @@ BIAS01_commvalues = dict(program='CALCAMP',test='BIAS01',
   comments='BIAS')
 
 class BIAS01_inputs(inputs.Inputs):
-    manifesto = inputs.CommonTaskInputs
+    manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
             ('N',([int],'Number of Frame Acquisitions.')),
             ])))

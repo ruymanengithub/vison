@@ -58,7 +58,7 @@ CHINJ00_commvalues = dict(program='CALCAMP',test='CHINJ00',
   
 
 class CHINJ00_inputs(inputs.Inputs):
-    manifesto = inputs.CommonTaskInputs
+    manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
             ('IDH',([float],'Injection Drain High Voltage.')),
             ('toi_chinj',([float],'TOI Charge Injection.')),

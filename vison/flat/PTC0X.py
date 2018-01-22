@@ -93,7 +93,7 @@ for w in testdefaults['PTC02WAVE']['waves']:
 
 
 class PTC0X_inputs(inputs.Inputs):
-    manifesto = inputs.CommonTaskInputs
+    manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
             ('exptimes',([dict,list],'Exposure times for each fluence.')),
             ('frames',([list],'Number of Frames for each fluence.')),

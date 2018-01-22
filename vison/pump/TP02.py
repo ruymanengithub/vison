@@ -55,7 +55,7 @@ TP02_commvalues = dict(program='CALCAMP',test='TP02',
   
 
 class TP02_inputs(inputs.Inputs):
-    manifesto = inputs.CommonTaskInputs
+    manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
             ('Nshuffles_H',([int],'Number of Shuffles, Horizontal/Serial Pumping.')),
             ('dwell_sv',([list],'Dwell Times list [serial].')),

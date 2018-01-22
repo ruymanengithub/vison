@@ -58,7 +58,7 @@ CHINJ01_commvalues = dict(program='CALCAMP',test='CHINJ01',
   comments='')
 
 class CHINJ01_inputs(inputs.Inputs):
-    manifesto = inputs.CommonTaskInputs
+    manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
             ('IDL',([float],'Injection Drain Low Voltage.')),
             ('IG1s',([list],'Injection Gate 1 Voltages.')),

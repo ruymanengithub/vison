@@ -52,7 +52,7 @@ isthere = os.path.exists
 
 
 class PSF01_PANCHRO_inputs(inputs.Inputs):
-    manifesto = inputs.CommonTaskInputs
+    manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
             ('inpath',([str],'Data path.')),
             ('wavelengths',([list],'Wavelengths.')),

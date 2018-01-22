@@ -54,7 +54,7 @@ PER01_commvalues = dict(program='CALCAMP',test='PERSIST01',
 
 
 class PERSIST01_inputs(inputs.Inputs):
-    manifesto = inputs.CommonTaskInputs
+    manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
             ('exptSATUR',([float],'Exposure times to produce latent.')),
             ('exptLATEN',([float],'Exposure times to quantify latent.')),

@@ -120,7 +120,7 @@ for Q in ['F','G','H']: BGD_lims['CCD1'][Q] = copy.deepcopy(BGD_lims['CCD1']['E'
 for CCD in [2,3]: BGD_lims['CCD%i' % CCD] = copy.deepcopy(BGD_lims['CCD1'])
 
 class PSF0X_inputs(inputs.Inputs):
-    manifesto = inputs.CommonTaskInputs
+    manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
             ('exptimes',([list],'Exposure times for each fluence.')),
             ('frames',([list],'Number of Frames for each fluence.')),

@@ -65,7 +65,7 @@ FLU_lims = dict(CCD1= dict(
 for i in [2,3]: FLU_lims['CCD%i' % i] = deepcopy(FLU_lims['CCD1'])
 
 class FLATS0X_inputs(inputs.Inputs):
-    manifesto = inputs.CommonTaskInputs
+    manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
             ('exptimes',([list],'Exposure times for each fluence.')),
             ('frames',([list],'Number of Frames for each fluence.')),

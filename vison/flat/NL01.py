@@ -70,7 +70,7 @@ NL01_commvalues = dict(program='CALCAMP',
   comments='')
 
 class NL01_inputs(inputs.Inputs):
-    manifesto = inputs.CommonTaskInputs
+    manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
             ('exptimes',([dict,list],'Exposure times for each fluence.')),
             ('exptinter',([float],'Exposure time for interleaved fluence stability control frames.')),
