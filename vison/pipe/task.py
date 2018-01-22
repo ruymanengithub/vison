@@ -249,10 +249,12 @@ class Task(object):
             nchecksout = [st.replace(item,'False','$\\textcolor{red}{\\bf{False}}$') for item in nchecksout][0]
             self.report.add_Text('%s acquisition consistent with expectations: %s' % (ntestkey,nchecksout))
             
-            if (checkreport['failedcols'])>0:
-                self.report.add_Text('%s failed columns: %s' % (ntestkey,checkreport['failedcols']))
+            if (checkreport['failedcols'])>0:          
+                nfailedcols = st.replace(checkreport['failedcols'].tolist().__repr__(),'_','\_')
+                self.report.add_Text('%s failed columns: %s' % (ntestkey,nfailedcols))
             if len(checkreport['failedkeys'])>0:
-                self.report.add_Text('%s failed keys: %s' % (ntestkey,checkreport['failedkeys']))
+                nfailedkeys = st.replace(checkreport['failedkeys'].tolist().__repr__(),'_','\_')
+                self.report.add_Text('%s failed keys: %s' % (ntestkey,nfailedkeys))
         
         # Adding Time Axis            
         
@@ -582,7 +584,7 @@ class Task(object):
                 values.append(n_val)
                 
         tDict = OrderedDict(Parameter=keys,Value=values)
-        formats = dict(Parameter='s',Value='char')
+        #formats = dict(Parameter='s',Value='char')
         
         self.report.add_Table(tDict,names=names,caption=caption)
         

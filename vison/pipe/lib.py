@@ -207,7 +207,6 @@ def addHK(dd,HKKeys,elvis=context.elvis):
     if len(HKKeys) == 0:
         return dd
     
-
     ObsIDs = dd.mx['ObsID']().copy()            
     datapaths = dd.mx['datapath'][:,0].copy()
     
