@@ -48,7 +48,7 @@ HKKeys = ['CCD1_OD_T','CCD2_OD_T','CCD3_OD_T','COMM_RD_T',
 CHINJ01_commvalues = dict(program='CALCAMP',test='CHINJ01',
   IG2_T=5.5,IG2_B=5.5,
   IPHI1=1,IPHI2=1,IPHI3=1,IPHI4=0,
-  rdmode='Normal',
+  rdmode='fwd_bas',
   flushes=7,exptime=0.,vstart=0,vend=2086,
   shuttr=0,
   chinj=1,chinj_on=30,
@@ -61,6 +61,7 @@ class CHINJ01_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
             ('IDL',([float],'Injection Drain Low Voltage.')),
+            ('IDH',([float],'Injection Drain High Voltage.')),
             ('IG1s',([list],'Injection Gate 1 Voltages.')),
             ('id_delays',([list],'Injection Drain Delays.')),
             ('toi_chinj',([int],'TOI Charge Injection.')),
@@ -101,6 +102,8 @@ class CHINJ01(InjTask):
     def set_perfdefaults(self,**kwargs):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
+        
+        
 
     def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
         """
@@ -177,7 +180,7 @@ class CHINJ01(InjTask):
     
     def filterexposures(self,structure,explogf,datapath,OBSID_lims):
         """ """
-        wavedkeys = []
+        wavedkeys = ['motr_siz']
         return super(CHINJ01,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
                               wavedkeys=wavedkeys)
     

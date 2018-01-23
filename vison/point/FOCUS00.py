@@ -160,7 +160,7 @@ class FOCUS00(PT.PointTask):
             FOCUS00_sdict['col%i' % (i+1,)] = dict(frames=2,
                           test='FOCUS00_%i' % wavelength,
                           exptime=exptime,
-                          mirr_pos=mirror_nom+float(j)*0.2,
+                          mirr_pos=mirror_nom+float(j)*1.,
                           wave=FW_IDX,
                           comments='F%.1f' % float(j))
         
@@ -177,7 +177,7 @@ class FOCUS00(PT.PointTask):
 
     def filterexposures(self,structure,explogf,datapath,OBSID_lims):
         """ """
-        wavedkeys = []
+        wavedkeys = ['motr_siz']
         return super(FOCUS00,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,
                               wavedkeys=wavedkeys)
         #return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,

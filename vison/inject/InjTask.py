@@ -117,9 +117,86 @@ class InjTask(Task):
     
     def check_metrics_ST(self,**kwargs):
         """ 
+
+        TODO:
+            
+            - offset levels (pre and over-scan), abs. and relative
+            - RON in pre and overscan
+            - mean fluence/signal in image area [script-column-dependent]
+            - med fluence/signal in image area [script-column-dependent]
+            - std in image area [script-column-dependent]
+        
         
         """
         
-        test = self.inputs['test']
+        # test = self.inputs['test']
         
-        stop()
+        Xindices = self.dd.indices
+        CCDs = Xindices[Xindices.names.index('CCD')].vals
+        
+        if self.report is not None: 
+            self.report.add_Section(keyword='check_metrics',Title='Offsets, RON, Injection levels',level=1)
+                
+        # absolute value of offsets
+        
+        offsets_lims = self.perflimits['offsets_lims']
+        for reg in ['pre','ove']:
+            arr = self.dd.mx['offset_%s' % reg]
+            _compliance_offsets = self.check_stat_perCCD(arr,offsets_lims,CCDs)
+            
+            if not self.IsComplianceMatrixOK(_compliance_offsets): self.dd.flags.add('POORQUALDATA')
+            if self.log is not None: self.addComplianceMatrix2Log(_compliance_offsets,label='COMPLIANCE OFFSETS [%s]:' % reg)        
+            if self.report is not None: self.addComplianceMatrix2Report(_compliance_offsets,label='COMPLIANCE OFFSETS [%s]:' % reg)
+
+        # cross-check of offsets: referred to pre-scan
+
+        offsets_gradients = self.perflimits['offsets_gradients']
+        for ireg,reg in enumerate(['ove']):            
+            _lims = dict()
+            for CCD in CCDs: _lims['CCD%i'%CCD] = offsets_gradients['CCD%i'%CCD][ireg+1]
+            arr = self.dd.mx['offset_%s' % reg][:]-self.dd.mx['offset_pre'][:]
+            _xcheck_offsets = self.check_stat_perCCD(arr,_lims,CCDs)
+            
+            if not self.IsComplianceMatrixOK(_xcheck_offsets): self.dd.flags.add('POORQUALDATA')
+            if self.log is not None: self.addComplianceMatrix2Log(_xcheck_offsets,label='OFFSET GRAD [%s-PRE] COMPLIANCE:' % reg)        
+            if self.report is not None: self.addComplianceMatrix2Report(_xcheck_offsets,label='OFFSET GRAD [%s-PRE] COMPLIANCE:' % reg)        
+        
+        # absolute value of std
+        
+        regs_std = ['pre','ove']
+        RONs_lims = self.perflimits['RONs_lims']
+        
+        for reg in regs_std:
+            _compliance_std = self.check_stat_perCCD(self.dd.mx['std_%s' % reg],RONs_lims,CCDs)
+        
+            if not self.IsComplianceMatrixOK(_compliance_std): 
+                self.dd.flags.add('POORQUALDATA')
+                self.dd.flags.add('RON_OOL')
+            if self.log is not None: self.addComplianceMatrix2Log(_compliance_std,label='COMPLIANCE RON [%s]:' % reg)        
+            if self.report is not None: self.addComplianceMatrix2Report(_compliance_std,label='COMPLIANCE RON [%s]:' % reg)
+            
+        
+        # IMG Signal Levels 
+        Flu_lims = self.perflimits['Flu_lims'] # dict
+        
+        _compliance_flu = self.check_stat_perCCDandCol(self.dd.mx['chk_med_inject'],Flu_lims,CCDs)
+        
+        
+        if not self.IsComplianceMatrixOK(_compliance_flu): 
+            self.dd.flags.add('POORQUALDATA')
+            self.dd.flags.add('FLUENCE_OOL')
+        if self.log is not None: self.addComplianceMatrix2Log(_compliance_flu,label='COMPLIANCE FLUENCE:')        
+        if self.report is not None: self.addComplianceMatrix2Report(_compliance_flu,label='COMPLIANCE FLUENCE:')
+        
+        # IMG std (injection-noise) levels
+        
+        FluGrad_lims = self.perflimits['FluGrad_lims'] # dict
+        
+        _compliance_flugrad = self.check_stat_perCCDandCol(self.dd.mx['chk_std_inject'],FluGrad_lims,CCDs)
+                
+        if not self.IsComplianceMatrixOK(_compliance_flugrad): 
+            self.dd.flags.add('POORQUALDATA')
+            self.dd.flags.add('FLUENCEGRAD_OOL')
+        if self.log is not None: self.addComplianceMatrix2Log(_compliance_flugrad,label='COMPLIANCE FLUENCE GRADIENT:')        
+        if self.report is not None: self.addComplianceMatrix2Report(_compliance_flugrad,label='COMPLIANCE FLUENCE GRADIENT:')
+        

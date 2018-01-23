@@ -32,7 +32,7 @@ Created on Mon Apr  3 17:38:00 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
-from copy import deepcopy
+import copy
 from collections import OrderedDict
 
 from vison.support import context
@@ -69,6 +69,20 @@ NL01_commvalues = dict(program='CALCAMP',
   source='flat',
   comments='')
 
+
+plusminus10pcent = 1.+np.array([-0.10,0.10])
+
+NL01_relfluences = np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])
+
+FLU_lims = dict(CCD1= dict())
+for iflu,rflu in enumerate(NL01_relfluences):
+    _cenval = min(rflu / 100.,1.) * 2.**16
+    _lims = _cenval * plusminus10pcent
+    FLU_lims['CCD1']['col%i' % (iflu+1)] = _lims
+
+for i in [2,3]: FLU_lims['CCD%i' % i] = copy.deepcopy(FLU_lims['CCD1'])
+
+
 class NL01_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
@@ -96,12 +110,12 @@ class NL01(FlatTask):
                     ('satCTE',self.do_satCTE)]
         self.HKKeys = HKKeys
         self.figdict = dict() # B01aux.B01figs
-        self.inputs['subpaths'] = dict() # dict(figs='figs',pickles='ccdpickles')
+        self.inputs['subpaths'] = dict(figs='figs') # dict(figs='figs',pickles='ccdpickles')
         
         
     def set_inpdefaults(self,**kwargs):
 
-        expts = (np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100. * ogse.tFWC_flat['nm0']).tolist() # ms
+        expts = (NL01_relfluences/100. * ogse.tFWC_flat['nm0']).tolist() # ms
         self.inpdefaults = dict(exptimes=expts,
                        exptinter=0.5 * ogse.tFWC_flat['nm0'],
                        frames=(np.ones(11,dtype='int32')*5).tolist(),           
@@ -111,6 +125,9 @@ class NL01(FlatTask):
     def set_perfdefaults(self,**kwargs):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
+        
+        self.perfdefaults['FLU_lims'] = FLU_lims # dict
+        
 
     def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
         """Builds NL01 script structure dictionary.
@@ -155,7 +172,7 @@ class NL01(FlatTask):
         Ncols = len(NL01_sdict.keys())    
         NL01_sdict['Ncols'] = Ncols
                   
-        commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+        commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(NL01_commvalues)
                 
         NL01_sdict = sc.update_structdict(NL01_sdict,commvalues,diffvalues)
@@ -180,36 +197,6 @@ class NL01(FlatTask):
         
     
     
-    def check_data(self):
-        """
-        
-        NL01: Checks that data quality is good enough.
-        
-        **METACODE**
-        
-        ::
-            
-            Check common HK values are within safe / nominal margins
-            Check voltages in HK match commanded voltages, within margins
-        
-            f.e.ObsID:
-                f.e.CCD:
-                    f.e.Q.:
-                        measure offsets/means in pre-, img-, over-
-                        measure std in pre-, img-, over-
-            assess std in pre- is within allocated margins
-            (assess offsets in pre- and over- are equal, within allocated  margins)
-            assess image-fluences are within allocated margins for each exposure time
-            
-            plot fluences vs. exposure time
-            plot std-pre vs. time
-        
-            issue any warnings to log
-            issue update to report
-        
-        """
-        
-        raise NotImplementedError
     
     def prep_data(self):
         """

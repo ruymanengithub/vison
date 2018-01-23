@@ -72,10 +72,16 @@ PTC0X_commvalues = dict(program='CALCAMP',
   wave = 4,
   source='flat',
   comments='')
-  
-PTC01_exptimes = (np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100.*ogse.tFWC_flat['nm800']).tolist() # ms
+
+
+PTC01_relfluences = np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])
+
+PTC01_exptimes = (PTC01_relfluences / 100.*ogse.tFWC_flat['nm800']).tolist() # ms
 PTC02waves = [590,640,730,890]
-PTC02TEMP_exptimes = (np.array([10.,30.,50.,70.,80.,90.])/100.*ogse.tFWC_flat['nm800']).tolist()
+
+PTC02_relfluences = np.array([10.,30.,50.,70.,80.,90.])
+
+PTC02TEMP_exptimes = (PTC02_relfluences / 100.*ogse.tFWC_flat['nm800']).tolist()
 
 testdefaults = dict(PTC01=dict(exptimes=PTC01_exptimes,
                          frames=[10,10,10,10,10,10,10,10,4,4,4],
@@ -86,10 +92,28 @@ testdefaults = dict(PTC01=dict(exptimes=PTC01_exptimes,
                     PTC02TEMP=dict(frames=[4,4,4,4,4,4],
                                    exptimes=PTC02TEMP_exptimes,
                                    wavelength=800))
-                    
 
 for w in testdefaults['PTC02WAVE']['waves']:
-    testdefaults['PTC02WAVE']['exptimes']['nm%i' % w] = (np.array([10.,30.,50.,70.,80.,90.])/100.*ogse.tFWC_flat['nm%i' % w]).tolist()
+    testdefaults['PTC02WAVE']['exptimes']['nm%i' % w] = (PTC02_relfluences/100.*ogse.tFWC_flat['nm%i' % w]).tolist()
+
+
+plusminus10pcent = 1.+np.array([-0.10,0.10])
+
+FLU_lims_PTC01 = dict(CCD1= dict())
+for iflu,rflu in enumerate(PTC01_relfluences):
+    _cenval = min(rflu / 100.,1.) * 2.**16
+    _lims = _cenval * plusminus10pcent
+    FLU_lims_PTC01['CCD1']['col%i' % (iflu+1)] = _lims
+
+for i in [2,3]: FLU_lims_PTC01['CCD%i' % i] = copy.deepcopy(FLU_lims_PTC01['CCD1'])
+
+FLU_lims_PTC02 = dict(CCD1= dict())
+for iflu,rflu in enumerate(PTC02_relfluences):
+    _cenval = min(rflu / 100.,1.) * 2.**16
+    _lims = _cenval * plusminus10pcent
+    FLU_lims_PTC02['CCD1']['col%i' % (iflu+1)] = _lims
+
+for i in [2,3]: FLU_lims_PTC02['CCD%i' % i] = copy.deepcopy(FLU_lims_PTC02['CCD1'])
 
 
 class PTC0X_inputs(inputs.Inputs):
@@ -115,7 +139,7 @@ class PTC0X(FlatTask):
                     ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
         self.figdict = dict() # PTC0Xaux.PTC0Xfigs
-        self.inputs['subpaths'] = dict()  #dict(figs='figs',pickles='ccdpickles')
+        self.inputs['subpaths'] = dict(figs='figs')  #dict(figs='figs',pickles='ccdpickles')
         
 
     def set_inpdefaults(self,**kwargs):
@@ -154,7 +178,9 @@ class PTC0X(FlatTask):
         except KeyError: 
             testkey = 'PTC01'
         
-        FLU_lims = dict()
+        if 'PTC01' in testkey: FLU_lims = FLU_lims_PTC01
+        elif 'PTC02' in testkey: FLU_lims = FLU_lims_PTC02
+        
         self.perfdefaults['FLU_lims'] = FLU_lims # dict
         
         
@@ -210,112 +236,7 @@ class PTC0X(FlatTask):
         return super(PTC0X,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,
                               wavedkeys=wavedkeys)
         
-    
-# =============================================================================
-#     def check_data(self):
-#         """
-#         
-#         Checks quality of ingested data.
-#         
-#         **METACODE**
-#         
-#         ::
-#             
-#             check common HK values are within safe / nominal margins
-#             check voltages in HK match commanded voltages, within margins
-#         
-#             f.e.ObsID:
-#                 f.e.CCD:
-#                     f.e.Q.:
-#                         measure offsets/means in pre-, img-, over-
-#                         measure std in pre-, img-, over-
-#             assess std in pre- is within allocated margins
-#             assess offsets in pre- and over- are equal, within allocated  margins
-#             assess image-fluences are within allocated margins
-#         
-#             plot fluences vs. exposure time
-#             plot std-pre vs. time
-#         
-#             issue any warnings to log
-#             issue update to report
-#         
-#         """
-#         
-#         if self.report is not None: self.report.add_Section(keyword='check_data',Title='Data Validation',level=0)
-#             
-#         # CHECK AND CROSS-CHECK HK
-#         
-#         #print 'HK-perf' # TESTS
-#         report_HK_perf = HKtools.check_HK_vs_command(HKKeys,dd,limits='P',elvis=inputs['elvis'])
-#         #print 'HK-safe' # TESTS
-#         report_HK_safe = HKtools.check_HK_abs(HKKeys,dd,limits='S',elvis=inputs['elvis'])
-#         
-#     
-#         # Initialize new columns
-#     
-#         Qindices = copy.deepcopy(dd.indices)
-#         
-#         if 'Quad' not in Qindices.names:
-#             Qindices.append(core.vIndex('Quad',vals=pilib.Quads))
-#         
-#     
-#         newcolnames_off = ['offset_pre','offset_ove']
-#         for newcolname_off in newcolnames_off:
-#             dd.initColumn(newcolname_off,Qindices,dtype='float32',valini=np.nan)
-#         
-#         newcolnames_std = ['std_pre','std_img','std_ove']
-#         for newcolname_std in newcolnames_std:
-#             dd.initColumn(newcolname_std,Qindices,dtype='float32',valini=np.nan)
-#         
-#     
-#         dd.initColumn('chk_flu_img',Qindices,dtype='float32',valini=np.nan)
-#         
-#         nObs,nCCD,nQuad = Qindices.shape
-#         Quads = Qindices[2].vals
-#         CCDs = Qindices[1].vals
-#             
-#         # Get statistics in different regions
-#         
-#         if not self.drill:
-#         
-#             for iObs in range(nObs):
-#                 
-#                 for jCCD in range(nCCD):
-#                     
-#                     #CCD = CCDs[jCCD]
-#                     
-#                     dpath = dd.mx['datapath'][iObs,jCCD]
-#                     ffits = os.path.join(dpath,'%s.fits' % dd.mx['File_name'][iObs,jCCD])
-#                     
-#                     ccdobj = ccd.CCD(ffits)
-#                     
-#                     for kQ in range(nQuad):
-#                         Quad = Quads[kQ]
-#                         
-#                         for reg in ['pre', 'ove']:
-#                             altstats = ccdobj.get_stats(Quad,sector=reg,statkeys=['mean','std'],trimscan=[5,5],
-#                                     ignore_pover=False,extension=-1)
-#                             dd.mx['offset_%s' % reg][iObs,jCCD,kQ] = altstats[0]
-#                             dd.mx['std_%s' % reg][iObs,jCCD,kQ] = altstats[1]
-#                         
-#                         imgstats = ccdobj.get_stats(Quad,sector=reg,statkeys=['median','std'],trimscan=[5,5],
-#                                     ignore_pover=True,extension=-1)
-#                         dd.mx['chk_flu_img'][iObs,jCCD,kQ] = imgstats[0]
-#                         dd.mx['std_img'][iObs,jCCD,kQ] = imgstats[1]
-#                         
-#                     
-#         # Assess metrics are within allocated boundaries
-#         
-#         warnings.warn('NOT FINISHED')
-#     
-#         if log is not None:
-#             log.info('Reporting and Flagging MISSING in PTC0X.check_data')    
-#     
-#         
-#         return dd, report
-#     
-# =============================================================================
-    
+        
     def extract_PTC(self):
         """
         

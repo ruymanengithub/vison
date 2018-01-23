@@ -147,6 +147,7 @@ class PointTask(Task):
         Spots = polib.Point_CooNom['names']
         Qs = ccd.Quads
         
+        
         compliance = OrderedDict()
         
         for iCCD,CCD in enumerate(CCDs):

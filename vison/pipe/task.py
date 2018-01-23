@@ -29,6 +29,7 @@ import task_lib as tlib
 from vison.datamodel import ccd
 from vison.image import calibration
 from vison.ogse import ogse
+from vison import __version__
 # END IMPORT
 
 isthere = os.path.exists
@@ -237,7 +238,7 @@ class Task(object):
         explog, checkreport = self.filterexposures(structure,explogf,datapath,OBSID_lims)
         
         if self.log is not None:
-            self.log.info('%s acquisition consistent with expectations: %s' % (testkey,checkreport['checksout']))
+            self.log.info('%s acquisition consistent with expectations: %s\\newline' % (testkey,checkreport['checksout']))
             if len(checkreport['failedcols'])>0:
                 self.log.info('%s failed columns: %s' % (testkey,checkreport['failedcols']))
             if len(checkreport['failedkeys'])>0:
@@ -407,10 +408,12 @@ class Task(object):
             compliance[CCDkey] = OrderedDict()
             for jcol,colname in enumerate(colnames):            
                 _lims = lims[CCDkey][colname]
-                ixsel = np.where(self.dd.mx['label'] == colname)
+                ixsel = np.where(self.dd.mx['label'][:] == 'chiquetete')
+                
                 test = (np.isnan(arr[ixsel,iCCD,...]) |\
                         (arr[ixsel,iCCD,...] <= _lims[0]) | (arr[ixsel,iCCD,...] >= _lims[1]))
-                compliance[CCDkey][colname] = not np.any(test,axis=(0,1)).sum()
+                
+                compliance[CCDkey][colname] = not (np.any(test,axis=(0,1)).sum() | (ixsel[0].shape[0]==0))
         return compliance
     
     

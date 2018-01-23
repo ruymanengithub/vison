@@ -161,52 +161,12 @@ class CHINJ02(InjTask):
         
         return CHINJ02_sdict
 
+    def filterexposures(self,structure,explogf,datapath,OBSID_lims):
+        """ """
+        wavedkeys = ['motr_siz']
+        return super(CHINJ02,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
+                              wavedkeys=wavedkeys)
 
-#==============================================================================
-#     def check_data(self):
-#         """ 
-#     
-#         CHINJ02: Checks quality of ingested data.
-#         
-#     
-#         **METACODE**
-#         
-#         ::
-#     
-#             check common HK values are within safe / nominal margins
-#             check voltages in HK match commanded voltages, within margins
-#         
-#             f.e.ObsID:
-#                 f.e.CCD:
-#                     f.e.Q.:
-#                         measure offsets in pre-, img-, over-
-#                         measure std in pre-, img-, over-
-#                         extract 2D chinj-pattern:
-#                             measure average level of injection
-#                             measure average level of non-injection
-#             
-#             assess std in pre- is within allocated margins
-#             assess offsets in pre-, and over- are equal, within allocated  margins
-#             assess offsets are within allocated margins
-#             assess non-injection level is within expected margins
-#             [assess injection level is within expected margins]
-#         
-#             [plot offsets vs. time]
-#             [plot std vs. time]
-#             plot injected level vs. IDL for each half
-#         
-#         
-#             issue any warnings to log
-#             issue update to report          
-#     
-#         
-#         """
-#         
-#     
-#         
-#         raise NotImplementedError
-#     
-#==============================================================================
 
     def extract_data(self):
         """
