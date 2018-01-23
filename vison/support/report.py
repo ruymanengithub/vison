@@ -17,16 +17,19 @@ Created on Wed Jan 25 16:58:33 2017
 import sys
 from pdb import set_trace as stop
 import os
-from vison.support import vistime
+import datetime
+#from vison.support import vistime
 #from latex import generate_header, generate_preamble
 import latex as lx
-from vison import data as visondata
-
 from astropy import table as astable
 from astropy.io import ascii
-
 import tempfile
 import string as st
+
+
+from vison import data as visondata
+from vison import __version__
+
 # END IMPORT
 
 
@@ -250,7 +253,7 @@ class Report(Container):
         
         self.TestName = st.replace(TestName,'_','\_')
         self.Model = Model
-        self.timestamp = vistime.get_time_tag()
+        #self.timestamp = vistime.get_time_tag()
         
         self.Texheader = Texheader
         self.Texbody = Texbody
@@ -294,6 +297,12 @@ class Report(Container):
         if overwrite and self.has_Section(keyword):
             self.drop_Section(keyword)
         self.add_to_Contents(Section(keyword,Title,level))
+        if level==0:
+            ttag = (datetime.datetime.now()).strftime('%d%b%y - %H:%M:%S')
+            self.add_Text('\\texttt{local time: %s}' % str(ttag))
+            self.add_Text('\\texttt{vison version: %s}\\newline' % str(__version__))
+            
+            
     
     def drop_Section(self,keyword):
         
