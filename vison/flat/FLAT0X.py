@@ -114,7 +114,7 @@ class FLAT0X(FlatTask):
         #wavelength = self.inputs['wavelength']        
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)        
-        self.perfdefaults['FLU_lims'] = FLU_lims
+        self.perfdefaults['FLU_lims'] = FLU_lims.copy()
         
     
 

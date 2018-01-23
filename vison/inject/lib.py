@@ -85,3 +85,29 @@ def extract_injection_lines(quaddata,pattern,VSTART=1,
                    avprof_alcol=avprof_alcol,stats_injection=stats_injection)
     
     return results
+
+def predict_inj_level(IDL,IDH,IG1,IG2,id_wid,id_dly,toi_ch,sectag):
+    """ """
+    
+    inj_threshold = 7.5
+    
+    if id_wid < 10.:
+        return 0.
+    
+    discrim = int(id_dly / toi_ch)
+    if discrim == 2:
+        injsect = 'T'
+    elif discrim == 3:
+        injsect = 'B'
+    else: injsect = 'None'
+    
+    if injsect != sectag: return np.nan
+    
+    if (IDL < IG1+inj_threshold):
+        injlevel = 2000. + max(0,IG2-IG1)/0.5*2000.
+    else:
+        injlevel = np.nan
+    
+    return injlevel
+                          
+    

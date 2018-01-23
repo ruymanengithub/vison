@@ -121,7 +121,7 @@ class BIAS01(DarkTask):
     
     def filterexposures(self,structure,explogf,datapath,OBSID_lims):
         """ """
-        wavedkeys = []
+        wavedkeys = ['motr_siz']
         return super(BIAS01,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
                               wavedkeys=wavedkeys)
     

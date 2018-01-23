@@ -83,7 +83,6 @@ class CHINJ01(InjTask):
         self.HKKeys = HKKeys
         self.figdict = dict()
         self.inputs['subpaths'] = dict(figs='figs')
-        self.perflimits.update(performance.perf_rdout)
 
 
     def set_inpdefaults(self,**kwargs):
@@ -102,6 +101,33 @@ class CHINJ01(InjTask):
     def set_perfdefaults(self,**kwargs):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
+        
+        tmpstructure = self.build_scriptdict(diffvalues={},elvis=self.elvis)
+        inj_exp = self.predict_expected_injlevels(tmpstructure)
+        
+        Flu_lims = OrderedDict()
+        FluGrad_lims = OrderedDict()
+        
+        for CCDkey in inj_exp.keys():
+            Flu_lims[CCDkey] = OrderedDict()
+            FluGrad_lims[CCDkey] = OrderedDict()
+            
+            for Q in inj_exp[CCDkey].keys():
+                Flu_lims[CCDkey][Q] = OrderedDict()
+                FluGrad_lims[CCDkey][Q] = OrderedDict()
+                
+                for colkey in inj_exp[CCDkey][Q].keys():
+                    _inj = inj_exp[CCDkey][Q][colkey]
+                    
+                    if np.isnan(_inj):
+                        Flu_lims[CCDkey][Q][colkey] = [-10.,1.01*2.**16]
+                        FluGrad_lims[CCDkey][Q][colkey] = [10.,1.E4]
+                    else:
+                        Flu_lims[CCDkey][Q][colkey] = _inj * (1.+np.array([-0.5,0.5]))
+                        FluGrad_lims[CCDkey][Q][colkey] = _inj * 0.3 * (1.+np.array([-0.5,0.5]))
+            
+        self.perfdefaults['Flu_lims'] = Flu_lims.copy()
+        self.perfdefaults['FluGrad_lims'] = FluGrad_lims.copy()
         
         
 
@@ -284,46 +310,4 @@ class CHINJ01(InjTask):
         
         raise NotImplementedError
         
-    #def meta_analysis(DataDict,report,inputs,log=None):
-    #    """ 
-    #    
-    #    CURRENTLY NOT NEEDED
-    #    
-    #    """
-    #    
-    #    return DataDict,report
 
-#==============================================================================
-#     def feeder(self,inputs,elvis=context.elvis):
-#         """ """
-#         
-#         self.subtasks = [('check',self.check_data),('extract',self.extract_data),
-#                     ('basic',self.basic_analysis)]
-#         
-#         IDL = inputs['IDL']
-#         IDH = inputs['IDH']
-#         IG1s = inputs['IG1s']
-#         id_delays = inputs['id_delays']
-#         toi_chinj = inputs['toi_chinj']
-#         
-#         if 'elvis' in inputs:
-#             self.elvis = inputs['elvis']
-#         else: self.elvis=elvis
-#         if 'diffvalues' in inputs:
-#             diffvalues = inputs['diffvalues']
-#         else:
-#             diffvalues = {}
-#         
-#         scriptdict = self.build_scriptdict(IDL,IDH,IG1s,id_delays,toi_chinj,
-#                         diffvalues=diffvalues,elvis=self.elvis)
-#                 
-#         inputs['structure'] = scriptdict        
-#         inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
-#         
-#         if 'perflimits' in inputs:
-#             self.perflimits.update(inputs['perflimits'])
-#         
-#         return inputs
-# 
-# 
-#==============================================================================

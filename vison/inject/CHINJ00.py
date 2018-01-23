@@ -80,8 +80,6 @@ class CHINJ00(InjTask):
         self.HKKeys = HKKeys
         self.figdict = dict()
         self.inputs['subpaths'] = dict(figs='figs')
-        self.perflimits.update(performance.perf_rdout)
-
 
     def set_inpdefaults(self,**kwargs):
         """ """

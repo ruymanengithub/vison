@@ -408,7 +408,7 @@ class Task(object):
             compliance[CCDkey] = OrderedDict()
             for jcol,colname in enumerate(colnames):            
                 _lims = lims[CCDkey][colname]
-                ixsel = np.where(self.dd.mx['label'][:] == 'chiquetete')
+                ixsel = np.where(self.dd.mx['label'][:] == colname)
                 
                 test = (np.isnan(arr[ixsel,iCCD,...]) |\
                         (arr[ixsel,iCCD,...] <= _lims[0]) | (arr[ixsel,iCCD,...] >= _lims[1]))
@@ -416,6 +416,26 @@ class Task(object):
                 compliance[CCDkey][colname] = not (np.any(test,axis=(0,1)).sum() | (ixsel[0].shape[0]==0))
         return compliance
     
+    def check_stat_perCCDQandCol(self,arr,lims,CCDs=[1,2,3]):
+        """ """
+        Qs = ['E','F','G','H']
+        colnames = lims['CCD%i' % CCDs[0]][Qs[0]].keys()
+        
+        compliance = OrderedDict()
+        for iCCD,CCD in enumerate(CCDs):
+            CCDkey = 'CCD%i' % CCD
+            compliance[CCDkey] = OrderedDict()
+            for iQ,Q in enumerate(Qs):
+                compliance[CCDkey][Q] = OrderedDict()
+                for jcol,colname in enumerate(colnames):            
+                    _lims = lims[CCDkey][Q][colname]
+                    ixsel = np.where(self.dd.mx['label'][:] == colname)
+                    
+                    test = (np.isnan(arr[ixsel,iCCD,...]) |\
+                            (arr[ixsel,iCCD,...] <= _lims[0]) | (arr[ixsel,iCCD,...] >= _lims[1]))
+                    
+                    compliance[CCDkey][Q][colname] = not (np.any(test,axis=(0,1)).sum() | (ixsel[0].shape[0]==0))
+        return compliance
     
     def check_data(self,**kwargs):
         """Generic check_data method"""        

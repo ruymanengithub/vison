@@ -61,7 +61,14 @@ def add_checkHK_report(self,report_HK,tag):
 def convert_compl_to_nesteditemlist(complidict):
     """ """
     
-    def traverse_tree(dictionary,nesteditemlist):        
+    def traverse_tree(dictionary,nesteditemlist):   
+            Nkeys = len(dictionary.keys())
+            if Nkeys >5:
+                nesteditemlist +=[
+                '\item %s' % dictionary.__repr__()
+                        ]
+                return nesteditemlist
+            
             for key,value in dictionary.items():
                 if isinstance(value,(dict,OrderedDict)):
                     nesteditemlist += [

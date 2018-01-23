@@ -13,16 +13,20 @@ import  numpy as np
 from pdb import  set_trace as stop
 import copy
 import os
+from collections import OrderedDict
 
 #from vison.support import context
 from vison.inject import extract_injection_lines
-from lib import lineoffsets
+from vison.inject import lib as ilib
 from vison.pipe.task import Task
 from vison.datamodel import core,ccd
 #from vison.pipe import lib as pilib
 from vison.support import context
 #from vison.pipe.task import Task
 # END IMPORT
+
+lineoffsets = ilib.lineoffsets
+
 
 class InjTask(Task):
     
@@ -39,6 +43,47 @@ class InjTask(Task):
             kwargs = dict()
         Task.check_data(self,**kwargs)
         
+    def predict_expected_injlevels(self,teststruct):
+        """ """        
+        CCDs = [1,2,3]
+        Quads = ['E','F','G','H']
+        
+        SecTags = dict(E='B',F='B',G='T',H='T')
+        
+        Ncols = teststruct['Ncols']
+        
+        expectation = OrderedDict()
+        
+        for CCD in CCDs:
+            CCDkey = 'CCD%i' % CCD
+            expectation[CCDkey] = OrderedDict()
+            
+            for Q in Quads:
+                expectation[CCDkey][Q] = OrderedDict()                
+                sectag = SecTags[Q]
+                
+                for icol in range(1,Ncols+1):
+                    coldict = teststruct['col%i' % icol]
+                    chinj = coldict['chinj']
+                    IG2 = coldict['IG2_%s' % sectag]
+                    IG1 = coldict['IG1_%i_%s' % (CCD,sectag)]
+                    IDL = coldict['IDL']
+                    IDH = coldict['IDH']
+                    id_wid = coldict['id_wid']
+                    id_dly = coldict['id_dly']
+                    toi_ch = coldict['toi_ch']
+                    
+                    if chinj==0:
+                        _inj = 0.
+                    else:
+                        _inj = ilib.predict_inj_level(IDL,IDH,IG1,IG2,id_wid,id_dly,toi_ch,sectag)
+                    
+                    expectation[CCDkey][Q]['col%i' % icol] = _inj
+                    
+        
+        return expectation
+        
+
     def get_checkstats_ST(self,**kwargs):
         """ """
         
@@ -179,7 +224,7 @@ class InjTask(Task):
         # IMG Signal Levels 
         Flu_lims = self.perflimits['Flu_lims'] # dict
         
-        _compliance_flu = self.check_stat_perCCDandCol(self.dd.mx['chk_med_inject'],Flu_lims,CCDs)
+        _compliance_flu = self.check_stat_perCCDQandCol(self.dd.mx['chk_med_inject'],Flu_lims,CCDs)
         
         
         if not self.IsComplianceMatrixOK(_compliance_flu): 
@@ -192,7 +237,7 @@ class InjTask(Task):
         
         FluGrad_lims = self.perflimits['FluGrad_lims'] # dict
         
-        _compliance_flugrad = self.check_stat_perCCDandCol(self.dd.mx['chk_std_inject'],FluGrad_lims,CCDs)
+        _compliance_flugrad = self.check_stat_perCCDQandCol(self.dd.mx['chk_std_inject'],FluGrad_lims,CCDs)
                 
         if not self.IsComplianceMatrixOK(_compliance_flugrad): 
             self.dd.flags.add('POORQUALDATA')

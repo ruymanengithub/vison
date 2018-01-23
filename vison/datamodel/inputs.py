@@ -24,7 +24,7 @@ CommonTaskInputs = OrderedDict(sorted([
             ('ID',([str],'Pipeline Execution ID.')),
             ('inCDPs',([dict],'Input Calibration Data Products, used in processing of data.')),
             ('OBSID_lims',([list],'OBSID Limits to search for frames of Test in Exp-Log.')),
-            ('perf_rdout',([dict],'Readout Performance: RON, BIAS levels, gradients, etc.')),
+            ('perflimits',([dict],'(Alt.) Performance limits: RON, BIAS levels, gradients, etc.')),
             ('resultsroot',([str],'Path to results directory (Pipeline Session Level).')),
             ('resultspath',([str],'Path to results directory (Task Level).')),
             ('subpaths',([dict],'Paths to results sub-folders. Relative to resultspath.')),
