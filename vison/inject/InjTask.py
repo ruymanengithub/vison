@@ -82,7 +82,35 @@ class InjTask(Task):
                     
         
         return expectation
+    
+    def get_FluenceAndGradient_limits(self):
+        """ """
         
+        tmpstructure = self.build_scriptdict(diffvalues={},elvis=self.elvis)
+        inj_exp = self.predict_expected_injlevels(tmpstructure)
+        
+        Flu_lims = OrderedDict()
+        FluGrad_lims = OrderedDict()
+        
+        for CCDkey in inj_exp.keys():
+            Flu_lims[CCDkey] = OrderedDict()
+            FluGrad_lims[CCDkey] = OrderedDict()
+            
+            for Q in inj_exp[CCDkey].keys():
+                Flu_lims[CCDkey][Q] = OrderedDict()
+                FluGrad_lims[CCDkey][Q] = OrderedDict()
+                
+                for colkey in inj_exp[CCDkey][Q].keys():
+                    _inj = inj_exp[CCDkey][Q][colkey]
+                    
+                    if np.isnan(_inj):
+                        Flu_lims[CCDkey][Q][colkey] = [-10.,1.01*2.**16]
+                        FluGrad_lims[CCDkey][Q][colkey] = [10.,1.E4]
+                    else:
+                        Flu_lims[CCDkey][Q][colkey] = _inj * (1.+np.array([-0.5,0.5]))
+                        FluGrad_lims[CCDkey][Q][colkey] = _inj * 0.3 * (1.+np.array([-0.5,0.5]))
+                        
+        return Flu_lims, FluGrad_lims
 
     def get_checkstats_ST(self,**kwargs):
         """ """

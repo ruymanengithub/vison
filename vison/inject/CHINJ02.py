@@ -105,6 +105,12 @@ class CHINJ02(InjTask):
     def set_perfdefaults(self,**kwargs):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
+        
+        Flu_lims, FluGrad_lims = self.get_FluenceAndGradient_limits()
+        
+        self.perfdefaults['Flu_lims'] = Flu_lims.copy()
+        self.perfdefaults['FluGrad_lims'] = FluGrad_lims.copy()
+        
 
     def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
         """ 

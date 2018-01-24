@@ -102,30 +102,8 @@ class CHINJ01(InjTask):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
         
-        tmpstructure = self.build_scriptdict(diffvalues={},elvis=self.elvis)
-        inj_exp = self.predict_expected_injlevels(tmpstructure)
+        Flu_lims, FluGrad_lims = self.get_FluenceAndGradient_limits()
         
-        Flu_lims = OrderedDict()
-        FluGrad_lims = OrderedDict()
-        
-        for CCDkey in inj_exp.keys():
-            Flu_lims[CCDkey] = OrderedDict()
-            FluGrad_lims[CCDkey] = OrderedDict()
-            
-            for Q in inj_exp[CCDkey].keys():
-                Flu_lims[CCDkey][Q] = OrderedDict()
-                FluGrad_lims[CCDkey][Q] = OrderedDict()
-                
-                for colkey in inj_exp[CCDkey][Q].keys():
-                    _inj = inj_exp[CCDkey][Q][colkey]
-                    
-                    if np.isnan(_inj):
-                        Flu_lims[CCDkey][Q][colkey] = [-10.,1.01*2.**16]
-                        FluGrad_lims[CCDkey][Q][colkey] = [10.,1.E4]
-                    else:
-                        Flu_lims[CCDkey][Q][colkey] = _inj * (1.+np.array([-0.5,0.5]))
-                        FluGrad_lims[CCDkey][Q][colkey] = _inj * 0.3 * (1.+np.array([-0.5,0.5]))
-            
         self.perfdefaults['Flu_lims'] = Flu_lims.copy()
         self.perfdefaults['FluGrad_lims'] = FluGrad_lims.copy()
         
@@ -212,49 +190,6 @@ class CHINJ01(InjTask):
     
     
     
-#==============================================================================
-#     def check_data(self):
-#         """ 
-#     
-#         CHINJ01: Checks quality of ingested data.
-#         
-#     
-#         **METACODE**
-#         
-#         ::
-#     
-#             check common HK values are within safe / nominal margins
-#             check voltages in HK match commanded voltages, within margins
-#         
-#             f.e.ObsID:
-#                 f.e.CCD:
-#                     f.e.Q.:
-#                         measure offsets in pre-, img-, over-
-#                         measure std in pre-, img-, over-
-#                         extract 2D chinj-pattern:
-#                             measure average level of injection
-#                             measure average level of non-injection
-#             
-#             assess std in pre- is within allocated margins
-#             assess offsets in pre-, and over- are equal, within allocated  margins
-#             assess offsets are within allocated margins
-#             assess non-injection level is within expected margins
-#             assess injection level is within expected margins
-#         
-#             [plot offsets vs. time]
-#             [plot std vs. time]
-#             plot injected level vs. IG1 for each half
-#         
-#         
-#             issue any warnings to log
-#             issue update to report          
-#     
-#         
-#         """
-#         
-#         raise NotImplementedError
-#         
-#==============================================================================
     
     def extract_data(self):
         """
