@@ -41,4 +41,5 @@ class PumpTask(InjTask):
     def check_metrics_ST(self,**kwargs):
         """ 
         
-        """
+        """        
+        super(PumpTask,self).check_metrics_ST(**kwargs)

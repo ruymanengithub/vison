@@ -34,13 +34,14 @@ class InjTask(Task):
         super(InjTask,self).__init__(*args,**kwargs)
         
     
-    def check_data(self):
+    def check_data(self,**kwargs):
         """ """
+        
         test = self.inputs['test']
         if test == 'CHINJ01':
-            kwargs = dict()
+            kwargs = dict().update(kwargs)
         elif test == 'CHINJ02':
-            kwargs = dict()
+            kwargs = dict().update(kwargs)
         Task.check_data(self,**kwargs)
         
     def predict_expected_injlevels(self,teststruct):
@@ -201,7 +202,6 @@ class InjTask(Task):
         
         
         """
-        
         # test = self.inputs['test']
         
         Xindices = self.dd.indices

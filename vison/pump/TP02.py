@@ -57,6 +57,7 @@ TP02_commvalues = dict(program='CALCAMP',test='TP02',
 class TP02_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
+            ('toi_chinj',([int],'TOI Charge Injection.')),            
             ('Nshuffles_H',([int],'Number of Shuffles, Horizontal/Serial Pumping.')),
             ('dwell_sv',([list],'Dwell Times list [serial].')),
             ('id_delays',([list],'Injection Drain Delays [2, one per CCDs section].')),
@@ -92,6 +93,11 @@ class TP02(PumpTask):
     def set_perfdefaults(self,**kwargs):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
+        
+        Flu_lims, FluGrad_lims = self.get_FluenceAndGradient_limits()
+        
+        self.perfdefaults['Flu_lims'] = Flu_lims.copy()
+        self.perfdefaults['FluGrad_lims'] = FluGrad_lims.copy()
 
 
     def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
@@ -153,45 +159,11 @@ class TP02(PumpTask):
     
     def filterexposures(self,structure,explogf,datapath,OBSID_lims):
         """ """
-        wavedkeys = []
+        wavedkeys = ['motr_siz']
         return super(TP02,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
                               wavedkeys=wavedkeys)
 
     
-    def check_data(self):
-        """ 
-    
-        TP02: Checks quality of ingested data.
-        
-    
-        **METACODE**
-        
-        ::
-    
-            check common HK values are within safe / nominal margins
-            check voltages in HK match commanded voltages, within margins
-        
-            f.e.ObsID:
-                f.e.CCD:
-                    f.e.Q.:
-                        measure offsets in pre-, over-
-                        measure std in pre-, over-
-                        measure mean in img-
-            
-            assess std in pre- (~RON) is within allocated margins
-            assess offsets in pre-, and over- are equal, within allocated margins
-            assess offsets are within allocated margins
-            assess injection level is within expected margins
-        
-            plot histogram of injected levels for each Q
-            [plot std vs. time]
-        
-            issue any warnings to log
-            issue update to report          
-    
-        
-        """
-        raise NotImplementedError
     
     def prep_data(self):
         """

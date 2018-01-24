@@ -36,22 +36,22 @@ from vison import __version__
 
 
 default_header = [
-'\documentclass[12pt,a4paper]{article}',\
-'\usepackage{t1enc}',\
-'\usepackage{a4wide}',\
-'\usepackage{latexsym}',\
-'\usepackage[dvips]{graphicx}',\
-'%\usepackage{psfig}',\
-'\usepackage[spanish]{babel}',\
-'\usepackage[ansinew]{inputenc}',\
-'\usepackage{amsmath}\usepackage{amsfonts}\usepackage{amssymb}',\
-'\usepackage{fancyhdr}',\
-'\usepackage{longtable}',\
-'\usepackage{multicol}',\
-'\\addtolength{\marginparwidth}{-1cm}',\
-'\\addtolength{\headwidth}{\marginparsep}',\
-'\\addtolength{\headwidth}{\marginparwidth}',\
-'\\addtolength{\\textwidth}{1.5cm}',\
+r'\documentclass[12pt,a4paper]{article}',\
+r'\usepackage{t1enc}',\
+r'\usepackage{a4wide}',\
+r'\usepackage{latexsym}',\
+r'\usepackage[dvips]{graphicx}',\
+r'%\usepackage{psfig}',\
+r'\usepackage[spanish]{babel}',\
+r'\usepackage[ansinew]{inputenc}',\
+r'\usepackage{amsmath}\usepackage{amsfonts}\usepackage{amssymb}',\
+r'\usepackage{fancyhdr}',\
+r'\usepackage{longtable}',\
+r'\usepackage{multicol}',\
+r'\addtolength{\marginparwidth}{-1cm}',\
+r'\addtolength{\headwidth}{\marginparsep}',\
+r'\addtolength{\headwidth}{\marginparwidth}',\
+r'\addtolength{\textwidth}{1.5cm}',\
 '\n']
 
 class Content(object):
@@ -148,27 +148,27 @@ class Figure(Content):
         """Generates LaTeX as list of strings."""
         
         
-        tex_raw = ['\\begin{figure}[!htb]',
-        '\centering',
-        '\includegraphics[width=__PLACEHOLDER__\\textwidth]{__PLACEHOLDER__}',
-        '\\vspace{-1mm}',
-        '\end{figure}']
+        tex_raw = [r'\begin{figure}[!htb]',
+        r'\centering',
+        r'\includegraphics[width=__PLACEHOLDER__\textwidth]{__PLACEHOLDER__}',
+        r'\vspace{-1mm}',
+        r'\end{figure}']
         
         substitutes = [self.textfraction,self.figpath]
         
         if self.caption is not None:
-            tex_raw.insert(-1,'\caption{__PLACEHOLDER__}')
+            tex_raw.insert(-1,r'\caption{__PLACEHOLDER__}')
             substitutes.append(self.caption)
         
         if self.label is not None:
-            tex_raw.insert(-1,'\label{__PLACEHOLDER__}')
+            tex_raw.insert(-1,r'\label{__PLACEHOLDER__}')
             substitutes.append(self.label)
         
-        texjoint = st.join(tex_raw,'JOIN_LINES')
-        texjoint = texjoint.replace('__PLACEHOLDER__','%s')
+        texjoint = st.join(tex_raw,r'JOIN_LINES')
+        texjoint = texjoint.replace(r'__PLACEHOLDER__',r'%s')
         texjoint = texjoint % tuple(substitutes)
         
-        tex = st.split(texjoint,'JOIN_LINES')
+        tex = st.split(texjoint,r'JOIN_LINES')
         tex += ['\n'] # just improves legigibility of .tex
         
         return tex
@@ -201,18 +201,18 @@ class Table(Content):
         
         tf = tempfile.TemporaryFile()
         
-        latexdict = ascii.latex.latexdicts['AA']
-        latexdict.update(dict(tablealign='ht'))
+        latexdict = ascii.latex.latexdicts['doublelines']
+        latexdict.update(dict(tablealign='ht'))        
         
         ascii.write(table,output=tf,formats=formats,Writer=ascii.Latex,
-                    latexdict=latexdict)
+                    latexdict=latexdict,col_align='|l|r|')
         
         tf.seek(0)
         tex = tf.readlines()
         tf.close()
         
         if self.caption is not None:
-            captiontex = '\caption{%s}\n' % self.caption
+            captiontex = r'\caption{%s}\n' % self.caption
             tex.insert(-1,captiontex)
         
         tex = [item[0:-1] for item in tex] # removes ending \n
@@ -248,7 +248,7 @@ class Report(Container):
     
     
     def __init__(self,TestName='Test',Model='XM',Contents=[],Texheader=default_header,
-                 Texbody=['\\begin{document}']):
+                 Texbody=[r'\begin{document}']):
         """ """
         
         self.TestName = st.replace(TestName,'_','\_')
@@ -257,7 +257,7 @@ class Report(Container):
         
         self.Texheader = Texheader
         self.Texbody = Texbody
-        self.Texfooter = ['\end{document}']
+        self.Texfooter = [r'\end{document}']
         
         self.Contents = Contents
     
@@ -299,8 +299,8 @@ class Report(Container):
         self.add_to_Contents(Section(keyword,Title,level))
         if level==0:
             ttag = (datetime.datetime.now()).strftime('%d%b%y - %H:%M:%S')
-            self.add_Text('\\texttt{local time: %s}' % str(ttag))
-            self.add_Text('\\texttt{vison version: %s}\\newline' % str(__version__))
+            self.add_Text(r'\texttt{local time: %s}' % str(ttag))
+            self.add_Text(r'\texttt{vison version: %s}\newline' % str(__version__))
             
             
     

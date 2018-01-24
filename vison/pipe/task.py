@@ -238,7 +238,7 @@ class Task(object):
         explog, checkreport = self.filterexposures(structure,explogf,datapath,OBSID_lims)
         
         if self.log is not None:
-            self.log.info('%s acquisition consistent with expectations: %s\\newline' % (testkey,checkreport['checksout']))
+            self.log.info('%s acquisition consistent with expectations: %s' % (testkey,checkreport['checksout']))
             if len(checkreport['failedcols'])>0:
                 self.log.info('%s failed columns: %s' % (testkey,checkreport['failedcols']))
             if len(checkreport['failedkeys'])>0:
@@ -248,7 +248,7 @@ class Task(object):
             ntestkey = st.replace(testkey,'_','\_')
             nchecksout = ['\\bf{%s}' % checkreport['checksout']]
             nchecksout = [st.replace(item,'False','$\\textcolor{red}{\\bf{False}}$') for item in nchecksout][0]
-            self.report.add_Text('%s acquisition consistent with expectations: %s' % (ntestkey,nchecksout))
+            self.report.add_Text('%s acquisition consistent with expectations: %s\\newline' % (ntestkey,nchecksout))
             
             if (checkreport['failedcols'])>0:          
                 nfailedcols = st.replace(checkreport['failedcols'].tolist().__repr__(),'_','\_')
@@ -445,7 +445,8 @@ class Task(object):
         self.check_HK_ST()        
         # OBTAIN METRICS FROM IMAGES        
         self.get_checkstats_ST(**kwargs)
-        # METRICS ASSESSMENT        
+        # METRICS ASSESSMENT       
+        
         self.check_metrics_ST(**kwargs)
         # PLOTs
         if self.report is not None: self.report.add_Section(keyword='check_plots',Title='Plots',level=1)

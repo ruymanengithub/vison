@@ -21,6 +21,7 @@ import os
 import datetime
 from copy import deepcopy
 from collections import OrderedDict
+import copy
 
 from vison.support import context
 from vison.pipe import lib as pilib
@@ -61,6 +62,9 @@ class DARK01_inputs(inputs.Inputs):
             ('exptime',([int],'Exposure time.')),
             ])))
 
+Flu_lims = OrderedDict(CCD1=[-2.,5.])
+for i in [2,3]: Flu_lims['CCD%i' % i] = copy.deepcopy(Flu_lims['CCD1'])
+    
 class DARK01(DarkTask):
     """ """
     
@@ -76,7 +80,7 @@ class DARK01(DarkTask):
                     ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
         self.figdict = dict()
-        self.inputs['subpaths'] = dict()
+        self.inputs['subpaths'] = dict(figs='figs')
                 
     def set_inpdefaults(self,**kwargs):
         self.inpdefaults = dict(N=4,exptime=565)
@@ -84,6 +88,8 @@ class DARK01(DarkTask):
     def set_perfdefaults(self,**kwargs):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
+        
+        self.perfdefaults['Flu_lims'] = Flu_lims
         
 
     def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
@@ -113,36 +119,38 @@ class DARK01(DarkTask):
         return super(DARK01,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
                               wavedkeys=wavedkeys)
         
-    def check_data(self):
-        """ 
-        DARK0: Checks quality of ingested data.
-        
-        **METACODE**
-        
-        ::
-        
-            check common HK values are within safe / nominal margins
-            check voltages in HK match commanded voltages, within margins
-        
-            f.e.ObsID:
-                f.e.CCD:
-                    f.e.Q.:
-                        measure offsets/means in pre-, img-, over-
-                        measure std in pre-, img-, over-
-            assess std in pre- is within allocated margins
-            assess offsets/means in pre-, img-, over- are equal, within allocated  margins
-            assess offsets/means are within allocated margins
-        
-            plot offsets/means vs. time
-            plot std vs. time
-        
-            issue any warnings to log
-            issue update to report
-        
-        """
-        
-        
-        raise NotImplementedError
+#==============================================================================
+#     def check_data(self):
+#         """ 
+#         DARK0: Checks quality of ingested data.
+#         
+#         **METACODE**
+#         
+#         ::
+#         
+#             check common HK values are within safe / nominal margins
+#             check voltages in HK match commanded voltages, within margins
+#         
+#             f.e.ObsID:
+#                 f.e.CCD:
+#                     f.e.Q.:
+#                         measure offsets/means in pre-, img-, over-
+#                         measure std in pre-, img-, over-
+#             assess std in pre- is within allocated margins
+#             assess offsets/means in pre-, img-, over- are equal, within allocated  margins
+#             assess offsets/means are within allocated margins
+#         
+#             plot offsets/means vs. time
+#             plot std vs. time
+#         
+#             issue any warnings to log
+#             issue update to report
+#         
+#         """
+#         
+#         
+#         raise NotImplementedError
+#==============================================================================
         
     
     def prep_data(self):
