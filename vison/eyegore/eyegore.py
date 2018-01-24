@@ -130,13 +130,13 @@ class Eyegore(tk.Tk):
             display1 = Ds['image'](self,self.path,elvis=self.elvis)        
             ani1 = display1.start_updating(self.intervals[1])
         
-        if not self.dolite:
-            display2 = Ds['hk'](self,self.path,self.intervals[2],elvis=elvis)
-            ani2 = display2.start_updating(self.intervals[3])
+        display2 = Ds['hk'](self,self.path,self.intervals[2],elvis=self.elvis)
         
-        display2b = Ds['hkflags'](self,display2,self.intervals[4],elvis=elvis)
+        ani2 = display2.start_updating(self.intervals[3])
+        
+        display2b = Ds['hkflags'](self,display2,self.intervals[4],elvis=self.elvis)
 
-        display4 = Ds['explog'](self,self.path,self.intervals[5],elvis=elvis)
+        display4 = Ds['explog'](self,self.path,self.intervals[5],elvis=self.elvis)
         
         self.update()
         

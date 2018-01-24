@@ -139,11 +139,12 @@ class HKButton(tk.Button,object):
 class HKFlags(tk.Toplevel):
     """ """
     
-    def __init__(self,root,parent,interval=5000):
+    def __init__(self,root,parent,interval=5000,elvis=context.elvis):
         """ """
         
         tk.Toplevel.__init__(self,root)
         self.ncols = 5
+        self.elvis = elvis
         
         self.parent = parent
         self.interval = interval
@@ -235,6 +236,7 @@ class HKFlags(tk.Toplevel):
         HKlim = self.parent.HKlims[HKkey]
         t = self.parent.HK['time'].copy()
         y = self.parent.HK[HKkey].copy()
+        #print 'Im here!'
         
         window = SingleHKplot(self.parent.root)
         window.render(HKkey,HKlim,t,y)
@@ -243,7 +245,10 @@ class HKFlags(tk.Toplevel):
     def update(self):
         
         try: self.find_offlims()
-        except: pass
+        except: pass    
+        #self.find_offlims()
+    
+        #print self.interval
     
         self.after(self.interval,self.update)
             
@@ -251,6 +256,7 @@ class HKFlags(tk.Toplevel):
     def find_offlims(self):
         
         HKkeys = self.HKkeys
+        #print self.parent.HK
         
         for ix in range(len(HKkeys)):
             HKlim = self.parent.HKlims[HKkeys[ix]]
@@ -306,7 +312,7 @@ class HKDisplay(tk.Toplevel):
         self.root = root
         
         self.HKkeys = HKtools.allHK_keys[elvis]
-        self.HKlims = HKtools.HKlims[elvis]
+        self.HKlims = HKtools.HKlims[elvis]['P']
         
         self.search_HKfile()
         
@@ -369,7 +375,7 @@ class HKDisplay(tk.Toplevel):
         
         self.date = date_infile
 
-        tmp_HK = 'HK_%s_ROE1.txt' % date_infile
+        tmp_HK = 'HK_%s_ROE1_01.txt' % date_infile
         tmp_HK = os.path.join(self.path,tmp_HK)
         
         isthere = os.path.exists(tmp_HK)
@@ -423,6 +429,7 @@ class HKDisplay(tk.Toplevel):
         
         HK = HKtools.loadHK_QFM(self.HKfile,elvis=self.elvis)
         
+        
         dtobjarr = np.array([datetime.datetime.strptime(item,'%d-%m-%y_%H:%M:%S') \
                              for item in HK['TimeStamp']])        
     
@@ -458,7 +465,7 @@ class HKDisplay(tk.Toplevel):
                 for item in self.axs[-(9-nHK)]:
                     item.get_xaxis().set_visible(False)
                     item.get_yaxis().set_visible(False)
-                    
+            
             
             for i in range(nHK):
                 
@@ -466,8 +473,7 @@ class HKDisplay(tk.Toplevel):
                 
                 HKname = self.HKkeys_to_plot[i]
                 _HKlims = HKlims[HKname]
-                
-                
+                                
                 try:
                     x = pHK['time'].copy()
                     y = pHK[HKname].copy()

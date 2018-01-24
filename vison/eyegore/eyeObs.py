@@ -19,7 +19,8 @@ import glob
 
 #from pdb import set_trace as stop
 #from optparse import OptionParser
-#import sys, os
+#import sys 
+import os
 #import numpy as np
 import time
 import string as st
@@ -46,10 +47,6 @@ import pyds9
 
 LARGE_FONT = ("Helvetica", 12)
 small_font = ("Verdana", 8)
-
-
-
-
 
 
 class ExpLogDisplay(tk.Toplevel):
@@ -252,9 +249,11 @@ class ExpLogDisplay(tk.Toplevel):
         d = pyds9.DS9()
         
         for CCD in [1,2,3]:
-            tmpfits = os.path.join(self.path,'EUC_%i_*D_*T_ROE1_CCD%i.fits' % (ObsID,CCD))
+            tmpfits = os.path.join(self.path,'EUC_%i_*D*T_ROE1_CCD%i.fits' % (ObsID,CCD))
             try: iFITSf = glob.glob(tmpfits)[0]
-            except IndexError: iFITSf = None
+            except IndexError: 
+                print tmpfits
+                iFITSf = None
             
             if iFITSf is not None:
                 d.set("frame %i" % CCD)

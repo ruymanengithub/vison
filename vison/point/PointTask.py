@@ -145,8 +145,7 @@ class PointTask(Task):
         """ """
         #Qs = lims['CCD%i' % CCDs[0]].keys()
         Spots = polib.Point_CooNom['names']
-        Qs = ccd.Quads
-        
+        Qs = ccd.Quads        
         
         compliance = OrderedDict()
         
@@ -165,12 +164,12 @@ class PointTask(Task):
                         colnames = _lims.keys()
                         compliance[CCDkey][Q][Spot] = OrderedDict()
                         for kcol,colname in enumerate(colnames):
-                            compliance
                             _lims_col = lims[CCDkey][Q][Spot][colname]
                             ixsel = np.where(self.dd.mx['label'] == colname)
                             test = (np.isnan(arr[ixsel,iCCD,jQ,kSpot]) |\
                              (arr[ixsel,iCCD,jQ,kSpot] <= _lims_col[0]) | (arr[ixsel,iCCD,jQ,kSpot] >= _lims_col[1]))
-                            compliance[CCDkey][Q][Spot][colname] = not np.any(test,axis=(0,1)).sum()
+                            compliance[CCDkey][Q][Spot][colname] = not (np.any(test,axis=(0,1)).sum() | (ixsel[0].shape[0]==0))
+                            stop()
                     else:
                         
                         test = (np.isnan(arr[:,iCCD,jQ,kSpot]) |\
@@ -266,11 +265,11 @@ class PointTask(Task):
         
         Flu_lims = self.perflimits['Flu_lims'] # dict
         _compliance_flu = self.check_stat_perCCDQSpot(self.dd.mx['chk_fluence'],Flu_lims,CCDs)
-
+        
         if not self.IsComplianceMatrixOK(_compliance_flu): 
             self.dd.flags.add('POORQUALDATA')
             self.dd.flags.add('FLUENCE_OOL')
-        if self.log is not None: self.addComplianceMatrix2Log(_compliance_bgd,label='COMPLIANCE FLUENCE:')     
-        if self.report is not None: self.addComplianceMatrix2Report(_compliance_bgd,label='COMPLIANCE FLUENCE:')
+        if self.log is not None: self.addComplianceMatrix2Log(_compliance_flu,label='COMPLIANCE FLUENCE:')     
+        if self.report is not None: self.addComplianceMatrix2Report(_compliance_flu,label='COMPLIANCE FLUENCE:')
         
         
