@@ -4,7 +4,8 @@
 # IMPORT STUFF
 import sys, os
 from optparse import OptionParser
-from vison.eyegore.eyegore import Eyegore
+from vison.eyegore.eyegore import Eyegore,_extpath
+from vison.support import context
 # END IMPORT
 
 
@@ -12,7 +13,9 @@ if __name__ == '__main__':
     
     parser = OptionParser()
     parser.add_option("-p","--path",dest="path",default='',help="day-path to be monitored.")
-    parser.add_option("-B","--broadcast",dest="broadcast",action='store_true',default=False,help="")
+    parser.add_option("-B","--broadcast",dest="broadcast",action='store_true',default=False,help="Synchronize data to gateway folder: %s" % _extpath)
+    parser.add_option("-E","--elvis",dest="elvis",default=context.elvis,help="ELVIS version.")
+    parser.add_option("-L","--lite",dest="lite",action="store_true",default=False,help="Run a lighter version of the program (no autom. HK-plots or image displays).")
     
     (options, args) = parser.parse_args()
     
@@ -22,6 +25,8 @@ if __name__ == '__main__':
         
     path = options.path
     broadcast = bool(options.broadcast)
+    elvis = options.elvis
+    dolite = bool(options.lite)
     
     if not os.path.exists(path):
         sys.exit('HKmonitory.py: %s does not exist' % path)
@@ -39,5 +44,5 @@ if __name__ == '__main__':
         print header % path
     
     
-    app = Eyegore(path,broadcast=broadcast)
+    app = Eyegore(path,broadcast=broadcast,elvis=elvis,dolite=dolite)
 

@@ -33,6 +33,7 @@ import tkFont as tkFont
 #from PIL import Image, ImageTk
 
 from  vison.datamodel import ccd as ccdmod
+from vison.support import context
 
 # END IMPORT
 
@@ -44,7 +45,7 @@ small_font = ("Verdana", 8)
 class ImageDisplay(tk.Toplevel):
     """ """
     
-    def __init__(self,parent,path):
+    def __init__(self,parent,path,elvis=context.elvis):
         """ """
         
         

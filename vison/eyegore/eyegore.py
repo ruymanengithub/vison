@@ -46,15 +46,18 @@ from PIL import Image, ImageTk
 from eyeHK import HKDisplay,HKFlags
 from eyeCCDs import ImageDisplay
 from eyeObs import ExpLogDisplay
+from vison.support import context
 # END IMPORT
 
 
 LARGE_FONT = ("Helvetica", 12)
 small_font = ("Verdana", 8)
 
+_extpath = os.path.join(os.sep,'data2','gaia','usdownloads','EuclidCaldata','Quarantine')
+
 def rsync_to_remote(path):
     """ """
-    extpath = os.path.join(os.sep,'data2','gaia','usdownloads','EuclidCaldata','Quarantine',path)
+    extpath = os.path.join(_extpath,path)
     command = "rsync -avzq %s raf@msslus.ac.uk:%s" % (os.path.join(path,os.sep),extpath)
     #command = "rsync -avqz TEST_DATA/24_Feb_80 /home/raf/Desktop/24_Feb_80"
     #print command
@@ -63,7 +66,8 @@ def rsync_to_remote(path):
 class Eyegore(tk.Tk):
     """ """
     
-    def __init__(self,path,broadcast,intervals=[20000,20000,1000,20000,20000,20000]):
+    def __init__(self,path,broadcast,intervals=[20000,20000,1000,20000,20000,20000],
+                 elvis=context.elvis,dolite=False):
         """ """
         tk.Tk.__init__(self)
         
@@ -72,6 +76,8 @@ class Eyegore(tk.Tk):
         self.path = path
         self.intervals = intervals
         self.broadcast = broadcast
+        self.elvis = elvis
+        self.dolite = dolite
         
         #self.withdraw()
         
@@ -118,17 +124,19 @@ class Eyegore(tk.Tk):
         
         Ds = dict(image=ImageDisplay,hk=HKDisplay,
                   hkflags=HKFlags,explog=ExpLogDisplay)
-        dkeys = ['image','hk','hkflags','explog']
+        #dkeys = ['image','hk','hkflags','explog']
         
-        display1 = Ds[dkeys[0]](self,self.path)        
-        ani1 = display1.start_updating(self.intervals[1])
-       
-        display2 = Ds[dkeys[1]](self,self.path,self.intervals[2])
-        ani2 = display2.start_updating(self.intervals[3])
+        if not self.dolite:
+            display1 = Ds['image'](self,self.path,elvis=self.elvis)        
+            ani1 = display1.start_updating(self.intervals[1])
         
-        display2b = Ds[dkeys[2]](self,display2,self.intervals[4])
+        if not self.dolite:
+            display2 = Ds['hk'](self,self.path,self.intervals[2],elvis=elvis)
+            ani2 = display2.start_updating(self.intervals[3])
+        
+        display2b = Ds['hkflags'](self,display2,self.intervals[4],elvis=elvis)
 
-        display4 = Ds[dkeys[3]](self,self.path,self.intervals[5])
+        display4 = Ds['explog'](self,self.path,self.intervals[5],elvis=elvis)
         
         self.update()
         
@@ -154,6 +162,7 @@ if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option("-p","--path",dest="path",default='',help="day-path to be monitored.")
     parser.add_option("-B","--broadcast",dest="broadcast",action='store_true',default=False,help="")
+    parser.add_option("-E","--elvis",dest="elvis",default=context.elvis,help="ELVIS version.")
     
     (options, args) = parser.parse_args()
     
@@ -163,6 +172,7 @@ if __name__ == '__main__':
         
     path = options.path
     broadcast = bool(options.broadcast)
+    elvis = options.elvis
     
     if not os.path.exists(path):
         sys.exit('HKmonitory.py: %s does not exist' % path)
@@ -180,7 +190,7 @@ if __name__ == '__main__':
         print header % path
     
     
-    app = Eyegore(path,broadcast=broadcast)
+    app = Eyegore(path,broadcast=broadcast,elvis=elvis,dolite=False)
 
     
     
