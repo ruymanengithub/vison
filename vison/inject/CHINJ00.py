@@ -61,7 +61,7 @@ class CHINJ00_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
             ('IDH',([float],'Injection Drain High Voltage.')),
-            ('toi_chinj',([float],'TOI Charge Injection.')),
+            ('toi_chinj',([int],'TOI Charge Injection.')),
             ('chinj_on',([int],'Number of lines injected per cycle.')),
             ('chinj_of',([int],'Number of lines NON injected per cycle.'))
             ])))
