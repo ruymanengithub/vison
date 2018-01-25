@@ -55,8 +55,8 @@ def _ax_render_HK(ax,x,y,HKlims,HKkey):
         ax.plot(x[np.isnan(y)],yp[np.isnan(y)],'ro-')                    
     else:
         ax.plot(x,y)
-        
-    if len(HKlims) == 0:
+    
+    if len(HKlims) == 1:
         ax.axhline(y=HKlims[0],ls='--',lw=2,color='r')
     elif len(HKlims) == 2:
         for ik in range(2):
@@ -108,8 +108,7 @@ class SingleHKplot(tk.Toplevel):
     
     def render(self,HKkey,HKlims,x,y):
         
-        ax = _ax_render_HK(self.ax,x,y,HKlims,HKkey)
-        
+        ax = _ax_render_HK(self.ax,x,y,HKlims,HKkey)        
         try: self.f.autofmt_xdate()
         except:
             pass
@@ -233,7 +232,7 @@ class HKFlags(tk.Toplevel):
         HKflag = event.widget
         ix = HKflag.ix
         HKkey = self.HKkeys[ix]
-        HKlim = self.parent.HKlims[HKkey]
+        HKlim = self.parent.HKlims[HKkey][1:]
         t = self.parent.HK['time'].copy()
         y = self.parent.HK[HKkey].copy()
         #print 'Im here!'
@@ -259,9 +258,13 @@ class HKFlags(tk.Toplevel):
         #print self.parent.HK
         
         for ix in range(len(HKkeys)):
-            HKlim = self.parent.HKlims[HKkeys[ix]]
+            HKlim = self.parent.HKlims[HKkeys[ix]][1:]
             lastval = self.parent.HK[HKkeys[ix]][-1]
             
+#            if HKkeys[ix] == 'SPW_STATUS_REG':
+#                print '%s= %.1f' % (HKkeys[ix],lastval)
+#                print 'lim = ', HKlim
+                
             isWithin = self.validate(lastval,HKlim)
             if isWithin: continue
             
@@ -312,7 +315,7 @@ class HKDisplay(tk.Toplevel):
         self.root = root
         
         self.HKkeys = HKtools.allHK_keys[elvis]
-        self.HKlims = HKtools.HKlims[elvis]['P']
+        self.HKlims = HKtools.HKlims[elvis]['S']
         
         self.search_HKfile()
         
