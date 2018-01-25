@@ -438,11 +438,11 @@ class Task(object):
         return compliance
     
     def check_data(self,**kwargs):
-        """Generic check_data method"""        
+        """Generic check_data method"""
         if self.report is not None: 
             self.report.add_Section(keyword='check_data',Title='Data Validation',level=0)
         # CHECK AND CROSS-CHECK HK        
-        self.check_HK_ST()        
+        self.check_HK_ST()
         # OBTAIN METRICS FROM IMAGES        
         self.get_checkstats_ST(**kwargs)
         # METRICS ASSESSMENT       

@@ -55,15 +55,18 @@ Step-by-Step:
   ::
     ~$ cd vison
 
-* Under the 'conda' sub-folder, you will find two text files: 
+* Under the 'conda' sub-folder, you will find several text files: 
   ::
     ~$ cd conda
     ~$ ls
-      env-conda_vison.txt  env-pip_vison.txt
+      env-conda_vison_linux.txt  env-conda_vison_windows.txt 
+      env-conda_vison_old.txt  env-pip_vison_old.txt  
+      env-pip_vison.txt
 
-* Then execute the following command to create a new conda environment, `vison`:
+* Then execute the following command to create a new conda environment, `vison`. Use the OS version that may correspond in
+your case (by now, only linux and windows versions available, and for 64 bits machines).
   ::
-    ~$ conda create -n vison --file env-conda_vison.txt
+    ~$ conda create -n vison --file env-conda_[OS].txt
 
 * When prompted, type "y" and return to install the listed packages.
 * Activate the new environment
