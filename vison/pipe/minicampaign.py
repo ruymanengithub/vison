@@ -93,18 +93,19 @@ def generate_reduced_test_sequence(equipment,toGen,elvis=context.elvis):
         
         print 'CHINJ00...'
      
-        IDL = 11.
         IDH = 18.
-        IG1s = [2.,6.]
         toi_chinj00 = 500
-        #id_delays = [toi_chinj00*3,toi_chinj00*2]
+        chinj_on = 30
+        chinj_of = 300
      
         diffCHINJ00 = dict(mirr_on=0,sn_ccd1=sn_ccd1,
                        sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
                        sn_rpsu=sn_rpsu,operator=operator)
          
-        chinj00 = CHINJ00.CHINJ00(inputs=dict(IDL=IDL,IDH=IDH,IG1s=IG1s,
+        chinj00 = CHINJ00.CHINJ00(inputs=dict(IDH=IDH,
                                                toi_chinj=toi_chinj00,
+                                               chinj_on = chinj_on,
+                                               chinj_of = chinj_of,
                                                diffvalues=diffCHINJ00))
         structCHINJ00 = chinj00.build_scriptdict(elvis=elvis)
          
