@@ -39,7 +39,10 @@ import Tkinter as tk
 import ttk
 import tkFont as tkFont
 
-import pyds9
+try: 
+    import pyds9
+except ImportError: 
+    print 'pyds9 not installed in the system. Will not be possible to liaise with SAO-ds9.'
 
 
 # END IMPORT
@@ -245,14 +248,17 @@ class ExpLogDisplay(tk.Toplevel):
         item = self.tree.identify('item',event.x,event.y)
         values = self.tree.item(item,"value")
         ObsID = int(values[0])
-        
-        d = pyds9.DS9()
+        try:
+            d = pyds9.DS9()
+        except NameError:
+            print "pyds9 not installed, can't open DS9!"
+            return
         
         for CCD in [1,2,3]:
             tmpfits = os.path.join(self.path,'EUC_%i_*D*T_ROE1_CCD%i.fits' % (ObsID,CCD))
             try: iFITSf = glob.glob(tmpfits)[0]
             except IndexError: 
-                print tmpfits
+                #print tmpfits
                 iFITSf = None
             
             if iFITSf is not None:
