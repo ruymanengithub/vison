@@ -97,7 +97,7 @@ def generate_reduced_test_sequence(equipment,toGen,elvis=context.elvis):
         IDH = 18.
         IG1s = [2.,6.]
         toi_chinj00 = 500
-        id_delays = [toi_chinj00*3,toi_chinj00*2]
+        #id_delays = [toi_chinj00*3,toi_chinj00*2]
      
         diffCHINJ00 = dict(mirr_on=0,sn_ccd1=sn_ccd1,
                        sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
@@ -105,7 +105,6 @@ def generate_reduced_test_sequence(equipment,toGen,elvis=context.elvis):
          
         chinj00 = CHINJ00.CHINJ00(inputs=dict(IDL=IDL,IDH=IDH,IG1s=IG1s,
                                                toi_chinj=toi_chinj00,
-                                               id_delays=id_delays,
                                                diffvalues=diffCHINJ00))
         structCHINJ00 = chinj00.build_scriptdict(elvis=elvis)
          
