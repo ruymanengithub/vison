@@ -8,7 +8,6 @@ IO related functions.
 :contact: r.azzollini_at_ucl.ac.uk
 """
 import datetime, cPickle, os
-#import pyfits as pf
 import numpy as np
 from pdb import set_trace as stop
 

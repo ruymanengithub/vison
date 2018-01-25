@@ -63,8 +63,9 @@ Step-by-Step:
       env-conda_vison_old.txt  env-pip_vison_old.txt  
       env-pip_vison.txt
 
-* Then execute the following command to create a new conda environment, `vison`. Use the OS version that may correspond in
-your case (by now, only linux and windows versions available, and for 64 bits machines).
+* Then execute the following command to create a new conda environment, `vison`.
+Use the OS version that may correspond in your case (by now, only linux and windows versions available, and for 64 bits machines).
+
   ::
     ~$ conda create -n vison --file env-conda_[OS].txt
 

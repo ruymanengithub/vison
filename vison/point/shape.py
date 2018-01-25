@@ -12,7 +12,7 @@ Simple class to measure quadrupole moments and ellipticity of an object.
 """
 import os, datetime, unittest
 import numpy as np
-import pyfits as pf
+from astropy.io import fits as fts
 from basis import SpotBase
 
 from pdb import set_trace as stop
@@ -304,10 +304,10 @@ class Shapemeter(SpotBase):
             os.remove(output)
 
         #create a new FITS file, using HDUList instance
-        ofd = pf.HDUList(pf.PrimaryHDU())
+        ofd = fts.HDUList(fts.PrimaryHDU())
 
         #new image HDU
-        hdu = pf.ImageHDU(data=data)
+        hdu = fts.ImageHDU(data=data)
 
         #update and verify the header
         hdu.header.add_history('If questions, please contact Ruyman Azzollini (r.azzollini at ucl.ac.uk).')
@@ -417,7 +417,7 @@ class TestShape(unittest.TestCase):
     def test_PSF12x(self):
         expected = 0.045536
         R2exp = 5.010087
-        data = pf.getdata(self.psffile12x)
+        data = fts.getdata(self.psffile12x)
         settings = dict(sampling=1/12.0)
         actual = Shapemeter(data, self.log, **settings).measureRefinedEllipticity()
         self.assertAlmostEqual(expected, actual['ellipticity'],
@@ -429,7 +429,7 @@ class TestShape(unittest.TestCase):
     def test_PSF(self):
         expected = 0.045437
         R2exp = 4.959904
-        data = pf.getdata(self.psffile)
+        data = fts.getdata(self.psffile)
         actual = Shapemeter(data, self.log).measureRefinedEllipticity()
         self.assertAlmostEqual(expected, actual['ellipticity'],
                                msg='exp=%f, got=%f' % (expected, actual['ellipticity']), delta=10*self.tolerance)
@@ -439,10 +439,10 @@ class TestShape(unittest.TestCase):
 
     def test_gaussian_weighting(self):
         settings = dict(debug=True)
-        data = pf.getdata(self.psffile)
+        data = fts.getdata(self.psffile)
         data /= np.max(data)
         _ = Shapemeter(data, self.log, **settings).measureRefinedEllipticity()
-        gweighted = pf.getdata('GaussianWeighted.fits')
+        gweighted = fts.getdata('GaussianWeighted.fits')
         self.assertAlmostEqual(np.max(data), np.max(gweighted))
 
 
