@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Pipeline &#8212; vison 0.3 documentation</title>
+    <title>Pipeline &#8212; vison 0.3+73.g57a3237 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3',
+        VERSION:     '0.3+73.g57a3237',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3+73.g57a3237 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -100,11 +100,115 @@ with subdirectories for each TASK run.</li>
 </table>
 <dl class="class">
 <dt id="vison.pipe.master.Pipe">
-<em class="property">class </em><code class="descclassname">vison.pipe.master.</code><code class="descname">Pipe</code><span class="sig-paren">(</span><em>inputdict</em>, <em>dolog=True</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.pipe.master.</code><code class="descname">Pipe</code><span class="sig-paren">(</span><em>inputdict</em>, <em>dolog=True</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Master Class of FM-analysis</p>
 <dl class="class">
+<dt id="vison.pipe.master.Pipe.BIAS01">
+<em class="property">class </em><code class="descname">BIAS01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BIAS01" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.pipe.master.Pipe.BIAS01.basic_analysis">
+<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BIAS01.basic_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>BIAS01: Basic analysis of data.</p>
+<p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
+   <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
+       
+       <span class="n">load</span> <span class="n">ccdobj</span> <span class="n">of</span> <span class="n">ObsID</span><span class="p">,</span> <span class="n">CCD</span>
+       
+       <span class="k">with</span> <span class="n">ccdobj</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
+           <span class="n">produce</span> <span class="n">a</span> <span class="mi">2</span><span class="n">D</span> <span class="n">poly</span> <span class="n">model</span> <span class="n">of</span> <span class="n">bias</span><span class="p">,</span> <span class="n">save</span> <span class="n">coefficients</span>
+           <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">rows</span>
+           <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">cols</span>
+           <span class="n">save</span> <span class="mi">2</span><span class="n">D</span> <span class="n">model</span> <span class="ow">and</span> <span class="n">profiles</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">pick</span> <span class="n">file</span> <span class="k">for</span> <span class="n">each</span> <span class="n">OBSID</span><span class="o">-</span><span class="n">CCD</span>
+           <span class="n">measure</span> <span class="ow">and</span> <span class="n">save</span> <span class="n">RON</span> <span class="n">after</span> <span class="n">subtracting</span> <span class="n">large</span> <span class="n">scale</span> <span class="n">structure</span>
+
+<span class="n">plot</span> <span class="n">RON</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span> <span class="ow">and</span> <span class="n">Q</span>
+<span class="n">plot</span> <span class="n">average</span> <span class="n">profiles</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span> <span class="ow">and</span> <span class="n">Q</span> <span class="p">(</span><span class="n">color</span> <span class="n">coded</span> <span class="n">by</span> <span class="n">time</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.BIAS01.build_scriptdict">
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BIAS01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds BIAS01 script structure dictionary.</p>
+<p>###:param N: integer, number of frames to acquire.
+:param diffvalues: dict, opt, differential values.
+:param elvis: char, ELVIS version.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.BIAS01.filterexposures">
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BIAS01.filterexposures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.BIAS01.meta_analysis">
+<code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BIAS01.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">:</span>
+   <span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">Q</span><span class="p">:</span>
+       <span class="n">stack</span> <span class="nb">all</span> <span class="n">ObsIDs</span> <span class="n">to</span> <span class="n">produce</span> <span class="n">Master</span> <span class="n">Bias</span>
+       <span class="n">measure</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">rows</span>
+       <span class="n">measure</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">cols</span>
+<span class="n">plot</span> <span class="n">average</span> <span class="n">profiles</span> <span class="n">of</span> <span class="n">Master</span> <span class="n">Bias</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">Q</span>
+<span class="n">produce</span> <span class="n">table</span> <span class="k">with</span> <span class="n">summary</span> <span class="n">of</span> <span class="n">results</span><span class="p">,</span> <span class="n">include</span> <span class="ow">in</span> <span class="n">report</span>
+<span class="n">show</span> <span class="n">Master</span> <span class="n">Bias</span> <span class="p">(</span><span class="n">image</span><span class="p">),</span> <span class="n">include</span> <span class="ow">in</span> <span class="n">report</span>
+<span class="n">save</span> <span class="n">name</span> <span class="n">of</span> <span class="n">MasterBias</span> <span class="n">to</span> <span class="n">DataDict</span><span class="p">,</span> <span class="n">report</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.BIAS01.prep_data">
+<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BIAS01.prep_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>BIAS01: Preparation of data for further analysis.
+applies a mask</p>
+<p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
+        <span class="n">apply</span> <span class="n">cosmetic</span> <span class="n">mask</span><span class="p">,</span> <span class="k">if</span> <span class="n">available</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
+            <span class="n">subtract</span> <span class="n">offset</span>
+        <span class="n">save</span> <span class="n">file</span> <span class="k">as</span> <span class="n">a</span> <span class="n">datamodel</span><span class="o">/</span><span class="n">ccd</span><span class="o">/</span><span class="n">CCD</span> <span class="nb">object</span><span class="o">.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vison.pipe.master.Pipe.CHINJ00">
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ00" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.pipe.master.Pipe.CHINJ00.build_scriptdict">
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ00.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds CHINJ00 script structure dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>diffvalues</strong> &#8211; dict, opt, differential values.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.CHINJ00.filterexposures">
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ00.filterexposures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.CHINJ00.set_inpdefaults">
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ00.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="vison.pipe.master.Pipe.CHINJ01">
-<em class="property">class </em><code class="descname">CHINJ01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ01" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ01" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.CHINJ01.basic_analysis">
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ01.basic_analysis" title="Permalink to this definition">¶</a></dt>
@@ -133,58 +237,14 @@ with subdirectories for each TASK run.</li>
 
 <dl class="method">
 <dt id="vison.pipe.master.Pipe.CHINJ01.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>IDL</em>, <em>IDH</em>, <em>IG1s</em>, <em>id_delays</em>, <em>toi_chinj</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds CHINJ01 script structure dictionary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>IDL</strong> &#8211; int, [mV], value of IDL (Inject. Drain Low).</li>
-<li><strong>IDH</strong> &#8211; int, [mV], Injection Drain High.</li>
-<li><strong>IG1s</strong> &#8211; list of 2 ints, [mV], [min,max] values of IG1.</li>
-<li><strong>id_delays</strong> &#8211; list of 2 ints, [mV], injection drain delays (2).</li>
-<li><strong>toi_chinj</strong> &#8211; int, [us], TOI-charge injection.</li>
-<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.pipe.master.Pipe.CHINJ01.check_data">
-<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ01.check_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>CHINJ01: Checks quality of ingested data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
-<span class="n">check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
-            <span class="n">measure</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">extract</span> <span class="mi">2</span><span class="n">D</span> <span class="n">chinj</span><span class="o">-</span><span class="n">pattern</span><span class="p">:</span>
-                <span class="n">measure</span> <span class="n">average</span> <span class="n">level</span> <span class="n">of</span> <span class="n">injection</span>
-                <span class="n">measure</span> <span class="n">average</span> <span class="n">level</span> <span class="n">of</span> <span class="n">non</span><span class="o">-</span><span class="n">injection</span>
-
-<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="ow">and</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span>  <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">non</span><span class="o">-</span><span class="n">injection</span> <span class="n">level</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">expected</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">injection</span> <span class="n">level</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">expected</span> <span class="n">margins</span>
-
-<span class="p">[</span><span class="n">plot</span> <span class="n">offsets</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
-<span class="p">[</span><span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
-<span class="n">plot</span> <span class="n">injected</span> <span class="n">level</span> <span class="n">vs</span><span class="o">.</span> <span class="n">IG1</span> <span class="k">for</span> <span class="n">each</span> <span class="n">half</span>
-
-
-<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>          
-</pre></div>
-</div>
+<p>#:param IDL: int, [mV], value of IDL (Inject. Drain Low).
+#:param IDH: int, [mV], Injection Drain High.
+#:param IG1s: list of 2 ints, [mV], [min,max] values of IG1.
+#:param id_delays: list of 2 ints, [mV], injection drain delays (2).
+#:param toi_chinj: int, [us], TOI-charge injection.
+:param diffvalues: dict, opt, differential values.</p>
 </dd></dl>
 
 <dl class="method">
@@ -204,15 +264,20 @@ with subdirectories for each TASK run.</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="vison.pipe.master.Pipe.CHINJ01.feeder">
-<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ01.feeder" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.pipe.master.Pipe.CHINJ01.filterexposures">
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ01.filterexposures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.CHINJ01.set_inpdefaults">
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ01.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.CHINJ02">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ02" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ02" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.CHINJ02.basic_analysis">
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ02.basic_analysis" title="Permalink to this definition">¶</a></dt>
@@ -242,57 +307,13 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 
 <dl class="method">
 <dt id="vison.pipe.master.Pipe.CHINJ02.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>IDLs</em>, <em>IDH</em>, <em>id_delays</em>, <em>toi_chinj</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ02.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ02.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds CHINJ02 script structure dictionary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>IDLs</strong> &#8211; list of 2 ints, [mV], [min,max] values of IDL (Inject. Drain Low).</li>
-<li><strong>IDH</strong> &#8211; int, [mV], Injection Drain High.</li>
-<li><strong>id_delays</strong> &#8211; list of 2 ints, [mV], injection drain delays (2).</li>
-<li><strong>toi_chinj</strong> &#8211; int, [us], TOI-charge injection.</li>
-<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.pipe.master.Pipe.CHINJ02.check_data">
-<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ02.check_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>CHINJ02: Checks quality of ingested data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
-<span class="n">check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
-            <span class="n">measure</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">extract</span> <span class="mi">2</span><span class="n">D</span> <span class="n">chinj</span><span class="o">-</span><span class="n">pattern</span><span class="p">:</span>
-                <span class="n">measure</span> <span class="n">average</span> <span class="n">level</span> <span class="n">of</span> <span class="n">injection</span>
-                <span class="n">measure</span> <span class="n">average</span> <span class="n">level</span> <span class="n">of</span> <span class="n">non</span><span class="o">-</span><span class="n">injection</span>
-
-<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="ow">and</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span>  <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">non</span><span class="o">-</span><span class="n">injection</span> <span class="n">level</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">expected</span> <span class="n">margins</span>
-<span class="p">[</span><span class="n">assess</span> <span class="n">injection</span> <span class="n">level</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">expected</span> <span class="n">margins</span><span class="p">]</span>
-
-<span class="p">[</span><span class="n">plot</span> <span class="n">offsets</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
-<span class="p">[</span><span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
-<span class="n">plot</span> <span class="n">injected</span> <span class="n">level</span> <span class="n">vs</span><span class="o">.</span> <span class="n">IDL</span> <span class="k">for</span> <span class="n">each</span> <span class="n">half</span>
-
-
-<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>          
-</pre></div>
-</div>
+<p>#:param IDLs: list of 2 ints, [mV], [min,max] values of IDL (Inject. Drain Low).
+#:param IDH: int, [mV], Injection Drain High.
+#:param id_delays: list of 2 ints, [mV], injection drain delays (2).
+#:param toi_chinj: int, [us], TOI-charge injection.
+:param diffvalues: dict, opt, differential values.</p>
 </dd></dl>
 
 <dl class="method">
@@ -312,8 +333,8 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 </dd></dl>
 
 <dl class="method">
-<dt id="vison.pipe.master.Pipe.CHINJ02.feeder">
-<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ02.feeder" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.pipe.master.Pipe.CHINJ02.filterexposures">
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ02.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -331,11 +352,16 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 </div>
 </dd></dl>
 
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.CHINJ02.set_inpdefaults">
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ02.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.DARK01">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">DARK01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.DARK01" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">DARK01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.DARK01" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.DARK01.basic_analysis">
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.DARK01.basic_analysis" title="Permalink to this definition">¶</a></dt>
@@ -359,52 +385,21 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 
 <dl class="method">
 <dt id="vison.pipe.master.Pipe.DARK01.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>N</em>, <em>exptime</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.DARK01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.DARK01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds DARK01 script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>N</strong> &#8211; integer, number of frames to acquire.</li>
-<li><strong>exptime</strong> &#8211; integer, ms, exposure time.</li>
-<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>diffvalues</strong> &#8211; dict, opt, differential values.</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="method">
-<dt id="vison.pipe.master.Pipe.DARK01.check_data">
-<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.DARK01.check_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>DARK0: Checks quality of ingested data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
-<span class="n">check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
-            <span class="n">measure</span> <span class="n">offsets</span><span class="o">/</span><span class="n">means</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span><span class="o">/</span><span class="n">means</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span>  <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span><span class="o">/</span><span class="n">means</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-
-<span class="n">plot</span> <span class="n">offsets</span><span class="o">/</span><span class="n">means</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
-<span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
-
-<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.pipe.master.Pipe.DARK01.feeder">
-<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.DARK01.feeder" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.pipe.master.Pipe.DARK01.filterexposures">
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.DARK01.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -445,53 +440,19 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.FLAT0X">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">FLAT0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FLAT0X" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">FLAT0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FLAT0X" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="vison.pipe.master.Pipe.FLAT0X.build_FLAT0X_scriptdict">
-<code class="descname">build_FLAT0X_scriptdict</code><span class="sig-paren">(</span><em>exptimes</em>, <em>frames</em>, <em>flags</em>, <em>wavelength=800</em>, <em>testkey='FLAT0X'</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FLAT0X.build_FLAT0X_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.pipe.master.Pipe.FLAT0X.build_scriptdict">
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FLAT0X.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds FLAT0X script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>exptimes</strong> &#8211; list of ints, exposure times.</li>
-<li><strong>wavelength</strong> &#8211; int, wavelength.</li>
-<li><strong>testkey</strong> &#8211; char, test identifier.</li>
-<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>diffvalues</strong> &#8211; dict, opt, differential values.</td>
 </tr>
 </tbody>
 </table>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.pipe.master.Pipe.FLAT0X.check_data">
-<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FLAT0X.check_data" title="Permalink to this definition">¶</a></dt>
-<dd><p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Checks</span> <span class="n">quality</span> <span class="n">of</span> <span class="n">ingested</span> <span class="n">data</span><span class="o">.</span>
-
-<span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
-<span class="n">check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
-            <span class="n">measure</span> <span class="n">offsets</span><span class="o">/</span><span class="n">means</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">and</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span>  <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">fluences</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">flag</span> <span class="n">saturations</span> <span class="k">if</span> <span class="n">there</span> <span class="n">are</span><span class="o">.</span>
-
-<span class="n">plot</span> <span class="n">fluence</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span> <span class="k">for</span> <span class="n">each</span> <span class="n">exptime</span>
-<span class="n">plot</span> <span class="n">std</span><span class="o">-</span><span class="n">pre</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
-
-<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="method">
@@ -553,70 +514,63 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 </dd></dl>
 
 <dl class="method">
-<dt id="vison.pipe.master.Pipe.FLAT0X.feeder">
-<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FLAT0X.feeder" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.pipe.master.Pipe.FLAT0X.filterexposures">
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FLAT0X.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="vison.pipe.master.Pipe.FLAT0X.filterexposures">
-<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FLAT0X.filterexposures" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.pipe.master.Pipe.FLAT0X.set_inpdefaults">
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FLAT0X.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.FOCUS00">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">FOCUS00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FOCUS00" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">FOCUS00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FOCUS00" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.pipe.master.Pipe.FOCUS00.basic_analysis">
+<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FOCUS00.basic_analysis" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="class">
-<dt id="vison.pipe.master.Pipe.NL01">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">NL01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL01" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="vison.pipe.master.Pipe.NL01.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>expts</em>, <em>exptinter</em>, <em>frames</em>, <em>wavelength=0</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Builds NL01 script structure dictionary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>expts</strong> &#8211; list of ints [ms], exposure times.</li>
-<li><strong>exptinter</strong> &#8211; int, ms, exposure time of interleaved source-stability exposures.</li>
-<li><strong>frames</strong> &#8211; list of ints, number of frames for each exposure time.</li>
-<li><strong>wavelength</strong> &#8211; int, wavelength. Default: 0 (Neutral Density Filter)</li>
-<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.FOCUS00.build_scriptdict">
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FOCUS00.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds FOCUS00 script structure dictionary.</p>
+<p>#:param wavelength: int, [nm], wavelength.
+#:param exptime: int, [ms], exposure time.
+:param diffvalues: dict, opt, differential values.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="vison.pipe.master.Pipe.NL01.check_data">
-<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL01.check_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>NL01: Checks that data quality is good enough.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
-<span class="n">Check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
+<dt id="vison.pipe.master.Pipe.FOCUS00.filterexposures">
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FOCUS00.filterexposures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
-            <span class="n">measure</span> <span class="n">offsets</span><span class="o">/</span><span class="n">means</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="p">(</span><span class="n">assess</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">and</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span>  <span class="n">margins</span><span class="p">)</span>
-<span class="n">assess</span> <span class="n">image</span><span class="o">-</span><span class="n">fluences</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span> <span class="k">for</span> <span class="n">each</span> <span class="n">exposure</span> <span class="n">time</span>
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.FOCUS00.meta_analysis">
+<code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FOCUS00.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-<span class="n">plot</span> <span class="n">fluences</span> <span class="n">vs</span><span class="o">.</span> <span class="n">exposure</span> <span class="n">time</span>
-<span class="n">plot</span> <span class="n">std</span><span class="o">-</span><span class="n">pre</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.FOCUS00.prep_data">
+<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FOCUS00.prep_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>
-</pre></div>
-</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="vison.pipe.master.Pipe.NL01">
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">NL01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL01" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.pipe.master.Pipe.NL01.build_scriptdict">
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds NL01 script structure dictionary.</p>
+<p>#:param expts: list of ints [ms], exposure times.
+#:param exptinter: int, ms, exposure time of interleaved source-stability exposures.
+#:param frames: list of ints, number of frames for each exposure time.
+#:param wavelength: int, wavelength. Default: 0 (Neutral Density Filter)
+:param diffvalues: dict, opt, differential values.</p>
 </dd></dl>
 
 <dl class="method">
@@ -659,13 +613,8 @@ image regions to later build NLC.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="vison.pipe.master.Pipe.NL01.feeder">
-<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL01.feeder" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="vison.pipe.master.Pipe.NL01.filterexposures">
-<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL01.filterexposures" title="Permalink to this definition">¶</a></dt>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL01.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a list of Exposure Logs and selects exposures from test PSF0X.</p>
 <p>The filtering takes into account an expected structure for the 
 acquisition script.</p>
@@ -712,7 +661,7 @@ date-folders.</p>
 
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.PERSIST01">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">PERSIST01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PERSIST01" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">PERSIST01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PERSIST01" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.PERSIST01.basic_analysis">
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PERSIST01.basic_analysis" title="Permalink to this definition">¶</a></dt>
@@ -729,7 +678,7 @@ date-folders.</p>
 
 <dl class="method">
 <dt id="vison.pipe.master.Pipe.PERSIST01.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>exptSATUR</em>, <em>exptLATEN</em>, <em>diffvalues={}</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PERSIST01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PERSIST01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds PERSISTENCE01 script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -776,6 +725,11 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="vison.pipe.master.Pipe.PERSIST01.filterexposures">
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PERSIST01.filterexposures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="vison.pipe.master.Pipe.PERSIST01.meta_analysis">
 <code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PERSIST01.meta_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Meta-analysis of data.</p>
@@ -804,55 +758,29 @@ date-folders.</p>
 </div>
 </dd></dl>
 
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.PERSIST01.set_inpdefaults">
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PERSIST01.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.PERSIST01.set_perfdefaults">
+<code class="descname">set_perfdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PERSIST01.set_perfdefaults" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.PTC0X">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">PTC0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PTC0X" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">PTC0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PTC0X" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.PTC0X.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>testkey</em>, <em>exptimes</em>, <em>frames</em>, <em>wavelength=800</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PTC0X.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PTC0X.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds PTC0X script structure dictionary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>exptimes</strong> &#8211; list of ints [ms], exposure times.</li>
-<li><strong>frames</strong> &#8211; list of ints, number of frames for each exposure time.</li>
-<li><strong>wavelength</strong> &#8211; int, wavelength. Default: 800 nm.</li>
-<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.pipe.master.Pipe.PTC0X.check_data">
-<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PTC0X.check_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks quality of ingested data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
-<span class="n">check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
-            <span class="n">measure</span> <span class="n">offsets</span><span class="o">/</span><span class="n">means</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">and</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span>  <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">image</span><span class="o">-</span><span class="n">fluences</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-
-<span class="n">plot</span> <span class="n">fluences</span> <span class="n">vs</span><span class="o">.</span> <span class="n">exposure</span> <span class="n">time</span>
-<span class="n">plot</span> <span class="n">std</span><span class="o">-</span><span class="n">pre</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
-
-<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>
-</pre></div>
-</div>
+<p>#:param exptimes: list of ints [ms], exposure times.
+#:param frames: list of ints, number of frames for each exposure time.
+#:param wavelength: int, wavelength. Default: 800 nm.
+:param diffvalues: dict, opt, differential values.</p>
 </dd></dl>
 
 <dl class="method">
@@ -883,13 +811,8 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="vison.pipe.master.Pipe.PTC0X.feeder">
-<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PTC0X.feeder" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="vison.pipe.master.Pipe.PTC0X.filterexposures">
-<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PTC0X.filterexposures" title="Permalink to this definition">¶</a></dt>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PTC0X.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -914,39 +837,24 @@ gain, and gain(fluence)</p>
 </div>
 </dd></dl>
 
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.PTC0X.set_inpdefaults">
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PTC0X.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
-<dt id="vison.pipe.master.Pipe.TP01">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP01" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.pipe.master.Pipe.TP00">
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP00" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="vison.pipe.master.Pipe.TP01.basic_analysis">
-<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP01.basic_analysis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Basic analysis of data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span> <span class="p">[</span><span class="n">there</span> <span class="n">are</span> <span class="n">different</span> <span class="n">TOI_TP</span> <span class="ow">and</span> <span class="n">TP</span><span class="o">-</span><span class="n">patterns</span><span class="p">]:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">load</span> <span class="s2">&quot;map of relative pumping&quot;</span>
-            <span class="n">find_dipoles</span><span class="p">:</span>
-                <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rel</span><span class="o">-</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">orientation</span>
-
-<span class="n">produce</span> <span class="o">&amp;</span> <span class="n">report</span><span class="p">:</span>  
-    <span class="nb">map</span> <span class="n">location</span> <span class="n">of</span> <span class="n">dipoles</span>
-    <span class="n">PDF</span> <span class="n">of</span> <span class="n">dipole</span> <span class="n">amplitudes</span> <span class="p">(</span><span class="k">for</span> <span class="n">N</span> <span class="ow">and</span> <span class="n">S</span><span class="p">)</span>
-    <span class="n">Counts</span> <span class="n">of</span> <span class="n">dipoles</span> <span class="p">(</span><span class="ow">and</span> <span class="n">N</span> <span class="n">vs</span><span class="o">.</span> <span class="n">S</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.pipe.master.Pipe.TP01.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>Nshuffles_V</em>, <em>TOI_TPv</em>, <em>id_delays</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.pipe.master.Pipe.TP00.build_scriptdict">
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP00.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="vison.pipe.master.Pipe.TP01.check_data">
-<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP01.check_data" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.pipe.master.Pipe.TP00.check_data">
+<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP00.check_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>TP01: Checks quality of ingested data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
@@ -974,8 +882,48 @@ gain, and gain(fluence)</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="vison.pipe.master.Pipe.TP01.feeder">
-<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP01.feeder" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.pipe.master.Pipe.TP00.filterexposures">
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP00.filterexposures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.TP00.set_inpdefaults">
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP00.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vison.pipe.master.Pipe.TP01">
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP01" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.pipe.master.Pipe.TP01.basic_analysis">
+<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP01.basic_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic analysis of data.</p>
+<p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span> <span class="p">[</span><span class="n">there</span> <span class="n">are</span> <span class="n">different</span> <span class="n">TOI_TP</span> <span class="ow">and</span> <span class="n">TP</span><span class="o">-</span><span class="n">patterns</span><span class="p">]:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
+            <span class="n">load</span> <span class="s2">&quot;map of relative pumping&quot;</span>
+            <span class="n">find_dipoles</span><span class="p">:</span>
+                <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rel</span><span class="o">-</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">orientation</span>
+
+<span class="n">produce</span> <span class="o">&amp;</span> <span class="n">report</span><span class="p">:</span>  
+    <span class="nb">map</span> <span class="n">location</span> <span class="n">of</span> <span class="n">dipoles</span>
+    <span class="n">PDF</span> <span class="n">of</span> <span class="n">dipole</span> <span class="n">amplitudes</span> <span class="p">(</span><span class="k">for</span> <span class="n">N</span> <span class="ow">and</span> <span class="n">S</span><span class="p">)</span>
+    <span class="n">Counts</span> <span class="n">of</span> <span class="n">dipoles</span> <span class="p">(</span><span class="ow">and</span> <span class="n">N</span> <span class="n">vs</span><span class="o">.</span> <span class="n">S</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.TP01.build_scriptdict">
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.TP01.filterexposures">
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP01.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1017,11 +965,16 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 </div>
 </dd></dl>
 
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.TP01.set_inpdefaults">
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP01.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.TP02">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP02" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP02" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.TP02.basic_analysis">
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP02.basic_analysis" title="Permalink to this definition">¶</a></dt>
@@ -1044,42 +997,12 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 
 <dl class="method">
 <dt id="vison.pipe.master.Pipe.TP02.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>Nshuffles_H</em>, <em>dwell_sv</em>, <em>id_delays</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP02.build_scriptdict" title="Permalink to this definition">¶</a></dt>
-<dd><p>MISSING: different starting points (not implemented in ELVIS yet).</p>
-</dd></dl>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP02.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
-<dt id="vison.pipe.master.Pipe.TP02.check_data">
-<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP02.check_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>TP02: Checks quality of ingested data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
-<span class="n">check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
-            <span class="n">measure</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">mean</span> <span class="ow">in</span> <span class="n">img</span><span class="o">-</span>
-
-<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="p">(</span><span class="o">~</span><span class="n">RON</span><span class="p">)</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="ow">and</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">injection</span> <span class="n">level</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">expected</span> <span class="n">margins</span>
-
-<span class="n">plot</span> <span class="n">histogram</span> <span class="n">of</span> <span class="n">injected</span> <span class="n">levels</span> <span class="k">for</span> <span class="n">each</span> <span class="n">Q</span>
-<span class="p">[</span><span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
-
-<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>          
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.pipe.master.Pipe.TP02.feeder">
-<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP02.feeder" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.pipe.master.Pipe.TP02.filterexposures">
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP02.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1121,6 +1044,11 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 </div>
 </dd></dl>
 
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.TP02.set_inpdefaults">
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP02.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="method">
@@ -1130,7 +1058,7 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 
 <dl class="method">
 <dt id="vison.pipe.master.Pipe.dotask">
-<code class="descclassname">Pipe.</code><code class="descname">dotask</code><span class="sig-paren">(</span><em>taskname</em>, <em>inputs</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.dotask" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Pipe.</code><code class="descname">dotask</code><span class="sig-paren">(</span><em>taskname</em>, <em>inputs</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.dotask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic test master function.</p>
 </dd></dl>
 
@@ -1146,18 +1074,122 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 
 <dl class="method">
 <dt id="vison.pipe.master.Pipe.wait_and_run">
-<code class="descclassname">Pipe.</code><code class="descname">wait_and_run</code><span class="sig-paren">(</span><em>explogf</em>, <em>elvis='6.1.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.wait_and_run" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Pipe.</code><code class="descname">wait_and_run</code><span class="sig-paren">(</span><em>explogf</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.wait_and_run" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">vison.pipe.master.</code><code class="descname">Pipe</code><span class="sig-paren">(</span><em>inputdict</em>, <em>dolog=True</em>, <em>drill=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">vison.pipe.master.</code><code class="descname">Pipe</code><span class="sig-paren">(</span><em>inputdict</em>, <em>dolog=True</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
 <dd><p>Master Class of FM-analysis</p>
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descname">CHINJ01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descname">BIAS01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<dd><dl class="method">
+<dt>
+<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>BIAS01: Basic analysis of data.</p>
+<p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
+   <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
+       
+       <span class="n">load</span> <span class="n">ccdobj</span> <span class="n">of</span> <span class="n">ObsID</span><span class="p">,</span> <span class="n">CCD</span>
+       
+       <span class="k">with</span> <span class="n">ccdobj</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
+           <span class="n">produce</span> <span class="n">a</span> <span class="mi">2</span><span class="n">D</span> <span class="n">poly</span> <span class="n">model</span> <span class="n">of</span> <span class="n">bias</span><span class="p">,</span> <span class="n">save</span> <span class="n">coefficients</span>
+           <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">rows</span>
+           <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">cols</span>
+           <span class="n">save</span> <span class="mi">2</span><span class="n">D</span> <span class="n">model</span> <span class="ow">and</span> <span class="n">profiles</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">pick</span> <span class="n">file</span> <span class="k">for</span> <span class="n">each</span> <span class="n">OBSID</span><span class="o">-</span><span class="n">CCD</span>
+           <span class="n">measure</span> <span class="ow">and</span> <span class="n">save</span> <span class="n">RON</span> <span class="n">after</span> <span class="n">subtracting</span> <span class="n">large</span> <span class="n">scale</span> <span class="n">structure</span>
+
+<span class="n">plot</span> <span class="n">RON</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span> <span class="ow">and</span> <span class="n">Q</span>
+<span class="n">plot</span> <span class="n">average</span> <span class="n">profiles</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span> <span class="ow">and</span> <span class="n">Q</span> <span class="p">(</span><span class="n">color</span> <span class="n">coded</span> <span class="n">by</span> <span class="n">time</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<dd><p>Builds BIAS01 script structure dictionary.</p>
+<p>###:param N: integer, number of frames to acquire.
+:param diffvalues: dict, opt, differential values.
+:param elvis: char, ELVIS version.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">:</span>
+   <span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">Q</span><span class="p">:</span>
+       <span class="n">stack</span> <span class="nb">all</span> <span class="n">ObsIDs</span> <span class="n">to</span> <span class="n">produce</span> <span class="n">Master</span> <span class="n">Bias</span>
+       <span class="n">measure</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">rows</span>
+       <span class="n">measure</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">cols</span>
+<span class="n">plot</span> <span class="n">average</span> <span class="n">profiles</span> <span class="n">of</span> <span class="n">Master</span> <span class="n">Bias</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">Q</span>
+<span class="n">produce</span> <span class="n">table</span> <span class="k">with</span> <span class="n">summary</span> <span class="n">of</span> <span class="n">results</span><span class="p">,</span> <span class="n">include</span> <span class="ow">in</span> <span class="n">report</span>
+<span class="n">show</span> <span class="n">Master</span> <span class="n">Bias</span> <span class="p">(</span><span class="n">image</span><span class="p">),</span> <span class="n">include</span> <span class="ow">in</span> <span class="n">report</span>
+<span class="n">save</span> <span class="n">name</span> <span class="n">of</span> <span class="n">MasterBias</span> <span class="n">to</span> <span class="n">DataDict</span><span class="p">,</span> <span class="n">report</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>BIAS01: Preparation of data for further analysis.
+applies a mask</p>
+<p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
+        <span class="n">apply</span> <span class="n">cosmetic</span> <span class="n">mask</span><span class="p">,</span> <span class="k">if</span> <span class="n">available</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
+            <span class="n">subtract</span> <span class="n">offset</span>
+        <span class="n">save</span> <span class="n">file</span> <span class="k">as</span> <span class="n">a</span> <span class="n">datamodel</span><span class="o">/</span><span class="n">ccd</span><span class="o">/</span><span class="n">CCD</span> <span class="nb">object</span><span class="o">.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<dd><dl class="method">
+<dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<dd><p>Builds CHINJ00 script structure dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>diffvalues</strong> &#8211; dict, opt, differential values.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
@@ -1186,58 +1218,14 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 
 <dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>IDL</em>, <em>IDH</em>, <em>IG1s</em>, <em>id_delays</em>, <em>toi_chinj</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
 <dd><p>Builds CHINJ01 script structure dictionary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>IDL</strong> &#8211; int, [mV], value of IDL (Inject. Drain Low).</li>
-<li><strong>IDH</strong> &#8211; int, [mV], Injection Drain High.</li>
-<li><strong>IG1s</strong> &#8211; list of 2 ints, [mV], [min,max] values of IG1.</li>
-<li><strong>id_delays</strong> &#8211; list of 2 ints, [mV], injection drain delays (2).</li>
-<li><strong>toi_chinj</strong> &#8211; int, [us], TOI-charge injection.</li>
-<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p>CHINJ01: Checks quality of ingested data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
-<span class="n">check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
-            <span class="n">measure</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">extract</span> <span class="mi">2</span><span class="n">D</span> <span class="n">chinj</span><span class="o">-</span><span class="n">pattern</span><span class="p">:</span>
-                <span class="n">measure</span> <span class="n">average</span> <span class="n">level</span> <span class="n">of</span> <span class="n">injection</span>
-                <span class="n">measure</span> <span class="n">average</span> <span class="n">level</span> <span class="n">of</span> <span class="n">non</span><span class="o">-</span><span class="n">injection</span>
-
-<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="ow">and</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span>  <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">non</span><span class="o">-</span><span class="n">injection</span> <span class="n">level</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">expected</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">injection</span> <span class="n">level</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">expected</span> <span class="n">margins</span>
-
-<span class="p">[</span><span class="n">plot</span> <span class="n">offsets</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
-<span class="p">[</span><span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
-<span class="n">plot</span> <span class="n">injected</span> <span class="n">level</span> <span class="n">vs</span><span class="o">.</span> <span class="n">IG1</span> <span class="k">for</span> <span class="n">each</span> <span class="n">half</span>
-
-
-<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>          
-</pre></div>
-</div>
+<p>#:param IDL: int, [mV], value of IDL (Inject. Drain Low).
+#:param IDH: int, [mV], Injection Drain High.
+#:param IG1s: list of 2 ints, [mV], [min,max] values of IG1.
+#:param id_delays: list of 2 ints, [mV], injection drain delays (2).
+#:param toi_chinj: int, [us], TOI-charge injection.
+:param diffvalues: dict, opt, differential values.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1258,14 +1246,19 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 
 <dl class="method">
 <dt>
-<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span></dt>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
@@ -1295,57 +1288,13 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 
 <dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>IDLs</em>, <em>IDH</em>, <em>id_delays</em>, <em>toi_chinj</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
 <dd><p>Builds CHINJ02 script structure dictionary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>IDLs</strong> &#8211; list of 2 ints, [mV], [min,max] values of IDL (Inject. Drain Low).</li>
-<li><strong>IDH</strong> &#8211; int, [mV], Injection Drain High.</li>
-<li><strong>id_delays</strong> &#8211; list of 2 ints, [mV], injection drain delays (2).</li>
-<li><strong>toi_chinj</strong> &#8211; int, [us], TOI-charge injection.</li>
-<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p>CHINJ02: Checks quality of ingested data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
-<span class="n">check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
-            <span class="n">measure</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">extract</span> <span class="mi">2</span><span class="n">D</span> <span class="n">chinj</span><span class="o">-</span><span class="n">pattern</span><span class="p">:</span>
-                <span class="n">measure</span> <span class="n">average</span> <span class="n">level</span> <span class="n">of</span> <span class="n">injection</span>
-                <span class="n">measure</span> <span class="n">average</span> <span class="n">level</span> <span class="n">of</span> <span class="n">non</span><span class="o">-</span><span class="n">injection</span>
-
-<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="ow">and</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span>  <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">non</span><span class="o">-</span><span class="n">injection</span> <span class="n">level</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">expected</span> <span class="n">margins</span>
-<span class="p">[</span><span class="n">assess</span> <span class="n">injection</span> <span class="n">level</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">expected</span> <span class="n">margins</span><span class="p">]</span>
-
-<span class="p">[</span><span class="n">plot</span> <span class="n">offsets</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
-<span class="p">[</span><span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
-<span class="n">plot</span> <span class="n">injected</span> <span class="n">level</span> <span class="n">vs</span><span class="o">.</span> <span class="n">IDL</span> <span class="k">for</span> <span class="n">each</span> <span class="n">half</span>
-
-
-<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>          
-</pre></div>
-</div>
+<p>#:param IDLs: list of 2 ints, [mV], [min,max] values of IDL (Inject. Drain Low).
+#:param IDH: int, [mV], Injection Drain High.
+#:param id_delays: list of 2 ints, [mV], injection drain delays (2).
+#:param toi_chinj: int, [us], TOI-charge injection.
+:param diffvalues: dict, opt, differential values.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1366,7 +1315,7 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 
 <dl class="method">
 <dt>
-<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span></dt>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1384,11 +1333,16 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 </div>
 </dd></dl>
 
+<dl class="method">
+<dt>
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">DARK01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">DARK01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
@@ -1412,18 +1366,13 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 
 <dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>N</em>, <em>exptime</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
 <dd><p>Builds DARK01 script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>N</strong> &#8211; integer, number of frames to acquire.</li>
-<li><strong>exptime</strong> &#8211; integer, ms, exposure time.</li>
-<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>diffvalues</strong> &#8211; dict, opt, differential values.</td>
 </tr>
 </tbody>
 </table>
@@ -1431,33 +1380,7 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 
 <dl class="method">
 <dt>
-<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p>DARK0: Checks quality of ingested data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
-<span class="n">check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
-            <span class="n">measure</span> <span class="n">offsets</span><span class="o">/</span><span class="n">means</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span><span class="o">/</span><span class="n">means</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span>  <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span><span class="o">/</span><span class="n">means</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-
-<span class="n">plot</span> <span class="n">offsets</span><span class="o">/</span><span class="n">means</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
-<span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
-
-<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span></dt>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1498,53 +1421,19 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">FLAT0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">FLAT0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
-<code class="descname">build_FLAT0X_scriptdict</code><span class="sig-paren">(</span><em>exptimes</em>, <em>frames</em>, <em>flags</em>, <em>wavelength=800</em>, <em>testkey='FLAT0X'</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
 <dd><p>Builds FLAT0X script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>exptimes</strong> &#8211; list of ints, exposure times.</li>
-<li><strong>wavelength</strong> &#8211; int, wavelength.</li>
-<li><strong>testkey</strong> &#8211; char, test identifier.</li>
-<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>diffvalues</strong> &#8211; dict, opt, differential values.</td>
 </tr>
 </tbody>
 </table>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Checks</span> <span class="n">quality</span> <span class="n">of</span> <span class="n">ingested</span> <span class="n">data</span><span class="o">.</span>
-
-<span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
-<span class="n">check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
-            <span class="n">measure</span> <span class="n">offsets</span><span class="o">/</span><span class="n">means</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">and</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span>  <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">fluences</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">flag</span> <span class="n">saturations</span> <span class="k">if</span> <span class="n">there</span> <span class="n">are</span><span class="o">.</span>
-
-<span class="n">plot</span> <span class="n">fluence</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span> <span class="k">for</span> <span class="n">each</span> <span class="n">exptime</span>
-<span class="n">plot</span> <span class="n">std</span><span class="o">-</span><span class="n">pre</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
-
-<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="method">
@@ -1607,69 +1496,62 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 
 <dl class="method">
 <dt>
-<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span></dt>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span></dt>
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">FOCUS00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span></dt>
-<dd></dd></dl>
-
-<dl class="class">
-<dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">NL01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">FOCUS00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>expts</em>, <em>exptinter</em>, <em>frames</em>, <em>wavelength=0</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span></dt>
-<dd><p>Builds NL01 script structure dictionary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>expts</strong> &#8211; list of ints [ms], exposure times.</li>
-<li><strong>exptinter</strong> &#8211; int, ms, exposure time of interleaved source-stability exposures.</li>
-<li><strong>frames</strong> &#8211; list of ints, number of frames for each exposure time.</li>
-<li><strong>wavelength</strong> &#8211; int, wavelength. Default: 0 (Neutral Density Filter)</li>
-<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<dd><p>Builds FOCUS00 script structure dictionary.</p>
+<p>#:param wavelength: int, [nm], wavelength.
+#:param exptime: int, [ms], exposure time.
+:param diffvalues: dict, opt, differential values.</p>
 </dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p>NL01: Checks that data quality is good enough.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
-<span class="n">Check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
 
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
-            <span class="n">measure</span> <span class="n">offsets</span><span class="o">/</span><span class="n">means</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="p">(</span><span class="n">assess</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">and</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span>  <span class="n">margins</span><span class="p">)</span>
-<span class="n">assess</span> <span class="n">image</span><span class="o">-</span><span class="n">fluences</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span> <span class="k">for</span> <span class="n">each</span> <span class="n">exposure</span> <span class="n">time</span>
+<dl class="method">
+<dt>
+<code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
 
-<span class="n">plot</span> <span class="n">fluences</span> <span class="n">vs</span><span class="o">.</span> <span class="n">exposure</span> <span class="n">time</span>
-<span class="n">plot</span> <span class="n">std</span><span class="o">-</span><span class="n">pre</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
+<dl class="method">
+<dt>
+<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
 
-<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>
-</pre></div>
-</div>
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">NL01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<dd><dl class="method">
+<dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<dd><p>Builds NL01 script structure dictionary.</p>
+<p>#:param expts: list of ints [ms], exposure times.
+#:param exptinter: int, ms, exposure time of interleaved source-stability exposures.
+#:param frames: list of ints, number of frames for each exposure time.
+#:param wavelength: int, wavelength. Default: 0 (Neutral Density Filter)
+:param diffvalues: dict, opt, differential values.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1713,12 +1595,7 @@ image regions to later build NLC.</p>
 
 <dl class="method">
 <dt>
-<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span></dt>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span></dt>
 <dd><p>Loads a list of Exposure Logs and selects exposures from test PSF0X.</p>
 <p>The filtering takes into account an expected structure for the 
 acquisition script.</p>
@@ -1765,7 +1642,7 @@ date-folders.</p>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">PERSIST01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">PERSIST01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
@@ -1782,7 +1659,7 @@ date-folders.</p>
 
 <dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>exptSATUR</em>, <em>exptLATEN</em>, <em>diffvalues={}</em>, <em>elvis='6.0.0'</em><span class="sig-paren">)</span></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
 <dd><p>Builds PERSISTENCE01 script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1830,6 +1707,11 @@ date-folders.</p>
 
 <dl class="method">
 <dt>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
 <code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd><p>Meta-analysis of data.</p>
 <p><strong>METACODE</strong></p>
@@ -1857,55 +1739,29 @@ date-folders.</p>
 </div>
 </dd></dl>
 
+<dl class="method">
+<dt>
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">set_perfdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">PTC0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">PTC0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>testkey</em>, <em>exptimes</em>, <em>frames</em>, <em>wavelength=800</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
 <dd><p>Builds PTC0X script structure dictionary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>exptimes</strong> &#8211; list of ints [ms], exposure times.</li>
-<li><strong>frames</strong> &#8211; list of ints, number of frames for each exposure time.</li>
-<li><strong>wavelength</strong> &#8211; int, wavelength. Default: 800 nm.</li>
-<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p>Checks quality of ingested data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
-<span class="n">check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
-            <span class="n">measure</span> <span class="n">offsets</span><span class="o">/</span><span class="n">means</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">and</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span>  <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">image</span><span class="o">-</span><span class="n">fluences</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-
-<span class="n">plot</span> <span class="n">fluences</span> <span class="n">vs</span><span class="o">.</span> <span class="n">exposure</span> <span class="n">time</span>
-<span class="n">plot</span> <span class="n">std</span><span class="o">-</span><span class="n">pre</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span>
-
-<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>
-</pre></div>
-</div>
+<p>#:param exptimes: list of ints [ms], exposure times.
+#:param frames: list of ints, number of frames for each exposure time.
+#:param wavelength: int, wavelength. Default: 800 nm.
+:param diffvalues: dict, opt, differential values.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1937,12 +1793,7 @@ date-folders.</p>
 
 <dl class="method">
 <dt>
-<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span></dt>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1967,34 +1818,19 @@ gain, and gain(fluence)</p>
 </div>
 </dd></dl>
 
+<dl class="method">
+<dt>
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
-<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p>Basic analysis of data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span> <span class="p">[</span><span class="n">there</span> <span class="n">are</span> <span class="n">different</span> <span class="n">TOI_TP</span> <span class="ow">and</span> <span class="n">TP</span><span class="o">-</span><span class="n">patterns</span><span class="p">]:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">load</span> <span class="s2">&quot;map of relative pumping&quot;</span>
-            <span class="n">find_dipoles</span><span class="p">:</span>
-                <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rel</span><span class="o">-</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">orientation</span>
-
-<span class="n">produce</span> <span class="o">&amp;</span> <span class="n">report</span><span class="p">:</span>  
-    <span class="nb">map</span> <span class="n">location</span> <span class="n">of</span> <span class="n">dipoles</span>
-    <span class="n">PDF</span> <span class="n">of</span> <span class="n">dipole</span> <span class="n">amplitudes</span> <span class="p">(</span><span class="k">for</span> <span class="n">N</span> <span class="ow">and</span> <span class="n">S</span><span class="p">)</span>
-    <span class="n">Counts</span> <span class="n">of</span> <span class="n">dipoles</span> <span class="p">(</span><span class="ow">and</span> <span class="n">N</span> <span class="n">vs</span><span class="o">.</span> <span class="n">S</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>Nshuffles_V</em>, <em>TOI_TPv</em>, <em>id_delays</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -2028,7 +1864,47 @@ gain, and gain(fluence)</p>
 
 <dl class="method">
 <dt>
-<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span></dt>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<dd><dl class="method">
+<dt>
+<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Basic analysis of data.</p>
+<p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span> <span class="p">[</span><span class="n">there</span> <span class="n">are</span> <span class="n">different</span> <span class="n">TOI_TP</span> <span class="ow">and</span> <span class="n">TP</span><span class="o">-</span><span class="n">patterns</span><span class="p">]:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
+            <span class="n">load</span> <span class="s2">&quot;map of relative pumping&quot;</span>
+            <span class="n">find_dipoles</span><span class="p">:</span>
+                <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rel</span><span class="o">-</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">orientation</span>
+
+<span class="n">produce</span> <span class="o">&amp;</span> <span class="n">report</span><span class="p">:</span>  
+    <span class="nb">map</span> <span class="n">location</span> <span class="n">of</span> <span class="n">dipoles</span>
+    <span class="n">PDF</span> <span class="n">of</span> <span class="n">dipole</span> <span class="n">amplitudes</span> <span class="p">(</span><span class="k">for</span> <span class="n">N</span> <span class="ow">and</span> <span class="n">S</span><span class="p">)</span>
+    <span class="n">Counts</span> <span class="n">of</span> <span class="n">dipoles</span> <span class="p">(</span><span class="ow">and</span> <span class="n">N</span> <span class="n">vs</span><span class="o">.</span> <span class="n">S</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -2070,11 +1946,16 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 </div>
 </dd></dl>
 
+<dl class="method">
+<dt>
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
@@ -2097,42 +1978,12 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 
 <dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>Nshuffles_H</em>, <em>dwell_sv</em>, <em>id_delays</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span></dt>
-<dd><p>MISSING: different starting points (not implemented in ELVIS yet).</p>
-</dd></dl>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p>TP02: Checks quality of ingested data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
-<span class="n">check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
-            <span class="n">measure</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">mean</span> <span class="ow">in</span> <span class="n">img</span><span class="o">-</span>
-
-<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="p">(</span><span class="o">~</span><span class="n">RON</span><span class="p">)</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="ow">and</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">injection</span> <span class="n">level</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">expected</span> <span class="n">margins</span>
-
-<span class="n">plot</span> <span class="n">histogram</span> <span class="n">of</span> <span class="n">injected</span> <span class="n">levels</span> <span class="k">for</span> <span class="n">each</span> <span class="n">Q</span>
-<span class="p">[</span><span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
-
-<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>          
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span></dt>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -2174,6 +2025,11 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 </div>
 </dd></dl>
 
+<dl class="method">
+<dt>
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="method">
@@ -2183,7 +2039,7 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 
 <dl class="method">
 <dt>
-<code class="descclassname">Pipe.</code><code class="descname">dotask</code><span class="sig-paren">(</span><em>taskname</em>, <em>inputs</em>, <em>drill=False</em><span class="sig-paren">)</span></dt>
+<code class="descclassname">Pipe.</code><code class="descname">dotask</code><span class="sig-paren">(</span><em>taskname</em>, <em>inputs</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
 <dd><p>Generic test master function.</p>
 </dd></dl>
 
@@ -2199,7 +2055,7 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 
 <dl class="method">
 <dt>
-<code class="descclassname">Pipe.</code><code class="descname">wait_and_run</code><span class="sig-paren">(</span><em>explogf</em>, <em>elvis='6.1.0'</em><span class="sig-paren">)</span></dt>
+<code class="descclassname">Pipe.</code><code class="descname">wait_and_run</code><span class="sig-paren">(</span><em>explogf</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2266,7 +2122,7 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
         <li class="right" >
           <a href="installation.html" title="Installation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3+73.g57a3237 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

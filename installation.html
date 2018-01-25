@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Installation &#8212; vison 0.3 documentation</title>
+    <title>Installation &#8212; vison 0.3+73.g57a3237 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3',
+        VERSION:     '0.3+73.g57a3237',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="source/includeme.html" title="README"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3+73.g57a3237 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -104,18 +104,27 @@ allow you to install the pipeline and meet all its dependencies.</p>
 </pre></div>
 </div>
 </li>
-<li><p class="first">Under the &#8216;conda&#8217; sub-folder, you will find two text files:</p>
+<li><p class="first">Under the &#8216;conda&#8217; sub-folder, you will find several text files:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>~$ cd conda
 ~$ ls
-  env-conda_vison.txt  env-pip_vison.txt
+  env-conda_vison_linux.txt  env-conda_vison_windows.txt
+  env-conda_vison_old.txt  env-pip_vison_old.txt
+  env-pip_vison.txt
 </pre></div>
 </div>
 </li>
-<li><p class="first">Then execute the following command to create a new conda environment, <cite>vison</cite>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>~$ conda create -n vison --file env-conda_vison.txt
-</pre></div>
-</div>
+<li><p class="first">Then execute the following command to create a new conda environment, <cite>vison</cite>. Use the OS version that may correspond in</p>
 </li>
+</ul>
+<dl class="docutils">
+<dt>your case (by now, only linux and windows versions available, and for 64 bits machines).</dt>
+<dd><dl class="first last docutils">
+<dt>::</dt>
+<dd>~$ conda create -n vison &#8211;file env-conda_[OS].txt</dd>
+</dl>
+</dd>
+</dl>
+<ul>
 <li><p class="first">When prompted, type &#8220;y&#8221; and return to install the listed packages.</p>
 </li>
 <li><p class="first">Activate the new environment</p>
@@ -234,7 +243,7 @@ within the <cite>vison</cite> conda environment. For example:</p>
         <li class="right" >
           <a href="source/includeme.html" title="README"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3+73.g57a3237 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

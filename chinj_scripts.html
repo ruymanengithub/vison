@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Charge Injection Scripts &#8212; vison 0.3 documentation</title>
+    <title>Charge Injection Scripts &#8212; vison 0.3+73.g57a3237 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3',
+        VERSION:     '0.3+73.g57a3237',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="support.html" title="Support Code"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3+73.g57a3237 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -77,7 +77,7 @@ TEST: CHINJ01</p>
 </table>
 <dl class="class">
 <dt id="vison.inject.CHINJ01.CHINJ01">
-<em class="property">class </em><code class="descclassname">vison.inject.CHINJ01.</code><code class="descname">CHINJ01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.inject.CHINJ01.</code><code class="descname">CHINJ01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.inject.CHINJ01.CHINJ01.basic_analysis">
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01.basic_analysis" title="Permalink to this definition">¶</a></dt>
@@ -106,58 +106,14 @@ TEST: CHINJ01</p>
 
 <dl class="method">
 <dt id="vison.inject.CHINJ01.CHINJ01.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>IDL</em>, <em>IDH</em>, <em>IG1s</em>, <em>id_delays</em>, <em>toi_chinj</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds CHINJ01 script structure dictionary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>IDL</strong> &#8211; int, [mV], value of IDL (Inject. Drain Low).</li>
-<li><strong>IDH</strong> &#8211; int, [mV], Injection Drain High.</li>
-<li><strong>IG1s</strong> &#8211; list of 2 ints, [mV], [min,max] values of IG1.</li>
-<li><strong>id_delays</strong> &#8211; list of 2 ints, [mV], injection drain delays (2).</li>
-<li><strong>toi_chinj</strong> &#8211; int, [us], TOI-charge injection.</li>
-<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.inject.CHINJ01.CHINJ01.check_data">
-<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01.check_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>CHINJ01: Checks quality of ingested data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
-<span class="n">check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
-            <span class="n">measure</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">extract</span> <span class="mi">2</span><span class="n">D</span> <span class="n">chinj</span><span class="o">-</span><span class="n">pattern</span><span class="p">:</span>
-                <span class="n">measure</span> <span class="n">average</span> <span class="n">level</span> <span class="n">of</span> <span class="n">injection</span>
-                <span class="n">measure</span> <span class="n">average</span> <span class="n">level</span> <span class="n">of</span> <span class="n">non</span><span class="o">-</span><span class="n">injection</span>
-
-<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="ow">and</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span>  <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">non</span><span class="o">-</span><span class="n">injection</span> <span class="n">level</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">expected</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">injection</span> <span class="n">level</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">expected</span> <span class="n">margins</span>
-
-<span class="p">[</span><span class="n">plot</span> <span class="n">offsets</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
-<span class="p">[</span><span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
-<span class="n">plot</span> <span class="n">injected</span> <span class="n">level</span> <span class="n">vs</span><span class="o">.</span> <span class="n">IG1</span> <span class="k">for</span> <span class="n">each</span> <span class="n">half</span>
-
-
-<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>          
-</pre></div>
-</div>
+<p>#:param IDL: int, [mV], value of IDL (Inject. Drain Low).
+#:param IDH: int, [mV], Injection Drain High.
+#:param IG1s: list of 2 ints, [mV], [min,max] values of IG1.
+#:param id_delays: list of 2 ints, [mV], injection drain delays (2).
+#:param toi_chinj: int, [us], TOI-charge injection.
+:param diffvalues: dict, opt, differential values.</p>
 </dd></dl>
 
 <dl class="method">
@@ -177,8 +133,13 @@ TEST: CHINJ01</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="vison.inject.CHINJ01.CHINJ01.feeder">
-<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01.feeder" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.inject.CHINJ01.CHINJ01.filterexposures">
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01.filterexposures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.inject.CHINJ01.CHINJ01.set_inpdefaults">
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -205,7 +166,7 @@ TEST: CHINJ02</p>
 </table>
 <dl class="class">
 <dt id="vison.inject.CHINJ02.CHINJ02">
-<em class="property">class </em><code class="descclassname">vison.inject.CHINJ02.</code><code class="descname">CHINJ02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.inject.CHINJ02.</code><code class="descname">CHINJ02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.inject.CHINJ02.CHINJ02.basic_analysis">
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02.basic_analysis" title="Permalink to this definition">¶</a></dt>
@@ -235,57 +196,13 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 
 <dl class="method">
 <dt id="vison.inject.CHINJ02.CHINJ02.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>IDLs</em>, <em>IDH</em>, <em>id_delays</em>, <em>toi_chinj</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds CHINJ02 script structure dictionary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>IDLs</strong> &#8211; list of 2 ints, [mV], [min,max] values of IDL (Inject. Drain Low).</li>
-<li><strong>IDH</strong> &#8211; int, [mV], Injection Drain High.</li>
-<li><strong>id_delays</strong> &#8211; list of 2 ints, [mV], injection drain delays (2).</li>
-<li><strong>toi_chinj</strong> &#8211; int, [us], TOI-charge injection.</li>
-<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.inject.CHINJ02.CHINJ02.check_data">
-<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02.check_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>CHINJ02: Checks quality of ingested data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
-<span class="n">check</span> <span class="n">voltages</span> <span class="ow">in</span> <span class="n">HK</span> <span class="n">match</span> <span class="n">commanded</span> <span class="n">voltages</span><span class="p">,</span> <span class="n">within</span> <span class="n">margins</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
-            <span class="n">measure</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">measure</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="n">img</span><span class="o">-</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span>
-            <span class="n">extract</span> <span class="mi">2</span><span class="n">D</span> <span class="n">chinj</span><span class="o">-</span><span class="n">pattern</span><span class="p">:</span>
-                <span class="n">measure</span> <span class="n">average</span> <span class="n">level</span> <span class="n">of</span> <span class="n">injection</span>
-                <span class="n">measure</span> <span class="n">average</span> <span class="n">level</span> <span class="n">of</span> <span class="n">non</span><span class="o">-</span><span class="n">injection</span>
-
-<span class="n">assess</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="ow">in</span> <span class="n">pre</span><span class="o">-</span><span class="p">,</span> <span class="ow">and</span> <span class="n">over</span><span class="o">-</span> <span class="n">are</span> <span class="n">equal</span><span class="p">,</span> <span class="n">within</span> <span class="n">allocated</span>  <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">offsets</span> <span class="n">are</span> <span class="n">within</span> <span class="n">allocated</span> <span class="n">margins</span>
-<span class="n">assess</span> <span class="n">non</span><span class="o">-</span><span class="n">injection</span> <span class="n">level</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">expected</span> <span class="n">margins</span>
-<span class="p">[</span><span class="n">assess</span> <span class="n">injection</span> <span class="n">level</span> <span class="ow">is</span> <span class="n">within</span> <span class="n">expected</span> <span class="n">margins</span><span class="p">]</span>
-
-<span class="p">[</span><span class="n">plot</span> <span class="n">offsets</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
-<span class="p">[</span><span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
-<span class="n">plot</span> <span class="n">injected</span> <span class="n">level</span> <span class="n">vs</span><span class="o">.</span> <span class="n">IDL</span> <span class="k">for</span> <span class="n">each</span> <span class="n">half</span>
-
-
-<span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>          
-</pre></div>
-</div>
+<p>#:param IDLs: list of 2 ints, [mV], [min,max] values of IDL (Inject. Drain Low).
+#:param IDH: int, [mV], Injection Drain High.
+#:param id_delays: list of 2 ints, [mV], injection drain delays (2).
+#:param toi_chinj: int, [us], TOI-charge injection.
+:param diffvalues: dict, opt, differential values.</p>
 </dd></dl>
 
 <dl class="method">
@@ -305,8 +222,8 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 </dd></dl>
 
 <dl class="method">
-<dt id="vison.inject.CHINJ02.CHINJ02.feeder">
-<code class="descname">feeder</code><span class="sig-paren">(</span><em>inputs</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02.feeder" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.inject.CHINJ02.CHINJ02.filterexposures">
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -323,6 +240,11 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 </pre></div>
 </div>
 </dd></dl>
+
+<dl class="method">
+<dt id="vison.inject.CHINJ02.CHINJ02.set_inpdefaults">
+<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -389,7 +311,7 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
         <li class="right" >
           <a href="support.html" title="Support Code"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3+73.g57a3237 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

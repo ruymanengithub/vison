@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Point-Source Scripts &#8212; vison 0.3 documentation</title>
+    <title>Point-Source Scripts &#8212; vison 0.3+73.g57a3237 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3',
+        VERSION:     '0.3+73.g57a3237',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="flat_scripts.html" title="Flat-Illumination Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3+73.g57a3237 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -106,102 +106,36 @@ TEST: FOCUS00</p>
 </table>
 <dl class="class">
 <dt id="vison.point.FOCUS00.FOCUS00">
-<em class="property">class </em><code class="descclassname">vison.point.FOCUS00.</code><code class="descname">FOCUS00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.point.FOCUS00.</code><code class="descname">FOCUS00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.point.FOCUS00.FOCUS00.basic_analysis">
+<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00.basic_analysis" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="vison.point.FOCUS00.basic_analysis_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">basic_analysis_FOCUS00</code><span class="sig-paren">(</span><em>DataDict</em>, <em>Report</em>, <em>inputs</em>, <em>log=None</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.basic_analysis_FOCUS00" title="Permalink to this definition">¶</a></dt>
-<dd><p>Performs basic analysis on spots:
-- 2D Gaussian Model shape measurements
-- Quadrupole Moments shape measurements</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.FOCUS00.build_FOCUS00_scriptdict">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">build_FOCUS00_scriptdict</code><span class="sig-paren">(</span><em>wavelength</em>, <em>exptime</em>, <em>diffvalues={}</em>, <em>elvis='6.3.0'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.build_FOCUS00_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.point.FOCUS00.FOCUS00.build_scriptdict">
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds FOCUS00 script structure dictionary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>wavelength</strong> &#8211; int, [nm], wavelength.</li>
-<li><strong>exptime</strong> &#8211; int, [ms], exposure time.</li>
-<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+<p>#:param wavelength: int, [nm], wavelength.
+#:param exptime: int, [ms], exposure time.
+:param diffvalues: dict, opt, differential values.</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="vison.point.FOCUS00.filterexposures_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">filterexposures_FOCUS00</code><span class="sig-paren">(</span><em>inwavelength</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em>, <em>structure={'Ncols': 6</em>, <em>'col6': {'frames': 2</em>, <em>'mirr_pos': 70.2</em>, <em>'exptime': 10.0}</em>, <em>'col4': {'frames': 2</em>, <em>'mirr_pos': 70.0</em>, <em>'exptime': 10.0}</em>, <em>'col5': {'frames': 2</em>, <em>'mirr_pos': 70.1</em>, <em>'exptime': 10.0}</em>, <em>'col2': {'frames': 2</em>, <em>'mirr_pos': 69.8</em>, <em>'exptime': 10.0}</em>, <em>'col3': {'frames': 2</em>, <em>'mirr_pos': 69.9</em>, <em>'exptime': 10.0}</em>, <em>'col1': {'frames': 5</em>, <em>'mirr_pos': 69.8</em>, <em>'exptime': 0}}</em>, <em>elvis='5.7.04'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.filterexposures_FOCUS00" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads a list of Exposure Logs and selects exposures from test FOCUS00.</p>
-<p>The filtering takes into account an expected structure for the 
-acquisition script.</p>
-<p>The datapath becomes another column in DataDict. This helps dealing
-with tests that run overnight and for which the input data is in several
-date-folders.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.FOCUS00.get_FOCUS00_structure">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">get_FOCUS00_structure</code><span class="sig-paren">(</span><em>wavelength</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.get_FOCUS00_structure" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vison.point.FOCUS00.FOCUS00.filterexposures">
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="vison.point.FOCUS00.get_basic_spot_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">get_basic_spot_FOCUS00</code><span class="sig-paren">(</span><em>stamp</em>, <em>x0</em>, <em>y0</em>, <em>log=None</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.get_basic_spot_FOCUS00" title="Permalink to this definition">¶</a></dt>
-<dd><p># TODO:
-#   get basic statistics, measure and subtract background
-#   update centroid
-#   do aperture photometry
-#   pack-up results and return</p>
-</dd></dl>
+<dl class="method">
+<dt id="vison.point.FOCUS00.FOCUS00.meta_analysis">
+<code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-<dl class="function">
-<dt id="vison.point.FOCUS00.get_shape_spot_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">get_shape_spot_FOCUS00</code><span class="sig-paren">(</span><em>stamp</em>, <em>x0</em>, <em>y0</em>, <em>method='G'</em>, <em>log=None</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.get_shape_spot_FOCUS00" title="Permalink to this definition">¶</a></dt>
-<dd><p># TODO:
-#   get basic statistics, measure and subtract background
-#   update centroid
-#   do aperture photometry
-#   pack-up results and return</p>
-</dd></dl>
+<dl class="method">
+<dt id="vison.point.FOCUS00.FOCUS00.prep_data">
+<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00.prep_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-<dl class="function">
-<dt id="vison.point.FOCUS00.meta_analysis_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">meta_analysis_FOCUS00</code><span class="sig-paren">(</span><em>DataDict</em>, <em>Report</em>, <em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.meta_analysis_FOCUS00" title="Permalink to this definition">¶</a></dt>
-<dd><p>Analyzes the relation between PSF shape and mirror position.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>DataDict</strong> &#8211; Dictionary with input data</li>
-<li><strong>Report</strong> &#8211; Report Objects</li>
-<li><strong>inputs</strong> &#8211; Dictionary with inputs</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.FOCUS00.prep_data_FOCUS00">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">prep_data_FOCUS00</code><span class="sig-paren">(</span><em>DataDict</em>, <em>Report</em>, <em>inputs</em>, <em>log=None</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.prep_data_FOCUS00" title="Permalink to this definition">¶</a></dt>
-<dd><p>Takes Raw Data and prepares it for further analysis. 
-Also checks that data quality is enough.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vison.point.FOCUS00.run">
-<code class="descclassname">vison.point.FOCUS00.</code><code class="descname">run</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test FOCUS00 master function.</p>
 </dd></dl>
 
 </div>
@@ -318,7 +252,7 @@ PSF02 - alternative temperatures</dd>
         <li class="right" >
           <a href="flat_scripts.html" title="Flat-Illumination Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3+73.g57a3237 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
