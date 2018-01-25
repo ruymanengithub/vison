@@ -26,6 +26,6 @@ imgheight = ccdobj.NAXIS2/2
 quad_width = ccdobj.NAXIS1/2
 imgwidth = quad_width - prescan - overscan
 
-sumwell = dict(fwd_bas=[9.425,4.825],fwd_e2v=[7.475,6.55],
+sumwell = dict(fwd_bas=[9.175,4.6],fwd_e2v=[7.95,5.825],
                rwd_bas_v=[6.5,0.175],rwd_bas_s=[6.5,0.175],
                rwd_bas_vs=[6.5,0.175])
