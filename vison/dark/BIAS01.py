@@ -131,18 +131,22 @@ class BIAS01(DarkTask):
         
         BIAS01: Preparation of data for further analysis.
         applies a mask
-        
+                
         **METACODE**
         
         ::
             f.e. ObsID:
-                f.e.CCD:                
-                    apply cosmetic mask, if available                
-                    f.e.Q:    
+                f.e.CCD:
+                    
+                    apply cosmetic mask, if available
+                    
+                    f.e.Q:
                         subtract offset
+                    
                     save file as a datamodel.ccd.CCD object.
-        
         """
+        
+        
         super(self).prepare_images(doExtract=True,doMask=True,doOffset=True)
         
     def basic_analysis(self):
@@ -152,7 +156,7 @@ class BIAS01(DarkTask):
         
         **METACODE**
         
-        :: 
+        ::
     
             f. e. ObsID:
                f.e.CCD:
