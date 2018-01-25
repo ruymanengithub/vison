@@ -135,16 +135,14 @@ class BIAS01(DarkTask):
         **METACODE**
         
         ::
+
             f.e. ObsID:
                 f.e.CCD:
-                    
                     apply cosmetic mask, if available
-                    
                     f.e.Q:
                         subtract offset
-                    
-                    save file as a datamodel.ccd.CCD object.
-                    
+                    save file as a datamodel/ccd/CCD object.
+
         """
         
         
@@ -158,7 +156,7 @@ class BIAS01(DarkTask):
         **METACODE**
         
         ::
-    
+
             f. e. ObsID:
                f.e.CCD:
                    
@@ -170,6 +168,7 @@ class BIAS01(DarkTask):
                        produce average profile along cols
                        save 2D model and profiles in a pick file for each OBSID-CCD
                        measure and save RON after subtracting large scale structure
+
             plot RON vs. time f. each CCD and Q
             plot average profiles f. each CCD and Q (color coded by time)
      
