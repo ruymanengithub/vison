@@ -110,7 +110,7 @@ if __name__ =='__main__':
 
     camptype = 'Mini' # Mini/Full    
     
-    outpath = 'MiniCal_scripts_19JAN18_E6.5.0'
+    outpath = 'MiniCal_data02/MiniCal_scripts_25JAN18_E6.5.0'
     
     equipment = dict(operator = 'cpf',
     sn_ccd1 = 'D01',
@@ -146,7 +146,7 @@ if __name__ =='__main__':
         
         toWrite = toWrite_def.copy()
         toWrite.update(OrderedDict(BIAS01=1,DARK01=1,CHINJ00=1,TP00=1,
-                      FLAT01=1,FLAT02=1,FOCUS00=1,PSF01=True))
+                      FLAT01=1,FLAT02=1,FOCUS00=1,PSF01=1))
         
         test_generator = minicampaign.generate_reduced_test_sequence
     

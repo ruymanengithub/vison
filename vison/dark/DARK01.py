@@ -59,7 +59,7 @@ class DARK01_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
             ('N',([int],'Number of Frame Acquisitions.')),
-            ('exptime',([int],'Exposure time.')),
+            ('exptime',([float],'Exposure time.')),
             ])))
 
 Flu_lims = OrderedDict(CCD1=[-2.,5.])
