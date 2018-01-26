@@ -17,11 +17,11 @@ import numpy as np
 import os
 from collections import OrderedDict
 
-from vison.plot import classes as plclasses
+from vison.plot import baseclasses as plbaseclasses
 
 # END IMPORT
 
-class plB01check(plclasses.Fig):
+class plB01check(plbaseclasses.Fig):
     
     def __init__(self):
         super(plB01check,self).__init__()
@@ -72,12 +72,12 @@ class plB01check(plclasses.Fig):
         """ """
         meta = dict(suptitle=self.suptitle,
                     doNiceXDate=True,doLegend=True)
-        plotobj = plclasses.Beam2DPlot(self.data,meta=meta)
+        kwargs.update(meta)
+        plotobj = plbaseclasses.Beam2DPlot(self.data,**kwargs)
         plotobj.render(self.figname)
-
-
+        
 
 B01figs = dict()
 B01figs['B01checks_offsets'] = [plB01check,dict(stat='offset')]
 B01figs['B01checks_stds'] = [plB01check,dict(stat='std')]
-B01figs['BlueScreen'] = [plclasses.BlueScreen,dict()]
+B01figs['BlueScreen'] = [plbaseclasses.BlueScreen,dict()]
