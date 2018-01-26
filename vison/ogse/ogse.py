@@ -21,6 +21,7 @@ Created on Fri Sep  8 12:11:55 2017
 overheads = dict(ff_readout = 72.,
                  writing = 25.,
                  flat2point = 40.,
+                 delta_focus=0.,
                  fw=2.)
 
 # saturation exposure times for flat-source, s, place-holders

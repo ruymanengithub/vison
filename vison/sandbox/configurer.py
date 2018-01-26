@@ -29,7 +29,7 @@ class Config():
         """ """
         self.inputsdict = dict(BLOCKID=self.BLOCKID,
                           resultsroot=self.resroot,
-                          tasks)
+                          tasks=[])
     
     def get_COMMTASK_inp(self,OBSID_lims,datapath,explogf):        
         inputs = dict(
