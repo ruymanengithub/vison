@@ -108,15 +108,15 @@ if __name__ =='__main__':
     
     elvis = '6.5.X'
 
-    camptype = 'Mini' # Mini/Full    
+    camptype = 'Full' # Mini/Full    
     
-    outpath = 'MiniCal_data02/MiniCal_scripts_25JAN18_E6.5.0'
+    outpath = 'MiniCal_data02/Full_Camp_scripts_26JAN18_E6.5.0'
     
     equipment = dict(operator = 'cpf',
     sn_ccd1 = 'D01',
     sn_ccd2 = 'D02',
     sn_ccd3 = 'D03',
-    sn_roe= 'SIM?',
+    sn_roe= 'SIM',
     sn_rpsu = 'PSUs')
     
     toWrite_def = OrderedDict(BIAS01=0,DARK01=0,CHINJ00=0,CHINJ01=0,CHINJ02=0,
