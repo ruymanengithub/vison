@@ -20,18 +20,8 @@ from collections import OrderedDict
 
 import vison
 from vison.datamodel import scriptic as sc
-#from vison.point import FOCUS00,PSF0X
-#from vison.dark import BIAS01,DARK01
-#from vison.flat import NL01, PTC0X, FLAT0X
-#from vison.inject import CHINJ01,CHINJ02
-#from vison.pump import TP01, TP02
-#from vison.other import PERSIST01 as PER01
-#from vison.point import lib as polib
 from vison.pipe import campaign, minicampaign
-#from vison.pipe import lib as pilib
 from vison.support import context
-
-from vison.ogse.ogse import tFWC_flat,tFWC_point
 
 import datetime
 import string as st
