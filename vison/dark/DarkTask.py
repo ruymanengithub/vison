@@ -46,16 +46,18 @@ class DarkTask(Task):
         if 'Quad' not in Xindices.names:
             Xindices.append(core.vIndex('Quad',vals=context.Quads))
         
+        valini = 0.
+        
         newcolnames_off = ['offset_pre','offset_img','offset_ove']
         for newcolname_off in newcolnames_off:
-            self.dd.initColumn(newcolname_off,Xindices,dtype='float32',valini=np.nan)
+            self.dd.initColumn(newcolname_off,Xindices,dtype='float32',valini=valini)
         
         newcolnames_std = ['std_pre','std_img','std_ove']
         for newcolname_std in newcolnames_std:
-            self.dd.initColumn(newcolname_std,Xindices,dtype='float32',valini=np.nan)
+            self.dd.initColumn(newcolname_std,Xindices,dtype='float32',valini=valini)
         
         if test == 'DARK01':
-            self.dd.initColumn('chk_flu_img',Xindices,dtype='float32',valini=np.nan)
+            self.dd.initColumn('chk_flu_img',Xindices,dtype='float32',valini=valini)
         
         nObs,_,_ = Xindices.shape
         CCDs = Xindices[Xindices.names.index('CCD')].vals

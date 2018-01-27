@@ -304,7 +304,9 @@ class Task(object):
         figobj = self.figdict[figkey][0]()
         figobj.configure(**kwargs)
         figobj.build_data(self)
-        figobj.plot()
+        if 'meta' in kwargs: meta = kwargs['meta']
+        else: meta = {}
+        figobj.plot(**meta)
         self.figdict[figkey][0] = copy.deepcopy(figobj)
         
     def addComplianceMatrix2Log(self,complidict,label=''):

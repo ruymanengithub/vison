@@ -18,66 +18,28 @@ import os
 from collections import OrderedDict
 
 from vison.plot import baseclasses as plbaseclasses
+from vison.plot import trends
 
 # END IMPORT
 
-class plB01check(plbaseclasses.Fig):
-    
-    def __init__(self):
-        super(plB01check,self).__init__()
-        
-        self.figname = 'BIAS01_%s_vs_time.png' 
-        self.caption = 'BIAS01: %s vs. time.' 
-        self.texfraction = 1.1
-        self.stat = ''
-        self.suptitle = ''
-        self.data = dict()
-    
-    def configure(self,**kwargs):
-        """ """
-        defaults = dict(path='./',stat='offset')
-        defaults.update(kwargs)
-        self.stat = defaults['stat']
-        self.figname = self.figname % self.stat
-        self.caption = self.caption % self.stat
-        path = defaults['path']
-        self.figname = os.path.join(path,self.figname)
-        self.suptitle = 'BIAS01-checks: %s' % self.stat
-        
-    def build_data(self,parent):
-        """ """
-        
-        dd = parent.dd
-        indices = parent.dd.indices
-        CCDs = indices[indices.names.index('CCD')].vals
-        Quads = indices[indices.names.index('Quad')].vals
-        
-        data = OrderedDict()
-        for ixCCD,CCD in enumerate(CCDs):
-            CCDkey = 'CCD%i' % CCD
-            data[CCDkey] = OrderedDict()
-            for iQ,Q in enumerate(Quads):
-                data[CCDkey][Q] = OrderedDict()
-                data[CCDkey][Q]['x'] = OrderedDict()
-                data[CCDkey][Q]['y'] = OrderedDict()
-                for sec in ['pre','img','ove']:
-                    data[CCDkey][Q]['x'][sec] = dd.mx['time'][:,ixCCD].copy()
-                    #data[CCDkey][Q]['x'][sec] = np.arange(len(dd.mx['time'][:,ixCCD])) # dd.mx['time'][:,ixCCD].copy()
-                    data[CCDkey][Q]['y'][sec] = dd.mx['%s_%s' % (self.stat,sec)][:,ixCCD,iQ].copy()
-        
-        self.data = data
-        
-        
-    def plot(self,**kwargs):
-        """ """
-        meta = dict(suptitle=self.suptitle,
-                    doNiceXDate=True,doLegend=True)
-        kwargs.update(meta)
-        plotobj = plbaseclasses.Beam2DPlot(self.data,**kwargs)
-        plotobj.render(self.figname)
-        
 
+check_offsets_dict = dict(stats=['offset_pre','offset_img','offset_ove'],
+                          figname='BIAS01_offset_vs_time.png',
+                          caption='BIAS01: offset vs. time.',
+                          meta=dict(doLegend=True,
+                          doNiceXDate=True,
+                          suptitle='BIAS01-checks: offsetes'))
+
+check_std_dict = dict(stats=['std_pre','std_img','std_ove'],
+                          figname='BIAS01_std_vs_time.png',
+                          caption='BIAS01: std vs. time.',
+                          meta=dict(doLegend=True,
+                                doNiceXDate=True,
+                                suptitle='BIAS01-checks: std')
+                          )
+ 
 B01figs = dict()
-B01figs['B01checks_offsets'] = [plB01check,dict(stat='offset')]
-B01figs['B01checks_stds'] = [plB01check,dict(stat='std')]
+B01figs['B01checks_offsets'] = [trends.pl_basic_checkstat,check_offsets_dict]
+#B01figs['B01checks_stds'] = [plB01check,dict(stat='std')]
+B01figs['B01checks_stds'] = [trends.pl_basic_checkstat,check_std_dict]
 B01figs['BlueScreen'] = [plbaseclasses.BlueScreen,dict()]

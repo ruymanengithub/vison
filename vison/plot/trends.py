@@ -13,60 +13,66 @@ Created on Fri Jan 26 16:18:43 2018
 # IMPORT STUFF
 import numpy as np
 from pdb import set_trace as stop
+import os
+from collections import OrderedDict
+
 import baseclasses
 # END IMPORT
 
-class pl_checkstat(baseclasses.Fig):
+class pl_basic_checkstat(baseclasses.Fig):
     
-    def __init__(self,stats,figname='',suptitle='',caption=''):
-        super(pl_checkstat,self).__init__()
+    def __init__(self):
+        super(pl_basic_checkstat,self).__init__()        
+        #self.figname = figname
         
-        self.figname = figname
-        self.caption = caption
-        self.texfraction = 1.1
-        self.stats = stats
-        self.suptitle = suptitle
+        self.stats = []
+        self.suptitle = ''
+        self.caption = ''
+        self.texfraction = 1.1  
         self.data = dict()
     
-#    def configure(self,**kwargs):
-#        """ """
-#        defaults = dict(path='./',stat='offset')
-#        defaults.update(kwargs)
-#        self.stat = defaults['stat']
-#        self.figname = self.figname % self.stat
-#        self.caption = self.caption % self.stat
-#        path = defaults['path']
-#        self.figname = os.path.join(path,self.figname)
-#        self.suptitle = 'BIAS01-checks: %s' % self.stat
-#        
-#    def build_data(self,parent):
-#        """ """
-#        
-#        dd = parent.dd
-#        indices = parent.dd.indices
-#        CCDs = indices[indices.names.index('CCD')].vals
-#        Quads = indices[indices.names.index('Quad')].vals
-#        
-#        data = OrderedDict()
-#        for ixCCD,CCD in enumerate(CCDs):
-#            CCDkey = 'CCD%i' % CCD
-#            data[CCDkey] = OrderedDict()
-#            for iQ,Q in enumerate(Quads):
-#                data[CCDkey][Q] = OrderedDict()
-#                data[CCDkey][Q]['x'] = OrderedDict()
-#                data[CCDkey][Q]['y'] = OrderedDict()
-#                for sec in ['pre','img','ove']:
-#                    data[CCDkey][Q]['x'][sec] = dd.mx['time'][:,ixCCD].copy()
-#                    #data[CCDkey][Q]['x'][sec] = np.arange(len(dd.mx['time'][:,ixCCD])) # dd.mx['time'][:,ixCCD].copy()
-#                    data[CCDkey][Q]['y'][sec] = dd.mx['%s_%s' % (self.stat,sec)][:,ixCCD,iQ].copy()
-#        
-#        self.data = data
-#        
-#        
-#    def plot(self,**kwargs):
-#        """ """
-#        meta = dict(suptitle=self.suptitle,
-#                    doNiceXDate=True,doLegend=True)
-#        kwargs.update(meta)
-#        plotobj = plbaseclasses.Beam2DPlot(self.data,**kwargs)
-#        plotobj.render(self.figname)
+    def configure(self,**kwargs):
+        """ """
+        defaults = dict(path='./',stats=[])
+        defaults.update(kwargs)
+        self.stats = defaults['stats']
+        if 'figname' in defaults: self.figname = defaults['figname']
+        if 'caption' in defaults: self.caption = defaults['caption']
+        path = defaults['path']
+        self.figname = os.path.join(path,self.figname)
+        
+        if 'suptitle' in defaults: self.suptitle = defaults['suptitle']
+        
+    def build_data(self,parent):
+        """ """
+        
+        dd = parent.dd
+        indices = parent.dd.indices
+        CCDs = indices[indices.names.index('CCD')].vals
+        Quads = indices[indices.names.index('Quad')].vals
+        
+        data = OrderedDict()
+        for ixCCD,CCD in enumerate(CCDs):
+            CCDkey = 'CCD%i' % CCD
+            data[CCDkey] = OrderedDict()
+            for iQ,Q in enumerate(Quads):
+                data[CCDkey][Q] = OrderedDict()
+                data[CCDkey][Q]['x'] = OrderedDict()
+                data[CCDkey][Q]['y'] = OrderedDict()
+                
+                for stat in self.stats:
+                    data[CCDkey][Q]['x'][stat] = dd.mx['time'][:,ixCCD].copy()
+                    data[CCDkey][Q]['y'][stat] = dd.mx[stat][:,ixCCD,iQ].copy()
+                    
+        
+        self.data = data
+        
+        
+    def plot(self,**kwargs):
+        """ """
+        meta = dict(suptitle=self.suptitle,
+                    doNiceXDate=True,doLegend=True)
+        meta.update(kwargs)
+        
+        plotobj = baseclasses.Beam2DPlot(self.data,**meta)
+        plotobj.render(self.figname)

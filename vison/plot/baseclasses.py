@@ -18,6 +18,7 @@ from vison.datamodel.HKtools import format_date
 import copy
 import itertools
 import os
+import string as st
 
 from matplotlib import pyplot as plt
 import matplotlib
@@ -42,9 +43,9 @@ def _squiggle_xy(a, b, c, d, i=np.arange(0.0, 2*np.pi, 0.05)):
 
 class Fig(object):
     
-    def __init__(self,filename=''):
+    def __init__(self,figname=''):
         
-        self.filename = filename
+        self.figname = figname
         self.texfraction = 1.0
         self.caption = ''
         
@@ -174,21 +175,16 @@ class Beam2DPlot(BasicPlot):
         
         super(Beam2DPlot,self).__init__(**kwargs)
         
-        defaults = dict(suptitle='',ccdtitles=dict(CCD1='CCD1',CCD2='CCD2',CCD3='CCD3'),
+        meta = dict(suptitle='',ccdtitles=dict(CCD1='CCD1',CCD2='CCD2',CCD3='CCD3'),
                         doLegend=False,
-                        doNiceXDate=False)
-        
-        if 'meta' in kwargs: meta = kwargs['meta']
-        else: meta = dict()
+                        doNiceXDate=False)        
+        meta.update(kwargs)
         
         self.figsize=(15,6)
         self.Quads = ['E','F','H','G']
         self.CCDs = [1,2,3]
-        self.data = data
-        self.meta = dict()
-        self.meta.update(defaults)
-        self.meta.update(meta)
-    
+        self.data = data.copy()
+        self.meta = meta.copy()    
         self.handles = []
         self.labels = []
     
@@ -252,10 +248,12 @@ class Beam2DPlot(BasicPlot):
                 for key in xkeys:
                     xarr = self.data[CCDkey][Q]['x'][key]
                     yarr = self.data[CCDkey][Q]['y'][key]
-                    handle = self.axs[CCDkey][Q].plot(xarr,yarr,label=key)
+                    label = st.replace(key,'_','\_')
+                    handle = self.axs[CCDkey][Q].plot(xarr,yarr,label=label)
+
                     if Q=='E' and CCD==1:
                         self.handles += handle
-                        self.labels.append(key)
+                        self.labels.append(label)
             else:
                 xarr = self.data[CCDkey][Q]['x']
                 yarr = self.data[CCDkey][Q]['y']
@@ -313,7 +311,7 @@ class Beam2DPlot(BasicPlot):
         plt.subplots_adjust(wspace=0.0)
         
         plt.margins(0.05)
-
+        
         plt.suptitle(self.meta['suptitle'])
         #plt.tight_layout()
         plt.subplots_adjust(top=0.85)
