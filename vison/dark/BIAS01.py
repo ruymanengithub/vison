@@ -81,7 +81,7 @@ class BIAS01(DarkTask):
                     ('basic',self.basic_analysis),
                     ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
-        self.figdict = B01aux.B01figs
+        self.figdict = B01aux.B01figs.copy()
         self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
         
         

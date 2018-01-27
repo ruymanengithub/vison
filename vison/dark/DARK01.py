@@ -37,6 +37,7 @@ from vison.datamodel import ccd
 from vison.datamodel import generator
 #from vison.pipe.task import Task
 from DarkTask import DarkTask
+import D01aux
 from vison.image import performance
 from vison.datamodel import inputs
 # END IMPORT
@@ -79,7 +80,7 @@ class DARK01(DarkTask):
                     ('basic',self.basic_analysis),
                     ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
-        self.figdict = dict()
+        self.figdict = D01aux.D01figs.copy()
         self.inputs['subpaths'] = dict(figs='figs')
                 
     def set_inpdefaults(self,**kwargs):

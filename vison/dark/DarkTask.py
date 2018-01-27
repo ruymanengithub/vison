@@ -31,7 +31,8 @@ class DarkTask(Task):
         if test == 'BIAS01':
             kwargs = dict(figkeys=['B01checks_offsets','B01checks_stds'])
         elif test == 'DARK01':
-            kwargs = dict()
+            kwargs = dict(figkeys=['D01checks_offsets','D01checks_stds',
+                                   'D01checks_flu'])
         Task.check_data(self,**kwargs)
         
     def get_checkstats_ST(self,**kwargs):
