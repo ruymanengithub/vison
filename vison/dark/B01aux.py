@@ -24,13 +24,15 @@ from vison.plot import trends
 
 
 check_offsets_dict = dict(stats=['offset_pre','offset_img','offset_ove'],
+                          trendaxis='time',
                           figname='BIAS01_offset_vs_time.png',
                           caption='BIAS01: offset vs. time.',
                           meta=dict(doLegend=True,
                           doNiceXDate=True,
-                          suptitle='BIAS01-checks: offsetes'))
+                          suptitle='BIAS01-checks: offsets'))
 
 check_std_dict = dict(stats=['std_pre','std_img','std_ove'],
+                      trendaxis='time',
                           figname='BIAS01_std_vs_time.png',
                           caption='BIAS01: std vs. time.',
                           meta=dict(doLegend=True,

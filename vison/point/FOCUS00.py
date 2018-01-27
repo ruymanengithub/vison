@@ -57,6 +57,7 @@ import PointTask as PT
 import FOCUS00_lib as F00lib
 from vison.image import performance
 from vison.datamodel import inputs
+import F00aux
 # END IMPORT
 
 isthere = os.path.exists
@@ -114,7 +115,7 @@ class FOCUS00(PT.PointTask):
                     ('basic',self.basic_analysis),
                     ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
-        self.figdict = dict()
+        self.figdict = F00aux.gt_F00figs(self.inputs['wavelength'])
         self.inputs['subpaths'] = dict(figs='figs')   
         
 

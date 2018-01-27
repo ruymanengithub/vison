@@ -24,6 +24,7 @@ from vison.plot import trends
 
 
 check_offsets_dict = dict(stats=['offset_pre','offset_ove'],
+                          trendaxis='time',
                           figname='DARK01_offset_vs_time.png',
                           caption='DARK01: offset vs. time.',
                           meta=dict(doLegend=True,
@@ -31,6 +32,7 @@ check_offsets_dict = dict(stats=['offset_pre','offset_ove'],
                           suptitle='DARK01-checks: offsets'))
 
 check_std_dict = dict(stats=['std_pre','std_ove'],
+                      trendaxis='time',
                           figname='DARK01_std_vs_time.png',
                           caption='DARK01: std vs. time.',
                           meta=dict(doLegend=True,
@@ -39,6 +41,7 @@ check_std_dict = dict(stats=['std_pre','std_ove'],
                           )
  
 check_flu_dict = dict(stats=['chk_flu_img'],
+                      trendaxis='time',
                           figname='DARK01_FLU_vs_time.png',
                           caption='DARK01: Fluence vs. time.',
                           meta=dict(doLegend=False,
