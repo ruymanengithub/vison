@@ -305,7 +305,7 @@ class Task(object):
         figobj.configure(**kwargs)
         figobj.build_data(self)
         if 'meta' in kwargs: meta = kwargs['meta']
-        else: meta = {}
+        else: meta = {}       
         figobj.plot(**meta)
         self.figdict[figkey][0] = copy.deepcopy(figobj)
         
@@ -369,7 +369,8 @@ class Task(object):
         figspath = self.inputs['subpaths']['figs']
         pmeta = dict(path=figspath,
                 caption = '$\\bf{MISSING}:$ %s' % niceref,
-                     title=niceref)
+                tag=ref,
+                     meta=dict(title=niceref))
         self.doPlot(key,**pmeta)
         self.addFigure2Report(key)
     
@@ -492,6 +493,7 @@ class Task(object):
                 self.doPlot(figkey,**pmeta)
                 self.addFigure2Report(figkey)
             except:
+                self.catchtraceback()                
                 nfigkey = 'BS_%s' % figkey                
                 self.skipMissingPlot(nfigkey,ref=figkey)
 

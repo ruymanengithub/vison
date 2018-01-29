@@ -44,6 +44,7 @@ class pl_basic_checkstat(baseclasses.Fig):
         self.figname = os.path.join(path,self.figname)        
         if 'suptitle' in defaults: self.suptitle = defaults['suptitle']
         
+        
     def build_data(self,parent):
         """ """
         
@@ -69,7 +70,7 @@ class pl_basic_checkstat(baseclasses.Fig):
         
         
     def plot(self,**kwargs):
-        """ """
+        """ """        
         meta = dict(suptitle=self.suptitle,
                     doNiceXDate=True,doLegend=True)
         meta.update(kwargs)

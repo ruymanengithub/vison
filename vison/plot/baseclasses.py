@@ -326,15 +326,13 @@ class ImgShow(BasicPlot):
         super(ImgShow,self).__init__(**kwargs)
         
         defaults = dict(title='')
-        
-        if 'meta' in kwargs: meta = kwargs['meta']
-        else: meta = dict()
-        
+                
         self.figsize=(7,7)
         self.data = data
         self.meta = dict()
         self.meta.update(defaults)
-        self.meta.update(meta)
+        self.meta.update(kwargs)
+        
         
     def axmethod(self):
         """ """
@@ -361,17 +359,17 @@ class BlueScreen(Fig):
         self.figname = 'BlueScreen%s.png' 
         self.caption = '' 
         self.texfraction = 0.7
-        self.title = ''
-    
+
     def configure(self,**kwargs):
         """ """
-        defaults = dict(path='./',title='',
-                        caption='',tag='')
+        
+        defaults = dict(path='./',
+                        caption='',tag='',
+                        meta=dict(title=''))
         defaults.update(kwargs)        
         self.caption = defaults['caption']
         path = defaults['path']
         self.figname = os.path.join(path,self.figname % defaults['tag'])
-        self.title = defaults['title']
         
     def build_data(self,parent):
         """ """        
@@ -379,8 +377,9 @@ class BlueScreen(Fig):
         
     def plot(self,**kwargs):
         """ """
-        meta = dict(title=self.title)
-        plotobj = ImgShow(self.data,meta=meta)
+        meta = dict()
+        meta.update(kwargs)        
+        plotobj = ImgShow(self.data,**meta)
         plotobj.render(self.figname)
     
 

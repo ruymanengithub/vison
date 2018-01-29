@@ -41,7 +41,9 @@ class PointTask(Task):
         elif 'PSF02' in test:
             kwargs = dict()
         elif 'FOCUS00' in test:
-            kwargs = dict(figkeys=['F00checks_offsets','F00checks_stds'])
+            kwargs = dict(figkeys=['F00checks_offsets','F00checks_stds',
+                                   'F00checks_bgd','F00checks_fluence',
+                                   'F00checks_fwhm'])
         
         Task.check_data(self,**kwargs)
     
@@ -57,27 +59,29 @@ class PointTask(Task):
             Qindices.append(core.vIndex('Quad',vals=context.Quads))
         
         
+        valini = 0.
+        
         newcolnames_off = ['offset_pre','offset_ove']
         for newcolname_off in newcolnames_off:
-            self.dd.initColumn(newcolname_off,Qindices,dtype='float32',valini=np.nan)
+            self.dd.initColumn(newcolname_off,Qindices,dtype='float32',valini=valini)
         
-        self.dd.initColumn('bgd_img',Qindices,dtype='float32',valini=np.nan)
+        self.dd.initColumn('bgd_img',Qindices,dtype='float32',valini=valini)
         
         newcolnames_std = ['std_pre','std_ove']
         for newcolname_std in newcolnames_std:
-            self.dd.initColumn(newcolname_std,Qindices,dtype='float32',valini=np.nan)
+            self.dd.initColumn(newcolname_std,Qindices,dtype='float32',valini=valini)
         
         Sindices = copy.deepcopy(Qindices)
         if 'Spot' not in Sindices.names:
             Sindices.append(core.vIndex('Spot',vals=polib.Point_CooNom['names']))
         
         
-        self.dd.initColumn('chk_x',Sindices,dtype='float32',valini=np.nan)
-        self.dd.initColumn('chk_y',Sindices,dtype='float32',valini=np.nan)
-        self.dd.initColumn('chk_peak',Sindices,dtype='float32',valini=np.nan)
-        self.dd.initColumn('chk_fluence',Sindices,dtype='float32',valini=np.nan)
-        self.dd.initColumn('chk_fwhmx',Sindices,dtype='float32',valini=np.nan)
-        self.dd.initColumn('chk_fwhmy',Sindices,dtype='float32',valini=np.nan)
+        self.dd.initColumn('chk_x',Sindices,dtype='float32',valini=valini)
+        self.dd.initColumn('chk_y',Sindices,dtype='float32',valini=valini)
+        self.dd.initColumn('chk_peak',Sindices,dtype='float32',valini=valini)
+        self.dd.initColumn('chk_fluence',Sindices,dtype='float32',valini=valini)
+        self.dd.initColumn('chk_fwhmx',Sindices,dtype='float32',valini=valini)
+        self.dd.initColumn('chk_fwhmy',Sindices,dtype='float32',valini=valini)
          
         chkkeycorr = dict(chk_x='x',chk_y='y',chk_peak='peak',chk_fluence='fluence',
                           chk_fwhmx='fwhmx',chk_fwhmy='fwhmy')
