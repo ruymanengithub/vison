@@ -148,6 +148,11 @@ class CCD2DPlot(BasicPlot):
                 self.axs[-1].plot(xarr,yarr)
             
             self.axs[-1].set_title(qtitles[Q])
+            
+            if self.meta['doNiceXDate']:
+                _xticks = self.axs[-1].get_xticks()
+                if len(_xticks)>6:
+                    self.axs[-1].set_xticks(_xticks[::2])
         
     def plt_trimmer(self):
         
@@ -279,9 +284,15 @@ class Beam2DPlot(BasicPlot):
             if Q == 'E':
                 self.axs[CCDkey][Q].set_title(CCDkey,x=1)
             
+            if self.meta['doNiceXDate']:
+                _xticks = self.axs[CCDkey][Q].get_xticks()
+                if len(_xticks)>6:
+                    self.axs[CCDkey][Q].set_xticks(_xticks[::2])
             
+            #self.axs[CCDkey][Q].locator_params(nticks=4,axis='x')
         
     def plt_trimmer(self):
+        
         
         
         for CCD in self.CCDs:
@@ -301,6 +312,7 @@ class Beam2DPlot(BasicPlot):
         if self.meta['doNiceXDate']:
             plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))   
             self.fig.autofmt_xdate()
+            #plt.locator_params(nticks=4,axis='x',prune='both')
         
         
         plt.locator_params(axis='y',nticks=7,prune='both')
