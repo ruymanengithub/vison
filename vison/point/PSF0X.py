@@ -143,7 +143,7 @@ class PSF0X(PointTask):
                          ('basic',self.basic_analysis),('bayes',self.bayes_analysis),
                          ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
-        self.figdict = PSF0Xaux.PSF0Xfigs
+        self.figdict = PSF0Xaux.gt_PSF0Xfigs(self.inputs['test'])
         self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
         
     def set_inpdefaults(self,**kwargs):

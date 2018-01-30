@@ -56,9 +56,9 @@ def gt_check_flu_dict(wave):
                           caption='FOCUS00\_%i: Fluence vs. Mirror Position.' % wave,
                           meta=dict(doLegend=False,
                                 doNiceXDate=False,
-                                suptitle='FOCUS00\_%i-checks: Fluence' % wave),
+                                suptitle='FOCUS00\_%i-checks: Fluence' % wave,
                                 xlabel='Mirr [mm]',
-                                ylabel='Flu.[ADU]')
+                                ylabel='Flu.[ADU]'))
 
 def gt_check_fwhm_dict(wave):
     return dict(stats=['chk_fwhmx','chk_fwhmy'],
@@ -67,9 +67,9 @@ def gt_check_fwhm_dict(wave):
                           caption='FOCUS00\_%i: FWHM(x,y) vs. Mirror Position.' % wave,
                           meta=dict(doLegend=True,
                                 doNiceXDate=False,
-                                suptitle='FOCUS00\_%i-checks: FWHM(x,y)' % wave),
+                                suptitle='FOCUS00\_%i-checks: FWHM(x,y)' % wave,
                                 xlabel='Mirr [mm]',
-                                ylabel='FWHM [pix]')
+                                ylabel='FWHM [pix]'))
 
 
 def gt_F00figs(wave):

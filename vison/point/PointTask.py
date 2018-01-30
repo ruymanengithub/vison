@@ -37,9 +37,13 @@ class PointTask(Task):
         """ """
         test = self.inputs['test']
         if 'PSF01' in test: 
-            kwargs = dict()
+            kwargs = dict(figkeys=['PSF0Xchecks_offsets','PSF0Xchecks_stds',
+                                   'PSF0Xchecks_bgd','PSF0Xchecks_fluence',
+                                   'PSF0Xchecks_fwhm'])
         elif 'PSF02' in test:
-            kwargs = dict()
+            kwargs = dict(figkeys=['PSF0Xchecks_offsets','PSF0Xchecks_stds',
+                                   'PSF0Xchecks_bgd','PSF0Xchecks_fluence',
+                                   'PSF0Xchecks_fwhm'])
         elif 'FOCUS00' in test:
             kwargs = dict(figkeys=['F00checks_offsets','F00checks_stds',
                                    'F00checks_bgd','F00checks_fluence',
@@ -173,7 +177,6 @@ class PointTask(Task):
                             test = (np.isnan(arr[ixsel,iCCD,jQ,kSpot]) |\
                              (arr[ixsel,iCCD,jQ,kSpot] <= _lims_col[0]) | (arr[ixsel,iCCD,jQ,kSpot] >= _lims_col[1]))
                             compliance[CCDkey][Q][Spot][colname] = not (np.any(test,axis=(0,1)).sum() | (ixsel[0].shape[0]==0))
-                            stop()
                     else:
                         
                         test = (np.isnan(arr[:,iCCD,jQ,kSpot]) |\
