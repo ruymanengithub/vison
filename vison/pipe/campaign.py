@@ -188,7 +188,7 @@ def generate_test_sequence(equipment,toGen,elvis=context.elvis):
                            nm640=ogse.tFWC_flat['nm640'],
                            nm730=ogse.tFWC_flat['nm730'],
                            nm800=ogse.tFWC_flat['nm800'],
-                           nm890=ogse.tFWC_flat['nm890'])
+                           nm880=ogse.tFWC_flat['nm880'])
     # FLAT-01
     
     if toGen['FLAT01']: 
@@ -220,7 +220,7 @@ def generate_test_sequence(equipment,toGen,elvis=context.elvis):
     
     if toGen['FLAT02']: 
         
-        wavesFLAT02 = [590,640,890]
+        wavesFLAT02 = [590,640,880]
         t_dummy_F02 = np.array([25.,75])/100.
         framesF02 = [80,30]
         
@@ -281,7 +281,7 @@ def generate_test_sequence(equipment,toGen,elvis=context.elvis):
         
         print 'PTC02WAVE...'
         
-        wavesPTC02w = [590,640,730,890]
+        wavesPTC02w = [590,640,730,880]
     
         diffPTC02w = dict(sn_ccd1=sn_ccd1,
                       sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
@@ -372,7 +372,7 @@ def generate_test_sequence(equipment,toGen,elvis=context.elvis):
         
         print 'FOCUS00...'
 
-        #wavesFOCUS00w = [590,640,730,800,890] # TESTS
+        #wavesFOCUS00w = [590,640,730,800,880] # TESTS
         wavesFOCUS00w = [800]
     
         diffFOCUS00w = dict(sn_ccd1=sn_ccd1,
@@ -404,7 +404,7 @@ def generate_test_sequence(equipment,toGen,elvis=context.elvis):
 
         print 'PSF01...'
         
-        #wavesPSF01w = [590,640,800,890]        
+        #wavesPSF01w = [590,640,800,880]        
         wavesPSF01w = PSF0X.testdefaults['waves']
         
         diffPSF01w = dict(sn_ccd1=sn_ccd1,

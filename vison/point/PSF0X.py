@@ -82,7 +82,7 @@ PSF0X_commvalues = dict(program='CALCAMP',
   wave=4,mirr_pos=polib.mirror_nom['F4'],
   comments='')
 
-testdefaults = dict(waves=[590,640,800,890],
+testdefaults = dict(waves=[590,640,800,880],
                                exptimes=dict(),
                                frames=[20,15,10,4,3])
 
