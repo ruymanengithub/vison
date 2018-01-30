@@ -47,6 +47,7 @@ from vison.support import files
 from FlatTask import FlatTask
 from vison.image import performance
 from vison.datamodel import inputs
+import NL01aux
 # END IMPORT
 
 isthere = os.path.exists
@@ -109,7 +110,7 @@ class NL01(FlatTask):
                     ('NL',self.produce_NLCs),
                     ('satCTE',self.do_satCTE)]
         self.HKKeys = HKKeys
-        self.figdict = dict() # B01aux.B01figs
+        self.figdict = NL01aux.NL01figs.copy()
         self.inputs['subpaths'] = dict(figs='figs') # dict(figs='figs',pickles='ccdpickles')
         
         

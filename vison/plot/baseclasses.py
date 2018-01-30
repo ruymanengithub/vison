@@ -291,7 +291,7 @@ class Beam2DPlot(BasicPlot):
                     
             if 'xlabel' in self.meta and Q in ['H','G']:
                 self.axs[CCDkey][Q].set_xlabel(self.meta['xlabel'])
-            if 'ylabel' in self.meta and Q in ['H','G'] and CCD==1:
+            if 'ylabel' in self.meta and Q in ['E','H'] and CCD==1:
                 self.axs[CCDkey][Q].set_ylabel(self.meta['ylabel'])
             
             #self.axs[CCDkey][Q].locator_params(nticks=4,axis='x')

@@ -251,10 +251,10 @@ class Task(object):
             self.report.add_Text('%s acquisition consistent with expectations: %s\\newline' % (ntestkey,nchecksout))
             
             if (checkreport['failedcols'])>0:          
-                nfailedcols = st.replace(checkreport['failedcols'].tolist().__repr__(),'_','\_')
+                nfailedcols = st.replace(checkreport['failedcols'].__repr__(),'_','\_')
                 self.report.add_Text('%s failed columns: %s' % (ntestkey,nfailedcols))
             if len(checkreport['failedkeys'])>0:
-                nfailedkeys = st.replace(checkreport['failedkeys'].tolist().__repr__(),'_','\_')
+                nfailedkeys = st.replace(checkreport['failedkeys'].__repr__(),'_','\_')
                 self.report.add_Text('%s failed keys: %s' % (ntestkey,nfailedkeys))
         
         # Adding Time Axis            

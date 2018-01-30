@@ -39,6 +39,7 @@ from vison.datamodel import generator
 from vison.flat.FlatTask import FlatTask
 from vison.image import performance
 from vison.datamodel import inputs
+import FLAT0Xaux as FL0Xaux
 # END IMPORT
 
 isthere = os.path.exists
@@ -88,7 +89,7 @@ class FLAT0X(FlatTask):
                     ('masterflat',self.do_master_flat),
                     ('prmask',self.do_prdef_mask)]
         self.HKKeys = HKKeys
-        self.figdict = dict() 
+        self.figdict = FL0Xaux.gt_FL0Xfigs(self.inputs['test'])
         self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
         
    
@@ -156,7 +157,7 @@ class FLAT0X(FlatTask):
 
     def filterexposures(self,structure,explogf,datapath,OBSID_lims):
         """ """
-        wavedkeys = []
+        wavedkeys = ['motr_siz']
         return super(FLAT0X,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
                               wavedkeys=wavedkeys)
     

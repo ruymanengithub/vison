@@ -55,6 +55,7 @@ from vison.image import performance
 #from vison.pipe.task import Task
 from FlatTask import FlatTask
 from vison.datamodel import inputs
+import PTC0Xaux
 # END IMPORT
 
 isthere = os.path.exists
@@ -138,7 +139,7 @@ class PTC0X(FlatTask):
         self.subtasks = [('check',self.check_data),('extract',self.extract_PTC),
                     ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
-        self.figdict = dict() # PTC0Xaux.PTC0Xfigs
+        self.figdict = PTC0Xaux.gt_PTC0Xfigs(self.inputs['test'])
         self.inputs['subpaths'] = dict(figs='figs')  #dict(figs='figs',pickles='ccdpickles')
         
 
@@ -232,7 +233,7 @@ class PTC0X(FlatTask):
         """
         
         """    
-        wavedkeys = []
+        wavedkeys = ['motr_siz']
         return super(PTC0X,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,
                               wavedkeys=wavedkeys)
         

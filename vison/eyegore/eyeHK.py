@@ -443,7 +443,7 @@ class HKDisplay(tk.Toplevel):
         for key in subKeys:
             pHK[key] = HK[key].copy()
         
-        pHK['CCD1_OD_T'] += datetime.datetime.now().second / 30. # TEST
+        #pHK['CCD1_OD_T'] += datetime.datetime.now().second / 30. # TEST
         
         self.HK = pHK
         

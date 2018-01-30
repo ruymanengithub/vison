@@ -153,8 +153,8 @@ def check_test_structure(explog,structure,CCDs=[1,2,3],selbool=True,wavedkeys=[]
             ix0 += frames
             
     
-    failedkeys = np.unique(failedkeys)
-    failedcols = np.unique(failedcols)
+    failedkeys = np.unique(failedkeys).tolist()
+    failedcols = np.unique(failedcols).tolist()
     
     report = dict(checksout=isconsistent,failedkeys=failedkeys,failedcols=failedcols)
     
