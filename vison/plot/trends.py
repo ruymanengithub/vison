@@ -52,7 +52,7 @@ class pl_basic_checkstat(baseclasses.Fig):
         indices = parent.dd.indices
         CCDs = indices[indices.names.index('CCD')].vals
         Quads = indices[indices.names.index('Quad')].vals
-        
+            
         data = OrderedDict()
         for ixCCD,CCD in enumerate(CCDs):
             CCDkey = 'CCD%i' % CCD
@@ -75,5 +75,6 @@ class pl_basic_checkstat(baseclasses.Fig):
                     doNiceXDate=True,doLegend=True)
         meta.update(kwargs)
         
+            
         plotobj = baseclasses.Beam2DPlot(self.data,**meta)
         plotobj.render(self.figname)

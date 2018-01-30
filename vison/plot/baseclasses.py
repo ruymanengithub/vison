@@ -288,6 +288,11 @@ class Beam2DPlot(BasicPlot):
                 _xticks = self.axs[CCDkey][Q].get_xticks()
                 if len(_xticks)>6:
                     self.axs[CCDkey][Q].set_xticks(_xticks[::2])
+                    
+            if 'xlabel' in self.meta and Q in ['H','G']:
+                self.axs[CCDkey][Q].set_xlabel(self.meta['xlabel'])
+            if 'ylabel' in self.meta and Q in ['H','G'] and CCD==1:
+                self.axs[CCDkey][Q].set_ylabel(self.meta['ylabel'])
             
             #self.axs[CCDkey][Q].locator_params(nticks=4,axis='x')
         
