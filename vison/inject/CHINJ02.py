@@ -36,6 +36,7 @@ from vison.datamodel import scriptic as sc
 from vison.datamodel import inputs
 from InjTask import InjTask
 from vison.image import performance
+import CH02aux
 # END IMPORT
 
 isthere = os.path.exists
@@ -86,7 +87,7 @@ class CHINJ02(InjTask):
         self.subtasks = [('check',self.check_data),('extract',self.extract_data),
                          ('basic',self.basic_analysis),('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
-        self.figdict = dict()
+        self.figdict = CH02aux.CH02figs.copy()
         self.inputs['subpaths'] = dict(figs='figs')
         
     

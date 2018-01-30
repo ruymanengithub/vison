@@ -36,13 +36,17 @@ class InjTask(Task):
     
     def check_data(self,**kwargs):
         """ """
-        
         test = self.inputs['test']
         if test == 'CHINJ01':
-            kwargs = dict().update(kwargs)
+            _kwargs = dict(figkeys=['CH01checks_offsets','CH01checks_stds',
+                                   'CH01checks_injlevel','CH01checks_injstd'])
+            _kwargs.update(kwargs)
         elif test == 'CHINJ02':
-            kwargs = dict().update(kwargs)
-        Task.check_data(self,**kwargs)
+            _kwargs = dict(figkeys=['CH02checks_offsets','CH02checks_stds',
+                                   'CH02checks_injlevel','CH02checks_injstd'])
+            _kwargs.update(kwargs)
+        
+        Task.check_data(self,**_kwargs)
         
     def predict_expected_injlevels(self,teststruct):
         """ """        
@@ -128,16 +132,18 @@ class InjTask(Task):
         if 'Quad' not in Xindices.names:
             Xindices.append(core.vIndex('Quad',vals=context.Quads))
         
+        valini = 0.
+        
         newcolnames_off = ['offset_pre','offset_ove']
         for newcolname_off in newcolnames_off:
-            self.dd.initColumn(newcolname_off,Xindices,dtype='float32',valini=np.nan)
+            self.dd.initColumn(newcolname_off,Xindices,dtype='float32',valini=valini)
         
         newcolnames_std = ['std_pre','std_ove']
         for newcolname_std in newcolnames_std:
-            self.dd.initColumn(newcolname_std,Xindices,dtype='float32',valini=np.nan)
+            self.dd.initColumn(newcolname_std,Xindices,dtype='float32',valini=valini)
         
         for chk_inj_col in ['chk_mea_inject','chk_med_inject','chk_std_inject']:
-            self.dd.initColumn(chk_inj_col,Xindices,dtype='float32',valini=np.nan)
+            self.dd.initColumn(chk_inj_col,Xindices,dtype='float32',valini=valini)
         
         
         nObs,_,_ = Xindices.shape
