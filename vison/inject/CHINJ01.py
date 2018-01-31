@@ -179,6 +179,9 @@ class CHINJ01(InjTask):
         commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(CHINJ01_commvalues)
         
+        if len(diffvalues)==0:
+            diffvalues = self.inputs['diffvalues']
+        
         CHINJ01_sdict = sc.update_structdict(CHINJ01_sdict,commvalues,diffvalues)
         
         return CHINJ01_sdict

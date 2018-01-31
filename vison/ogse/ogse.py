@@ -31,7 +31,7 @@ tFWC_flat = dict(nm590=2.,
                 nm730=2.,
                 nm800=2.,
                 nm880=2.,
-                nm0=200.) 
+                nm0=100.) 
 
 # saturation exposure times for point-source, ms, orientative
 
@@ -41,7 +41,7 @@ tFWC_point = dict(nm590=2.,
                 nm730=2.,
                 nm800=2.,
                 nm880=2.,
-                nm0=200.) # ms
+                nm0=100.) # ms
 
 # FWHM (lambda), in pixels, orientative
                   

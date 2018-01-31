@@ -113,7 +113,10 @@ class PERSIST01(Task):
         
         commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(PER01_commvalues)               
-                   
+        
+        if len(diffvalues)==0:
+            diffvalues = self.inputs['diffvalues']
+        
         PER01_sdict = sc.update_structdict(PER01_sdict,commvalues,diffvalues)
         
         return PER01_sdict

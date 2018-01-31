@@ -151,6 +151,9 @@ class FLAT0X(FlatTask):
         commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(FLAT0X_commvalues)
         
+        if len(diffvalues)==0:
+            diffvalues = self.inputs['diffvalues']
+        
         FLAT0X_sdict = sc.update_structdict(FLAT0X_sdict,commvalues,diffvalues)
         
         return FLAT0X_sdict

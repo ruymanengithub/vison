@@ -153,6 +153,9 @@ class TP02(PumpTask):
         commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(TP02_commvalues)
         
+        if len(diffvalues)==0:
+            diffvalues = self.inputs['diffvalues']
+        
         TP02_sdict = sc.update_structdict(TP02_sdict,commvalues,diffvalues)
         
         return TP02_sdict

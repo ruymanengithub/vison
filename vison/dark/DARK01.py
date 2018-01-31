@@ -110,6 +110,9 @@ class DARK01(DarkTask):
         commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(DARK01_commvalues)
         
+        if len(diffvalues)==0:
+            diffvalues = self.inputs['diffvalues']
+        
         DARK01_sdict = sc.update_structdict(DARK01_sdict,commvalues,diffvalues)    
         
         return DARK01_sdict

@@ -171,6 +171,9 @@ class FOCUS00(PT.PointTask):
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(FOCUS00_commvalues)           
         
+        if len(diffvalues)==0:
+            diffvalues = self.inputs['diffvalues']
+        
         FOCUS00_sdict = sc.update_structdict(FOCUS00_sdict,commvalues,diffvalues)
         
         

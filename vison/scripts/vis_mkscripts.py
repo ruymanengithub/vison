@@ -17,6 +17,7 @@ from pdb import set_trace as stop
 import numpy as np
 import os
 from collections import OrderedDict
+import copy
 
 import vison
 from vison.datamodel import scriptic as sc
@@ -65,7 +66,8 @@ def scwriter(toWrite,test_generator,outpath,equipment,elvis=context.elvis):
     print >> f1, 'vison version: %s\n' % versiontag
     
     for test in test_sequence.keys():
-        structtest = test_sequence[test]
+        testobj = copy.deepcopy(test_sequence[test])
+        structtest = testobj.build_scriptdict(elvis=elvis)
         
         iNcols = structtest['Ncols']
         frameslist = [structtest['col%i' % i]['frames'] for i in range(1,iNcols+1)]

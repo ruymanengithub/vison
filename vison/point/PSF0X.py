@@ -82,7 +82,7 @@ PSF0X_commvalues = dict(program='CALCAMP',
   wave=4,mirr_pos=polib.mirror_nom['F4'],
   comments='')
 
-testdefaults = dict(waves=[590,640,800,880],
+testdefaults = dict(waves=[590,640,730,800,880],
                                exptimes=dict(),
                                frames=[20,15,10,4,3])
 
@@ -209,6 +209,9 @@ class PSF0X(PointTask):
         
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(PSF0X_commvalues)               
+        
+        if len(diffvalues)==0:
+            diffvalues = self.inputs['diffvalues']
         
         PSF0X_sdict = sc.update_structdict(PSF0X_sdict,commvalues,diffvalues)
         

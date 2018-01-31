@@ -78,7 +78,7 @@ PTC0X_commvalues = dict(program='CALCAMP',
 PTC01_relfluences = np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])
 
 PTC01_exptimes = (PTC01_relfluences / 100.*ogse.tFWC_flat['nm800']).tolist() # ms
-PTC02waves = [590,640,730,880]
+PTC02waves = [590,640,730,800,880,0]
 
 PTC02_relfluences = np.array([10.,30.,50.,70.,80.,90.])
 
@@ -223,6 +223,9 @@ class PTC0X(FlatTask):
                    
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(PTC0X_commvalues)
+        
+        if len(diffvalues)==0:
+            diffvalues = self.inputs['diffvalues']
         
         PTC0X_sdict = sc.update_structdict(PTC0X_sdict,commvalues,diffvalues)
         
