@@ -30,6 +30,7 @@ from vison.pipe.task import Task
 from PumpTask import PumpTask
 from vison.image import performance
 from vison.datamodel import inputs
+import TP01aux
 # END IMPORT 
 
 isthere = os.path.exists
@@ -80,7 +81,7 @@ class TP01(PumpTask):
                     ('basic',self.basic_analysis),
                     ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
-        self.figdict = dict()
+        self.figdict = TP01aux.TP01figs.copy()
         self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
 
 

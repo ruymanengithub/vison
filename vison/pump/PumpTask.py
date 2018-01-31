@@ -28,13 +28,18 @@ class PumpTask(InjTask):
         super(PumpTask,self).__init__(*args,**kwargs)
         
         
-    def check_data(self):
+    def check_data(self,**kwargs):
         """ """
         test = self.inputs['test']
         if test == 'TP01':
-            kwargs = dict(pattern=(2066,0,1))
+            kwargs = dict(pattern=(2066,0,1),
+                          figkeys=['TP01checks_offsets','TP01checks_stds',
+                                   'TP01checks_injlevel','TP01checks_injstd'])
         elif test == 'TP02':
-            kwargs = dict(pattern=(2066,0,1))
+            kwargs = dict(pattern=(2066,0,1),
+                          figkeys=['TP02checks_offsets','TP02checks_stds',
+                                   'TP02checks_injlevel','TP02checks_injstd'])
+        
         InjTask.check_data(self,**kwargs)
 
     

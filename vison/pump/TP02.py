@@ -30,6 +30,7 @@ from vison.datamodel import scriptic as sc
 from PumpTask import PumpTask
 from vison.image import performance
 from vison.datamodel import inputs
+import TP02aux
 # END IMPORT 
 
 isthere = os.path.exists
@@ -78,7 +79,7 @@ class TP02(PumpTask):
                     ('basic',self.basic_analysis),
                     ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
-        self.figdict = dict()
+        self.figdict = TP02aux.TP02figs.copy()
         self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
         
     def set_inpdefaults(self,**kwargs):

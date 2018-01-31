@@ -40,13 +40,13 @@ class InjTask(Task):
         if test == 'CHINJ01':
             _kwargs = dict(figkeys=['CH01checks_offsets','CH01checks_stds',
                                    'CH01checks_injlevel','CH01checks_injstd'])
-            _kwargs.update(kwargs)
+            kwargs.update(_kwargs)
         elif test == 'CHINJ02':
             _kwargs = dict(figkeys=['CH02checks_offsets','CH02checks_stds',
                                    'CH02checks_injlevel','CH02checks_injstd'])
-            _kwargs.update(kwargs)
+            kwargs.update(_kwargs)
         
-        Task.check_data(self,**_kwargs)
+        Task.check_data(self,**kwargs)
         
     def predict_expected_injlevels(self,teststruct):
         """ """        
