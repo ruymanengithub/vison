@@ -448,8 +448,7 @@ class Task(object):
         self.check_HK_ST()
         # OBTAIN METRICS FROM IMAGES        
         self.get_checkstats_ST(**kwargs)
-        # METRICS ASSESSMENT       
-        
+        # METRICS ASSESSMENT               
         self.check_metrics_ST(**kwargs)
         # PLOTs
         if self.report is not None: self.report.add_Section(keyword='check_plots',Title='Plots',level=1)
@@ -459,6 +458,7 @@ class Task(object):
             self.addFlagsToLog()
         if self.report is not None:
             self.addFlagsToReport()
+        stop()
         
     def check_HK_ST(self):
         """ """

@@ -18,6 +18,7 @@ from glob import glob
 import datetime
 import sys
 from collections import OrderedDict
+import copy
 
 from matplotlib import pyplot as plt
 import pylab
@@ -286,7 +287,7 @@ def loadHK_preQM(filename,elvis='5.7.07'):
     
     return data
 
-def loadHK_QFM(filename,elvis=context.elvis):
+def loadHK_QFMsingle(filename,elvis=context.elvis):
     """Loads a HK file
     
     Structure: tab separated columns, one per Keyword. First column is a 
@@ -295,18 +296,49 @@ def loadHK_QFM(filename,elvis=context.elvis):
     :param filename: path to the file to be loaded, including the file itself
     :param elvis: "ELVIS" version
     
-    :return: dictionary with pairs parameter:[values]
+    :return: astropy table with pairs parameter:[values]
     
     """
-    
     table = ascii.read(filename)
-    data = OrderedDict()
-    
-    for key in table.keys():
-        data[key] = table[key].data.copy()
-    
-    return data
+    return table
 
+def mergeHK(HKList):
+    """ """
+
+    HK = copy.deepcopy(HKList[0])
+    nHK = len(HKList)
+    
+    for ixHK in range(1,nHK):
+        iHKdata = HKList[ixHK]
+        
+        # Row-by-Row appending of the "iHKdata" added catalog
+        
+        for iL in range(len(iHKdata)):
+            HK.add_row(iHKdata[iL].as_void().tolist())
+    
+    return HK
+    
+
+def loadHK_QFM(filename,elvis=context.elvis):
+    """Loads a HK file
+    
+    Structure: tab separated columns, one per Keyword. First column is a 
+    timestamp, and there may be a variable number of rows (readings).
+    
+    :param filename: path to the file to be loaded, including the file itself, or list of paths to HK files.
+    :param elvis: "ELVIS" version
+    
+    :return: astropy table with pairs parameter:[values]
+    
+    """
+
+    
+    if isinstance(filename,str):
+        return loadHK_QFMsingle(filename)
+    elif isinstance(filename,list):
+        HKs = [loadHK_QFMsingle(item) for item in filename]
+        return mergeHK(HKs)
+    
 
 def iniHK_QFM(elvis=context.elvis,length=0):
     """ """
