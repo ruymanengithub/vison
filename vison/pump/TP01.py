@@ -37,22 +37,23 @@ isthere = os.path.exists
 
 HKKeys = []
 
-IG1=6
-IG2=5
+IG1=6.
+IG2=5.
 
 TP01_commvalues = dict(program='CALCAMP',test='TP01',
   flushes=7,exptime=0.,shuttr=0,
   e_shuttr=0,vstart=0,vend=2066,
   siflsh=1,siflsh_p=500,
-  IDL=11,IDH=18,
+  IDL=11.,IDH=18.,
   IG1_1_T=IG1,IG1_2_T=IG1,IG1_3_T=IG1,
   IG1_1_B=IG1,IG1_2_B=IG1,IG1_3_B=IG1,
   IG2_T=IG2,IG2_B=IG2,
   chinj=1,chinj_on=2066,chinj_of=0,
   chin_dly=0,
+  toi_chinj=500,
   v_tpump=1,s_tpump=0,
   v_tp_cnt=1000,
-  dwell_v=0,dwell_s=0,
+  dwell_v=0.,dwell_s=0.,
   motr_on=0,
   comments='')
 
@@ -63,6 +64,7 @@ class TP01_inputs(inputs.Inputs):
             ('toi_chinj',([int],'TOI Charge Injection.')),
             ('Nshuffles_V',([int],'Number of Shuffles, Vertical/Parallel Pumping.')),
             ('id_delays',([list],'Injection Drain Delays [2, one per CCDs section].')),
+            ('toi_chinj',([int],'TOI Charge Injection.')),
             ('toi_tpv',([list],'Vector of TOI TP-V values.')),
             ('vpumpmodes',([list],'Vertical/Parallel Pumping Starting points.'))
             ])))
@@ -83,12 +85,12 @@ class TP01(PumpTask):
         self.HKKeys = HKKeys
         self.figdict = TP01aux.TP01figs.copy()
         self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
-
+        
 
     def set_inpdefaults(self,**kwargs):
         """ """
         
-        toi_chinjTP01 = 250
+        toi_chinjTP01 = 500
         self.inpdefaults = dict(toi_chinj=toi_chinjTP01,
                          Nshuffles_V=5000,
                          id_delays=np.array([3.,2.]) * toi_chinjTP01,
@@ -103,6 +105,7 @@ class TP01(PumpTask):
         
         self.perfdefaults['Flu_lims'] = Flu_lims.copy()
         self.perfdefaults['FluGrad_lims'] = FluGrad_lims.copy()
+        
 
     def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
         """ """
@@ -111,6 +114,7 @@ class TP01(PumpTask):
         toi_tpv = self.inputs['toi_tpv']
         id_delays = self.inputs['id_delays']
         vpumpmodes = self.inputs['vpumpmodes']
+        toi_chinj = self.inputs['toi_chinj']
         
         assert len(id_delays) == 2
         
@@ -121,7 +125,7 @@ class TP01(PumpTask):
         # First Injection Drain Delay
         
         TP01_sdict['col1'] = dict(frames=1,v_tpump=0,comments='BGD',
-                  id_delay=id_delays[0])
+                  id_delay=id_delays[0],toi_ch=toi_chinj)
         
         colcounter = 2
         for i,toi_tp in enumerate(toi_tpv):
@@ -129,7 +133,8 @@ class TP01(PumpTask):
             for k,vpumpmode in enumerate(vpumpmodes):
                 colkey = 'col%i' % colcounter
                 TP01_sdict[colkey] = dict(frames=1,toi_tp=toi_tp,
-                         id_dly=id_delays[0],v_tpmod=vpumpmode)
+                         id_dly=id_delays[0],v_tpmod=vpumpmode,
+                                         toi_ch=toi_chinj)
                 
                 colcounter += 1
         
@@ -137,7 +142,7 @@ class TP01(PumpTask):
         
         
         TP01_sdict['col%i' % colcounter] = dict(frames=1,v_tpump=0,comments='BGD',
-                  id_delay=id_delays[1])
+                  id_delay=id_delays[1],toi_ch=toi_chinj)
         colcounter += 1
     
         for j,toi_tp in enumerate(toi_tpv):
@@ -147,7 +152,8 @@ class TP01(PumpTask):
                 colkey = 'col%i' % colcounter
                 #print colkey
                 TP01_sdict[colkey] = dict(frames=1,toi_tp=toi_tp,
-                             id_dly=id_delays[1],v_tpmod=vpumpmode)    
+                             id_dly=id_delays[1],v_tpmod=vpumpmode,
+                                             toi_ch=toi_chinj)    
                 
                 colcounter += 1
         

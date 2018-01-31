@@ -83,6 +83,7 @@ class InjTask(Task):
                     else:
                         _inj = ilib.predict_inj_level(IDL,IDH,IG1,IG2,id_wid,id_dly,toi_ch,sectag)
                     
+                    
                     expectation[CCDkey][Q]['col%i' % icol] = _inj
                     
         
