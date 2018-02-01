@@ -16,6 +16,7 @@ matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 import matplotlib.animation as animation
 from matplotlib import pyplot as plt
+import glob
 
 import os
 from pdb import set_trace as stop
@@ -114,9 +115,6 @@ class SingleHKplot(tk.Toplevel):
             pass
         plt.tight_layout(rect=[0, 0, 1, 1])
         
-          
-
-
 
 class HKButton(tk.Button,object):
     
@@ -306,7 +304,7 @@ class HKDisplay(tk.Toplevel):
         self.interval = interval
         self.elvis = elvis
         self.date = '21-02-80'
-        self.HKfile = None
+        self.HKfiles = None
         self.HK = dict()
         self.sizeHK = 0 # size in bytes of HK file
         self.page = 1
@@ -317,7 +315,7 @@ class HKDisplay(tk.Toplevel):
         self.HKkeys = HKtools.allHK_keys[elvis]
         self.HKlims = HKtools.HKlims[elvis]['S']
         
-        self.search_HKfile()
+        self.search_HKfiles()
         
         tk.Toplevel.__init__(self,self.root)
         
@@ -370,7 +368,7 @@ class HKDisplay(tk.Toplevel):
         toolbar.update()
         canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
     
-    def search_HKfile(self):
+    def search_HKfiles(self):
         """ """
         
         struct_date = time.strptime(os.path.split(st.replace(self.path,'_',''))[-1],'%d%b%y')
@@ -378,15 +376,19 @@ class HKDisplay(tk.Toplevel):
         
         self.date = date_infile
 
-        tmp_HK = 'HK_%s_ROE1_01.txt' % date_infile
+        tmp_HK = 'HK_%s_ROE1_??.txt' % date_infile
         tmp_HK = os.path.join(self.path,tmp_HK)
         
-        isthere = os.path.exists(tmp_HK)
-        if isthere:
-            self.HKfile = tmp_HK
+        HKfiles = glob.glob(tmp_HK)        
+        
+        #isthere = os.path.exists(tmp_HK)
+        arethere = len(HKfiles)>0
+        
+        if arethere:
+            self.HKfiles = HKfiles
         else:
-            print 'HKfile %s not found' % tmp_HK
-            self.HKfile = None
+            print 'HKfiles %s not found' % tmp_HK
+            self.HKfiles = None
     
     def select_HKkeys(self):
         """ """
@@ -407,32 +409,32 @@ class HKDisplay(tk.Toplevel):
         self.HKkeys_to_plot = HKkeys_to_plot
         
     
-    def get_data(self):
+    def get_bitsize(self,filelist):
         """ """
-        
+        bitsize = 0
+        for item in filelist:
+            bitsize += os.stat(item).st_size
+        return bitsize
+    
+    def get_data(self):
+        """ """        
+                
         self.select_HKkeys()
+               
         
-        if self.HKfile is None:
+        if self.HKfiles is None:
             yield self.HK
         
-        #with open(self.HKfile) as f:
-        #    nHKlines = len(f.readlines())
+        sizeHK = self.get_bitsize(self.HKfiles)
         
-        #if nHKlines <= self.nHKlines:
-        #    yield self.HK
-        
-        statinfo = os.stat(self.HKfile)
-        sizeHK = statinfo.st_size
         
         if sizeHK <= self.sizeHK:
             yield self.HK
         
         self.sizeHK = sizeHK
-        #self.nHKlines = nHKlines
-        
-        HK = HKtools.loadHK_QFM(self.HKfile,elvis=self.elvis)
-        
-        
+
+        HK = HKtools.loadHK_QFM(self.HKfiles,elvis=self.elvis)
+                
         dtobjarr = np.array([datetime.datetime.strptime(item,'%d-%m-%y_%H:%M:%S') \
                              for item in HK['TimeStamp']])        
     
@@ -441,11 +443,9 @@ class HKDisplay(tk.Toplevel):
         subKeys = [Key for Key in HK.keys() if Key != 'TimeStamp']
         
         for key in subKeys:
-            pHK[key] = HK[key].copy()
-        
-        #pHK['CCD1_OD_T'] += datetime.datetime.now().second / 30. # TEST
-        
-        self.HK = pHK
+            pHK[key] = HK[key].data.copy()
+                
+        self.HK = pHK.copy()
         
         yield pHK
         
@@ -455,10 +455,7 @@ class HKDisplay(tk.Toplevel):
         
         def render(pHK):
             
-            
-            max_xticks = 6
-            xloc = plt.MaxNLocator(max_xticks)            
-            
+
             nHK = len(self.HKkeys_to_plot)
             
             for item in self.axs:
@@ -468,15 +465,14 @@ class HKDisplay(tk.Toplevel):
                 for item in self.axs[-(9-nHK)]:
                     item.get_xaxis().set_visible(False)
                     item.get_yaxis().set_visible(False)
-            
-            
+                        
             for i in range(nHK):
                 
                 ax = self.axs[i]
                 
                 HKname = self.HKkeys_to_plot[i]
                 _HKlims = HKlims[HKname]
-                                
+                
                 try:
                     x = pHK['time'].copy()
                     y = pHK[HKname].copy()
@@ -484,7 +480,7 @@ class HKDisplay(tk.Toplevel):
                     x = np.array([0,1])
                     y = np.array([0,1])
                 
-                ax = _ax_render_HK(ax,x,y,_HKlims,HKname)
+                self.axs[i] = _ax_render_HK(ax,x,y,_HKlims,HKname)
                 
             try: self.f.autofmt_xdate()
             except:
@@ -495,11 +491,8 @@ class HKDisplay(tk.Toplevel):
         return render
         
 
-    def start_updating(self,interval):
-        #self.do_update = True
-        
+    def start_updating(self,interval):        
         f = self.f
-        render = self.gen_render()
-        #while self.do_update:
-        return animation.FuncAnimation(f, render,self.get_data,interval=interval)
+        render = self.gen_render()        
+        return animation.FuncAnimation(f,render,self.get_data,interval=interval)
 

@@ -197,9 +197,6 @@ def DataDict_builder(explog,inputs,structure):
     
     return dd
 
-
-
-
 def addHK(dd,HKKeys,elvis=context.elvis):
     """Adds HK information to a DataDict object."""
     
@@ -240,7 +237,7 @@ def addHK(dd,HKKeys,elvis=context.elvis):
         ixkey = readHKKeys.index(HKKey)
         dd.mx[pre_HKKey][:] = HKdata[:,0,ixkey]
         
-
+    
     return dd
 
 

@@ -30,11 +30,16 @@ from vison.datamodel import scriptic as sc
 from PumpTask import PumpTask
 from vison.image import performance
 from vison.datamodel import inputs
+import TP02aux
 # END IMPORT 
 
 isthere = os.path.exists
 
-HKKeys = []
+HKKeys = ['CCD1_OD_T','CCD2_OD_T','CCD3_OD_T','COMM_RD_T',
+'CCD2_IG1_T','CCD3_IG1_T','CCD1_TEMP_T','CCD2_TEMP_T','CCD3_TEMP_T',
+'CCD1_IG1_T','COMM_IG2_T','FPGA_PCB_TEMP_T','CCD1_OD_B',
+'CCD2_OD_B','CCD3_OD_B','COMM_RD_B','CCD2_IG1_B','CCD3_IG1_B','CCD1_TEMP_B',
+'CCD2_TEMP_B','CCD3_TEMP_B','CCD1_IG1_B','COMM_IG2_B']
 
 IG1=6
 IG2=5
@@ -49,6 +54,7 @@ TP02_commvalues = dict(program='CALCAMP',test='TP02',
   IG2_T=IG2,IG2_B=IG2,
   chinj=1,chinj_on=2066,chinj_of=0,
   chin_dly=0,
+  toi_chinj=500,
   s_tpump=1,s_tp_cnt=5000,
   v_tp_cnt=0,dwell_v=0,dwell_s=0,
   comments='')
@@ -61,6 +67,7 @@ class TP02_inputs(inputs.Inputs):
             ('Nshuffles_H',([int],'Number of Shuffles, Horizontal/Serial Pumping.')),
             ('dwell_sv',([list],'Dwell Times list [serial].')),
             ('id_delays',([list],'Injection Drain Delays [2, one per CCDs section].')),
+            ('toi_chinj',([int],'TOI Charge Injection.')),
             ('spumpmodes',([list],'Horizontal/Serial Pumping Starting points.'))
             ])))
 
@@ -78,12 +85,12 @@ class TP02(PumpTask):
                     ('basic',self.basic_analysis),
                     ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
-        self.figdict = dict()
+        self.figdict = TP02aux.TP02figs.copy()
         self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
         
     def set_inpdefaults(self,**kwargs):
         """ """
-        toi_chinj=250
+        toi_chinj=500
         self.inpdefaults = dict(toi_chinj=toi_chinj,
                          Nshuffles_H=5000,
                          dwell_sv=[0.,4.75,14.3,28.6],
@@ -106,6 +113,7 @@ class TP02(PumpTask):
         Nshuffles_H = self.inputs['Nshuffles_H']
         dwell_sv = self.inputs['dwell_sv']
         id_delays = self.inputs['id_delays']
+        toi_chinj=self.inputs['toi_chinj']
         spumpmodes = self.inputs['spumpmodes']
         
         assert len(id_delays) == 2
@@ -117,7 +125,7 @@ class TP02(PumpTask):
         # First Injection Drain Delay
         
         TP02_sdict['col1'] = dict(frames=1,v_tpump=0,s_tpump=0,
-                  comments='BGD',id_dly=id_delays[0])
+                  comments='BGD',id_dly=id_delays[0],toi_ch=toi_chinj)
         
         colcounter = 2
         for i,dwell_s in enumerate(dwell_sv):
@@ -125,14 +133,14 @@ class TP02(PumpTask):
             for k,sermode in enumerate(spumpmodes):
                 colkey = 'col%i' % colcounter
                 TP02_sdict[colkey] = dict(frames=1,dwell_s=dwell_s,
-                         id_dly=id_delays[0],s_tpmod=sermode)
+                         id_dly=id_delays[0],s_tpmod=sermode,toi_ch=toi_chinj)
                 
                 colcounter += 1
         
         # Second Injection Drain Delay
         
         TP02_sdict['col%i' % colcounter] = dict(frames=1,v_tpump=0,s_tpump=0,
-                  comments='BGD',id_dly=id_delays[1])
+                  comments='BGD',id_dly=id_delays[1],toi_ch=toi_chinj)
         colcounter += 1 
         
         for j,dwell_s in enumerate(dwell_sv):
@@ -142,7 +150,7 @@ class TP02(PumpTask):
                 colkey = 'col%i' % colcounter
                 #print colkey
                 TP02_sdict[colkey] = dict(frames=1,dwell_s=dwell_s,
-                             id_dly=id_delays[1],s_tpmod=sermode)    
+                             id_dly=id_delays[1],s_tpmod=sermode,toi_ch=toi_chinj)    
                 
                 colcounter += 1
                 
