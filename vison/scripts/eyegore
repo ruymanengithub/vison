@@ -16,6 +16,7 @@ if __name__ == '__main__':
     parser.add_option("-B","--broadcast",dest="broadcast",action='store_true',default=False,help="Synchronize data to gateway folder: %s" % _extpath)
     parser.add_option("-E","--elvis",dest="elvis",default=context.elvis,help="ELVIS version.")
     parser.add_option("-L","--lite",dest="lite",action="store_true",default=False,help="Run a lighter version of the program (no autom. HK-plots or image displays).")
+    parser.add_option("-r","--rsync",dest="altpath",default='',help="rsync to an alternative local path.")
     
     (options, args) = parser.parse_args()
     
@@ -26,6 +27,7 @@ if __name__ == '__main__':
     path = options.path
     broadcast = bool(options.broadcast)
     elvis = options.elvis
+    altpath = options.altpath
     dolite = bool(options.lite)
     
     if not os.path.exists(path):
@@ -44,5 +46,5 @@ if __name__ == '__main__':
         print header % path
     
     
-    app = Eyegore(path,broadcast=broadcast,elvis=elvis,dolite=dolite)
+    app = Eyegore(path,broadcast=broadcast,elvis=elvis,dolite=dolite,altpath=altpath)
 

@@ -62,11 +62,18 @@ def rsync_to_remote(path):
     #command = "rsync -avqz TEST_DATA/24_Feb_80 /home/raf/Desktop/24_Feb_80"
     os.system(command)
 
+def rsync_to_altlocalpath(path,altpath):
+    """ """
+    _altpath = os.path.join(altpath,path)
+    command = "rsync -avzq %s %s" % (path+os.sep,_altpath)
+    print command
+    os.system(command)
+
 class Eyegore(tk.Tk):
     """ """
     
     def __init__(self,path,broadcast,intervals=[20000,20000,1000,20000,20000,20000],
-                 elvis=context.elvis,dolite=False):
+                 elvis=context.elvis,dolite=False,altpath=''):
         """ """
         tk.Tk.__init__(self)
         
@@ -77,6 +84,7 @@ class Eyegore(tk.Tk):
         self.broadcast = broadcast
         self.elvis = elvis
         self.dolite = dolite
+        self.altpath = altpath
         
         #self.withdraw()
         
@@ -150,6 +158,9 @@ class Eyegore(tk.Tk):
 
         if self.broadcast:
             rsync_to_remote(self.path)
+            
+        if self.altpath != '':
+            rsync_to_altlocalpath(self.path,self.altpath)
 
         self.after(self.intervals[0],self.update)
 
@@ -162,6 +173,8 @@ if __name__ == '__main__':
     parser.add_option("-p","--path",dest="path",default='',help="day-path to be monitored.")
     parser.add_option("-B","--broadcast",dest="broadcast",action='store_true',default=False,help="")
     parser.add_option("-E","--elvis",dest="elvis",default=context.elvis,help="ELVIS version.")
+    parser.add_option("-L","--lite",dest="lite",action="store_true",default=False,help="Run a lighter version of the program (no autom. HK-plots or image displays).")
+    parser.add_option("-r","--rsync",dest="altpath",default='',help="rsync to an alternative local path.")
     
     (options, args) = parser.parse_args()
     
@@ -172,6 +185,8 @@ if __name__ == '__main__':
     path = options.path
     broadcast = bool(options.broadcast)
     elvis = options.elvis
+    altpath = options.altpath
+    dolite = bool(options.lite)
     
     if not os.path.exists(path):
         sys.exit('HKmonitory.py: %s does not exist' % path)
@@ -189,7 +204,7 @@ if __name__ == '__main__':
         print header % path
     
     
-    app = Eyegore(path,broadcast=broadcast,elvis=elvis,dolite=False)
+    app = Eyegore(path,broadcast=broadcast,elvis=elvis,dolite=dolite,altpath=altpath)
 
     
     
