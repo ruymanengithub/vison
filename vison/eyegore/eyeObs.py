@@ -200,7 +200,7 @@ class ExpLogDisplay(tk.Toplevel):
         self.EXPLOG = EXPLOG[self.nEL:nEL]
         
         self.nEL = nEL
-        self.sEL = self.sEL
+        self.sEL = sEL
         
     
     def growTree(self):
