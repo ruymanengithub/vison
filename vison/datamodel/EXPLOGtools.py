@@ -178,7 +178,7 @@ def iniExplog(elvis):
 
 
 def loadExpLog(expfile,elvis=context.elvis):
-    """Loads an Exposure Log from file."""
+    """Loads an Exposure Log from file."""    
     explog = ascii.read(expfile,data_start=1,delimiter='\t',guess=False,\
                         names=columnlist[elvis],format='no_header')
     return explog

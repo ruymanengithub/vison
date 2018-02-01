@@ -9,31 +9,18 @@ Created on Fri Oct 13 16:22:36 2017
 """
 
 # IMPORT STUFF
+from pdb import set_trace as stop
 import matplotlib
 matplotlib.use("TkAgg")
-#from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
-#import matplotlib.animation as animation
-#from matplotlib import pyplot as plt
 import glob
 
 
-#from pdb import set_trace as stop
-#from optparse import OptionParser
-#import sys 
 import os
-#import numpy as np
 import time
 import string as st
-#import datetime
 
-#from vison.datamodel import HKtools 
 from vison.datamodel import EXPLOGtools as ELtools
-#from vison import data as vdata
-#from vison.pipe import lib as pilib
 from vison.support import context
-#import loadHK_QFM,allHK_keys
-
-#from multiprocessing.dummy import Pool
 
 import Tkinter as tk
 import ttk
@@ -61,7 +48,7 @@ class ExpLogDisplay(tk.Toplevel):
         self.elvis = elvis
         self.date = '21-02-80'
         self.interval = interval
-        self.explogf = None
+        self.explogfs = None
         self.EXPLOG = dict()
         self.nEL = 0 # Nr. lines in EXPLOG
         self.sEL = 0 # size of EXPLOG, bytes
@@ -71,6 +58,7 @@ class ExpLogDisplay(tk.Toplevel):
         self.elementList = []
         self.info = ""
         self.tree = None
+        
         
         tk.Toplevel.__init__(self,parent)
         
@@ -92,17 +80,19 @@ class ExpLogDisplay(tk.Toplevel):
         
         self.fr1 = tk.Frame(self)
         self.fr1.grid(row=0,in_=self.fr0)
-                
+        
+        
         self.labels['NObsID'] = tk.Label(self, text="NObs = 0", font=small_font)
         self.labels['NObsID'].grid(row=0,column=0,in_=self.fr1,sticky='w')
         self.labels['NEntries'] = tk.Label(self, text="NEntries = 0", font=small_font)
         self.labels['NEntries'].grid(row=0,column=1,in_=self.fr1,sticky='w')
         
+        
         self.fr1.grid_columnconfigure(0, weight=1)
         self.fr1.grid_rowconfigure(0, weight=1)
-
         
-        self.search_EXPLOG()
+        
+        self.search_EXPLOGs()
         self.get_data()
         
         self.elementHeader = self.EXPLOG.colnames
@@ -118,8 +108,11 @@ class ExpLogDisplay(tk.Toplevel):
     def update(self):
                 
         self.tree.yview_moveto(1)
-    
+        
+        
+        self.search_EXPLOGs()
         self.get_data()
+        
         self.build_elementList()
                 
         self.buildTree()
@@ -136,6 +129,8 @@ class ExpLogDisplay(tk.Toplevel):
         #self.subframe.pack(fill='both', expand=True)
         self.fr2.grid(row=1,column=0, in_=self.fr0)
         self.tree = ttk.Treeview(self,columns=self.elementHeader, show="headings")
+        for col in self.elementHeader:
+            self.tree.column(col,minwidth=100,width=100,stretch=True)
         vsb = ttk.Scrollbar(self,orient="vertical", command=self.tree.yview)
         hsb = ttk.Scrollbar(self,orient="horizontal", command=self.tree.xview)
         self.tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
@@ -147,7 +142,7 @@ class ExpLogDisplay(tk.Toplevel):
         #self.tree.yview_scroll(-1,'units')
         #self.tree.yview_moveto(0.5)
         
-        self.tree['height'] = 20
+        self.tree['height'] = 30
         
         self.fr2.grid_columnconfigure(0, weight=1)
         self.fr2.grid_rowconfigure(0, weight=1)
@@ -162,7 +157,27 @@ class ExpLogDisplay(tk.Toplevel):
                 row.append(self.EXPLOG[colname][ix])
             self.elementList.append(tuple(row))
         
-    def search_EXPLOG(self):
+#==============================================================================
+#     def search_EXPLOG(self):
+#         """ """
+#         
+#         struct_date = time.strptime(os.path.split(st.replace(self.path,'_',''))[-1],'%d%b%y')
+#         date_infile = time.strftime('%d%m%y',struct_date)
+#         
+#         self.date = date_infile
+#         
+#         tmp_EL = 'EXP_LOG_%s.txt' % date_infile
+#         tmp_EL = os.path.join(self.path,tmp_EL)
+#         
+#         isthere = os.path.exists(tmp_EL)
+#         if isthere:
+#             self.explogf = tmp_EL
+#         else:
+#             print 'EXPLOG %s not found' % tmp_EL
+#             self.explogf = None
+#     
+#==============================================================================
+    def search_EXPLOGs(self):
         """ """
         
         struct_date = time.strptime(os.path.split(st.replace(self.path,'_',''))[-1],'%d%b%y')
@@ -170,37 +185,56 @@ class ExpLogDisplay(tk.Toplevel):
         
         self.date = date_infile
         
-        tmp_EL = 'EXP_LOG_%s.txt' % date_infile
+        tmp_EL = 'EXP_LOG_*.txt' 
         tmp_EL = os.path.join(self.path,tmp_EL)
         
-        isthere = os.path.exists(tmp_EL)
-        if isthere:
-            self.explogf = tmp_EL
+        explogfs = glob.glob(tmp_EL)
+        
+        arethere = len(explogfs)>0
+        
+        if arethere:
+            self.explogfs = explogfs
         else:
-            print 'EXPLOG %s not found' % tmp_EL
-            self.explogf = None
-        
-        
+            print 'EXPLOGs %s not found' % tmp_EL
+            self.explogfs = None
+    
+    def get_bitsize(self,filelist):
+        """ """
+        bitsize = 0
+        for item in filelist:
+            bitsize += os.stat(item).st_size
+        return bitsize
+    
+    
+    def loadExplogs(self):
+        """ """        
+        ELList = []
+        for item in self.explogfs:
+            ELList.append(ELtools.loadExpLog(item,elvis=self.elvis))
+        if len(ELList)<2: return ELList[0]
+        else:
+            return ELtools.mergeExpLogs(ELList,addpedigree=False)
+    
     def get_data(self):
         """ """
         
-        if self.explogf is None:
+        if self.explogfs is None:
             return
         
-        statinfo = os.stat(self.explogf)
-        sEL = statinfo.st_size # commented on TESTS
-        #sEL = self.sEL + 1 # TESTS
+        sEL = self.get_bitsize(self.explogfs)
         
         if sEL <= self.sEL:
             return
-    
-        EXPLOG = ELtools.loadExpLog(self.explogf,elvis=self.elvis)
+         
+        EXPLOG = self.loadExplogs()
+        #EXPLOG = ELtools.loadExpLog(self.explogf,elvis=self.elvis)
+         
         nEL = len(EXPLOG) # commented on TESTS
         #nEL = self.nEL + 5 # TESTS
         self.EXPLOG = EXPLOG[self.nEL:nEL]
         
         self.nEL = nEL
-        self.sEL = self.sEL
+        self.sEL = sEL
         
     
     def growTree(self):
