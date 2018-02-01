@@ -13,7 +13,7 @@ from pdb import set_trace as stop
 import matplotlib
 matplotlib.use("TkAgg")
 import glob
-
+from astropy.table import Table
 
 import os
 import time
@@ -49,7 +49,7 @@ class ExpLogDisplay(tk.Toplevel):
         self.date = '21-02-80'
         self.interval = interval
         self.explogfs = None
-        self.EXPLOG = dict()
+        self.EXPLOG = Table()
         self.nEL = 0 # Nr. lines in EXPLOG
         self.sEL = 0 # size of EXPLOG, bytes
         
@@ -90,8 +90,7 @@ class ExpLogDisplay(tk.Toplevel):
         
         self.fr1.grid_columnconfigure(0, weight=1)
         self.fr1.grid_rowconfigure(0, weight=1)
-        
-        
+                
         self.search_EXPLOGs()
         self.get_data()
         

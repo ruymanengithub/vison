@@ -58,9 +58,8 @@ _extpath = os.path.join(os.sep,'data2','gaia','usdownloads','EuclidCaldata','Qua
 def rsync_to_remote(path):
     """ """
     extpath = os.path.join(_extpath,path)
-    command = "rsync -avzq %s raf@msslus.ac.uk:%s" % (os.path.join(path,os.sep),extpath)
+    command = "rsync -avzq %s raf@msslus.ac.uk:%s" % (path+os.sep,extpath)
     #command = "rsync -avqz TEST_DATA/24_Feb_80 /home/raf/Desktop/24_Feb_80"
-    #print command
     os.system(command)
 
 class Eyegore(tk.Tk):
