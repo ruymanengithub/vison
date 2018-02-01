@@ -320,10 +320,10 @@ def mergeHK(HKList):
     
 
 def loadHK_QFM(filename,elvis=context.elvis):
-    """Loads a HK file
+    """Loads a HK file, or list of HK files.
     
-    Structure: tab separated columns, one per Keyword. First column is a 
-    timestamp, and there may be a variable number of rows (readings).
+    Structure: astropy table. First column is a timestamp, and there may be 
+    a variable number of rows (readings).
     
     :param filename: path to the file to be loaded, including the file itself, or list of paths to HK files.
     :param elvis: "ELVIS" version
@@ -331,7 +331,6 @@ def loadHK_QFM(filename,elvis=context.elvis):
     :return: astropy table with pairs parameter:[values]
     
     """
-
     
     if isinstance(filename,str):
         return loadHK_QFMsingle(filename)
