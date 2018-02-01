@@ -451,14 +451,16 @@ class Task(object):
         # METRICS ASSESSMENT               
         self.check_metrics_ST(**kwargs)
         # PLOTs
-        if self.report is not None: self.report.add_Section(keyword='check_plots',Title='Plots',level=1)
-        self.addFigures_ST(**kwargs)
+        if self.report is not None: 
+            self.report.add_Section(keyword='check_plots',Title='Plots',level=1)
+            self.addFigures_ST(**kwargs)
+            self.addHKPlotsMatrix()
+            
         # Update Report, raise flags, fill-in
         if self.log is not None:
             self.addFlagsToLog()
         if self.report is not None:
-            self.addFlagsToReport()
-        stop()
+            self.addFlagsToReport()        
         
     def check_HK_ST(self):
         """ """

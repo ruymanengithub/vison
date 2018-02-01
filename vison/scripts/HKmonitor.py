@@ -89,7 +89,7 @@ if __name__ == '__main__':
     if not isthere(outpath): os.system('mkdir %s' % outpath)
     
 
-    obsids,dtobjs,tdeltasec,HK_keys, HKdata = parseHKfiles(HKlist,form=elvis)
+    obsids,dtobjs,tdeltasec,HK_keys, HKdata = parseHKfiles(HKlist,elvis=elvis)
     
     fOBSID = obsids[0]
     lOBSID = obsids[-1]
@@ -97,11 +97,19 @@ if __name__ == '__main__':
     
     figlist = [] 
     
-    for key in allHK_keys[elvis]:
+    HKkeys = allHK_keys[elvis]
+    if 'TimeStamp' in HKkeys:
+        HKkeys.pop(HKkeys.index('TimeStamp'))
+    
+    for key in HKkeys:
+        print key
         
         figname = os.path.join(outpath,'%s_%s.eps' % (datetag,key,))
-        HKplot(HKdata,keylist=allHK_keys[elvis],key=key,dtobjs=dtobjs,filename=figname,stat='mean')
+        
+        HKplot(HKdata,keylist=HKkeys,key=key,dtobjs=dtobjs,filename=figname,stat='mean')
         figlist.append(figname)
+    
+    stop()
     
     reportroot = 'HKmonitor_%s_%i-%i_OBSIDs_ROE%i' % (datetag,fOBSID,lOBSID,roe)
     

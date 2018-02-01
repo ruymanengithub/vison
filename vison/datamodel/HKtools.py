@@ -20,17 +20,29 @@ import sys
 from collections import OrderedDict
 import copy
 
-from matplotlib import pyplot as plt
-import pylab
-import matplotlib
-
 from astropy.io import ascii
 from astropy.table import Table,Column
 import string as st
 import numpy as np
 
+from matplotlib import pyplot as plt
+import matplotlib
+matplotlib.rcParams['font.size'] = 17
+matplotlib.rc('xtick', labelsize=14)
+matplotlib.rc('axes', linewidth=1.1)
+matplotlib.rcParams['legend.fontsize'] = 12
+matplotlib.rcParams['legend.handlelength'] = 3
+matplotlib.rcParams['xtick.major.size'] = 5
+matplotlib.rcParams['ytick.major.size'] = 5
+matplotlib.rcParams['image.interpolation'] = 'none'
+import pylab
+#import matplotlib.cm as cm
+#from mpl_toolkits.mplot3d import Axes3D
+
 from vison.support import context
 #from vison.pipe import lib as pilib
+
+
 # END IMPORT
 
 
@@ -390,10 +402,8 @@ def synthHK(HK):
     synthHKdict = {}
     
     for key in HK.keys():
-        values = HK[key].copy()
-        
-        values = filtervalues(values,key)
-        
+        values = HK[key].data.copy()
+              
         try: mean = values.mean()
         except: mean = np.nan
         try: std = values.std()
@@ -416,6 +426,8 @@ def reportHK(HKs,key,reqstat='all'):
     :reqstat: what statistic to retrieve.
     
     """
+    
+    stop()
     
     if reqstat != 'all': ixstat = allstats.index(reqstat)
     else: ixstat = np.where(allstats)
@@ -507,7 +519,7 @@ def parseHKfiles(HKlist,elvis=context.elvis):
         obsids.append(obsid)
         dtobjs.append(dtobj)
         
-        HK = HKloader(HKfname,elvis=elvis)
+        HK = HKloader(HKfname,elvis=elvis)        
         synthHKdict = synthHK(HK)
         
         for ik,key in enumerate(HK_keys):
@@ -551,7 +563,6 @@ def HKplot(allHKdata,keylist,key,dtobjs,filename='',stat='mean'):
     ixstat = allstats.index(stat)
     
     HKvals = allHKdata[:,ixstat,ixkey]
-    
 
     ylabel = 'V'
         
@@ -578,7 +589,8 @@ def HKplot(allHKdata,keylist,key,dtobjs,filename='',stat='mean'):
     #ax1.plot(HKvals,'b')
     #ax1.set_xlabel(r'$Time$')
     ax1.set_ylabel(r'$%s$' % ylabel)
-    ax1.set_title(key)
+    ntitle = st.replace(key,'_','\_')
+    ax1.set_title(ntitle)
     
     for item in [ax1.title, ax1.xaxis.label, ax1.yaxis.label]:
         item.set_fontsize(18)

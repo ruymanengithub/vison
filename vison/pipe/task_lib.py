@@ -143,3 +143,12 @@ def filterexposures(self,structure,explogf,datapath,OBSID_lims,colorblind=False,
         frcounter += _frames*3
     
     return explog, checkreport
+
+
+def addHKPlotsMatrix(self):
+    """ """
+    
+    figspath = self.inputs['subpaths']['figs']
+    
+    
+    
