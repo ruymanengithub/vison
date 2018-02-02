@@ -85,8 +85,8 @@ class DarkTask(Task):
                             self.dd.mx['std_%s' % reg][iObs,jCCD,kQ] = stats[1]
                             
                             if test == 'DARK01' and reg == 'img':
-                                offset_cbe = np.mean([self.dd.mx['offset_pre' % reg][iObs,jCCD,kQ],
-                                                      self.dd.mx['offset_ove' % reg][iObs,jCCD,kQ]])
+                                offset_cbe = np.mean([self.dd.mx['offset_pre'][iObs,jCCD,kQ],
+                                                      self.dd.mx['offset_ove'][iObs,jCCD,kQ]])
                                 self.dd.mx['chk_flu_%s' % reg][iObs,jCCD,kQ] = stats[0] - offset_cbe
     
     def check_metrics_ST(self,**kwargs):

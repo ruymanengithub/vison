@@ -26,22 +26,22 @@ overheads = dict(ff_readout = 72.,
 
 # saturation exposure times for flat-source, s, place-holders
 
-tFWC_flat = dict(nm590=2.,
-                nm640=2.,
-                nm730=2.,
-                nm800=2.,
-                nm880=2.,
-                nm0=100.) 
+tFWC_flat = dict(nm590=0.65,
+                nm640=0.65,
+                nm730=0.65,
+                nm800=0.65,
+                nm880=0.65,
+                nm0=30.) 
 
 # saturation exposure times for point-source, ms, orientative
 
 
-tFWC_point = dict(nm590=2.,
-                nm640=2.,
-                nm730=2.,
-                nm800=2.,
-                nm880=2.,
-                nm0=100.) # ms
+tFWC_point = dict(nm590=0.25,
+                nm640=0.25,
+                nm730=0.25,
+                nm800=0.25,
+                nm880=0.25,
+                nm0=25.) # ms
 
 # FWHM (lambda), in pixels, orientative
                   

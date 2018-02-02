@@ -88,13 +88,13 @@ class Pipe(object):
     
     for wave in [0,590,640,730,880]:
         Test_dict['FLAT02_%i' % wave] = FLAT0X
-    for wave in [590,640,730,880]:
+    for wave in [590,640,730,800,880,0]:
         Test_dict['PTC02_%i' % wave] = PTC0X
     for temp in [150,156]:
         Test_dict['PTC02_%iK' % temp] = PTC0X
     for wave in [590,640,730,800,880]:
         Test_dict['FOCUS00_%i' % wave] = FOCUS00
-    for wave in [590,640,800,880]:
+    for wave in [590,640,730,800,880]:
         Test_dict['PSF01_%i' % wave] = PSF0X
     for temp in [150,156]:
         Test_dict['PSF02_%iK' % temp] = PSF0X

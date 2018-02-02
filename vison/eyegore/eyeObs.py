@@ -18,6 +18,7 @@ from astropy.table import Table
 import os
 import time
 import string as st
+import numpy as np
 
 from vison.datamodel import EXPLOGtools as ELtools
 from vison.support import context
@@ -37,6 +38,7 @@ except ImportError:
 
 LARGE_FONT = ("Helvetica", 12)
 small_font = ("Verdana", 8)
+medium_font = ("Verdana",10)
 
 
 class ExpLogDisplay(tk.Toplevel):
@@ -58,6 +60,9 @@ class ExpLogDisplay(tk.Toplevel):
         self.elementList = []
         self.info = ""
         self.tree = None
+        #self.NObsID = 0
+        #self.Nentries = 0
+        self.updating = True
         
         
         tk.Toplevel.__init__(self,parent)
@@ -81,11 +86,20 @@ class ExpLogDisplay(tk.Toplevel):
         self.fr1 = tk.Frame(self)
         self.fr1.grid(row=0,in_=self.fr0)
         
+        self.labels['NObsIDs'] = dict()
+        self.labels['NObsIDs']['var'] = tk.StringVar()
+        self.labels['NObsIDs']['var'].set("NObs = 0")
+        self.labels['NObsIDs']['app'] = tk.Label(self, textvariable=self.labels['NObsIDs']['var'], 
+                   font=medium_font,bd=2,relief='groove')
+        self.labels['NObsIDs']['app'].grid(row=0,column=0,in_=self.fr1,sticky='w')
+        self.labels['NEntries'] = dict()
+        self.labels['NEntries']['var'] = tk.StringVar()
+        self.labels['NEntries']['var'].set("NEntries = 0")
+        self.labels['NEntries']['app'] = tk.Label(self, textvariable=self.labels['NEntries']['var'], 
+                   font=medium_font,bd=2,relief='groove')
+        self.labels['NEntries']['app'].grid(row=0,column=1,in_=self.fr1,sticky='w')
         
-        self.labels['NObsID'] = tk.Label(self, text="NObs = 0", font=small_font)
-        self.labels['NObsID'].grid(row=0,column=0,in_=self.fr1,sticky='w')
-        self.labels['NEntries'] = tk.Label(self, text="NEntries = 0", font=small_font)
-        self.labels['NEntries'].grid(row=0,column=1,in_=self.fr1,sticky='w')
+        
         
         
         self.fr1.grid_columnconfigure(0, weight=1)
@@ -105,18 +119,20 @@ class ExpLogDisplay(tk.Toplevel):
         self.update()
     
     def update(self):
-                
-        self.tree.yview_moveto(1)
         
+        if self.updating:
         
-        self.search_EXPLOGs()
-        self.get_data()
-        
-        self.build_elementList()
-                
-        self.buildTree()
-        
-        self.tree.yview_moveto(1)
+            self.tree.yview_moveto(1)
+            
+            
+            self.search_EXPLOGs()
+            self.get_data()
+            
+            self.build_elementList()
+                    
+            self.buildTree()
+                        
+            self.tree.yview_moveto(1)
         
         self.after(self.interval,self.update)
 
@@ -227,6 +243,8 @@ class ExpLogDisplay(tk.Toplevel):
          
         EXPLOG = self.loadExplogs()
         #EXPLOG = ELtools.loadExpLog(self.explogf,elvis=self.elvis)
+        
+        NObsIDs = len(np.unique(EXPLOG['ObsID']))
          
         nEL = len(EXPLOG) # commented on TESTS
         #nEL = self.nEL + 5 # TESTS
@@ -234,6 +252,9 @@ class ExpLogDisplay(tk.Toplevel):
         
         self.nEL = nEL
         self.sEL = sEL
+        
+        self.labels['NEntries']['var'].set('Nentries = %i' % len(EXPLOG))
+        self.labels['NObsIDs']['var'].set('NObsIDs = %i' % NObsIDs)
         
     
     def growTree(self):
