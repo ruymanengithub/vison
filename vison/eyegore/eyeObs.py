@@ -98,7 +98,10 @@ class ExpLogDisplay(tk.Toplevel):
         self.labels['NEntries']['app'] = tk.Label(self, textvariable=self.labels['NEntries']['var'], 
                    font=medium_font,bd=2,relief='groove')
         self.labels['NEntries']['app'].grid(row=0,column=1,in_=self.fr1,sticky='w')
-                
+        
+        
+        
+        
         self.fr1.grid_columnconfigure(0, weight=1)
         self.fr1.grid_rowconfigure(0, weight=1)
                 
