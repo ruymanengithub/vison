@@ -76,7 +76,7 @@ class Eyegore(tk.Tk):
         self.intervals = intervals
         self.broadcast = broadcast
         self.elvis = elvis
-        self.dolite = dolite
+        self.dolite = dolite       
         
         #self.withdraw()
         
@@ -110,6 +110,10 @@ class Eyegore(tk.Tk):
         end_button = tk.Button(self, text="EXIT", 
                               command=self.kill)
         end_button.grid(column=0,row=2,sticky='w',padx=0,in_=fr)
+        
+        #updates_button = tk.Button(self, text="NO-UPDATES", 
+        #                      command=self.stop_updates)
+        #updates_button.grid(column=1,row=2,sticky='w',padx=0,in_=fr)
 
         
         self.label = tk.Label(self,image=self.tkimg)
