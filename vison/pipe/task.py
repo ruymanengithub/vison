@@ -458,7 +458,6 @@ class Task(object):
             self.addFlagsToLog()
         if self.report is not None:
             self.addFlagsToReport()
-        stop()
         
     def check_HK_ST(self):
         """ """
