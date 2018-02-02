@@ -67,7 +67,7 @@ def gt_check_img_var_dict(test):
                           doNiceXDate=False,
                            suptitle='%s-checks: Fluence \& Variance' % ntest,
                            xlabel='exptime[s]',
-                           ylabel=r'[ADU^2]'))
+                           ylabel='[ADU^2]'))
 
 def gt_PTC0Xfigs(test):
     PTC0Xfigs = dict()
