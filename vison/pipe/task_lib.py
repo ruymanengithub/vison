@@ -103,6 +103,10 @@ def filterexposures(self,structure,explogf,datapath,OBSID_lims,colorblind=False,
     # load exposure log(s)
     explog = pilib.loadexplogs(explogf,elvis=self.elvis,addpedigree=True,
                                datapath=datapath)
+    
+    if len(OBSID_lims)==0:
+        OBSID_lims = [explog['ObsID'][0],explog['ObsID'][-1]]
+    
     Ncols = structure['Ncols']
     
     testkey = self.inputs['test']
