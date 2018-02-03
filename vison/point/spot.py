@@ -144,17 +144,21 @@ class Spot(Shapemeter,Photometer,Gaussmeter):
     
         return res    
 
-    def measure_basic(self,rin=10,rap=10,rout=-1,gain=gain,debug=False):
+    def measure_basic(self,rap=10,rin=10,rout=-1,gain=gain,debug=False):
         """ 
         # TODO:
         #   get basic statistics, measure and subtract background
         #   update centroid
         #   do aperture photometry
         #   pack-up results and return
+        
+        :parameter rap: source extraction aperture radius.
+        :parameter rin: inner radius of background annulus.
+        :parameter rout: outer radius of background annulus (-1 to set bound by image area).
+        :parameter gain: image gain (e-/ADU).
+        
         """
         
-        rap = 5
-        rin = 10
         if rout <0:
             rout = max(self.data.shape)
     
@@ -168,7 +172,8 @@ class Spot(Shapemeter,Photometer,Gaussmeter):
         xcen,ycen,fwhmx,fwhmy = self.get_centroid(full=True)
         centre = self.xcen,self.ycen
     
-        flu,eflu = self.doap_photom(centre,rap,rin,rout,gain=gain,doErrors=True,
+        flu,eflu = self.doap_photom(centre,rap,rin,rout,gain=gain,
+                        doErrors=True,
                         subbgd=True)
         
         x,y = self.xcen,self.ycen
