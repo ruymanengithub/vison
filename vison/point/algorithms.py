@@ -16,7 +16,7 @@ from pdb import set_trace as stop
 # END IMPORT
 
 def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35, 
-               verbose=False, full=False):
+               verbose=False, full=False,CEN0=None):
     """ Implement the Floating-window first moment centroid algorithm
         chosen for JWST target acquisition.
 
@@ -56,15 +56,20 @@ def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35
         XHW, YHW = halfwidth[0:2]
     else:
         XHW, YHW = halfwidth, halfwidth
-
-    # Determine starting peak location
-    if checkbox > 1:
-        raise NotImplemented("Checkbox smoothing not done yet")
+        
+    if CEN0 is not None:
+        XPEAK, YPEAK = CEN0
+        if verbose: print "Input guess position is %d, %d" % (XPEAK, YPEAK)
     else:
-        # just use brightest pixel
-        w = np.where(image == image.max())
-        YPEAK, XPEAK = w[0][0], w[1][0]
-        if verbose: print "Peak pixels are %d, %d" % (XPEAK, YPEAK)
+
+        # Determine starting peak location
+        if checkbox > 1:
+            raise NotImplemented("Checkbox smoothing not done yet")
+        else:
+            # just use brightest pixel
+            w = np.where(image == image.max())
+            YPEAK, XPEAK = w[0][0], w[1][0]
+            if verbose: print "Peak pixels are %d, %d" % (XPEAK, YPEAK)
 
 
     # Calculate centroid for first iteration
@@ -76,7 +81,6 @@ def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35
     YSUM2 = 0.0
     YSUM3 = 0.0
     CONVERGENCEFLAG = False
-
 
     for i in np.arange( 2*XHW+1)+ XPEAK-XHW :
         for j in np.arange( 2*YHW+1) +YPEAK-YHW :

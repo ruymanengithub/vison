@@ -92,9 +92,11 @@ class Photometer(SpotBase):
         TODO:
             add aperture masking        
         """
+        xcen0 = self.data.shape[1]/2
+        ycen0 = self.data.shape[0]/2
         xcen,ycen,xcen2,ycen2,xcen3,ycen3 = poalg.fwcentroid(self.data, checkbox=1, maxiterations=10, 
                                      threshold=1e-3, halfwidth=6, verbose=False,
-                                     full=full)
+                                     full=full,CEN0=(xcen0,ycen0))
         self.xcen = xcen
         self.ycen = ycen
         
