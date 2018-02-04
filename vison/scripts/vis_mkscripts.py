@@ -148,7 +148,7 @@ def scwriter(toWrite,test_generator,outpath,equipment,elvis=context.elvis):
     Nframes = 0
     
     f1 = open(os.path.join(outpath,inventoryf),'w')
-    print >> f1, 'Scripst written on %s' % datetag
+    print >> f1, 'Scripts written on %s' % datetag
     print >> f1, 'checksumf: %s' % checksumf
     print >> f1, 'vison version: %s\n' % versiontag
     
