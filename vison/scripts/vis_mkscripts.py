@@ -65,7 +65,10 @@ def scwriter(toWrite,test_generator,outpath,equipment,elvis=context.elvis):
     print >> f1, 'checksumf: %s' % checksumf
     print >> f1, 'vison version: %s\n' % versiontag
     
+    print 'WRITING SCRIPTS...'
+    
     for test in test_sequence.keys():
+        print '%s...' % test
         testobj = copy.deepcopy(test_sequence[test])
         structtest = testobj.build_scriptdict(elvis=elvis)
         
