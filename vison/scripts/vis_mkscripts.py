@@ -146,6 +146,7 @@ def scwriter(toWrite,test_generator,outpath,equipment,elvis=context.elvis):
     test_sequence = test_generator(equipment,toWrite,elvis=elvis)
     
     Nframes = 0
+    duration = 0
     
     f1 = open(os.path.join(outpath,inventoryf),'w')
     print >> f1, 'Scripts written on %s' % datetag
@@ -159,6 +160,8 @@ def scwriter(toWrite,test_generator,outpath,equipment,elvis=context.elvis):
         testobj = copy.deepcopy(test_sequence[test])
         structtest = testobj.build_scriptdict(elvis=elvis)
         testduration = test_timer(structtest)
+        
+        duration += testduration
         
         iNcols = structtest['Ncols']
         frameslist = [structtest['col%i' % i]['frames'] for i in range(1,iNcols+1)]
@@ -175,6 +178,7 @@ def scwriter(toWrite,test_generator,outpath,equipment,elvis=context.elvis):
         checksums.append((ffile,xsum))
     
     print >> f1, '\n %i Frames Total' % Nframes
+    print >> f1, '\n %.2f Minutes Total' % duration
     
     f1.close()
     
