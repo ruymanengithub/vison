@@ -166,7 +166,8 @@ class TP00(PumpTask):
         commvalues.update(TP00_commvalues)    
         
         if len(diffvalues)==0:
-            diffvalues = self.inputs['diffvalues']
+            try: diffvalues = self.inputs['diffvalues']
+            except: diffvalues = diffvalues = dict()
         
         TP00_sdict = sc.update_structdict(TP00_sdict,commvalues,diffvalues)
         

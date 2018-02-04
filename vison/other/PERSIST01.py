@@ -115,7 +115,8 @@ class PERSIST01(Task):
         commvalues.update(PER01_commvalues)               
         
         if len(diffvalues)==0:
-            diffvalues = self.inputs['diffvalues']
+            try: diffvalues = self.inputs['diffvalues']
+            except: diffvalues = diffvalues = dict()
         
         PER01_sdict = sc.update_structdict(PER01_sdict,commvalues,diffvalues)
         

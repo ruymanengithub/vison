@@ -111,7 +111,8 @@ class DARK01(DarkTask):
         commvalues.update(DARK01_commvalues)
         
         if len(diffvalues)==0:
-            diffvalues = self.inputs['diffvalues']
+            try: diffvalues = self.inputs['diffvalues']
+            except: diffvalues = diffvalues = dict()
         
         DARK01_sdict = sc.update_structdict(DARK01_sdict,commvalues,diffvalues)    
         

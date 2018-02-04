@@ -180,7 +180,8 @@ class CHINJ01(InjTask):
         commvalues.update(CHINJ01_commvalues)
         
         if len(diffvalues)==0:
-            diffvalues = self.inputs['diffvalues']
+            try: diffvalues = self.inputs['diffvalues']
+            except: diffvalues = diffvalues = dict()
         
         CHINJ01_sdict = sc.update_structdict(CHINJ01_sdict,commvalues,diffvalues)
         

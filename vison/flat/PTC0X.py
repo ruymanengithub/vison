@@ -224,8 +224,10 @@ class PTC0X(FlatTask):
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(PTC0X_commvalues)
         
+
         if len(diffvalues)==0:
-            diffvalues = self.inputs['diffvalues']
+            try: diffvalues = self.inputs['diffvalues']
+            except: diffvalues = diffvalues = dict()
         
         PTC0X_sdict = sc.update_structdict(PTC0X_sdict,commvalues,diffvalues)
         

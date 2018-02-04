@@ -172,7 +172,8 @@ class FOCUS00(PT.PointTask):
         commvalues.update(FOCUS00_commvalues)           
         
         if len(diffvalues)==0:
-            diffvalues = self.inputs['diffvalues']
+            try: diffvalues = self.inputs['diffvalues']
+            except: diffvalues = diffvalues = dict()
         
         FOCUS00_sdict = sc.update_structdict(FOCUS00_sdict,commvalues,diffvalues)
         

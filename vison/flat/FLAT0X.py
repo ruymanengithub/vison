@@ -152,7 +152,8 @@ class FLAT0X(FlatTask):
         commvalues.update(FLAT0X_commvalues)
         
         if len(diffvalues)==0:
-            diffvalues = self.inputs['diffvalues']
+            try: diffvalues = self.inputs['diffvalues']
+            except: diffvalues = diffvalues = dict()
         
         FLAT0X_sdict = sc.update_structdict(FLAT0X_sdict,commvalues,diffvalues)
         
