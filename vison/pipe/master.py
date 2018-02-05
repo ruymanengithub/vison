@@ -231,15 +231,16 @@ class Pipe(object):
             
             explog = pilib.loadexplogs(explogf,elvis)
             
-            for taskitem in tasksequence:
+            for it,taskitem in enumerate(tasksequence):
                 
                 taskname,testkey,Nframes = taskitem
         
                 available = pilib.coarsefindTestinExpLog(explog,testkey,Nframes)
                 
                 if available:
+                    #print '%s available, doing nothing!' % taskname # TESTS
                     self.launchtask(taskname)
-                    tasksequence.pop(0)
+                    tasksequence.pop(it)
             
             sleep(waittime)
             
