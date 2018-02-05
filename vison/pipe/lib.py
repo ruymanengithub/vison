@@ -249,12 +249,14 @@ def coarsefindTestinExpLog(explog,testkey,Nframes):
     :return: bool, test was acquired or not.
     
     """
-    
+    #if testkey=='BIAS01': stop()
     indices = np.where(explog['test'] == testkey)
+    if len(indices[0])==0: return False
+    
     ccds = explog['CCD'][indices]
     uccd = np.unique(ccds)
     nccds = len(uccd)
-    Nobsids = len(indices[0])/nccds
+    Nobsids = len(indices[0])/nccds 
     
     wasacquired = Nobsids == Nframes    
     return wasacquired
