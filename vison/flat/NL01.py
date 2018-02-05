@@ -177,7 +177,8 @@ class NL01(FlatTask):
         commvalues.update(NL01_commvalues)
         
         if len(diffvalues)==0:
-            diffvalues = self.inputs['diffvalues']
+            try: diffvalues = self.inputs['diffvalues']
+            except: diffvalues = diffvalues = dict()
         
         NL01_sdict = sc.update_structdict(NL01_sdict,commvalues,diffvalues)
         

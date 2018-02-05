@@ -44,24 +44,37 @@ def gt_check_std_dict(test):
                                 suptitle='%s-checks: std' % ntest))
 
 
-def gt_check_img_fluvar_dict(test):
+def gt_check_img_flu_dict(test):
     ntest = st.replace(test,'_','\_')
-    return dict(stats=['flu_med_img','flu_var_img'],
+    return dict(stats=['flu_med_img'],
                 trendaxis = 'exptime',
-                figname='%s_fluvar_vs_exptime.png' % test,
-                caption='%s: Fluence \& Variance vs. exposure time.' % ntest,
+                figname='%s_flu_vs_exptime.png' % test,
+                caption='%s: Fluence vs. exposure time.' % ntest,
+                   meta=dict(doLegend=True,
+                          doNiceXDate=False,
+                           suptitle='%s-checks: Fluence' % ntest,
+                           xlabel='exptime[s]',
+                           ylabel='[ADU]'))
+
+
+def gt_check_img_var_dict(test):
+    ntest = st.replace(test,'_','\_')
+    return dict(stats=['flu_var_img'],
+                trendaxis = 'exptime',
+                figname='%s_var_vs_exptime.png' % test,
+                caption='%s: Variance vs. exposure time.' % ntest,
                    meta=dict(doLegend=True,
                           doNiceXDate=False,
                            suptitle='%s-checks: Fluence \& Variance' % ntest,
                            xlabel='exptime[s]',
-                           ylabel='[ADU]'))
-
+                           ylabel='[ADU^2]'))
 
 def gt_PTC0Xfigs(test):
     PTC0Xfigs = dict()
     PTC0Xfigs['PTC0Xchecks_offsets'] = [trends.pl_basic_checkstat,gt_check_offsets_dict(test)]
     PTC0Xfigs['PTC0Xchecks_stds'] = [trends.pl_basic_checkstat,gt_check_std_dict(test)]
-    PTC0Xfigs['PTC0Xchecks_fluvar'] = [trends.pl_basic_checkstat,gt_check_img_fluvar_dict(test)]
+    PTC0Xfigs['PTC0Xchecks_flu'] = [trends.pl_basic_checkstat,gt_check_img_flu_dict(test)]
+    PTC0Xfigs['PTC0Xchecks_var'] = [trends.pl_basic_checkstat,gt_check_img_var_dict(test)]
     PTC0Xfigs['BlueScreen'] = [plbaseclasses.BlueScreen,dict()]
     return PTC0Xfigs
 

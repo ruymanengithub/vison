@@ -165,7 +165,8 @@ class CHINJ02(InjTask):
         commvalues.update(CHINJ02_commvalues)
         
         if len(diffvalues)==0:
-            diffvalues = self.inputs['diffvalues']
+            try: diffvalues = self.inputs['diffvalues']
+            except: diffvalues = diffvalues = dict()
         
         CHINJ02_sdict = sc.update_structdict(CHINJ02_sdict,commvalues,diffvalues)
         

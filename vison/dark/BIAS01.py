@@ -112,7 +112,8 @@ class BIAS01(DarkTask):
         commvalues.update(BIAS01_commvalues)
         
         if len(diffvalues)==0:
-            diffvalues = self.inputs['diffvalues']
+            try: diffvalues = self.inputs['diffvalues']
+            except: diffvalues = diffvalues = dict()
         
         BIAS01_sdict = sc.update_structdict(BIAS01_sdict,commvalues,diffvalues)
     

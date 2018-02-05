@@ -143,7 +143,7 @@ class PointTask(Task):
                             spot = polib.extract_spot(ccdobj,coo, Quad,log=self.log,
                                                       stampw=self.stampw)
                             
-                            res_bas = spot.measure_basic(rin=10,rap=10,rout=-1)
+                            res_bas = spot.measure_basic(rap=10,rin=10,rout=-1)
                             
                             for chkkey in chkkeycorr:
                                 self.dd.mx[chkkey][iObs,jCCD,kQ,xSpot] = res_bas[chkkeycorr[chkkey]]

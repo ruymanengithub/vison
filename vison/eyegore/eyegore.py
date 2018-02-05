@@ -55,18 +55,19 @@ small_font = ("Verdana", 8)
 
 _extpath = os.path.join(os.sep,'data2','gaia','usdownloads','EuclidCaldata','Quarantine')
 
-def rsync_to_remote(path):
+def rsync_to_remote(path,broadcast):
     """ """
-    extpath = os.path.join(_extpath,path)
-    command = "rsync -avzq %s raf@msslus.ac.uk:%s" % (path+os.sep,extpath)
+    #extpath = os.path.join(_extpath,path)
+    command = "rsync -e 'ssh' -avzq %s raf@msslus:%s%s" % (path,broadcast,os.sep)
     #command = "rsync -avqz TEST_DATA/24_Feb_80 /home/raf/Desktop/24_Feb_80"
+    print 'syncing to MSSLUS: %s' % command
     os.system(command)
 
 def rsync_to_altlocalpath(path,altpath):
     """ """
     _altpath = os.path.join(altpath,path)
     command = "rsync -avzq %s %s" % (path+os.sep,_altpath)
-    print command
+    print 'SYNCING TO ALTLOCAL: %s' % command
     os.system(command)
 
 class Eyegore(tk.Tk):
@@ -160,8 +161,8 @@ class Eyegore(tk.Tk):
         
     def update(self):
 
-        if self.broadcast:
-            rsync_to_remote(self.path)
+        if self.broadcast is not None:
+            rsync_to_remote(self.path,self.broadcast)
             
         if self.altpath != '':
             rsync_to_altlocalpath(self.path,self.altpath)
@@ -175,7 +176,7 @@ if __name__ == '__main__':
     
     parser = OptionParser()
     parser.add_option("-p","--path",dest="path",default='',help="day-path to be monitored.")
-    parser.add_option("-B","--broadcast",dest="broadcast",action='store_true',default=False,help="")
+    parser.add_option("-B","--broadcast",dest="broadcast",default='None',help="Synchronize data to gateway folder in msslus")
     parser.add_option("-E","--elvis",dest="elvis",default=context.elvis,help="ELVIS version.")
     parser.add_option("-L","--lite",dest="lite",action="store_true",default=False,help="Run a lighter version of the program (no autom. HK-plots or image displays).")
     parser.add_option("-r","--rsync",dest="altpath",default='',help="rsync to an alternative local path.")
@@ -187,9 +188,15 @@ if __name__ == '__main__':
         sys.exit()
         
     path = options.path
-    broadcast = bool(options.broadcast)
+    broadcast = options.broadcast
     elvis = options.elvis
     altpath = options.altpath
+    
+    if broadcast != 'None':
+        broadcast = os.path.join(_extpath,broadcast)
+    else: broadcast = None
+
+
     dolite = bool(options.lite)
     
     if not os.path.exists(path):

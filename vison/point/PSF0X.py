@@ -211,7 +211,8 @@ class PSF0X(PointTask):
         commvalues.update(PSF0X_commvalues)               
         
         if len(diffvalues)==0:
-            diffvalues = self.inputs['diffvalues']
+            try: diffvalues = self.inputs['diffvalues']
+            except: diffvalues = diffvalues = dict()
         
         PSF0X_sdict = sc.update_structdict(PSF0X_sdict,commvalues,diffvalues)
         
