@@ -52,7 +52,7 @@ HKKeys = ['CCD1_OD_T','CCD2_OD_T','CCD3_OD_T','COMM_RD_T',
 
 
 DARK01_commvalues = dict(program='CALCAMP',test='DARK01',
-  flushes=7,shuttr=1,
+  flushes=7,shuttr=0,
   siflsh=1,siflsh_p=500,
   comments='DARK')
 
