@@ -166,6 +166,7 @@ if __name__ == '__main__':
     parser.add_option("-p","--path",dest="path",default='',help="day-path to be monitored.")
     parser.add_option("-B","--broadcast",dest="broadcast",action='store_true',default=False,help="")
     parser.add_option("-E","--elvis",dest="elvis",default=context.elvis,help="ELVIS version.")
+    parser.add_option("-L","--lite",dest="lite",action="store_true",default=False,help="Run a lighter version of the program (no autom. HK-plots or image displays).")
     
     (options, args) = parser.parse_args()
     
@@ -176,6 +177,7 @@ if __name__ == '__main__':
     path = options.path
     broadcast = bool(options.broadcast)
     elvis = options.elvis
+    dolite = bool(options.lite)
     
     if not os.path.exists(path):
         sys.exit('HKmonitory.py: %s does not exist' % path)
