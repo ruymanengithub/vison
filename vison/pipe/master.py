@@ -234,7 +234,6 @@ class Pipe(object):
             for it,taskitem in enumerate(tasksequence):
                 
                 taskname,testkey,Nframes = taskitem
-        
                 available = pilib.coarsefindTestinExpLog(explog,testkey,Nframes)
                 
                 if available:

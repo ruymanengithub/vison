@@ -456,7 +456,7 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
         temps_PSF02 = [150,156]
         
         exptsPSF02 = np.array([5.,25.,50.,75.,90.])/100. * ogse.tFWC_point['nm%i' % wPSF02]
-        frsPSF02 = [20,15,10,4,3]
+        frsPSF02 = [20,14,10,4,4]
         
         diffPSF02 = dict()
         diffPSF02.update(diffvalues)

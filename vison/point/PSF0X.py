@@ -84,7 +84,7 @@ PSF0X_commvalues = dict(program='CALCAMP',
 
 testdefaults = dict(waves=[590,640,730,800,880],
                                exptimes=dict(),
-                               frames=[20,15,10,4,3])
+                               frames=[20,14,10,4,4])
 
 for w in testdefaults['waves']:
     testdefaults['exptimes']['nm%i' % w] = (np.array([5.,25.,50.,75.,90.])/100.*ogse.tFWC_point['nm%i' % w]).tolist()
