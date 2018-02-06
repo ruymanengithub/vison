@@ -205,7 +205,6 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
                       exptimes=exptimesF01,
                       frames=framesF01,
                       wavelength=800,
-                      test='FLAT01_800',
                       diffvalues = diffFLAT01)
         
         
