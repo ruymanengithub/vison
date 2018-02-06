@@ -109,11 +109,12 @@ def test_timer(teststruct):
         iduration = col['exptime']
         
         if col['siflsh']==1:
-            iduration += col['siflsh_p']
+            iduration += col['siflsh_p']*1.e-3
         
         iduration += get_dt_flush(**col)
         
         iduration += get_dt_ro(**col)
+        
         if col['chinj'] ==1 or col['s_tpump'] ==1 or col['v_tpump']==1:
             iduration += get_dt_chinj(**col)
         
@@ -123,7 +124,7 @@ def test_timer(teststruct):
             iduration += get_dt_vtpump(**col)
         
         iduration *= col['frames']
-        
+        #print iduration
         testduration += iduration
     
     testduration /= 60. # minutes
