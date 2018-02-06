@@ -257,6 +257,8 @@ class ExpLogDisplay(tk.Toplevel):
         
 
         for i,item in enumerate(self.elementList):
+            print i+self.nEL
+            
             if (i+self.nEL) % 2 == 0: parity = 'odd'
             elif (i+self.nEL) % 2 !=0: parity = 'pair'
             self.tree.insert('', 'end', values=item, tags=(parity,))
