@@ -97,7 +97,7 @@ class TP01(PumpTask):
         toi_chinjTP01 = 500
         self.inpdefaults = dict(toi_chinj=toi_chinjTP01,
                          Nshuffles_V=5000,
-                         id_delays=np.array([3.,2.]) * toi_chinjTP01,
+                         id_delays=np.array([2.5,1.5]) * toi_chinjTP01,
                          toi_tpv=[200,1000,2000,4000,8000],
                          vpumpmodes = [123,234,341,412])
         

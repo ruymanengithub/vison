@@ -103,7 +103,7 @@ class TP00(PumpTask):
         
 
         toi_chinj=500
-        id_delays = np.array([3.,2.]) * toi_chinj
+        id_delays = np.array([2.5,1.5]) * toi_chinj
         
         vpumpmodes = [123,234,341,412]        
         Nshuffles_V = self.inputs['Nshuffles_V']

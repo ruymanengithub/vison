@@ -90,7 +90,7 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
         IDH = 18.
         IG1s = [2.,6.]
         toi_chinj01 = 500
-        id_delays = [toi_chinj01*3,toi_chinj01*2]
+        id_delays = [toi_chinj01*2.5,toi_chinj01*1.5]
     
         diffCHINJ01 = dict(mirr_on=0)
         diffCHINJ01.update(diffvalues)
@@ -116,7 +116,7 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
         IDH = 18.
         #IG1s = [2000,6000]
         toi_chinj02 = 500
-        id_delays = [toi_chinj02*3,toi_chinj02*2]
+        id_delays = [toi_chinj02*2.5,toi_chinj02*1.5]
         diffCHINJ02 = dict(mirr_on=0)
         diffCHINJ02.update(diffvalues)
 
@@ -139,7 +139,7 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
 
         TOI_TPv = [200,1000,2000,4000,8000]
         toi_chinjTP01 = 250 # quick injection
-        id_delays_TP01 = (np.array([3.,2.]) * toi_chinjTP01).tolist()
+        id_delays_TP01 = (np.array([2.5,1.5]) * toi_chinjTP01).tolist()
         
         diffTP01 = dict()
         diffTP01.update(diffvalues)
@@ -163,7 +163,7 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
         Nshuffles_H=5000
         dwell_sv = [0.,4.75,14.3,28.6] # us
         toi_chinjTP02 = 250 # quick injection
-        id_delays_TP02 = (np.array([3.,2.])*toi_chinjTP02).tolist()
+        id_delays_TP02 = (np.array([2.5,1.5])*toi_chinjTP02).tolist()
               
         diffTP02 = dict(mirr_on=0)
         diffTP02.update(diffvalues)

@@ -94,7 +94,7 @@ class TP02(PumpTask):
         self.inpdefaults = dict(toi_chinj=toi_chinj,
                          Nshuffles_H=5000,
                          dwell_sv=[0.,4.75,14.3,28.6],
-                         id_delays=np.array([3.,2.])*toi_chinj,
+                         id_delays=np.array([2.5,1.5])*toi_chinj,
                          spumpmodes=[23,31])
         
     def set_perfdefaults(self,**kwargs):

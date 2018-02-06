@@ -94,7 +94,7 @@ class CHINJ01(InjTask):
                 IDL = 11.,
                 IDH = 18.,
                 IG1s = [2.,6.],
-                id_delays = [toi_chinj*3.,toi_chinj*2.],
+                id_delays = [toi_chinj*2.5,toi_chinj*1.5],
                 toi_chinj = toi_chinj
                 )
         

@@ -111,7 +111,7 @@ class CHINJ00(InjTask):
         chinj_on = self.inputs['chinj_on']
         chinj_off = self.inputs['chinj_of']
         
-        id_delays = np.array([3.,2.]) * toi_chinj
+        id_delays = np.array([2.5,1.5]) * toi_chinj
         
         IG1s = [4.,6.,4.,6.]
         IG2s = [6.,4.,6.,4.]

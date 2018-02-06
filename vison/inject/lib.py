@@ -94,11 +94,11 @@ def predict_inj_level(IDL,IDH,IG1,IG2,id_wid,id_dly,toi_ch,sectag):
     if id_wid < 10.:
         return 0.
     
-    discrim = int(id_dly / float(toi_ch))
-    if discrim == 2:
-        injsect = 'T'
-    elif discrim == 3:
+    discrim = id_dly / float(toi_ch)
+    if 1. < discrim < 2.:
         injsect = 'B'
+    elif 2.< discrim < 3:
+        injsect = 'T'
     else: injsect = 'None'
     
     if injsect != sectag: return np.nan
