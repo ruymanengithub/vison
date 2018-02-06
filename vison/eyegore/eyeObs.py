@@ -99,9 +99,6 @@ class ExpLogDisplay(tk.Toplevel):
                    font=medium_font,bd=2,relief='groove')
         self.labels['NEntries']['app'].grid(row=0,column=1,in_=self.fr1,sticky='w')
         
-        
-        
-        
         self.fr1.grid_columnconfigure(0, weight=1)
         self.fr1.grid_rowconfigure(0, weight=1)
                 
@@ -122,8 +119,7 @@ class ExpLogDisplay(tk.Toplevel):
         
         if self.updating:
         
-            self.tree.yview_moveto(1)
-            
+            self.tree.yview_moveto(1)            
             
             self.search_EXPLOGs()
             self.get_data()
@@ -261,8 +257,8 @@ class ExpLogDisplay(tk.Toplevel):
         
 
         for i,item in enumerate(self.elementList):
-            if (i+self.nEL) % 2 == 0: parity = 'pair'
-            elif (i+self.nEL) % 2 !=0: parity = 'odd'
+            if (i+self.nEL) % 2 == 0: parity = 'odd'
+            elif (i+self.nEL) % 2 !=0: parity = 'pair'
             self.tree.insert('', 'end', values=item, tags=(parity,))
         
             # adjust column's width if necessary to fit each value
