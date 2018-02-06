@@ -129,7 +129,7 @@ class TP01(PumpTask):
         # First Injection Drain Delay
         
         TP01_sdict['col1'] = dict(frames=1,v_tpump=0,comments='BGD',
-                  id_delay=id_delays[0],toi_ch=toi_chinj)
+                  id_dly=id_delays[0],toi_ch=toi_chinj)
         
         colcounter = 2
         for i,toi_tp in enumerate(toi_tpv):
@@ -146,7 +146,7 @@ class TP01(PumpTask):
         
         
         TP01_sdict['col%i' % colcounter] = dict(frames=1,v_tpump=0,comments='BGD',
-                  id_delay=id_delays[1],toi_ch=toi_chinj)
+                  id_dly=id_delays[1],toi_ch=toi_chinj)
         colcounter += 1
     
         for j,toi_tp in enumerate(toi_tpv):
@@ -173,6 +173,7 @@ class TP01(PumpTask):
             except: diffvalues = diffvalues = dict()
        
         TP01_sdict = sc.update_structdict(TP01_sdict,commvalues,diffvalues)
+        
         
         return TP01_sdict
 
