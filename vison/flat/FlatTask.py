@@ -38,7 +38,7 @@ class FlatTask(Task):
                                    'FL0Xchecks_fluvar'])
         elif test == 'PTC01':
             kwargs = dict(figkeys=['PTC0Xchecks_offsets','PTC0Xchecks_stds',
-                                   'PTC0Xchecks_fluvar'])
+                                   'PTC0Xchecks_flu','PTC0Xchecks_var'])
         elif 'PTC02' in test:
             kwargs = dict(figkeys=['PTC0Xchecks_offsets','PTC0Xchecks_stds',
                                    'PTC0Xchecks_flu','PTC0Xchecks_var'])
