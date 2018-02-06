@@ -15,6 +15,7 @@ Created on Wed Apr  5 10:21:05 2017
 
 # IMPORT STUFF
 from pdb import set_trace as stop
+from collections import OrderedDict
 
 from vison.datamodel import ccd as ccdmod
 #from vison.pipe import lib as plib
@@ -28,7 +29,7 @@ from vison.point import spot as spotmod
 
 mirror_nom = dict(F1=50.,F2=50.,F3=50.,F4=50.,F5=50.,F6=50.) # nominal focus positions of mirror
 
-stampw = 50
+stampw = 75
 
 # ALPHA BRAVO
 #    CHARLIE
@@ -64,6 +65,28 @@ for iCCD in range(2,4):
     for Q in context.Quads:
         Point_CooNom['CCD%i' % iCCD][Q] = copy.deepcopy(Point_CooNom['CCD1'][Q])
 
+# MEASUREMENTS
+
+Point_CooNom['CCD2'] = OrderedDict(E=OrderedDict(ALPHA=(542.0, 1725.0), 
+                                                  BRAVO=(1716.0, 1700.0), 
+                                                  CHARLIE=(1126.0, 1124.0),
+                                                  DELTA=(521.0, 551.0), 
+                                                  ECHO=(1695.0, 537.0)), 
+                                    F=OrderedDict(ALPHA=(578.0, 1686.0),
+                                                  BRAVO=(1745.0, 1668.0),
+                                                  CHARLIE=(1141.0, 1144.0),
+                                                  DELTA=(553.0, 522.0),
+                                                  ECHO=(1723.0, 496.0)),
+                                    G=OrderedDict(ALPHA=(534.0, 1590.0), 
+                                                  BRAVO=(1702.0, 1571.0), 
+                                                  CHARLIE=(1139.0, 1033.0),
+                                                  DELTA=(515.0, 415.0), 
+                                                  ECHO=(1685.0, 394.0)),
+                                    H=OrderedDict(ALPHA=(554.0, 1626.0),
+                                                 BRAVO=(1725.0, 1606.0),
+                                                 CHARLIE=(1131.0, 1029.0),
+                                                 DELTA= (531.0, 446.0), 
+                                                 ECHO=(1706.0, 435.0)))
 
 def extract_spot(ccdobj,coo,Quad,log=None,stampw=25):
     """ """
