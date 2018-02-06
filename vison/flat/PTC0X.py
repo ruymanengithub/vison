@@ -155,7 +155,7 @@ class PTC0X(FlatTask):
         if 'PTC02' in testkey:
             if testkey[-1] == 'K': _testkey = 'PTC02TEMP'
             else: _testkey = 'PTC02WAVE'
-        
+
         if _testkey == 'PTC02WAVE':
             try: wavelength = kwargs['wavelength']
             except KeyError: wavelength=800

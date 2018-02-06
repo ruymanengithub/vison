@@ -48,6 +48,7 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
         diffBIAS01.update(diffvalues)
         
         bias01 = BIAS01.BIAS01(inputs=dict(elvis=elvis,
+                                           test='BIAS01',
                                            N=Nbias01,diffvalues=diffBIAS01))
         
         #structBIAS01 = bias01.build_scriptdict(elvis=elvis)        
@@ -67,6 +68,7 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
         diffDARK01.update(diffvalues)
         
         dark01 = DARK01.DARK01(inputs=dict(elvis=elvis,
+                                           test='DARK01',
                                            N=Ndark01,exptime=exptime_dark01,
                                            diffvalues=diffDARK01))
         
@@ -94,6 +96,7 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
         diffCHINJ01.update(diffvalues)
         
         chinj01 = CHINJ01.CHINJ01(inputs=dict(elvis=elvis,
+                                              test='CHINJ01',
                                               IDL=IDL,IDH=IDH,IG1s=IG1s,
                                               toi_chinj=toi_chinj01,
                                               id_delays=id_delays,
@@ -118,6 +121,7 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
         diffCHINJ02.update(diffvalues)
 
         chinj02 = CHINJ02.CHINJ02(inputs=dict(elvis=elvis,
+                                              test='CHINJ02',
                                               IDLs=IDLs,IDH=IDH,toi_chinj=toi_chinj02,
                                               id_delays=id_delays,diffvalues=diffCHINJ02))
         #structCHINJ02 = chinj02.build_scriptdict(elvis=elvis)        
@@ -141,6 +145,7 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
         diffTP01.update(diffvalues)
         
         tp01 = TP01.TP01(inputs=dict(elvis=elvis,
+                                     test='TP01',
                                      toi_tpv=TOI_TPv,toi_chinj=toi_chinjTP01,
                                       id_delays=id_delays_TP01,
                                       diffvalues=diffTP01))
@@ -164,6 +169,7 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
         diffTP02.update(diffvalues)
 
         tp02 = TP02.TP02(inputs=dict(elvis=elvis,
+                                     test='TP02',
                                      Nshuffles_H=Nshuffles_H,
                                      dwell_sv=dwell_sv,toi_chinj=toi_chinjTP02,
                                      id_delays=id_delays_TP02,
@@ -195,6 +201,7 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
         diffFLAT01.update(diffvalues)
         
         inpF01 = dict(elvis=elvis,
+                      test='FLAT01',
                       exptimes=exptimesF01,
                       frames=framesF01,
                       wavelength=800,
@@ -295,7 +302,7 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
             print '%s...' % itestkey
             
             ptc02w = PTC0X.PTC0X(inputs=dict(elvis=elvis,
-                                             test='PTC02_%i' % wave,
+                                             test=itestkey,
                                              wavelength=wave,
                                              exptimes=exptsPTC02w,
                                              frames=frsPTC02w,
@@ -390,6 +397,7 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
             print '%s...' % itestkey
             
             focus00 = FOCUS00.FOCUS00(inputs=dict(elvis=elvis,
+                                                  test=itestkey,
                                                   wavelength=wave,
                                                   exptime=iexptimeF00,
                                                   diffvalues=diffFOCUS00w))
@@ -429,7 +437,7 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
                                              wavelength=wave,
                                              exptimes=exptsPSF01w,
                                              frames=frsPSF01w,
-                                             test='PSF01_%i' % wave,
+                                             test=itestkey,
                                              diffvalues=diffPSF01w))
             
             #istructPSF01w = psf01w.build_scriptdict(diffvalues=diffPSF01w,
@@ -491,6 +499,7 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
         diffPER01.update(diffvalues)
         
         persist01 = PER01.PERSIST01(inputs=dict(elvis=elvis,
+                                                test='PERSIST01',
                                                 exptSATUR=exptPER01_SATUR,
                                                 exptLATEN=exptPER01_LATEN,
                                                 diffvalues=diffPER01))
