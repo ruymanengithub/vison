@@ -99,7 +99,7 @@ class Pipe(object):
     for temp in [150,156]:
         Test_dict['PSF02_%iK' % temp] = PSF0X
     
-    def __init__(self,inputdict,dolog=True,drill=False,debug=False):
+    def __init__(self,inputdict,dolog=True,drill=False,debug=False,startobsid=0):
         """ """
         
         self.inputs = defaults
@@ -109,6 +109,7 @@ class Pipe(object):
         self.CHAMBER=self.inputs['CHAMBER']
         self.drill = drill
         self.debug = debug
+        self.startobsid = startobsid
         
         if self.debug:
             self.ID = 'PipeDebug'
@@ -230,6 +231,10 @@ class Pipe(object):
         while not fahrtig:
             
             explog = pilib.loadexplogs(explogf,elvis)
+            
+            if self.startobsid>0:
+                ixstart = np.where(explog['ObsID']==self.startobsid)[0][0]
+                explog = explog[ixstart:].copy()
             
             for it,taskitem in enumerate(tasksequence):
                 

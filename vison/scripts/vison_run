@@ -74,7 +74,7 @@ if __name__ == '__main__':
     parser.add_option("-d","--drill",dest="drill",action="store_true", default=False, help="Do a drill execution.")
     parser.add_option("-g","--debug",dest="debug",action="store_true", default=False, help="Run in 'debug' mode.")
     parser.add_option("-T","--test",dest="test",action="store_true",default=False,help="Run in 'test' mode (just ingest inputs and initialize pipeline and output directories)")
-    
+    parser.add_option("-O","--ObsID",dest="startobsid",default="0",help="Only use data from given ObsID and onwards. Only used in 'wait' mode.")
     (options, args) = parser.parse_args()
     
     configf = options.config
@@ -86,11 +86,12 @@ if __name__ == '__main__':
     drill = options.drill
     debug = options.debug
     dotest = options.test
-        
+    startobsid = int(options.startobsid)
+    
     inputdict = openconfigf(configf)    
     inputdict = _update_todo_flags(inputdict,docheck=docheck,dotest=dotest)
     
-    pipe = Pipe(inputdict,dolog=dolog,drill=drill,debug=debug)
+    pipe = Pipe(inputdict,dolog=dolog,drill=drill,debug=debug,startobsid=startobsid)
     
     if wait:
         pipe.wait_and_run(explogf,elvis=elvis)
