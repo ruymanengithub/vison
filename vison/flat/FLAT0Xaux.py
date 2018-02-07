@@ -44,22 +44,33 @@ def gt_check_std_dict(test):
                                 suptitle='%s-checks: std' % ntest))
 
 
-def gt_check_img_fluvar_dict(test):
+def gt_check_img_flu_dict(test):
     ntest = st.replace(test,'_','\_')
-    return dict(stats=['flu_med_img','flu_var_img'],
-                          figname='%s_fluvar_vs_time.png' % test,
-                          caption='%s: Fluence \& Variance vs. time.' % ntest,
-                          meta=dict(doLegend=True,
+    return dict(stats=['flu_med_img'],
+                          figname='%s_flu_vs_time.png' % test,
+                          caption='%s: Fluence vs. time.' % ntest,
+                          meta=dict(doLegend=False,
                                 doNiceXDate=True,
-                                suptitle='%s-checks: Fluence \& Variance' % ntest,
+                                suptitle='%s-checks: Fluence' % ntest,
                                 ylabel='[ADU]'))
+
+def gt_check_img_var_dict(test):
+    ntest = st.replace(test,'_','\_')
+    return dict(stats=['flu_var_img'],
+                          figname='%s_var_vs_time.png' % test,
+                          caption='%s: Fluence \& Variance vs. time.' % ntest,
+                          meta=dict(doLegend=False,
+                                doNiceXDate=True,
+                                suptitle='%s-checks: Variance' % ntest,
+                                ylabel='[ADU^2]'))
 
 
 def gt_FL0Xfigs(test):
     FL0Xfigs = dict()
     FL0Xfigs['FL0Xchecks_offsets'] = [trends.pl_basic_checkstat,gt_check_offsets_dict(test)]
     FL0Xfigs['FL0Xchecks_stds'] = [trends.pl_basic_checkstat,gt_check_std_dict(test)]
-    FL0Xfigs['FL0Xchecks_fluvar'] = [trends.pl_basic_checkstat,gt_check_img_fluvar_dict(test)]
+    FL0Xfigs['FL0Xchecks_flu'] = [trends.pl_basic_checkstat,gt_check_img_flu_dict(test)]
+    FL0Xfigs['FL0Xchecks_var'] = [trends.pl_basic_checkstat,gt_check_img_var_dict(test)]
     FL0Xfigs['BlueScreen'] = [plbaseclasses.BlueScreen,dict()]
     return FL0Xfigs
 

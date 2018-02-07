@@ -50,7 +50,7 @@ def gt_check_img_flu_dict(test):
                 trendaxis = 'exptime',
                 figname='%s_flu_vs_exptime.png' % test,
                 caption='%s: Fluence vs. exposure time.' % ntest,
-                   meta=dict(doLegend=True,
+                   meta=dict(doLegend=False,
                           doNiceXDate=False,
                            suptitle='%s-checks: Fluence' % ntest,
                            xlabel='exptime[s]',
@@ -63,9 +63,9 @@ def gt_check_img_var_dict(test):
                 trendaxis = 'exptime',
                 figname='%s_var_vs_exptime.png' % test,
                 caption='%s: Variance vs. exposure time.' % ntest,
-                   meta=dict(doLegend=True,
+                   meta=dict(doLegend=False,
                           doNiceXDate=False,
-                           suptitle='%s-checks: Fluence \& Variance' % ntest,
+                           suptitle='%s-checks: Variance' % ntest,
                            xlabel='exptime[s]',
                            ylabel='[ADU^2]'))
 

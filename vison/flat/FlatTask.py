@@ -32,10 +32,12 @@ class FlatTask(Task):
         test = self.inputs['test']
         if 'FLAT01'in test: # AD-HOC modification of test label
             kwargs = dict(figkeys=['FL0Xchecks_offsets','FL0Xchecks_stds',
-                                   'FL0Xchecks_fluvar'])
+                                   'FL0Xchecks_flu',
+                                   'FL0Xchecks_var'])
         elif 'FLAT02' in test:
             kwargs = dict(figkeys=['FL0Xchecks_offsets','FL0Xchecks_stds',
-                                   'FL0Xchecks_fluvar'])
+                                   'FL0Xchecks_flu',
+                                   'FL0Xchecks_var'])
         elif test == 'PTC01':
             kwargs = dict(figkeys=['PTC0Xchecks_offsets','PTC0Xchecks_stds',
                                    'PTC0Xchecks_flu','PTC0Xchecks_var'])
@@ -44,7 +46,8 @@ class FlatTask(Task):
                                    'PTC0Xchecks_flu','PTC0Xchecks_var'])
         elif test == 'NL01':
             kwargs = dict(figkeys=['NL01checks_offsets','NL01checks_stds',
-                                   'NL01checks_fluvar'])
+                                   'NL01checks_flu',
+                                   'NL01checks_var'])
             
         Task.check_data(self,**kwargs)
     
