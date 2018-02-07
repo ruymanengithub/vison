@@ -354,19 +354,20 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
     if toGen['NL01']: 
         
         print 'NL01...'
+        waveNL01 = 880
         
         diffNL01 = dict(mirr_on=0)
         diffNL01.update(diffvalues)
 
         # 5 frames per fluence: 1%, 2%, 3%, 5%, 10%, 20%,30%, 50%,70%,80%,85%,90%,95%
-        exptsNL01 = (np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100. * ogse.tFWC_flat['nm0']).tolist() # ms
-        exptinterNL01 = 0.5 * ogse.tFWC_flat['nm0']
+        exptsNL01 = (np.array([5.,10.,20.,30.,50.,70.,80.,90.,100.,110.,120.])/100. * ogse.tFWC_flat['nm%i' % waveNL01]).tolist() # ms
+        exptinterNL01 = 0.5 * ogse.tFWC_flat['nm%i' % waveNL01]
         frsNL01 = (np.ones(11,dtype='int32')*5).tolist()
         
         nl01 = NL01.NL01(inputs=dict(elvis=elvis,
                                      test='NL01',
                                      exptimes=exptsNL01,exptinter=exptinterNL01,
-                                     frames=frsNL01,wavelength=0,
+                                     frames=frsNL01,wavelength=waveNL01,
                                      diffvalues=diffNL01))
         
         #structNL01 = nl01.build_scriptdict(diffvalues=diffNL01,elvis=elvis)    

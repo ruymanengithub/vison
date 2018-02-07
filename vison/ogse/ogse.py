@@ -32,7 +32,7 @@ tFWC_flat = dict(nm590=0.82,
                 nm730=0.94,
                 nm800=1.87,
                 nm880=9.4,
-                nm0=30.) # ?? 
+                nm0=1.6) # after DRY-RUN...
 
 # saturation exposure times for point-source, ms, orientative
 

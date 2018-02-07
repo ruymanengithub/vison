@@ -66,7 +66,7 @@ NL01_commvalues = dict(program='CALCAMP',
   flushes=7,vstart=0,vend=2086,
   exptime=0.,shuttr=1,
   siflsh=1,siflsh_p=500,
-  wave=6,
+  wave=5,
   source='flat',
   comments='')
 
@@ -115,12 +115,14 @@ class NL01(FlatTask):
         
         
     def set_inpdefaults(self,**kwargs):
+        
+        wave = 800        
 
-        expts = (NL01_relfluences/100. * ogse.tFWC_flat['nm0']).tolist() # ms
+        expts = (NL01_relfluences/100. * ogse.tFWC_flat['nm%i' % wave]).tolist() # ms
         self.inpdefaults = dict(exptimes=expts,
-                       exptinter=0.5 * ogse.tFWC_flat['nm0'],
+                       exptinter=0.5 * ogse.tFWC_flat['nm%i' % wave],
                        frames=(np.ones(11,dtype='int32')*5).tolist(),           
-                       wavelength=0,
+                       wavelength=wave,
                        )
         
     def set_perfdefaults(self,**kwargs):
