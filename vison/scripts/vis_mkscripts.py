@@ -83,7 +83,7 @@ def get_dt_stpump(**kwargs):
     vend = kwargs['vend']
     nlines = vend-vstart
     
-    dt = nlines * ((14.3E-6+dwell_s)*s_tp_cnt)
+    dt = nlines * ((2.*14.3E-6+dwell_s)*s_tp_cnt)
     return dt
     
     
