@@ -3,6 +3,8 @@
 
 # IMPORT STUFF
 import sys, os
+from pdb import set_trace as stop
+
 from optparse import OptionParser
 from vison.eyegore.eyegore import Eyegore,_extpath
 from vison.support import context
@@ -32,6 +34,8 @@ if __name__ == '__main__':
     
     if broadcast != 'None':
         broadcast = os.path.join(_extpath,broadcast)
+    else: 
+        broadcast = None
     
     if not os.path.exists(path):
         sys.exit('HKmonitory.py: %s does not exist' % path)

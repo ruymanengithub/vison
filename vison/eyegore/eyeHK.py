@@ -368,6 +368,35 @@ class HKDisplay(tk.Toplevel):
         toolbar.update()
         canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
     
+    
+    def sort_HKfiles(self,HKfiles):
+        """ """
+        
+        # First we order by dates (ELVIS generates a 
+        # new master HK file after midnight in the same day-folder)
+        
+        alldays = []
+        for iHKfile in HKfiles:
+            itstr = os.path.split(iHKfile)[-1][3:11]
+            it = datetime.datetime.strptime(itstr,'%d-%m-%y')
+            alldays.append(it)
+        dorder = np.argsort(alldays)
+        
+        oHKfiles = []
+        
+        # Then we sort by the appendix number among the master HK files of a
+        # given date (there may be more than one, I've been told...)
+        
+        ordered_dates = np.unique(np.array(alldays)[dorder])
+        
+        for iod,idate in enumerate(ordered_dates):
+            idate = ordered_dates[iod]
+            idatestr = idate.strftime('%d-%m-%y')
+            subfiles = [item for item in HKfiles if 'HK_%s' % idatestr in item]
+            oHKfiles += np.sort(subfiles).tolist() 
+        
+        return oHKfiles
+    
     def search_HKfiles(self):
         """ """
         
@@ -376,10 +405,14 @@ class HKDisplay(tk.Toplevel):
         
         self.date = date_infile
 
-        tmp_HK = 'HK_%s_ROE1_??.txt' % date_infile
+        #tmp_HK = 'HK_%s_ROE1_??.txt' % date_infile
+        tmp_HK = 'HK_??-??-??_ROE1_??.txt'
         tmp_HK = os.path.join(self.path,tmp_HK)
         
         HKfiles = glob.glob(tmp_HK)        
+        
+        HKfiles = self.sort_HKfiles(HKfiles)
+        
         
         #isthere = os.path.exists(tmp_HK)
         arethere = len(HKfiles)>0
