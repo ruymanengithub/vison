@@ -105,43 +105,43 @@ class STRAY00(DarkTask):
         # start with all lights on in LAB
         STRAY00_sdict['col1'] = dict(frames=1,exptime=0,shuttr=0,wave=1,
                      source='flat',
-                     comment = 'LABLIT')
+                     comments = 'LABLIT')
         STRAY00_sdict['col2'] = dict(frames=1,exptime=100,shuttr=0,wave=1,
                      source='flat',
-                     comment='LABLIT')
+                     comments='LABLIT')
         # switch off all lights in LAB
         STRAY00_sdict['col3'] = dict(frames=1,exptime=0,shuttr=0,wave=1,
                      source='flat',
-                     comment='LABOUTW1')
+                     comments='LABOUTW1')
         STRAY00_sdict['col4'] = dict(frames=1,exptime=100,shuttr=0,wave=1,
                      source='flat',
-                     comment='LABOUTW1')
+                     comments='LABOUTW1')
         # change light source wavelength
         STRAY00_sdict['col5'] = dict(frames=1,exptime=0,shuttr=0,wave=4,
                      source='flat',
-                     comment='LABOUTW4')
+                     comments='LABOUTW4')
         STRAY00_sdict['col6'] = dict(frames=1,exptime=100,shuttr=0,wave=4,
                      source='flat',
-                     comment='LABOUTW4')                
+                     comments='LABOUTW4')                
         # switch off Light Source
         STRAY00_sdict['col7'] = dict(frames=1,exptime=0,shuttr=0,wave=1,
-                     comment='TUNGSOFF')
+                     comments='TUNGSOFF')
         STRAY00_sdict['col8'] = dict(frames=1,exptime=100,shuttr=0,wave=1,
                      source='flat',
-                     comment='TUNGSOFF')
+                     comments='TUNGSOFF')
         # switch off Pressure Gauge - Light Source still Off
         STRAY00_sdict['col9'] = dict(frames=1,exptime=0,shuttr=0,wave=1,
-                     comment='GAUGEOFF')
+                     comments='GAUGEOFF')
         STRAY00_sdict['col10'] = dict(frames=1,exptime=100,shuttr=0,wave=1,
                      source='flat',
-                     comment='GAUGEOFF')
+                     comments='GAUGEOFF')
         # Switch on Pressure Gauge and Light Source
         STRAY00_sdict['col11'] = dict(frames=1,exptime=0,shuttr=0,wave=1,
                      source='flat',
-                     comment='TUNGGAUON')
+                     comments='TUNGGAUON')
         STRAY00_sdict['col12'] = dict(frames=1,exptime=100,shuttr=0,wave=1,
                      source='flat',
-                     comment='TUNGGAUON')
+                     comments='TUNGGAUON')
         
         # NON-supervised, Lights Off, Gauge On, Tungsten On
         
@@ -149,39 +149,39 @@ class STRAY00(DarkTask):
 
         STRAY00_sdict['col13'] = dict(frames=1,exptime=300,shuttr=0,wave=1,
                      source='flat',
-                     comment='DARK-FF')
+                     comments='DARK-FF')
         
         STRAY00_sdict['col14'] = dict(frames=1,exptime=300,shuttr=0,wave=4,
                      source='flat',
-                     comment='DARK-FF')        
+                     comments='DARK-FF')        
         
         # DARK PSF-source wave = 1, mirror at near end
 
         STRAY00_sdict['col15'] = dict(frames=1,exptime=300,shuttr=0,wave=1,
                      source='point',
                      mirr_on=1,mirr_pos=1.,
-                     comment='DARK-PSF')
+                     comments='DARK-PSF')
         
         # DARK PSF-source wave = 1, mirror at far end
         
         STRAY00_sdict['col16'] = dict(frames=1,exptime=300,shuttr=0,wave=1,
                      source='point',
                      mirr_on=1,mirr_pos=99.,
-                     comment='DARK-PSF')        
+                     comments='DARK-PSF')        
         
         # DARK PSF-source wave = 4, mirror at near end
         
         STRAY00_sdict['col17'] = dict(frames=1,exptime=300,shuttr=0,wave=4,
                      source='point',
                      mirr_on=1,mirr_pos=1.,
-                     comment='DARK-PSF')
+                     comments='DARK-PSF')
         
         # DARK PSF-source wave = 4, mirror at far end
         
         STRAY00_sdict['col18'] = dict(frames=1,exptime=300,shuttr=0,wave=4,
                      source='point',
                      mirr_on=1,mirr_pos=99.,
-                     comment='DARK-PSF')        
+                     comments='DARK-PSF')        
         
         
         # PSF - Short, wave = 1
@@ -189,24 +189,24 @@ class STRAY00(DarkTask):
         STRAY00_sdict['col19'] = dict(frames=1,exptime=5.,shuttr=1,wave=1,
                      source='point',
                      mirr_on=1,mirr_pos=50.,
-                     comment='PSF-S')
+                     comments='PSF-S')
         
         STRAY00_sdict['col20'] = dict(frames=1,exptime=50.,shuttr=1,wave=1,
                      source='point',
                      mirr_on=1,mirr_pos=50.,
-                     comment='PSF-L')
+                     comments='PSF-L')
         
         # PSF - Long, wave = 4
         
         STRAY00_sdict['col21'] = dict(frames=1,exptime=5.,shuttr=1,wave=4,
                      source='point',
                      mirr_on=1,mirr_pos=50.,
-                     comment='PSF-S')
+                     comments='PSF-S')
         
         STRAY00_sdict['col22'] = dict(frames=1,exptime=50.,shuttr=1,wave=4,
                      source='point',
                      mirr_on=1,mirr_pos=50.,
-                     comment='PSF-L')        
+                     comments='PSF-L')        
         
         
         
