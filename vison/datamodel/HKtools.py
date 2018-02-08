@@ -21,7 +21,7 @@ from collections import OrderedDict
 import copy
 
 from astropy.io import ascii
-from astropy.table import Table,Column
+from astropy.table import Table,Column,vstack
 import string as st
 import numpy as np
 
@@ -316,19 +316,20 @@ def loadHK_QFMsingle(filename,elvis=context.elvis):
 
 def mergeHK(HKList):
     """ """
+    return vstack(HKList)
 
-    HK = copy.deepcopy(HKList[0])
-    nHK = len(HKList)
+    #HK = copy.deepcopy(HKList[0])
+    #nHK = len(HKList)
     
-    for ixHK in range(1,nHK):
-        iHKdata = HKList[ixHK]
+    #for ixHK in range(1,nHK):
+    #    iHKdata = HKList[ixHK]
         
-        # Row-by-Row appending of the "iHKdata" added catalog
+        # Row-by-Row appending of the "iHKdata" added catalog... is there a faster way?
         
-        for iL in range(len(iHKdata)):
-            HK.add_row(iHKdata[iL].as_void().tolist())
+    #    for iL in range(len(iHKdata)):
+    #        HK.add_row(iHKdata[iL].as_void().tolist())
     
-    return HK
+    #return HK
     
 
 def loadHK_QFM(filename,elvis=context.elvis):

@@ -465,9 +465,13 @@ class HKDisplay(tk.Toplevel):
             yield self.HK
         
         self.sizeHK = sizeHK
+        
+        print 'loading HK...'
 
         HK = HKtools.loadHK_QFM(self.HKfiles,elvis=self.elvis)
-                
+        
+        print 'done loading HK!'
+        
         dtobjarr = np.array([datetime.datetime.strptime(item,'%d-%m-%y_%H:%M:%S') \
                              for item in HK['TimeStamp']])        
     
