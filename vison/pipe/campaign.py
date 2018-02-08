@@ -112,7 +112,7 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
         
         print 'CHINJ02...'
 
-        IDLs = [13.,16.]
+        IDLs = [10.,13.]
         IDH = 18.
         #IG1s = [2000,6000]
         toi_chinj02 = 500

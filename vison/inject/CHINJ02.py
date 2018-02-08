@@ -96,7 +96,7 @@ class CHINJ02(InjTask):
         toi_chinj = 500
         
         self.inpdefaults = dict(
-        IDLs = [13.,16.],
+        IDLs = [10.,13.],
         IDH = 18.,
         id_delays = [toi_chinj*2.5,toi_chinj*1.5],
         toi_chinj = toi_chinj
