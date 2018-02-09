@@ -541,7 +541,7 @@ def parseHKfiles(HKlist,elvis=context.elvis):
 
 
 def format_date(x,pos=None):
-    try: return pylab.num2date(x).strftime('%d/%b-%H:%M:%S')
+    try: return pylab.num2date(x).strftime('%d/%b-%H:%M')
     except: pass
     #except: stop()
 

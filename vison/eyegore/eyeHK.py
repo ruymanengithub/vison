@@ -32,11 +32,13 @@ import tkFont as tkFont
 from vison.support import context
 #from vison.pipe import lib as pilib
 from vison.datamodel import HKtools
+from vison.datamodel.HKtools import format_date
 # END IMPORT
 
 
 LARGE_FONT = ("Helvetica", 12)
 small_font = ("Verdana", 8)
+
 
 
 def _ax_render_HK(ax,x,y,HKlims,HKkey):
@@ -53,9 +55,9 @@ def _ax_render_HK(ax,x,y,HKlims,HKkey):
         yp = y.copy()
         yp[np.isnan(y)] = 0
         ax.plot(x,yp)
-        ax.plot(x[np.isnan(y)],yp[np.isnan(y)],'ro-')                    
+        ax.plot(x[np.isnan(y)],yp[np.isnan(y)],'ro:')                    
     else:
-        ax.plot(x,y)
+        ax.plot(x,y,'b.')
     
     if len(HKlims) == 1:
         ax.axhline(y=HKlims[0],ls='--',lw=2,color='r')
@@ -110,7 +112,9 @@ class SingleHKplot(tk.Toplevel):
     def render(self,HKkey,HKlims,x,y):
         
         ax = _ax_render_HK(self.ax,x,y,HKlims,HKkey)        
-        try: self.f.autofmt_xdate()
+        try: 
+            plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))   
+            self.f.autofmt_xdate()
         except:
             pass
         plt.tight_layout(rect=[0, 0, 1, 1])
@@ -519,7 +523,9 @@ class HKDisplay(tk.Toplevel):
                 
                 self.axs[i] = _ax_render_HK(ax,x,y,_HKlims,HKname)
                 
-            try: self.f.autofmt_xdate()
+            try:                
+                plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))   
+                self.f.autofmt_xdate()
             except:
                 pass
             plt.tight_layout(rect=[0, 0, 1, 1])
