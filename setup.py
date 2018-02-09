@@ -52,7 +52,8 @@ def configuration():
            'vison/scripts/vis_mkscripts.py',
            'vison/scripts/vis_genDataSet.py',
            'vison/scripts/eyegore',
-           'vison/scripts/vison_run'])
+           'vison/scripts/vison_run',
+           'vison/scripts/vis_explogs_merger.py'])
    
     return config
 
