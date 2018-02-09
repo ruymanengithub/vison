@@ -184,7 +184,7 @@ def loadExpLog(expfile,elvis=context.elvis):
     return explog
     
 
-def mergeExpLogs(explogList,addpedigree=False):
+def mergeExpLogs(explogList,addpedigree=False,verbose=False):
     """Merges explog objects in a list."""
     
     nexplogs=len(explogList)
@@ -199,6 +199,8 @@ def mergeExpLogs(explogList,addpedigree=False):
     
     for iexp in range(1,nexplogs):
         iexplog = explogList[iexp]
+        if verbose:
+            print 'merging explog %i/%i...' % (iexp+1,nexplogs)
         
         # Check format compatibility of columns
         
