@@ -61,6 +61,7 @@ def rsync_to_remote(path,broadcast):
     command = "rsync -e 'ssh' -L -avzq %s raf@msslus:%s%s" % (path,broadcast,os.sep)
     #command = "rsync -avqz TEST_DATA/24_Feb_80 /home/raf/Desktop/24_Feb_80"
     print 'syncing to MSSLUS: %s' % command
+    stop()
     os.system(command)
 
 def rsync_to_altlocalpath(path,altpath):
@@ -68,6 +69,7 @@ def rsync_to_altlocalpath(path,altpath):
     _altpath = os.path.join(altpath,path)
     command = "rsync -avzq %s %s" % (path+os.sep,_altpath)
     print 'SYNCING TO ALTLOCAL: %s' % command
+    stop()
     os.system(command)
 
 class Eyegore(tk.Tk):
