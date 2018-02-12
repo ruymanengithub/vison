@@ -20,7 +20,7 @@ CommonTaskInputs = OrderedDict(sorted([
             ('datapath',([str],'Path to Data.')),
             ('diffvalues',([dict],'Dictionary with values of variable entries in acq. script (e.g. CCD S/Ns) [opt.].')),
             ('elvis',([str],'ELVIS version.')),
-            ('explogf',([str],'Exposure Log File.')),
+            ('explogf',([str,list],'Exposure Log File(s).')),
             ('ID',([str],'Pipeline Execution ID.')),
             ('inCDPs',([dict],'Input Calibration Data Products, used in processing of data.')),
             ('OBSID_lims',([list],'OBSID Limits to search for frames of Test in Exp-Log.')),

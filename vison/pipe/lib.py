@@ -17,6 +17,8 @@ import copy
 from glob import glob
 import os
 import numpy as np
+import string as st
+import datetime
 
 from vison import __version__
 from vison.datamodel import core
@@ -44,12 +46,34 @@ from vison.support import context
 #               rwd_bas_v=[6.5,0.175],rwd_bas_s=[6.5,0.175],
 #               rwd_bas_vs=[6.5,0.175])
 
+def extract_date_explogf(explogf):
+    """ """
+    items = st.split(explogf,'_')        
+    stdate = items[2]
+    idate = datetime.datetime.strptime(stdate,'%d%m%y')
+    return idate
+
+
+def sortbydateexplogfs(explogfs):
+    """Sorts exposure logs according to date"""
+    
+    assert isinstance(explogfs,list)
+    
+    dates = []
+    for explogf in explogfs:
+        baseexplogf = os.path.basename(explogf)
+        baseexplogf = os.path.splitext(baseexplogf)[0]
+        idate = extract_date_explogf(baseexplogf)
+        dates.append(idate)
+    return (np.array(explogfs)[np.argsort(dates)]).tolist()
+
+
+
 def loadexplogs(explogfs,elvis=context.elvis,addpedigree=False,datapath=None):
     """loads in memory an explog (text-file) or list of explogs (text-files)."""
     
     if isinstance(explogfs,str):
         explog = ELtools.loadExpLog(explogfs,elvis=elvis)
-        
     
     elif isinstance(explogfs,list):
         expLogList = []

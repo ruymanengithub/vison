@@ -18,7 +18,7 @@ Some Guidelines for Development:
     - Input data is "sacred": read-only.
     - Each execution of Master must have associated a unique ANALYSIS-ID.
     - All the Analysis must be divided in TASKS. TASKS can have SUB-TASKS.
-    - All data for each TASK must be under a single directory (TBC).
+    - All data for each TASK must be under a single day-folder.
     - All results from the execution of FMmaster must be under a single directory 
       with subdirectories for each TASK run.
     - A subfolder of this root directory will contain the logging information:
@@ -40,6 +40,7 @@ import numpy as np
 from time import sleep
 import datetime
 import sys,traceback
+import glob
 
 from vison import __version__
 from vison.support import logger as lg
@@ -188,8 +189,12 @@ class Pipe(object):
             
             self.launchtask(taskname)
     
-    def wait_and_run(self,explogf,elvis=context.elvis):
+    def wait_and_run(self,dayfolder,elvis=context.elvis):
         """ """
+        
+        tmpEL = os.path.join(dayfolder,'EXP_LOG_*.txt')
+        explogfs = glob.glob(tmpEL)
+        explogfs = pilib.sortbydateexplogfs(explogfs)
         
         tasknames = self.tasks
         resultsroot = self.inputs['resultsroot']
@@ -208,13 +213,12 @@ class Pipe(object):
             
             testkey = taskinputs['test']
             taskinputs['resultspath'] = os.path.join(resultsroot,taskinputs['resultspath'])
-            taskinputs['explogf'] = explogf
+            taskinputs['explogf'] = explogfs
             taskinputs['elvis'] = elvis            
             
             Test = self.Test_dict[taskname]
             test = Test(taskinputs)
             taskinputs = copy.deepcopy(test.inputs)
-            
             
             structure = taskinputs['structure']
             
@@ -231,7 +235,7 @@ class Pipe(object):
         
         while not fahrtig:
             
-            explog = pilib.loadexplogs(explogf,elvis)
+            explog = pilib.loadexplogs(explogfs,elvis)
             
             if self.startobsid>0:
                 ixstart = np.where(explog['ObsID']==self.startobsid)[0][0]
