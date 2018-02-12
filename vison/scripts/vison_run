@@ -33,27 +33,9 @@ import sys
 import imp
 
 from vison import Pipe
+from vison.pipe.lib import _update_todo_flags
 # END IMPORT
 
-
-def _update_todo_flags(inputdict,docheck=False,dotest=False):
-    
-    assert np.array([docheck,dotest]).sum() <= 1, 'At most 1 kwd should be True!'
-    if np.array([docheck,dotest]).sum() == 0: return inputdict
-    
-    for taskname in inputdict['tasks']:
-        for key in inputdict[taskname]['todo_flags']:
-            inputdict[taskname]['todo_flags'][key] = False
-    
-    if docheck:
-        _todocheck = dict(init=True,check=True,report=True)
-    if dotest:
-        _todocheck = dict(init=True)
-    
-    for taskname in inputdict['tasks']:
-        inputdict[taskname]['todo_flags'].update(_todocheck)
-
-    return inputdict
 
 def openconfigf(configf):
     f = open(configf)
@@ -88,7 +70,8 @@ if __name__ == '__main__':
     dotest = options.test
     startobsid = int(options.startobsid)
     
-    inputdict = openconfigf(configf)    
+    inputdict = openconfigf(configf)
+    
     inputdict = _update_todo_flags(inputdict,docheck=docheck,dotest=dotest)
     
     pipe = Pipe(inputdict,dolog=dolog,drill=drill,debug=debug,startobsid=startobsid)

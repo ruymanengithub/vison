@@ -237,6 +237,7 @@ class Pipe(object):
             
             explog = pilib.loadexplogs(explogfs,elvis)
             
+            
             if self.startobsid>0:
                 ixstart = np.where(explog['ObsID']==self.startobsid)[0][0]
                 explog = explog[ixstart:].copy()
