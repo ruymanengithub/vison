@@ -60,7 +60,7 @@ class Task(object):
         self.debug = debug
         
         self.set_inpdefaults(**inputs)
-        _inputs = self.inpdefaults        
+        _inputs = self.inpdefaults.copy()    
         _inputs.update(inputs)
         self.inputs.update(_inputs)
         
@@ -68,12 +68,12 @@ class Task(object):
              self.elvis = self.inputs['elvis']
         
         self.set_perfdefaults(**inputs)
-        _perfdefaults = self.perfdefaults
+        _perfdefaults = self.perfdefaults.copy()
         self.perflimits.update(_perfdefaults)
         if 'perflimits' in self.inputs:
             self.perflimits.update(self.inputs['perflimits']) 
         
-        if 'diffvalues' in inputs: diffvalues = inputs['diffvalues']
+        if 'diffvalues' in inputs: diffvalues = inputs['diffvalues'].copy()
         else: diffvalues = {}
         
         self.inputs['structure'] = self.build_scriptdict(diffvalues,elvis=self.elvis)

@@ -104,7 +104,7 @@ class Pipe(object):
     def __init__(self,inputdict,dolog=True,drill=False,debug=False,startobsid=0):
         """ """
         
-        self.inputs = defaults
+        self.inputs = defaults.copy()
         self.inputs.update(inputdict)
         self.tasks = self.inputs['tasks']
         self.BLOCKID=self.inputs['BLOCKID'] # BLOCK (ROE+RPSU+CCDs) under test
