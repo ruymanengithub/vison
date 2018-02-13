@@ -92,7 +92,7 @@ def get_dt_vtpump(**kwargs):
     toi_tp = kwargs['toi_tp']*1.e-6
     v_tp_cnt = kwargs['v_tp_cnt']
     dwell_v = kwargs['dwell_v']*1.e-6    
-    dt = ((8.*toi_tp+dwell_v)*v_tp_cnt)
+    dt = ((4.*toi_tp+dwell_v)*v_tp_cnt)
     
     return dt
 
