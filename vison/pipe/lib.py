@@ -247,7 +247,7 @@ def addHK(dd,HKKeys,elvis=context.elvis):
         elif len(HKs) ==0:
             print 'HK file for ObsID %i not found' % ObsID
     
-
+    
     obsids, dtobjs, tdeltasec, readHKKeys, HKdata = HKtools.parseHKfiles(HKlist,elvis=elvis)
     
     HKix = copy.deepcopy(dd.mx['ObsID'].indices)

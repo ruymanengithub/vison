@@ -184,7 +184,7 @@ class Table(Content):
         - include option to rotate table to show in landscape
     
     """
-    def __init__(self,tableDict,formats=dict(),names=[],caption=None):
+    def __init__(self,tableDict,formats=dict(),names=[],caption=None,col_align=None):
         
         table = astable.Table(data=tableDict,names=names)
         
@@ -192,9 +192,16 @@ class Table(Content):
         self.table = table
         self.formatDict = formats
         self.caption = caption
-        
+        self.col_align = col_align
+
     def generate_Latex(self,):
         """Generates LaTeX as list of strings."""
+        
+        if self.col_align is None:            
+            Ncols  = len(self.table.columns)            
+            col_align = '%s|' % (Ncols*'|c',)
+        else:
+            col_align = self.col_align
         
         table = self.table
         formats = self.formatDict
@@ -202,10 +209,10 @@ class Table(Content):
         tf = tempfile.TemporaryFile()
         
         latexdict = ascii.latex.latexdicts['doublelines']
-        latexdict.update(dict(tablealign='ht'))        
+        latexdict.update(dict(tablealign='!ht'))        
         
         ascii.write(table,output=tf,formats=formats,Writer=ascii.Latex,
-                    latexdict=latexdict,col_align='|l|r|')
+                    latexdict=latexdict,col_align=col_align)
         
         tf.seek(0)
         tex = tf.readlines()
@@ -339,10 +346,10 @@ class Report(Container):
         self.add_to_Contents(Figure(figpath,texfraction,caption,label))
     
     
-    def add_Table(self,tableDict,formats=dict(),names=[],caption=''):
+    def add_Table(self,tableDict,formats=dict(),names=[],caption='',col_align=None):
         """ """
         # tableDict,formats=dict(),names=[],caption=None
-        self.add_to_Contents(Table(tableDict,formats,names,caption))
+        self.add_to_Contents(Table(tableDict,formats,names,caption,col_align=col_align))
     
     
     def add_Text(self,text):

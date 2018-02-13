@@ -444,7 +444,9 @@ class Task(object):
         """Generic check_data method"""
         if self.report is not None: 
             self.report.add_Section(keyword='check_data',Title='Data Validation',level=0)
-        # CHECK AND CROSS-CHECK HK        
+        # INVENTORY OF DATA
+        self.add_data_inventory_to_report()
+        # CHECK AND CROSS-CHECK HK
         self.check_HK_ST()
         # OBTAIN METRICS FROM IMAGES        
         self.get_checkstats_ST(**kwargs)
@@ -455,7 +457,6 @@ class Task(object):
             self.report.add_Section(keyword='check_plots',Title='Plots',level=1)
             self.addFigures_ST(**kwargs)
             #self.addHKPlotsMatrix()
-            
         # Update Report, raise flags, fill-in
         if self.log is not None:
             self.addFlagsToLog()
@@ -616,5 +617,28 @@ class Task(object):
         tDict = OrderedDict(Parameter=keys,Value=values)
         #formats = dict(Parameter='s',Value='char')
         
-        self.report.add_Table(tDict,names=names,caption=caption)
+        self.report.add_Table(tDict,names=names,caption=caption,col_align='|l|r|')
         
+    def add_data_inventory_to_report(self):
+        """ """
+        
+        self.report.add_Text('\\textbf{Test Data}')
+        
+        caption = 'Data Used by Task %s , Test $%s$. Datapath = "%s"' % (self.name,self.inputs['test'],self.inputs['datapath'])
+        #ncaption = st.replace(caption,'_','\\_')
+        
+        ObsID = self.dd.mx['ObsID'][:].copy()
+        exptime = self.dd.mx['exptime'][:,0].copy()
+        chinj = self.dd.mx['chinj'][:,0].copy()
+        v_tpump = self.dd.mx['v_tpump'][:,0].copy()
+        s_tpump = self.dd.mx['s_tpump'][:,0].copy()
+        source = self.dd.mx['source'][:,0].copy()
+        wave = self.dd.mx['wave'][:,0].copy()
+                
+        names = ['ObsID','exptime','chinj','v_tpump','s_tpump','source','wave']
+        
+                
+        tDict = OrderedDict(ObsID=ObsID,exptime=exptime,chinj=chinj,v_tpump=v_tpump,
+                            s_tpump=s_tpump,source=source,wave=wave)
+        
+        self.report.add_Table(tDict,names=names,caption=caption)

@@ -408,7 +408,7 @@ class CCD(object):
 
    
     def get_stats(self,Quadrant,sector='img',statkeys=['mean'],trimscan=[0,0],
-                  ignore_pover=True,extension=-1):
+                  ignore_pover=True,extension=-1,VSTART=0,VEND=NrowsCCD+voverscan):
         """ """
         
         Qdata = self.get_quad(Quadrant,canonical=True,extension=extension)
@@ -419,9 +419,9 @@ class CCD(object):
             stat_dict = dict(mean=np.mean,median=np.median,std=np.std)
         
         if ignore_pover:
-            vlims = [0,NrowsCCD]
+            vlims = [VSTART,min(NrowsCCD,VEND)]
         else:
-            vlims = [0,None]
+            vlims = [VSTART,VEND]
         
         if sector == 'pre':
             hlims = [0,self.prescan]

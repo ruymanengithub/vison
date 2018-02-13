@@ -520,7 +520,8 @@ def parseHKfiles(HKlist,elvis=context.elvis):
         obsids.append(obsid)
         dtobjs.append(dtobj)
         
-        HK = HKloader(HKfname,elvis=elvis)        
+        HK = HKloader(HKfname,elvis=elvis)
+        
         synthHKdict = synthHK(HK)
         
         for ik,key in enumerate(HK_keys):
