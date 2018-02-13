@@ -23,7 +23,7 @@ from pdb import set_trace as stop
 
 lineoffsets = dict(E=0,F=0,G=0,H=0)
 
-def extract_injection_lines(quaddata,pattern,VSTART=1,
+def extract_injection_lines(quaddata,pattern,VSTART=0,
             VEND=2066,suboffmean=False,lineoffset=0):
     """     
     quaddata: quadrant data, array
@@ -44,22 +44,22 @@ def extract_injection_lines(quaddata,pattern,VSTART=1,
     
     NX = quaddata.shape[0]
     
-    nlines = VEND-VSTART+1
+    nlines = VEND-VSTART
     
     rowmedians = np.zeros(nlines,dtype='float32')
     rowstds = np.zeros(nlines,dtype='float32')
-    rowix = np.arange(VSTART,VEND+1)
+    rowix = np.arange(VSTART,VEND)
     
     stack_2d = np.zeros((nrep,NX-(npre+npost),npercycle),dtype='float32') + np.nan
     
-    for ii in (rowix-1):
+    for ii in (rowix):
         
         row = quaddata[npre:-1*npost,ii].copy()
         
-        rowmedians[ii-VSTART+1] = np.nanmedian(row)
-        rowstds[ii-VSTART+1] = np.nanmedian(row)
+        rowmedians[ii-VSTART] = np.nanmedian(row)
+        rowstds[ii-VSTART] = np.nanmedian(row)
         
-        icycle = max((ii+lineoffset+1) / npercycle,0)
+        icycle = max((ii+lineoffset) / npercycle,0)
         ix_in_cycle = (ii+lineoffset) - npercycle * icycle
         
         stack_2d[icycle,:,ix_in_cycle] = row.copy()
