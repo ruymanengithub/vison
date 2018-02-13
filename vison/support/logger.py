@@ -11,12 +11,31 @@ These functions can be used for logging information.
 """
 import logging
 import logging.handlers
-import new
+#import new
 from pdb import set_trace as stop
+import textwrap
+
+
+def f_text_wrapper(msg):
+    """ """
+    textwrap.break_on_hypens=True
+    width = 80
+    #wmsg = []
+    if type(msg) in [str,unicode]:
+        wmsg = textwrap.wrap(msg,width=width)
+        #wmsg = ['%s\\' % item for item in wmsg]
+    elif type(msg) == list:
+        wmsg = []
+        for item in msg:
+            wmsg += f_text_wrapper(item)
+    
+    return wmsg
 
 
 def _info(f):
     def wrapper(self,msg,*args,**kwargs):
+        
+        msg = f_text_wrapper(msg)
 
         if type(msg) == str:
             _msg = msg
