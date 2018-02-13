@@ -33,19 +33,20 @@ class Shapemeter(SpotBase):
     Settings dictionary contains all parameter values needed.
     """
 
-    def __init__(self, data, log=None, **kwargs):
+    def __init__(self, data, log=None, verbose=False, **kwargs):
         """
         :param data: stamp to be analysed.
         :type data: ndarray
         :param log: logger
         :type log: instance
+        :param verbose: bool switch
         :param kwargs: additional keyword arguments
         :type kwargs: dict
 
         Settings dictionary contains all parameter values needed.
         """
         
-        super(Shapemeter,self).__init__(data,log)
+        super(Shapemeter,self).__init__(data,log,verbose)
         
 
         self.shsettings = dict(iterations=4,
@@ -62,9 +63,8 @@ class Shapemeter(SpotBase):
        
         self.shsettings.update(kwargs)
         
-
-        for key, value in self.shsettings.iteritems():
-            if self.log is not None: self.log.info('%s = %s' % (key, value))
+        if self.log is not None and self.verbose:
+            self.log.info(self.shsettings.__repr__())
 
 
     def quadrupoles(self,image):

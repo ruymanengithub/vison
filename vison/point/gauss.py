@@ -39,12 +39,13 @@ class Gaussmeter(SpotBase):
     Settings dictionary contains all parameter values needed.
     """
 
-    def __init__(self, data, log=None, **kwargs):
+    def __init__(self, data, log=None, verbose=False, **kwargs):
         """
         :param data: stamp to be analysed.
         :type data: ndarray
         :param log: logger
         :type log: instance
+        :param verbose: bool switch
         :param kwargs: additional keyword arguments
         :type kwargs: dict
 

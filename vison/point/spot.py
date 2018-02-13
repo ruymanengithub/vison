@@ -40,12 +40,13 @@ class Spot(Shapemeter,Photometer,Gaussmeter):
     Settings dictionary contains all parameter values needed.
     """
 
-    def __init__(self, data, log=None, **kwargs):
+    def __init__(self, data, log=None, verbose=False, **kwargs):
         """
         :param data: stamp to be analysed.
         :type data: ndarray
         :param log: logger
         :type log: instance
+        :param verbose: bool switch
         :param kwargs: additional keyword arguments
         :type kwargs: dict
 
@@ -54,9 +55,9 @@ class Spot(Shapemeter,Photometer,Gaussmeter):
         
         #super(Spot, self).__init__(data,log=log,**kwargs)
         
-        Shapemeter.__init__(self,data,log,**kwargs)
-        Photometer.__init__(self,data,log,**kwargs)
-        Gaussmeter.__init__(self,data,log,**kwargs)
+        Shapemeter.__init__(self,data,log,verbose, **kwargs)
+        Photometer.__init__(self,data,log,verbose, **kwargs)
+        Gaussmeter.__init__(self,data,log,verbose, **kwargs)
         
         
         self.data = data.copy()
