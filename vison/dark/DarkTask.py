@@ -74,13 +74,15 @@ class DarkTask(Task):
                     ffits = os.path.join(dpath,'%s.fits' % \
                                          self.dd.mx['File_name'][iObs,jCCD])                    
                     ccdobj = ccd.CCD(ffits)
+                    vstart = self.dd.mx['vstart'][iObs][jCCD]
+                    vend = self.dd.mx['vend'][iObs][jCCD]
                     
                     for kQ,Quad in enumerate(Quads):
                         
                         
                         for reg in ['pre','ove','img' ]:
                             stats = ccdobj.get_stats(Quad,sector=reg,statkeys=['median','std'],trimscan=[5,5],
-                                    ignore_pover=True,extension=-1)
+                                    ignore_pover=True,extension=-1,VSTART=vstart,VEND=vend)
                             self.dd.mx['offset_%s' % reg][iObs,jCCD,kQ] = stats[0]
                             self.dd.mx['std_%s' % reg][iObs,jCCD,kQ] = stats[1]
                             

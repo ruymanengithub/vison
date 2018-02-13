@@ -175,12 +175,14 @@ class InjTask(Task):
                         nrep = (vend-vstart)/(non+noff)+1
                         pattern = (non,noff,nrep)
                     
+                    
                     for kQ,Quad in enumerate(Quads):
                         
                         
                         for reg in ['pre', 'ove']:
                             stats = ccdobj.get_stats(Quad,sector=reg,statkeys=['median','std'],trimscan=[5,5],
-                                    ignore_pover=True,extension=-1)
+                                    ignore_pover=True,extension=-1,VSTART=vstart,VEND=vend)
+                            
                             self.dd.mx['offset_%s' % reg][iObs,jCCD,kQ] = stats[0]
                             self.dd.mx['std_%s' % reg][iObs,jCCD,kQ] = stats[1]
                                               
