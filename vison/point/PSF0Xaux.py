@@ -62,7 +62,7 @@ def gt_check_flu_dict(test):
                           meta=dict(doLegend=False,
                                 doNiceXDate=False,
                                 suptitle='%s-checks: Fluence' % ntest,
-                                xlabel='Mirr [mm]',
+                                xlabel='Exptime [s]',
                                 ylabel='Flu.[ADU]'))
 
 def gt_check_fwhm_dict(test):
