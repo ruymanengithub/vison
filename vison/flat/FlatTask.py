@@ -33,21 +33,21 @@ class FlatTask(Task):
         if 'FLAT01'in test: # AD-HOC modification of test label
             kwargs = dict(figkeys=['FL0Xchecks_offsets','FL0Xchecks_stds',
                                    'FL0Xchecks_flu',
-                                   'FL0Xchecks_var'])
+                                   'FL0Xchecks_imgstd'])
         elif 'FLAT02' in test:
             kwargs = dict(figkeys=['FL0Xchecks_offsets','FL0Xchecks_stds',
                                    'FL0Xchecks_flu',
-                                   'FL0Xchecks_var'])
+                                   'FL0Xchecks_imgstd'])
         elif test == 'PTC01':
             kwargs = dict(figkeys=['PTC0Xchecks_offsets','PTC0Xchecks_stds',
-                                   'PTC0Xchecks_flu','PTC0Xchecks_var'])
+                                   'PTC0Xchecks_flu','PTC0Xchecks_imgstd'])
         elif 'PTC02' in test:
             kwargs = dict(figkeys=['PTC0Xchecks_offsets','PTC0Xchecks_stds',
-                                   'PTC0Xchecks_flu','PTC0Xchecks_var'])
+                                   'PTC0Xchecks_flu','PTC0Xchecks_imgstd'])
         elif test == 'NL01':
             kwargs = dict(figkeys=['NL01checks_offsets','NL01checks_stds',
                                    'NL01checks_flu',
-                                   'NL01checks_var'])
+                                   'NL01checks_imgstd'])
             
         Task.check_data(self,**kwargs)
     
@@ -71,7 +71,7 @@ class FlatTask(Task):
             self.dd.initColumn(newcolname_off,Xindices,dtype='float32',valini=valini)
         
         self.dd.initColumn('flu_med_img',Xindices,dtype='float32',valini=valini)
-        self.dd.initColumn('flu_var_img',Xindices,dtype='float32',valini=valini)
+        self.dd.initColumn('flu_std_img',Xindices,dtype='float32',valini=valini)
         
         newcolnames_std = ['std_pre','std_ove']
         for newcolname_std in newcolnames_std:
@@ -106,7 +106,7 @@ class FlatTask(Task):
                         stats_img = ccdobj.get_stats(Quad,sector='img',statkeys=['median','std'],trimscan=[5,5],
                                 ignore_pover=True,extension=-1)
                         self.dd.mx['flu_med_img'][iObs,jCCD,kQ] = stats_img[0]
-                        self.dd.mx['flu_var_img'][iObs,jCCD,kQ] = stats_img[1]**2.
+                        self.dd.mx['flu_std_img'][iObs,jCCD,kQ] = stats_img[1]
 
     
     def check_metrics_ST(self,**kwargs):

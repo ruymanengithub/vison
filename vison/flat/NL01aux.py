@@ -50,20 +50,20 @@ check_img_flu_dict = dict(stats=['flu_med_img'],
                                 ylabel='[ADU]',
                                 xlabel='exptime [s]'))
 
-check_img_var_dict = dict(stats=['flu_var_img'],
+check_img_std_dict = dict(stats=['flu_std_img'],
                         trendaxis='exptime',
-                          figname='NL01_var_vs_exptime.png',
-                          caption='NL01: Variance vs. exposure time.',
+                          figname='NL01_imgstd_vs_exptime.png',
+                          caption='NL01: Image area STD vs. exposure time.',
                           meta=dict(doLegend=False,
                                 doNiceXDate=False,
-                                suptitle='NL01-checks: Variance',
-                                ylabel='[ADU^2]',
+                                suptitle='NL01-checks: Image STD',
+                                ylabel='[ADU]',
                                 xlabel='exptime [s]'))
 
 NL01figs = dict()
 NL01figs['NL01checks_offsets'] = [trends.pl_basic_checkstat,check_offsets_dict.copy()]
 NL01figs['NL01checks_stds'] = [trends.pl_basic_checkstat,check_std_dict.copy()]
 NL01figs['NL01checks_flu'] = [trends.pl_basic_checkstat,check_img_flu_dict.copy()]
-NL01figs['NL01checks_var'] = [trends.pl_basic_checkstat,check_img_var_dict.copy()]
+NL01figs['NL01checks_imgstd'] = [trends.pl_basic_checkstat,check_img_std_dict.copy()]
 NL01figs['BlueScreen'] = [plbaseclasses.BlueScreen,dict()]
 
