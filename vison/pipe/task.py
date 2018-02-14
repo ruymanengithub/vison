@@ -301,7 +301,14 @@ class Task(object):
         
     def doPlot(self,figkey,**kwargs):
         """ """
-        figobj = self.figdict[figkey][0]()
+        try: figobj = self.figdict[figkey][0]()
+        except:
+            print 'DEBUGGING IN Task.doPlot...'
+            msg_trbk = traceback.format_exc()
+            self.log.info(msg_trbk)
+            print figkey, type(self.figdict[figkey][0])
+            raise RuntimeError
+            
         figobj.configure(**kwargs)
         figobj.build_data(self)
         if 'meta' in kwargs: meta = kwargs['meta']

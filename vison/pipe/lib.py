@@ -172,7 +172,7 @@ def check_test_structure(explog,structure,CCDs=[1,2,3],selbool=True,wavedkeys=[]
                     checksout = np.all(explog[key][ixsubsel]==val)
                 isconsistent &= checksout
                 if ~checksout:
-                    failedkeys.append(key)
+                    failedkeys.append(key)                   
                     
             ix0 += frames
             
