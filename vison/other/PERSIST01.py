@@ -48,7 +48,8 @@ PER01_commvalues = dict(program='CALCAMP',test='PERSIST01',
   shuttr=1,
   siflsh=1,siflsh_p=500,
   chinj=0,
-  wave=4,mirr_pos=polib.mirror_nom['F4'],
+  wave=4,
+  mirr_pos=polib.mirror_nom['F4'],
   mirr_on=1,
   comments='')
 
@@ -59,8 +60,6 @@ class PERSIST01_inputs(inputs.Inputs):
             ('exptSATUR',([float],'Exposure times to produce latent.')),
             ('exptLATEN',([float],'Exposure times to quantify latent.')),
             ])))
-
-
 
 class PERSIST01(Task):
     """ """
@@ -104,9 +103,9 @@ class PERSIST01(Task):
         exptSATUR = self.inputs['exptSATUR']
         exptLATEN = self.inputs['exptLATEN']
         
-        PER01_sdict = dict(col1=dict(frames=5,exptime=0,comments='REFER.'),
+        PER01_sdict = dict(col1=dict(frames=5,exptime=0,shuttr=0,comments='REFER.'),
                            col2=dict(frames=1,exptime=exptSATUR,comments='EXPOSE'),
-                           col3=dict(frames=3,exptime=exptLATEN,comments='LATENT'))   
+                           col3=dict(frames=3,exptime=exptLATEN,shuttr=0,comments='LATENT'))   
         
         Ncols = len(PER01_sdict.keys())    
         PER01_sdict['Ncols'] = Ncols
