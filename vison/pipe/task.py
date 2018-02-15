@@ -306,7 +306,7 @@ class Task(object):
             print 'DEBUGGING IN Task.doPlot...'
             msg_trbk = traceback.format_exc()
             self.log.info(msg_trbk)
-            print figkey, type(self.figdict[figkey][0])
+            self.log.info('%s, %s, %s' % (figkey, figobj, type(self.figdict[figkey][0])))
             raise RuntimeError
             
         figobj.configure(**kwargs)
