@@ -184,7 +184,8 @@ class Table(Content):
         - include option to rotate table to show in landscape
     
     """
-    def __init__(self,tableDict,formats=dict(),names=[],caption=None,col_align=None):
+    def __init__(self,tableDict,formats=dict(),names=[],caption=None,col_align=None,
+                 longtable=False):
         
         table = astable.Table(data=tableDict,names=names)
         
@@ -193,6 +194,7 @@ class Table(Content):
         self.formatDict = formats
         self.caption = caption
         self.col_align = col_align
+        self.longtable = longtable
 
     def generate_Latex(self,):
         """Generates LaTeX as list of strings."""
@@ -209,7 +211,11 @@ class Table(Content):
         tf = tempfile.TemporaryFile()
         
         latexdict = ascii.latex.latexdicts['doublelines']
-        latexdict.update(dict(tablealign='!ht'))        
+        
+        latexdict.update(dict(tablealign='!ht'))
+        
+        if self.longtable:
+            latexdict['tabletype'] = 'longtable'
         
         ascii.write(table,output=tf,formats=formats,Writer=ascii.Latex,
                     latexdict=latexdict,col_align=col_align)
@@ -228,7 +234,22 @@ class Table(Content):
         
         
         tex = [st.replace(item,'_','\_') for item in tex]
-        #tex = [st.replace(item,'_','\_') for item in tex]        
+        #tex = [st.replace(item,'_','\_') for item in tex]
+        
+        # NASTY-HACKs
+
+        if 'X' in col_align:
+            foo_replacer1 = lambda line: st.replace(line,'begin{tabular}','begin{tabularx}{1\\textwidth}')
+            tex = map(foo_replacer1,tex)
+            foo_replacer2 = lambda line: st.replace(line,'end{tabular}','end{tabularx}')
+            tex = map(foo_replacer2,tex)
+        
+        if self.longtable:
+            for i in range(len(tex)):
+                if 'begin{longtable}' in tex[i]:
+                    tex[i] += '{%s}' % col_align
+            tex = [item for item in tex if '{tabular}' not in item]
+        
         
         return tex
     
@@ -346,10 +367,11 @@ class Report(Container):
         self.add_to_Contents(Figure(figpath,texfraction,caption,label))
     
     
-    def add_Table(self,tableDict,formats=dict(),names=[],caption='',col_align=None):
+    def add_Table(self,tableDict,formats=dict(),names=[],caption='',col_align=None,longtable=False):
         """ """
         # tableDict,formats=dict(),names=[],caption=None
-        self.add_to_Contents(Table(tableDict,formats,names,caption,col_align=col_align))
+        self.add_to_Contents(Table(tableDict,formats,names,caption,col_align=col_align,
+                                   longtable=longtable))
     
     
     def add_Text(self,text):
