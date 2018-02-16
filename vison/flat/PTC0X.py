@@ -279,17 +279,17 @@ class PTC0X(FlatTask):
         if 'mask' in inputs['inCDPs']:
             Maskdata = calibration.load_CDPs(inputs['inCDPs']['Mask'],ccd.CCD)
             doMask = True
-            if log is not None:
+            if self.log is not None:
                 masksstr = inputs['inCDPs']['Mask'].__str__()
                 masksstr = st.replace(masksstr,',',',\n')
-                log.info('Applying cosmetics mask')
-                log.info(masksstr)    
+                self.log.info('Applying cosmetics mask')
+                self.log.info(masksstr)    
         
         
-        label = dd.mx['label'][:,0].copy() # labels should be the same accross CCDs. PATCH.
-        ObsIDs = dd.mx['ObsID'][:].copy()
+        label = self.dd.mx['label'][:,0].copy() # labels should be the same accross CCDs. PATCH.
+        ObsIDs = self.dd.mx['ObsID'][:].copy()
         
-        indices = copy.deepcopy(dd.indices)
+        indices = copy.deepcopy(self.dd.indices)
         
         nObs,nCCD,nQuad = indices.shape
         Quads = indices[indices.names.index('Quad')].vals

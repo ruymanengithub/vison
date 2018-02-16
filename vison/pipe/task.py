@@ -156,7 +156,7 @@ class Task(object):
             
         else:
             #dd, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
-            self.recover_progres(DataDictFile,reportobjFile)
+            self.recover_progress(DataDictFile,reportobjFile)
         
         
         # DATA-WORK and ANALYSIS        
@@ -624,7 +624,7 @@ class Task(object):
         tDict = OrderedDict(Parameter=keys,Value=values)
         #formats = dict(Parameter='s',Value='char')
         
-        self.report.add_Table(tDict,names=names,caption=caption,col_align='|l|r|')
+        self.report.add_Table(tDict,names=names,caption=caption,col_align='|l|X|')
         
     def add_data_inventory_to_report(self):
         """ """
@@ -648,4 +648,4 @@ class Task(object):
         tDict = OrderedDict(ObsID=ObsID,exptime=exptime,chinj=chinj,v_tpump=v_tpump,
                             s_tpump=s_tpump,source=source,wave=wave)
         
-        self.report.add_Table(tDict,names=names,caption=caption)
+        self.report.add_Table(tDict,names=names,caption=caption,longtable=True)
