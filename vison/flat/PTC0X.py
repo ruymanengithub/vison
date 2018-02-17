@@ -49,13 +49,10 @@ from vison.datamodel import core, ccd
 from vison.image import calibration
 import ptc as ptclib
 from vison.image import performance
-#from vison.pipe import FlatFielding as FFing
-#from vison.support.report import Report
-#from vison.support import files
-#from vison.pipe.task import Task
 from FlatTask import FlatTask
 from vison.datamodel import inputs
 import PTC0Xaux
+from vison.support.files import cPickleRead,cPickleDumpDictionary
 # END IMPORT
 
 isthere = os.path.exists
@@ -136,11 +133,13 @@ class PTC0X(FlatTask):
         super(PTC0X,self).__init__(inputs,log,drill,debug)
         self.name = 'PTC0X'
         self.type = 'Simple'
-        self.subtasks = [('check',self.check_data),('extract',self.extract_PTC),
+        self.subtasks = [('check',self.check_data),
+                         ('prep',self.prepare_images),
+                         ('extract',self.extract_PTC),
                     ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
         self.figdict = PTC0Xaux.gt_PTC0Xfigs(self.inputs['test'])
-        self.inputs['subpaths'] = dict(figs='figs')  #dict(figs='figs',pickles='ccdpickles')
+        self.inputs['subpaths'] = dict(figs='figs',ccdpickles='ccdpickles')
         
 
     def set_inpdefaults(self,**kwargs):
@@ -242,7 +241,11 @@ class PTC0X(FlatTask):
         return super(PTC0X,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,
                               wavedkeys=wavedkeys)
         
-        
+    def prepare_images(self):
+        super(PTC0X,self).prepare_images(doExtract=True,doMask=False,
+             doOffset=True,doBias=False,doFF=False)
+    
+    
     def extract_PTC(self):
         """
         
@@ -260,7 +263,6 @@ class PTC0X(FlatTask):
             f.e. OBSID pair:
                 CCD:
                     Q:
-                        [apply defects mask if available]
                         subtract CCD images
                         f.e. segment:
                             measure central value
@@ -268,30 +270,21 @@ class PTC0X(FlatTask):
             
         """
         
-        if report is not None: report.add_Section(keyword='extract',Title='PTC Extraction',level=0)    
+        if self.report is not None: self.report.add_Section(keyword='extract',Title='PTC Extraction',level=0)    
+        
         
         # HARDWIRED VALUES
         wpx = 300
         hpx = 300
-        
-        doMask = False
-        
-        if 'mask' in inputs['inCDPs']:
-            Maskdata = calibration.load_CDPs(inputs['inCDPs']['Mask'],ccd.CCD)
-            doMask = True
-            if self.log is not None:
-                masksstr = inputs['inCDPs']['Mask'].__str__()
-                masksstr = st.replace(masksstr,',',',\n')
-                self.log.info('Applying cosmetics mask')
-                self.log.info(masksstr)    
-        
-        
+                
         label = self.dd.mx['label'][:,0].copy() # labels should be the same accross CCDs. PATCH.
         ObsIDs = self.dd.mx['ObsID'][:].copy()
         
         indices = copy.deepcopy(self.dd.indices)
         
-        nObs,nCCD,nQuad = indices.shape
+        
+        nObs, nCCD, nQuad = indices.shape
+        
         Quads = indices[indices.names.index('Quad')].vals
         CCDs = indices[indices.names.index('CCD')].vals
         
@@ -302,17 +295,20 @@ class PTC0X(FlatTask):
         Nsectors = tile_coos[Quads[0]]['Nsamps']    
         sectornames = np.arange(Nsectors)
         
-        
-        Sindices = copy.deepcopy(dd.indices)
+        Sindices = copy.deepcopy(self.dd.indices)
         if 'Sector' not in Sindices.names:
             Sindices.append(core.vIndex('Sector',vals=sectornames))
+            
+        # Initializing new columns
         
-        dd.initColumn('sec_med',Sindices,dtype='float32',valini=np.nan)
-        dd.initColumn('sec_var',Sindices,dtype='float32',valini=np.nan)
+        valini = np.nan
+        
+        self.dd.initColumn('sec_med',Sindices,dtype='float32',valini=valini)
+        self.dd.initColumn('sec_var',Sindices,dtype='float32',valini=valini)
         
         # Pairing ObsIDs
         
-        dd.initColumn('ObsID_pair',dd.mx['ObsID'].indices,dtype='int64',valini=np.nan)
+        self.dd.initColumn('ObsID_pair',self.dd.mx['ObsID'].indices,dtype='int64',valini=0)
         
         ulabels = np.unique(label)
         
@@ -322,43 +318,37 @@ class PTC0X(FlatTask):
             ixeven = np.arange(0,nsix,2)
             ixodd = np.arange(1,nsix,2)
             
-            dd.mx['ObsID_pair'][six[0][ixeven]] = ObsIDs[six[0][ixodd]]
+            self.dd.mx['ObsID_pair'][six[0][ixeven]] = ObsIDs[six[0][ixodd]]
             
-            
+        
         if not self.drill:
             
-            if doMask:
+            if self.proc_histo['Masked']:
                 estimators = dict(median=np.ma.median,std=np.ma.std)
             else:
                 estimators = dict(median=np.median,std=np.std)
             
+            dpath = self.inputs['subpaths']['ccdpickles']
+            
             for iObs in range(nObs):
                 
-                _ObsID_pair = dd.mx['ObsID_pair'][iObs]
+                _ObsID_pair = self.dd.mx['ObsID_pair'][iObs]
                 if np.isnan(_ObsID_pair): continue
                 iObs_pair = np.where(ObsIDs == _ObsID_pair)[0][0]
                 
                 
                 for jCCD,CCD in enumerate(CCDs):
+                                        
+                    ccdobj_odd_f = os.path.join(dpath,self.dd.mx['ccdobj_name'][iObs,jCCD])
+                    ccdobj_eve_f = os.path.join(dpath,self.dd.mx['ccdobj_name'][iObs_pair,jCCD])
                     
-                    CCDkey = 'CCD%i' % CCD
-                    
-                    dpathodd = dd.mx['datapath'][iObs,jCCD]
-                    dpatheve = dd.mx['datapath'][iObs_pair,jCCD]
-                    
-                    ffits_odd = os.path.join(dpathodd,'%s.fits' % dd.mx['File_name'][iObs,jCCD])
-                    ffits_eve = os.path.join(dpatheve,'%s.fits' % dd.mx['File_name'][iObs_pair,jCCD])
-                    
-                    ccdobj_odd = ccd.CCD(ffits_odd)
-                    ccdobj_eve = ccd.CCD(ffits_eve)
+                    ccdobj_odd = copy.deepcopy(cPickleRead(ccdobj_odd_f)['ccdobj'])
+                    ccdobj_eve = copy.deepcopy(cPickleRead(ccdobj_eve_f)['ccdobj'])
                     
                     evedata = ccdobj_eve.extensions[-1].data.copy()
                     
-                    ccdobj_odd.sub_bias(evedata,extension=-1)
-                    
-                    if doMask:
-                        ccdobj_odd.get_mask(Maskdata[CCDkey].extensions[-1])
-                    
+                    ccdobj_odd.sub_bias(evedata,extension=-1) # easy way to subtract one image from the other
+                                        
                     for kQ in range(nQuad):
                         
                         Quad = Quads[kQ]
@@ -370,8 +360,10 @@ class PTC0X(FlatTask):
                         _meds = np.array(map(estimators['median'],_tiles))
                         _vars = np.array(map(estimators['std'],_tiles))**2.
                         
-                        dd.mx['sec_med'][iObs,jCCD,kQ,:] = _meds.copy()
-                        dd.mx['sec_var'][iObs,jCCD,kQ,:] = _vars.copy()
+                        self.dd.mx['sec_med'][iObs,jCCD,kQ,:] = _meds.copy()
+                        self.dd.mx['sec_var'][iObs,jCCD,kQ,:] = _vars.copy()
+                        
+        return None
 
         
     def meta_analysis(self):
@@ -399,9 +391,9 @@ class PTC0X(FlatTask):
         
         """
         
-        if report is not None: report.add_Section(keyword='meta',Title='PTC Analysis',level=0)
+        if self.report is not None: self.report.add_Section(keyword='meta',Title='PTC Analysis',level=0)
         
-        dIndices = copy.deepcopy(dd.indices)
+        dIndices = copy.deepcopy(self.dd.indices)
         
         CCDs = dIndices[dIndices.names.index('CCD')].vals
         Quads = dIndices[dIndices.names.index('Quad')].vals    
@@ -433,18 +425,15 @@ class PTC0X(FlatTask):
                     bloom_mx[CCDkey][Quad][key] = np.nan
         
         # fitting the PTCs
-    
         
         for iCCD, CCD in enumerate(CCDs):
-            
             
             CCDkey = 'C%i' % CCD
             
             for jQ, Q in enumerate(Quads):
                 
-                
-                raw_var = dd.mx['sec_var'][:,iCCD,jQ,:]
-                raw_med = dd.mx['sec_med'][:,iCCD,jQ,:]
+                raw_var = self.dd.mx['sec_var'][:,iCCD,jQ,:]
+                raw_med = self.dd.mx['sec_med'][:,iCCD,jQ,:]
                 
                 ixnonan = np.where(~np.isnan(raw_var) & ~np.isnan(raw_med))
                 var = raw_var[ixnonan]
@@ -469,13 +458,13 @@ class PTC0X(FlatTask):
                 bloom_mx[CCDkey][Q]['bloom_ADU'] = _bloom['bloom']
         
     
-        dd.products['gain'] = copy.deepcopy(gain_mx)
-        dd.products['bloom'] = copy.deepcopy(bloom_mx)
+        self.dd.products['gain'] = copy.deepcopy(gain_mx)
+        self.dd.products['bloom'] = copy.deepcopy(bloom_mx)
         
         # Build Tables
         
         # Do plots
         
-        # Add rerts
+        # Add reports
         
         

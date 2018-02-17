@@ -29,6 +29,7 @@ import task_lib as tlib
 from vison.datamodel import ccd
 from vison.image import calibration
 from vison.ogse import ogse
+from vison.support.files import cPickleDumpDictionary
 from vison import __version__
 # END IMPORT
 
@@ -58,6 +59,12 @@ class Task(object):
         self.perflimits = dict()
         self.drill = drill
         self.debug = debug
+        self.proc_histo = dict(Extract=False)
+        self.inputs['preprocessing'] = dict()
+        self.inputs['preprocessing']['offsetkwargs']=dict(method='row',
+                   scan='pre',trimscan=[5,5],
+                   ignore_pover=True,
+                   extension=-1)
         
         self.set_inpdefaults(**inputs)
         _inputs = self.inpdefaults.copy()    
@@ -134,7 +141,7 @@ class Task(object):
             if 'subpaths' in self.inputs:
                 for _pathkey in self.inputs['subpaths'].keys():
                     subpath = self.inputs['subpaths'][_pathkey]
-                    os.system('rm %s/*' % subpath)
+                    os.system('rm -r %s/*' % subpath)
             
             # Initialising Report Object
         
@@ -180,6 +187,7 @@ class Task(object):
                     dtm = ((tend-tini).seconds)/60.
                     if self.log is not None: 
                         self.log.info('%.1f minutes in running Sub-task: %s' % (dtm,subtaskname))
+                    print 'saving progress!'
                     self.save_progress(DataDictFile,reportobjFile)
                 except:
                     self.catchtraceback()
@@ -515,9 +523,12 @@ class Task(object):
         if self.report is not None: 
             self.report.add_Section(keyword='prep_data',Title='Images Pre-Processing',level=0)
         
-        if not doExtract: 
+        if not doExtract:
             self.report.add_Text('Not extracting FITS files: Nothing done.')
+            self.proc_histo['Extract']=False
             return
+        else:
+            self.proc_histo['Extract']=True
         
         def _loadCDP(cdpkey,msg):
             CDPData = calibration.load_CDPs(self.inputs['inCDPs'][cdpkey],ccd.CCD)
@@ -575,27 +586,31 @@ class Task(object):
                     
                     ccdobj = ccd.CCD(infits) # converting the FITS file into a CCD Object
                     
-                    fullccdobj_name = os.path.join(picklespath,'%s.pick' % self.dd.mx['ccdobj_name'][iObs,jCCD]) 
+                    fullccdobj_name = os.path.join(picklespath,'%s.pick' % ccdobj_name) 
                     
                     if doMask:
                         ccdobj.get_mask(MaskData[CCDkey].extensions[-1])
+                        self.proc_histo['Masked']=True
                     
                     if doOffset:
                         for Quad in Quads:
                             #ccdobj.sub_offset(Quad,method='median',scan='pre',trimscan=[5,5],
                             #                  ignore_pover=False)
-                            ccdobj.sub_offsets(Quad,**offsetkwargs)
+                            ccdobj.sub_offset(Quad,**offsetkwargs)
+                            self.proc_histo['SubOffset']=True
                     
                     if doBias:
                         ccdobj.sub_bias(BiasData[CCDkey],extension=-1)
+                        self.proc_histo['SubBias']=True
                     
                     if doFF:
                         FF = FFData['nm%i' % wavelength][CCDkey]
                         ccdobj.divide_by_flatfield(FF,extension=-1)
+                        self.proc_histo['FF']=True
                     
-                    ccdobj.writeto(fullccdobj_name,clobber=True)                    
+                    cPickleDumpDictionary(dict(ccdobj=ccdobj),fullccdobj_name)
+                    #ccdobj.writeto(fullccdobj_name,clobber=True)                    
                     self.dd.mx['ccdobj_name'][iObs,jCCD] = ccdobj_name
-    
         
         return None
     

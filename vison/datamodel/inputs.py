@@ -30,7 +30,8 @@ CommonTaskInputs = OrderedDict(sorted([
             ('subpaths',([dict],'Paths to results sub-folders. Relative to resultspath.')),
             ('structure',([dict],'Test Structure.')),
             ('test',([str],'Test/Task Name')),
-            ('todo_flags',([dict],'Sub-Tasks to-do indicator.'))
+            ('todo_flags',([dict],'Sub-Tasks to-do indicator.')),
+            ('preprocessing',([dict],'Pre-processing kwargs dictionary.'))
             ]))
 
 class Inputs(dict):

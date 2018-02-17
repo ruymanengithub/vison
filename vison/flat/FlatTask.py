@@ -85,6 +85,7 @@ class FlatTask(Task):
         
         
         if not self.drill:
+        #if 3==2: # DEBUG!
             
             for iObs in range(nObs):
                 for jCCD, CCD in enumerate(CCDs):
