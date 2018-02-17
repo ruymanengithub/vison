@@ -546,68 +546,144 @@ def format_date(x,pos=None):
     except: pass
     #except: stop()
 
-def HKplot(allHKdata,keylist,key,dtobjs,filename='',stat='mean'):
+#==============================================================================
+# def HKplot(allHKdata,keylist,key,dtobjs,filename='',stat='mean'):
+#     """Plots the values of a HK parameter as a function of time.
+#     
+#     :param allHKdata: HKdata = [(nfiles,nstats,nHKparams)]
+#     :param keylist: list with all HK keys.
+#     :param key: selected key.
+#     :param dtobjs: datetime objects time axis.
+#     :param filename: file-name to store plot [empty string not to save].
+#     :param stat: statistics to plot.
+#     
+#     :return: None!!
+#     
+#     """
+#     
+#     ixkey = keylist.index(key)
+#     
+#     ixstat = allstats.index(stat)
+#     
+#     HKvals = allHKdata[:,ixstat,ixkey]
+# 
+#     ylabel = 'V'
+#         
+#     curr_keys = ['hk_vrclk_lo_roe','hk_i3.3v_dig_rpsu','hk_i1.5v_dig_rpsu',
+#                  'hk_i28v_rpsu','hk_i+van_rpsu','hk_i-van_rpsu',
+#                  'hk_ivclk_rpsu','hk_ivccd_rpsu','hk_vclk_roe']
+#    
+#     if key.lower() in curr_keys:
+#         ylabel = 'I[A]'
+#         
+#     temp_keys = ['hk_temp_top_ccd1','hk_temp_bottom_ccd1',
+#                  'hk_temp_top_ccd2','hk_temp_bottom_ccd2',
+#                  'hk_temp_top_ccd3','hk_temp_bottom_ccd3',
+#                  'hk_temp1_rpsu','hk_temp2_rpsu',
+#                  'video_top','video_bot']
+#     
+#     if key.lower() in temp_keys:
+#         ylabel = 'deg [C]'    
+# 
+#     fig = plt.figure(figsize=(7,6))
+#     ax1 = fig.add_subplot(111)
+#     if not np.all(np.isnan(HKvals)):
+#         ax1.plot(dtobjs,HKvals,'b-')
+#     #ax1.plot(HKvals,'b')
+#     #ax1.set_xlabel(r'$Time$')
+#     ax1.set_ylabel(r'$%s$' % ylabel)
+#     ntitle = st.replace(key,'_','\_')
+#     ax1.set_title(ntitle)
+#     
+#     for item in [ax1.title, ax1.xaxis.label, ax1.yaxis.label]:
+#         item.set_fontsize(18)
+#     
+#     ylim = ax1.get_ylim()
+#     dy = ylim[1]-ylim[0]
+#     if dy < 0.1:
+#         ymid = (ylim[1]+ylim[0])/2.
+#         ylim = (ymid-0.05,ymid+0.05)
+#     
+#     ax1.set_ylim(ylim)
+#     
+#     #if key == 'HK_temp_top_CCD1': stop()
+#         
+#     #if dtobjs[0] != 0:
+#     plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))   
+#     fig.autofmt_xdate()
+#     
+#     
+#     plt.tight_layout(rect=[0, 0, 1, 1])
+#     
+#     if filename== '':
+#         plt.show()
+#     else:
+#         plt.savefig(filename)
+#    
+#         
+#     plt.close()
+# 
+#==============================================================================
+
+def _ax_render_HK(ax,x,y,HKlims,HKkey):
+    """ """
+    
+        
+    max_xticks = 6
+    xloc = plt.MaxNLocator(max_xticks)            
+        
+    ax.clear()
+                                
+    if np.any(np.isnan(y)):
+        yp = y.copy()
+        yp[np.isnan(y)] = 0
+        ax.plot(x,yp)
+        ax.plot(x[np.isnan(y)],yp[np.isnan(y)],'ro:')                    
+    else:
+        ax.plot(x,y,'b.',ms=2)
+    
+    if len(HKlims) == 1:
+        ax.axhline(y=HKlims[0],ls='--',lw=2,color='r')
+    elif len(HKlims) == 2:
+        for ik in range(2):
+            ax.axhline(y=HKlims[ik],ls='--',lw=2,color='r')
+        
+    HKtitle = '$%s$' % HKkey.replace('_','\_')
+    ax.set_title(HKtitle)
+    
+    try:
+        for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +\
+            ax.get_xticklabels() + ax.get_yticklabels()):
+            item.set_fontsize(10)
+    except:
+        pass
+    
+    ax.xaxis.set_major_locator(xloc)
+    
+    return ax
+
+
+def doHKSinglePlot(dtobjs,HK,HKkey,ylabel='V',HKlims=[],filename=''):
     """Plots the values of a HK parameter as a function of time.
     
-    :param allHKdata: HKdata = [(nfiles,nstats,nHKparams)]
-    :param keylist: list with all HK keys.
-    :param key: selected key.
     :param dtobjs: datetime objects time axis.
+    :param HK: HK values (array)
+    :param HKkey:
+    :param ylabel:
+    :param HKlims:
     :param filename: file-name to store plot [empty string not to save].
-    :param stat: statistics to plot.
     
     :return: None!!
     
     """
     
-    ixkey = keylist.index(key)
     
-    ixstat = allstats.index(stat)
-    
-    HKvals = allHKdata[:,ixstat,ixkey]
-
-    ylabel = 'V'
-        
-    curr_keys = ['hk_vrclk_lo_roe','hk_i3.3v_dig_rpsu','hk_i1.5v_dig_rpsu',
-                 'hk_i28v_rpsu','hk_i+van_rpsu','hk_i-van_rpsu',
-                 'hk_ivclk_rpsu','hk_ivccd_rpsu','hk_vclk_roe']
-   
-    if key.lower() in curr_keys:
-        ylabel = 'I[A]'
-        
-    temp_keys = ['hk_temp_top_ccd1','hk_temp_bottom_ccd1',
-                 'hk_temp_top_ccd2','hk_temp_bottom_ccd2',
-                 'hk_temp_top_ccd3','hk_temp_bottom_ccd3',
-                 'hk_temp1_rpsu','hk_temp2_rpsu',
-                 'video_top','video_bot']
-    
-    if key.lower() in temp_keys:
-        ylabel = 'deg [C]'    
-
     fig = plt.figure(figsize=(7,6))
     ax1 = fig.add_subplot(111)
-    if not np.all(np.isnan(HKvals)):
-        ax1.plot(dtobjs,HKvals,'b-')
-    #ax1.plot(HKvals,'b')
-    #ax1.set_xlabel(r'$Time$')
-    ax1.set_ylabel(r'$%s$' % ylabel)
-    ntitle = st.replace(key,'_','\_')
-    ax1.set_title(ntitle)
     
-    for item in [ax1.title, ax1.xaxis.label, ax1.yaxis.label]:
-        item.set_fontsize(18)
+    ax1 = _ax_render_HK(ax1,dtobjs,HK,HKlims,HKkey)
     
-    ylim = ax1.get_ylim()
-    dy = ylim[1]-ylim[0]
-    if dy < 0.1:
-        ymid = (ylim[1]+ylim[0])/2.
-        ylim = (ymid-0.05,ymid+0.05)
-    
-    ax1.set_ylim(ylim)
-    
-    #if key == 'HK_temp_top_CCD1': stop()
-        
-    #if dtobjs[0] != 0:
+
     plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))   
     fig.autofmt_xdate()
     
@@ -618,8 +694,7 @@ def HKplot(allHKdata,keylist,key,dtobjs,filename='',stat='mean'):
         plt.show()
     else:
         plt.savefig(filename)
-   
-        
+    
     plt.close()
 
 

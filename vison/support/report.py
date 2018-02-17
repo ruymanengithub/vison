@@ -14,6 +14,7 @@ Created on Wed Jan 25 16:58:33 2017
 """
 
 # IMPORT STUFF
+import numpy as np
 import sys
 from pdb import set_trace as stop
 import os
@@ -173,6 +174,50 @@ class Figure(Content):
         
         return tex
 
+
+class FigsTable(Content):
+    """Class to generate table of figures"""
+    
+    def __init__(self,FigsList,Ncols,figswidth,caption=None):
+        """ """
+        self.type = 'figstable'
+        self.FigsList = FigsList
+        self.Ncols = Ncols
+        self.figswidth = figswidth
+        self.caption = caption
+        
+    def generate_Latex(self):
+        """Generates LaTeX as list of strings"""
+        
+        
+        nrows = int(np.ceil(len(self.FigsList)/float(self.Ncols)) * 2)
+        
+        tex = []
+        tex.append('\\begin{longtable}{|%s}' % ('c|' * self.Ncols))
+        tex.append('\\hline')
+        
+        figcounter = 0
+        
+        for j in range(nrows):
+            for i in range(self.Ncols):
+                
+                try:
+                    image = self.FigsList[figcounter]
+                    
+                    newrow = '\includegraphics[width=%scm]{%s}&' % \
+                    (self.figswidth,image)
+                except IndexError:
+                    newrow = '   &'
+                if (i+1) == self.Ncols:
+                    newrow = newrow[0:-1] + ' \\\\ \\hline'
+                tex.append(newrow)
+                
+                figcounter += 1
+
+        
+        tex.append('\end{longtable}')        
+        
+        return tex
 
 class Table(Content):
     """ 
@@ -373,6 +418,10 @@ class Report(Container):
         self.add_to_Contents(Table(tableDict,formats,names,caption,col_align=col_align,
                                    longtable=longtable))
     
+    def add_FigsTable(self,FigsList,Ncols,figswidth,caption=''):
+        """ """
+        self.add_to_Contents(FigsTable(FigsList,Ncols,figswidth,caption))
+        
     
     def add_Text(self,text):
         """ """

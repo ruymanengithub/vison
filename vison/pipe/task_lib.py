@@ -9,10 +9,13 @@ Created on Fri Nov 17 19:11:53 2017
 """
 
 # IMPORT STUFF
+import os
 from pdb import set_trace as stop
 import string as st
 import numpy as np
 from collections import OrderedDict
+import copy
+
 from vison.datamodel import HKtools
 from vison.pipe import lib as pilib
 # END IMPORT
@@ -150,9 +153,30 @@ def filterexposures(self,structure,explogf,datapath,OBSID_lims,colorblind=False,
 
 
 def addHKPlotsMatrix(self):
-    """ """
+    """Adds to self.report a table-figure with HK [self.HKKeys] during test."""
     
     figspath = self.inputs['subpaths']['figs']
-    stop()
+    HKKeys = copy.deepcopy(self.HKKeys)
+    
+    time = self.dd.mx['time'][:,0].copy()
+    HKdata = OrderedDict()
+    HKdata['time'] = time.copy()
+    for key in HKKeys: HKdata[key] = self.dd.mx['HK_%s' % key][:].copy()
+    
+    HKfigs = []
+    
+    for key in HKKeys:
+        
+        HKlims = HKtools.HKlims[self.elvis]['S'][key][1:]
+        
+        figname = os.path.join(figspath,'HK_%s_%s.eps' % \
+                               (key,self.inputs['test']))
+        HKtools.doHKSinglePlot(time,HKdata[key],key,ylabel='V',
+                               HKlims=HKlims,filename=figname)
+        HKfigs.append(figname)
+    
+    self.report.add_FigsTable(HKfigs,Ncols=3,figswidth=4,
+                              caption='Selected HK parameters during test.')
+    
     
     

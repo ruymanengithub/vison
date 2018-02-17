@@ -3,7 +3,7 @@
 # -*- coding: utf-8 -*-
 """
 
-TODO: DEBUG, calls unexistent class LaTeX
+TODO: DEBUG, calls nonexistent class LaTeX
 
 Script to produce HK reports out of HK files in a folder.
 Aimed at quick inspection of data from Characterization and Calibration Campaigns

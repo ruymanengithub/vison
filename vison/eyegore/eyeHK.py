@@ -32,53 +32,13 @@ import tkFont as tkFont
 from vison.support import context
 #from vison.pipe import lib as pilib
 from vison.datamodel import HKtools
-from vison.datamodel.HKtools import format_date
+from vison.datamodel.HKtools import format_date, _ax_render_HK
 # END IMPORT
 
 
 LARGE_FONT = ("Helvetica", 12)
 small_font = ("Verdana", 8)
 
-
-
-def _ax_render_HK(ax,x,y,HKlims,HKkey):
-    """ """
-    
-        
-    max_xticks = 6
-    xloc = plt.MaxNLocator(max_xticks)            
-        
-    ax.clear()
-        
-                                
-    if np.any(np.isnan(y)):
-        yp = y.copy()
-        yp[np.isnan(y)] = 0
-        ax.plot(x,yp)
-        ax.plot(x[np.isnan(y)],yp[np.isnan(y)],'ro:')                    
-    else:
-        ax.plot(x,y,'b.')
-    
-    if len(HKlims) == 1:
-        ax.axhline(y=HKlims[0],ls='--',lw=2,color='r')
-    elif len(HKlims) == 2:
-        for ik in range(2):
-            ax.axhline(y=HKlims[ik],ls='--',lw=2,color='r')
-        
-    HKtitle = '$%s$' % HKkey.replace('_','\_')
-    ax.set_title(HKtitle)
-    
-    try:
-        for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +\
-            ax.get_xticklabels() + ax.get_yticklabels()):
-            item.set_fontsize(10)
-    except:
-        pass
-    
-    ax.xaxis.set_major_locator(xloc)
-    
-    return ax
-        
 
 
 
