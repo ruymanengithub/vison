@@ -37,7 +37,7 @@ isthere = os.path.exists
 class Task(object):
     """ """
     
-    from task_lib import check_HK,filterexposures
+    from task_lib import check_HK,filterexposures,addHKPlotsMatrix
     
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
@@ -452,18 +452,18 @@ class Task(object):
         if self.report is not None: 
             self.report.add_Section(keyword='check_data',Title='Data Validation',level=0)
         # INVENTORY OF DATA
-        self.add_data_inventory_to_report()
+        #self.add_data_inventory_to_report()
         # CHECK AND CROSS-CHECK HK
         self.check_HK_ST()
         # OBTAIN METRICS FROM IMAGES        
-        self.get_checkstats_ST(**kwargs)
+        #self.get_checkstats_ST(**kwargs)
         # METRICS ASSESSMENT               
-        self.check_metrics_ST(**kwargs)
+        #self.check_metrics_ST(**kwargs)
         # PLOTs
         if self.report is not None: 
             self.report.add_Section(keyword='check_plots',Title='Plots',level=1)
-            self.addFigures_ST(**kwargs)
-            #self.addHKPlotsMatrix()
+            #self.addFigures_ST(**kwargs)
+            self.addHKPlotsMatrix()
         # Update Report, raise flags, fill-in
         if self.log is not None:
             self.addFlagsToLog()

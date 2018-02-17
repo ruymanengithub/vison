@@ -153,6 +153,6 @@ def addHKPlotsMatrix(self):
     """ """
     
     figspath = self.inputs['subpaths']['figs']
-    
+    stop()
     
     
