@@ -190,7 +190,7 @@ class FigsTable(Content):
         """Generates LaTeX as list of strings"""
         
         
-        nrows = int(np.ceil(len(self.FigsList)/float(self.Ncols)) * 2)
+        nrows = int(np.ceil(len(self.FigsList)/float(self.Ncols)))
         
         tex = []
         tex.append('\\begin{longtable}{|%s}' % ('c|' * self.Ncols))
