@@ -132,7 +132,7 @@ class BIAS01(DarkTask):
         """
         
         BIAS01: Preparation of data for further analysis.
-        applies a mask. Calls task.prepare_images().
+        Calls task.prepare_images().
         
         Applies:
             offset subtraction
@@ -189,11 +189,14 @@ class BIAS01(DarkTask):
             profilespath = self.inputs['subpaths']['profiles']
             
             for iObs in range(nObs):
-                             
+                
+                vstart = self.dd.mx['vstart'][iObs]
+                vend = self.dd.mx['vend'][iObs]
+                
                 for jCCD,CCD in enumerate(CCDs):
                                         
                     ccdobj_name = self.dd.mx['ccdobj_name'][iObs,jCCD]                    
-                    fullccdobj_name = os.path.join(picklespath,'%s.pick' % ccdobj_name)
+                    fullccdobj_name = os.path.join(ccdpicklespath,'%s.pick' % ccdobj_name)
                     
                     ccdobj = copy.deepcopy(cPickleRead(fullccdobj_name)['ccdobj'])
                     
@@ -206,11 +209,14 @@ class BIAS01(DarkTask):
                         
                         # produce average profile along rows
                         
-                        hor1Dprof = ccdobj.get_1Dprofile(orient='hor',area='img',Q=Q)
+                        hor1Dprof = ccdobj.get_1Dprofile(Q=Q,orient='hor',area='img',stacker='mean',
+                                                         vstart=vstart,vend=vend)
                         
                         # produce average profile along cols
                         
-                        ver1Dprof = ccdobj.get_1Dprofile(orient='ver',area='img',Q=Q)
+                        ver1Dprof = ccdobj.get_1Dprofile(Q=Q,orient='ver',area='img',stacker='mean',
+                                                         vstart=vstart,vend=vend)
+                        
                         
                         # save 2D model and profiles in a pick file for each OBSID-CCD
                         

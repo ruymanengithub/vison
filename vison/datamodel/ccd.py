@@ -5,7 +5,9 @@ Data model for Euclid-VIS CCDs (ground testing at MSSL)
 
 Created on Fri Nov 13 17:42:36 2015
 
-:Author: Ruyman Azzollini
+:author: Ruyman Azzollini
+:contact: r.azzollini_at_ucl.ac.uk
+
 """
 
 # IMPORT STUFF
@@ -16,6 +18,7 @@ from pdb import set_trace as stop
 import sys
 import datetime
 import itertools
+import ccd_aux
 from vison import __version__
 # END IMPORT
 
@@ -141,6 +144,10 @@ class CCD(object):
     
     """
     
+    get_1Dprofile = ccd_aux.get_1Dprofile    
+    get_2Dmodel = ccd_aux.get_2Dmodel
+    extract_region = ccd_aux.extract_region
+    
     def __init__(self,infits=None,extensions=[-1],getallextensions=False,withpover=True):
         """ """
         
@@ -232,8 +239,11 @@ class CCD(object):
         
         :param canonical: 
         
-        Canonical [True] = with readout-node at pixel index (0,0) regardless of quadrant. This is the orientation which corresponds to the data-reading order (useful for cross-talk measurements, for example).
-        Non-Canonical [False] = with readout-node at corner matching placement of quadrant on the CCD. This is the orientation that would match the representation of the image on DS9.        
+        Canonical [True] = with readout-node at pixel index (0,0) regardless of quadrant. 
+        This is the orientation which corresponds to the data-reading order (useful 
+        for cross-talk measurements, for example). Non-Canonical [False] = with 
+        readout-node at corner matching placement of quadrant on the CCD. 
+        This is the orientation that would match the representation of the image on DS9.        
 
         :type canonical: bool
         
@@ -724,7 +734,8 @@ class CCD(object):
             qdata = self.get_quad(Q,canonical=True,extension=extension)
             qdata[np.where(mask_onoff==0)] = 0.
             self.set_quad(qdata,Q,canonical=True,extension=extension)
-        
+    
+    
     
 def test_create_from_scratch():
     """ """

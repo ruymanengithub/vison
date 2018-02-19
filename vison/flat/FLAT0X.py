@@ -165,7 +165,19 @@ class FLAT0X(FlatTask):
         return super(FLAT0X,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
                               wavedkeys=wavedkeys)
     
-    
+    def prep_data(self):
+        """
+        
+        FLAT0X: Preparation of data for further analysis.
+        Calls task.prepare_images().
+        
+        Applies:
+            offset subtraction
+            [bias structure subtraction, if available]
+            cosmetics masking
+        
+        """
+        super(self).prepare_images(doExtract=True,doMask=True,doOffset=True,doBias=True)
     
     def do_indiv_flats(self):
         """

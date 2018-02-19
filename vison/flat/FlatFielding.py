@@ -79,7 +79,7 @@ def get_ilum_splines(img,filtsize=25,filtertype='median',Tests=False):
     return ILUM
 
 
-def fit2D(xx,yy,zz,degree=1):
+def fit2Dpol(xx,yy,zz,degree=1):
     """ """
     from astropy.modeling import models, fitting
     
@@ -123,7 +123,7 @@ def get_ilum(img,pdegree=5,filtsize=15,filtertype='median',Tests=False):
     zz = filtered[(xx,yy)]
     #zz = img[(xx,yy)]
     
-    p = fit2D(xx,yy,zz,degree=pdegree)
+    p = fit2Dpol(xx,yy,zz,degree=pdegree)
     
     xp,yp= np.mgrid[:NX,:NY]
     pilum = p(xp, yp)
@@ -132,9 +132,6 @@ def get_ilum(img,pdegree=5,filtsize=15,filtertype='median',Tests=False):
     
     return ILUM
 
-
-def _produce_SingleFlatfield(args):
-    produce_SingleFlatfield(*args)
 
 
 def produce_SingleFlatfield(infits,outfits,settings={},runonTests=False):
@@ -231,20 +228,19 @@ def produce_SingleFlatfield(infits,outfits,settings={},runonTests=False):
     hdulist.writeto(outfits,clobber=True)
 
 
-def produce_IndivFlats(infits,outfits,settings,runonTests,processes=6):
+def _produce_SingleFlatfield(args):
+    produce_SingleFlatfield(*args)
+
+
+def produce_IndivFlats(infitsList,outfitsList,settings,runonTests,processes=6):
     """ """
     
-    assert len(infits) == len(outfits)
+    assert len(infitsList) == len(outfitsList)
         
     arglist = []
     
-    for ix in range(len(infits)): 
-        arglist.append((infits[ix],outfits[ix],settings,runonTests))
-
-    # TESTS
-    
-    #produce_SingleFlatfield(*arglist[0])
-    #stop()
+    for ix in range(len(infitsList)): 
+        arglist.append((infitsList[ix],outfitsList[ix],settings,runonTests))
     
     #generate flats using multiprocessing
     pool = Pool(processes=processes)    
@@ -252,7 +248,7 @@ def produce_IndivFlats(infits,outfits,settings,runonTests,processes=6):
     pool.map(_produce_SingleFlatfield, arglist)
     
     
-def produce_MasterFlat(infits,outfits,mask=None,settings={}):
+def produce_MasterFlat(infitsList,outfits,mask=None,settings={}):
     """Produces a Master Flat out of a number of flat-illumination exposures.
     Takes the outputs from produce_IndivFlats."""
     
@@ -265,7 +261,7 @@ def produce_MasterFlat(infits,outfits,mask=None,settings={}):
     mflat = np.zeros((NAXIS1*2,NAXIS2*2))
     eflat = np.zeros((NAXIS1*2,NAXIS2*2)) 
     
-    nin = len(infits)
+    nin = len(infitsList)
     
     for Quad in Quads:
         
@@ -275,12 +271,12 @@ def produce_MasterFlat(infits,outfits,mask=None,settings={}):
         y0 = B[2]
         y1 = B[3]
     
-        cubeflat = np.zeros((NAXIS1,NAXIS2,len(infits)))
+        cubeflat = np.zeros((NAXIS1,NAXIS2,len(infitsList)))
         
         for ix in range(nin):
         
             print 'Loading img %i of %i..., Q=%s' % (ix+1,nin,Quad)
-            inhdulist = fts.open(infits[ix])
+            inhdulist = fts.open(infitsList[ix])
         
             #for Quad in Quads:
             #    cubeflat = np.zeros((2119,2066,len(list_ffits)))
