@@ -528,7 +528,8 @@ class Task(object):
             self.proc_histo['Extract']=False
             return
         else:
-            self.proc_histo['Extract']=True
+            pass
+            #self.proc_histo['Extract']=True
         
         def _loadCDP(cdpkey,msg):
             CDPData = calibration.load_CDPs(self.inputs['inCDPs'][cdpkey],ccd.CCD)
@@ -537,21 +538,45 @@ class Task(object):
                 cdpstr = st.replace(cdpstr,',',',\n')
                 self.log.info(msg)
                 self.log.info(cdpstr)
+                if self.report is not None:
+                    self.report.add_Text(msg)
+                    self.report.add_Text(cdpstr)
             return CDPData
+        
+        def _reportNotFound(reportobj,msg):
+            if reportobj is not None:
+                reportobj.add_Text(msg)
         
         if doMask and 'mask' in self.inputs['inCDPs']:
             self.inputs['inCDPs']['Mask']['CCD%i']
-            MaskData = _loadCDP('Mask','Applying cosmetics mask...')
-            
-        offsetkwargs = self.inputs['preprocessing']['offsetkwargs']
+            MaskData = _loadCDP('Mask','Loading cosmetics mask...')
+            self.proc_histo['Masked']=True
+        elif doMask and 'mask' not in self.inputs['inCDPs']:
+            NotFoundMsg = 'Cosmetics Mask not Found!'
+            self.log.info(NotFoundMsg)
+            _reportNotFound(self.report,NotFoundMsg)
+        
+        if doOffset:
+            self.proc_histo['SubOffset']=True
+            offsetkwargs = self.inputs['preprocessing']['offsetkwargs']
 
         if doBias and 'bias' in self.inputs['inCDPs']:
-            BiasData = _loadCDP('Bias','Substracting Bias Structure...')
-
+            BiasData = _loadCDP('Bias','Loading Bias Structure...')
+            self.proc_histo['SubBias']=True
+        elif doBias and 'bias' not in self.inputs['inCDPs']:
+            NotFoundMsg = 'Bias Structure not found!'
+            self.log.info(NotFoundMsg)
+            _reportNotFound(self.report,NotFoundMsg)
+            
         
         if doFF and 'FF' in self.inputs['inCDPs']:
-            FFData = _loadCDP('FF','Dividing by Flat-Field Map...')
-        
+            FFData = _loadCDP('FF','Loading Flat-Field Maps...')
+            self.proc_histo['FF']=True
+        elif doFF and 'FF' not in self.inputs['inCDPs']:
+            NotFoundMsg = 'FFs no found!'
+            self.log.info(NotFoundMsg)
+            _reportNotFound(self.report,NotFoundMsg)
+            
         # Initialize new columns
     
         Cindices = copy.deepcopy(self.dd.mx['File_name'].indices)
@@ -590,23 +615,22 @@ class Task(object):
                     
                     if doMask:
                         ccdobj.get_mask(MaskData[CCDkey].extensions[-1])
-                        self.proc_histo['Masked']=True
+                        
                     
                     if doOffset:
                         for Quad in Quads:
                             #ccdobj.sub_offset(Quad,method='median',scan='pre',trimscan=[5,5],
                             #                  ignore_pover=False)
                             ccdobj.sub_offset(Quad,**offsetkwargs)
-                            self.proc_histo['SubOffset']=True
-                    
+                            
+                        
                     if doBias:
                         ccdobj.sub_bias(BiasData[CCDkey],extension=-1)
-                        self.proc_histo['SubBias']=True
+                        
                     
                     if doFF:
                         FF = FFData['nm%i' % wavelength][CCDkey]
-                        ccdobj.divide_by_flatfield(FF,extension=-1)
-                        self.proc_histo['FF']=True
+                        ccdobj.divide_by_flatfield(FF,extension=-1)                        
                     
                     cPickleDumpDictionary(dict(ccdobj=ccdobj),fullccdobj_name)
                     #ccdobj.writeto(fullccdobj_name,clobber=True)                    
