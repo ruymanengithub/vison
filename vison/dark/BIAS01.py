@@ -34,6 +34,7 @@ import B01aux
 from DarkTask import DarkTask
 from vison.image import performance
 from vison.datamodel import inputs
+from vison.support.files import cPickleRead, cPickleDumpDictionary
 #from vison.support.report import Report
 
 
@@ -131,23 +132,15 @@ class BIAS01(DarkTask):
         """
         
         BIAS01: Preparation of data for further analysis.
-        applies a mask
-                
-        **METACODE**
+        applies a mask. Calls task.prepare_images().
         
-        ::
-
-            f.e. ObsID:
-                f.e.CCD:
-                    apply cosmetic mask, if available
-                    f.e.Q:
-                        subtract offset
-                    save file as a datamodel/ccd/CCD object.
-
+        Applies:
+            offset subtraction
+            cosmetics masking
+        
         """
-        
-        
         super(self).prepare_images(doExtract=True,doMask=True,doOffset=True)
+        
         
     def basic_analysis(self):
         """ 
@@ -172,12 +165,63 @@ class BIAS01(DarkTask):
 
             plot RON vs. time f. each CCD and Q
             plot average profiles f. each CCD and Q (color coded by time)
-     
-        
+           
         """
         
-        raise NotImplementedError
-       
+        if self.report is not None: self.report.add_Section(keyword='extract',Title='BIAS01 Extraction', level=0)
+        
+        
+        Cindices = copy.deepcopy(self.dd.mx['File_name'].indices)
+        self.dd.initColumn('ccdobj_name',Cindices,dtype='S100',valini='None')
+        
+        
+        DDindices = copy.deepcopy(self.dd.indices) 
+        
+        nObs,nCCD,nQuad = DDindices.shape
+        Quads = DDindices[2].vals
+        CCDs = DDindices[DDindices.names.index('CCD')].vals
+    
+        # The "Hard"-work
+
+        if not self.drill:
+            
+            ccdpicklespath = self.inputs['subpaths']['ccdpickles']
+            profilespath = self.inputs['subpaths']['profiles']
+            
+            for iObs in range(nObs):
+                             
+                for jCCD,CCD in enumerate(CCDs):
+                                        
+                    ccdobj_name = self.dd.mx['ccdobj_name'][iObs,jCCD]                    
+                    fullccdobj_name = os.path.join(picklespath,'%s.pick' % ccdobj_name)
+                    
+                    ccdobj = copy.deepcopy(cPickleRead(fullccdobj_name)['ccdobj'])
+                    
+                    for kQ,Q in enumerate(Quads):
+                        
+                        
+                        # produce a 2D poly model of bias, save coefficients
+                        
+                        mod2D = ccdobj.get_2Dmodel(Q=Q,kind='splines',area='img')
+                        
+                        # produce average profile along rows
+                        
+                        hor1Dprof = ccdobj.get_1Dprofile(orient='hor',area='img',Q=Q)
+                        
+                        # produce average profile along cols
+                        
+                        ver1Dprof = ccdobj.get_1Dprofile(orient='ver',area='img',Q=Q)
+                        
+                        # save 2D model and profiles in a pick file for each OBSID-CCD
+                        
+                        
+                        # measure and save RON after subtracting large scale structure
+                        
+                        
+                    
+        # PLOTS
+        
+        
         
         
     def meta_analysis(self):
@@ -193,10 +237,12 @@ class BIAS01(DarkTask):
                    measure average profile along rows
                    measure average profile along cols
             plot average profiles of Master Bias f. each Q
-            produce table with summary of results, include in report
+            produce table(s) with summary of results, include in report
             show Master Bias (image), include in report
             save name of MasterBias to DataDict, report
             
         """
         
         raise NotImplementedError
+        
+        
