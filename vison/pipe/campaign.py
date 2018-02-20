@@ -217,7 +217,7 @@ def generate_test_sequence(diffvalues,toGen,elvis=context.elvis):
     # FLAT-02
     
     
-    if toGen['FLAT02']: 
+    if toGen['FLAT02']:
         
         wavesFLAT02 = [590,640,880]
         t_dummy_F02 = np.array([25.,75])/100.
