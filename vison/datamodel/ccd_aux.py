@@ -30,12 +30,14 @@ from vison import __version__
 
 
 def extract_region(ccdobj,Q,area='img',vstart=0,vend=2086,
-                   Full=False,extension=-1):
+                   Full=False,canonical=True,extension=-1):
     """ """
     prescan = ccdobj.prescan
     overscan = ccdobj.overscan
     imgx = ccdobj.NAXIS1/2 - prescan - overscan
     
+    # the quadrant is "extracted" always in canonical orientation,
+    # to ease extraction of sub-area (pre-scan, over-scan, image-area)
     Qdata = ccdobj.get_quad(Q,canonical=True,extension=extension)
     
     BB = [None,None,None,None]
@@ -58,110 +60,219 @@ def extract_region(ccdobj,Q,area='img',vstart=0,vend=2086,
     
     subregion = Qdata[BB[0]:BB[1],BB[2]:BB[3]].copy()
     
+    # if not canonical we return area in "DS9" orientation for quadrant
+    
+    if not canonical:
+        if Q == 'E': subregion = subregion[:,::-1].copy()
+        elif Q == 'F': subregion = subregion[::-1,::-1].copy()
+        elif Q == 'G': subregion = subregion[::-1,:].copy()
+        elif Q == 'H': subregion = subregion[:,:].copy()
+    
     if not Full:
         return subregion
     else:
         return subregion, BB
 
 
+#def filter_img(img,filtsize=15,filtertype='median',Tests=False):
+#    """ """
+#    NX,NY = img.shape
+#    #xx,yy = np.meshgrid(np.arange(NX),np.arange(NY),indexing='ij')
+#    
+#    
+#    if Tests:
+#        filtered = np.ones_like(img)
+#    else:
+#        if filtertype == 'median':    
+#            filtered = nd.median_filter(img,size=filtsize,mode='nearest') # 'constant',cval=0)
+#        elif filtertype == 'mean':
+#            filtered = nd.uniform_filter(img,size=filtsize,mode='nearest') # 'constant',cval=0)
+#
+#    return filtered
+#
+
+#def get_ilum_splines(img,sampling=1,splinemethod='cubic'):
+#    """ """
+#    
+#    NX,NY = img.shape
+#    
+#    nX = NX/sampling
+#    nY = NY/sampling
+#    
+#    samplebin = 10
+#    
+#    sx = np.arange(samplebin/2,nX*samplebin+samplebin/2,samplebin)
+#    sy = np.arange(samplebin/2,nY*samplebin+samplebin/2,samplebin)
+#    
+#    sxx,syy = np.meshgrid(sx,sy,indexing='ij')
+#    
+#    zz = img[(sxx,syy)]
+#    
+#    xx,yy = np.mgrid[0:NX:NX*1j,0:NY:NY*1j]
+#    
+#    
+#    pilum = interpolate.griddata((sxx.flatten(),syy.flatten()),zz.flatten(),
+#                                (xx,yy), method=splinemethod,fill_value=np.nan)
+#    
+#    nans = np.isnan(pilum)
+#    pilum[nans] = img[nans].copy()
+#    
+#    
+#    ILUM = dict(polyfit=pilum,polycoefs=[])    
+#    
+#    return ILUM
+
+
+#def fit2Dpol_xyz(xx,yy,zz,degree=1):
+#    """ """
+#    from astropy.modeling import models, fitting
+#    
+#    p_init = models.Polynomial2D(degree=degree)
+#    fit_p = fitting.LinearLSQFitter()
+#    
+#    with warnings.catch_warnings():
+#    # Ignore model linearity warning from the fitter (if changing fitter...)
+#        warnings.simplefilter('ignore')
+#        p = fit_p(p_init, xx, yy, zz)
+#    
+#    return p
+#
+#
+#def get_ilum_poly2D(img,sampling,pdegree=5):
+#    """ """
+#    
+#    NX,NY = img.shape
+#    
+#    nX = NX/sampling
+#    nY = NY/sampling
+#    
+#    x = np.arange(sampling/2,nX*sampling+sampling/2,sampling)
+#    y = np.arange(sampling/2,nY*sampling+sampling/2,sampling)
+#    
+#    xx,yy = np.meshgrid(x,y,indexing='ij')
+#    
+#    zz = img[(xx,yy)]
+#    
+#    p = fit2Dpol_xyz(xx,yy,zz,degree=pdegree)
+#    
+#    xp,yp= np.mgrid[:NX,:NY]
+#    pilum = p(xp, yp)
+#    
+#    ILUM = dict(polyfit=pilum,polycoefs=p)
+#    
+#    return ILUM
+#
+
 class Model2D():
     """Class for 2D models of images and images sections."""
     
-    def __init__(self):
+    def __init__(self,img,corners=[]):
+        """ """
+        assert isinstance(img,np.ndarray)
+        self.img = img.copy()
+        
+        if len(corners)>0:
+            NX = corners[1]-corners[0]+1
+            NY = corners[3]-corners[2]+1
+            assert (NY,NX) == img.shape
+        
+        self.corners = corners
+        self.imgmodel = np.zeros_like(img,dtype='float32')
+        self.polycoeffs = []
+        
+    
+    def filter_img(self,filtsize=15,filtertype='median',Tests=False):
         """ """
 
-def filter_img(img,filtsize=15,filtertype='median',Tests=False):
-    """ """
-    NX,NY = img.shape
-    #xx,yy = np.meshgrid(np.arange(NX),np.arange(NY),indexing='ij')
+        if Tests:
+            filtered = np.ones_like(self.img)
+        else:
+            if filtertype == 'median':    
+                filtered = nd.median_filter(self.img,size=filtsize,mode='nearest') # 'constant',cval=0)
+            elif filtertype == 'mean':
+                filtered = nd.uniform_filter(self.img,size=filtsize,mode='nearest') # 'constant',cval=0)
+        
+        self.img = filtered.copy()
+        
+        return None
     
+    def get_ilum_splines(self,sampling=1,splinemethod='cubic'):
+        """ """
+        
+        corners = self.corners        
+        
+        NX,NY = self.img.shape
+        
+        nX = NX/sampling
+        nY = NY/sampling
+        
+        samplebin = 10
+        
+        sx = np.arange(samplebin/2,nX*samplebin+samplebin/2,samplebin)
+        sy = np.arange(samplebin/2,nY*samplebin+samplebin/2,samplebin)
+        
+        sxx,syy = np.meshgrid(sx,sy,indexing='ij')
+        
+        zz = self.img[(sxx,syy)]
+        
+        xx,yy = np.mgrid[0:NX:NX*1j,0:NY:NY*1j]
+                
+        pilum = interpolate.griddata((sxx.flatten(),syy.flatten()),zz.flatten(),
+                                    (xx,yy), method=splinemethod,fill_value=np.nan)
+        
+        nans = np.isnan(pilum)
+        pilum[nans] = self.img[nans].copy()
+        
+        self.imgmodel = pilum.copy()
+        
+        return None
     
-    if Tests:
-        filtered = np.ones_like(img)
-    else:
-        if filtertype == 'median':    
-            filtered = nd.median_filter(img,size=filtsize,mode='nearest') # 'constant',cval=0)
-        elif filtertype == 'mean':
-            filtered = nd.uniform_filter(img,size=filtsize,mode='nearest') # 'constant',cval=0)
 
-    return filtered
-
-
-def get_ilum_splines(img,sampling,splinemethod):
-    """ """
-    
-    NX,NY = img.shape
-    
-    nX = NX/sampling
-    nY = NY/sampling
-    
-    samplebin = 10
-    
-    sx = np.arange(samplebin/2,nX*samplebin+samplebin/2,samplebin)
-    sy = np.arange(samplebin/2,nY*samplebin+samplebin/2,samplebin)
-    
-    sxx,syy = np.meshgrid(sx,sy,indexing='ij')
-    
-    zz = img[(sxx,syy)]
-    
-    xx,yy = np.mgrid[0:NX:NX*1j,0:NY:NY*1j]
+    def fit2Dpol_xyz(self,xx,yy,zz,degree=1):
+        """ """
+        from astropy.modeling import models, fitting
+        
+        p_init = models.Polynomial2D(degree=degree)
+        fit_p = fitting.LinearLSQFitter()
+        
+        with warnings.catch_warnings():
+        # Ignore model linearity warning from the fitter (if changing fitter...)
+            warnings.simplefilter('ignore')
+            p = fit_p(p_init, xx, yy, zz)
+        
+        return p
     
     
-    pilum = interpolate.griddata((sxx.flatten(),syy.flatten()),zz.flatten(),
-                                (xx,yy), method=splinemethod,fill_value=np.nan)
+    def get_ilum_poly2D(self,sampling=1,pdegree=5):
+        """ """
+        
+        NX,NY = self.img.shape
+        
+        nX = NX/sampling
+        nY = NY/sampling
+        
+        x = np.arange(sampling/2,nX*sampling+sampling/2,sampling)
+        y = np.arange(sampling/2,nY*sampling+sampling/2,sampling)
+        
+        xx,yy = np.meshgrid(x,y,indexing='ij')
+        
+        zz = self.img[(xx,yy)]
+        
+        p = self.fit2Dpol_xyz(xx,yy,zz,degree=pdegree)
+        
+        xp,yp= np.mgrid[:NX,:NY]
+        pilum = p(xp, yp)
+        
+        self.imgmodel = pilum.copy()
+        self.polycoeffs = p
+        
+        return None
     
-    nans = np.isnan(pilum)
-    pilum[nans] = img[nans].copy()
-    
-    
-    ILUM = dict(img=img,polyfit=pilum,polycoefs=[])    
-    
-    return ILUM
-
-
-def fit2Dpol_xyz(xx,yy,zz,degree=1):
-    """ """
-    from astropy.modeling import models, fitting
-    
-    p_init = models.Polynomial2D(degree=degree)
-    fit_p = fitting.LinearLSQFitter()
-    
-    with warnings.catch_warnings():
-    # Ignore model linearity warning from the fitter (if changing fitter...)
-        warnings.simplefilter('ignore')
-        p = fit_p(p_init, xx, yy, zz)
-    
-    return p
-
-
-def get_ilum_poly2D(img,sampling,pdegree=5):
-    """ """
-    
-    NX,NY = img.shape
-    
-    nX = NX/sampling
-    nY = NY/sampling
-    
-    x = np.arange(sampling/2,nX*sampling+sampling/2,sampling)
-    y = np.arange(sampling/2,nY*sampling+sampling/2,sampling)
-    
-    xx,yy = np.meshgrid(x,y,indexing='ij')
-    
-    zz = img[(xx,yy)]
-    
-    p = fit2Dpol_xyz(xx,yy,zz,degree=pdegree)
-    
-    xp,yp= np.mgrid[:NX,:NY]
-    pilum = p(xp, yp)
-    
-    ILUM = dict(img=img.coopy(),polyfit=pilum,polycoefs=p)
-    
-    return ILUM
 
 
-def get_2Dmodel(ccdobj,Q,area='img',kind='spline',splinemethod='cubic',pdegree=2,
+def get_region2Dmodel(ccdobj,Q,area='img',kind='spline',splinemethod='cubic',pdegree=2,
                 doFilter=False,filtsize=1,filtertype='mean',
-                vstart=0,vend=2086,extension=-1):
+                vstart=0,vend=2086,canonical=True,extension=-1):
     """ """
     
     #prescan = ccdobj.prescan
@@ -169,21 +280,23 @@ def get_2Dmodel(ccdobj,Q,area='img',kind='spline',splinemethod='cubic',pdegree=2
     #imgx = ccdobj.NAXIS1/2 - prescan - overscan
     
     subregion, BB = ccdobj.extract_region(Q,area=area,vstart=vstart,vend=vend,
-                                      Full=True,
+                                      Full=True,canonical=canonical,
                                           extension=extension)
+    
+    regmodel = Model2D(subregion)
     
     if doFilter:
         if filtsize > 1:
-            subregion = filter_img(subregion,filtsize=filtsize,
-                                   filtertype=filtertype)
-    
+            regmodel.filter_img(filtsize=filtsize,filtertype=filtertype,
+                                Tests=False)
+            
     if kind == 'poly2D':
-        ILUM = get_ilum_poly2D(subregion,sampling=filtsize,pdegree=pdegree)
+        regmodel.get_ilum_poly2D(sampling=filtsize,pdegree=pdegree)
     elif kind == 'spline':
-        ILUM = get_ilum_splines(subregion,sampling=filtsize,
+        regmodel.get_ilum_splines(sampling=filtsize,
                                 splinemethod=splinemethod)
     
-    return ILUM
+    return regmodel
     
     
 class Profile1D(object):
