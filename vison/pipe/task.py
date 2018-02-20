@@ -43,6 +43,8 @@ class Task(object):
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
         self.ID = None
+        self.BLOCKID = None
+        self.CHAMBER = None
         self.internals = dict()
         #self.inputs = dict()
         self.inputs = self.inputsclass()
@@ -84,6 +86,9 @@ class Task(object):
         else: diffvalues = {}
         
         self.inputs['structure'] = self.build_scriptdict(diffvalues,elvis=self.elvis)
+        
+        self.CDP_header = OrderedDict()
+        
     
     def set_inpdefaults(self,**kwargs):
         pass
@@ -97,6 +102,12 @@ class Task(object):
     
     def __call__(self):
         """Generic test master function."""
+        
+        
+        self.CDP_header = OrderedDict(ID=self.ID,
+                BLOCKID=self.BLOCKID,
+                CHAMBER=self.CHAMBER,
+                vison=__version__)
         
         # INPUTS
         

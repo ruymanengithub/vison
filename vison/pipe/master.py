@@ -269,6 +269,8 @@ class Pipe(object):
         try:
             Test = self.Test_dict[taskname](inputs,self.log,drill,debug)
             Test.ID = self.ID
+            Test.BLOCKID = self.BLOCKID
+            Test.CHAMBER = self.CHAMBER
             Test()
         except:
             self.catchtraceback()
