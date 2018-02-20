@@ -145,7 +145,7 @@ class CCD(object):
     """
     
     get_1Dprofile = ccd_aux.get_1Dprofile    
-    get_2Dmodel = ccd_aux.get_2Dmodel
+    get_region2Dmodel = ccd_aux.get_region2Dmodel
     extract_region = ccd_aux.extract_region
     
     def __init__(self,infits=None,extensions=[-1],getallextensions=False,withpover=True):

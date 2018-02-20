@@ -24,6 +24,7 @@ import warnings
 
 from scipy import ndimage as nd
 from scipy import interpolate
+from scipy import signal
 
 from vison import __version__
 # END IMPORT
@@ -189,6 +190,7 @@ class Model2D():
         else:
             if filtertype == 'median':    
                 filtered = nd.median_filter(self.img,size=filtsize,mode='nearest') # 'constant',cval=0)
+                #filtered = signal.medfilt2d(self.img,kernel_size=filtsize)
             elif filtertype == 'mean':
                 filtered = nd.uniform_filter(self.img,size=filtsize,mode='nearest') # 'constant',cval=0)
         
@@ -196,7 +198,7 @@ class Model2D():
         
         return None
     
-    def get_ilum_splines(self,sampling=1,splinemethod='cubic'):
+    def get_model_splines(self,sampling=1,splinemethod='cubic'):
         """ """
         
         corners = self.corners        
@@ -206,10 +208,10 @@ class Model2D():
         nX = NX/sampling
         nY = NY/sampling
         
-        samplebin = 10
+        #samplebin = 10
         
-        sx = np.arange(samplebin/2,nX*samplebin+samplebin/2,samplebin)
-        sy = np.arange(samplebin/2,nY*samplebin+samplebin/2,samplebin)
+        sx = np.arange(sampling/2,nX*sampling+sampling/2,sampling)
+        sy = np.arange(sampling/2,nY*sampling+sampling/2,sampling)
         
         sxx,syy = np.meshgrid(sx,sy,indexing='ij')
         
@@ -243,7 +245,7 @@ class Model2D():
         return p
     
     
-    def get_ilum_poly2D(self,sampling=1,pdegree=5):
+    def get_model_poly2D(self,sampling=1,pdegree=5):
         """ """
         
         NX,NY = self.img.shape
@@ -291,9 +293,9 @@ def get_region2Dmodel(ccdobj,Q,area='img',kind='spline',splinemethod='cubic',pde
                                 Tests=False)
             
     if kind == 'poly2D':
-        regmodel.get_ilum_poly2D(sampling=filtsize,pdegree=pdegree)
+        regmodel.get_model_poly2D(sampling=filtsize,pdegree=pdegree)
     elif kind == 'spline':
-        regmodel.get_ilum_splines(sampling=filtsize,
+        regmodel.get_model_splines(sampling=filtsize,
                                 splinemethod=splinemethod)
     
     return regmodel

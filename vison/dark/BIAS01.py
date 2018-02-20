@@ -172,7 +172,7 @@ class BIAS01(DarkTask):
         
         
         Cindices = copy.deepcopy(self.dd.mx['File_name'].indices)
-        self.dd.initColumn('ccdobj_name',Cindices,dtype='S100',valini='None')
+        self.dd.initColumn('profiles_name',Cindices,dtype='S100',valini='None')
         
         
         DDindices = copy.deepcopy(self.dd.indices) 
@@ -190,6 +190,8 @@ class BIAS01(DarkTask):
             
             for iObs in range(nObs):
                 
+                OBSID = self.dd.mx['ObsID'][iObs]
+                
                 vstart = self.dd.mx['vstart'][iObs]
                 vend = self.dd.mx['vend'][iObs]
                 
@@ -200,12 +202,24 @@ class BIAS01(DarkTask):
                     
                     ccdobj = copy.deepcopy(cPickleRead(fullccdobj_name)['ccdobj'])
                     
+                    profiles = OrderedDict(CDP_header=self.CDP_header.copy())
+                    
                     for kQ,Q in enumerate(Quads):
                         
+                        profiles[Q] = OrderedDict()
                         
                         # produce a 2D poly model of bias, save coefficients
                         
-                        mod2D = ccdobj.get_2Dmodel(Q=Q,kind='splines',area='img')
+                        # REALLY NECESSARY?
+                        
+                        mod2D = ccdobj.get_region2Dmodel(Q=Q,area='all',kind='poly2D',
+                                        pdegree=5,doFilter=False,
+                                        vstart=vstart,vend=vend,
+                                        canonical=False,extension=-1)
+                        
+                        # measure and save RON after subtracting large scale structure
+                        
+                        # PENDING (but REALLY NECESSARY?)
                         
                         # produce average profile along rows
                         
@@ -217,17 +231,23 @@ class BIAS01(DarkTask):
                         ver1Dprof = ccdobj.get_1Dprofile(Q=Q,orient='ver',area='img',stacker='mean',
                                                          vstart=vstart,vend=vend)
                         
+                        profiles[Q]['hor'] = copy.deepcopy(hor1Dprof)
+                        profiles[Q]['ver'] = copy.deepcopy(ver1Dprof)
                         
-                        # save 2D model and profiles in a pick file for each OBSID-CCD
-                        
-                        
-                        # measure and save RON after subtracting large scale structure
-                        
-                        
+                    # save (2D model and) profiles in a pick file for each OBSID-CCD
+                    
+                    profilespickf = 'profs1D_%i_BIAS01.pick' % (OBSID,)
+                    fprofilespickf = os.path.join(profilespath,profilespickf)
+                                 
+                    cPickleDumpDictionary(profiles,fprofilespickf)
+                    
+                    self.dd.mx['profiles_name'][iObs,jCCD] = profilespickf
+                    
                     
         # PLOTS
         
         
+        # REPORTS
         
         
     def meta_analysis(self):
