@@ -17,7 +17,11 @@ from glob import glob
 import string as st
 from pdb import set_trace as stop
 
-from vison.support.ds9 import ds9class
+#from vison.support.ds9 import ds9class
+try: 
+    import pyds9
+except ImportError: 
+    print 'pyds9 not installed in the system. Will not be possible to liaise with SAO-ds9.'
 
 
 isthere = os.path.exists
@@ -54,7 +58,7 @@ if __name__ == '__main__':
     
     FITSlist = []
     for iobs in range(obsid0,obsid1+1):
-        tantFITS = os.path.join(path,'EUC_%i_*D_*T_ROE%i_CCD%i.fits' % (iobs,roe,ccd))
+        tantFITS = os.path.join(path,'EUC_%i_*D*T_ROE%i_CCD%i.fits' % (iobs,roe,ccd))
         try:
             FITS = glob(tantFITS)[0]
             FITSlist.append(FITS)
@@ -62,19 +66,17 @@ if __name__ == '__main__':
             sys.exit("Image %s not found!" % tantFITS)
     
     
-    ds9obj = ds9class()
-    if ds9obj.isOpen():
-        sys.exit('Close all OPEN DS9 instances first!')
-    ds9obj.launch()
-    
+    try:
+        d = pyds9.DS9()
+    except NameError:
+        print "pyds9 not installed, can't open DS9!"
+        sys.exit()
+        
     nFITS = len(FITSlist)
     for ifits,FITS in enumerate(FITSlist):
         
-        
-        ds9obj.xpaset('file %s' % FITS)
-        if ifits ==0: ds9obj.xpaset('file %s' % FITS)
-        ds9obj.xpaset('zoom to fit')
-        ds9obj.xpaset('scale histequ zscale')
-        if ifits < (nFITS-1): 
-            ds9obj.xpaset('frame new')
+        d.set("frame %i" % (ifits+1,))
+        d.set('file %s' % FITS)
+        d.set('zoom to fit')
+        d.set('scale histequ zscale')
     
