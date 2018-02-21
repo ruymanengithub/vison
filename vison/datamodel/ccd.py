@@ -144,6 +144,8 @@ class CCD(object):
     
     """
     
+    Quads = Quads
+    
     get_1Dprofile = ccd_aux.get_1Dprofile    
     get_region2Dmodel = ccd_aux.get_region2Dmodel
     extract_region = ccd_aux.extract_region
@@ -614,7 +616,7 @@ class CCD(object):
     def simadd_flatilum(self,levels=dict(E=0.,F=0.,G=0.,H=0.),extension=-1):
         """ """
 
-        for Q in Quads:
+        for Q in self.Quads:
             quaddata = self.get_quad(Q,canonical=True,extension=extension)
             quaddata[self.prescan:-self.overscan,0:NrowsCCD] += levels[Q]
             self.set_quad(quaddata,Q,canonical=True,extension=extension)
@@ -632,7 +634,7 @@ class CCD(object):
         ny = 15
 
         
-        for Q in Quads:
+        for Q in self.Quads:
             quaddata = self.get_quad(Q,canonical=False,extension=extension).copy()
             
             point_keys = Point_CooNom[CCDID][Q].keys()
@@ -667,7 +669,7 @@ class CCD(object):
     
     def simadd_bias(self,levels=dict(E=2000,F=2000,G=2000,H=2000),extension=-1):
         
-         for Q in Quads:            
+         for Q in self.Quads:            
             B = self.QuadBound[Q]
             self.extensions[extension].data[B[0]:B[1],B[2]:B[3]] += levels[Q]
     
@@ -702,7 +704,7 @@ class CCD(object):
         mask = np.ones((self.NAXIS1/2,self.NAXIS2/2),dtype='int8')
         mask[:,vstart:vend] = 0
         
-        for Q in Quads:            
+        for Q in self.Quads:            
             qdata = self.get_quad(Q,canonical=True,extension=extension)
             qdata[np.where(mask)] = 0
             self.set_quad(qdata,Q,canonical=True,extension=extension)
@@ -730,7 +732,7 @@ class CCD(object):
         #from astropy.io import fits as fts
         #fts.writeto('mask.fits',mask_onoff.transpose().astype('int32'),overwrite=True)
         
-        for Q in Quads:
+        for Q in self.Quads:
             qdata = self.get_quad(Q,canonical=True,extension=extension)
             qdata[np.where(mask_onoff==0)] = 0.
             self.set_quad(qdata,Q,canonical=True,extension=extension)
