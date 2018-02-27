@@ -22,6 +22,8 @@ from vison.support import context
 
 class DarkTask(Task):
     
+    from darkaux import get_DarkDefectsMask_CDP
+    
     def __init__(self,*args,**kwargs):
         super(DarkTask,self).__init__(*args,**kwargs)
 
