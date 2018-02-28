@@ -109,6 +109,8 @@ HeadKeys['6.3.0'] = [
 #'OD_B1_V':'OD_B1_V','OD_B2_V':'OD_B2_V','OD_B3_V':'OD_V3_V',
 #'RD_T_V':'RD_T_V','RD_B_V':'RD_B_V'}}
 
+    
+
 
 class Extension():
     """Extension Class"""
@@ -209,8 +211,7 @@ class CCD(object):
         for iext in extensions:
                 
             hdu = hdulist[iext]
-            
-            
+                        
             if hdu.data is not None:
                 data = hdu.data.transpose().astype('float32').copy()
             else: data = None
@@ -228,10 +229,15 @@ class CCD(object):
 
     
     def add_extension(self,data,header=None,label=None,headerdict=None):
-        """ """    
+        """ """
+        assert data.shape == self.shape
+        
         self.extensions.append(Extension(data,header,label,headerdict))
         self.nextensions += 1
-        
+    
+    def set_extension(self,data,header=None,label=None,headerdict=None,extension=-1):
+        assert data.shape == self.shape
+        self.extensions[extension] = Extension(data,header,label,headerdict)
     
     def get_quad(self,Quadrant,canonical=False,extension=-1):
         """Returns a quadrant in canonical or non-canonical orientation.
@@ -359,8 +365,7 @@ class CCD(object):
         self.extensions[extension].data[edges[0]:edges[1],edges[2]:edges[3]] = Qdata.copy()
         
         return None
-
-
+    
     def getsectioncollims(self,QUAD):
         """Returns limits of [HORIZONTAL] sections: prescan, image and overscan"""
         
@@ -737,6 +742,82 @@ class CCD(object):
             qdata[np.where(mask_onoff==0)] = 0.
             self.set_quad(qdata,Q,canonical=True,extension=extension)
     
+
+
+class CCDPile(CCD):
+    """Class to hold and operate (e.g. stack) on a bunch of CCD images."""
+    
+    
+    def __init__(self,infitsList=[],ccdobjList=[],extension=-1,withpover=True):
+        """ """
+        
+        self.extensions = []
+        
+        
+        if len(infitsList) > 0:
+            
+            for infits in infitsList:
+                
+                assert type(infits) is str, "'%s' can't be a name for a file!" % infits
+                assert isthere(infits), 'infits:%s is just not there :-(' % infits
+                
+                
+                iccdobj = CCD(infits,extensions=[extension],withpover=withpover,
+                             getallextensions=False)
+                
+                
+                self.extensions.append(iccdobj.extensions[0])
+
+        else:
+            
+            self.extensions = []
+        
+        self.nextensions = len(self.extensions)
+        
+        self.NAXIS1 = NAXIS1
+        if withpover: self.NAXIS2 = NAXIS2
+        else: self.NAXIS2 = NAXIS2-40
+
+        self.shape = (self.NAXIS1,self.NAXIS2)
+        
+        for iext in range(self.nextensions):
+            if self.extensions[iext].data is not None:
+                assert self.shape == self.extensions[iext].data.shape
+        
+        self.prescan = prescan
+        self.overscan = overscan
+        if withpover: self.voverscan = voverscan
+        else: self.voverscan = 0
+        
+        self.gain = dict(E=3.1,F=3.1,G=3.1,H=3.1)
+        self.rn = dict(E=4.5,F=4.5,G=4.5,H=4.5)
+        
+        self.QuadBound = QuadBound 
+        
+        self.masked = False
+        
+        
+    def stack(self,method='median'):
+        """ """
+        
+        if method == 'median':
+            fstack = np.median
+        elif method == 'mean':
+            fstack = np.mean
+        
+        stackimg = np.zeros(self.shape,dtype='float32')
+        NAXIS1 = self.NAXIS1
+        NAXIS2 = self.NAXIS2
+        nimages = self.nextensions
+        
+        
+        for i in range(NAXIS2):
+            imgrow = np.zeros((NAXIS1,nimages),dtype='float32')
+            for j in range(nimages):
+                imgrow[:,j] = self.extensions[j].data[:,i]
+            stackimg[:,i] = fstack(imgrow,axis=1).copy()
+       
+        return stackimg
     
     
 def test_create_from_scratch():
