@@ -202,7 +202,6 @@ class CCD(object):
         
         hdulist = fts.open(fitsfile)
         
-        
         nextensions = len(hdulist)
             
         if getallextensions:
@@ -745,7 +744,9 @@ class CCD(object):
 
 
 class CCDPile(CCD):
-    """Class to hold and operate (e.g. stack) on a bunch of CCD images."""
+    """Class to hold and operate (e.g. stack) on a bunch of CCD images.
+    Each image (a single extension picked from each) becomes an extension in the pile.
+    """
     
     
     def __init__(self,infitsList=[],ccdobjList=[],extension=-1,withpover=True):
@@ -753,20 +754,33 @@ class CCDPile(CCD):
         
         self.extensions = []
         
+        self.NAXIS1 = NAXIS1
+        if withpover: self.NAXIS2 = NAXIS2
+        else: self.NAXIS2 = NAXIS2-40
+
+        self.shape = (self.NAXIS1,self.NAXIS2)
         
         if len(infitsList) > 0:
             
-            for infits in infitsList:
+            for i,infits in enumerate(infitsList):
                 
                 assert type(infits) is str, "'%s' can't be a name for a file!" % infits
                 assert isthere(infits), 'infits:%s is just not there :-(' % infits
                 
-                
                 iccdobj = CCD(infits,extensions=[extension],withpover=withpover,
                              getallextensions=False)
                 
+                assert self.shape == iccdobj.shape
                 
-                self.extensions.append(iccdobj.extensions[0])
+                self.extensions.append(iccdobj.extensions[extension])
+                
+        elif len(ccdobjList) > 0:
+            
+            for i,iccdobj in enumerate(ccdobjList):
+                
+                assert self.shape == iccdobj.shape
+                
+                self.extensions.append(iccdobj.extensions[extension])
 
         else:
             
@@ -774,15 +788,6 @@ class CCDPile(CCD):
         
         self.nextensions = len(self.extensions)
         
-        self.NAXIS1 = NAXIS1
-        if withpover: self.NAXIS2 = NAXIS2
-        else: self.NAXIS2 = NAXIS2-40
-
-        self.shape = (self.NAXIS1,self.NAXIS2)
-        
-        for iext in range(self.nextensions):
-            if self.extensions[iext].data is not None:
-                assert self.shape == self.extensions[iext].data.shape
         
         self.prescan = prescan
         self.overscan = overscan
@@ -810,7 +815,6 @@ class CCDPile(CCD):
         NAXIS2 = self.NAXIS2
         nimages = self.nextensions
         
-        
         for i in range(NAXIS2):
             imgrow = np.zeros((NAXIS1,nimages),dtype='float32')
             for j in range(nimages):
@@ -818,7 +822,7 @@ class CCDPile(CCD):
             stackimg[:,i] = fstack(imgrow,axis=1).copy()
        
         return stackimg
-    
+     
     
 def test_create_from_scratch():
     """ """
