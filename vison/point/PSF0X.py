@@ -261,7 +261,7 @@ class PSF0X(PointTask):
         doFlats = False
         
         if 'mask' in self.inputs['inCDPs']:
-            Maskdata = calibration.load_CDPs(self.inputs['inCDPs']['Mask'],ccd.CCD)
+            Maskdata = calibration.load_FITS_CDPs(self.inputs['inCDPs']['Mask'],ccd.CCD)
             doMask = True
             if self.log is not None:
                 masksstr = self.inputs['inCDPs']['Mask'].__str__()
@@ -270,7 +270,7 @@ class PSF0X(PointTask):
                 self.log.info(masksstr)
         
         if 'bias' in self.inputs['inCDPs']:
-            Biasdata = calibration.load_CDPs(self.inputs['inCDPs']['Bias'],ccd.CCD)
+            Biasdata = calibration.load_FITS_CDPs(self.inputs['inCDPs']['Bias'],ccd.CCD)
             doBias = True
             if self.log is not None:
                 biasstr = self.inputs['inCDPs']['Bias'].__str__()
@@ -280,7 +280,7 @@ class PSF0X(PointTask):
         
         
         if 'FF' in self.inputs['inCDPs']:
-            FFdata = calibration.load_CDPs(self.inputs['inCDPs']['FF'],FFing.FlatField)
+            FFdata = calibration.load_FITS_CDPs(self.inputs['inCDPs']['FF'],FFing.FlatField)
             doFlats = True
             if self.log is not None:
                 FFstr = self.inputs['inCDPs']['FF'].__str__()
