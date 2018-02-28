@@ -8,7 +8,7 @@ Created on Thu Nov  2 16:54:28 2017
 
 """
 
-def load_CDPs(FDict,dataclass):
+def load_FITS_CDPs(FDict,dataclass):
 
     # Load File for each CCD
     

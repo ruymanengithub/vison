@@ -85,12 +85,14 @@ class FLAT0X(FlatTask):
         super(FLAT0X,self).__init__(inputs,log,drill,debug)
         self.name = 'FLAT0X'
         self.type = 'Simple'
-        self.subtasks = [('check',self.check_data),('indivflats',self.do_indiv_flats),
+        self.subtasks = [('check',self.check_data),
+                    ('prep',self.prepare_images),
+                    ('indivflats',self.do_indiv_flats),
                     ('masterflat',self.do_master_flat),
                     ('prmask',self.do_prdef_mask)]
         self.HKKeys = HKKeys
         self.figdict = FL0Xaux.gt_FL0Xfigs(self.inputs['test'])
-        self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
+        self.inputs['subpaths'] = dict(figs='figs',ccdpickles='ccdpickles')
         
    
     def set_inpdefaults(self,**kwargs):
@@ -165,7 +167,7 @@ class FLAT0X(FlatTask):
         return super(FLAT0X,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
                               wavedkeys=wavedkeys)
     
-    def prep_data(self):
+    def prepare_images(self):
         """
         
         FLAT0X: Preparation of data for further analysis.
@@ -177,7 +179,7 @@ class FLAT0X(FlatTask):
             cosmetics masking
         
         """
-        super(self).prepare_images(doExtract=True,doMask=True,doOffset=True,doBias=True)
+        super(FLAT0X,self).prepare_images(doExtract=True,doMask=True,doOffset=True,doBias=True)
     
     def do_indiv_flats(self):
         """
@@ -205,6 +207,8 @@ class FLAT0X(FlatTask):
             plot average profiles f. each CCD and Q (color coded by time)
         
         """
+        
+        stop()
         
         raise NotImplementedError
         
