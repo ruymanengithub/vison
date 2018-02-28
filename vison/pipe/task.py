@@ -202,7 +202,7 @@ class Task(object):
                     self.save_progress(DataDictFile,reportobjFile)
                 except:
                     self.catchtraceback()
-                    self.save_progress(DataDictFile,reportobjFile)
+                    #self.save_progress(DataDictFile,reportobjFile)
                     if not self.debug:
                         if self.log is not None:
                             self.log.info('SUBTASK "%s:%s" FAILED, QUITTING!' % (subtaskname,subtaskmethod.__name__))
