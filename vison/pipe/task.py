@@ -128,6 +128,11 @@ class Task(object):
         DataDictFile = os.path.join(resultspath,'%s_DataDict.pick' % testkey)
         reportobjFile = os.path.join(resultspath,'%s_Report.pick' % testkey)
         
+        for _pathkey in _paths:
+            subpath = os.path.join(resultspath,_paths[_pathkey])            
+            _paths[_pathkey] = subpath
+        self.inputs['subpaths'] = _paths
+        
         if todo_flags['init']:
             
             
@@ -137,11 +142,7 @@ class Task(object):
             
             # Creating subresultspath
             for _pathkey in _paths:
-                subpath = os.path.join(resultspath,_paths[_pathkey])            
                 if not isthere(subpath): os.system('mkdir %s' % subpath)
-                _paths[_pathkey] = subpath
-            
-            self.inputs['subpaths'] = _paths
 
             # Let's start from scratch
             
@@ -543,7 +544,7 @@ class Task(object):
             #self.proc_histo['Extract']=True
         
         def _loadCDP(cdpkey,msg):
-            CDPData = calibration.load_CDPs(self.inputs['inCDPs'][cdpkey],ccd.CCD)
+            CDPData = calibration.load_FITS_CDPs(self.inputs['inCDPs'][cdpkey],ccd.CCD)
             if self.log is not None:
                 cdpstr = self.inputs['inCDPs'][cdpkey].__str__()
                 cdpstr = st.replace(cdpstr,',',',\n')
@@ -566,6 +567,7 @@ class Task(object):
             NotFoundMsg = 'Cosmetics Mask not Found!'
             self.log.info(NotFoundMsg)
             _reportNotFound(self.report,NotFoundMsg)
+            doMask = False
         
         if doOffset:
             self.proc_histo['SubOffset']=True
@@ -578,6 +580,7 @@ class Task(object):
             NotFoundMsg = 'Bias Structure not found!'
             self.log.info(NotFoundMsg)
             _reportNotFound(self.report,NotFoundMsg)
+            doBias = False
             
         
         if doFF and 'FF' in self.inputs['inCDPs']:
@@ -587,6 +590,7 @@ class Task(object):
             NotFoundMsg = 'FFs no found!'
             self.log.info(NotFoundMsg)
             _reportNotFound(self.report,NotFoundMsg)
+            doFF=False
             
         # Initialize new columns
     
@@ -603,7 +607,9 @@ class Task(object):
             
             picklespath = self.inputs['subpaths']['ccdpickles']
             
-            for iObs in range(nObs):
+            #for iObs in range(nObs):
+            for iObs in range(3): # TESTS!
+                print 'TESTS: task.prepare_images: LIMITTING TO 3 IMAGES!'
                 
                 if doFF:
                     FW_ID = self.dd.mx['wavelength'][iObs]
@@ -617,6 +623,8 @@ class Task(object):
                     
                     dpath = self.dd.mx['datapath'][iObs,jCCD]
                     infits = os.path.join(dpath,'%s.fits' % self.dd.mx['File_name'][iObs,jCCD])
+                    
+                    print 'Test %s: preparing %s...' % (self.inputs['test'],infits)
                     
                     ccdobj = ccd.CCD(infits) # converting the FITS file into a CCD Object
                     
