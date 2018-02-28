@@ -193,16 +193,18 @@ class FLAT0X(FlatTask):
     
             f.e. ObsID:
                 f.e.CCD:
+                    
+                    load ccdobj
+                    
                     f.e.Q:
-                        subtract offset
-                        opt: [sub bias frame]
+                        
                         model 2D fluence distro in image area
                         produce average profile along rows
                         produce average profile along cols
                         
                     save 2D model and profiles in a pick file for each OBSID-CCD
                     divide by 2D model to produce indiv-flat
-                    save indiv-Flat to FITS, update add filename
+                    save indiv-Flat to FITS(?), update add filename
     
             plot average profiles f. each CCD and Q (color coded by time)
         
@@ -241,7 +243,9 @@ class FLAT0X(FlatTask):
         ::
         
             Produces mask of defects in Photo-Response
-        
+            Could use master FF, or a stack of a subset of images (in order
+            to process faster).
+            
             f.e.CCD:
                 f.e.Q:
                     produce mask of PR defects
