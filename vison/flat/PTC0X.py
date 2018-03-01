@@ -282,7 +282,6 @@ class PTC0X(FlatTask):
         
         indices = copy.deepcopy(self.dd.indices)
         
-        
         nObs, nCCD, nQuad = indices.shape
         
         Quads = indices[indices.names.index('Quad')].vals

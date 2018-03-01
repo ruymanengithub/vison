@@ -23,6 +23,8 @@ import vison
 #from matplotlib import pyplot as plt
 
 from vison.datamodel import ccd as ccdmodule
+from vison.datamodel.cdp import  CDP as CDPClass
+from vison.support.files import  cPickleRead
 
 from scipy import ndimage as nd
 #from scipy import signal
@@ -32,200 +34,256 @@ from astropy.io import fits as fts
 Quads = ['E','F','G','H']
 
 
-def get_ilum_splines(img,filtsize=25,filtertype='median',Tests=False):
-    """ """
-    
-    NX,NY = img.shape
-    #xx,yy = np.meshgrid(np.arange(NX),np.arange(NY),indexing='ij')
-    
-    if Tests:
-        filtered = np.ones_like(img)
-    else:
-        
-        if filtertype == 'median':    
-            filtered = nd.median_filter(img,size=filtsize,mode='nearest') # ,cval=0)
-        elif filtertype == 'mean':
-            filtered = nd.uniform_filter(img,size=filtsize,mode='nearest') #,cval=0)
-        #filtered = signal.medfilt(img,filtsize)
-        #filtered = np.ones_like(img)
-    
-    
-    nX = NX/filtsize
-    nY = NY/filtsize
-    
-    samplebin = 10
-    
-    sx = np.arange(samplebin/2,nX*samplebin+samplebin/2,samplebin)
-    sy = np.arange(samplebin/2,nY*samplebin+samplebin/2,samplebin)
-    
-    sxx,syy = np.meshgrid(sx,sy,indexing='ij')
-    
-    zz = filtered[(sxx,syy)]
-    #zz = img[(xx,yy)]
-    
-    xx,yy = np.mgrid[0:NX:NX*1j,0:NY:NY*1j]
-    
-    
-    pilum = interpolate.griddata((sxx.flatten(),syy.flatten()),zz.flatten(),
-                                (xx,yy), method='cubic',fill_value=np.nan)
-    
-    nans = np.isnan(pilum)
-    pilum[nans] = filtered[nans].copy()
-    
-    
-    ILUM = dict(filtered=filtered,polyfit=pilum,polycoefs=[])
-    
-    
-    return ILUM
+#def get_ilum_splines(img,filtsize=25,filtertype='median',Tests=False):
+#    """ """
+#    
+#    NX,NY = img.shape
+#    #xx,yy = np.meshgrid(np.arange(NX),np.arange(NY),indexing='ij')
+#    
+#    if Tests:
+#        filtered = np.ones_like(img)
+#    else:
+#        
+#        if filtertype == 'median':    
+#            filtered = nd.median_filter(img,size=filtsize,mode='nearest') # ,cval=0)
+#        elif filtertype == 'mean':
+#            filtered = nd.uniform_filter(img,size=filtsize,mode='nearest') #,cval=0)
+#        #filtered = signal.medfilt(img,filtsize)
+#        #filtered = np.ones_like(img)
+#    
+#    
+#    nX = NX/filtsize
+#    nY = NY/filtsize
+#    
+#    samplebin = 10
+#    
+#    sx = np.arange(samplebin/2,nX*samplebin+samplebin/2,samplebin)
+#    sy = np.arange(samplebin/2,nY*samplebin+samplebin/2,samplebin)
+#    
+#    sxx,syy = np.meshgrid(sx,sy,indexing='ij')
+#    
+#    zz = filtered[(sxx,syy)]
+#    #zz = img[(xx,yy)]
+#    
+#    xx,yy = np.mgrid[0:NX:NX*1j,0:NY:NY*1j]
+#    
+#    
+#    pilum = interpolate.griddata((sxx.flatten(),syy.flatten()),zz.flatten(),
+#                                (xx,yy), method='cubic',fill_value=np.nan)
+#    
+#    nans = np.isnan(pilum)
+#    pilum[nans] = filtered[nans].copy()
+#    
+#    
+#    ILUM = dict(filtered=filtered,polyfit=pilum,polycoefs=[])
+#    
+#    
+#    return ILUM
+#
+#
+#def fit2Dpol(xx,yy,zz,degree=1):
+#    """ """
+#    from astropy.modeling import models, fitting
+#    
+#    p_init = models.Polynomial2D(degree=degree)
+#    fit_p = fitting.LinearLSQFitter()
+#    
+#    with warnings.catch_warnings():
+#    # Ignore model linearity warning from the fitter (if changing fitter...)
+#        warnings.simplefilter('ignore')
+#        p = fit_p(p_init, xx, yy, zz)
+#    
+#    return p
+#
+#def get_ilum(img,pdegree=5,filtsize=15,filtertype='median',Tests=False):
+#    """ """
+#    #import warnings
+#    
+#    
+#    NX,NY = img.shape
+#    #xx,yy = np.meshgrid(np.arange(NX),np.arange(NY),indexing='ij')
+#    
+#    
+#    if Tests:
+#        filtered = np.ones_like(img)
+#    else:
+#        if filtertype == 'median':    
+#            filtered = nd.median_filter(img,size=filtsize,mode='nearest') # 'constant',cval=0)
+#        elif filtertype == 'mean':
+#            filtered = nd.uniform_filter(img,size=filtsize,mode='nearest') # 'constant',cval=0)
+#        #filtered = signal.medfilt(img,filtsize)
+#        #filtered = np.ones_like(img)
+#    
+#    nX = NX/filtsize
+#    nY = NY/filtsize
+#    
+#    x = np.arange(filtsize/2,nX*filtsize+filtsize/2,filtsize)
+#    y = np.arange(filtsize/2,nY*filtsize+filtsize/2,filtsize)
+#    
+#    xx,yy = np.meshgrid(x,y,indexing='ij')
+#    
+#    zz = filtered[(xx,yy)]
+#    #zz = img[(xx,yy)]
+#    
+#    p = fit2Dpol(xx,yy,zz,degree=pdegree)
+#    
+#    xp,yp= np.mgrid[:NX,:NY]
+#    pilum = p(xp, yp)
+#    
+#    ILUM = dict(filtered=filtered,polyfit=pilum,polycoefs=p)
+#    
+#    return ILUM
 
 
-def fit2Dpol(xx,yy,zz,degree=1):
-    """ """
-    from astropy.modeling import models, fitting
-    
-    p_init = models.Polynomial2D(degree=degree)
-    fit_p = fitting.LinearLSQFitter()
-    
-    with warnings.catch_warnings():
-    # Ignore model linearity warning from the fitter (if changing fitter...)
-        warnings.simplefilter('ignore')
-        p = fit_p(p_init, xx, yy, zz)
-    
-    return p
 
-def get_ilum(img,pdegree=5,filtsize=15,filtertype='median',Tests=False):
-    """ """
-    #import warnings
-    
-    
-    NX,NY = img.shape
-    #xx,yy = np.meshgrid(np.arange(NX),np.arange(NY),indexing='ij')
-    
-    
-    if Tests:
-        filtered = np.ones_like(img)
-    else:
-        if filtertype == 'median':    
-            filtered = nd.median_filter(img,size=filtsize,mode='nearest') # 'constant',cval=0)
-        elif filtertype == 'mean':
-            filtered = nd.uniform_filter(img,size=filtsize,mode='nearest') # 'constant',cval=0)
-        #filtered = signal.medfilt(img,filtsize)
-        #filtered = np.ones_like(img)
-    
-    nX = NX/filtsize
-    nY = NY/filtsize
-    
-    x = np.arange(filtsize/2,nX*filtsize+filtsize/2,filtsize)
-    y = np.arange(filtsize/2,nY*filtsize+filtsize/2,filtsize)
-    
-    xx,yy = np.meshgrid(x,y,indexing='ij')
-    
-    zz = filtered[(xx,yy)]
-    #zz = img[(xx,yy)]
-    
-    p = fit2Dpol(xx,yy,zz,degree=pdegree)
-    
-    xp,yp= np.mgrid[:NX,:NY]
-    pilum = p(xp, yp)
-    
-    ILUM = dict(filtered=filtered,polyfit=pilum,polycoefs=p)
-    
-    return ILUM
-
+#def produce_SingleFlatfield(infits,outfits,settings={},runonTests=False):
+#    """ """
+#    #runonTests = False
+#    
+#    insettings = dict(bmethod='row',bscan='pre',ilumtype='polynomial')
+#    insettings.update(settings)
+#    
+#    print infits
+#    
+#    
+#    ccd = ccdmodule.CCD(infits)
+#    NX,NY = ccd.NAXIS1,ccd.NAXIS2
+#    
+#    # Cosmetic Masking
+#    
+#    if 'cosmetics' in insettings.keys():
+#        cosmeticsmask = insettings['cosmetics'].copy()
+#        ccd.get_mask(cosmeticsmask)
+#    
+#    # Master Bias
+#    
+#    if 'superbias' in insettings.keys():
+#        superbias = insettings['superbias'].copy()
+#        ccd.sub_bias(superbias)
+#    
+#    cube = np.zeros((NX,NY,3),dtype='float32')
+#    
+#    bmethod = insettings['bmethod']
+#    bscan = insettings['bscan']
+#    filtertype = insettings['filtertype']
+#    ilumtype = insettings['ilumtype']
+#    
+#    for Quad in Quads:
+#        
+#        B = ccdmodule.QuadBound[Quad]
+#        
+#        #print 'OBSID=%i, Q=%s' % (OBSID,Quad)
+#        
+#        ccd.sub_offset(Quad,method=bmethod,scan=bscan)
+#        
+#        img = ccd.get_quad(Quad,canonical=True).copy()
+#        
+#        stripedimg = img[ccdmodule.prescan:ccdmodule.imgarea[0]+ccdmodule.prescan,:]
+#        
+#        if ilumtype == 'polynomial':
+#            ILUM = get_ilum(stripedimg,pdegree=5,filtsize=15,filtertype=filtertype,Tests=runonTests)
+#        elif ilumtype == 'spline':
+#            ILUM = get_ilum_splines(stripedimg,filtsize=25,filtertype=filtertype,Tests=runonTests)
+#            
+#        #divbyfiltered = np.zeros_like(img)
+#        filtered = np.zeros_like(img)
+#        #divbypoly = np.zeros_like(img)
+#        poly = np.zeros_like(img)
+#        #divfiltbypoly = np.zeros_like(img)
+#        
+#        #divbyfiltered[51:2048+51,:] = stripedimg / ILUM['filtered']
+#        
+#        filtered[ccdmodule.prescan:ccdmodule.imgarea[0]+ccdmodule.prescan,:] = ILUM['filtered'].copy()
+#
+#        #divbypoly[51:2048+51,:] = stripedimg / ILUM['polyfit']
+#        poly[ccdmodule.prescan:ccdmodule.imgarea[0]+ccdmodule.prescan,:] = ILUM['polyfit'].copy()
+#        #divfiltbypoly[51:2048+51,:] = ILUM['filtered']/ILUM['polyfit']
+#        
+#        
+#        if Quad == 'E': 
+#            cube[B[0]:B[1],B[2]:B[3],0] = img[:,::-1].copy()
+#            cube[B[0]:B[1],B[2]:B[3],1] = filtered[:,::-1].copy()
+#            cube[B[0]:B[1],B[2]:B[3],2] = poly[:,::-1].copy()
+#        elif Quad == 'F': 
+#            cube[B[0]:B[1],B[2]:B[3],0] = img[::-1,::-1].copy()
+#            cube[B[0]:B[1],B[2]:B[3],1] = filtered[::-1,::-1].copy()
+#            cube[B[0]:B[1],B[2]:B[3],2] = poly[::-1,::-1].copy()
+#        elif Quad == 'G': 
+#            cube[B[0]:B[1],B[2]:B[3],0] = img[::-1,:].copy()
+#            cube[B[0]:B[1],B[2]:B[3],1] = filtered[::-1,:].copy()
+#            cube[B[0]:B[1],B[2]:B[3],2] = poly[::-1,:].copy()
+#        elif Quad == 'H': 
+#            cube[B[0]:B[1],B[2]:B[3],0] = img.copy()
+#            cube[B[0]:B[1],B[2]:B[3],1] = filtered.copy()
+#            cube[B[0]:B[1],B[2]:B[3],2] = poly.copy()
+#    
+#    
+#    hdu = fts.PrimaryHDU()
+#    hdulist = fts.HDUList([hdu])
+#    
+#    hdulist.append(fts.ImageHDU(cube.transpose()))
+#    #hdulist.append(fts.ImageHDU(divbyfiltered.transpose()))
+#    #hdulist.append(fts.ImageHDU(filtered.transpose()))
+#    #hdulist.append(fts.ImageHDU(divbypoly.transpose()))
+#    #hdulist.append(fts.ImageHDU(poly.transpose()))
+#    #hdulist.append(fts.ImageHDU(divfiltbypoly.transpose()))
+#    hdulist.writeto(outfits,clobber=True)
 
 
 def produce_SingleFlatfield(infits,outfits,settings={},runonTests=False):
     """ """
     #runonTests = False
     
-    insettings = dict(bmethod='row',bscan='pre',ilumtype='polynomial')
+    insettings = dict(kind='spline',splinemethod='cubic',
+                      doFilter=True,filtsize=50,filtertype='mean')
     insettings.update(settings)
     
-    print infits
+    ccdin = cPickleRead(infits)['ccdobj']
     
+    shape = ccdin.shape
     
-    ccd = ccdmodule.CCD(infits)
-    NX,NY = ccd.NAXIS1,ccd.NAXIS2
-    
-    # Cosmetic Masking
-    
-    if 'cosmetics' in insettings.keys():
-        cosmeticsmask = insettings['cosmetics'].copy()
-        ccd.get_mask(cosmeticsmask)
-    
-    # Master Bias
-    
-    if 'superbias' in insettings.keys():
-        superbias = insettings['superbias'].copy()
-        ccd.sub_bias(superbias)
-    
-    cube = np.zeros((NX,NY,3),dtype='float32')
-    
-    bmethod = insettings['bmethod']
-    bscan = insettings['bscan']
-    filtertype = insettings['filtertype']
-    ilumtype = insettings['ilumtype']
-    
-    for Quad in Quads:
+    ccdout = ccdmodule.CCD()
+    ccdout.shape = shape
+    ccdout.NAXIS1 = ccdin.NAXIS1
+    ccdout.NAXIS2 = ccdin.NAXIS2
+    ccdout.prescan = ccdin.prescan
+    ccdout.overscan = ccdin.overscan
         
-        B = ccdmodule.QuadBound[Quad]
+    ccdout.add_extension(np.ones(shape,dtype='float32'),label='FLAT')
+    ccdout.add_extension(np.zeros(shape,dtype='float32'),label='MODEL')
+    
+    
+    
+    for Q in Quads:
+    
+        Qregmodel = ccdin.get_region2Dmodel(Q,area='img',vstart=0,vend=2066,
+                              canonical=True,extension=-1,
+                              **insettings)
         
-        #print 'OBSID=%i, Q=%s' % (OBSID,Quad)
+        # Set 1st Extension: image
         
-        ccd.sub_offset(Quad,method=bmethod,scan=bscan)
+        Qimg = ccdin.get_quad(Q,canonical=True,extension=-1).copy()
+        QFF = np.ones_like(Qimg)
+        QFF[ccdin.prescan:-ccdin.overscan,0:2066] = Qimg[ccdin.prescan:-ccdin.overscan,0:2066].copy()
         
-        img = ccd.get_quad(Quad,canonical=True).copy()
+        ccdout.set_quad(QFF,Q,canonical=True,extension=0)
         
-        stripedimg = img[ccdmodule.prescan:ccdmodule.imgarea[0]+ccdmodule.prescan,:]
+        # Set 2nd Extension: model
         
-        if ilumtype == 'polynomial':
-            ILUM = get_ilum(stripedimg,pdegree=5,filtsize=15,filtertype=filtertype,Tests=runonTests)
-        elif ilumtype == 'spline':
-            ILUM = get_ilum_splines(stripedimg,filtsize=25,filtertype=filtertype,Tests=runonTests)
-            
-        #divbyfiltered = np.zeros_like(img)
-        filtered = np.zeros_like(img)
-        #divbypoly = np.zeros_like(img)
-        poly = np.zeros_like(img)
-        #divfiltbypoly = np.zeros_like(img)
+        QMod = np.ones(Qimg.shape,dtype='float32')
+        QMod[ccdout.prescan:-ccdout.overscan,0:2066] = Qregmodel.imgmodel.copy()
         
-        #divbyfiltered[51:2048+51,:] = stripedimg / ILUM['filtered']
+        ccdout.set_quad(QMod,Q,canonical=True,extension=1)
         
-        filtered[ccdmodule.prescan:ccdmodule.imgarea[0]+ccdmodule.prescan,:] = ILUM['filtered'].copy()
+        # divide image by model
+        
+        ccdout.divide_by_flatfield(QMod,extension=0)
+    
+    
+    ccdout.writeto(outfits,clobber=True)
+    
+    return None
 
-        #divbypoly[51:2048+51,:] = stripedimg / ILUM['polyfit']
-        poly[ccdmodule.prescan:ccdmodule.imgarea[0]+ccdmodule.prescan,:] = ILUM['polyfit'].copy()
-        #divfiltbypoly[51:2048+51,:] = ILUM['filtered']/ILUM['polyfit']
-        
-        
-        if Quad == 'E': 
-            cube[B[0]:B[1],B[2]:B[3],0] = img[:,::-1].copy()
-            cube[B[0]:B[1],B[2]:B[3],1] = filtered[:,::-1].copy()
-            cube[B[0]:B[1],B[2]:B[3],2] = poly[:,::-1].copy()
-        elif Quad == 'F': 
-            cube[B[0]:B[1],B[2]:B[3],0] = img[::-1,::-1].copy()
-            cube[B[0]:B[1],B[2]:B[3],1] = filtered[::-1,::-1].copy()
-            cube[B[0]:B[1],B[2]:B[3],2] = poly[::-1,::-1].copy()
-        elif Quad == 'G': 
-            cube[B[0]:B[1],B[2]:B[3],0] = img[::-1,:].copy()
-            cube[B[0]:B[1],B[2]:B[3],1] = filtered[::-1,:].copy()
-            cube[B[0]:B[1],B[2]:B[3],2] = poly[::-1,:].copy()
-        elif Quad == 'H': 
-            cube[B[0]:B[1],B[2]:B[3],0] = img.copy()
-            cube[B[0]:B[1],B[2]:B[3],1] = filtered.copy()
-            cube[B[0]:B[1],B[2]:B[3],2] = poly.copy()
-    
-    
-    hdu = fts.PrimaryHDU()
-    hdulist = fts.HDUList([hdu])
-    
-    hdulist.append(fts.ImageHDU(cube.transpose()))
-    #hdulist.append(fts.ImageHDU(divbyfiltered.transpose()))
-    #hdulist.append(fts.ImageHDU(filtered.transpose()))
-    #hdulist.append(fts.ImageHDU(divbypoly.transpose()))
-    #hdulist.append(fts.ImageHDU(poly.transpose()))
-    #hdulist.append(fts.ImageHDU(divfiltbypoly.transpose()))
-    hdulist.writeto(outfits,clobber=True)
 
 
 def _produce_SingleFlatfield(args):
@@ -344,12 +402,7 @@ def produce_MasterFlat(infitsList,outfits,mask=None,settings={}):
 
 class FlatField(ccdmodule.CCD,object):
     """ """
-
-# Master
-#     hdu.header.add_history('Extension 1: Flat')
-#    hdu.header.add_history('Extension 2: eFlat')
-#    What about a Mask?: Extension 3: Mask
-
+    
 
     def __init__(self,fitsfile='',data=dict(),meta=dict(),withpover=True):
         """ """

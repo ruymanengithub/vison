@@ -19,7 +19,7 @@ import numpy as np
 from pdb import set_trace as stop
 import os
 import datetime
-from copy import deepcopy
+import copy
 from collections import OrderedDict
 
 from vison.support import context
@@ -27,7 +27,7 @@ from vison.pipe import lib as pilib
 from vison.ogse import ogse
 from vison.point import lib as polib
 from vison.datamodel import  scriptic as sc
-#from vison.pipe import FlatFielding as FFing
+from vison.pipe import FlatFielding as FFing
 #from vison.support.report import Report
 #from vison.support import files
 from vison.datamodel import ccd
@@ -92,7 +92,8 @@ class FLAT0X(FlatTask):
                     ('prmask',self.do_prdef_mask)]
         self.HKKeys = HKKeys
         self.figdict = FL0Xaux.gt_FL0Xfigs(self.inputs['test'])
-        self.inputs['subpaths'] = dict(figs='figs',ccdpickles='ccdpickles')
+        self.inputs['subpaths'] = dict(figs='figs',ccdpickles='ccdpickles',
+                   ccdflats='ccdflats')
         
    
     def set_inpdefaults(self,**kwargs):
@@ -210,9 +211,54 @@ class FLAT0X(FlatTask):
         
         """
         
-        stop()
+        if self.report is not None: self.report.add_Section(keyword='indivFF',Title='Individual Flat-Fields',level=0)    
         
-        raise NotImplementedError
+        # INITIALISATION
+        
+        indices = copy.deepcopy(self.dd.indices)
+        
+        ObsIDs = indices[indices.names.index('ObsID')].vals
+        CCDs = indices[indices.names.index('CCD')].vals
+        
+        ccdindices = copy.deepcopy(self.dd.mx['CCD'].indices)
+        
+        self.dd.initColumn('indiv_flats',ccdindices,dtype='S100',valini='None')
+        
+        
+        # The heavy-lifting
+        
+        if not self.drill:
+            
+            
+            dpath = self.inputs['subpaths']['ccdpickles']
+            fpath = self.inputs['subpaths']['ccdflats']
+            
+            fullinpath_adder = lambda path: os.path.join(dpath,path)
+            vfullinpath_adder = np.vectorize(fullinpath_adder)
+            fccdobj_names = vfullinpath_adder(self.dd.mx['ccdobj_name'])
+            
+            wavelength = self.inputs['wavelength']
+            
+            for iObs,ObsID in enumerate(ObsIDs):
+                
+                for jCCD,CCD in enumerate(CCDs):
+                    ilabel = self.dd.mx['label'][iObs,jCCD]
+                    
+                    self.dd.mx['indiv_flats'][iObs,jCCD] = 'EUC_FF_%inm_%s_ROE1_%s.pick' %\
+                              (wavelength,ilabel,ObsID,CCD)
+                    
+            fulloutpath_adder = lambda path: os.path.join(fpath,path)
+            vfulloutpath_adder = np.vectorize(fulloutpath_adder)
+            findiv_flats = vfulloutpath_adder(self.dd.mx['indiv_flats'])
+            
+            ffsettings = dict()
+            
+            FFing.produce_IndivFlats(fccdobj_names.flatten(),findiv_flats.flatten(),
+                                     settings=ffsettings,
+                                     runonTests=False,
+                                     processes=self.processes)
+            
+            
         
         
     def do_master_flat(self):
@@ -233,7 +279,53 @@ class FLAT0X(FlatTask):
         
         """
         
-        raise NotImplementedError
+        if self.report is not None: self.report.add_Section(keyword='MasterFF',Title='Master Flat-Fields',level=0)    
+        
+        wavelength = self.inputs['wavelength']
+        settings = dict()
+        
+                
+        indices = copy.deepcopy(self.dd['indiv_flats'].indices)
+        #ObsIDs = indices[indices.names.index('ObsID')].vals
+        CCDs = indices[indices.names.index('CCD')].vals
+        
+        dpath = self.inputs['subpaths']['ccdflats']
+        cdppath = self.inputs['subpaths']['cdps']
+        
+        labels = self.dd.mx['label'][:].copy()
+        ulabels = np.unique(labels)
+        
+        if not self.drill:
+            
+            self.dd.products['MasterFFs'] = OrderedDict()
+            
+            for ulabel in ulabels:
+                
+                self.dd.products['MasterFFs'][ulabel] = OrderedDict()
+            
+                for jCCD,CCD in enumerate(CCDs):
+                    
+                    FFname = 'EUC_FF_%inm_%s_ROE1_%s.fits' % \
+                                          (wavelength,ulabel,CCD)
+                    
+                    FFpath = os.path.join(cdppath,FFname)
+                    
+                    selix = np.where((labels==ulabel) & (CCDs==CCD))
+                    
+                    FFlist = self.dd.mx['indiv_flats'][selix].flatten().copy()
+                    fullinpath_adder = lambda path: os.path.join(dpath,path)
+                    vfullinpath_adder = np.vectorize(fullinpath_adder)
+                    FFlist = vfullinpath_adder(FFlist)
+                    
+                    FFing.produce_MasterFlat(FFlist,FFpath,mask=None,settings=settings)
+                    
+                    self.dd.products['MasterFFs'][ulabel][CCD] = FFpath
+                                        
+                    # Measure Flat-Field (PRNU)
+
+        # REPORT results
+        
+        # SHOW FFs
     
     
     def do_prdef_mask(self):

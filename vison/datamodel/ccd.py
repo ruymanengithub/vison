@@ -234,6 +234,12 @@ class CCD(object):
         self.extensions.append(Extension(data,header,label,headerdict))
         self.nextensions += 1
     
+    def del_extension(self,extension):
+        """ """
+        
+        self.extensions.pop(extension)
+        self.nextensions -= 1
+    
     def set_extension(self,data,header=None,label=None,headerdict=None,extension=-1):
         assert data.shape == self.shape
         self.extensions[extension] = Extension(data,header,label,headerdict)

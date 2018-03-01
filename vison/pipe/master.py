@@ -101,7 +101,8 @@ class Pipe(object):
     for temp in [150,156]:
         Test_dict['PSF02_%iK' % temp] = PSF0X
     
-    def __init__(self,inputdict,dolog=True,drill=False,debug=False,startobsid=0):
+    def __init__(self,inputdict,dolog=True,drill=False,debug=False,startobsid=0,
+                 processes=1):
         """ """
         
         self.inputs = defaults.copy()
@@ -112,6 +113,7 @@ class Pipe(object):
         self.drill = drill
         self.debug = debug
         self.startobsid = startobsid
+        self.processes = processes
         
         if self.debug:
             self.ID = 'PipeDebug'
@@ -271,6 +273,7 @@ class Pipe(object):
             Test.ID = self.ID
             Test.BLOCKID = self.BLOCKID
             Test.CHAMBER = self.CHAMBER
+            Test.processes = self.processes
             Test()
         except:
             self.catchtraceback()
