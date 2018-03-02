@@ -244,7 +244,7 @@ class FLAT0X(FlatTask):
                 for jCCD,CCD in enumerate(CCDs):
                     ilabel = self.dd.mx['label'][iObs,jCCD]
                     
-                    self.dd.mx['indiv_flats'][iObs,jCCD] = 'EUC_FF_%inm_%s_ROE1_%s.pick' %\
+                    self.dd.mx['indiv_flats'][iObs,jCCD] = 'EUC_FF_%inm_%s_ROE1_%s.fits' %\
                               (wavelength,ilabel,ObsID,CCD)
                     
             fulloutpath_adder = lambda path: os.path.join(fpath,path)
