@@ -229,7 +229,8 @@ class CCD(object):
     
     def add_extension(self,data,header=None,label=None,headerdict=None):
         """ """
-        assert data.shape == self.shape
+        if data is not None:
+            assert data.shape == self.shape
         
         self.extensions.append(Extension(data,header,label,headerdict))
         self.nextensions += 1

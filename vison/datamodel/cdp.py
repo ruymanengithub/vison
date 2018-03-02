@@ -16,6 +16,7 @@ Created on Tue Feb 27 10:58:42 2018
 # IMPORT STUFF
 from pdb import set_trace as stop
 from collections import OrderedDict
+import  copy
 
 from vison import __version__
 from vison.support.files import cPickleDumpDictionary, cPickleRead
@@ -27,23 +28,28 @@ def loadCDPfromPickle(pickf):
     cdp = cPickleRead(pickf)
     return cdp
 
-class CDP(OrderedDict):
+class CDP(object):
     """ """
     
-    def __init__(self,data=OrderedDict(),meta=OrderedDict(),ID=None,BLOCKID=None,CHAMBER=None):
+    #def __init__(self,data=OrderedDict(),meta=OrderedDict(),ID=None,BLOCKID=None,CHAMBER=None):
+    def __init__(self,*args,**kwargs):
         """ """
         
-        self.ID = ID
-        self.BLOCKID = BLOCKID
-        self.CHAMBER = CHAMBER
+        inputs = dict(ID=None,BLOCKID=None,CHAMBER=None)
+        inputs.update(args)
+        inputs.update(kwargs)
+        
+        self.ID = inputs['ID']
+        self.BLOCKID = inputs['BLOCKID']
+        self.CHAMBER = inputs['CHAMBER']
         self.vison = __version__
         
-        self.data = data.copy()
-        self.meta = meta.copy()
+        #self.data = copy.deepcopy(data)
+        #self.meta = copy.deepcopy(meta)
         
         
     def savetopickle(self,pickf):
-        """ """        
+        """ """
         cPickleDumpDictionary(self,pickf)
     
     

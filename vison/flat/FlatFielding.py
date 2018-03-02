@@ -25,6 +25,7 @@ import vison
 from vison.datamodel import ccd as ccdmodule
 from vison.datamodel.cdp import  CDP as CDPClass
 from vison.support.files import  cPickleRead
+from vison import __version__
 
 from scipy import ndimage as nd
 #from scipy import signal
@@ -306,6 +307,99 @@ def produce_IndivFlats(infitsList,outfitsList,settings,runonTests,processes=6):
     pool.map(_produce_SingleFlatfield, arglist)
     
     
+#def produce_MasterFlat(infitsList,outfits,mask=None,settings={}):
+#    """Produces a Master Flat out of a number of flat-illumination exposures.
+#    Takes the outputs from produce_IndivFlats."""
+#    
+#    insettings = dict(ilum='fit')
+#    insettings.update(settings)
+#    
+#    NAXIS1 = ccdmodule.NAXIS1/2
+#    NAXIS2 = ccdmodule.NAXIS2/2
+#    
+#    mflat = np.zeros((NAXIS1*2,NAXIS2*2))
+#    eflat = np.zeros((NAXIS1*2,NAXIS2*2)) 
+#    
+#    nin = len(infitsList)
+#    
+#    for Quad in Quads:
+#        
+#        B = ccdmodule.QuadBound[Quad]
+#        x0 = B[0]
+#        x1 = B[1]
+#        y0 = B[2]
+#        y1 = B[3]
+#    
+#        cubeflat = np.zeros((NAXIS1,NAXIS2,len(infitsList)))
+#        
+#        for ix in range(nin):
+#        
+#            print 'Loading img %i of %i..., Q=%s' % (ix+1,nin,Quad)
+#            inhdulist = fts.open(infitsList[ix])
+#        
+#            #for Quad in Quads:
+#            #    cubeflat = np.zeros((2119,2066,len(list_ffits)))
+#            img = inhdulist[1].data.transpose()[:,:,0].copy() # offset-subtracted exposure
+#            filtered = inhdulist[1].data.transpose()[:,:,1].copy() # medianfiltered bias-sub exposure
+#            polyfit = inhdulist[1].data.transpose()[:,:,2].copy() # polynomial fit to  bias-sub exposure
+#            #iflat = np.zeros_like(img)
+#            #iflat[51:2048+51,:] = img[51:2048+51,:]/filtered[51:2048+51,:]
+#        
+#            inhdulist.close()
+#            
+#            
+#            if insettings['ilum'] == 'fit': subdivimg = img[x0:x1,y0:y1] / polyfit[x0:x1,y0:y1]
+#            elif insettings['ilum'] == 'filtered': subdivimg = img[x0:x1,y0:y1] / filtered[x0:x1,y0:y1]    
+#            
+#            if mask is not None:
+#               subdivimg = np.ma.masked_array(subdivimg,mask[x0:x1,y0:y1])
+#               subdivimg[np.where(subdivimg.mask)] = 0
+#            
+#            subdivimg[np.where(np.isinf(subdivimg))] = 0
+#            
+#            cubeflat[:,:,ix] = subdivimg
+#
+#            #cubeflat[:,:,iOBS] = np.zeros((NAXIS1*2,NAXIS2*2))
+#        
+#        
+#        qflat = np.zeros((NAXIS1,NAXIS2))
+#        eqflat = np.zeros((NAXIS1,NAXIS2))
+#        
+#        for ix in range(NAXIS1):
+#            qflat[ix,:] = np.nanmedian(cubeflat[ix,:,:],axis=1)
+#            eqflat[ix,:] = np.nanstd(cubeflat[ix,:,:],axis=1)/np.sqrt(nin)
+#        
+#        mflat[x0:x1,y0:y1] = qflat.copy()
+#        eflat[x0:x1,y0:y1] = eqflat.copy()
+#    
+#    
+#    hdu = fts.PrimaryHDU()
+#    
+#    if 'header' in insettings:
+#        for key in insettings['header'].keys():
+#            hdu.header[key] = insettings['header'][key]
+#    
+#    hdu.header['NCOMB'] = nin 
+#    hdu.header['ILUM'] = settings['ilum']
+#    hdu.header.add_history('Master FLAT')
+#    hdu.header.add_history('Extension 1: FLAT')
+#    hdu.header.add_history('Extension 2: eFLAT')
+#    hdu.header.add_history('CCD273 EM1A Characterization Campaign')
+#    hdu.header.add_history('Created by vison (version=%s) at %s' % (vison.__version__, datetime.datetime.isoformat(datetime.datetime.now())))
+#    hdu.header.add_history('Further Info: Ruyman Azzollini (r.azzollini_at_mssl.ucl.ac.uk)')
+#    
+#    hdulist = fts.HDUList([hdu])
+#    
+#    mhdu = fts.ImageHDU(mflat.transpose())
+#    mhdu.header['EXTNAME'] = 'FLAT'    
+#    hdulist.append(mhdu)
+#    ehdu = fts.ImageHDU(eflat.transpose())
+#    ehdu.header['EXTNAME'] = 'Uncertainty'
+#    hdulist.append(ehdu)
+#    #hdulist.append(fts.ImageHDU(filtmflat.transpose()))
+#        
+#    hdulist.writeto(outfits,clobber=True)
+
 def produce_MasterFlat(infitsList,outfits,mask=None,settings={}):
     """Produces a Master Flat out of a number of flat-illumination exposures.
     Takes the outputs from produce_IndivFlats."""
@@ -400,21 +494,23 @@ def produce_MasterFlat(infitsList,outfits,mask=None,settings={}):
     hdulist.writeto(outfits,clobber=True)
 
 
-class FlatField(ccdmodule.CCD,object):
+class FlatField(ccdmodule.CCD,CDPClass):
     """ """
-    
 
-    def __init__(self,fitsfile='',data=dict(),meta=dict(),withpover=True):
+    def __init__(self,fitsfile='',data=dict(),meta=dict(),withpover=True,ID=None,BLOCKID=None,CHAMBER=None):
         """ """
+        
+        self.BLOCKID = BLOCKID
+        self.ID = ID
+        self.CHAMBER = CHAMBER
+        self.vison = __version__
         
         #super(FlatField,self).__init__(infits=None)        
         print 'TODO: FlatFielding.FlatField needs improvemenents: masking'
         
         if fitsfile != '':
             super(FlatField,self).__init__(infits=fitsfile,getallextensions=True,withpover=withpover)
-            #self.loadfromFITS(fitsfile=fitsfile,getallextensions=True)            
-            self.parse_fits()
-            
+            self.parse_fits()            
         else:
             super(FlatField,self).__init__(infits=None,withpover=withpover)
             
@@ -428,16 +524,12 @@ class FlatField(ccdmodule.CCD,object):
             assert 'WAVEL' in meta.keys()
             self.wavelength = meta['WAVEL']
             
-            
             self.add_extension(data=None,header=None,label=None,headerdict=meta)            
             self.add_extension(data=data['Flat'].copy(),label='FLAT')
             self.add_extension(data=data['eFlat'].copy(),label='EFLAT')
             
             if 'Mask' in data.keys():
                 self.add_extension(data=data['Mask'].copy(),label='MASK')
-            
-            
-    
     
     def parse_fits(self,):
         """ """

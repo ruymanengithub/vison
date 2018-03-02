@@ -63,7 +63,7 @@ FLU_lims = dict(CCD1= dict(
                     col1=0.25 * 2**16 * (1.+np.array([-0.10,0.10])),
                     col2=0.50 * 2**16 * (1.+np.array([-0.10,0.10])),
                     col3=0.75 * 2**16 * (1.+np.array([-0.10,0.10]))))
-for i in [2,3]: FLU_lims['CCD%i' % i] = deepcopy(FLU_lims['CCD1'])
+for i in [2,3]: FLU_lims['CCD%i' % i] = copy.deepcopy(FLU_lims['CCD1'])
 
 class FLATS0X_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
@@ -151,7 +151,7 @@ class FLAT0X(FlatTask):
         Ncols = len(FLAT0X_sdict.keys())    
         FLAT0X_sdict['Ncols'] = Ncols
                     
-        commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+        commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(FLAT0X_commvalues)
         
         if len(diffvalues)==0:
@@ -258,7 +258,11 @@ class FLAT0X(FlatTask):
                                      runonTests=False,
                                      processes=self.processes)
             
+            # MISSING: 1D profiles. Do as part of produce_IndivFlats, or separate?
             
+        
+            # Show 1D Profiles for each fluence across CCDs: 
+            #   2 profiles x N-fluences = 2N plots (each with 4Qx3CCD subplots)
         
         
     def do_master_flat(self):
@@ -297,13 +301,19 @@ class FLAT0X(FlatTask):
         
         if not self.drill:
             
+            PRNU = OrderedDict()
+            
             self.dd.products['MasterFFs'] = OrderedDict()
             
             for ulabel in ulabels:
                 
+                PRNU[ulabel] = OrderedDict()
+                
                 self.dd.products['MasterFFs'][ulabel] = OrderedDict()
             
                 for jCCD,CCD in enumerate(CCDs):
+                    
+                    PRNU[ulabel][CCD] = OrderedDict()
                     
                     FFname = 'EUC_FF_%inm_%s_ROE1_%s.fits' % \
                                           (wavelength,ulabel,CCD)
@@ -317,15 +327,35 @@ class FLAT0X(FlatTask):
                     vfullinpath_adder = np.vectorize(fullinpath_adder)
                     FFlist = vfullinpath_adder(FFlist)
                     
+                    # MISSING: proper defects and useful area masking 
+                    #   (mask-out pre/over scans)
+                    
                     FFing.produce_MasterFlat(FFlist,FFpath,mask=None,settings=settings)
                     
                     self.dd.products['MasterFFs'][ulabel][CCD] = FFpath
                                         
-                    # Measure Flat-Field (PRNU)
+                    # Measure Flat-Field (PRNU): per-Q
+                    
+                    FF = FFing.FlatField(FFpath)
+                    
+                    iFextension = FF.extnames.index('FLAT')
+                    
+                    Quads = FF.Quads
+                    
+                    for Q in Quads:
+                        
+                        iQ_PRNU = FF.get_stats(Q,sector='img',statkeys=['std'],
+                                             ignore_pover=True,
+                                             extension=iFextension)[0]
+                        
+                        PRNU[ulabel][CCD][Q] = iQ_PRNU
+        
 
-        # REPORT results
+        # REPORT PRNU results
         
         # SHOW FFs
+        
+        
     
     
     def do_prdef_mask(self):
