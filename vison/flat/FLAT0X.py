@@ -244,7 +244,7 @@ class FLAT0X(FlatTask):
         
             Produces mask of defects in Photo-Response
             Could use master FF, or a stack of a subset of images (in order
-            to process faster).
+            to produce mask, needed by other tasks, quicker).
             
             f.e.CCD:
                 f.e.Q:
