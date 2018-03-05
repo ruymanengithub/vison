@@ -53,5 +53,6 @@ def fitPTC(means,var):
 
 
 def foo_bloom(means,var):
+    """DUMMY function (PLACE-HOLDER)"""
     res = dict(bloom = np.nan)
     return res

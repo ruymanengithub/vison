@@ -34,7 +34,7 @@ def wrap_fitNL(raw_data,exptimes,col_labels,times=[],TrackFlux=True,subBgd=True)
         pass
     
     if TrackFlux:
-        
+        pass
     
     
     

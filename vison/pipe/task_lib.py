@@ -140,6 +140,24 @@ def filterexposures(self,structure,explogf,datapath,OBSID_lims,colorblind=False,
                                            wavedkeys=wavedkeys)
     
     # Labeling of exposures
+    
+    explog = self.add_labels_to_explog(explog,structure)
+    
+#    explog['label'] = np.array(['NoneNoneNone']*len(explog))
+#    
+#    frcounter = 0
+#    for ic in range(1,Ncols+1):
+#        _frames = structure['col%i' % ic]['frames']
+#        #print frcounter,frcounter+_frames*3
+#        explog['label'][frcounter:frcounter+_frames*3] = 'col%i' % ic
+#        frcounter += _frames*3
+    
+    return explog, checkreport
+
+def add_labels_to_explog(self,explog,structure):
+    """ """
+    Ncols = structure['Ncols']
+    
     explog['label'] = np.array(['NoneNoneNone']*len(explog))
     
     frcounter = 0
@@ -149,7 +167,8 @@ def filterexposures(self,structure,explogf,datapath,OBSID_lims,colorblind=False,
         explog['label'][frcounter:frcounter+_frames*3] = 'col%i' % ic
         frcounter += _frames*3
     
-    return explog, checkreport
+    return explog
+    
 
 
 def addHKPlotsMatrix(self):

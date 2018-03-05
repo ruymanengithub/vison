@@ -36,18 +36,16 @@ import copy
 from collections import OrderedDict
 
 from vison.support import context
-from vison.pipe import lib as pilib
 from vison.ogse import ogse
-from vison.point import lib as polib
 from vison.datamodel import  scriptic as sc
-import FlatFielding as FFing
-from vison.support.report import Report
 from vison.support import files
 #from vison.pipe.task import Task
 from FlatTask import FlatTask
 from vison.image import performance
-from vison.datamodel import inputs
+from vison.datamodel import inputs, core
+from vison.datamodel import ccd as ccdmodule
 import NL01aux
+import nl as nllib
 # END IMPORT
 
 isthere = os.path.exists
@@ -163,13 +161,13 @@ class NL01(FlatTask):
     
             iexp = expts[ix]
             
-            colkeyFlu = 'col%i' % (ix*2+2,)
+            colkeyFlu = 'col%i' % (ix*2+3,)
         
             NL01_sdict[colkeyFlu] = dict(frames=ifra,exptime=iexp,comment='Fluence%i' % (ix+1,))
             
-            colkeySta = 'col%i' % (ix*2+2+1,)
+            colkeySta = 'col%i' % (ix*2+3+1,)
         
-            NL01_sdict[colkeySta] = dict(frames=1,exptime=exptinter,comment='STA')
+            NL01_sdict[colkeySta] = dict(frames=1,exptime=exptinter,comment='STAB')
         
     
         Ncols = len(NL01_sdict.keys())    
@@ -185,7 +183,6 @@ class NL01(FlatTask):
         NL01_sdict = sc.update_structdict(NL01_sdict,commvalues,diffvalues)
         
         return NL01_sdict
-    
     
     def filterexposures(self,structure,explogf,datapath,OBSID_lims):
         """Loads a list of Exposure Logs and selects exposures from test PSF0X.
@@ -251,7 +248,7 @@ class NL01(FlatTask):
         wpx = 300
         hpx = 300
         
-        label = self.dd.mx['label'][:,0].copy() # labels should be the same accross CCDs. PATCH.
+        #label = self.dd.mx['label'][:,0].copy() # labels should be the same accross CCDs. PATCH.
         ObsIDs = self.dd.mx['ObsID'][:].copy()
         
         indices = copy.deepcopy(self.dd.indices)
@@ -261,7 +258,7 @@ class NL01(FlatTask):
         Quads = indices[indices.names.index('Quad')].vals
         CCDs = indices[indices.names.index('CCD')].vals
                        
-        emptyccdobj = ccd.CCD()    
+        emptyccdobj = ccdmodule.CCD()    
         tile_coos = dict()
         for Quad in Quads:
             tile_coos[Quad] = emptyccdobj.get_tile_coos(Quad,wpx,hpx)
@@ -283,7 +280,7 @@ class NL01(FlatTask):
             
             dpath = self.inputs['subpaths']['ccdpickles']
             
-            for iObs in range(nObs):
+            for iObs,ObsID in enumerate(ObsIDs):
                 
                 for jCCD,CCD in enumerate(CCDs):
                     
@@ -328,7 +325,77 @@ class NL01(FlatTask):
         
         """
         
-        raise NotImplementedError
+        if self.report is not None: self.report.add_Section(keyword='NL',Title='Non-Linearity Analysis',level=0)
+        
+        dIndices = copy.deepcopy(self.dd.indices)
+        CCDs = dIndices[dIndices.names.index('CCD')].vals
+        Quads = dIndices[dIndices.names.index('Quad')].vals   
+        
+        
+        NL_mx = OrderedDict()
+        
+        NL_tmp_keys = ['max_NL']
+        
+        for CCD in CCDs:
+            CCDkey = 'CCD%i' % CCD
+            NL_mx[CCDkey] = dict()
+            for Quad in Quads:
+                NL_mx[CCDkey][Quad] = dict()
+                for key in NL_tmp_keys:
+                    NL_mx[CCDkey][Quad][key] = np.nan
+        
+        
+        # Fitting the NL curves
+        
+        for iCCD, CCD in enumerate(CCDs):
+            
+            CCDkey = 'C%i' % CCD
+            
+            for jQ, Q in enumerate(Quads):
+                
+                raw_med = self.dd.mx['sec_med'][:,iCCD,jQ,:].copy()
+                col_labels = self.dd.mx['label'][:,iCCD].copy()
+                exptimes = self.dd.mx['exptime'][:,iCCD].copy()
+                dtobjs = self.dd.mx['time'][:,iCCD].copy()
+                
+                #ixnonan = np.where(~np.isnan(raw_med))
+                #med = raw_med[ixnonan]
+                
+                # col1 == BGD
+                # colEVEN = STAB
+                # colODD = Fluences != 0
+                
+                
+                _fitresults = nllib.wrap_fitNL(raw_med,exptimes,col_labels,dtobjs,TrackFlux=True,
+                                          subBgd=True)
+                
+                stop()
+                
+                for zx in range(2):
+                    gain_mx[CCDkey][Q]['a%i' % zx] = _fitresults['fit'][2-zx]
+                    gain_mx[CCDkey][Q]['ea%i' % zx] = _fitresults['efit'][2-zx]
+                    
+                gain_mx[CCDkey][Q]['gain'] = _fitresults['gain']
+                gain_mx[CCDkey][Q]['rn'] = _fitresults['rn']
+                gain_mx[CCDkey][Q]['quality'] = _fitresults['quality']
+                
+                
+                _bloom = ptclib.foo_bloom(med,var)
+                
+                bloom_mx[CCDkey][Q]['bloom_ADU'] = _bloom['bloom']
+                bloom_mx[CCDkey][Q]['bloom_ADU'] = _bloom['bloom']
+        
+    
+        self.dd.products['NL'] = copy.deepcopy(NL_mx)
+        
+        # Build Tables
+        
+        # Do plots
+        
+        # Add reports
+
+        
+        
         
     def do_satCTE(self):
         """
