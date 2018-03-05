@@ -325,6 +325,23 @@ class CCD(object):
         return tiles
     
     
+    def get_tiles_stats(self,Quad,tile_coos,statkey,extension=-1):
+        """ """
+        
+        if isinstance(self.extensions[extension].data,np.ma.masked_array):
+            stat_dict = dict(mean=np.ma.mean,median=np.ma.median,std=np.ma.std)
+        else:
+            stat_dict = dict(mean=np.mean,median=np.median,std=np.std)
+            
+        estimator = stat_dict[statkey]
+        
+        tiles = self.get_tiles(Quad,tile_coos,extension=extension)
+        
+        vals = np.array(map(estimator,tiles))
+        
+        return vals
+    
+    
     def get_cutout(self,corners,Quadrant,canonical=False,extension=-1):
         """Returns a cutout from the CCD image, either in 
         canonical or non-canonical orientation.
