@@ -229,10 +229,17 @@ class CCD(object):
     
     def add_extension(self,data,header=None,label=None,headerdict=None):
         """ """
-        assert data.shape == self.shape
+        if data is not None:
+            assert data.shape == self.shape
         
         self.extensions.append(Extension(data,header,label,headerdict))
         self.nextensions += 1
+    
+    def del_extension(self,extension):
+        """ """
+        
+        self.extensions.pop(extension)
+        self.nextensions -= 1
     
     def set_extension(self,data,header=None,label=None,headerdict=None,extension=-1):
         assert data.shape == self.shape
@@ -802,26 +809,36 @@ class CCDPile(CCD):
         self.masked = False
         
         
-    def stack(self,method='median'):
+    def stack(self,method='median',dostd=False):
         """ """
         
         if method == 'median':
             fstack = np.median
         elif method == 'mean':
             fstack = np.mean
+        fstd = np.std
         
         stackimg = np.zeros(self.shape,dtype='float32')
         NAXIS1 = self.NAXIS1
         NAXIS2 = self.NAXIS2
         nimages = self.nextensions
         
+        if dostd:
+            stackstd = np.zeros_like(stackimg,dtype='float32')
+        
         for i in range(NAXIS2):
             imgrow = np.zeros((NAXIS1,nimages),dtype='float32')
             for j in range(nimages):
                 imgrow[:,j] = self.extensions[j].data[:,i]
             stackimg[:,i] = fstack(imgrow,axis=1).copy()
-       
-        return stackimg
+            
+            if dostd:
+                stackstd[:,i] = fstd(imgrow,axis=1).copy()
+        
+        if dostd:
+            return stackimg, stackstd
+        else:
+            return stackimg
      
     
 def test_create_from_scratch():

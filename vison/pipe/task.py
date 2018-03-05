@@ -45,6 +45,7 @@ class Task(object):
         self.ID = None
         self.BLOCKID = None
         self.CHAMBER = None
+        self.processes = 1
         self.internals = dict()
         #self.inputs = dict()
         self.inputs = self.inputsclass()

@@ -12,7 +12,7 @@ import numpy as np
 from pdb import set_trace as stop
 
 
-def cPickleDumpDictionary(dictionary, output):
+def cPickleDumpDictionary(dictionary, output,protocol=2):
     """
     Dumps a dictionary of data to a cPickled file.
 
@@ -22,7 +22,7 @@ def cPickleDumpDictionary(dictionary, output):
     :return: None
     """
     out = open(output, 'wb')
-    cPickle.dump(dictionary, out)
+    cPickle.dump(dictionary, out,protocol=protocol)
     out.close()
 
 
@@ -33,7 +33,7 @@ def cPickleRead(file):
     return cPickle.load(open(file))
 
 
-def cPickleDump(data, output):
+def cPickleDump(data, output,protocol=2):
     """
     Dumps data to a cPickled file.
 
@@ -43,7 +43,7 @@ def cPickleDump(data, output):
     :return: None
     """
     out = open(output, 'wb')
-    cPickle.dump(data, out)
+    cPickle.dump(data, out,protocol=protocol)
     out.close()
 
 def convert_fig_to_eps(figname):
