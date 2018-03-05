@@ -202,9 +202,6 @@ class NL01(FlatTask):
         return super(NL01,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
                               wavedkeys=wavedkeys)
         
-    
-    
-    
     def prep_data(self):
         """
         
@@ -218,10 +215,14 @@ class NL01(FlatTask):
                 f.e.CCD:
                     f.e.Q:
                         subtract offset
-                        opt: [sub bias frame] 
+                    opt: [sub bias frame]
+                    opt: [divide by FF]
+                    opt: [mask-out defects]
         
         """
-        raise NotImplementedError
+        super(NL01,self).prepare_images(doExtract=True,doMask=True,
+             doOffset=True,doBias=True,doFF=True)
+        
         
     def extract_stats(self):
         """
@@ -244,8 +245,66 @@ class NL01(FlatTask):
     
         """
         
-        raise NotImplementedError
-    
+        if self.report is not None: self.report.add_Section(keyword='extract',Title='Image Extraction',level=0)  
+        
+        # HARDWIRED VALUES
+        wpx = 300
+        hpx = 300
+        
+        label = self.dd.mx['label'][:,0].copy() # labels should be the same accross CCDs. PATCH.
+        ObsIDs = self.dd.mx['ObsID'][:].copy()
+        
+        indices = copy.deepcopy(self.dd.indices)
+        
+        nObs, nCCD, nQuad = indices.shape
+        
+        Quads = indices[indices.names.index('Quad')].vals
+        CCDs = indices[indices.names.index('CCD')].vals
+                       
+        emptyccdobj = ccd.CCD()    
+        tile_coos = dict()
+        for Quad in Quads:
+            tile_coos[Quad] = emptyccdobj.get_tile_coos(Quad,wpx,hpx)
+        Nsectors = tile_coos[Quads[0]]['Nsamps']    
+        sectornames = np.arange(Nsectors)
+        
+        Sindices = copy.deepcopy(self.dd.indices)
+        if 'Sector' not in Sindices.names:
+            Sindices.append(core.vIndex('Sector',vals=sectornames))
+            
+        # Initializing new columns
+        
+        valini = 0.
+        
+        self.dd.initColumn('sec_med',Sindices,dtype='float32',valini=valini)
+        self.dd.initColumn('sec_var',Sindices,dtype='float32',valini=valini)
+        
+        if not self.drill:
+            
+            dpath = self.inputs['subpaths']['ccdpickles']
+            
+            for iObs in range(nObs):
+                
+                for jCCD,CCD in enumerate(CCDs):
+                    
+                    ccdobj_f = os.path.join(dpath,self.dd.mx['ccdobj_name'][iObs,jCCD])
+                    
+                    ccdobj = copy.deepcopy(files.cPickleRead(ccdobj_f))
+                    
+                    for kQ in range(nQuad):
+                        
+                        Quad = Quads[kQ]
+                        
+                        _tile_coos = tile_coos[Quad]
+                        
+                        _meds = ccdobj.get_tile_stats(Quad,_tile_coos,'median',extension=-1)
+                        _vars = ccdobj.get_tile_stats(Quad,_tile_coos,'std',extension=-1)**2.
+                        
+                        self.dd.mx['sec_med'][iObs,jCCD,kQ,:] = _meds.copy()
+                        self.dd.mx['sec_var'][iObs,jCCD,kQ,:] = _vars.copy()
+            
+        
+        
     
     def produce_NLCs(self):
         """ 
