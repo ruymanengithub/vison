@@ -365,10 +365,9 @@ class NL01(FlatTask):
                 # colEVEN = STAB
                 # colODD = Fluences != 0
                 
-                
+                stop()
                 _fitresults = nllib.wrap_fitNL(raw_med,exptimes,col_labels,dtobjs,TrackFlux=True,
-                                          subBgd=True)
-                
+                                          subBgd=True)                
                 stop()
                 
                 for zx in range(2):
