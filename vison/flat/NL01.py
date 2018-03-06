@@ -334,15 +334,15 @@ class NL01(FlatTask):
         
         NL_mx = OrderedDict()
         
-        NL_tmp_keys = ['max_NL']
+        #NL_tmp_keys = ['maxNLpc','flu_maxNLpc', 'coeffs']
         
         for CCD in CCDs:
             CCDkey = 'CCD%i' % CCD
             NL_mx[CCDkey] = dict()
             for Quad in Quads:
-                NL_mx[CCDkey][Quad] = dict()
-                for key in NL_tmp_keys:
-                    NL_mx[CCDkey][Quad][key] = np.nan
+                NL_mx[CCDkey][Quad] = OrderedDict()
+#                for key in NL_tmp_keys:
+#                    NL_mx[CCDkey][Quad][key] = np.nan
         
         
         # Fitting the NL curves
@@ -362,37 +362,27 @@ class NL01(FlatTask):
                 #med = raw_med[ixnonan]
                 
                 # col1 == BGD
-                # colEVEN = STAB
-                # colODD = Fluences != 0
+                # colEVEN = Fluences != 0
+                # colODD, >1 =  STAB
                 
-                stop()
+                # fitresults = dict(coeffs=NLfit,NLdeg=NLdeg,maxNLpc=maxNLpc,
+                #      flu_maxNLpc=flu_maxNLpc)
                 _fitresults = nllib.wrap_fitNL(raw_med,exptimes,col_labels,dtobjs,TrackFlux=True,
                                           subBgd=True)                
-                stop()
                 
-                for zx in range(2):
-                    gain_mx[CCDkey][Q]['a%i' % zx] = _fitresults['fit'][2-zx]
-                    gain_mx[CCDkey][Q]['ea%i' % zx] = _fitresults['efit'][2-zx]
-                    
-                gain_mx[CCDkey][Q]['gain'] = _fitresults['gain']
-                gain_mx[CCDkey][Q]['rn'] = _fitresults['rn']
-                gain_mx[CCDkey][Q]['quality'] = _fitresults['quality']
-                
-                
-                _bloom = ptclib.foo_bloom(med,var)
-                
-                bloom_mx[CCDkey][Q]['bloom_ADU'] = _bloom['bloom']
-                bloom_mx[CCDkey][Q]['bloom_ADU'] = _bloom['bloom']
-        
+                NL_mx[CCDkey][Quad].update(_fitresults)
     
         self.dd.products['NL'] = copy.deepcopy(NL_mx)
         
         # Build Tables
+        # PENDING
         
         # Do plots
+        # PENDING
         
         # Add reports
-
+        # PENDING
+        
         
         
         

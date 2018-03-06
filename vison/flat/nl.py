@@ -17,6 +17,7 @@ Created on Mon Feb 5 15:51:00 2018
 from pdb import set_trace as stop
 import numpy as np
 import datetime
+from collections import OrderedDict
 #END IMPORT
 
 FullDynRange = 2.**16
@@ -73,7 +74,7 @@ def fitNL(fluences,exptimes):
     maxNLpc = NLpol[ixmax]
     flu_maxNLpc = xNL[ixmax]
     
-    fitresults = dict(coeffs=NLfit,NLdeg=NLdeg,maxNLpc=maxNLpc,
+    fitresults = OrderedDict(coeffs=NLfit,NLdeg=NLdeg,maxNLpc=maxNLpc,
                       flu_maxNLpc=flu_maxNLpc)
     return fitresults
 
