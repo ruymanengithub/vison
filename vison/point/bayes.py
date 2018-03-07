@@ -4,7 +4,7 @@ Bayesian CCD Spot Measurements
 ==============================
 
 
-NEEDS REVISION AND UPGRADES
+NEEDSREVISION AND UPGRADES
 
 TODO: 
     - single fluence multi-spot fitting
