@@ -90,7 +90,8 @@ def convert_compl_to_nesteditemlist(complidict):
     return nesteditemlist
 
 
-def filterexposures(self,structure,explogf,datapath,OBSID_lims,colorblind=False,wavedkeys=[]):
+def filterexposures(self,structure,explogf,datapath,OBSID_lims,colorblind=False,wavedkeys=[],
+                    surrogate=''):
     """Loads a list of Exposure Logs and selects exposures from test 'test'.
     
     The filtering takes into account an expected structure for the 
@@ -112,7 +113,8 @@ def filterexposures(self,structure,explogf,datapath,OBSID_lims,colorblind=False,
     
     Ncols = structure['Ncols']
     
-    testkey = self.inputs['test']
+    if surrogate != '': testkey = surrogate
+    else: testkey = self.inputs['test']
     #testkey = structure['col1']['test']
     
     if not colorblind:
