@@ -307,7 +307,7 @@ class PTC0X(FlatTask):
         
         # Pairing ObsIDs
         
-        self.dd.initColumn('ObsID_pair',self.dd.mx['ObsID'].indices,dtype='int64',valini=0)
+        self.dd.initColumn('ObsID_pair',self.dd.mx['ObsID'].indices,dtype='int64',valini=np.nan)
         
         ulabels = np.unique(label)
         
