@@ -5,8 +5,8 @@ VIS Ground Calibration
 TEST: PTC_0X
 
 Photon-Transfer-Curve Analysis
-   PTC01 - nominal temperature
-   PTC02 - alternative temperatures
+   PTC01 - nominal temperature and wavelength
+   PTC02 - alternative temperatures / wavelengths
 
 Tasks:
 
@@ -242,7 +242,7 @@ class PTC0X(FlatTask):
                               wavedkeys=wavedkeys)
         
     def prepare_images(self):
-        super(PTC0X,self).prepare_images(doExtract=True,doMask=False,
+        super(PTC0X,self).prepare_images(doExtract=True,doMask=True,
              doOffset=True,doBias=False,doFF=False)
     
     
