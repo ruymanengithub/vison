@@ -197,38 +197,74 @@ class BF01(PTC0X):
 
         indices = copy.deepcopy(self.dd.indices)   
         #nObs, nCCD, nQuad = indices.shape
-        CCDs = indices[indices.names.index('CCD')].vals
-        Quads = indices[indices.names.index('Quad')].vals
-                        
+        CCDs = np.array(indices[indices.names.index('CCD')].vals)
+        Quads = np.array(indices[indices.names.index('Quad')].vals)
+        
+        ulabels = np.unique(label)
+        
+        # INITIALISATIONS
+        
+        kernel_FWHMx = np.zeros((len(ulabels),len(CCDs),len(Quads)),dtype='float32')   
+        kernel_FWHMy = np.zeros((len(ulabels),len(CCDs),len(Quads)),dtype='float32')   
+        kernel_e = np.zeros((len(ulabels),len(CCDs),len(Quads)),dtype='float32')         
+        
+        fluence = np.zeros(len(ulabels),dtype='float32') + np.nan
+        
+        self.dd.products['BF'] = OrderedDict()
+        self.dd.products['BF']['ulabels'] = ulabels.copy()
+        self.dd.products['BF']['CCDs'] = CCDs.copy()
+        self.dd.products['BF']['Quads'] = Quads.copy()
+                          
+        for jCCD, CCD in enumerate(CCDs):
+                
+            self.dd.products['BF'][CCD] = OrderedDict()
+                
+            for kQ,Q in enumerate(Quads):
+                    
+                self.dd.products['BF'][CCD][Q] = OrderedDict()
+                
+            self.dd.products['BF']['kernel_FWHMx'] = kernel_FWHMx.copy()
+            self.dd.products['BF']['kernel_FWHMy'] = kernel_FWHMy.copy()
+            self.dd.products['BF']['kernel_e'] = kernel_e.copy()
+            self.dd.products['BF']['fluence'] = fluence.copy()
+                          
+                          
         if not self.drill:
             
-            ulabels = np.unique(label)
-            
-            self.dd.products['BF'] = OrderedDict()
-            
-            
+            singlepixmap = np.zeros((101,101),dtype='float32') + 0.01
+            singlepixmap[50,50] = 1.
+                        
             for jCCD, CCD in enumerate(CCDs):
                 
-                self.dd.products['BF'][CCD] = OrderedDict()
-                
-                for Q in Quads:
+                for kQ,Q in enumerate(Quads):
                     
-                    self.dd.products['BF'][CCD][Q] = OrderedDict()
-                
-                    for ulabel in ulabels:
+                    for ix,ulabel in enumerate(ulabels):
                         
                         COV_dict = self.dd.products['COV'][CCD][Q][ulabel]
                         
                         COV_mx = COV_dict['av_covmap'].copy()
                         
+                        fluence[ix] = COV_dict['av_mu'].copy()
+                        
                         Asol_Q, psmooth_Q = G15.solve_for_A_linalg(COV_mx,var=1.,mu=1.,returnAll=True,doplot=False)
                         
+                        kernel_Q = G15.degrade_estatic(singlepixmap,Asol_Q)
                         
+                        kerQshape = G15.get_cross_shape_rough(kernel_Q,pitch=12.)
                         
                         self.dd.products['BF'][CCD][Q][ulabel] = OrderedDict(Asol = Asol_Q.copy(),
-                                        psmooth=psmooth_Q.copy())
-            
-            
+                                        psmooth=psmooth_Q.copy(),
+                                        kernel = kernel_Q.copy())
+                        
+                        kernel_FWHMx[ix,jCCD,kQ] = kerQshape['FWHMx']
+                        kernel_FWHMy[ix,jCCD,kQ] = kerQshape['FWHMy']
+                        kernel_e[ix,jCCD,kQ] = kerQshape['e']
+        
+        self.dd.products['BF']['kernel_FWHMx'] = kernel_FWHMx.copy()
+        self.dd.products['BF']['kernel_FWHMy'] = kernel_FWHMy.copy()
+        self.dd.products['BF']['kernel_e'] = kernel_e.copy()
+        self.dd.products['BF']['fluence'] = fluence.copy()
+        
         # Plots
         # PENDING
         
@@ -236,7 +272,6 @@ class BF01(PTC0X):
         # PENDING    
         
         
-    
     
     def meta_analysis(self):
         """

@@ -23,6 +23,7 @@ Created on Thu Sep 22 11:38:24 2016
 
 # IMPORT STUFF
 from pdb import set_trace as stop
+from astropy.io import fits as fts
 
 import numpy as np
 from scipy.special import expi as Ei
@@ -30,7 +31,6 @@ from scipy import optimize as optimize
 import copy
 from scipy.signal import convolve2d
 
-from astropy.io import fits as fts
 from matplotlib import pyplot as plt
 # END IMPORT
 
@@ -621,7 +621,7 @@ def _build_aijb_synth(psmooth,N):
     return aijb
 
 
-def get_kernel(aijb,writeFits=False):
+def get_kernel(aijb):
     """ 
     
     'kernel' is an array (2N-1)x(2N-1)x4. Each plane kernel[:,:,b] is
@@ -634,7 +634,6 @@ def get_kernel(aijb,writeFits=False):
     :return: kernel matrix, (2N-1)x(2N-1)x4
     
     """
-    from astropy.io import fits as fts
 
     N,Np,shouldbe4 = aijb.shape
     assert N == Np
@@ -701,13 +700,7 @@ def get_kernel(aijb,writeFits=False):
                 kernel[i+N-1,N-j-1,3] =aijb[i,j,1] # -y
             elif i>0 and j==0:
                 kernel[N-i-1,j+N-1,3] = aijb[i,j,3] # -x       
-    
-    if writeFits:
-        fts.writeto('kernel_North.fits',kernel[:,:,0].transpose(),clobber=True)
-        fts.writeto('kernel_East.fits',kernel[:,:,1].transpose(),clobber=True)
-        fts.writeto('kernel_South.fits',kernel[:,:,2].transpose(),clobber=True)
-        fts.writeto('kernel_West.fits',kernel[:,:,3].transpose(),clobber=True)
-    
+        
     kernel[:,:,:] = kernel[::-1,::-1,:] # surprise!
     
     # x - y permutation
@@ -735,12 +728,7 @@ def get_Rdisp(img,aijb):
     NX,NY = img.shape
     
     Rdisp = np.zeros((NX,NY,4),dtype='float32')
-    
-    #fts.writeto('kernel_North.fits',kernel[:,:,0],clobber=True)
-    #fts.writeto('kernel_East.fits',kernel[:,:,1],clobber=True)
-    #fts.writeto('kernel_South.fits',kernel[:,:,2],clobber=True)
-    #fts.writeto('kernel_West.fits',kernel[:,:,3],clobber=True)
-    
+        
     
     for ixside in range(4):
         sidekernel = kernel[:,:,ixside].copy()
@@ -807,6 +795,22 @@ def correct_estatic(img,aijb):
     dimg = get_deltaQ(img,aijb)
     return img - dimg
     
+def get_cross_shape_rough(cross,pitch=pixpitch):
+    """ """
+    
+    Ixwing = np.mean([cross[0,1],cross[2,1]])
+    Iywing = np.mean([cross[1,0],cross[1,2]])
+    
+    sigmax = np.sqrt(-pixpitch**2/(2.*np.log(Ixwing)))
+    fwhmx = sigmax * 2.355
+    
+    sigmay = np.sqrt(-pixpitch**2/(2.*np.log(Iywing)))
+    fwhmy = sigmay * 2.355
+    e  = (sigmax**2-sigmay**2)/(sigmax**2.+sigmay**2.)
+    
+    shape = dict(fwhmx = fwhmx,fwhmy=fwhmy,e=e)
+
+    return shape
 
 
 def plot_maps_ftheta(f,ii,jj,suptitle=''):
@@ -1079,7 +1083,6 @@ def test_selfconsist():
     singlepixmap[50,50] = 1.
     
     k = get_kernel(Asynth,writeFits=True)
-    
     
     kernel = degrade_estatic(singlepixmap,Abest)
     deltaQ = get_deltaQ(singlepixmap,Abest)
