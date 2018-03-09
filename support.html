@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Support Code &#8212; vison 0.3+73.g57a3237 documentation</title>
+    <title>Support Code &#8212; vison 0.4+119.g8cde5f6 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3+73.g57a3237',
+        VERSION:     '0.4+119.g8cde5f6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="scripts.html" title="Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3+73.g57a3237 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -56,7 +56,7 @@
             
   <div class="section" id="module-vison.support.ds9">
 <span id="support-code"></span><h1>Support Code<a class="headerlink" href="#module-vison.support.ds9" title="Permalink to this headline">¶</a></h1>
-<p>NEEDS REVISION
+<p>NEEDSREVISION
 TODO: UPDATE</p>
 <p>Module with functions related to the handling of ds9 from python
 through XPA.</p>
@@ -156,7 +156,7 @@ as intended.</td>
 </table>
 <dl class="function">
 <dt id="vison.support.files.cPickleDump">
-<code class="descclassname">vison.support.files.</code><code class="descname">cPickleDump</code><span class="sig-paren">(</span><em>data</em>, <em>output</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.files.cPickleDump" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.support.files.</code><code class="descname">cPickleDump</code><span class="sig-paren">(</span><em>data</em>, <em>output</em>, <em>protocol=2</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.files.cPickleDump" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dumps data to a cPickled file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -177,7 +177,7 @@ as intended.</td>
 
 <dl class="function">
 <dt id="vison.support.files.cPickleDumpDictionary">
-<code class="descclassname">vison.support.files.</code><code class="descname">cPickleDumpDictionary</code><span class="sig-paren">(</span><em>dictionary</em>, <em>output</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.files.cPickleDumpDictionary" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.support.files.</code><code class="descname">cPickleDumpDictionary</code><span class="sig-paren">(</span><em>dictionary</em>, <em>output</em>, <em>protocol=2</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.files.cPickleDumpDictionary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dumps a dictionary of data to a cPickled file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -245,6 +245,18 @@ as intended.</td>
 <dd></dd></dl>
 
 <dl class="class">
+<dt id="vison.support.report.FigsTable">
+<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">FigsTable</code><span class="sig-paren">(</span><em>FigsList</em>, <em>Ncols</em>, <em>figswidth</em>, <em>caption=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.FigsTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to generate table of figures</p>
+<dl class="method">
+<dt id="vison.support.report.FigsTable.generate_Latex">
+<code class="descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.FigsTable.generate_Latex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates LaTeX as list of strings</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="vison.support.report.Figure">
 <em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Figure</code><span class="sig-paren">(</span><em>figpath</em>, <em>textfraction=0.7</em>, <em>caption=None</em>, <em>label=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Figure" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
@@ -267,7 +279,7 @@ as intended.</td>
 
 <dl class="class">
 <dt id="vison.support.report.Table">
-<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Table</code><span class="sig-paren">(</span><em>tableDict</em>, <em>formats={}</em>, <em>names=[]</em>, <em>caption=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Table" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Table</code><span class="sig-paren">(</span><em>tableDict</em>, <em>formats={}</em>, <em>names=[]</em>, <em>caption=None</em>, <em>col_align=None</em>, <em>longtable=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Table" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
 <div><dl class="docutils">
 <dt>PENDING:</dt>
@@ -360,6 +372,11 @@ end{tabular}}</div></blockquote>
 </dd></dl>
 
 <dl class="function">
+<dt id="vison.support.logger.f_text_wrapper">
+<code class="descclassname">vison.support.logger.</code><code class="descname">f_text_wrapper</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.logger.f_text_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="vison.support.logger.setUpLogger">
 <code class="descclassname">vison.support.logger.</code><code class="descname">setUpLogger</code><span class="sig-paren">(</span><em>log_filename</em>, <em>loggername='logger'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.logger.setUpLogger" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets up a logger.</p>
@@ -434,6 +451,18 @@ Classes and functions to do Real-Time Monitoring of the Data Acquisition</p>
 
 <dl class="class">
 <dt>
+<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">FigsTable</code><span class="sig-paren">(</span><em>FigsList</em>, <em>Ncols</em>, <em>figswidth</em>, <em>caption=None</em><span class="sig-paren">)</span></dt>
+<dd><p>Class to generate table of figures</p>
+<dl class="method">
+<dt>
+<code class="descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Generates LaTeX as list of strings</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
 <em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Figure</code><span class="sig-paren">(</span><em>figpath</em>, <em>textfraction=0.7</em>, <em>caption=None</em>, <em>label=None</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
@@ -455,7 +484,7 @@ Classes and functions to do Real-Time Monitoring of the Data Acquisition</p>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Table</code><span class="sig-paren">(</span><em>tableDict</em>, <em>formats={}</em>, <em>names=[]</em>, <em>caption=None</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Table</code><span class="sig-paren">(</span><em>tableDict</em>, <em>formats={}</em>, <em>names=[]</em>, <em>caption=None</em>, <em>col_align=None</em>, <em>longtable=False</em><span class="sig-paren">)</span></dt>
 <dd><blockquote>
 <div><dl class="docutils">
 <dt>PENDING:</dt>
@@ -546,7 +575,7 @@ end{tabular}}</div></blockquote>
         <li class="right" >
           <a href="scripts.html" title="Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3+73.g57a3237 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

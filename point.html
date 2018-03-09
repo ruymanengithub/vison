@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Point-Source Analysis &#8212; vison 0.3+73.g57a3237 documentation</title>
+    <title>Point-Source Analysis &#8212; vison 0.4+119.g8cde5f6 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3+73.g57a3237',
+        VERSION:     '0.4+119.g8cde5f6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="plot.html" title="Plotting"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3+73.g57a3237 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -71,7 +71,7 @@
 <p>Created on Thu Apr 20 18:56:40 2017</p>
 <dl class="class">
 <dt id="vison.point.basis.SpotBase">
-<em class="property">class </em><code class="descclassname">vison.point.basis.</code><code class="descname">SpotBase</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.basis.SpotBase" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.point.basis.</code><code class="descname">SpotBase</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.basis.SpotBase" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -120,7 +120,7 @@
 </div>
 <dl class="class">
 <dt id="vison.point.gauss.Gaussmeter">
-<em class="property">class </em><code class="descclassname">vison.point.gauss.</code><code class="descname">Gaussmeter</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.gauss.Gaussmeter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.point.gauss.</code><code class="descname">Gaussmeter</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em>, <em>verbose=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.gauss.Gaussmeter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides methods to measure the shape of an object using 
 a 2D Gaussian Model.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -200,7 +200,7 @@ p[5] = floor</dd>
 </div>
 <dl class="class">
 <dt id="vison.point.photom.Photometer">
-<em class="property">class </em><code class="descclassname">vison.point.photom.</code><code class="descname">Photometer</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.photom.Photometer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.point.photom.</code><code class="descname">Photometer</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em>, <em>verbose=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.photom.Photometer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides methods to measure the shape of an object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -263,7 +263,7 @@ p[5] = floor</dd>
 </div>
 <dl class="class">
 <dt id="vison.point.shape.Shapemeter">
-<em class="property">class </em><code class="descclassname">vison.point.shape.</code><code class="descname">Shapemeter</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.shape.Shapemeter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.point.shape.</code><code class="descname">Shapemeter</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em>, <em>verbose=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.shape.Shapemeter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides methods to measure the shape of an object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -406,7 +406,7 @@ If self.shsettings[&#8216;weighted&#8217;] is False then no weighting scheme is 
 <p>Created on Thu Apr 20 15:35:08 2017</p>
 <dl class="class">
 <dt id="vison.point.spot.Spot">
-<em class="property">class </em><code class="descclassname">vison.point.spot.</code><code class="descname">Spot</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.point.spot.</code><code class="descname">Spot</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em>, <em>verbose=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides methods to do point-source analysis on a stamp.
 Aimed at basic analysis:</p>
 <blockquote>
@@ -473,12 +473,26 @@ fluence,efluence)</td>
 
 <dl class="method">
 <dt id="vison.point.spot.Spot.measure_basic">
-<code class="descname">measure_basic</code><span class="sig-paren">(</span><em>rin=10</em>, <em>rap=10</em>, <em>rout=-1</em>, <em>gain=3.1</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot.measure_basic" title="Permalink to this definition">¶</a></dt>
+<code class="descname">measure_basic</code><span class="sig-paren">(</span><em>rap=10</em>, <em>rin=10</em>, <em>rout=-1</em>, <em>gain=3.1</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot.measure_basic" title="Permalink to this definition">¶</a></dt>
 <dd><p># TODO:
 #   get basic statistics, measure and subtract background
 #   update centroid
 #   do aperture photometry
 #   pack-up results and return</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>rap</strong> &#8211; source extraction aperture radius.</li>
+<li><strong>rin</strong> &#8211; inner radius of background annulus.</li>
+<li><strong>rout</strong> &#8211; outer radius of background annulus (-1 to set bound by image area).</li>
+<li><strong>gain</strong> &#8211; image gain (e-/ADU).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -507,7 +521,7 @@ imaging data.</p>
 
 <dl class="function">
 <dt id="vison.point.lib.gen_point_mask">
-<code class="descclassname">vison.point.lib.</code><code class="descname">gen_point_mask</code><span class="sig-paren">(</span><em>CCD</em>, <em>Quad</em>, <em>width=25</em>, <em>sources='all'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.lib.gen_point_mask" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.point.lib.</code><code class="descname">gen_point_mask</code><span class="sig-paren">(</span><em>CCD</em>, <em>Quad</em>, <em>width=75</em>, <em>sources='all'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.lib.gen_point_mask" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -594,7 +608,7 @@ imaging data.</p>
         <li class="right" >
           <a href="plot.html" title="Plotting"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3+73.g57a3237 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

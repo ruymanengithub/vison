@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Image Analysis &#8212; vison 0.3+73.g57a3237 documentation</title>
+    <title>Image Analysis &#8212; vison 0.4+119.g8cde5f6 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3+73.g57a3237',
+        VERSION:     '0.4+119.g8cde5f6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="flat.html" title="“Flat” Acq. Analysis Tools"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3+73.g57a3237 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -72,6 +72,32 @@
 </tbody>
 </table>
 </div>
+<div class="section" id="module-vison.image.pixbounce">
+<span id="pixbounce-py"></span><h2>pixbounce.py<a class="headerlink" href="#module-vison.image.pixbounce" title="Permalink to this headline">¶</a></h2>
+<p>Euclid-VIS Ground Calibration Campaign</p>
+<p>Pixel Bounce Analysis methods.</p>
+<p>Created on Fri Mar  9 09:50:16 2018</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="vison.image.pixbounce.get_pixbounce_from_overscan">
+<code class="descclassname">vison.image.pixbounce.</code><code class="descname">get_pixbounce_from_overscan</code><span class="sig-paren">(</span><em>ccdobj, thresholds=[0, 65536.0]</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.pixbounce.get_pixbounce_from_overscan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves Hard Edge Respose for all Quadrants of a CCD. 
+Uses the transition from image to overscan (along rows). Averages
+across rows. Input image should have high image-area fluence but not 
+saturating. Rows can be filtered by average fluence in them via &#8220;thresholds&#8221;
+keyword. Do not use on images acquired with irradiated CCDs.</p>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -87,6 +113,7 @@
   <ul>
 <li><a class="reference internal" href="#">Image Analysis</a><ul>
 <li><a class="reference internal" href="#module-vison.image.bits">bits.py</a></li>
+<li><a class="reference internal" href="#module-vison.image.pixbounce">pixbounce.py</a></li>
 </ul>
 </li>
 </ul>
@@ -133,7 +160,7 @@
         <li class="right" >
           <a href="flat.html" title="“Flat” Acq. Analysis Tools"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3+73.g57a3237 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

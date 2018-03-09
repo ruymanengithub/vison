@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Data Model &#8212; vison 0.3+73.g57a3237 documentation</title>
+    <title>Data Model &#8212; vison 0.4+119.g8cde5f6 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3+73.g57a3237',
+        VERSION:     '0.4+119.g8cde5f6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="pipe.html" title="Pipeline"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3+73.g57a3237 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -64,7 +64,9 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Author:</th><td class="field-body">Ruyman Azzollini</td>
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
 </tr>
 </tbody>
 </table>
@@ -82,7 +84,12 @@ to also &#8220;host&#8221; calibration data-products, such as Flat-Fields.</p>
 
 <dl class="method">
 <dt id="vison.datamodel.ccd.CCD.add_to_hist">
-<code class="descname">add_to_hist</code><span class="sig-paren">(</span><em>action</em>, <em>extension=-1</em>, <em>vison=u'0.3+73.g57a3237'</em>, <em>params={}</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.add_to_hist" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_to_hist</code><span class="sig-paren">(</span><em>action</em>, <em>extension=-1</em>, <em>vison=u'0.4+119.g8cde5f6'</em>, <em>params={}</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.add_to_hist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.del_extension">
+<code class="descname">del_extension</code><span class="sig-paren">(</span><em>extension</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.del_extension" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -94,6 +101,16 @@ to also &#8220;host&#8221; calibration data-products, such as Flat-Fields.</p>
 <dl class="method">
 <dt id="vison.datamodel.ccd.CCD.do_Vscan_Mask">
 <code class="descname">do_Vscan_Mask</code><span class="sig-paren">(</span><em>VSTART</em>, <em>VEND</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.do_Vscan_Mask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.extract_region">
+<code class="descname">extract_region</code><span class="sig-paren">(</span><em>ccdobj</em>, <em>Q</em>, <em>area='img'</em>, <em>vstart=0</em>, <em>vend=2086</em>, <em>Full=False</em>, <em>canonical=True</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.extract_region" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.get_1Dprofile">
+<code class="descname">get_1Dprofile</code><span class="sig-paren">(</span><em>ccdobj</em>, <em>Q</em>, <em>orient='hor'</em>, <em>area='img'</em>, <em>stacker='mean'</em>, <em>vstart=0</em>, <em>vend=2086</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.get_1Dprofile" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -143,8 +160,11 @@ of the image on DS9.</li>
 </tr>
 </tbody>
 </table>
-<p>Canonical [True] = with readout-node at pixel index (0,0) regardless of quadrant. This is the orientation which corresponds to the data-reading order (useful for cross-talk measurements, for example).
-Non-Canonical [False] = with readout-node at corner matching placement of quadrant on the CCD. This is the orientation that would match the representation of the image on DS9.</p>
+<p>Canonical [True] = with readout-node at pixel index (0,0) regardless of quadrant. 
+This is the orientation which corresponds to the data-reading order (useful 
+for cross-talk measurements, for example). Non-Canonical [False] = with 
+readout-node at corner matching placement of quadrant on the CCD. 
+This is the orientation that would match the representation of the image on DS9.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -156,8 +176,13 @@ Non-Canonical [False] = with readout-node at corner matching placement of quadra
 </dd></dl>
 
 <dl class="method">
+<dt id="vison.datamodel.ccd.CCD.get_region2Dmodel">
+<code class="descname">get_region2Dmodel</code><span class="sig-paren">(</span><em>ccdobj</em>, <em>Q</em>, <em>area='img'</em>, <em>kind='spline'</em>, <em>splinemethod='cubic'</em>, <em>pdegree=2</em>, <em>doFilter=False</em>, <em>filtsize=1</em>, <em>filtertype='mean'</em>, <em>vstart=0</em>, <em>vend=2086</em>, <em>canonical=True</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.get_region2Dmodel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="vison.datamodel.ccd.CCD.get_stats">
-<code class="descname">get_stats</code><span class="sig-paren">(</span><em>Quadrant, sector='img', statkeys=['mean'], trimscan=[0, 0], ignore_pover=True, extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.get_stats" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_stats</code><span class="sig-paren">(</span><em>Quadrant, sector='img', statkeys=['mean'], trimscan=[0, 0], ignore_pover=True, extension=-1, VSTART=0, VEND=2086</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.get_stats" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -168,6 +193,11 @@ Non-Canonical [False] = with readout-node at corner matching placement of quadra
 <dl class="method">
 <dt id="vison.datamodel.ccd.CCD.get_tiles">
 <code class="descname">get_tiles</code><span class="sig-paren">(</span><em>Quadrant</em>, <em>tile_coos</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.get_tiles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCD.get_tiles_stats">
+<code class="descname">get_tiles_stats</code><span class="sig-paren">(</span><em>Quad</em>, <em>tile_coos</em>, <em>statkey</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.get_tiles_stats" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -231,6 +261,18 @@ Non-Canonical [False] = with readout-node at corner matching placement of quadra
 </dd></dl>
 
 <dl class="class">
+<dt id="vison.datamodel.ccd.CCDPile">
+<em class="property">class </em><code class="descclassname">vison.datamodel.ccd.</code><code class="descname">CCDPile</code><span class="sig-paren">(</span><em>infitsList=[]</em>, <em>ccdobjList=[]</em>, <em>extension=-1</em>, <em>withpover=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCDPile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to hold and operate (e.g. stack) on a bunch of CCD images.
+Each image (a single extension picked from each) becomes an extension in the pile.</p>
+<dl class="method">
+<dt id="vison.datamodel.ccd.CCDPile.stack">
+<code class="descname">stack</code><span class="sig-paren">(</span><em>method='median'</em>, <em>dostd=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCDPile.stack" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="vison.datamodel.ccd.Extension">
 <em class="property">class </em><code class="descclassname">vison.datamodel.ccd.</code><code class="descname">Extension</code><span class="sig-paren">(</span><em>data</em>, <em>header=None</em>, <em>label=None</em>, <em>headerdict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.Extension" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extension Class</p>
@@ -287,7 +329,7 @@ Non-Canonical [False] = with readout-node at corner matching placement of quadra
 
 <dl class="function">
 <dt id="vison.datamodel.EXPLOGtools.mergeExpLogs">
-<code class="descclassname">vison.datamodel.EXPLOGtools.</code><code class="descname">mergeExpLogs</code><span class="sig-paren">(</span><em>explogList</em>, <em>addpedigree=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.EXPLOGtools.mergeExpLogs" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.datamodel.EXPLOGtools.</code><code class="descname">mergeExpLogs</code><span class="sig-paren">(</span><em>explogList</em>, <em>addpedigree=False</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.EXPLOGtools.mergeExpLogs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Merges explog objects in a list.</p>
 </dd></dl>
 
@@ -320,31 +362,6 @@ Non-Canonical [False] = with readout-node at corner matching placement of quadra
 </tr>
 </tbody>
 </table>
-<dl class="function">
-<dt id="vison.datamodel.HKtools.HKplot">
-<code class="descclassname">vison.datamodel.HKtools.</code><code class="descname">HKplot</code><span class="sig-paren">(</span><em>allHKdata</em>, <em>keylist</em>, <em>key</em>, <em>dtobjs</em>, <em>filename=''</em>, <em>stat='mean'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.HKtools.HKplot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plots the values of a HK parameter as a function of time.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>allHKdata</strong> &#8211; HKdata = [(nfiles,nstats,nHKparams)]</li>
-<li><strong>keylist</strong> &#8211; list with all HK keys.</li>
-<li><strong>key</strong> &#8211; selected key.</li>
-<li><strong>dtobjs</strong> &#8211; datetime objects time axis.</li>
-<li><strong>filename</strong> &#8211; file-name to store plot [empty string not to save].</li>
-<li><strong>stat</strong> &#8211; statistics to plot.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None!!</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 <dl class="function">
 <dt id="vison.datamodel.HKtools.check_HK_abs">
 <code class="descclassname">vison.datamodel.HKtools.</code><code class="descname">check_HK_abs</code><span class="sig-paren">(</span><em>HKKeys</em>, <em>dd</em>, <em>limits='S'</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.HKtools.check_HK_abs" title="Permalink to this definition">¶</a></dt>
@@ -402,6 +419,31 @@ False = At least one value is outside limits, referred to commanded value.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="vison.datamodel.HKtools.doHKSinglePlot">
+<code class="descclassname">vison.datamodel.HKtools.</code><code class="descname">doHKSinglePlot</code><span class="sig-paren">(</span><em>dtobjs</em>, <em>HK</em>, <em>HKkey</em>, <em>ylabel='V'</em>, <em>HKlims=[]</em>, <em>filename=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.HKtools.doHKSinglePlot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the values of a HK parameter as a function of time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dtobjs</strong> &#8211; datetime objects time axis.</li>
+<li><strong>HK</strong> &#8211; HK values (array)</li>
+<li><strong>HKkey</strong> &#8211; </li>
+<li><strong>ylabel</strong> &#8211; </li>
+<li><strong>HKlims</strong> &#8211; </li>
+<li><strong>filename</strong> &#8211; file-name to store plot [empty string not to save].</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None!!</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="vison.datamodel.HKtools.filtervalues">
 <code class="descclassname">vison.datamodel.HKtools.</code><code class="descname">filtervalues</code><span class="sig-paren">(</span><em>values</em>, <em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.HKtools.filtervalues" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -414,6 +456,29 @@ False = At least one value is outside limits, referred to commanded value.</p>
 <dl class="function">
 <dt id="vison.datamodel.HKtools.loadHK_QFM">
 <code class="descclassname">vison.datamodel.HKtools.</code><code class="descname">loadHK_QFM</code><span class="sig-paren">(</span><em>filename</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.HKtools.loadHK_QFM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a HK file, or list of HK files.</p>
+<p>Structure: astropy table. First column is a timestamp, and there may be 
+a variable number of rows (readings).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> &#8211; path to the file to be loaded, including the file itself, or list of paths to HK files.</li>
+<li><strong>elvis</strong> &#8211; &#8220;ELVIS&#8221; version</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">astropy table with pairs parameter:[values]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.HKtools.loadHK_QFMsingle">
+<code class="descclassname">vison.datamodel.HKtools.</code><code class="descname">loadHK_QFMsingle</code><span class="sig-paren">(</span><em>filename</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.HKtools.loadHK_QFMsingle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a HK file</p>
 <p>Structure: tab separated columns, one per Keyword. First column is a 
 timestamp, and there may be a variable number of rows (readings).</p>
@@ -427,7 +492,7 @@ timestamp, and there may be a variable number of rows (readings).</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dictionary with pairs parameter:[values]</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">astropy table with pairs parameter:[values]</p>
 </td>
 </tr>
 </tbody>
@@ -453,6 +518,11 @@ of exposure and HK sampling rate).</p>
 </tbody>
 </table>
 </dd></dl>
+
+<dl class="function">
+<dt id="vison.datamodel.HKtools.mergeHK">
+<code class="descclassname">vison.datamodel.HKtools.</code><code class="descname">mergeHK</code><span class="sig-paren">(</span><em>HKList</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.HKtools.mergeHK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="vison.datamodel.HKtools.parseDTstr">
@@ -653,7 +723,7 @@ HK dictionaries (output from loadHK).</p>
         <li class="right" >
           <a href="pipe.html" title="Pipeline"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3+73.g57a3237 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Flat-Illumination Scripts &#8212; vison 0.3+73.g57a3237 documentation</title>
+    <title>Flat-Illumination Scripts &#8212; vison 0.4+119.g8cde5f6 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3+73.g57a3237',
+        VERSION:     '0.4+119.g8cde5f6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="dark_scripts.html" title="“Dark Acquisitions” Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3+73.g57a3237 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -93,23 +93,25 @@ TEST: FLAT0X</p>
 <dt id="vison.flat.FLAT0X.FLAT0X.do_indiv_flats">
 <code class="descname">do_indiv_flats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.do_indiv_flats" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Preparation</span> <span class="n">of</span> <span class="n">data</span> <span class="k">for</span> <span class="n">further</span> <span class="n">analysis</span> <span class="ow">and</span> 
-<span class="n">produce</span> <span class="n">flat</span><span class="o">-</span><span class="n">field</span> <span class="k">for</span> <span class="n">each</span> <span class="n">OBSID</span><span class="o">.</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span>Preparation of data for further analysis and 
+produce flat-field for each OBSID.
 
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">subtract</span> <span class="n">offset</span>
-            <span class="n">opt</span><span class="p">:</span> <span class="p">[</span><span class="n">sub</span> <span class="n">bias</span> <span class="n">frame</span><span class="p">]</span>
-            <span class="n">model</span> <span class="mi">2</span><span class="n">D</span> <span class="n">fluence</span> <span class="n">distro</span> <span class="ow">in</span> <span class="n">image</span> <span class="n">area</span>
-            <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">rows</span>
-            <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">cols</span>
+f.e. ObsID:
+    f.e.CCD:
+        
+        load ccdobj
+        
+        f.e.Q:
             
-        <span class="n">save</span> <span class="mi">2</span><span class="n">D</span> <span class="n">model</span> <span class="ow">and</span> <span class="n">profiles</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">pick</span> <span class="n">file</span> <span class="k">for</span> <span class="n">each</span> <span class="n">OBSID</span><span class="o">-</span><span class="n">CCD</span>
-        <span class="n">divide</span> <span class="n">by</span> <span class="mi">2</span><span class="n">D</span> <span class="n">model</span> <span class="n">to</span> <span class="n">produce</span> <span class="n">indiv</span><span class="o">-</span><span class="n">flat</span>
-        <span class="n">save</span> <span class="n">indiv</span><span class="o">-</span><span class="n">Flat</span> <span class="n">to</span> <span class="n">FITS</span><span class="p">,</span> <span class="n">update</span> <span class="n">add</span> <span class="n">filename</span>
+            model 2D fluence distro in image area
+            produce average profile along rows
+            produce average profile along cols
+            
+        save 2D model and profiles in a pick file for each OBSID-CCD
+        divide by 2D model to produce indiv-flat
+        save indiv-Flat to FITS(?), update add filename
 
-<span class="n">plot</span> <span class="n">average</span> <span class="n">profiles</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span> <span class="ow">and</span> <span class="n">Q</span> <span class="p">(</span><span class="n">color</span> <span class="n">coded</span> <span class="n">by</span> <span class="n">time</span><span class="p">)</span>
+plot average profiles f. each CCD and Q (color coded by time)
 </pre></div>
 </div>
 </dd></dl>
@@ -135,6 +137,8 @@ TEST: FLAT0X</p>
 <code class="descname">do_prdef_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.do_prdef_mask" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Produces</span> <span class="n">mask</span> <span class="n">of</span> <span class="n">defects</span> <span class="ow">in</span> <span class="n">Photo</span><span class="o">-</span><span class="n">Response</span>
+<span class="n">Could</span> <span class="n">use</span> <span class="n">master</span> <span class="n">FF</span><span class="p">,</span> <span class="ow">or</span> <span class="n">a</span> <span class="n">stack</span> <span class="n">of</span> <span class="n">a</span> <span class="n">subset</span> <span class="n">of</span> <span class="n">images</span> <span class="p">(</span><span class="ow">in</span> <span class="n">order</span>
+<span class="n">to</span> <span class="n">produce</span> <span class="n">mask</span><span class="p">,</span> <span class="n">needed</span> <span class="n">by</span> <span class="n">other</span> <span class="n">tasks</span><span class="p">,</span> <span class="n">quicker</span><span class="p">)</span><span class="o">.</span>
 
 <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
@@ -151,6 +155,19 @@ TEST: FLAT0X</p>
 <dt id="vison.flat.FLAT0X.FLAT0X.filterexposures">
 <code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.flat.FLAT0X.FLAT0X.prepare_images">
+<code class="descname">prepare_images</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.prepare_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>FLAT0X: Preparation of data for further analysis.
+Calls task.prepare_images().</p>
+<dl class="docutils">
+<dt>Applies:</dt>
+<dd>offset subtraction
+[bias structure subtraction, if available]
+cosmetics masking</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="vison.flat.FLAT0X.FLAT0X.set_inpdefaults">
@@ -267,7 +284,9 @@ date-folders.</p>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
             <span class="n">subtract</span> <span class="n">offset</span>
-            <span class="n">opt</span><span class="p">:</span> <span class="p">[</span><span class="n">sub</span> <span class="n">bias</span> <span class="n">frame</span><span class="p">]</span> 
+        <span class="n">opt</span><span class="p">:</span> <span class="p">[</span><span class="n">sub</span> <span class="n">bias</span> <span class="n">frame</span><span class="p">]</span>
+        <span class="n">opt</span><span class="p">:</span> <span class="p">[</span><span class="n">divide</span> <span class="n">by</span> <span class="n">FF</span><span class="p">]</span>
+        <span class="n">opt</span><span class="p">:</span> <span class="p">[</span><span class="n">mask</span><span class="o">-</span><span class="n">out</span> <span class="n">defects</span><span class="p">]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -301,8 +320,8 @@ date-folders.</p>
 TEST: PTC_0X</p>
 <dl class="docutils">
 <dt>Photon-Transfer-Curve Analysis</dt>
-<dd>PTC01 - nominal temperature
-PTC02 - alternative temperatures</dd>
+<dd>PTC01 - nominal temperature and wavelength
+PTC02 - alternative temperatures / wavelengths</dd>
 </dl>
 <p>Tasks:</p>
 <blockquote>
@@ -364,7 +383,6 @@ variance(binned difference-frames) vs. fluence</dd>
 <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">OBSID</span> <span class="n">pair</span><span class="p">:</span>
     <span class="n">CCD</span><span class="p">:</span>
         <span class="n">Q</span><span class="p">:</span>
-            <span class="p">[</span><span class="n">apply</span> <span class="n">defects</span> <span class="n">mask</span> <span class="k">if</span> <span class="n">available</span><span class="p">]</span>
             <span class="n">subtract</span> <span class="n">CCD</span> <span class="n">images</span>
             <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">segment</span><span class="p">:</span>
                 <span class="n">measure</span> <span class="n">central</span> <span class="n">value</span>
@@ -471,7 +489,7 @@ gain, and gain(fluence)</p>
         <li class="right" >
           <a href="dark_scripts.html" title="“Dark Acquisitions” Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.3+73.g57a3237 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
