@@ -84,8 +84,11 @@ class CHINJ02(InjTask):
         super(CHINJ02,self).__init__(inputs,log,drill,debug)
         self.name = 'CHINJ02'
         self.type = 'Simple'
-        self.subtasks = [('check',self.check_data),('extract',self.extract_data),
-                         ('basic',self.basic_analysis),('meta',self.meta_analysis)]
+        self.subtasks = [('check',self.check_data),
+                         ('prep',self.prepare_images),
+                         ('extract',self.extract_data),
+                         ('basic',self.basic_analysis),
+                         ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
         self.figdict = CH02aux.CH02figs.copy()
         self.inputs['subpaths'] = dict(figs='figs')

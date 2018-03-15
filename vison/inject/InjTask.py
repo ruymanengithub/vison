@@ -47,6 +47,20 @@ class InjTask(Task):
             kwargs.update(_kwargs)
         
         Task.check_data(self,**kwargs)
+    
+    def prepare_images(self):
+        """
+        
+        InjTask: Preparation of data for further analysis.
+        Calls task.prepare_images().
+        
+        Applies:
+            offset subtraction
+            [bias structure subtraction, if available]
+            cosmetics masking
+        
+        """
+        super(InjTask,self).prepare_images(doExtract=True,doMask=True,doOffset=True,doBias=True)
         
     def predict_expected_injlevels(self,teststruct):
         """ """        
