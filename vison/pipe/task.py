@@ -38,7 +38,7 @@ isthere = os.path.exists
 class Task(object):
     """ """
     
-    from task_lib import check_HK,filterexposures,addHKPlotsMatrix
+    from task_lib import check_HK,filterexposures,addHKPlotsMatrix,add_labels_to_explog
     
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
@@ -133,6 +133,7 @@ class Task(object):
             subpath = os.path.join(resultspath,_paths[_pathkey])            
             _paths[_pathkey] = subpath
         self.inputs['subpaths'] = _paths
+        
         
         if todo_flags['init']:
             
@@ -600,8 +601,10 @@ class Task(object):
         
         DDindices = copy.deepcopy(self.dd.indices)
         
-        nObs,nCCD,nQuad = DDindices.shape
-        Quads = DDindices[2].vals
+        #nObs,nCCD,nQuad = DDindices.shape
+        #Quads = DDindices[2].vals
+                
+        nObs = len(DDindices[DDindices.names.index('ix')].vals)
         CCDs = DDindices[DDindices.names.index('CCD')].vals
         
         if not self.drill:
@@ -636,7 +639,7 @@ class Task(object):
                         
                     
                     if doOffset:
-                        for Quad in Quads:
+                        for Quad in ccdobj.Quads:
                             #ccdobj.sub_offset(Quad,method='median',scan='pre',trimscan=[5,5],
                             #                  ignore_pover=False)
                             ccdobj.sub_offset(Quad,**offsetkwargs)
@@ -650,7 +653,8 @@ class Task(object):
                         FF = FFData['nm%i' % wavelength][CCDkey]
                         ccdobj.divide_by_flatfield(FF,extension=-1)                        
                     
-                    cPickleDumpDictionary(dict(ccdobj=ccdobj),fullccdobj_name)
+                    #cPickleDumpDictionary(dict(ccdobj=ccdobj),fullccdobj_name)
+                    cPickleDumpDictionary(ccdobj,fullccdobj_name)
                     #ccdobj.writeto(fullccdobj_name,clobber=True)                    
                     self.dd.mx['ccdobj_name'][iObs,jCCD] = ccdobj_name
         

@@ -82,12 +82,14 @@ class TP02(PumpTask):
         super(TP02,self).__init__(inputs,log,drill,debug)
         self.name = 'TP02'
         self.type = 'Simple'
-        self.subtasks = [('check',self.check_data),('prep',self.prep_data),
+        self.subtasks = [('check',self.check_data),
+                         ('prep',self.prepare_images),
+                        ('extract',self.extract),
                     ('basic',self.basic_analysis),
                     ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
         self.figdict = TP02aux.TP02figs.copy()
-        self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
+        self.inputs['subpaths'] = dict(figs='figs',ccdpickles='ccdpickles')
         
     def set_inpdefaults(self,**kwargs):
         """ """
@@ -178,26 +180,8 @@ class TP02(PumpTask):
 
     
     
-    def prep_data(self):
-        """
-        
-        **METACODE**
-        
-        ::
-        
-            Preparation of data for further analysis:
-    
-            f.e. ObsID [images with TPing only]:
-                f.e.CCD:
-                    f.e.Q:
-                        subtract offset
-                        divide by reference image wo TPing
-                        average across readout lines (iterations)
-                        save raw 1D map of relative pumping
-    
-        
-        """
-        
+    def extract(self):
+        """ """
         raise NotImplementedError
         
     

@@ -18,7 +18,7 @@ Created on Tue Aug 29 17:37:00 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
-from copy import deepcopy
+import copy
 from collections import OrderedDict
 
 from vison.pipe import lib as pilib
@@ -30,7 +30,9 @@ from vison.pipe.task import Task
 from PumpTask import PumpTask
 from vison.image import performance
 from vison.datamodel import inputs
+from vison.support.files import cPickleRead
 import TP01aux
+import tptools
 # END IMPORT 
 
 isthere = os.path.exists
@@ -84,12 +86,15 @@ class TP01(PumpTask):
         super(TP01,self).__init__(inputs,log,drill,debug)
         self.name = 'TP01'
         self.type = 'Simple'
-        self.subtasks = [('check',self.check_data),('prep',self.prep_data),
+        self.subtasks = [('check',self.check_data),
+                         ('prep',self.prepare_images),
+                    ('extract',self.extract),
                     ('basic',self.basic_analysis),
                     ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
         self.figdict = TP01aux.TP01figs.copy()
-        self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
+        self.inputs['subpaths'] = dict(figs='figs',ccdpickles='ccdpickles',
+                   products='products')
         
 
     def set_inpdefaults(self,**kwargs):
@@ -166,7 +171,7 @@ class TP01(PumpTask):
         Ncols = len(TP01_sdict.keys())    
         TP01_sdict['Ncols'] = Ncols
     
-        commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+        commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(TP01_commvalues)    
         
         if len(diffvalues)==0:
@@ -184,27 +189,109 @@ class TP01(PumpTask):
         return super(TP01,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
                               wavedkeys=wavedkeys)
         
-    
-    def prep_data(self):
-        """
+    def extract(self):
+        """ 
+        
+        Obtain maps of dipoles.
         
         **METACODE**
         
         ::
-        
-            Preparation of data for further analysis:
-    
-            f.e. ObsID [images with TPing only]:
-                f.e.CCD:
-                    f.e.Q:
-                        subtract offset
-                        divide by reference image wo TPing
-                        save "map of relative pumping"
-    
+            
+            f.e. id_delay (there are 2):
+                f.e. CCD:
+                    f.e. Q:
+                        produce reference non-pumped injection map
+            
+            f. e. ObsID:
+                f.e. CCD:
+                    
+                    load ccdobj                    
+                    f.e.Q.:
+                        divide ccdobj.Q by injection map
+                    
+                    save dipole map and store reference
+                        
         
         """
+        DDindices = copy.deepcopy(self.dd.indices)
+        CCDs = DDindices[DDindices.names.index('CCD')].vals
         
-        raise NotImplementedError
+        ccdpicklespath = self.inputs['subpaths']['ccdpickles']
+        productspath = self.inputs['subpaths']['products']
+                         
+        # Initialisations
+        
+        self.dd.initColumn('dipoles_raw',self.dd.mx['ccdobj_name'].indices,\
+                           dtype='S100',valini='None')
+        
+                         
+        id_dlys = np.unique(self.dd.mx['id_dly'][:,0])
+                
+        
+        
+        #injprofiles = OrderedDict()
+        
+        if not self.drill:
+            
+            # INJECTION PROFILES (models of the injection used to generate maps of relative amplitude of dipoles)
+            
+#            for id_dly in id_dlys:
+#                
+#                injprofiles['ID_%i' % id_dly] = OrderedDict()
+#                
+#                for jCCD, CCD in enumerate(CCDs):
+#                    
+#                    ixref = np.where((self.dd.mx['id_dly'][:] == id_dly) & (self.dd.mx['CCD'][:] == 'CCD%i' % CCD) &
+#                                     (self.dd.mx['v_tpump'][:] == 0))
+#                    
+#                    ccdobj_ref_f = '%s.pick' % self.dd.mx['ccdobj_name'][ixref][0]
+#                    
+#                    # COMMENTED ON TESTS
+#                    try :
+#                        ccdobj_ref = copy.deepcopy(cPickleRead(os.path.join(ccdpicklespath,ccdobj_ref_f)))
+#                        i_injprof_tpnorm = tptools.get_injprofile_tpnorm(ccdobj_ref,vstart=0,vend=ccd.NrowsCCD)
+#                         
+#                        injprofiles['ID_%i' % id_dly]['CCD%i' % CCD] = i_injprof_tpnorm.copy()                        
+#                    except IOError: # TESTS
+#                        pass
+            
+            
+            # Computing maps of relative amplitude of dipoles
+            
+            for id_dly in id_dlys:
+                 
+                for jCCD, CCD in enumerate(CCDs):
+                    
+                    try:
+                        injprofile = injprofiles['ID_%i' % id_dly]['CCD%i' % CCD].copy()
+                    except:
+                        print 'exception caught on TESTS' # TESTS
+                        
+                    ixsel = np.where((self.dd.mx['id_dly'][:] == id_dly) & (self.dd.mx['v_tpump'][:] != 0))
+                    
+                    for ix in ixsel[0]:
+                        ObsID = self.dd.mx['ObsID'][ix]
+                        
+                        ioutf = 'TP01_rawmap_%i_IDDLY_%i_CCD%i.fits' % (ObsID,id_dly,CCD)
+                        
+                        iccdobj_f = '%s.pick' % self.dd.mx['ccdobj_name'][ix,jCCD]
+                        
+                        try: 
+                            #injprofile = injprofiles['ID_%i' % id_dly]['CCD%i' % CCD].copy()
+                            iccdobj = cPickleRead(os.path.join(ccdpicklespath,iccdobj_f))                            
+                            irawmap = copy.deepcopy(iccdobj)
+                            
+                            irawmap = tptools.gen_raw_dpmap_vtpump(irawmap,vstart=0,vend=ccd.NrowsCCD)
+                            #irawmap.divide_by_flatfield(injprofile,extension=-1)
+                            irawmap.writeto(os.path.join(productspath,ioutf))
+                            
+                            self.dd.mx['dipoles_raw'][ix,jCCD] = ioutf
+                        
+                        except: # TESTS
+                            pass
+                        
+         
         
     
     def basic_analysis(self):
@@ -229,6 +316,9 @@ class TP01(PumpTask):
                 Counts of dipoles (and N vs. S)
         
         """
+        
+        stop()
+        
         raise NotImplementedError
         
     def meta_analysis(self):
