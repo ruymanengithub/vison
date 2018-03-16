@@ -19,7 +19,7 @@ Contents:
 :version: |version|
 :date: |today|
 
-This Python package "vison" is the pipeline that will be used at MSSL for ground calibration of the VIS detection chains, including one ROE, one RPSU and three CCDs.
+This Python package "vison" is the pipeline that will be used at MSSL for ground calibration of the VIS detection chains (12 + 2 spares), including one ROE, one RPSU and three CCDs each.
 
 Installation
 ============
