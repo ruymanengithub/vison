@@ -53,7 +53,8 @@ def configuration():
            'vison/scripts/vis_genDataSet.py',
            'vison/scripts/eyegore',
            'vison/scripts/vison_run',
-           'vison/scripts/vis_explogs_merger.py'])
+           'vison/scripts/vis_explogs_merger.py',
+           'vison/scripts/run_xtalk.py'])
    
     return config
 
