@@ -19,19 +19,19 @@ import numpy as np
 from glob import glob
 import os
 import copy
-import string as st
+#import string as st
 
 from scipy.optimize import curve_fit
 
 from matplotlib import pyplot as plt
 
 from vissim.datamodel import ccd as ccdmod
-from vissim.support.files import cPickleDumpDictionary, cPickleRead
-from vissim.support import logger as lg
-from vissim.datamodel.HKtools import parseHKfiles
-from vissim.support.latex import LaTeX
+#from vissim.support.files import cPickleDumpDictionary, cPickleRead
+#from vissim.support import logger as lg
+#from vissim.datamodel.HKtools import parseHKfiles
+#from vissim.support.latex import LaTeX
 
-from scipy import ndimage as nd
+#from scipy import ndimage as nd
 from scipy import signal, stats
 from astropy.io import fits as fts
 # END IMPORT
@@ -81,12 +81,12 @@ def f_fitXT(source,*p):
     
     return fwc * victim
 
-def sub_bgd(img,xedge,VSTART=0,VEND=2066):
+def sub_bgd(img,colend,VSTART=0,VEND=2086):
     """ """
     
     NX,NY = img.shape
     
-    midbgd1d = np.nanmean(img[xedge+20:-20,:],axis=0)
+    midbgd1d = np.nanmean(img[colend+20:-20,:],axis=0)
     midbgd2d = np.repeat(midbgd1d.reshape(1,NY),NX,axis=0)
     
     img = img - midbgd2d
@@ -191,9 +191,9 @@ def xtalk_fit(x,y):
     return results
 
 
-def find_levels(img,xedge=1600):
+def find_levels(img,colstart=1,colend=1600):
     
-    histo = np.histogram(img[:xedge-1,:],bins=200)
+    histo = np.histogram(img[colstart:colend,:],bins=200)
     
     bins = histo[1]
     nperbin = histo[0]
@@ -202,7 +202,6 @@ def find_levels(img,xedge=1600):
     
     pnperbin = np.zeros(len(nperbin)+2)
     pnperbin[1:-1] = nperbin
-    
     
     argrelmax=signal.argrelmax
         
@@ -233,7 +232,8 @@ def find_levels(img,xedge=1600):
 
 
 
-def processXtalk_single(CCDref,Qref,xtalk_obsids,thresholdinj=0.,xedge=1600,savefigs=False,log=None):
+def processXtalk_single(CCDref,Qref,OBSID,thresholdinj=0.,colstart=1,colend=1600,
+                        savefigs=False,log=None,datapath='',respath=''):
     """ 
     # Flow:
     #
@@ -264,29 +264,26 @@ def processXtalk_single(CCDref,Qref,xtalk_obsids,thresholdinj=0.,xedge=1600,save
     
     CCDs = [1,2,3]
     Quads = ['E','F','G','H']
-    #deltal = 300 # ADU
     
     
     msg = 'Reference = CCD%i-Q:%s' % (CCDref,Qref)
     print msg
     
     if log is not None: log.info(msg)
-        
-    OBSID = xtalk_obsids['CCD%i' % CCDref][Qref]
-
     
-    tCCDfileref = os.path.join(datapath,'Channel_%i' % CCDref,Qref,'EUC_%i_*_ROE1_CCD%i.fits' % (OBSID,CCDref,))
+    tCCDfileref = os.path.join(datapath,'EUC_%i_*_ROE1_CCD%i.fits' % (OBSID,CCDref,))
     
     CCDfileref = glob(tCCDfileref)[-1]
     
     ccdref = ccdmod.CCD(CCDfileref)
     imgref = ccdref.get_quad(Qref,canonical=True).copy()
-    imgref = sub_bgd(imgref,xedge)
+    imgref = sub_bgd(imgref,colend)
     
-    try: levels,nperlevel = find_levels(imgref,xedge)
+    try: levels,nperlevel = find_levels(imgref,colstart,colend)
     except RuntimeError: 
         log.info('Not Possible to analyze CCD%i,Q=%s' % (CCDref,Qref)) 
         return None
+    
     
     mask = np.zeros_like(imgref)
     
@@ -302,7 +299,8 @@ def processXtalk_single(CCDref,Qref,xtalk_obsids,thresholdinj=0.,xedge=1600,save
         lowbound = min(level * 0.99,level-100)
         hibound = max(level * 1.01,level+100)
 
-        ixsel = np.where((imgref >= lowbound) & (imgref <= hibound) & (X < xedge))    
+        ixsel = np.where((imgref >= lowbound) & (imgref <= hibound) & 
+                         (X >= colstart) & (X<colend))    
         mask[ixsel] = level
         pixels = imgref[ixsel]
         #refpix.append(np.nanmedian(pixels))
@@ -323,17 +321,16 @@ def processXtalk_single(CCDref,Qref,xtalk_obsids,thresholdinj=0.,xedge=1600,save
     
     #refpix -= refpix[0]
     
-    maskfits = os.path.join(resultspath,'mask_%s%s.fits' % (CCDref,Qref))
+    maskfits = os.path.join(respath,'mask_%s%s.fits' % (CCDref,Qref))
     fts.writeto(maskfits,mask.astype('float32').transpose(),overwrite=True)
     
-
     Xtalk = {}
     
     for CCD in CCDs:
         
         print CCD
         
-        tCCDfile = os.path.join(datapath,'Channel_%i' % CCDref,Qref,'EUC_%i_*_CCD%i.fits' % (OBSID,CCD,))
+        tCCDfile = os.path.join(datapath,'EUC_%i_*_CCD%i.fits' % (OBSID,CCD,))
         CCDfile = glob(tCCDfile)[-1]
         
         ccd = ccdmod.CCD(CCDfile)
@@ -347,7 +344,7 @@ def processXtalk_single(CCDref,Qref,xtalk_obsids,thresholdinj=0.,xedge=1600,save
             iimg = ccd.get_quad(Quad,canonical=True).copy()
             
             
-            iimg = sub_bgd(iimg,xedge)
+            iimg = sub_bgd(iimg,colend)
             
             #iimg -= biaslevels['CCD%i' % CCD][Quad]
             
@@ -366,28 +363,19 @@ def processXtalk_single(CCDref,Qref,xtalk_obsids,thresholdinj=0.,xedge=1600,save
                 
                 xtalkpix.append(np.nanmean(vals))
                 extalkpix.append(np.nanstd(vals)/np.sqrt(nvals))
-                
-                #xtalkpix.append(np.nanmean(pixels))
-                #extalkpix.append(np.nanstd(pixels)/np.sqrt(npixels))
-                
-                
             
             xtalkpix = np.array(xtalkpix)
             extalkpix = np.array(extalkpix)
             
-            #xtalkpix -= xtalkpix[0]
             
             sellevels = np.where(refpix > thresholdinj)
             
-            #results = xtalk_fit(refpix[sellevels],xtalkpix[sellevels])            
-            #log.info('CCD%i-%s, xtalk=%.2e' % (CCD,Quad,results['coefs'][0]))
-            
+           
             try: 
                 results = xtalk_fit(refpix[sellevels],xtalkpix[sellevels])            
                 log.info('CCD%i-%s, xtalk=%.2e' % (CCD,Quad,results['coefs'][0]))
             except: 
                 log.info('CCD%i-%s, xtalk=?? (COULD NOT FIT)')
-                stop()
             
             results['ex'] = erefpix[sellevels].copy()
             results['ey'] = extalkpix[sellevels].copy()
@@ -395,7 +383,7 @@ def processXtalk_single(CCDref,Qref,xtalk_obsids,thresholdinj=0.,xedge=1600,save
             Xtalk['CCD%i' % CCD][Quad] = copy.deepcopy(results)
     
         if savefigs:
-            figname = os.path.join(figpath,'CCD%i_XTALK_ref%i%s.png' % \
+            figname = os.path.join(respath,'CCD%i_XTALK_ref%i%s.png' % \
                 (CCD,CCDref,Qref))
         else: 
             figname=''
@@ -416,7 +404,7 @@ def PlotSummaryFig(Xtalk,suptitle,figname='',scale='RATIO'):
     Quads = ['E','F','G','H']
     
     req = 0.15
-    logreq = np.log10(req/2.**16)
+    #logreq = np.log10(req/2.**16)
     
     fig = plt.figure(figsize=(8,7))
     ax = fig.add_subplot(111)
