@@ -30,6 +30,22 @@ from vison import __version__
 # END IMPORT
 
 
+
+
+def rebin(arr, new_shape, stat='mean'):
+    """"Rebin 2D array arr to shape new_shape by averaging."""
+    if stat == 'mean':
+        fgroup = np.mean
+    elif stat == 'median':
+        fgroup = np.median
+    
+    shape = (new_shape[0], arr.shape[0] // new_shape[0],
+             new_shape[1], arr.shape[1] // new_shape[1])
+    
+    return fgroup(fgroup(arr.reshape(shape),axis=-1),axis=1)
+    
+
+
 def extract_region(ccdobj,Q,area='img',vstart=0,vend=2086,
                    Full=False,canonical=True,extension=-1):
     """ """
@@ -75,8 +91,6 @@ def extract_region(ccdobj,Q,area='img',vstart=0,vend=2086,
         return subregion, BB
 
 
-
-
 class Model2D():
     """Class for 2D models of images and images sections."""
     
@@ -84,6 +98,9 @@ class Model2D():
         """ """
         assert isinstance(img,np.ndarray)
         self.img = img.copy()
+        self.binimg = None
+        self.XXbin = None
+        self.YYbin = None
         
         if len(corners)>0:
             NX = corners[1]-corners[0]+1
@@ -93,6 +110,26 @@ class Model2D():
         self.corners = corners
         self.imgmodel = np.zeros_like(img,dtype='float32')
         self.polycoeffs = []
+    
+    def bin_img(self,boxsize,stat='median'):
+        """ """        
+        
+        ishape = self.img.shape        
+        _nshape = (ishape[0]/boxsize,ishape[1]/boxsize)
+        trimshape = _nshape[0]*boxsize,_nshape[1]*boxsize
+        _img = self.img[0:trimshape[0],0:trimshape[1]].copy()
+        
+        rebinned = rebin(_img,_nshape,stat=stat)
+        
+        sx = np.arange(boxsize/2,rebinned.shape[0]*boxsize+boxsize/2,boxsize)
+        sy = np.arange(boxsize/2,rebinned.shape[1]*boxsize+boxsize/2,boxsize)
+        
+        sxx,syy = np.meshgrid(sx,sy,indexing='ij')
+        
+        self.bin_img = rebinned.copy()
+        self.XXbin = sxx.copy()
+        self.YYbin = syy.copy()
+        
         
     
     def filter_img(self,filtsize=15,filtertype='median',Tests=False):
@@ -111,25 +148,34 @@ class Model2D():
         
         return None
     
-    def get_model_splines(self,sampling=1,splinemethod='cubic'):
+    
+    def get_model_splines(self,sampling=1,splinemethod='cubic',useBin=False):
         """ """
         
-        corners = self.corners        
+        #corners = self.corners        
         
         NX,NY = self.img.shape
         
-        nX = NX/sampling
-        nY = NY/sampling
+        if useBin:
+            
+            sxx = self.XXbin.copy()
+            syy = self.YYbin.copy()
+            zz = self.bin_img.copy()
+            
+        else:
         
-        #samplebin = 10
-        
-        sx = np.arange(sampling/2,nX*sampling+sampling/2,sampling)
-        sy = np.arange(sampling/2,nY*sampling+sampling/2,sampling)
-        
-        sxx,syy = np.meshgrid(sx,sy,indexing='ij')
-        
-        zz = self.img[(sxx,syy)]
-        
+            nX = NX/sampling
+            nY = NY/sampling
+            
+            #samplebin = 10
+            
+            sx = np.arange(sampling/2,nX*sampling+sampling/2,sampling)
+            sy = np.arange(sampling/2,nY*sampling+sampling/2,sampling)
+            
+            sxx,syy = np.meshgrid(sx,sy,indexing='ij')
+            
+            zz = self.img[(sxx,syy)]
+            
         xx,yy = np.mgrid[0:NX:NX*1j,0:NY:NY*1j]
                 
         pilum = interpolate.griddata((sxx.flatten(),syy.flatten()),zz.flatten(),
@@ -158,20 +204,29 @@ class Model2D():
         return p
     
     
-    def get_model_poly2D(self,sampling=1,pdegree=5):
+    def get_model_poly2D(self,sampling=1,pdegree=5,useBin=False):
         """ """
         
         NX,NY = self.img.shape
         
-        nX = NX/sampling
-        nY = NY/sampling
         
-        x = np.arange(sampling/2,nX*sampling+sampling/2,sampling)
-        y = np.arange(sampling/2,nY*sampling+sampling/2,sampling)
+        if useBin:
+            
+            xx = self.XXbin.copy()
+            yy = self.YYbin.copy()
+            zz = self.bin_img.copy()
+            
+        else:
         
-        xx,yy = np.meshgrid(x,y,indexing='ij')
-        
-        zz = self.img[(xx,yy)]
+            nX = NX/sampling
+            nY = NY/sampling
+            
+            x = np.arange(sampling/2,nX*sampling+sampling/2,sampling)
+            y = np.arange(sampling/2,nY*sampling+sampling/2,sampling)
+            
+            xx,yy = np.meshgrid(x,y,indexing='ij')
+            
+            zz = self.img[(xx,yy)]
         
         p = self.fit2Dpol_xyz(xx,yy,zz,degree=pdegree)
         
@@ -186,7 +241,7 @@ class Model2D():
 
 
 def get_region2Dmodel(ccdobj,Q,area='img',kind='spline',splinemethod='cubic',pdegree=2,
-                doFilter=False,filtsize=1,filtertype='mean',
+                doFilter=False,doBin=True,filtsize=1,filtertype='mean',
                 vstart=0,vend=2086,canonical=True,extension=-1):
     """ """
     
@@ -203,13 +258,16 @@ def get_region2Dmodel(ccdobj,Q,area='img',kind='spline',splinemethod='cubic',pde
     if doFilter:
         if filtsize > 1:
             regmodel.filter_img(filtsize=filtsize,filtertype=filtertype,
-                                Tests=False)
-            
+                               Tests=False)
+    
+    if doBin:
+        regmodel.bin_img(boxsize=filtsize,stat=filtertype)
+    
     if kind == 'poly2D':
-        regmodel.get_model_poly2D(sampling=filtsize,pdegree=pdegree)
+        regmodel.get_model_poly2D(sampling=filtsize,pdegree=pdegree,useBin=doBin)
     elif kind == 'spline':
         regmodel.get_model_splines(sampling=filtsize,
-                                splinemethod=splinemethod)
+                                splinemethod=splinemethod,useBin=doBin)
     
     return regmodel
     

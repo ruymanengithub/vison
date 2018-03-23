@@ -151,7 +151,8 @@ class CCD(object):
     get_1Dprofile = ccd_aux.get_1Dprofile    
     get_region2Dmodel = ccd_aux.get_region2Dmodel
     extract_region = ccd_aux.extract_region
-    
+    #rebin = ccd_aux.rebin    
+
     def __init__(self,infits=None,extensions=[-1],getallextensions=False,withpover=True):
         """ """
         
@@ -196,6 +197,10 @@ class CCD(object):
         self.masked = False
         
         self.historial = []
+    
+    def dummyrebin(self,arr,new_shape,stat='median'):
+        """ """
+        return ccd_aux.rebin(arr,new_shape,stat)
     
     
     def loadfromFITS(self,fitsfile,extensions=[-1],getallextensions=False):
