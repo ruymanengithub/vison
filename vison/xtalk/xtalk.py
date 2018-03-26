@@ -19,19 +19,15 @@ import numpy as np
 from glob import glob
 import os
 import copy
+import datetime
 #import string as st
 
 from scipy.optimize import curve_fit
 
 from matplotlib import pyplot as plt
 
-from vissim.datamodel import ccd as ccdmod
-#from vissim.support.files import cPickleDumpDictionary, cPickleRead
-#from vissim.support import logger as lg
-#from vissim.datamodel.HKtools import parseHKfiles
-#from vissim.support.latex import LaTeX
-
-#from scipy import ndimage as nd
+from vison.datamodel import ccd as ccdmod
+from vison import __version__
 from scipy import signal, stats
 from astropy.io import fits as fts
 # END IMPORT
@@ -39,38 +35,6 @@ from astropy.io import fits as fts
 
 isthere = os.path.exists
 
-#xtalk_obsids_10Mar = dict(CCD1=dict(E=1,F=2,G=8,H=9),
-#                    CCD2=dict(E=4,F=5,G=10,H=11),
-#                    CCD3=dict(E=6,F=7,G=12,H=13))
-
-#xtalk_obsids_17Mar = dict(CCD1=dict(E=132,F=133,G=127,H=126),
-#                    CCD2=dict(E=135,F=134,G=128,H=129),
-#                    CCD3=dict(E=136,F=139,G=131,H=130))
-
-xtalk_obsids_14Jul_nomods = dict(CCD1=dict(E=1,F=2,G=3,H=4),
-                                 CCD2=dict(E=5,F=6,G=7,H=8),
-                                 CCD3=dict(E=9,F=10,G=11,H=12))
-
-xtalk_obsids_14Jul_short2GL123 = dict(CCD1=dict(G=2,H=3),
-                                   CCD2=dict(G=4,H=6),
-                                   CCD3=dict(G=8,H=9))
-
-xtalk_obsids_14Jul_short2GL12 = dict(CCD1=dict(G=11,H=12),
-                                   CCD2=dict(G=13,H=15),
-                                   CCD3=dict(G=17,H=18))
-
-xtalk_obsids_14Jul_short2GL1 = dict(CCD1=dict(G=20,H=21),
-                                   CCD2=dict(G=22,H=24),
-                                   CCD3=dict(G=26,H=27))
-
-
-xtalk_obsids_18Jul_shield2GL123 = dict(CCD1=dict(G=1,H=2),
-                                   CCD2=dict(G=3,H=4),
-                                   CCD3=dict(G=5,H=6))
-
-xtalk_obsids_24Jul_fixedADC = dict(CCD1=dict(E=1,F=2,G=3,H=4),
-                                   CCD2=dict(E=5,F=6,G=7,H=8),
-                                   CCD3=dict(E=9,F=10,G=11,H=12))
 
 def f_fitXT(source,*p):
 
@@ -549,4 +513,303 @@ def PlotSummaryFig(Xtalk,suptitle,figname='',scale='RATIO'):
         plt.show()
 
     plt.close()
+    
+
+from openpyxl import Workbook
+from openpyxl.drawing.image import Image
+from openpyxl.utils import get_column_letter
+#from openpyxl.styles import PatternFill
+import openpyxl
+
+
+color_codes = dict(gray='B2A8A6',
+                   red='F73910',
+                   orange='F5AA08',
+                   yellow='F5EA08',
+                   blue='08B1F5',
+                   green='08F510')
+
+color_fills = dict()
+for colkey in color_codes.keys():
+    _color = openpyxl.styles.colors.Color(rgb=color_codes[colkey])
+    color_fills[colkey] = openpyxl.styles.fills.PatternFill(patternType='solid',fgColor=_color)
+
+class Report_Xtalk():
+    """ """
+    
+    color_fills = color_fills
+    
+    threshold_red_ADU = 30. # ADU
+    threshold_orange_ADU = 5. # ADU
+    threshold_yellow_ADU = 2. # ADU
+    
+    
+    def __init__(self,Xtalk):
+        """ """
+        
+        self.CCDs = [1,2,3]
+        self.Quads = ['E','F','G','H']
+        
+        self.data = Xtalk
+        
+        self.wb = Workbook()
+        self.wb.create_sheet('Header')
+        self.wb.create_sheet('Summary')
+        self.wb.create_sheet('Xtalk_Ratio')
+        self.wb.create_sheet('Xtalk_ADU')
+        self.wb.create_sheet('Figures')
+    
+    def fill_Header(self):
+        """ """
+        
+        headerdict = self.data['meta']
+        
+        headkeys = ['ROE_ID','Injector','ACQ_DATE','label',
+        'PROC_DATE','vison']
+        
+        PROC_DATE = (datetime.datetime.now()).strftime('%d%b%y_%H%M%S')
+        headerdict.update(dict(vison=__version__,
+                               PROC_DATE=PROC_DATE))
+        
+        self.wb['Header']['A1'] = 'XTALK Report'
+        
+        ix0 = 5
+        for ik,key in enumerate(headkeys):
+            self.wb['Header']['A%i' % (ix0+ik)] = headerdict[key]
+    
+    
+    def fill_Summary(self):
+        """ """
+        
+        # STATS
+    
+        xtalks = []
+        extalks = []
+        couples = []
+    
+        for iCr,CCDref in enumerate(self.CCDs):
+            for iQr,Qref in enumerate(self.Quads):
+                
+                CCDreftag = 'CCD%i' % CCDref
+                
+                for iCCD,CCD in enumerate(self.CCDs):
+                    for iQ,Q in enumerate(self.Quads):
+                        
+                        if (iCCD == iCr) and (iQr == iQ): continue
+                        
+                        CCDtag = 'CCD%i' % CCD
+                        
+                        xtalk_dict = self.data[CCDreftag][Qref][CCDtag][Q]
+                            
+                        coefs = copy.deepcopy(xtalk_dict['coefs'])
+                            
+                        xsource = np.linspace(0,2.**16,200)
+                        yvictim = f_fitXT(xsource,*coefs)
+                                
+                        ixmax = np.argmax(np.abs(yvictim))
+                        ixtalk = yvictim[ixmax]                   
+                        iextalk = xtalk_dict['std_xtalk'] * 2.**16
+                        
+                        xtalks.append(ixtalk)
+                        extalks.append(iextalk)
+                        
+                        couples.append('%i%s-%i%s' % (iCr+1,Qref,iCCD+1,Q))
+    
+        xtalks = np.array(xtalks)
+        axtalks = np.abs(xtalks)
+        
+        ncouples = len(couples)
+        n05 = len(np.where(axtalks<=0.5)[0])
+        n05_1 = len(np.where((axtalks>0.5) & (axtalks <=1.))[0])
+        n1_2 = len(np.where((axtalks>1.0) & (axtalks <=2.))[0])
+        n2_5 = len(np.where((axtalks>2.0) & (axtalks <=5.))[0])
+        n5_100 = len(np.where((axtalks>5.) & (axtalks <=100.))[0])    
+        ix_max = np.abs(xtalks).argmax()
+        max_xtalk = xtalks[ix_max]
+        max_couple = couples[ix_max]
+        
+        def assign_item_value(Item,Value,row):
+            self.wb['Summary']['A%i' % row] = Item
+            self.wb['Summary']['B%i' % row] = Value
+
+        assign_item_value('# channels with max(x-talk) <= 0.5 ADU','%i/%i' % (n05,ncouples,),1)
+        assign_item_value('# channels with 0.5 < max(x-talk) <= 1.0 ADU','%i/%i' % (n05_1,ncouples,),2)
+        assign_item_value('# channels with 1.0 < max(x-talk) <= 2.0 ADU','%i/%i' % (n1_2,ncouples,),3)
+        assign_item_value('# channels with 2.0 < max(x-talk) <= 5.0 ADU','%i/%i' % (n2_5,ncouples,),4)
+        assign_item_value('# channels with 5.0 < max(x-talk) <= 100.0 ADU','%i/%i' % (n5_100,ncouples,),5)
+        assign_item_value('Worst Cross-Talk [ADU]','%.2f' % max_xtalk,6)
+        assign_item_value('Worst Cross-Talk is for S-V',max_couple,7)
+
+               
+        self.adjust_columns_width(sheet='Summary')
+    
+    def fill_Xtalk_Ratios(self):
+        """ """
+
+        ws = self.wb['Xtalk_Ratio']
+        
+        colnames = ['']
+        for CCD in self.CCDs:
+            for Q in self.Quads:
+                colnames.append('%i%s' % (CCD,Q))
+        
+        for i,col in enumerate(ws.iter_cols(min_row=1,max_row=1,min_col=2,max_col=(len(colnames)-1)*3+1)):            
+            if (i % 3) ==1:
+                col[0].value = colnames[1+i/3]
+            Q =colnames[1+i/3][-1] 
+            if Q in ['E','G']:
+                col[0].fill = self.color_fills['blue']
+            elif Q in ['F','H']:
+                col[0].fill = self.color_fills['green']
+        
+        subtitles = ['ratio','eratio','r_at_maxinj']        
+        for i,col in enumerate(ws.iter_cols(min_row=2,max_row=2,min_col=2,max_col=(len(colnames)-1)*3+1)):
+            col[0].value = subtitles[i%3]
+        
+        # Labelling reference channels
+        
+        channels = []
+        for CCD in self.CCDs:
+            for Q in self.Quads:
+                channels.append('%i%s' % (CCD,Q))
+        
+        for i,row in enumerate(ws.iter_rows(min_row=3,max_row=3+len(channels)-1,min_col=1,max_col=1)):
+            row[0].value = channels[i]
+        
+        for iCr,CCDref in enumerate(self.CCDs):
+            for iQr,Qref in enumerate(self.Quads):
+                
+                irow = iCr*4+iQr+1+1+1
+                
+                for jC,CCD in enumerate(self.CCDs):
+                    for jQ,Q, in enumerate(self.Quads):
+                       
+                        CCDreftag = 'CCD%i' % CCDref
+                        CCDtag = 'CCD%i' % CCD
+                        
+                        xtalk_dict = self.data[CCDreftag][Qref][CCDtag][Q]
+                        
+                        ixtalk = xtalk_dict['xtalk']
+                        iextalk = xtalk_dict['std_xtalk']
+                        xtalk_atmaxinj = xtalk_dict['xtalk_atmaxinj']
+                        
+                        values = [ixtalk,iextalk,xtalk_atmaxinj]
+                        
+                        for k in range(3):
+                            jcol = jC*4*3+jQ*3+k+1+1
+                            jcolLetter = get_column_letter(jcol)
+                        
+                            ws['%s%i' % (jcolLetter,irow)] = values[k]
+                            ws['%s%i' % (jcolLetter,irow)].number_format = '0.0E+00'
+                            
+                            if values[0] == 1.:
+                                ws['%s%i' % (jcolLetter,irow)].fill = self.color_fills['gray']
+                            
+        
+        
+        self.adjust_columns_width(sheet='Xtalk_Ratio',minwidth=5)
+
+    def fill_Xtalk_ADUs(self):
+        """ """
+
+        ws = self.wb['Xtalk_ADU']
+        
+        colnames = ['']
+        for CCD in self.CCDs:
+            for Q in self.Quads:
+                colnames.append('%i%s' % (CCD,Q))
+        
+        for i,col in enumerate(ws.iter_cols(min_row=1,max_row=1,min_col=2,max_col=(len(colnames)-1)*2+1)):            
+            if (i % 2) ==0:
+                try: col[0].value = colnames[1+i/2]     
+                except: stop()
+            Q =colnames[1+i/2][-1] 
+            if Q in ['E','G']:
+                col[0].fill = self.color_fills['blue']
+            elif Q in ['F','H']:
+                col[0].fill = self.color_fills['green']
+        
+        subtitles = ['xtalk_lin','xtalk_at_maxinj']        
+        for i,col in enumerate(ws.iter_cols(min_row=2,max_row=2,min_col=2,max_col=(len(colnames)-1)*2+1)):
+            col[0].value = subtitles[i%2]
+        
+        # Labelling reference channels
+        
+        channels = []
+        for CCD in self.CCDs:
+            for Q in self.Quads:
+                channels.append('%i%s' % (CCD,Q))
+        
+        for i,row in enumerate(ws.iter_rows(min_row=3,max_row=3+len(channels)-1,min_col=1,max_col=1)):
+            row[0].value = channels[i]
+        
+        for iCr,CCDref in enumerate(self.CCDs):
+            for iQr,Qref in enumerate(self.Quads):
+                
+                irow = iCr*4+iQr+1+1+1
+                
+                for jC,CCD in enumerate(self.CCDs):
+                    for jQ,Q, in enumerate(self.Quads):
+                       
+                        CCDreftag = 'CCD%i' % CCDref
+                        CCDtag = 'CCD%i' % CCD
+                        
+                        xtalk_dict = self.data[CCDreftag][Qref][CCDtag][Q]
+                        
+                        ixtalk = xtalk_dict['xtalk']
+                        xtalk_atmaxinj = xtalk_dict['xtalk_atmaxinj']
+                        
+                        values = [ixtalk*2.**16,xtalk_atmaxinj*2.**16]
+                            
+                        
+                        for k in range(2):
+                            jcol = jC*4*2+jQ*2+k+1+1
+                            jcolLetter = get_column_letter(jcol)
+                        
+                            ws['%s%i' % (jcolLetter,irow)] = values[k]
+                            ws['%s%i' % (jcolLetter,irow)].number_format = '0.00'
+                            
+                            if ixtalk == 1.:
+                                ws['%s%i' % (jcolLetter,irow)].fill = self.color_fills['gray']
+                            else:
+                                if np.any(np.array(values)>self.threshold_yellow_ADU):
+                                    ws['%s%i' % (jcolLetter,irow)].fill = self.color_fills['yellow']
+                                if np.any(np.array(values)>self.threshold_orange_ADU):
+                                    ws['%s%i' % (jcolLetter,irow)].fill = self.color_fills['orange']
+                                if np.any(np.array(values)>self.threshold_red_ADU):
+                                    ws['%s%i' % (jcolLetter,irow)].fill = self.color_fills['red']
+        
+        self.adjust_columns_width(sheet='Xtalk_ADU',minwidth=5)
+    
+    def fill_Figures(self):
+        """ """
+        
+    
+    
+    def get_str_len(self,cell):
+        if cell.value is None:
+            return 0
+        else:
+            return len(str(cell.value))
+        
+    def adjust_columns_width(self,sheet,minwidth=0):
+        """ """
+        
+        column_widths = []
+        for row in self.wb[sheet]:
+            for i, cell in enumerate(row):                
+                if len(column_widths)>i:                    
+                    if self.get_str_len(cell)>column_widths[i]:
+                        column_widths[i] = self.get_str_len(cell)
+                else:
+                    column_widths += [self.get_str_len(cell)]
+
+        for i, column_width in enumerate(column_widths):
+            self.wb[sheet].column_dimensions[get_column_letter(i+1)].width = max([column_width,minwidth])
+    
+    def save(self,filename):
+        self.wb.save(filename)
+    
+        
+    
     

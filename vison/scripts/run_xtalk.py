@@ -21,6 +21,7 @@ from astropy.io import ascii
 import datetime
 import numpy as np
 from optparse import OptionParser
+from collections import OrderedDict
 
 from vison.xtalk import xtalk
 from vison.support.files import cPickleDumpDictionary,cPickleRead
@@ -34,17 +35,18 @@ thresholdinj = 1.E2 # ADU
 #END HARDWIRED
 
 
-def run_xtalk(incat,inpath='',respath='',label='',doCompute=False):
+def run_xtalk(incat,inpath='',respath='',label='',ttag='',doCompute=False):
     """ """
     
-    ttag = (datetime.datetime.now()).strftime('%d%b%y_%H%M%S')
+    if ttag == '':
+        ttag = (datetime.datetime.now()).strftime('%d%b%y_%H%M%S')
     
     if label !='': _label = '_%s' % label
     else: _label = ''
-    logfile = os.path.join(respath,'analysis_Xtak_%s%s.log' % (ttag,_label))
     
-    outfile = os.path.join(respath,'Xtalks_%s%s.pick' % (ttag,_label))
-
+    logfile = os.path.join(respath,'analysis_Xtalk_%s%s.log' % (ttag,_label))
+    outpickfile = os.path.join(respath,'Xtalks_%s%s.pick' % (ttag,_label))
+    outexcelfile = os.path.join(respath,'Xtalks_%s%s.xlsx' % (ttag,_label))
     
     indata = ascii.read(incat)
     CHANNELS = indata['CHANNELS'].data.copy()
@@ -78,14 +80,29 @@ def run_xtalk(incat,inpath='',respath='',label='',doCompute=False):
                thresholdinj,colstart=colstart,colend=colend,savefigs=True,log=log,
                datapath=inpath,respath=respath)               
                    
-       cPickleDumpDictionary(Xtalks,outfile)
+       cPickleDumpDictionary(Xtalks,outpickfile)
     
     else:
         
-        Xtalks = cPickleRead(outfile)
-        
-    stop()
-
+        Xtalks = cPickleRead(outpickfile)
+    
+    
+    report = xtalk.Report_Xtalk(Xtalks)
+    
+    #headerdict = OrderedDict(ROE_ID,
+    #                         Injector,
+    #                         ACQ_DATE=ttag,
+    #                         label=label)
+    
+    #report.fill_Header()
+    report.fill_Summary()
+    report.fill_Xtalk_Ratios()
+    report.fill_Xtalk_ADUs()
+    #report.fill_Figures()
+    
+    report.save(outexcelfile)
+    
+    
 
 if __name__ == '__main__':
     
@@ -94,6 +111,7 @@ if __name__ == '__main__':
     parser.add_option("-r","--respath",dest="respath",default='',help="Results Path.")
     parser.add_option("-i","--incat",dest="incat",default='',help="Inputs Catalog-like file.")
     parser.add_option("-l","--label",dest="label",default='',help="label [figures, file-names].")
+    parser.add_option("-t","--ttag",dest="ttag",default='',help="Time-Tag [figures, file-names].")
     parser.add_option("-C","--compute",dest="doCompute",action='store_true',default=False,help="Compute cross-talk matrix OR [default] only report results.")
         
     (options, args) = parser.parse_args()
@@ -102,6 +120,7 @@ if __name__ == '__main__':
     respath = options.respath
     incat = options.incat
     label = options.label
+    ttag = options.ttag
     doCompute = options.doCompute
     
     if incat == '':
@@ -124,5 +143,5 @@ if __name__ == '__main__':
     
     
     
-    run_xtalk(incat,path,respath,label=label,doCompute=doCompute)
+    run_xtalk(incat,path,respath,label=label,ttag=ttag,doCompute=doCompute)
     
