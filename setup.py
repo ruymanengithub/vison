@@ -40,6 +40,7 @@ def configuration():
     config.add_subpackage('vison/sandbox')
     config.add_subpackage('vison/scripts')
     config.add_subpackage('vison/support')
+    config.add_subpackage('vison/xtalk')
     
     #config.add_subpackage('vison/doc')
         
