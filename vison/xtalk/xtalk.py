@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 
-NEEDSREVISION
-
 Module for analysis of Cross-Talk data obtained with ROE-Tab injection.
 
 Created on Thu Sep 14 16:11:09 2017
@@ -155,14 +153,14 @@ def xtalk_fit(x,y):
     return results
 
 
-def find_levels(img,colstart=1,colend=1600):
+def find_levels(img,colstart=1,colend=1600,rowstart=1,rowend=2086):
     
-    histo = np.histogram(img[colstart:colend,:],bins=200)
+    histo = np.histogram(img[colstart:colend,rowstart:rowend],bins=200)
     
     bins = histo[1]
     nperbin = histo[0]
     
-    nperbin[nperbin < 1E3] = 0
+    nperbin[np.where(nperbin < 1E3)] = 0
     
     pnperbin = np.zeros(len(nperbin)+2)
     pnperbin[1:-1] = nperbin
@@ -197,7 +195,7 @@ def find_levels(img,colstart=1,colend=1600):
 
 
 def processXtalk_single(CCDref,Qref,OBSID,thresholdinj=0.,colstart=1,colend=1600,
-                        savefigs=False,log=None,datapath='',respath=''):
+                        rowstart=1,rowend=2086,savefigs=False,log=None,datapath='',respath=''):
     """ 
     # Flow:
     #
@@ -229,7 +227,6 @@ def processXtalk_single(CCDref,Qref,OBSID,thresholdinj=0.,colstart=1,colend=1600
     CCDs = [1,2,3]
     Quads = ['E','F','G','H']
     
-    
     msg = 'Reference = CCD%i-Q:%s' % (CCDref,Qref)
     print msg
     
@@ -243,7 +240,7 @@ def processXtalk_single(CCDref,Qref,OBSID,thresholdinj=0.,colstart=1,colend=1600
     imgref = ccdref.get_quad(Qref,canonical=True).copy()
     imgref = sub_bgd(imgref,colend)
     
-    try: levels,nperlevel = find_levels(imgref,colstart,colend)
+    try: levels,nperlevel = find_levels(imgref,colstart,colend,rowstart,rowend)
     except RuntimeError: 
         log.info('Not Possible to analyze CCD%i,Q=%s' % (CCDref,Qref)) 
         return None
@@ -264,7 +261,8 @@ def processXtalk_single(CCDref,Qref,OBSID,thresholdinj=0.,colstart=1,colend=1600
         hibound = max(level * 1.01,level+100)
 
         ixsel = np.where((imgref >= lowbound) & (imgref <= hibound) & 
-                         (X >= colstart) & (X<colend))    
+                         (X >= colstart) & (X<colend) &
+                         (Y >= rowstart) & (Y<rowend))    
         mask[ixsel] = level
         pixels = imgref[ixsel]
         #refpix.append(np.nanmedian(pixels))
@@ -451,16 +449,16 @@ def PlotSummaryFig(Xtalk,suptitle,figname='',scale='RATIO'):
                         else:
                             stop()
                    
-                        # EM3 without modifications
-                        if (CCDref==2) and (Qref == 'H') and (CCD==2) and (Q=='G'):
-                            ms = (29.5/ req)*5.
-                            ms = max(ms,5)
-                            ax.scatter(x,y,facecolor='none',color='k',s=[ms])
-                        # EM3 without modifications
-                        if (CCDref==2) and (Qref == 'H') and (CCD==2) and (Q=='F'):
-                            ms = (3.6/ req)*5.
-                            ms = max(ms,5)
-                            ax.scatter(x,y,facecolor='none',color='k',s=[ms])
+#                        # EM3 without modifications
+#                        if (CCDref==2) and (Qref == 'H') and (CCD==2) and (Q=='G'):
+#                            ms = (29.5/ req)*5.
+#                            ms = max(ms,5)
+#                            ax.scatter(x,y,facecolor='none',color='k',s=[ms])
+#                        # EM3 without modifications
+#                        if (CCDref==2) and (Qref == 'H') and (CCD==2) and (Q=='F'):
+#                            ms = (3.6/ req)*5.
+#                            ms = max(ms,5)
+#                            ax.scatter(x,y,facecolor='none',color='k',s=[ms])
 
                         
     
@@ -553,30 +551,35 @@ class Report_Xtalk():
         self.data = Xtalk
         
         self.wb = Workbook()
-        self.wb.create_sheet('Header')
-        self.wb.create_sheet('Summary')
-        self.wb.create_sheet('Xtalk_Ratio')
-        self.wb.create_sheet('Xtalk_ADU')
-        self.wb.create_sheet('Figures')
+        self.wb.create_sheet('Header',0)
+        self.wb.create_sheet('Summary',1)
+        self.wb.create_sheet('Xtalk_Ratio',2)
+        self.wb.create_sheet('Xtalk_ADU',3)
+        self.wb.create_sheet('Figures',4)
+        
+        std = self.wb.get_sheet_by_name('Sheet')
+        self.wb.remove_sheet(std)
+        
     
     def fill_Header(self):
         """ """
         
         headerdict = self.data['meta']
         
-        headkeys = ['ROE_ID','Injector','ACQ_DATE','label',
-        'PROC_DATE','vison']
+        headkeys = ['Date','ROE','ROE_FW','Injector','Injector_FW','Label',
+        'Analysis_Date','vison']
         
-        PROC_DATE = (datetime.datetime.now()).strftime('%d%b%y_%H%M%S')
-        headerdict.update(dict(vison=__version__,
-                               PROC_DATE=PROC_DATE))
+        
+        headerdict.update(dict(vison=__version__))
         
         self.wb['Header']['A1'] = 'XTALK Report'
         
         ix0 = 5
         for ik,key in enumerate(headkeys):
-            self.wb['Header']['A%i' % (ix0+ik)] = headerdict[key]
-    
+            self.wb['Header']['A%i' % (ix0+ik)] = key
+            self.wb['Header']['B%i' % (ix0+ik)] = headerdict[key]
+        
+        self.adjust_columns_width(sheet='Header')
     
     def fill_Summary(self):
         """ """
@@ -783,6 +786,13 @@ class Report_Xtalk():
     
     def fill_Figures(self):
         """ """
+        
+        figsdict = self.data['figs']
+        
+        ws = self.wb['Figures']
+        
+        ws.add_image(openpyxl.drawing.image.Image(figsdict['RATIO']),'A1')
+        ws.add_image(openpyxl.drawing.image.Image(figsdict['ADU']),'A40')
         
     
     

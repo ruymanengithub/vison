@@ -22,31 +22,56 @@ import datetime
 import numpy as np
 from optparse import OptionParser
 from collections import OrderedDict
+import copy
 
+import json
 from vison.xtalk import xtalk
 from vison.support.files import cPickleDumpDictionary,cPickleRead
 from vison.support import logger as lg
 # END IMPORT
 
 #HARDWIRED
+rowstart = 1
+rowend = 2086
 colstart = 1
 colend = 1600
 thresholdinj = 1.E2 # ADU
 #END HARDWIRED
 
+meta_defaults = dict(Date="21.02.1980",ROE="Unknown",
+                     ROE_FW="Uknown",
+                     Injector="Uknown",
+                     Injector_FW="Uknown",
+                     Label=None)
 
-def run_xtalk(incat,inpath='',respath='',label='',ttag='',doCompute=False):
+def load_metafile(metafile):
+    """ """
+    with open(metafile) as json_data:
+        meta = json.load(json_data,encoding='ascii')['metadata']
+    return meta
+    
+    
+
+def run_xtalk(incat,inpath='',respath='',metafile='',doCompute=False):
     """ """
     
-    if ttag == '':
-        ttag = (datetime.datetime.now()).strftime('%d%b%y_%H%M%S')
+    run_ttag = (datetime.datetime.now()).strftime('%d%b%y_%H%M%S')
     
+    meta = copy.deepcopy(meta_defaults)
+    if metafile != '':
+        inmeta = load_metafile(metafile)
+        meta.update(inmeta)
+    
+    datetag = meta["Date"]
+    
+    label = meta['Label']
     if label !='': _label = '_%s' % label
     else: _label = ''
     
-    logfile = os.path.join(respath,'analysis_Xtalk_%s%s.log' % (ttag,_label))
-    outpickfile = os.path.join(respath,'Xtalks_%s%s.pick' % (ttag,_label))
-    outexcelfile = os.path.join(respath,'Xtalks_%s%s.xlsx' % (ttag,_label))
+    
+    logfile = os.path.join(respath,'analysis_Xtalk_%s%s.log' % (datetag,_label))
+    outpickfile = os.path.join(respath,'Xtalks_%s%s.pick' % (datetag,_label))
+    outexcelfile = os.path.join(respath,'Xtalks_%s%s.xlsx' % (datetag,_label))
     
     indata = ascii.read(incat)
     CHANNELS = indata['CHANNELS'].data.copy()
@@ -60,9 +85,9 @@ def run_xtalk(incat,inpath='',respath='',label='',ttag='',doCompute=False):
        if os.path.exists(logfile): os.system('rm %s' % logfile)
         
        log = lg.setUpLogger(logfile)
-       log.info(['Starting CROSS-TALK ANALYSIS on %s' % ttag])
+       log.info(['Starting CROSS-TALK ANALYSIS on %s' % run_ttag])
     
-       Xtalks = dict()
+       Xtalks = dict(meta=meta)
     
        for CCDref in CCDs:
        
@@ -77,28 +102,38 @@ def run_xtalk(incat,inpath='',respath='',label='',ttag='',doCompute=False):
                OBSID = OBSIDs[np.where(CHANNELS == source)]
                 
                Xtalks['CCD%i' % CCDref][Qref] = xtalk.processXtalk_single(CCDref,Qref,OBSID,\
-               thresholdinj,colstart=colstart,colend=colend,savefigs=True,log=log,
-               datapath=inpath,respath=respath)               
+               thresholdinj,rowstart=rowstart,rowend=rowend,colstart=colstart,colend=colend,
+               savefigs=True,log=log,datapath=inpath,respath=respath)               
                    
        cPickleDumpDictionary(Xtalks,outpickfile)
     
     else:
         
         Xtalks = cPickleRead(outpickfile)
+        
     
+    savefigs = True
+    if savefigs: 
+        figname_R = os.path.join(respath,'XTALK_summary_%s%s_RATIO.png' % (datetag,_label))
+        figname_A = os.path.join(respath,'XTALK_summary_%s%s_ADU.png' % (datetag,_label))
+    else:
+        figname_R = ''
+        figname_A = ''
+    
+    suptitle = 'XTALK %s %s' % (label,datetag)
+    xtalk.PlotSummaryFig(Xtalks,suptitle,figname_R,scale='RATIO')
+    xtalk.PlotSummaryFig(Xtalks,suptitle,figname_A,scale='ADU')    
+    
+    Xtalks['figs'] = dict(RATIO=figname_R,ADU=figname_A)
+    Xtalks['meta']['Analysis_Date'] = run_ttag
     
     report = xtalk.Report_Xtalk(Xtalks)
     
-    #headerdict = OrderedDict(ROE_ID,
-    #                         Injector,
-    #                         ACQ_DATE=ttag,
-    #                         label=label)
-    
-    #report.fill_Header()
+    report.fill_Header()
     report.fill_Summary()
     report.fill_Xtalk_Ratios()
     report.fill_Xtalk_ADUs()
-    #report.fill_Figures()
+    report.fill_Figures()
     
     report.save(outexcelfile)
     
@@ -110,8 +145,9 @@ if __name__ == '__main__':
     parser.add_option("-p","--path",dest="path",default='',help="Data Path.")
     parser.add_option("-r","--respath",dest="respath",default='',help="Results Path.")
     parser.add_option("-i","--incat",dest="incat",default='',help="Inputs Catalog-like file.")
-    parser.add_option("-l","--label",dest="label",default='',help="label [figures, file-names].")
-    parser.add_option("-t","--ttag",dest="ttag",default='',help="Time-Tag [figures, file-names].")
+    parser.add_option("-m","--meta",dest="metafile",default='',help="File with Meta-Information.")
+    #parser.add_option("-l","--label",dest="label",default='',help="label [figures, file-names].")
+    #parser.add_option("-t","--ttag",dest="ttag",default='',help="Time-Tag [figures, file-names].")
     parser.add_option("-C","--compute",dest="doCompute",action='store_true',default=False,help="Compute cross-talk matrix OR [default] only report results.")
         
     (options, args) = parser.parse_args()
@@ -119,8 +155,9 @@ if __name__ == '__main__':
     path = options.path
     respath = options.respath
     incat = options.incat
-    label = options.label
-    ttag = options.ttag
+    metafile = options.metafile
+    #label = options.label
+    #ttag = options.ttag
     doCompute = options.doCompute
     
     if incat == '':
@@ -143,5 +180,5 @@ if __name__ == '__main__':
     
     
     
-    run_xtalk(incat,path,respath,label=label,ttag=ttag,doCompute=doCompute)
+    run_xtalk(incat,path,respath,metafile=metafile,doCompute=doCompute)
     
