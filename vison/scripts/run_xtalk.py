@@ -24,10 +24,10 @@ from optparse import OptionParser
 from collections import OrderedDict
 import copy
 
-import json
 from vison.xtalk import xtalk
 from vison.support.files import cPickleDumpDictionary,cPickleRead
 from vison.support import logger as lg
+from vison.support import vjson
 # END IMPORT
 
 #HARDWIRED
@@ -44,12 +44,6 @@ meta_defaults = dict(Date="21.02.1980",ROE="Unknown",
                      Injector_FW="Uknown",
                      Label=None)
 
-def load_metafile(metafile):
-    """ """
-    with open(metafile) as json_data:
-        meta = json.load(json_data,encoding='ascii')['metadata']
-    return meta
-    
     
 
 def run_xtalk(incat,inpath='',respath='',metafile='',doCompute=False):
@@ -59,7 +53,7 @@ def run_xtalk(incat,inpath='',respath='',metafile='',doCompute=False):
     
     meta = copy.deepcopy(meta_defaults)
     if metafile != '':
-        inmeta = load_metafile(metafile)
+        inmeta = vjson.load_metafile(metafile)
         meta.update(inmeta)
     
     datetag = meta["Date"]
