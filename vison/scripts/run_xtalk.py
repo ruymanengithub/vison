@@ -53,7 +53,7 @@ def run_xtalk(incat,inpath='',respath='',metafile='',doCompute=False):
     
     meta = copy.deepcopy(meta_defaults)
     if metafile != '':
-        inmeta = vjson.load_metafile(metafile)
+        inmeta = vjson.load_jsonfile(metafile)["metadata"]
         meta.update(inmeta)
     
     datetag = meta["Date"]

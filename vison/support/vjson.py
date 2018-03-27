@@ -10,12 +10,13 @@ Created on Tue Mar 27 14:25:43 2018
 
 # IMPORT STUFF
 import json
+#from decimal import Decimal
 # END IMPORT
 
 
-def load_metafile(metafile):
+def load_jsonfile(jsonfile):
     """ """
-    with open(metafile) as json_data:
-        meta = json.load(json_data,encoding='ascii')['metadata']
-    return meta
+    with open(jsonfile) as json_data:
+        pydict = json.load(json_data,encoding='ascii',parse_float=float,parse_int=int)
+    return pydict
     
