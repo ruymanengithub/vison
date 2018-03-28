@@ -27,7 +27,7 @@ from vison.pipe import lib as pilib
 from vison.ogse import ogse
 from vison.point import lib as polib
 from vison.datamodel import  scriptic as sc
-from vison.pipe import FlatFielding as FFing
+import FlatFielding as FFing
 #from vison.support.report import Report
 #from vison.support import files
 from vison.datamodel import ccd

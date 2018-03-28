@@ -11,6 +11,7 @@ Created on Mon Mar 26 12:07:54 2018
 # IMPORT STUFF
 from pdb import set_trace as stop
 import openpyxl as oxl
+from openpyxl.utils import dataframe as odataframe
 import pandas
 import copy
 # END IMPORT
@@ -33,11 +34,12 @@ class ReportXL(object):
     color_fills = color_fills
     
     def __init__(self,datadict):
+        
         self.data = copy.deepcopy(datadict)
         
         self.wb = oxl.Workbook()
-        std = self.wb.get_sheet_by_name('Sheet')
-        self.wb.remove_sheet(std)
+        std = self.wb['Sheet']
+        self.wb.remove(std)
         
     def get_str_len(self,cell):
         if cell.value is None:
@@ -59,10 +61,27 @@ class ReportXL(object):
 
         for i, column_width in enumerate(column_widths):
             self.wb[sheetname].column_dimensions[oxl.utils.get_column_letter(i+1)].width = max([column_width,minwidth])        
+    
+    
+    def df_to_sheet(self,df,sheetname,index=False,header=True):
+        """ """
         
+        ws = self.wb[sheetname]
+        df_to_rows = odataframe.dataframe_to_rows
+        
+        for r in df_to_rows(df,index=index,header=header):
+            ws.append(r)
+        
+        for cell in ws['A'] + ws[1]:
+            cell.style = 'Pandas'
+        
+    def add_image(self,figpath,sheetname,cell='A1'):
+        """ """
+        self.wb[sheetname].add_image(oxl.drawing.image.Image(figpath),cell)
+    
     def save(self,filename):
         self.wb.save(filename)
-        
+    
 
 
 def test0():
