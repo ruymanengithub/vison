@@ -18,12 +18,15 @@ from glob import glob
 import os
 import copy
 import datetime
+import openpyxl as oxl
+
 #import string as st
 
 from scipy.optimize import curve_fit
 
 from matplotlib import pyplot as plt
 
+from vison.support.excel import ReportXL
 from vison.datamodel import ccd as ccdmod
 from vison import __version__
 from scipy import signal, stats
@@ -513,52 +516,29 @@ def PlotSummaryFig(Xtalk,suptitle,figname='',scale='RATIO'):
     plt.close()
     
 
-from openpyxl import Workbook
-from openpyxl.drawing.image import Image
-from openpyxl.utils import get_column_letter
-#from openpyxl.styles import PatternFill
-import openpyxl
 
 
-color_codes = dict(gray='B2A8A6',
-                   red='F73910',
-                   orange='F5AA08',
-                   yellow='F5EA08',
-                   blue='08B1F5',
-                   green='08F510')
-
-color_fills = dict()
-for colkey in color_codes.keys():
-    _color = openpyxl.styles.colors.Color(rgb=color_codes[colkey])
-    color_fills[colkey] = openpyxl.styles.fills.PatternFill(patternType='solid',fgColor=_color)
-
-class Report_Xtalk():
+class ReportXL_Xtalk(ReportXL):
     """ """
-    
-    color_fills = color_fills
     
     threshold_red_ADU = 30. # ADU
     threshold_orange_ADU = 5. # ADU
     threshold_yellow_ADU = 2. # ADU
     
-    
     def __init__(self,Xtalk):
         """ """
+        
+        super(ReportXL_Xtalk,self).__init__(Xtalk)
         
         self.CCDs = [1,2,3]
         self.Quads = ['E','F','G','H']
         
-        self.data = Xtalk
-        
-        self.wb = Workbook()
         self.wb.create_sheet('Header',0)
         self.wb.create_sheet('Summary',1)
         self.wb.create_sheet('Xtalk_Ratio',2)
         self.wb.create_sheet('Xtalk_ADU',3)
         self.wb.create_sheet('Figures',4)
         
-        std = self.wb.get_sheet_by_name('Sheet')
-        self.wb.remove_sheet(std)
         
     
     def fill_Header(self):
@@ -579,7 +559,7 @@ class Report_Xtalk():
             self.wb['Header']['A%i' % (ix0+ik)] = key
             self.wb['Header']['B%i' % (ix0+ik)] = headerdict[key]
         
-        self.adjust_columns_width(sheet='Header')
+        self.adjust_columns_width(sheetname='Header')
     
     def fill_Summary(self):
         """ """
@@ -644,7 +624,7 @@ class Report_Xtalk():
         assign_item_value('Worst Cross-Talk is for S-V',max_couple,7)
 
                
-        self.adjust_columns_width(sheet='Summary')
+        self.adjust_columns_width(sheetname='Summary')
     
     def fill_Xtalk_Ratios(self):
         """ """
@@ -700,7 +680,7 @@ class Report_Xtalk():
                         
                         for k in range(3):
                             jcol = jC*4*3+jQ*3+k+1+1
-                            jcolLetter = get_column_letter(jcol)
+                            jcolLetter = oxl.utils.get_column_letter(jcol)
                         
                             ws['%s%i' % (jcolLetter,irow)] = values[k]
                             ws['%s%i' % (jcolLetter,irow)].number_format = '0.0E+00'
@@ -710,7 +690,7 @@ class Report_Xtalk():
                             
         
         
-        self.adjust_columns_width(sheet='Xtalk_Ratio',minwidth=5)
+        self.adjust_columns_width(sheetname='Xtalk_Ratio',minwidth=5)
 
     def fill_Xtalk_ADUs(self):
         """ """
@@ -767,7 +747,7 @@ class Report_Xtalk():
                         
                         for k in range(2):
                             jcol = jC*4*2+jQ*2+k+1+1
-                            jcolLetter = get_column_letter(jcol)
+                            jcolLetter = oxl.utils.get_column_letter(jcol)
                         
                             ws['%s%i' % (jcolLetter,irow)] = values[k]
                             ws['%s%i' % (jcolLetter,irow)].number_format = '0.00'
@@ -782,43 +762,15 @@ class Report_Xtalk():
                                 if np.any(np.array(values)>self.threshold_red_ADU):
                                     ws['%s%i' % (jcolLetter,irow)].fill = self.color_fills['red']
         
-        self.adjust_columns_width(sheet='Xtalk_ADU',minwidth=5)
+        self.adjust_columns_width(sheetname='Xtalk_ADU',minwidth=5)
     
     def fill_Figures(self):
-        """ """
-        
-        figsdict = self.data['figs']
-        
+        """ """        
+        figsdict = self.data['figs']        
         ws = self.wb['Figures']
+        ws.add_image(oxl.drawing.image.Image(figsdict['RATIO']),'A1')
+        ws.add_image(oxl.drawing.image.Image(figsdict['ADU']),'A40')
         
-        ws.add_image(openpyxl.drawing.image.Image(figsdict['RATIO']),'A1')
-        ws.add_image(openpyxl.drawing.image.Image(figsdict['ADU']),'A40')
-        
-    
-    
-    def get_str_len(self,cell):
-        if cell.value is None:
-            return 0
-        else:
-            return len(str(cell.value))
-        
-    def adjust_columns_width(self,sheet,minwidth=0):
-        """ """
-        
-        column_widths = []
-        for row in self.wb[sheet]:
-            for i, cell in enumerate(row):                
-                if len(column_widths)>i:                    
-                    if self.get_str_len(cell)>column_widths[i]:
-                        column_widths[i] = self.get_str_len(cell)
-                else:
-                    column_widths += [self.get_str_len(cell)]
-
-        for i, column_width in enumerate(column_widths):
-            self.wb[sheet].column_dimensions[get_column_letter(i+1)].width = max([column_width,minwidth])
-    
-    def save(self,filename):
-        self.wb.save(filename)
     
         
     

@@ -121,7 +121,7 @@ def run_xtalk(incat,inpath='',respath='',metafile='',doCompute=False):
     Xtalks['figs'] = dict(RATIO=figname_R,ADU=figname_A)
     Xtalks['meta']['Analysis_Date'] = run_ttag
     
-    report = xtalk.Report_Xtalk(Xtalks)
+    report = xtalk.ReportXL_Xtalk(Xtalks)
     
     report.fill_Header()
     report.fill_Summary()
