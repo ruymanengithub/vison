@@ -75,7 +75,7 @@ def gen_raw_dpmap_vtpump(ccdobj,Nrows=-1,vstart=0,vend=ccdmod.NrowsCCD,extension
     return ccdobj
 
 
-def find_dipoles_vtpump(ccdobj,threshold,Q,vstart=0,vend=ccdmod.NrowsCCD,coosys='ccd',extension=-1):
+def find_dipoles_vtpump(ccdobj,threshold,Q,vstart=0,vend=ccdmod.NrowsCCD,extension=-1):
     """ """
     
     prescan = ccdobj.prescan
@@ -97,26 +97,9 @@ def find_dipoles_vtpump(ccdobj,threshold,Q,vstart=0,vend=ccdmod.NrowsCCD,coosys=
     if len(rows0) == 0:
         return None
     
-    if coosys == 'Q':
-    
-        X = rows0 + prescan 
-        Y = cols0 + vstart 
-    
-    elif coosys == 'ccd':
-        
-        BB = ccdobj.QuadBound[Q]
-        Xq = rows0 + prescan
-        Yq = cols0 + vstart
-        
-        if Q in ['F','G']:
-            BB = [BB[1]-1.,BB[0],BB[2],BB[3]]
-        if Q in ['E','F']:
-            BB = [BB[0],BB[1],BB[3]-1.,BB[2]]
-        
-        X = BB[0] + Xq * (BB[1]-BB[0])/np.abs(BB[1]-BB[0])
-        Y = BB[2] + Yq * (BB[3]-BB[2])/np.abs(BB[3]-BB[2]) 
-        
-        
+    X = rows0 + prescan 
+    Y = cols0 + vstart 
+            
     S = np.zeros_like(X)
     S[np.where(deltamap[rows0,cols0]>0)] = 1
     S[np.where(deltamap[rows0,cols0]<0)] = 0

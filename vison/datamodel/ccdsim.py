@@ -15,7 +15,6 @@ Created on Wed Apr  4 11:13:30 2018
 from pdb import set_trace as stop
 import numpy as np
 
-from ccd import NrowsCCD
 # END IMPORT
 
 
@@ -25,7 +24,7 @@ def simadd_flatilum(ccdobj,levels=dict(E=0.,F=0.,G=0.,H=0.),extension=-1):
 
     for Q in ccdobj.Quads:
         quaddata = ccdobj.get_quad(Q,canonical=True,extension=extension)
-        quaddata[ccdobj.prescan:-ccdobj.overscan,0:NrowsCCD] += levels[Q]
+        quaddata[ccdobj.prescan:-ccdobj.overscan,0:ccdobj.NrowsCCD] += levels[Q]
         ccdobj.set_quad(quaddata,Q,canonical=True,extension=extension)
 
 
@@ -114,7 +113,9 @@ def sim_window(ccdobj,vstart,vend,extension=-1):
         qdata[np.where(mask)] = 0
         ccdobj.set_quad(qdata,Q,canonical=True,extension=extension)
     
-def simadd_injection(ccdobj,levels,on=NrowsCCD,off=0,extension=-1):
+def simadd_injection(ccdobj,levels,on=1E6,off=0,extension=-1):
+    
+    on = min(on,ccdobj.NrowsCCD)
     
     ccdobj.simadd_flatilum(levels=levels,extension=-1)
     

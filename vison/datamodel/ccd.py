@@ -146,6 +146,7 @@ class CCD(object):
     
     """
     
+    NrowsCCD = NrowsCCD
     Quads = Quads
     
     get_1Dprofile = ccd_aux.get_1Dprofile    
@@ -210,7 +211,7 @@ class CCD(object):
 
     def _invert_BB(self,BB,Q):
         """ """        
-        if Q in ['E','G']:
+        if Q in ['F','G']:
             BB = [BB[1]-1.,BB[0],BB[2],BB[3]]
         if Q in ['E','F']:
             BB = [BB[0],BB[1],BB[3]-1.,BB[2]]
@@ -229,10 +230,9 @@ class CCD(object):
     
     def cooconv_Qcan_2_CCD(self,x,y,Q):
         """Converts from Quadrant-canonical coordinates to CCD coordinates."""
-        
-        xp,yp = self.cooconv_Qcan_2_Qrel(x,y,Q)
-        X,Y = self.cooconv_Qrel_2_CCD(xp,yp,Q)
-        
+        xr,yr = self.cooconv_Qcan_2_Qrel(x,y,Q)
+        print Q,x.max(),y.max(),xr.max(),yr.max()
+        X,Y = self.cooconv_Qrel_2_CCD(xr,yr,Q)
         return X,Y
         
     
@@ -258,7 +258,7 @@ class CCD(object):
     
             
     
-    def cooconv_CCD_2_Can(self,x,y,Q):
+    def cooconv_CCD_2_Qcan(self,x,y,Q):
         """Converts from CCD coos. to Quadrant-canonical coos."""
         xp,yp = self.cooconv_CCD_2_Qrel(x,y,Q)
         X,Y = self.cooconv_Qrel_2_Qcan(xp,yp,Q)
@@ -274,13 +274,23 @@ class CCD(object):
     def cooconv_Qrel_2_Qcan(self,x,y,Q):
         """ """
         BB = self.QuadBound[Q]
-        self._conv_coo_from_BB_rel(x,y,BB)
+        xp,yp = self._conv_coo_from_BB_rel(x,y,BB)
+        xzero = 0.
+        yzero = 0.
+        if Q in ['F','G']: xzero = BB[1]-BB[0]-1.
+        if Q in ['E','F']: yzero = BB[3]-BB[2]-1.
+        return xp + xzero, yp + yzero
         
     def cooconv_Qcan_2_Qrel(self,x,y,Q):
         """ """
         BB = self.QuadBound[Q]
         BBinv = self._invert_BB(BB,Q)
-        self._conv_coo_from_BB_rel(x,y,BBinv)
+        xp,yp = self._conv_coo_from_BB_rel(x,y,BBinv)
+        xzero = 0.
+        yzero = 0.
+        if Q in ['F','G']: xzero = BB[1]-BB[0]-1.
+        if Q in ['E','F']: yzero = BB[3]-BB[2]-1.
+        return xp + xzero, yp + yzero
 
     
     def cooconvert(self,x,y,insys,outsys,Q='U'):
@@ -292,7 +302,7 @@ class CCD(object):
         
         converter = conversion_dict[insys][outsys]
         
-        return converter(self,x,y,Q)
+        return converter(x,y,Q)
     
     
     def dummyrebin(self,arr,new_shape,stat='median'):
@@ -524,7 +534,7 @@ class CCD(object):
         if QUAD in ['E','F']:
             
             imgstart = self.voverscan - 1
-            imgend = imgstart + NrowsCCD - 1
+            imgend = imgstart + self.NrowsCCD - 1
             
             if self.voverscan != 0:
                 ovstart = 0
@@ -535,7 +545,7 @@ class CCD(object):
         elif QUAD in ['G','H']:
             
             imgstart = 0
-            imgend = NrowsCCD - 1
+            imgend = self.NrowsCCD - 1
             
             if self.voverscan !=0:
                 ovstart = imgend
@@ -560,7 +570,7 @@ class CCD(object):
             stat_dict = dict(mean=np.mean,median=np.median,std=np.std)
         
         if ignore_pover:
-            vlims = [VSTART,min(NrowsCCD,VEND)]
+            vlims = [VSTART,min(self.NrowsCCD,VEND)]
         else:
             vlims = [VSTART,VEND]
         
@@ -607,7 +617,7 @@ class CCD(object):
         hlims[1] -= trimscan[1]
         
         if ignore_pover:
-            vlims = [0,NrowsCCD]
+            vlims = [0,self.NrowsCCD]
         else:
             vlims = [0,None]
 
