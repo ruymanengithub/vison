@@ -18,7 +18,7 @@ from pdb import set_trace as stop
 import sys
 import datetime
 import itertools
-import ccd_aux
+import ccd_aux, ccdsim
 from vison import __version__
 # END IMPORT
 
@@ -151,6 +151,16 @@ class CCD(object):
     get_1Dprofile = ccd_aux.get_1Dprofile    
     get_region2Dmodel = ccd_aux.get_region2Dmodel
     extract_region = ccd_aux.extract_region
+    
+    simadd_flatilim = ccdsim.simadd_flatilum
+    simadd_points = ccdsim.simadd_points
+    simadd_bias = ccdsim.simadd_bias
+    simadd_ron = ccdsim.simadd_ron
+    simadd_poisson = ccdsim.simadd_poisson
+    sim_window = ccdsim.sim_window
+    simadd_injection = ccdsim.simadd_injection
+    
+    
     #rebin = ccd_aux.rebin    
 
     def __init__(self,infits=None,extensions=[-1],getallextensions=False,withpover=True):
@@ -197,6 +207,93 @@ class CCD(object):
         self.masked = False
         
         self.historial = []
+
+    def _invert_BB(self,BB,Q):
+        """ """        
+        if Q in ['E','G']:
+            BB = [BB[1]-1.,BB[0],BB[2],BB[3]]
+        if Q in ['E','F']:
+            BB = [BB[0],BB[1],BB[3]-1.,BB[2]]
+        return BB
+
+    
+    def cooconv_Qrel_2_CCD(self,x,y,Q):
+        """Converts from Quadrant-relative coordinates to CCD coordinates."""
+        BB = self.QuadBound[Q]
+        
+        X = x + BB[0]
+        Y = y + BB[2]
+        
+        return X,Y
+    
+    
+    def cooconv_Qcan_2_CCD(self,x,y,Q):
+        """Converts from Quadrant-canonical coordinates to CCD coordinates."""
+        
+        xp,yp = self.cooconv_Qcan_2_Qrel(x,y,Q)
+        X,Y = self.cooconv_Qrel_2_CCD(xp,yp,Q)
+        
+        return X,Y
+        
+    
+    def cooconv_CCD_2_Qrel(self,x,y,Q):
+        """Converts from CCD coos. to Quadrant-relative coos."""
+        
+        BB = self.QuadBound[Q]
+        X = x - BB[0]
+        Y = y - BB[2]
+        return X,Y
+    
+    def get_Q_of_CCDcoo(self,x,y):
+        """ """
+        
+        for Q in self.Quads:
+            X,Y = self.cooconv_CCD_2_Qrel(x,y,Q)
+            isinside = (X>=0) &\
+                       (X<=self.NAXIS1/2)&\
+                       (Y>=0)&\
+                       (Y<=self.NAXIS2/2)
+            if isinside: return Q
+        return None
+    
+            
+    
+    def cooconv_CCD_2_Can(self,x,y,Q):
+        """Converts from CCD coos. to Quadrant-canonical coos."""
+        xp,yp = self.cooconv_CCD_2_Qrel(x,y,Q)
+        X,Y = self.cooconv_Qrel_2_Qcan(xp,yp,Q)
+        return X,Y
+        
+        
+    def _conv_coo_from_BB_rel(self,x,y,BB):
+        """ """
+        X = x * (BB[1]-BB[0])/np.abs(BB[1]-BB[0])
+        Y = y * (BB[3]-BB[2])/np.abs(BB[3]-BB[2]) 
+        return X,Y
+    
+    def cooconv_Qrel_2_Qcan(self,x,y,Q):
+        """ """
+        BB = self.QuadBound[Q]
+        self._conv_coo_from_BB_rel(x,y,BB)
+        
+    def cooconv_Qcan_2_Qrel(self,x,y,Q):
+        """ """
+        BB = self.QuadBound[Q]
+        BBinv = self._invert_BB(BB,Q)
+        self._conv_coo_from_BB_rel(x,y,BBinv)
+
+    
+    def cooconvert(self,x,y,insys,outsys,Q='U'):
+        """ """
+        
+        conversion_dict = dict(CCD=dict(Qrel=self.cooconv_CCD_2_Qrel,Qcan=self.cooconv_CCD_2_Qcan),
+                               Qrel=dict(CCD=self.cooconv_Qrel_2_CCD,Qcan=self.cooconv_Qrel_2_Qcan),
+                               Qcan=dict(Qrel=self.cooconv_Qcan_2_Qrel,CCD=self.cooconv_Qcan_2_CCD))
+        
+        converter = conversion_dict[insys][outsys]
+        
+        return converter(self,x,y,Q)
+    
     
     def dummyrebin(self,arr,new_shape,stat='median'):
         """ """
@@ -423,7 +520,6 @@ class CCD(object):
     def getsectionrowlims(self,QUAD):
         """Returns limits of [VERTICAL] sections: image [and overscan]"""
         
-        semiNAXIS2 = self.NAXIS2/2
         
         if QUAD in ['E','F']:
             
@@ -646,129 +742,6 @@ class CCD(object):
         hdulist.writeto(fitsf,overwrite=clobber)
     
     
-    def simadd_flatilum(self,levels=dict(E=0.,F=0.,G=0.,H=0.),extension=-1):
-        """ """
-
-        for Q in self.Quads:
-            quaddata = self.get_quad(Q,canonical=True,extension=extension)
-            quaddata[self.prescan:-self.overscan,0:NrowsCCD] += levels[Q]
-            self.set_quad(quaddata,Q,canonical=True,extension=extension)
-    
-    
-    def simadd_points(self,flux,fwhm,CCDID='CCD1',dx=0,dy=0,extension=-1):
-        """ """
-        from vison.point.lib import Point_CooNom
-        from vison.point.models import fgauss2D
-        
-        sigma = fwhm/2.355
-        i0 = flux/(2.*np.pi*sigma**2.)
-        
-        nx = 15
-        ny = 15
-
-        
-        for Q in self.Quads:
-            quaddata = self.get_quad(Q,canonical=False,extension=extension).copy()
-            
-            point_keys = Point_CooNom[CCDID][Q].keys()
-            
-            B = self.QuadBound[Q]
-            
-            for pkey in point_keys:
-                xp,yp = Point_CooNom[CCDID][Q][pkey]
-                
-                x0 = xp - B[0] + dx
-                y0 = yp - B[2] + dy
-                
-                xmin = int(np.round(x0))-nx/2
-                xmax = xmin+nx
-                ymin = int(np.round(y0))-ny/2
-                ymax = ymin+ny
-                
-                x = np.arange(xmin,xmax)
-                y = np.arange(ymin,ymax)
-                
-                xx,yy = np.meshgrid(x,y,indexing='xy')
-                
-                p = [i0,x0,y0,sigma,sigma,0.]
-                point_stamp = fgauss2D(xx,yy,p)
-                
-                quaddata[xmin:xmax,ymin:ymax] += point_stamp.copy()
-                
-            self.set_quad(quaddata,Q,canonical=False,extension=extension)
-        
-        
-        
-    
-    def simadd_bias(self,levels=dict(E=2000,F=2000,G=2000,H=2000),extension=-1):
-        
-         for Q in self.Quads:            
-            B = self.QuadBound[Q]
-            self.extensions[extension].data[B[0]:B[1],B[2]:B[3]] += levels[Q]
-    
-    
-    def simadd_ron(self,extension=-1):
-        """ """
-        
-        noise = np.random.normal(loc=0.0, scale=self.rn['E'],size=self.extensions[extension].data.shape)
-        self.extensions[extension].data += noise
-        
-    
-    def simadd_poisson(self,extension=-1):
-        """ """
-        
-        gain = self.gain['E']
-        
-        image_e = self.extensions[extension].data.copy()*gain
-        
-        rounded = np.rint(image_e)
-        residual = image_e - rounded #ugly workaround for multiple rounding operations...
-        rounded[rounded < 0.0] = 0.0
-        image_e = np.random.poisson(rounded).astype(np.float64)
-        image_e += residual
-        
-        image = image_e / gain
-        
-        self.extensions[extension].data = image.copy()
-            
-    def sim_window(self,vstart,vend,extension=-1):
-        """ """
-        
-        mask = np.ones((self.NAXIS1/2,self.NAXIS2/2),dtype='int8')
-        mask[:,vstart:vend] = 0
-        
-        for Q in self.Quads:            
-            qdata = self.get_quad(Q,canonical=True,extension=extension)
-            qdata[np.where(mask)] = 0
-            self.set_quad(qdata,Q,canonical=True,extension=extension)
-        
-    def simadd_injection(self,levels,on=NrowsCCD,off=0,extension=-1):
-        
-        self.simadd_flatilum(levels=levels,extension=-1)
-        
-        # ON/OFF masking
-        
-        NX,NY = self.NAXIS1/2,self.NAXIS2/2
-        
-        mask_onoff = np.zeros((NX,NY),dtype='int8')
-        
-        y0 = 0
-        Fahrtig = False
-        
-        while not Fahrtig:
-            y1 = min(y0 + on,NY)
-            mask_onoff[:,y0:y1] = 1
-            y0 = y1 + off
-            if (y0>NY-1):
-                break
-
-        #from astropy.io import fits as fts
-        #fts.writeto('mask.fits',mask_onoff.transpose().astype('int32'),overwrite=True)
-        
-        for Q in self.Quads:
-            qdata = self.get_quad(Q,canonical=True,extension=extension)
-            qdata[np.where(mask_onoff==0)] = 0.
-            self.set_quad(qdata,Q,canonical=True,extension=extension)
     
 
 
