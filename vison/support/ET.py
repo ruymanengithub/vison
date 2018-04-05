@@ -24,7 +24,7 @@ URLs = dict(NonSpecificWarning="https://visonwarningcall.000webhostapp.com/vison
 def grab_numbers_and_codes():
     """Retrieves phone numbers and access codes necessary to make the phone calls."""
     
-    detailsf = os.path.join(os.path.pathsep,'home','raf','credentials_twilio.pick')[1:]
+    detailsf = os.path.join(os.path.pathsep,'home','raf','CREDENTIALS','credentials_twilio.pick')[1:]
     details = pickle.load(open(detailsf))
     return details
 
