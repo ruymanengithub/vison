@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 
-
 QLA script.
 Aimed at quick inspection of data from Characterization and Calibration Campaigns
 of Euclid-VIS.
