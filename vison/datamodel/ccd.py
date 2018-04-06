@@ -231,7 +231,7 @@ class CCD(object):
     def cooconv_Qcan_2_CCD(self,x,y,Q):
         """Converts from Quadrant-canonical coordinates to CCD coordinates."""
         xr,yr = self.cooconv_Qcan_2_Qrel(x,y,Q)
-        print Q,x.max(),y.max(),xr.max(),yr.max()
+        #print Q,x.max(),y.max(),xr.max(),yr.max()
         X,Y = self.cooconv_Qrel_2_CCD(xr,yr,Q)
         return X,Y
         
