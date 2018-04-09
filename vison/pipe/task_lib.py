@@ -21,8 +21,6 @@ from vison.pipe import lib as pilib
 # END IMPORT
 
 
-
-
 def check_HK(self,HKKeys,reference='command',limits='P',tag='',doReport=False,doLog=True):
     """ """
     
@@ -61,33 +59,6 @@ def add_checkHK_report(self,report_HK,tag):
     return msg_HK
 
 
-def convert_compl_to_nesteditemlist(complidict):
-    """ """
-    
-    def traverse_tree(dictionary,nesteditemlist):   
-            Nkeys = len(dictionary.keys())
-            if Nkeys >5:
-                nesteditemlist +=[
-                '\item %s' % dictionary.__repr__()
-                        ]
-                return nesteditemlist
-            
-            for key,value in dictionary.items():
-                if isinstance(value,(dict,OrderedDict)):
-                    nesteditemlist += [
-                    '\item %s:' % key, 
-                    '\\begin{itemize}']
-                    nesteditemlist = traverse_tree(value,nesteditemlist)
-                    nesteditemlist += ['\\end{itemize}']
-                else:
-                    nesteditemlist += [
-                    '\item %s : %s' % (key,value)        
-                            ]
-            return nesteditemlist
-    nesteditemlist = ['\\begin{itemize}']
-    nesteditemlist += traverse_tree(complidict,[])
-    nesteditemlist += ['\\end{itemize}']
-    return nesteditemlist
 
 
 def filterexposures(self,structure,explogf,datapath,OBSID_lims,colorblind=False,wavedkeys=[],

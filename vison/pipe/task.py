@@ -25,11 +25,12 @@ from vison.support import vistime
 from vison.support import files
 import lib as pilib
 from vison.support import context
-import task_lib as tlib
+#import task_lib as tlib
 from vison.datamodel import ccd
 from vison.image import calibration
 from vison.ogse import ogse
 from vison.support.files import cPickleDumpDictionary
+from vison.datamodel import compliance
 from vison import __version__
 # END IMPORT
 
@@ -343,21 +344,17 @@ class Task(object):
         st_compl = complidict.__str__()
         self.log.info('%s\n%s' % (label,st_compl))
         
-        
+    
     def addComplianceMatrix2Report(self,complidict,label=''):
         """ """
         nicelabel = st.replace(label,' ','\ ')
         #st_compl = complidict.__str__()
-        st_compl = tlib.convert_compl_to_nesteditemlist(complidict)
-        nice_st_compl = [st.replace(item,'False','$\\textcolor{red}{\\bf{False}}$') for item in st_compl]
-        msgList = ['$\\bf{%s}$' % nicelabel] +\
-                  ['\\begingroup'] +\
-                  ['\\scriptsize'] +\
-                  nice_st_compl +\
-                  ['\endgroup']
-#                   ['\\\\']+\
-                   
-        self.report.add_Text(msgList)
+        
+        complitex = ['$\\bf{%s}$' % nicelabel]
+        complitex += compliance.gen_compliance_tex(complidict)
+        complitex =[st.replace(item,'False','$\\textcolor{red}{\\bf{False}}$') for item in complitex]
+        
+        self.report.add_Text(complitex)
         
     def IsComplianceMatrixOK(self,complidict):
         """ """
