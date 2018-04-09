@@ -38,6 +38,7 @@ from vison.pipe.lib import _update_todo_flags
 
 
 def openconfigf(configf):
+    
     f = open(configf)
     exec f
     f.close()

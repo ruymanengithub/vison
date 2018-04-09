@@ -19,4 +19,4 @@ def load_jsonfile(jsonfile):
     with open(jsonfile) as json_data:
         pydict = json.load(json_data,encoding='ascii',parse_float=float,parse_int=int)
     return pydict
-    
+
