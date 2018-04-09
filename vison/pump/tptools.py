@@ -16,7 +16,7 @@ import os
 import numpy as np
 import copy
 from scipy import  ndimage as nd
-import pandas
+import pandas as pd
 from collections import  OrderedDict
 
 from vison.datamodel import ccd as ccdmod
@@ -80,7 +80,6 @@ def find_dipoles_vtpump(ccdobj,threshold,Q,vstart=0,vend=ccdmod.NrowsCCD,extensi
     
     prescan = ccdobj.prescan
     overscan = ccdobj.overscan
-    NAXIS2 = ccdobj.NAXIS2
     
     qrawmap = ccdobj.get_quad(Q,canonical=True,extension=extension)[prescan:-overscan,vstart:vend].copy()
     
@@ -95,7 +94,7 @@ def find_dipoles_vtpump(ccdobj,threshold,Q,vstart=0,vend=ccdmod.NrowsCCD,extensi
                            ((2.*np.abs(qraw_p1-1.)-np.abs(deltamap))<0.2*threshold))
     
     if len(rows0) == 0:
-        return None
+        return pd.DataFrame(dict(X=[],Y=[],S=[],A=[]),columns=['X','Y','S','A'])
     
     X = rows0 + prescan 
     Y = cols0 + vstart 
@@ -106,7 +105,7 @@ def find_dipoles_vtpump(ccdobj,threshold,Q,vstart=0,vend=ccdmod.NrowsCCD,extensi
     A = deltamap[rows0,cols0]/2.
     
     indict = OrderedDict(X=X,Y=Y,S=S,A=A)
-    df = pandas.DataFrame(indict,columns=['X','Y','S','A'])
+    df = pd.DataFrame(indict,columns=['X','Y','S','A'])
          
     return df
     
@@ -134,8 +133,83 @@ def save_dipcat2D_as_ds9regs(df,Q,regfilename,clobber=True):
     for line in hdr: print >> f, line
     for line in body: print >>f, line
     f.close()
+
+
+def fcomp_distamp_dipoles(merged,mcat):
+    """ """
     
+    _X = mcat['X'].as_matrix()
+    _Y = mcat['Y'].as_matrix()
+    _S = mcat['S'].as_matrix()
+        
+    _mix = np.zeros_like(_X,dtype='int32') - 1
+                            
+    for ix in range(len(_X)):
+        disc = np.isclose(((merged['uX']-_X[ix])**2.+(merged['uY']-_Y[ix])**2.)**0.5,0.) & (_S[ix] == merged['uS'])
+        try: _mix[ix] = np.where(disc)[0][0]
+        except: pass
+        
+    mcat['mix'] = pd.Series(_mix,index=mcat.index)
+    
+    return mcat
+
+
+def merge_2dcats_generic(catsdict,catkeys,parentkey,columns,opcolumns,fcomp,dropna=False):
+    """ """
+    
+    merged = catsdict[parentkey].copy()
+    
+    for col in opcolumns:
+        merged['u%s' % col] = pd.Series(merged[col].as_matrix(),index=merged.index)
+    
+    pix = merged.index.values.copy()
+    
+    merged['mix'] = pd.Series(pix,index=merged.index)
+        
+    cats2match = [key for key in catkeys if key != parentkey]
+    
+    for ic,mkey in enumerate(cats2match):
+        
+        mcat = catsdict[mkey]
+        
+        #print mkey, len(mcat)
+        
+        mcat = fcomp(merged,mcat)
+        
+        merged = pd.merge(merged,mcat,how='outer',on='mix',suffixes=('','_%s' % mkey),
+                           copy=False)
+        
+        ixnonmerged = np.where(merged['mix'] == -1)
+        Nnonmerged = len(ixnonmerged[0])
+        maxmix = int(merged['mix'].max())
+        
+        for ocol in opcolumns:        
+            merged.loc[ixnonmerged[0],'u%s' % ocol] = merged.loc[ixnonmerged[0],'%s_%s' % (ocol,mkey)]
+
+        merged.loc[ixnonmerged[0],'mix'] = np.linspace(maxmix+1,maxmix+Nnonmerged+1,Nnonmerged,dtype='int32')
+        
+    
+    renamerdict = dict()
+    for key in columns:
+        renamerdict[key] = '%s_%s' % (key,parentkey)
+    
+    merged = merged.rename(index=str,columns=renamerdict)
+    merged = merged.drop(['mix'],axis=1)
+    
+    merged.drop([u'u%s' % key for key in opcolumns],axis=1)
+    
+    if dropna:
+        merged = merged.dropna()
+    
+    return merged
+
 
     
+def merge_vtp_dipole_cats_bypos(catsdict,catkeys,parentkey,dropna=False):
+    """ """
+    columns = ['X','Y','S','A']
+    opcolumns = ['X','Y','S']
+    return merge_2dcats_generic(catsdict,catkeys,parentkey,columns,opcolumns,fcomp_distamp_dipoles,dropna=False)
+        
     
     
