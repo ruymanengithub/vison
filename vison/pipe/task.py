@@ -41,6 +41,7 @@ class Task(object):
     
     from task_lib import check_HK,filterexposures,addHKPlotsMatrix,add_labels_to_explog
     
+    
     def __init__(self,inputs,log=None,drill=False,debug=False):
         """ """
         self.ID = None
@@ -706,3 +707,7 @@ class Task(object):
                             s_tpump=s_tpump,source=source,wave=wave)
         
         self.report.add_Table(tDict,names=names,caption=caption,longtable=True)
+    
+    def get_time_tag(self):
+        from vison.support.vistime import get_time_tag
+        return get_time_tag()

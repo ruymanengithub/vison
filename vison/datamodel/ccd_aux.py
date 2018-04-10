@@ -110,8 +110,9 @@ class Model2D():
         
         self.corners = corners
         self.imgmodel = np.zeros_like(img,dtype='float32')
-        self.polycoeffs = []
-    
+        self.polycoeffs = dict()
+        self.polyfunc = None
+        
     def bin_img(self,boxsize,stat='median'):
         """ """        
         
@@ -235,14 +236,15 @@ class Model2D():
         pilum = p(xp, yp)
         
         self.imgmodel = pilum.copy()
-        self.polycoeffs = p
+        self.polycoeffs = dict(zip(p.param_names,p.parameters))
+        self.polyfunc = p
         
         return None
     
 
 
 def get_region2Dmodel(ccdobj,Q,area='img',kind='spline',splinemethod='cubic',pdegree=2,
-                doFilter=False,doBin=True,filtsize=1,filtertype='mean',
+                doFilter=False,doBin=True,filtsize=1,binsize=1,filtertype='mean',
                 vstart=0,vend=2086,canonical=True,extension=-1):
     """ """
     
@@ -262,7 +264,7 @@ def get_region2Dmodel(ccdobj,Q,area='img',kind='spline',splinemethod='cubic',pde
                                Tests=False)
     
     if doBin:
-        regmodel.bin_img(boxsize=filtsize,stat=filtertype)
+        regmodel.bin_img(boxsize=binsize,stat=filtertype)
     
     if kind == 'poly2D':
         regmodel.get_model_poly2D(sampling=filtsize,pdegree=pdegree,useBin=doBin)

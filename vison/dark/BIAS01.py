@@ -33,8 +33,9 @@ import B01aux
 #from vison.pipe.task import Task
 from DarkTask import DarkTask
 from vison.image import performance
-from vison.datamodel import inputs
+from vison.datamodel import inputs, cdp
 from vison.support.files import cPickleRead, cPickleDumpDictionary
+from vison.support import utils
 #from vison.support.report import Report
 
 
@@ -161,7 +162,7 @@ class BIAS01(DarkTask):
                        produce a 2D poly model of bias, save coefficients
                        produce average profile along rows
                        produce average profile along cols
-                       save 2D model and profiles in a pick file for each OBSID-CCD
+                       # save 2D model and profiles in a pick file for each OBSID-CCD
                        measure and save RON after subtracting large scale structure
 
             plot RON vs. time f. each CCD and Q
@@ -169,20 +170,27 @@ class BIAS01(DarkTask):
            
         """
         
+        
         if self.report is not None: self.report.add_Section(keyword='extract',Title='BIAS01 Extraction', level=0)
         
         
         Cindices = copy.deepcopy(self.dd.mx['File_name'].indices)
         self.dd.initColumn('profiles_name',Cindices,dtype='S100',valini='None')
-        
-        
+                
         DDindices = copy.deepcopy(self.dd.indices) 
+        
+        self.dd.initColumn('RON',DDindices,dtype='float32',valini=0.)
+        
         
         nObs,nCCD,nQuad = DDindices.shape
         Quads = DDindices[2].vals
         CCDs = DDindices[DDindices.names.index('CCD')].vals
     
         # The "Hard"-work
+        
+        function,module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function,module=module))
 
         if not self.drill:
             
@@ -197,29 +205,38 @@ class BIAS01(DarkTask):
                     
                     vstart = self.dd.mx['vstart'][iObs,jCCD]
                     vend = self.dd.mx['vend'][iObs,jCCD]
-                
-                    ccdobj_name = self.dd.mx['ccdobj_name'][iObs,jCCD]                    
+                    
+                    ccdobj_name = self.dd.mx['ccdobj_name'][iObs,jCCD]
+                    
+                    if ccdobj_name == 'None': continue # TESTS
+                    
                     fullccdobj_name = os.path.join(ccdpicklespath,'%s.pick' % ccdobj_name)
                     
                     ccdobj = copy.deepcopy(cPickleRead(fullccdobj_name))
                     
-                    profiles = OrderedDict(CDP_header=self.CDP_header.copy())
+                    CDP_header['DATE'] = self.get_time_tag()
+                    
+                    profiles = cdp.CDP()
+                    profiles.header = CDP_header.copy()
+                    profiles.path = profilespath
+                    profiles.data = OrderedDict()
                     
                     for kQ,Q in enumerate(Quads):
                         
-                        profiles[Q] = OrderedDict()
+                        profiles.data[Q] = OrderedDict()
                         
-                        # produce a 2D poly model of bias, save coefficients
-                        
-                        # REALLY NECESSARY?
-                        
-                        mod2D = ccdobj.get_region2Dmodel(Q=Q,area='all',kind='poly2D',
-                                        pdegree=5,doFilter=False,
-                                        vstart=vstart,vend=vend,canonical=False,extension=-1)
-                        
+                        # produce a 2D poly model of bias, [save coefficients?]
                         # measure and save RON after subtracting large scale structure
                         
-                        # PENDING (but REALLY NECESSARY?)
+                        mod2D = ccdobj.get_region2Dmodel(Q=Q,area='all',kind='poly2D',
+                                        pdegree=5,doFilter=False,doBin=True,binsize=300,
+                                        vstart=vstart,vend=vend,canonical=False,extension=-1)
+                        
+                        onlyRONimg = ccdobj.get_quad(Q,canonical=False) - mod2D.imgmodel                        
+                        RON = onlyRONimg.std()
+                        
+                        self.dd.mx['RON'][iObs,jCCD,kQ] = RON                        
+                        polycoeffs  = mod2D.polycoeffs
                         
                         # produce average profile along rows
                         
@@ -231,25 +248,29 @@ class BIAS01(DarkTask):
                         ver1Dprof = ccdobj.get_1Dprofile(Q=Q,orient='ver',area='img',stacker='mean',
                                                          vstart=vstart,vend=vend)
                         
-                        profiles[Q]['hor'] = copy.deepcopy(hor1Dprof)
-                        profiles[Q]['ver'] = copy.deepcopy(ver1Dprof)
+                        profiles.data[Q]['hor'] = copy.deepcopy(hor1Dprof)
+                        profiles.data[Q]['ver'] = copy.deepcopy(ver1Dprof)
                         
                     # save (2D model and) profiles in a pick file for each OBSID-CCD
                     
-                    profilespickf = 'profs1D_%i_BIAS01.pick' % (OBSID,)
-                    fprofilespickf = os.path.join(profilespath,profilespickf)
-                                 
-                    cPickleDumpDictionary(profiles,fprofilespickf)
+                    profiles.rootname = 'profs1D_%i_CCD%i_BIAS01' % (OBSID,CCD)
                     
-                    self.dd.mx['profiles_name'][iObs,jCCD] = profilespickf
+                    #fprofilespickf = os.path.join(profilespath,profilespickf)
                     
-                    stop()
-                              
+                    profiles.savetopickle()
                     
-        # PLOTS
+                    #cPickleDumpDictionary(profiles,fprofilespickf)
+                    
+                    self.dd.mx['profiles_name'][iObs,jCCD] = profiles.rootname
+                    
         
+        # PLOTS
+        # profiles 1D (Hor & Ver) x (CCD&Q)
+        # histograms of RON per CCD&Q
         
         # REPORTS
+        # Table with average values of RON per CCD&Q
+        
         
         
     def meta_analysis(self):

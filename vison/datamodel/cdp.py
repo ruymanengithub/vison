@@ -17,6 +17,7 @@ Created on Tue Feb 27 10:58:42 2018
 from pdb import set_trace as stop
 from collections import OrderedDict
 import  copy
+import os
 
 from vison import __version__
 from vison.support.files import cPickleDumpDictionary, cPickleRead
@@ -30,27 +31,44 @@ def loadCDPfromPickle(pickf):
 
 class CDP(object):
     """ """
+
+    rootname = 'Unknown'
+    path = ''
+    header = OrderedDict()
+    meta = OrderedDict()
+    data = None
     
-    #def __init__(self,data=OrderedDict(),meta=OrderedDict(),ID=None,BLOCKID=None,CHAMBER=None):
+    #def __init__(self,*args,**kwargs):
+    #    """ """
     def __init__(self,*args,**kwargs):
+        """ """    
+        #inputs = dict(ID=None,BLOCKID=None,CHAMBER=None)
+        #inputs.update(args)
+        #inputs.update(kwargs)
+        
+        #self.ID = inputs['ID']
+        #self.BLOCKID = inputs['BLOCKID']
+        #self.CHAMBER = inputs['CHAMBER']
+        #self.vison = __version__
+        
+        if 'header' in args: self.header.update(['header'])
+        elif 'header' in kwargs: self.header.update(kwargs['header'])
+        
+        if 'meta' in args: self.meta.update(['meta'])
+        elif 'meta' in kwargs: self.meta.update(kwargs['meta'])
+        
+        
+        
+    def savetopickle(self,pickf=''):
         """ """
-        
-        inputs = dict(ID=None,BLOCKID=None,CHAMBER=None)
-        inputs.update(args)
-        inputs.update(kwargs)
-        
-        self.ID = inputs['ID']
-        self.BLOCKID = inputs['BLOCKID']
-        self.CHAMBER = inputs['CHAMBER']
-        self.vison = __version__
-        
-        #self.data = copy.deepcopy(data)
-        #self.meta = copy.deepcopy(meta)
-        
-        
-    def savetopickle(self,pickf):
+        if pickf == '':
+            outf = os.path.join(self.path,'%s.pick' % self.rootname)
+        else:
+            outf = pickf
+        #outdict = OrderedDict(Header=self.header,Data=self.data)
+        cPickleDumpDictionary(self,outf)
+    
+    
+    def savehardcopy(self,filef=''):
         """ """
-        cPickleDumpDictionary(self,pickf)
-    
-    
-    
+        raise NotImplementedError('Subclass implements abstract method (if needed).') 
