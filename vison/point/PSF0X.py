@@ -144,7 +144,7 @@ class PSF0X(PointTask):
                          ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
         self.figdict = PSF0Xaux.gt_PSF0Xfigs(self.inputs['test'])
-        self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
+        self.inputs['subpaths'] = dict(figs='figs',ccdpickles='ccdpickles')
         
     def set_inpdefaults(self,**kwargs):
         
@@ -312,7 +312,7 @@ class PSF0X(PointTask):
         if not self.drill:
             
             rpath = self.inputs['resultspath']
-            picklespath = self.inputs['subpaths']['pickles']
+            picklespath = self.inputs['subpaths']['ccdpickles']
             spotspath = self.inputs['subpaths']['spots']
             
             for iObs in range(nObs):

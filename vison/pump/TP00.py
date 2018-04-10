@@ -81,7 +81,7 @@ class TP00(PumpTask):
         self.subtasks = [('check',self.check_data)]
         self.HKKeys = HKKeys
         self.figdict = dict()
-        self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
+        self.inputs['subpaths'] = dict(figs='figs',ccdpickles='ccdpickles')
 
 
     def set_inpdefaults(self,**kwargs):

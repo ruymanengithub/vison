@@ -248,7 +248,7 @@ class CHINJ00(InjTask):
 #                         diffvalues=diffvalues,elvis=self.elvis)
 #                 
 #         inputs['structure'] = scriptdict        
-#         inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
+#         inputs['subpaths'] = dict(figs='figs',ccdpickles='ccdpickles')
 #         
 #         if 'perflimits' in inputs:
 #             self.perflimits.update(inputs['perflimits'])
