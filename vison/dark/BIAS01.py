@@ -83,7 +83,8 @@ class BIAS01(DarkTask):
                     ('meta',self.meta_analysis)]
         self.HKKeys = HKKeys
         self.figdict = B01aux.B01figs.copy()
-        self.inputs['subpaths'] = dict(figs='figs',pickles='ccdpickles')
+        self.inputs['subpaths'] = dict(figs='figs',ccdpickles='ccdpickles',
+                   profiles='profiles')
         
         
     def set_inpdefaults(self,**kwargs):
@@ -139,7 +140,7 @@ class BIAS01(DarkTask):
             cosmetics masking
         
         """
-        super(self).prepare_images(doExtract=True,doMask=True,doOffset=True)
+        super(BIAS01,self).prepare_images(doExtract=True,doMask=True,doOffset=True)
         
         
     def basic_analysis(self):
@@ -192,15 +193,15 @@ class BIAS01(DarkTask):
                 
                 OBSID = self.dd.mx['ObsID'][iObs]
                 
-                vstart = self.dd.mx['vstart'][iObs]
-                vend = self.dd.mx['vend'][iObs]
-                
                 for jCCD,CCD in enumerate(CCDs):
-                                        
+                    
+                    vstart = self.dd.mx['vstart'][iObs,jCCD]
+                    vend = self.dd.mx['vend'][iObs,jCCD]
+                
                     ccdobj_name = self.dd.mx['ccdobj_name'][iObs,jCCD]                    
                     fullccdobj_name = os.path.join(ccdpicklespath,'%s.pick' % ccdobj_name)
                     
-                    ccdobj = copy.deepcopy(cPickleRead(fullccdobj_name)['ccdobj'])
+                    ccdobj = copy.deepcopy(cPickleRead(fullccdobj_name))
                     
                     profiles = OrderedDict(CDP_header=self.CDP_header.copy())
                     
@@ -214,8 +215,7 @@ class BIAS01(DarkTask):
                         
                         mod2D = ccdobj.get_region2Dmodel(Q=Q,area='all',kind='poly2D',
                                         pdegree=5,doFilter=False,
-                                        vstart=vstart,vend=vend,
-                                        canonical=False,extension=-1)
+                                        vstart=vstart,vend=vend,canonical=False,extension=-1)
                         
                         # measure and save RON after subtracting large scale structure
                         
@@ -243,6 +243,8 @@ class BIAS01(DarkTask):
                     
                     self.dd.mx['profiles_name'][iObs,jCCD] = profilespickf
                     
+                    stop()
+                              
                     
         # PLOTS
         

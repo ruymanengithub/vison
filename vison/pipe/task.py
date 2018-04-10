@@ -581,7 +581,6 @@ class Task(object):
             _reportNotFound(self.report,NotFoundMsg)
             doBias = False
             
-        
         if doFF and 'FF' in self.inputs['inCDPs']:
             FFData = _loadCDP('FF','Loading Flat-Field Maps...')
             self.proc_histo['FF']=True

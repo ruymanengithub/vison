@@ -75,8 +75,9 @@ def extract_region(ccdobj,Q,area='img',vstart=0,vend=2086,
     BB[2] = vstart
     BB[3] = vend
     
-    subregion = Qdata[BB[0]:BB[1],BB[2]:BB[3]].copy()
     
+    subregion = Qdata[BB[0]:BB[1],BB[2]:BB[3]].copy()
+
     # if not canonical we return area in "DS9" orientation for quadrant
     
     if not canonical:

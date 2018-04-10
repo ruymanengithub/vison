@@ -22,7 +22,6 @@ def countdictlayers(d):
     return max(countdictlayers(v) if isinstance(v,dict) else 0 for v in d.values()) + 1
 
 
-
 def convert_compl_to_nesteditemlist(complidict):
     """ """
     
@@ -70,8 +69,6 @@ def removescalars_from_dict(indict):
     outdict = traverse_tree(indict)
         
     return outdict
-    
-    return outdict
 
 
 def gen_compliance_tex(indict):
@@ -83,8 +80,7 @@ def gen_compliance_tex(indict):
     
     if level < 3:
         df = pd.DataFrame.from_dict(complidict)
-        
-        tex = df.to_latex(multicolumn=True,multirow=True,longtable=True,index=False)
+        tex = df.to_latex(multicolumn=True,multirow=True,longtable=True,index=False)        
     elif level == 3:
         keys = []
         frames = []
