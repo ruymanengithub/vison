@@ -18,6 +18,7 @@ from pdb import set_trace as stop
 from collections import OrderedDict
 import  copy
 import os
+import string as st
 
 from vison import __version__
 from vison.support.files import cPickleDumpDictionary, cPickleRead
@@ -57,7 +58,6 @@ class CDP(object):
         
         if 'meta' in args: self.meta.update(['meta'])
         elif 'meta' in kwargs: self.meta.update(kwargs['meta'])
-        
         
         
     def savetopickle(self,pickf=''):
@@ -122,7 +122,16 @@ class Tables_CDP(CDP):
         self.report.df_to_sheet(df,sheet,index=False,header=False)
         
     
-    def fill_allSheets(self):
+    def get_textable(self,sheet,caption=''):
+        """ """
+        tex = self.data[sheet].to_latex(multicolumn=True,multirow=True,longtable=True,index=False)
+        tex = st.split(tex,'\n')
+        if caption != '':
+            tex.insert(-1,r'\caption{%s}' % caption)
+        return tex
+        
+    
+    def fill_allDataSheets(self):
         """ """
         for sheet in self.data.keys():
             self.fill_Sheet(sheet)

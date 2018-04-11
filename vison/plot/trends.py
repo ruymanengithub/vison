@@ -44,7 +44,6 @@ class pl_basic_checkstat(baseclasses.Fig):
         self.figname = os.path.join(path,self.figname)        
         if 'suptitle' in defaults: self.suptitle = defaults['suptitle']
         
-        
     def build_data(self,parent):
         """ """
         
@@ -66,7 +65,7 @@ class pl_basic_checkstat(baseclasses.Fig):
                     data[CCDkey][Q]['x'][stat] = dd.mx[self.trendaxis][:,ixCCD].copy()
                     data[CCDkey][Q]['y'][stat] = dd.mx[stat][:,ixCCD,iQ].copy()
         
-        self.data = data
+        self.data = data.copy()
         
         
     def plot(self,**kwargs):

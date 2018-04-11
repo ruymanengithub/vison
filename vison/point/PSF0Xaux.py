@@ -56,7 +56,7 @@ def gt_check_bgd_dict(test):
 def gt_check_flu_dict(test):
     ntest = st.replace(test,'_','\_')
     return dict(stats=['chk_fluence'],
-                      trendaxis='exptime',
+                      trendaxis='mirr_pos',
                           figname='%s_flu_vs_mirr.png' % test,
                           caption='%s: Fluence vs. Mirror Position.' % ntest,
                           meta=dict(doLegend=False,
@@ -68,11 +68,11 @@ def gt_check_flu_dict(test):
 def gt_check_fwhm_dict(test):
     ntest = st.replace(test,'_','\_')
     return dict(stats=['chk_fwhmx','chk_fwhmy'],
-                      trendaxis='time',
+                      trendaxis='mirr_pos',
                           figname='%s_fwhmxy_vs_mirr.png' % test,
                           caption='%s: FWHM(x,y) vs. Mirror Position.' % ntest,
                           meta=dict(doLegend=True,
-                                doNiceXDate=True,
+                                doNiceXDate=False,
                                 suptitle='%s-checks: FWHM(x,y)' % ntest,
                                 ylabel='FWHM [pix]'))
 

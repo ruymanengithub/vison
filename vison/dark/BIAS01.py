@@ -22,6 +22,7 @@ import datetime
 import copy
 import string as st
 from collections import OrderedDict
+import pandas as pd
 
 from vison.support import context
 from vison.pipe import lib as pilib
@@ -301,14 +302,23 @@ class BIAS01(DarkTask):
         # histograms of RON per CCD&Q
         
         
+        
+        
         # REPORTS
         # Table with median (Best Estimate) values of RON per CCD&Q
+        # NEEDS REFACTORING!! (move somewhere else, abstractize it and recycle)
         
         RON = self.dd.mx['RON'][:].copy()
         RONmsk = np.zeros_like(RON,dtype='int32')
         RONmsk[np.where((np.isclose(RON,0.)) | (np.isnan(RON)))] = 1
         beRON = np.ma.median(np.ma.masked_array(RON,mask=RONmsk),axis=1).data.copy()
-        beRONdf = foo(beRON)
+        
+        beRONdict = OrderedDict()
+        for jCCD,CCD in CCDs:
+            beRONdict['CCD%i' % CCD] = OrderedDict()
+            for kQ,Q in Quads:
+                beRONdict['CCD%i' % CCD][Q] = beRON[jCCD,kQ]
+        beRONdf = pd.DataFrame.from_dict(beRONdict) # PENDING
         
         RON_CDP = cdp.Tables_CDP()
         RON_CDP.rootname = 'RON_BIAS01'
@@ -317,13 +327,19 @@ class BIAS01(DarkTask):
                               meta=dict(),
                               header=CDP_header.copy())
         RON_CDP.init_workbook()
-        RON_CDP.fillAllIn()
+        RON_CDP.fill_Header(title='BIAS01: RON')
+        RON_CDP.fill_Meta()
+        RON_CDP.fill_allDataSheets()
         RON_CDP.savehardcopy()
         RON_CDP.savetopickle()
         
+        self.dd.products['RON_CDP'] = os.path.join(RON_CDP.path,'%s.pick' % RON_CDP.rootname)
         
         
-        stop()
+        if self.report is not None:
+            beRONtex = RON_CDP.get_textable(sheet='RON',caption='')            
+            self.report.add_Text(beRONtex)
+
         
         
         
