@@ -96,7 +96,7 @@ class Tables_CDP(CDP):
         
     
     def init_workbook(self):
-        """ """        
+        """ """
         self.report = ReportXL(OrderedDict())
         self.report.wb.create_sheet('Header',0)
         self.report.wb.create_sheet('Meta',1)

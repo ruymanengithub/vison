@@ -19,13 +19,10 @@ from collections import OrderedDict
 
 from vison.plot import baseclasses as plbaseclasses
 from vison.plot import trends
-from vison.datamodel.cdp import CDP
+#from vison.datamodel.cdp import CDP
 
 # END IMPORT
 
-class profiles_cdp(CDP):
-    """ """
-    
 
 
 check_offsets_dict = dict(stats=['offset_pre','offset_img','offset_ove'],
