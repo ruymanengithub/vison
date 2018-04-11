@@ -14,6 +14,7 @@ import openpyxl as oxl
 from openpyxl.utils import dataframe as odataframe
 import pandas
 import copy
+from collections import OrderedDict
 # END IMPORT
 
 color_codes = dict(gray='B2A8A6',
@@ -62,8 +63,27 @@ class ReportXL(object):
         for i, column_width in enumerate(column_widths):
             self.wb[sheetname].column_dimensions[oxl.utils.get_column_letter(i+1)].width = max([column_width,minwidth])        
     
+    def dict_to_sheet(self,indict,sheetname,keys=[],title=''):
+        """ """
+        
+        if len(keys) == 0:
+            keys = indict.keys()
+            
+        printdict = OrderedDict()
+        for key in keys:
+            printdict[key] = str(indict[key].__repr__())
+                
+        self.wb['Header']['A1'] = title
+        
+        ix0 = 5
+        for ik,key in enumerate(keys):
+            self.wb['Header']['A%i' % (ix0+ik)] = key
+            self.wb['Header']['B%i' % (ix0+ik)] = printdict[key]
+        
+        self.adjust_columns_width(sheetname=sheetname)
+        
     
-    def df_to_sheet(self,df,sheetname,index=False,header=True):
+    def df_to_sheet(self,df,sheetname,minwidth=10,index=False,header=True):
         """ """
         
         ws = self.wb[sheetname]
@@ -74,6 +94,9 @@ class ReportXL(object):
         
         for cell in ws['A'] + ws[1]:
             cell.style = 'Pandas'
+        
+        self.adjust_columns_width(sheetname,minwidth=minwidth)
+        
         
     def add_image(self,figpath,sheetname,cell='A1'):
         """ """

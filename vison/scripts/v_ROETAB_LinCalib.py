@@ -126,27 +126,17 @@ class ReportXL_RTLIN(ReportXL):
         self.wb.create_sheet('RT_NONLIN',4)
         self.wb.create_sheet('Figures',5)
     
+    
     def fill_Header(self):
         """ """
         headerdict = self.data['meta']
-        for key in headerdict:
-            headerdict[key] = str(headerdict[key].__repr__())
-        
-        headkeys = ['Date','Injector','Injector_FW',
-                    'degRT','RTlevels','SampInter',
+        headerdict.update(dict(vison=__version__))
+        headkeys = ['Date','Injector','Injector_FW','degRT','RTlevels','SampInter',
                    'Analysis_Date','vison']
         
-        headerdict.update(dict(vison=__version__))
+        self.dict_to_sheet(headerdict,'Header',keys=headkeys,
+                           title='ROE-TAB Non-Linearity Calibration Report')
         
-        self.wb['Header']['A1'] = 'ROE-TAB Non-Linearity Calibration Report'
-        
-        ix0 = 5
-        for ik,key in enumerate(headkeys):
-            self.wb['Header']['A%i' % (ix0+ik)] = key
-            self.wb['Header']['B%i' % (ix0+ik)] = headerdict[key]
-        
-        self.adjust_columns_width(sheetname='Header')
-    
     
     def fill_Data(self):
         """ """
@@ -183,7 +173,6 @@ class ReportXL_RTLIN(ReportXL):
         
         df = pandas.DataFrame.from_dict(indict)        
         self.df_to_sheet(df,'RTADU_to_V',index=False,header=True)
-        
         self.adjust_columns_width('RTADU_to_V',minwidth=10)
         
     
