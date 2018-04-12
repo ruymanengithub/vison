@@ -27,108 +27,105 @@ color_codes = dict(gray='B2A8A6',
 color_fills = dict()
 for colkey in color_codes.keys():
     _color = oxl.styles.colors.Color(rgb=color_codes[colkey])
-    color_fills[colkey] = oxl.styles.fills.PatternFill(patternType='solid',fgColor=_color)
+    color_fills[colkey] = oxl.styles.fills.PatternFill(
+        patternType='solid', fgColor=_color)
 
 
 class ReportXL(object):
-    
+
     color_fills = color_fills
-    
-    def __init__(self,datadict):
-        
+
+    def __init__(self, datadict):
+
         self.data = copy.deepcopy(datadict)
-        
+
         self.wb = oxl.Workbook()
         std = self.wb['Sheet']
         self.wb.remove(std)
-        
-    def get_str_len(self,cell):
+
+    def get_str_len(self, cell):
         if cell.value is None:
             return 0
         else:
             return len(str(cell.value))
-        
-    def adjust_columns_width(self,sheetname,minwidth=0):
+
+    def adjust_columns_width(self, sheetname, minwidth=0):
         """ """
-        
+
         column_widths = []
         for row in self.wb[sheetname]:
-            for i, cell in enumerate(row):                
-                if len(column_widths)>i:                    
-                    if self.get_str_len(cell)>column_widths[i]:
+            for i, cell in enumerate(row):
+                if len(column_widths) > i:
+                    if self.get_str_len(cell) > column_widths[i]:
                         column_widths[i] = self.get_str_len(cell)
                 else:
                     column_widths += [self.get_str_len(cell)]
 
         for i, column_width in enumerate(column_widths):
-            self.wb[sheetname].column_dimensions[oxl.utils.get_column_letter(i+1)].width = max([column_width,minwidth])        
-    
-    def dict_to_sheet(self,indict,sheetname,keys=[],title=''):
+            self.wb[sheetname].column_dimensions[oxl.utils.get_column_letter(
+                i+1)].width = max([column_width, minwidth])
+
+    def dict_to_sheet(self, indict, sheetname, keys=[], title=''):
         """ """
-        
+
         if len(keys) == 0:
             keys = indict.keys()
-            
+
         printdict = OrderedDict()
         for key in keys:
             printdict[key] = str(indict[key].__repr__())
-                
+
         self.wb['Header']['A1'] = title
-        
+
         ix0 = 5
-        for ik,key in enumerate(keys):
+        for ik, key in enumerate(keys):
             self.wb['Header']['A%i' % (ix0+ik)] = key
             self.wb['Header']['B%i' % (ix0+ik)] = printdict[key]
-        
+
         self.adjust_columns_width(sheetname=sheetname)
-        
-    
-    def df_to_sheet(self,df,sheetname,minwidth=10,index=False,header=True):
+
+    def df_to_sheet(self, df, sheetname, minwidth=10, index=False, header=True):
         """ """
-        
+
         ws = self.wb[sheetname]
         df_to_rows = odataframe.dataframe_to_rows
-        
-        for r in df_to_rows(df,index=index,header=header):
+
+        for r in df_to_rows(df, index=index, header=header):
             ws.append(r)
-        
+
         for cell in ws['A'] + ws[1]:
             cell.style = 'Pandas'
-        
-        self.adjust_columns_width(sheetname,minwidth=minwidth)
-        
-        
-    def add_image(self,figpath,sheetname,cell='A1'):
+
+        self.adjust_columns_width(sheetname, minwidth=minwidth)
+
+    def add_image(self, figpath, sheetname, cell='A1'):
         """ """
-        self.wb[sheetname].add_image(oxl.drawing.image.Image(figpath),cell)
-    
-    def save(self,filename):
+        self.wb[sheetname].add_image(oxl.drawing.image.Image(figpath), cell)
+
+    def save(self, filename):
         self.wb.save(filename)
-    
 
 
 def test0():
     """Just a dummy test to show we can use openpyxl"""
-    
-    wb = oxl.Workbook()
-    ws = wb.active    
-    ws1 = wb.create_sheet('Mysheet')
-    ws2 = wb.create_sheet('Mysheet',0)
-    ws1.title= "New Title"    
-    ws.sheet_properties.tabColor = "1072BA"    
-    #ws3 = wb["New Title"]    
-    ws['A4'] = 4    
-    
-    img = oxl.drawing.image.Image('../data/Eyegore.gif')
-    
-    ws2.add_image(img,'A1')
-    
-    print (wb.sheetnames)
-    
-    
-    wb.save('Test0.xlsx')    
 
-    
+    wb = oxl.Workbook()
+    ws = wb.active
+    ws1 = wb.create_sheet('Mysheet')
+    ws2 = wb.create_sheet('Mysheet', 0)
+    ws1.title = "New Title"
+    ws.sheet_properties.tabColor = "1072BA"
+    #ws3 = wb["New Title"]
+    ws['A4'] = 4
+
+    img = oxl.drawing.image.Image('../data/Eyegore.gif')
+
+    ws2.add_image(img, 'A1')
+
+    print (wb.sheetnames)
+
+    wb.save('Test0.xlsx')
+
+
 if __name__ == '__main__':
     test0()
-    

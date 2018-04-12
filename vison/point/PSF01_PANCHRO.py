@@ -54,42 +54,41 @@ isthere = os.path.exists
 class PSF01_PANCHRO_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
-            ('inpath',([str],'Data path.')),
-            ('wavelengths',([list],'Wavelengths.')),
-            ])))
+        ('inpath', ([str], 'Data path.')),
+        ('wavelengths', ([list], 'Wavelengths.')),
+    ])))
 
 
 class PSF01_PANCHRO(Task):
-    
+
     inputsclass = PSF01_PANCHRO_inputs
-    
-    def __init__(self,inputs,log=None,drill=False,debug=False):
+
+    def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(PSF01_PANCHRO,self).__init__(inputs,log,drill,debug)
+        super(PSF01_PANCHRO, self).__init__(inputs, log, drill, debug)
         self.name = 'PSF01_PANCHRO'
         self.type = 'Meta'
-        self.subtasks = [('check',self.check_data),
-                         ('meta',self.meta)]
+        self.subtasks = [('check', self.check_data),
+                         ('meta', self.meta)]
         #self.HKKeys = HKKeys
         self.figdict = PSF0Xaux.PSF0Xfigs
         self.perflimits.update(performance.perf_rdout)
 
     def ingest_data_MetaTest(self):
         """ """
-        
+
         wavelengths = self.inputs['wavelengths']
         inpath = self.inputs['inpath']
-        
-        self.dd = dict()        
-        for iw,wave in enumerate(wavelengths):
+
+        self.dd = dict()
+        for iw, wave in enumerate(wavelengths):
             wpath = 'PSF01_%i' % wave
-            iDDpickfile = os.path.join(inpath,wpath,'PSF01_%i_DataDict.pick' % wave)
+            iDDpickfile = os.path.join(
+                inpath, wpath, 'PSF01_%i_DataDict.pick' % wave)
             self.dd['nm%i' % wave] = cPickleRead(iDDpickfile)
-        
-    
+
     def check_data(self):
         """ """
-    
+
     def meta(self):
         """ """
-    

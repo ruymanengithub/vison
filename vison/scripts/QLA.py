@@ -42,71 +42,72 @@ if __name__ == '__main__':
     #  do plots
     #  assemble all plots into a pdf file per image
     #  merge all pdfs into a single pdf file
-     
+
     """
-    
+
     parser = OptionParser()
-    parser.add_option("-p","--path",dest="path",default='',help="path where to look for FITS files. Search is not recursive.")    
-    parser.add_option("-r","--roe",dest="roe",default=None,help="ROE to select")
-    parser.add_option("-c","--ccd",dest="ccd",default=None,help="CCD to select")
+    parser.add_option("-p", "--path", dest="path", default='',
+                      help="path where to look for FITS files. Search is not recursive.")
+    parser.add_option("-r", "--roe", dest="roe",
+                      default=None, help="ROE to select")
+    parser.add_option("-c", "--ccd", dest="ccd",
+                      default=None, help="CCD to select")
     #parser.add_option("-e","--elvis",dest="elvis",default='5.7.02',help="ELVIS version")
-        
+
     (options, args) = parser.parse_args()
-    
-    
+
     if options.path == '':
         parser.print_help()
         sys.exit()
-    
+
     path = options.path
     roe = int(options.roe)
     ccd = int(options.ccd)
     #elvis = options.elvis
-  
+
     if not os.path.exists(path):
-        sys.exit('QLA.py: %s does not exist' % path)  
-    
-    FITSlist = glob(os.path.join(path,'EUC_*_ROE%i_CCD%i.fits' % (roe,ccd)))
+        sys.exit('QLA.py: %s does not exist' % path)
+
+    FITSlist = glob(os.path.join(path, 'EUC_*_ROE%i_CCD%i.fits' % (roe, ccd)))
     #FITSlist = FITSlist[0:-1]
-    
+
     nOBSIDs = len(FITSlist)
     firstFITS = os.path.split(FITSlist[0])[-1]
-    datetag = st.split(firstFITS,'_')[2]
+    datetag = st.split(firstFITS, '_')[2]
     datetag = datetag[0:datetag.index('D')]
-    
+
     outpath = 'FITSmonitor_%s' % datetag
-    if not isthere(outpath): os.system('mkdir %s' % outpath)
-    
-    
+    if not isthere(outpath):
+        os.system('mkdir %s' % outpath)
+
     PDFlist = []
-    
-    #ixstart = [ix for ix in range(nOBSIDs) if 'EUC_799' in FITSlist[ix]][0] # TESTS
-    #PDFlist = glob(os.path.join(outpath,'EUC_*.pdf'))    
-    
-    #for FITSfile in FITSlist[ixstart:]:
-    
+
+    # ixstart = [ix for ix in range(nOBSIDs) if 'EUC_799' in FITSlist[ix]][0] # TESTS
+    #PDFlist = glob(os.path.join(outpath,'EUC_*.pdf'))
+
+    # for FITSfile in FITSlist[ixstart:]:
+
     OBSIDs = []
-    
-    for FITSfile in FITSlist:  
-        
+
+    for FITSfile in FITSlist:
+
         bareFITS = os.path.split(FITSfile)[-1]
-        OBSID = int(st.split(bareFITS,'_')[1])
+        OBSID = int(st.split(bareFITS, '_')[1])
         OBSIDs.append(OBSID)
-        
-        FITSpdf = QLAt.reportFITS(FITSfile,outpath=outpath)
+
+        FITSpdf = QLAt.reportFITS(FITSfile, outpath=outpath)
         PDFlist.append(FITSpdf)
-        
-    
+
     order = np.argsort(OBSIDs)
     PDFlist = np.array(PDFlist)[order]
-    
-    pdfFile = 'FITSmonitor_%s_ROE%s_CCD%s.pdf' % (datetag,roe,ccd)
-    
-    
+
+    pdfFile = 'FITSmonitor_%s_ROE%s_CCD%s.pdf' % (datetag, roe, ccd)
+
     tempcommand = 'ghostscript -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=%s %s'
-    PDFlistLine = st.join(PDFlist,' ')
-    os.system(tempcommand % (pdfFile,PDFlistLine))
-    
-    for PDFfile in PDFlist: os.system('rm %s' % PDFfile)
-    
-    os.system('mv %s %s/' % (pdfFile,outpath))
+    PDFlistLine = st.join(PDFlist, ' ')
+    os.system(tempcommand % (pdfFile, PDFlistLine))
+
+    for PDFfile in PDFlist:
+        os.system('rm %s' % PDFfile)
+
+    os.system('mv %s %s/' % (pdfFile, outpath))

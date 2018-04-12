@@ -18,127 +18,131 @@ import numpy as np
 # END IMPORT
 
 
-
-def simadd_flatilum(ccdobj,levels=dict(E=0.,F=0.,G=0.,H=0.),extension=-1):
+def simadd_flatilum(ccdobj, levels=dict(E=0., F=0., G=0., H=0.), extension=-1):
     """ """
 
     for Q in ccdobj.Quads:
-        quaddata = ccdobj.get_quad(Q,canonical=True,extension=extension)
-        quaddata[ccdobj.prescan:-ccdobj.overscan,0:ccdobj.NrowsCCD] += levels[Q]
-        ccdobj.set_quad(quaddata,Q,canonical=True,extension=extension)
+        quaddata = ccdobj.get_quad(Q, canonical=True, extension=extension)
+        quaddata[ccdobj.prescan:-ccdobj.overscan,
+                 0:ccdobj.NrowsCCD] += levels[Q]
+        ccdobj.set_quad(quaddata, Q, canonical=True, extension=extension)
 
 
-def simadd_points(ccdobj,flux,fwhm,CCDID='CCD1',dx=0,dy=0,extension=-1):
+def simadd_points(ccdobj, flux, fwhm, CCDID='CCD1', dx=0, dy=0, extension=-1):
     """ """
     from vison.point.lib import Point_CooNom
     from vison.point.models import fgauss2D
-    
+
     sigma = fwhm/2.355
     i0 = flux/(2.*np.pi*sigma**2.)
-    
+
     nx = 15
     ny = 15
 
-    
     for Q in ccdobj.Quads:
-        quaddata = ccdobj.get_quad(Q,canonical=False,extension=extension).copy()
-        
+        quaddata = ccdobj.get_quad(
+            Q, canonical=False, extension=extension).copy()
+
         point_keys = Point_CooNom[CCDID][Q].keys()
-        
+
         B = ccdobj.QuadBound[Q]
-        
+
         for pkey in point_keys:
-            xp,yp = Point_CooNom[CCDID][Q][pkey]
-            
+            xp, yp = Point_CooNom[CCDID][Q][pkey]
+
             x0 = xp - B[0] + dx
             y0 = yp - B[2] + dy
-            
+
             xmin = int(np.round(x0))-nx/2
             xmax = xmin+nx
             ymin = int(np.round(y0))-ny/2
             ymax = ymin+ny
-            
-            x = np.arange(xmin,xmax)
-            y = np.arange(ymin,ymax)
-            
-            xx,yy = np.meshgrid(x,y,indexing='xy')
-            
-            p = [i0,x0,y0,sigma,sigma,0.]
-            point_stamp = fgauss2D(xx,yy,p)
-            
-            quaddata[xmin:xmax,ymin:ymax] += point_stamp.copy()
-            
-        ccdobj.set_quad(quaddata,Q,canonical=False,extension=extension)
-    
 
-def simadd_bias(ccdobj,levels=dict(E=2000,F=2000,G=2000,H=2000),extension=-1):
-    
-     for Q in ccdobj.Quads:            
+            x = np.arange(xmin, xmax)
+            y = np.arange(ymin, ymax)
+
+            xx, yy = np.meshgrid(x, y, indexing='xy')
+
+            p = [i0, x0, y0, sigma, sigma, 0.]
+            point_stamp = fgauss2D(xx, yy, p)
+
+            quaddata[xmin:xmax, ymin:ymax] += point_stamp.copy()
+
+        ccdobj.set_quad(quaddata, Q, canonical=False, extension=extension)
+
+
+def simadd_bias(ccdobj, levels=dict(E=2000, F=2000, G=2000, H=2000), extension=-1):
+
+    for Q in ccdobj.Quads:
         B = ccdobj.QuadBound[Q]
-        ccdobj.extensions[extension].data[B[0]:B[1],B[2]:B[3]] += levels[Q]
+        ccdobj.extensions[extension].data[B[0]:B[1], B[2]:B[3]] += levels[Q]
 
 
-def simadd_ron(ccdobj,extension=-1):
+def simadd_ron(ccdobj, extension=-1):
     """ """
-    
-    noise = np.random.normal(loc=0.0, scale=ccdobj.rn['E'],size=ccdobj.extensions[extension].data.shape)
+
+    noise = np.random.normal(
+        loc=0.0, scale=ccdobj.rn['E'], size=ccdobj.extensions[extension].data.shape)
     ccdobj.extensions[extension].data += noise
-    
 
-def simadd_poisson(ccdobj,extension=-1):
+
+def simadd_poisson(ccdobj, extension=-1):
     """ """
-    
+
     gain = ccdobj.gain['E']
-    
+
     image_e = ccdobj.extensions[extension].data.copy()*gain
-    
+
     rounded = np.rint(image_e)
-    residual = image_e - rounded #ugly workaround for multiple rounding operations...
+    # ugly workaround for multiple rounding operations...
+    residual = image_e - rounded
     rounded[rounded < 0.0] = 0.0
     image_e = np.random.poisson(rounded).astype(np.float64)
     image_e += residual
-    
+
     image = image_e / gain
-    
+
     ccdobj.extensions[extension].data = image.copy()
-        
-def sim_window(ccdobj,vstart,vend,extension=-1):
+
+
+def sim_window(ccdobj, vstart, vend, extension=-1):
     """ """
-    
-    mask = np.ones((ccdobj.NAXIS1/2,ccdobj.NAXIS2/2),dtype='int8')
-    mask[:,vstart:vend] = 0
-    
+
+    mask = np.ones((ccdobj.NAXIS1/2, ccdobj.NAXIS2/2), dtype='int8')
+    mask[:, vstart:vend] = 0
+
     for Q in ccdobj.Quads:
-        qdata = ccdobj.get_quad(Q,canonical=True,extension=extension)
+        qdata = ccdobj.get_quad(Q, canonical=True, extension=extension)
         qdata[np.where(mask)] = 0
-        ccdobj.set_quad(qdata,Q,canonical=True,extension=extension)
-    
-def simadd_injection(ccdobj,levels,on=1E6,off=0,extension=-1):
-    
-    on = min(on,ccdobj.NrowsCCD)
-    
-    ccdobj.simadd_flatilum(levels=levels,extension=-1)
-    
+        ccdobj.set_quad(qdata, Q, canonical=True, extension=extension)
+
+
+def simadd_injection(ccdobj, levels, on=1E6, off=0, extension=-1):
+
+    on = min(on, ccdobj.NrowsCCD)
+
+    ccdobj.simadd_flatilum(levels=levels, extension=-1)
+
     # ON/OFF masking
-    
-    NX,NY = ccdobj.NAXIS1/2,ccdobj.NAXIS2/2
-    
-    mask_onoff = np.zeros((NX,NY),dtype='int8')
-    
+
+    NX, NY = ccdobj.NAXIS1/2, ccdobj.NAXIS2/2
+
+    mask_onoff = np.zeros((NX, NY), dtype='int8')
+
     y0 = 0
     Fahrtig = False
-    
+
     while not Fahrtig:
-        y1 = min(y0 + on,NY)
-        mask_onoff[:,y0:y1] = 1
+        y1 = min(y0 + on, NY)
+        mask_onoff[:, y0:y1] = 1
         y0 = y1 + off
-        if (y0>NY-1):
+        if (y0 > NY-1):
             break
 
     #from astropy.io import fits as fts
-    #fts.writeto('mask.fits',mask_onoff.transpose().astype('int32'),overwrite=True)
-    
+    # fts.writeto('mask.fits',mask_onoff.transpose().astype('int32'),overwrite=True)
+
     for Q in ccdobj.Quads:
-        qdata = ccdobj.get_quad(Q,canonical=True,extension=extension)
-        qdata[np.where(mask_onoff==0)] = 0.
-        ccdobj.set_quad(qdata,Q,canonical=True,extension=extension)
+        qdata = ccdobj.get_quad(Q, canonical=True, extension=extension)
+        qdata[np.where(mask_onoff == 0)] = 0.
+        ccdobj.set_quad(qdata, Q, canonical=True, extension=extension)

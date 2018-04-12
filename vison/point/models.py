@@ -19,7 +19,7 @@ import numpy as np
 # END IMPORT
 
 
-def fgauss2D(x,y,p):
+def fgauss2D(x, y, p):
     """
     A gaussian fitting function where
      p[0] = amplitude
@@ -29,8 +29,7 @@ def fgauss2D(x,y,p):
      p[4] = sigmay
      p[5] = floor
     """
-    return p[0] * np.exp(-( 
+    return p[0] * np.exp(-(
                           (x-p[1])**2./(2.0*p[3]**2.) +
                           (y-p[2])**2./(2.*p[4]**2.)
-                        )) + p[5]
-    
+    )) + p[5]

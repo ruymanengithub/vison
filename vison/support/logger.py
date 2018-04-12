@@ -18,23 +18,23 @@ import textwrap
 
 def f_text_wrapper(msg):
     """ """
-    textwrap.break_on_hypens=True
+    textwrap.break_on_hypens = True
     width = 80
     #wmsg = []
-    if type(msg) in [str,unicode]:
-        wmsg = textwrap.wrap(msg,width=width)
+    if type(msg) in [str, unicode]:
+        wmsg = textwrap.wrap(msg, width=width)
         #wmsg = ['%s\\' % item for item in wmsg]
     elif type(msg) == list:
         wmsg = []
         for item in msg:
             wmsg += f_text_wrapper(item)
-    
+
     return wmsg
 
 
 def _info(f):
-    def wrapper(self,msg,*args,**kwargs):
-        
+    def wrapper(self, msg, *args, **kwargs):
+
         msg = f_text_wrapper(msg)
 
         if type(msg) == str:
@@ -43,11 +43,12 @@ def _info(f):
             _msg = ''
             for item in msg:
                 _msg += '%s\n' % item
-        return f(self,_msg,*args,**kwargs)
+        return f(self, _msg, *args, **kwargs)
     return wrapper
 
+
 class _myLogger(logging.Logger):
-    
+
     @_info
     def info(self, msg, *args, **kwargs):
         """
@@ -60,7 +61,6 @@ class _myLogger(logging.Logger):
         """
         if self.isEnabledFor(logging.INFO):
             self._log(logging.INFO, msg, args, **kwargs)
-        
 
 
 def setUpLogger(log_filename, loggername='logger'):
@@ -78,13 +78,13 @@ def setUpLogger(log_filename, loggername='logger'):
     logger.setLevel(logging.DEBUG)
     # Add the log message handler to the logger
     handler = logging.handlers.RotatingFileHandler(log_filename)
-    #maxBytes=20, backupCount=5)
+    # maxBytes=20, backupCount=5)
     # create formatter
     #formatter = logging.Formatter('%(asctime)s - %(module)s - %(funcName)s - %(levelname)s - %(message)s')
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
     # add formatter to ch
     handler.setFormatter(formatter)
-    # add handler to logger 
+    # add handler to logger
     logger.addHandler(handler)
 
     return logger
@@ -104,4 +104,5 @@ class SimpleLogger(object):
         Writes text either to file or screen.
         """
         print >> self.file, text
-        if self.verbose: print text
+        if self.verbose:
+            print text

@@ -17,9 +17,10 @@ Created on Wed Feb  1 17:37:32 2017
 
 def test():
     """Tests Module Basic Functionality"""
-    
+
     pass
 
+
 if __name__ == '__main__':
-    
+
     test()

@@ -6,10 +6,11 @@ import pprint
 import os
 
 scope = ['https://spreadsheets.google.com/feeds',
-'https://www.googleapis.com/auth/drive']
+         'https://www.googleapis.com/auth/drive']
 
-credsf = os.path.join('/home/raf/','CREDENTIALS','EuclidVis_calcampreporter.json')
-creds = ServiceAccountCredentials.from_json_keyfile_name(credsf,scope)
+credsf = os.path.join('/home/raf/', 'CREDENTIALS',
+                      'EuclidVis_calcampreporter.json')
+creds = ServiceAccountCredentials.from_json_keyfile_name(credsf, scope)
 
 client = gspread.authorize(creds)
 
@@ -21,13 +22,10 @@ result = sheet.row_values(1)
 
 pp.pprint(result)
 
-#sheet.update_cell(1,1,"Ni3hao3!")
+# sheet.update_cell(1,1,"Ni3hao3!")
 #result2 = sheet.row_values(1)
-#pp.pprint(result2)
+# pp.pprint(result2)
 
 #row = ["I'm","Updating","a","spreadhseet","from","python"]
 #index = 2
-#sheet.insert_row(row,index)
-
-
-
+# sheet.insert_row(row,index)

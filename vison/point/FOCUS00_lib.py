@@ -26,57 +26,54 @@ import matplotlib.pyplot as plt
 # END IMPORT
 
 
-def fit_focus_single(x,y,yerror=None,degree=1,doplot=True):
+def fit_focus_single(x, y, yerror=None, degree=1, doplot=True):
     """ """
     assert len(x) == len(y)
-    
+
     if yerror is not None:
         assert len(y) == len(yerror)
-    
-    
-    coeffs,Vcoeffs = np.polyfit(x,y,degree,full=False,cov=True)
-    
+
+    coeffs, Vcoeffs = np.polyfit(x, y, degree, full=False, cov=True)
+
     ecoeffs = np.diag(Vcoeffs)**0.5
-    
+
     pol = np.poly1d(coeffs)
-    
-    xfocus = -coeffs[1]/(2.*coeffs[0]) 
-    #exfocus = np.abs(xfocus)*np.sqrt((ecoeffs[1]/coeffs[1])**2.+
+
+    xfocus = -coeffs[1]/(2.*coeffs[0])
+    # exfocus = np.abs(xfocus)*np.sqrt((ecoeffs[1]/coeffs[1])**2.+
     #     1/2.*(ecoeffs[0]/coeffs[0])**2.) # WRONG?
-    
+
     if doplot:
         fig = plt.figure()
         ax = fig.add_subplot(111)
         if yerror == None:
-            ax.plot(x,y,'bo')
+            ax.plot(x, y, 'bo')
         else:
-            ax.errorbar(x,y,yerr=yerror,fmt='o',color='b')
-        ax.plot(x,pol(x),'r--')
-        ax.axvline(x=xfocus,ls='--',color='k')
+            ax.errorbar(x, y, yerr=yerror, fmt='o', color='b')
+        ax.plot(x, pol(x), 'r--')
+        ax.axvline(x=xfocus, ls='--', color='k')
         ax.set_xlabel('Mirr_pos')
         ax.set_ylabel('FWHM')
-        
+
         plt.show()
-    
-    res = dict(coeffs=coeffs,ecoeffs=ecoeffs,focus=xfocus)
-    
+
+    res = dict(coeffs=coeffs, ecoeffs=ecoeffs, focus=xfocus)
+
     return res
 
-def fit_focus_all(shape_seq,doplot=True):
+
+def fit_focus_all(shape_seq, doplot=True):
     """ 
-    
+
     TODO:
         - average of focus (mirr_pos) for each CCD-Q-pos: map
         - overal average of focus (mirr_pos)
         - map of fwhm_x for best-focus mirr_pos
         - map of fwhm_y for best-focus mirr_pos
         - map of fluence for best-focus mirr_pos
-            
+
     """
-    
-    
-    
-    
-def inspect_focus_all(shape_seq,doplot=True):
+
+
+def inspect_focus_all(shape_seq, doplot=True):
     """ """
-    

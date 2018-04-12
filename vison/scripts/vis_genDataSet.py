@@ -30,77 +30,74 @@ from vison.pipe import campaign
 
 from vison.point import lib as polib
 
-from vison.ogse.ogse import tFWC_flat,tFWC_point
+from vison.ogse.ogse import tFWC_flat, tFWC_point
 
 import datetime
 
 # END IMPORT
 
-    
 
-def genExpLog(toGen,explogf,equipment,elvis=context.elvis):
+def genExpLog(toGen, explogf, equipment, elvis=context.elvis):
     """ """
-    
+
     OBSID0 = 1000
 
-    logdefaults = {'egse_ver':elvis,'con_file':'vis_roe_config_cotsqm_273_vn.txt',
-        'fl_rdout':0,'ci_rdout':0,
-        'fpga_ver':'2AC',
-        'R1C1_TT':-153.,'R1C2_TT':-153.,'R1C3_TT':-153.,
-        'R1C1_TB':-153.,'R1C2_TB':-153.,'R1C3_TB':-153.,}
-    
-    test_sequence = campaign.generate_test_sequence(equipment,toGen,elvis=elvis)
-    
+    logdefaults = {'egse_ver': elvis, 'con_file': 'vis_roe_config_cotsqm_273_vn.txt',
+                   'fl_rdout': 0, 'ci_rdout': 0,
+                   'fpga_ver': '2AC',
+                   'R1C1_TT': -153., 'R1C2_TT': -153., 'R1C3_TT': -153.,
+                   'R1C1_TB': -153., 'R1C2_TB': -153., 'R1C3_TB': -153., }
+
+    test_sequence = campaign.generate_test_sequence(
+        equipment, toGen, elvis=elvis)
+
     tests = test_sequence.keys()
 
     explog = None
-    
+
     structtest0 = test_sequence[tests[0]]
-    explog = gen.generate_Explog(structtest0,logdefaults,elvis=elvis,explog=explog,OBSID0=OBSID0,
-                        date=date0)
-    
+    explog = gen.generate_Explog(structtest0, logdefaults, elvis=elvis, explog=explog, OBSID0=OBSID0,
+                                 date=date0)
+
     for test in tests[1:]:
         structtest = test_sequence[test]
-        explog = gen.generate_Explog(structtest,logdefaults,elvis=elvis,explog=explog)
-     
+        explog = gen.generate_Explog(
+            structtest, logdefaults, elvis=elvis, explog=explog)
+
     # WRITING EXPOSURE LOG
-    
-    explog.write(explogf,format='ascii',overwrite=True,delimiter='\t')
-    
+
+    explog.write(explogf, format='ascii', overwrite=True, delimiter='\t')
+
     return explog
 
-    
-    
-def datasetGenerator(TestsSelector,doGenExplog,doGenHK,doGenFITS,outpath,elvis,
+
+def datasetGenerator(TestsSelector, doGenExplog, doGenHK, doGenFITS, outpath, elvis,
                      Nrows=0):
     """ """
-    
-    
-    equipment = dict(operator = 'raf',
-    sn_ccd1 = 'CCD1TEST',
-    sn_ccd2 = 'CCD2TEST',
-    sn_ccd3 = 'CCD3TEST',
-    sn_roe= 'ROETEST',
-    sn_rpsu = 'RPSUTEST')
-    
-    datekey = date0.strftime('%d%m%y')    
-    explogf = os.path.join(outpath,'EXP_LOG_%s.txt' % datekey)
-    
-    
-    if doGenExplog:       
-        
+
+    equipment = dict(operator='raf',
+                     sn_ccd1='CCD1TEST',
+                     sn_ccd2='CCD2TEST',
+                     sn_ccd3='CCD3TEST',
+                     sn_roe='ROETEST',
+                     sn_rpsu='RPSUTEST')
+
+    datekey = date0.strftime('%d%m%y')
+    explogf = os.path.join(outpath, 'EXP_LOG_%s.txt' % datekey)
+
+    if doGenExplog:
+
         print 'Generating EXPOSURE LOG...'
-        
-        explog = genExpLog(TestsSelector,explogf,equipment,elvis)
-        
+
+        explog = genExpLog(TestsSelector, explogf, equipment, elvis)
+
     else:
-        explog = ELtools.loadExpLog(explogf,elvis=elvis)
-    
-    
+        explog = ELtools.loadExpLog(explogf, elvis=elvis)
+
     if doGenHK:
-        
+
         print 'Generating HK files...'
-        
+
 #        HKvals = {'HK_OD_Top_CCD1':'OD_T1_V','HK_OD_Bottom_CCD1':'OD_B1_V',
 #                  'HK_OD_Top_CCD2':'OD_T2_V','HK_OD_Bottom_CCD2':'OD_B2_V','HK_OD_Top_CCD3':'OD_T3_V',
 #                  'HK_OD_Bottom_CCD3':'OD_B3_V','HK_IG1_Top_CCD1':'IG1_T1_V','HK_IG1_Bottom_CCD1':'IG1_B1_V',
@@ -119,80 +116,77 @@ def datasetGenerator(TestsSelector,doGenExplog,doGenHK,doGenFITS,outpath,elvis,
 #                  'HK_VCLK_RPSU':19.7,'HK_IVCLK_RPSU':3.3,'HK_VCCD_RPSU':50.1,'HK_IVCCD_RPSU':0.13,'HK_Temp1_RPSU':50.,
 #                  'HK_Temp2_RPSU':50.,'HK_Video_TOP':50.,'HK_Video_BOT':50.,'HK_FPGA_TOP':50.,'HK_FPGA_BOT':50.,
 #                  'HK_ID1':0.,'HK_ID2':0.,'HK_Viclk_ROE':0.}
-        
-        HKvals = {'CCD1_OD_T':'OD_1_T','CCD2_OD_T':'OD_2_T','CCD3_OD_T':'OD_3_T',
-                  'COMM_RD_T':'RD_T','CCD2_IG1_T':'IG1_2_T','CCD3_IG1_T':'IG1_3_T',
-                  'CCD1_TEMP_T':'R1C1_TT','CCD2_TEMP_T':'R1C2_TT','CCD3_TEMP_T':'R1C3_TT',
-                  'CCD1_IG1_T':'IG1_1_T','COMM_IG2_T':'IG2_T','VID_PCB_TEMP_T':10.,
-                  'FPGA_PCB_TEMP_T':10.,'CCD1_OD_B':'OD_1_B','CCD2_OD_B':'OD_2_B','CCD3_OD_B':'OD_3_B',
-                  'COMM_RD_B':'RD_B','CCD2_IG1_B':'IG1_2_B','CCD3_IG1_B':'IG1_3_B','CCD1_TEMP_B':'R1C1_TB',
-                  'CCD2_TEMP_B':'R1C2_TB','CCD3_TEMP_B':'R1C3_TB','CCD1_IG1_B':'IG1_1_B',
-                  'COMM_IG2_B':'IG2_B','VID_PCB_TEMP_B':10.,'FPGA_PCB_TEMP_B':10.,'FPGA_BIAS_DD':24.,
-                  'FPGA_BIAS_OG':1.,'FPGA_BIAS_ID1':0.,'FPGA_BIAS_ID2':0.,
-                  'FPGA_BIAS_ID_T':'IDL','FPGA_BIAS_ID_B':'IDL','FPGA_VRCLK_V':10.2,
-                  'FPGA_10VA_P_V':10.,'FPGA_VICLK_V':0.,'FPGA_5VA_P_V':5.,'FPGA_5VREF_V':5.,
-                  'FPGA_VCCD_V':32.,'FPGA_1V5VD_P_V':1.5,'FPGA_3V2_N_V':-3.2,'FPGA_5VA_N_V':-5.2,
-                  'RPSU_VCCD_V':50.1,'RPSU_VCLK_V':19.7,'RPSU_VAN_P_V':9.9,
-                  'RPSU_VAN_N_V':9.9,'RPSU_3V3VD_V':6.6,'RPSU_1V5VD_V':3.4,'RPSU_28V_PRI_V':28,
-                  'RPSU_TEMP1':10.,'RPSU_VCCD_I':0.13,'RPSU_VCLK_I':19.7,'RPSU_VAN_P_I':3.3,
-                  'RPSU_VAN_N_I':3.3,'RPSU_3V3VD_I':3.3,'RPSU_1V5VD_I':3.3,
-                  'RPSU_28V_PRI_I':3.3,'RPSU_TEMP_2':10.,
-                  'stTMRErrFlg':0,'hkTMRErrFlg':0,'spwTmTOFlg':0,'CDPUClkSt':0,'fpgaSpwErr':0,
-                  'V3v3ProtCnt':0,'V5ProtCnt':0,'VccdErrFlg':0,'VclkErrFlg':0,'VanErrFlg':0,
-                  'stRamErr':0,'hkRamErr':0,'ADC_BSY_ERR_CNT':0,'SPW_STATUS_REG':12192} 
-        
-        if Nrows > 0:
-            sexplog = explog[0:Nrows]
-        else:
-            sexplog = explog
-        gen.generate_HK(sexplog,HKvals,datapath=outpath,elvis=elvis)
-    
-    
-    
-    if doGenFITS:
-        
-        #tests
-        #selix = [0,113,314,3988] # bias=0,flat=314,chinj=113,psf=3988        
-        #selix = [0,113,314,3988]      
-        
-        print 'Generating FITS files... '
-        
-        if Nrows > 0:
-            sexplog = explog[0:Nrows]
-        else:
-            sexplog = explog
-        
-        gen.generate_FITS_fromExpLog(sexplog,outpath,elvis)
-     
 
-if __name__ =='__main__':
-        
-    
+        HKvals = {'CCD1_OD_T': 'OD_1_T', 'CCD2_OD_T': 'OD_2_T', 'CCD3_OD_T': 'OD_3_T',
+                  'COMM_RD_T': 'RD_T', 'CCD2_IG1_T': 'IG1_2_T', 'CCD3_IG1_T': 'IG1_3_T',
+                  'CCD1_TEMP_T': 'R1C1_TT', 'CCD2_TEMP_T': 'R1C2_TT', 'CCD3_TEMP_T': 'R1C3_TT',
+                  'CCD1_IG1_T': 'IG1_1_T', 'COMM_IG2_T': 'IG2_T', 'VID_PCB_TEMP_T': 10.,
+                  'FPGA_PCB_TEMP_T': 10., 'CCD1_OD_B': 'OD_1_B', 'CCD2_OD_B': 'OD_2_B', 'CCD3_OD_B': 'OD_3_B',
+                  'COMM_RD_B': 'RD_B', 'CCD2_IG1_B': 'IG1_2_B', 'CCD3_IG1_B': 'IG1_3_B', 'CCD1_TEMP_B': 'R1C1_TB',
+                  'CCD2_TEMP_B': 'R1C2_TB', 'CCD3_TEMP_B': 'R1C3_TB', 'CCD1_IG1_B': 'IG1_1_B',
+                  'COMM_IG2_B': 'IG2_B', 'VID_PCB_TEMP_B': 10., 'FPGA_PCB_TEMP_B': 10., 'FPGA_BIAS_DD': 24.,
+                  'FPGA_BIAS_OG': 1., 'FPGA_BIAS_ID1': 0., 'FPGA_BIAS_ID2': 0.,
+                  'FPGA_BIAS_ID_T': 'IDL', 'FPGA_BIAS_ID_B': 'IDL', 'FPGA_VRCLK_V': 10.2,
+                  'FPGA_10VA_P_V': 10., 'FPGA_VICLK_V': 0., 'FPGA_5VA_P_V': 5., 'FPGA_5VREF_V': 5.,
+                  'FPGA_VCCD_V': 32., 'FPGA_1V5VD_P_V': 1.5, 'FPGA_3V2_N_V': -3.2, 'FPGA_5VA_N_V': -5.2,
+                  'RPSU_VCCD_V': 50.1, 'RPSU_VCLK_V': 19.7, 'RPSU_VAN_P_V': 9.9,
+                  'RPSU_VAN_N_V': 9.9, 'RPSU_3V3VD_V': 6.6, 'RPSU_1V5VD_V': 3.4, 'RPSU_28V_PRI_V': 28,
+                  'RPSU_TEMP1': 10., 'RPSU_VCCD_I': 0.13, 'RPSU_VCLK_I': 19.7, 'RPSU_VAN_P_I': 3.3,
+                  'RPSU_VAN_N_I': 3.3, 'RPSU_3V3VD_I': 3.3, 'RPSU_1V5VD_I': 3.3,
+                  'RPSU_28V_PRI_I': 3.3, 'RPSU_TEMP_2': 10.,
+                  'stTMRErrFlg': 0, 'hkTMRErrFlg': 0, 'spwTmTOFlg': 0, 'CDPUClkSt': 0, 'fpgaSpwErr': 0,
+                  'V3v3ProtCnt': 0, 'V5ProtCnt': 0, 'VccdErrFlg': 0, 'VclkErrFlg': 0, 'VanErrFlg': 0,
+                  'stRamErr': 0, 'hkRamErr': 0, 'ADC_BSY_ERR_CNT': 0, 'SPW_STATUS_REG': 12192}
+
+        if Nrows > 0:
+            sexplog = explog[0:Nrows]
+        else:
+            sexplog = explog
+        gen.generate_HK(sexplog, HKvals, datapath=outpath, elvis=elvis)
+
+    if doGenFITS:
+
+        # tests
+        # selix = [0,113,314,3988] # bias=0,flat=314,chinj=113,psf=3988
+        #selix = [0,113,314,3988]
+
+        print 'Generating FITS files... '
+
+        if Nrows > 0:
+            sexplog = explog[0:Nrows]
+        else:
+            sexplog = explog
+
+        gen.generate_FITS_fromExpLog(sexplog, outpath, elvis)
+
+
+if __name__ == '__main__':
+
     doGenExplog = True
     doGenHK = True
     doGenFITS = True
     Nrows = None
-    
-    #date0 = pilib.dtobj_default 
-    date0 = datetime.datetime(2018,1,19,7,0,0) # early riser
+
+    #date0 = pilib.dtobj_default
+    date0 = datetime.datetime(2018, 1, 19, 7, 0, 0)  # early riser
     elvis = '6.3.0'
-    
-    #TestsSelector = dict(BIAS01=1,DARK01=1,CHINJ01=1,CHINJ02=1,
+
+    # TestsSelector = dict(BIAS01=1,DARK01=1,CHINJ01=1,CHINJ02=1,
     #                  FLAT01=1,FLAT02=1,PTC01=1,PTC02WAVE=0,PTC02TEMP=0,NL01=1,
     #                  PSF01=1,PSF02=1,
     #                  TP01=1,TP02=1,
     #                  PERSIST01=1,FOCUS00=1)
-    
-    TestsSelector = dict(BIAS01=0,DARK01=0,CHINJ01=0,CHINJ02=0,
-                      FLAT01=0,FLAT02=0,PTC01=0,PTC02WAVE=0,PTC02TEMP=0,NL01=0,
-                      PSF01=0,PSF02=0,
-                      TP01=0,TP02=0,
-                      PERSIST01=0,FOCUS00=1)
-    
-    outpath = os.path.join('TEST_DATA',date0.strftime('%d_%b_%y'))
-    
+
+    TestsSelector = dict(BIAS01=0, DARK01=0, CHINJ01=0, CHINJ02=0,
+                         FLAT01=0, FLAT02=0, PTC01=0, PTC02WAVE=0, PTC02TEMP=0, NL01=0,
+                         PSF01=0, PSF02=0,
+                         TP01=0, TP02=0,
+                         PERSIST01=0, FOCUS00=1)
+
+    outpath = os.path.join('TEST_DATA', date0.strftime('%d_%b_%y'))
+
     if not os.path.exists(outpath):
         os.system('mkdir %s' % outpath)
-    
-    datasetGenerator(TestsSelector,doGenExplog,doGenHK,doGenFITS,outpath,elvis,
+
+    datasetGenerator(TestsSelector, doGenExplog, doGenHK, doGenFITS, outpath, elvis,
                      Nrows=Nrows)

@@ -23,54 +23,60 @@ from vison.plot import trends
 
 # END IMPORT
 
+
 def gt_check_offsets_dict(test):
-    ntest = st.replace(test,'_','\_')
-    return dict(stats=['offset_pre','offset_ove'],
-                          trendaxis='time',
-                          figname='%s_offset_vs_time.png' % (test,),
-                          caption='%s: offset vs. time.' % (ntest,),
-                          meta=dict(doLegend=True,
+    ntest = st.replace(test, '_', '\_')
+    return dict(stats=['offset_pre', 'offset_ove'],
+                trendaxis='time',
+                figname='%s_offset_vs_time.png' % (test,),
+                caption='%s: offset vs. time.' % (ntest,),
+                meta=dict(doLegend=True,
                           doNiceXDate=True,
                           suptitle='%s-checks: offsets' % ntest))
 
+
 def gt_check_std_dict(test):
-    ntest = st.replace(test,'_','\_')
-    return dict(stats=['std_pre','std_ove'],
-                      trendaxis='time',
-                          figname='%s_std_vs_time.png' % test,
-                          caption='%s: std vs. time.' % ntest,
-                          meta=dict(doLegend=True,
-                                doNiceXDate=True,
-                                suptitle='%s-checks: std' % ntest))
+    ntest = st.replace(test, '_', '\_')
+    return dict(stats=['std_pre', 'std_ove'],
+                trendaxis='time',
+                figname='%s_std_vs_time.png' % test,
+                caption='%s: std vs. time.' % ntest,
+                meta=dict(doLegend=True,
+                          doNiceXDate=True,
+                          suptitle='%s-checks: std' % ntest))
 
 
 def gt_check_img_flu_dict(test):
-    ntest = st.replace(test,'_','\_')
+    ntest = st.replace(test, '_', '\_')
     return dict(stats=['flu_med_img'],
-                          figname='%s_flu_vs_time.png' % test,
-                          caption='%s: Fluence vs. time.' % ntest,
-                          meta=dict(doLegend=False,
-                                doNiceXDate=True,
-                                suptitle='%s-checks: Fluence' % ntest,
-                                ylabel='[ADU]'))
+                figname='%s_flu_vs_time.png' % test,
+                caption='%s: Fluence vs. time.' % ntest,
+                meta=dict(doLegend=False,
+                          doNiceXDate=True,
+                          suptitle='%s-checks: Fluence' % ntest,
+                          ylabel='[ADU]'))
+
 
 def gt_check_img_std_dict(test):
-    ntest = st.replace(test,'_','\_')
+    ntest = st.replace(test, '_', '\_')
     return dict(stats=['flu_std_img'],
-                          figname='%s_imgstd_vs_time.png' % test,
-                          caption='%s: Image area STD vs. time.' % ntest,
-                          meta=dict(doLegend=False,
-                                doNiceXDate=True,
-                                suptitle='%s-checks: Image-Area STD' % ntest,
-                                ylabel='[ADU]'))
+                figname='%s_imgstd_vs_time.png' % test,
+                caption='%s: Image area STD vs. time.' % ntest,
+                meta=dict(doLegend=False,
+                          doNiceXDate=True,
+                          suptitle='%s-checks: Image-Area STD' % ntest,
+                          ylabel='[ADU]'))
 
 
 def gt_FL0Xfigs(test):
     FL0Xfigs = dict()
-    FL0Xfigs['FL0Xchecks_offsets'] = [trends.pl_basic_checkstat,gt_check_offsets_dict(test)]
-    FL0Xfigs['FL0Xchecks_stds'] = [trends.pl_basic_checkstat,gt_check_std_dict(test)]
-    FL0Xfigs['FL0Xchecks_flu'] = [trends.pl_basic_checkstat,gt_check_img_flu_dict(test)]
-    FL0Xfigs['FL0Xchecks_imgstd'] = [trends.pl_basic_checkstat,gt_check_img_std_dict(test)]
-    FL0Xfigs['BlueScreen'] = [plbaseclasses.BlueScreen,dict()]
+    FL0Xfigs['FL0Xchecks_offsets'] = [
+        trends.pl_basic_checkstat, gt_check_offsets_dict(test)]
+    FL0Xfigs['FL0Xchecks_stds'] = [
+        trends.pl_basic_checkstat, gt_check_std_dict(test)]
+    FL0Xfigs['FL0Xchecks_flu'] = [
+        trends.pl_basic_checkstat, gt_check_img_flu_dict(test)]
+    FL0Xfigs['FL0Xchecks_imgstd'] = [
+        trends.pl_basic_checkstat, gt_check_img_std_dict(test)]
+    FL0Xfigs['BlueScreen'] = [plbaseclasses.BlueScreen, dict()]
     return FL0Xfigs
-

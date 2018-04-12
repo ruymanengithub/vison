@@ -24,26 +24,25 @@ from vison.plot import trends
 # END IMPORT
 
 
-
-check_offsets_dict = dict(stats=['offset_pre','offset_img','offset_ove'],
+check_offsets_dict = dict(stats=['offset_pre', 'offset_img', 'offset_ove'],
                           trendaxis='time',
                           figname='BIAS01_offset_vs_time.png',
                           caption='BIAS01: offset vs. time.',
                           meta=dict(doLegend=True,
-                          doNiceXDate=True,
-                          suptitle='BIAS01-checks: offsets'))
+                                    doNiceXDate=True,
+                                    suptitle='BIAS01-checks: offsets'))
 
-check_std_dict = dict(stats=['std_pre','std_img','std_ove'],
+check_std_dict = dict(stats=['std_pre', 'std_img', 'std_ove'],
                       trendaxis='time',
-                          figname='BIAS01_std_vs_time.png',
-                          caption='BIAS01: std vs. time.',
-                          meta=dict(doLegend=True,
+                      figname='BIAS01_std_vs_time.png',
+                      caption='BIAS01: std vs. time.',
+                      meta=dict(doLegend=True,
                                 doNiceXDate=True,
                                 suptitle='BIAS01-checks: std')
-                          )
- 
+                      )
+
 B01figs = dict()
-B01figs['B01checks_offsets'] = [trends.pl_basic_checkstat,check_offsets_dict]
+B01figs['B01checks_offsets'] = [trends.pl_basic_checkstat, check_offsets_dict]
 #B01figs['B01checks_stds'] = [plB01check,dict(stat='std')]
-B01figs['B01checks_stds'] = [trends.pl_basic_checkstat,check_std_dict]
-B01figs['BlueScreen'] = [plbaseclasses.BlueScreen,dict()]
+B01figs['B01checks_stds'] = [trends.pl_basic_checkstat, check_std_dict]
+B01figs['BlueScreen'] = [plbaseclasses.BlueScreen, dict()]

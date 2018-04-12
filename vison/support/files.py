@@ -7,12 +7,14 @@ IO related functions.
 :author: Sami-Matias Niemi
 :contact: r.azzollini_at_ucl.ac.uk
 """
-import datetime, cPickle, os
+import datetime
+import cPickle
+import os
 import numpy as np
 from pdb import set_trace as stop
 
 
-def cPickleDumpDictionary(dictionary, output,protocol=2):
+def cPickleDumpDictionary(dictionary, output, protocol=2):
     """
     Dumps a dictionary of data to a cPickled file.
 
@@ -22,7 +24,7 @@ def cPickleDumpDictionary(dictionary, output,protocol=2):
     :return: None
     """
     out = open(output, 'wb')
-    cPickle.dump(dictionary, out,protocol=protocol)
+    cPickle.dump(dictionary, out, protocol=protocol)
     out.close()
 
 
@@ -33,7 +35,7 @@ def cPickleRead(file):
     return cPickle.load(open(file))
 
 
-def cPickleDump(data, output,protocol=2):
+def cPickleDump(data, output, protocol=2):
     """
     Dumps data to a cPickled file.
 
@@ -43,28 +45,27 @@ def cPickleDump(data, output,protocol=2):
     :return: None
     """
     out = open(output, 'wb')
-    cPickle.dump(data, out,protocol=protocol)
+    cPickle.dump(data, out, protocol=protocol)
     out.close()
+
 
 def convert_fig_to_eps(figname):
     """Converts a figure to .eps. Returns new file name."""
     root = os.path.splitext(figname)
     epsname = '%s.eps' % root
-    os.system('convert %s %s' % (figname,epsname))
+    os.system('convert %s %s' % (figname, epsname))
     return epsname
 
 
-
 def test():
-    
+
     data = ['a']
     picklef = 'test_cpickle.pick'
-    
-    cPickleDump(data,picklef)
+
+    cPickleDump(data, picklef)
     data = cPickleRead(picklef)
     stop()
-    
-    
-    
+
+
 if __name__ == '__main__':
     test()

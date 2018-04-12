@@ -33,320 +33,317 @@ from vison.datamodel import inputs
 from vison.support.files import cPickleRead
 import TP01aux
 import tptools
-# END IMPORT 
+# END IMPORT
 
 isthere = os.path.exists
 
-HKKeys = ['CCD1_OD_T','CCD2_OD_T','CCD3_OD_T','COMM_RD_T',
-'CCD2_IG1_T','CCD3_IG1_T','CCD1_TEMP_T','CCD2_TEMP_T','CCD3_TEMP_T',
-'CCD1_IG1_T','COMM_IG2_T','FPGA_PCB_TEMP_T','CCD1_OD_B',
-'CCD2_OD_B','CCD3_OD_B','COMM_RD_B','CCD2_IG1_B','CCD3_IG1_B','CCD1_TEMP_B',
-'CCD2_TEMP_B','CCD3_TEMP_B','CCD1_IG1_B','COMM_IG2_B']
+HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
+          'CCD2_IG1_T', 'CCD3_IG1_T', 'CCD1_TEMP_T', 'CCD2_TEMP_T', 'CCD3_TEMP_T',
+          'CCD1_IG1_T', 'COMM_IG2_T', 'FPGA_PCB_TEMP_T', 'CCD1_OD_B',
+          'CCD2_OD_B', 'CCD3_OD_B', 'COMM_RD_B', 'CCD2_IG1_B', 'CCD3_IG1_B', 'CCD1_TEMP_B',
+          'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
 
-IG1=6.
-IG2=5.
+IG1 = 6.
+IG2 = 5.
 
-TP01_commvalues = dict(program='CALCAMP',test='TP01',
-  flushes=7,exptime=0.,shuttr=0,
-  e_shuttr=0,vstart=0,vend=2066,
-  siflsh=1,siflsh_p=500,
-  IDL=11.,IDH=18.,
-  IG1_1_T=IG1,IG1_2_T=IG1,IG1_3_T=IG1,
-  IG1_1_B=IG1,IG1_2_B=IG1,IG1_3_B=IG1,
-  IG2_T=IG2,IG2_B=IG2,
-  chinj=1,chinj_on=2066,chinj_of=0,
-  chin_dly=0,
-  id_wid=60,
-  toi_chinj=500,
-  v_tpump=1,s_tpump=0,
-  v_tp_cnt=1000,
-  dwell_v=0.,dwell_s=0.,
-  motr_on=0,
-  comments='')
+TP01_commvalues = dict(program='CALCAMP', test='TP01',
+                       flushes=7, exptime=0., shuttr=0,
+                       e_shuttr=0, vstart=0, vend=2066,
+                       siflsh=1, siflsh_p=500,
+                       IDL=11., IDH=18.,
+                       IG1_1_T=IG1, IG1_2_T=IG1, IG1_3_T=IG1,
+                       IG1_1_B=IG1, IG1_2_B=IG1, IG1_3_B=IG1,
+                       IG2_T=IG2, IG2_B=IG2,
+                       chinj=1, chinj_on=2066, chinj_of=0,
+                       chin_dly=0,
+                       id_wid=60,
+                       toi_chinj=500,
+                       v_tpump=1, s_tpump=0,
+                       v_tp_cnt=1000,
+                       dwell_v=0., dwell_s=0.,
+                       motr_on=0,
+                       comments='')
 
 
 class TP01_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
-            ('toi_chinj',([int],'TOI Charge Injection.')),
-            ('Nshuffles_V',([int],'Number of Shuffles, Vertical/Parallel Pumping.')),
-            ('id_delays',([list],'Injection Drain Delays [2, one per CCDs section].')),
-            ('toi_chinj',([int],'TOI Charge Injection.')),
-            ('toi_tpv',([list],'Vector of TOI TP-V values.')),
-            ('vpumpmodes',([list],'Vertical/Parallel Pumping Starting points.'))
-            ])))
+        ('toi_chinj', ([int], 'TOI Charge Injection.')),
+        ('Nshuffles_V',
+         ([int], 'Number of Shuffles, Vertical/Parallel Pumping.')),
+        ('id_delays',
+         ([list], 'Injection Drain Delays [2, one per CCDs section].')),
+        ('toi_chinj', ([int], 'TOI Charge Injection.')),
+        ('toi_tpv', ([list], 'Vector of TOI TP-V values.')),
+        ('vpumpmodes',
+         ([list], 'Vertical/Parallel Pumping Starting points.'))
+    ])))
+
 
 class TP01(PumpTask):
     """ """
-    
+
     inputsclass = TP01_inputs
 
-    def __init__(self,inputs,log=None,drill=False,debug=False):
+    def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(TP01,self).__init__(inputs,log,drill,debug)
+        super(TP01, self).__init__(inputs, log, drill, debug)
         self.name = 'TP01'
         self.type = 'Simple'
-        self.subtasks = [('check',self.check_data),
-                         ('prep',self.prepare_images),
-                    ('extract',self.extract),
-                    ('basic',self.basic_analysis),
-                    ('meta',self.meta_analysis)]
+        self.subtasks = [('check', self.check_data),
+                         ('prep', self.prepare_images),
+                         ('extract', self.extract),
+                         ('basic', self.basic_analysis),
+                         ('meta', self.meta_analysis)]
         self.HKKeys = HKKeys
         self.figdict = TP01aux.TP01figs.copy()
-        self.inputs['subpaths'] = dict(figs='figs',ccdpickles='ccdpickles',
-                   products='products')
-        
+        self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
+                                       products='products')
 
-    def set_inpdefaults(self,**kwargs):
+    def set_inpdefaults(self, **kwargs):
         """ """
-        
+
         toi_chinjTP01 = 500
         self.inpdefaults = dict(toi_chinj=toi_chinjTP01,
-                         Nshuffles_V=5000,
-                         id_delays=np.array([2.5,1.5]) * toi_chinjTP01,
-                         toi_tpv=[200,1000,2000,4000,8000],
-                         vpumpmodes = [123,234,341,412])
-        
-    def set_perfdefaults(self,**kwargs):
+                                Nshuffles_V=5000,
+                                id_delays=np.array([2.5, 1.5]) * toi_chinjTP01,
+                                toi_tpv=[200, 1000, 2000, 4000, 8000],
+                                vpumpmodes=[123, 234, 341, 412])
+
+    def set_perfdefaults(self, **kwargs):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
-        
+
         Flu_lims, FluGrad_lims = self.get_FluenceAndGradient_limits()
-        
+
         self.perfdefaults['Flu_lims'] = Flu_lims.copy()
         self.perfdefaults['FluGrad_lims'] = FluGrad_lims.copy()
-        
 
-    def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
+    def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """ """
-        
+
         Nshuffles_V = self.inputs['Nshuffles_V']
         toi_tpv = self.inputs['toi_tpv']
         id_delays = self.inputs['id_delays']
         vpumpmodes = self.inputs['vpumpmodes']
         toi_chinj = self.inputs['toi_chinj']
-        
+
         assert len(id_delays) == 2
-        
+
         TP01_sdict = dict()
-        
+
         TP01_commvalues['ver_shuffles'] = Nshuffles_V
-        
+
         # First Injection Drain Delay
-        
-        TP01_sdict['col1'] = dict(frames=1,v_tpump=0,comments='BGD',
-                  id_dly=id_delays[0],toi_ch=toi_chinj)
-        
+
+        TP01_sdict['col1'] = dict(frames=1, v_tpump=0, comments='BGD',
+                                  id_dly=id_delays[0], toi_ch=toi_chinj)
+
         colcounter = 2
-        for i,toi_tp in enumerate(toi_tpv):
-            
-            for k,vpumpmode in enumerate(vpumpmodes):
+        for i, toi_tp in enumerate(toi_tpv):
+
+            for k, vpumpmode in enumerate(vpumpmodes):
                 colkey = 'col%i' % colcounter
-                TP01_sdict[colkey] = dict(frames=1,toi_tp=toi_tp,
-                         id_dly=id_delays[0],v_tpmod=vpumpmode,
-                                         toi_ch=toi_chinj)
-                
+                TP01_sdict[colkey] = dict(frames=1, toi_tp=toi_tp,
+                                          id_dly=id_delays[0], v_tpmod=vpumpmode,
+                                          toi_ch=toi_chinj)
+
                 colcounter += 1
-        
+
         # Second Injection Drain Delay
-        
-        
-        TP01_sdict['col%i' % colcounter] = dict(frames=1,v_tpump=0,comments='BGD',
-                  id_dly=id_delays[1],toi_ch=toi_chinj)
+
+        TP01_sdict['col%i' % colcounter] = dict(frames=1, v_tpump=0, comments='BGD',
+                                                id_dly=id_delays[1], toi_ch=toi_chinj)
         colcounter += 1
-    
-        for j,toi_tp in enumerate(toi_tpv):
-            
-            for k,vpumpmode in enumerate(vpumpmodes):
-            
+
+        for j, toi_tp in enumerate(toi_tpv):
+
+            for k, vpumpmode in enumerate(vpumpmodes):
+
                 colkey = 'col%i' % colcounter
                 #print colkey
-                TP01_sdict[colkey] = dict(frames=1,toi_tp=toi_tp,
-                             id_dly=id_delays[1],v_tpmod=vpumpmode,
-                                             toi_ch=toi_chinj)    
-                
+                TP01_sdict[colkey] = dict(frames=1, toi_tp=toi_tp,
+                                          id_dly=id_delays[1], v_tpmod=vpumpmode,
+                                          toi_ch=toi_chinj)
+
                 colcounter += 1
-        
-        
-        Ncols = len(TP01_sdict.keys())    
+
+        Ncols = len(TP01_sdict.keys())
         TP01_sdict['Ncols'] = Ncols
-    
+
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
-        commvalues.update(TP01_commvalues)    
-        
-        if len(diffvalues)==0:
-            try: diffvalues = self.inputs['diffvalues']
-            except: diffvalues = diffvalues = dict()
-       
-        TP01_sdict = sc.update_structdict(TP01_sdict,commvalues,diffvalues)
-        
-        
+        commvalues.update(TP01_commvalues)
+
+        if len(diffvalues) == 0:
+            try:
+                diffvalues = self.inputs['diffvalues']
+            except:
+                diffvalues = diffvalues = dict()
+
+        TP01_sdict = sc.update_structdict(TP01_sdict, commvalues, diffvalues)
+
         return TP01_sdict
 
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims):
+    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
         """ """
         wavedkeys = ['motr_siz']
-        return super(TP01,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
-                              wavedkeys=wavedkeys)
-        
+        return super(TP01, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=True,
+                                                 wavedkeys=wavedkeys)
+
     def extract(self):
         """ 
-        
+
         Obtain maps of dipoles.
-        
+
         **METACODE**
-        
+
         ::
-            
+
             f.e. id_delay (there are 2):
                 f.e. CCD:
                     f.e. Q:
                         produce reference non-pumped injection map
-            
+
             f. e. ObsID:
                 f.e. CCD:
-                    
+
                     load ccdobj                    
                     f.e.Q.:
                         divide ccdobj.Q by injection map
-                    
+
                     save dipole map and store reference
-                        
-        
+
+
         """
         DDindices = copy.deepcopy(self.dd.indices)
         CCDs = DDindices[DDindices.names.index('CCD')].vals
-        
+
         ccdpicklespath = self.inputs['subpaths']['ccdpickles']
         productspath = self.inputs['subpaths']['products']
-                         
+
         # Initialisations
-        
-        self.dd.initColumn('dipoles_raw',self.dd.mx['ccdobj_name'].indices,\
-                           dtype='S100',valini='None')
-        
-                         
-        id_dlys = np.unique(self.dd.mx['id_dly'][:,0])
-                
-        
-        
+
+        self.dd.initColumn('dipoles_raw', self.dd.mx['ccdobj_name'].indices,
+                           dtype='S100', valini='None')
+
+        id_dlys = np.unique(self.dd.mx['id_dly'][:, 0])
+
         #injprofiles = OrderedDict()
-        
+
         if not self.drill:
-            
+
             # INJECTION PROFILES (models of the injection used to generate maps of relative amplitude of dipoles)
-            
-#            for id_dly in id_dlys:
-#                
-#                injprofiles['ID_%i' % id_dly] = OrderedDict()
-#                
-#                for jCCD, CCD in enumerate(CCDs):
-#                    
-#                    ixref = np.where((self.dd.mx['id_dly'][:] == id_dly) & (self.dd.mx['CCD'][:] == 'CCD%i' % CCD) &
-#                                     (self.dd.mx['v_tpump'][:] == 0))
-#                    
-#                    ccdobj_ref_f = '%s.pick' % self.dd.mx['ccdobj_name'][ixref][0]
-#                    
-#                    # COMMENTED ON TESTS
-#                    try :
-#                        ccdobj_ref = copy.deepcopy(cPickleRead(os.path.join(ccdpicklespath,ccdobj_ref_f)))
-#                        i_injprof_tpnorm = tptools.get_injprofile_tpnorm(ccdobj_ref,vstart=0,vend=ccd.NrowsCCD)
-#                         
-#                        injprofiles['ID_%i' % id_dly]['CCD%i' % CCD] = i_injprof_tpnorm.copy()                        
-#                    except IOError: # TESTS
-#                        pass
-            
-            
+
+            #            for id_dly in id_dlys:
+            #
+            #                injprofiles['ID_%i' % id_dly] = OrderedDict()
+            #
+            #                for jCCD, CCD in enumerate(CCDs):
+            #
+            #                    ixref = np.where((self.dd.mx['id_dly'][:] == id_dly) & (self.dd.mx['CCD'][:] == 'CCD%i' % CCD) &
+            #                                     (self.dd.mx['v_tpump'][:] == 0))
+            #
+            #                    ccdobj_ref_f = '%s.pick' % self.dd.mx['ccdobj_name'][ixref][0]
+            #
+            #                    # COMMENTED ON TESTS
+            #                    try :
+            #                        ccdobj_ref = copy.deepcopy(cPickleRead(os.path.join(ccdpicklespath,ccdobj_ref_f)))
+            #                        i_injprof_tpnorm = tptools.get_injprofile_tpnorm(ccdobj_ref,vstart=0,vend=ccd.NrowsCCD)
+            #
+            #                        injprofiles['ID_%i' % id_dly]['CCD%i' % CCD] = i_injprof_tpnorm.copy()
+            #                    except IOError: # TESTS
+            #                        pass
+
             # Computing maps of relative amplitude of dipoles
-            
+
             for id_dly in id_dlys:
-                 
+
                 for jCCD, CCD in enumerate(CCDs):
-                    
+
                     try:
-                        injprofile = injprofiles['ID_%i' % id_dly]['CCD%i' % CCD].copy()
+                        injprofile = injprofiles['ID_%i' %
+                                                 id_dly]['CCD%i' % CCD].copy()
                     except:
-                        print 'exception caught on TESTS' # TESTS
-                        
-                    ixsel = np.where((self.dd.mx['id_dly'][:] == id_dly) & (self.dd.mx['v_tpump'][:] != 0))
-                    
+                        print 'exception caught on TESTS'  # TESTS
+
+                    ixsel = np.where((self.dd.mx['id_dly'][:] == id_dly) & (
+                        self.dd.mx['v_tpump'][:] != 0))
+
                     for ix in ixsel[0]:
                         ObsID = self.dd.mx['ObsID'][ix]
-                        
-                        ioutf = 'TP01_rawmap_%i_IDDLY_%i_CCD%i.fits' % (ObsID,id_dly,CCD)
-                        
-                        iccdobj_f = '%s.pick' % self.dd.mx['ccdobj_name'][ix,jCCD]
-                        
-                        try: 
+
+                        ioutf = 'TP01_rawmap_%i_IDDLY_%i_CCD%i.fits' % (
+                            ObsID, id_dly, CCD)
+
+                        iccdobj_f = '%s.pick' % self.dd.mx['ccdobj_name'][ix, jCCD]
+
+                        try:
                             #injprofile = injprofiles['ID_%i' % id_dly]['CCD%i' % CCD].copy()
-                            iccdobj = cPickleRead(os.path.join(ccdpicklespath,iccdobj_f))                            
+                            iccdobj = cPickleRead(
+                                os.path.join(ccdpicklespath, iccdobj_f))
                             irawmap = copy.deepcopy(iccdobj)
-                            
-                            irawmap = tptools.gen_raw_dpmap_vtpump(irawmap,vstart=0,vend=ccd.NrowsCCD)
-                            #irawmap.divide_by_flatfield(injprofile,extension=-1)
-                            irawmap.writeto(os.path.join(productspath,ioutf))
-                            
-                            self.dd.mx['dipoles_raw'][ix,jCCD] = ioutf
-                        
-                        except: # TESTS
+
+                            irawmap = tptools.gen_raw_dpmap_vtpump(
+                                irawmap, vstart=0, vend=ccd.NrowsCCD)
+                            # irawmap.divide_by_flatfield(injprofile,extension=-1)
+                            irawmap.writeto(os.path.join(productspath, ioutf))
+
+                            self.dd.mx['dipoles_raw'][ix, jCCD] = ioutf
+
+                        except:  # TESTS
                             pass
-                        
-         
-        
-    
+
     def basic_analysis(self):
         """
-        
+
         Basic analysis of data.
-    
+
         **METACODE**
-        
+
         ::
-    
+
             f. e. ObsID [there are different TOI_TP and TP-patterns]:
                 f.e.CCD:
                     f.e.Q:
                         load "map of relative pumping"
                         find_dipoles:
                             x, y, rel-amplitude, orientation
-    
+
             produce & report:  
                 map location of dipoles
                 PDF of dipole amplitudes (for N and S)
                 Counts of dipoles (and N vs. S)
-        
+
         """
-        
+
         stop()
-        
+
         raise NotImplementedError
-        
+
     def meta_analysis(self):
         """
-        
+
         Meta-analysis of data:
-            
+
             Try to identify tau and pixel-phase location for each trap.
             Need to associate dipoles across TOI_TPs and TP-patterns
-    
-    
+
+
         **METACODE**
-        
+
         ::
-            
+
             across TOI_TP, patterns:
                 build catalog of traps: x,y,I-phase, Amp
                 from Amp(TOI) -> tau, Pc
-            
+
             Report on :
                 Histogram of Taus
                 Histogram of Pc (capture probability)
                 Histogram of I-phases (larger phases should have more traps, 
                                   statistically) -> check
-    
+
                 Total Count of Traps
-    
+
         """
         raise NotImplementedError
-        
-    

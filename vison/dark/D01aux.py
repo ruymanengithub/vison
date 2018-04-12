@@ -23,36 +23,35 @@ from vison.plot import trends
 # END IMPORT
 
 
-check_offsets_dict = dict(stats=['offset_pre','offset_ove'],
+check_offsets_dict = dict(stats=['offset_pre', 'offset_ove'],
                           trendaxis='time',
                           figname='DARK01_offset_vs_time.png',
                           caption='DARK01: offset vs. time.',
                           meta=dict(doLegend=True,
-                          doNiceXDate=True,
-                          suptitle='DARK01-checks: offsets'))
+                                    doNiceXDate=True,
+                                    suptitle='DARK01-checks: offsets'))
 
-check_std_dict = dict(stats=['std_pre','std_ove'],
+check_std_dict = dict(stats=['std_pre', 'std_ove'],
                       trendaxis='time',
-                          figname='DARK01_std_vs_time.png',
-                          caption='DARK01: std vs. time.',
-                          meta=dict(doLegend=True,
+                      figname='DARK01_std_vs_time.png',
+                      caption='DARK01: std vs. time.',
+                      meta=dict(doLegend=True,
                                 doNiceXDate=True,
                                 suptitle='DARK01-checks: std')
-                          )
- 
+                      )
+
 check_flu_dict = dict(stats=['chk_flu_img'],
                       trendaxis='time',
-                          figname='DARK01_FLU_vs_time.png',
-                          caption='DARK01: Fluence vs. time.',
-                          meta=dict(doLegend=False,
+                      figname='DARK01_FLU_vs_time.png',
+                      caption='DARK01: Fluence vs. time.',
+                      meta=dict(doLegend=False,
                                 doNiceXDate=True,
                                 suptitle='DARK01-checks: Image Area Fluence.')
-                          )
-    
+                      )
 
-    
+
 D01figs = dict()
-D01figs['D01checks_offsets'] = [trends.pl_basic_checkstat,check_offsets_dict]
-D01figs['D01checks_stds'] = [trends.pl_basic_checkstat,check_std_dict]
-D01figs['D01checks_flu'] = [trends.pl_basic_checkstat,check_flu_dict]
-D01figs['BlueScreen'] = [plbaseclasses.BlueScreen,dict()]
+D01figs['D01checks_offsets'] = [trends.pl_basic_checkstat, check_offsets_dict]
+D01figs['D01checks_stds'] = [trends.pl_basic_checkstat, check_std_dict]
+D01figs['D01checks_flu'] = [trends.pl_basic_checkstat, check_flu_dict]
+D01figs['BlueScreen'] = [plbaseclasses.BlueScreen, dict()]

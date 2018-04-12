@@ -40,26 +40,23 @@ LARGE_FONT = ("Helvetica", 12)
 small_font = ("Verdana", 8)
 
 
-
-
 class SingleHKplot(tk.Toplevel):
     """ """
-    
-    def __init__(self,root):
+
+    def __init__(self, root):
         """ """
-        
-        tk.Toplevel.__init__(self,root)
-        
+
+        tk.Toplevel.__init__(self, root)
+
         self.wm_title('HK Parameter')
-        
-        self.minsize(width=450,height=400)
-        
-        
+
+        self.minsize(width=450, height=400)
+
         #frame = tk.Frame(self)
-        
-        self.f = plt.figure(figsize=(4,4),dpi=100)
+
+        self.f = plt.figure(figsize=(4, 4), dpi=100)
         self.ax = self.f.add_subplot(111)
-        
+
         canvas = FigureCanvasTkAgg(self.f, self)
         plt.tight_layout(rect=[0, 0, 1, 1])
         canvas.show()
@@ -68,29 +65,29 @@ class SingleHKplot(tk.Toplevel):
         toolbar = NavigationToolbar2TkAgg(canvas, self)
         toolbar.update()
         canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-    
-    def render(self,HKkey,HKlims,x,y):
-        
-        ax = _ax_render_HK(self.ax,x,y,HKlims,HKkey)        
-        try: 
-            plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))   
+
+    def render(self, HKkey, HKlims, x, y):
+
+        ax = _ax_render_HK(self.ax, x, y, HKlims, HKkey)
+        try:
+            plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))
             self.f.autofmt_xdate()
         except:
             pass
         plt.tight_layout(rect=[0, 0, 1, 1])
-        
 
-class HKButton(tk.Button,object):
-    
-    def __init__(self,master=None,**options):
+
+class HKButton(tk.Button, object):
+
+    def __init__(self, master=None, **options):
         """ """
-        
-        ix = options.pop('ix') 
-        ic = options.pop('ic') 
+
+        ix = options.pop('ix')
+        ic = options.pop('ic')
         ir = options.pop('ir')
-        
-        super(HKButton,self).__init__(master,options)
-        
+
+        super(HKButton, self).__init__(master, options)
+
         self.ix = ix
         self.ir = ir
         self.ic = ic
@@ -99,98 +96,101 @@ class HKButton(tk.Button,object):
 
 class HKFlags(tk.Toplevel):
     """ """
-    
-    def __init__(self,root,parent,interval=5000,elvis=context.elvis):
+
+    def __init__(self, root, parent, interval=5000, elvis=context.elvis):
         """ """
-        
-        tk.Toplevel.__init__(self,root)
+
+        tk.Toplevel.__init__(self, root)
         self.ncols = 5
         self.elvis = elvis
-        
+
         self.parent = parent
         self.interval = interval
         self.HKkeys = self.parent.HKkeys[1:]
-        
+
         self.wm_title('HK Flags')
-        
-        self.minsize(width=400,height=400)
-        
+
+        self.minsize(width=400, height=400)
+
         self.HKframe = tk.Frame(self)
         self.HKframe.pack(fill='both')
-        
+
         self.setup_flagsgrid()
-        
+
         self.update()
-        
+
     def setup_flagsgrid(self):
-        
+
         HKkeys = self.HKkeys
-        
+
         ncols = self.ncols
         nrows = int(np.ceil(len(HKkeys)/(ncols*1.)))
-        
+
         self.HKflags = []
-        
+
         for ir in range(nrows):
             for ic in range(ncols):
                 ix = ir * ncols + ic
-                
-                try: HKkey = HKkeys[ix]
+
+                try:
+                    HKkey = HKkeys[ix]
                 except:
                     break
-                
-                #self.setup_Flag(HKkey,'green',ix,ic,ir)
-                
-                self.HKflags.append(HKButton(self, text=HKkey,font=small_font,bg='green',
-                                             ix=ix,ic=ic,ir=ir))
-                self.HKflags[-1].grid(column=ic,row=ir,sticky='nsew',\
-                     in_=self.HKframe)
-                
-                self.HKflags[-1].bind("<Button 1>",self.ResetFlag)
-                self.HKflags[-1].bind("<Button 3>",self.showHK)
-        
+
+                # self.setup_Flag(HKkey,'green',ix,ic,ir)
+
+                self.HKflags.append(HKButton(self, text=HKkey, font=small_font, bg='green',
+                                             ix=ix, ic=ic, ir=ir))
+                self.HKflags[-1].grid(column=ic, row=ir, sticky='nsew',
+                                      in_=self.HKframe)
+
+                self.HKflags[-1].bind("<Button 1>", self.ResetFlag)
+                self.HKflags[-1].bind("<Button 3>", self.showHK)
+
         if ic < ncols-1:
             icr = ic+1
             irr = ir
         else:
             icr = 0
             irr = ir+1
-        
-        self.resetButton = HKButton(self, text='RESET ALL',font=small_font,bg='blue',
-                                             ix=-1,ic=icr,ir=irr)
-        self.resetButton.grid(column=icr,row=irr,sticky='nsew',\
-                     in_=self.HKframe)
-                
-        self.resetButton.bind("<Button 1>",self.ResetAllFlags)
-    
-    def setup_Flag(self,text,color,ix,ic,ir):
+
+        self.resetButton = HKButton(self, text='RESET ALL', font=small_font, bg='blue',
+                                    ix=-1, ic=icr, ir=irr)
+        self.resetButton.grid(column=icr, row=irr, sticky='nsew',
+                              in_=self.HKframe)
+
+        self.resetButton.bind("<Button 1>", self.ResetAllFlags)
+
+    def setup_Flag(self, text, color, ix, ic, ir):
         try:
             HKflag = self.HKflags[ix]
         except IndexError:
-            self.HKflags.append(HKButton(self,text=text,font=small_font,bg=color,
-                                         ix=ix,ic=ic,ir=ir))
+            self.HKflags.append(HKButton(self, text=text, font=small_font, bg=color,
+                                         ix=ix, ic=ic, ir=ir))
             HKflag = self.HKflags[ix]
-        try: HKflag.grid(column=ic,row=ir,sticky='nsew',in_=self.HKframe)
-        except: stop()
+        try:
+            HKflag.grid(column=ic, row=ir, sticky='nsew', in_=self.HKframe)
+        except:
+            stop()
         HKflag.bind("<Button 1>", self.ResetFlag)
         HKflag.bind("<Button 3>)", self.showHK)
-    
-    def ResetFlag(self,event):
+
+    def ResetFlag(self, event):
         """ """
 
         button = event.widget
         ix = button.ix
-        
-        self.changeColor(ix,'green')
-    
-    def ResetAllFlags(self,event):
-        
+
+        self.changeColor(ix, 'green')
+
+    def ResetAllFlags(self, event):
+
         for HKflag in self.HKflags:
             ix = HKflag.ix
-            self.changeColor(ix,'green')
-            
-    def showHK(self,event):
-        
+            self.changeColor(ix, 'green')
+
+    def showHK(self, event):
+
         HKflag = event.widget
         ix = HKflag.ix
         HKkey = self.HKkeys[ix]
@@ -198,131 +198,131 @@ class HKFlags(tk.Toplevel):
         t = self.parent.HK['time'].copy()
         y = self.parent.HK[HKkey].copy()
         #print 'Im here!'
-        
+
         window = SingleHKplot(self.parent.root)
-        window.render(HKkey,HKlim,t,y)
-        
-    
+        window.render(HKkey, HKlim, t, y)
+
     def update(self):
-        
-        try: self.find_offlims()
-        except: pass    
-        #self.find_offlims()
-    
+
+        try:
+            self.find_offlims()
+        except:
+            pass
+        # self.find_offlims()
+
         #print self.interval
-    
-        self.after(self.interval,self.update)
-            
-    
+
+        self.after(self.interval, self.update)
+
     def find_offlims(self):
-        
+
         HKkeys = self.HKkeys
         #print self.parent.HK
-        
+
         for ix in range(len(HKkeys)):
             HKlim = self.parent.HKlims[HKkeys[ix]][1:]
             lastval = self.parent.HK[HKkeys[ix]][-1]
-            
+
 #            if HKkeys[ix] == 'SPW_STATUS_REG':
 #                print '%s= %.1f' % (HKkeys[ix],lastval)
 #                print 'lim = ', HKlim
-                
-            isWithin = self.validate(lastval,HKlim)
-            if isWithin: continue
-            
-            self.changeColor(ix,'red')
-    
 
-    def validate(self,val,HKlim):
-        
+            isWithin = self.validate(lastval, HKlim)
+            if isWithin:
+                continue
+
+            self.changeColor(ix, 'red')
+
+    def validate(self, val, HKlim):
+
         if len(HKlim) == 2:
-            if (HKlim[0]<= val) and (HKlim[1]>=val):
+            if (HKlim[0] <= val) and (HKlim[1] >= val):
                 return True
         elif len(HKlim) == 1:
             if HKlim == val:
                 return True
         return False
-    
-    def changeColor(self,ix,color):
-        
+
+    def changeColor(self, ix, color):
+
         ic = self.HKflags[ix].ic
         ir = self.HKflags[ix].ir
         text = self.HKflags[ix].text
         self.HKflags[ix].destroy()
-        self.HKflags[ix] = HKButton(self, text=text,font=small_font,bg=color,
-                                             ix=ix,ic=ic,ir=ir)
-        self.HKflags[ix].grid(column=ic,row=ir,sticky='nsew',\
-                in_=self.HKframe)
-                
-        self.HKflags[ix].bind("<Button 1>",self.ResetFlag)
-        self.HKflags[ix].bind("<Button 3>",self.showHK)
-        
-        #self.setup_Flag(text,color,ix,ic,ir)
-        
+        self.HKflags[ix] = HKButton(self, text=text, font=small_font, bg=color,
+                                    ix=ix, ic=ic, ir=ir)
+        self.HKflags[ix].grid(column=ic, row=ir, sticky='nsew',
+                              in_=self.HKframe)
+
+        self.HKflags[ix].bind("<Button 1>", self.ResetFlag)
+        self.HKflags[ix].bind("<Button 3>", self.showHK)
+
+        # self.setup_Flag(text,color,ix,ic,ir)
+
 
 class HKDisplay(tk.Toplevel):
     """ """
-    def __init__(self,root,path,interval,elvis=context.elvis):
-        
+
+    def __init__(self, root, path, interval, elvis=context.elvis):
+
         self.path = path
         self.interval = interval
         self.elvis = elvis
         self.date = '21-02-80'
         self.HKfiles = None
         self.HK = dict()
-        self.sizeHK = 0 # size in bytes of HK file
+        self.sizeHK = 0  # size in bytes of HK file
         self.page = 1
-        
+
         #self.nHKlines = 1
         self.root = root
-        
+
         self.HKkeys = HKtools.allHK_keys[elvis]
         self.HKlims = HKtools.HKlims[elvis]['S']
-        
+
         self.search_HKfiles()
-        
-        tk.Toplevel.__init__(self,self.root)
-        
-        self.minsize(width=700,height=925)
-        
+
+        tk.Toplevel.__init__(self, self.root)
+
+        self.minsize(width=700, height=925)
+
         self.wm_title('HK Display')
-        
+
         frame = tk.Frame(self)
-        l1 = tk.Label(frame,text="Page: ",font=LARGE_FONT)
+        l1 = tk.Label(frame, text="Page: ", font=LARGE_FONT)
         l1.pack(side="left")
-        
-        pvar = tk.StringVar() 
+
+        pvar = tk.StringVar()
         pvar.set('1')
-        pentry = tk.Entry(frame,textvariable=pvar)
-        
+        pentry = tk.Entry(frame, textvariable=pvar)
+
         pentry.pack(side="left")
         frame.pack(side="top")
-        
+
         def update_page(event):
             try:
                 self.page = int(pvar.get())
             except ValueError:
                 self.page = 1
-        
-        pentry.bind('<Return>',update_page)
-        
+
+        pentry.bind('<Return>', update_page)
+
         self.setup_plotgrid()
-        
-    
+
     def setup_plotgrid(self):
-        
-        f = plt.figure(figsize=(4,8),dpi=100)
-        
+
+        f = plt.figure(figsize=(4, 8), dpi=100)
+
         axs = []
-        
+
         for i in range(9):
-            
-            ax = f.add_subplot(3,3,i+1)            
+
+            ax = f.add_subplot(3, 3, i+1)
             axs.append(ax)
-        
+
         self.f = f
         self.axs = axs
-        
+
         canvas = FigureCanvasTkAgg(self.f, self)
         plt.tight_layout(rect=[0, 0, 1, 1])
         canvas.show()
@@ -331,171 +331,163 @@ class HKDisplay(tk.Toplevel):
         toolbar = NavigationToolbar2TkAgg(canvas, self)
         toolbar.update()
         canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-    
-    
-    def sort_HKfiles(self,HKfiles):
+
+    def sort_HKfiles(self, HKfiles):
         """ """
-        
-        # First we order by dates (ELVIS generates a 
+
+        # First we order by dates (ELVIS generates a
         # new master HK file after midnight in the same day-folder)
-        
+
         alldays = []
         for iHKfile in HKfiles:
             itstr = os.path.split(iHKfile)[-1][3:11]
-            it = datetime.datetime.strptime(itstr,'%d-%m-%y')
+            it = datetime.datetime.strptime(itstr, '%d-%m-%y')
             alldays.append(it)
         dorder = np.argsort(alldays)
-        
+
         oHKfiles = []
-        
+
         # Then we sort by the appendix number among the master HK files of a
         # given date (there may be more than one, I've been told...)
-        
+
         ordered_dates = np.unique(np.array(alldays)[dorder])
-        
-        for iod,idate in enumerate(ordered_dates):
+
+        for iod, idate in enumerate(ordered_dates):
             idate = ordered_dates[iod]
             idatestr = idate.strftime('%d-%m-%y')
             subfiles = [item for item in HKfiles if 'HK_%s' % idatestr in item]
-            oHKfiles += np.sort(subfiles).tolist() 
-        
+            oHKfiles += np.sort(subfiles).tolist()
+
         return oHKfiles
-    
+
     def search_HKfiles(self):
         """ """
-        
-        struct_date = time.strptime(os.path.split(st.replace(self.path,'_',''))[-1],'%d%b%y')
-        date_infile = time.strftime('%d-%m-%y',struct_date)
-        
+
+        struct_date = time.strptime(os.path.split(
+            st.replace(self.path, '_', ''))[-1], '%d%b%y')
+        date_infile = time.strftime('%d-%m-%y', struct_date)
+
         self.date = date_infile
 
         #tmp_HK = 'HK_%s_ROE1_??.txt' % date_infile
         tmp_HK = 'HK_??-??-??_ROE1_??.txt'
-        tmp_HK = os.path.join(self.path,tmp_HK)
-        
-        HKfiles = glob.glob(tmp_HK)        
-        
+        tmp_HK = os.path.join(self.path, tmp_HK)
+
+        HKfiles = glob.glob(tmp_HK)
+
         HKfiles = self.sort_HKfiles(HKfiles)
-        
-        
+
         #isthere = os.path.exists(tmp_HK)
-        arethere = len(HKfiles)>0
-        
+        arethere = len(HKfiles) > 0
+
         if arethere:
             self.HKfiles = HKfiles
         else:
             print 'HKfiles %s not found' % tmp_HK
             self.HKfiles = None
-    
+
     def select_HKkeys(self):
         """ """
-        
+
         allHKkeys = self.HKkeys
         nkeys = len(allHKkeys)-1
         page = self.page
         #print page
-        
+
         if page * 9 > nkeys+9-1:
             return
-        
+
         ix0 = (page-1)*9
-        ix1 = ix0 + 9 if ix0+9<=nkeys else None
-        
+        ix1 = ix0 + 9 if ix0+9 <= nkeys else None
+
         HKkeys_to_plot = allHKkeys[1:][ix0:ix1]
-        
+
         self.HKkeys_to_plot = HKkeys_to_plot
-        
-    
-    def get_bitsize(self,filelist):
+
+    def get_bitsize(self, filelist):
         """ """
         bitsize = 0
         for item in filelist:
             bitsize += os.stat(item).st_size
         return bitsize
-    
+
     def get_data(self):
-        """ """        
-                
+        """ """
+
         self.select_HKkeys()
-               
-        
+
         if self.HKfiles is None:
             yield self.HK
-        
+
         sizeHK = self.get_bitsize(self.HKfiles)
-        
-        
+
         if sizeHK <= self.sizeHK:
             yield self.HK
-        
+
         self.sizeHK = sizeHK
-        
+
         print 'loading HK...'
 
-        HK = HKtools.loadHK_QFM(self.HKfiles,elvis=self.elvis)
-        
+        HK = HKtools.loadHK_QFM(self.HKfiles, elvis=self.elvis)
+
         print 'done loading HK!'
-        
-        dtobjarr = np.array([datetime.datetime.strptime(item,'%d-%m-%y_%H:%M:%S') \
-                             for item in HK['TimeStamp']])        
-    
-        pHK = dict(time = dtobjarr)
-        
+
+        dtobjarr = np.array([datetime.datetime.strptime(item, '%d-%m-%y_%H:%M:%S')
+                             for item in HK['TimeStamp']])
+
+        pHK = dict(time=dtobjarr)
+
         subKeys = [Key for Key in HK.keys() if Key != 'TimeStamp']
-        
+
         for key in subKeys:
             pHK[key] = HK[key].data.copy()
-                
+
         self.HK = pHK.copy()
-        
+
         yield pHK
-        
+
     def gen_render(self):
-        
+
         HKlims = self.HKlims
-        
+
         def render(pHK):
-            
 
             nHK = len(self.HKkeys_to_plot)
-            
+
             for item in self.axs:
                 item.clear()
-            
-            if nHK <9:
+
+            if nHK < 9:
                 for item in self.axs[-(9-nHK)]:
                     item.get_xaxis().set_visible(False)
                     item.get_yaxis().set_visible(False)
-                        
+
             for i in range(nHK):
-                
+
                 ax = self.axs[i]
-                
+
                 HKname = self.HKkeys_to_plot[i]
                 _HKlims = HKlims[HKname]
-                
+
                 try:
                     x = pHK['time'].copy()
                     y = pHK[HKname].copy()
                 except KeyError:
-                    x = np.array([0,1])
-                    y = np.array([0,1])
-                
-                self.axs[i] = _ax_render_HK(ax,x,y,_HKlims,HKname)
-                
-            try:                
-                plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))   
+                    x = np.array([0, 1])
+                    y = np.array([0, 1])
+
+                self.axs[i] = _ax_render_HK(ax, x, y, _HKlims, HKname)
+
+            try:
+                plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))
                 self.f.autofmt_xdate()
             except:
                 pass
             plt.tight_layout(rect=[0, 0, 1, 1])
-            
 
         return render
-        
 
-    def start_updating(self,interval):        
+    def start_updating(self, interval):
         f = self.f
-        render = self.gen_render()        
-        return animation.FuncAnimation(f,render,self.get_data,interval=interval)
-
+        render = self.gen_render()
+        return animation.FuncAnimation(f, render, self.get_data, interval=interval)

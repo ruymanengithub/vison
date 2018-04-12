@@ -10,7 +10,9 @@ Simple class to measure quadrupole moments and ellipticity of an object.
 :contact: r.azzollini_at_ucl.ac.uk
 
 """
-import os, datetime, unittest
+import os
+import datetime
+import unittest
 import numpy as np
 from astropy.io import fits as fts
 from basis import SpotBase
@@ -45,29 +47,27 @@ class Shapemeter(SpotBase):
 
         Settings dictionary contains all parameter values needed.
         """
-        
-        super(Shapemeter,self).__init__(data,log,verbose)
-        
+
+        super(Shapemeter, self).__init__(data, log, verbose)
 
         self.shsettings = dict(iterations=4,
-                             sampling=1.0,
-                             platescale=120.0,
-                             pixelSize=12.0,
-                             sigma=0.75,
-                             weighted=True,
-                             conservePeak=True,
-                             debug=False,
-                             fixedPosition=False,
-                             fixedX=None,
-                             fixedY=None)
-       
+                               sampling=1.0,
+                               platescale=120.0,
+                               pixelSize=12.0,
+                               sigma=0.75,
+                               weighted=True,
+                               conservePeak=True,
+                               debug=False,
+                               fixedPosition=False,
+                               fixedX=None,
+                               fixedY=None)
+
         self.shsettings.update(kwargs)
-        
+
         if self.log is not None and self.verbose:
             self.log.info(self.shsettings.__repr__())
 
-
-    def quadrupoles(self,image):
+    def quadrupoles(self, image):
         """
         Derive quadrupole moments and ellipticity from the input image.
 
@@ -77,12 +77,13 @@ class Shapemeter(SpotBase):
         :return: quadrupoles, centroid, and ellipticity (also the projected components e1, e2)
         :rtype: dict
         """
-        if self.log is not None: self.log.info('Deriving quadrupole moments')
+        if self.log is not None:
+            self.log.info('Deriving quadrupole moments')
 
-        #normalization factor
+        # normalization factor
         imsum = float(np.sum(image))
 
-        #generate a mesh coordinate grid
+        # generate a mesh coordinate grid
         sizeY, sizeX = image.shape
         Xvector = np.arange(0, sizeX)
         Yvector = np.arange(0, sizeY)
@@ -92,54 +93,57 @@ class Shapemeter(SpotBase):
         Xcentre = np.sum(Xmesh.copy() * image.copy()) / imsum
         Ycentre = np.sum(Ymesh.copy() * image.copy()) / imsum
 
-        #coordinate array
+        # coordinate array
         Xarray = Xcentre * np.ones([sizeY, sizeX])
         Yarray = Ycentre * np.ones([sizeY, sizeX])
 
-        #centroided positions
+        # centroided positions
         Xpos = Xmesh - Xarray
         Ypos = Ymesh - Yarray
 
-        #squared and cross term
+        # squared and cross term
         Xpos2 = Xpos * Xpos
         Ypos2 = Ypos * Ypos
         XYpos = Ypos * Xpos
 
-        #integrand
+        # integrand
         Qyyint = Ypos2 * image.copy()
         Qxxint = Xpos2 * image.copy()
         Qxyint = XYpos * image.copy()
 
-        #sum over and normalize to get the quadrupole moments
+        # sum over and normalize to get the quadrupole moments
         Qyy = np.sum(Qyyint) / imsum
         Qxx = np.sum(Qxxint) / imsum
         Qxy = np.sum(Qxyint) / imsum
 
-        if self.log is not None: self.log.info('(Qxx, Qyy, Qxy) = (%f, %f, %f)' % (Qxx, Qyy, Qxy))
+        if self.log is not None:
+            self.log.info('(Qxx, Qyy, Qxy) = (%f, %f, %f)' % (Qxx, Qyy, Qxy))
 
-        #derive projections and ellipticity
+        # derive projections and ellipticity
         denom = Qxx + Qyy
         e1 = (Qxx - Qyy) / denom
         e2 = 2. * Qxy / denom
         ellipticity = np.sqrt(e1*e1 + e2*e2)
 
-        #also a and b
+        # also a and b
         a = np.sqrt(.5 * (Qxx + Qyy + np.sqrt((Qxx - Qyy)**2 + 4.*Qxy*Qxy)))
         b = np.sqrt(.5 * (Qxx + Qyy - np.sqrt((Qxx - Qyy)**2 + 4.*Qxy*Qxy)))
 
-        #check that ellipticity is reasonable
+        # check that ellipticity is reasonable
         if ellipticity > 1.0:
-            if self.log is not None: self.log.error('Ellipticity greater than 1 derived, will set it to unity!')
+            if self.log is not None:
+                self.log.error(
+                    'Ellipticity greater than 1 derived, will set it to unity!')
             ellipticity = 1.0
 
-        if self.log is not None: self.log.info('Centroiding (x, y) = (%f, %f) and ellipticity = %.4f (%.4f, %.4f)' %
-                      (Ycentre+1, Xcentre+1, ellipticity, e1, e2))
+        if self.log is not None:
+            self.log.info('Centroiding (x, y) = (%f, %f) and ellipticity = %.4f (%.4f, %.4f)' %
+                          (Ycentre+1, Xcentre+1, ellipticity, e1, e2))
 
         res = dict(ellipticity=ellipticity, e1=e1, e2=e2, Qxx=Qxx, Qyy=Qyy, Qxy=Qxy,
                    centreY=Ycentre, centreX=Xcentre,
                    a=a, b=b)
         return res
-
 
     def circular2DGaussian(self, x, y, sigma):
         """
@@ -155,32 +159,36 @@ class Shapemeter(SpotBase):
         :return: circular Gaussian 2D profile and x and y mesh grid
         :rtype: dict
         """
-        if self.log is not None: self.log.info('Creating a circular symmetric 2D Gaussian with sigma=%.3f centered on (x, y) = (%f, %f)' % (sigma, x, y))
+        if self.log is not None:
+            self.log.info(
+                'Creating a circular symmetric 2D Gaussian with sigma=%.3f centered on (x, y) = (%f, %f)' % (sigma, x, y))
 
-        #x and y coordinate vectors
+        # x and y coordinate vectors
         Gyvect = np.arange(1, self.NY + 1)
         Gxvect = np.arange(1, self.NX + 1)
 
-        #meshgrid
+        # meshgrid
         Gxmesh, Gymesh = np.meshgrid(Gxvect, Gyvect)
 
-        #normalizers
+        # normalizers
         sigmax = 1. / (2. * sigma**2)
-        sigmay = sigmax #same sigma in both directions, thus same normalizer
+        sigmay = sigmax  # same sigma in both directions, thus same normalizer
 
-        #gaussian
+        # gaussian
         exponent = (sigmax * (Gxmesh - x)**2 + sigmay * (Gymesh - y)**2)
-        try: Gaussian = np.exp(-exponent) / (2. * np.pi * sigma*sigma)
-        except: stop()
+        try:
+            Gaussian = np.exp(-exponent) / (2. * np.pi * sigma*sigma)
+        except:
+            stop()
 
         if self.shsettings['conservePeak']:
-            #normalize to unity
+            # normalize to unity
             Gaussian /= np.max(Gaussian)
 
-        output = dict(GaussianXmesh=Gxmesh, GaussianYmesh=Gymesh, Gaussian=Gaussian)
+        output = dict(GaussianXmesh=Gxmesh,
+                      GaussianYmesh=Gymesh, Gaussian=Gaussian)
 
         return output
-
 
     def ellip2DGaussian(self, x, y, sigmax, sigmay):
         """
@@ -199,32 +207,33 @@ class Shapemeter(SpotBase):
         :return: circular Gaussian 2D profile and x and y mesh grid
         :rtype: dict
         """
-        if self.log is not None: self.log.info('Creating a 2D Gaussian with sigmax=%.3f and sigmay=%.3f centered on (x, y) = (%f, %f)' %
-                      (sigmax, sigmay, x, y))
+        if self.log is not None:
+            self.log.info('Creating a 2D Gaussian with sigmax=%.3f and sigmay=%.3f centered on (x, y) = (%f, %f)' %
+                          (sigmax, sigmay, x, y))
 
-        #x and y coordinate vectors
+        # x and y coordinate vectors
         Gyvect = np.arange(1, self.NY + 1)
         Gxvect = np.arange(1, self.NX + 1)
 
-        #meshgrid
+        # meshgrid
         Gxmesh, Gymesh = np.meshgrid(Gxvect, Gyvect)
 
-        #normalizers
+        # normalizers
         sigx = 1. / (2. * sigmax**2)
         sigy = 1. / (2. * sigmay**2)
 
-        #gaussian
+        # gaussian
         exponent = (sigx * (Gxmesh - x)**2 + sigy * (Gymesh - y)**2)
         Gaussian = np.exp(-exponent) / (2. * np.pi * sigmax*sigmay)
 
         if self.shsettings['conservePeak']:
-            #normalize to unity
+            # normalize to unity
             Gaussian /= np.max(Gaussian)
 
-        output = dict(GaussianXmesh=Gxmesh, GaussianYmesh=Gymesh, Gaussian=Gaussian)
+        output = dict(GaussianXmesh=Gxmesh,
+                      GaussianYmesh=Gymesh, Gaussian=Gaussian)
 
         return output
-
 
     def measureRefinedEllipticity(self):
         """
@@ -239,22 +248,28 @@ class Shapemeter(SpotBase):
         :rtype: dict
         """
         self.shsettings['sampleSigma'] = self.shsettings['sigma'] / self.shsettings['pixelSize'] * \
-                                       self.shsettings['platescale'] / self.shsettings['sampling']
+            self.shsettings['platescale'] / self.shsettings['sampling']
 
-        if self.log is not None: 
-            self.log.info('Sample sigma used for weighting = %f' % self.shsettings['sampleSigma'])
+        if self.log is not None:
+            self.log.info('Sample sigma used for weighting = %f' %
+                          self.shsettings['sampleSigma'])
 
         if self.shsettings['fixedPosition']:
-            if self.log is not None: self.log.info('Using a fixed ')
-            quad = dict(centreX=self.shsettings['fixedX'], centreY=self.shsettings['fixedY'])
+            if self.log is not None:
+                self.log.info('Using a fixed ')
+            quad = dict(
+                centreX=self.shsettings['fixedX'], centreY=self.shsettings['fixedY'])
         else:
-            if self.log is not None: self.log.info('The initial estimate for the mean values are taken from the unweighted quadrupole moments.')
+            if self.log is not None:
+                self.log.info(
+                    'The initial estimate for the mean values are taken from the unweighted quadrupole moments.')
             quad = self.quadrupoles(self.data.copy())
-            
 
         for x in range(self.shsettings['iterations']):
             if self.shsettings['weighted']:
-                if self.log is not None: self.log.info('Iteration %i with circular symmetric Gaussian weights' % x)
+                if self.log is not None:
+                    self.log.info(
+                        'Iteration %i with circular symmetric Gaussian weights' % x)
                 if self.shsettings['fixedPosition']:
                     gaussian = self.circular2DGaussian(self.shsettings['fixedX'],
                                                        self.shsettings['fixedY'],
@@ -264,19 +279,24 @@ class Shapemeter(SpotBase):
                                                        quad['centreY']+1.,
                                                        self.shsettings['sampleSigma'])
 
-                GaussianWeighted = self.data.copy() * gaussian['Gaussian'].copy()
+                GaussianWeighted = self.data.copy(
+                ) * gaussian['Gaussian'].copy()
             else:
-                if self.log is not None: self.log.info('Iteration %i with no weighting' % x)
+                if self.log is not None:
+                    self.log.info('Iteration %i with no weighting' % x)
                 GaussianWeighted = self.data.copy()
 
             quad = self.quadrupoles(GaussianWeighted.copy())
-        
+
         # The squared radius R2 in um2
-        R2 = quad['Qxx'] * self.shsettings['sampling']**2 + quad['Qyy'] * self.shsettings['sampling']**2.
-        R2arcsec = R2 * (self.shsettings['pixelSize'] / self.shsettings['platescale'])**2.
+        R2 = quad['Qxx'] * self.shsettings['sampling']**2 + \
+            quad['Qyy'] * self.shsettings['sampling']**2.
+        R2arcsec = R2 * \
+            (self.shsettings['pixelSize'] / self.shsettings['platescale'])**2.
 
         if self.shsettings['debug']:
-            self.writeFITS(gaussian['Gaussian'], 'GaussianWeightingFunction.fits')
+            self.writeFITS(gaussian['Gaussian'],
+                           'GaussianWeightingFunction.fits')
             self.writeFITS(GaussianWeighted, 'GaussianWeighted.fits')
 
         res = dict(centreX=quad['centreX']+1, centreY=quad['centreY']+1,
@@ -287,7 +307,6 @@ class Shapemeter(SpotBase):
                    GaussianWeighted=GaussianWeighted,
                    a=quad['a'], b=quad['b'])
         return res
-
 
     def writeFITS(self, data, output):
         """
@@ -303,32 +322,36 @@ class Shapemeter(SpotBase):
         if os.path.isfile(output):
             os.remove(output)
 
-        #create a new FITS file, using HDUList instance
+        # create a new FITS file, using HDUList instance
         ofd = fts.HDUList(fts.PrimaryHDU())
 
-        #new image HDU
+        # new image HDU
         hdu = fts.ImageHDU(data=data)
 
-        #update and verify the header
-        hdu.header.add_history('If questions, please contact Ruyman Azzollini (r.azzollini at ucl.ac.uk).')
-        hdu.header.add_history('This file has been created with the vison package at %s' \
+        # update and verify the header
+        hdu.header.add_history(
+            'If questions, please contact Ruyman Azzollini (r.azzollini at ucl.ac.uk).')
+        hdu.header.add_history('This file has been created with the vison package at %s'
                                % datetime.datetime.isoformat(datetime.datetime.now()))
         hdu.verify('fix')
 
         ofd.append(hdu)
 
-        #write the actual file
+        # write the actual file
         ofd.writeto(output)
-        if self.log is not None: self.log.info('Wrote %s' % output)
+        if self.log is not None:
+            self.log.info('Wrote %s' % output)
 
 
 class TestShape(unittest.TestCase):
     """
     Unit tests for the shape class.
     """
+
     def setUp(self):
         from vissim.support import logger as lg
-        if self.log is not None: self.log = lg.setUpLogger('shapeTesting.log')
+        if self.log is not None:
+            self.log = lg.setUpLogger('shapeTesting.log')
 
         self.psffile12x = '../data/psf12x.fits'
         self.psffile = '../data/psf1x.fits'
@@ -341,90 +364,104 @@ class TestShape(unittest.TestCase):
         self.xcent = 500.
         self.ycent = 500.
 
-        #create 2D Gaussians that will be used for testing
+        # create 2D Gaussians that will be used for testing
         self.GaussianCirc = Shapemeter(np.zeros((1000, 1000)), self.log).circular2DGaussian(self.xcent,
-                                                                                                  self.ycent,
-                                                                                                  self.sigma)['Gaussian']
+                                                                                            self.ycent,
+                                                                                            self.sigma)['Gaussian']
         self.Gaussian = Shapemeter(np.zeros((1000, 1000)), self.log).ellip2DGaussian(self.xcent,
-                                                                                      self.ycent,
-                                                                                      self.sigmax,
-                                                                                      self.sigmay)['Gaussian']
+                                                                                     self.ycent,
+                                                                                     self.sigmax,
+                                                                                     self.sigmay)['Gaussian']
         self.Gaussian2 = Shapemeter(np.zeros((1000, 1000)), self.log).ellip2DGaussian(self.xcent,
-                                                                                       self.ycent,
-                                                                                       self.sigmax2,
-                                                                                       self.sigmay2)['Gaussian']
+                                                                                      self.ycent,
+                                                                                      self.sigmax2,
+                                                                                      self.sigmay2)['Gaussian']
 
     def test_ellipticity_noweighting_circular_Gaussian(self):
         expected = 0.0
         settings = dict(weighted=False)
-        actual = Shapemeter(self.GaussianCirc, self.log, **settings).measureRefinedEllipticity()['ellipticity']
-        self.assertAlmostEqual(expected, actual, msg='exp=%f, got=%f' % (expected, actual), delta=self.tolerance)
-
+        actual = Shapemeter(self.GaussianCirc, self.log, **
+                            settings).measureRefinedEllipticity()['ellipticity']
+        self.assertAlmostEqual(expected, actual, msg='exp=%f, got=%f' % (
+            expected, actual), delta=self.tolerance)
 
     def test_noweighting_Gaussian(self):
-        expected = np.abs((self.sigmax**2 - self.sigmay**2) / (self.sigmax**2 + self.sigmay**2))
+        expected = np.abs((self.sigmax**2 - self.sigmay**2) /
+                          (self.sigmax**2 + self.sigmay**2))
         settings = dict(weighted=False)
-        actual = Shapemeter(self.Gaussian, self.log, **settings).measureRefinedEllipticity()
+        actual = Shapemeter(self.Gaussian, self.log, **
+                            settings).measureRefinedEllipticity()
         ae = actual['ellipticity']
         ae1 = actual['e1']
         ae2 = actual['e2']
         R2 = actual['R2']
         R2exp = self.sigmax**2 + self.sigmay**2
-        self.assertAlmostEqual(expected, ae, msg='exp=%f, got=%f' % (expected, ae), delta=self.tolerance)
-        self.assertAlmostEqual(expected, ae1, msg='exp=%f, got=%f' % (expected, ae1), delta=self.tolerance)
-        self.assertAlmostEqual(0.0, ae2, msg='exp=%f, got=%f' % (expected, ae2), delta=self.tolerance)
-        self.assertAlmostEqual(R2exp, R2, msg='exp=%f, got=%f' % (R2exp, R2), delta=self.tolerance)
-
+        self.assertAlmostEqual(expected, ae, msg='exp=%f, got=%f' % (
+            expected, ae), delta=self.tolerance)
+        self.assertAlmostEqual(expected, ae1, msg='exp=%f, got=%f' % (
+            expected, ae1), delta=self.tolerance)
+        self.assertAlmostEqual(0.0, ae2, msg='exp=%f, got=%f' %
+                               (expected, ae2), delta=self.tolerance)
+        self.assertAlmostEqual(R2exp, R2, msg='exp=%f, got=%f' %
+                               (R2exp, R2), delta=self.tolerance)
 
     def test_noweighting_Gaussian2(self):
-        expected = np.abs((self.sigmax2**2 - self.sigmay2**2) / (self.sigmax2**2 + self.sigmay2**2))
+        expected = np.abs((self.sigmax2**2 - self.sigmay2**2) /
+                          (self.sigmax2**2 + self.sigmay2**2))
         settings = dict(weighted=False, iterations=40)
-        actual = Shapemeter(self.Gaussian2, self.log, **settings).measureRefinedEllipticity()
+        actual = Shapemeter(self.Gaussian2, self.log, **
+                            settings).measureRefinedEllipticity()
         ae = actual['ellipticity']
         ae1 = actual['e1']
         ae2 = actual['e2']
         R2 = actual['R2']
         R2exp = self.sigmax2**2 + self.sigmay2**2
-        self.assertAlmostEqual(expected, ae, msg='exp=%f, got=%f' % (expected, ae), delta=self.tolerance)
-        self.assertAlmostEqual(expected, ae1, msg='exp=%f, got=%f' % (expected, ae1), delta=self.tolerance)
-        self.assertAlmostEqual(0.0, ae2, msg='exp=%f, got=%f' % (expected, ae2), delta=self.tolerance)
-        self.assertAlmostEqual(R2exp, R2, msg='exp=%f, got=%f' % (R2exp, R2), delta=1e-4)
-
+        self.assertAlmostEqual(expected, ae, msg='exp=%f, got=%f' % (
+            expected, ae), delta=self.tolerance)
+        self.assertAlmostEqual(expected, ae1, msg='exp=%f, got=%f' % (
+            expected, ae1), delta=self.tolerance)
+        self.assertAlmostEqual(0.0, ae2, msg='exp=%f, got=%f' %
+                               (expected, ae2), delta=self.tolerance)
+        self.assertAlmostEqual(
+            R2exp, R2, msg='exp=%f, got=%f' % (R2exp, R2), delta=1e-4)
 
     def test_ellipticity_Gaussian(self):
-        expected = np.abs((self.sigmax**2 - self.sigmay**2) / (self.sigmax**2 + self.sigmay**2))
+        expected = np.abs((self.sigmax**2 - self.sigmay**2) /
+                          (self.sigmax**2 + self.sigmay**2))
         settings = dict(sigma=3000., iterations=40)
-        actual = Shapemeter(self.Gaussian, self.log, **settings).measureRefinedEllipticity()['ellipticity']
-        self.assertAlmostEqual(expected, actual, msg='exp=%f, got=%f' % (expected, actual), delta=1e-5)
-
+        actual = Shapemeter(self.Gaussian, self.log, **
+                            settings).measureRefinedEllipticity()['ellipticity']
+        self.assertAlmostEqual(expected, actual, msg='exp=%f, got=%f' % (
+            expected, actual), delta=1e-5)
 
     def test_centroiding_weighting_Gaussian(self):
         expected = self.xcent, self.ycent
-        actual = Shapemeter(self.Gaussian, self.log).measureRefinedEllipticity()
+        actual = Shapemeter(
+            self.Gaussian, self.log).measureRefinedEllipticity()
         self.assertAlmostEqual(expected[0], actual['centreX'],
                                msg='exp=%f, got=%f' % (expected[0], actual['centreX']), delta=self.tolerance)
         self.assertAlmostEqual(expected[1], actual['centreY'],
                                msg='exp=%f, got=%f' % (expected[1], actual['centreY']), delta=self.tolerance)
 
-
     def test_R2_noweighting_circular_Gaussian(self):
         expected = 2 * self.sigma**2
         settings = dict(weighted=False)
-        actual = Shapemeter(self.GaussianCirc, self.log, **settings).measureRefinedEllipticity()['R2']
-        self.assertAlmostEqual(expected, actual, msg='exp=%f, got=%f' % (expected, actual), delta=self.tolerance)
-
+        actual = Shapemeter(self.GaussianCirc, self.log, **
+                            settings).measureRefinedEllipticity()['R2']
+        self.assertAlmostEqual(expected, actual, msg='exp=%f, got=%f' % (
+            expected, actual), delta=self.tolerance)
 
     def test_PSF12x(self):
         expected = 0.045536
         R2exp = 5.010087
         data = fts.getdata(self.psffile12x)
         settings = dict(sampling=1/12.0)
-        actual = Shapemeter(data, self.log, **settings).measureRefinedEllipticity()
+        actual = Shapemeter(
+            data, self.log, **settings).measureRefinedEllipticity()
         self.assertAlmostEqual(expected, actual['ellipticity'],
                                msg='exp=%f, got=%f' % (expected, actual['ellipticity']), delta=10*self.tolerance)
         self.assertAlmostEqual(R2exp, actual['R2'],
                                msg='exp=%f, got=%f' % (R2exp, actual['R2']), delta=10*self.tolerance)
-
 
     def test_PSF(self):
         expected = 0.045437
@@ -436,7 +473,6 @@ class TestShape(unittest.TestCase):
         self.assertAlmostEqual(R2exp, actual['R2'],
                                msg='exp=%f, got=%f' % (R2exp, actual['R2']), delta=10*self.tolerance)
 
-
     def test_gaussian_weighting(self):
         settings = dict(debug=True)
         data = fts.getdata(self.psffile)
@@ -447,6 +483,6 @@ class TestShape(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    #testing section
+    # testing section
     suite = unittest.TestLoader().loadTestsFromTestCase(TestShape)
     unittest.TextTestRunner(verbosity=3).run(suite)

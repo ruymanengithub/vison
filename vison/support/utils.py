@@ -19,16 +19,19 @@ import os
 
 # END IMPORT
 
-def get_function_module(level=1,reference='vison'):
+
+def get_function_module(level=1, reference='vison'):
     import inspect
-    
+
     stack = inspect.stack()
     stackrow = stack[level]
     funcname = stackrow[3]
     mod_path = stackrow[1]
-    mod_path_split = st.split(mod_path,sep=os.path.sep)
-    try: ixref = mod_path_split.index(reference)
-    except: ixref = 0
+    mod_path_split = st.split(mod_path, sep=os.path.sep)
+    try:
+        ixref = mod_path_split.index(reference)
+    except:
+        ixref = 0
     module = os.path.join(*mod_path_split[ixref:])
-    
-    return funcname,module
+
+    return funcname, module

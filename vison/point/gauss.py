@@ -24,6 +24,7 @@ from astropy.modeling import models, fitting
 from basis import SpotBase
 # END IMPORT
 
+
 class Gaussmeter(SpotBase):
     """
     Provides methods to measure the shape of an object using 
@@ -51,37 +52,38 @@ class Gaussmeter(SpotBase):
 
         Settings dictionary contains all parameter values needed.
         """
-        
-        super(Gaussmeter,self).__init__(data,log)
-        
+
+        super(Gaussmeter, self).__init__(data, log)
+
         self.gasettings = dict()
 
         self.gasettings.update(kwargs)
-        
 
         for key, value in self.gasettings.iteritems():
-            if self.log is not None: self.log.info('%s = %s' % (key, value))
-    
-    
+            if self.log is not None:
+                self.log.info('%s = %s' % (key, value))
+
     def fit_Gauss(self):
         """ """
-        
+
         i00 = self.data.max()
-        
-        gaus = models.Gaussian2D(i00, self.xcen, self.ycen, x_stddev=0.5, y_stddev=0.5)
-        gaus.theta.fixed = True  #fix angle
+
+        gaus = models.Gaussian2D(
+            i00, self.xcen, self.ycen, x_stddev=0.5, y_stddev=0.5)
+        gaus.theta.fixed = True  # fix angle
         p_init = gaus
         fit_p = fitting.LevMarLSQFitter()
-        
-        XX, YY = np.meshgrid(np.arange(self.NX), np.arange(self.NY),indexing='xy')
+
+        XX, YY = np.meshgrid(np.arange(self.NX),
+                             np.arange(self.NY), indexing='xy')
         rawres = fit_p(p_init, XX, YY, self.data)
-        
-        params = rawres.parameters[0:-1] # theta is fixed
-        try: eparams = np.diag(fit_p.fit_info['param_cov'])**0.5
+
+        params = rawres.parameters[0:-1]  # theta is fixed
+        try:
+            eparams = np.diag(fit_p.fit_info['param_cov'])**0.5
         except:
-            if self.log is not None: self.log.info('Gaussmeter.fit_Gauss did not converge')
+            if self.log is not None:
+                self.log.info('Gaussmeter.fit_Gauss did not converge')
             eparams = np.zeros_like(params)+np.nan
-        
+
         return params, eparams
-        
-        

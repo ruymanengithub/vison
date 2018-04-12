@@ -33,13 +33,14 @@ Created on Wed Jul 27 12:16:40 2016
 """
 
 # IMPORT STUFF
-from pdb import  set_trace as stop
+from pdb import set_trace as stop
 import copy
 import os
 import numpy as np
 from time import sleep
 import datetime
-import sys,traceback
+import sys
+import traceback
 import glob
 
 from vison import __version__
@@ -53,14 +54,14 @@ from vison.support import context
 
 isthere = os.path.exists
 
-defaults = dict(BLOCKID='R00P00CC000000',CHAMBER='A')
+defaults = dict(BLOCKID='R00P00CC000000', CHAMBER='A')
 
-waittime = 120 # seconds
+waittime = 120  # seconds
 
 
 class Pipe(object):
     """Master Class of FM-analysis """
-    
+
     from vison.dark.BIAS01 import BIAS01
     from vison.dark.DARK01 import DARK01
     from vison.flat.NL01 import NL01
@@ -77,199 +78,203 @@ class Pipe(object):
     from vison.pump.TP01 import TP01
     from vison.pump.TP02 import TP02
     from vison.other.STRAY00 import STRAY00
-    
-    Test_dict = dict(BIAS01=BIAS01,DARK01=DARK01,
-                     NL01=NL01,FLAT01=FLAT0X,
+
+    Test_dict = dict(BIAS01=BIAS01, DARK01=DARK01,
+                     NL01=NL01, FLAT01=FLAT0X,
                      PTC01=PTC0X,
-                     CHINJ00=CHINJ00,CHINJ01=CHINJ01,CHINJ02=CHINJ02,
+                     CHINJ00=CHINJ00, CHINJ01=CHINJ01, CHINJ02=CHINJ02,
                      TP00=TP00,
-                     TP01=TP01,TP02=TP02,
+                     TP01=TP01, TP02=TP02,
                      PERSIST01=PERSIST01,
                      PSF01_PANCHRO=PSF01_PANCHRO,
                      STRAY00=STRAY00)
-    
-    for wave in [0,590,640,730,880]:
+
+    for wave in [0, 590, 640, 730, 880]:
         Test_dict['FLAT02_%i' % wave] = FLAT0X
-    for wave in [590,640,730,800,880,0]:
+    for wave in [590, 640, 730, 800, 880, 0]:
         Test_dict['PTC02_%i' % wave] = PTC0X
-    for temp in [150,156]:
+    for temp in [150, 156]:
         Test_dict['PTC02_%iK' % temp] = PTC0X
-    for wave in [590,640,730,800,880]:
+    for wave in [590, 640, 730, 800, 880]:
         Test_dict['FOCUS00_%i' % wave] = FOCUS00
-    for wave in [590,640,730,800,880]:
+    for wave in [590, 640, 730, 800, 880]:
         Test_dict['PSF01_%i' % wave] = PSF0X
-    for temp in [150,156]:
+    for temp in [150, 156]:
         Test_dict['PSF02_%iK' % temp] = PSF0X
-    
-    def __init__(self,inputdict,dolog=True,drill=False,debug=False,startobsid=0,
+
+    def __init__(self, inputdict, dolog=True, drill=False, debug=False, startobsid=0,
                  processes=1):
         """ """
-        
+
         self.inputs = defaults.copy()
         self.inputs.update(inputdict)
         self.tasks = self.inputs['tasks']
-        self.BLOCKID=self.inputs['BLOCKID'] # BLOCK (ROE+RPSU+CCDs) under test
-        self.CHAMBER=self.inputs['CHAMBER']
+        # BLOCK (ROE+RPSU+CCDs) under test
+        self.BLOCKID = self.inputs['BLOCKID']
+        self.CHAMBER = self.inputs['CHAMBER']
         self.drill = drill
         self.debug = debug
         self.startobsid = startobsid
         self.processes = processes
-        
+
         if self.debug:
             self.ID = 'PipeDebug'
         else:
             self.ID = 'FM%s' % vistime.get_time_tag()  # ID of the analysis "session"
-        
+
         self.inputs['ID'] = self.ID
 
         if dolog:
             self.logf = 'Calib_%s.log' % self.ID
-            
-            if os.path.exists(self.logf): os.system('rm %s' % self.logf)
-            
+
+            if os.path.exists(self.logf):
+                os.system('rm %s' % self.logf)
+
             self.log = lg.setUpLogger(self.logf)
             self.log.info(['\n\nStarting FM Calib. Pipeline',
-                          'Pipeline ID: %s' % self.ID,
-                          'BLOCK ID: %s' % self.BLOCKID,
-                          'Chamber: %s\n' % self.CHAMBER,
-                          'vison version: %s\n' % __version__,
-                          'Tasks: %s\n' % ( ('%s,'*len(self.tasks)) % tuple(self.tasks))[0:-1]])
+                           'Pipeline ID: %s' % self.ID,
+                           'BLOCK ID: %s' % self.BLOCKID,
+                           'Chamber: %s\n' % self.CHAMBER,
+                           'vison version: %s\n' % __version__,
+                           'Tasks: %s\n' % (('%s,'*len(self.tasks)) % tuple(self.tasks))[0:-1]])
         else:
             self.log = None
-        
-    def launchtask(self,taskname):
+
+    def launchtask(self, taskname):
         """ """
-        
+
         taskinputs = self.inputs[taskname]
-        
+
         extinputs = copy.deepcopy(self.inputs)
         alltasks = extinputs['tasks']
         extinputs.pop('tasks')
-        for _taskname in alltasks: extinputs.pop(_taskname)
+        for _taskname in alltasks:
+            extinputs.pop(_taskname)
         taskinputs.update(extinputs)
-        
+
         msg = ['\n\nRunning Task: %s\n' % taskname]
         msg += ['Inputs:\n']
         for key in taskinputs:
-            msg += ['%s = %s' % (key,str(taskinputs[key]))]
-            
-        if self.log is not None: self.log.info(msg)
+            msg += ['%s = %s' % (key, str(taskinputs[key]))]
+
+        if self.log is not None:
+            self.log.info(msg)
 
         tini = datetime.datetime.now()
-        
-        
-        self.dotask(taskname,taskinputs,drill=self.drill,debug=self.debug)
-        
+
+        self.dotask(taskname, taskinputs, drill=self.drill, debug=self.debug)
+
         tend = datetime.datetime.now()
         dtm = ((tend-tini).seconds)/60.
-        if self.log is not None: 
-            self.log.info('%.1f minutes in running Task: %s' % (dtm,taskname))
-        
-    
-    def run(self,explogf=None,elvis=None):
+        if self.log is not None:
+            self.log.info('%.1f minutes in running Task: %s' % (dtm, taskname))
+
+    def run(self, explogf=None, elvis=None):
         """ """
-        
+
         tasknames = self.tasks
         resultsroot = self.inputs['resultsroot']
         if not os.path.exists(resultsroot):
             os.system('mkdir %s' % resultsroot)
-        
-        if self.log is not None: self.log.info('\n\nResults will be saved in: %s\n' % resultsroot)
-        
-        
+
+        if self.log is not None:
+            self.log.info('\n\nResults will be saved in: %s\n' % resultsroot)
+
         for taskname in tasknames:
-            
+
             taskinputs = self.inputs[taskname]
-            taskinputs['resultspath'] = os.path.join(resultsroot,taskinputs['resultspath'])
-            
+            taskinputs['resultspath'] = os.path.join(
+                resultsroot, taskinputs['resultspath'])
+
             if explogf is not None:
                 taskinputs['explogf'] = explogf
             if elvis is not None:
                 taskinputs['elvis'] = elvis
-            
+
             self.inputs[taskname] = taskinputs
-            
+
             self.launchtask(taskname)
-    
-    def wait_and_run(self,dayfolder,elvis=context.elvis):
+
+    def wait_and_run(self, dayfolder, elvis=context.elvis):
         """ """
-        
-        tmpEL = os.path.join(dayfolder,'EXP_LOG_*.txt')
+
+        tmpEL = os.path.join(dayfolder, 'EXP_LOG_*.txt')
         explogfs = glob.glob(tmpEL)
         explogfs = pilib.sortbydateexplogfs(explogfs)
-        
+
         tasknames = self.tasks
         resultsroot = self.inputs['resultsroot']
         if not os.path.exists(resultsroot):
             os.system('mkdir %s' % resultsroot)
-        
-        if self.log is not None: self.log.info('\n\nResults will be saved in: %s\n' % resultsroot)
-        
+
+        if self.log is not None:
+            self.log.info('\n\nResults will be saved in: %s\n' % resultsroot)
+
         # Learn how many ObsIDs will generate each task
-        
+
         tasksequence = []
-        
+
         for taskname in tasknames:
-            
+
             taskinputs = self.inputs[taskname]
-            
+
             testkey = taskinputs['test']
-            taskinputs['resultspath'] = os.path.join(resultsroot,taskinputs['resultspath'])
+            taskinputs['resultspath'] = os.path.join(
+                resultsroot, taskinputs['resultspath'])
             taskinputs['explogf'] = explogfs
-            taskinputs['elvis'] = elvis            
-            
+            taskinputs['elvis'] = elvis
+
             Test = self.Test_dict[taskname]
             test = Test(taskinputs)
             taskinputs = copy.deepcopy(test.inputs)
-            
+
             structure = taskinputs['structure']
-            
+
             Ncols = structure['Ncols']
-            
+
             Nframes = 0
-            for ic in range(1,Ncols+1): Nframes += structure['col%i' % ic]['frames']
-            
-            tasksequence.append((taskname,testkey,Nframes))
-            
+            for ic in range(1, Ncols+1):
+                Nframes += structure['col%i' % ic]['frames']
+
+            tasksequence.append((taskname, testkey, Nframes))
+
         # Launching tasks
-        
+
         fahrtig = False
-        
+
         while not fahrtig:
-            
-            explog = pilib.loadexplogs(explogfs,elvis)
-            
-            
-            if self.startobsid>0:
-                ixstart = np.where(explog['ObsID']==self.startobsid)[0][0]
+
+            explog = pilib.loadexplogs(explogfs, elvis)
+
+            if self.startobsid > 0:
+                ixstart = np.where(explog['ObsID'] == self.startobsid)[0][0]
                 explog = explog[ixstart:].copy()
-            
-            for it,taskitem in enumerate(tasksequence):
-                
-                taskname,testkey,Nframes = taskitem
-                available = pilib.coarsefindTestinExpLog(explog,testkey,Nframes)
-                
+
+            for it, taskitem in enumerate(tasksequence):
+
+                taskname, testkey, Nframes = taskitem
+                available = pilib.coarsefindTestinExpLog(
+                    explog, testkey, Nframes)
+
                 if available:
-                    #print '%s available, doing nothing!' % taskname # TESTS
+                    # print '%s available, doing nothing!' % taskname # TESTS
                     self.launchtask(taskname)
                     tasksequence.pop(it)
-            
+
             sleep(waittime)
-            
+
             #print tasksequence
-            
+
             if len(tasksequence) == 0:
-                fahrtig = True    
-        
-        
+                fahrtig = True
+
         return None
 
-    
-    def dotask(self,taskname,inputs,drill=False,debug=False):
+    def dotask(self, taskname, inputs, drill=False, debug=False):
         """Generic test master function."""
-        
+
         try:
-            Test = self.Test_dict[taskname](inputs,self.log,drill,debug)
+            Test = self.Test_dict[taskname](inputs, self.log, drill, debug)
             Test.ID = self.ID
             Test.BLOCKID = self.BLOCKID
             Test.CHAMBER = self.CHAMBER
@@ -278,10 +283,12 @@ class Pipe(object):
         except:
             self.catchtraceback()
             if self.log is not None:
-                self.log.info('TASK "%s@%s" FAILED, QUITTING!' % (taskname,self.Test_dict[taskname].__module__))
+                self.log.info('TASK "%s@%s" FAILED, QUITTING!' %
+                              (taskname, self.Test_dict[taskname].__module__))
             else:
-                print 'TASK "%s@%s" FAILED, QUITTING!' % (taskname,self.Test_dict[taskname].__module__)
-    
+                print 'TASK "%s@%s" FAILED, QUITTING!' % (
+                    taskname, self.Test_dict[taskname].__module__)
+
     def catchtraceback(self):
         """ """
         msg_trbk = traceback.format_exc()
@@ -289,6 +296,3 @@ class Pipe(object):
             self.log.info(msg_trbk)
         else:
             print msg_trbk
-
-        
-

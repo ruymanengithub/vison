@@ -9,9 +9,10 @@ Created on Thu Apr 20 18:56:40 2017
 
 """
 
+
 class SpotBase(object):
     """ """
-    
+
     def __init__(self, data, log=None, verbose=False):
         """
         :param data: stamp to be analysed.
@@ -24,7 +25,7 @@ class SpotBase(object):
 
         Settings dictionary contains all parameter values needed.
         """
-        
+
         self.data = data.copy()
         self.log = log
         self.verbose = verbose
@@ -32,6 +33,6 @@ class SpotBase(object):
         NX, NY = self.data.shape
         self.NX = NX
         self.NY = NY
-        
+
         self.xcen = NX/2
         self.ycen = NY/2

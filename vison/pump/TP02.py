@@ -31,213 +31,210 @@ from PumpTask import PumpTask
 from vison.image import performance
 from vison.datamodel import inputs
 import TP02aux
-# END IMPORT 
+# END IMPORT
 
 isthere = os.path.exists
 
-HKKeys = ['CCD1_OD_T','CCD2_OD_T','CCD3_OD_T','COMM_RD_T',
-'CCD2_IG1_T','CCD3_IG1_T','CCD1_TEMP_T','CCD2_TEMP_T','CCD3_TEMP_T',
-'CCD1_IG1_T','COMM_IG2_T','FPGA_PCB_TEMP_T','CCD1_OD_B',
-'CCD2_OD_B','CCD3_OD_B','COMM_RD_B','CCD2_IG1_B','CCD3_IG1_B','CCD1_TEMP_B',
-'CCD2_TEMP_B','CCD3_TEMP_B','CCD1_IG1_B','COMM_IG2_B']
+HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
+          'CCD2_IG1_T', 'CCD3_IG1_T', 'CCD1_TEMP_T', 'CCD2_TEMP_T', 'CCD3_TEMP_T',
+          'CCD1_IG1_T', 'COMM_IG2_T', 'FPGA_PCB_TEMP_T', 'CCD1_OD_B',
+          'CCD2_OD_B', 'CCD3_OD_B', 'COMM_RD_B', 'CCD2_IG1_B', 'CCD3_IG1_B', 'CCD1_TEMP_B',
+          'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
 
-IG1=6
-IG2=5
+IG1 = 6
+IG2 = 5
 
-TP02_commvalues = dict(program='CALCAMP',test='TP02',
-  exptime=0.,shuttr=0,
-  vstart=0,vend=100,
-  siflsh=1,siflsh_p=500,
-  IDL=11,IDH=18,
-  IG1_1_T=IG1,IG1_2_T=IG1,IG1_3_T=IG1,
-  IG1_1_B=IG1,IG1_2_B=IG1,IG1_3_B=IG1,
-  IG2_T=IG2,IG2_B=IG2,
-  chinj=1,chinj_on=2066,chinj_of=0,
-  chin_dly=0,
-  id_wid=60,
-  toi_chinj=500,
-  s_tpump=1,s_tp_cnt=5000,
-  v_tp_cnt=0,dwell_v=0,dwell_s=0,
-  comments='')
-  
+TP02_commvalues = dict(program='CALCAMP', test='TP02',
+                       exptime=0., shuttr=0,
+                       vstart=0, vend=100,
+                       siflsh=1, siflsh_p=500,
+                       IDL=11, IDH=18,
+                       IG1_1_T=IG1, IG1_2_T=IG1, IG1_3_T=IG1,
+                       IG1_1_B=IG1, IG1_2_B=IG1, IG1_3_B=IG1,
+                       IG2_T=IG2, IG2_B=IG2,
+                       chinj=1, chinj_on=2066, chinj_of=0,
+                       chin_dly=0,
+                       id_wid=60,
+                       toi_chinj=500,
+                       s_tpump=1, s_tp_cnt=5000,
+                       v_tp_cnt=0, dwell_v=0, dwell_s=0,
+                       comments='')
+
 
 class TP02_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
-            ('toi_chinj',([int],'TOI Charge Injection.')),            
-            ('Nshuffles_H',([int],'Number of Shuffles, Horizontal/Serial Pumping.')),
-            ('dwell_sv',([list],'Dwell Times list [serial].')),
-            ('id_delays',([list],'Injection Drain Delays [2, one per CCDs section].')),
-            ('toi_chinj',([int],'TOI Charge Injection.')),
-            ('spumpmodes',([list],'Horizontal/Serial Pumping Starting points.'))
-            ])))
+        ('toi_chinj', ([int], 'TOI Charge Injection.')),
+        ('Nshuffles_H',
+         ([int], 'Number of Shuffles, Horizontal/Serial Pumping.')),
+        ('dwell_sv', ([list], 'Dwell Times list [serial].')),
+        ('id_delays',
+         ([list], 'Injection Drain Delays [2, one per CCDs section].')),
+        ('toi_chinj', ([int], 'TOI Charge Injection.')),
+        ('spumpmodes',
+         ([list], 'Horizontal/Serial Pumping Starting points.'))
+    ])))
+
 
 class TP02(PumpTask):
     """ """
-    
+
     inputsclass = TP02_inputs
-    
-    def __init__(self,inputs,log=None,drill=False,debug=False):
+
+    def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(TP02,self).__init__(inputs,log,drill,debug)
+        super(TP02, self).__init__(inputs, log, drill, debug)
         self.name = 'TP02'
         self.type = 'Simple'
-        self.subtasks = [('check',self.check_data),
-                         ('prep',self.prepare_images),
-                        ('extract',self.extract),
-                    ('basic',self.basic_analysis),
-                    ('meta',self.meta_analysis)]
+        self.subtasks = [('check', self.check_data),
+                         ('prep', self.prepare_images),
+                         ('extract', self.extract),
+                         ('basic', self.basic_analysis),
+                         ('meta', self.meta_analysis)]
         self.HKKeys = HKKeys
         self.figdict = TP02aux.TP02figs.copy()
-        self.inputs['subpaths'] = dict(figs='figs',ccdpickles='ccdpickles')
-        
-    def set_inpdefaults(self,**kwargs):
+        self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles')
+
+    def set_inpdefaults(self, **kwargs):
         """ """
-        toi_chinj=500
+        toi_chinj = 500
         self.inpdefaults = dict(toi_chinj=toi_chinj,
-                         Nshuffles_H=5000,
-                         dwell_sv=[0.,4.75,14.3,28.6],
-                         id_delays=np.array([2.5,1.5])*toi_chinj,
-                         spumpmodes=[23,31])
-        
-    def set_perfdefaults(self,**kwargs):
+                                Nshuffles_H=5000,
+                                dwell_sv=[0., 4.75, 14.3, 28.6],
+                                id_delays=np.array([2.5, 1.5])*toi_chinj,
+                                spumpmodes=[23, 31])
+
+    def set_perfdefaults(self, **kwargs):
         self.perfdefaults = dict()
         self.perfdefaults.update(performance.perf_rdout)
-        
+
         Flu_lims, FluGrad_lims = self.get_FluenceAndGradient_limits()
-        
+
         self.perfdefaults['Flu_lims'] = Flu_lims.copy()
         self.perfdefaults['FluGrad_lims'] = FluGrad_lims.copy()
 
-
-    def build_scriptdict(self,diffvalues=dict(),elvis=context.elvis):
+    def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """ """
-        
+
         Nshuffles_H = self.inputs['Nshuffles_H']
         dwell_sv = self.inputs['dwell_sv']
         id_delays = self.inputs['id_delays']
-        toi_chinj=self.inputs['toi_chinj']
+        toi_chinj = self.inputs['toi_chinj']
         spumpmodes = self.inputs['spumpmodes']
-        
+
         assert len(id_delays) == 2
-        
+
         TP02_sdict = dict()
-        
+
         TP02_commvalues['ser_shuffles'] = Nshuffles_H
-        
+
         # First Injection Drain Delay
-        
-        TP02_sdict['col1'] = dict(frames=1,v_tpump=0,s_tpump=0,
-                  comments='BGD',id_dly=id_delays[0],toi_ch=toi_chinj)
-        
+
+        TP02_sdict['col1'] = dict(frames=1, v_tpump=0, s_tpump=0,
+                                  comments='BGD', id_dly=id_delays[0], toi_ch=toi_chinj)
+
         colcounter = 2
-        for i,dwell_s in enumerate(dwell_sv):
-            
-            for k,sermode in enumerate(spumpmodes):
+        for i, dwell_s in enumerate(dwell_sv):
+
+            for k, sermode in enumerate(spumpmodes):
                 colkey = 'col%i' % colcounter
-                TP02_sdict[colkey] = dict(frames=1,dwell_s=dwell_s,
-                         id_dly=id_delays[0],s_tpmod=sermode,toi_ch=toi_chinj)
-                
+                TP02_sdict[colkey] = dict(frames=1, dwell_s=dwell_s,
+                                          id_dly=id_delays[0], s_tpmod=sermode, toi_ch=toi_chinj)
+
                 colcounter += 1
-        
+
         # Second Injection Drain Delay
-        
-        TP02_sdict['col%i' % colcounter] = dict(frames=1,v_tpump=0,s_tpump=0,
-                  comments='BGD',id_dly=id_delays[1],toi_ch=toi_chinj)
-        colcounter += 1 
-        
-        for j,dwell_s in enumerate(dwell_sv):
-            
-            for k,sermode in enumerate(spumpmodes):
-            
+
+        TP02_sdict['col%i' % colcounter] = dict(frames=1, v_tpump=0, s_tpump=0,
+                                                comments='BGD', id_dly=id_delays[1], toi_ch=toi_chinj)
+        colcounter += 1
+
+        for j, dwell_s in enumerate(dwell_sv):
+
+            for k, sermode in enumerate(spumpmodes):
+
                 colkey = 'col%i' % colcounter
                 #print colkey
-                TP02_sdict[colkey] = dict(frames=1,dwell_s=dwell_s,
-                             id_dly=id_delays[1],s_tpmod=sermode,toi_ch=toi_chinj)    
-                
+                TP02_sdict[colkey] = dict(frames=1, dwell_s=dwell_s,
+                                          id_dly=id_delays[1], s_tpmod=sermode, toi_ch=toi_chinj)
+
                 colcounter += 1
-                
-        
-        Ncols = len(TP02_sdict.keys())    
+
+        Ncols = len(TP02_sdict.keys())
         TP02_sdict['Ncols'] = Ncols
-                  
+
         commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(TP02_commvalues)
-        
-        if len(diffvalues)==0:
-            try: diffvalues = self.inputs['diffvalues']
-            except: diffvalues = diffvalues = dict()
-        
-        TP02_sdict = sc.update_structdict(TP02_sdict,commvalues,diffvalues)
-        
+
+        if len(diffvalues) == 0:
+            try:
+                diffvalues = self.inputs['diffvalues']
+            except:
+                diffvalues = diffvalues = dict()
+
+        TP02_sdict = sc.update_structdict(TP02_sdict, commvalues, diffvalues)
+
         return TP02_sdict
-    
-    def filterexposures(self,structure,explogf,datapath,OBSID_lims):
+
+    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
         """ """
         wavedkeys = ['motr_siz']
-        return super(TP02,self).filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=True,
-                              wavedkeys=wavedkeys)
+        return super(TP02, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=True,
+                                                 wavedkeys=wavedkeys)
 
-    
-    
     def extract(self):
         """ """
         raise NotImplementedError
-        
-    
+
     def basic_analysis(self):
         """
-        
+
         Basic analysis of data.
-    
+
         **METACODE**
-        
+
         ::
-    
+
             f. e. ObsID [there are different TOI_TP and TP-patterns]:
                 f.e.CCD:
                     f.e.Q:
                         load raw 1D map of relative pumping (from extract_data)
                         identify dipoles:
                             x, rel-amplitude, orientation (E or W)
-    
+
             produce & report:  
                 map location of dipoles
                 PDF of dipole amplitudes (for E and W)
                 Counts of dipoles (and E vs. W)
-        
+
         """
         raise NotImplementedError
-        
+
     def meta_analysis(self):
         """
-        
+
         Meta-analysis of data:
-            
+
             Try to identify tau and pixel-phase location for each trap.
             Need to associate dipoles across TOI_TPs and TP-patterns        
-            
-     
+
+
         **METACODE**
-        
+
         ::
-            
+
             across TOI_TP, patterns:
                 build catalog of traps: x,y,R-phase, amp(dwell)
                 from Amp(dwell) -> tau, Pc
-                
+
             Report on :
                Histogram of Taus
                Histogram of Pc (capture probability)
                Histogram of R-phases
-    
+
                Total Count of Traps
-    
-        
-    
+
+
+
         """
         raise NotImplementedError
-        
-        
-    
-    

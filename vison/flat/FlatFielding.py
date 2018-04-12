@@ -23,8 +23,8 @@ from scipy import interpolate
 #from matplotlib import pyplot as plt
 
 from vison.datamodel import ccd as ccdmodule
-from vison.datamodel.cdp import  CDP as CDPClass
-from vison.support.files import  cPickleRead
+from vison.datamodel.cdp import CDP as CDPClass
+from vison.support.files import cPickleRead
 from vison import __version__
 
 from scipy import ndimage as nd
@@ -32,165 +32,164 @@ from scipy import ndimage as nd
 from astropy.io import fits as fts
 # END IMPORT
 
-Quads = ['E','F','G','H']
+Quads = ['E', 'F', 'G', 'H']
 
 
-
-def produce_SingleFlatfield(infits,outfits,settings={},runonTests=False):
+def produce_SingleFlatfield(infits, outfits, settings={}, runonTests=False):
     """ """
     #runonTests = False
-    
-    insettings = dict(kind='spline',splinemethod='cubic',
-                      doFilter=True,filtsize=50,filtertype='mean')
+
+    insettings = dict(kind='spline', splinemethod='cubic',
+                      doFilter=True, filtsize=50, filtertype='mean')
     insettings.update(settings)
-    
+
     ccdin = cPickleRead(infits)['ccdobj']
-    
+
     shape = ccdin.shape
-    
+
     ccdout = ccdmodule.CCD()
     ccdout.shape = shape
     ccdout.NAXIS1 = ccdin.NAXIS1
     ccdout.NAXIS2 = ccdin.NAXIS2
     ccdout.prescan = ccdin.prescan
     ccdout.overscan = ccdin.overscan
-        
-    ccdout.add_extension(np.ones(shape,dtype='float32'),label='FLAT')
-    ccdout.add_extension(np.zeros(shape,dtype='float32'),label='MODEL')
-    
-    for Q in Quads:
-    
-        Qregmodel = ccdin.get_region2Dmodel(Q,area='img',vstart=0,vend=2066,
-                              canonical=True,extension=-1,
-                              **insettings)
-        
-        # Set 1st Extension: image
-        
-        Qimg = ccdin.get_quad(Q,canonical=True,extension=-1).copy()
-        QFF = np.ones_like(Qimg)
-        QFF[ccdin.prescan:-ccdin.overscan,0:2066] = Qimg[ccdin.prescan:-ccdin.overscan,0:2066].copy()
-        
-        ccdout.set_quad(QFF,Q,canonical=True,extension=0)
-        
-        # Set 2nd Extension: model
-        
-        QMod = np.ones(Qimg.shape,dtype='float32')
-        QMod[ccdout.prescan:-ccdout.overscan,0:2066] = Qregmodel.imgmodel.copy()
-        
-        ccdout.set_quad(QMod,Q,canonical=True,extension=1)
-        
-        # divide image by model
-        
-        ccdout.divide_by_flatfield(QMod,extension=0)
-    
-    
-    ccdout.writeto(outfits,clobber=True)
-    
-    return None
 
+    ccdout.add_extension(np.ones(shape, dtype='float32'), label='FLAT')
+    ccdout.add_extension(np.zeros(shape, dtype='float32'), label='MODEL')
+
+    for Q in Quads:
+
+        Qregmodel = ccdin.get_region2Dmodel(Q, area='img', vstart=0, vend=2066,
+                                            canonical=True, extension=-1,
+                                            **insettings)
+
+        # Set 1st Extension: image
+
+        Qimg = ccdin.get_quad(Q, canonical=True, extension=-1).copy()
+        QFF = np.ones_like(Qimg)
+        QFF[ccdin.prescan:-ccdin.overscan,
+            0:2066] = Qimg[ccdin.prescan:-ccdin.overscan, 0:2066].copy()
+
+        ccdout.set_quad(QFF, Q, canonical=True, extension=0)
+
+        # Set 2nd Extension: model
+
+        QMod = np.ones(Qimg.shape, dtype='float32')
+        QMod[ccdout.prescan:-ccdout.overscan,
+             0:2066] = Qregmodel.imgmodel.copy()
+
+        ccdout.set_quad(QMod, Q, canonical=True, extension=1)
+
+        # divide image by model
+
+        ccdout.divide_by_flatfield(QMod, extension=0)
+
+    ccdout.writeto(outfits, clobber=True)
+
+    return None
 
 
 def _produce_SingleFlatfield(args):
     produce_SingleFlatfield(*args)
 
 
-def produce_IndivFlats(infitsList,outfitsList,settings,runonTests,processes=6):
+def produce_IndivFlats(infitsList, outfitsList, settings, runonTests, processes=6):
     """ """
-    
-    assert len(infitsList) == len(outfitsList)
-        
-    arglist = []
-    
-    for ix in range(len(infitsList)): 
-        arglist.append((infitsList[ix],outfitsList[ix],settings,runonTests))
-    
-    #generate flats using multiprocessing
-    pool = Pool(processes=processes)    
-    #_produce_SingleFlatfield(arglist[0]) # TESTS    
-    pool.map(_produce_SingleFlatfield, arglist)
-    
-    
 
-def produce_MasterFlat(infitsList,outfits,mask=None,settings={}):
+    assert len(infitsList) == len(outfitsList)
+
+    arglist = []
+
+    for ix in range(len(infitsList)):
+        arglist.append((infitsList[ix], outfitsList[ix], settings, runonTests))
+
+    # generate flats using multiprocessing
+    pool = Pool(processes=processes)
+    # _produce_SingleFlatfield(arglist[0]) # TESTS
+    pool.map(_produce_SingleFlatfield, arglist)
+
+
+def produce_MasterFlat(infitsList, outfits, mask=None, settings={}):
     """Produces a Master Flat out of a number of flat-illumination exposures.
     Takes the outputs from produce_IndivFlats."""
-    
-    
-    ccdpile = ccdmodule.CCDPile(infitsList=infitsList,extension=0,withpover=True)
-    
-    stackimg, stackstd = ccdpile.stack(method='median',dostd=True)    
-    
-    metabag = dict(WAVEL=-1,ID='0',BLOCKID='0',CHAMBER='None')
+
+    ccdpile = ccdmodule.CCDPile(
+        infitsList=infitsList, extension=0, withpover=True)
+
+    stackimg, stackstd = ccdpile.stack(method='median', dostd=True)
+
+    metabag = dict(WAVEL=-1, ID='0', BLOCKID='0', CHAMBER='None')
     metabag.update(settings)
-    
-    fdata = dict(Flat=stackimg,eFlat=stackstd)
+
+    fdata = dict(Flat=stackimg, eFlat=stackstd)
     fmeta = dict(NCOMB=len(infitsList),
                  WAVEL=metabag['WAVEL'])
-    
-    mff = FlatField(data=fdata,meta=fmeta,withpover=True,
-                    ID=metabag['ID'],BLOCKID=metabag['BLOCKID'],
+
+    mff = FlatField(data=fdata, meta=fmeta, withpover=True,
+                    ID=metabag['ID'], BLOCKID=metabag['BLOCKID'],
                     CHAMBER=metabag['CHAMBER'])
-    
+
     if mask is not None:
         mff.get_mask(mask)
-    
-    mff.writeto(outfits,clobber=True,unsigned16bit=False)
-    
 
-class FlatField(ccdmodule.CCD,CDPClass):
+    mff.writeto(outfits, clobber=True, unsigned16bit=False)
+
+
+class FlatField(ccdmodule.CCD, CDPClass):
     """ """
 
-    def __init__(self,fitsfile='',data=dict(),meta=dict(),withpover=True,ID=None,BLOCKID=None,CHAMBER=None):
+    def __init__(self, fitsfile='', data=dict(), meta=dict(), withpover=True, ID=None, BLOCKID=None, CHAMBER=None):
         """ """
-        
+
         self.BLOCKID = BLOCKID
         self.ID = ID
         self.CHAMBER = CHAMBER
         self.vison = __version__
-        
-        #super(FlatField,self).__init__(infits=None)        
+
+        # super(FlatField,self).__init__(infits=None)
         print 'TODO: FlatFielding.FlatField needs improvemenents: masking'
-        
+
         if fitsfile != '':
-            super(FlatField,self).__init__(infits=fitsfile,getallextensions=True,withpover=withpover)
-            self.parse_fits()            
+            super(FlatField, self).__init__(infits=fitsfile,
+                                            getallextensions=True, withpover=withpover)
+            self.parse_fits()
         else:
-            super(FlatField,self).__init__(infits=None,withpover=withpover)
-            
-            assert isinstance(data,dict)
+            super(FlatField, self).__init__(infits=None, withpover=withpover)
+
+            assert isinstance(data, dict)
             assert 'Flat' in data.keys()
             assert 'eFlat' in data.keys()
-            
-            assert isinstance(meta,dict)
+
+            assert isinstance(meta, dict)
             assert 'NCOMB' in meta.keys()
             self.ncomb = meta['NCOMB']
             assert 'WAVEL' in meta.keys()
             self.wavelength = meta['WAVEL']
-            
-            self.add_extension(data=None,header=None,label=None,headerdict=meta)            
-            self.add_extension(data=data['Flat'].copy(),label='FLAT')
-            self.add_extension(data=data['eFlat'].copy(),label='EFLAT')
-            
+
+            self.add_extension(data=None, header=None,
+                               label=None, headerdict=meta)
+            self.add_extension(data=data['Flat'].copy(), label='FLAT')
+            self.add_extension(data=data['eFlat'].copy(), label='EFLAT')
+
             if 'Mask' in data.keys():
-                self.add_extension(data=data['Mask'].copy(),label='MASK')
-    
+                self.add_extension(data=data['Mask'].copy(), label='MASK')
+
     def parse_fits(self,):
         """ """
-        
+
         assert self.nextensions >= 3
-        
+
         self.ncomb = self.extensions[0].header['NCOMB']
         self.wavelength = self.extensions[0].header['WAVEL']
         assert self.extensions[1].label.upper() == 'FLAT'
         self.Flat = self.extensions[1].data
-        
+
         ekey = self.extensions[2].label.upper()
         assert (ekey == 'EFLAT')
         self.eFlat = self.extensions[2].data
-        
-        if self.nextensions >3:
+
+        if self.nextensions > 3:
             assert self.extensions[3].label.upper() == 'MASK'
             self.Mask = self.extensions[3].data
         else:
             self.Mask = None
-
