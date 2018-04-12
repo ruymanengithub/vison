@@ -16,6 +16,7 @@ from collections import OrderedDict
 import pandas as pd
 import collections
 import string as st
+import copy
 # END IMPORT
 
 
@@ -24,7 +25,7 @@ def countdictlayers(d):
 
 
 def convert_compl_to_nesteditemlist(complidict):
-    """ """
+    """ """    
 
     def traverse_tree(dictionary, nesteditemlist):
         Nkeys = len(dictionary.keys())
@@ -52,7 +53,7 @@ def convert_compl_to_nesteditemlist(complidict):
         ['\\begin{itemize}'] +\
         traverse_tree(complidict, []) +\
         ['\\end{itemize}']
-
+    
     return tex
 
 
@@ -66,23 +67,25 @@ def removescalars_from_dict(indict):
             elif not isinstance(value, collections.Sequence):
                 indict[key] = [value]
         return indict
-
-    outdict = traverse_tree(indict)
+    
+    outdict = traverse_tree(copy.deepcopy(indict))
 
     return outdict
 
 
 def gen_compliance_tex(indict):
     """ """
-
-    complidict = removescalars_from_dict(indict)
-
-    level = countdictlayers(complidict)
-
+    
+    complidict = copy.deepcopy(indict)
+    
+    level = countdictlayers(indict)
+    
     if level < 3:
+        if level == 1: complidict = removescalars_from_dict(complidict)
         df = pd.DataFrame.from_dict(complidict)
         tex = df.to_latex(multicolumn=True, multirow=True,
-                          longtable=True, index=False)
+                          longtable=True, index=level>1)
+        tex = st.split(tex, '\n')
     elif level == 3:
         keys = []
         frames = []
@@ -90,9 +93,11 @@ def gen_compliance_tex(indict):
             keys.append(key)
             frames.append(pd.DataFrame.from_dict(d))
         df = pd.concat(frames, keys=keys)
+        
         tex = df.to_latex(multicolumn=True, multirow=True,
-                          longtable=True, index=False)
+                          longtable=True, index=True)
+        tex = st.split(tex, '\n')
     else:
         tex = convert_compl_to_nesteditemlist(complidict)
-    tex = st.split(tex, '\n')
+        
     return tex
