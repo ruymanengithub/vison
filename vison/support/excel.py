@@ -75,12 +75,12 @@ class ReportXL(object):
         for key in keys:
             printdict[key] = str(indict[key].__repr__())
 
-        self.wb['Header']['A1'] = title
+        self.wb[sheetname]['A1'] = title
 
         ix0 = 5
         for ik, key in enumerate(keys):
-            self.wb['Header']['A%i' % (ix0+ik)] = key
-            self.wb['Header']['B%i' % (ix0+ik)] = printdict[key]
+            self.wb[sheetname]['A%i' % (ix0+ik)] = key
+            self.wb[sheetname]['B%i' % (ix0+ik)] = printdict[key]
 
         self.adjust_columns_width(sheetname=sheetname)
 

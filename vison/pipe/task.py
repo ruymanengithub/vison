@@ -122,7 +122,7 @@ class Task(object):
         resultspath = self.inputs['resultspath']
         try:
             _paths = self.inputs['subpaths']
-        except:
+        except KeyError:
             _paths = dict()
         testkey = self.inputs['test']
         todo_flags = self.inputs['todo_flags']
@@ -182,11 +182,8 @@ class Task(object):
             elif self.type == 'Meta':
                 self.ingest_data_MetaTest()
 
-            # self.save_progress(dd,reportobj,DataDictFile,reportobjFile)
             self.save_progress(DataDictFile, reportobjFile)
-
         else:
-            #dd, reportobj = pilib.recover_progress(DataDictFile,reportobjFile)
             self.recover_progress(DataDictFile, reportobjFile)
 
         # DATA-WORK and ANALYSIS
