@@ -47,14 +47,25 @@ class Fig(object):
         self.figname = figname
         self.texfraction = 1.0
         self.caption = ''
+        self.plotclass = None
 
     def configure(self, **kwargs):
         """ """
-        raise NotImplementedError('Subclass implements abstract method')
+        defaults = dict()
+        defaults.update(kwargs)
+        if 'figname' in defaults:
+            self.figname = defaults['figname']
+        if 'caption' in defaults:
+            self.caption = defaults['caption']
+        path = defaults['path']
+        self.figname = os.path.join(path, self.figname)
+        if 'suptitle' in defaults:
+            self.suptitle = defaults['suptitle']
 
-    def plot(self, figname=''):
+    def plot(self,**kwargs):
         """ """
-        raise NotImplementedError('Subclass implements abstract method')
+        plotobj = self.plotclass(self.data,**kwargs)
+        plotobj.render(self.figname)
 
 
 class BasicPlot(object):
@@ -191,27 +202,15 @@ class Beam2DPlot(BasicPlot):
         self.meta = meta.copy()
         self.handles = []
         self.labels = []
-
-    def axmethod(self):
-        """ 
-
-        TODO:
-            3 CCDs with 4 Quadrants each
-            share x and y axes within CCDs, but with gaps between CCDs
-            allow for optional legend
-            allow for optional "nice" date x-axis
-
-
-        """
-        #qtitles = self.meta['qtitles']
-        plt.close('all')
         self.fig = None
-
+        self.axs = dict()
+        
+    def init_fig_and_axes(self):
+        """ """
+        plt.close('all')
         fig, axsarr = plt.subplots(
             2, 6, sharex=True, sharey=True, figsize=self.figsize)
         self.fig = fig
-
-        self.axs = dict()
 
         # initialisation of self.axs
 
@@ -222,6 +221,25 @@ class Beam2DPlot(BasicPlot):
                 self.axs[CCDkey][Q] = None
 
         self.axs['CCD1']['E'] = axsarr[0, 0]
+        
+        plotlist = [item for item in itertools.product(self.CCDs, ['E', 'F'])] +\
+                   [item for item in itertools.product(self.CCDs, ['H', 'G'])]
+                   
+        stop()
+
+        for k in range(1, len(plotlist)+1):
+
+            CCDkey = 'CCD%i' % plotlist[k-1][0]
+            Q = plotlist[k-1][1]
+
+            if k > 1:
+                self.axs[CCDkey][Q] = axsarr.flatten()[k-1]
+    
+    
+    def axmethod(self):
+        """ """
+        
+        self.init_fig_and_axes()
 
         plotlist = [item for item in itertools.product(self.CCDs, ['E', 'F'])] +\
                    [item for item in itertools.product(self.CCDs, ['H', 'G'])]
@@ -350,8 +368,8 @@ class ImgShow(BasicPlot):
     def axmethod(self):
         """ """
         self.axs = self.fig.add_subplot(111)
-        self.axs.imshow(self.data)
-        self.axs.set_title(self.meta['title'])
+        self.axs[0].imshow(self.data)
+        self.axs[0].set_title(self.meta['title'])
 
     def plt_trimmer(self):
         """ """

@@ -11,19 +11,19 @@ Created on Fri Jan 26 16:18:43 2018
 """
 
 # IMPORT STUFF
-import numpy as np
 from pdb import set_trace as stop
 import os
 from collections import OrderedDict
+import numpy as np
 
-import baseclasses
+from vison.plot import baseclasses
 # END IMPORT
 
 
 class pl_basic_checkstat(baseclasses.Fig):
 
-    def __init__(self):
-        super(pl_basic_checkstat, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(pl_basic_checkstat, self).__init__(*args,**kwargs)
         #self.figname = figname
 
         self.stats = []
@@ -32,21 +32,7 @@ class pl_basic_checkstat(baseclasses.Fig):
         self.caption = ''
         self.texfraction = 1.1
         self.data = dict()
-
-    def configure(self, **kwargs):
-        """ """
-        defaults = dict(path='./', stats=[], trendaxis='time')
-        defaults.update(kwargs)
-        self.stats = defaults['stats']
-        self.trendaxis = defaults['trendaxis']
-        if 'figname' in defaults:
-            self.figname = defaults['figname']
-        if 'caption' in defaults:
-            self.caption = defaults['caption']
-        path = defaults['path']
-        self.figname = os.path.join(path, self.figname)
-        if 'suptitle' in defaults:
-            self.suptitle = defaults['suptitle']
+        
 
     def build_data(self, parent):
         """ """
@@ -71,11 +57,19 @@ class pl_basic_checkstat(baseclasses.Fig):
 
         self.data = data.copy()
 
+    def configure(self, **kwargs):
+        """ """
+        defaults = dict(path='./', stats=[], trendaxis='time')
+        defaults.update(kwargs)
+        self.stats = defaults['stats']
+        self.trendaxis = defaults['trendaxis']
+        
+        super(pl_basic_checkstat,self).configure(**defaults)
+        
     def plot(self, **kwargs):
         """ """
         meta = dict(suptitle=self.suptitle,
                     doNiceXDate=True, doLegend=True)
         meta.update(kwargs)
-
-        plotobj = baseclasses.Beam2DPlot(self.data, **meta)
-        plotobj.render(self.figname)
+        
+        super(pl_basic_checkstat,self).plot(**meta)
