@@ -246,7 +246,7 @@ class PointTask(Task):
             for CCD in CCDs:
                 _lims['CCD%i' % CCD] = offsets_gradients['CCD%i' % CCD][ireg+1]
             arr = self.dd.mx['offset_%s' % reg][:]-self.dd.mx['offset_pre'][:]
-            _xcheck_offsets = self.check_stat_perCCD(arr, _lims, CCDs)
+            _xcheck_offsets = self.check_stat_perCCD(arr, _lims, CCDs)            
 
             if not self.IsComplianceMatrixOK(_xcheck_offsets):
                 self.dd.flags.add('POORQUALDATA')
@@ -281,7 +281,7 @@ class PointTask(Task):
         BGD_lims = self.perflimits['BGD_lims']  # dict
         _compliance_bgd = self.check_stat_perCCDandQ(
             self.dd.mx['bgd_img'], BGD_lims, CCDs)
-
+        
         if not self.IsComplianceMatrixOK(_compliance_bgd):
             self.dd.flags.add('POORQUALDATA')
             self.dd.flags.add('BGD_OOL')
@@ -299,7 +299,7 @@ class PointTask(Task):
                     self.dd.mx['chk_fwhmy'][:]**2.)**0.5
         _compliance_fwhm = self.check_stat_perCCDQSpot(
             chk_fwhm, FWHM_lims, CCDs)
-
+        
         if not self.IsComplianceMatrixOK(_compliance_fwhm):
             self.dd.flags.add('POORQUALDATA')
             self.dd.flags.add('FOCUS_OOL')
@@ -325,3 +325,4 @@ class PointTask(Task):
         if self.report is not None:
             self.addComplianceMatrix2Report(
                 _compliance_flu, label='COMPLIANCE FLUENCE:')
+        

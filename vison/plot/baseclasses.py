@@ -224,91 +224,78 @@ class Beam2DPlot(BasicPlot):
         
         plotlist = [item for item in itertools.product(self.CCDs, ['E', 'F'])] +\
                    [item for item in itertools.product(self.CCDs, ['H', 'G'])]
-                   
-        stop()
-
+        
         for k in range(1, len(plotlist)+1):
-
             CCDkey = 'CCD%i' % plotlist[k-1][0]
             Q = plotlist[k-1][1]
-
-            if k > 1:
-                self.axs[CCDkey][Q] = axsarr.flatten()[k-1]
-    
+            self.axs[CCDkey][Q] = axsarr.flatten()[k-1]
+        
     
     def axmethod(self):
         """ """
         
         self.init_fig_and_axes()
-
-        plotlist = [item for item in itertools.product(self.CCDs, ['E', 'F'])] +\
-                   [item for item in itertools.product(self.CCDs, ['H', 'G'])]
-
-        for k in range(1, len(plotlist)+1):
-
-            CCD = plotlist[k-1][0]
+        
+        
+        for CCD in self.CCDs:
             CCDkey = 'CCD%i' % CCD
-            Q = plotlist[k-1][1]
-
-            if k > 1:
-                # self.axs[CCDkey][Q] = self.fig.add_subplot(2,6,k,sharex=self.axs['CCD1']['E'],
-                #        sharey=self.axs['CCD1']['E'])
-                self.axs[CCDkey][Q] = axsarr.flatten()[k-1]
-
-            try:
-                xkeys = self.data[CCDkey][Q]['x'].keys()
-            except AttributeError:
-                xkeys = None
-
-            if xkeys is not None:
-                ykeys = self.data[CCDkey][Q]['y'].keys()
-                isconsistent = np.all([xkeys[i] == ykeys[i]
-                                       for i in range(len(xkeys))])
-                assert (len(xkeys) == len(ykeys)) and isconsistent
-
-                for key in xkeys:
-                    xarr = self.data[CCDkey][Q]['x'][key]
-                    yarr = self.data[CCDkey][Q]['y'][key]
-                    label = st.replace(key, '_', '\_')
-                    handle = self.axs[CCDkey][Q].plot(xarr, yarr, label=label)
-
-                    if Q == 'E' and CCD == 1:
-                        self.handles += handle
-                        self.labels.append(label)
-            else:
-                xarr = self.data[CCDkey][Q]['x']
-                yarr = self.data[CCDkey][Q]['y']
-                self.axs[CCDkey][Q].plot(xarr, yarr)
-
+            for Q in self.Quads:
+                
+                try:
+                    xkeys = self.data[CCDkey][Q]['x'].keys()
+                except AttributeError:
+                    xkeys = None
+    
+                if xkeys is not None:
+                    ykeys = self.data[CCDkey][Q]['y'].keys()
+                    isconsistent = np.all([xkeys[i] == ykeys[i]
+                                           for i in range(len(xkeys))])
+                    assert (len(xkeys) == len(ykeys)) and isconsistent
+    
+                    for key in xkeys:
+                        xarr = self.data[CCDkey][Q]['x'][key]
+                        yarr = self.data[CCDkey][Q]['y'][key]
+                        label = st.replace(key, '_', '\_')
+                        try: handle = self.axs[CCDkey][Q].plot(xarr, yarr, label=label)
+                        except: stop()
+    
+                        if Q == 'E' and CCD == 1:
+                            self.handles += handle
+                            self.labels.append(label)
+                else:
+                    xarr = self.data[CCDkey][Q]['x']
+                    yarr = self.data[CCDkey][Q]['y']
+                    self.axs[CCDkey][Q].plot(xarr, yarr)
+    
+#                    if Q in ['E', 'H']:
+#                        self.axs[CCDkey][Q].text(0.05, 0.9, Q, horizontalalignment='left',
+#                                                 transform=self.axs[CCDkey][Q].transAxes)
+#                    else:
+#                        self.axs[CCDkey][Q].text(0.90, 0.9, Q, horizontalalignment='left',
+#                                                 transform=self.axs[CCDkey][Q].transAxes)
+#    
+#                    if Q == 'E':
+#                        self.axs[CCDkey][Q].set_title(CCDkey, x=1)
+    
                 if Q in ['E', 'H']:
                     self.axs[CCDkey][Q].text(0.05, 0.9, Q, horizontalalignment='left',
                                              transform=self.axs[CCDkey][Q].transAxes)
-                else:
-                    self.axs[CCDkey][Q].text(0.90, 0.9, Q, horizontalalignment='left',
+                elif Q in ['F', 'G']:
+                    self.axs[CCDkey][Q].text(0.9, 0.9, Q, horizontalalignment='right',
                                              transform=self.axs[CCDkey][Q].transAxes)
-
+    
                 if Q == 'E':
                     self.axs[CCDkey][Q].set_title(CCDkey, x=1)
-
-            if Q in ['E', 'H']:
-                self.axs[CCDkey][Q].text(0.05, 0.9, Q, horizontalalignment='left',
-                                         transform=self.axs[CCDkey][Q].transAxes)
-            elif Q in ['F', 'G']:
-                self.axs[CCDkey][Q].text(0.9, 0.9, Q, horizontalalignment='right',
-                                         transform=self.axs[CCDkey][Q].transAxes)
-
-            if Q == 'E':
-                self.axs[CCDkey][Q].set_title(CCDkey, x=1)
-
-            if self.meta['doNiceXDate']:
-                _xticks = self.axs[CCDkey][Q].get_xticks()
-                if len(_xticks) > 6:
-                    self.axs[CCDkey][Q].set_xticks(_xticks[::2])
-
-            if 'xlabel' in self.meta and Q in ['H', 'G']:
-                self.axs[CCDkey][Q].set_xlabel(self.meta['xlabel'])
-            if 'ylabel' in self.meta and Q in ['E', 'H'] and CCD == 1:
-                self.axs[CCDkey][Q].set_ylabel(self.meta['ylabel'])
+    
+                if self.meta['doNiceXDate']:
+                    _xticks = self.axs[CCDkey][Q].get_xticks()
+                    if len(_xticks) > 6:
+                        self.axs[CCDkey][Q].set_xticks(_xticks[::2])
+    
+                if 'xlabel' in self.meta and Q in ['H', 'G']:
+                    self.axs[CCDkey][Q].set_xlabel(self.meta['xlabel'])
+                if 'ylabel' in self.meta and Q in ['E', 'H'] and CCD == 1:
+                    self.axs[CCDkey][Q].set_ylabel(self.meta['ylabel'])
 
             # self.axs[CCDkey][Q].locator_params(nticks=4,axis='x')
 
@@ -367,7 +354,7 @@ class ImgShow(BasicPlot):
 
     def axmethod(self):
         """ """
-        self.axs = self.fig.add_subplot(111)
+        self.axs = [self.fig.add_subplot(111)]
         self.axs[0].imshow(self.data)
         self.axs[0].set_title(self.meta['title'])
 

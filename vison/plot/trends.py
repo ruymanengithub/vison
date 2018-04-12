@@ -32,7 +32,7 @@ class pl_basic_checkstat(baseclasses.Fig):
         self.caption = ''
         self.texfraction = 1.1
         self.data = dict()
-        
+        self.plotclass = baseclasses.Beam2DPlot
 
     def build_data(self, parent):
         """ """
