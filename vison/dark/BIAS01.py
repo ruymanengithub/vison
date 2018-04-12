@@ -88,7 +88,7 @@ class BIAS01(DarkTask):
         self.HKKeys = HKKeys
         self.figdict = B01aux.B01figs.copy()
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
-                                       profiles='profiles')
+                                       profiles='profiles',products='products')
 
     def set_inpdefaults(self, **kwargs):
         self.inpdefaults = self.inputsclass(N=25)
@@ -312,6 +312,9 @@ class BIAS01(DarkTask):
         # PLOTS
         # profiles 1D (Hor & Ver) x (CCD&Q)
         # histograms of RON per CCD&Q
+        
+        
+        
 
         # REPORTS
         # Table with median (Best Estimate) values of RON per CCD&Q
@@ -324,9 +327,9 @@ class BIAS01(DarkTask):
             RON, mask=RONmsk), axis=1).data.copy()
 
         beRONdict = OrderedDict()
-        for jCCD, CCD in CCDs:
+        for jCCD, CCD in enumerate(CCDs):
             beRONdict['CCD%i' % CCD] = OrderedDict()
-            for kQ, Q in Quads:
+            for kQ, Q in enumerate(Quads):
                 beRONdict['CCD%i' % CCD][Q] = beRON[jCCD, kQ]
         beRONdf = pd.DataFrame.from_dict(beRONdict)  # PENDING
 
@@ -347,7 +350,7 @@ class BIAS01(DarkTask):
             RON_CDP.path, '%s.pick' % RON_CDP.rootname)
 
         if self.report is not None:
-            beRONtex = RON_CDP.get_textable(sheet='RON', caption='')
+            beRONtex = RON_CDP.get_textable(sheet='RON', caption='BIAS01: RON')
             self.report.add_Text(beRONtex)
 
     def meta_analysis(self):

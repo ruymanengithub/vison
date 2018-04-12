@@ -41,36 +41,31 @@ class CDP(object):
     meta = OrderedDict()
     data = None
 
-    # def __init__(self,*args,**kwargs):
-    #    """ """
     def __init__(self, *args, **kwargs):
         """ """
-        #inputs = dict(ID=None,BLOCKID=None,CHAMBER=None)
-        # inputs.update(args)
-        # inputs.update(kwargs)
-
-        #self.ID = inputs['ID']
-        #self.BLOCKID = inputs['BLOCKID']
-        #self.CHAMBER = inputs['CHAMBER']
-        #self.vison = __version__
-
-        if 'header' in args:
-            self.header.update(['header'])
-        elif 'header' in kwargs:
-            self.header.update(kwargs['header'])
-
-        if 'meta' in args:
-            self.meta.update(['meta'])
-        elif 'meta' in kwargs:
-            self.meta.update(kwargs['meta'])
+        
+        defaults = dict(rootname='Uknown', path='', header=OrderedDict(),
+                        meta=OrderedDict(), data=None)
+        defaults.update(args)
+        defaults.update(kwargs)
+        
+        for key in defaults.keys(): self.__setattr__(key,defaults[key])
 
     def savetopickle(self, pickf=''):
         """ """
         if pickf == '':
             pickf = os.path.join(self.path, '%s.pick' % self.rootname)
 
-        #outdict = OrderedDict(Header=self.header,Data=self.data)
-        cPickleDumpDictionary(self, pickf)
+        outdict = copy.deepcopy(self.__dict__)
+        cPickleDumpDictionary(outdict, pickf)
+        
+    def loadfrompickle(self,pickf=''):
+        """ """
+        if pickf == '':
+            pickf = os.path.join(self.path, '%s.pick' % self.rootname)
+        saved = cPickleRead(pickf)
+        self.__dict__.update(saved)
+        
 
     def savehardcopy(self, filef=''):
         """ """
@@ -81,12 +76,11 @@ class CDP(object):
 class Tables_CDP(CDP):
     """ """
 
-    figs = OrderedDict()
-    data = OrderedDict()
-
     def __init__(self, *args, **kwargs):
         """ """
         super(Tables_CDP, self).__init__(*args, **kwargs)
+        self.figs = OrderedDict()
+        self.data = OrderedDict()
         self.xlsx = None
 
     def ingest_inputs(self, data, meta=OrderedDict(), header=OrderedDict(), figs=OrderedDict()):
@@ -103,7 +97,7 @@ class Tables_CDP(CDP):
         self.report.wb.create_sheet('Header', 0)
         self.report.wb.create_sheet('Meta', 1)
 
-        for i, k in enumerate(self.iterkeys()):
+        for i, k in enumerate(self.data.iterkeys()):
             self.report.wb.create_sheet(k, i)
 
     def fill_Header(self, title=''):
