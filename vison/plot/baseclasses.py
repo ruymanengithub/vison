@@ -267,16 +267,6 @@ class Beam2DPlot(BasicPlot):
                     yarr = self.data[CCDkey][Q]['y']
                     self.axs[CCDkey][Q].plot(xarr, yarr)
     
-#                    if Q in ['E', 'H']:
-#                        self.axs[CCDkey][Q].text(0.05, 0.9, Q, horizontalalignment='left',
-#                                                 transform=self.axs[CCDkey][Q].transAxes)
-#                    else:
-#                        self.axs[CCDkey][Q].text(0.90, 0.9, Q, horizontalalignment='left',
-#                                                 transform=self.axs[CCDkey][Q].transAxes)
-#    
-#                    if Q == 'E':
-#                        self.axs[CCDkey][Q].set_title(CCDkey, x=1)
-    
                 if Q in ['E', 'H']:
                     self.axs[CCDkey][Q].text(0.05, 0.9, Q, horizontalalignment='left',
                                              transform=self.axs[CCDkey][Q].transAxes)
@@ -422,6 +412,5 @@ def testBeam2DPlot():
 
 
 if __name__ == '__main__':
-    # testCCD2DPlot()
 
     testBeam2DPlot()

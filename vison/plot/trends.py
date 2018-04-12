@@ -54,7 +54,8 @@ class pl_basic_checkstat(baseclasses.Fig):
                 for stat in self.stats:
                     data[CCDkey][Q]['x'][stat] = dd.mx[self.trendaxis][:, ixCCD].copy()
                     data[CCDkey][Q]['y'][stat] = dd.mx[stat][:, ixCCD, iQ].copy()
-
+        print self.stats,self.trendaxis
+        stop()
         self.data = data.copy()
 
     def configure(self, **kwargs):
