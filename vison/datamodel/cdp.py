@@ -121,7 +121,7 @@ class Tables_CDP(CDP):
             multicolumn=True, multirow=True, longtable=True, index=False)
         tex = st.split(tex, '\n')
         if caption != '':
-            tex.insert(-1, r'\caption{%s}' % caption)
+            tex.insert(-2, r'\caption{%s}' % caption)
         return tex
 
     def fill_allDataSheets(self):
