@@ -28,13 +28,14 @@ def setInDict(dataDict,mapList,value):
 
 
 class Fig(object):
+    
+    plotclass = None
 
     def __init__(self, figname=''):
 
         self.figname = figname
         self.texfraction = 1.0
         self.caption = ''
-        self.plotclass = None
         self.suptitle = ''
         self.data = dict()
 
@@ -56,8 +57,13 @@ class Fig(object):
         plotobj = self.plotclass(self.data,**kwargs)
         plotobj.render(self.figname)
 
+class Fig_Beam2DPlot(Fig):
+    plotclass = baseplotclasses.Beam2DPlot
 
-class Fig_Beam_XY_fromDD(Fig):
+class Fig_Beam1DHist(Fig):
+    plotclass = baseplotclasses.Hist1DPlot
+
+class Fig_XY_fromDD(Fig):
 
     
     def _build_data_xvsy(self,ddmx,indicesDict,indicesList,labels,trendaxis):

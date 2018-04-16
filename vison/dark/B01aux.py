@@ -17,7 +17,7 @@ import numpy as np
 import os
 from collections import OrderedDict
 
-from vison.plot import baseclasses as plbaseclasses
+from vison.plot import figclasses
 from vison.plot import trends
 from vison.datamodel import cdp
 
@@ -41,18 +41,43 @@ check_std_dict = dict(stats=['std_pre', 'std_img', 'std_ove'],
                                 suptitle='BIAS01-checks: std')
                       )
 
+basic_prof1Dhor_dict = dict(
+        figname='BIAS01_profs1D_hor_allOBSIDs.png',
+        caption='BIAS01: Average profiles across columns.',
+        meta=dict(doLegend=False,
+                  ylabel='ADU',
+                  xlabel='Column [pix]',
+                  suptitle='BIAS01: Profiles across columns.')
+        )
+
+basic_prof1Dver_dict = dict(
+        figname='BIAS01_profs1D_ver_allOBSIDs.png',
+        caption='BIAS01: Average profiles across rows.',
+        meta=dict(doLegend=False,
+                  ylabel='ADU',
+                  xlabel='Row [pix]',
+                  suptitle='BIAS01: Profiles across rows.')
+        )
+
+basic_histosRON_dict = dict(
+        figname='BIAS01_RON_distro_allOBSIDs.png',
+        caption='BIAS01: RON distribution',
+        meta = dict(
+                suptitle='BIAS01: RON Distribution'),
+        )
 
 
 B01figs = dict()
 B01figs['B01checks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]
 #B01figs['B01checks_stds'] = [plB01check,dict(stat='std')]
 B01figs['B01checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
-B01figs['B01basic_prof1D_hor'] = []
-B01figs['B01basic_prof1D_ver'] = []
-B01figs['B01basic_histosRON'] = []
-B01figs['BlueScreen'] = [plbaseclasses.BlueScreen, dict()]
+B01figs['B01basic_prof1D_hor'] = [figclasses.Fig_Beam2DPlot, basic_prof1Dhor_dict]
+B01figs['B01basic_prof1D_ver'] = [figclasses.Fig_Beam2DPlot, basic_prof1Dver_dict]
+B01figs['B01basic_histosRON'] = [figclasses.Fig_Beam1DHist, basic_histosRON_dict]
+B01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
 
 
 RON_CDP = cdp.Tables_CDP()
 RON_CDP.rootname = 'RON_BIAS01'
+
 CDP_lib = dict(RON=RON_CDP)

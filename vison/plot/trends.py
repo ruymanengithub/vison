@@ -22,7 +22,7 @@ from vison.plot import baseplotclasses
 # END IMPORT
 
 
-class Fig_Basic_Checkstat(figclasses.Fig_BeamXY_fromDD):
+class Fig_Basic_Checkstat(figclasses.Fig_XY_fromDD):
 
     def __init__(self, *args, **kwargs):
         super(Fig_Basic_Checkstat, self).__init__(*args,**kwargs)
