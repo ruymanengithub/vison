@@ -313,7 +313,9 @@ class BIAS01(DarkTask):
         # profiles 1D (Hor & Ver) x (CCD&Q)
         # histograms of RON per CCD&Q
         
-        
+        figkeys = ['B01basic_prof1D_hor','B01basic_prof1D_ver',
+        'B01basic_histosRON']
+        self.addFigures_ST(figkeys=figkeys)
         
 
         # REPORTS
@@ -333,19 +335,15 @@ class BIAS01(DarkTask):
                 beRONdict['CCD%i' % CCD][Q] = beRON[jCCD, kQ]
         beRONdf = pd.DataFrame.from_dict(beRONdict)  # PENDING
 
-        RON_CDP = cdp.Tables_CDP()
-        RON_CDP.rootname = 'RON_BIAS01'
+        RON_CDP = B01aux.CDP_lib['RON']
         RON_CDP.path = self.inputs['subpaths']['products']
         RON_CDP.ingest_inputs(data=dict(RON=beRONdf),
                               meta=dict(),
                               header=CDP_header.copy())
-        RON_CDP.init_workbook()
-        RON_CDP.fill_Header(title='BIAS01: RON')
-        RON_CDP.fill_Meta()
-        RON_CDP.fill_allDataSheets()
-        RON_CDP.savehardcopy()
-        RON_CDP.savetopickle()
-
+        
+        RON_CDP = self.init_and_fill_CDP(RON_CDP,header_title='BIAS01: RON')
+        self.save_CDP(RON_CDP)
+        
         self.dd.products['RON_CDP'] = os.path.join(
             RON_CDP.path, '%s.pick' % RON_CDP.rootname)
 
