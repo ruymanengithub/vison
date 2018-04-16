@@ -60,9 +60,9 @@ check_injstd_dict = dict(stats=['chk_std_inject'],
 
 CH02figs = dict()
 CH02figs['CH02checks_offsets'] = [
-    trends.pl_basic_checkstat, check_offsets_dict]
-CH02figs['CH02checks_stds'] = [trends.pl_basic_checkstat, check_std_dict]
+    trends.Fig_Basic_Checkstat, check_offsets_dict]
+CH02figs['CH02checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
 CH02figs['CH02checks_injlevel'] = [
-    trends.pl_basic_checkstat, check_injlevel_dict]
-CH02figs['CH02checks_injstd'] = [trends.pl_basic_checkstat, check_injstd_dict]
+    trends.Fig_Basic_Checkstat, check_injlevel_dict]
+CH02figs['CH02checks_injstd'] = [trends.Fig_Basic_Checkstat, check_injstd_dict]
 CH02figs['BlueScreen'] = [plbaseclasses.BlueScreen, dict()]

@@ -80,14 +80,14 @@ def gt_check_fwhm_dict(wave):
 def gt_F00figs(wave):
     F00figs = dict()
     F00figs['F00checks_offsets'] = [
-        trends.pl_basic_checkstat, gt_check_offsets_dict(wave)]
+        trends.Fig_Basic_Checkstat, gt_check_offsets_dict(wave)]
     F00figs['F00checks_stds'] = [
-        trends.pl_basic_checkstat, gt_check_std_dict(wave)]
+        trends.Fig_Basic_Checkstat, gt_check_std_dict(wave)]
     F00figs['F00checks_bgd'] = [
-        trends.pl_basic_checkstat, gt_check_bgd_dict(wave)]
+        trends.Fig_Basic_Checkstat, gt_check_bgd_dict(wave)]
     F00figs['F00checks_fluence'] = [
-        trends.pl_basic_checkstat, gt_check_flu_dict(wave)]
+        trends.Fig_Basic_Checkstat, gt_check_flu_dict(wave)]
     F00figs['F00checks_fwhm'] = [
-        trends.pl_basic_checkstat, gt_check_fwhm_dict(wave)]
+        trends.Fig_Basic_Checkstat, gt_check_fwhm_dict(wave)]
     F00figs['BlueScreen'] = [plbaseclasses.BlueScreen, dict()]
     return F00figs

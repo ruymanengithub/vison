@@ -86,14 +86,14 @@ def gt_check_fwhm_dict(test):
 def gt_PSF0Xfigs(test):
     PSF0Xfigs = dict()
     PSF0Xfigs['PSF0Xchecks_offsets'] = [
-        trends.pl_basic_checkstat, gt_check_offsets_dict(test)]
+        trends.Fig_Basic_Checkstat, gt_check_offsets_dict(test)]
     PSF0Xfigs['PSF0Xchecks_stds'] = [
-        trends.pl_basic_checkstat, gt_check_std_dict(test)]
+        trends.Fig_Basic_Checkstat, gt_check_std_dict(test)]
     PSF0Xfigs['PSF0Xchecks_bgd'] = [
-        trends.pl_basic_checkstat, gt_check_bgd_dict(test)]
+        trends.Fig_Basic_Checkstat, gt_check_bgd_dict(test)]
     PSF0Xfigs['PSF0Xchecks_fluence'] = [
-        trends.pl_basic_checkstat, gt_check_flu_dict(test)]
+        trends.Fig_Basic_Checkstat, gt_check_flu_dict(test)]
     PSF0Xfigs['PSF0Xchecks_fwhm'] = [
-        trends.pl_basic_checkstat, gt_check_fwhm_dict(test)]
+        trends.Fig_Basic_Checkstat, gt_check_fwhm_dict(test)]
     PSF0Xfigs['BlueScreen'] = [plbaseclasses.BlueScreen, dict()]
     return PSF0Xfigs

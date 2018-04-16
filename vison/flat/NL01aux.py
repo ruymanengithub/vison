@@ -62,11 +62,11 @@ check_img_std_dict = dict(stats=['flu_std_img'],
 
 NL01figs = dict()
 NL01figs['NL01checks_offsets'] = [
-    trends.pl_basic_checkstat, check_offsets_dict.copy()]
+    trends.Fig_Basic_Checkstat, check_offsets_dict.copy()]
 NL01figs['NL01checks_stds'] = [
-    trends.pl_basic_checkstat, check_std_dict.copy()]
+    trends.Fig_Basic_Checkstat, check_std_dict.copy()]
 NL01figs['NL01checks_flu'] = [
-    trends.pl_basic_checkstat, check_img_flu_dict.copy()]
+    trends.Fig_Basic_Checkstat, check_img_flu_dict.copy()]
 NL01figs['NL01checks_imgstd'] = [
-    trends.pl_basic_checkstat, check_img_std_dict.copy()]
+    trends.Fig_Basic_Checkstat, check_img_std_dict.copy()]
 NL01figs['BlueScreen'] = [plbaseclasses.BlueScreen, dict()]

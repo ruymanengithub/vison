@@ -75,12 +75,12 @@ def gt_check_img_std_dict(test):
 def gt_PTC0Xfigs(test):
     PTC0Xfigs = dict()
     PTC0Xfigs['PTC0Xchecks_offsets'] = [
-        trends.pl_basic_checkstat, gt_check_offsets_dict(test)]
+        trends.Fig_Basic_Checkstat, gt_check_offsets_dict(test)]
     PTC0Xfigs['PTC0Xchecks_stds'] = [
-        trends.pl_basic_checkstat, gt_check_std_dict(test)]
+        trends.Fig_Basic_Checkstat, gt_check_std_dict(test)]
     PTC0Xfigs['PTC0Xchecks_flu'] = [
-        trends.pl_basic_checkstat, gt_check_img_flu_dict(test)]
+        trends.Fig_Basic_Checkstat, gt_check_img_flu_dict(test)]
     PTC0Xfigs['PTC0Xchecks_imgstd'] = [
-        trends.pl_basic_checkstat, gt_check_img_std_dict(test)]
+        trends.Fig_Basic_Checkstat, gt_check_img_std_dict(test)]
     PTC0Xfigs['BlueScreen'] = [plbaseclasses.BlueScreen, dict()]
     return PTC0Xfigs

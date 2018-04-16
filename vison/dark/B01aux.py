@@ -19,7 +19,7 @@ from collections import OrderedDict
 
 from vison.plot import baseclasses as plbaseclasses
 from vison.plot import trends
-#from vison.datamodel.cdp import CDP
+from vison.datamodel import cdp
 
 # END IMPORT
 
@@ -41,8 +41,18 @@ check_std_dict = dict(stats=['std_pre', 'std_img', 'std_ove'],
                                 suptitle='BIAS01-checks: std')
                       )
 
+
+
 B01figs = dict()
-B01figs['B01checks_offsets'] = [trends.pl_basic_checkstat, check_offsets_dict]
+B01figs['B01checks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]
 #B01figs['B01checks_stds'] = [plB01check,dict(stat='std')]
-B01figs['B01checks_stds'] = [trends.pl_basic_checkstat, check_std_dict]
+B01figs['B01checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
+B01figs['B01basic_prof1D_hor'] = []
+B01figs['B01basic_prof1D_ver'] = []
+B01figs['B01basic_histosRON'] = []
 B01figs['BlueScreen'] = [plbaseclasses.BlueScreen, dict()]
+
+
+RON_CDP = cdp.Tables_CDP()
+RON_CDP.rootname = 'RON_BIAS01'
+CDP_lib = dict(RON=RON_CDP)
