@@ -81,7 +81,7 @@ class Tables_CDP(CDP):
         super(Tables_CDP, self).__init__(*args, **kwargs)
         self.figs = OrderedDict()
         self.data = OrderedDict()
-        self.xlsx = None
+        self.report = None
 
     def ingest_inputs(self, data, meta=OrderedDict(), header=OrderedDict(), figs=OrderedDict()):
         """ """
@@ -98,7 +98,7 @@ class Tables_CDP(CDP):
         self.report.wb.create_sheet('Meta', 1)
 
         for i, k in enumerate(self.data.iterkeys()):
-            self.report.wb.create_sheet(k, i)
+            self.report.wb.create_sheet(k, i+2)
 
     def fill_Header(self, title=''):
         """ """
@@ -113,7 +113,7 @@ class Tables_CDP(CDP):
     def fill_Sheet(self, sheet):
         """ """
         df = self.data[sheet]
-        self.report.df_to_sheet(df, sheet, index=False, header=False)
+        self.report.df_to_sheet(df, sheet, index=True, header=True)
 
     def get_textable(self, sheet, caption=''):
         """ """
@@ -133,5 +133,6 @@ class Tables_CDP(CDP):
         """ """
         if filef == '':
             filef = os.path.join(self.path, '%s.xlsx' % self.rootname)
-
+        if os.path.exists(filef):
+            os.system('rm %s' % filef)
         self.report.save(filef)
