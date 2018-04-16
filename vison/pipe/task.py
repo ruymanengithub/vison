@@ -42,6 +42,7 @@ class Task(object):
     """ """
 
     from task_lib import check_HK, filterexposures, addHKPlotsMatrix, add_labels_to_explog
+    from task_lib import init_and_fill_CDP, save_CDP
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
