@@ -201,23 +201,28 @@ class BIAS01(DarkTask):
         profs1D2plot['ver'] = OrderedDict()
 
         for CCD in CCDs:
-            profs1D2plot['hor']['CCD%i' % CCD] = OrderedDict()
-            profs1D2plot['ver']['CCD%i' % CCD] = OrderedDict()
+            for tag in ['hor','ver']:
+                profs1D2plot[tag]['CCD%i' % CCD] = OrderedDict()
             for Q in Quads:
-                profs1D2plot['hor']['CCD%i' % CCD][Q] = []
-                profs1D2plot['ver']['CCD%i' % CCD][Q] = []
-
+                for tag in ['hor','ver']:
+                    profs1D2plot[tag]['CCD%i' % CCD][Q] = OrderedDict()
+                    profs1D2plot[tag]['CCD%i' % CCD][Q]['x'] = OrderedDict()
+                    profs1D2plot[tag]['CCD%i' % CCD][Q]['y'] = OrderedDict()
+                
+        
         if not self.drill:
 
             ccdpicklespath = self.inputs['subpaths']['ccdpickles']
             profilespath = self.inputs['subpaths']['profiles']
+            
+            
 
             for iObs in range(nObs):
 
                 OBSID = self.dd.mx['ObsID'][iObs]
 
                 for jCCD, CCD in enumerate(CCDs):
-
+                    
                     vstart = self.dd.mx['vstart'][iObs, jCCD]
                     vend = self.dd.mx['vend'][iObs, jCCD]
 
@@ -230,7 +235,8 @@ class BIAS01(DarkTask):
                         ccdpicklespath, '%s.pick' % ccdobj_name)
 
                     ccdobj = copy.deepcopy(cPickleRead(fullccdobj_name))
-
+                    
+                    
                     CDP_header['DATE'] = self.get_time_tag()
 
                     iprofiles1D = cdp.CDP()
@@ -280,15 +286,11 @@ class BIAS01(DarkTask):
 
                         iprofiles1D.data[Q]['hor'] = copy.deepcopy(hor1Dprof)
                         iprofiles1D.data[Q]['ver'] = copy.deepcopy(ver1Dprof)
-
-                        profs1D2plot['hor']['CCD%i' %
-                                            CCD][Q].append(hor1Dprof.data.copy())
-                        profs1D2plot['hor']['CCD%i' %
-                                            CCD][Q][-1].update(dict(label='OBS%i' % OBSID))
-                        profs1D2plot['ver']['CCD%i' %
-                                            CCD][Q].append(ver1Dprof.data.copy())
-                        profs1D2plot['ver']['CCD%i' %
-                                            CCD][Q][-1].update(dict(label='OBS%i' % OBSID))
+                        
+                        for oritag in ['hor','ver']:
+                            for axtag in ['x','y']:
+                                profs1D2plot[oritag]['CCD%i' %
+                                                    CCD][Q][axtag]['OBS%i' % OBSID]  = hor1Dprof.data[axtag]
 
                     # save (2D model and) profiles in a pick file for each OBSID-CCD
 
@@ -305,19 +307,20 @@ class BIAS01(DarkTask):
                     # cPickleDumpDictionary(profiles,fprofilespickf)
 
                     self.dd.mx['profiles1D_name'][iObs,
-                                                  jCCD] = iprofiles1D.rootname
-                    self.dd.mx['mods2D_name'][iObs,
-                                              jCCD] = iprofiles2D.rootname
+                              jCCD] = iprofiles1D.rootname
+                    self.dd.mx['mods2D_name'][iObs,jCCD] = iprofiles2D.rootname
 
         # PLOTS
         # profiles 1D (Hor & Ver) x (CCD&Q)
         # histograms of RON per CCD&Q
         
-        figkeys = ['B01basic_prof1D_hor','B01basic_prof1D_ver',
-        'B01basic_histosRON']
+        figkeys = ['B01basic_prof1D_hor','B01basic_prof1D_ver','B01basic_histosRON']
+        self.figdict['B01basic_prof1D_hor'][1]['data'] = profs1D2plot['hor']
+        self.figdict['B01basic_prof1D_ver'][1]['data'] = profs1D2plot['ver']
+        #self.figdict['B01basic_histosRON'][1]['data'] = None # PENDING
+        
         self.addFigures_ST(figkeys=figkeys)
         
-
         # REPORTS
         # Table with median (Best Estimate) values of RON per CCD&Q
         # NEEDS REFACTORING!! (move somewhere else, abstractize it and recycle)
@@ -363,10 +366,10 @@ class BIAS01(DarkTask):
                    stack all ObsIDs to produce Master Bias
                    measure average profile along rows
                    measure average profile along cols
-            plot average profiles of Master Bias f. each Q
+            plot average profiles of Master Bias(s) f. each CCD,Q
             produce table(s) with summary of results, include in report
-            show Master Bias (image), include in report
-            save name of MasterBias to DataDict, report
+            show Master Bias(s) (3 images), include in report
+            save name of MasterBias(s) to DataDict, report
 
         """
 

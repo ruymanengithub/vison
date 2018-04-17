@@ -62,7 +62,9 @@ basic_prof1Dver_dict = dict(
 basic_histosRON_dict = dict(
         figname='BIAS01_RON_distro_allOBSIDs.png',
         caption='BIAS01: RON distribution',
-        meta = dict(
+        meta = dict(doLegend=False,
+                ylabel='N',
+                xlabel='RON [ADU]',
                 suptitle='BIAS01: RON Distribution'),
         )
 
