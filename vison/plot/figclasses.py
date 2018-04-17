@@ -15,7 +15,7 @@ import numpy as np
 from collections import defaultdict
 from itertools import product
 from functools import reduce
-import baseplotclasses
+from vison.plot import baseplotclasses
 
 from matplotlib import pyplot as plt
 # END IMPORT
@@ -29,7 +29,7 @@ def setInDict(dataDict,mapList,value):
 
 class Fig(object):
     
-    plotclass = None
+    plotclass = lambda x: None
 
     def __init__(self, figname=''):
 
@@ -56,9 +56,12 @@ class Fig(object):
         """ """
         plotobj = self.plotclass(self.data,**kwargs)
         plotobj.render(self.figname)
+        
+    def build_data(self,*args,**kwargs):
+        return None
 
 class Fig_Beam2DPlot(Fig):
-    plotclass = baseplotclasses.BeamPlotXvY
+    plotclass = baseplotclasses.BeamPlotYvX
 
 class Fig_Beam1DHist(Fig):
     plotclass = baseplotclasses.Beam1DHist
@@ -67,7 +70,7 @@ class Fig_Beam1DHist(Fig):
 class Fig_XY_fromDD(Fig):
 
     
-    def _build_data_xvsy(self,ddmx,indicesDict,indicesList,labels,trendaxis):
+    def _build_data_yvsx(self,ddmx,indicesDict,indicesList,labels,trendaxis):
         
         plnames = ['x','y']
     
@@ -142,7 +145,7 @@ class BlueScreen(Fig):
         path = defaults['path']
         self.figname = os.path.join(path, self.figname % defaults['tag'])
 
-    def build_data(self, parent):
+    def build_data(self,*args,**kwargs):
         """ """
         self.data = plt.imread(self.rootfigure)
 

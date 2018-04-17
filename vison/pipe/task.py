@@ -167,7 +167,7 @@ class Task(object):
                 for _pathkey in self.inputs['subpaths'].keys():
                     subpath = self.inputs['subpaths'][_pathkey]
                     os.system('rm -r %s/*' % subpath)
-
+ 
             # Initialising Report Object
 
             if todo_flags['report']:
@@ -348,7 +348,10 @@ class Task(object):
             raise RuntimeError
 
         figobj.configure(**kwargs)
-        figobj.build_data(self)
+        if 'data' in kwargs:
+            figobj.data = copy.deepcopy(kwargs['data'])
+        else:
+            figobj.build_data(self)
         if 'meta' in kwargs:
             meta = kwargs['meta']
         else:

@@ -93,7 +93,7 @@ class CCD2DPlot(BasicPlot):
 
         self.figsize = (8, 8)
         self.Quads = ['E', 'F', 'H', 'G']
-        self.data = data
+        self.data = copy.deepcopy(data)
         self.meta = dict()
         self.meta.update(defaults)
         self.meta.update(meta)
@@ -165,7 +165,7 @@ class BeamPlot(BasicPlot):
     
     def __init__(self, data, **kwargs):
 
-        super(BeamPlotYvX, self).__init__(**kwargs)
+        super(BeamPlot, self).__init__(**kwargs)
 
         meta = dict(suptitle='', ccdtitles=dict(CCD1='CCD1', CCD2='CCD2', CCD3='CCD3'),
                     doLegend=False,
@@ -175,7 +175,7 @@ class BeamPlot(BasicPlot):
         self.figsize = (15, 6)
         self.Quads = ['E', 'F', 'H', 'G']
         self.CCDs = [1, 2, 3]
-        self.data = data.copy()
+        self.data = copy.deepcopy(data)
         self.meta = meta.copy()
         self.handles = []
         self.labels = []
