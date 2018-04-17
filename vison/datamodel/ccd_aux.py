@@ -308,6 +308,9 @@ def get_1Dprofile(ccdobj, Q, orient='hor', area='img', stacker='mean', vstart=0,
         stackaxis = 0
 
     y = stacker_dict[stacker](subregion, axis=stackaxis)
+    
+    # BUG! This conversion of coordinates is WRONG (given "subregion")
+    print 'BUG! in ccd_aux.get_1Dprofile'
 
     if orient == 'hor':
         if Q in ['E', 'H']:
