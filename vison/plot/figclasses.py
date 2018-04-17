@@ -58,10 +58,11 @@ class Fig(object):
         plotobj.render(self.figname)
 
 class Fig_Beam2DPlot(Fig):
-    plotclass = baseplotclasses.Beam2DPlot
+    plotclass = baseplotclasses.BeamPlotXvY
 
 class Fig_Beam1DHist(Fig):
-    plotclass = baseplotclasses.Hist1DPlot
+    plotclass = baseplotclasses.Beam1DHist
+    
 
 class Fig_XY_fromDD(Fig):
 

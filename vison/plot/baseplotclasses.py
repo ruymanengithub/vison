@@ -50,7 +50,7 @@ class BasicPlot(object):
             self.fig = kwargs['fig']
         self.axs = []
 
-    def axmethod(self):
+    def populate_axes(self):
         raise NotImplementedError("Subclass must implement abstract method")
 
     def plt_trimmer(self):
@@ -64,7 +64,7 @@ class BasicPlot(object):
 
         self.init_fig()
 
-        self.axmethod()
+        self.populate_axes()
 
         self.plt_trimmer()
 
@@ -101,7 +101,7 @@ class CCD2DPlot(BasicPlot):
         self.handles = []
         self.labels = []
 
-    def axmethod(self):
+    def populate_axes(self):
 
         qtitles = self.meta['qtitles']
 
@@ -160,11 +160,12 @@ class CCD2DPlot(BasicPlot):
             plt.subplots_adjust(right=0.85)
 
 
-class Beam2DPlot(BasicPlot):
-
+class BeamPlot(BasicPlot):
+    """ """
+    
     def __init__(self, data, **kwargs):
 
-        super(Beam2DPlot, self).__init__(**kwargs)
+        super(BeamPlotYvX, self).__init__(**kwargs)
 
         meta = dict(suptitle='', ccdtitles=dict(CCD1='CCD1', CCD2='CCD2', CCD3='CCD3'),
                     doLegend=False,
@@ -180,11 +181,11 @@ class Beam2DPlot(BasicPlot):
         self.labels = []
         self.fig = None
         self.axs = dict()
-    
+
     def init_fig(self):
-        self.init_fig_and_axes()
+        self._init_fig_and_axes()
     
-    def init_fig_and_axes(self):
+    def _init_fig_and_axes(self):
         """ """
         plt.close('all')
         fig, axsarr = plt.subplots(
@@ -208,60 +209,57 @@ class Beam2DPlot(BasicPlot):
             CCDkey = 'CCD%i' % plotlist[k-1][0]
             Q = plotlist[k-1][1]
             self.axs[CCDkey][Q] = axsarr.flatten()[k-1]
-        
-    
-    def axmethod(self):
+
+
+    def populate_axes(self):
         """ """
         
         for CCD in self.CCDs:
             CCDkey = 'CCD%i' % CCD
             for Q in self.Quads:
                 
+                ax = self.axs[CCDkey][Q]
+                CQdict = self.data[CCDkey][Q]
+                
                 try:
-                    xkeys = self.data[CCDkey][Q]['x'].keys()
+                    xkeys = CQdict['x'].keys()
                 except AttributeError:
                     xkeys = None
     
                 if xkeys is not None:
-                    ykeys = self.data[CCDkey][Q]['y'].keys()
+                    ykeys = CQdict['y'].keys()
                     isconsistent = np.all([xkeys[i] == ykeys[i]
                                            for i in range(len(xkeys))])
                     assert (len(xkeys) == len(ykeys)) and isconsistent
-    
+                           
+                    
                     for key in xkeys:
-                        xarr = self.data[CCDkey][Q]['x'][key]
-                        yarr = self.data[CCDkey][Q]['y'][key]
-                        label = st.replace(key, '_', '\_')
-                        try: handle = self.axs[CCDkey][Q].plot(xarr, yarr, label=label)
-                        except: stop()
-    
+                        handle, label = self._ax_core_funct(ax,CQdict,key)
                         if Q == 'E' and CCD == 1:
                             self.handles += handle
                             self.labels.append(label)
                 else:
-                    xarr = self.data[CCDkey][Q]['x']
-                    yarr = self.data[CCDkey][Q]['y']
-                    self.axs[CCDkey][Q].plot(xarr, yarr)
+                    _, _ = self._ax_core_funct(ax,CQdict)
     
                 if Q in ['E', 'H']:
-                    self.axs[CCDkey][Q].text(0.05, 0.9, Q, horizontalalignment='left',
+                    ax.text(0.05, 0.9, Q, horizontalalignment='left',
                                              transform=self.axs[CCDkey][Q].transAxes)
                 elif Q in ['F', 'G']:
-                    self.axs[CCDkey][Q].text(0.9, 0.9, Q, horizontalalignment='right',
+                    ax.text(0.9, 0.9, Q, horizontalalignment='right',
                                              transform=self.axs[CCDkey][Q].transAxes)
     
                 if Q == 'E':
-                    self.axs[CCDkey][Q].set_title(CCDkey, x=1)
+                    ax.set_title(CCDkey, x=1)
     
                 if self.meta['doNiceXDate']:
-                    _xticks = self.axs[CCDkey][Q].get_xticks()
+                    _xticks = ax.get_xticks()
                     if len(_xticks) > 6:
-                        self.axs[CCDkey][Q].set_xticks(_xticks[::2])
+                        ax.set_xticks(_xticks[::2])
     
                 if 'xlabel' in self.meta and Q in ['H', 'G']:
-                    self.axs[CCDkey][Q].set_xlabel(self.meta['xlabel'])
+                    ax.set_xlabel(self.meta['xlabel'])
                 if 'ylabel' in self.meta and Q in ['E', 'H'] and CCD == 1:
-                    self.axs[CCDkey][Q].set_ylabel(self.meta['ylabel'])
+                    ax.set_ylabel(self.meta['ylabel'])
 
             # self.axs[CCDkey][Q].locator_params(nticks=4,axis='x')
 
@@ -304,6 +302,50 @@ class Beam2DPlot(BasicPlot):
             plt.subplots_adjust(right=0.85)
 
 
+class BeamPlotYvX(BeamPlot):
+    
+    def _ax_core_funct(self,ax,CQdict,key=''):
+        
+        if key != '':
+            xarr = CQdict['x'][key]
+            yarr = CQdict['y'][key]
+            label = st.replace(key, '_', '\_')
+            handle = ax.plot(xarr, yarr, label=label)
+        else:
+            xarr = CQdict['x']
+            yarr = CQdict['y']
+            ax.plot(xarr, yarr)
+            handle, label = None, None
+        
+        return handle, label
+    
+class Beam1DHist(BeamPlot):
+    """ """
+    
+    def _ax_core_funct(self,ax,CQdict,key=''):
+        
+        hist_kwargs = dict(range=None,density=False,weights=None,
+                           cumulative=False,histtype='bar',align='mid',
+                           orientation='vertical',log=False)
+        for key in hist_kwargs.keys():
+            if key in self.meta:
+                hist_kwargs[key] = self.meta[key]
+        
+        if key != '':
+            label = st.replace(key, '_', '\_')
+            bins = CQdict['bins'][key]
+            x = CQdict['x'][key]
+            hist_kwargs['label'] = label
+        else:
+            bins = CQdict['bins']
+            x = CQdict['x']
+            label = None
+
+        _, _, patch = ax.hist(x, bins, **hist_kwargs)
+            
+        return patch, label
+    
+
 class ImgShow(BasicPlot):
 
     def __init__(self, data, **kwargs):
@@ -317,9 +359,8 @@ class ImgShow(BasicPlot):
         self.meta = dict()
         self.meta.update(defaults)
         self.meta.update(kwargs)
-    
 
-    def axmethod(self):
+    def populate_axes(self):
         """ """
         self.axs = [self.fig.add_subplot(111)]
         self.axs[0].imshow(self.data)
@@ -344,7 +385,7 @@ def testBeam2DPlot():
                 CCD3=copy.deepcopy(ccddict))
 
     meta = dict(suptitle='Test', doLegend=True)
-    beam2dplot = Beam2DPlot(data, meta=meta)
+    beam2dplot = BeamPlotYvX(data, meta=meta)
 
     beam2dplot.render(figname='')
 

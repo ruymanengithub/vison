@@ -34,7 +34,7 @@ class Fig_Basic_Checkstat(figclasses.Fig_XY_fromDD):
         self.caption = ''
         self.texfraction = 1.1
         self.data = dict()
-        self.plotclass = baseplotclasses.Beam2DPlot
+        self.plotclass = baseplotclasses.BeamPlotYvX
         
     def build_data(self,parent):
         """ """
