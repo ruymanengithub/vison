@@ -118,7 +118,7 @@ class Tables_CDP(CDP):
     def get_textable(self, sheet, caption=''):
         """ """
         tex = self.data[sheet].to_latex(
-            multicolumn=True, multirow=True, longtable=True, index=False)
+            multicolumn=True, multirow=True, longtable=True, index=True)
         tex = st.split(tex, '\n')
         if caption != '':
             tex.insert(-2, r'\caption{%s}' % caption)

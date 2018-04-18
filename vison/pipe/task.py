@@ -348,10 +348,10 @@ class Task(object):
             raise RuntimeError
 
         figobj.configure(**kwargs)
-        if 'data' in kwargs:
-            figobj.data = copy.deepcopy(kwargs['data'])
-        else:
+        if kwargs['dobuild']:
             figobj.build_data(self)
+        else:
+            figobj.data = copy.deepcopy(kwargs['data'])
         if 'meta' in kwargs:
             meta = kwargs['meta']
         else:
@@ -533,7 +533,7 @@ class Task(object):
         if (not HK_perf_ok) or (not HK_safe_ok):
             self.dd.flags.add('HK_OOL')
 
-    def addFigures_ST(self, **kwargs):
+    def addFigures_ST(self, dobuilddata=True, **kwargs):
         """ """
         try:
             figkeys = kwargs['figkeys']
@@ -546,6 +546,7 @@ class Task(object):
             try:
                 pmeta = self.figdict[figkey][1]
                 pmeta['path'] = figspath
+                pmeta['dobuilddata'] = dobuilddata
                 self.doPlot(figkey, **pmeta)
                 self.addFigure2Report(figkey)
             except:
