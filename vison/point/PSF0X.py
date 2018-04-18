@@ -58,6 +58,7 @@ from PointTask import PointTask
 import PSF0Xaux
 from vison.image import performance
 from vison.datamodel import inputs
+from vison.support.files import cPickleRead
 # END IMPORT
 
 isthere = os.path.exists
@@ -237,72 +238,26 @@ class PSF0X(PointTask):
         return super(PSF0X, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=False,
                                                   wavedkeys=wavedkeys)
 
-    # def prep_data(dd,report,inputs,log=None):
-
     def prep_data(self):
         """
 
         PSF0X: Preparation of data for further analysis.
+        Calls task.prepare_images().
 
-        **METACODE**
+        Applies (per CCD  & Q):
+            cosmetics masking 
+            offset subtraction
+            bias subtraction
+            FF division
 
-        ::
-            f.e. ObsID:
-                f.e.CCD:                
-                    apply cosmetic mask, if available
-                    f.e.Q:
-                        subtract offset
-                    subtract superbias, if available
-                    divide by flat-field, if available
-
-                    save image as a datamodel.ccd.CCD object.                
-                    cuts-out and save stamps of pre-processed spots for further analysis.
+            per spot:               
+                cuts-out and save stamps of pre-processed spots for further analysis.
+    
 
         """
-
-        if self.report is not None:
-            self.report.add_Section(
-                keyword='prep_data', Title='Data Pre-Processing', level=0)
-
-        # Inputs un-packing
-
-        doMask = False
-        doBias = False
-        doOffset = True
-        doFlats = False
-
-        if 'mask' in self.inputs['inCDPs']:
-            Maskdata = calibration.load_FITS_CDPs(
-                self.inputs['inCDPs']['Mask'], ccd.CCD)
-            doMask = True
-            if self.log is not None:
-                masksstr = self.inputs['inCDPs']['Mask'].__str__()
-                masksstr = st.replace(masksstr, ',', ',\n')
-                self.log.info('Applying cosmetics mask')
-                self.log.info(masksstr)
-
-        if 'bias' in self.inputs['inCDPs']:
-            Biasdata = calibration.load_FITS_CDPs(
-                self.inputs['inCDPs']['Bias'], ccd.CCD)
-            doBias = True
-            if self.log is not None:
-                biasstr = self.inputs['inCDPs']['Bias'].__str__()
-                biasstr = st.replace(biasstr, ',', ',\n')
-                self.log.info('Subtracting Bias')
-                self.log.info(biasstr)
-
-        if 'FF' in self.inputs['inCDPs']:
-            FFdata = calibration.load_FITS_CDPs(
-                self.inputs['inCDPs']['FF'], FFing.FlatField)
-            doFlats = True
-            if self.log is not None:
-                FFstr = self.inputs['inCDPs']['FF'].__str__()
-                FFstr = st.replace(FFstr, ',', ',\n')
-                self.log.info('Dividing by Flat-Fields')
-                self.log.info(FFstr)
-
-        # INDEX HANDLING
-
+        super(PSF0X, self).prepare_images(
+            doExtract=True, doMask=True, doOffset=True, doBias=True, doFF=True)
+        
         dIndices = copy.deepcopy(self.dd.indices)
 
         CCDs = dIndices[dIndices.names.index('CCD')].vals
@@ -312,20 +267,19 @@ class PSF0X(PointTask):
         nObs = dIndices[dIndices.names.index('ix')].len
         SpotNames = dIndices[dIndices.names.index('Spot')].vals
         nSpots = len(SpotNames)
-
+        
         CIndices = copy.deepcopy(dIndices)
         CIndices.pop(CIndices.names.index('Quad'))
         CIndices.pop(CIndices.names.index('Spot'))
-
+        
+        
         # INITIALIZATIONS
 
-        self.dd.initColumn('ccdobj_name', CIndices,
-                           dtype='S100', valini='None')
         self.dd.initColumn('spots_name', CIndices, dtype='S100', valini='None')
-
+        
         if not self.drill:
 
-            rpath = self.inputs['resultspath']
+            #rpath = self.inputs['resultspath']
             picklespath = self.inputs['subpaths']['ccdpickles']
             spotspath = self.inputs['subpaths']['spots']
 
@@ -334,35 +288,11 @@ class PSF0X(PointTask):
                 for jCCD, CCD in enumerate(CCDs):
 
                     CCDkey = 'CCD%i' % CCD
-
-                    self.dd.mx['ccdobj_name'][iObs,
-                                              jCCD] = '%s_proc' % self.dd.mx['File_name'][iObs, jCCD]
-
-                    dpath = self.dd.mx['datapath'][iObs, jCCD]
-                    infits = os.path.join(dpath, '%s.fits' %
-                                          self.dd.mx['File_name'][iObs, jCCD])
-
-                    ccdobj = ccd.CCD(infits)
-
+                    
                     fullccdobj_name = os.path.join(
                         picklespath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs, jCCD])
-
-                    if doMask:
-                        ccdobj.get_mask(Maskdata[CCDkey].extensions[-1])
-
-                    if doOffset:
-                        for Quad in Quads:
-                            ccdobj.sub_offset(Quad, method='median', scan='pre', trimscan=[5, 5],
-                                              ignore_pover=False)
-                    if doBias:
-                        ccdobj.sub_bias(
-                            Biasdata[CCDkey].extensions[-1], extension=-1)
-
-                    if doFlats:
-                        ccdobj.divide_by_flatfield(
-                            FFdata[CCDkey].extensions[1].data, extension=-1)
-
-                    ccdobj.writeto(fullccdobj_name, clobber=True)
+                    
+                    ccdobj = copy.deepcopy(cPickleRead(fullccdobj_name))
 
                     # Cut-out "spots"
 
@@ -391,9 +321,9 @@ class PSF0X(PointTask):
                     files.cPickleDumpDictionary(spotsdict, fullspots_name)
 
         if self.log is not None:
-            self.log.info('Saved spot "bag" files to %s' % rpath)
+            self.log.info('Saved spot "bag" files to %s' % spotspath)
+        
 
-    # def basic_analysis(dd,report,inputs,log=None):
 
     def basic_analysis(self):
         """Performs basic analysis on spots:
