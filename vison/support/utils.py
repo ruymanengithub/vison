@@ -30,7 +30,7 @@ def get_function_module(level=1, reference='vison'):
     mod_path_split = st.split(mod_path, sep=os.path.sep)
     try:
         ixref = mod_path_split.index(reference)
-    except:
+    except ValueError:
         ixref = 0
     module = os.path.join(*mod_path_split[ixref:])
 
