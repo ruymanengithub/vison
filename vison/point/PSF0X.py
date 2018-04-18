@@ -40,19 +40,14 @@ import warnings
 import copy
 from collections import OrderedDict
 
-from vison.datamodel import core
-from vison.datamodel import ccd
-from vison.pipe import lib as pilib
 from vison.support import context
 from vison.point import lib as polib
 from vison.ogse import ogse
 #from vison.datamodel import HKtools
 from vison.datamodel import scriptic as sc
-from vison.flat import FlatFielding as FFing
 #from vison.point import lib as polib
 #from vison.support.report import Report
 from vison.support import files
-from vison.image import calibration
 #from vison.pipe.task import Task
 from PointTask import PointTask
 import PSF0Xaux
