@@ -10,7 +10,8 @@ Created on Thu Nov  2 16:54:28 2017
 
 
 def load_FITS_CDPs(FDict, dataclass):
-
+    """Dummy function to load CDPs for all 3 CCDs.
+    Input is of type dict(CCD1='',CCD2='',CCD3='')"""
     # Load File for each CCD
 
     data = dict()
