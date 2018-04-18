@@ -314,12 +314,14 @@ class BIAS01(DarkTask):
         # profiles 1D (Hor & Ver) x (CCD&Q)
         # histograms of RON per CCD&Q
         
-        figkeys = ['B01basic_prof1D_hor','B01basic_prof1D_ver','B01basic_histosRON']
+        figkeys1 = ['B01basic_prof1D_hor','B01basic_prof1D_ver'] 
         self.figdict['B01basic_prof1D_hor'][1]['data'] = profs1D2plot['hor']
         self.figdict['B01basic_prof1D_ver'][1]['data'] = profs1D2plot['ver']
+        self.addFigures_ST(figkeys=figkeys1,dobuilddata=False)
+        #figkeys2 = ['B01basic_histosRON']
         #self.figdict['B01basic_histosRON'][1]['data'] = None # PENDING
+        #self.addFigures_ST(figkeys=figkeys2,dobuilddata=True) # PENDING
         
-        self.addFigures_ST(figkeys=figkeys)
         
         # REPORTS
         # Table with median (Best Estimate) values of RON per CCD&Q
