@@ -9,13 +9,11 @@ Created on Thu Mar 17 13:18:10 2016
 
 @author: Ruyman Azzollini
 """
-
+from pdb import set_trace as stop
 from optparse import OptionParser
 import sys
 import os
 from glob import glob
-import string as st
-from pdb import set_trace as stop
 
 #from vison.support.ds9 import ds9class
 try:
@@ -27,9 +25,7 @@ except ImportError:
 isthere = os.path.exists
 
 if __name__ == '__main__':
-    """ 
 
-    """
     usage = 'usage: %prog [options] arg1 [arg2]'
     parser = OptionParser(usage)
     parser.add_option("-p", "--path", dest="path", default='',
@@ -65,7 +61,7 @@ if __name__ == '__main__':
         try:
             FITS = glob(tantFITS)[0]
             FITSlist.append(FITS)
-        except:
+        except IOError:
             sys.exit("Image %s not found!" % tantFITS)
 
     try:

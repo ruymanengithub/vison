@@ -51,10 +51,7 @@ class Flags(object):
         self.dict = flagsdict
 
     def isflagon(self, flag):
-        if self.value & self.dict[flag][0] == self.dict[flag][0]:
-            return True
-        else:
-            return False
+        return bool(self.value & self.dict[flag][0] == self.dict[flag][0])
 
     def add(self, flag):
         self.value |= self.dict[flag][0]
