@@ -45,7 +45,6 @@ def explog_merger(ELlist, output='EXP_LOG_merged.txt', elvis=context.elvis):
 
 
 if __name__ == '__main__':
-    """ """
 
     parser = OptionParser()
 

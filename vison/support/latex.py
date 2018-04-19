@@ -17,9 +17,6 @@ from pdb import set_trace as stop
 import os
 from vison import data
 import string as st
-#import numpy as num
-#from PIL import Image
-#import string as st
 
 # END IMPORT
 
