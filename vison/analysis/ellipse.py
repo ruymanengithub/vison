@@ -9,8 +9,9 @@ Auxiliary module with functions to generate generalized ellipse masks.
 """
 
 # IMPORT STUFF
-import numpy as np
 from pdb import set_trace as stop
+import collections
+import numpy as np
 from scipy.special import gamma
 # END IMPORT
 
@@ -29,7 +30,7 @@ def dist_superellipse(n, center, q=1, pos_ang=0., c=0.):
     order to get expected results. Nonetheless, the polar angle means the 
     counter-clock wise angle with respect to the 'y' axis.
 
-    :param n: shape of array (N1,N2)
+    :param n: shape of array (N1,N2), it can be an integer (squared shape NxN)
     :param center: center of superellipse radii: (c1,c2)
     :param q: axis ratio r2/r1
     :param pos_ang: position angle of isophotes, in degrees, CCW from axis 1
@@ -40,17 +41,17 @@ def dist_superellipse(n, center, q=1, pos_ang=0., c=0.):
 
     # CHECK INPUTS
 
-    criterio1 = type(n) in (type(1), type(1.0)) or \
-        type(n) == type(()) and len(n) == 2
+    criterio1 = isinstance(n,int) or isinstance(n,float)\
+        (isinstance(n,collections.Sequence) and len(n) == 2)
 
     assert criterio1, 'n must be an scalar or a 2 elements tuple'
 
-    if type(n) in (type(1), type(1.0)):
-        n = float(n)
-    if type(n) == 'tuple':
+    if not isinstance(n,collections.Sequence):
+        n = (float(n),float(n))
+    else:
         n = tuple([float(x) for x in n])
 
-    criterio2 = 'int' in str(type(q)) or 'float' in str(type(q))
+    criterio2 = isinstance(q,(int,float))
 
     if not criterio2:
         print 'q must be an integer or float'
@@ -63,7 +64,7 @@ def dist_superellipse(n, center, q=1, pos_ang=0., c=0.):
     if criterio2 and criterio3:
         q = float(q)
 
-    criterio4 = 'int' in str(type(pos_ang)) or 'float' in str(type(pos_ang))
+    criterio4 = isinstance(pos_ang,(int,float))
     if not criterio4:
         print 'pos_ang must be an integer or float'
         criterio5 = 'False'
@@ -75,13 +76,13 @@ def dist_superellipse(n, center, q=1, pos_ang=0., c=0.):
     if criterio4 and criterio5:
         pos_ang = float(pos_ang)
 
-    criterio6 = 'int' in str(type(c)) or 'float' in str(type(c))
+    criterio6 = isinstance(c,(int,float))
     if not criterio6:
         print 'c must be an integer or float'
     else:
         c = float(c)
 
-    criterio7 = type(center) == type(()) and len(center) == 2
+    criterio7 = isinstance(center,collections.Sequence) and len(center) == 2
     if not criterio7:
         print 'center must be a 2 element tuple'
     else:
@@ -92,34 +93,32 @@ def dist_superellipse(n, center, q=1, pos_ang=0., c=0.):
     criterios = reduce(np.logical_and, np.array([criterio1, criterio2, criterio3,
                                                  criterio4, criterio5, criterio6, criterio7]))
 
-    if criterios:
+    if not criterios:
+        return np.array([0.0])
 
-        radeg = 180. / np.pi
+    radeg = 180. / np.pi
 
-        ang = pos_ang / radeg
-        cosang = np.cos(ang)
-        sinang = np.sin(ang)
+    ang = pos_ang / radeg
+    cosang = np.cos(ang)
+    sinang = np.sin(ang)
 
-        if len(n) == 2:
-            nx = n[1]
-            ny = n[0]
-        else:
-            nx = ny = n
-
-        x = np.arange(nx, dtype='Float32') - center[1]
-        y = np.arange(ny, dtype='Float32') - center[0]
-        im = np.zeros(shape=(ny, nx), dtype='Float32')
-        xcosang = x * cosang
-        xsinang = x * sinang
-
-        for i in range(ny):
-            xtemp = xcosang + y[i] * sinang
-            ytemp = -xsinang + y[i] * cosang
-            im[i, :] = ((np.abs(xtemp/q))**(c+2.) +
-                        (np.abs(ytemp))**(c+2.))**(1./(c+2.))
-
+    if len(n) == 2:
+        nx = n[1]
+        ny = n[0]
     else:
-        im = np.array([0.0])
+        nx = ny = n
+
+    x = np.arange(nx, dtype='Float32') - center[1]
+    y = np.arange(ny, dtype='Float32') - center[0]
+    im = np.zeros(shape=(ny, nx), dtype='Float32')
+    xcosang = x * cosang
+    xsinang = x * sinang
+
+    for i in range(ny):
+        xtemp = xcosang + y[i] * sinang
+        ytemp = -xsinang + y[i] * cosang
+        im[i, :] = ((np.abs(xtemp/q))**(c+2.) +
+                    (np.abs(ytemp))**(c+2.))**(1./(c+2.))
 
     return im
 
