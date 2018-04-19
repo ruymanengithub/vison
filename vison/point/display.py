@@ -33,6 +33,11 @@ import matplotlib.pyplot as plt
 
 def show_spots_allCCDs(spots_bag, title='', filename='', dobar=True):
     """ """
+    imgs = get_spots_images_allCCDs(spots_bag)
+    doplot_spots_allCCDs(imgs,title=title,filename=filename)
+    
+
+def get_spots_images_allCCDs(spots_bag):
 
     Quads = ['E', 'F', 'H', 'G']  # not a typo
 
@@ -66,6 +71,10 @@ def show_spots_allCCDs(spots_bag, title='', filename='', dobar=True):
                             y1 = y0+ny
                             iimg[x0:x1, y0:y1] = stamp.copy()
         imgs.append(iimg)
+
+    return imgs
+
+def doplot_spots_allCCDs(imgs,title='',filename=''):
 
     fig = plt.figure(figsize=(12, 6))
     axs = []

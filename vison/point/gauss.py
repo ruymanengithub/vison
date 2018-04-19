@@ -21,7 +21,7 @@ from pdb import set_trace as stop
 import numpy as np
 from astropy.modeling import models, fitting
 
-from basis import SpotBase
+from vison.point.basis import SpotBase
 # END IMPORT
 
 
@@ -82,8 +82,11 @@ class Gaussmeter(SpotBase):
         try:
             eparams = np.diag(fit_p.fit_info['param_cov'])**0.5
         except:
+            Emsg = 'Gaussmeter.fit_Gauss did not converge'
             if self.log is not None:
-                self.log.info('Gaussmeter.fit_Gauss did not converge')
+                self.log.info(Emsg)
+            else:
+                print Emsg
             eparams = np.zeros_like(params)+np.nan
 
         return params, eparams
