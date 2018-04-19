@@ -35,6 +35,7 @@ from PIL import Image, ImageTk
 from vison.eyegore.eyeHK import HKDisplay, HKFlags
 from vison.eyegore.eyeCCDs import ImageDisplay
 from vison.eyegore.eyeObs import ExpLogDisplay
+from vison.eyegore import eyeWarnings
 from vison.support import context
 from vison.support import logger as lg
 from vison import __version__
@@ -69,9 +70,11 @@ def rsync_to_altlocalpath(path, altpath):
 
 class Eyegore(tk.Tk):
     """ """
+    
 
     def __init__(self, path, broadcast, intervals=None,
-                 elvis=context.elvis, dolite=False, altpath='',dolog=True):
+                 elvis=context.elvis, dolite=False, altpath='', 
+                 doWarnings = False, dolog=True):
         """ """
         tk.Tk.__init__(self)
         
@@ -100,8 +103,12 @@ class Eyegore(tk.Tk):
                            'vison version: %s\n' % __version__])
         else:
             self.log = None
-
-
+        
+        if doWarnings:
+            self.Warnings = eyeWarnings.EyeWarnings()
+        else:
+            self.Warnings = False
+        
         self.setup_MasterWG()
 
         self.run()
@@ -199,6 +206,8 @@ if __name__ == '__main__':
                       help="rsync to an alternative local path.")
     parser.add_option("-g", "--log", dest="dolog", action="store_true", default=True,
                       help="keep a log")
+    parser.add_option("-W","--Warnings",dest="doWarnings",action="store_true",default=False,
+                      help="Raise warnings (via email and/or phone) if critical HK is OOL.")
 
     (options, args) = parser.parse_args()
 
@@ -218,6 +227,7 @@ if __name__ == '__main__':
 
     dolite = bool(options.lite)
     dolog = bool(options.dolog)
+    doWarnings = bool(options.doWarnings)
 
     if not os.path.exists(path):
         sys.exit('HKmonitory.py: %s does not exist' % path)
@@ -235,4 +245,5 @@ if __name__ == '__main__':
         print header % path
 
     app = Eyegore(path, broadcast=broadcast, elvis=elvis,
-                  dolite=dolite, altpath=altpath, dolog=dolog)
+                  dolite=dolite, altpath=altpath, doWarnings=doWarnings,
+                  dolog=dolog)
