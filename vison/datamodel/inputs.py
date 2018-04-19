@@ -92,7 +92,6 @@ class ChildInputs(Inputs):
 
 
 if __name__ == '__main__':
-    """ """
 
     inputs = ChildInputs([('b', 2.)], a=1., c=2)
 

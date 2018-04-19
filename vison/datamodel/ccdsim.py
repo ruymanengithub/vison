@@ -18,8 +18,10 @@ import numpy as np
 # END IMPORT
 
 
-def simadd_flatilum(ccdobj, levels=dict(E=0., F=0., G=0., H=0.), extension=-1):
+def simadd_flatilum(ccdobj, levels=None, extension=-1):
     """ """
+    if levels is None:
+        levels = dict(E=0., F=0., G=0., H=0.)
 
     for Q in ccdobj.Quads:
         quaddata = ccdobj.get_quad(Q, canonical=True, extension=extension)
@@ -71,7 +73,10 @@ def simadd_points(ccdobj, flux, fwhm, CCDID='CCD1', dx=0, dy=0, extension=-1):
         ccdobj.set_quad(quaddata, Q, canonical=False, extension=extension)
 
 
-def simadd_bias(ccdobj, levels=dict(E=2000, F=2000, G=2000, H=2000), extension=-1):
+def simadd_bias(ccdobj, levels=None, extension=-1):
+    
+    if levels is None:
+        levels = dict(E=2000, F=2000, G=2000, H=2000)
 
     for Q in ccdobj.Quads:
         B = ccdobj.QuadBound[Q]

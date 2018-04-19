@@ -22,7 +22,7 @@ from pdb import set_trace as stop
 import numpy as np
 from vison.analysis.ellipse import dist_superellipse
 from vison.point import algorithms as poalg
-from basis import SpotBase
+from vison.point.basis import SpotBase
 # END IMPORT
 
 
