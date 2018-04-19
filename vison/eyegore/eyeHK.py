@@ -33,6 +33,7 @@ from vison.support import context
 #from vison.pipe import lib as pilib
 from vison.datamodel import HKtools
 from vison.datamodel.HKtools import format_date, _ax_render_HK
+from vison.eyegore.eyelib import get_bitsize
 # END IMPORT
 
 
@@ -94,6 +95,45 @@ class HKButton(tk.Button, object):
         self.text = options['text']
 
 
+def validate_within_HKlim(val, HKlim):
+
+    if len(HKlim) == 2:
+        if (HKlim[0] <= val) and (HKlim[1] >= val):
+            return True
+    elif len(HKlim) == 1:
+        if HKlim == val:
+            return True
+    return False
+
+def sort_HKfiles(HKfiles):
+    """ """
+
+    # First we order by dates (ELVIS generates a
+    # new master HK file after midnight in the same day-folder)
+
+    alldays = []
+    for iHKfile in HKfiles:
+        itstr = os.path.split(iHKfile)[-1][3:11]
+        it = datetime.datetime.strptime(itstr, '%d-%m-%y')
+        alldays.append(it)
+    dorder = np.argsort(alldays)
+
+    oHKfiles = []
+
+    # Then we sort by the appendix number among the master HK files of a
+    # given date (there may be more than one, I've been told...)
+
+    ordered_dates = np.unique(np.array(alldays)[dorder])
+
+    for iod, idate in enumerate(ordered_dates):
+        idate = ordered_dates[iod]
+        idatestr = idate.strftime('%d-%m-%y')
+        subfiles = [item for item in HKfiles if 'HK_%s' % idatestr in item]
+        oHKfiles += np.sort(subfiles).tolist()
+
+    return oHKfiles
+
+
 class HKFlags(tk.Toplevel):
     """ """
 
@@ -103,6 +143,7 @@ class HKFlags(tk.Toplevel):
         tk.Toplevel.__init__(self, root)
         self.ncols = 5
         self.elvis = elvis
+        self.log = root.log
 
         self.parent = parent
         self.interval = interval
@@ -134,7 +175,7 @@ class HKFlags(tk.Toplevel):
 
                 try:
                     HKkey = HKkeys[ix]
-                except:
+                except IndexError:
                     break
 
                 # self.setup_Flag(HKkey,'green',ix,ic,ir)
@@ -208,9 +249,6 @@ class HKFlags(tk.Toplevel):
             self.find_offlims()
         except:
             pass
-        # self.find_offlims()
-
-        #print self.interval
 
         self.after(self.interval, self.update)
 
@@ -223,25 +261,14 @@ class HKFlags(tk.Toplevel):
             HKlim = self.parent.HKlims[HKkeys[ix]][1:]
             lastval = self.parent.HK[HKkeys[ix]][-1]
 
-#            if HKkeys[ix] == 'SPW_STATUS_REG':
-#                print '%s= %.1f' % (HKkeys[ix],lastval)
-#                print 'lim = ', HKlim
-
-            isWithin = self.validate(lastval, HKlim)
+            isWithin = validate_within_HKlim(lastval, HKlim)
             if isWithin:
                 continue
-
+            if self.log is not None:
+                print 'PENDING  TO IMPLEMENT LOGGING OF OUT-OF-LIMITS FLAGGING'
             self.changeColor(ix, 'red')
 
-    def validate(self, val, HKlim):
-
-        if len(HKlim) == 2:
-            if (HKlim[0] <= val) and (HKlim[1] >= val):
-                return True
-        elif len(HKlim) == 1:
-            if HKlim == val:
-                return True
-        return False
+    
 
     def changeColor(self, ix, color):
 
@@ -273,6 +300,8 @@ class HKDisplay(tk.Toplevel):
         self.HK = dict()
         self.sizeHK = 0  # size in bytes of HK file
         self.page = 1
+        self.log = root.log
+        self.HKkeys_to_plot = []
 
         #self.nHKlines = 1
         self.root = root
@@ -332,33 +361,6 @@ class HKDisplay(tk.Toplevel):
         toolbar.update()
         canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-    def sort_HKfiles(self, HKfiles):
-        """ """
-
-        # First we order by dates (ELVIS generates a
-        # new master HK file after midnight in the same day-folder)
-
-        alldays = []
-        for iHKfile in HKfiles:
-            itstr = os.path.split(iHKfile)[-1][3:11]
-            it = datetime.datetime.strptime(itstr, '%d-%m-%y')
-            alldays.append(it)
-        dorder = np.argsort(alldays)
-
-        oHKfiles = []
-
-        # Then we sort by the appendix number among the master HK files of a
-        # given date (there may be more than one, I've been told...)
-
-        ordered_dates = np.unique(np.array(alldays)[dorder])
-
-        for iod, idate in enumerate(ordered_dates):
-            idate = ordered_dates[iod]
-            idatestr = idate.strftime('%d-%m-%y')
-            subfiles = [item for item in HKfiles if 'HK_%s' % idatestr in item]
-            oHKfiles += np.sort(subfiles).tolist()
-
-        return oHKfiles
 
     def search_HKfiles(self):
         """ """
@@ -375,7 +377,7 @@ class HKDisplay(tk.Toplevel):
 
         HKfiles = glob.glob(tmp_HK)
 
-        HKfiles = self.sort_HKfiles(HKfiles)
+        HKfiles = sort_HKfiles(HKfiles)
 
         #isthere = os.path.exists(tmp_HK)
         arethere = len(HKfiles) > 0
@@ -404,13 +406,6 @@ class HKDisplay(tk.Toplevel):
 
         self.HKkeys_to_plot = HKkeys_to_plot
 
-    def get_bitsize(self, filelist):
-        """ """
-        bitsize = 0
-        for item in filelist:
-            bitsize += os.stat(item).st_size
-        return bitsize
-
     def get_data(self):
         """ """
 
@@ -419,7 +414,7 @@ class HKDisplay(tk.Toplevel):
         if self.HKfiles is None:
             yield self.HK
 
-        sizeHK = self.get_bitsize(self.HKfiles)
+        sizeHK = get_bitsize(self.HKfiles)
 
         if sizeHK <= self.sizeHK:
             yield self.HK

@@ -53,6 +53,7 @@ class ImageDisplay(tk.Toplevel):
         self.parent = parent
         self.path = path
         self.wm_title('Image Display')
+        self.log = parent.log
 
         self.minsize(width=850, height=400)
 

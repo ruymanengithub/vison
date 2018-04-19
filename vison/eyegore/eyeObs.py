@@ -22,6 +22,7 @@ import numpy as np
 
 from vison.datamodel import EXPLOGtools as ELtools
 from vison.support import context
+from vison.eyegore.eyelib import get_bitsize
 
 import Tkinter as tk
 import ttk
@@ -41,6 +42,29 @@ small_font = ("Verdana", 8)
 medium_font = ("Verdana", 10)
 
 
+def isNumeric(s):
+    """
+    test if a string s is numeric
+    """
+    for c in s:
+        if c in "1234567890-.+":
+            numeric = True
+        else:
+            return False
+    return numeric
+
+def changeNumeric(data):
+    """
+    if the data to be sorted is numeric change to float
+    """
+    new_data = []
+    if isNumeric(data[0][0]):
+        # change child to a float
+        for child, col in data:
+            new_data.append((float(child), col))
+        return new_data
+    return data
+
 class ExpLogDisplay(tk.Toplevel):
     """ """
 
@@ -54,6 +78,7 @@ class ExpLogDisplay(tk.Toplevel):
         self.EXPLOG = Table()
         self.nEL = 0  # Nr. lines in EXPLOG
         self.sEL = 0  # size of EXPLOG, bytes
+        self.log = parent.log
 
         self.labels = {}
         self.elementHeader = []
@@ -190,12 +215,6 @@ class ExpLogDisplay(tk.Toplevel):
             print 'EXPLOGs %s not found' % tmp_EL
             self.explogfs = None
 
-    def get_bitsize(self, filelist):
-        """ """
-        bitsize = 0
-        for item in filelist:
-            bitsize += os.stat(item).st_size
-        return bitsize
 
     def loadExplogs(self):
         """ """
@@ -213,7 +232,7 @@ class ExpLogDisplay(tk.Toplevel):
         if self.explogfs is None:
             return
 
-        sEL = self.get_bitsize(self.explogfs)
+        sEL = get_bitsize(self.explogfs)
 
         if sEL <= self.sEL:
             return
@@ -300,28 +319,6 @@ class ExpLogDisplay(tk.Toplevel):
                 d.set("zoom to fit")
                 d.set("scale mode zscale")
 
-    def isNumeric(self, s):
-        """
-        test if a string s is numeric
-        """
-        for c in s:
-            if c in "1234567890-.+":
-                numeric = True
-            else:
-                return False
-        return numeric
-
-    def changeNumeric(self, data):
-        """
-        if the data to be sorted is numeric change to float
-        """
-        new_data = []
-        if self.isNumeric(data[0][0]):
-            # change child to a float
-            for child, col in data:
-                new_data.append((float(child), col))
-            return new_data
-        return data
 
     def sortBy(self, tree, col, descending):
         """
@@ -331,7 +328,7 @@ class ExpLogDisplay(tk.Toplevel):
         data = [(tree.set(child, col), child)
                 for child in tree.get_children('')]
         # if the data to be sorted is numeric change to float
-        data = self.changeNumeric(data)
+        data = changeNumeric(data)
         # now sort the data in place
         data.sort(reverse=descending)
         for ix, item in enumerate(data):

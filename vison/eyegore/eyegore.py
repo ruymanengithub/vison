@@ -17,37 +17,28 @@ Created on Thu Feb  2 15:27:39 2017
 # IMPORT STUFF
 import matplotlib
 matplotlib.use("TkAgg")
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
-import matplotlib.animation as animation
-from matplotlib import pyplot as plt
 
 
 from pdb import set_trace as stop
 from optparse import OptionParser
 import sys
 import os
-import numpy as np
-import time
-import string as st
-import datetime
 
-from vison.datamodel import HKtools
-from vison.datamodel import EXPLOGtools as ELtools
 from vison import data as vdata
 #import loadHK_QFM,allHK_keys
 
 #from multiprocessing.dummy import Pool
 
-import time
 import Tkinter as tk
-import ttk
-import tkFont as tkFont
 from PIL import Image, ImageTk
 
-from eyeHK import HKDisplay, HKFlags
-from eyeCCDs import ImageDisplay
-from eyeObs import ExpLogDisplay
+from vison.eyegore.eyeHK import HKDisplay, HKFlags
+from vison.eyegore.eyeCCDs import ImageDisplay
+from vison.eyegore.eyeObs import ExpLogDisplay
 from vison.support import context
+from vison.support import logger as lg
+from vison import __version__
+from vison.support import vistime
 # END IMPORT
 
 
@@ -65,7 +56,6 @@ def rsync_to_remote(path, broadcast):
         path, broadcast, os.sep)
     #command = "rsync -avqz TEST_DATA/24_Feb_80 /home/raf/Desktop/24_Feb_80"
     print 'syncing to MSSLUS: %s' % command
-    stop()
     os.system(command)
 
 
@@ -74,17 +64,19 @@ def rsync_to_altlocalpath(path, altpath):
     _altpath = os.path.join(altpath, path)
     command = "rsync -avzq %s %s" % (path+os.sep, _altpath)
     print 'SYNCING TO ALTLOCAL: %s' % command
-    stop()
     os.system(command)
 
 
 class Eyegore(tk.Tk):
     """ """
 
-    def __init__(self, path, broadcast, intervals=[20000, 20000, 1000, 20000, 20000, 20000],
-                 elvis=context.elvis, dolite=False, altpath=''):
+    def __init__(self, path, broadcast, intervals=None,
+                 elvis=context.elvis, dolite=False, altpath='',dolog=True):
         """ """
         tk.Tk.__init__(self)
+        
+        if intervals is None:
+            intervals = [20000, 20000, 1000, 20000, 20000, 20000]
 
         if path[-1] == os.path.sep:
             path = path[:-1]
@@ -94,13 +86,25 @@ class Eyegore(tk.Tk):
         self.elvis = elvis
         self.dolite = dolite
         self.altpath = altpath
+        
+        if dolog:
+            datestamp = vistime.get_time_tag()
+            self.logf = 'Eyegore_%s.log' % datestamp
 
-        # self.withdraw()
+            if os.path.exists(self.logf):
+                os.system('rm %s' % self.logf)
+
+            self.log = lg.setUpLogger(self.logf)
+            self.log.info(['\n\nStarting Eyegore',
+                           'DATE: %s' % datestamp,
+                           'vison version: %s\n' % __version__])
+        else:
+            self.log = None
+
 
         self.setup_MasterWG()
 
         self.run()
-        # self.mainloop()
 
     def setup_MasterWG(self):
         """ """
@@ -193,6 +197,8 @@ if __name__ == '__main__':
                       help="Run a lighter version of the program (no autom. HK-plots or image displays).")
     parser.add_option("-r", "--rsync", dest="altpath", default='',
                       help="rsync to an alternative local path.")
+    parser.add_option("-g", "--log", dest="dolog", action="store_true", default=True,
+                      help="keep a log")
 
     (options, args) = parser.parse_args()
 
@@ -211,6 +217,7 @@ if __name__ == '__main__':
         broadcast = None
 
     dolite = bool(options.lite)
+    dolog = bool(options.dolog)
 
     if not os.path.exists(path):
         sys.exit('HKmonitory.py: %s does not exist' % path)
@@ -228,4 +235,4 @@ if __name__ == '__main__':
         print header % path
 
     app = Eyegore(path, broadcast=broadcast, elvis=elvis,
-                  dolite=dolite, altpath=altpath)
+                  dolite=dolite, altpath=altpath, dolog=dolog)
