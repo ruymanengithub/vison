@@ -21,9 +21,10 @@ for CCD in [1, 2, 3]:
     offsets_lims[CCDkey] = [offsets[CCDkey] +
                             offsets_margins[0], offsets[CCDkey]+offsets_margins[1]]
 
-
-offsets_gradients = dict(CCD1=[[0, 0], [5, 10], [5, 10]], CCD2=[[0, 0], [5, 10], [5, 10]],
-                         CCD3=[[0, 0], [5, 10], [5, 10]])  # ADU
+# offsets_gradients = dict(CCDX=[[prescan-prescan+-margin],[image-prescan+-margin],[overscan-prescan+-margin]])
+offsets_gradients = dict(CCD1=dict(pre=[0, 0], img=[5, 10], ove=[5, 10]), 
+                         CCD2=dict(pre=[0, 0], img=[5, 10], ove=[5, 10]),
+                         CCD3=dict(pre=[0, 0], img=[5, 10], ove=[5, 10]))  # ADU
 RONs = dict(CCD1=1.4, CCD2=1.4, CCD3=1.4)  # ADU, STD
 RONs_margins = [-0.2, 0.2]  # ADU, STD
 RONs_lims = dict()

@@ -158,7 +158,7 @@ class FlatTask(Task):
         for ireg, reg in enumerate(['ove']):
             _lims = dict()
             for CCD in CCDs:
-                _lims['CCD%i' % CCD] = offsets_gradients['CCD%i' % CCD][ireg+1]
+                _lims['CCD%i' % CCD] = offsets_gradients['CCD%i' % CCD][reg]
             arr = self.dd.mx['offset_%s' % reg][:]-self.dd.mx['offset_pre'][:]
             _xcheck_offsets = self.check_stat_perCCD(arr, _lims, CCDs)
 
