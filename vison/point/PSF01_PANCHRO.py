@@ -21,11 +21,8 @@ Created on Thu Nov 30 16:38:00 2017
 """
 
 # IMPORT STUFF
-import numpy as np
 from pdb import set_trace as stop
 import os
-import string as st
-import warnings
 import copy
 from collections import OrderedDict
 
@@ -42,7 +39,7 @@ from vison.flat import FlatFielding as FFing
 from vison.support import files
 from vison.image import calibration
 from vison.pipe.task import Task
-import PSF0Xaux
+from vison.point import PSF0Xaux
 from vison.image import performance
 from vison.support.files import cPickleRead
 from vison.datamodel import inputs
@@ -71,8 +68,9 @@ class PSF01_PANCHRO(Task):
         self.subtasks = [('check', self.check_data),
                          ('meta', self.meta)]
         #self.HKKeys = HKKeys
-        self.figdict = PSF0Xaux.PSF0Xfigs
+        self.figdict = PSF0Xaux.PSF01_PANCHRO_figs
         self.perflimits.update(performance.perf_rdout)
+        self.dd = dict()
 
     def ingest_data_MetaTest(self):
         """ """
@@ -80,7 +78,6 @@ class PSF01_PANCHRO(Task):
         wavelengths = self.inputs['wavelengths']
         inpath = self.inputs['inpath']
 
-        self.dd = dict()
         for iw, wave in enumerate(wavelengths):
             wpath = 'PSF01_%i' % wave
             iDDpickfile = os.path.join(

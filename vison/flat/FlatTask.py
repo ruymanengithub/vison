@@ -54,8 +54,6 @@ class FlatTask(Task):
     def get_checkstats_ST(self, **kwargs):
         """ """
 
-        #test = self.inputs['test']
-
         # Initialize new columns
 
         Xindices = copy.deepcopy(self.dd.indices)

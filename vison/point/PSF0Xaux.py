@@ -97,3 +97,6 @@ def gt_PSF0Xfigs(test):
         trends.Fig_Basic_Checkstat, gt_check_fwhm_dict(test)]
     PSF0Xfigs['BlueScreen'] = [plbaseclasses.BlueScreen, dict()]
     return PSF0Xfigs
+
+
+PSF01_PANCHRO_figs = dict()

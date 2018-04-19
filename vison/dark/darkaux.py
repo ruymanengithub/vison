@@ -12,6 +12,7 @@ Created on Tue Nov 14 13:25:01 2017
 """
 
 # IMPORT STUFF
+import copy
 import numpy as np
 from pdb import set_trace as stop
 from collections import OrderedDict
@@ -21,64 +22,55 @@ from vison.datamodel import cdp
 # END IMPORT
 
 
-def get_DarkDefectsMask(ccdobj, threshold, subbgd=True, extension=-1, bgdmodel=None,
-                        Full=False):
-    """ """
-
-    Quads = ccdobj.Quads
-    #shape = ccdobj.shape
-    #NQx = shape[0]/2
-    #NQy = shape[1]/2
+def get_bgd_model(ccdobj,extension=-1):
+    
     prescan = ccdobj.prescan
+    
+    bgd = ccdmod.CCD()
+    bgd.add_extension(np.zeros_like(
+        ccdobj.extensions[extension].data, dtype='float32'))
 
-    if subbgd:
+    for Quad in ccdobj.Quads:
 
-        if bgdmodel is None:
+        Qimgmodel = ccdobj.get_region2Dmodel(Quad, area='img', kind='poly2D',
+                                             pdegree=5, doFilter=False, filtsize=1,
+                                             vstart=0, vend=2066, canonical=True, extension=extension).imgmodel.copy()
 
-            bgd = ccdmod.CCD()
-            bgd.add_extension(np.zeros_like(
-                ccdobj.extensions[extension].data, dtype='float32'))
+        # pre/overscans will get nulled
+        Qmodel = ccdobj.get_quad(
+            Quad, canonical=True, extension=extension).copy()
 
-            for Quad in Quads:
+        Qmodel[prescan:prescan+Qimgmodel.shape[0],
+               0:Qimgmodel.shape[1]] = Qimgmodel.copy()
 
-                Qimgmodel = ccdobj.get_region2Dmodel(Quad, area='img', kind='poly2D',
-                                                     pdegree=5, doFilter=False, filtsize=1,
-                                                     vstart=0, vend=2066, canonical=True, extension=extension).imgmodel.copy()
+        bgd.set_quad(Qmodel, Quad, canonical=True, extension=-1)
 
-                # pre/overscans will get nulled
-                Qmodel = ccdobj.get_quad(
-                    Quad, canonical=True, extension=extension).copy()
+    return bgd.extensions[-1].data.copy()
+    
 
-                Qmodel[prescan:prescan+Qimgmodel.shape[0],
-                       0:Qimgmodel.shape[1]] = Qimgmodel.copy()
-
-                bgd.set_quad(Qmodel, Quad, canonical=True, extension=-1)
-
-            bgdmodel = bgd.extensions[-1].data.copy()
-
-        ccdobj.sub_bias(bgdmodel, extension=extension)
-
-    maskdata = ccdobj.extensions[extension].data
-
-    mask = (maskdata > threshold).astype('int32')
-
-    if Full:
-        return mask, bgdmodel
-    else:
-        return mask
-
-
-def get_DarkDefectsMask_CDP(self, darkccdobj, threshold, subbgd=True, extension=-1, bgdmodel=None):
+def get_DarkDefectsMask(ccdobj, threshold, extension=-1):
     """ """
+    maskdata = ccdobj.extensions[extension].data
+    mask = (maskdata > threshold).astype('int32')
+    return mask
 
-    mask = get_DarkDefectsMask(darkccdobj, threshold, subbgd=subbgd, extension=extension, bgdmodel=bgdmodel,
-                               Full=False)
+
+def get_DarkDefectsMask_CDP(self, darkccdobj, threshold, subbgd=True, bgdmodel=None, extension=-1):
+    """ """
+    
+    if subbgd:
+        if bgdmodel is None:            
+            bgdmodel = get_bgd_model(darkccdobj,extension=extension)
+
+        darkccdobj.sub_bias(bgdmodel, extension=extension)
+
+    mask = get_DarkDefectsMask(darkccdobj, threshold, extension=extension)
 
     ID = self.ID
     BLOCKID = self.BLOCKID
     CHAMBER = self.CHAMBER
 
-    data = OrderedDict(mask=mask.copy())
+    data = OrderedDict(mask=copy.deepcopy(mask))
     meta = OrderedDict(threshold=threshold, subbgd=subbgd,
                        function=get_DarkDefectsMask.__name__)
 

@@ -27,6 +27,9 @@ def getFromDict(dataDict,mapList):
 def setInDict(dataDict,mapList,value):
     getFromDict(dataDict,mapList[:-1])[mapList[-1]] = value
 
+def countdictlayers(d):
+    return max(countdictlayers(v) if isinstance(v, dict) else 0 for v in d.values()) + 1
+
 
 def get_function_module(level=1, reference='vison'):
     import inspect

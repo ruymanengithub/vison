@@ -17,11 +17,10 @@ import pandas as pd
 import collections
 import string as st
 import copy
+
+from vison.support.utils import countdictlayers
 # END IMPORT
 
-
-def countdictlayers(d):
-    return max(countdictlayers(v) if isinstance(v, dict) else 0 for v in d.values()) + 1
 
 
 def convert_compl_to_nesteditemlist(complidict):
@@ -92,9 +91,9 @@ def gen_compliance_tex(indict):
         for key, d in complidict.iteritems():
             keys.append(key)
             frames.append(pd.DataFrame.from_dict(d))
-        df = pd.concat(frames, keys=keys)
+        series = pd.concat(frames, keys=keys)
         
-        tex = df.to_latex(multicolumn=True, multirow=True,
+        tex = series.to_latex(multicolumn=True, multirow=True,
                           longtable=True, index=True)
         tex = st.split(tex, '\n')
     else:
