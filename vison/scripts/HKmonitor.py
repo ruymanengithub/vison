@@ -2,12 +2,20 @@
 
 # -*- coding: utf-8 -*-
 """
-
-TODO: DEBUG, calls nonexistent class LaTeX
+:TODO:
+     find HK files in a folder
+     parse HK files
+     plot HK parameters vs. time
+     assemble all plots into a pdf file
+     
+     DEBUG, calls nonexistent class LaTeX
 
 Script to produce HK reports out of HK files in a folder.
 Aimed at quick inspection of data from Characterization and Calibration Campaigns
 of Euclid-VIS.
+
+
+
 
 :History:
 Created on Tue Mar 15 10:35:43 2016
@@ -32,14 +40,6 @@ from pdb import set_trace as stop
 isthere = os.path.exists
 
 if __name__ == '__main__':
-    """
-    TODO:
-     find HK files in a folder
-     parse HK files
-     plot HK parameters vs. time
-     assemble all plots into a pdf file
-
-    """
 
     parser = OptionParser()
     parser.add_option("-p", "--path", dest="path", default='',

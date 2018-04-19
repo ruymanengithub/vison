@@ -31,6 +31,12 @@ for colkey in color_codes.keys():
         patternType='solid', fgColor=_color)
 
 
+def get_str_len(cell):
+    if cell.value is None:
+        return 0
+    else:
+        return len(str(cell.value))
+
 class ReportXL(object):
 
     color_fills = color_fills
@@ -43,12 +49,6 @@ class ReportXL(object):
         std = self.wb['Sheet']
         self.wb.remove(std)
 
-    def get_str_len(self, cell):
-        if cell.value is None:
-            return 0
-        else:
-            return len(str(cell.value))
-
     def adjust_columns_width(self, sheetname, minwidth=0):
         """ """
 
@@ -56,19 +56,19 @@ class ReportXL(object):
         for row in self.wb[sheetname]:
             for i, cell in enumerate(row):
                 if len(column_widths) > i:
-                    if self.get_str_len(cell) > column_widths[i]:
-                        column_widths[i] = self.get_str_len(cell)
+                    if get_str_len(cell) > column_widths[i]:
+                        column_widths[i] = get_str_len(cell)
                 else:
-                    column_widths += [self.get_str_len(cell)]
+                    column_widths += [get_str_len(cell)]
 
         for i, column_width in enumerate(column_widths):
             self.wb[sheetname].column_dimensions[oxl.utils.get_column_letter(
                 i+1)].width = max([column_width, minwidth])
 
-    def dict_to_sheet(self, indict, sheetname, keys=[], title=''):
+    def dict_to_sheet(self, indict, sheetname, keys=None, title=''):
         """ """
 
-        if len(keys) == 0:
+        if keys is  None:
             keys = indict.keys()
 
         printdict = OrderedDict()

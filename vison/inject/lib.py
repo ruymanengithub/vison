@@ -88,8 +88,12 @@ def extract_injection_lines(quaddata, pattern, VSTART=0,
     return results
 
 
-def predict_inj_level(IDL, IDH, IG1, IG2, id_wid, id_dly, toi_ch, sectag):
+def predict_inj_level(ID, IGs, id_timing, toi_ch, sectag):
     """ """
+    
+    IDL, IDH = ID
+    IG1, IG2 = IGs
+    id_wid, id_dly = id_timing
 
     inj_threshold = 7.5
 

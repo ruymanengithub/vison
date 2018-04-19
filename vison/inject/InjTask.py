@@ -84,19 +84,16 @@ class InjTask(Task):
                 for icol in range(1, Ncols+1):
                     coldict = teststruct['col%i' % icol]
                     chinj = coldict['chinj']
-                    IG2 = coldict['IG2_%s' % sectag]
-                    IG1 = coldict['IG1_%i_%s' % (CCD, sectag)]
-                    IDL = coldict['IDL']
-                    IDH = coldict['IDH']
-                    id_wid = coldict['id_wid']
-                    id_dly = coldict['id_dly']
+                    IGs = (coldict['IG1_%i_%s' % (CCD, sectag)],coldict['IG2_%s' % sectag])
+                    ID = (coldict['IDL'], coldict['IDH'])
+                    id_timing = (coldict['id_wid'],coldict['id_dly'])
                     toi_ch = coldict['toi_ch']
 
                     if chinj == 0:
                         _inj = 0.
                     else:
-                        _inj = ilib.predict_inj_level(
-                            IDL, IDH, IG1, IG2, id_wid, id_dly, toi_ch, sectag)
+                        _inj = ilib.predict_inj_level(ID, IGs, id_timing, 
+                                                      toi_ch, sectag)
 
                     expectation[CCDkey][Q]['col%i' % icol] = _inj
 
