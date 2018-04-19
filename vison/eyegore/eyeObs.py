@@ -168,26 +168,6 @@ class ExpLogDisplay(tk.Toplevel):
                 row.append(self.EXPLOG[colname][ix])
             self.elementList.append(tuple(row))
 
-# ==============================================================================
-#     def search_EXPLOG(self):
-#         """ """
-#
-#         struct_date = time.strptime(os.path.split(st.replace(self.path,'_',''))[-1],'%d%b%y')
-#         date_infile = time.strftime('%d%m%y',struct_date)
-#
-#         self.date = date_infile
-#
-#         tmp_EL = 'EXP_LOG_%s.txt' % date_infile
-#         tmp_EL = os.path.join(self.path,tmp_EL)
-#
-#         isthere = os.path.exists(tmp_EL)
-#         if isthere:
-#             self.explogf = tmp_EL
-#         else:
-#             print 'EXPLOG %s not found' % tmp_EL
-#             self.explogf = None
-#
-# ==============================================================================
     def search_EXPLOGs(self):
         """ """
 

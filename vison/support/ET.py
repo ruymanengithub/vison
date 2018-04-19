@@ -65,7 +65,6 @@ class ET(object):
 
 
 if __name__ == '__main__':
-    """Tests"""
 
     ETavailable = True
     try:
