@@ -77,3 +77,4 @@ def fit_focus_all(shape_seq, doplot=True):
 
 def inspect_focus_all(shape_seq, doplot=True):
     """ """
+    raise NotImplementedError

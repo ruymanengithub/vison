@@ -12,9 +12,6 @@ Created on Fri Jan 26 16:18:43 2018
 
 # IMPORT STUFF
 from pdb import set_trace as stop
-#import os
-#from collections import OrderedDict
-#import numpy as np
 import copy
 
 from vison.plot import figclasses
@@ -36,7 +33,7 @@ class Fig_Basic_Checkstat(figclasses.Fig_XY_fromDD):
         self.data = dict()
         self.plotclass = baseplotclasses.BeamPlotYvX
         
-    def build_data(self,parent):
+    def build_data(self,parent,**kwargs):
         """ """
         
         indicesList = ['CCD','Quad']
@@ -52,7 +49,7 @@ class Fig_Basic_Checkstat(figclasses.Fig_XY_fromDD):
         for label in self.stats:
             ddmx[label] = copy.deepcopy(dd[label][:])
         
-        self.data = self._build_data_xvsy(ddmx,indicesDict,indicesList,self.stats,
+        self.data = self._build_data_yvsx(ddmx,indicesDict,indicesList,self.stats,
                                      self.trendaxis)
         
     def configure(self, **kwargs):

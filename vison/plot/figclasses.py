@@ -10,22 +10,21 @@ Created on Mon Apr 16 16:17:13 2018
 
 # IMPORT STUFF
 import os
-import operator
 import numpy as np
 from collections import defaultdict
 from itertools import product
-from functools import reduce
 from vison.plot import baseplotclasses
+from vison.support import utils
 
 from matplotlib import pyplot as plt
 # END IMPORT
 
-def getFromDict(dataDict,mapList):
-    return reduce(operator.getitem,mapList,dataDict)
-
-def setInDict(dataDict,mapList,value):
-    getFromDict(dataDict,mapList[:-1])[mapList[-1]] = value
-
+#def getFromDict(dataDict,mapList):
+#    return reduce(operator.getitem,mapList,dataDict)
+#
+#def setInDict(dataDict,mapList,value):
+#    getFromDict(dataDict,mapList[:-1])[mapList[-1]] = value
+#
 
 class Fig(object):
     
@@ -106,15 +105,15 @@ class Fig_XY_fromDD(Fig):
             elif axis == 'y':
                 value = ddmx[stat][ix_tuple[:-2]]
                 
-            setInDict(data,indices_tuple,value)
+            utils.setInDict(data,indices_tuple,value)
         
         # Convert defaultdict 'back' to dict()
         
         for indices_tuple in indices_tuples:
             for j in range(1,len(indicesList)+2):
-                value = getFromDict(data,indices_tuple[:-j])
+                value = utils.getFromDict(data,indices_tuple[:-j])
                 if isinstance(value,defaultdict):
-                    setInDict(data,indices_tuple[:-j],dict(value))
+                    utils.setInDict(data,indices_tuple[:-j],dict(value))
         data = dict(data)
         
         return data

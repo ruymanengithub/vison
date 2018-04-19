@@ -16,8 +16,16 @@ from pdb import set_trace as stop
 import numpy as np
 import string as st
 import os
+from functools import reduce
+import operator
 
 # END IMPORT
+
+def getFromDict(dataDict,mapList):
+    return reduce(operator.getitem,mapList,dataDict)
+
+def setInDict(dataDict,mapList,value):
+    getFromDict(dataDict,mapList[:-1])[mapList[-1]] = value
 
 
 def get_function_module(level=1, reference='vison'):
