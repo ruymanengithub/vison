@@ -19,7 +19,6 @@ import os
 import string
 import time
 import numpy as np
-import os
 # END IMPORT
 
 
