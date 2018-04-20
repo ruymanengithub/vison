@@ -34,6 +34,7 @@ from vison.support import context
 from vison.datamodel import HKtools
 from vison.datamodel.HKtools import format_date, _ax_render_HK
 from vison.eyegore.eyelib import get_bitsize
+from vison.support import vistime
 # END IMPORT
 
 
@@ -80,8 +81,11 @@ class SingleHKplot(tk.Toplevel):
 
 class HKButton(tk.Button, object):
 
-    def __init__(self, master=None, **options):
+    def __init__(self, master=None, **kwargs):
         """ """
+        
+        options = dict(status=False)
+        options.update(kwargs)
 
         ix = options.pop('ix')
         ic = options.pop('ic')
@@ -93,17 +97,27 @@ class HKButton(tk.Button, object):
         self.ir = ir
         self.ic = ic
         self.text = options['text']
-
+        self.status = options['status']
 
 def validate_within_HKlim(val, HKlim):
+    """ 
+    violation:
+        0: None
+        -1: below lower limit
+        1: above upper limit
+        2: different from limit, if limit is a single value
+    
+    """
 
     if len(HKlim) == 2:
-        if (HKlim[0] <= val) and (HKlim[1] >= val):
-            return True
+        if HKlim[0] > val:
+            return False, -1
+        elif HKlim[1] < val:
+            return False, 1
     elif len(HKlim) == 1:
-        if HKlim == val:
-            return True
-    return False
+        if HKlim != val:
+            return False, 2
+    return True, 0
 
 def sort_HKfiles(HKfiles):
     """ """
@@ -144,6 +158,7 @@ class HKFlags(tk.Toplevel):
         self.ncols = 5
         self.elvis = elvis
         self.log = root.log
+        self.Warnings = root.Warnings
 
         self.parent = parent
         self.interval = interval
@@ -171,6 +186,7 @@ class HKFlags(tk.Toplevel):
 
         for ir in range(nrows):
             for ic in range(ncols):
+                
                 ix = ir * ncols + ic
 
                 try:
@@ -181,7 +197,7 @@ class HKFlags(tk.Toplevel):
                 # self.setup_Flag(HKkey,'green',ix,ic,ir)
 
                 self.HKflags.append(HKButton(self, text=HKkey, font=small_font, bg='green',
-                                             ix=ix, ic=ic, ir=ir))
+                                             ix=ix, ic=ic, ir=ir, status=False))
                 self.HKflags[-1].grid(column=ic, row=ir, sticky='nsew',
                                       in_=self.HKframe)
 
@@ -202,33 +218,34 @@ class HKFlags(tk.Toplevel):
 
         self.resetButton.bind("<Button 1>", self.ResetAllFlags)
 
-    def setup_Flag(self, text, color, ix, ic, ir):
-        try:
-            HKflag = self.HKflags[ix]
-        except IndexError:
-            self.HKflags.append(HKButton(self, text=text, font=small_font, bg=color,
-                                         ix=ix, ic=ic, ir=ir))
-            HKflag = self.HKflags[ix]
-        try:
-            HKflag.grid(column=ic, row=ir, sticky='nsew', in_=self.HKframe)
-        except:
-            stop()
-        HKflag.bind("<Button 1>", self.ResetFlag)
-        HKflag.bind("<Button 3>)", self.showHK)
+#    def setup_Flag(self, text, color, ix, ic, ir):
+#        try:
+#            HKflag = self.HKflags[ix]
+#        except IndexError:
+#            self.HKflags.append(HKButton(self, text=text, font=small_font, bg=color,
+#                                         ix=ix, ic=ic, ir=ir))
+#            HKflag = self.HKflags[ix]
+#        try:
+#            HKflag.grid(column=ic, row=ir, sticky='nsew', in_=self.HKframe)
+#        except:
+#            stop()
+#        HKflag.bind("<Button 1>", self.ResetFlag)
+#        HKflag.bind("<Button 3>)", self.showHK)
 
     def ResetFlag(self, event):
         """ """
-
         button = event.widget
         ix = button.ix
-
-        self.changeColor(ix, 'green')
+        self.lowerflag(ix)
+        if self.log is not None:
+            HKkey = self.HKflags[ix].text
+            self.log.info('LOWERED %s' % HKkey)
 
     def ResetAllFlags(self, event):
-
-        for HKflag in self.HKflags:
-            ix = HKflag.ix
-            self.changeColor(ix, 'green')
+        for ix,HKflag in enumerate(self.HKflags):
+            self.lowerflag(ix)
+        if self.log is not None:
+            self.log.info('LOWERED ALL FLAGS')
 
     def showHK(self, event):
 
@@ -261,30 +278,47 @@ class HKFlags(tk.Toplevel):
             HKlim = self.parent.HKlims[HKkeys[ix]][1:]
             lastval = self.parent.HK[HKkeys[ix]][-1]
 
-            isWithin = validate_within_HKlim(lastval, HKlim)
-            if isWithin:
+            isWithin, violation_type = validate_within_HKlim(lastval, HKlim)
+            if isWithin or self.isflagraised(ix):
                 continue
+            time_stamp = vistime.get_time_tag()
+            self.raiseflag(ix)
             if self.log is not None:
-                print 'PENDING  TO IMPLEMENT LOGGING OF OUT-OF-LIMITS FLAGGING'
-            self.changeColor(ix, 'red')
+                self.log.info('RAISED %s: %s, lims=%s (timestamp=%s)' %\
+                    (HKkeys[ix],lastval.__str__(),HKlim.__str__(),time_stamp))
+            if self.Warnings is not None:
+                print 'PENDING TO FINISH IMPLEMENTATION issuing of Warnings'
+                self.Warnings.process_event(HKkeys[ix],lastval,HKlim,violation_type)
+            
+    def isflagraised(self,ix):
+        """ """
+        return self.HKflags[ix].status
 
+    def lowerflag(self,ix):
+        """ """
+        self.HKflags[ix].status = False
+        self.changeColor(ix,'green')
     
+    def raiseflag(self,ix):
+        """ """
+        self.HKflags[ix].status = True
+        self.changeColor(ix,'red')
 
     def changeColor(self, ix, color):
-
+        """ """
         ic = self.HKflags[ix].ic
         ir = self.HKflags[ix].ir
         text = self.HKflags[ix].text
+        status = self.HKflags[ix].status
         self.HKflags[ix].destroy()
         self.HKflags[ix] = HKButton(self, text=text, font=small_font, bg=color,
-                                    ix=ix, ic=ic, ir=ir)
+                                    ix=ix, ic=ic, ir=ir, status=status)
         self.HKflags[ix].grid(column=ic, row=ir, sticky='nsew',
                               in_=self.HKframe)
 
         self.HKflags[ix].bind("<Button 1>", self.ResetFlag)
         self.HKflags[ix].bind("<Button 3>", self.showHK)
 
-        # self.setup_Flag(text,color,ix,ic,ir)
 
 
 class HKDisplay(tk.Toplevel):

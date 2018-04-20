@@ -31,6 +31,9 @@ class Warnings(object):
     def __init__(self):
         """ """
     
+    def process_event(self,HKKey,value,HKlim,violation_type):
+        raise NotImplementedError
+    
     def iscritical(self,HKkey):
         return bool(HKkey in self.critical_HKkeys)
     
@@ -41,8 +44,8 @@ class Warnings(object):
             self.issue_warning(HKkey,data,severity)
     
     
-    def send_email(self,subject,body,recipient,attachment=None):
-        os.system('mail -s "%s" < %s %s' % (subject,body,email_recipient))
+    def send_email(self,subject,body,recipient):
+        os.system('mail -s "%s" < %s %s' % (subject,body,recipient))
         # including an attachment (e.g. a figure) requires using "mutt" or some
         # or some other program that can handle that... example:
         #echo "This is the message body" | mutt -a file.to.attach -s "subject of message" recipient@domain.com

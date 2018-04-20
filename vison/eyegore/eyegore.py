@@ -107,7 +107,7 @@ class Eyegore(tk.Tk):
         if doWarnings:
             self.Warnings = eyeWarnings.EyeWarnings()
         else:
-            self.Warnings = False
+            self.Warnings = None
         
         self.setup_MasterWG()
 
