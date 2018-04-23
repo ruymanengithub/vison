@@ -90,6 +90,7 @@ class HKButton(tk.Button, object):
         ix = options.pop('ix')
         ic = options.pop('ic')
         ir = options.pop('ir')
+        status = options.pop('status')
 
         super(HKButton, self).__init__(master, options)
 
@@ -97,7 +98,7 @@ class HKButton(tk.Button, object):
         self.ir = ir
         self.ic = ic
         self.text = options['text']
-        self.status = options['status']
+        self.status = status
 
 def validate_within_HKlim(val, HKlim):
     """ 
@@ -159,7 +160,8 @@ class HKFlags(tk.Toplevel):
         self.elvis = elvis
         self.log = root.log
         self.Warnings = root.Warnings
-
+        if self.Warnings is not None:
+            self.Warnings.parent = self
         self.parent = parent
         self.interval = interval
         self.HKkeys = self.parent.HKkeys[1:]
@@ -218,19 +220,6 @@ class HKFlags(tk.Toplevel):
 
         self.resetButton.bind("<Button 1>", self.ResetAllFlags)
 
-#    def setup_Flag(self, text, color, ix, ic, ir):
-#        try:
-#            HKflag = self.HKflags[ix]
-#        except IndexError:
-#            self.HKflags.append(HKButton(self, text=text, font=small_font, bg=color,
-#                                         ix=ix, ic=ic, ir=ir))
-#            HKflag = self.HKflags[ix]
-#        try:
-#            HKflag.grid(column=ic, row=ir, sticky='nsew', in_=self.HKframe)
-#        except:
-#            stop()
-#        HKflag.bind("<Button 1>", self.ResetFlag)
-#        HKflag.bind("<Button 3>)", self.showHK)
 
     def ResetFlag(self, event):
         """ """
@@ -287,8 +276,7 @@ class HKFlags(tk.Toplevel):
                 self.log.info('RAISED %s: %s, lims=%s (timestamp=%s)' %\
                     (HKkeys[ix],lastval.__str__(),HKlim.__str__(),time_stamp))
             if self.Warnings is not None:
-                print 'PENDING TO FINISH IMPLEMENTATION issuing of Warnings'
-                self.Warnings.process_event(HKkeys[ix],lastval,HKlim,violation_type)
+                self.Warnings.process_event(HKkeys[ix],violation_type,lastval,HKlim,time_stamp)
             
     def isflagraised(self,ix):
         """ """

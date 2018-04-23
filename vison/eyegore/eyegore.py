@@ -74,7 +74,7 @@ class Eyegore(tk.Tk):
 
     def __init__(self, path, broadcast, intervals=None,
                  elvis=context.elvis, dolite=False, altpath='', 
-                 doWarnings = False, dolog=True):
+                 doWarnings = False, dolog=False):
         """ """
         tk.Tk.__init__(self)
         
@@ -204,7 +204,7 @@ if __name__ == '__main__':
                       help="Run a lighter version of the program (no autom. HK-plots or image displays).")
     parser.add_option("-r", "--rsync", dest="altpath", default='',
                       help="rsync to an alternative local path.")
-    parser.add_option("-g", "--log", dest="dolog", action="store_true", default=True,
+    parser.add_option("-g", "--log", dest="dolog", action="store_true", default=False,
                       help="keep a log")
     parser.add_option("-W","--Warnings",dest="doWarnings",action="store_true",default=False,
                       help="Raise warnings (via email and/or phone) if critical HK is OOL.")
@@ -219,15 +219,15 @@ if __name__ == '__main__':
     broadcast = options.broadcast
     elvis = options.elvis
     altpath = options.altpath
+    dolite = bool(options.lite)
+    dolog = bool(options.dolog)
+    doWarnings = bool(options.doWarnings)
 
     if broadcast != 'None':
         broadcast = os.path.join(_extpath, broadcast)
     else:
         broadcast = None
 
-    dolite = bool(options.lite)
-    dolog = bool(options.dolog)
-    doWarnings = bool(options.doWarnings)
 
     if not os.path.exists(path):
         sys.exit('HKmonitory.py: %s does not exist' % path)
