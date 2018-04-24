@@ -59,6 +59,12 @@ for key,value in subURLs.iteritems():
 
 recipient = vjson.load_jsonfile(os.path.join(utils.credentials_path,'recipients_eyegore'))['main']
 
+matches_expression = lambda pair: re.match(pair[0],pair[1]) is not None      
+        
+def _get_matching_HKurl(HKkey,patterns):
+    for key,value in patterns.iteritems():
+        if matches_expression((value,HKkey)): return key
+    return None
 
 class EyeWarnings(object):
     
@@ -68,16 +74,17 @@ class EyeWarnings(object):
     def __init__(self,parent_flags_obj=None):
         """ """
         self.parent = parent_flags_obj
+        self.log = None
         if self.parent is not None: 
             self.log = self.parent.log
+        
         self.recipient = recipient
         
-        self.ETavailable = True
         try:
             self.et = ET.ET()
         except IOError:
             print 'vison.support.ET: Phone Calling is limited to personel with access details.'
-            self.ETavailable = False
+            self.et = None
     
     def process_event(self,HKkey,violation_type,value,HKlim,timestamp):
         
@@ -142,40 +149,35 @@ class EyeWarnings(object):
         VIDTemp='VID_PCB_TEMP_[T,B]',
         FPGATemp='FPGA_PCB_TEMP_[T,B]')
         
-        matches_expression = lambda pair: re.match(pair[0],pair[1]) is not None
-                                                  
+        HKurl = _get_matching_HKurl(HKkey,HKkeys_patterns)
         
-        def get_matching_HKurl(HKkey):
-            for key,value in HKkeys_patterns.iteritems():
-                if matches_expression((value,HKkey)): return key
-            return None
+        if violation_type == -1: prefix = 'Lo'
+        elif violation_type == 1: prefix = 'Hi'
+        elif violation_type == 2: prefix = 'Ne'
+        else: prefix = 'Un'
         
-        HKurl = get_matching_HKurl(HKkey)
+        urlkey = '%s%s' % (prefix,HKurl)
         
-        stop()
+        if urlkey in URLs:
+            return URLs[urlkey]
         
-        violation_key = st.replace('T%i' % violation_type, '-', 'm')
-        urlkey = '%s_%s' % (HKkey,violation_key)
-        if urlkey not in URLdict:
-            if self.log is not None:
-                    self.log.info('VOICE WARNING not sent! urlkey not known: %s' % urlkey)
         return None
     
     def warn_via_phone(self,HKkey,violation_type):
         """ """
         
-        if not self.ETavailable: 
+        if self.et is None: 
             if self.log is not None:
                     self.log.info('VOICE WARNING not sent! ET not available')
             return None
         
         url = self.get_phone_url(HKkey,violation_type)
-
+        
         try:
             self.do_phone_call(url)
         except:
             if self.log is not None:
-                    self.log.info('VOICE WARNING not sent! [%s]' % HKkey)
+                self.log.info('VOICE WARNING not sent! [%s]' % HKkey)
     
     def get_parent_HK_data(self,HKkey):
         
@@ -196,7 +198,8 @@ class EyeWarnings(object):
         if severity>0:
             self.warn_via_email(HKkey,value,HKlim,timestamp,HKdata)
         if severity > 1:
-            self.warn_via_phone(HKkey)
+            print 'WARNINGS via phone-calls DISABLED by now in eyeWarnings'      
+            # self.warn_via_phone(HKkey,violation_type) DISABLED BY NOW
     
 
 def test_URLs():
@@ -212,6 +215,30 @@ def test_URLs():
         except urllib2.URLError,e:
             print key, value, e.args
 
+def test_get_URLs():
+    ew = EyeWarnings()
+    
+    assert ew.get_phone_url('CCD1_TEMP_T',-1) == URLs['LoCCDTemp']
+    assert ew.get_phone_url('CCD1_TEMP_T',1) == URLs['HiCCDTemp']
+    assert ew.get_phone_url('VID_PCB_TEMP_T',-1) == URLs['LoVIDTemp']
+    assert ew.get_phone_url('VID_PCB_TEMP_T',1) == URLs['HiVIDTemp']
+    assert ew.get_phone_url('FPGA_PCB_TEMP_T',-1) == URLs['LoFPGATemp']
+    assert ew.get_phone_url('FPGA_PCB_TEMP_T',1) == URLs['HiFPGATemp']
+    
+    print 'test_get_URLs passed!'
+
+def test_do_phone_call(urlkey):
+    ew = EyeWarnings()
+    ew.do_phone_call(URLs[urlkey])
+
+def test_assess_OOL():
+    
+    ew = EyeWarnings()
+    ew.assess_OOL_incident('CCD1_TEMP_T',-1,-160,[-133,35],'24042018_1828')
+
 if __name__ == '__main__':
     test_URLs()
+    test_get_URLs()
+    #test_assess_OOL() # does phone call    
+    #test_do_phone_call('LoCCDTemp') # does phone call
         

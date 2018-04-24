@@ -19,24 +19,12 @@ import os
 from vison.support import utils
 # END IMPORT
 
-
-rootURL = "https://visonwarningcall.000webhostapp.com"
-subURLs = dict(
-    NonSpecificWarning="visonwarningcall.xml",
-    LoCCDTemp="low_CCD_Temp.xml",
-    HiCCDTemp="hi_CCD_Temp.xml",
-    LoVIDTemp="low_VID_PCB_Temp.xml",
-    HiVIDTemp="hi_VID_PCB_Temp.xml",
-    LoFPGATemp="low_FPGA_PCB_Temp.xml",
-    HiFPGATemp="hi_FPGA_PCB_Temp.xml")
-URLs = dict()
-for key,value in subURLs.iteritems():
-    URLs[key] = '%s/%s' % (rootURL,value)
+testURL = "https://visonwarningcall.000webhostapp.com/visonwarningcall.xml"
 
 def grab_numbers_and_codes():
     """Retrieves phone numbers and access codes necessary to make the phone calls."""
 
-    detailsf = os.path.join(os.path.pathsep, utils.credentials_path, 'credentials_twilio.pick')[1:]
+    detailsf = os.path.join(utils.credentials_path, 'credentials_twilio.pick')
     details = pickle.load(open(detailsf))
     return details
 
@@ -83,4 +71,4 @@ if __name__ == '__main__':
         ETavailable = False
 
     if ETavailable:
-        et.dial_numbers(URLs['NonSpecificWarning'])
+        et.dial_numbers(testURL)
