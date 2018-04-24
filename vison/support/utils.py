@@ -21,6 +21,8 @@ import operator
 
 # END IMPORT
 
+credentials_path = os.path.join(os.environ['HOME'],'CREDENTIALS_VISON')
+
 def getFromDict(dataDict,mapList):
     return reduce(operator.getitem,mapList,dataDict)
 

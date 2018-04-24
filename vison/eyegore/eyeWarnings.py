@@ -20,6 +20,8 @@ import pandas as pd
 from collections import OrderedDict
 
 from vison.support import ET
+from vison.support import vjson
+from vison.support import utils
 # END IMPORT
 
 critical_HKkeys = ['CCD3_TEMP_T', 'CCD2_TEMP_T', 'CCD1_TEMP_T', 
@@ -41,7 +43,8 @@ severitydict = dict(CCD1_TEMP_T=dict(Tm1=2,T1=2),
 
 # NEEDS WORK, populate URLdict
 URLdict = dict(NonSpecificWarning="https://visonwarningcall.000webhostapp.com/visonwarningcall.xml")
-masked_recipient = 'ruyman.azzollini_at_gmail.com' # NEEDS BETTER/SAFER SOLUTION!
+
+recipient = vjson.load_jsonfile(os.path.join(utils.credentials_path,'recipients_eyegore'))['main']
 
 
 class EyeWarnings(object):
@@ -52,11 +55,13 @@ class EyeWarnings(object):
     def __init__(self,parent_flags_obj=None):
         """ """
         self.parent = parent_flags_obj
-        self.log = self.parent.log
+        if self.parent is not None: 
+            self.log = self.parent.log
+        self.recipient = recipient
         
         self.ETavailable = True
         try:
-            self.et = ET()
+            self.et = ET.ET()
         except IOError:
             print 'vison.support.ET: Phone Calling is limited to personel with access details.'
             self.ETavailable = False
@@ -100,8 +105,6 @@ class EyeWarnings(object):
     def warn_via_email(self,HKkey,value,HKlim,timestamp,HKdata=None):
         """ """
         
-        recipient = st.replace(masked_recipient,'_at_','@') # NEEDS IMPROVEMENT, UNSAFE
-        
         subject = 'Eyegore HK WARNING: %s (DT=%s)' % (HKkey,timestamp)
         bodyList = ['HK OOL WARNING: %s' % HKkey,
             'value = %s, limits = %s' % (value,HKlim),
@@ -113,7 +116,7 @@ class EyeWarnings(object):
             bodyList.append('LATEST VALUES after the jump\n\n')
             bodyList.append(df.to_string(index=False))
         
-        self.send_email(subject,bodyList,recipient)
+        self.send_email(subject,bodyList,self.recipient)
     
     def do_phone_call(self,urlkey):
         """ """

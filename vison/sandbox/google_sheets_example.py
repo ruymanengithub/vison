@@ -4,11 +4,12 @@ from oauth2client.service_account import ServiceAccountCredentials
 from pdb import set_trace as stop
 import pprint
 import os
+from vison.support import utils
 
 scope = ['https://spreadsheets.google.com/feeds',
          'https://www.googleapis.com/auth/drive']
 
-credsf = os.path.join('/home/raf/', 'CREDENTIALS',
+credsf = os.path.join(utils.credentials_path,
                       'EuclidVis_calcampreporter.json')
 creds = ServiceAccountCredentials.from_json_keyfile_name(credsf, scope)
 

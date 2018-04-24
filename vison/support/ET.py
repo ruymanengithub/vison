@@ -16,6 +16,7 @@ from pdb import set_trace as stop
 from twilio.rest import TwilioRestClient
 import cPickle as pickle
 import os
+from vison.support import utils
 # END IMPORT
 
 
@@ -26,8 +27,7 @@ URLs = dict(
 def grab_numbers_and_codes():
     """Retrieves phone numbers and access codes necessary to make the phone calls."""
 
-    detailsf = os.path.join(os.path.pathsep, 'home', 'raf',
-                            'CREDENTIALS', 'credentials_twilio.pick')[1:]
+    detailsf = os.path.join(os.path.pathsep, utils.credentials_path, 'credentials_twilio.pick')[1:]
     details = pickle.load(open(detailsf))
     return details
 
