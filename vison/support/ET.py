@@ -38,6 +38,7 @@ class ET(object):
         self.TWILIO_PHONE_NUMBER = resources['TWILIO_PHONE_NUMBER']
         self.SIDnToken = resources['SIDnToken']
         self.DIAL_NUMBERS = resources['DIAL_NUMBERS']
+        self.client = TwilioRestClient(*self.SIDnToken)
 
     def dial_numbers(self, url):
         """Dials one or more phone numbers from a Twilio phone number.
@@ -47,22 +48,26 @@ class ET(object):
                     as intended.
 
         """
-
-        SID, Token = self.SIDnToken
-        TWILIO_PHONE_NUMBER = self.TWILIO_PHONE_NUMBER
-        DIAL_NUMBERS = self.DIAL_NUMBERS
-
-        client = TwilioRestClient(SID, Token)
-        for number in DIAL_NUMBERS:
+        
+        for number in self.DIAL_NUMBERS:
             print("Dialing " + number)
             # set the method to "GET" from default POST because Amazon S3 only
             # serves GET requests on files. Typically POST would be used for apps
-            client.calls.create(to=number, from_=TWILIO_PHONE_NUMBER,
+            self.client.calls.create(to=number, from_=self.TWILIO_PHONE_NUMBER,
                                 url=url, method="GET")
+    
+    def send_sms(self,body):
+        """ """
+        for number in self.DIAL_NUMBERS:
+            print("Texting " + number)
+            self.client.messages.create(
+               to=number,
+               from_=self.TWILIO_PHONE_NUMBER,
+               body=body)
 
 
-if __name__ == '__main__':
-
+def test_do_phonecall():
+    
     ETavailable = True
     try:
         et = ET()
@@ -72,3 +77,24 @@ if __name__ == '__main__':
 
     if ETavailable:
         et.dial_numbers(testURL)
+
+def test_send_sms():
+    ETavailable = True
+    try:
+        et = ET()
+    except IOError:
+        print 'vison.support.ET: Phone Calling is limited to personel with access details.'
+        ETavailable = False
+
+    if ETavailable:
+        body = "Hellow World!"
+        et.send_sms(body)
+        
+
+if __name__ == '__main__':
+    
+    #test_do_phonecall()
+    
+    test_send_sms()
+
+    
