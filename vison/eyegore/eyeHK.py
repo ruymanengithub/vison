@@ -165,6 +165,7 @@ class HKFlags(tk.Toplevel):
         self.parent = parent
         self.interval = interval
         self.HKkeys = self.parent.HKkeys[1:]
+        self.HK = self.parent.HK
 
         self.wm_title('HK Flags')
 

@@ -18,10 +18,12 @@ import string as st
 import tempfile
 import pandas as pd
 from collections import OrderedDict
+import re
 
 from vison.support import ET
 from vison.support import vjson
 from vison.support import utils
+
 # END IMPORT
 
 critical_HKkeys = ['CCD3_TEMP_T', 'CCD2_TEMP_T', 'CCD1_TEMP_T', 
@@ -41,8 +43,19 @@ severitydict = dict(CCD1_TEMP_T=dict(Tm1=2,T1=2),
                     FPGA_PCB_TEMP_B=dict(Tm1=1,T1=2), 
                                     )
 
-# NEEDS WORK, populate URLdict
-URLdict = dict(NonSpecificWarning="https://visonwarningcall.000webhostapp.com/visonwarningcall.xml")
+rootURL = "https://visonwarningcall.000webhostapp.com"
+subURLs = dict(
+    NonSpecificWarning="visonwarningcall.xml",
+    LoCCDTemp="low_CCD_TEMP.xml",
+    HiCCDTemp="hi_CCD_TEMP.xml",
+    LoVIDTemp="low_VID_PCB_TEMP.xml",
+    HiVIDTemp="hi_VID_PCB_TEMP.xml",
+    LoFPGATemp="low_FPGA_PCB_TEMP.xml",
+    HiFPGATemp="hi_FPGA_PCB_TEMP.xml")
+URLs = dict()
+for key,value in subURLs.iteritems():
+    URLs[key] = '%s/%s' % (rootURL,value)
+
 
 recipient = vjson.load_jsonfile(os.path.join(utils.credentials_path,'recipients_eyegore'))['main']
 
@@ -118,9 +131,35 @@ class EyeWarnings(object):
         
         self.send_email(subject,bodyList,self.recipient)
     
-    def do_phone_call(self,urlkey):
+    def do_phone_call(self,url):
         """ """
-        self.et.dial_numbers(URLdict[urlkey])
+        self.et.dial_numbers(url)
+    
+    def get_phone_url(self,HKkey,violation_type):
+        """ """        
+        HKkeys_patterns = dict(
+        CCDTemp='CCD\d_TEMP_[T,B]',
+        VIDTemp='VID_PCB_TEMP_[T,B]',
+        FPGATemp='FPGA_PCB_TEMP_[T,B]')
+        
+        matches_expression = lambda pair: re.match(pair[0],pair[1]) is not None
+                                                  
+        
+        def get_matching_HKurl(HKkey):
+            for key,value in HKkeys_patterns.iteritems():
+                if matches_expression((value,HKkey)): return key
+            return None
+        
+        HKurl = get_matching_HKurl(HKkey)
+        
+        stop()
+        
+        violation_key = st.replace('T%i' % violation_type, '-', 'm')
+        urlkey = '%s_%s' % (HKkey,violation_key)
+        if urlkey not in URLdict:
+            if self.log is not None:
+                    self.log.info('VOICE WARNING not sent! urlkey not known: %s' % urlkey)
+        return None
     
     def warn_via_phone(self,HKkey,violation_type):
         """ """
@@ -130,15 +169,10 @@ class EyeWarnings(object):
                     self.log.info('VOICE WARNING not sent! ET not available')
             return None
         
-        violation_key = st.replace('T%i' % violation_type, '-', 'm')   
-        urlkey = '%s_%s' % (HKkey,violation_key)
-        if urlkey not in URLdict:
-            if self.log is not None:
-                    self.log.info('VOICE WARNING not sent! urlkey not known: %s' % urlkey)
-            return None
+        url = self.get_phone_url(HKkey,violation_type)
 
         try:
-            self.do_phone_call(urlkey)
+            self.do_phone_call(url)
         except:
             if self.log is not None:
                     self.log.info('VOICE WARNING not sent! [%s]' % HKkey)
@@ -146,9 +180,9 @@ class EyeWarnings(object):
     def get_parent_HK_data(self,HKkey):
         
         if self.parent is not None:
-            HKdata = self.parent.parent.HK # alias
+            HKdata = self.parent.HK # alias
             data = dict(time=HKdata['time'][-100:],
-                        HKkey= HKdata['time'][-100:])
+                        HKkey= HKdata[HKkey][-100:])
         else:
             data = None
             
@@ -164,4 +198,20 @@ class EyeWarnings(object):
         if severity > 1:
             self.warn_via_phone(HKkey)
     
+
+def test_URLs():
+    """ """
+    import urllib2
+    
+    for key,value in URLs.iteritems():
+        try:
+            urllib2.urlopen(value)
+            print 'Found %s' % key, value
+        except urllib2.HTTPError,e:
+            print key, value, e.code
+        except urllib2.URLError,e:
+            print key, value, e.args
+
+if __name__ == '__main__':
+    test_URLs()
         

@@ -20,9 +20,18 @@ from vison.support import utils
 # END IMPORT
 
 
-URLs = dict(
-    NonSpecificWarning="https://visonwarningcall.000webhostapp.com/visonwarningcall.xml")
-
+rootURL = "https://visonwarningcall.000webhostapp.com"
+subURLs = dict(
+    NonSpecificWarning="visonwarningcall.xml",
+    LoCCDTemp="low_CCD_Temp.xml",
+    HiCCDTemp="hi_CCD_Temp.xml",
+    LoVIDTemp="low_VID_PCB_Temp.xml",
+    HiVIDTemp="hi_VID_PCB_Temp.xml",
+    LoFPGATemp="low_FPGA_PCB_Temp.xml",
+    HiFPGATemp="hi_FPGA_PCB_Temp.xml")
+URLs = dict()
+for key,value in subURLs.iteritems():
+    URLs[key] = '%s/%s' % (rootURL,value)
 
 def grab_numbers_and_codes():
     """Retrieves phone numbers and access codes necessary to make the phone calls."""
