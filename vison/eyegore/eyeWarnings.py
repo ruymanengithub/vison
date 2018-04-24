@@ -57,7 +57,8 @@ for key,value in subURLs.iteritems():
     URLs[key] = '%s/%s' % (rootURL,value)
 
 
-recipient = vjson.load_jsonfile(os.path.join(utils.credentials_path,'recipients_eyegore'))['main']
+try: recipient = vjson.load_jsonfile(os.path.join(utils.credentials_path,'recipients_eyegore'))['main']
+except IOError: recipient = None
 
 matches_expression = lambda pair: re.match(pair[0],pair[1]) is not None      
         
@@ -124,6 +125,10 @@ class EyeWarnings(object):
     
     def warn_via_email(self,HKkey,value,HKlim,timestamp,HKdata=None):
         """ """
+        
+        if self.recipient is None:
+            if self.log is not None:
+                self.log.info("warn_via_email: recipient must be valid (%s)" % self.recipient)
         
         subject = 'Eyegore HK WARNING: %s (DT=%s)' % (HKkey,timestamp)
         bodyList = ['HK OOL WARNING: %s' % HKkey,
