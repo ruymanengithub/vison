@@ -20,3 +20,7 @@ def load_jsonfile(jsonfile):
         pydict = json.load(json_data, encoding='ascii',
                            parse_float=float, parse_int=int)
     return pydict
+
+def dumps_to_json(pydict):
+    """ """
+    return json.dumps(pydict)

@@ -23,7 +23,7 @@ import vison
 from vison.datamodel import scriptic as sc
 from vison.campaign import campaign, minicampaign
 from vison.support import context
-from vison.chronos import get_test_duration
+from vison.campaign.chronos import get_test_duration
 
 import datetime
 import string as st
@@ -145,5 +145,14 @@ if __name__ == '__main__':
                                    FLAT01=1, FLAT02=1, FOCUS00=1, PSF01=1))
 
         test_generator = minicampaign.generate_reduced_test_sequence
-
+        
+    from vison.support import vjson
+    from collections import OrderedDict
+    
+    inputs = OrderedDict(elvis=elvis,equipment=equipment,toWrite=toWrite,
+                         camptype=camptype,outpath=outpath)
+    
+    jsonstr = vjson.dumps_to_json(inputs)
+    
+    stop()
     scwriter(toWrite, test_generator, outpath, equipment, elvis)
