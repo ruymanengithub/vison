@@ -424,14 +424,14 @@ class Report(Container):
         """ """
         self.add_to_Contents(Text(text))
 
-    def doreport(self, reportname, cleanafter=False):
+    def doreport(self, reportname, cleanafter=False, silent=True):
 
         self.generate_Header()
         self.generate_Texbody()
-        outfiles = self.writeto(reportname, cleanafter)
+        outfiles = self.writeto(reportname, cleanafter, silent=silent)
         return outfiles
 
-    def writeto(self, fileroot, cleanafter=False):
+    def writeto(self, fileroot, cleanafter=False, silent=True):
         """Writes pdf with contents"""
 
         fileLaTex = '%s.tex' % fileroot
@@ -440,7 +440,8 @@ class Report(Container):
             os.system('rm %s' % fileLaTex)
 
         self.writeLaTex(fileLaTex)
-        outfiles = self.compileLaTex2pdf(fileroot, cleanafter=cleanafter)
+        outfiles = self.compileLaTex2pdf(fileroot, cleanafter=cleanafter,
+                                         silent=silent)
 
         return outfiles
 
@@ -456,7 +457,7 @@ class Report(Container):
             print >> f, line
         f.close()
 
-    def compileLaTex2pdf(self, fileroot, cleanafter=False):
+    def compileLaTex2pdf(self, fileroot, cleanafter=False, silent=True):
         """Compiles a Latex file"""
 
         EuclidViscls = 'EuclidVIS.cls'
@@ -470,9 +471,11 @@ class Report(Container):
                   os.path.join(visondata.__path__[0], deluxetablesty))
 
         execline1 = 'latex %s.tex' % fileroot
+        if silent: execline1 += ' > /dev/null'
         os.system(execline1)
         os.system(execline1)  # do it twice to get references right!
         execline2 = 'dvipdf %s.dvi %s.pdf' % tuple([fileroot]*2)
+        if silent: execline2 += ' > /dev/null'
         os.system(execline2)
         os.system(execline2)  # twice to get all references
 
