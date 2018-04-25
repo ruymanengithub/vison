@@ -20,7 +20,7 @@ from vison.datamodel import EXPLOGtools as ELtools
 from vison.datamodel import generator as gen
 from vison.datamodel import scriptic as sc
 from vison.support import context
-from vison.pipe import campaign
+from vison.campaign import campaign
 #from vison.point import FOCUS00,PSF0X
 #from vison.dark import BIAS01,DARK01
 #from vison.flat import NL01, PTC0X, FLAT0X
