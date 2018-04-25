@@ -145,28 +145,25 @@ class Task(object):
         self.inputs['subpaths'] = _paths
 
         if todo_flags['init']:
-
-            # Creating resultspath
-            if not isthere(resultspath):
-                os.system('mkdir %s' % resultspath)
-
-            # Creating subresultspath
-            for _pathkey in _paths:
-                if not isthere(subpath):
-                    os.system('mkdir %s' % subpath)
-
-            # Let's start from scratch
-
+            
+            
             if os.path.exists(DataDictFile):
                 os.system('rm %s' % DataDictFile)
             if os.path.exists(reportobjFile):
                 os.system('rm %s' % reportobjFile)
+            
+            # Creating/clearing resultspath
+            if not isthere(resultspath):
+                os.system('mkdir %s' % resultspath)
+            else:
+                os.system('find %s -maxdepth 1 -type f -exec rm -f {} \;' % resultspath)
 
-            os.system('rm %s/*' % self.inputs['resultspath'])
-            if 'subpaths' in self.inputs:
-                for _pathkey in self.inputs['subpaths'].keys():
-                    subpath = self.inputs['subpaths'][_pathkey]
-                    os.system('rm -r %s/*' % subpath)
+            # Creating/clearing subresultspath
+            for _,subpath in self.inputs['subpaths'].iteritems():
+                if not isthere(subpath):
+                    os.system('mkdir %s' % subpath)
+                else:
+                    os.system('rm -rf %s/*' % subpath)
  
             # Initialising Report Object
 
@@ -229,8 +226,8 @@ class Task(object):
         # Write automatic Report of Results
 
         if todo_flags['report']:
-            self.report.doreport(reportroot, cleanafter)
-            outfiles = self.report.writeto(reportroot, cleanafter)
+            self.report.doreport(reportroot, cleanafter, silent=True)
+            outfiles = self.report.writeto(reportroot, cleanafter, silent=True)
 
             for outfile in outfiles:
                 os.system('mv %s %s/' % (outfile, resultspath))
@@ -348,7 +345,7 @@ class Task(object):
             raise RuntimeError
 
         figobj.configure(**kwargs)
-        if kwargs['dobuild']:
+        if kwargs['dobuilddata']:
             figobj.build_data(self)
         else:
             figobj.data = copy.deepcopy(kwargs['data'])
@@ -416,7 +413,8 @@ class Task(object):
         pmeta = dict(path=figspath,
                      caption='$\\bf{MISSING}:$ %s' % niceref,
                      tag=ref,
-                     meta=dict(title=niceref))
+                     meta=dict(title=niceref),
+                     dobuilddata=True)
         self.doPlot(key, **pmeta)
         self.addFigure2Report(key)
 
