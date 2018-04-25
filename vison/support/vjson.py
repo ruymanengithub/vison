@@ -9,18 +9,27 @@ Created on Tue Mar 27 14:25:43 2018
 """
 
 # IMPORT STUFF
+from pdb import set_trace as stop
 import json
+#import ast
+import yaml
 #from decimal import Decimal
 # END IMPORT
 
 
-def load_jsonfile(jsonfile):
+def load_jsonfile(jsonfile,useyaml=False):
     """ """
+    
     with open(jsonfile) as json_data:
-        pydict = json.load(json_data, encoding='ascii',
-                           parse_float=float, parse_int=int)
+        
+        if useyaml:
+            json_str = json_data.read()
+            pydict = yaml.safe_load(json_str)
+        else:
+            pydict = json.load(json_data, encoding='ascii',
+                      parse_float=float, parse_int=int)
     return pydict
 
 def dumps_to_json(pydict):
     """ """
-    return json.dumps(pydict)
+    return json.dumps(pydict,indent=4)
