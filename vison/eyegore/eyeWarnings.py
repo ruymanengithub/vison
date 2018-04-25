@@ -139,7 +139,7 @@ class EyeWarnings(object):
         self.send_email(subject,bodyList,self.recipient)
     
     def do_phone_call(self,url):
-        """ """
+        """Does phone call via self.et object"""
         self.et.dial_numbers(url)
     
     def get_phone_url(self,HKkey,violation_type):
@@ -179,6 +179,27 @@ class EyeWarnings(object):
             if self.log is not None:
                 self.log.info('VOICE WARNING not sent! [%s]' % HKkey)
     
+    def warn_via_sms(self,HKkey,value,HKlim,timestamp):
+        """ """
+        
+        if self.et is None:
+            if self.log is not None:
+                self.log.info('SMS WARNING not sent! ET not available.')
+        
+        body = st.join(['HK OOL WARNING: %s. ' % HKkey,
+            'value = %s, limits = %s. ' % (value,HKlim),
+            'at %s' % timestamp])
+        
+        try:
+            self.send_sms(body)
+        except:
+            if self.log is not None:
+                self.log.info('SMS WARNING not sent! ET not available.')
+        
+    def send_sms(self,body):
+        """Sends text message via self.et object"""
+        self.et.send_sms(body)
+    
     def get_parent_HK_data(self,HKkey):
         
         if self.parent is not None:
@@ -198,8 +219,9 @@ class EyeWarnings(object):
         if severity>0:
             self.warn_via_email(HKkey,value,HKlim,timestamp,HKdata)
         if severity > 1:
-            print 'WARNINGS via phone-calls DISABLED by now in eyeWarnings'      
+            print 'WARNINGS via phone-calls/sms DISABLED by now in eyeWarnings'      
             # self.warn_via_phone(HKkey,violation_type) DISABLED BY NOW
+            # self.warn_via_sms(HKkey,value,HKlim,timestamp)
     
 
 def test_URLs():
