@@ -9,6 +9,7 @@ Created on Mon Apr 16 16:17:13 2018
 """
 
 # IMPORT STUFF
+from pdb import set_trace as stop
 import os
 import numpy as np
 from collections import defaultdict
@@ -57,7 +58,7 @@ class Fig(object):
         plotobj.render(self.figname)
         
     def build_data(self,*args,**kwargs):
-        return None
+        raise NotImplementedError("child class implements abstract method")
 
 class Fig_Beam2DPlot(Fig):
     plotclass = baseplotclasses.BeamPlotYvX
@@ -99,7 +100,6 @@ class Fig_XY_fromDD(Fig):
             
             axis = indices_tuple[-2]
             stat = indices_tuple[-1]
-            
             if axis == 'x':
                 value = ddmx[trendaxis][ix_tuple[:-2]]
             elif axis == 'y':

@@ -33,22 +33,21 @@ class Fig_Basic_Checkstat(figclasses.Fig_XY_fromDD):
         self.data = dict()
         self.plotclass = baseplotclasses.BeamPlotYvX
         
-    def build_data(self,parent,**kwargs):
+    def build_data(self,dd,**kwargs):
         """ """
         
         indicesList = ['CCD','Quad']
         
-        dd = parent.dd
-        indices = parent.dd.indices
+        indices = dd.indices
         indicesDict = dict()
         for key in indicesList:
             indicesDict[key] = indices[indices.names.index(key)].vals        
         
         ddmx = dict()
-        ddmx[self.trendaxis] = copy.deepcopy(dd[self.trendaxis][:])
+        ddmx[self.trendaxis] = copy.deepcopy(dd.mx[self.trendaxis][:])
         for label in self.stats:
-            ddmx[label] = copy.deepcopy(dd[label][:])
-        
+            ddmx[label] = copy.deepcopy(dd.mx[label][:])
+        stop()
         self.data = self._build_data_yvsx(ddmx,indicesDict,indicesList,self.stats,
                                      self.trendaxis)
         
