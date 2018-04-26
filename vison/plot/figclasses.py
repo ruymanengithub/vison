@@ -70,53 +70,153 @@ class Fig_Beam1DHist(Fig):
 class Fig_XY_fromDD(Fig):
 
     
-    def _build_data_yvsx(self,ddmx,indicesDict,indicesList,labels,trendaxis):
+    def _build_data_yvsx(self,subdd,stats,trendaxis,index2margin,indices2param):
         
-        plnames = ['x','y']
+        assert isinstance(subdd,dict)
+        assert isinstance(stats,list)
+        assert isinstance(trendaxis,str)
+                
+        #plnames = ['x','y']
     
-        iterable_keys = []
-        for indname in indicesList:
-            iterable_keys.append(indicesDict[indname])
-        iterable_keys += [plnames] + [labels]
+        iterable_data_keys = []
+        for indname in indices2param:
+            iterable_data_keys.append(subdd[stats[0]].indices.get_vals(indname))
         
-        iterable_ix = []
-        for indname in indicesList:
-            iterable_ix.append(np.arange(len(indicesDict[indname])).tolist())
-        iterable_ix += [[None]*len(plnames)] + [[None]*len(labels)]
+#        tagkeys = []
+#        if index2tag is not None:
+#            tagkeys = subdd[stats[0]].indices.get_vals(index2tag)
+#
+#        iterable_data_keys += [plnames] + tagkeys
         
+        data_keys_tuples = [item for item in product(*iterable_data_keys)]
+        
+        trend_indices = subdd[trendaxis].indices
+        stats_indices = subdd[stats[0]].indices # all stats SHOULD have same indices
+        
+        def get_ix_tuples(indobj,indexlist,margin=None):
+           
+            iterable_ix = [] 
+            if margin is not None:
+                iterable_ix+= [[slice(None)]]
+            
+            for _ixname in indexlist:
+                iterable_ix.append(np.arange(indobj.get_len(_ixname)))
+            
+#            if tag is not None:
+#                iterable_ix.append(np.arange(indobj.get_len(tag)))
+#
+            return [item for item in product(*iterable_ix)]
+        
+        ix_tuples = get_ix_tuples(stats_indices,indices2param,margin=index2margin)
         
         # nested dictionary based on recursion and collections.defaultdict
         nested_dict = lambda: defaultdict(nested_dict)
         data = nested_dict()
         
-        indices_tuples = [item for item in product(*iterable_keys)]
-        ix_tuples = [item for item in product(*iterable_ix)]
+        NdimsTrend = len(trend_indices.shape)
+        NdimsStats = len(stats_indices.shape)
         
-        # on-the-fly creation and assignation of values
+        # broadcasting trends axis matrix, if needed
         
-        for i in range(len(indices_tuples)):
-            indices_tuple = indices_tuples[i]
+        sup_trendmx = subdd[trendaxis][:].copy()
+        
+        def add_axis(arr,repeats):
+            return arr[...,np.newaxis].repeat(repeats,axis=-1).copy()
+        
+        if NdimsStats>NdimsTrend:
+            stats_shape = stats_indices.shape
+            for i in stats_shape[NdimsTrend:]:
+                sup_trendmx = add_axis(sup_trendmx,i)
+        
+        # on-the-fly creation and assignation of values 
+        
+        assert len(data_keys_tuples) == len(ix_tuples)
+        
+        full_keys_tuples = []
+        
+        for i in range(len(data_keys_tuples)):
+            
+            keys_tuple = data_keys_tuples[i]
             ix_tuple = ix_tuples[i]
             
-            axis = indices_tuple[-2]
-            stat = indices_tuple[-1]
-            if axis == 'x':
-                value = ddmx[trendaxis][ix_tuple[:-2]]
-            elif axis == 'y':
-                value = ddmx[stat][ix_tuple[:-2]]
+            for stat in stats:
+                _keysx = tuple(list(keys_tuple)+['x']+[stat])
+                 
+                valuex = sup_trendmx[ix_tuple].copy()
+               
+                utils.setInDict(data,_keysx,valuex)
                 
-            utils.setInDict(data,indices_tuple,value)
-        
+                _keysy = tuple(list(keys_tuple)+['y']+[stat])
+                
+                valuey = subdd[stat][ix_tuple].copy()
+                utils.setInDict(data,_keysy,valuey)
+                
+                full_keys_tuples += [_keysx,_keysy]
+            
         # Convert defaultdict 'back' to dict()
         
-        for indices_tuple in indices_tuples:
-            for j in range(1,len(indicesList)+2):
-                value = utils.getFromDict(data,indices_tuple[:-j])
+        
+        Nlevels = len(full_keys_tuples[0])
+        
+        for keys_tuple in full_keys_tuples:
+            for j in range(1,Nlevels):
+                value = utils.getFromDict(data,keys_tuple[:-j])
                 if isinstance(value,defaultdict):
-                    utils.setInDict(data,indices_tuple[:-j],dict(value))
+                    utils.setInDict(data,keys_tuple[:-j],dict(value))
         data = dict(data)
         
+        
         return data
+    
+    
+#    def old_build_data_yvsx(self,ddmx,indicesDict,indicesList,labels,trendaxis):
+#        
+#        plnames = ['x','y']
+#    
+#        iterable_keys = []
+#        for indname in indicesList:
+#            iterable_keys.append(indicesDict[indname])
+#        iterable_keys += [plnames] + [labels]
+#        
+#        iterable_ix = []
+#        for indname in indicesList:
+#            iterable_ix.append(np.arange(len(indicesDict[indname])).tolist())
+#        iterable_ix += [[None]*len(plnames)] + [[None]*len(labels)]
+#        
+#        
+#        # nested dictionary based on recursion and collections.defaultdict
+#        nested_dict = lambda: defaultdict(nested_dict)
+#        data = nested_dict()
+#        
+#        indices_tuples = [item for item in product(*iterable_keys)]
+#        ix_tuples = [item for item in product(*iterable_ix)]
+#        
+#        # on-the-fly creation and assignation of values
+#        
+#        
+#        for i in range(len(indices_tuples)):
+#            indices_tuple = indices_tuples[i]
+#            ix_tuple = ix_tuples[i]
+#            
+#            axis = indices_tuple[-2]
+#            stat = indices_tuple[-1]
+#            if axis == 'x':
+#                value = ddmx[trendaxis][ix_tuple[:-2]]
+#            elif axis == 'y':
+#                value = ddmx[stat][ix_tuple[:-2]]
+#                
+#            utils.setInDict(data,indices_tuple,value)
+#        
+#        # Convert defaultdict 'back' to dict()
+#        
+#        for indices_tuple in indices_tuples:
+#            for j in range(1,len(indicesList)+2):
+#                value = utils.getFromDict(data,indices_tuple[:-j])
+#                if isinstance(value,defaultdict):
+#                    utils.setInDict(data,indices_tuple[:-j],dict(value))
+#        data = dict(data)
+#        
+#        return data
 
 class BlueScreen(Fig):
     """ """

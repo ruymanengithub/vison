@@ -13,9 +13,11 @@ Created on Fri Jan 26 16:18:43 2018
 # IMPORT STUFF
 from pdb import set_trace as stop
 import copy
+import numpy as np
 
 from vison.plot import figclasses
 from vison.plot import baseplotclasses
+from vison.datamodel.core import vColumn
 # END IMPORT
 
 
@@ -33,24 +35,82 @@ class Fig_Basic_Checkstat(figclasses.Fig_XY_fromDD):
         self.data = dict()
         self.plotclass = baseplotclasses.BeamPlotYvX
         
+#    def old_build_data(self,dd,**kwargs):
+#        """ """
+#        
+#        indicesList = ['CCD','Quad']
+#        
+#        indices = dd.indices
+#        indicesDict = dict()
+#        for key in indicesList:
+#            indicesDict[key] = indices[indices.names.index(key)].vals        
+#        
+#        ddmx = dict()
+#        ddmx[self.trendaxis] = copy.deepcopy(dd.mx[self.trendaxis][:])
+#        for label in self.stats:
+#            ddmx[label] = copy.deepcopy(dd.mx[label][:])
+#        
+#        self.data = self.old_build_data_yvsx(ddmx,indicesDict,indicesList,self.stats,
+#                                     self.trendaxis)
+    
     def build_data(self,dd,**kwargs):
         """ """
         
-        indicesList = ['CCD','Quad']
+        index2margin = 'ix'
+        indices2param = ['CCD','Quad']
+        stats = self.stats
         
-        indices = dd.indices
-        indicesDict = dict()
-        for key in indicesList:
-            indicesDict[key] = indices[indices.names.index(key)].vals        
+        subdd = dict()
+        subdd[self.trendaxis] = copy.deepcopy(dd.mx[self.trendaxis])
+        trendaxes = subdd[self.trendaxis].indices.get_names()
         
-        ddmx = dict()
-        ddmx[self.trendaxis] = copy.deepcopy(dd.mx[self.trendaxis][:])
-        for label in self.stats:
-            ddmx[label] = copy.deepcopy(dd.mx[label][:])
-        stop()
-        self.data = self._build_data_yvsx(ddmx,indicesDict,indicesList,self.stats,
-                                     self.trendaxis)
+        assert index2margin in trendaxes
+        assert np.all([ixkey in [index2margin]+indices2param for ixkey in trendaxes])
         
+        refstatindices = dd.mx[self.stats[0]].indices.get_names() # all stats must have same indices
+        indices2tag = [index for index in refstatindices if index not in [index2margin]+indices2param]
+        
+        assert len(indices2tag)<=1
+                
+        if len(stats)>1:
+            assert len(indices2tag)==0
+        
+        if len(indices2tag)==1:
+            index2tag = indices2tag[0]
+        else:
+            index2tag = None
+        
+        
+        if len(stats)>1 and index2tag is None:
+            
+            tags = stats
+            
+            for tag in tags:
+                subdd[tag] = copy.deepcopy(dd.mx[tag])
+                _statindices =  subdd[tag].indices.get_names()
+                assert _statindices == refstatindices
+                
+        elif len(stats)==1 and index2tag is not None:
+            
+            tags = dd.mx[stats[0]].indices.get_vals(index2tag)
+            stat = stats[0]
+            
+            for tag in tags:
+                subdd[tag] = vColumn(dd.mx[stat][...,0],dd.mx[stat].name,dd.mx[stat].indices[:-1])
+            
+        elif len(stats)==1 and index2tag is None:
+            
+            tags = stats
+            subdd[tags[0]] = copy.deepcopy(dd.mx[tags[0]])
+        
+        else:
+            raise AssertionError
+        
+        
+        self.data = self._build_data_yvsx(subdd,tags,
+                self.trendaxis,index2margin,indices2param)
+        
+    
     def configure(self, **kwargs):
         """ """
         defaults = dict(path='./', stats=[], trendaxis='time')
