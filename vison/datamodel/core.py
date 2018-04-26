@@ -44,6 +44,12 @@ class vIndex(object):
             self.len = N
         else:
             raise TypeError
+            
+    def get_vals(self):
+        return self.vals
+    
+    def get_len(self):
+        return self.len
 
     def __str__(self):
         return '("%s": %i)' % (self.name, self.len)
@@ -72,7 +78,17 @@ class vMultiIndex(list, object):
         for item in self:
             names.append(item.name)
         return names
-
+    
+    def find(self,indexname):
+        return self.names.index(indexname)
+    
+    def get_vals(self,indexname):
+        """ """
+        return self[self.find(indexname)].get_vals()
+    
+    def get_len(self,indexname):
+        return self[self.find(indexname)].get_len()
+    
     def get_shape(self):
         shape = []
         for item in self:
