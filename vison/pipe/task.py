@@ -436,10 +436,14 @@ class Task(object):
         for iCCD, CCDkey in enumerate(CCDs):
             compliance[CCDkey] = OrderedDict()
             for jQ, Q in enumerate(ccd.Quads):
-                _lims = CCDQlims[CCDkey][Q]
+                # allowing for some flexibility in the granularity of the set 
+                # limits (common per CCD or Q). WATCH IT OUT.
+                if isinstance(CCDQlims[CCDkey],dict):
+                    _lims = CCDQlims[CCDkey][Q]
+                elif isinstance(CCDQlims[CCDkey],list):
+                    _lims = CCDQlims[CCDkey]
                 test = (np.isnan(arr[:, iCCD, jQ, ...]) |
                         (arr[:, iCCD, jQ, ...] <= _lims[0]) | (arr[:, iCCD, jQ, ...] >= _lims[1]))
-
                 compliance[CCDkey][Q] = not np.any(test).sum()
         return compliance
 

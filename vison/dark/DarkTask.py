@@ -117,6 +117,7 @@ class DarkTask(Task):
 
         offsets_lims = self.perflimits['offsets_lims']
         
+        
         if test == 'BIAS01':
             regs_off = ['pre', 'img', 'ove']
         elif test == 'DARK01':
@@ -124,7 +125,7 @@ class DarkTask(Task):
 
         for reg in regs_off:
             arr = self.dd.mx['offset_%s' % reg]
-            _compliance_offsets = self.check_stat_perCCD(
+            _compliance_offsets = self.check_stat_perCCDandQ(
                 arr, offsets_lims, CCDs)
 
             if not self.IsComplianceMatrixOK(_compliance_offsets):
@@ -133,7 +134,6 @@ class DarkTask(Task):
                 self.addComplianceMatrix2Log(
                     _compliance_offsets, label='COMPLIANCE OFFSETS [%s]:' % reg)
             if self.report is not None:
-                
                 self.addComplianceMatrix2Report(
                     _compliance_offsets, label='COMPLIANCE OFFSETS [%s]:' % reg)
 
@@ -151,7 +151,7 @@ class DarkTask(Task):
             for CCDk in CCDs:
                 _lims[CCDk] = offsets_gradients[CCDk][reg]
             arr = self.dd.mx['offset_%s' % reg][:]-self.dd.mx['offset_pre'][:]
-            _xcheck_offsets = self.check_stat_perCCD(arr, _lims, CCDs)
+            _xcheck_offsets = self.check_stat_perCCDandQ(arr, _lims, CCDs)
 
             if not self.IsComplianceMatrixOK(_xcheck_offsets):
                 self.dd.flags.add('POORQUALDATA')
@@ -171,7 +171,7 @@ class DarkTask(Task):
 
         RONs_lims = self.perflimits['RONs_lims']
         for reg in regs_std:
-            _compliance_std = self.check_stat_perCCD(
+            _compliance_std = self.check_stat_perCCDandQ(
                 self.dd.mx['std_%s' % reg], RONs_lims, CCDs)
 
             if not self.IsComplianceMatrixOK(_compliance_std):
@@ -191,7 +191,7 @@ class DarkTask(Task):
             Flu_lims = self.perflimits['Flu_lims']
 
             arr = self.dd.mx['chk_flu_img'][:].copy()
-            _compliance_Flu = self.check_stat_perCCD(arr, Flu_lims, CCDs)
+            _compliance_Flu = self.check_stat_perCCDandQ(arr, Flu_lims, CCDs)
 
             if not self.IsComplianceMatrixOK(_compliance_Flu):
                 self.dd.flags.add('POORQUALDATA')

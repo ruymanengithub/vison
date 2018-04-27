@@ -16,8 +16,8 @@ Created on Wed Nov  1 09:57:44 2017
 offsets = dict(CCD1=2000, CCD2=2000, CCD3=2000)  # ADU
 offsets_margins = [-200, 200]  # ADU
 offsets_lims = dict()
-for CCD in [1, 2, 3]:
-    CCDkey = 'CCD%i' % CCD
+for iCCD in [1, 2, 3]:
+    CCDkey = 'CCD%i' % iCCD
     offsets_lims[CCDkey] = [offsets[CCDkey] +
                             offsets_margins[0], offsets[CCDkey]+offsets_margins[1]]
 
