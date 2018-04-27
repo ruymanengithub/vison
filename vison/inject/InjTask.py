@@ -73,7 +73,7 @@ class InjTask(Task):
 
         expectation = OrderedDict()
 
-        for jCCD,CCDkey in CCDs:
+        for jCCD,CCDkey in enumerate(CCDs):
             
             expectation[CCDkey] = OrderedDict()
 
