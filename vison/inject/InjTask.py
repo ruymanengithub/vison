@@ -84,7 +84,7 @@ class InjTask(Task):
                 for icol in range(1, Ncols+1):
                     coldict = teststruct['col%i' % icol]
                     chinj = coldict['chinj']
-                    IGs = (coldict['IG1_%i_%s' % (jCCD, sectag)],coldict['IG2_%s' % sectag])
+                    IGs = (coldict['IG1_%i_%s' % (jCCD+1, sectag)],coldict['IG2_%s' % sectag])
                     ID = (coldict['IDL'], coldict['IDH'])
                     id_timing = (coldict['id_wid'],coldict['id_dly'])
                     toi_ch = coldict['toi_ch']
