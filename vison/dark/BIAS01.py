@@ -23,6 +23,7 @@ import copy
 import string as st
 from collections import OrderedDict
 import pandas as pd
+import unittest
 
 from vison.support import context
 from vison.pipe import lib as pilib
@@ -323,6 +324,7 @@ class BIAS01(DarkTask):
         
         
         # REPORTS
+        
         # Table with median (Best Estimate) values of RON per CCD&Q
         # NEEDS REFACTORING!! (move somewhere else, abstractize it and recycle)
 
@@ -330,9 +332,9 @@ class BIAS01(DarkTask):
         RONmsk = np.zeros_like(RON, dtype='int32')
         RONmsk[np.where((np.isclose(RON, 0.)) | (np.isnan(RON)))] = 1
         beRON = np.ma.median(np.ma.masked_array(
-            RON, mask=RONmsk), axis=1).data.copy()
+            RON, mask=RONmsk), axis=1).data.copy() # best estimate of RON
 
-        beRONdict = OrderedDict()
+        beRONdict = OrderedDict() 
         for jCCD, CCDk in enumerate(CCDs):
             beRONdict[CCDk] = OrderedDict()
             for kQ, Q in enumerate(Quads):
@@ -375,3 +377,27 @@ class BIAS01(DarkTask):
         """
 
         raise NotImplementedError
+
+
+class Test(unittest.TestCase):
+    """
+    Unit tests for the BIAS01 class.
+    """
+    def setUp(self):
+        
+        inputs = dict()
+        self.b01 = BIAS01(inputs,log=None, drill=True, debug=False)
+        
+
+    def test_check_data(self):
+        """
+        
+        :return: None
+        """
+        self.b01.check_data()
+
+if __name__ == '__main__':
+    
+    suite = unittest.TestLoader().loadTestsFromTestCase(Test)
+    unittest.TextTestRunner(verbosity=3).run(suite)
+    
