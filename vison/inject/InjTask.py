@@ -64,7 +64,7 @@ class InjTask(Task):
 
     def predict_expected_injlevels(self, teststruct):
         """ """
-        CCDs = [1, 2, 3]
+        CCDs = ['CCD1', 'CCD2', 'CCD3']
         Quads = ['E', 'F', 'G', 'H']
 
         SecTags = dict(E='B', F='B', G='T', H='T')
@@ -73,8 +73,8 @@ class InjTask(Task):
 
         expectation = OrderedDict()
 
-        for CCD in CCDs:
-            CCDkey = 'CCD%i' % CCD
+        for jCCD,CCDkey in CCDs:
+            
             expectation[CCDkey] = OrderedDict()
 
             for Q in Quads:
@@ -84,7 +84,7 @@ class InjTask(Task):
                 for icol in range(1, Ncols+1):
                     coldict = teststruct['col%i' % icol]
                     chinj = coldict['chinj']
-                    IGs = (coldict['IG1_%i_%s' % (CCD, sectag)],coldict['IG2_%s' % sectag])
+                    IGs = (coldict['IG1_%i_%s' % (jCCD, sectag)],coldict['IG2_%s' % sectag])
                     ID = (coldict['IDL'], coldict['IDH'])
                     id_timing = (coldict['id_wid'],coldict['id_dly'])
                     toi_ch = coldict['toi_ch']
@@ -162,8 +162,8 @@ class InjTask(Task):
                                dtype='float32', valini=valini)
 
         nObs, _, _ = Xindices.shape
-        CCDs = Xindices[Xindices.names.index('CCD')].vals
-        Quads = Xindices[Xindices.names.index('Quad')].vals
+        CCDs = Xindices.get_vals('CCD')
+        Quads = Xindices.get_vals('Quad')
 
         # Get statistics in different regions
 
@@ -174,7 +174,7 @@ class InjTask(Task):
                 if self.debug:
                     print 'check_data: processing Obsid %i/%i' % (iObs+1, nObs)
 
-                for jCCD, CCD in enumerate(CCDs):
+                for jCCD, CCDk in enumerate(CCDs):
                     dpath = self.dd.mx['datapath'][iObs, jCCD]
                     ffits = os.path.join(dpath, '%s.fits' %
                                          self.dd.mx['File_name'][iObs, jCCD])
@@ -232,7 +232,7 @@ class InjTask(Task):
         # test = self.inputs['test']
 
         Xindices = self.dd.indices
-        CCDs = Xindices[Xindices.names.index('CCD')].vals
+        CCDs = Xindices.get_vals('CCD')
 
         if self.report is not None:
             self.report.add_Section(
@@ -260,8 +260,8 @@ class InjTask(Task):
         offsets_gradients = self.perflimits['offsets_gradients']
         for ireg, reg in enumerate(['ove']):
             _lims = dict()
-            for CCD in CCDs:
-                _lims['CCD%i' % CCD] = offsets_gradients['CCD%i' % CCD][reg]
+            for CCDk in CCDs:
+                _lims[CCDk] = offsets_gradients[CCDk][reg]
             arr = self.dd.mx['offset_%s' % reg][:]-self.dd.mx['offset_pre'][:]
             _xcheck_offsets = self.check_stat_perCCD(arr, _lims, CCDs)
 

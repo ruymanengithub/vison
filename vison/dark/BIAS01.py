@@ -188,7 +188,7 @@ class BIAS01(DarkTask):
 
         nObs, nCCD, nQuad = DDindices.shape
         Quads = DDindices[2].vals
-        CCDs = DDindices[DDindices.names.index('CCD')].vals
+        CCDs = DDindices.get_vals('CCD')
 
         # The "Hard"-work
 
@@ -200,14 +200,14 @@ class BIAS01(DarkTask):
         profs1D2plot['hor'] = OrderedDict()
         profs1D2plot['ver'] = OrderedDict()
 
-        for CCD in CCDs:
+        for CCDk in CCDs:
             for tag in ['hor','ver']:
-                profs1D2plot[tag]['CCD%i' % CCD] = OrderedDict()
+                profs1D2plot[tag][CCDk] = OrderedDict()
             for Q in Quads:
                 for tag in ['hor','ver']:
-                    profs1D2plot[tag]['CCD%i' % CCD][Q] = OrderedDict()
-                    profs1D2plot[tag]['CCD%i' % CCD][Q]['x'] = OrderedDict()
-                    profs1D2plot[tag]['CCD%i' % CCD][Q]['y'] = OrderedDict()
+                    profs1D2plot[tag][CCDk][Q] = OrderedDict()
+                    profs1D2plot[tag][CCDk][Q]['x'] = OrderedDict()
+                    profs1D2plot[tag][CCDk][Q]['y'] = OrderedDict()
                 
         
         if not self.drill:
@@ -221,7 +221,7 @@ class BIAS01(DarkTask):
 
                 OBSID = self.dd.mx['ObsID'][iObs]
 
-                for jCCD, CCD in enumerate(CCDs):
+                for jCCD, CCDk in enumerate(CCDs):
                     
                     vstart = self.dd.mx['vstart'][iObs, jCCD]
                     vend = self.dd.mx['vend'][iObs, jCCD]
@@ -289,15 +289,14 @@ class BIAS01(DarkTask):
                         
                         for oritag in ['hor','ver']:
                             for axtag in ['x','y']:
-                                profs1D2plot[oritag]['CCD%i' %
-                                                    CCD][Q][axtag]['OBS%i' % OBSID]  = hor1Dprof.data[axtag]
+                                profs1D2plot[oritag][CCDk][Q][axtag]['OBS%i' % OBSID]  = hor1Dprof.data[axtag]
 
                     # save (2D model and) profiles in a pick file for each OBSID-CCD
 
-                    iprofiles1D.rootname = 'profs1D_%i_CCD%i_BIAS01' % (
-                        OBSID, CCD)
-                    iprofiles2D.rootname = 'mod2D_%i_CCD%i_BIAS01' % (
-                        OBSID, CCD)
+                    iprofiles1D.rootname = 'profs1D_%i_%s_BIAS01' % (
+                        OBSID, CCDk)
+                    iprofiles2D.rootname = 'mod2D_%i_%s_BIAS01' % (
+                        OBSID, CCDk)
 
                     #fprofilespickf = os.path.join(profilespath,profilespickf)
 
@@ -334,10 +333,10 @@ class BIAS01(DarkTask):
             RON, mask=RONmsk), axis=1).data.copy()
 
         beRONdict = OrderedDict()
-        for jCCD, CCD in enumerate(CCDs):
-            beRONdict['CCD%i' % CCD] = OrderedDict()
+        for jCCD, CCDk in enumerate(CCDs):
+            beRONdict[CCDk] = OrderedDict()
             for kQ, Q in enumerate(Quads):
-                beRONdict['CCD%i' % CCD][Q] = beRON[jCCD, kQ]
+                beRONdict[CCDk][Q] = beRON[jCCD, kQ]
         beRONdf = pd.DataFrame.from_dict(beRONdict)  # PENDING
 
         RON_CDP = B01aux.CDP_lib['RON']

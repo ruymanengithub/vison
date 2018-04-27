@@ -225,8 +225,8 @@ class FLAT0X(FlatTask):
 
         indices = copy.deepcopy(self.dd.indices)
 
-        ObsIDs = indices[indices.names.index('ObsID')].vals
-        CCDs = indices[indices.names.index('CCD')].vals
+        ObsIDs = indices.get_vals('ObsID')
+        CCDs = indices.get_vals('CCD')
 
         ccdindices = copy.deepcopy(self.dd.mx['CCD'].indices)
 
@@ -248,11 +248,11 @@ class FLAT0X(FlatTask):
 
             for iObs, ObsID in enumerate(ObsIDs):
 
-                for jCCD, CCD in enumerate(CCDs):
+                for jCCD, CCDk in enumerate(CCDs):
                     ilabel = self.dd.mx['label'][iObs, jCCD]
 
                     self.dd.mx['indiv_flats'][iObs, jCCD] = 'EUC_FF_%inm_%s_ROE1_%s.fits' %\
-                        (wavelength, ilabel, ObsID, CCD)
+                        (wavelength, ilabel, ObsID, CCDk)
 
             def fulloutpath_adder(path): return os.path.join(fpath, path)
             vfulloutpath_adder = np.vectorize(fulloutpath_adder)
@@ -296,8 +296,8 @@ class FLAT0X(FlatTask):
         settings = dict()
 
         indices = copy.deepcopy(self.dd['indiv_flats'].indices)
-        #ObsIDs = indices[indices.names.index('ObsID')].vals
-        CCDs = indices[indices.names.index('CCD')].vals
+        
+        CCDs = indices.get_vals('CCD')
 
         dpath = self.inputs['subpaths']['ccdflats']
         cdppath = self.inputs['subpaths']['cdps']
@@ -317,16 +317,16 @@ class FLAT0X(FlatTask):
 
                 self.dd.products['MasterFFs'][ulabel] = OrderedDict()
 
-                for jCCD, CCD in enumerate(CCDs):
+                for jCCD, CCDk in enumerate(CCDs):
 
-                    PRNU[ulabel][CCD] = OrderedDict()
+                    PRNU[ulabel][CCDk] = OrderedDict()
 
                     FFname = 'EUC_FF_%inm_%s_ROE1_%s.fits' % \
-                        (wavelength, ulabel, CCD)
+                        (wavelength, ulabel, CCDk)
 
                     FFpath = os.path.join(cdppath, FFname)
 
-                    selix = np.where((labels == ulabel) & (CCDs == CCD))
+                    selix = np.where((labels == ulabel) & (CCDs == CCDk))
 
                     FFlist = self.dd.mx['indiv_flats'][selix].flatten().copy()
 
@@ -341,7 +341,7 @@ class FLAT0X(FlatTask):
                     FFing.produce_MasterFlat(
                         FFlist, FFpath, mask=None, settings=settings)
 
-                    self.dd.products['MasterFFs'][ulabel][CCD] = FFpath
+                    self.dd.products['MasterFFs'][ulabel][CCDk] = FFpath
 
                     # Measure Flat-Field (PRNU): per-Q
 
@@ -357,7 +357,7 @@ class FLAT0X(FlatTask):
                                                ignore_pover=True,
                                                extension=iFextension)[0]
 
-                        PRNU[ulabel][CCD][Q] = iQ_PRNU
+                        PRNU[ulabel][CCDk][Q] = iQ_PRNU
 
         # REPORT PRNU results
 

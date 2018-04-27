@@ -295,8 +295,8 @@ class PTC0X(FlatTask):
 
         nObs, nCCD, nQuad = indices.shape
 
-        Quads = indices[indices.names.index('Quad')].vals
-        CCDs = indices[indices.names.index('CCD')].vals
+        Quads = indices.get_vals('Quad')
+        CCDs = indices.get_vals('CCD')
 
         emptyccdobj = ccd.CCD()
         tile_coos = dict()
@@ -347,7 +347,7 @@ class PTC0X(FlatTask):
                     continue
                 iObs_pair = np.where(ObsIDs == _ObsID_pair)[0][0]
 
-                for jCCD, CCD in enumerate(CCDs):
+                for jCCD, CCDk in enumerate(CCDs):
 
                     ccdobj_odd_f = os.path.join(
                         dpath, self.dd.mx['ccdobj_name'][iObs, jCCD])
@@ -411,8 +411,8 @@ class PTC0X(FlatTask):
 
         dIndices = copy.deepcopy(self.dd.indices)
 
-        CCDs = dIndices[dIndices.names.index('CCD')].vals
-        Quads = dIndices[dIndices.names.index('Quad')].vals
+        CCDs = dIndices.get_vals('CCD')
+        Quads = dIndices.get_vals('Quad')
 
         # Initializations of output data-products
 
@@ -421,8 +421,7 @@ class PTC0X(FlatTask):
         g_tmp_keys = ['a0', 'ea0', 'a1', 'ea1', 'a2',
                       'ea2', 'gain', 'egain', 'alpha', 'rn']
 
-        for CCD in CCDs:
-            CCDkey = 'CCD%i' % CCD
+        for CCDkey in CCDs:
             gain_mx[CCDkey] = dict()
             for Quad in Quads:
                 gain_mx[CCDkey][Quad] = dict()
@@ -433,8 +432,7 @@ class PTC0X(FlatTask):
 
         bloom_mx = OrderedDict()
 
-        for CCD in CCDs:
-            CCDkey = 'CCD%i' % CCD
+        for CCDkey in CCDs:
             bloom_mx[CCDkey] = dict()
             for Quad in Quads:
                 bloom_mx[CCDkey][Quad] = dict()
@@ -443,9 +441,8 @@ class PTC0X(FlatTask):
 
         # fitting the PTCs
 
-        for iCCD, CCD in enumerate(CCDs):
+        for iCCD, CCDkey in enumerate(CCDs):
 
-            CCDkey = 'C%i' % CCD
 
             for jQ, Q in enumerate(Quads):
 

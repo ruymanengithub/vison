@@ -419,11 +419,10 @@ class Task(object):
         self.doPlot(key, **pmeta)
         self.addFigure2Report(key)
 
-    def check_stat_perCCD(self, arr, CCDlims, CCDs=[1, 2, 3]):
+    def check_stat_perCCD(self, arr, CCDlims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
         compliance = OrderedDict()
-        for iCCD, CCD in enumerate(CCDs):
-            CCDkey = 'CCD%i' % CCD
+        for iCCD, CCDkey in enumerate(CCDs):
             #compliance[CCDkey] = OrderedDict()
             _lims = CCDlims[CCDkey]
             test = (np.isnan(arr[:, iCCD, ...]) |
@@ -431,11 +430,10 @@ class Task(object):
             compliance[CCDkey] = not np.any(test, axis=(0, 1)).sum()
         return compliance
 
-    def check_stat_perCCDandQ(self, arr, CCDQlims, CCDs=[1, 2, 3]):
+    def check_stat_perCCDandQ(self, arr, CCDQlims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
         compliance = OrderedDict()
-        for iCCD, CCD in enumerate(CCDs):
-            CCDkey = 'CCD%i' % CCD
+        for iCCD, CCDkey in enumerate(CCDs):
             compliance[CCDkey] = OrderedDict()
             for jQ, Q in enumerate(ccd.Quads):
                 _lims = CCDQlims[CCDkey][Q]
@@ -445,13 +443,12 @@ class Task(object):
                 compliance[CCDkey][Q] = not np.any(test).sum()
         return compliance
 
-    def check_stat_perCCDandCol(self, arr, lims, CCDs=[1, 2, 3]):
+    def check_stat_perCCDandCol(self, arr, lims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
-        colnames = lims['CCD%i' % CCDs[0]].keys()
+        colnames = lims[CCDs[0]].keys()
 
         compliance = OrderedDict()
-        for iCCD, CCD in enumerate(CCDs):
-            CCDkey = 'CCD%i' % CCD
+        for iCCD, CCDkey in enumerate(CCDs):
             compliance[CCDkey] = OrderedDict()
             for jcol, colname in enumerate(colnames):
                 _lims = lims[CCDkey][colname]
@@ -464,14 +461,13 @@ class Task(object):
                     np.any(test, axis=(0, 1)).sum() | (ixsel[0].shape[0] == 0))
         return compliance
 
-    def check_stat_perCCDQandCol(self, arr, lims, CCDs=[1, 2, 3]):
+    def check_stat_perCCDQandCol(self, arr, lims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
         Qs = ['E', 'F', 'G', 'H']
-        colnames = lims['CCD%i' % CCDs[0]][Qs[0]].keys()
+        colnames = lims[CCDs[0]][Qs[0]].keys()
 
         compliance = OrderedDict()
-        for iCCD, CCD in enumerate(CCDs):
-            CCDkey = 'CCD%i' % CCD
+        for iCCD, CCDkey in enumerate(CCDs):
             compliance[CCDkey] = OrderedDict()
             for iQ, Q in enumerate(Qs):
                 compliance[CCDkey][Q] = OrderedDict()
@@ -587,7 +583,7 @@ class Task(object):
                 reportobj.add_Text(msg)
 
         if doMask and 'mask' in self.inputs['inCDPs']:
-            self.inputs['inCDPs']['Mask']['CCD%i']
+            #self.inputs['inCDPs']['Mask']['CCD%i']
             MaskData = _loadCDP('Mask', 'Loading cosmetics mask...')
             self.proc_histo['Masked'] = True
         elif doMask and 'mask' not in self.inputs['inCDPs']:
@@ -629,9 +625,9 @@ class Task(object):
         #nObs,nCCD,nQuad = DDindices.shape
         #Quads = DDindices[2].vals
 
-        nObs = len(DDindices[DDindices.names.index('ix')].vals)
-        CCDs = DDindices[DDindices.names.index('CCD')].vals
-
+        nObs = DDindices.get_len('ix')
+        CCDs = DDindices.get_vals('CCD')
+        
         if not self.drill:
 
             picklespath = self.inputs['subpaths']['ccdpickles']
@@ -644,9 +640,7 @@ class Task(object):
                     FW_ID = self.dd.mx['wavelength'][iObs]
                     wavelength = ogse.FW['F%i' % FW_ID]
 
-                for jCCD, CCD in enumerate(CCDs):
-
-                    CCDkey = 'CCD%i' % CCD
+                for jCCD, CCDkey in enumerate(CCDs):
 
                     ccdobj_name = '%s_proc' % self.dd.mx['File_name'][iObs, jCCD]
 

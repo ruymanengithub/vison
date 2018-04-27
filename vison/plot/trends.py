@@ -35,23 +35,6 @@ class Fig_Basic_Checkstat(figclasses.Fig_XY_fromDD):
         self.data = dict()
         self.plotclass = baseplotclasses.BeamPlotYvX
         
-#    def old_build_data(self,dd,**kwargs):
-#        """ """
-#        
-#        indicesList = ['CCD','Quad']
-#        
-#        indices = dd.indices
-#        indicesDict = dict()
-#        for key in indicesList:
-#            indicesDict[key] = indices[indices.names.index(key)].vals        
-#        
-#        ddmx = dict()
-#        ddmx[self.trendaxis] = copy.deepcopy(dd.mx[self.trendaxis][:])
-#        for label in self.stats:
-#            ddmx[label] = copy.deepcopy(dd.mx[label][:])
-#        
-#        self.data = self.old_build_data_yvsx(ddmx,indicesDict,indicesList,self.stats,
-#                                     self.trendaxis)
     
     def build_data(self,dd,**kwargs):
         """ """
@@ -109,6 +92,7 @@ class Fig_Basic_Checkstat(figclasses.Fig_XY_fromDD):
         
         self.data = self._build_data_yvsx(subdd,tags,
                 self.trendaxis,index2margin,indices2param)
+        
         
     
     def configure(self, **kwargs):

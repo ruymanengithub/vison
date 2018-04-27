@@ -189,8 +189,8 @@ class DataDict(object):
 
     def loadExpLog(self, explog):
         """ """
-
-        CCDs = [1, 2, 3]
+        # CCDs = [1,2,3]
+        CCDs = ['CCD1', 'CCD2', 'CCD3']
 
         ObsID = explog['ObsID'].data
         uObsID = np.unique(ObsID)
@@ -209,8 +209,8 @@ class DataDict(object):
                 continue
 
             arrlist = []
-            for CCDindex in CCDs:
-                CCDkey = 'CCD%i' % CCDindex
+            for CCDkey in CCDs:
+                #CCDkey = 'CCD%i' % CCDindex
                 arrlist.append(explog[key].data[np.where(ccdcol == CCDkey)])
             array = np.array(arrlist).transpose()
             self.addColumn(array, key, commIndices)
@@ -337,7 +337,7 @@ def useCases():
 
     dpath = '/home/raf/WORK/EUCLID/CALIBRATION/PipelineDevel/TEST_DATA/24_Feb_80/'
     explogf = os.path.join(dpath, 'EXP_LOG_240280.txt')
-
+    elvis = '6.5.X'
     explog = ELtools.loadExpLog(explogf, elvis=elvis)
 
     dd = DataDict()
@@ -395,10 +395,10 @@ def useCases():
 
     dd.initColumn('spot_fwhm', OCQindices, dtype='float32', valini=0.)
 
-    nObs = dd.indices[dd.indices.names.index('ix')].len
-    nCCD = dd.indices[dd.indices.names.index('CCD')].len
-    nQuad = dd.indices[dd.indices.names.index('Quad')].len
-
+    nObs = dd.indices.get_len('ix')
+    nCCD = dd.indices.get_len('CCD')
+    nQuad = dd.indices.get_len('Quad')
+    
     for iObs in range(nObs):
         for jCCD in range(nCCD):
             for kQ in range(nQuad):

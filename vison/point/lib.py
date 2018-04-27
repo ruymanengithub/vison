@@ -127,7 +127,7 @@ def gen_point_mask(CCD, Quad, width=stampw, sources='all'):
 
     for source in sourcelist:
 
-        coo = Point_CooNom['CCD%i' % CCD][Quad][source]
+        coo = Point_CooNom[CCD][Quad][source]
 
         x0Q, y0Q = tuple([int(np.round(item)) for item in coo])
 

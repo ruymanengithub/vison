@@ -67,15 +67,15 @@ class DarkTask(Task):
                                dtype='float32', valini=valini)
 
         nObs, _, _ = Xindices.shape
-        CCDs = Xindices[Xindices.names.index('CCD')].vals
-        Quads = Xindices[Xindices.names.index('Quad')].vals
+        CCDs = Xindices.get_vals('CCD')
+        Quads = Xindices.get_vals('Quad')
 
         # Get statistics in different regions
 
         if not self.drill:
 
             for iObs in range(nObs):
-                for jCCD, CCD in enumerate(CCDs):
+                for jCCD, CCDk in enumerate(CCDs):
                     dpath = self.dd.mx['datapath'][iObs, jCCD]
                     ffits = os.path.join(dpath, '%s.fits' %
                                          self.dd.mx['File_name'][iObs, jCCD])
@@ -107,7 +107,7 @@ class DarkTask(Task):
         test = self.inputs['test']
 
         Xindices = self.dd.indices
-        CCDs = Xindices[Xindices.names.index('CCD')].vals
+        CCDs = Xindices.get_vals('CCD')
 
         if self.report is not None:
             self.report.add_Section(
@@ -133,6 +133,7 @@ class DarkTask(Task):
                 self.addComplianceMatrix2Log(
                     _compliance_offsets, label='COMPLIANCE OFFSETS [%s]:' % reg)
             if self.report is not None:
+                
                 self.addComplianceMatrix2Report(
                     _compliance_offsets, label='COMPLIANCE OFFSETS [%s]:' % reg)
 
@@ -147,8 +148,8 @@ class DarkTask(Task):
 
         for ireg, reg in enumerate(regs_grad):
             _lims = dict()
-            for CCD in CCDs:
-                _lims['CCD%i' % CCD] = offsets_gradients['CCD%i' % CCD][reg]
+            for CCDk in CCDs:
+                _lims[CCDk] = offsets_gradients[CCDk][reg]
             arr = self.dd.mx['offset_%s' % reg][:]-self.dd.mx['offset_pre'][:]
             _xcheck_offsets = self.check_stat_perCCD(arr, _lims, CCDs)
 

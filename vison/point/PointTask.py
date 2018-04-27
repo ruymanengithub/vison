@@ -98,16 +98,16 @@ class PointTask(Task):
                           chk_fwhmx='fwhmx', chk_fwhmy='fwhmy')
 
         nObs, _, _ = Qindices.shape
-        CCDs = Qindices[Qindices.names.index('CCD')].vals
-        Quads = Qindices[Qindices.names.index('Quad')].vals
-        Spots = Sindices[Sindices.names.index('Spot')].vals
+        CCDs = Qindices.get_vals('CCD')
+        Quads = Qindices.get_vals('Quad')
+        Spots = Sindices.get_vals('Spot')
 
         # Get statistics in different regions
 
         if not self.drill:
 
             for iObs in range(nObs):
-                for jCCD, CCD in enumerate(CCDs):
+                for jCCD, CCDk in enumerate(CCDs):
                     dpath = self.dd.mx['datapath'][iObs, jCCD]
                     ffits = os.path.join(dpath, '%s.fits' %
                                          self.dd.mx['File_name'][iObs, jCCD])
@@ -131,7 +131,7 @@ class PointTask(Task):
                         alt_ccdobj = copy.deepcopy(ccdobj)
 
                         mask_sources = polib.gen_point_mask(
-                            CCD, Quad, width=self.stampw, sources='all')
+                            CCDk, Quad, width=self.stampw, sources='all')
 
                         alt_ccdobj.get_mask(mask_sources)
 
@@ -147,8 +147,7 @@ class PointTask(Task):
 
                         for xSpot, SpotName in enumerate(Spots):
 
-                            coo = polib.Point_CooNom['CCD%i' %
-                                                     CCD][Quad][SpotName]
+                            coo = polib.Point_CooNom[CCDk][Quad][SpotName]
 
                             spot = polib.extract_spot(ccdobj, coo, Quad, log=self.log,
                                                       stampw=self.stampw)
@@ -164,7 +163,7 @@ class PointTask(Task):
                                 self.dd.mx[chkkey][iObs, jCCD, kQ,
                                                    xSpot] = res_bas[chkkeycorr[chkkey]]
 
-    def check_stat_perCCDQSpot(self, arr, lims, CCDs=[1, 2, 3]):
+    def check_stat_perCCDQSpot(self, arr, lims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
         #Qs = lims['CCD%i' % CCDs[0]].keys()
         Spots = polib.Point_CooNom['names']
@@ -172,8 +171,7 @@ class PointTask(Task):
 
         compliance = OrderedDict()
 
-        for iCCD, CCD in enumerate(CCDs):
-            CCDkey = 'CCD%i' % CCD
+        for iCCD, CCDkey in enumerate(CCDs):
             compliance[CCDkey] = OrderedDict()
 
             for jQ, Q in enumerate(Qs):
@@ -215,7 +213,7 @@ class PointTask(Task):
         #test = self.inputs['test']
 
         Xindices = self.dd.indices
-        CCDs = Xindices[Xindices.names.index('CCD')].vals
+        CCDs = Xindices.get_vals('CCD')
 
         if self.report is not None:
             self.report.add_Section(
@@ -243,8 +241,8 @@ class PointTask(Task):
         offsets_gradients = self.perflimits['offsets_gradients']
         for ireg, reg in enumerate(['ove']):
             _lims = dict()
-            for CCD in CCDs:
-                _lims['CCD%i' % CCD] = offsets_gradients['CCD%i' % CCD][reg]
+            for CCDk in CCDs:
+                _lims[CCDk] = offsets_gradients[CCDk][reg]
             arr = self.dd.mx['offset_%s' % reg][:]-self.dd.mx['offset_pre'][:]
             _xcheck_offsets = self.check_stat_perCCD(arr, _lims, CCDs)            
 

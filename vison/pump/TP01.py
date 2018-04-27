@@ -216,7 +216,7 @@ class TP01(PumpTask):
 
         """
         DDindices = copy.deepcopy(self.dd.indices)
-        CCDs = DDindices[DDindices.names.index('CCD')].vals
+        CCDs = DDindices.get_vals('CCD')
 
         ccdpicklespath = self.inputs['subpaths']['ccdpickles']
         productspath = self.inputs['subpaths']['products']
@@ -228,7 +228,7 @@ class TP01(PumpTask):
 
         id_dlys = np.unique(self.dd.mx['id_dly'][:, 0])
 
-        #injprofiles = OrderedDict()
+        injprofiles = OrderedDict()
 
         if not self.drill:
 
@@ -258,11 +258,11 @@ class TP01(PumpTask):
 
             for id_dly in id_dlys:
 
-                for jCCD, CCD in enumerate(CCDs):
+                for jCCD, CCDk in enumerate(CCDs):
 
                     try:
                         injprofile = injprofiles['ID_%i' %
-                                                 id_dly]['CCD%i' % CCD].copy()
+                                                 id_dly][CCDk].copy()
                     except:
                         print 'exception caught on TESTS'  # TESTS
 
@@ -272,8 +272,8 @@ class TP01(PumpTask):
                     for ix in ixsel[0]:
                         ObsID = self.dd.mx['ObsID'][ix]
 
-                        ioutf = 'TP01_rawmap_%i_IDDLY_%i_CCD%i.fits' % (
-                            ObsID, id_dly, CCD)
+                        ioutf = 'TP01_rawmap_%i_IDDLY_%i_%s.fits' % (
+                            ObsID, id_dly, CCDk)
 
                         iccdobj_f = '%s.pick' % self.dd.mx['ccdobj_name'][ix, jCCD]
 

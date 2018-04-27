@@ -141,8 +141,8 @@ class BF01(PTC0X):
 
         indices = copy.deepcopy(self.dd.indices)
         #nObs, nCCD, nQuad = indices.shape
-        CCDs = indices[indices.names.index('CCD')].vals
-        Quads = indices[indices.names.index('Quad')].vals
+        CCDs = indices.get_vals('CCD')
+        Quads = indices.get_vals('Quad')
 
         if not self.drill:
 
@@ -155,11 +155,11 @@ class BF01(PTC0X):
 
             ulabels = np.unique(label)
 
-            for jCCD, CCD in enumerate(CCDs):
+            for jCCD, CCDk in enumerate(CCDs):
 
-                self.dd.products['COV'][CCD] = OrderedDict()
+                self.dd.products['COV'][CCDk] = OrderedDict()
                 for Q in Quads:
-                    self.dd.products['COV'][CCD][Q] = OrderedDict()
+                    self.dd.products['COV'][CCDk][Q] = OrderedDict()
 
                 for ulabel in ulabels:
 
@@ -172,7 +172,7 @@ class BF01(PTC0X):
                         ccdobjList, Npix=Npix, doTest=False)
 
                     for Q in Quads:
-                        self.dd.products['COV'][CCD][Q][ulabel] = copy.deepcopy(
+                        self.dd.products['COV'][CCDk][Q][ulabel] = copy.deepcopy(
                             icovdict[Q])
 
         # Plots
@@ -200,8 +200,8 @@ class BF01(PTC0X):
 
         indices = copy.deepcopy(self.dd.indices)
         #nObs, nCCD, nQuad = indices.shape
-        CCDs = np.array(indices[indices.names.index('CCD')].vals)
-        Quads = np.array(indices[indices.names.index('Quad')].vals)
+        CCDs = np.array(indices.get_vals('CCD'))
+        Quads = np.array(indices.get_vals('Quad'))
 
         ulabels = np.unique(label)
 
@@ -221,13 +221,13 @@ class BF01(PTC0X):
         self.dd.products['BF']['CCDs'] = CCDs.copy()
         self.dd.products['BF']['Quads'] = Quads.copy()
 
-        for jCCD, CCD in enumerate(CCDs):
+        for jCCD, CCDk in enumerate(CCDs):
 
-            self.dd.products['BF'][CCD] = OrderedDict()
+            self.dd.products['BF'][CCDk] = OrderedDict()
 
             for kQ, Q in enumerate(Quads):
 
-                self.dd.products['BF'][CCD][Q] = OrderedDict()
+                self.dd.products['BF'][CCDk][Q] = OrderedDict()
 
             self.dd.products['BF']['kernel_FWHMx'] = kernel_FWHMx.copy()
             self.dd.products['BF']['kernel_FWHMy'] = kernel_FWHMy.copy()
@@ -239,13 +239,13 @@ class BF01(PTC0X):
             singlepixmap = np.zeros((101, 101), dtype='float32') + 0.01
             singlepixmap[50, 50] = 1.
 
-            for jCCD, CCD in enumerate(CCDs):
+            for jCCD, CCDk in enumerate(CCDs):
 
                 for kQ, Q in enumerate(Quads):
 
                     for ix, ulabel in enumerate(ulabels):
 
-                        COV_dict = self.dd.products['COV'][CCD][Q][ulabel]
+                        COV_dict = self.dd.products['COV'][CCDk][Q][ulabel]
 
                         COV_mx = COV_dict['av_covmap'].copy()
 
@@ -259,7 +259,7 @@ class BF01(PTC0X):
                         kerQshape = G15.get_cross_shape_rough(
                             kernel_Q, pitch=12.)
 
-                        self.dd.products['BF'][CCD][Q][ulabel] = OrderedDict(Asol=Asol_Q.copy(),
+                        self.dd.products['BF'][CCDk][Q][ulabel] = OrderedDict(Asol=Asol_Q.copy(),
                                                                              psmooth=psmooth_Q.copy(),
                                                                              kernel=kernel_Q.copy())
 

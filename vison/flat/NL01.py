@@ -261,8 +261,8 @@ class NL01(FlatTask):
 
         nObs, nCCD, nQuad = indices.shape
 
-        Quads = indices[indices.names.index('Quad')].vals
-        CCDs = indices[indices.names.index('CCD')].vals
+        Quads = indices.get_vals('Quad')
+        CCDs = indices.get_vals('CCD')
 
         emptyccdobj = ccdmodule.CCD()
         tile_coos = dict()
@@ -288,7 +288,7 @@ class NL01(FlatTask):
 
             for iObs, ObsID in enumerate(ObsIDs):
 
-                for jCCD, CCD in enumerate(CCDs):
+                for jCCD, CCDk in enumerate(CCDs):
 
                     ccdobj_f = os.path.join(
                         dpath, self.dd.mx['ccdobj_name'][iObs, jCCD])
@@ -336,15 +336,14 @@ class NL01(FlatTask):
                 keyword='NL', Title='Non-Linearity Analysis', level=0)
 
         dIndices = copy.deepcopy(self.dd.indices)
-        CCDs = dIndices[dIndices.names.index('CCD')].vals
-        Quads = dIndices[dIndices.names.index('Quad')].vals
+        CCDs = dIndices.get_vals('CCDs')
+        Quads = dIndices.get_vals('Quads')
 
         NL_mx = OrderedDict()
 
         #NL_tmp_keys = ['maxNLpc','flu_maxNLpc', 'coeffs']
 
-        for CCD in CCDs:
-            CCDkey = 'CCD%i' % CCD
+        for CCDkey in CCDs:
             NL_mx[CCDkey] = dict()
             for Quad in Quads:
                 NL_mx[CCDkey][Quad] = OrderedDict()
@@ -353,9 +352,8 @@ class NL01(FlatTask):
 
         # Fitting the NL curves
 
-        for iCCD, CCD in enumerate(CCDs):
+        for iCCD, CCDkey in enumerate(CCDs):
 
-            CCDkey = 'C%i' % CCD
 
             for jQ, Q in enumerate(Quads):
 
