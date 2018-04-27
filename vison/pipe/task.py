@@ -58,6 +58,7 @@ class Task(object):
         # self.set_defaults()
         self.elvis = context.elvis
         self.log = log
+        self.report = None
         self.name = ''
         self.type = 'Simple'
         self.HKKeys = []
@@ -96,6 +97,7 @@ class Task(object):
             diffvalues, elvis=self.elvis)
 
         self.CDP_header = OrderedDict()
+        
 
     def set_inpdefaults(self, **kwargs):
         pass
