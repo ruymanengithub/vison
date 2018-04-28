@@ -17,7 +17,7 @@ import numpy as np
 import os
 from collections import OrderedDict
 
-from vison.plot import baseclasses as plbaseclasses
+from vison.plot import figclasses
 from vison.plot import trends
 
 # END IMPORT
@@ -89,5 +89,5 @@ def gt_F00figs(wave):
         trends.Fig_Basic_Checkstat, gt_check_flu_dict(wave)]
     F00figs['F00checks_fwhm'] = [
         trends.Fig_Basic_Checkstat, gt_check_fwhm_dict(wave)]
-    F00figs['BlueScreen'] = [plbaseclasses.BlueScreen, dict()]
+    F00figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return F00figs

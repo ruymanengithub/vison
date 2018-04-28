@@ -17,7 +17,7 @@ import numpy as np
 import os
 from collections import OrderedDict
 
-from vison.plot import baseclasses as plbaseclasses
+from vison.plot import figclasses
 from vison.plot import trends
 
 # END IMPORT
@@ -54,4 +54,4 @@ D01figs = dict()
 D01figs['D01checks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]
 D01figs['D01checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
 D01figs['D01checks_flu'] = [trends.Fig_Basic_Checkstat, check_flu_dict]
-D01figs['BlueScreen'] = [plbaseclasses.BlueScreen, dict()]
+D01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
