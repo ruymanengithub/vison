@@ -286,7 +286,7 @@ def coarsefindTestinExpLog(explog, testkey, Nframes):
     return wasacquired
 
 
-def _update_todo_flags(inputdict, docheck=False, dotest=False):
+def _update_todo_flags(inputdict, docheck=False, dotest=False, doreport=False):
 
     assert np.array([docheck, dotest]).sum(
     ) <= 1, 'At most 1 kwd should be True!'
@@ -296,13 +296,18 @@ def _update_todo_flags(inputdict, docheck=False, dotest=False):
     for taskname in inputdict['tasks']:
         for key in inputdict[taskname]['todo_flags']:
             inputdict[taskname]['todo_flags'][key] = False
-
+    
+    _todocheck = dict(init=False,check=False,report=False)
+    _todocheck['report'] = doreport
+    
     if docheck:
-        _todocheck = dict(init=True, check=True, report=True)
-    if dotest:
-        _todocheck = dict(init=True)
+        _todocheck.update(dict(init=True, check=True, report=True))
+    elif dotest:
+        _todocheck.update(dict(init=True))
 
     for taskname in inputdict['tasks']:
         inputdict[taskname]['todo_flags'].update(_todocheck)
 
     return inputdict
+
+

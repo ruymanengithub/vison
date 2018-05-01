@@ -148,6 +148,9 @@ class Task(object):
 
         if todo_flags['init']:
             
+            if self.log is not None:
+                    self.log.info('Initializing: %s' %
+                              (self.__module__,))
             
             if os.path.exists(DataDictFile):
                 os.system('rm %s' % DataDictFile)
@@ -192,14 +195,14 @@ class Task(object):
 
             subtaskname, subtaskmethod = subtask
 
-            if self.log is not None:
-                self.log.info('%s: %s' %
-                              (subtaskname, subtaskmethod.__module__))
-
             if subtaskname not in todo_flags:
                 todo_flags[subtaskname] = False
 
             if todo_flags[subtaskname]:
+                
+                if self.log is not None:
+                    self.log.info('Executing %s: %s' %
+                              (subtaskname, subtaskmethod.__module__))
 
                 tini = datetime.datetime.now()
                 try:
@@ -209,7 +212,7 @@ class Task(object):
                     if self.log is not None:
                         self.log.info(
                             '%.1f minutes in running Sub-task: %s' % (dtm, subtaskname))
-                    print 'saving progress!'
+                    #print 'saving progress!'
                     self.save_progress(DataDictFile, reportobjFile)
                 except:
                     self.catchtraceback()

@@ -42,6 +42,7 @@ import datetime
 import sys
 import traceback
 import glob
+from collections import OrderedDict
 
 from vison import __version__
 from vison.support import logger as lg
@@ -116,6 +117,7 @@ class Pipe(object):
         self.debug = debug
         self.startobsid = startobsid
         self.processes = processes
+        self.completion = OrderedDict()
 
         if self.debug:
             self.ID = 'PipeDebug'
@@ -131,19 +133,29 @@ class Pipe(object):
                 os.system('rm %s' % self.logf)
 
             self.log = lg.setUpLogger(self.logf)
-            self.log.info(['\n\nStarting FM Calib. Pipeline',
-                           'Pipeline ID: %s' % self.ID,
-                           'BLOCK ID: %s' % self.BLOCKID,
-                           'Chamber: %s\n' % self.CHAMBER,
-                           'vison version: %s\n' % __version__,
-                           'Tasks: %s\n' % (('%s,'*len(self.tasks)) % tuple(self.tasks))[0:-1]])
+            self.log.info(['_', 'Starting FM Calib. Pipeline']+\
+                          self._get_log_header())
         else:
             self.log = None
-            
+    
+    def _get_log_header(self):
+        log_header = [
+        'Pipeline ID: %s' % self.ID,
+        'BLOCK ID: %s' % self.BLOCKID,
+        'Chamber: %s\n' % self.CHAMBER,
+        'vison version: %s\n' % __version__,
+        'Tasks: %s\n' % self.tasks.__repr__()]
+        return log_header
+     
     def get_test(self,taskname,inputs=dict(),log=None,drill=False,debug=False):
         """ """
         # self.Test_dict[taskname](inputs, self.log, drill, debug)
-        return self.Test_dict[taskname](inputs, log, drill, debug)
+        test = self.Test_dict[taskname](inputs, log, drill, debug)
+        test.ID = self.ID
+        test.BLOCKID = self.BLOCKID
+        test.CHAMBER = self.CHAMBER
+        test.processes = self.processes
+        return test
 
     def launchtask(self, taskname):
         """ """
@@ -165,17 +177,19 @@ class Pipe(object):
         if self.log is not None:
             self.log.info(msg)
 
-        tini = datetime.datetime.now()
-        success = self.dotask(taskname, taskinputs, log=self.log, drill=self.drill, debug=self.debug)
-        tend = datetime.datetime.now()
         
-        dtm = ((tend-tini).seconds)/60.
+        report = self.dotask(taskname, taskinputs, drill=self.drill, debug=self.debug)
+        
         if self.log is not None:
-            self.log.info('%.1f minutes in running Task: %s' % (dtm, taskname))
-            self.log.info('Task %s cut short because of exceptions: %s' % (taskname,success))
+            self.log.info('%.1f minutes in running Task: %s' % (report['exectime'], taskname))
+            self.log.info('Task %s exited with Errors: %s' % (taskname,report['Errors']))
+        
+        self.completion[taskname] = copy.deepcopy(report)
 
     def run(self, explogf=None, elvis=None):
         """ """
+        
+        tini = datetime.datetime.now()
 
         tasknames = self.tasks
         resultsroot = self.inputs['resultsroot']
@@ -199,6 +213,31 @@ class Pipe(object):
             self.inputs[taskname] = taskinputs
 
             self.launchtask(taskname)
+        
+        tend = datetime.datetime.now()
+        Dtm = ((tend-tini).seconds)/60.
+        
+        summary = self.get_execution_summary(exectime=Dtm)
+        if self.log is not None:
+            self.log.info(summary)
+        
+        
+    def get_execution_summary(self,exectime=None):
+        """ """
+        summary = ['_','_','_','_',
+        '######################################################################']+\
+        self._get_log_header()
+        
+        for task in self.tasks:
+            _compl = self.completion[task]
+            summary += ['_','%s' % task]
+            summary += ['Executed in %.1f minutes' % _compl['exectime']]
+            summary += ['Raised Flags = %s' % _compl['flags']]
+            if _compl['Errors']:
+                 summary += ['Executed with ERROR(s)']
+            
+        return summary
+    
 
     def wait_and_run(self, dayfolder, elvis=context.elvis):
         """ """
@@ -228,9 +267,7 @@ class Pipe(object):
                 resultsroot, taskinputs['resultspath'])
             taskinputs['explogf'] = explogfs
             taskinputs['elvis'] = elvis
-
-            #Test = self.Test_dict[taskname]
-            #test = Test(taskinputs)
+                      
             test = self.get_test(taskname,taskinputs,log=self.log)
             taskinputs = copy.deepcopy(test.inputs)
 
@@ -279,19 +316,21 @@ class Pipe(object):
     def dotask(self, taskname, inputs, drill=False, debug=False):
         """Generic test master function."""
         
-        success = True
+        tini = datetime.datetime.now()
+        
+        Errors = False
 
         try:
             #Test = self.Test_dict[taskname](inputs, self.log, drill, debug)
-            test = self.get_test(taskname,inputs, self.log, drill, debug)
-            test.ID = self.ID
-            test.BLOCKID = self.BLOCKID
-            test.CHAMBER = self.CHAMBER
-            test.processes = self.processes
+            test = self.get_test(taskname, inputs, self.log, drill, debug)
+            #test.ID = self.ID
+            #test.BLOCKID = self.BLOCKID
+            #test.CHAMBER = self.CHAMBER
+            #test.processes = self.processes
             test()
         except:
             self.catchtraceback()
-            success = False
+            Errors = True
             if self.log is not None:
                 self.log.info('TASK "%s@%s" FAILED, QUITTING!' %
                               (taskname, self.Test_dict[taskname].__module__))
@@ -299,7 +338,20 @@ class Pipe(object):
                 print 'TASK "%s@%s" FAILED, QUITTING!' % (
                     taskname, self.Test_dict[taskname].__module__)
         
-        return success
+        tend = datetime.datetime.now()
+        dtm = ((tend-tini).seconds)/60.
+        
+        execlog = OrderedDict()
+        execlog['Task'] = taskname
+        execlog['Errors'] = Errors
+        execlog['exectime'] = dtm
+        try:
+            flags = test.dd.flags.getFlagsOnList()
+        except:
+            flags = []
+        execlog['flags'] = flags.__repr__()
+        
+        return execlog
 
     def catchtraceback(self):
         """ """
