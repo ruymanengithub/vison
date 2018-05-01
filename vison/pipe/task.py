@@ -351,8 +351,9 @@ class Task(object):
 
         figobj.configure(**kwargs)
         if kwargs['dobuilddata']:
-            try: figobj.build_data(self.dd)
-            except: stop()
+            figobj.build_data(self.dd)
+            #except:             
+                #stop()
         else:
             figobj.data = copy.deepcopy(kwargs['data'])
         if 'meta' in kwargs:

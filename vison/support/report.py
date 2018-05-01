@@ -297,7 +297,7 @@ class Table(Content):
                 if 'begin{longtable}' in tex[i]:
                     tex[i] += '{%s}' % col_align
             tex = [item for item in tex if '{tabular}' not in item]
-
+        
         return tex
 
 
