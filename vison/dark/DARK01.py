@@ -24,17 +24,16 @@ from collections import OrderedDict
 import copy
 
 from vison.support import context
-from vison.pipe import lib as pilib
-from vison.point import lib as polib
+#from vison.pipe import lib as pilib
+#from vison.point import lib as polib
 from vison.datamodel import scriptic as sc
 #from vison.pipe import FlatFielding as FFing
 #from vison.support.report import Report
 #from vison.support import files
-from vison.datamodel import ccd
-from vison.datamodel import EXPLOGtools as ELtools
-from vison.datamodel import HKtools
-from vison.datamodel import ccd
-from vison.datamodel import generator
+#from vison.datamodel import EXPLOGtools as ELtools
+#from vison.datamodel import HKtools
+#from vison.datamodel import ccd
+#from vison.datamodel import generator
 #from vison.pipe.task import Task
 from DarkTask import DarkTask
 import D01aux
