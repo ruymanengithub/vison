@@ -139,6 +139,11 @@ class Pipe(object):
                            'Tasks: %s\n' % (('%s,'*len(self.tasks)) % tuple(self.tasks))[0:-1]])
         else:
             self.log = None
+            
+    def get_test(self,taskname,inputs=dict(),log=None,drill=False,debug=False):
+        """ """
+        # self.Test_dict[taskname](inputs, self.log, drill, debug)
+        return self.Test_dict[taskname](inputs, log, drill, debug)
 
     def launchtask(self, taskname):
         """ """
@@ -161,13 +166,13 @@ class Pipe(object):
             self.log.info(msg)
 
         tini = datetime.datetime.now()
-
-        self.dotask(taskname, taskinputs, drill=self.drill, debug=self.debug)
-
+        success = self.dotask(taskname, taskinputs, log=self.log, drill=self.drill, debug=self.debug)
         tend = datetime.datetime.now()
+        
         dtm = ((tend-tini).seconds)/60.
         if self.log is not None:
             self.log.info('%.1f minutes in running Task: %s' % (dtm, taskname))
+            self.log.info('Task %s cut short because of exceptions: %s' % (taskname,success))
 
     def run(self, explogf=None, elvis=None):
         """ """
@@ -224,8 +229,9 @@ class Pipe(object):
             taskinputs['explogf'] = explogfs
             taskinputs['elvis'] = elvis
 
-            Test = self.Test_dict[taskname]
-            test = Test(taskinputs)
+            #Test = self.Test_dict[taskname]
+            #test = Test(taskinputs)
+            test = self.get_test(taskname,taskinputs,log=self.log)
             taskinputs = copy.deepcopy(test.inputs)
 
             structure = taskinputs['structure']
@@ -272,22 +278,28 @@ class Pipe(object):
 
     def dotask(self, taskname, inputs, drill=False, debug=False):
         """Generic test master function."""
+        
+        success = True
 
         try:
-            Test = self.Test_dict[taskname](inputs, self.log, drill, debug)
-            Test.ID = self.ID
-            Test.BLOCKID = self.BLOCKID
-            Test.CHAMBER = self.CHAMBER
-            Test.processes = self.processes
-            Test()
+            #Test = self.Test_dict[taskname](inputs, self.log, drill, debug)
+            test = self.get_test(taskname,inputs, self.log, drill, debug)
+            test.ID = self.ID
+            test.BLOCKID = self.BLOCKID
+            test.CHAMBER = self.CHAMBER
+            test.processes = self.processes
+            test()
         except:
             self.catchtraceback()
+            success = False
             if self.log is not None:
                 self.log.info('TASK "%s@%s" FAILED, QUITTING!' %
                               (taskname, self.Test_dict[taskname].__module__))
             else:
                 print 'TASK "%s@%s" FAILED, QUITTING!' % (
                     taskname, self.Test_dict[taskname].__module__)
+        
+        return success
 
     def catchtraceback(self):
         """ """
