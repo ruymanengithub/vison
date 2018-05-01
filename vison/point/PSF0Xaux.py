@@ -18,7 +18,7 @@ import os
 from collections import OrderedDict
 import string as st
 
-from vison.plot import baseclasses as plbaseclasses
+from vison.plot import figclasses
 from vison.plot import trends
 
 # END IMPORT
@@ -95,7 +95,7 @@ def gt_PSF0Xfigs(test):
         trends.Fig_Basic_Checkstat, gt_check_flu_dict(test)]
     PSF0Xfigs['PSF0Xchecks_fwhm'] = [
         trends.Fig_Basic_Checkstat, gt_check_fwhm_dict(test)]
-    PSF0Xfigs['BlueScreen'] = [plbaseclasses.BlueScreen, dict()]
+    PSF0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return PSF0Xfigs
 
 
