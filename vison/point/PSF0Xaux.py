@@ -60,28 +60,39 @@ def gt_check_bgd_dict(test):
 def gt_check_flu_dict(test):
     ntest = st.replace(test, '_', '\_')
     return dict(stats=['chk_fluence'],
-                trendaxis='exptime',
+                trendaxis='mirr_pos',
                 figname='%s_flu_vs_mirr.png' % test,
                 caption='%s: Fluence vs. Mirror Position.' % ntest,
                 meta=dict(doLegend=False,
                           doNiceXDate=False,
                           suptitle='%s-checks: Fluence' % ntest,
-                          xlabel='Exptime [s]',
+                          xlabel='mirr\_pos mm',
                           ylabel='Flu.[ADU]'))
 
 
-def gt_check_fwhm_dict(test):
+def gt_check_fwhmx_dict(test):
     ntest = st.replace(test, '_', '\_')
-    return dict(stats=['chk_fwhmx', 'chk_fwhmy'],
+    return dict(stats=['chk_fwhmx'],
                 trendaxis='mirr_pos',
-                figname='%s_fwhmxy_vs_mirr.png' % test,
-                caption='%s: FWHM(x,y) vs. Mirror Position.' % ntest,
+                figname='%s_fwhmx_vs_mirr.png' % test,
+                caption='%s: FWHM(x) vs. Mirror Position.' % ntest,
                 meta=dict(doLegend=True,
                           doNiceXDate=False,
-                          suptitle='%s-checks: FWHM(x,y)' % ntest,
+                          suptitle='%s-checks: FWHM(x)' % ntest,
                           xlabel='mm',
-                          ylabel='FWHM [pix]'))
+                          ylabel='FWHMx [pix]'))
 
+def gt_check_fwhmy_dict(test):
+    ntest = st.replace(test, '_', '\_')
+    return dict(stats=['chk_fwhmy'],
+                trendaxis='mirr_pos',
+                figname='%s_fwhmy_vs_mirr.png' % test,
+                caption='%s: FWHM(y) vs. Mirror Position.' % ntest,
+                meta=dict(doLegend=True,
+                          doNiceXDate=False,
+                          suptitle='%s-checks: FWHM(y)' % ntest,
+                          xlabel='mm',
+                          ylabel='FWHMy [pix]'))
 
 def gt_PSF0Xfigs(test):
     PSF0Xfigs = dict()
@@ -93,8 +104,10 @@ def gt_PSF0Xfigs(test):
         trends.Fig_Basic_Checkstat, gt_check_bgd_dict(test)]
     PSF0Xfigs['PSF0Xchecks_fluence'] = [
         trends.Fig_Basic_Checkstat, gt_check_flu_dict(test)]
-    PSF0Xfigs['PSF0Xchecks_fwhm'] = [
-        trends.Fig_Basic_Checkstat, gt_check_fwhm_dict(test)]
+    PSF0Xfigs['PSF0Xchecks_fwhmx'] = [
+        trends.Fig_Basic_Checkstat, gt_check_fwhmx_dict(test)]
+    PSF0Xfigs['PSF0Xchecks_fwhmy'] = [
+        trends.Fig_Basic_Checkstat, gt_check_fwhmy_dict(test)]
     PSF0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return PSF0Xfigs
 

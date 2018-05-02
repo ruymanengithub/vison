@@ -65,17 +65,27 @@ def gt_check_flu_dict(wave):
                           ylabel='Flu.[ADU]'))
 
 
-def gt_check_fwhm_dict(wave):
-    return dict(stats=['chk_fwhmx', 'chk_fwhmy'],
+def gt_check_fwhmx_dict(wave):
+    return dict(stats=['chk_fwhmx'],
                 trendaxis='mirr_pos',
-                figname='FOCUS00_%i_fwhmxy_vs_mirr.png' % wave,
-                caption='FOCUS00\_%i: FWHM(x,y) vs. Mirror Position.' % wave,
+                figname='FOCUS00_%i_fwhmx_vs_mirr.png' % wave,
+                caption='FOCUS00\_%i: FWHM(x) vs. Mirror Position.' % wave,
                 meta=dict(doLegend=True,
                           doNiceXDate=False,
-                          suptitle='FOCUS00\_%i-checks: FWHM(x,y)' % wave,
+                          suptitle='FOCUS00\_%i-checks: FWHM(x)' % wave,
                           xlabel='Mirr [mm]',
-                          ylabel='FWHM [pix]'))
+                          ylabel='FWHMx [pix]'))
 
+def gt_check_fwhmy_dict(wave):
+    return dict(stats=['chk_fwhmy'],
+                trendaxis='mirr_pos',
+                figname='FOCUS00_%i_fwhmy_vs_mirr.png' % wave,
+                caption='FOCUS00\_%i: FWHM(y) vs. Mirror Position.' % wave,
+                meta=dict(doLegend=True,
+                          doNiceXDate=False,
+                          suptitle='FOCUS00\_%i-checks: FWHM(y)' % wave,
+                          xlabel='Mirr [mm]',
+                          ylabel='FWHMy [pix]'))
 
 def gt_F00figs(wave):
     F00figs = dict()
@@ -87,7 +97,9 @@ def gt_F00figs(wave):
         trends.Fig_Basic_Checkstat, gt_check_bgd_dict(wave)]
     F00figs['F00checks_fluence'] = [
         trends.Fig_Basic_Checkstat, gt_check_flu_dict(wave)]
-    F00figs['F00checks_fwhm'] = [
-        trends.Fig_Basic_Checkstat, gt_check_fwhm_dict(wave)]
+    F00figs['F00checks_fwhmx'] = [
+        trends.Fig_Basic_Checkstat, gt_check_fwhmx_dict(wave)]
+    F00figs['F00checks_fwhmy'] = [
+        trends.Fig_Basic_Checkstat, gt_check_fwhmy_dict(wave)]
     F00figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return F00figs
