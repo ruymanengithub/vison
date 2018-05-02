@@ -215,6 +215,10 @@ class FigsTable(Content):
                 figcounter += 1
 
         tex.append('\end{longtable}')
+        
+        if self.caption is not None:
+            captiontex = r'\caption{%s}' % self.caption
+            tex.insert(-1, captiontex)
 
         return tex
 
