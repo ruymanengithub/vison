@@ -23,45 +23,35 @@ import string as st
 isthere = os.path.exists
 
 
-def generate_header(test, model, author):
+def replace_in_template(texf,values):
     """ """
-
-    headertexf = os.path.join(data.__path__[0], 'header_template.tex')
-
-    fp = open(headertexf, 'r')
-    headertexlines = fp.readlines()
+    
+    fp = open(texf, 'r')
+    texlines = fp.readlines()
     fp.close()
 
-    headertexlines = [item[0:-1] for item in headertexlines]  # removes end \n
+    texlines = [item[0:-1] for item in texlines]  # removes end \n
 
-    header = st.join(headertexlines, 'JOIN___LINES')
-    header = header.replace('%', '%%')
-    header = header.replace('__PLACEHOLDER__', '%s')
-    header = header % (author, model, test)
-    header = header.replace('%%', '%')
+    tex = st.join(texlines, 'JOIN___LINES')
+    tex = tex.replace('%', '%%')
+    tex = tex.replace('__PLACEHOLDER__', '%s')
+    tex = tex % values
+    tex = tex.replace('%%', '%')
 
-    headerList = st.split(header, 'JOIN___LINES')
+    texList = st.split(tex, 'JOIN___LINES')
+    
+    return texList
+    
 
+def generate_header(test, model, author, reference='7-XXX'):
+    """ """
+    headertexf = os.path.join(data.__path__[0], 'header_template.tex')
+    headerList = replace_in_template(headertexf,(author, model, test, reference))
     return headerList
 
 
-def generate_preamble(model, test, custodian='Ruyman Azzollini'):
+def generate_preamble(model, test, custodian='Ruyman Azzollini',reference='7-XXX'):
 
     preambletexf = os.path.join(data.__path__[0], 'preamble_template.tex')
-
-    fp = open(preambletexf, 'r')
-    preambletexlines = fp.readlines()
-    fp.close()
-
-    preambletexlines = [item[0:-1]
-                        for item in preambletexlines]  # removes end \n
-
-    preamble = st.join(preambletexlines, 'JOIN___LINES')
-    preamble = preamble.replace('%', '%%')
-    preamble = preamble.replace('__PLACEHOLDER__', '%s')
-    preamble = preamble % (model, test, custodian)
-    preamble = preamble.replace('%%', '%')
-
-    preambleList = st.split(preamble, 'JOIN___LINES')
-
+    preambleList = replace_in_template(preambletexf,(model, test, reference, custodian))
     return preambleList

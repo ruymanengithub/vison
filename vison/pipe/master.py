@@ -178,13 +178,13 @@ class Pipe(object):
             self.log.info(msg)
 
         
-        report = self.dotask(taskname, taskinputs, drill=self.drill, debug=self.debug)
+        taskreport = self.dotask(taskname, taskinputs, drill=self.drill, debug=self.debug)
         
         if self.log is not None:
-            self.log.info('%.1f minutes in running Task: %s' % (report['exectime'], taskname))
-            self.log.info('Task %s exited with Errors: %s' % (taskname,report['Errors']))
+            self.log.info('%.1f minutes in running Task: %s' % (taskreport['exectime'], taskname))
+            self.log.info('Task %s exited with Errors: %s' % (taskname,taskreport['Errors']))
         
-        self.completion[taskname] = copy.deepcopy(report)
+        self.completion[taskname] = copy.deepcopy(taskreport)
 
     def run(self, explogf=None, elvis=None):
         """ """
@@ -323,11 +323,7 @@ class Pipe(object):
         try:
             #Test = self.Test_dict[taskname](inputs, self.log, drill, debug)
             test = self.get_test(taskname, inputs, self.log, drill, debug)
-            #test.ID = self.ID
-            #test.BLOCKID = self.BLOCKID
-            #test.CHAMBER = self.CHAMBER
-            #test.processes = self.processes
-            test()
+            test() # test execution
         except:
             self.catchtraceback()
             Errors = True

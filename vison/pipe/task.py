@@ -49,6 +49,7 @@ class Task(object):
         self.ID = None
         self.BLOCKID = None
         self.CHAMBER = None
+        self.Model = 'XM'
         self.processes = 1
         self.internals = dict()
         #self.inputs = dict()
@@ -59,6 +60,7 @@ class Task(object):
         self.elvis = context.elvis
         self.log = log
         self.report = None
+        self.TestReference = '7-XXX'
         self.name = ''
         self.type = 'Simple'
         self.HKKeys = []
@@ -173,7 +175,8 @@ class Task(object):
             # Initialising Report Object
 
             if todo_flags['report']:
-                self.report = Report(TestName=self.name)
+                self.report = Report(TestName=testkey, Model=self.Model, 
+                                     Reference=self.TestReference)
                 self.report.add_Section(
                     keyword='init', Title='Inputs \& Data Ingestion', level=0)
                 self.add_inputs_to_report()

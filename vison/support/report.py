@@ -324,7 +324,7 @@ class Text(Content):
 class Report(Container):
 
     def __init__(self, TestName='Test', Model='XM', Contents=[], Texheader=default_header,
-                 Texbody=[r'\begin{document}']):
+                 Texbody=[r'\begin{document}'],Reference='7-XXX'):
         """ """
 
         self.TestName = st.replace(TestName, '_', '\_')
@@ -336,21 +336,19 @@ class Report(Container):
         self.Texfooter = [r'\end{document}']
 
         self.Contents = Contents
+        
+        self.Reference = Reference
 
     def generate_Header(self, author='Ruyman Azzollini'):
-
-        test = self.TestName
-        model = self.Model
-
-        headerList = lx.generate_header(test, model, author)
+        """ """
+        headerList = lx.generate_header(self.TestName, self.Model, author, self.Reference)
         self.Texheader = headerList
 
     def generate_Texbody(self, custodian='Ruyman Azzollini'):
         """ """
-        model = self.Model
-        test = self.TestName
-
-        Texbody = lx.generate_preamble(model, test, custodian)
+        #model = self.Model
+        #test = self.TestName
+        Texbody = lx.generate_preamble(self.Model, self.TestName, custodian, self.Reference)
 
         for item in self.Contents:
             Texbody += item.generate_Latex()
