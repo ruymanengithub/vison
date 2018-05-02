@@ -472,7 +472,7 @@ class Report(Container):
         os.system('ln -s %s' %
                   os.path.join(visondata.__path__[0], deluxetablesty))
 
-        execline1 = 'latex %s.tex' % fileroot
+        execline1 = 'latex -interaction=nonstopmode %s.tex' % fileroot
         if silent: execline1 += ' > /dev/null'
         os.system(execline1)
         os.system(execline1)  # do it twice to get references right!
