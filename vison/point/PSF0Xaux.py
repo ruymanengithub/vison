@@ -63,7 +63,7 @@ def gt_check_flu_dict(test):
                 trendaxis='mirr_pos',
                 figname='%s_flu_vs_mirr.png' % test,
                 caption='%s: Fluence vs. Mirror Position.' % ntest,
-                meta=dict(doLegend=False,
+                meta=dict(doLegend=True,
                           doNiceXDate=False,
                           suptitle='%s-checks: Fluence' % ntest,
                           xlabel='mirr\_pos mm',

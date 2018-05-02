@@ -58,7 +58,7 @@ def gt_check_flu_dict(wave):
                 trendaxis='mirr_pos',
                 figname='FOCUS00_%i_flu_vs_mirr.png' % wave,
                 caption='FOCUS00\_%i: Fluence vs. Mirror Position.' % wave,
-                meta=dict(doLegend=False,
+                meta=dict(doLegend=True,
                           doNiceXDate=False,
                           suptitle='FOCUS00\_%i-checks: Fluence' % wave,
                           xlabel='Mirr [mm]',
