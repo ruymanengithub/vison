@@ -190,31 +190,25 @@ class Eyegore(tk.Tk):
 
         self.after(self.intervals[0], self.update)
 
-
-if __name__ == '__main__':
-
+def Eexecuter():
+    
     parser = OptionParser()
-    parser.add_option("-p", "--path", dest="path", default='',
-                      help="day-path to be monitored.")
-    parser.add_option("-B", "--broadcast", dest="broadcast", default='None',
-                      help="Synchronize data to gateway folder in msslus")
-    parser.add_option("-E", "--elvis", dest="elvis",
-                      default=context.elvis, help="ELVIS version.")
-    parser.add_option("-L", "--lite", dest="lite", action="store_true", default=False,
-                      help="Run a lighter version of the program (no autom. HK-plots or image displays).")
-    parser.add_option("-r", "--rsync", dest="altpath", default='',
-                      help="rsync to an alternative local path.")
+    parser.add_option("-p","--path",dest="path",default='',help="day-path to be monitored.")
+    parser.add_option("-B","--broadcast",dest="broadcast",default='None',help="Synchronize data to gateway folder at msslus")
+    parser.add_option("-E","--elvis",dest="elvis",default=context.elvis,help="ELVIS version.")
+    parser.add_option("-L","--lite",dest="lite",action="store_true",default=False,help="Run a lighter version of the program (no autom. HK-plots or image displays).")
+    parser.add_option("-r","--rsync",dest="altpath",default='',help="rsync to an alternative local path.")
     parser.add_option("-g", "--log", dest="dolog", action="store_true", default=False,
                       help="keep a log")
     parser.add_option("-W","--Warnings",dest="doWarnings",action="store_true",default=False,
                       help="Raise warnings (via email and/or phone) if critical HK is OOL.")
-
+    
     (options, args) = parser.parse_args()
-
+    
     if options.path == '':
         parser.print_help()
         sys.exit()
-
+        
     path = options.path
     broadcast = options.broadcast
     elvis = options.elvis
@@ -222,28 +216,31 @@ if __name__ == '__main__':
     dolite = bool(options.lite)
     dolog = bool(options.dolog)
     doWarnings = bool(options.doWarnings)
-
+    
     if broadcast != 'None':
-        broadcast = os.path.join(_extpath, broadcast)
-    else:
+        broadcast = os.path.join(_extpath,broadcast)
+    else: 
         broadcast = None
-
-
+    
     if not os.path.exists(path):
         sys.exit('HKmonitory.py: %s does not exist' % path)
     else:
-
-        header = '\n\n#########################################################\n' +\
-                 '#                                                       #\n' +\
-                 '#                                                       #\n' +\
-                 '#       starting EYEGORE on path:                       #\n' +\
-                 '#            %s                                         \n' +\
-                 '#                                                       #\n' +\
-                 '#                                                       #\n' +\
+        header = '\n\n#########################################################\n'+\
+                 '#                                                       #\n'+\
+                 '#                                                       #\n'+\
+                 '#       starting EYEGORE on path:                        #\n'+\
+                 '            %s                                           \n'+\
+                 '#                                                       #\n'+\
+                 '#                                                       #\n'+\
                  '#########################################################\n'
-
+        
         print header % path
+    
+    
+    app = Eyegore(path,broadcast=broadcast,elvis=elvis,dolite=dolite,
+                  altpath=altpath,doWarnings=doWarnings,dolog=dolog)
 
-    app = Eyegore(path, broadcast=broadcast, elvis=elvis,
-                  dolite=dolite, altpath=altpath, doWarnings=doWarnings,
-                  dolog=dolog)
+
+if __name__ == '__main__':
+    
+    Eexecuter()
