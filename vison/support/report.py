@@ -263,6 +263,7 @@ class Table(Content):
         latexdict = ascii.latex.latexdicts['doublelines']
 
         latexdict.update(dict(tablealign='!ht'))
+        latexdict['tabletype'] = 'table'
 
         if self.longtable:
             latexdict['tabletype'] = 'longtable'
@@ -301,8 +302,6 @@ class Table(Content):
                 if 'begin{longtable}' in tex[i]:
                     tex[i] += '{%s}' % col_align
             tex = [item for item in tex if '{tabular}' not in item]
-        
-        #stop()
         
         return tex
 
