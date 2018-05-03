@@ -286,16 +286,23 @@ def coarsefindTestinExpLog(explog, testkey, Nframes):
     return wasacquired
 
 
-def _update_todo_flags(inputdict, docheck=False, dotest=False, doreport=False):
+def broadcast_todo_flags_func(inputdict,tododict):
+    
+    for taskname in inputdict['tasks']:
+        for key in inputdict[taskname]['todo_flags']:
+            inputdict[taskname]['todo_flags'][key] = False
+    
+    for taskname in inputdict['tasks']:
+        inputdict[taskname]['todo_flags'].update(tododict)
+    
+    return inputdict
+
+def broadcast_todo_flags(inputdict, docheck=False, dotest=False, doreport=False):
 
     assert np.array([docheck, dotest]).sum(
     ) <= 1, 'At most 1 kwd should be True!'
     if np.array([docheck, dotest]).sum() == 0:
         return inputdict
-
-    for taskname in inputdict['tasks']:
-        for key in inputdict[taskname]['todo_flags']:
-            inputdict[taskname]['todo_flags'][key] = False
     
     _todocheck = dict(init=False,check=False,report=False)
     _todocheck['report'] = doreport
@@ -304,9 +311,8 @@ def _update_todo_flags(inputdict, docheck=False, dotest=False, doreport=False):
         _todocheck.update(dict(init=True, check=True, report=True))
     elif dotest:
         _todocheck.update(dict(init=True))
-
-    for taskname in inputdict['tasks']:
-        inputdict[taskname]['todo_flags'].update(_todocheck)
+        
+    inputdict = broadcast_todo_flags_func(inputdict,_todocheck)
 
     return inputdict
 

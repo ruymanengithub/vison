@@ -33,7 +33,7 @@ import sys
 import imp
 
 from vison import Pipe
-from vison.pipe.lib import _update_todo_flags
+from vison.pipe.lib import broadcast_todo_flags
 # END IMPORT
 
 
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     
     inputdict = openconfigf(configf)
     
-    inputdict = _update_todo_flags(inputdict,docheck=docheck,dotest=dotest)
+    inputdict = broadcast_todo_flags(inputdict,docheck=docheck,dotest=dotest)
     
     pipe = Pipe(inputdict,dolog=dolog,drill=drill,debug=debug,startobsid=startobsid)
     
