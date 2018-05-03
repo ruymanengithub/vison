@@ -302,6 +302,8 @@ class Table(Content):
                     tex[i] += '{%s}' % col_align
             tex = [item for item in tex if '{tabular}' not in item]
         
+        #stop()
+        
         return tex
 
 
