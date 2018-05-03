@@ -131,8 +131,9 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
         return report
 
     failedkeys = []
-    failedcols = []
-
+    failedcols = []    
+    msgs = []
+    
     for iCCD in CCDs:
 
         cselbool = selbool & (explog['CCD'] == 'CCD%i' % iCCD)
@@ -167,21 +168,26 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
                 if val is None or key in wavedkeys:
                     continue
                 try:
-                    checksout = np.all(np.isclose(explog[key][ixsubsel], val))
+                    checksout = np.all(np.isclose(explog[key][ixsubsel], val,rtol=0.005))
                 except TypeError:
                     checksout = np.all(explog[key][ixsubsel] == val)
                 isconsistent &= checksout
                 if ~checksout:
                     failedkeys.append(key)
+                    
+                    msgs.append('%s: "%s" NE "%s"' % (key,val.__repr__(),explog[key][ixsubsel].tolist().__repr__()))
+                    
 
             ix0 += frames
 
     failedkeys = np.unique(failedkeys).tolist()
     failedcols = np.unique(failedcols).tolist()
+    msgs = np.unique(msgs).tolist()
 
     report = dict(checksout=isconsistent,
-                  failedkeys=failedkeys, failedcols=failedcols)
-
+                  failedkeys=failedkeys, failedcols=failedcols,
+                  msgs=msgs)
+    
     return report
 
 

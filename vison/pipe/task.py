@@ -280,6 +280,8 @@ class Task(object):
             if len(checkreport['failedkeys']) > 0:
                 self.log.info('%s failed keys: %s' %
                               (testkey, checkreport['failedkeys']))
+            if len(checkreport['msgs']) > 0:
+                self.log.info(['_']+checkreport['msgs'])
 
         if self.report is not None:
             ntestkey = st.replace(testkey, '_', '\_')
@@ -299,6 +301,10 @@ class Task(object):
                     checkreport['failedkeys'].__repr__(), '_', '\_')
                 self.report.add_Text('%s failed keys: %s' %
                                      (ntestkey, nfailedkeys))
+            if len(checkreport['msgs']) > 0:
+                for msg in checkreport['msgs']:
+                    nmsg = st.replace(msg,'_','\_')
+                    self.report.add_Text(nmsg)
 
         # Adding Time Axis
 
