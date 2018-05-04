@@ -195,6 +195,10 @@ class ExpLogDisplay(tk.Toplevel):
 
     def search_EXPLOGs(self):
         """ """
+        
+        if self.path is None:
+            self.explogfs = None
+            return
 
         struct_date = time.strptime(os.path.split(
             st.replace(self.path, '_', ''))[-1], '%d%b%y')

@@ -84,12 +84,18 @@ class ImageDisplay(tk.Toplevel):
 
     def get_data(self):
         """"""
+        IMGs = dict(ObsID=-1)
+        for CCD in [1, 2, 3]:
+            IMGs['CCD%i' % CCD] = None
+        
+        if self.path is None:
+            yield IMGs
+            return
+        
         FITSs = sorted(glob.glob(os.path.join(
             self.path, '*.fits')), key=os.path.getmtime)
         lastFITS = FITSs[-1]
         lastObs = int(st.split(os.path.split(lastFITS)[-1], '_')[1])
-
-        IMGs = dict()
 
         for CCD in [1, 2, 3]:
             try:

@@ -71,7 +71,6 @@ def rsync_to_altlocalpath(path, altpath):
 class Eyegore(tk.Tk):
     """ """
     
-
     def __init__(self, path, broadcast, intervals=None,
                  elvis=context.elvis, dolite=False, altpath='', 
                  doWarnings = False, dolog=False):
@@ -80,9 +79,9 @@ class Eyegore(tk.Tk):
         
         if intervals is None:
             intervals = [20000, 20000, 1000, 20000, 20000, 20000]
-
-        if path[-1] == os.path.sep:
-            path = path[:-1]
+        if path is not None:
+            if path[-1] == os.path.sep:
+                path = path[:-1]    
         self.path = path
         self.intervals = intervals
         self.broadcast = broadcast
@@ -193,7 +192,7 @@ class Eyegore(tk.Tk):
 def Eexecuter():
     
     parser = OptionParser()
-    parser.add_option("-p","--path",dest="path",default='',help="day-path to be monitored.")
+    parser.add_option("-p","--path",dest="path",default=None,help="day-path to be monitored.")
     parser.add_option("-B","--broadcast",dest="broadcast",default='None',help="Synchronize data to gateway folder at msslus")
     parser.add_option("-E","--elvis",dest="elvis",default=context.elvis,help="ELVIS version.")
     parser.add_option("-L","--lite",dest="lite",action="store_true",default=False,help="Run a lighter version of the program (no autom. HK-plots or image displays).")
@@ -205,9 +204,11 @@ def Eexecuter():
     
     (options, args) = parser.parse_args()
     
-    if options.path == '':
+    if options.path is None:
         parser.print_help()
-        sys.exit()
+        ans = raw_input('\nNo path provided... you sure? [press any key to continue] \n')
+        
+        #sys.exit()
         
     path = options.path
     broadcast = options.broadcast
@@ -222,19 +223,19 @@ def Eexecuter():
     else: 
         broadcast = None
     
-    if not os.path.exists(path):
-        sys.exit('HKmonitory.py: %s does not exist' % path)
-    else:
-        header = '\n\n#########################################################\n'+\
-                 '#                                                       #\n'+\
-                 '#                                                       #\n'+\
-                 '#       starting EYEGORE on path:                        #\n'+\
-                 '            %s                                           \n'+\
-                 '#                                                       #\n'+\
-                 '#                                                       #\n'+\
-                 '#########################################################\n'
-        
-        print header % path
+    #if not os.path.exists(path):
+    #    sys.exit('path "%s" does not exist' % path)
+    #else:
+    header = '\n\n#########################################################\n'+\
+             '#                                                       #\n'+\
+             '#                                                       #\n'+\
+             '#       starting EYEGORE on path:                        #\n'+\
+             '            "%s"                                         \n'+\
+             '#                                                       #\n'+\
+             '#                                                       #\n'+\
+             '#########################################################\n'
+    
+    print header % path
     
     
     app = Eyegore(path,broadcast=broadcast,elvis=elvis,dolite=dolite,
