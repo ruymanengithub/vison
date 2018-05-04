@@ -16,6 +16,7 @@ from pdb import set_trace as stop
 import numpy as np
 import os
 from collections import OrderedDict
+import pandas as pd
 
 from vison.plot import figclasses
 from vison.plot import trends
@@ -79,7 +80,27 @@ B01figs['B01basic_histosRON'] = [figclasses.Fig_Beam1DHist, basic_histosRON_dict
 B01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
 
 
-RON_CDP = cdp.Tables_CDP()
-RON_CDP.rootname = 'RON_BIAS01'
+class RON_CDP(cdp.Tables_CDP):
+    
+    def ingest_inputs(self, RONmx, CCDs, Quads, meta=None, header=None, figs=None):
+        
+        RONmsk = np.zeros_like(RONmx, dtype='int32')
+        RONmsk[np.where((np.isclose(RONmx, 0.)) | (np.isnan(RONmx)))] = 1
+        beRON = np.ma.median(np.ma.masked_array(
+            RONmx, mask=RONmsk), axis=1).data.copy() # best estimate of RON
 
-CDP_lib = dict(RON=RON_CDP)
+        beRONdict = OrderedDict() 
+        for jCCD, CCDk in enumerate(CCDs):
+            beRONdict[CCDk] = OrderedDict()
+            for kQ, Q in enumerate(Quads):
+                beRONdict[CCDk][Q] = beRON[jCCD, kQ]
+        beRONdf = pd.DataFrame.from_dict(beRONdict)  # PENDING
+        
+        _data = OrderedDict(RON=beRONdf)
+        super(RON_CDP,self).ingest_inputs(_data,meta=meta,header=header,figs=figs)
+        
+
+ron_cdp = RON_CDP()
+ron_cdp.rootname = 'RON_BIAS01'
+
+CDP_lib = dict(RON=ron_cdp)

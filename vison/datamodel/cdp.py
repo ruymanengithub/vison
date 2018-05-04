@@ -83,8 +83,14 @@ class Tables_CDP(CDP):
         self.data = OrderedDict()
         self.report = None
 
-    def ingest_inputs(self, data, meta=OrderedDict(), header=OrderedDict(), figs=OrderedDict()):
+    def ingest_inputs(self, data, meta=None, header=None, figs=None):
         """ """
+        if meta is None:
+            meta = OrderedDict()
+        if header is None:
+            header = OrderedDict()
+        if figs is None:
+            figs = OrderedDict()
 
         self.header.update(header)
         self.meta.update(meta)

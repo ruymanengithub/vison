@@ -757,3 +757,7 @@ class Task(object):
     def get_time_tag(self):
         from vison.support.vistime import get_time_tag
         return get_time_tag()
+    
+    def pack_CDP_to_dd(self,cdp,cdp_key):
+        self.dd.products[cdp_key] = os.path.join(cdp.path,'%s.pick' % cdp.rootname)
+        

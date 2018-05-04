@@ -146,6 +146,7 @@ class BIAS01(DarkTask):
         """
         super(BIAS01, self).prepare_images(
             doExtract=True, doMask=True, doOffset=True)
+        
 
     def basic_analysis(self):
         """ 
@@ -215,8 +216,6 @@ class BIAS01(DarkTask):
 
             ccdpicklespath = self.inputs['subpaths']['ccdpickles']
             profilespath = self.inputs['subpaths']['profiles']
-            
-            
 
             for iObs in range(nObs):
 
@@ -263,9 +262,10 @@ class BIAS01(DarkTask):
 
                         onlyRONimg = ccdobj.get_quad(
                             Q, canonical=False) - mod2D.imgmodel
-                        RON = onlyRONimg.std()
+                        _RON = onlyRONimg.std()
+                        stop()
 
-                        self.dd.mx['RON'][iObs, jCCD, kQ] = RON
+                        self.dd.mx['RON'][iObs, jCCD, kQ] = _RON
 
                         iprofiles2D.data[Q] = OrderedDict()
                         iprofiles2D.data[Q]['polycoeffs'] = copy.deepcopy(
@@ -322,41 +322,29 @@ class BIAS01(DarkTask):
         #self.figdict['B01basic_histosRON'][1]['data'] = None # PENDING
         #self.addFigures_ST(figkeys=figkeys2,dobuilddata=True) # PENDING
         
-        
         # REPORTS
         
         # Table with median (Best Estimate) values of RON per CCD&Q
-        # NEEDS REFACTORING!! (move somewhere else, abstractize it and recycle)
+        # NEEDS REFACTORING?! (move somewhere else, abstractize it and recycle)
 
         RON = self.dd.mx['RON'][:].copy()
-        RONmsk = np.zeros_like(RON, dtype='int32')
-        RONmsk[np.where((np.isclose(RON, 0.)) | (np.isnan(RON)))] = 1
-        beRON = np.ma.median(np.ma.masked_array(
-            RON, mask=RONmsk), axis=1).data.copy() # best estimate of RON
-
-        beRONdict = OrderedDict() 
-        for jCCD, CCDk in enumerate(CCDs):
-            beRONdict[CCDk] = OrderedDict()
-            for kQ, Q in enumerate(Quads):
-                beRONdict[CCDk][Q] = beRON[jCCD, kQ]
-        beRONdf = pd.DataFrame.from_dict(beRONdict)  # PENDING
-
-        RON_CDP = B01aux.CDP_lib['RON']
-        RON_CDP.path = self.inputs['subpaths']['products']
-        RON_CDP.ingest_inputs(data=dict(RON=beRONdf),
+        ron_cdp = B01aux.CDP_lib['RON']
+        ron_cdp.path = self.inputs['subpaths']['products']
+        ron_cdp.ingest_inputs(RONmx=RON.copy(),
+                              CCDs=CCDs,
+                              Quads=Quads,
                               meta=dict(),
                               header=CDP_header.copy())
         
-        RON_CDP = self.init_and_fill_CDP(RON_CDP,header_title='BIAS01: RON')
-        self.save_CDP(RON_CDP)
+        ron_cdp = self.init_and_fill_CDP(ron_cdp,header_title='BIAS01: RON')
+        self.save_CDP(ron_cdp)
         
-        self.dd.products['RON_CDP'] = os.path.join(
-            RON_CDP.path, '%s.pick' % RON_CDP.rootname)
+        self.pack_CDP_to_dd(ron_cdp,'RON_CDP')
 
         if self.report is not None:
-            beRONtex = RON_CDP.get_textable(sheet='RON', caption='BIAS01: RON')
+            beRONtex = ron_cdp.get_textable(sheet='RON', caption='BIAS01: RON')
             self.report.add_Text(beRONtex)
-
+    
     def meta_analysis(self):
         """
 
