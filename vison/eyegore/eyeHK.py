@@ -228,7 +228,8 @@ class HKFlags(tk.Toplevel):
         self.resetButton.bind("<Button 1>", self.ResetAllFlags)
         
         self.HelpButton = HelpButton(self,helplist=flagshelpList,text='?', 
-                                     font=small_font, bg='pink')
+                                     font=small_font, bg='pink',
+                                     label='HK Flags: HELP')
         
         self.HelpButton.grid(column=icr+1, row=irr,sticky='nsew',
                              in_=self.HKframe)
