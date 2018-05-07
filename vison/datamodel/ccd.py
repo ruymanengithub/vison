@@ -44,40 +44,6 @@ QuadBound = dict(E=[0, NAXIS1/2, NAXIS2/2, NAXIS2],
 Quads = ['E', 'F', 'G', 'H']
 
 
-#HeadKeys = {'6.0.0': ['EXTNAME', 'BUNIT', 'PROGRAM', 'OBJECT', 'OBSID', 'OPERATOR',
-#                      'FULLPATH', 'LAB_VER', 'CON_FILE', 'DATE', 'EXPTIME', 'FL_RDOUT', 'CI_RDOUT',
-#                      'N_P_HIGH', 'CHRG_INJ', 'ON_CYCLE''OFF_CYCL''RPEAT_CY''PLS_WDTH', 'PLS_DEL',
-#                      'SERRDDEL', 'TRAPPUMP', 'TP_SER_S', 'TP_VER_S', 'TP_DW_V', 'TP_DW_H', 'TOI_FLSH',
-#                      'TOI_PUMP', 'TOI_READ', 'TOI_CINJ', 'INVFLSHP', 'INVFLUSH', 'FLUSHES', 'VSTART',
-#                      'VEND', 'OVRSCN_H', 'CLK_ROE', 'CNVSTART', 'SUMWELL', 'INISWEEP', 'SPW_CLK', 'FPGA_VER',
-#                      'EGSE_VER', 'M_STEPS', 'M_ST_SZE', 'WAVELENG', 'MIRR_POS', 'CHMB_PRE', 'CCD1_SN',
-#                      'CCD2_SN', 'CCD3_SN', 'ROE_SN', 'CALSCRPT', 'COMMENTS', 'TMPCCD1T', 'TMPCCD1B',
-#                      'TMPCCD2T', 'TMPCCD2B', 'TMPCCD3T', 'TMPCCD3B', 'IDL_V', 'IDH_V', 'IG1_T1_V', 'IG1_T2_V',
-#                      'IG1_T3_V', 'IG1_B1_V', 'IG1_B2_V', 'IG1_B3_V', 'IG2_T_V', 'IG2_B_V', 'OD_T1_V',
-#                      'OD_T2_V', 'OD_T3_V', 'OD_B1_V', 'OD_B2_V', 'OD_B3_V', 'RD_T_V', 'RD_B_V']}
-#HeadKeys['6.3.0'] = [
-#    'XTENSION', 'BITPIX',
-#    'NAXIS', 'NAXIS1', 'NAXIS2',
-#    'PCOUNT', 'GCOUNT',
-#    'BZERO', 'BSCALE',
-#    'EXTNAME', 'BUNIT',
-#    'PROGRAM', 'OBJECT', 'OBSID', 'OPERATOR', 'FULLPATH', 'LAB_VER', 'CON_FILE',
-#    'DATE', 'EXPTIME', 'FL_RDOUT', 'CI_RDOUT',
-#    'IPHI', 'CHINJ', 'CHINJ_ON', 'CHINJ_OF', 'ID_WID', 'ID_DLY', 'CHIN_DLY',
-#    'V_TPUMP', 'S_TPUMP', 'V_TP_MOD', 'S_TP_MOD', 'V_TP_CNT', 'S_TP_CNT',
-#    'DWELL_V', 'DWELL_S',
-#    'TOI_FL', 'TOI_TP', 'TOI_RO', 'TOI_CH',
-#    'SIFLSH', 'SIFLSH_P', 'FLUSHES',
-#    'VSTART', 'VEND', 'RDMODE', 'SWELLW', 'SWELLDLY', 'INISWEEP',
-#    'SPW_CLK', 'FPGA_VER', 'EGSE_VER', 'MOTR_ON', 'MOTR_CNT', 'MOTR_SIZ',
-#    'SOURCE', 'LAMBDA', 'MIRR_ON', 'MIRR_POS',
-#    'SN_CCD1', 'SN_CCD2', 'SN_CCD3', 'SN_ROE', 'SN_RPSU',
-#    'CALSCRPT',
-#    'COMMENTS', 'R1C1_TT', 'R1C1_TB', 'R1C2_TT', 'R1C2_TB', 'R1C3_TT', 'R1C3_TT',
-#    'IDL', 'IDH',
-#    'IG1_1_T', 'IG1_2_T', 'IG1_3_T', 'IG1_1_B', 'IG1_2_B', 'IG1_3_B',
-#    'IG2_T', 'IG2_B',
-#    'OD_1_T', 'OD_2_T', 'OD_3_T', 'OD_1_B', 'OD_2_B', 'OD_3_B', 'RD_T', 'RD_B']
 
 
 class Extension():
@@ -230,36 +196,31 @@ class CCD(object):
         X, Y = self.cooconv_Qrel_2_Qcan(xp, yp, Q)
         return X, Y
 
-    def _conv_coo_from_BB_rel(self, x, y, BB):
-        """ """
-        X = x * (BB[1]-BB[0])/np.abs(BB[1]-BB[0])
-        Y = y * (BB[3]-BB[2])/np.abs(BB[3]-BB[2])
-        return X, Y
+    #def _conv_coo_from_BB_rel(self, x, y, BB):
+    #    """ """
+    #    X = x * (BB[1]-BB[0])/np.abs(BB[1]-BB[0])
+    #    Y = y * (BB[3]-BB[2])/np.abs(BB[3]-BB[2])
+    #    return X, Y
 
     def cooconv_Qrel_2_Qcan(self, x, y, Q):
         """ """
         BB = self.QuadBound[Q]
-        xp, yp = self._conv_coo_from_BB_rel(x, y, BB)
         xzero = 0.
         yzero = 0.
+        xsign = 1.
+        ysign = 1.
         if Q in ['F', 'G']:
             xzero = BB[1]-BB[0]-1.
+            xsign = -1.
         if Q in ['E', 'F']:
             yzero = BB[3]-BB[2]-1.
-        return xp + xzero, yp + yzero
+            ysign = -1.
+        return xsign*x + xzero, ysign*y + yzero
 
     def cooconv_Qcan_2_Qrel(self, x, y, Q):
         """ """
-        BB = self.QuadBound[Q]
-        BBinv = self._invert_BB(BB, Q)
-        xp, yp = self._conv_coo_from_BB_rel(x, y, BBinv)
-        xzero = 0.
-        yzero = 0.
-        if Q in ['F', 'G']:
-            xzero = BB[1]-BB[0]-1.
-        if Q in ['E', 'F']:
-            yzero = BB[3]-BB[2]-1.
-        return xp + xzero, yp + yzero
+        return self.cooconv_Qrel_2_Qcan(x,y,Q)
+    
 
     def cooconvert(self, x, y, insys, outsys, Q='U'):
         """ """
@@ -677,7 +638,6 @@ class CCD(object):
         assert self.shape == mask.shape
 
         for iext in range(self.nextensions):
-
             masked = np.ma.masked_array(self.extensions[iext].data, mask)
             self.extensions[iext].data = masked.copy()
 
