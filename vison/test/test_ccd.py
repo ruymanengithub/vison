@@ -200,8 +200,8 @@ class TestCCDClass(unittest.TestCase):
                              msg='running subtest %i' %  i)
 
     
-    def test_dummyrebin(self):
-        pass
+    #def test_dummyrebin(self):
+    #    pass
     
     def test_get_tile_coos(self):
         pass
