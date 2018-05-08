@@ -29,9 +29,11 @@ class TestCCDClass(unittest.TestCase):
         self.prescan = ccd.prescan
         self.overscan = ccd.overscan
         self.tolerance = 1.e-7
+        self.gain = 3.5
+        self.RON = 4.5 / self.gain
         
         img = np.zeros((self.NAXIS1,self.NAXIS2),dtype='float32') 
-        eimg = np.ones((self.NAXIS1,self.NAXIS2),dtype='float32') * 1.4
+        eimg = np.ones((self.NAXIS1,self.NAXIS2),dtype='float32') * self.RON
                 
         self.ccdobj = ccd.CCD()
         self.ccdobj.add_extension(data=img,label='IMAGE')
@@ -39,17 +41,23 @@ class TestCCDClass(unittest.TestCase):
         
         NX = self.NAXIS1/2
         NY = self.NAXIS2/2
-        Y, _ = np.meshgrid(np.arange(NY), np.arange(NX), indexing='xy')
-        
-        Qramp = Y.copy()*1.
-        Qramp[0:self.prescan,:] = 0.
-        Qramp[-self.overscan:,:] = 0.
-        Qramp += self.offset
-        
-        Qramp[self.badpixel] = np.nan
         
         for Q in self.ccdobj.Quads:
-            self.ccdobj.set_quad(Qramp.copy(),Q,canonical=False,extension=0)
+        
+            
+            Y, _ = np.meshgrid(np.arange(NY), np.arange(NX), indexing='xy')
+        
+            Qramp = Y.copy()*1.
+            Qramp[0:self.prescan,:] = 0.
+            Qramp[-self.overscan:,:] = 0.
+            Qramp += self.offset
+            
+            Qramp[self.badpixel] = np.nan
+        
+            self.ccdobj.set_quad(Qramp.copy(),Q,canonical=True,extension=0)
+        
+        mask = np.isnan(self.ccdobj.extensions[0].data)
+        self.ccdobj.get_mask(mask)
         
     
     def test_ccdobj_has_extensions(self):
@@ -187,37 +195,205 @@ class TestCCDClass(unittest.TestCase):
     #    pass
     
     def test_get_tile_coos(self):
-        pass
+        
+        wpx = 200
+        hpx = 150
+        Qs = self.ccdobj.Quads
+        
+        def get_img_bounds(Q):
+            _, _, _imgstarth, _imgendh, _, _ = self.ccdobj.getsectioncollims(Q)
+            _imgstartv, _imgendv, _, _ = self.ccdobj.getsectionrowlims(Q)
+            return (_imgstarth,_imgendh, _imgstartv, _imgendv)
+        
+        def get_urpix(llpix,wpx,hpx):
+            Nsamps = len(llpix)
+            urpix = [(llpix[i][0]+wpx-1,llpix[i][1]+hpx-1) for i in range(Nsamps)]
+            return urpix
+        
+        def are_within_image(llpix,urpix, wpx, hpx, img_bounds):
+            arewithinimage = [(llpix[i][0]>=img_bounds[0]) & (urpix[i][0] <= img_bounds[1]) &\
+                             (llpix[i][1]>=img_bounds[2]) & (urpix[i][1] <= img_bounds[3]) \
+                             for i in range(len(llpix))]
+            return arewithinimage
+        
+        for i,Q in enumerate(Qs):
+            img_bounds = get_img_bounds(Q)           
+            itiles = self.ccdobj.get_tile_coos(Q,wpx,hpx)
+            ccpix = itiles['ccpix']
+            llpix = itiles['llpix']
+            Nsamps = itiles['Nsamps']
+            
+            checks = []         
+            checks.append((wpx == itiles['wpx']) and (hpx == itiles['hpx']))
+            checks.append(len(ccpix) == len(llpix) == Nsamps)
+            
+            urpix = get_urpix(llpix,wpx,hpx)
+            arewithinimage = are_within_image(llpix, urpix, wpx, hpx, img_bounds)
+            
+            checks.append(np.all(arewithinimage))
+            
+            areas = [(urpix[i][0]-llpix[i][0]+1)*(urpix[i][1]-llpix[i][1]+1) \
+                     for i in range(Nsamps)]
+            
+            
+            checks.append(np.all(np.isclose(np.array(areas), wpx*hpx)))
+                        
+            self.assertTrue(np.all(checks),msg='Failed on checks on Q=%s' % Q)
+            
     
     def test_get_tiles_stats(self):
-        pass
+        
+        Q = 'E'
+        wpx = 250
+        hpx = 150
+        tile_coos = self.ccdobj.get_tile_coos(Q,wpx,hpx)
+        statkey = 'mean'
+        
+        res = self.ccdobj.get_tiles_stats(Q, tile_coos, statkey, extension=-1)
+        
+        checks = []
+        checks.append(len(res) == tile_coos['Nsamps'])
+        checks.append(np.all(np.isclose(res,self.RON)))
+        
+        self.assertTrue(np.all(checks))
     
     def test_get_cutout(self):
-        pass
+        prescan = self.ccdobj.prescan
+        corners = [prescan,prescan+2,0,2]
+        expected = np.array([[self.offset,self.offset+1.],
+                             [self.offset,self.offset+1.]])
+        for iQ,Q in enumerate(self.ccdobj.Quads):
+            _cut = self.ccdobj.get_cutout(corners,Q,canonical=True,extension=0)
+            
+            self.assertAlmostEqual(np.abs(_cut-expected).sum(),0.,delta=self.tolerance,
+                                   msg='Failed at check %i,Q=%s' % (iQ,Q))
     
     def test_getsectioncollims(self):
-        pass
+        pre = self.ccdobj.prescan
+        over = self.ccdobj.overscan
+        img = self.wQ-pre-over
+        expected = dict(E=(0, pre-1, pre, img+pre-1, 
+                           img+pre, img+pre+over-1),
+                        F=(img+over, img+over+pre-1, 
+                           over, img+over-1, 0, over-1),
+                        G=(img+over, img+over+pre-1, 
+                           over, img+over-1, 0, over-1),
+                        H=(0, pre-1, pre, 
+                           img+pre-1, img+pre, img+pre+over-1))
+        for iQ,Q in enumerate(self.ccdobj.Quads):
+            res = np.array(self.ccdobj.getsectioncollims(Q))
+            shouldbe0 = np.abs(np.array(expected[Q]) - res).sum()
+            sizesareok = (((res[1]-res[0]+1)==pre) &\
+                          ((res[3]-res[2]+1)==img) &\
+                          ((res[5]-res[4]+1)==over))
+            self.assertTrue(np.isclose(shouldbe0,0.,rtol=self.tolerance) \
+                            & sizesareok,
+                            msg='Failed at check %i,Q=%s' % (iQ,Q))
+            
     
     def test_getsectionrowlims(self):
-        pass
+        
+        vover = self.ccdobj.voverscan
+        img = self.ccdobj.NrowsCCD
+        expected = dict(E=(vover, vover+img-1, 0, vover-1),
+                        F=(vover, vover+img-1, 0, vover-1),
+                        G=(0, img-1, img, img+vover-1),
+                        H=(0, img-1, img, img+vover-1))
+        
+        for iQ,Q in enumerate(self.ccdobj.Quads):
+            res = np.array(self.ccdobj.getsectionrowlims(Q))
+            shouldbe0 = np.abs(np.array(expected[Q]) - res).sum()
+            sizesareok = ((res[1]-res[0]+1)==img) & \
+                         ((res[3]-res[2]+1)==vover)
+            self.assertTrue(np.isclose(shouldbe0,0.,rtol=self.tolerance) \
+                            & sizesareok,
+                            msg='Failed at check %i,Q=%s' % (iQ,Q))
+            
     
     def test_get_stats(self):
-        pass
+        Nimg = self.ccdobj.NrowsCCD
+        offset = self.offset
+        pre=self.ccdobj.prescan
+        over= self.ccdobj.overscan
+        NY = self.NAXIS2/2
+        NX = self.NAXIS1/2
+        Y, _ = np.meshgrid(np.arange(NY,dtype='float32'), 
+                           np.arange(NX,dtype='float32'), indexing='xy')
+        Y = Y.astype('float32') + offset
+        Y[self.badpixel] = np.nan
+        mask = np.isnan(Y)
+        Y = np.ma.masked_array(Y,mask)
+        expected = np.ma.mean(Y[pre:-over,0:Nimg])
+        
+        for iQ,Q in enumerate(self.ccdobj.Quads):
+            res = self.ccdobj.get_stats(Q,sector='img',statkeys=['mean'],
+                                        trimscan=[0,0],ignore_pover=True,
+                                        extension=0)
+            self.assertAlmostEqual(res[0],expected,delta=self.tolerance,
+                                   msg='Failed at check %i,Q=%s' % (iQ,Q))
+        
     
     def test_sub_offset(self):
-        pass
+        
+        expected = self.offset
+        
+        for iQ,Q in enumerate(self.ccdobj.Quads):
+            
+            res = self.ccdobj.sub_offset(Q,method='median',scan='pre',
+                                        trimscan=[0,0],ignore_pover=True,
+                                        extension=0)
+            self.assertAlmostEqual(res[0],expected,delta=self.tolerance,
+                                   msg='Failed at check %i,Q=%s' % (iQ,Q))
+        
     
     def test_sub_bias(self):
-        pass
+        superbias = np.zeros_like(self.ccdobj.extensions[0].data)+self.offset
+        self.ccdobj.sub_bias(superbias,extension=0)
+        res = self.ccdobj.get_stats('E',sector='pre',statkeys=['mean'],
+                                        trimscan=[0,0],ignore_pover=True,
+                                        extension=0)
+        self.assertAlmostEqual(res[0],0.,delta=self.tolerance)
+        
     
     def test_divide_by_flatfield(self):
-        pass
+        FF = np.ones_like(self.ccdobj.extensions[0].data)*2.
+        img_bef = self.ccdobj.extensions[0].data.copy()
+        self.ccdobj.divide_by_flatfield(FF,extension=0)
+        img_aft = self.ccdobj.extensions[0].data.copy()
+        self.assertAlmostEqual(np.ma.mean((img_aft/img_bef)),0.5,
+                               delta=self.tolerance)
     
     def test_get_1Dprofile(self):
-        pass
+        
+        expected = np.arange(0,self.ccdobj.NrowsCCD,dtype='float32')+self.offset
+        
+        for iQ,Q in enumerate(self.ccdobj.Quads):
+                            
+            res = self.ccdobj.get_1Dprofile('E',orient='ver',area='img',
+                                            stacker='median',vstart=0,
+                                            vend=self.ccdobj.NrowsCCD,
+                                            extension=0)
+            resy = res.data['y']
+            
+            self.assertAlmostEqual(np.abs(expected-resy).sum(),0.,
+                                   delta=self.tolerance,
+                                   msg='Failed at check %i,Q=%s' % (iQ,Q))
+        
     
     def test_get_region2Dmodel(self):
-        pass
+        
+        for iQ,Q in enumerate(self.ccdobj.Quads):
+                            
+            res = self.ccdobj.get_region2Dmodel('E',area='img',kind='poly2D',
+                        pdegree=1,doFilter=False,doBin=False,
+                        vend=self.ccdobj.NrowsCCD,canonical=True,
+                        extension=0)
+            rms = np.sqrt((res.imgmodel-res.img)**2.).mean()
+            
+            self.assertAlmostEqual(rms,0.,
+                                   delta=self.tolerance,
+                                   msg='Failed at check %i,Q=%s' % (iQ,Q))            
+        
     
     def test_extract_region(self):
         pass
