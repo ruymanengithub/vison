@@ -76,7 +76,28 @@ class CCD(object):
 
     The class has been extended to handle multi-extension images. This is useful
     to also "host" calibration data-products, such as Flat-Fields.
-
+    
+    
+    A note on Coordinates Systems:
+        - 'CCD': referenced to the first pixel readout from channel H. All 4 quadrants
+        in a single array, their detection nodes in the 4 "corners" of the 
+        rectangle. Same system as images are displayed on DS9. In clock-wise
+        sense, quadrants are H (bottom-left), E (top-left), F (top-right),
+        and G (bottom-right).
+        - 'Quadrant-canonical': Quadrant coordinates system in which the first pixel 
+        is the first pixel read out (closest pixel to the readout node), and 
+        the last is the last readout. In this system, the serial pre-scan comes 
+        before the image area, and this before the serial overscan. Parallel 
+        overscan comes after image area in the parallel direction. In this 
+        system, coordinates of pixels across quadrants, for a single readout, 
+        correspond to the same point in time. Useful when doing cross-talk analysis, 
+        for example.
+        - 'Quadrant-relative': quadrant coordinates system with the same relative orientation
+        as in the 'CCD' system, but referenced to the 'lower-left' pixel of the
+        given quadrant in such system. In this system, the readout node is in a 
+        different corner for each quadrant: lower-left for H, top-left for E,
+        top-right for F and bottom-right for G.
+    
     """
 
     NrowsCCD = NrowsCCD
@@ -124,6 +145,8 @@ class CCD(object):
             self.NAXIS2 = NAXIS2-40
 
         self.shape = (self.NAXIS1, self.NAXIS2)
+        self.wQ = self.NAXIS1/2
+        self.hQ = self.NAXIS2/2
 
         for iext in range(self.nextensions):
             if self.extensions[iext].data is not None:
@@ -145,16 +168,8 @@ class CCD(object):
 
         self.historial = []
 
-    def _invert_BB(self, BB, Q):
-        """ """
-        if Q in ['F', 'G']:
-            BB = [BB[1]-1., BB[0], BB[2], BB[3]]
-        if Q in ['E', 'F']:
-            BB = [BB[0], BB[1], BB[3]-1., BB[2]]
-        return BB
-
     def cooconv_Qrel_2_CCD(self, x, y, Q):
-        """Converts from Quadrant-relative coordinates to CCD coordinates."""
+        """Converts coordiates from Quadrant-relative to CCD."""
         BB = self.QuadBound[Q]
 
         X = x + BB[0]
@@ -163,14 +178,14 @@ class CCD(object):
         return X, Y
 
     def cooconv_Qcan_2_CCD(self, x, y, Q):
-        """Converts from Quadrant-canonical coordinates to CCD coordinates."""
+        """Converts coordiates from Quadrant-canonical to CCD."""
         xr, yr = self.cooconv_Qcan_2_Qrel(x, y, Q)
         #print Q,x.max(),y.max(),xr.max(),yr.max()
         X, Y = self.cooconv_Qrel_2_CCD(xr, yr, Q)
         return X, Y
 
     def cooconv_CCD_2_Qrel(self, x, y, Q):
-        """Converts from CCD coos. to Quadrant-relative coos."""
+        """Converts coordiates from CCD to Quadrant-relative."""
 
         BB = self.QuadBound[Q]
         X = x - BB[0]
@@ -178,7 +193,7 @@ class CCD(object):
         return X, Y
 
     def get_Q_of_CCDcoo(self, x, y):
-        """ """
+        """Retrieves Quadrant that corresponds to given CCD coordinates."""
 
         for Q in self.Quads:
             X, Y = self.cooconv_CCD_2_Qrel(x, y, Q)
@@ -191,7 +206,7 @@ class CCD(object):
         return None
 
     def cooconv_CCD_2_Qcan(self, x, y, Q):
-        """Converts from CCD coos. to Quadrant-canonical coos."""
+        """Converts coordiates from CCD to Quadrant-canonical."""
         xp, yp = self.cooconv_CCD_2_Qrel(x, y, Q)
         X, Y = self.cooconv_Qrel_2_Qcan(xp, yp, Q)
         return X, Y
@@ -203,7 +218,7 @@ class CCD(object):
     #    return X, Y
 
     def cooconv_Qrel_2_Qcan(self, x, y, Q):
-        """ """
+        """Converts coordiates from Quadrant-relative to Quadrant-canonical."""
         BB = self.QuadBound[Q]
         xzero = 0.
         yzero = 0.
@@ -218,12 +233,12 @@ class CCD(object):
         return xsign*x + xzero, ysign*y + yzero
 
     def cooconv_Qcan_2_Qrel(self, x, y, Q):
-        """ """
+        """Converts coordiates from Quadrant-canonical to Quadrant-relative."""
         return self.cooconv_Qrel_2_Qcan(x,y,Q)
     
 
     def cooconvert(self, x, y, insys, outsys, Q='U'):
-        """ """
+        """Coordinates conversion between different systems."""
 
         conversion_dict = dict(CCD=dict(Qrel=self.cooconv_CCD_2_Qrel, Qcan=self.cooconv_CCD_2_Qcan),
                                Qrel=dict(CCD=self.cooconv_Qrel_2_CCD,
@@ -239,6 +254,7 @@ class CCD(object):
         return ccd_aux.rebin(arr, new_shape, stat)
 
     def loadfromFITS(self, fitsfile, extensions=[-1], getallextensions=False):
+        """Loads contents of self from a FITS file."""
 
         hdulist = fts.open(fitsfile)
 
@@ -268,7 +284,7 @@ class CCD(object):
         hdulist.close()
 
     def add_extension(self, data, header=None, label=None, headerdict=None):
-        """ """
+        """Appends an extension to self (extensions are in a list)."""
         if data is not None:
             assert data.shape == self.shape
 
@@ -276,12 +292,13 @@ class CCD(object):
         self.nextensions += 1
 
     def del_extension(self, extension):
-        """ """
+        """Deletes an extension from self, by index."""
 
         self.extensions.pop(extension)
         self.nextensions -= 1
 
     def set_extension(self, data, header=None, label=None, headerdict=None, extension=-1):
+        """Sets extension 'extension' in self."""
         assert data.shape == self.shape
         self.extensions[extension] = Extension(data, header, label, headerdict)
 
@@ -323,33 +340,50 @@ class CCD(object):
         return Qdata
 
     def get_tile_coos(self, Quadrant, wpx, hpx):
-        """ """
+        """ 
+        Returns a dictionary with a tiling [coordinates of corners of tiles]
+        of quadrant Q, with tiles of size wpx[width] x hpx[height].
+           CAUTION: Returned coordinates are Q-relative.
+        
+        :param Quadrant: str, Quadrant, one of ['E','F','G','H']
+        :param wpx: int, width [along NAXIS1] of tiles, in pixels.
+        :param hpx: int, height [along NAXIS2] of tiles, in pixels.
+        :return: tiles_dict = dict(
+                          wpx='Width of tiles, integer', 
+                          hpx='Height of tiles, integer', 
+                          llpix='Lower left corner of tiles, list of tuples',
+                          ccpix= 'Central pixel of tiles, list of tuples', 
+                          Nsamps='Number of tiles, integer')
+        
+        """
 
         tiles_dict = dict()
 
-        #Qedges = self.QuadBound[Quadrant]
+        # Retrieve boundaries (cols and rows) of image sections: s-prescan, image, s-overscan, p-overscan
         _prestarth, _preendh, _imgstarth, _imgendh, _ovstarth, _ovendh = self.getsectioncollims(
             Quadrant)
 
         _imgstartv, _imgendv, _ovstartv, _ovendv = self.getsectionrowlims(
             Quadrant)
 
-        # imglims = [Qedges[0]+_imgstarth,Qedges[0]+_imgendh,
-        #           Qedges[2]+_imgstartv,Qedges[2]+_imgendv]
+        # IMAGE area boundaries
 
         imglims = [_imgstarth, _imgendh,
                    _imgstartv, _imgendv]
-
-        #print 'IMG = %i x %i' % (imglims[1]-imglims[0]+1,imglims[3]-imglims[2]+1)
-
-        xsamp = np.arange(imglims[0], imglims[1], step=wpx)
-        ysamp = np.arange(imglims[2], imglims[3], step=hpx)
-
+        
+        # sampling points (lower-left)
+        
+        xsamp = np.arange(imglims[0], imglims[1]-wpx-1, step=wpx)
+        ysamp = np.arange(imglims[2], imglims[3]-hpx-1, step=hpx)
+        
+        # lower-left pixels of tiles
         llpix = list(itertools.product(xsamp, ysamp))
+        # Number of samples-tiles
         Nsamps = len(llpix)
+        # centre-pixels of tiles
         ccpix = [(llpix[i][0]+wpx/2., llpix[i][1]+hpx/2.)
                  for i in range(Nsamps)]
-
+        # dictionary with results
         tiles_dict = dict(wpx=wpx, hpx=hpx, llpix=llpix,
                           ccpix=ccpix, Nsamps=Nsamps)
 
@@ -439,54 +473,55 @@ class CCD(object):
 
         return None
 
-    def getsectioncollims(self, QUAD):
+    def getsectioncollims(self, Q):
         """Returns limits of [HORIZONTAL] sections: prescan, image and overscan"""
 
-        semiNAXIS1 = self.NAXIS1/2
-
-        if QUAD in ['E', 'H']:
+        if Q in ['E', 'H']:
 
             prestart = 0
             preend = self.prescan-1
-            ovstart = semiNAXIS1-self.overscan
+            ovstart = self.wQ-self.overscan
             ovend = ovstart + self.overscan - 1
             imgstart = preend+1
             imgend = ovstart-1
 
-        elif QUAD in ['F', 'G']:
+        elif Q in ['F', 'G']:
 
             ovstart = 0
             ovend = self.overscan-1
-            prestart = semiNAXIS1-self.prescan
+            prestart = self.wQ-self.prescan
             preend = prestart + self.prescan-1
             imgstart = ovend+1
             imgend = prestart-1
 
         return (prestart, preend, imgstart, imgend, ovstart, ovend)
 
-    def getsectionrowlims(self, QUAD):
-        """Returns limits of [VERTICAL] sections: image [and overscan]"""
+    def getsectionrowlims(self, Q):
+        """Returns limits of [VERTICAL] sections: image [and vertical overscan]"""
+        
+        vover = self.voverscan
+        img = self.NrowsCCD
 
-        if QUAD in ['E', 'F']:
+        if Q in ['E', 'F']:
 
-            imgstart = self.voverscan - 1
-            imgend = imgstart + self.NrowsCCD - 1
+            imgstart = vover
+            imgend = imgstart + img - 1
 
             if self.voverscan != 0:
                 ovstart = 0
-                ovend = ovstart + self.voverscan - 1
+                ovend = ovstart + vover - 1
             else:
                 ovstart = None
                 ovend = None
 
-        elif QUAD in ['G', 'H']:
+        elif Q in ['G', 'H']:
 
             imgstart = 0
-            imgend = self.NrowsCCD - 1
+            imgend = img - 1
 
             if self.voverscan != 0:
-                ovstart = imgend
-                ovend = imgend+self.voverscan - 1
+                ovstart = img
+                ovend = img + vover - 1
             else:
                 ovstart = None
                 ovend = None
@@ -498,7 +533,7 @@ class CCD(object):
         """ """
 
         Qdata = self.get_quad(Quadrant, canonical=True, extension=extension)
-
+        
         if isinstance(Qdata, np.ma.masked_array):
             stat_dict = dict(
                 mean=np.ma.mean, median=np.ma.median, std=np.ma.std)
@@ -525,7 +560,6 @@ class CCD(object):
         results = []
 
         for statkey in statkeys:
-
             results.append(stat_dict[statkey](
                 Qdata[hlims[0]:hlims[1], vlims[0]:vlims[1]]))
 

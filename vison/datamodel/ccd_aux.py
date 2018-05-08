@@ -179,6 +179,12 @@ class Model2D():
             zz = self.img[(sxx, syy)]
 
         xx, yy = np.mgrid[0:NX:NX*1j, 0:NY:NY*1j]
+        
+        if isinstance(zz,np.ma.masked_array):
+            selix = np.where(~zz.mask)
+            xx = xx[selix]
+            yy = yy[selix]
+            zz = zz[selix]
 
         pilum = interpolate.griddata((sxx.flatten(), syy.flatten()), zz.flatten(),
                                      (xx, yy), method=splinemethod, fill_value=np.nan)
@@ -226,7 +232,13 @@ class Model2D():
             xx, yy = np.meshgrid(x, y, indexing='ij')
 
             zz = self.img[(xx, yy)]
-
+        
+        if isinstance(zz,np.ma.masked_array):
+            selix = np.where(~zz.mask)
+            xx = xx[selix]
+            yy = yy[selix]
+            zz = zz[selix]
+        
         p = self.fit2Dpol_xyz(xx, yy, zz, degree=pdegree)
 
         xp, yp = np.mgrid[:NX, :NY]
@@ -309,9 +321,6 @@ def get_1Dprofile(ccdobj, Q, orient='hor', area='img', stacker='mean', vstart=0,
 
     y = stacker_dict[stacker](subregion, axis=stackaxis)
     
-    # BUG! This conversion of coordinates is WRONG (given "subregion")
-    print 'BUG! in ccd_aux.get_1Dprofile'
-
     if orient == 'hor':
         if Q in ['E', 'H']:
             x = np.arange(BB[0], BB[1])
