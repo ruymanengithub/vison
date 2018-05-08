@@ -21,7 +21,9 @@ class TestCCDClass(unittest.TestCase):
     
     def setUp(self):
         self.NAXIS1 = 4238
+        self.wQ = self.NAXIS1/2
         self.NAXIS2 = 4172
+        self.hQ = self.NAXIS2/2
         self.offset = 1000.
         self.badpixel = (100,100) # bad pixel on each Quad, canonical orientation
         self.prescan = ccd.prescan
@@ -65,6 +67,15 @@ class TestCCDClass(unittest.TestCase):
         self.ccdobj.get_mask(mask)
         self.assertTrue(self.ccdobj.masked)
     
+    def _validate_coo_conversion(self,f,incoos,outcoos):
+        
+        for i in range(len(incoos)):
+            point = incoos[i]
+            xin,yin,Q = point
+            xou,you = f(xin,yin,Q)
+            dist = ((outcoos[i][0]-xou)**2.+(outcoos[i][1]-you)**2.)**0.5
+            self.assertAlmostEqual(dist,0.,delta=self.tolerance,
+                             msg='running subtest %i' %  i)
     
     def test_cooconv_Qrel_2_CCD(self):
         
@@ -72,18 +83,13 @@ class TestCCDClass(unittest.TestCase):
                   (100,200,'F'),
                   (100,200,'G'),
                   (100,200,'H')]
-        outcoos = [(incoos[0][0],incoos[0][1]+self.NAXIS2/2),
-                   (incoos[1][0]+self.NAXIS1/2,incoos[1][1]+self.NAXIS2/2),
-                   (incoos[2][0]+self.NAXIS1/2,incoos[2][1]),
+        outcoos = [(incoos[0][0],incoos[0][1]+self.hQ),
+                   (incoos[1][0]+self.wQ,incoos[1][1]+self.hQ),
+                   (incoos[2][0]+self.wQ,incoos[2][1]),
                    (incoos[3][0],incoos[3][1])]
         
-        for i in range(len(incoos)):
-            point = incoos[i]
-            xr,yr,Q = point
-            X,Y = self.ccdobj.cooconv_Qrel_2_CCD(xr,yr,Q)
-            dist = ((outcoos[i][0]-X)**2.+(outcoos[i][1]-Y)**2.)**0.5
-            self.assertAlmostEqual(dist,0.,delta=self.tolerance,
-                             msg='running subtest %i' %  i)
+        self._validate_coo_conversion(self.ccdobj.cooconv_Qrel_2_CCD,
+                                      incoos,outcoos)
     
     def test_cooconv_Qcan_2_CCD(self):
         
@@ -98,14 +104,9 @@ class TestCCDClass(unittest.TestCase):
                    (2.*wQ-incoos[1][0]-1.,2*hQ-incoos[1][1]-1.),
                    (2.*wQ-incoos[2][0]-1.,incoos[2][1]),
                    (incoos[3][0],incoos[3][1])]
-        
-        for i in range(len(incoos)):
-            point = incoos[i]
-            xc,yc,Q = point
-            X,Y = self.ccdobj.cooconv_Qcan_2_CCD(xc,yc,Q)
-            dist = ((outcoos[i][0]-X)**2.+(outcoos[i][1]-Y)**2.)**0.5
-            self.assertAlmostEqual(dist,0.,delta=self.tolerance,
-                             msg='running subtest %i' %  i)
+
+        self._validate_coo_conversion(self.ccdobj.cooconv_Qcan_2_CCD,
+                                      incoos,outcoos)
         
     def test_cooconv_CCD_2_Qrel(self):
         
@@ -121,15 +122,10 @@ class TestCCDClass(unittest.TestCase):
                    (100.,100.),
                    (100.,100.),
                    (100.,100.)]
-        
-        for i in range(len(incoos)):
-            point = incoos[i]
-            xr,yr,Q = point
-            Xc,Yc = self.ccdobj.cooconv_CCD_2_Qrel(xr,yr,Q)
-            dist = ((outcoos[i][0]-Xc)**2.+(outcoos[i][1]-Yc)**2.)**0.5
-            self.assertAlmostEqual(dist,0.,delta=self.tolerance,
-                             msg='running subtest %i' %  i)
-        
+
+        self._validate_coo_conversion(self.ccdobj.cooconv_CCD_2_Qrel,
+                                      incoos,outcoos)
+
         
     def test_cooconv_CCD_2_Qcan(self):
         
@@ -145,14 +141,10 @@ class TestCCDClass(unittest.TestCase):
                    (100.,100.),
                    (100.,100.),
                    (100.,100.)]
-        
-        for i in range(len(incoos)):
-            point = incoos[i]
-            Xc,Yc,Q = point
-            xc,yc = self.ccdobj.cooconv_CCD_2_Qcan(Xc,Yc,Q)
-            dist = ((outcoos[i][0]-xc)**2.+(outcoos[i][1]-yc)**2.)**0.5
-            self.assertAlmostEqual(dist,0.,delta=self.tolerance,
-                             msg='running subtest %i' %  i)
+
+        self._validate_coo_conversion(self.ccdobj.cooconv_CCD_2_Qcan,
+                                      incoos,outcoos)
+
         
     def test_cooconv_Qrel_2_Qcan(self):
         
@@ -168,15 +160,11 @@ class TestCCDClass(unittest.TestCase):
                    (100.,100.),
                    (100.,100.),
                    (100.,100.)]
-        
-        for i in range(len(incoos)):
-            point = incoos[i]
-            xr,yr,Q = point
-            xc,yc = self.ccdobj.cooconv_Qrel_2_Qcan(xr,yr,Q)
-            dist = ((outcoos[i][0]-xc)**2.+(outcoos[i][1]-yc)**2.)**0.5
-            self.assertAlmostEqual(dist,0.,delta=self.tolerance,
-                             msg='running subtest %i' %  i)
-    
+
+        self._validate_coo_conversion(self.ccdobj.cooconv_Qrel_2_Qcan,
+                                      incoos,outcoos)
+
+            
     def test_cooconv_Qcan_2_Qrel(self):
         hQ = self.NAXIS2/2
         wQ = self.NAXIS1/2
@@ -190,15 +178,10 @@ class TestCCDClass(unittest.TestCase):
                   (wQ-100.-1.,hQ-100-1.),
                   (wQ-100-1.,100),
                   (100,100)]
-        
-        for i in range(len(incoos)):
-            point = incoos[i]
-            xc,yc,Q = point
-            xr,yr = self.ccdobj.cooconv_Qrel_2_Qcan(xc,yc,Q)
-            dist = ((outcoos[i][0]-xr)**2.+(outcoos[i][1]-yr)**2.)**0.5
-            self.assertAlmostEqual(dist,0.,delta=self.tolerance,
-                             msg='running subtest %i' %  i)
 
+        self._validate_coo_conversion(self.ccdobj.cooconv_Qrel_2_Qcan,
+                                      incoos,outcoos)
+        
     
     #def test_dummyrebin(self):
     #    pass
