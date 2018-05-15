@@ -17,6 +17,7 @@ import pandas as pd
 import string
 import numpy as np
 from collections import OrderedDict
+import copy
 
 from vison.support import context
 #from vison.pipe import lib as pilib
@@ -236,6 +237,7 @@ script_dictionary['6.5.X']['defaults'] = {
     'roe-tab': 'hrdstart'
 }
 
+script_dictionary['7.2.X'] = copy.deepcopy(script_dictionary['6.5.X'])
 
 def update_structdict(sdict, commvalues, diffvalues):
     """Updates an script structure with common values and differential values.

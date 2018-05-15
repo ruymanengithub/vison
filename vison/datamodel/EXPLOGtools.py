@@ -84,6 +84,8 @@ columnlist['6.5.X'] = ['ObsID', 'File_name', 'CCD', 'ROE', 'date', 'program',
                        'IG1_1_T', 'IG1_2_T', 'IG1_3_T', 'IG1_1_B', 'IG1_2_B', 'IG1_3_B', 'IG2_T', 'IG2_B',
                        'OD_1_T', 'OD_2_T', 'OD_3_T', 'OD_1_B', 'OD_2_B', 'OD_3_B', 'RD_T', 'RD_B']
 
+columnlist['7.2.X'] = copy.deepcopy(columnlist['6.5.X'])
+
 dtypes_dict = {'ObsID': 'i', 'File_name': 'S40', 'CCD': 'S4', 'ROE': 'S5', 'DATE': 'S20',
                'PROGRAM': 'S12', 'TEST': 'S12', 'CCD1_SN': 'S20', 'CCD2_SN': 'S20',
                'CCD3_SN': 'S20', 'BUNIT': 'S3', 'Operator': 'S3', 'Lab_ver': 'S8',
