@@ -72,7 +72,10 @@ def scwriter(toWrite, test_generator, outpath, equipment, elvis=context.elvis):
     for test in test_sequence.keys():
         print '%s...' % test
         testobj = copy.deepcopy(test_sequence[test])
-        structtest = testobj.build_scriptdict(elvis=elvis)
+        try:
+            structtest = testobj.build_scriptdict(elvis=elvis)
+        except:
+            stop()
         testduration = get_test_duration(structtest)
 
         duration += testduration
