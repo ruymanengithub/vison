@@ -7,7 +7,7 @@ from pdb import set_trace as stop
 from astropy.io import ascii
 from astropy.table import Table, Column
 import os
-from copy import copy
+import copy
 import numpy as np
 from vison.support import vistime
 #from vison.pipe import lib as pilib
@@ -192,7 +192,7 @@ def mergeExpLogs(explogList, addpedigree=False, verbose=False):
 
     #assert nexplogs >=2
 
-    explog = copy(explogList[0])
+    explog = copy.deepcopy(explogList[0])
     colnames = explog.colnames
 
     if addpedigree:
