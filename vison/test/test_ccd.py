@@ -223,22 +223,21 @@ class TestCCDClass(unittest.TestCase):
             llpix = itiles['llpix']
             Nsamps = itiles['Nsamps']
             
-            checks = []         
-            checks.append((wpx == itiles['wpx']) and (hpx == itiles['hpx']))
-            checks.append(len(ccpix) == len(llpix) == Nsamps)
+            comm_msg = 'Failed on checks on Q=%s' % Q
+            
+            self.assertTrue((wpx == itiles['wpx']) and (hpx == itiles['hpx']),msg='check 1, %s' % comm_msg)
+            self.assertTrue(len(ccpix) == len(llpix) == Nsamps, msg='check 2, %s' % comm_msg)
             
             urpix = get_urpix(llpix,wpx,hpx)
             arewithinimage = are_within_image(llpix, urpix, wpx, hpx, img_bounds)
             
-            checks.append(np.all(arewithinimage))
+            self.assertTrue(np.all(arewithinimage), msg='check 3, %s' % comm_msg)
             
             areas = [(urpix[i][0]-llpix[i][0]+1)*(urpix[i][1]-llpix[i][1]+1) \
                      for i in range(Nsamps)]
             
             
-            checks.append(np.all(np.isclose(np.array(areas), wpx*hpx)))
-                        
-            self.assertTrue(np.all(checks),msg='Failed on checks on Q=%s' % Q)
+            self.assertTrue(np.all(np.isclose(np.array(areas), wpx*hpx)), msg='check 4, %s' % comm_msg)
             
     
     def test_get_tiles_stats(self):
@@ -251,11 +250,9 @@ class TestCCDClass(unittest.TestCase):
         
         res = self.ccdobj.get_tiles_stats(Q, tile_coos, statkey, extension=-1)
         
-        checks = []
-        checks.append(len(res) == tile_coos['Nsamps'])
-        checks.append(np.all(np.isclose(res,self.RON)))
+        self.assertTrue(len(res) == tile_coos['Nsamps'])
+        self.assertTrue(np.all(np.isclose(res,self.RON)))
         
-        self.assertTrue(np.all(checks))
     
     def test_get_cutout(self):
         prescan = self.ccdobj.prescan
@@ -286,9 +283,9 @@ class TestCCDClass(unittest.TestCase):
             sizesareok = (((res[1]-res[0]+1)==pre) &\
                           ((res[3]-res[2]+1)==img) &\
                           ((res[5]-res[4]+1)==over))
-            self.assertTrue(np.isclose(shouldbe0,0.,rtol=self.tolerance) \
-                            & sizesareok,
-                            msg='Failed at check %i,Q=%s' % (iQ,Q))
+            self.assertTrue(np.isclose(shouldbe0,0.,rtol=self.tolerance), 
+                            msg='values error... Failed at check %i,Q=%s' % (iQ,Q))
+            self.assertTrue(sizesareok,msg='dimensions error... Failed at check %i,Q=%s' % (iQ,Q))
             
     
     def test_getsectionrowlims(self):
@@ -305,9 +302,10 @@ class TestCCDClass(unittest.TestCase):
             shouldbe0 = np.abs(np.array(expected[Q]) - res).sum()
             sizesareok = ((res[1]-res[0]+1)==img) & \
                          ((res[3]-res[2]+1)==vover)
-            self.assertTrue(np.isclose(shouldbe0,0.,rtol=self.tolerance) \
-                            & sizesareok,
-                            msg='Failed at check %i,Q=%s' % (iQ,Q))
+                         
+            self.assertTrue(np.isclose(shouldbe0,0.,rtol=self.tolerance), 
+                            msg='values error... Failed at check %i,Q=%s' % (iQ,Q))
+            self.assertTrue(sizesareok,msg='dimensions error... Failed at check %i,Q=%s' % (iQ,Q))
             
     
     def test_get_stats(self):
@@ -396,7 +394,18 @@ class TestCCDClass(unittest.TestCase):
         
     
     def test_extract_region(self):
-        pass
+        
+        Quads = self.ccdobj.Quads
+        
+        subreg_r, BB_r = self.ccdobj.extract_region(Quads[0],area='img',vstart=0,vend=2086,
+                                                Full=True,canonical=True,extension=0)    
+        
+        for Q in Quads[1:]:
+        
+            subreg, BB = self.ccdobj.extract_region(Q,area='img',vstart=0,vend=2086,
+                                   Full=True,canonical=True,extension=0)
+            self.assertAlmostEqual(np.abs(subreg-subreg_r).sum(),0.,delta=self.tolerance,
+                                   msg='Failed at Q=%s' % Q)
     
 
  
