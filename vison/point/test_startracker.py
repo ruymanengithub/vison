@@ -30,7 +30,7 @@ class Test(unittest.TestCase):
     """
     def setUp(self):
         
-        pass
+        self.startracker = StarTracker()
         
 
     def test_something(self):
@@ -38,13 +38,13 @@ class Test(unittest.TestCase):
         
         :return: None
         """
+        
         self.assertTrue(True)
 
 
 if __name__ == '__main__':
     
-    #suite = unittest.TestLoader().loadTestsFromTestCase(Test)
-    #unittest.TextTestRunner(verbosity=3).run(suite)
+    suite = unittest.TestLoader().loadTestsFromTestCase(Test)
+    unittest.TextTestRunner(verbosity=3).run(suite)
     
-    pass
     
