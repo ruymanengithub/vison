@@ -110,6 +110,7 @@ class FOCUS00_inputs(inputs.Inputs):
     manifesto.update(OrderedDict(sorted([
         ('exptime', ([float], 'Exposure time.')),
         ('wavelength', ([int], 'Wavelength')),
+        ('deltafocus',([float],'delta-focus step, mm'))
     ])))
 
 
@@ -133,7 +134,8 @@ class FOCUS00(PT.PointTask):
     def set_inpdefaults(self, **kwargs):
 
         self.inpdefaults = dict(wavelength=800,
-                                exptime=60./100.*ogse.tFWC_point['nm%i' % 800])
+                                exptime=60./100.*ogse.tFWC_point['nm%i' % 800],
+                                deltafocus=0.1)
 
     def set_perfdefaults(self, **kwargs):
         self.perfdefaults = dict()
@@ -154,6 +156,7 @@ class FOCUS00(PT.PointTask):
 
         wavelength = self.inputs['wavelength']
         exptime = self.inputs['exptime']
+        delta_focus = self.inputs['deltafocus']
 
         FW_ID = ogse.get_FW_ID(wavelength)
         FW_IDX = int(FW_ID[-1])
@@ -170,7 +173,7 @@ class FOCUS00(PT.PointTask):
                                                    test='FOCUS00_%i' % wavelength,
                                                    exptime=exptime,
                                                    mirr_pos=mirror_nom +
-                                                   float(j)*1.,
+                                                   float(j)*delta_focus,
                                                    wave=FW_IDX,
                                                    comments='F%.1f' % float(j))
 

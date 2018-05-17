@@ -26,8 +26,8 @@ from vison.point import spot as spotmod
 # END IMPORT
 
 
-mirror_nom = dict(F1=50., F2=50., F3=50., F4=50., F5=50.,
-                  F6=50.)  # nominal focus positions of mirror
+mirror_nom = dict(F1=86., F2=86., F3=86., F4=86., F5=86.,
+                  F6=86.)  # nominal focus positions of mirror
 
 stampw = 75
 

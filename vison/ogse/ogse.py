@@ -27,23 +27,42 @@ overheads = dict(ff_readout=72.,
 # saturation exposure times for flat-source, s
 # updated on 3rd FEB 2018 after Cold Commissioning of Fac#1
 
-tFWC_flat = dict(nm590=0.82,
-                 nm640=0.82,
-                 nm730=0.94,
-                 nm800=1.87,
-                 nm880=9.4,
-                 nm0=1.6)  # after DRY-RUN...
+#tFWC_flat = dict(nm590=0.82,
+#                 nm640=0.82,
+#                 nm730=0.94,
+#                 nm800=1.87,
+#                 nm880=9.4,
+#                 nm0=1.6)  # after DRY-RUN...
 
-# saturation exposure times for point-source, ms, orientative
+# saturation exposure times for flat-source, s
+# updated on 17 MAY 2018 before DRY-RUN-JUN18
+
+tFWC_flat = dict(nm590=1.02,
+                 nm640=0.78,
+                 nm730=0.94,
+                 nm800=0.53,
+                 nm880=2.02,
+                 nm0=1.6)  # GUESSING from tFWC_point...       
+                 
+                 
+# saturation exposure times for point-source, s, orientative
 
 # updated on 3rd FEB 2018 after Cold Commissioning of Fac#1
 
-tFWC_point = dict(nm590=0.17,
-                  nm640=0.22,
+#tFWC_point = dict(nm590=0.17,
+#                  nm640=0.22,
+#                  nm730=0.21,
+#                  nm800=0.39,
+#                  nm880=1.95,
+#                  nm0=3.)  # s
+
+# updated on 17th May 2018 before DRY-RUN-JUN18
+tFWC_point = dict(nm590=0.21,
+                  nm640=0.21,
                   nm730=0.21,
-                  nm800=0.39,
-                  nm880=1.95,
-                  nm0=3.)  # ms
+                  nm800=0.11,
+                  nm880=0.82,
+                  nm0=3.)  # s
 
 # FWHM (lambda), in pixels, GUESS
 
@@ -52,7 +71,8 @@ fwhm_lambda = dict(nm590=1.3,
                    nm730=1.5,
                    nm800=1.5,
                    nm880=1.6,
-                   nm0=1.5)  # ms
+                   nm0=1.5)  # s
+
 
 # Filter Wheel Positions
 
