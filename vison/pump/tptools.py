@@ -20,7 +20,7 @@ import pandas as pd
 from collections import OrderedDict
 
 from vison.datamodel import ccd as ccdmod
-
+from vison.image.ds9reg import save_spots_as_ds9regs
 # END IMPORT
 
 
@@ -116,32 +116,20 @@ def find_dipoles_vtpump(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, ex
     return df
 
 
-def save_dipcat2D_as_ds9regs(df, Q, regfilename, clobber=True):
+def save_dipcat2D_as_ds9regs(df, regfilename, clobber=True):
     """ """
-    color = 'green'
-    width = 2
-    radius = 6.0
+    
+    X = df['X']
+    Y = df['Y']
+    R = np.ones_like(X,dtype='float32') * 6.0
+    
+    data = dict(X=X,
+                Y=Y,
+                R=R)
+    
+    save_spots_as_ds9regs(data,regfilename,regtype='circle',
+                          clobber=True)
 
-    hdr = ['# Region file format: DS9 version 4.1',
-           'global color=%s dashlist=8 3 width=%i font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1' %
-           (color, width),
-           'physical']
-    body = []
-
-    Nreg = len(df)
-    for i in range(Nreg):
-        body.append('circle(%.1f,%.1f,%.1f)' %
-                    (df['X'][i]+1., df['Y'][i]+1., radius))
-
-    if clobber and os.path.exists(regfilename):
-        os.system('rm %s' % regfilename)
-
-    f = open(regfilename, 'a')
-    for line in hdr:
-        print >> f, line
-    for line in body:
-        print >>f, line
-    f.close()
 
 
 def fcomp_distamp_dipoles(merged, mcat):
