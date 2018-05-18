@@ -14,18 +14,29 @@ from pdb import set_trace as stop
 import astromatic_wrapper as aw
 import os
 import string as st
+import numpy as np
+import tempfile
 
-from vison.datamodel import ccd as ccdmod
+from astropy.io import fits as fts
+
+from vison import data as visondata
+#from vison.datamodel import ccd as ccdmod
 # END IMPORT
 
 default_params = ['NUMBER','EXT_NUMBER','X_IMAGE','Y_IMAGE','A_IMAGE','B_IMAGE','ELONGATION','FWHM_IMAGE','MAG_AUTO']
+config_default_file = 'sexconfig.default'
 
 class VSExtractor(object):
     
-    
-    def __init__(self,FITS=None,ccdobj=None):
-        """ """        
-        self.files = dict()
+    def __init__(self,img=None):
+        """ """
+        #if img is not None:
+        #    assert isinstance(img,np.ndarray)
+        #    tmpf = self.save_img_to_tmp(img)
+        #else:
+        #    tmpf = None
+        
+        self.img = img
         
         self.internals = dict(
                 MINAREA=5,
@@ -35,18 +46,35 @@ class VSExtractor(object):
                 PIXEL_SCALE = 1.,
                 GAIN = 1.
                 )
+        
         self.internals['params'] = default_params
     
+    def save_img_to_tmp(self,img,delete=True,close=False):
+        """ """
+        outf = tempfile.NamedTemporaryFile(mode='w+b',suffix='.fits',
+                                           prefix='vison_sex',
+                                           delete=delete)
+        fts.writeto(outf,img,overwrite=True)
+        if close:
+            outf.close()
+        
+        return outf
+    
+    #def close_images(self):
+    #    for item in self.files['image']:
+    #        item.close()
+        
     def update_internals(self,inputs):
         assert isinstance(inputs,dict)
         self.internals.update(inputs)
     
     def get_sex_kwargs(self,catroot,config=None,checks=None):
         
-        catname = '%s.ldac' % catroot
+        catname = '%s.ldac.fits' % catroot
         
         configdefaults = dict(
                 CATALOG_NAME = catname,
+                CATALOG_TYPE = 'FITS_LDAC',
                 DETECT_MINAREA='%i' % self.internals['MINAREA'],
                 DETECT_THRESH='15.,%.1f' % self.internals['MAG_ZEROPOINT'],
                 ANALYSIS_THRESH='15.,%.1f' % self.internals['MAG_ZEROPOINT'],
@@ -55,7 +83,7 @@ class VSExtractor(object):
                 MAG_ZEROPOINT='%.1f' % self.internals['MAG_ZEROPOINT'],
                 GAIN='%.1f' % self.internals['GAIN'],
                 PIXEL_SCALE='%.1f' % self.internals['PIXEL_SCALE'],
-                SEEING_FWHM='%.1f' % self.internals['SEEEING_FWHM'],
+                SEEING_FWHM='%.1f' % self.internals['SEEING_FWHM'],
                 BACKPHOTO_TYPE='LOCAL',
                 BACK_SIZE='500',
                 BACK_FILTERSIZE='3')
@@ -81,6 +109,8 @@ class VSExtractor(object):
         kwargs['temp_path'] = '.'
         kwargs['params'] = self.internals['params']
         
+        kwargs['config_file'] = os.path.join(visondata.__path__[0],config_default_file)
+        
         if config is not None:
             assert isinstance(config,dict)
             kwargs['config'].update(config)
@@ -91,7 +121,11 @@ class VSExtractor(object):
         """ """
         kwargs = self.get_sex_kwargs(catroot,config,checks)
         sextractor = aw.api.Astromatic(**kwargs)
-        sextractor.run_frames(self.files['kmage'],frames=[1])
+        
+        tmpf = self.save_img_to_tmp(self.img,delete=False,close=True)
+        sextractor.run_frames(tmpf.name,frames=[1])
+        os.system('rm %s' % tmpf.name)
+        
         catname = kwargs['config']['CATALOG_NAME']
         
         if cleanafter:
