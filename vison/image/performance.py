@@ -15,17 +15,39 @@ Created on Wed Nov  1 09:57:44 2017
 
 # IMPORT STUFF
 from collections import OrderedDict
+import os
+from pdb import set_trace as stop
+
+from vison.support import vjson
+from vison import blocks
 # ENDIMPORT
 
 CCDs = ['CCD1','CCD2','CCD3']
 Quads = ['E','F','G','H']
 
+offsets_UNK =  OrderedDict(CCD1=OrderedDict(E=2000.,
+                                            F=2000.,
+                                            G=2000.,
+                                            H=2000.))
+offsets_UNK['CCD2'] = offsets_UNK['CCD1'].copy()
+offsets_UNK['CCD3'] = offsets_UNK['CCD1'].copy()
 
 offsets_margins = [-200, 200]  # ADU
 
+blockspath = blocks.__path__[0]
 
 def get_offsets(BLOCKID=None):
-     return dict(CCD1=2000, CCD2=2000, CCD3=2000)  # ADU
+    
+    if BLOCKID is None:
+        return offsets_UNK
+    
+    offsets_json = '%s_offsets.json' % BLOCKID
+    fpath = os.path.join(blockspath,offsets_json)
+    try:
+        offsets = vjson.load_jsonfile(fpath)
+    except:
+        stop()
+    return offsets  # ADU
 
 def get_offsets_lims(offsets,offsets_margins):
     """ """
@@ -42,6 +64,7 @@ def get_offsets_lims(offsets,offsets_margins):
 offsets_gradients = dict(CCD1=dict(pre=[0, 0], img=[5, 10], ove=[5, 10]), 
                          CCD2=dict(pre=[0, 0], img=[5, 10], ove=[5, 10]),
                          CCD3=dict(pre=[0, 0], img=[5, 10], ove=[5, 10]))  # ADU
+
 RONs = dict(CCD1=1.4, CCD2=1.4, CCD3=1.4)  # ADU, STD
 RONs_margins = [-0.2, 0.2]  # ADU, STD
 RONs_lims = dict()
@@ -70,7 +93,6 @@ def get_perf_rdout(BLOCKID):
     perf_rdout.update(def_perf_rdout)
     
     offsets = get_offsets(BLOCKID)
-    
     perf_rdout['offsets'] = offsets
     perf_rdout['offsets_lims'] = get_offsets_lims(offsets,offsets_margins)
     
