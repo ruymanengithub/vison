@@ -169,8 +169,7 @@ class PSF0X(PointTask):
                                 exptimes=exptimes)
 
     def set_perfdefaults(self, **kwargs):
-        self.perfdefaults = dict()
-        self.perfdefaults.update(performance.perf_rdout)
+        super(PSF0X,self).set_perfdefaults(**kwargs)
 
         self.perfdefaults['BGD_lims'] = BGD_lims  # ADUs
         self.perfdefaults['Flu_lims'] = Flu_lims  # ADUs

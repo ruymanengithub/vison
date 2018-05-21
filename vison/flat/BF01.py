@@ -91,7 +91,6 @@ class BF01(PTC0X):
         self.inpdefaults['test'] = kwargs['test']
 
     def set_perfdefaults(self, **kwargs):
-
         # maskerading as PTC0X here...
         _kwargs = copy.deepcopy(kwargs)
         _kwargs['test'] = kwargs['surrogate']

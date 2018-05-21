@@ -180,8 +180,7 @@ class PTC0X(FlatTask):
                                 frames=frames, exptimes=exptimes)
 
     def set_perfdefaults(self, **kwargs):
-        self.perfdefaults = dict()
-        self.perfdefaults.update(performance.perf_rdout)
+        super(PTC0X,self).set_perfdefaults(**kwargs)
 
         try:
             testkey = kwargs['test']

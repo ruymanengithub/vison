@@ -120,8 +120,7 @@ class FLAT0X(FlatTask):
 
     def set_perfdefaults(self, **kwargs):
         #wavelength = self.inputs['wavelength']
-        self.perfdefaults = dict()
-        self.perfdefaults.update(performance.perf_rdout)
+        super(FLAT0X,self).set_perfdefaults(**kwargs)
         self.perfdefaults['FLU_lims'] = FLU_lims.copy()
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):

@@ -138,8 +138,7 @@ class FOCUS00(PT.PointTask):
                                 deltafocus=0.1)
 
     def set_perfdefaults(self, **kwargs):
-        self.perfdefaults = dict()
-        self.perfdefaults.update(performance.perf_rdout)
+        super(FOCUS00,self).set_perfdefaults(**kwargs)
         self.perfdefaults['BGD_lims'] = copy.deepcopy(PT.BGD_lims)
         self.perfdefaults['FWHM_lims'] = copy.deepcopy(FWHM_lims)
         self.perfdefaults['Flu_lims'] = copy.deepcopy(Flu_lims)

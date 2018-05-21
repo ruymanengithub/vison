@@ -87,10 +87,6 @@ class PERSIST01(Task):
             exptLATEN=565.
         )
 
-    def set_perfdefaults(self, **kwargs):
-        """ """
-        self.perfdefaults = dict()
-        self.perfdefaults.update(performance.perf_rdout)
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """ 

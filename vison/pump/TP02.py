@@ -105,8 +105,7 @@ class TP02(PumpTask):
                                 spumpmodes=[23, 31])
 
     def set_perfdefaults(self, **kwargs):
-        self.perfdefaults = dict()
-        self.perfdefaults.update(performance.perf_rdout)
+        super(TP02,self).set_perfdefaults(**kwargs)
 
         Flu_lims, FluGrad_lims = self.get_FluenceAndGradient_limits()
 

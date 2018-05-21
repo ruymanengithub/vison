@@ -94,10 +94,6 @@ class BIAS01(DarkTask):
     def set_inpdefaults(self, **kwargs):
         self.inpdefaults = self.inputsclass(N=25)
 
-    def set_perfdefaults(self, **kwargs):
-        self.perfdefaults = dict()
-        self.perfdefaults.update(performance.perf_rdout)
-
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """Builds BIAS01 script structure dictionary.
 

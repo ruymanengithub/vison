@@ -127,9 +127,7 @@ class NL01(FlatTask):
                                 )
 
     def set_perfdefaults(self, **kwargs):
-        self.perfdefaults = dict()
-        self.perfdefaults.update(performance.perf_rdout)
-
+        super(NL01,self).set_perfdefaults(**kwargs)
         self.perfdefaults['FLU_lims'] = FLU_lims  # dict
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):

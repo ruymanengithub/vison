@@ -27,6 +27,7 @@ from vison.support import files
 import lib as pilib
 from vison.support import context
 #import task_lib as tlib
+from vison.image import performance
 from vison.datamodel import ccd
 from vison.image import calibration
 from vison.ogse import ogse
@@ -105,7 +106,8 @@ class Task(object):
         pass
 
     def set_perfdefaults(self, **kwargs):
-        pass
+        self.perfdefaults = dict()
+        self.perfdefaults.update(performance.perf_rdout)
 
     def build_scriptdict(self, diffvalues={}, elvis=context.elvis):
         """ """

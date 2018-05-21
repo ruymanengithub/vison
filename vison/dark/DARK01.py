@@ -90,9 +90,7 @@ class DARK01(DarkTask):
         self.inpdefaults = dict(N=4, exptime=565)
 
     def set_perfdefaults(self, **kwargs):
-        self.perfdefaults = dict()
-        self.perfdefaults.update(performance.perf_rdout)
-
+        super(DARK01, self).set_perfdefaults(**kwargs)
         self.perfdefaults['Flu_lims'] = Flu_lims
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
