@@ -107,7 +107,7 @@ class Task(object):
 
     def set_perfdefaults(self, **kwargs):
         self.perfdefaults = dict()
-        self.perfdefaults.update(performance.perf_rdout)
+        self.perfdefaults.update(performance.get_perf_rdout(self.BLOCKID))
 
     def build_scriptdict(self, diffvalues={}, elvis=context.elvis):
         """ """
