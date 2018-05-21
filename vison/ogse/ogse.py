@@ -47,13 +47,19 @@ mirror_nom = dict(F1=86., F2=86., F3=86., F4=86., F5=86.,
 # saturation exposure times for flat-source, s
 # updated on 17 MAY 2018 before DRY-RUN-JUN18
 
-tFWC_flat = dict(nm590=1.02,
-                 nm640=0.78,
-                 nm730=0.94,
-                 nm800=0.53,
-                 nm880=2.02,
-                 nm0=1.6)  # GUESSING from tFWC_point...       
-                 
+#tFWC_flat = dict(nm590=1.02,
+#                 nm640=0.78,
+#                 nm730=0.94,
+#                 nm800=0.53,
+#                 nm880=2.02,
+#                 nm0=1.6)  # GUESSING from tFWC_point...       
+
+tFWC_flat = dict(nm590=100.,
+                 nm640=100.,
+                 nm730=100.,
+                 nm800=200.,
+                 nm880=200.,
+                 nm0=200.)  # Using diffuser... 21/MAY/2018   
                  
 # saturation exposure times for point-source, s, orientative
 
