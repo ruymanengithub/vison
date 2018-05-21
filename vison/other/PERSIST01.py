@@ -25,7 +25,7 @@ from collections import OrderedDict
 from vison.support import context
 #from vison.pipe import lib as pilib
 #from vison.point import lib as polib
-from vison.support import ogse
+from vison.ogse import ogse
 from vison.datamodel import scriptic as sc
 #from vison.pipe import FlatFielding as FFing
 #from vison.support.report import Report
