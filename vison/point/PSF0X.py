@@ -75,7 +75,7 @@ PSF0X_commvalues = dict(program='CALCAMP',
                         motr_siz=120,
                         source='point',
                         mirr_on=1,
-                        wave=4, mirr_pos=polib.mirror_nom['F4'],
+                        wave=4, mirr_pos=ogse.mirror_nom['F4'],
                         comments='')
 
 testdefaults = dict(waves=[590, 640, 730, 800, 880],
@@ -199,7 +199,7 @@ class PSF0X(PointTask):
         FW_IDX = int(FW_ID[-1])
 
         PSF0X_commvalues['wave'] = FW_IDX
-        PSF0X_commvalues['mirr_pos'] = polib.mirror_nom['F%i' % FW_IDX]
+        PSF0X_commvalues['mirr_pos'] = ogse.mirror_nom['F%i' % FW_IDX]
 
         ncols = len(exptimes)
 

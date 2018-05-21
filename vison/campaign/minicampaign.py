@@ -145,7 +145,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis):
 #         #IG1s = [2000,6000]
 #         toi_chinj02 = 500
 #         id_delays = [toi_chinj02*3,toi_chinj02*2]
-#         diffCHINJ02 = dict(pos_cal_mirror=polib.mirror_nom['F4'],sn_ccd1=sn_ccd1,
+#         diffCHINJ02 = dict(pos_cal_mirror=ogse.mirror_nom['F4'],sn_ccd1=sn_ccd1,
 #                           sn_ccd2=sn_ccd2,sn_ccd3=sn_ccd3,sn_roe=sn_roe,
 #                           sn_rpsu=sn_rpsu,operator=operator)
 #

@@ -430,7 +430,7 @@ def IMG_point_gen(ccdobj, ELdict):
     mirror = ELdict['mirr_pos']
     iCCD = ELdict['CCD']
 
-    mirror_nom = polib.mirror_nom['F%i' % waveID]
+    mirror_nom = ogse.mirror_nom['F%i' % waveID]
     tsatur = ogse.tFWC_point['nm%i' % wavenm]
 
     fluence = 2.*2.**16 * exptime / tsatur

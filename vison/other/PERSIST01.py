@@ -24,7 +24,8 @@ from collections import OrderedDict
 
 from vison.support import context
 #from vison.pipe import lib as pilib
-from vison.point import lib as polib
+#from vison.point import lib as polib
+from vison.support import ogse
 from vison.datamodel import scriptic as sc
 #from vison.pipe import FlatFielding as FFing
 #from vison.support.report import Report
@@ -49,7 +50,7 @@ PER01_commvalues = dict(program='CALCAMP', test='PERSIST01',
                         siflsh=1, siflsh_p=500,
                         chinj=0,
                         wave=4,
-                        mirr_pos=polib.mirror_nom['F4'],
+                        mirr_pos=ogse.mirror_nom['F4'],
                         mirr_on=1,
                         comments='')
 

@@ -160,7 +160,7 @@ class FOCUS00(PT.PointTask):
 
         FW_ID = ogse.get_FW_ID(wavelength)
         FW_IDX = int(FW_ID[-1])
-        mirror_nom = polib.mirror_nom[FW_ID]
+        mirror_nom = ogse.mirror_nom[FW_ID]
 
         # FOCUS00_sdict = dict(col1=dict(frames=5,wave=FW_IDX,exptime=0,
         #                               mirr_pos=mirror_nom-5,

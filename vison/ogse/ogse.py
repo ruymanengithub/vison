@@ -24,6 +24,16 @@ overheads = dict(ff_readout=72.,
                  delta_focus=0.,
                  fw=2.)
 
+
+# FOCUS 
+
+# TODO: NEEDS to be addressed by CHAMBER-ID
+mirror_nom = dict(F1=86., F2=86., F3=86., F4=86., F5=86.,
+                  F6=86.)  # nominal focus positions of mirror
+
+
+# SATURATION TIMES
+
 # saturation exposure times for flat-source, s
 # updated on 3rd FEB 2018 after Cold Commissioning of Fac#1
 
