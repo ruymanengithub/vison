@@ -17,6 +17,7 @@ import numpy as np
 CommonTaskInputs = OrderedDict(sorted([
     ('BLOCKID', ([str], 'Unique Detection Block Identifier.')),
     ('CHAMBER', ([str], 'Test Chamber.')),
+    ('processes', ([int], 'Number of Threads to use.')),
     ('datapath', ([str], 'Path to Data.')),
     ('diffvalues', ([
         dict], 'Dictionary with values of variable entries in acq. script (e.g. CCD S/Ns) [opt.].')),

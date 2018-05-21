@@ -49,7 +49,7 @@ def configuration():
 
     # config.add_subpackage('vison/doc')
     
-    config.add_data_dir(['vison/blocks','vison/blocks']
+    config.add_data_dir(['vison/blocks','vison/blocks'])
     config.add_data_dir(['vison/data', 'vison/data'])
     config.add_data_dir(['vison/doc', 'vison/doc'])
 
