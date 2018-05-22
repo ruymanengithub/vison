@@ -24,7 +24,6 @@ from collections import OrderedDict
 
 from vison.support import context
 from vison.pipe import lib as pilib
-from vison.ogse import ogse
 from vison.point import lib as polib
 from vison.datamodel import scriptic as sc
 import FlatFielding as FFing
@@ -109,8 +108,8 @@ class FLAT0X(FlatTask):
             test = 'FLAT0X'
 
         t_dummy_F0X = np.array([25., 50., 75])/100.
-        exptimesF0X = (ogse.tFWC_flat['nm%i' %
-                                      wavelength] * t_dummy_F0X).tolist()  # s
+        tFWCw = self.ogse.profile['tFWC_flat']['nm%i' % wavelength]
+        exptimesF0X = (tFWCw * t_dummy_F0X).tolist()  # s
         framesF0X = [80, 60, 30]
 
         self.inpdefaults = dict(exptimes=exptimesF0X,
@@ -120,8 +119,7 @@ class FLAT0X(FlatTask):
 
     def set_perfdefaults(self, **kwargs):
         #wavelength = self.inputs['wavelength']
-        self.perfdefaults = dict()
-        self.perfdefaults.update(performance.perf_rdout)
+        super(FLAT0X,self).set_perfdefaults(**kwargs)
         self.perfdefaults['FLU_lims'] = FLU_lims.copy()
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
@@ -136,7 +134,7 @@ class FLAT0X(FlatTask):
         wavelength = self.inputs['wavelength']
         test = self.inputs['test']
 
-        FW_ID = ogse.get_FW_ID(wavelength)
+        FW_ID = self.ogse.get_FW_ID(wavelength)
         FW_IDX = int(FW_ID[-1])
 
         FLAT0X_commvalues['wave'] = FW_IDX

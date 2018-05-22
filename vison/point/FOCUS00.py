@@ -37,7 +37,6 @@ from collections import OrderedDict
 
 #from vison.pipe import lib as pilib
 from vison.support import context
-from vison.ogse import ogse
 from vison.flat import FlatFielding as FFing
 from vison.support.report import Report
 from vison.support import files
@@ -110,6 +109,7 @@ class FOCUS00_inputs(inputs.Inputs):
     manifesto.update(OrderedDict(sorted([
         ('exptime', ([float], 'Exposure time.')),
         ('wavelength', ([int], 'Wavelength')),
+        ('deltafocus',([float],'delta-focus step, mm'))
     ])))
 
 
@@ -131,13 +131,14 @@ class FOCUS00(PT.PointTask):
         self.inputs['subpaths'] = dict(figs='figs')
 
     def set_inpdefaults(self, **kwargs):
-
+        
+        tFWC800 = self.ogse.profile['tFWC_point']['nm%i' % 800]
         self.inpdefaults = dict(wavelength=800,
-                                exptime=60./100.*ogse.tFWC_point['nm%i' % 800])
+                                exptime=60./100.*tFWC800,
+                                deltafocus=0.1)
 
     def set_perfdefaults(self, **kwargs):
-        self.perfdefaults = dict()
-        self.perfdefaults.update(performance.perf_rdout)
+        super(FOCUS00,self).set_perfdefaults(**kwargs)
         self.perfdefaults['BGD_lims'] = copy.deepcopy(PT.BGD_lims)
         self.perfdefaults['FWHM_lims'] = copy.deepcopy(FWHM_lims)
         self.perfdefaults['Flu_lims'] = copy.deepcopy(Flu_lims)
@@ -154,10 +155,11 @@ class FOCUS00(PT.PointTask):
 
         wavelength = self.inputs['wavelength']
         exptime = self.inputs['exptime']
+        delta_focus = self.inputs['deltafocus']
 
-        FW_ID = ogse.get_FW_ID(wavelength)
+        FW_ID = self.ogse.get_FW_ID(wavelength)
         FW_IDX = int(FW_ID[-1])
-        mirror_nom = polib.mirror_nom[FW_ID]
+        mirror_nom = self.ogse.profile['mirror_nom'][FW_ID]
 
         # FOCUS00_sdict = dict(col1=dict(frames=5,wave=FW_IDX,exptime=0,
         #                               mirr_pos=mirror_nom-5,
@@ -170,7 +172,7 @@ class FOCUS00(PT.PointTask):
                                                    test='FOCUS00_%i' % wavelength,
                                                    exptime=exptime,
                                                    mirr_pos=mirror_nom +
-                                                   float(j)*1.,
+                                                   float(j)*delta_focus,
                                                    wave=FW_IDX,
                                                    comments='F%.1f' % float(j))
 

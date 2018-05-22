@@ -88,10 +88,6 @@ class STRAY00(DarkTask):
         """ """
         self.inpdefaults = dict()
 
-    def set_perfdefaults(self, **kwargs):
-        self.perfdefaults = dict()
-        self.perfdefaults.update(performance.perf_rdout)
-
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """
         Builds STRAY00 script structure dictionary.        

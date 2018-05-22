@@ -30,7 +30,6 @@ from vison.datamodel import core
 from vison.datamodel import ccd
 from vison.pipe import lib as pilib
 from vison.point import lib as polib
-from vison.ogse import ogse
 #from vison.datamodel import HKtools
 from vison.datamodel import scriptic as sc
 from vison.flat import FlatFielding as FFing

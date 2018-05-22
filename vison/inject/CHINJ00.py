@@ -92,9 +92,6 @@ class CHINJ00(InjTask):
             chinj_on=30,
             chinj_of=300)
 
-    def set_perfdefaults(self, **kwargs):
-        self.perfdefaults = dict()
-        self.perfdefaults.update(performance.perf_rdout)
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """

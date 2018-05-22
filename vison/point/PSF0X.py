@@ -42,7 +42,7 @@ from collections import OrderedDict
 
 from vison.support import context
 from vison.point import lib as polib
-from vison.ogse import ogse
+from vison.ogse import ogse as ogsemod
 #from vison.datamodel import HKtools
 from vison.datamodel import scriptic as sc
 #from vison.point import lib as polib
@@ -58,6 +58,8 @@ from vison.support.files import cPickleRead
 
 isthere = os.path.exists
 
+stampw = polib.stampw
+
 HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
           'CCD2_IG1_T', 'CCD3_IG1_T', 'CCD1_TEMP_T', 'CCD2_TEMP_T', 'CCD3_TEMP_T',
           'CCD1_IG1_T', 'COMM_IG2_T', 'FPGA_PCB_TEMP_T', 'CCD1_OD_B',
@@ -67,39 +69,60 @@ HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
 PSF0X_commvalues = dict(program='CALCAMP',
                         IPHI1=1, IPHI2=1, IPHI3=1, IPHI4=0,
                         rdmode='fwd_bas',
-                        flushes=7, exptime=0., vstart=0, vend=2086,
+                        flushes=7, 
+                        exptime=0., 
+                        vstart=0, 
+                        vend=2086,
                         shuttr=1,
-                        siflsh=1, siflush_p=500,
+                        siflsh=1, 
+                        siflush_p=500,
                         motr_on=1,
                         motr_cnt=2,
                         motr_siz=120,
                         source='point',
                         mirr_on=1,
-                        wave=4, mirr_pos=polib.mirror_nom['F4'],
+                        wave=4, 
+                        mirr_pos=ogsemod.mirror_nom['F4'],
                         comments='')
 
-testdefaults = dict(waves=[590, 640, 730, 800, 880],
+PSF0X_relfluences = np.array([5., 25., 50., 75., 90.])
+
+def get_testdefaults(ogseobj=None):
+    
+    if ogseobj is None:
+        ogseobj = ogsemod.Ogse()
+
+    testdefaults = dict(waves=[590, 640, 730, 800, 880],
                     exptimes=dict(),
                     frames=[20, 14, 10, 4, 4])
+    
+    for w in testdefaults['waves']:
+        tFWC_pointw = ogseobj.profile['tFWC_point']['nm%i' % w]
+        testdefaults['exptimes']['nm%i' % w] = \
+                    (PSF0X_relfluences/100.*tFWC_pointw).tolist()
 
-for w in testdefaults['waves']:
-    testdefaults['exptimes']['nm%i' % w] = (
-        np.array([5., 25., 50., 75., 90.])/100.*ogse.tFWC_point['nm%i' % w]).tolist()
-
-stampw = polib.stampw
+    return testdefaults
 
 plusminus10pc = 1.+np.array([-0.1, 0.1])
 
-satur_fluence = 2.*2.E5/performance.gains['CCD1']
+satur_fluence = 2.*2.E5 / performance.gains['CCD1']
+
 Flu_lims = OrderedDict(
     CCD1=OrderedDict(
         E=OrderedDict(
-            ALPHA=OrderedDict(
-                col1=2.*5./100.*plusminus10pc*satur_fluence,  # +/-10%
-                col2=2.*25./100.*plusminus10pc*satur_fluence,
-                col3=2.*50./100.*plusminus10pc*satur_fluence,
-                col4=2.*75./100.*plusminus10pc*satur_fluence,
-                col5=2.*90./100.*plusminus10pc*satur_fluence))))
+            ALPHA=OrderedDict()))) # +/-10%
+#                col1=2.*5./100.*plusminus10pc*satur_fluence,  
+#                col2=2.*25./100.*plusminus10pc*satur_fluence,
+#                col3=2.*50./100.*plusminus10pc*satur_fluence,
+#                col4=2.*75./100.*plusminus10pc*satur_fluence,
+#                col5=2.*90./100.*plusminus10pc*satur_fluence))))
+
+Nfluences = len(PSF0X_relfluences)
+for i in range(1,Nfluences+1):
+    Flu_lims['CCD1']['E']['ALPHA']['col%i' % i] = \
+            2. * PSF0X_relfluences[i-1]*plusminus10pc*satur_fluence,
+
+
 for Spot in ['BRAVO', 'CHARLIE', 'DELTA', 'ECHO']:
     Flu_lims['CCD1']['E'][Spot] = Flu_lims['CCD1']['E']['ALPHA']
 for Q in ['F', 'G', 'H']:
@@ -155,6 +178,7 @@ class PSF0X(PointTask):
     def set_inpdefaults(self, **kwargs):
 
         testkey = kwargs['test']
+        testdefaults = get_testdefaults(self.ogse)
 
         if 'PSF01' in testkey:
             wavelength = kwargs['wavelength']
@@ -169,8 +193,7 @@ class PSF0X(PointTask):
                                 exptimes=exptimes)
 
     def set_perfdefaults(self, **kwargs):
-        self.perfdefaults = dict()
-        self.perfdefaults.update(performance.perf_rdout)
+        super(PSF0X,self).set_perfdefaults(**kwargs)
 
         self.perfdefaults['BGD_lims'] = BGD_lims  # ADUs
         self.perfdefaults['Flu_lims'] = Flu_lims  # ADUs
@@ -195,11 +218,11 @@ class PSF0X(PointTask):
 
         assert len(exptimes) == len(frames)
 
-        FW_ID = ogse.get_FW_ID(wavelength)
+        FW_ID = self.ogse.get_FW_ID(wavelength)
         FW_IDX = int(FW_ID[-1])
 
         PSF0X_commvalues['wave'] = FW_IDX
-        PSF0X_commvalues['mirr_pos'] = polib.mirror_nom['F%i' % FW_IDX]
+        PSF0X_commvalues['mirr_pos'] = self.ogse.profile['mirror_nom']['F%i' % FW_IDX]
 
         ncols = len(exptimes)
 

@@ -36,7 +36,6 @@ import copy
 from collections import OrderedDict
 
 from vison.support import context
-from vison.ogse import ogse
 from vison.datamodel import scriptic as sc
 from vison.support import files
 #from vison.pipe.task import Task
@@ -117,19 +116,19 @@ class NL01(FlatTask):
     def set_inpdefaults(self, **kwargs):
 
         wave = 800
+        
+        tFWCw = self.ogse.profile['tFWC_flat']['nm%i' % wave]
 
         expts = (NL01_relfluences/100. *
-                 ogse.tFWC_flat['nm%i' % wave]).tolist()  # ms
+                 tFWCw).tolist()  # ms
         self.inpdefaults = dict(exptimes=expts,
-                                exptinter=0.5 * ogse.tFWC_flat['nm%i' % wave],
+                                exptinter=0.5 * tFWCw,
                                 frames=(np.ones(11, dtype='int32')*5).tolist(),
                                 wavelength=wave,
                                 )
 
     def set_perfdefaults(self, **kwargs):
-        self.perfdefaults = dict()
-        self.perfdefaults.update(performance.perf_rdout)
-
+        super(NL01,self).set_perfdefaults(**kwargs)
         self.perfdefaults['FLU_lims'] = FLU_lims  # dict
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
@@ -149,7 +148,7 @@ class NL01(FlatTask):
 
         assert len(expts) == len(frames)
 
-        FW_ID = ogse.get_FW_ID(wavelength)
+        FW_ID = self.ogse.get_FW_ID(wavelength)
         FW_IDX = int(FW_ID[-1])
 
         NL01_commvalues['wave'] = FW_IDX

@@ -151,10 +151,10 @@ class Pipe(object):
         """ """
         # self.Test_dict[taskname](inputs, self.log, drill, debug)
         test = self.Test_dict[taskname](inputs, log, drill, debug)
-        test.ID = self.ID
-        test.BLOCKID = self.BLOCKID
-        test.CHAMBER = self.CHAMBER
-        test.processes = self.processes
+        #test.ID = self.ID
+        #test.BLOCKID = self.BLOCKID
+        #test.CHAMBER = self.CHAMBER
+        #test.processes = self.processes
         return test
 
     def launchtask(self, taskname):
@@ -168,7 +168,12 @@ class Pipe(object):
         for _taskname in alltasks:
             extinputs.pop(_taskname)
         taskinputs.update(extinputs)
-
+        
+        taskinputs.update(dict(ID=self.ID,
+                               BLOCKID=self.BLOCKID,
+                               CHAMBER=self.CHAMBER,
+                               processes=self.processes))
+        
         msg = ['\n\nRunning Task: %s\n' % taskname]
         msg += ['Inputs:\n']
         for key in taskinputs:
@@ -321,8 +326,8 @@ class Pipe(object):
         Errors = False
 
         try:
-            #Test = self.Test_dict[taskname](inputs, self.log, drill, debug)
             test = self.get_test(taskname, inputs, self.log, drill, debug)
+            stop()
             test() # test execution
         except:
             self.catchtraceback()

@@ -21,13 +21,12 @@ import astropy as astpy
 from time import time
 import numpy as np
 
-from vison.ogse import ogse
+from vison.ogse import ogse as ogsemod
 from vison.datamodel import EXPLOGtools as ELtools
 from vison.datamodel import HKtools
 from vison.datamodel import ccd
 #from vison.pipe import lib as pilib
 from vison.support import context
-from vison.point import lib as polib
 from vison.support import vistime
 
 # END IMPORT
@@ -94,7 +93,7 @@ def _update_fromscript(rowdict, scriptcol):
 
 
 def generate_Explog(scrdict, defaults, elvis=context.elvis, explog=None, OBSID0=1000,
-                    date=vistime.dtobj_default):
+                    date=vistime.dtobj_default,CHAMBER=None):
     """ 
 
     Generates a fake ExposureLog from a test structure dictionary.
@@ -316,7 +315,7 @@ def generate_HK(explog, vals, datapath='', elvis=context.elvis):
 #    return ccdobj
 
 
-def IMG_bias_gen(ccdobj, ELdict):
+def IMG_bias_gen(ccdobj, ELdict, ogse=None):
     """ """
 
     vstart = ELdict['vstart']
@@ -334,16 +333,20 @@ def IMG_bias_gen(ccdobj, ELdict):
     return ccdobj
 
 
-def IMG_flat_gen(ccdobj, ELdict):
+def IMG_flat_gen(ccdobj, ELdict, ogse=None):
     """ """
+    
+    if ogse is None:
+        ogse = ogsemod.Ogse()
 
     vstart = ELdict['vstart']
     vend = ELdict['vend']
 
     waveID = ELdict['wave']
     exptime = ELdict['exptime']
-
-    tsatur = ogse.tFWC_flat['nm%i' % ogse.FW['F%i' % waveID]]
+    
+    wave = ogse.profile['FW']['F%i' % waveID]
+    tsatur = ogse.profile['tFWC_flat']['nm%i' % wave]
 
     fluence = 2.**16 * exptime / tsatur
 
@@ -371,7 +374,7 @@ def IMG_flat_gen(ccdobj, ELdict):
     return ccdobj
 
 
-def IMG_chinj_gen(ccdobj, ELdict,):
+def IMG_chinj_gen(ccdobj, ELdict, ogse=None):
     """ """
 
     inj_threshold = 7.5
@@ -418,24 +421,27 @@ def IMG_chinj_gen(ccdobj, ELdict,):
     return ccdobj
 
 
-def IMG_point_gen(ccdobj, ELdict):
+def IMG_point_gen(ccdobj, ELdict, ogse=None):
     """ """
+    
+    if ogse is None:
+        ogse = ogsemod.Ogse()
 
     vstart = ELdict['vstart']
     vend = ELdict['vend']
 
     waveID = ELdict['wave']
-    wavenm = ogse.FW['F%i' % waveID]
+    wavenm = ogse.profile['FW']['F%i' % waveID]
     exptime = ELdict['exptime']
     mirror = ELdict['mirr_pos']
     iCCD = ELdict['CCD']
 
-    mirror_nom = polib.mirror_nom['F%i' % waveID]
-    tsatur = ogse.tFWC_point['nm%i' % wavenm]
+    mirror_nom = ogse.profile['mirror_nom']['F%i' % waveID]
+    tsatur = ogse.profile['tFWC_point']['nm%i' % wavenm]
 
     fluence = 2.*2.**16 * exptime / tsatur
 
-    fwhm = ogse.fwhm_lambda['nm%i' % wavenm] * \
+    fwhm = ogse.profile['fwhm_lambda']['nm%i' % wavenm] * \
         (1.+((mirror-mirror_nom)/0.2)**2.)
 
     ccdobj.simadd_points(fluence, fwhm, CCDID=iCCD, dx=0, dy=0)
@@ -460,9 +466,12 @@ def IMG_point_gen(ccdobj, ELdict):
     return ccdobj
 
 
-def generate_FITS(ELdict, funct, filename='', elvis=context.elvis):
+def generate_FITS(ELdict, funct, filename='', elvis=context.elvis, ogse=None):
     """ """
-
+    
+    if ogse is None:
+        ogse = ogsemod.Ogse()
+    
     NAXIS1, NAXIS2 = ccd.NAXIS1, ccd.NAXIS2
 
     waivedkeys = ['File_name', 'fl_rdout', 'ci_rdout',
@@ -477,7 +486,7 @@ def generate_FITS(ELdict, funct, filename='', elvis=context.elvis):
     ccdobj.add_extension(data=None)
     ccdobj.add_extension(data=img, label='ROE1_%s' % CCD)
 
-    ccdobj = funct(ccdobj, ELdict)
+    ccdobj = funct(ccdobj, ELdict, ogse)
 
     ccdobj.extensions[-1].header['WAVELENG'] = ELdict['wave']
 
@@ -492,8 +501,10 @@ def generate_FITS(ELdict, funct, filename='', elvis=context.elvis):
         return ccdobj
 
 
-def generate_FITS_fromExpLog(explog, datapath, elvis=context.elvis):
+def generate_FITS_fromExpLog(explog, datapath, elvis=context.elvis, CHAMBER=None):
     """ """
+    
+    ogse = ogsemod.Ogse(CHAMBER)
 
     IMGgens = dict(BIAS=IMG_bias_gen, FLAT=IMG_flat_gen,
                    CHINJ=IMG_chinj_gen, POINT=IMG_point_gen)
@@ -532,7 +543,7 @@ def generate_FITS_fromExpLog(explog, datapath, elvis=context.elvis):
         if ispoint:
             FITSgen = IMGgens['POINT']
 
-        generate_FITS(row, funct=FITSgen, filename=FITSname, elvis=elvis)
+        generate_FITS(row, funct=FITSgen, filename=FITSname, elvis=elvis, ogse=ogse)
 
     t1 = time()
     dtmin = (t1-t0)/60.

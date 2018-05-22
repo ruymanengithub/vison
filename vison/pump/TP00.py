@@ -94,9 +94,6 @@ class TP00(PumpTask):
             dwell_tpsv=[0, 16, 32],
         )
 
-    def set_perfdefaults(self, **kwargs):
-        self.perfdefaults = dict()
-        self.perfdefaults.update(performance.perf_rdout)
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """ """

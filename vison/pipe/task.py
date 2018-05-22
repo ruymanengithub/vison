@@ -27,9 +27,10 @@ from vison.support import files
 import lib as pilib
 from vison.support import context
 #import task_lib as tlib
+from vison.image import performance
 from vison.datamodel import ccd
 from vison.image import calibration
-from vison.ogse import ogse
+from vison.ogse import ogse as ogsemod
 from vison.support.files import cPickleDumpDictionary
 from vison.datamodel import compliance
 from vison import __version__
@@ -46,17 +47,26 @@ class Task(object):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
+        
         self.ID = None
+        if 'ID' in inputs:
+            self.ID = inputs['ID']
         self.BLOCKID = None
+        if 'BLOCKID' in inputs:
+            self.BLOCKID = inputs['BLOCKID']
         self.CHAMBER = None
-        self.Model = 'XM'
+        if 'CHAMBER' in inputs:
+            self.CHAMBER = inputs['CHAMBER']
         self.processes = 1
+        if 'processes' in inputs:
+            self.processes = inputs['processes']
+        
+        self.ogse = ogsemod.Ogse(self.CHAMBER)
+        self.Model = 'XM'
         self.internals = dict()
-        #self.inputs = dict()
         self.inputs = self.inputsclass()
         self.inpdefaults = dict()
         self.perfdefaults = dict()
-        # self.set_defaults()
         self.elvis = context.elvis
         self.log = log
         self.report = None
@@ -81,9 +91,6 @@ class Task(object):
         _inputs.update(inputs)
         self.inputs.update(_inputs)
 
-        if 'elvis' in self.inputs:
-            self.elvis = self.inputs['elvis']
-
         self.set_perfdefaults(**inputs)
         _perfdefaults = self.perfdefaults.copy()
         self.perflimits.update(_perfdefaults)
@@ -105,7 +112,8 @@ class Task(object):
         pass
 
     def set_perfdefaults(self, **kwargs):
-        pass
+        self.perfdefaults = dict()
+        self.perfdefaults.update(performance.get_perf_rdout(self.BLOCKID))
 
     def build_scriptdict(self, diffvalues={}, elvis=context.elvis):
         """ """
@@ -644,20 +652,20 @@ class Task(object):
         #nObs,nCCD,nQuad = DDindices.shape
         #Quads = DDindices[2].vals
 
-        nObs = DDindices.get_len('ix')
+        #nObs = DDindices.get_len('ix')
+        nObs = 3 # TESTS!
+        print 'TESTS: task.prepare_images: LIMITTING TO 3 IMAGES!'
+
         CCDs = DDindices.get_vals('CCD')
         
         if not self.drill:
 
             picklespath = self.inputs['subpaths']['ccdpickles']
 
-            # for iObs in range(nObs):
-            for iObs in range(3):  # TESTS!
-                print 'TESTS: task.prepare_images: LIMITTING TO 3 IMAGES!'
-
+            for iObs in range(nObs):                
                 if doFF:
                     FW_ID = self.dd.mx['wavelength'][iObs]
-                    wavelength = ogse.FW['F%i' % FW_ID]
+                    wavelength = self.ogse['FW']['F%i' % FW_ID]
 
                 for jCCD, CCDkey in enumerate(CCDs):
 

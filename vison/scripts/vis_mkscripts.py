@@ -47,10 +47,11 @@ def f_write_script(struct, filename, outpath, elvis):
     return xsum
 
 
-def scwriter(toWrite, test_generator, outpath, equipment, elvis=context.elvis):
+def scwriter(toWrite, test_generator, outpath, equipment, elvis=context.elvis, CHAMBER=None):
     """ """
 
     datetag = (datetime.datetime.now()).strftime('%d%b%y')
+    fulldatetag = (datetime.datetime.now()).strftime('%d%b%y %H:%M:%S')
     versiontag = vison.__version__
 
     checksumf = 'CHECK_SUMS_%s.txt' % datetag
@@ -60,7 +61,8 @@ def scwriter(toWrite, test_generator, outpath, equipment, elvis=context.elvis):
     if not os.path.exists(outpath):
         os.system('mkdir %s' % outpath)
 
-    test_sequence = test_generator(equipment, toWrite, elvis=elvis)
+    test_sequence = test_generator(equipment, toWrite, elvis=elvis, CHAMBER=CHAMBER)
+    
 
     Nframes = 0
     duration = 0
@@ -76,6 +78,7 @@ def scwriter(toWrite, test_generator, outpath, equipment, elvis=context.elvis):
             structtest = testobj.build_scriptdict(elvis=elvis)
         except:
             stop()
+        
         testduration = get_test_duration(structtest)
 
         duration += testduration
@@ -95,7 +98,7 @@ def scwriter(toWrite, test_generator, outpath, equipment, elvis=context.elvis):
     
     with open(os.path.join(outpath, inventoryf),'w') as f1:
     
-        print >> f1, 'Scripts written on %s' % datetag
+        print >> f1, 'Scripts written on %s' % fulldatetag
         print >> f1, 'checksumf: %s' % checksumf
         print >> f1, 'vison version: %s\n' % versiontag
         
@@ -154,4 +157,4 @@ if __name__ == '__main__':
     
     
     scwriter(inputs['toWrite'], test_generator, inputs['outpath'], 
-             inputs['equipment'],inputs['elvis'])
+             inputs['equipment'],inputs['elvis'],inputs['CHAMBER'])

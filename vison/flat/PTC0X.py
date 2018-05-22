@@ -41,7 +41,7 @@ from collections import OrderedDict
 
 from vison.support import context
 #from vison.pipe import lib as pilib
-from vison.ogse import ogse
+from vison.ogse import ogse as ogsemod
 from vison.point import lib as polib
 from vison.datamodel import scriptic as sc
 from vison.datamodel import HKtools
@@ -64,9 +64,13 @@ HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
           'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
 
 PTC0X_commvalues = dict(program='CALCAMP',
-                        flushes=7, exptime=0., vstart=0, vend=2086,
+                        flushes=7, 
+                        exptime=0., 
+                        vstart=0, 
+                        vend=2086,
                         shuttr=1,
-                        siflsh=1, siflsh_p=500,
+                        siflsh=1, 
+                        siflsh_p=500,
                         wave=4,
                         source='flat',
                         comments='')
@@ -75,30 +79,40 @@ PTC0X_commvalues = dict(program='CALCAMP',
 PTC01_relfluences = np.array(
     [5., 10., 20., 30., 50., 70., 80., 90., 100., 110., 120.])
 
-PTC01_exptimes = (PTC01_relfluences / 100. *
-                  ogse.tFWC_flat['nm800']).tolist()  # ms
-PTC02waves = [590, 640, 730, 800, 880, 0]
-
 PTC02_relfluences = np.array([10., 30., 50., 70., 80., 90.])
 
-PTC02TEMP_exptimes = (PTC02_relfluences / 100. *
-                      ogse.tFWC_flat['nm800']).tolist()
+def get_testdefaults_PTC0X(ogseobj=None):
+    
+    if ogseobj is None:
+        ogseobj = ogsemod.Ogse()
 
-testdefaults = dict(PTC01=dict(exptimes=PTC01_exptimes,
-                               frames=[10, 10, 10, 10, 10,
-                                       10, 10, 10, 4, 4, 4],
-                               wavelength=800),
-                    PTC02WAVE=dict(waves=PTC02waves,
-                                   frames=[4, 4, 4, 4, 4, 4],
-                                   exptimes=dict()),
-                    PTC02TEMP=dict(frames=[4, 4, 4, 4, 4, 4],
-                                   exptimes=PTC02TEMP_exptimes,
-                                   wavelength=800))
-
-for w in testdefaults['PTC02WAVE']['waves']:
-    testdefaults['PTC02WAVE']['exptimes']['nm%i' % w] = (
-        PTC02_relfluences/100.*ogse.tFWC_flat['nm%i' % w]).tolist()
-
+    tFWC800 = ogseobj.profile['tFWC_flat']['nm800']
+    
+    PTC01_exptimes = (PTC01_relfluences / 100. *
+                      tFWC800).tolist()  # ms
+    PTC02waves = [590, 640, 730, 800, 880, 0]
+    
+    
+    PTC02TEMP_exptimes = (PTC02_relfluences / 100. *
+                          tFWC800).tolist()
+    
+    testdefaults = dict(PTC01=dict(exptimes=PTC01_exptimes,
+                                   frames=[10, 10, 10, 10, 10,
+                                           10, 10, 10, 4, 4, 4],
+                                   wavelength=800),
+                        PTC02WAVE=dict(waves=PTC02waves,
+                                       frames=[4, 4, 4, 4, 4, 4],
+                                       exptimes=dict()),
+                        PTC02TEMP=dict(frames=[4, 4, 4, 4, 4, 4],
+                                       exptimes=PTC02TEMP_exptimes,
+                                       wavelength=800))
+    
+    for w in testdefaults['PTC02WAVE']['waves']:
+        tFWCw = ogseobj.profile['tFWC_flat']['nm%i' % w]
+        testdefaults['PTC02WAVE']['exptimes']['nm%i' % w] = (
+            PTC02_relfluences/100.*tFWCw).tolist()
+    
+    return testdefaults
 
 plusminus10pcent = 1.+np.array([-0.10, 0.10])
 
@@ -150,6 +164,8 @@ class PTC0X(FlatTask):
 
     def set_inpdefaults(self, **kwargs):
         """ """
+        
+        testdefaults = get_testdefaults_PTC0X(self.ogse)
 
         try:
             testkey = kwargs['test']
@@ -179,9 +195,9 @@ class PTC0X(FlatTask):
         self.inpdefaults = dict(test=testkey, wavelength=wavelength,
                                 frames=frames, exptimes=exptimes)
 
+
     def set_perfdefaults(self, **kwargs):
-        self.perfdefaults = dict()
-        self.perfdefaults.update(performance.perf_rdout)
+        super(PTC0X,self).set_perfdefaults(**kwargs)
 
         try:
             testkey = kwargs['test']
@@ -212,7 +228,7 @@ class PTC0X(FlatTask):
 
         assert len(exptimes) == len(frames)
 
-        FW_ID = ogse.get_FW_ID(wavelength)
+        FW_ID = self.ogse.get_FW_ID(wavelength)
         FW_IDX = int(FW_ID[-1])
 
         PTC0X_commvalues['test'] = testkey
