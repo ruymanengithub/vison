@@ -61,6 +61,7 @@ class Task(object):
         if 'processes' in inputs:
             self.processes = inputs['processes']
         
+        self.ogse = ogse.Ogse(self.CHAMBER)
         self.Model = 'XM'
         self.internals = dict()
         self.inputs = self.inputsclass()

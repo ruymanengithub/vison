@@ -128,7 +128,7 @@ default_profile = dict(
         )
 
 
-def get_FW_ID(wavelength,FW):
+def get_FW_ID(wavelength,FW=FW): # REDTAG: DEFAULT FW ON TESTS ONLY
     """returns FW key corresponding to input wavelength.
     :param wavelength: integer, wavelength.
     """
