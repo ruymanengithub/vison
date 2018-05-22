@@ -18,26 +18,17 @@ import os
 
 from vison.datamodel import EXPLOGtools as ELtools
 from vison.datamodel import generator as gen
-from vison.datamodel import scriptic as sc
+#from vison.datamodel import scriptic as sc
 from vison.support import context
 from vison.campaign import campaign
-#from vison.point import FOCUS00,PSF0X
-#from vison.dark import BIAS01,DARK01
-#from vison.flat import NL01, PTC0X, FLAT0X
-#from vison.inject import CHINJ01,CHINJ02
-#from vison.pump import TP01, TP02
-#from vison.other import PERSIST01 as PER01
-
-from vison.point import lib as polib
-
-from vison.ogse.ogse import tFWC_flat, tFWC_point
+#from vison.point import lib as polib
 
 import datetime
 
 # END IMPORT
 
 
-def genExpLog(toGen, explogf, equipment, elvis=context.elvis):
+def genExpLog(toGen, explogf, equipment, elvis=context.elvis, CHAMBER=None):
     """ """
 
     OBSID0 = 1000
@@ -49,7 +40,7 @@ def genExpLog(toGen, explogf, equipment, elvis=context.elvis):
                    'R1C1_TB': -153., 'R1C2_TB': -153., 'R1C3_TB': -153., }
 
     test_sequence = campaign.generate_test_sequence(
-        equipment, toGen, elvis=elvis)
+        equipment, toGen, elvis=elvis, CHAMBER=CHAMBER)
 
     tests = test_sequence.keys()
 
@@ -57,12 +48,12 @@ def genExpLog(toGen, explogf, equipment, elvis=context.elvis):
 
     structtest0 = test_sequence[tests[0]]
     explog = gen.generate_Explog(structtest0, logdefaults, elvis=elvis, explog=explog, OBSID0=OBSID0,
-                                 date=date0)
+                                 date=date0, CHAMBER=CHAMBER)
 
     for test in tests[1:]:
         structtest = test_sequence[test]
         explog = gen.generate_Explog(
-            structtest, logdefaults, elvis=elvis, explog=explog)
+            structtest, logdefaults, elvis=elvis, explog=explog, CHAMBER=CHAMBER)
 
     # WRITING EXPOSURE LOG
 
@@ -72,7 +63,7 @@ def genExpLog(toGen, explogf, equipment, elvis=context.elvis):
 
 
 def datasetGenerator(TestsSelector, doGenExplog, doGenHK, doGenFITS, outpath, elvis,
-                     Nrows=0):
+                     CHAMBER, Nrows=0):
     """ """
 
     equipment = dict(operator='raf',
@@ -89,7 +80,7 @@ def datasetGenerator(TestsSelector, doGenExplog, doGenHK, doGenFITS, outpath, el
 
         print 'Generating EXPOSURE LOG...'
 
-        explog = genExpLog(TestsSelector, explogf, equipment, elvis)
+        explog = genExpLog(TestsSelector, explogf, equipment, elvis, CHAMBER)
 
     else:
         explog = ELtools.loadExpLog(explogf, elvis=elvis)
@@ -157,7 +148,7 @@ def datasetGenerator(TestsSelector, doGenExplog, doGenHK, doGenFITS, outpath, el
         else:
             sexplog = explog
 
-        gen.generate_FITS_fromExpLog(sexplog, outpath, elvis)
+        gen.generate_FITS_fromExpLog(sexplog, outpath, elvis, CHAMBER)
 
 
 if __name__ == '__main__':
@@ -166,10 +157,12 @@ if __name__ == '__main__':
     doGenHK = True
     doGenFITS = True
     Nrows = None
+    elvis = '6.3.0'
+    CHAMBER = 'A_JUN18'
 
     #date0 = pilib.dtobj_default
     date0 = datetime.datetime(2018, 1, 19, 7, 0, 0)  # early riser
-    elvis = '6.3.0'
+    
 
     # TestsSelector = dict(BIAS01=1,DARK01=1,CHINJ01=1,CHINJ02=1,
     #                  FLAT01=1,FLAT02=1,PTC01=1,PTC02WAVE=0,PTC02TEMP=0,NL01=1,
@@ -189,4 +182,4 @@ if __name__ == '__main__':
         os.system('mkdir %s' % outpath)
 
     datasetGenerator(TestsSelector, doGenExplog, doGenHK, doGenFITS, outpath, elvis,
-                     Nrows=Nrows)
+                     CHAMBER, Nrows=Nrows)
