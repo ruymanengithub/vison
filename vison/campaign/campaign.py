@@ -51,8 +51,10 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         diffBIAS01.update(diffvalues)
 
         bias01 = BIAS01.BIAS01(inputs=dict(elvis=elvis,
+                                           CHAMBER=CHAMBER,
                                            test='BIAS01',
-                                           N=Nbias01, diffvalues=diffBIAS01))
+                                           N=Nbias01, 
+                                           diffvalues=diffBIAS01))
 
         #structBIAS01 = bias01.build_scriptdict(elvis=elvis)
         test_sequence['BIAS01'] = copy.deepcopy(bias01)
@@ -69,8 +71,10 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         diffDARK01.update(diffvalues)
 
         dark01 = DARK01.DARK01(inputs=dict(elvis=elvis,
+                                           CHAMBER=CHAMBER,
                                            test='DARK01',
-                                           N=Ndark01, exptime=exptime_dark01,
+                                           N=Ndark01, 
+                                           exptime=exptime_dark01,
                                            diffvalues=diffDARK01))
 
         #structDARK01 = dark01.build_scriptdict(elvis=elvis)
@@ -96,6 +100,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         diffCHINJ01.update(diffvalues)
 
         chinj01 = CHINJ01.CHINJ01(inputs=dict(elvis=elvis,
+                                              CHAMBER=CHAMBER,
                                               test='CHINJ01',
                                               IDL=IDL, IDH=IDH, IG1s=IG1s,
                                               toi_chinj=toi_chinj01,
@@ -120,6 +125,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         diffCHINJ02.update(diffvalues)
 
         chinj02 = CHINJ02.CHINJ02(inputs=dict(elvis=elvis,
+                                              CHAMBER=CHAMBER,
                                               test='CHINJ02',
                                               IDLs=IDLs, IDH=IDH, toi_chinj=toi_chinj02,
                                               id_delays=id_delays, diffvalues=diffCHINJ02))
@@ -142,6 +148,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         diffTP01.update(diffvalues)
 
         tp01 = TP01.TP01(inputs=dict(elvis=elvis,
+                                     CHAMBER=CHAMBER,
                                      test='TP01',
                                      toi_tpv=TOI_TPv, toi_chinj=toi_chinjTP01,
                                      id_delays=id_delays_TP01,
@@ -165,6 +172,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         diffTP02.update(diffvalues)
 
         tp02 = TP02.TP02(inputs=dict(elvis=elvis,
+                                     CHAMBER=CHAMBER,
                                      test='TP02',
                                      Nshuffles_H=Nshuffles_H,
                                      dwell_sv=dwell_sv, toi_chinj=toi_chinjTP02,
@@ -196,6 +204,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         diffFLAT01.update(diffvalues)
 
         inpF01 = dict(elvis=elvis,
+                      CHAMBER=CHAMBER,
                       test='FLAT01',
                       exptimes=exptimesF01,
                       frames=framesF01,
@@ -227,6 +236,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                 exptimes_FLAT0X['nm%i' % wave] * t_dummy_F02).tolist()
 
             inpF02 = dict(elvis=elvis,
+                          CHAMBER=CHAMBER,
                           exptimes=iexptimesF02,
                           frames=framesF02,
                           wavelength=wave,
@@ -259,6 +269,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         frsPTC01 = [10, 10, 10, 10, 10, 10, 10, 10, 4, 4, 4]
 
         ptc01 = PTC0X.PTC0X(inputs=dict(elvis=elvis,
+                                        CHAMBER=CHAMBER,
                                         test='PTC01', exptimes=exptsPTC01,
                                         frames=frsPTC01, wavelength=800,
                                         diffvalues=diffPTC01))
@@ -293,6 +304,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             print '%s...' % itestkey
 
             ptc02w = PTC0X.PTC0X(inputs=dict(elvis=elvis,
+                                             CHAMBER=CHAMBER,
                                              test=itestkey,
                                              wavelength=wave,
                                              exptimes=exptsPTC02w,
@@ -328,6 +340,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             diffPTC02T['test'] = itestkey
 
             ptc02t = PTC0X.PTC0X(inputs=dict(elvis=elvis,
+                                             CHAMBER=CHAMBER,
                                              test=itestkey,
                                              wavelength=wavePTC02T,
                                              frames=frsPTC02T,
@@ -357,6 +370,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         frsNL01 = (np.ones(11, dtype='int32')*5).tolist()
 
         nl01 = NL01.NL01(inputs=dict(elvis=elvis,
+                                     CHAMBER=CHAMBER,
                                      test='NL01',
                                      exptimes=exptsNL01, exptinter=exptinterNL01,
                                      frames=frsNL01, wavelength=waveNL01,
@@ -390,6 +404,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             print '%s...' % itestkey
 
             focus00 = FOCUS00.FOCUS00(inputs=dict(elvis=elvis,
+                                                  CHAMBER=CHAMBER,
                                                   test=itestkey,
                                                   wavelength=wave,
                                                   exptime=iexptimeF00,
@@ -405,15 +420,16 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         print 'PSF01...'
 
         #wavesPSF01w = [590,640,800,880]
-        wavesPSF01w = PSF0X.testdefaults['waves']
+        PSF0Xtestdefaults = PSF0X.get_testdefaults(ogse)
+        wavesPSF01w = PSF0Xtestdefaults['waves']
 
         diffPSF01w = dict()
         diffPSF01w.update(diffvalues)
 
         for iw, wave in enumerate(wavesPSF01w):
 
-            exptsPSF01w = PSF0X.testdefaults['exptimes']['nm%i' % wave]
-            frsPSF01w = PSF0X.testdefaults['frames']
+            exptsPSF01w = PSF0Xtestdefaults['exptimes']['nm%i' % wave]
+            frsPSF01w = PSF0Xtestdefaults['frames']
 
             itestkey = 'PSF01_%i' % wave
             diffPSF01w['test'] = itestkey
@@ -421,6 +437,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             print '%s...' % itestkey
 
             psf01w = PSF0X.PSF0X(inputs=dict(elvis=elvis,
+                                             CHAMBER=CHAMBER,
                                              wavelength=wave,
                                              exptimes=exptsPSF01w,
                                              frames=frsPSF01w,
@@ -459,6 +476,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             print '%s...' % itestkey
 
             psf02k = PSF0X.PSF0X(inputs=dict(elvis=elvis,
+                                             CHAMBER=CHAMBER,
                                              wavelength=800,
                                              exptimes=exptsPSF02.tolist(),
                                              frames=frsPSF02,
@@ -487,6 +505,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         diffPER01.update(diffvalues)
 
         persist01 = PER01.PERSIST01(inputs=dict(elvis=elvis,
+                                                CHAMBER=CHAMBER,
                                                 test='PERSIST01',
                                                 exptSATUR=exptPER01_SATUR,
                                                 exptLATEN=exptPER01_LATEN,

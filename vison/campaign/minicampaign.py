@@ -37,7 +37,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBE
     """ """
     
     ogse = ogsemod.Ogse(CHAMBER)
-
+    
     operator = equipment['operator']
     sn_ccd1 = equipment['sn_ccd1']
     sn_ccd2 = equipment['sn_ccd2']
@@ -58,8 +58,10 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBE
                           sn_ccd2=sn_ccd2, sn_ccd3=sn_ccd3, sn_roe=sn_roe,
                           sn_rpsu=sn_rpsu, operator=operator)
 
-        bias01 = BIAS01.BIAS01(inputs=dict(N=Nbias01, diffvalues=diffBIAS01,
-                                           elvis=elvis))
+        bias01 = BIAS01.BIAS01(inputs=dict(N=Nbias01, 
+                                           diffvalues=diffBIAS01,
+                                           elvis=elvis,
+                                           CHAMBER=CHAMBER))
 
         #structBIAS01 = bias01.build_scriptdict(elvis=elvis)
         test_sequence['BIAS01'] = copy.deepcopy(bias01)
@@ -77,7 +79,9 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBE
                           sn_rpsu=sn_rpsu, operator=operator)
 
         dark01 = DARK01.DARK01(inputs=dict(N=Ndark01, exptime=exptime_dark01,
-                                           diffvalues=diffDARK01))
+                                           diffvalues=diffDARK01,
+                                           elvis=elvis,
+                                           CHAMBER=CHAMBER))
 
         #structDARK01 = dark01.build_scriptdict(elvis=elvis)
         test_sequence['DARK01'] = copy.deepcopy(dark01)
@@ -104,7 +108,8 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBE
                                               chinj_on=chinj_on,
                                               chinj_of=chinj_of,
                                               diffvalues=diffCHINJ00,
-                                              elvis=elvis))
+                                              elvis=elvis,
+                                              CHAMBER=CHAMBER))
         #structCHINJ00 = chinj00.build_scriptdict(elvis=elvis)
         test_sequence['CHINJ00'] = copy.deepcopy(chinj00)
 
@@ -132,7 +137,8 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBE
                                      Nshuffles_S=Nshuffles_S,
                                      dwell_tpsv=dwell_tpsv,
                                      diffvalues=diffTP00,
-                                     elvis=elvis))
+                                     elvis=elvis,
+                                     CHAMBER=CHAMBER))
 
         #structTP00 = tp00.build_scriptdict(elvis=elvis)
         test_sequence['TP00'] = copy.deepcopy(tp00)
@@ -165,10 +171,12 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBE
                       wavelength=800,
                       test='FLAT01_800',
                       diffvalues=diffFLAT01,
-                      elvis=elvis)
+                      elvis=elvis,
+                      CHAMBER=CHAMBER)
 
-
+        
         flat01 = FLAT0X.FLAT0X(inputs=inpF01)
+        
 
         #structFLAT01 = flat01.build_scriptdict(
         #    diffvalues=diffFLAT01, elvis=elvis)
@@ -199,7 +207,8 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBE
                           wavelength=wave,
                           test=itestkey,
                           diffvalues=diffFLAT02,
-                          elvis=elvis)
+                          elvis=elvis,
+                          CHAMBER=CHAMBER)
 
             flat02 = FLAT0X.FLAT0X(inputs=inpF02)
 
@@ -234,7 +243,8 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBE
             focus00 = FOCUS00.FOCUS00(inputs=dict(wavelength=wave,
                                                   exptime=iexptimeF00,
                                                   diffvalues=diffFOCUS00w,
-                                                  elvis=elvis))
+                                                  elvis=elvis,
+                                                  CHAMBER=CHAMBER))
             #istructFOCUS00w = focus00.build_scriptdict(diffvalues=diffFOCUS00w,
             #                                           elvis=elvis)
             test_sequence[itestkey] = copy.deepcopy(focus00)
@@ -266,7 +276,8 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBE
                                          frames=frsPSF01w,
                                          test=itestkey,
                                          diffvalues=diffPSF01w,
-                                         elvis=elvis))
+                                         elvis=elvis,
+                                         CHAMBER=CHAMBER))
 
         #istructPSF01w = psf01w.build_scriptdict(diffvalues=diffPSF01w,
         #                                        elvis=elvis)
