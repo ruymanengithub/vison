@@ -15,28 +15,14 @@ Created on Tue Aug 29 17:39:00 2017
 """
 
 # IMPORT STUFF
-#import numpy as np
 from pdb import set_trace as stop
-#import os
-#import datetime
 from copy import deepcopy
 from collections import OrderedDict
 
 from vison.support import context
-#from vison.pipe import lib as pilib
-#from vison.point import lib as polib
-from vison.ogse import ogse
+from vison.ogse import ogse as ogsemod
 from vison.datamodel import scriptic as sc
-#from vison.pipe import FlatFielding as FFing
-#from vison.support.report import Report
-#from vison.support import files
-#from vison.datamodel import ccd
-#from vison.datamodel import EXPLOGtools as ELtools
-#from vison.datamodel import HKtools
-#from vison.datamodel import ccd
-#from vison.datamodel import generator
 from vison.pipe.task import Task
-from vison.image import performance
 from vison.datamodel import inputs
 # END IMPORT
 
@@ -44,13 +30,13 @@ HKKeys = []
 
 PER01_commvalues = dict(program='CALCAMP', test='PERSIST01',
                         rdmode='fwd_bas',
-                        flushes=7,  # exptime=0.,
+                        flushes=3,  # exptime=0.,
                         vstart=0, vend=2086,
                         shuttr=1,
                         siflsh=1, siflsh_p=500,
                         chinj=0,
                         wave=4,
-                        mirr_pos=ogse.mirror_nom['F4'],
+                        mirr_pos=ogsemod.mirror_nom['F4'],
                         mirr_on=1,
                         comments='')
 
@@ -110,6 +96,7 @@ class PERSIST01(Task):
         PER01_sdict['Ncols'] = Ncols
 
         commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+        PER01_commvalues['mirror_pos'] = self.ogse.profile['mirror_nom']['F4']
         commvalues.update(PER01_commvalues)
 
         if len(diffvalues) == 0:

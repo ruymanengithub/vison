@@ -30,7 +30,7 @@ from vison.support import context
 from vison.image import performance
 from vison.datamodel import ccd
 from vison.image import calibration
-from vison.ogse import ogse
+from vison.ogse import ogse as ogsemod
 from vison.support.files import cPickleDumpDictionary
 from vison.datamodel import compliance
 from vison import __version__
@@ -61,7 +61,7 @@ class Task(object):
         if 'processes' in inputs:
             self.processes = inputs['processes']
         
-        self.ogse = ogse.Ogse(self.CHAMBER)
+        self.ogse = ogsemod.Ogse(self.CHAMBER)
         self.Model = 'XM'
         self.internals = dict()
         self.inputs = self.inputsclass()
@@ -665,7 +665,7 @@ class Task(object):
             for iObs in range(nObs):                
                 if doFF:
                     FW_ID = self.dd.mx['wavelength'][iObs]
-                    wavelength = ogse.FW['F%i' % FW_ID]
+                    wavelength = self.ogse['FW']['F%i' % FW_ID]
 
                 for jCCD, CCDkey in enumerate(CCDs):
 

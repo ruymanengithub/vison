@@ -37,7 +37,6 @@ from collections import OrderedDict
 
 #from vison.pipe import lib as pilib
 from vison.support import context
-from vison.ogse import ogse
 from vison.flat import FlatFielding as FFing
 from vison.support.report import Report
 from vison.support import files
@@ -132,9 +131,10 @@ class FOCUS00(PT.PointTask):
         self.inputs['subpaths'] = dict(figs='figs')
 
     def set_inpdefaults(self, **kwargs):
-
+        
+        tFWC800 = self.ogse.profile['tFWC_point']['nm%i' % 800]
         self.inpdefaults = dict(wavelength=800,
-                                exptime=60./100.*ogse.tFWC_point['nm%i' % 800],
+                                exptime=60./100.*tFWC800,
                                 deltafocus=0.1)
 
     def set_perfdefaults(self, **kwargs):
@@ -157,9 +157,9 @@ class FOCUS00(PT.PointTask):
         exptime = self.inputs['exptime']
         delta_focus = self.inputs['deltafocus']
 
-        FW_ID = ogse.get_FW_ID(wavelength)
+        FW_ID = self.ogse.get_FW_ID(wavelength)
         FW_IDX = int(FW_ID[-1])
-        mirror_nom = ogse.mirror_nom[FW_ID]
+        mirror_nom = self.ogse.profile['mirror_nom'][FW_ID]
 
         # FOCUS00_sdict = dict(col1=dict(frames=5,wave=FW_IDX,exptime=0,
         #                               mirr_pos=mirror_nom-5,

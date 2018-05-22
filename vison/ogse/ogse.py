@@ -18,11 +18,11 @@ from pdb import set_trace as stop
 import os
 
 from vison.support import vjson
+from vison import ogse_profiles
 # END IMPORT
 
-_path = os.path.abspath(__file__)
+_path = os.path.abspath(ogse_profiles.__file__)
 ogsepath = os.path.dirname(_path)
-
 
 # OVERHEADS
 
@@ -171,4 +171,4 @@ class Ogse(object):
     def get_FW_ID(self,wavelength):
         """ """
         return get_FW_ID(wavelength,self.profile['FW'])
-        
+    
