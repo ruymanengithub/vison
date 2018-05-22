@@ -24,14 +24,17 @@ from vison.inject import CHINJ01, CHINJ02
 from vison.pump import TP01, TP02
 from vison.other import PERSIST01 as PER01
 from vison.point import lib as polib
-from vison.ogse import ogse
+from vison.ogse import ogse as ogsemod
 #from vison.pipe import lib as pilib
 from vison.support import context
 # END IMPORT
 
 
-def generate_test_sequence(diffvalues, toGen, elvis=context.elvis):
+def generate_test_sequence(diffvalues, toGen, elvis=context.elvis, 
+                           CHAMBER=None):
     """ """
+    
+    ogse = ogsemod.Ogse(CHAMBER)
 
     print 'GENERATING TEST SEQUENCE...'
 
@@ -174,11 +177,11 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis):
 
     # FLATS
 
-    exptimes_FLAT0X = dict(nm590=ogse.tFWC_flat['nm590'],
-                           nm640=ogse.tFWC_flat['nm640'],
-                           nm730=ogse.tFWC_flat['nm730'],
-                           nm800=ogse.tFWC_flat['nm800'],
-                           nm880=ogse.tFWC_flat['nm880'])
+    exptimes_FLAT0X = dict(nm590=ogse.profile['tFWC_flat']['nm590'],
+                           nm640=ogse.profile['tFWC_flat']['nm640'],
+                           nm730=ogse.profile['tFWC_flat']['nm730'],
+                           nm800=ogse.profile['tFWC_flat']['nm800'],
+                           nm880=ogse.profile['tFWC_flat']['nm880'])
     # FLAT-01
 
     if toGen['FLAT01']:
@@ -249,10 +252,10 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis):
                          vend=2086)
 
         diffPTC01.update(diffvalues)
-
+        tFWC_flat800 = ogse.profile['tFWC_flat']['nm800']
         # 5%, 10%, 20%, 30%, 50%, 70%, 80%, 90%, 100%, 110%, 120%
         exptsPTC01 = (np.array([5., 10., 20., 30., 50., 70., 80., 90.,
-                                100., 110., 120.])/100.*ogse.tFWC_flat['nm800']).tolist()  # ms
+                                100., 110., 120.])/100.*tFWC_flat800).tolist()  # ms
         frsPTC01 = [10, 10, 10, 10, 10, 10, 10, 10, 4, 4, 4]
 
         ptc01 = PTC0X.PTC0X(inputs=dict(elvis=elvis,
@@ -277,9 +280,11 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis):
         for iw, wave in enumerate(wavesPTC02w):
 
             # 10%, 30%, 50%, 70%, 80%, 90% x FWC. 4 frames per fluence.
+            
+            tFWC_flatw = ogse.profile['tFWC_flat']['nm%i' % wave]
 
             exptsPTC02w = (np.array(
-                [10., 30., 50., 70., 80., 90.])/100.*ogse.tFWC_flat['nm%i' % wave]).tolist()
+                [10., 30., 50., 70., 80., 90.])/100.*tFWC_flatw).tolist()
             frsPTC02w = [4, 4, 4, 4, 4, 4]
 
             itestkey = 'PTC02_%i' % wave
@@ -310,8 +315,9 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis):
         diffPTC02T.update(diffvalues)
 
         # 10%, 30%, 50%, 70%, 80%, 90% x FWC. 4 frames per fluence.
+        tFWC_flatw = ogse.profile['tFWC_flat']['nm%i' % wavePTC02T]
         exptsPTC02T = (np.array([10., 30., 50., 70., 80., 90.]) /
-                       100.*ogse.tFWC_flat['nm%i' % wavePTC02T]).tolist()
+                       100.*tFWC_flatw).tolist()
         frsPTC02T = [4, 4, 4, 4, 4, 4]
 
         for it, T in enumerate(TempsPTC02T):
@@ -344,9 +350,10 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis):
         diffNL01.update(diffvalues)
 
         # 5 frames per fluence: 1%, 2%, 3%, 5%, 10%, 20%,30%, 50%,70%,80%,85%,90%,95%
+        tFWC_flatNL01 = ogse.profile['tFWC_flat']['nm%i' % waveNL01]
         exptsNL01 = (np.array([5., 10., 20., 30., 50., 70., 80., 90., 100.,
-                               110., 120.])/100. * ogse.tFWC_flat['nm%i' % waveNL01]).tolist()  # ms
-        exptinterNL01 = 0.5 * ogse.tFWC_flat['nm%i' % waveNL01]
+                               110., 120.])/100. * tFWC_flatNL01).tolist()  # ms
+        exptinterNL01 = 0.5 * tFWC_flatNL01
         frsNL01 = (np.ones(11, dtype='int32')*5).tolist()
 
         nl01 = NL01.NL01(inputs=dict(elvis=elvis,
@@ -371,8 +378,10 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis):
         diffFOCUS00w.update(diffvalues)
 
         for iw, wave in enumerate(wavesFOCUS00w):
+            
+            tFWC_pointw = ogse.profile['tFWC_point']['nm%i' % wave]
 
-            iexptimeF00 = 60./100. * ogse.tFWC_point['nm%i' % wave]
+            iexptimeF00 = 60./100. * tFWC_pointw
 
             itestkey = 'FOCUS00_%i' % wave
 
@@ -403,12 +412,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis):
 
         for iw, wave in enumerate(wavesPSF01w):
 
-            # 10%, 30%, 50%, 70%, 80%, 90% x FWC. 4 frames per fluence.
-
-            #exptsPSF01w = np.array([5.,25.,50.,75.,90.])/100.*ogse.tFWC_point['nm%i' % wave]
-            # *ogse.tFWC_point['nm%i' % wave]
             exptsPSF01w = PSF0X.testdefaults['exptimes']['nm%i' % wave]
-            #frsPSF01w = [20,15,10,4,3]
             frsPSF01w = PSF0X.testdefaults['frames']
 
             itestkey = 'PSF01_%i' % wave
@@ -436,9 +440,11 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis):
 
         wPSF02 = 800
         temps_PSF02 = [150, 156]
+        
+        tFWC_pointPSF02  = ogse.profile['tFWC_point']['nm%i' % wPSF02]
 
         exptsPSF02 = np.array([5., 25., 50., 75., 90.]) / \
-            100. * ogse.tFWC_point['nm%i' % wPSF02]
+            100. * tFWC_pointPSF02
         frsPSF02 = [20, 14, 10, 4, 4]
 
         diffPSF02 = dict()
@@ -471,8 +477,10 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis):
     if toGen['PERSIST01']:
 
         print 'PERSIST01...'
+        
+        tFWC_point590 = ogse.profile['tFWC_point']['nm590']
 
-        exptPER01_SATUR = ogse.tFWC_point['nm590']*100.   # s
+        exptPER01_SATUR = tFWC_point590*100.   # s
         exptPER01_LATEN = 565.  # s
 
         diffPER01 = dict()

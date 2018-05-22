@@ -47,7 +47,7 @@ def f_write_script(struct, filename, outpath, elvis):
     return xsum
 
 
-def scwriter(toWrite, test_generator, outpath, equipment, elvis=context.elvis):
+def scwriter(toWrite, test_generator, outpath, equipment, elvis=context.elvis, CHAMBER=None):
     """ """
 
     datetag = (datetime.datetime.now()).strftime('%d%b%y')
@@ -154,4 +154,4 @@ if __name__ == '__main__':
     
     
     scwriter(inputs['toWrite'], test_generator, inputs['outpath'], 
-             inputs['equipment'],inputs['elvis'])
+             inputs['equipment'],inputs['elvis'],inputs['CHAMBER'])
