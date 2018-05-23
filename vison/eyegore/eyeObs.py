@@ -139,19 +139,20 @@ class ExpLogDisplay(tk.Toplevel):
         self.fr0.grid_columnconfigure(0, weight=1)
         self.fr0.grid_rowconfigure(0, weight=1)
 
-        self.update()
+        self.update(startup=True)
 
-    def update(self):
+    def update(self,startup=False):
 
         if self.updating:
 
             self.search_EXPLOGs()
             theresnewdata = self.get_data()
             
-            if theresnewdata: self.tree.yview_moveto(1)
-            self.build_elementList()
-            self.buildTree()
-            if theresnewdata: self.tree.yview_moveto(1)
+            if theresnewdata or startup: 
+                self.tree.yview_moveto(1)
+                self.build_elementList()
+                self.buildTree()
+                self.tree.yview_moveto(1)
 
         self.after(self.interval, self.update)
 
