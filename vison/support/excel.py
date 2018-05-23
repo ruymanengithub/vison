@@ -41,7 +41,7 @@ class ReportXL(object):
 
     color_fills = color_fills
 
-    def __init__(self, datadict):
+    def __init__(self, datadict=None):
 
         self.data = copy.deepcopy(datadict)
 
