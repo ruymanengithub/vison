@@ -148,11 +148,10 @@ class ExpLogDisplay(tk.Toplevel):
             self.search_EXPLOGs()
             theresnewdata = self.get_data()
             
-            if theresnewdata:
-                self.tree.yview_moveto(1)
-                self.build_elementList()
-                self.buildTree()
-                self.tree.yview_moveto(1)
+            if theresnewdata: self.tree.yview_moveto(1)
+            self.build_elementList()
+            self.buildTree()
+            if theresnewdata: self.tree.yview_moveto(1)
 
         self.after(self.interval, self.update)
 
