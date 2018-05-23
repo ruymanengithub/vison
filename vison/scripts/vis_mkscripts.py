@@ -144,7 +144,7 @@ def scwriter(toWrite, test_generator, outpath, equipment, elvis=context.elvis, C
         summarydict['Test'].append(test)
         summarydict['Ncols'].append(iNcols)
         summarydict['Nframes'].append(iNframes)
-        summarydict['Duration'].append(iNframes)
+        summarydict['Duration_min'].append(iNframes)
     
     metatxt = dict(date=fulldatetag,
                    checksumfile=checksumf,
