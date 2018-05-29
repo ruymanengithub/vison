@@ -92,7 +92,7 @@ def get_testdefaults(ogseobj=None):
     if ogseobj is None:
         ogseobj = ogsemod.Ogse()
 
-    testdefaults = dict(waves=[590, 640, 730, 800, 880],
+    testdefaults = dict(waves=[590, 640, 730, 800, 880, 0],
                     exptimes=dict(),
                     frames=[20, 14, 10, 4, 4])
     
@@ -180,7 +180,7 @@ class PSF0X(PointTask):
         testkey = kwargs['test']
         testdefaults = get_testdefaults(self.ogse)
 
-        if 'PSF01' in testkey:
+        if 'PSF01' in testkey or 'PSFLUX00' in testkey:
             wavelength = kwargs['wavelength']
         elif 'PSF02' in testkey:
             wavelength = 800

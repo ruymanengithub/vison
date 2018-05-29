@@ -129,7 +129,7 @@ class ExpLogDisplay(tk.Toplevel):
         self.fr1.grid_rowconfigure(0, weight=1)
 
         self.search_EXPLOGs()
-        self.get_data()
+        _ = self.get_data()
 
         self.elementHeader = self.EXPLOG.colnames
 
@@ -139,22 +139,20 @@ class ExpLogDisplay(tk.Toplevel):
         self.fr0.grid_columnconfigure(0, weight=1)
         self.fr0.grid_rowconfigure(0, weight=1)
 
-        self.update()
+        self.update(startup=True)
 
-    def update(self):
+    def update(self,startup=False):
 
         if self.updating:
 
-            self.tree.yview_moveto(1)
-
             self.search_EXPLOGs()
-            self.get_data()
-
-            self.build_elementList()
-
-            self.buildTree()
-
-            self.tree.yview_moveto(1)
+            theresnewdata = self.get_data()
+            
+            if theresnewdata or startup: 
+                self.tree.yview_moveto(1)
+                self.build_elementList()
+                self.buildTree()
+                self.tree.yview_moveto(1)
 
         self.after(self.interval, self.update)
 
@@ -234,12 +232,12 @@ class ExpLogDisplay(tk.Toplevel):
         """ """
 
         if self.explogfs is None:
-            return
+            return False
 
         sEL = get_bitsize(self.explogfs)
 
         if sEL <= self.sEL:
-            return
+            return False
 
         EXPLOG = self.loadExplogs()
         #EXPLOG = ELtools.loadExpLog(self.explogf,elvis=self.elvis)
@@ -255,6 +253,8 @@ class ExpLogDisplay(tk.Toplevel):
 
         self.labels['NEntries']['var'].set('Nentries = %i' % len(EXPLOG))
         self.labels['NObsIDs']['var'].set('NObsIDs = %i' % NObsIDs)
+        
+        return True
 
     def growTree(self):
 
