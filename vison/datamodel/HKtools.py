@@ -165,7 +165,7 @@ allHK_keys['7.2.X'] = ['TimeStamp', 'CCD3_OD_T', 'CCD2_OD_T', 'CCD1_OD_T', 'COMM
 'RPSU_28V_PRI_I', 'RPSU_TEMP_2', 'ProtOvRideFlg', 'hkInvalidFlg', 'SPI_Inh_n', 
 '3v3ProtErr', '5vProtErr', 'V3v3ProtCnt', 'V5ProtCnt', 'VccdErrFlg', 'VclkErrFlg', 
 'VanErrFlg', 'dacExeErr', 'hkTmErr', 'spwTmTOFlg', 'spwTmRspErrFlg', 'spwTcPktErrFlg', 
-'spiWdTrip', 'CDPUClkSt', 'CDPUClkLost', 'hkRamErr', 'ADC_BSY_ERR_CNT', 'SPW_STATUS_REG', 
+'adcBsyErrFlg', 'CDPUClkSt', 'CDPUClkLost', 'hkRamErr', 'ADC_BSY_ERR_CNT', 'SPW_STATUS_REG', 
 'Out_of_range']
 
 
@@ -255,12 +255,12 @@ HKlims['6.5.X']['S'].update({'ProtOvRideFlg': ['I', 0], 'hkInvalidFlg': ['I', 0]
 HKlims['7.2.X'] = dict()
 HKlims['7.2.X']['P'] = HKlims['6.5.X']['P']
 ignore = map(HKlims['7.2.X']['P'].pop, ['fpgaSpwErr'])
-HKlims['7.2.X']['P'].update({'dacExeErr':['I', 0], 'spwTmRspErrFlg':['I', 0], 'spwTcPktErrFlg':['I', 0], 'spiWdTrip':['I', 0],
+HKlims['7.2.X']['P'].update({'dacExeErr':['I', 0], 'spwTmRspErrFlg':['I', 0], 'spwTcPktErrFlg':['I', 0], 'adcBsyErrFlg':['I', 0],
        'CDPUClkLost':['I', 0]})
 
 HKlims['7.2.X']['S'] = HKlims['6.5.X']['S']
 ignore = map(HKlims['7.2.X']['S'].pop, ['fpgaSpwErr'])
-HKlims['7.2.X']['S'].update({'dacExeErr':['I', 0], 'spwTmRspErrFlg':['I', 0], 'spwTcPktErrFlg':['I', 0], 'spiWdTrip':['I', 0],
+HKlims['7.2.X']['S'].update({'dacExeErr':['I', 0], 'spwTmRspErrFlg':['I', 0], 'spwTcPktErrFlg':['I', 0], 'adcBsyErrFlg':['I', 0],
        'CDPUClkLost':['I', 0]})
 
 
@@ -298,7 +298,7 @@ HKcorr['6.5.X'] = HKcorr['6.3.0'].copy()
 
 HKcorr['7.2.X'] = HKcorr['6.5.X'].copy()
 map(HKcorr['7.2.X'].pop,['fpgaSpwErr'])
-HKcorr['7.2.X'].update({'dacExeErr':None, 'spwTmRspErrFlg':None, 'spwTcPktErrFlg':None, 'spiWdTrip':None,
+HKcorr['7.2.X'].update({'dacExeErr':None, 'spwTmRspErrFlg':None, 'spwTcPktErrFlg':None, 'adcBsyErrFlg':None,
        'CDPUClkLost':None})
 
 allstats = ['mean', 'std', 'min', 'max']
