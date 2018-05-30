@@ -63,7 +63,7 @@ def rsync_to_remote(path, broadcast):
 def rsync_to_altlocalpath(path, altpath):
     """ """
     #_altpath = os.path.join(altpath, path)
-    command = "rsync -avzq %s %s" % (path+os.sep, altpath+os.sep)
+    command = "rsync -avzq %s %s" % (path, altpath+os.sep)
     print 'SYNCING TO ALTLOCAL: %s' % command
     os.system(command)
 
