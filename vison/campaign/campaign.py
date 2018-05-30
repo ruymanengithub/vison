@@ -476,10 +476,11 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                                              exptimes=exptsPSFLUX00w,
                                              frames=frsPSFLUX00,
                                              test=itestkey,
-                                             diffvalues=diffPSF01w))
+                                             diffvalues=diffPSFLUX00w))
 
 
             test_sequence[itestkey] = copy.deepcopy(psflux00w)
+        
 
     # PSF02
 
