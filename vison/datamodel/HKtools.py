@@ -218,7 +218,7 @@ HKlims['6.3.0'] = dict(P={'CCD1_OD_T': ['R', -0.2, +0.2], 'CCD2_OD_T': ['R', -0.
                           'FPGA_VCCD_V': ['A', 29.5, 30.5], 'FPGA_1V5VD_P_V': ['A', 1.45, 1.55],
                           'FPGA_3V2_N_V': ['A', -3.7, -2.7], 'FPGA_5VA_N_V': ['A', -5.9, -4.9],
                           'RPSU_VCCD_V': ['A', 31.6, 36.], 'RPSU_VCLK_V': ['A', 11.5, 14.], 'RPSU_VAN_P_V': ['A', 6.0, 8.2],
-                          'RPSU_VAN_N_V': ['A', -6., -8.2], 'RPSU_3V3VD_V': ['A', 3.1, 3.6], 'RPSU_1V5VD_V': ['A', 1.435, 1.575],
+                          'RPSU_VAN_N_V': ['A', -8.2, -6.], 'RPSU_3V3VD_V': ['A', 3.1, 3.6], 'RPSU_1V5VD_V': ['A', 1.435, 1.575],
                           'RPSU_28V_PRI_V': ['A', 26., 29.], 'RPSU_TEMP1': ['A', -10., 50.],
                           'RPSU_VCCD_I': ['A', 0., 0.1], 'RPSU_VCLK_I': ['A', 0., 0.1], 'RPSU_VAN_P_I': ['A', 0., 0.6],
                           'RPSU_VAN_N_I': ['A', 0.0, 0.6], 'RPSU_3V3VD_I': ['A', 0., 0.150], 'RPSU_1V5VD_I': ['A', 0.0, 0.150],
