@@ -183,7 +183,6 @@ class Pipe(object):
 
         if self.log is not None:
             self.log.info(msg)
-
         
         taskreport = self.dotask(taskname, taskinputs, drill=self.drill, debug=self.debug)
         
@@ -299,8 +298,7 @@ class Pipe(object):
             if self.startobsid > 0:
                 ixstart = np.where(explog['ObsID'] == self.startobsid)[0][0]
                 explog = explog[ixstart:].copy()
-            
-                
+
 
             for it, taskitem in enumerate(tasksequence):
 
@@ -311,11 +309,13 @@ class Pipe(object):
                 if available:
                     # print '%s available, doing nothing!' % taskname # TESTS
                     if self.startobsid >0:
-                        self.inputs[taskname]['OBSID_lims'] = [self.startobsid,self.startobsid+Nframes-1]                
+                        self.inputs[taskname]['OBSID_lims'] = [self.startobsid,explog['ObsID'][-1]]                
                     self.launchtask(taskname)
                     tasksequence.pop(it)
 
             sleep(waittime)
+            if self.log is not None:
+                self.log.info('Pipeline sleeping for %i seconds...' % waittime)
 
             #print tasksequence
 

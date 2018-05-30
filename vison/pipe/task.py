@@ -281,6 +281,7 @@ class Task(object):
 
         explog, checkreport = self.filterexposures(
             structure, explogf, datapath, OBSID_lims)
+        
 
         if self.log is not None:
             self.log.info('%s acquisition consistent with expectations: %s' % (
