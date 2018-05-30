@@ -299,15 +299,19 @@ class Pipe(object):
             if self.startobsid > 0:
                 ixstart = np.where(explog['ObsID'] == self.startobsid)[0][0]
                 explog = explog[ixstart:].copy()
+            
+                
 
             for it, taskitem in enumerate(tasksequence):
 
                 taskname, testkey, Nframes = taskitem
                 available = pilib.coarsefindTestinExpLog(
                     explog, testkey, Nframes)
-
+                
                 if available:
                     # print '%s available, doing nothing!' % taskname # TESTS
+                    if self.startobsid >0:
+                        self.inputs[taskname]['OBSID_lims'] = [self.startobsid,self.startobsid+Nframes-1]                
                     self.launchtask(taskname)
                     tasksequence.pop(it)
 

@@ -257,7 +257,7 @@ def addHK(dd, HKKeys, elvis=context.elvis):
         HKlist, elvis=elvis)
 
     HKix = copy.deepcopy(dd.mx['ObsID'].indices)
-
+    
     for HKKey in HKKeys:
 
         pre_HKKey = 'HK_%s' % HKKey
@@ -266,6 +266,7 @@ def addHK(dd, HKKeys, elvis=context.elvis):
 
         ixkey = readHKKeys.index(HKKey)
         dd.mx[pre_HKKey][:] = HKdata[:, 0, ixkey]
+
     
     return dd
 
