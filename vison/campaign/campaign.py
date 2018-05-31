@@ -454,7 +454,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         print 'PSFLUX00...'
         
-        wavesPSFLUX00 = [590,640,800,880,0]
+        wavesPSFLUX00 = [590,640,730,800,880,0]
 
         diffPSFLUX00w = dict()
         diffPSFLUX00w.update(diffvalues)
