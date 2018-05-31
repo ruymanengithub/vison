@@ -290,6 +290,7 @@ class Pipe(object):
         # Launching tasks
 
         fahrtig = False
+        tini = datetime.datetime.now()
 
         while not fahrtig:
 
@@ -313,14 +314,21 @@ class Pipe(object):
                     self.launchtask(taskname)
                     tasksequence.pop(it)
             
-            sleep(waittime)
-            if self.log is not None:
-                self.log.info('Pipeline sleeping for %i seconds...' % waittime)
-
-            #print tasksequence
-
             if len(tasksequence) == 0:
                 fahrtig = True
+            else:
+                sleep(waittime)
+                if self.log is not None:
+                    self.log.info('Pipeline sleeping for %i seconds...' % waittime)
+        
+        tend = datetime.datetime.now()
+        Dtm = ((tend-tini).seconds)/60.
+        
+        summary = self.get_execution_summary(exectime=Dtm)
+        if self.log is not None:
+            self.log.info(summary)        
+                    
+
 
         return None
 
