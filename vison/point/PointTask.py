@@ -36,21 +36,26 @@ class PointTask(Task):
     def __init__(self, *args, **kwargs):
         super(PointTask, self).__init__(*args, **kwargs)
 
-    def check_data(self):
+    def check_data(self, **kwargs):
         """ """
         test = self.inputs['test']
         if 'PSF01' in test:
-            kwargs = dict(figkeys=['PSF0Xchecks_offsets', 'PSF0Xchecks_stds',
+            _kwargs = dict(figkeys=['PSF0Xchecks_offsets', 'PSF0Xchecks_stds',
                                    'PSF0Xchecks_bgd', 'PSF0Xchecks_fluence',
                                    'PSF0Xchecks_fwhmx', 'PSF0Xchecks_fwhmy'])
         elif 'PSF02' in test:
-            kwargs = dict(figkeys=['PSF0Xchecks_offsets', 'PSF0Xchecks_stds',
+            _kwargs = dict(figkeys=['PSF0Xchecks_offsets', 'PSF0Xchecks_stds',
                                    'PSF0Xchecks_bgd', 'PSF0Xchecks_fluence',
                                    'PSF0Xchecks_fwhmx', 'PSF0Xchecks_fwhmy'])
         elif 'FOCUS00' in test:
-            kwargs = dict(figkeys=['F00checks_offsets', 'F00checks_stds',
+            _kwargs = dict(figkeys=['F00checks_offsets', 'F00checks_stds',
                                    'F00checks_bgd', 'F00checks_fluence',
                                    'F00checks_fwhmx', 'F00checks_fwhmy'])
+        elif 'PSFLUX00' in test:
+            _kwargs = dict(figkeys=['F00checks_offsets', 'F00checks_stds',
+                                   'F00checks_bgd', 'F00checks_fluence',
+                                   'F00checks_fwhmx', 'F00checks_fwhmy'])
+        kwargs.update(_kwargs)
 
         Task.check_data(self, **kwargs)
 
