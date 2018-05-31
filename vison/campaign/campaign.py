@@ -386,7 +386,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         print 'FOCUS00...'
 
         # wavesFOCUS00w = [590,640,730,800,880] # TESTS
-        wavesFOCUS00w = [800]
+        wavesFOCUS00w = [590,640,800]
 
         diffFOCUS00w = dict()
         diffFOCUS00w.update(diffvalues)
