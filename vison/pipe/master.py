@@ -312,7 +312,7 @@ class Pipe(object):
                         self.inputs[taskname]['OBSID_lims'] = [self.startobsid,explog['ObsID'][-1]]                
                     self.launchtask(taskname)
                     tasksequence.pop(it)
-
+            
             sleep(waittime)
             if self.log is not None:
                 self.log.info('Pipeline sleeping for %i seconds...' % waittime)

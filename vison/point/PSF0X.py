@@ -103,32 +103,31 @@ def get_testdefaults(ogseobj=None):
 
     return testdefaults
 
-plusminus10pc = 1.+np.array([-0.1, 0.1])
 
-satur_fluence = 2.*2.E5 / performance.gains['CCD1']
+def get_Flu_lims(relfluences):
 
-Flu_lims = OrderedDict(
-    CCD1=OrderedDict(
-        E=OrderedDict(
-            ALPHA=OrderedDict()))) # +/-10%
-#                col1=2.*5./100.*plusminus10pc*satur_fluence,  
-#                col2=2.*25./100.*plusminus10pc*satur_fluence,
-#                col3=2.*50./100.*plusminus10pc*satur_fluence,
-#                col4=2.*75./100.*plusminus10pc*satur_fluence,
-#                col5=2.*90./100.*plusminus10pc*satur_fluence))))
-
-Nfluences = len(PSF0X_relfluences)
-for i in range(1,Nfluences+1):
-    Flu_lims['CCD1']['E']['ALPHA']['col%i' % i] = \
-            2. * PSF0X_relfluences[i-1]*plusminus10pc*satur_fluence,
-
-
-for Spot in ['BRAVO', 'CHARLIE', 'DELTA', 'ECHO']:
-    Flu_lims['CCD1']['E'][Spot] = Flu_lims['CCD1']['E']['ALPHA']
-for Q in ['F', 'G', 'H']:
-    Flu_lims['CCD1'][Q] = copy.deepcopy(Flu_lims['CCD1']['E'])
-for CCD in [2, 3]:
-    Flu_lims['CCD%i' % CCD] = copy.deepcopy(Flu_lims['CCD1'])
+    plusminus10pc = 1.+np.array([-0.1, 0.1])
+    satur_fluence = 2.*2.E5 / performance.gains['CCD1']
+    
+    Flu_lims = OrderedDict(
+        CCD1=OrderedDict(
+            E=OrderedDict(
+                ALPHA=OrderedDict()))) # +/-10%
+    
+    Nfluences = len(relfluences)
+    for i in range(1,Nfluences+1):
+        Flu_lims['CCD1']['E']['ALPHA']['col%i' % i] = \
+                2. * relfluences[i-1]*plusminus10pc*satur_fluence
+    
+    
+    for Spot in ['BRAVO', 'CHARLIE', 'DELTA', 'ECHO']:
+        Flu_lims['CCD1']['E'][Spot] = Flu_lims['CCD1']['E']['ALPHA']
+    for Q in ['F', 'G', 'H']:
+        Flu_lims['CCD1'][Q] = copy.deepcopy(Flu_lims['CCD1']['E'])
+    for CCD in [2, 3]:
+        Flu_lims['CCD%i' % CCD] = copy.deepcopy(Flu_lims['CCD1'])
+        
+    return Flu_lims
 
 
 FWHM_lims = OrderedDict(CCD1=OrderedDict(
@@ -196,7 +195,7 @@ class PSF0X(PointTask):
         super(PSF0X,self).set_perfdefaults(**kwargs)
 
         self.perfdefaults['BGD_lims'] = BGD_lims  # ADUs
-        self.perfdefaults['Flu_lims'] = Flu_lims  # ADUs
+        self.perfdefaults['Flu_lims'] = get_Flu_lims(PSF0X_relfluences)  # ADUs
         self.perfdefaults['FWHM_lims'] = FWHM_lims  # Pixels
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
