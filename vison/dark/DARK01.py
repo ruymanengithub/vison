@@ -64,7 +64,9 @@ class DARK01_inputs(inputs.Inputs):
     ])))
 
 
-Flu_lims = OrderedDict(CCD1=[-2., 5.])
+Flu_lims = OrderedDict(CCD1=OrderedDict(E=[-2., 5.]))
+for Q in ['F','G','H']:
+    Flu_lims['CCD1'][Q] = copy.deepcopy(Flu_lims['CCD1']['E'])
 for i in [2, 3]:
     Flu_lims['CCD%i' % i] = copy.deepcopy(Flu_lims['CCD1'])
 
