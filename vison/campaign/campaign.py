@@ -386,7 +386,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         print 'FOCUS00...'
 
         # wavesFOCUS00w = [590,640,730,800,880] # TESTS
-        wavesFOCUS00w = [800]
+        wavesFOCUS00w = [590,640,800]
 
         diffFOCUS00w = dict()
         diffFOCUS00w.update(diffvalues)
@@ -454,7 +454,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         print 'PSFLUX00...'
         
-        wavesPSFLUX00 = [590,640,800,880,0]
+        wavesPSFLUX00 = [590,640,730,800,880,0]
 
         diffPSFLUX00w = dict()
         diffPSFLUX00w.update(diffvalues)
@@ -476,10 +476,11 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                                              exptimes=exptsPSFLUX00w,
                                              frames=frsPSFLUX00,
                                              test=itestkey,
-                                             diffvalues=diffPSF01w))
+                                             diffvalues=diffPSFLUX00w))
 
 
             test_sequence[itestkey] = copy.deepcopy(psflux00w)
+        
 
     # PSF02
 

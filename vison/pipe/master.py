@@ -183,7 +183,6 @@ class Pipe(object):
 
         if self.log is not None:
             self.log.info(msg)
-
         
         taskreport = self.dotask(taskname, taskinputs, drill=self.drill, debug=self.debug)
         
@@ -291,6 +290,7 @@ class Pipe(object):
         # Launching tasks
 
         fahrtig = False
+        tini = datetime.datetime.now()
 
         while not fahrtig:
 
@@ -300,23 +300,35 @@ class Pipe(object):
                 ixstart = np.where(explog['ObsID'] == self.startobsid)[0][0]
                 explog = explog[ixstart:].copy()
 
+
             for it, taskitem in enumerate(tasksequence):
 
                 taskname, testkey, Nframes = taskitem
                 available = pilib.coarsefindTestinExpLog(
                     explog, testkey, Nframes)
-
+                
                 if available:
                     # print '%s available, doing nothing!' % taskname # TESTS
+                    if self.startobsid >0:
+                        self.inputs[taskname]['OBSID_lims'] = [self.startobsid,explog['ObsID'][-1]]                
                     self.launchtask(taskname)
                     tasksequence.pop(it)
-
-            sleep(waittime)
-
-            #print tasksequence
-
+            
             if len(tasksequence) == 0:
                 fahrtig = True
+            else:
+                sleep(waittime)
+                if self.log is not None:
+                    self.log.info('Pipeline sleeping for %i seconds...' % waittime)
+        
+        tend = datetime.datetime.now()
+        Dtm = ((tend-tini).seconds)/60.
+        
+        summary = self.get_execution_summary(exectime=Dtm)
+        if self.log is not None:
+            self.log.info(summary)        
+                    
+
 
         return None
 
@@ -329,7 +341,6 @@ class Pipe(object):
 
         try:
             test = self.get_test(taskname, inputs, self.log, drill, debug)
-            stop()
             test() # test execution
         except:
             self.catchtraceback()

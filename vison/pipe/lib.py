@@ -124,9 +124,11 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
         isconsistent = False
         failedkeys = ['all']
         failedcols = np.arange(1, Ncols+1).tolist()
+        msgs=[]
 
         report = dict(checksout=isconsistent,
-                      failedkeys=failedkeys, failedcols=failedcols)
+                      failedkeys=failedkeys, failedcols=failedcols,
+                      msgs=msgs)
 
         return report
 
@@ -257,7 +259,7 @@ def addHK(dd, HKKeys, elvis=context.elvis):
         HKlist, elvis=elvis)
 
     HKix = copy.deepcopy(dd.mx['ObsID'].indices)
-
+    
     for HKKey in HKKeys:
 
         pre_HKKey = 'HK_%s' % HKKey
@@ -266,6 +268,7 @@ def addHK(dd, HKKeys, elvis=context.elvis):
 
         ixkey = readHKKeys.index(HKKey)
         dd.mx[pre_HKKey][:] = HKdata[:, 0, ixkey]
+
     
     return dd
 

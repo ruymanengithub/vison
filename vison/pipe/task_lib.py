@@ -109,11 +109,11 @@ def filterexposures(self, structure, explogf, datapath, OBSID_lims, colorblind=F
         selbool = (explog['test'] == testkey) & \
             (explog['ObsID'] >= OBSID_lims[0]) & \
             (explog['ObsID'] <= OBSID_lims[1])
-
+    
     explog = explog[np.where(selbool)]
 
     # Assess structure
-
+    
     checkreport = pilib.check_test_structure(explog, structure, CCDs=[1, 2, 3],
                                              wavedkeys=wavedkeys)
 

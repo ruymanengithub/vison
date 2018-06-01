@@ -60,6 +60,10 @@ class Task(object):
         self.processes = 1
         if 'processes' in inputs:
             self.processes = inputs['processes']
+        if 'elvis' in inputs:
+            self.elvis = inputs['elvis']
+        else:
+            self.elvis = context.elvis
         
         self.ogse = ogsemod.Ogse(self.CHAMBER)
         self.Model = 'XM'
@@ -67,7 +71,6 @@ class Task(object):
         self.inputs = self.inputsclass()
         self.inpdefaults = dict()
         self.perfdefaults = dict()
-        self.elvis = context.elvis
         self.log = log
         self.report = None
         self.TestReference = '7-XXX'
@@ -101,7 +104,7 @@ class Task(object):
             diffvalues = inputs['diffvalues'].copy()
         else:
             diffvalues = {}
-
+            
         self.inputs['structure'] = self.build_scriptdict(
             diffvalues, elvis=self.elvis)
 
@@ -278,6 +281,7 @@ class Task(object):
 
         explog, checkreport = self.filterexposures(
             structure, explogf, datapath, OBSID_lims)
+        
 
         if self.log is not None:
             self.log.info('%s acquisition consistent with expectations: %s' % (
