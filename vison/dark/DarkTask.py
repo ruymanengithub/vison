@@ -197,7 +197,7 @@ class DarkTask(Task):
                 self.dd.flags.add('POORQUALDATA')
             if self.log is not None:
                 self.addComplianceMatrix2Log(
-                    _compliance_offsets, label='COMPLIANCE FLUENCE [img]:')
+                    _compliance_Flu, label='COMPLIANCE FLUENCE [img]:')
             if self.report is not None:
                 self.addComplianceMatrix2Report(
-                    _compliance_offsets, label='COMPLIANCE FLUENCE [img]:')
+                    _compliance_Flu, label='COMPLIANCE FLUENCE [img]:')
