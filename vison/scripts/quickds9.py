@@ -34,6 +34,9 @@ if __name__ == '__main__':
                       default=0, help="ROE to select")
     parser.add_option("-c", "--ccd", dest="ccd",
                       default=0, help="CCD to select")
+    parser.add_option("-t", "--template", dest="temp",
+                      default='EUC_%i_*D*T_ROE%i_CCD%i.fits',
+                      help="Image Name Template")
     #parser.add_option("-s","--start",dest="start",default=None,help="Start OBSID")
     #parser.add_option("-e","--end",dest="end",default=None,help="End OBSID")
     #parser.add_option("-e","--elvis",dest="elvis",default='5.7.02',help="ELVIS version")
@@ -52,12 +55,13 @@ if __name__ == '__main__':
     path = options.path
     roe = int(options.roe)
     ccd = int(options.ccd)
+    template = options.temp
     #elvis = options.elvis
 
     FITSlist = []
     for iobs in range(obsid0, obsid1+1):
         tantFITS = os.path.join(
-            path, 'EUC_%i_*D*T_ROE%i_CCD%i.fits' % (iobs, roe, ccd))
+            path, template % (iobs, roe, ccd))
         try:
             FITS = glob(tantFITS)[0]
             FITSlist.append(FITS)
