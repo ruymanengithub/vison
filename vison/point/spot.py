@@ -157,7 +157,6 @@ class Spot(Shapemeter, Photometer, Gaussmeter):
 
         if rout < 0:
             rout = max(self.data.shape)
-
         if debug:
             return dict(bgd=0., peak=1., fluence=1., efluence=0.,
                         x=1., y=1., fwhmx=1., fwhmy=1.)
