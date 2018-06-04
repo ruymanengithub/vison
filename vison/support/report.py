@@ -483,7 +483,6 @@ class Report(Container):
         os.system(execline2)  # twice to get all references
 
         if cleanafter:
-            stop()
             os.system('rm %s.dvi %s.aux %s.log %s.tex %s.out %s.soc %s.toc' %
                       tuple([fileroot]*7))
             outfiles = [item % fileroot for item in

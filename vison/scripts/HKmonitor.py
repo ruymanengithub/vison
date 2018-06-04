@@ -28,12 +28,14 @@ import sys
 import os
 from glob import glob
 import string as st
+import numpy as np
 
 from vison.support import context
 #from vison.support.latex import LaTeX
 #from vison.pipe import lib as pilib
-from vison.datamodel.HKtools import HKplot, parseHKfiles, allHK_keys
+from vison.datamodel.HKtools import doHKSinglePlot, parseHKfiles, allHK_keys, HKlims
 #from vison.support.latex import LaTeX
+from vison.support import report as repmod
 
 from pdb import set_trace as stop
 
@@ -58,7 +60,9 @@ if __name__ == '__main__':
     if options.path == '':
         parser.print_help()
         sys.exit()
-
+    
+    debug = False # REDTAG
+    
     path = options.path
     roe = int(options.roe)
     elvis = options.elvis
@@ -90,36 +94,44 @@ if __name__ == '__main__':
     outpath = 'HKmonitor_%s' % datetag
     if not isthere(outpath):
         os.system('mkdir %s' % outpath)
+    
+    if not debug:
+        
+        obsids, dtobjs, tdeltasec, HK_keys, HKdata = parseHKfiles(
+            HKlist, elvis=elvis)
 
-    obsids, dtobjs, tdeltasec, HK_keys, HKdata = parseHKfiles(
-        HKlist, elvis=elvis)
+        fOBSID = obsids[0]
+        lOBSID = obsids[-1]
+    
+        figlist = []
+    
+        HKkeys = allHK_keys[elvis]
+        if 'TimeStamp' in HKkeys:
+            HKkeys.pop(HKkeys.index('TimeStamp'))
+        
 
-    fOBSID = obsids[0]
-    lOBSID = obsids[-1]
-
-    figlist = []
-
-    HKkeys = allHK_keys[elvis]
-    if 'TimeStamp' in HKkeys:
-        HKkeys.pop(HKkeys.index('TimeStamp'))
-
-    for key in HKkeys:
-        print key
-
-        figname = os.path.join(outpath, '%s_%s.eps' % (datetag, key,))
-
-        HKplot(HKdata, keylist=HKkeys, key=key,
-               dtobjs=dtobjs, filename=figname, stat='mean')
-        figlist.append(figname)
-
-    stop()
+        for ik,key in enumerate(HKkeys):
+    
+            figname = os.path.join(outpath, '%s_%s.eps' % (datetag, key,))
+            
+            HKvec = HKdata[:,0,ik+1].copy()
+            
+            iHKlims = HKlims[elvis]['S'][key]
+            
+            doHKSinglePlot(dtobjs, HKvec,
+                           HKkey=key, ylabel=key, HKlims=iHKlims[1:], 
+                           filename=figname)
+            
+            figlist.append(figname)    
 
     reportroot = 'HKmonitor_%s_%i-%i_OBSIDs_ROE%i' % (
         datetag, fOBSID, lOBSID, roe)
-
-    report = LaTeX()
-    header = ''
-    report.GenDoBody(header, figlist, ImagesperRow=2, imgsize=8)
-    report.Write('%s.tex' % reportroot)
-    report.Compile2PDF('%s.tex' % reportroot, cleanafter=True, figures=figlist)
+     
+    report = repmod.Report(TestName='HKMonitor_%s' % datetag,
+                           Model='XX')
+    
+    report.add_FigsTable(figlist,Ncols=2,figswidth='8',
+                         caption='HK plots, built from HK-OBSID files only.'+\
+                         ' CAUTION: HK collected inter-readouts is not shown here.')
+    report.doreport(reportroot,cleanafter=True)
     os.system('mv %s.pdf %s/' % (reportroot, outpath))
