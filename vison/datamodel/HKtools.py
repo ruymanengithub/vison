@@ -480,8 +480,6 @@ def reportHK(HKs, key, reqstat='all'):
 
     """
 
-    stop()
-
     if reqstat != 'all':
         ixstat = allstats.index(reqstat)
     else:
