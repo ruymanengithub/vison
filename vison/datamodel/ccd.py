@@ -151,7 +151,8 @@ class CCD(object):
         for iext in range(self.nextensions):
             if self.extensions[iext].data is not None:
                 assert self.shape == self.extensions[iext].data.shape
-
+        
+        self.chinjlines = 2
         self.prescan = prescan
         self.overscan = overscan
         if withpover:
@@ -167,6 +168,21 @@ class CCD(object):
         self.masked = False
 
         self.historial = []
+        
+        self.sectors = dict(LL='H',
+                        LR='G',
+                        UL='E',
+                        UR='F')
+        
+        self.xCCDoffsets = dict(E=self.overscan,
+                        F=self.overscan+self.prescan,
+                        G=self.overscan+self.prescan,
+                        H=self.overscan)
+        
+        self.yCCDoffsets = dict(E=self.voverscan-self.chinjlines*2,
+                        F=self.voverscan-self.chinjlines*2,
+                        G=0,
+                        H=0)
 
     def cooconv_Qrel_2_CCD(self, x, y, Q):
         """Converts coordiates from Quadrant-relative to CCD."""
@@ -191,8 +207,37 @@ class CCD(object):
         X = x - BB[0]
         Y = y - BB[2]
         return X, Y
+    
+    def get_Q(self,x,y,w,h):
+        """ """
+        semiwidth = w/2
+        semiheight = h/2
+        if x< semiwidth:
+            xtag = 'L'
+        elif x>= semiwidth:
+            xtag = 'R'
+        if y< semiheight:
+            ytag = 'L'
+        elif y>=semiheight:
+            ytag = 'U'
+        tag = xtag+ytag
+        
+        return self.sectors[tag]
+    
+    def get_Q_of_CCDcoo(self,x,y):
+        """ """
+        w = self.NAXIS1
+        h = self.NAXIS2
+        return self.get_Q(self,x,y,w,h)        
+    
+    def get_Q_of_Physcoo(self,x,y):
+        """ """
+        w = self.NAXIS1-self.prescan*2-self.overscan*2
+        h = self.NAXIS2-self.voverscan*2+self.chinjlines*2
+        return self.get_Q(self,x,y,w,h)
 
-    def get_Q_of_CCDcoo(self, x, y):
+
+    def demoted_get_Q_of_CCDcoo(self, x, y):
         """Retrieves Quadrant that corresponds to given CCD coordinates."""
 
         for Q in self.Quads:
@@ -236,7 +281,17 @@ class CCD(object):
         """Converts coordiates from Quadrant-canonical to Quadrant-relative."""
         return self.cooconv_Qrel_2_Qcan(x,y,Q)
     
-
+    def cooconv_CCD_2_Phys(self,x,y,Q):
+        """ """
+        xp = x - self.xCCDoffsets[Q]
+        yp = y - self.yCCDoffsets[Q]
+        return xp,yp
+        
+    def cooconv_Phys_2_CCD(self,x,y,Q):
+        """ """
+        xp,yp = self.cooconv_CCD_2_Phys(-x,-y,Q)
+        return -xp, -yp
+    
     def cooconvert(self, x, y, insys, outsys, Q='U'):
         """Coordinates conversion between different systems."""
 
