@@ -16,6 +16,7 @@ import numpy as np
 import os
 from pdb import set_trace as stop
 import sys
+import collections
 import datetime
 import itertools
 import ccd_aux
@@ -142,7 +143,7 @@ class CCD(object):
         if withpover:
             self.NAXIS2 = NAXIS2
         else:
-            self.NAXIS2 = NAXIS2-40
+            self.NAXIS2 = NAXIS2-voverscan*2
 
         self.shape = (self.NAXIS1, self.NAXIS2)
         self.wQ = self.NAXIS1/2
@@ -169,17 +170,20 @@ class CCD(object):
 
         self.historial = []
         
-        self.sectors = dict(LL='H',
-                        LR='G',
-                        UL='E',
-                        UR='F')
+        self.Qmatrix = [['E','F'],
+                   ['H','G']]
         
-        self.xCCDoffsets = dict(E=self.overscan,
+#        self.sectors = dict(LL='H',
+#                        LR='G',
+#                        UL='E',
+#                        UR='F')
+        
+        self.xCCD2Physoffsets = dict(E=self.overscan,
                         F=self.overscan+self.prescan,
                         G=self.overscan+self.prescan,
                         H=self.overscan)
         
-        self.yCCDoffsets = dict(E=self.voverscan-self.chinjlines*2,
+        self.yCCD2Physoffsets = dict(E=self.voverscan-self.chinjlines*2,
                         F=self.voverscan-self.chinjlines*2,
                         G=0,
                         H=0)
@@ -210,19 +214,34 @@ class CCD(object):
     
     def get_Q(self,x,y,w,h):
         """ """
+        
+        assert isinstance(x,type(y))
+        arearrays = isinstance(x,collections.Sequence)
+
         semiwidth = w/2
         semiheight = h/2
-        if x< semiwidth:
-            xtag = 'L'
-        elif x>= semiwidth:
-            xtag = 'R'
-        if y< semiheight:
-            ytag = 'L'
-        elif y>=semiheight:
-            ytag = 'U'
-        tag = xtag+ytag
         
-        return self.sectors[tag]
+        yix = y>=semiheight
+        xix = x>=semiwidth
+        
+        f = lambda coo: self.Qmatrix[coo[1]][coo[0]]
+        
+        if arearrays:
+            return map(f,zip(xix,yix))
+        else:
+            return f((xix,yix))
+    
+#        if x< semiwidth:
+#            xtag = 'L'
+#        elif x>= semiwidth:
+#            xtag = 'R'
+#        if y< semiheight:
+#            ytag = 'L'
+#        elif y>=semiheight:
+#            ytag = 'U'
+#        tag = xtag+ytag
+        
+#        return self.sectors[tag]
     
     def get_Q_of_CCDcoo(self,x,y):
         """ """
@@ -235,7 +254,6 @@ class CCD(object):
         w = self.NAXIS1-self.prescan*2-self.overscan*2
         h = self.NAXIS2-self.voverscan*2+self.chinjlines*2
         return self.get_Q(self,x,y,w,h)
-
 
     def demoted_get_Q_of_CCDcoo(self, x, y):
         """Retrieves Quadrant that corresponds to given CCD coordinates."""
@@ -281,10 +299,11 @@ class CCD(object):
         """Converts coordiates from Quadrant-canonical to Quadrant-relative."""
         return self.cooconv_Qrel_2_Qcan(x,y,Q)
     
-    def cooconv_CCD_2_Phys(self,x,y,Q):
+    def cooconv_CCD_2_Phys(self,x,y):
         """ """
-        xp = x - self.xCCDoffsets[Q]
-        yp = y - self.yCCDoffsets[Q]
+        Q = self.get_Q_of_CCDcoo(x,y)
+        xp = x - self.xCCD2Physoffsets[Q]
+        yp = y - self.yCCD2Physoffsets[Q]
         return xp,yp
         
     def cooconv_Phys_2_CCD(self,x,y,Q):

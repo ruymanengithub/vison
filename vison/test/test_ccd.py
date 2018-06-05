@@ -19,6 +19,7 @@ from vison.datamodel import ccd
 
 class TestCCDClass(unittest.TestCase):
     
+    
     def setUp(self):
         self.NAXIS1 = 4238
         self.wQ = self.NAXIS1/2
@@ -28,6 +29,7 @@ class TestCCDClass(unittest.TestCase):
         self.badpixel = (100,100) # bad pixel on each Quad, canonical orientation
         self.prescan = ccd.prescan
         self.overscan = ccd.overscan
+        self.voverscan = ccd.voverscan
         self.tolerance = 1.e-7
         self.gain = 3.5
         self.RON = 4.5 / self.gain
@@ -35,7 +37,7 @@ class TestCCDClass(unittest.TestCase):
         img = np.zeros((self.NAXIS1,self.NAXIS2),dtype='float32') 
         eimg = np.ones((self.NAXIS1,self.NAXIS2),dtype='float32') * self.RON
                 
-        self.ccdobj = ccd.CCD()
+        self.ccdobj = ccd.CCD(withpover=True)
         self.ccdobj.add_extension(data=img,label='IMAGE')
         self.ccdobj.add_extension(data=eimg,label='UNCERTAINTY')
         
@@ -63,12 +65,13 @@ class TestCCDClass(unittest.TestCase):
     def test_ccdobj_has_extensions(self):
         self.assertEqual(self.ccdobj.nextensions,2,
             msg='ccdobj has %i extensions (expected 2)' % self.ccdobj.nextensions)
-        
+    
+    @unittest.skip("REDTAG")
     def test_ccdobj_has_right_shape(self):
         self.assertEqual(self.ccdobj.shape,(self.NAXIS1,self.NAXIS2),
                          msg='shape=%s, expected=%s' %\
                          (self.ccdobj.shape.__repr__(),(self.NAXIS1,self.NAXIS2).__repr__()))
-    
+    @unittest.skip("REDTAG")
     def test_get_mask(self):
         """ """
         mask = np.isnan(self.ccdobj.extensions[0].data)
@@ -85,6 +88,7 @@ class TestCCDClass(unittest.TestCase):
             self.assertAlmostEqual(dist,0.,delta=self.tolerance,
                              msg='running subtest %i' %  i)
     
+    @unittest.skip("REDTAG") # REDTAG
     def test_cooconv_Qrel_2_CCD(self):
         
         incoos = [(100,200,'E'),
@@ -99,6 +103,7 @@ class TestCCDClass(unittest.TestCase):
         self._validate_coo_conversion(self.ccdobj.cooconv_Qrel_2_CCD,
                                       incoos,outcoos)
     
+    @unittest.skip("REDTAG")  # REDTAG
     def test_cooconv_Qcan_2_CCD(self):
         
         hQ = self.NAXIS2/2
@@ -115,7 +120,8 @@ class TestCCDClass(unittest.TestCase):
 
         self._validate_coo_conversion(self.ccdobj.cooconv_Qcan_2_CCD,
                                       incoos,outcoos)
-        
+    
+    @unittest.skip("REDTAG")  # REDTAG
     def test_cooconv_CCD_2_Qrel(self):
         
         hQ = self.NAXIS2/2
@@ -134,7 +140,7 @@ class TestCCDClass(unittest.TestCase):
         self._validate_coo_conversion(self.ccdobj.cooconv_CCD_2_Qrel,
                                       incoos,outcoos)
 
-        
+    @unittest.skip("REDTAG")  # REDTAG
     def test_cooconv_CCD_2_Qcan(self):
         
         hQ = self.NAXIS2/2
@@ -153,7 +159,7 @@ class TestCCDClass(unittest.TestCase):
         self._validate_coo_conversion(self.ccdobj.cooconv_CCD_2_Qcan,
                                       incoos,outcoos)
 
-        
+    @unittest.skip("REDTAG")  # REDTAG
     def test_cooconv_Qrel_2_Qcan(self):
         
         hQ = self.NAXIS2/2
@@ -172,7 +178,7 @@ class TestCCDClass(unittest.TestCase):
         self._validate_coo_conversion(self.ccdobj.cooconv_Qrel_2_Qcan,
                                       incoos,outcoos)
 
-            
+    @unittest.skip("REDTAG")  # REDTAG        
     def test_cooconv_Qcan_2_Qrel(self):
         hQ = self.NAXIS2/2
         wQ = self.NAXIS1/2
@@ -189,11 +195,35 @@ class TestCCDClass(unittest.TestCase):
 
         self._validate_coo_conversion(self.ccdobj.cooconv_Qrel_2_Qcan,
                                       incoos,outcoos)
+    
+    def test_CCD_2_Phys(self):
         
+        hQ = self.NAXIS2/2
+        wQ = self.NAXIS1/2
+        
+        stop()
+        
+        incoos = [(),
+                  (),
+                  ()]
+        
+        outcoos = []
+        
+        self._validate_coo_conversion(self.ccdobj.cooconv_CCD_2_Phys,
+                                      incoos,outcoos)
+    
+    def test_Phys_2_CCD(self):
+        
+        incoos = []
+        
+        outcoos = []
+        
+        self._validate_coo_conversion(self.ccdobj.cooconv_Phys_2_CCD,
+                                      incoos,outcoos)
     
     #def test_dummyrebin(self):
     #    pass
-    
+    @unittest.skip("REDTAG")  # REDTAG
     def test_get_tile_coos(self):
         
         wpx = 200
@@ -239,7 +269,7 @@ class TestCCDClass(unittest.TestCase):
             
             self.assertTrue(np.all(np.isclose(np.array(areas), wpx*hpx)), msg='check 4, %s' % comm_msg)
             
-    
+    @unittest.skip("REDTAG")  # REDTAG
     def test_get_tiles_stats(self):
         
         Q = 'E'
@@ -253,7 +283,7 @@ class TestCCDClass(unittest.TestCase):
         self.assertTrue(len(res) == tile_coos['Nsamps'])
         self.assertTrue(np.all(np.isclose(res,self.RON)))
         
-    
+    @unittest.skip("REDTAG")  # REDTAG
     def test_get_cutout(self):
         prescan = self.ccdobj.prescan
         corners = [prescan,prescan+2,0,2]
@@ -264,7 +294,8 @@ class TestCCDClass(unittest.TestCase):
             
             self.assertAlmostEqual(np.abs(_cut-expected).sum(),0.,delta=self.tolerance,
                                    msg='Failed at check %i,Q=%s' % (iQ,Q))
-    
+
+    @unittest.skip("REDTAG")  # REDTAG
     def test_getsectioncollims(self):
         pre = self.ccdobj.prescan
         over = self.ccdobj.overscan
@@ -287,7 +318,7 @@ class TestCCDClass(unittest.TestCase):
                             msg='values error... Failed at check %i,Q=%s' % (iQ,Q))
             self.assertTrue(sizesareok,msg='dimensions error... Failed at check %i,Q=%s' % (iQ,Q))
             
-    
+    @unittest.skip("REDTAG")  # REDTAG
     def test_getsectionrowlims(self):
         
         vover = self.ccdobj.voverscan
@@ -307,7 +338,7 @@ class TestCCDClass(unittest.TestCase):
                             msg='values error... Failed at check %i,Q=%s' % (iQ,Q))
             self.assertTrue(sizesareok,msg='dimensions error... Failed at check %i,Q=%s' % (iQ,Q))
             
-    
+    @unittest.skip("REDTAG")  # REDTAG
     def test_get_stats(self):
         Nimg = self.ccdobj.NrowsCCD
         offset = self.offset
@@ -330,7 +361,7 @@ class TestCCDClass(unittest.TestCase):
             self.assertAlmostEqual(res[0],expected,delta=self.tolerance,
                                    msg='Failed at check %i,Q=%s' % (iQ,Q))
         
-    
+    @unittest.skip("REDTAG")  # REDTAG
     def test_sub_offset(self):
         
         expected = self.offset
@@ -343,7 +374,7 @@ class TestCCDClass(unittest.TestCase):
             self.assertAlmostEqual(res[0],expected,delta=self.tolerance,
                                    msg='Failed at check %i,Q=%s' % (iQ,Q))
         
-    
+    @unittest.skip("REDTAG")  # REDTAG
     def test_sub_bias(self):
         superbias = np.zeros_like(self.ccdobj.extensions[0].data)+self.offset
         self.ccdobj.sub_bias(superbias,extension=0)
@@ -352,7 +383,7 @@ class TestCCDClass(unittest.TestCase):
                                         extension=0)
         self.assertAlmostEqual(res[0],0.,delta=self.tolerance)
         
-    
+    @unittest.skip("REDTAG")  # REDTAG
     def test_divide_by_flatfield(self):
         FF = np.ones_like(self.ccdobj.extensions[0].data)*2.
         img_bef = self.ccdobj.extensions[0].data.copy()
@@ -361,6 +392,7 @@ class TestCCDClass(unittest.TestCase):
         self.assertAlmostEqual(np.ma.mean((img_aft/img_bef)),0.5,
                                delta=self.tolerance)
     
+    @unittest.skip("REDTAG")  # REDTAG
     def test_get_1Dprofile(self):
         
         expected = np.arange(0,self.ccdobj.NrowsCCD,dtype='float32')+self.offset
@@ -377,7 +409,7 @@ class TestCCDClass(unittest.TestCase):
                                    delta=self.tolerance,
                                    msg='Failed at check %i,Q=%s' % (iQ,Q))
         
-    
+    @unittest.skip("REDTAG")  # REDTAG
     def test_get_region2Dmodel(self):
         
         for iQ,Q in enumerate(self.ccdobj.Quads):
@@ -392,7 +424,7 @@ class TestCCDClass(unittest.TestCase):
                                    delta=self.tolerance,
                                    msg='Failed at check %i,Q=%s' % (iQ,Q))            
         
-    
+    @unittest.skip("REDTAG")  # REDTAG
     def test_extract_region(self):
         
         Quads = self.ccdobj.Quads
