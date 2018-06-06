@@ -83,8 +83,10 @@ class TestCCDClass(unittest.TestCase):
         for i in range(len(incoos)):
             point = incoos[i]
             xin,yin,Q = point
-            xou,you = f(xin,yin,Q)
+            #xou, you = f(xin,yin,Q)
+            xou, you = f(*point)
             dist = ((outcoos[i][0]-xou)**2.+(outcoos[i][1]-you)**2.)**0.5
+            
             self.assertAlmostEqual(dist,0.,delta=self.tolerance,
                              msg='running subtest %i' %  i)
     
@@ -196,25 +198,31 @@ class TestCCDClass(unittest.TestCase):
         self._validate_coo_conversion(self.ccdobj.cooconv_Qrel_2_Qcan,
                                       incoos,outcoos)
     
-    def test_CCD_2_Phys(self):
-        
-        hQ = self.NAXIS2/2
-        wQ = self.NAXIS1/2
-        
-        stop()
-        
-        incoos = [(),
-                  (),
-                  ()]
-        
-        outcoos = []
-        
-        self._validate_coo_conversion(self.ccdobj.cooconv_CCD_2_Phys,
-                                      incoos,outcoos)
     
-    def test_Phys_2_CCD(self):
+    def test_cooconv_CCD_2_Phys(self):
         
-        incoos = []
+        
+        c = self.ccdobj
+        
+        incoos = [(c.wQ-c.overscan-1.,c.hQ+c.voverscan+1.-1.,'E'), # E
+                  (c.wQ+c.overscan+1.-1.,c.hQ+c.voverscan+1.-1.,'F'), # F
+                  (c.wQ+c.overscan+1.-1.,c.hQ-c.voverscan-1.,'G'), # G
+                  (c.wQ-c.overscan-1.,c.hQ-c.voverscan-1.,'H')] # H
+        
+        outcoos = [(c.wQphys-1, c.hQphys + c.chinjlines+1.-1.),
+                   (c.wQphys+1.-1., c.hQphys+ c.chinjlines+1.-1.),
+                   (c.wQphys+1.-1., c.hQphys - c.chinjlines-1.),
+                   (c.wQphys-1., c.hQphys - c.chinjlines-1.)]
+        
+        def f(x,y,Q):
+            return self.ccdobj.cooconv_CCD_2_Phys(x,y)
+        
+        self._validate_coo_conversion(f,incoos,outcoos)
+        
+    @unittest.skip("REDTAG")  # REDTAG 
+    def test_cooconv_Phys_2_CCD(self):
+        
+        incoos = [()]
         
         outcoos = []
         

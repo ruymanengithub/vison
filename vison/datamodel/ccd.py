@@ -42,6 +42,13 @@ QuadBound = dict(E=[0, NAXIS1/2, NAXIS2/2, NAXIS2],
                  G=[NAXIS1/2, NAXIS1, 0, NAXIS2/2],
                  H=[0, NAXIS1/2, 0, NAXIS2/2])
 
+def f_get_QuadBound(NAXIS1,NAXIS2):
+    return dict(E=[0, NAXIS1/2, NAXIS2/2, NAXIS2],
+                 F=[NAXIS1/2, NAXIS1, NAXIS2/2, NAXIS2],
+                 G=[NAXIS1/2, NAXIS1, 0, NAXIS2/2],
+                 H=[0, NAXIS1/2, 0, NAXIS2/2])
+    
+
 Quads = ['E', 'F', 'G', 'H']
 
 
@@ -164,34 +171,44 @@ class CCD(object):
         self.gain = dict(E=3.1, F=3.1, G=3.1, H=3.1)
         self.rn = dict(E=4.5, F=4.5, G=4.5, H=4.5)
 
-        self.QuadBound = QuadBound
+        self.QuadBound = f_get_QuadBound(self.NAXIS1,self.NAXIS2)
+        
+        self.wQphys = self.NAXIS1/2-self.prescan-self.overscan
+        self.hQphys = self.NAXIS2/2-self.voverscan+self.chinjlines
+        self.QuadBoundPhys = f_get_QuadBound(2*self.wQphys,2*self.hQphys)
 
         self.masked = False
 
         self.historial = []
         
-        self.Qmatrix = [['E','F'],
-                   ['H','G']]
+        self.Qmatrix = np.array([['H','G'],
+                        ['E','F']])
         
 #        self.sectors = dict(LL='H',
 #                        LR='G',
 #                        UL='E',
 #                        UR='F')
         
-        self.xCCD2Physoffsets = dict(E=self.overscan,
-                        F=self.overscan+self.prescan,
-                        G=self.overscan+self.prescan,
-                        H=self.overscan)
+        self.xCCD2Physoffsets = dict(E=self.prescan,
+                        F=2*self.overscan+self.prescan,
+                        G=2*self.overscan+self.prescan,
+                        H=self.prescan)
         
-        self.yCCD2Physoffsets = dict(E=self.voverscan-self.chinjlines*2,
-                        F=self.voverscan-self.chinjlines*2,
+        self.yCCD2Physoffsets = dict(E=2*self.voverscan-2*self.chinjlines,
+                        F=2*self.voverscan-2*self.chinjlines,
                         G=0,
                         H=0)
 
     def cooconv_Qrel_2_CCD(self, x, y, Q):
         """Converts coordiates from Quadrant-relative to CCD."""
+        
+        #assert len(x) == len(y)
+        #assert len(x) == len(Q)
+        #arearrays = not np.isscalar(x)
+        #if arearrays:
+        #    return map(self.cooconv_Qrel_2_CCD,zip(x,y,Q))
+        
         BB = self.QuadBound[Q]
-
         X = x + BB[0]
         Y = y + BB[2]
 
@@ -199,13 +216,26 @@ class CCD(object):
 
     def cooconv_Qcan_2_CCD(self, x, y, Q):
         """Converts coordiates from Quadrant-canonical to CCD."""
+        
+        #assert isinstance(x,type(y))
+        #assert isinstance(x,type(Q))
+        #arearrays = not np.isscalar(x)
+        #if arearrays:
+        #    return map(self.cooconv_Qcan_2_CCD,zip(x,y,Q))
+        
         xr, yr = self.cooconv_Qcan_2_Qrel(x, y, Q)
         #print Q,x.max(),y.max(),xr.max(),yr.max()
         X, Y = self.cooconv_Qrel_2_CCD(xr, yr, Q)
         return X, Y
 
     def cooconv_CCD_2_Qrel(self, x, y, Q):
-        """Converts coordiates from CCD to Quadrant-relative."""
+        """Converts coordinates from CCD to Quadrant-relative."""
+        
+        #assert isinstance(x,type(y))
+        #assert isinstance(x,type(Q))
+        #arearrays = not np.isscalar(x)
+        #if arearrays:
+        #    return map(self.cooconv_CCD_2_Qrel,zip(x,y,Q))
 
         BB = self.QuadBound[Q]
         X = x - BB[0]
@@ -215,61 +245,67 @@ class CCD(object):
     def get_Q(self,x,y,w,h):
         """ """
         
-        assert isinstance(x,type(y))
-        arearrays = isinstance(x,collections.Sequence)
-
-        semiwidth = w/2
-        semiheight = h/2
+        #assert isinstance(x,type(y))
+        #arearrays = not np.isscalar(x)        
+        #if arearrays:
+        #   return map(self.get_Q,zip(x,y))
         
-        yix = y>=semiheight
-        xix = x>=semiwidth
+#        f = lambda coo: self.Qmatrix[coo[1]][coo[0]]
         
-        f = lambda coo: self.Qmatrix[coo[1]][coo[0]]
+#        if arearrays:
+#            xix = (x>=w/2).astype('int32')
+#            yix = (y>=h/2).astype('int32')
+#            return map(f,zip(xix,yix))
+#        else:
+        xix = int(x>=w/2)
+        yix = int(y>=h/2)
         
-        if arearrays:
-            return map(f,zip(xix,yix))
-        else:
-            return f((xix,yix))
-    
-#        if x< semiwidth:
-#            xtag = 'L'
-#        elif x>= semiwidth:
-#            xtag = 'R'
-#        if y< semiheight:
-#            ytag = 'L'
-#        elif y>=semiheight:
-#            ytag = 'U'
-#        tag = xtag+ytag
+        return self.Qmatrix[yix,xix]
         
-#        return self.sectors[tag]
     
     def get_Q_of_CCDcoo(self,x,y):
         """ """
+        #assert isinstance(x,type(y))
+        #arearrays = not np.isscalar(x)
+        #if arearrays:
+        #    return map(self.get_Q_of_CCDcoo,zip(x,y))
+        
         w = self.NAXIS1
         h = self.NAXIS2
-        return self.get_Q(self,x,y,w,h)        
+        return self.get_Q(x,y,w,h)        
     
     def get_Q_of_Physcoo(self,x,y):
         """ """
+        #assert isinstance(x,type(y))
+        #arearrays = not np.isscalar(x)
+        #if arearrays:
+        #    return map(self.get_Q_of_Physcoo,zip(x,y))
+        
         w = self.NAXIS1-self.prescan*2-self.overscan*2
         h = self.NAXIS2-self.voverscan*2+self.chinjlines*2
-        return self.get_Q(self,x,y,w,h)
+        return self.get_Q(x,y,w,h)
 
-    def demoted_get_Q_of_CCDcoo(self, x, y):
-        """Retrieves Quadrant that corresponds to given CCD coordinates."""
-
-        for Q in self.Quads:
-            X, Y = self.cooconv_CCD_2_Qrel(x, y, Q)
-            isinside = (X >= 0) &\
-                       (X <= self.NAXIS1/2) &\
-                       (Y >= 0) &\
-                       (Y <= self.NAXIS2/2)
-            if isinside:
-                return Q
-        return None
+#    def demoted_get_Q_of_CCDcoo(self, x, y):
+#        """Retrieves Quadrant that corresponds to given CCD coordinates."""
+#
+#        for Q in self.Quads:
+#            X, Y = self.cooconv_CCD_2_Qrel(x, y, Q)
+#            isinside = (X >= 0) &\
+#                       (X <= self.NAXIS1/2) &\
+#                       (Y >= 0) &\
+#                       (Y <= self.NAXIS2/2)
+#            if isinside:
+#                return Q
+#        return None
 
     def cooconv_CCD_2_Qcan(self, x, y, Q):
         """Converts coordiates from CCD to Quadrant-canonical."""
+        #assert isinstance(x,type(y))
+        #assert isinstance(x,type(Q))
+        #arearrays = not np.isscalar(x)
+        #if arearrays:
+        #    return map(self.cooconv_CCD_2_Qcan,zip(x,y,Q))
+        
         xp, yp = self.cooconv_CCD_2_Qrel(x, y, Q)
         X, Y = self.cooconv_Qrel_2_Qcan(xp, yp, Q)
         return X, Y
@@ -282,6 +318,13 @@ class CCD(object):
 
     def cooconv_Qrel_2_Qcan(self, x, y, Q):
         """Converts coordiates from Quadrant-relative to Quadrant-canonical."""
+        #assert isinstance(x,type(y))
+        #assert isinstance(x,type(Q))
+        #arearrays = not np.isscalar(x)
+        #if arearrays:
+        #    return map(self.cooconv_Qrel_2_Qcan,zip(x,y,Q))
+        
+        
         BB = self.QuadBound[Q]
         xzero = 0.
         yzero = 0.
@@ -301,15 +344,55 @@ class CCD(object):
     
     def cooconv_CCD_2_Phys(self,x,y):
         """ """
+        #assert len(x) == len(y)
+        #arearrays = not np.isscalar(x)
+        #if arearrays:
+        #    return map(self.cooconv_CCD_2_Phys,zip(x,y))        
+        
+        #Qw = (self.NAXIS1-self.prescan*2-self.overscan*2)/2
+        #Qh = (self.NAXIS2-self.voverscan*2)/2
+        
         Q = self.get_Q_of_CCDcoo(x,y)
-        xp = x - self.xCCD2Physoffsets[Q]
-        yp = y - self.yCCD2Physoffsets[Q]
-        return xp,yp
+        
+        xcan, ycan = self.cooconv_CCD_2_Qcan(x,y,Q)
+        
+        isonSi = ((xcan>=self.prescan) & (xcan<(self.wQ-self.overscan)) &\
+                  (ycan>=0) & (ycan<self.hQ-self.voverscan))
+        
+        xp, yp = np.nan, np.nan
+        if isonSi:
+            xp = x - self.xCCD2Physoffsets[Q]
+            yp = y - self.yCCD2Physoffsets[Q]
+        
+        return xp, yp
+
         
     def cooconv_Phys_2_CCD(self,x,y,Q):
         """ """
-        xp,yp = self.cooconv_CCD_2_Phys(-x,-y,Q)
-        return -xp, -yp
+        #assert len(x)==len(y)
+        #arearrays = not np.isscalar(x)
+        #if arearrays:
+        #    return map(self.cooconv_Phys_2_CCD,zip(x,y))
+        
+        #Qw = self.wQphys-self.chinjlines
+        #Qh = self.hQphys-self.chinjlines
+        
+        Q = self.get_Q_of_Physcoo(x,y)
+        xrel = x - self.QuadBoundPhys[Q][0]
+        yrel = y - self.QuadBoundPhys[Q][2]
+        
+        xrel, yrel = self.cooconv_Phys_2_Qrel(x,y,Q)
+        
+        isonSi = ((xrel>=0) | (xrel<Qw) |\
+                                (yrel>=0) | (yrel<Qh))
+        xp, yp = np.nan, np.nan
+        
+        if isonSi:
+            xp = x + self.xCCD2Physoffsets[Q]
+            yp = y + self.yCCD2Physoffsets[Q]
+        
+        return xp,yp
+        
     
     def cooconvert(self, x, y, insys, outsys, Q='U'):
         """Coordinates conversion between different systems."""
