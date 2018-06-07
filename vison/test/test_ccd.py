@@ -85,12 +85,13 @@ class TestCCDClass(unittest.TestCase):
             xin,yin,Q = point
             #xou, you = f(xin,yin,Q)
             xou, you = f(*point)
+            
             dist = ((outcoos[i][0]-xou)**2.+(outcoos[i][1]-you)**2.)**0.5
             
             self.assertAlmostEqual(dist,0.,delta=self.tolerance,
                              msg='running subtest %i' %  i)
     
-    @unittest.skip("REDTAG") # REDTAG
+    #@unittest.skip("REDTAG") # REDTAG
     def test_cooconv_Qrel_2_CCD(self):
         
         incoos = [(100,200,'E'),
@@ -105,7 +106,7 @@ class TestCCDClass(unittest.TestCase):
         self._validate_coo_conversion(self.ccdobj.cooconv_Qrel_2_CCD,
                                       incoos,outcoos)
     
-    @unittest.skip("REDTAG")  # REDTAG
+    #@unittest.skip("REDTAG")  # REDTAG
     def test_cooconv_Qcan_2_CCD(self):
         
         hQ = self.NAXIS2/2
@@ -123,7 +124,7 @@ class TestCCDClass(unittest.TestCase):
         self._validate_coo_conversion(self.ccdobj.cooconv_Qcan_2_CCD,
                                       incoos,outcoos)
     
-    @unittest.skip("REDTAG")  # REDTAG
+    #@unittest.skip("REDTAG")  # REDTAG
     def test_cooconv_CCD_2_Qrel(self):
         
         hQ = self.NAXIS2/2
@@ -142,7 +143,7 @@ class TestCCDClass(unittest.TestCase):
         self._validate_coo_conversion(self.ccdobj.cooconv_CCD_2_Qrel,
                                       incoos,outcoos)
 
-    @unittest.skip("REDTAG")  # REDTAG
+    #@unittest.skip("REDTAG")  # REDTAG
     def test_cooconv_CCD_2_Qcan(self):
         
         hQ = self.NAXIS2/2
@@ -161,7 +162,7 @@ class TestCCDClass(unittest.TestCase):
         self._validate_coo_conversion(self.ccdobj.cooconv_CCD_2_Qcan,
                                       incoos,outcoos)
 
-    @unittest.skip("REDTAG")  # REDTAG
+    #@unittest.skip("REDTAG")  # REDTAG
     def test_cooconv_Qrel_2_Qcan(self):
         
         hQ = self.NAXIS2/2
@@ -180,7 +181,7 @@ class TestCCDClass(unittest.TestCase):
         self._validate_coo_conversion(self.ccdobj.cooconv_Qrel_2_Qcan,
                                       incoos,outcoos)
 
-    @unittest.skip("REDTAG")  # REDTAG        
+    #@unittest.skip("REDTAG")  # REDTAG        
     def test_cooconv_Qcan_2_Qrel(self):
         hQ = self.NAXIS2/2
         wQ = self.NAXIS1/2
@@ -197,7 +198,6 @@ class TestCCDClass(unittest.TestCase):
 
         self._validate_coo_conversion(self.ccdobj.cooconv_Qrel_2_Qcan,
                                       incoos,outcoos)
-    
     
     def test_cooconv_CCD_2_Phys(self):
         
@@ -219,15 +219,25 @@ class TestCCDClass(unittest.TestCase):
         
         self._validate_coo_conversion(f,incoos,outcoos)
         
-    @unittest.skip("REDTAG")  # REDTAG 
+    #@unittest.skip("REDTAG")  # REDTAG 
     def test_cooconv_Phys_2_CCD(self):
         
-        incoos = [()]
+        c = self.ccdobj
         
-        outcoos = []
+        incoos = [(c.wQphys-1, c.hQphys + c.chinjlines+1.-1., 'E'),
+                   (c.wQphys+1.-1., c.hQphys+ c.chinjlines+1.-1., 'F'),
+                   (c.wQphys+1.-1., c.hQphys - c.chinjlines-1., 'G'),
+                   (c.wQphys-1., c.hQphys - c.chinjlines-1., 'H')]
         
-        self._validate_coo_conversion(self.ccdobj.cooconv_Phys_2_CCD,
-                                      incoos,outcoos)
+        outcoos = [(c.wQ-c.overscan-1.,c.hQ+c.voverscan+1.-1.), # E
+                  (c.wQ+c.overscan+1.-1.,c.hQ+c.voverscan+1.-1.), # F
+                  (c.wQ+c.overscan+1.-1.,c.hQ-c.voverscan-1.), # G
+                  (c.wQ-c.overscan-1.,c.hQ-c.voverscan-1.)] # H
+        
+        def f(x,y,Q):
+            return self.ccdobj.cooconv_Phys_2_CCD(x,y)
+        
+        self._validate_coo_conversion(f,incoos,outcoos)
     
     #def test_dummyrebin(self):
     #    pass
