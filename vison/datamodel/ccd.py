@@ -84,7 +84,7 @@ def cooconv_arrays_decorate(func):
         cooargs = args[1:]
         arearraysvec = []
         for cooarg in cooargs:
-            arearraysvec.append(isinstance(cooargs[0],(list,tuple,collections.Sequence)))
+            arearraysvec.append(isinstance(cooargs[0],(list,tuple,collections.Sequence,np.ndarray)))
         assert np.all(np.array(arearraysvec) == arearraysvec[0])        
         arearrays = arearraysvec[0]
         
