@@ -38,6 +38,5 @@ def dumps_to_json(pydict):
 def save_jsonfile(pydict,jsonfile):
     """ """
     json = dumps_to_json(pydict)
-    
     with open(jsonfile,'wa') as f:
         print >> f, json    
