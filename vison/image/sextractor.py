@@ -40,6 +40,7 @@ class VSExtractor(object):
         
         self.internals = dict(
                 MINAREA=5,
+                DET_THRESH=13.,
                 MAG_ZEROPOINT=20.,
                 SATUR_LEVEL=65535,
                 SEEING_FWHM = 1.5,
@@ -76,8 +77,10 @@ class VSExtractor(object):
                 CATALOG_NAME = catname,
                 CATALOG_TYPE = 'FITS_LDAC',
                 DETECT_MINAREA='%i' % self.internals['MINAREA'],
-                DETECT_THRESH='15.,%.1f' % self.internals['MAG_ZEROPOINT'],
-                ANALYSIS_THRESH='15.,%.1f' % self.internals['MAG_ZEROPOINT'],
+                DETECT_THRESH='%.1f,%.1f' % \
+                (self.internals['DET_THRESH'],self.internals['MAG_ZEROPOINT']),
+                ANALYSIS_THRESH='%.1f,%.1f' % \
+                (self.internals['DET_THRESH'],self.internals['MAG_ZEROPOINT']),
                 FILTER='N',
                 SATUR_LEVEL='%i' % self.internals['SATUR_LEVEL'],
                 MAG_ZEROPOINT='%.1f' % self.internals['MAG_ZEROPOINT'],
@@ -85,7 +88,7 @@ class VSExtractor(object):
                 PIXEL_SCALE='%.1f' % self.internals['PIXEL_SCALE'],
                 SEEING_FWHM='%.1f' % self.internals['SEEING_FWHM'],
                 BACKPHOTO_TYPE='LOCAL',
-                BACK_SIZE='500',
+                BACK_SIZE='250',
                 BACK_FILTERSIZE='3')
 
         if checks is not None:
