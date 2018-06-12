@@ -12,15 +12,15 @@ from pdb import set_trace as stop
 import unittest
 from collections import OrderedDict
 import numpy as np
-import collections
+#import collections
 from astropy.io import ascii
 from astropy.table import Table
 import astroalign as aa
 import skimage
 
-from vison.point.lib import Point_CooNom
+#from vison.point.lib import Point_CooNom
 from vison.datamodel import ccd as ccdmod
-from vison.support import vjson
+#from vison.support import vjson
 # END IMPORT
 
 
@@ -183,44 +183,18 @@ class TestStarTracker(unittest.TestCase):
         self.stracker = StarTracker(CCD=2,withpover=True)
         
     @unittest.skip("REDTAG")
-    def test_save_Coos(self, coosfile):
+    def test_something(self):
         """ """
         pass
     
-    @unittest.skip("REDTAG")
-    def test_load_Coos(self):
-        self.stracker.load_Coos('')
-    
-    def test_save_Pattern(self, coosfile):
-        pass
-    
-    @unittest.skip("REDTAG")
-    def test_load_Pattern(self):
-        self.stracker.load_Coos('')
-        
-    @unittest.skip("REDTAG") 
-    def test_shiftCoo(self):
-        pass
 
 
 def testit():
     suite = unittest.TestLoader().loadTestsFromTestCase(TestStarTracker)
     unittest.TextTestRunner(verbosity=3).run(suite)
     
-def developit():
-    stracker = StarTracker(CCD=1,withpover=True)
-    xr,yr = stracker.rotate(10.,20.,90.)
-    
-    coodict = stracker.Coos.copy()
-    x = coodict['x'].copy()
-    y = coodict['y'].copy()
-    ccdobj = ccdmod.CCD(withpover=True)
-    xp, yp = ccdobj.cooconv_CCD_2_Phys(x,y)
-    stop()
-    
 
 if __name__ == '__main__':
     
-    #testit()
-    developit()
+    testit()
     
