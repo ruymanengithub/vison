@@ -56,10 +56,12 @@ def get_body_ellipses(X,Y,A=None,B=None,THETA=None):
     
     return body
 
-def save_spots_as_ds9regs(data, regfilename, regtype='circle', clobber=True):
+def save_spots_as_ds9regs(data, regfilename=None, regfile=None, regtype='circle', clobber=True):
     """ """
     color = 'green'
     width = 2
+    
+    assert (regfilename is not None) ^ (regfile is not None)
     
     fbody_dict = dict(circle=get_body_circles,
                       ellipse=get_body_ellipses)
@@ -74,12 +76,21 @@ def save_spots_as_ds9regs(data, regfilename, regtype='circle', clobber=True):
     
     body = fbody_dict[regtype](**data)
     
-    if clobber and os.path.exists(regfilename):
-        os.system('rm %s' % regfilename)
-
-    with open(regfilename, 'wa') as f:
+    def myprinter(f, hdr, body):
         for line in hdr:
-            print >> f, line
+                print >> f, line
         for line in body:
             print >>f, line
-        f.close()
+    
+    
+    if regfilename is not None:
+        
+        if clobber and os.path.exists(regfilename):
+            os.system('rm %s' % regfilename)
+    
+        with open(regfilename, 'wa') as f:
+            myprinter(f, hdr, body)
+            f.close()
+    elif regfile is not None:
+        myprinter(regfile, hdr, body)
+        regfile.close()

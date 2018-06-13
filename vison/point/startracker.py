@@ -17,6 +17,7 @@ from astropy.io import ascii
 from astropy.table import Table
 import astroalign as aa
 import skimage
+import copy
 
 #from vison.point.lib import Point_CooNom
 from vison.datamodel import ccd as ccdmod
@@ -102,7 +103,17 @@ class StarTracker(object):
                 delimiter='\t',
                 formats=dict(X='%.2f',Y='%.2f'),
                 overwrite=overwrite)
+    
+    
+    def load_Patt_fromdict(self, Pattdict):
+        assert isinstance(Pattdict,(dict,OrderedDict))
+        assert 'ID' in Pattdict
+        assert 'X' in Pattdict
+        assert 'Y' in Pattdict
+        assert len(Pattdict['X']) == len(Pattdict['Y'])
+        assert len(Pattdict['X']) == len(Pattdict['ID'])
         
+        self.Pattern = copy.deepcopy(Pattdict)
         
     def load_Patt_fromfile(self, Pattfile):
         self.Pattern = self._load_gencoos_fromfile(Pattfile)
@@ -115,6 +126,9 @@ class StarTracker(object):
     def convert_Phys_2_CCD(self,X,Y):
         """ """
         return self.cobj.cooconv_Phys_2_CCD(X,Y)
+    
+    def convert_CCD_2_Phys(self,X,Y):
+        return self.cobj.cooconv_CCD_2_Phys(X,Y)
     
     def get_CCDcoos(self,nested=False):
         """ """
