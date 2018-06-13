@@ -132,6 +132,7 @@ class VSExtractor(object):
         catname = kwargs['config']['CATALOG_NAME']
         
         if cleanafter:
+            os.system('rm sex.param')
             self.cleanaftersex(kwargs['config'])
         
         return catname

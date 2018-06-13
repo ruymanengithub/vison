@@ -55,6 +55,7 @@ def run_SEx(img, catroot):
     SExCatFile = vSEx.run_sex(catroot,
                           checks=['BACKGROUND','SEGMENTATION'],                         
                           cleanafter=False)
+    os.system('rm sex.param')
     SExCat = sex.aw.utils.ldac.get_table_from_ldac(SExCatFile)
     
     return SExCat
@@ -181,6 +182,7 @@ def run_starfinder(FITS, tag=''):
         d.set("zoom to fit")
         d.set("scale mode zscale")
         d.set('regions load %s' % ds9regsf)
+        os.system('rm %s' % ds9regsf)
         
         d.set("frame 2")
         d.set("file %s" % SEG_FITS)
@@ -268,6 +270,9 @@ def run_starfinder(FITS, tag=''):
         hold = raw_input('Beware, you are about to overwrite "%s"... any key to proceed. ' % Pattfile)
     
     stracker.save_Patt_tofile(Pattfile, overwrite=True)
+    
+    # CLEANING UP
+    
     
     
 
