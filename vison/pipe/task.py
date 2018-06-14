@@ -65,7 +65,7 @@ class Task(object):
         else:
             self.elvis = context.elvis
         
-        self.ogse = ogsemod.Ogse(self.CHAMBER)
+        self.ogse = ogsemod.Ogse(self.CHAMBER,withpover=True)
         self.Model = 'XM'
         self.internals = dict()
         self.inputs = self.inputsclass()

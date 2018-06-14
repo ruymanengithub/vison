@@ -18,22 +18,32 @@ from astropy.table import Table
 import astroalign as aa
 import skimage
 import copy
+import os
 
 from vison.datamodel import ccd as ccdmod
+from vison import ogse_profiles
 # END IMPORT
 
+
+_path = os.path.abspath(ogse_profiles.__file__)
+ogsepath = os.path.dirname(_path)
+
+default_patt_files = OrderedDict(
+       CCD1 = os.path.join(ogsepath,'Pattern_CCD1_CHAMBER_A_JUN18.txt'),
+       CCD2 = os.path.join(ogsepath,'Pattern_CCD2_CHAMBER_A_JUN18.txt'),
+       CCD3 = os.path.join(ogsepath,'Pattern_CCD3_CHAMBER_A_JUN18.txt'),)
 
 class StarTracker(object):
     
     
-    def __init__(self,CCD,withpover=True):
+    def __init__(self,CCD,withpover=True,patt_files=None):
         
         self.Quads = ['E','F','G','H']
-        self.starnames = ['ALPHA','BRAVO','CHARLIE','DELTA']
-        self.patt_files = OrderedDict(
-            CCD1 = None,
-            CCD2 = 'Pattern_CCD2_prime.txt',
-            CCD3 = None)
+        self.starnames = ['ALPHA', 'BRAVO', 'CHARLIE', 'DELTA', 'ECHO']
+        if patt_files is None:
+            self.patt_files = default_patt_files.copy()
+        else:
+            self.patt_files = patt_files.copy()
         
         self.CCD = CCD        
         self.withpover = withpover # parallel overscans

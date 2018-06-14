@@ -16,9 +16,12 @@ Created on Fri Sep  8 12:11:55 2017
 # IMPORT STUFF
 from pdb import set_trace as stop
 import os
+from collections import OrderedDict
+import copy
 
 from vison.support import vjson
 from vison import ogse_profiles
+from vison.point import startracker as strmod
 # END IMPORT
 
 _path = os.path.abspath(ogse_profiles.__file__)
@@ -137,11 +140,14 @@ def get_FW_ID(wavelength,FW=FW): # REDTAG: DEFAULT FW ON TESTS ONLY
 
 class Ogse(object):
     
-    def __init__(self,CHAMBER=None):
+    def __init__(self,CHAMBER=None,withpover=True):
         
+        self.CCDs = [1,2,3]
         self.CHAMBER = CHAMBER
-        self.profile = dict()
+        self.profile = OrderedDict()
         self.load_ogse_profile(CHAMBER)
+        self.startrackers = OrderedDict()
+        self.load_startrackers(CHAMBER,withpover=withpover)
     
     def get_profile_path(self,CHAMBER):
         profilef = 'CHAMBER_%s_profile.json' % CHAMBER
@@ -159,6 +165,27 @@ class Ogse(object):
         profile = vjson.load_jsonfile(fpath)
         
         self.profile = profile.copy()
+    
+    def get_pspattern_paths(self,CHAMBER):
+        pspattern_paths = OrderedDict()
+        for CCD in self.CCDs:
+            pspatternf = 'Pattern_CCD%i_%s.txt' % (CCD, CHAMBER)
+            fpath = os.path.join(ogsepath,pspatternf)
+            pspattern_paths['CCD%i' % CCD] = fpath
+        return pspattern_paths
+    
+    def load_startrackers(self,CHAMBER,withpover=True):
+        """ """
+        
+        if CHAMBER is None:
+            raise NotImplementedError
+        
+        pspattern_paths = self.get_pspattern_paths(CHAMBER)
+        
+        for CCD in self.CCDs:
+            istartracker = strmod.StarTracker(CCD,withpover,patt_files=pspattern_paths)
+            self.startrackers['CCD%i' % CCD] = copy.deepcopy(istartracker)
+        
     
     def save_ogse_profile(self,jsonpath):
         """ """

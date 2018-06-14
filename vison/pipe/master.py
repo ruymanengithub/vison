@@ -55,7 +55,7 @@ from vison.support import context
 
 isthere = os.path.exists
 
-defaults = dict(BLOCKID='R00P00CC000000', CHAMBER='A')
+defaults = dict(BLOCKID='R00P00CC000000', CHAMBER='A_JUN18')
 
 waittime = 120  # seconds
 
