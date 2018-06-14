@@ -204,7 +204,7 @@ class Pipe(object):
 
         if self.log is not None:
             self.log.info('\n\nResults will be saved in: %s\n' % resultsroot)
-
+        
         for taskname in tasknames:
 
             taskinputs = self.inputs[taskname]

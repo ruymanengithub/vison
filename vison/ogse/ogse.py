@@ -169,7 +169,7 @@ class Ogse(object):
     def get_pspattern_paths(self,CHAMBER):
         pspattern_paths = OrderedDict()
         for CCD in self.CCDs:
-            pspatternf = 'Pattern_CCD%i_%s.txt' % (CCD, CHAMBER)
+            pspatternf = 'Pattern_CCD%i_CHAMBER_%s.txt' % (CCD, CHAMBER)
             fpath = os.path.join(ogsepath,pspatternf)
             pspattern_paths['CCD%i' % CCD] = fpath
         return pspattern_paths
@@ -178,7 +178,7 @@ class Ogse(object):
         """ """
         
         if CHAMBER is None:
-            raise NotImplementedError
+            return
         
         pspattern_paths = self.get_pspattern_paths(CHAMBER)
         
