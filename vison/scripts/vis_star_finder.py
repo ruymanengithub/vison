@@ -256,7 +256,7 @@ def run_starfinder(FITS, tag=''):
     Xc = pattern_ccd_table['X'].copy()
     Yc = pattern_ccd_table['Y'].copy()
     
-    Xp, Yp = stracker.convert_Phys_2_CCD(Xc,Yc)
+    Xp, Yp = stracker.convert_CCD_2_Phys(Xc,Yc)
     
     pattern_phys_table = OrderedDict()
     pattern_phys_table['ID'] = pattern_ccd_table['ID'].copy()
