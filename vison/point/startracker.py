@@ -138,7 +138,7 @@ class StarTracker(object):
     def convert_CCD_2_Phys(self,X,Y):
         return self.cobj.cooconv_CCD_2_Phys(X,Y)
     
-    def get_CCDcoos(self,nested=False):
+    def get_allCCDcoos(self,nested=False):
         """ """
         X = self.Pattern['X'].copy()
         Y = self.Pattern['Y'].copy()
@@ -154,6 +154,14 @@ class StarTracker(object):
             return nesteddict
         else:
             return coodict
+    
+    def get_CCDcoos(self, Quad, Star):
+        ID = '%s%s' % (Quad, Star[0])
+        ixID = np.where(self.Pattern['ID'] == ID)
+        pt = self.Pattern # alias
+        Xp, Yp = pt['X'][ixID][0], pt['Y'][ixID][0]
+        Xc, Yc = self.convert_Phys_2_CCD(Xp,Yp)
+        return (Xc,Yc)
     
     def get_similaritymx(scale,rotation_deg,translation):
         """ 
