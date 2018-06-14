@@ -19,9 +19,7 @@ import astroalign as aa
 import skimage
 import copy
 
-#from vison.point.lib import Point_CooNom
 from vison.datamodel import ccd as ccdmod
-#from vison.support import vjson
 # END IMPORT
 
 
