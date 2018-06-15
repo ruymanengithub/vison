@@ -108,7 +108,7 @@ def extract_spot(ccdobj, coo, Quad, log=None, stampw=25):
     return spot
 
 
-def gen_point_mask(CCD, Quad, width=stampw, sources='all'):
+def gen_point_mask(CCD, Quad, width=stampw, sources='all', coodict = Point_CooNom):
     """ """
 
     fkccdobj = ccdmod.CCD()
@@ -116,16 +116,15 @@ def gen_point_mask(CCD, Quad, width=stampw, sources='all'):
     NAXIS1, NAXIS2 = fkccdobj.NAXIS1, fkccdobj.NAXIS2
 
     msk = np.zeros((NAXIS1, NAXIS2), dtype='int8')
-
-    allsources = Point_CooNom['names']
+    
     if sources == 'all':
-        sourcelist = allsources
+        sourcelist = coodict['names']
     else:
         sourcelist = [sources]
 
     for source in sourcelist:
 
-        coo = Point_CooNom[CCD][Quad][source]
+        coo = coodict[CCD][Quad][source]
 
         x0Q, y0Q = tuple([int(np.round(item)) for item in coo])
 

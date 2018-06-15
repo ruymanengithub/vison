@@ -679,7 +679,7 @@ def format_date(x, pos=None):
 # ==============================================================================
 
 
-def _ax_render_HK(ax, x, y, HKlims, HKkey):
+def _ax_render_HK(ax, x, y, HKlims, HKkey, fontsize=10):
     """ """
 
     max_xticks = 6
@@ -693,7 +693,7 @@ def _ax_render_HK(ax, x, y, HKlims, HKkey):
         ax.plot(x, yp)
         ax.plot(x[np.isnan(y)], yp[np.isnan(y)], 'ro:')
     else:
-        ax.plot(x, y, 'b.', ms=2)
+        ax.plot(x, y, 'b.', ms=3)
 
     if len(HKlims) == 1:
         ax.axhline(y=HKlims[0], ls='--', lw=2, color='r')
@@ -707,7 +707,7 @@ def _ax_render_HK(ax, x, y, HKlims, HKkey):
     try:
         for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
                      ax.get_xticklabels() + ax.get_yticklabels()):
-            item.set_fontsize(10)
+            item.set_fontsize(fontsize)
     except:
         pass
 
@@ -716,7 +716,7 @@ def _ax_render_HK(ax, x, y, HKlims, HKkey):
     return ax
 
 
-def doHKSinglePlot(dtobjs, HK, HKkey, ylabel='V', HKlims=[], filename=''):
+def doHKSinglePlot(dtobjs, HK, HKkey, ylabel='V', HKlims=[], filename='',fontsize=10):
     """Plots the values of a HK parameter as a function of time.
 
     :param dtobjs: datetime objects time axis.
@@ -733,7 +733,7 @@ def doHKSinglePlot(dtobjs, HK, HKkey, ylabel='V', HKlims=[], filename=''):
     fig = plt.figure(figsize=(7, 6))
     ax1 = fig.add_subplot(111)
 
-    ax1 = _ax_render_HK(ax1, dtobjs, HK, HKlims, HKkey)
+    ax1 = _ax_render_HK(ax1, dtobjs, HK, HKlims, HKkey, fontsize=fontsize)
 
     plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))
     fig.autofmt_xdate()

@@ -16,6 +16,7 @@ import numpy as np
 import os
 from pdb import set_trace as stop
 import sys
+import collections
 import datetime
 import itertools
 import ccd_aux
@@ -40,6 +41,13 @@ QuadBound = dict(E=[0, NAXIS1/2, NAXIS2/2, NAXIS2],
                  F=[NAXIS1/2, NAXIS1, NAXIS2/2, NAXIS2],
                  G=[NAXIS1/2, NAXIS1, 0, NAXIS2/2],
                  H=[0, NAXIS1/2, 0, NAXIS2/2])
+
+def f_get_QuadBound(NAXIS1,NAXIS2):
+    return dict(E=[0, NAXIS1/2, NAXIS2/2, NAXIS2],
+                 F=[NAXIS1/2, NAXIS1, NAXIS2/2, NAXIS2],
+                 G=[NAXIS1/2, NAXIS1, 0, NAXIS2/2],
+                 H=[0, NAXIS1/2, 0, NAXIS2/2])
+    
 
 Quads = ['E', 'F', 'G', 'H']
 
@@ -67,6 +75,30 @@ class Extension():
             self.header['EXTNAME'] = label
 
         self.label = label
+
+
+def cooconv_arrays_decorate(func):
+    """ """
+    def cooconv_wrapper(*args):
+        
+        cooargs = args[1:]
+        arearraysvec = []
+        for cooarg in cooargs:
+            arearraysvec.append(isinstance(cooargs[0],(list,tuple,collections.Sequence,np.ndarray)))
+        assert np.all(np.array(arearraysvec) == arearraysvec[0])        
+        arearrays = arearraysvec[0]
+        
+        if arearrays:
+            lengths = [len(cooarg) for cooarg in cooargs]
+            assert np.all(np.array(lengths) == lengths[0])
+            retlist = []
+            for i in range(lengths[0]):
+                retlist.append(func(args[0],*tuple([cooarg[i] for cooarg in cooargs])))
+            return  tuple([np.array(item) for item in zip(*retlist)])
+        else:
+            return func(*args)
+    
+    return cooconv_wrapper
 
 
 class CCD(object):
@@ -142,7 +174,7 @@ class CCD(object):
         if withpover:
             self.NAXIS2 = NAXIS2
         else:
-            self.NAXIS2 = NAXIS2-40
+            self.NAXIS2 = NAXIS2-voverscan*2
 
         self.shape = (self.NAXIS1, self.NAXIS2)
         self.wQ = self.NAXIS1/2
@@ -151,7 +183,8 @@ class CCD(object):
         for iext in range(self.nextensions):
             if self.extensions[iext].data is not None:
                 assert self.shape == self.extensions[iext].data.shape
-
+        
+        self.chinjlines = 2
         self.prescan = prescan
         self.overscan = overscan
         if withpover:
@@ -162,61 +195,93 @@ class CCD(object):
         self.gain = dict(E=3.1, F=3.1, G=3.1, H=3.1)
         self.rn = dict(E=4.5, F=4.5, G=4.5, H=4.5)
 
-        self.QuadBound = QuadBound
+        self.QuadBound = f_get_QuadBound(self.NAXIS1,self.NAXIS2)
+        
+        self.wQphys = self.NAXIS1/2-self.prescan-self.overscan
+        self.hQphys = self.NAXIS2/2-self.voverscan+self.chinjlines
+        self.QuadBoundPhys = f_get_QuadBound(2*self.wQphys,2*self.hQphys)
 
         self.masked = False
 
         self.historial = []
-
+        
+        self.Qmatrix = np.array([['H','G'],
+                        ['E','F']])
+        
+#        self.sectors = dict(LL='H',
+#                        LR='G',
+#                        UL='E',
+#                        UR='F')
+        
+        self.xCCD2Physoffsets = dict(E=self.prescan,
+                        F=2*self.overscan+self.prescan,
+                        G=2*self.overscan+self.prescan,
+                        H=self.prescan)
+        
+        self.yCCD2Physoffsets = dict(E=2*self.voverscan-2*self.chinjlines,
+                        F=2*self.voverscan-2*self.chinjlines,
+                        G=0,
+                        H=0)
+    
+    @cooconv_arrays_decorate
     def cooconv_Qrel_2_CCD(self, x, y, Q):
         """Converts coordiates from Quadrant-relative to CCD."""
         BB = self.QuadBound[Q]
-
         X = x + BB[0]
         Y = y + BB[2]
 
         return X, Y
-
+    
+    @cooconv_arrays_decorate
     def cooconv_Qcan_2_CCD(self, x, y, Q):
-        """Converts coordiates from Quadrant-canonical to CCD."""
+        """Converts coordiates from Quadrant-canonical to CCD."""                
         xr, yr = self.cooconv_Qcan_2_Qrel(x, y, Q)
-        #print Q,x.max(),y.max(),xr.max(),yr.max()
         X, Y = self.cooconv_Qrel_2_CCD(xr, yr, Q)
         return X, Y
-
+    
+    @cooconv_arrays_decorate
     def cooconv_CCD_2_Qrel(self, x, y, Q):
-        """Converts coordiates from CCD to Quadrant-relative."""
-
+        """Converts coordinates from CCD to Quadrant-relative."""
+        
         BB = self.QuadBound[Q]
         X = x - BB[0]
         Y = y - BB[2]
         return X, Y
-
-    def get_Q_of_CCDcoo(self, x, y):
-        """Retrieves Quadrant that corresponds to given CCD coordinates."""
-
-        for Q in self.Quads:
-            X, Y = self.cooconv_CCD_2_Qrel(x, y, Q)
-            isinside = (X >= 0) &\
-                       (X <= self.NAXIS1/2) &\
-                       (Y >= 0) &\
-                       (Y <= self.NAXIS2/2)
-            if isinside:
-                return Q
-        return None
-
+    
+    #@cooconv_arrays_decorate
+    def get_Q(self,x,y,w,h):
+        """ """
+        xix = int(x>=w/2)
+        yix = int(y>=h/2)
+        return self.Qmatrix[yix,xix]
+        
+    @cooconv_arrays_decorate
+    def get_Q_of_CCDcoo(self,x,y):
+        """ """        
+        w = self.NAXIS1
+        h = self.NAXIS2
+        return self.get_Q(x,y,w,h)        
+    
+    @cooconv_arrays_decorate
+    def get_Q_of_Physcoo(self,x,y):
+        """ """
+        #assert isinstance(x,type(y))
+        #arearrays = not np.isscalar(x)
+        #if arearrays:
+        #    return map(self.get_Q_of_Physcoo,zip(x,y))
+        
+        w = self.NAXIS1-self.prescan*2-self.overscan*2
+        h = self.NAXIS2-self.voverscan*2+self.chinjlines*2
+        return self.get_Q(x,y,w,h)
+    
+    @cooconv_arrays_decorate
     def cooconv_CCD_2_Qcan(self, x, y, Q):
-        """Converts coordiates from CCD to Quadrant-canonical."""
+        """Converts coordiates from CCD to Quadrant-canonical."""        
         xp, yp = self.cooconv_CCD_2_Qrel(x, y, Q)
         X, Y = self.cooconv_Qrel_2_Qcan(xp, yp, Q)
         return X, Y
-
-    #def _conv_coo_from_BB_rel(self, x, y, BB):
-    #    """ """
-    #    X = x * (BB[1]-BB[0])/np.abs(BB[1]-BB[0])
-    #    Y = y * (BB[3]-BB[2])/np.abs(BB[3]-BB[2])
-    #    return X, Y
-
+    
+    @cooconv_arrays_decorate
     def cooconv_Qrel_2_Qcan(self, x, y, Q):
         """Converts coordiates from Quadrant-relative to Quadrant-canonical."""
         BB = self.QuadBound[Q]
@@ -231,12 +296,42 @@ class CCD(object):
             yzero = BB[3]-BB[2]-1.
             ysign = -1.
         return xsign*x + xzero, ysign*y + yzero
-
+   
+    @cooconv_arrays_decorate
     def cooconv_Qcan_2_Qrel(self, x, y, Q):
         """Converts coordiates from Quadrant-canonical to Quadrant-relative."""
         return self.cooconv_Qrel_2_Qcan(x,y,Q)
     
+    @cooconv_arrays_decorate
+    def cooconv_CCD_2_Phys(self,x,y):
+        """ """
+        Q = self.get_Q_of_CCDcoo(x,y)
+        
+        xcan, ycan = self.cooconv_CCD_2_Qcan(x,y,Q)
+        
+        isonSi = ((xcan>=self.prescan) & (xcan<(self.wQ-self.overscan)) &\
+                  (ycan>=0) & (ycan<self.hQ-self.voverscan))
+        
+        xp, yp = np.nan, np.nan
+        if isonSi:
+            xp = x - self.xCCD2Physoffsets[Q]
+            yp = y - self.yCCD2Physoffsets[Q]
+        return xp, yp
 
+    @cooconv_arrays_decorate
+    def cooconv_Phys_2_CCD(self,x,y):
+        """ """
+        Q = self.get_Q_of_Physcoo(x,y)
+        
+        isonSi = ((x>=0) & (x<self.wQphys*2) &\
+                False == ((y>=self.hQphys) & (y<=self.hQphys + self.chinjlines-1)))
+        xp, yp = np.nan, np.nan
+        if isonSi:
+            xp = x + self.xCCD2Physoffsets[Q]
+            yp = y + self.yCCD2Physoffsets[Q]
+        return xp,yp
+        
+    
     def cooconvert(self, x, y, insys, outsys, Q='U'):
         """Coordinates conversion between different systems."""
 

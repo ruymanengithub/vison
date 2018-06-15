@@ -170,7 +170,8 @@ def addHKPlotsMatrix(self):
         figname = os.path.join(figspath, 'HK_%s_%s.eps' %
                                (key, self.inputs['test']))
         HKtools.doHKSinglePlot(time, HKdata[key], key, ylabel='V',
-                               HKlims=HKlims, filename=figname)
+                               HKlims=HKlims, filename=figname,
+                               fontsize=14)
         HKfigs.append(figname)
 
     self.report.add_FigsTable(HKfigs, Ncols=3, figswidth=4,

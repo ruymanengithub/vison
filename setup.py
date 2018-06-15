@@ -64,7 +64,8 @@ def configuration():
                         'vison/scripts/vis_explogs_merger.py',
                         'vison/scripts/run_xtalk.py',
                         'vison/scripts/v_ROE_LinCalib.py',
-                        'vison/scripts/v_ROETAB_LinCalib.py'])
+                        'vison/scripts/v_ROETAB_LinCalib.py',
+                        'vison/scripts/vis_star_finder.py'])
 
     return config
 
