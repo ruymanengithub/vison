@@ -60,38 +60,38 @@ def gt_check_bgd_dict(test):
 def gt_check_flu_dict(test):
     ntest = st.replace(test, '_', '\_')
     return dict(stats=['chk_fluence'],
-                trendaxis='mirr_pos',
-                figname='%s_flu_vs_mirr.png' % test,
-                caption='%s: Fluence vs. Mirror Position.' % ntest,
+                trendaxis='exptime',
+                figname='%s_flu_vs_exptime.png' % test,
+                caption='%s: Fluence vs. Exposure Time.' % ntest,
                 meta=dict(doLegend=True,
                           doNiceXDate=False,
                           suptitle='%s-checks: Fluence' % ntest,
-                          xlabel='mirr\_pos mm',
+                          xlabel='seconds',
                           ylabel='Flu.[ADU]'))
 
 
 def gt_check_fwhmx_dict(test):
     ntest = st.replace(test, '_', '\_')
     return dict(stats=['chk_fwhmx'],
-                trendaxis='mirr_pos',
-                figname='%s_fwhmx_vs_mirr.png' % test,
-                caption='%s: FWHM(x) vs. Mirror Position.' % ntest,
+                trendaxis='exptime',
+                figname='%s_fwhmx_vs_exptime.png' % test,
+                caption='%s: FWHM(x) vs. Exposure Time.' % ntest,
                 meta=dict(doLegend=True,
                           doNiceXDate=False,
                           suptitle='%s-checks: FWHM(x)' % ntest,
-                          xlabel='mm',
+                          xlabel='seconds',
                           ylabel='FWHMx [pix]'))
 
 def gt_check_fwhmy_dict(test):
     ntest = st.replace(test, '_', '\_')
     return dict(stats=['chk_fwhmy'],
-                trendaxis='mirr_pos',
-                figname='%s_fwhmy_vs_mirr.png' % test,
-                caption='%s: FWHM(y) vs. Mirror Position.' % ntest,
+                trendaxis='exptime',
+                figname='%s_fwhmy_vs_exptime.png' % test,
+                caption='%s: FWHM(y) vs. Exposure Time.' % ntest,
                 meta=dict(doLegend=True,
                           doNiceXDate=False,
                           suptitle='%s-checks: FWHM(y)' % ntest,
-                          xlabel='mm',
+                          xlabel='seconds',
                           ylabel='FWHMy [pix]'))
 
 def gt_PSF0Xfigs(test):
