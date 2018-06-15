@@ -511,6 +511,7 @@ class Task(object):
 
                     compliance[CCDkey][Q][colname] = not (
                         np.any(test, axis=(0, 1)).sum() | (ixsel[0].shape[0] == 0))
+                    
         return compliance
 
     def check_data(self, **kwargs):
