@@ -310,11 +310,11 @@ class BeamPlotYvX(BeamPlot):
             xarr = CQdict['x'][key]
             yarr = CQdict['y'][key]
             label = st.replace(key, '_', '\_')
-            handle = ax.plot(xarr, yarr, label=label)
+            handle = ax.plot(xarr, yarr, '-.', label=label)
         else:
             xarr = CQdict['x']
             yarr = CQdict['y']
-            ax.plot(xarr, yarr)
+            ax.plot(xarr, yarr, '_.')
             handle, label = None, None
         
         return handle, label

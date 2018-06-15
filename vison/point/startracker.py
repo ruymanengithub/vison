@@ -33,13 +33,16 @@ default_patt_files = OrderedDict(
        CCD2 = os.path.join(ogsepath,'Pattern_CCD2_CHAMBER_A_JUN18.txt'),
        CCD3 = os.path.join(ogsepath,'Pattern_CCD3_CHAMBER_A_JUN18.txt'),)
 
+
+starnames = ['ALPHA', 'BRAVO', 'CHARLIE', 'DELTA', 'ECHO']
+
 class StarTracker(object):
     
     
     def __init__(self,CCD,withpover=True,patt_files=None):
         
         self.Quads = ['E','F','G','H']
-        self.starnames = ['ALPHA', 'BRAVO', 'CHARLIE', 'DELTA', 'ECHO']
+        self.starnames = starnames
         if patt_files is None:
             self.patt_files = default_patt_files.copy()
         else:
@@ -142,6 +145,7 @@ class StarTracker(object):
         """ """
         X = self.Pattern['X'].copy()
         Y = self.Pattern['Y'].copy()
+        
         Xc, Yc = self.convert_Phys_2_CCD(X,Y)
         
         coodict = OrderedDict()
@@ -199,10 +203,6 @@ class StarTracker(object):
         Xp, Yp = self._apply_transform(X,Y,similaritymx)
         self.Pattern['X'] = Xp.copy()
         self.Pattern['Y'] = Yp.copy()
-        
-    
-        
-    
 
 class TestStarTracker(unittest.TestCase):
     """

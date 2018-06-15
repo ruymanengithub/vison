@@ -15,8 +15,10 @@ import numpy as np
 import os
 from collections import OrderedDict
 
+
 from vison.pipe.task import Task
 from vison.point import lib as polib
+from vison.point import startracker as strackermod
 from vison.datamodel import core, ccd
 #from vison.pipe import lib as pilib
 from vison.support import context
@@ -86,7 +88,7 @@ class PointTask(Task):
         Sindices = copy.deepcopy(Qindices)
         if 'Spot' not in Sindices.names:
             Sindices.append(core.vIndex(
-                'Spot', vals=polib.Point_CooNom['names']))
+                'Spot', vals=strackermod.starnames))
 
         self.dd.initColumn('chk_x', Sindices, dtype='float32', valini=valini)
         self.dd.initColumn('chk_y', Sindices, dtype='float32', valini=valini)
@@ -110,9 +112,17 @@ class PointTask(Task):
         # Get statistics in different regions
 
         if not self.drill:
+            
+            strackers = self.ogse.startrackers
+            
+            psCCDcoodicts = OrderedDict(names=strackers['CCD1'].starnames)
+            
+            for jCCD, CCDk in enumerate(CCDs):
+                psCCDcoodicts[CCDk] = strackers[CCDk].get_allCCDcoos(nested=True)
 
             for iObs in range(nObs):
                 for jCCD, CCDk in enumerate(CCDs):
+                    
                     dpath = self.dd.mx['datapath'][iObs, jCCD]
                     ffits = os.path.join(dpath, '%s.fits' %
                                          self.dd.mx['File_name'][iObs, jCCD])
@@ -136,7 +146,8 @@ class PointTask(Task):
                         alt_ccdobj = copy.deepcopy(ccdobj)
 
                         mask_sources = polib.gen_point_mask(
-                            CCDk, Quad, width=self.stampw, sources='all')
+                            CCDk, Quad, width=self.stampw, sources='all',
+                            coodict=psCCDcoodicts.copy())
 
                         alt_ccdobj.get_mask(mask_sources)
 
@@ -152,11 +163,12 @@ class PointTask(Task):
 
                         for xSpot, SpotName in enumerate(Spots):
 
-                            coo = polib.Point_CooNom[CCDk][Quad][SpotName]
+                            #coo = polib.Point_CooNom[CCDk][Quad][SpotName]
+                            coo = psCCDcoodicts[CCDk][Quad][SpotName]
 
                             spot = polib.extract_spot(ccdobj, coo, Quad, log=self.log,
                                                       stampw=self.stampw)
-
+                            
                             try:
                                 res_bas = spot.measure_basic(
                                     rap=10, rin=15, rout=-1)
@@ -167,11 +179,12 @@ class PointTask(Task):
                             for chkkey in chkkeycorr:
                                 self.dd.mx[chkkey][iObs, jCCD, kQ,
                                                    xSpot] = res_bas[chkkeycorr[chkkey]]
+                        
 
     def check_stat_perCCDQSpot(self, arr, lims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
         #Qs = lims['CCD%i' % CCDs[0]].keys()
-        Spots = polib.Point_CooNom['names']
+        Spots = strackermod.starnames
         Qs = ccd.Quads
 
         compliance = OrderedDict()

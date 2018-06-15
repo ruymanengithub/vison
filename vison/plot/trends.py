@@ -78,8 +78,8 @@ class Fig_Basic_Checkstat(figclasses.Fig_XY_fromDD):
             tags = dd.mx[stats[0]].indices.get_vals(index2tag)
             stat = stats[0]
             
-            for tag in tags:
-                subdd[tag] = vColumn(dd.mx[stat][...,0],dd.mx[stat].name,dd.mx[stat].indices[:-1])
+            for it,tag in enumerate(tags):
+                subdd[tag] = vColumn(dd.mx[stat][...,it],dd.mx[stat].name,dd.mx[stat].indices[:-1])
             
         elif len(stats)==1 and index2tag is None:
             
@@ -88,7 +88,6 @@ class Fig_Basic_Checkstat(figclasses.Fig_XY_fromDD):
         
         else:
             raise AssertionError
-        
         
         self.data = self._build_data_yvsx(subdd,tags,
                 self.trendaxis,index2margin,indices2param)
