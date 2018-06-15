@@ -152,21 +152,20 @@ class PERSIST01(Task):
 
     def prep_data(self):
         """
+        
+        PERSIST01: Preparation of data for further analysis.
+        Calls task.prepare_images().
 
-        **METACODE**
+        Applies:
+            offset subtraction
+            cosmetics masking
 
-        ::
-
-            Preparation of data for further analysis:
-
-            f.e. ObsID [images with TPing only]:
-                f.e.CCD:
-                    f.e.Q:
-                        subtract offset
-
+        
         """
+        super(PERSIST01, self).prepare_images(
+            doExtract=True, doMask=True, doOffset=True)
 
-        raise NotImplementedError
+        
 
     def basic_analysis(self):
         """

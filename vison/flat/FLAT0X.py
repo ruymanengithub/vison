@@ -184,7 +184,7 @@ class FLAT0X(FlatTask):
 
         """
         super(FLAT0X, self).prepare_images(doExtract=True,
-                                           doMask=True, doOffset=True, doBias=True)
+            doMask=True, doOffset=True, doBias=True)
 
     def do_indiv_flats(self):
         """

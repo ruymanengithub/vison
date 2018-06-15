@@ -129,57 +129,21 @@ class DARK01(DarkTask):
         return super(DARK01, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=True,
                                                    wavedkeys=wavedkeys)
 
-# ==============================================================================
-#     def check_data(self):
-#         """
-#         DARK0: Checks quality of ingested data.
-#
-#         **METACODE**
-#
-#         ::
-#
-#             check common HK values are within safe / nominal margins
-#             check voltages in HK match commanded voltages, within margins
-#
-#             f.e.ObsID:
-#                 f.e.CCD:
-#                     f.e.Q.:
-#                         measure offsets/means in pre-, img-, over-
-#                         measure std in pre-, img-, over-
-#             assess std in pre- is within allocated margins
-#             assess offsets/means in pre-, img-, over- are equal, within allocated  margins
-#             assess offsets/means are within allocated margins
-#
-#             plot offsets/means vs. time
-#             plot std vs. time
-#
-#             issue any warnings to log
-#             issue update to report
-#
-#         """
-#
-#
-#         raise NotImplementedError
-# ==============================================================================
-
     def prep_data(self):
         """
 
         DARK01: Preparation of data for further analysis.
+        Calls task.prepare_images().
 
-        **METACODE**
-
-        ::
-
-            f.e. ObsID:
-                f.e.CCD:
-                    f.e.Q:
-                        subtract offset: save to pick, update filename
-
+        Applies:
+            offset subtraction
+            [BIAS SUBTRACTION]
+            cosmetics masking
 
         """
+        super(DARK01, self).prepare_images(
+            doExtract=True, doMask=True, doOffset=True, doBias=True)
 
-        raise NotImplementedError
 
     def basic_analysis(self):
         """ 
