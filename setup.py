@@ -20,7 +20,6 @@ from pdb import set_trace as stop
 import versioneer
 
 
-
 def configuration():
 
     config = Configuration()
