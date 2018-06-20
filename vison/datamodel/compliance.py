@@ -17,9 +17,14 @@ import pandas as pd
 import collections
 import string as st
 import copy
+import numpy as np
+
+import unittest
 
 from vison.support.utils import countdictlayers
 # END IMPORT
+        
+        
 
 
 
@@ -100,3 +105,80 @@ def gen_compliance_tex(indict):
         tex = convert_compl_to_nesteditemlist(complidict)
         
     return tex
+
+class ComplianceMX(OrderedDict):
+    
+    def __init__(self, *args, **kwargs):
+        """ """
+        super(ComplianceMX,self).__init__(*args,**kwargs)
+        
+    def check_stat(self,inparr):
+        raise NotImplementedError("Subclass must implement abstract method")
+    
+    def get_compliance_tex(self):
+        return gen_compliance_tex(self)
+    
+    def get_compliance_txt(self):
+        return self.__str__()
+    
+    def IsCompliant(self):
+        
+        def traverse_tree(dictionary, isOK):
+            
+            for key, value in dictionary.items():
+                #print 'Upper: %s' % key
+                if isinstance(value, (dict, OrderedDict)):
+                    #print key,value
+                    isOK = isOK and traverse_tree(value, isOK)
+                else:
+                    #print key,value
+                    isOK = isOK and value[0]
+            return isOK
+        
+        
+        isOK = traverse_tree(self, True)
+        
+        return isOK
+
+class ComplianceMX_CCDQ(ComplianceMX):
+    
+    def __init__(self, *args, **kwargs):
+        """ """
+        super(ComplianceMX_CCDQ,self).__init__(*args,**kwargs)
+        self.CCDs = ['CCD1','CCD2','CCD3']
+        self.Qs = ['E','F','G','H']
+        self.CCDQlims = OrderedDict()
+        
+        
+    def check_stat(self,inparr):
+        """ """
+        for iCCD, CCDkey in enumerate(self.CCDs):
+            self[CCDkey] = OrderedDict()
+            for jQ, Q in enumerate(self.Qs):
+                if isinstance(self.CCDQlims[CCDkey],dict):
+                    _lims = self.CCDQlims[CCDkey][Q]
+                elif isinstance(self.CCDQlims[CCDkey],list):
+                    _lims = self.CCDQlims[CCDkey]
+                test = (np.isnan(inparr[:, iCCD, jQ, ...]) |
+                        (inparr[:, iCCD, jQ, ...] <= _lims[0]) | (inparr[:, iCCD, jQ, ...] >= _lims[1]))
+                try: avvalue = np.nanmean(inparr[:,iCCD, jQ, ...])
+                except: avvalue = np.nan
+                self[CCDkey][Q] = [not np.any(test).sum(), avvalue]
+
+
+class TestComplianceClass(unittest.TestCase):
+    
+    def setUp(self):
+        self.comp = ComplianceMX()
+    
+    def test0(self):
+        stop()
+
+
+def testit():
+    unittest.main()
+    
+
+if __name__ == '__main__':
+    
+    testit()

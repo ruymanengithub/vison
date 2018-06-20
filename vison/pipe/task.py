@@ -32,7 +32,7 @@ from vison.datamodel import ccd
 from vison.image import calibration
 from vison.ogse import ogse as ogsemod
 from vison.support.files import cPickleDumpDictionary
-from vison.datamodel import compliance
+from vison.datamodel import compliance as complimod
 from vison import __version__
 # END IMPORT
 
@@ -386,7 +386,9 @@ class Task(object):
 
     def addComplianceMatrix2Log(self, complidict, label=''):
         """ """
-        st_compl = complidict.__str__()
+        #st_compl = complidict.__str__()
+        stop()
+        st_compl = complidict.get_compliance_txt()
         self.log.info('%s\n%s' % (label, st_compl))
 
     def addComplianceMatrix2Report(self, complidict, label=''):
@@ -395,7 +397,8 @@ class Task(object):
         #st_compl = complidict.__str__()
 
         complitex = ['$\\bf{%s}$' % nicelabel]
-        complitex += compliance.gen_compliance_tex(complidict)
+        #complitex += complimod.gen_compliance_tex(complidict)
+        complitex += complidict.get_compliance_tex()
         complitex = [st.replace(
             item, 'False', '$\\textcolor{red}{\\bf{False}}$') for item in complitex]
 
@@ -457,21 +460,31 @@ class Task(object):
             compliance[CCDkey] = not np.any(test, axis=(0, 1)).sum()
         return compliance
 
+#==============================================================================
+#     def old_check_stat_perCCDandQ(self, arr, CCDQlims, CCDs=['CCD1', 'CCD2', 'CCD3']):
+#         """ """
+#         compliance = OrderedDict()
+#         for iCCD, CCDkey in enumerate(CCDs):
+#             compliance[CCDkey] = OrderedDict()
+#             for jQ, Q in enumerate(ccd.Quads):
+#                 # allowing for some flexibility in the granularity of the set 
+#                 # limits (common per CCD or Q). WATCH IT OUT.
+#                 if isinstance(CCDQlims[CCDkey],dict):
+#                     _lims = CCDQlims[CCDkey][Q]
+#                 elif isinstance(CCDQlims[CCDkey],list):
+#                     _lims = CCDQlims[CCDkey]
+#                 test = (np.isnan(arr[:, iCCD, jQ, ...]) |
+#                         (arr[:, iCCD, jQ, ...] <= _lims[0]) | (arr[:, iCCD, jQ, ...] >= _lims[1]))
+#                 compliance[CCDkey][Q] = not np.any(test).sum()
+#         return compliance
+#==============================================================================
+
     def check_stat_perCCDandQ(self, arr, CCDQlims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
-        compliance = OrderedDict()
-        for iCCD, CCDkey in enumerate(CCDs):
-            compliance[CCDkey] = OrderedDict()
-            for jQ, Q in enumerate(ccd.Quads):
-                # allowing for some flexibility in the granularity of the set 
-                # limits (common per CCD or Q). WATCH IT OUT.
-                if isinstance(CCDQlims[CCDkey],dict):
-                    _lims = CCDQlims[CCDkey][Q]
-                elif isinstance(CCDQlims[CCDkey],list):
-                    _lims = CCDQlims[CCDkey]
-                test = (np.isnan(arr[:, iCCD, jQ, ...]) |
-                        (arr[:, iCCD, jQ, ...] <= _lims[0]) | (arr[:, iCCD, jQ, ...] >= _lims[1]))
-                compliance[CCDkey][Q] = not np.any(test).sum()
+        compliance = complimod.ComplianceMX_CCDQ()
+        compliance.CCDQlims = CCDQlims.copy()
+        compliance.CCDs = CCDs
+        compliance.check_stat(arr)
         return compliance
 
     def check_stat_perCCDandCol(self, arr, lims, CCDs=['CCD1', 'CCD2', 'CCD3']):
