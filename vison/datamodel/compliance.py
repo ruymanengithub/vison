@@ -21,6 +21,7 @@ import numpy as np
 
 import unittest
 
+from vison.support import vjson
 from vison.support.utils import countdictlayers
 # END IMPORT
         
@@ -110,16 +111,17 @@ class ComplianceMX(OrderedDict):
     
     def __init__(self, *args, **kwargs):
         """ """
-        super(ComplianceMX,self).__init__(*args,**kwargs)
+        super(ComplianceMX,self).__init__()
         
     def check_stat(self,inparr):
         raise NotImplementedError("Subclass must implement abstract method")
     
     def get_compliance_tex(self):
-        return gen_compliance_tex(self)
+        return gen_compliance_tex(dict(self))
     
     def get_compliance_txt(self):
-        return self.__str__()
+        return vjson.dumps_to_json(self)
+        #return self.__str__()
     
     def IsCompliant(self):
         
@@ -142,18 +144,32 @@ class ComplianceMX(OrderedDict):
 
 class ComplianceMX_CCDQ(ComplianceMX):
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self,CCDs=None,Qs=None,CCDQlims=None):
         """ """
-        super(ComplianceMX_CCDQ,self).__init__(*args,**kwargs)
-        self.CCDs = ['CCD1','CCD2','CCD3']
-        self.Qs = ['E','F','G','H']
-        self.CCDQlims = OrderedDict()
+        super(ComplianceMX_CCDQ,self).__init__()
+        if CCDs is None:
+            self.CCDs = ['CCD1','CCD2','CCD3']
+        else:
+            self.CCDs = CCDs
+        if Qs is None:
+            self.Qs = ['E','F','G','H']
+        else:
+            self.Qs = Qs
+            
+        for CCD in self.CCDs:
+            self[CCD] = OrderedDict()
+            #for Q in self.Qs:
+            #    self[CCD][Q] = OrderedDict()
+        
+        if CCDQlims is None:        
+            self.CCDQlims = OrderedDict()
+        else:
+            self.CCDQlims = CCDQlims
         
         
     def check_stat(self,inparr):
         """ """
         for iCCD, CCDkey in enumerate(self.CCDs):
-            self[CCDkey] = OrderedDict()
             for jQ, Q in enumerate(self.Qs):
                 if isinstance(self.CCDQlims[CCDkey],dict):
                     _lims = self.CCDQlims[CCDkey][Q]
@@ -161,9 +177,134 @@ class ComplianceMX_CCDQ(ComplianceMX):
                     _lims = self.CCDQlims[CCDkey]
                 test = (np.isnan(inparr[:, iCCD, jQ, ...]) |
                         (inparr[:, iCCD, jQ, ...] <= _lims[0]) | (inparr[:, iCCD, jQ, ...] >= _lims[1]))
-                try: avvalue = np.nanmean(inparr[:,iCCD, jQ, ...])
+                try: avvalue = float(np.nanmean(inparr[:,iCCD, jQ, ...]))
                 except: avvalue = np.nan
-                self[CCDkey][Q] = [not np.any(test).sum(), avvalue]
+                self[CCDkey][Q] = [not np.any(test).sum(), avvalue, _lims]
+
+
+class ComplianceMX_CCD(ComplianceMX):
+    
+    def __init__(self,CCDs=None, CCDlims=None):
+        """ """
+        super(ComplianceMX_CCD,self).__init__()
+        if CCDs is None:
+            self.CCDs = ['CCD1','CCD2','CCD3']
+        else:
+            self.CCDs = CCDs
+        
+        if CCDlims is None:        
+            self.CCDlims = OrderedDict()
+        else:
+            self.CCDlims = CCDlims
+        
+        
+    def check_stat(self,inparr):
+        """ """
+        for iCCD, CCDkey in enumerate(self.CCDs):
+            
+            _lims = self.CCDQlims[CCDkey]
+            test = (np.isnan(inparr[:, iCCD, ...]) |\
+                    (inparr[:, iCCD, ...] <= _lims[0]) |\
+                    (inparr[:, iCCD, ...] >= _lims[1]))
+            
+            try: avvalue = float(np.nanmean(inparr[:,iCCD, ...]))
+            except: avvalue = np.nan
+            
+            self[CCDkey] = [not np.any(test).sum(), avvalue, _lims]
+
+
+class ComplianceMX_CCDCol(ComplianceMX):
+    
+    def __init__(self, colnames, indexer, CCDs=None, lims=None):
+        """ """
+        super(ComplianceMX_CCD,self).__init__()
+        
+        self.colnames = colnames
+        self.indexer = indexer
+        
+        if CCDs is None:
+            self.CCDs = ['CCD1','CCD2','CCD3']
+        else:
+            self.CCDs = CCDs
+        
+        for CCD in self.CCDs:
+            self[CCD] = OrderedDict()
+        
+        if lims is None:        
+            self.lims = OrderedDict()
+        else:
+            self.lims = lims
+        
+        
+    def check_stat(self,inparr):
+        """ """
+        for iCCD, CCDkey in enumerate(self.CCDs):
+            for jcol, colname in enumerate(self.colnames):
+                _lims = self.lims[CCDkey][colname]
+                ixsel = np.where(self.indexer == colname)
+
+                testv = (np.isnan(inparr[ixsel, iCCD, ...]) |
+                        (inparr[ixsel, iCCD, ...] <= _lims[0]) | (inparr[ixsel, iCCD, ...] >= _lims[1]))
+                
+                try: avvalue = float(np.nanmean(inparr[ixsel,iCCD, ...]))
+                except: avvalue = np.nan
+                
+                test = not (
+                    np.any(testv, axis=(0, 1)).sum() | (ixsel[0].shape[0] == 0))
+                
+                self[CCDkey][colname] = [test, avvalue, _lims]
+
+class ComplianceMX_CCDQCol(ComplianceMX):
+    
+    def __init__(self, colnames, indexer, CCDs=None, Qs=None, lims=None):
+        """ """
+        super(ComplianceMX_CCD,self).__init__()
+        
+        self.colnames = colnames
+        self.indexer = indexer
+        
+        if CCDs is None:
+            self.CCDs = ['CCD1','CCD2','CCD3']
+        else:
+            self.CCDs = CCDs
+            
+        if Qs is None:
+            self.Qs = ['E','F','G','H']
+        else:
+            self.Qs = Qs
+        
+        for CCD in self.CCDs:
+            self[CCD] = OrderedDict()
+            for Q in self.Qs:
+                self[CCD][Q] = OrderedDict()
+            
+        
+        if lims is None:        
+            self.lims = OrderedDict()
+        else:
+            self.lims = lims
+        
+        
+    def check_stat(self,inparr):
+        """ """
+        for iCCD, CCDkey in enumerate(self.CCDs):
+            for jQ, Q in enumerate(self.Qs):
+                for kcol, colname in enumerate(self.colnames):
+                    _lims = self.lims[CCDkey][colname]
+                    ixsel = np.where(self.indexer == colname)
+    
+                    testv = (np.isnan(inparr[ixsel, iCCD, jQ, ...]) |\
+                            (inparr[ixsel, iCCD, jQ, ...] <= _lims[0]) | \
+                            (inparr[ixsel, iCCD, jQ, ...] >= _lims[1]))
+                    
+                    try: avvalue = float(np.nanmean(inparr[ixsel,iCCD, jQ, ...]))
+                    except: avvalue = np.nan
+                    
+                    test = not (
+                        np.any(testv, axis=(0, 1)).sum() | (ixsel[0].shape[0] == 0))
+                    
+                    self[CCDkey][Q][colname] = [test, avvalue, _lims]
+
 
 
 class TestComplianceClass(unittest.TestCase):
