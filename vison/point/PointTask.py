@@ -183,15 +183,23 @@ class PointTask(Task):
 
     def check_stat_perCCDQSpot(self, arr, lims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
-        Spots = strackermod.starnames
+        spotnames = strackermod.starnames
         Qs = ccd.Quads
-        colnames = lims[CCDs[0]][Qs[0]][Spots[0]].keys()
         
-        compliance = complimod.ComplianceMX_CCDQColSpot(colnames, 
-                                                   indexer=self.dd.mx['label'][:],
-                                                   CCDs=CCDs,
-                                                   Qs=Qs,
-                                                   lims=lims.copy())
+        if isinstance(lims[CCDs[0]][Qs[0]][spotnames[0]],(dict,OrderedDict)):
+            colnames = lims[CCDs[0]][Qs[0]][spotnames[0]].keys()
+            indexer = self.dd.mx['label'][:].copy()            
+        elif isinstance(lims[CCDs[0]][Qs[0]][spotnames[0]],(list,tuple)):            
+            colnames = None
+            indexer = None
+        
+        compliance = complimod.ComplianceMX_CCDQColSpot(spotnames,
+                                colnames=colnames, 
+                                indexer=indexer,
+                                CCDs=CCDs,
+                                Qs=Qs,
+                                lims=lims.copy())
+        
         compliance.check_stat(arr)
         return compliance
 

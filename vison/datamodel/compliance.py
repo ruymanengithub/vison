@@ -142,6 +142,37 @@ class ComplianceMX(OrderedDict):
         
         return isOK
 
+class ComplianceMX_CCD(ComplianceMX):
+    
+    def __init__(self,CCDs=None, CCDlims=None):
+        """ """
+        super(ComplianceMX_CCD,self).__init__()
+        if CCDs is None:
+            self.CCDs = ['CCD1','CCD2','CCD3']
+        else:
+            self.CCDs = CCDs
+        
+        if CCDlims is None:        
+            self.CCDlims = OrderedDict()
+        else:
+            self.CCDlims = CCDlims
+        
+        
+    def check_stat(self,inparr):
+        """ """
+        for iCCD, CCDkey in enumerate(self.CCDs):
+            
+            _lims = self.CCDQlims[CCDkey]
+            test = (np.isnan(inparr[:, iCCD, ...]) |\
+                    (inparr[:, iCCD, ...] <= _lims[0]) |\
+                    (inparr[:, iCCD, ...] >= _lims[1]))
+            
+            try: avvalue = float(np.nanmean(inparr[:,iCCD, ...]))
+            except: avvalue = np.nan
+            
+            self[CCDkey] = [not np.any(test).sum(), avvalue, tuple(_lims)]
+
+
 class ComplianceMX_CCDQ(ComplianceMX):
     
     def __init__(self,CCDs=None,Qs=None,CCDQlims=None):
@@ -179,38 +210,7 @@ class ComplianceMX_CCDQ(ComplianceMX):
                         (inparr[:, iCCD, jQ, ...] <= _lims[0]) | (inparr[:, iCCD, jQ, ...] >= _lims[1]))
                 try: avvalue = float(np.nanmean(inparr[:,iCCD, jQ, ...]))
                 except: avvalue = np.nan
-                self[CCDkey][Q] = [not np.any(test).sum(), avvalue, _lims]
-
-
-class ComplianceMX_CCD(ComplianceMX):
-    
-    def __init__(self,CCDs=None, CCDlims=None):
-        """ """
-        super(ComplianceMX_CCD,self).__init__()
-        if CCDs is None:
-            self.CCDs = ['CCD1','CCD2','CCD3']
-        else:
-            self.CCDs = CCDs
-        
-        if CCDlims is None:        
-            self.CCDlims = OrderedDict()
-        else:
-            self.CCDlims = CCDlims
-        
-        
-    def check_stat(self,inparr):
-        """ """
-        for iCCD, CCDkey in enumerate(self.CCDs):
-            
-            _lims = self.CCDQlims[CCDkey]
-            test = (np.isnan(inparr[:, iCCD, ...]) |\
-                    (inparr[:, iCCD, ...] <= _lims[0]) |\
-                    (inparr[:, iCCD, ...] >= _lims[1]))
-            
-            try: avvalue = float(np.nanmean(inparr[:,iCCD, ...]))
-            except: avvalue = np.nan
-            
-            self[CCDkey] = [not np.any(test).sum(), avvalue, _lims]
+                self[CCDkey][Q] = [not np.any(test).sum(), avvalue, tuple(_lims)]
 
 
 class ComplianceMX_CCDCol(ComplianceMX):
@@ -252,7 +252,7 @@ class ComplianceMX_CCDCol(ComplianceMX):
                 test = not (
                     np.any(testv, axis=(0, 1)).sum() | (ixsel[0].shape[0] == 0))
                 
-                self[CCDkey][colname] = [test, avvalue, _lims]
+                self[CCDkey][colname] = [test, avvalue, tuple(_lims)]
 
 class ComplianceMX_CCDQCol(ComplianceMX):
     
@@ -303,11 +303,11 @@ class ComplianceMX_CCDQCol(ComplianceMX):
                     test = not (
                         np.any(testv, axis=(0, 1)).sum() | (ixsel[0].shape[0] == 0))
                     
-                    self[CCDkey][Q][colname] = [test, avvalue, _lims]
+                    self[CCDkey][Q][colname] = [test, avvalue, tuple(_lims)]
 
 class ComplianceMX_CCDQColSpot(ComplianceMX):
     
-    def __init__(self, colnames, indexer, spotnames, CCDs=None, Qs=None, lims=None):
+    def __init__(self, spotnames, colnames=None, indexer=None, CCDs=None, Qs=None, lims=None):
         """ """
         super(ComplianceMX_CCDQColSpot,self).__init__()
         
@@ -359,18 +359,17 @@ class ComplianceMX_CCDQColSpot(ComplianceMX):
                             try: avvalue = float(np.nanmean(inparr[ixsel ,iCCD, jQ, kspot, ...]))
                             except: avvalue = np.nan
                             
-                            self[CCDkey][Q][spot][colname] = [test, avvalue, _lims_col]
+                            self[CCDkey][Q][spot][colname] = [test, avvalue, tuple(_lims_col)]
                     else:
 
                         testv = (np.isnan(inparr[:, iCCD, jQ, kspot, ...]) |
                                 (inparr[:, iCCD, jQ, kspot, ...] <= _lims[0]) |\
                                 (inparr[:, iCCD, jQ, kspot] >= _lims[1]))
-                        testv = not (
-                                np.any(testv, axis=(0, 1)).sum() | (ixsel[0].shape[0] == 0))
-                        test = not np.any(test).sum()
+                        
+                        test = not np.any(testv).sum()
                         try: avvalue = float(np.nanmean(inparr[: ,iCCD, jQ, kspot, ...]))
                         except: avvalue = np.nan
-                        self[CCDkey][Q][spot] = [test, avvalue, _lims]
+                        self[CCDkey][Q][spot] = [test, avvalue, tuple(_lims)]
                         
 
 class TestComplianceClass(unittest.TestCase):
