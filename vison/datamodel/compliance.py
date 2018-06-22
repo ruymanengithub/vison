@@ -77,33 +77,55 @@ def removescalars_from_dict(indict):
 
     return outdict
 
+def texarize_complidict(indict):
+    
+    def traverse_tree(indict):
+        for key, value in indict.iteritems():
+            if isinstance(value, (dict, OrderedDict)):
+                indict[key] = traverse_tree(value)
+            else:
+                compmsg = indict[key]
+                llim,ulim = tuple(compmsg[2])
+                tex = '%.2f^{(%.2f,%.2f)}' % (compmsg[1],llim,ulim)
+                if not compmsg[0]:
+                    tex = '\\textcolor{red}{%s}' % tex
+                tex = '$%s$' % tex
+                indict[key] = tex
+        return indict
+    
+    outdict = traverse_tree(copy.deepcopy(indict))
 
-def gen_compliance_tex(indict):
+    return outdict
+    
+
+def gen_compliance_tex(indict,escape=True):
     """ """
     
     complidict = copy.deepcopy(indict)
-    
-    level = countdictlayers(indict)
+    tcomplidict = texarize_complidict(complidict)
+    level = countdictlayers(tcomplidict)
     
     if level < 3:
-        if level == 1: complidict = removescalars_from_dict(complidict)
-        df = pd.DataFrame.from_dict(complidict)
+        if level == 1: tcomplidict = removescalars_from_dict(tcomplidict)
+        df = pd.DataFrame.from_dict(tcomplidict)
         tex = df.to_latex(multicolumn=True, multirow=True,
-                          longtable=True, index=level>1)
+                          longtable=True, index=level>1,
+                          escape=escape)
         tex = st.split(tex, '\n')
     elif level == 3:
         keys = []
         frames = []
-        for key, d in complidict.iteritems():
+        for key, d in tcomplidict.iteritems():
             keys.append(key)
             frames.append(pd.DataFrame.from_dict(d))
         series = pd.concat(frames, keys=keys)
         
         tex = series.to_latex(multicolumn=True, multirow=True,
-                          longtable=True, index=True)
+                          longtable=True, index=True,
+                          escape=escape)
         tex = st.split(tex, '\n')
     else:
-        tex = convert_compl_to_nesteditemlist(complidict)
+        tex = convert_compl_to_nesteditemlist(tcomplidict)
         
     return tex
 
@@ -117,7 +139,7 @@ class ComplianceMX(OrderedDict):
         raise NotImplementedError("Subclass must implement abstract method")
     
     def get_compliance_tex(self):
-        return gen_compliance_tex(dict(self))
+        return gen_compliance_tex(dict(self),escape=False)
     
     def get_compliance_txt(self):
         return vjson.dumps_to_json(self)
