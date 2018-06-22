@@ -217,7 +217,7 @@ class ComplianceMX_CCDCol(ComplianceMX):
     
     def __init__(self, colnames, indexer, CCDs=None, lims=None):
         """ """
-        super(ComplianceMX_CCD,self).__init__()
+        super(ComplianceMX_CCDCol,self).__init__()
         
         self.colnames = colnames
         self.indexer = indexer
@@ -258,7 +258,7 @@ class ComplianceMX_CCDQCol(ComplianceMX):
     
     def __init__(self, colnames, indexer, CCDs=None, Qs=None, lims=None):
         """ """
-        super(ComplianceMX_CCD,self).__init__()
+        super(ComplianceMX_CCDQCol,self).__init__()
         
         self.colnames = colnames
         self.indexer = indexer
@@ -309,7 +309,7 @@ class ComplianceMX_CCDQColSpot(ComplianceMX):
     
     def __init__(self, colnames, indexer, spotnames, CCDs=None, Qs=None, lims=None):
         """ """
-        super(ComplianceMX_CCD,self).__init__()
+        super(ComplianceMX_CCDQColSpot,self).__init__()
         
         self.colnames = colnames
         self.indexer = indexer
