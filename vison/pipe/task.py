@@ -398,8 +398,8 @@ class Task(object):
         complitex = ['$\\bf{%s}$' % nicelabel]
         #complitex += complimod.gen_compliance_tex(complidict)
         complitex += complidict.get_compliance_tex()
-        complitex = [st.replace(
-            item, 'False', '$\\textcolor{red}{\\bf{False}}$') for item in complitex]
+        #complitex = [st.replace(
+        #    item, 'False', '$\\textcolor{red}{\\bf{False}}$') for item in complitex]
 
         self.report.add_Text(complitex)
 
