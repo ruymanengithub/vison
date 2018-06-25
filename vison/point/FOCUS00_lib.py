@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 # END IMPORT
 
 
-def fit_focus_single(x, y, yerror=None, degree=1, doplot=True):
+def fit_focus_single(x, y, yerror=None, degree=1, doplot=False):
     """ """
     assert len(x) == len(y)
 
@@ -73,6 +73,7 @@ def fit_focus_all(shape_seq, doplot=True):
         - map of fluence for best-focus mirr_pos
 
     """
+    raise NotImplementedError
 
 
 def inspect_focus_all(shape_seq, doplot=True):
