@@ -43,20 +43,20 @@ class PointTask(Task):
         test = self.inputs['test']
         if 'PSF01' in test:
             _kwargs = dict(figkeys=['PSF0Xchecks_offsets', 'PSF0Xchecks_stds',
-                                   'PSF0Xchecks_bgd', 'PSF0Xchecks_fluence',
-                                   'PSF0Xchecks_fwhmx', 'PSF0Xchecks_fwhmy'])
+                                    'PSF0Xchecks_bgd', 'PSF0Xchecks_fluence',
+                                    'PSF0Xchecks_fwhmx', 'PSF0Xchecks_fwhmy'])
         elif 'PSF02' in test:
             _kwargs = dict(figkeys=['PSF0Xchecks_offsets', 'PSF0Xchecks_stds',
-                                   'PSF0Xchecks_bgd', 'PSF0Xchecks_fluence',
-                                   'PSF0Xchecks_fwhmx', 'PSF0Xchecks_fwhmy'])
+                                    'PSF0Xchecks_bgd', 'PSF0Xchecks_fluence',
+                                    'PSF0Xchecks_fwhmx', 'PSF0Xchecks_fwhmy'])
         elif 'FOCUS00' in test:
             _kwargs = dict(figkeys=['F00checks_offsets', 'F00checks_stds',
-                                   'F00checks_bgd', 'F00checks_fluence',
-                                   'F00checks_fwhmx', 'F00checks_fwhmy'])
+                                    'F00checks_bgd', 'F00checks_fluence',
+                                    'F00checks_fwhmx', 'F00checks_fwhmy'])
         elif 'PSFLUX00' in test:
             _kwargs = dict(figkeys=['PSF0Xchecks_offsets', 'PSF0Xchecks_stds',
-                                   'PSF0Xchecks_bgd', 'PSF0Xchecks_fluence',
-                                   'PSF0Xchecks_fwhmx', 'PSF0Xchecks_fwhmy'])
+                                    'PSF0Xchecks_bgd', 'PSF0Xchecks_fluence',
+                                    'PSF0Xchecks_fwhmx', 'PSF0Xchecks_fwhmy'])
         kwargs.update(_kwargs)
 
         Task.check_data(self, **kwargs)
@@ -112,17 +112,18 @@ class PointTask(Task):
         # Get statistics in different regions
 
         if not self.drill:
-            
+
             strackers = self.ogse.startrackers
-            
+
             psCCDcoodicts = OrderedDict(names=strackers['CCD1'].starnames)
-            
+
             for jCCD, CCDk in enumerate(CCDs):
-                psCCDcoodicts[CCDk] = strackers[CCDk].get_allCCDcoos(nested=True)
+                psCCDcoodicts[CCDk] = strackers[CCDk].get_allCCDcoos(
+                    nested=True)
 
             for iObs in range(nObs):
                 for jCCD, CCDk in enumerate(CCDs):
-                    
+
                     dpath = self.dd.mx['datapath'][iObs, jCCD]
                     ffits = os.path.join(dpath, '%s.fits' %
                                          self.dd.mx['File_name'][iObs, jCCD])
@@ -168,7 +169,7 @@ class PointTask(Task):
 
                             spot = polib.extract_spot(ccdobj, coo, Quad, log=self.log,
                                                       stampw=self.stampw)
-                            
+
                             try:
                                 res_bas = spot.measure_basic(
                                     rap=10, rin=15, rout=-1)
@@ -179,27 +180,26 @@ class PointTask(Task):
                             for chkkey in chkkeycorr:
                                 self.dd.mx[chkkey][iObs, jCCD, kQ,
                                                    xSpot] = res_bas[chkkeycorr[chkkey]]
-                        
 
     def check_stat_perCCDQSpot(self, arr, lims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
         spotnames = strackermod.starnames
         Qs = ccd.Quads
-        
-        if isinstance(lims[CCDs[0]][Qs[0]][spotnames[0]],(dict,OrderedDict)):
+
+        if isinstance(lims[CCDs[0]][Qs[0]][spotnames[0]], (dict, OrderedDict)):
             colnames = lims[CCDs[0]][Qs[0]][spotnames[0]].keys()
-            indexer = self.dd.mx['label'][:].copy()            
-        elif isinstance(lims[CCDs[0]][Qs[0]][spotnames[0]],(list,tuple)):            
+            indexer = self.dd.mx['label'][:].copy()
+        elif isinstance(lims[CCDs[0]][Qs[0]][spotnames[0]], (list, tuple)):
             colnames = None
             indexer = None
-        
+
         compliance = complimod.ComplianceMX_CCDQColSpot(spotnames,
-                                colnames=colnames, 
-                                indexer=indexer,
-                                CCDs=CCDs,
-                                Qs=Qs,
-                                lims=lims.copy())
-        
+                                                        colnames=colnames,
+                                                        indexer=indexer,
+                                                        CCDs=CCDs,
+                                                        Qs=Qs,
+                                                        lims=lims.copy())
+
         compliance.check_stat(arr)
         return compliance
 
@@ -248,7 +248,7 @@ class PointTask(Task):
             for CCDk in CCDs:
                 _lims[CCDk] = offsets_gradients[CCDk][reg]
             arr = self.dd.mx['offset_%s' % reg][:]-self.dd.mx['offset_pre'][:]
-            _xcheck_offsets = self.check_stat_perCCDandQ(arr, _lims, CCDs)            
+            _xcheck_offsets = self.check_stat_perCCDandQ(arr, _lims, CCDs)
 
             if not self.IsComplianceMatrixOK(_xcheck_offsets):
                 self.dd.flags.add('POORQUALDATA')
@@ -283,7 +283,7 @@ class PointTask(Task):
         BGD_lims = self.perflimits['BGD_lims']  # dict
         _compliance_bgd = self.check_stat_perCCDandQ(
             self.dd.mx['bgd_img'], BGD_lims, CCDs)
-        
+
         if not self.IsComplianceMatrixOK(_compliance_bgd):
             self.dd.flags.add('POORQUALDATA')
             self.dd.flags.add('BGD_OOL')
@@ -301,7 +301,7 @@ class PointTask(Task):
                     self.dd.mx['chk_fwhmy'][:]**2.)**0.5
         _compliance_fwhm = self.check_stat_perCCDQSpot(
             chk_fwhm, FWHM_lims, CCDs)
-        
+
         if not self.IsComplianceMatrixOK(_compliance_fwhm):
             self.dd.flags.add('POORQUALDATA')
             self.dd.flags.add('FOCUS_OOL')
@@ -327,4 +327,3 @@ class PointTask(Task):
         if self.report is not None:
             self.addComplianceMatrix2Report(
                 _compliance_flu, label='COMPLIANCE FLUENCE:')
-        

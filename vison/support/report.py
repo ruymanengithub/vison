@@ -215,7 +215,7 @@ class FigsTable(Content):
                 figcounter += 1
 
         tex.append('\end{longtable}')
-        
+
         if self.caption is not None:
             captiontex = r'\caption{%s}' % self.caption
             tex.insert(-1, captiontex)
@@ -302,7 +302,7 @@ class Table(Content):
                 if 'begin{longtable}' in tex[i]:
                     tex[i] += '{%s}' % col_align
             tex = [item for item in tex if '{tabular}' not in item]
-        
+
         return tex
 
 
@@ -329,7 +329,7 @@ class Text(Content):
 class Report(Container):
 
     def __init__(self, TestName='Test', Model='XM', Contents=[], Texheader=default_header,
-                 Texbody=[r'\begin{document}'],Reference='7-XXX'):
+                 Texbody=[r'\begin{document}'], Reference='7-XXX'):
         """ """
 
         self.TestName = st.replace(TestName, '_', '\_')
@@ -341,19 +341,21 @@ class Report(Container):
         self.Texfooter = [r'\end{document}']
 
         self.Contents = Contents
-        
+
         self.Reference = Reference
 
     def generate_Header(self, author='Ruyman Azzollini'):
         """ """
-        headerList = lx.generate_header(self.TestName, self.Model, author, self.Reference)
+        headerList = lx.generate_header(
+            self.TestName, self.Model, author, self.Reference)
         self.Texheader = headerList
 
     def generate_Texbody(self, custodian='Ruyman Azzollini'):
         """ """
         #model = self.Model
         #test = self.TestName
-        Texbody = lx.generate_preamble(self.Model, self.TestName, custodian, self.Reference)
+        Texbody = lx.generate_preamble(
+            self.Model, self.TestName, custodian, self.Reference)
 
         for item in self.Contents:
             Texbody += item.generate_Latex()
@@ -474,11 +476,13 @@ class Report(Container):
                   os.path.join(visondata.__path__[0], deluxetablesty))
 
         execline1 = 'latex -interaction=nonstopmode %s.tex' % fileroot
-        if silent: execline1 += ' > /dev/null'
+        if silent:
+            execline1 += ' > /dev/null'
         os.system(execline1)
         os.system(execline1)  # do it twice to get references right!
         execline2 = 'dvipdf %s.dvi %s.pdf' % tuple([fileroot]*2)
-        if silent: execline2 += ' > /dev/null'
+        if silent:
+            execline2 += ' > /dev/null'
         os.system(execline2)
         os.system(execline2)  # twice to get all references
 

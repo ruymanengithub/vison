@@ -116,8 +116,7 @@ class DarkTask(Task):
         # absolute value of offsets
 
         offsets_lims = self.perflimits['offsets_lims']
-        
-        
+
         if test == 'BIAS01':
             regs_off = ['pre', 'img', 'ove']
         elif test == 'DARK01':
@@ -128,7 +127,7 @@ class DarkTask(Task):
             _compliance_offsets = self.check_stat_perCCDandQ(
                 arr, offsets_lims, CCDs)
 
-            #if not self.IsComplianceMatrixOK(_compliance_offsets):
+            # if not self.IsComplianceMatrixOK(_compliance_offsets):
             if not _compliance_offsets.IsCompliant():
                 self.dd.flags.add('POORQUALDATA')
             if self.log is not None:

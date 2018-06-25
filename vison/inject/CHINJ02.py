@@ -107,7 +107,7 @@ class CHINJ02(InjTask):
         )
 
     def set_perfdefaults(self, **kwargs):
-        super(CHINJ02,self).set_perfdefaults(**kwargs)
+        super(CHINJ02, self).set_perfdefaults(**kwargs)
 
         Flu_lims, FluGrad_lims = self.get_FluenceAndGradient_limits()
 

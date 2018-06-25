@@ -43,13 +43,14 @@ class CDP(object):
 
     def __init__(self, *args, **kwargs):
         """ """
-        
+
         defaults = dict(rootname='Uknown', path='', header=OrderedDict(),
                         meta=OrderedDict(), data=None)
         defaults.update(args)
         defaults.update(kwargs)
-        
-        for key in defaults.keys(): self.__setattr__(key,defaults[key])
+
+        for key in defaults.keys():
+            self.__setattr__(key, defaults[key])
 
     def savetopickle(self, pickf=''):
         """ """
@@ -58,14 +59,13 @@ class CDP(object):
 
         outdict = copy.deepcopy(self.__dict__)
         cPickleDumpDictionary(outdict, pickf)
-        
-    def loadfrompickle(self,pickf=''):
+
+    def loadfrompickle(self, pickf=''):
         """ """
         if pickf == '':
             pickf = os.path.join(self.path, '%s.pick' % self.rootname)
         saved = cPickleRead(pickf)
         self.__dict__.update(saved)
-        
 
     def savehardcopy(self, filef=''):
         """ """

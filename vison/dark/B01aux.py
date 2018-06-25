@@ -43,62 +43,66 @@ check_std_dict = dict(stats=['std_pre', 'std_img', 'std_ove'],
                       )
 
 basic_prof1Dhor_dict = dict(
-        figname='BIAS01_profs1D_hor_allOBSIDs.png',
-        caption='BIAS01: Average profiles across columns.',
-        meta=dict(doLegend=False,
-                  ylabel='ADU',
-                  xlabel='Column [pix]',
-                  suptitle='BIAS01: Profiles across columns.')
-        )
+    figname='BIAS01_profs1D_hor_allOBSIDs.png',
+    caption='BIAS01: Average profiles across columns.',
+    meta=dict(doLegend=False,
+              ylabel='ADU',
+              xlabel='Column [pix]',
+              suptitle='BIAS01: Profiles across columns.')
+)
 
 basic_prof1Dver_dict = dict(
-        figname='BIAS01_profs1D_ver_allOBSIDs.png',
-        caption='BIAS01: Average profiles across rows.',
-        meta=dict(doLegend=False,
-                  ylabel='ADU',
-                  xlabel='Row [pix]',
-                  suptitle='BIAS01: Profiles across rows.')
-        )
+    figname='BIAS01_profs1D_ver_allOBSIDs.png',
+    caption='BIAS01: Average profiles across rows.',
+    meta=dict(doLegend=False,
+              ylabel='ADU',
+              xlabel='Row [pix]',
+              suptitle='BIAS01: Profiles across rows.')
+)
 
 basic_histosRON_dict = dict(
-        figname='BIAS01_RON_distro_allOBSIDs.png',
-        caption='BIAS01: RON distribution',
-        meta = dict(doLegend=False,
-                ylabel='N',
-                xlabel='RON [ADU]',
-                suptitle='BIAS01: RON Distribution'),
-        )
+    figname='BIAS01_RON_distro_allOBSIDs.png',
+    caption='BIAS01: RON distribution',
+    meta=dict(doLegend=False,
+              ylabel='N',
+              xlabel='RON [ADU]',
+              suptitle='BIAS01: RON Distribution'),
+)
 
 
 B01figs = dict()
 B01figs['B01checks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]
 #B01figs['B01checks_stds'] = [plB01check,dict(stat='std')]
 B01figs['B01checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
-B01figs['B01basic_prof1D_hor'] = [figclasses.Fig_Beam2DPlot, basic_prof1Dhor_dict]
-B01figs['B01basic_prof1D_ver'] = [figclasses.Fig_Beam2DPlot, basic_prof1Dver_dict]
-B01figs['B01basic_histosRON'] = [figclasses.Fig_Beam1DHist, basic_histosRON_dict]
+B01figs['B01basic_prof1D_hor'] = [
+    figclasses.Fig_Beam2DPlot, basic_prof1Dhor_dict]
+B01figs['B01basic_prof1D_ver'] = [
+    figclasses.Fig_Beam2DPlot, basic_prof1Dver_dict]
+B01figs['B01basic_histosRON'] = [
+    figclasses.Fig_Beam1DHist, basic_histosRON_dict]
 B01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
 
 
 class RON_CDP(cdp.Tables_CDP):
-    
+
     def ingest_inputs(self, RONmx, CCDs, Quads, meta=None, header=None, figs=None):
-        
+
         RONmsk = np.zeros_like(RONmx, dtype='int32')
         RONmsk[np.where((np.isclose(RONmx, 0.)) | (np.isnan(RONmx)))] = 1
         beRON = np.ma.median(np.ma.masked_array(
-            RONmx, mask=RONmsk), axis=1).data.copy() # best estimate of RON
+            RONmx, mask=RONmsk), axis=1).data.copy()  # best estimate of RON
 
-        beRONdict = OrderedDict() 
+        beRONdict = OrderedDict()
         for jCCD, CCDk in enumerate(CCDs):
             beRONdict[CCDk] = OrderedDict()
             for kQ, Q in enumerate(Quads):
                 beRONdict[CCDk][Q] = beRON[jCCD, kQ]
         beRONdf = pd.DataFrame.from_dict(beRONdict)  # PENDING
-        
+
         _data = OrderedDict(RON=beRONdf)
-        super(RON_CDP,self).ingest_inputs(_data,meta=meta,header=header,figs=figs)
-        
+        super(RON_CDP, self).ingest_inputs(
+            _data, meta=meta, header=header, figs=figs)
+
 
 ron_cdp = RON_CDP()
 ron_cdp.rootname = 'RON_BIAS01'

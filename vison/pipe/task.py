@@ -47,7 +47,7 @@ class Task(object):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        
+
         self.ID = None
         if 'ID' in inputs:
             self.ID = inputs['ID']
@@ -64,8 +64,8 @@ class Task(object):
             self.elvis = inputs['elvis']
         else:
             self.elvis = context.elvis
-        
-        self.ogse = ogsemod.Ogse(self.CHAMBER,withpover=True)
+
+        self.ogse = ogsemod.Ogse(self.CHAMBER, withpover=True)
         self.Model = 'XM'
         self.internals = dict()
         self.inputs = self.inputsclass()
@@ -104,12 +104,11 @@ class Task(object):
             diffvalues = inputs['diffvalues'].copy()
         else:
             diffvalues = {}
-            
+
         self.inputs['structure'] = self.build_scriptdict(
             diffvalues, elvis=self.elvis)
 
         self.CDP_header = OrderedDict()
-        
 
     def set_inpdefaults(self, **kwargs):
         pass
@@ -160,33 +159,34 @@ class Task(object):
         self.inputs['subpaths'] = _paths
 
         if todo_flags['init']:
-            
+
             if self.log is not None:
-                    self.log.info('Initializing: %s' %
+                self.log.info('Initializing: %s' %
                               (self.__module__,))
-            
+
             if os.path.exists(DataDictFile):
                 os.system('rm %s' % DataDictFile)
             if os.path.exists(reportobjFile):
                 os.system('rm %s' % reportobjFile)
-            
+
             # Creating/clearing resultspath
             if not isthere(resultspath):
                 os.system('mkdir %s' % resultspath)
             else:
-                os.system('find %s -maxdepth 1 -type f -exec rm -f {} \;' % resultspath)
+                os.system(
+                    'find %s -maxdepth 1 -type f -exec rm -f {} \;' % resultspath)
 
             # Creating/clearing subresultspath
-            for _,subpath in self.inputs['subpaths'].iteritems():
+            for _, subpath in self.inputs['subpaths'].iteritems():
                 if not isthere(subpath):
                     os.system('mkdir %s' % subpath)
                 else:
                     os.system('rm -rf %s/*' % subpath)
- 
+
             # Initialising Report Object
 
             if todo_flags['report']:
-                self.report = Report(TestName=testkey, Model=self.Model, 
+                self.report = Report(TestName=testkey, Model=self.Model,
                                      Reference=self.TestReference)
                 self.report.add_Section(
                     keyword='init', Title='Inputs \& Data Ingestion', level=0)
@@ -213,10 +213,10 @@ class Task(object):
                 todo_flags[subtaskname] = False
 
             if todo_flags[subtaskname]:
-                
+
                 if self.log is not None:
                     self.log.info('Executing %s: %s' %
-                              (subtaskname, subtaskmethod.__module__))
+                                  (subtaskname, subtaskmethod.__module__))
 
                 tini = datetime.datetime.now()
                 try:
@@ -281,7 +281,6 @@ class Task(object):
 
         explog, checkreport = self.filterexposures(
             structure, explogf, datapath, OBSID_lims)
-        
 
         if self.log is not None:
             self.log.info('%s acquisition consistent with expectations: %s' % (
@@ -315,7 +314,7 @@ class Task(object):
                                      (ntestkey, nfailedkeys))
             if len(checkreport['msgs']) > 0:
                 for msg in checkreport['msgs']:
-                    nmsg = st.replace(msg,'_','\_')
+                    nmsg = st.replace(msg, '_', '\_')
                     self.report.add_Text(nmsg)
 
         # Adding Time Axis
@@ -373,8 +372,8 @@ class Task(object):
         figobj.configure(**kwargs)
         if kwargs['dobuilddata']:
             figobj.build_data(self.dd)
-            #except:             
-                #stop()
+            # except:
+            # stop()
         else:
             figobj.data = copy.deepcopy(kwargs['data'])
         if 'meta' in kwargs:
@@ -387,7 +386,7 @@ class Task(object):
     def addComplianceMatrix2Log(self, complidict, label=''):
         """ """
         #st_compl = complidict.__str__()
-        st_compl = st.split(complidict.get_compliance_txt(),'\n')        
+        st_compl = st.split(complidict.get_compliance_txt(), '\n')
         self.log.info([label, st_compl])
 
     def addComplianceMatrix2Report(self, complidict, label=''):
@@ -398,7 +397,7 @@ class Task(object):
         complitex = ['$\\bf{%s}$' % nicelabel]
         #complitex += complimod.gen_compliance_tex(complidict)
         complitex += complidict.get_compliance_tex()
-        #complitex = [st.replace(
+        # complitex = [st.replace(
         #    item, 'False', '$\\textcolor{red}{\\bf{False}}$') for item in complitex]
 
         self.report.add_Text(complitex)
@@ -448,44 +447,41 @@ class Task(object):
         self.doPlot(key, **pmeta)
         self.addFigure2Report(key)
 
-
     def check_stat_perCCD(self, arr, CCDlims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
-        compliance = complimod.ComplianceMX_CCD(CCDs=CCDs,CCDlims=CCDlims.copy())
+        compliance = complimod.ComplianceMX_CCD(
+            CCDs=CCDs, CCDlims=CCDlims.copy())
         compliance.check_stat(arr)
         return compliance
-
 
     def check_stat_perCCDandQ(self, arr, CCDQlims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
-        compliance = complimod.ComplianceMX_CCDQ(CCDs=CCDs,CCDQlims=CCDQlims.copy())
+        compliance = complimod.ComplianceMX_CCDQ(
+            CCDs=CCDs, CCDQlims=CCDQlims.copy())
         compliance.check_stat(arr)
         return compliance
-
 
     def check_stat_perCCDandCol(self, arr, lims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
         colnames = lims[CCDs[0]].keys()
-        compliance = complimod.ComplianceMX_CCDCol(colnames, 
+        compliance = complimod.ComplianceMX_CCDCol(colnames,
                                                    indexer=self.dd.mx['label'][:],
-                                                   CCDs=CCDs,lims=lims.copy())
+                                                   CCDs=CCDs, lims=lims.copy())
         compliance.check_stat(arr)
         return compliance
-
 
     def check_stat_perCCDQandCol(self, arr, lims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
         Qs = ['E', 'F', 'G', 'H']
         colnames = lims[CCDs[0]][Qs[0]].keys()
-        
-        compliance = complimod.ComplianceMX_CCDQCol(colnames, 
-                                                   indexer=self.dd.mx['label'][:],
-                                                   CCDs=CCDs,
-                                                   Qs=Qs,
-                                                   lims=lims.copy())
+
+        compliance = complimod.ComplianceMX_CCDQCol(colnames,
+                                                    indexer=self.dd.mx['label'][:],
+                                                    CCDs=CCDs,
+                                                    Qs=Qs,
+                                                    lims=lims.copy())
         compliance.check_stat(arr)
         return compliance
-
 
     def check_data(self, **kwargs):
         """Generic check_data method"""
@@ -588,7 +584,7 @@ class Task(object):
                 reportobj.add_Text(msg)
 
         if doMask and 'mask' in self.inputs['inCDPs']:
-            #self.inputs['inCDPs']['Mask']['CCD%i']
+            # self.inputs['inCDPs']['Mask']['CCD%i']
             MaskData = _loadCDP('Mask', 'Loading cosmetics mask...')
             self.proc_histo['Masked'] = True
         elif doMask and 'mask' not in self.inputs['inCDPs']:
@@ -631,16 +627,16 @@ class Task(object):
         #Quads = DDindices[2].vals
 
         #nObs = DDindices.get_len('ix')
-        nObs = 3 # TESTS!
+        nObs = 3  # TESTS!
         print 'TESTS: task.prepare_images: LIMITTING TO 3 IMAGES!'
 
         CCDs = DDindices.get_vals('CCD')
-        
+
         if not self.drill:
 
             picklespath = self.inputs['subpaths']['ccdpickles']
 
-            for iObs in range(nObs):                
+            for iObs in range(nObs):
                 if doFF:
                     FW_ID = self.dd.mx['wavelength'][iObs]
                     wavelength = self.ogse['FW']['F%i' % FW_ID]
@@ -743,7 +739,7 @@ class Task(object):
     def get_time_tag(self):
         from vison.support.vistime import get_time_tag
         return get_time_tag()
-    
-    def pack_CDP_to_dd(self,cdp,cdp_key):
-        self.dd.products[cdp_key] = os.path.join(cdp.path,'%s.pick' % cdp.rootname)
-        
+
+    def pack_CDP_to_dd(self, cdp, cdp_key):
+        self.dd.products[cdp_key] = os.path.join(
+            cdp.path, '%s.pick' % cdp.rootname)

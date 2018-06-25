@@ -70,25 +70,25 @@ def rsync_to_altlocalpath(path, altpath):
 
 class Eyegore(tk.Tk):
     """ """
-    
+
     def __init__(self, path, broadcast, intervals=None,
-                 elvis=context.elvis, dolite=False, altpath='', 
-                 doWarnings = False, dolog=False):
+                 elvis=context.elvis, dolite=False, altpath='',
+                 doWarnings=False, dolog=False):
         """ """
         tk.Tk.__init__(self)
-        
+
         if intervals is None:
             intervals = [20000, 20000, 1000, 20000, 20000, 20000]
         if path is not None:
             if path[-1] == os.path.sep:
-                path = path[:-1]    
+                path = path[:-1]
         self.path = path
         self.intervals = intervals
         self.broadcast = broadcast
         self.elvis = elvis
         self.dolite = dolite
         self.altpath = altpath
-        
+
         if dolog:
             datestamp = vistime.get_time_tag()
             self.logf = 'Eyegore_%s.log' % datestamp
@@ -102,12 +102,12 @@ class Eyegore(tk.Tk):
                            'vison version: %s\n' % __version__])
         else:
             self.log = None
-        
+
         if doWarnings:
             self.Warnings = eyeWarnings.EyeWarnings()
         else:
             self.Warnings = None
-        
+
         self.setup_MasterWG()
 
         self.run()
@@ -189,27 +189,34 @@ class Eyegore(tk.Tk):
 
         self.after(self.intervals[0], self.update)
 
+
 def Eexecuter():
-    
+
     parser = OptionParser()
-    parser.add_option("-p","--path",dest="path",default=None,help="day-path to be monitored.")
-    parser.add_option("-B","--broadcast",dest="broadcast",default='None',help="Synchronize data to gateway folder at msslus")
-    parser.add_option("-E","--elvis",dest="elvis",default=context.elvis,help="ELVIS version.")
-    parser.add_option("-L","--lite",dest="lite",action="store_true",default=False,help="Run a lighter version of the program (no autom. HK-plots or image displays).")
-    parser.add_option("-r","--rsync",dest="altpath",default='',help="rsync to an alternative local path.")
+    parser.add_option("-p", "--path", dest="path",
+                      default=None, help="day-path to be monitored.")
+    parser.add_option("-B", "--broadcast", dest="broadcast", default='None',
+                      help="Synchronize data to gateway folder at msslus")
+    parser.add_option("-E", "--elvis", dest="elvis",
+                      default=context.elvis, help="ELVIS version.")
+    parser.add_option("-L", "--lite", dest="lite", action="store_true", default=False,
+                      help="Run a lighter version of the program (no autom. HK-plots or image displays).")
+    parser.add_option("-r", "--rsync", dest="altpath", default='',
+                      help="rsync to an alternative local path.")
     parser.add_option("-g", "--log", dest="dolog", action="store_true", default=False,
                       help="keep a log")
-    parser.add_option("-W","--Warnings",dest="doWarnings",action="store_true",default=False,
+    parser.add_option("-W", "--Warnings", dest="doWarnings", action="store_true", default=False,
                       help="Raise warnings (via email and/or phone) if critical HK is OOL.")
-    
+
     (options, args) = parser.parse_args()
-    
+
     if options.path is None:
         parser.print_help()
-        ans = raw_input('\nNo path provided... you sure? [press any key to continue] \n')
-        
-        #sys.exit()
-        
+        ans = raw_input(
+            '\nNo path provided... you sure? [press any key to continue] \n')
+
+        # sys.exit()
+
     path = options.path
     broadcast = options.broadcast
     elvis = options.elvis
@@ -217,31 +224,30 @@ def Eexecuter():
     dolite = bool(options.lite)
     dolog = bool(options.dolog)
     doWarnings = bool(options.doWarnings)
-    
+
     if broadcast != 'None':
-        broadcast = os.path.join(_extpath,broadcast)
-    else: 
+        broadcast = os.path.join(_extpath, broadcast)
+    else:
         broadcast = None
-    
-    #if not os.path.exists(path):
+
+    # if not os.path.exists(path):
     #    sys.exit('path "%s" does not exist' % path)
-    #else:
-    header = '\n\n#########################################################\n'+\
-             '#                                                       #\n'+\
-             '#                                                       #\n'+\
-             '#       starting EYEGORE on path:                        #\n'+\
-             '            "%s"                                         \n'+\
-             '#                                                       #\n'+\
-             '#                                                       #\n'+\
+    # else:
+    header = '\n\n#########################################################\n' +\
+             '#                                                       #\n' +\
+             '#                                                       #\n' +\
+             '#       starting EYEGORE on path:                        #\n' +\
+             '            "%s"                                         \n' +\
+             '#                                                       #\n' +\
+             '#                                                       #\n' +\
              '#########################################################\n'
-    
+
     print header % path
-    
-    
-    app = Eyegore(path,broadcast=broadcast,elvis=elvis,dolite=dolite,
-                  altpath=altpath,doWarnings=doWarnings,dolog=dolog)
+
+    app = Eyegore(path, broadcast=broadcast, elvis=elvis, dolite=dolite,
+                  altpath=altpath, doWarnings=doWarnings, dolog=dolog)
 
 
 if __name__ == '__main__':
-    
+
     Eexecuter()

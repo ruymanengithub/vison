@@ -30,10 +30,10 @@ from vison.support import context
 # END IMPORT
 
 
-def generate_test_sequence(diffvalues, toGen, elvis=context.elvis, 
+def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                            CHAMBER=None):
     """ """
-    
+
     ogse = ogsemod.Ogse(CHAMBER)
 
     print 'GENERATING TEST SEQUENCE...'
@@ -53,7 +53,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         bias01 = BIAS01.BIAS01(inputs=dict(elvis=elvis,
                                            CHAMBER=CHAMBER,
                                            test='BIAS01',
-                                           N=Nbias01, 
+                                           N=Nbias01,
                                            diffvalues=diffBIAS01))
 
         #structBIAS01 = bias01.build_scriptdict(elvis=elvis)
@@ -73,7 +73,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         dark01 = DARK01.DARK01(inputs=dict(elvis=elvis,
                                            CHAMBER=CHAMBER,
                                            test='DARK01',
-                                           N=Ndark01, 
+                                           N=Ndark01,
                                            exptime=exptime_dark01,
                                            diffvalues=diffDARK01))
 
@@ -291,7 +291,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         for iw, wave in enumerate(wavesPTC02w):
 
             # 10%, 30%, 50%, 70%, 80%, 90% x FWC. 4 frames per fluence.
-            
+
             tFWC_flatw = ogse.profile['tFWC_flat']['nm%i' % wave]
 
             exptsPTC02w = (np.array(
@@ -386,13 +386,13 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         print 'FOCUS00...'
 
         # wavesFOCUS00w = [590,640,730,800,880] # TESTS
-        wavesFOCUS00w = [590,640,800]
+        wavesFOCUS00w = [590, 640, 800]
 
         diffFOCUS00w = dict()
         diffFOCUS00w.update(diffvalues)
 
         for iw, wave in enumerate(wavesFOCUS00w):
-            
+
             tFWC_pointw = ogse.profile['tFWC_point']['nm%i' % wave]
 
             iexptimeF00 = 60./100. * tFWC_pointw
@@ -422,7 +422,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         #
         PSF0Xtestdefaults = PSF0X.get_testdefaults(ogse)
         #wavesPSF01w = PSF0Xtestdefaults['waves']
-        wavesPSF01w = [590,640,800,880]
+        wavesPSF01w = [590, 640, 800, 880]
 
         diffPSF01w = dict()
         diffPSF01w.update(diffvalues)
@@ -449,21 +449,22 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             #                                       elvis=elvis)
 
             test_sequence[itestkey] = copy.deepcopy(psf01w)
-            
+
     if toGen['PSFLUX00']:
 
         print 'PSFLUX00...'
-        
-        wavesPSFLUX00 = [590,640,730,800,880,0]
+
+        wavesPSFLUX00 = [590, 640, 730, 800, 880, 0]
 
         diffPSFLUX00w = dict()
         diffPSFLUX00w.update(diffvalues)
 
         for iw, wave in enumerate(wavesPSFLUX00):
-            
+
             tFWC_pointw = ogse.profile['tFWC_point']['nm%i' % wave]
-            exptsPSFLUX00w = (np.array([0.25,0.5,0.75]) * tFWC_pointw).tolist()        
-            frsPSFLUX00 = [1,1,1]
+            exptsPSFLUX00w = (
+                np.array([0.25, 0.5, 0.75]) * tFWC_pointw).tolist()
+            frsPSFLUX00 = [1, 1, 1]
 
             itestkey = 'PSFLUX00_%i' % wave
             diffPSFLUX00w['test'] = itestkey
@@ -471,16 +472,14 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             print '%s...' % itestkey
 
             psflux00w = PSF0X.PSF0X(inputs=dict(elvis=elvis,
-                                             CHAMBER=CHAMBER,
-                                             wavelength=wave,
-                                             exptimes=exptsPSFLUX00w,
-                                             frames=frsPSFLUX00,
-                                             test=itestkey,
-                                             diffvalues=diffPSFLUX00w))
-
+                                                CHAMBER=CHAMBER,
+                                                wavelength=wave,
+                                                exptimes=exptsPSFLUX00w,
+                                                frames=frsPSFLUX00,
+                                                test=itestkey,
+                                                diffvalues=diffPSFLUX00w))
 
             test_sequence[itestkey] = copy.deepcopy(psflux00w)
-        
 
     # PSF02
 
@@ -490,8 +489,8 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         wPSF02 = 800
         temps_PSF02 = [150, 156]
-        
-        tFWC_pointPSF02  = ogse.profile['tFWC_point']['nm%i' % wPSF02]
+
+        tFWC_pointPSF02 = ogse.profile['tFWC_point']['nm%i' % wPSF02]
 
         exptsPSF02 = np.array([5., 25., 50., 75., 90.]) / \
             100. * tFWC_pointPSF02
@@ -528,7 +527,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
     if toGen['PERSIST01']:
 
         print 'PERSIST01...'
-        
+
         tFWC_point590 = ogse.profile['tFWC_point']['nm590']
 
         exptPER01_SATUR = tFWC_point590*100.   # s

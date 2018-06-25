@@ -135,21 +135,21 @@ class Pipe(object):
                 os.system('rm %s' % self.logf)
 
             self.log = lg.setUpLogger(self.logf)
-            self.log.info(['_', 'Starting FM Calib. Pipeline']+\
+            self.log.info(['_', 'Starting FM Calib. Pipeline'] +
                           self._get_log_header())
         else:
             self.log = None
-    
+
     def _get_log_header(self):
         log_header = [
-        'Pipeline ID: %s' % self.ID,
-        'BLOCK ID: %s' % self.BLOCKID,
-        'Chamber: %s\n' % self.CHAMBER,
-        'vison version: %s\n' % __version__,
-        'Tasks: %s\n' % self.tasks.__repr__()]
+            'Pipeline ID: %s' % self.ID,
+            'BLOCK ID: %s' % self.BLOCKID,
+            'Chamber: %s\n' % self.CHAMBER,
+            'vison version: %s\n' % __version__,
+            'Tasks: %s\n' % self.tasks.__repr__()]
         return log_header
-     
-    def get_test(self,taskname,inputs=dict(),log=None,drill=False,debug=False):
+
+    def get_test(self, taskname, inputs=dict(), log=None, drill=False, debug=False):
         """ """
         # self.Test_dict[taskname](inputs, self.log, drill, debug)
         test = self.Test_dict[taskname](inputs, log, drill, debug)
@@ -170,12 +170,12 @@ class Pipe(object):
         for _taskname in alltasks:
             extinputs.pop(_taskname)
         taskinputs.update(extinputs)
-        
+
         taskinputs.update(dict(ID=self.ID,
                                BLOCKID=self.BLOCKID,
                                CHAMBER=self.CHAMBER,
                                processes=self.processes))
-        
+
         msg = ['\n\nRunning Task: %s\n' % taskname]
         msg += ['Inputs:\n']
         for key in taskinputs:
@@ -183,18 +183,21 @@ class Pipe(object):
 
         if self.log is not None:
             self.log.info(msg)
-        
-        taskreport = self.dotask(taskname, taskinputs, drill=self.drill, debug=self.debug)
-        
+
+        taskreport = self.dotask(taskname, taskinputs,
+                                 drill=self.drill, debug=self.debug)
+
         if self.log is not None:
-            self.log.info('%.1f minutes in running Task: %s' % (taskreport['exectime'], taskname))
-            self.log.info('Task %s exited with Errors: %s' % (taskname,taskreport['Errors']))
-        
+            self.log.info('%.1f minutes in running Task: %s' %
+                          (taskreport['exectime'], taskname))
+            self.log.info('Task %s exited with Errors: %s' %
+                          (taskname, taskreport['Errors']))
+
         self.completion[taskname] = copy.deepcopy(taskreport)
 
     def run(self, explogf=None, elvis=None):
         """ """
-        
+
         tini = datetime.datetime.now()
 
         tasknames = self.tasks
@@ -204,7 +207,7 @@ class Pipe(object):
 
         if self.log is not None:
             self.log.info('\n\nResults will be saved in: %s\n' % resultsroot)
-        
+
         for taskname in tasknames:
 
             taskinputs = self.inputs[taskname]
@@ -219,31 +222,29 @@ class Pipe(object):
             self.inputs[taskname] = taskinputs
 
             self.launchtask(taskname)
-        
+
         tend = datetime.datetime.now()
         Dtm = ((tend-tini).seconds)/60.
-        
+
         summary = self.get_execution_summary(exectime=Dtm)
         if self.log is not None:
             self.log.info(summary)
-        
-        
-    def get_execution_summary(self,exectime=None):
+
+    def get_execution_summary(self, exectime=None):
         """ """
-        summary = ['_','_','_','_',
-        '######################################################################']+\
-        self._get_log_header()
-        
+        summary = ['_', '_', '_', '_',
+                   '######################################################################'] +\
+            self._get_log_header()
+
         for task in self.tasks:
             _compl = self.completion[task]
-            summary += ['_','%s' % task]
+            summary += ['_', '%s' % task]
             summary += ['Executed in %.1f minutes' % _compl['exectime']]
             summary += ['Raised Flags = %s' % _compl['flags']]
             if _compl['Errors']:
-                 summary += ['Executed with ERROR(s)']
-            
+                summary += ['Executed with ERROR(s)']
+
         return summary
-    
 
     def wait_and_run(self, dayfolder, elvis=context.elvis):
         """ """
@@ -273,8 +274,8 @@ class Pipe(object):
                 resultsroot, taskinputs['resultspath'])
             taskinputs['explogf'] = explogfs
             taskinputs['elvis'] = elvis
-                      
-            test = self.get_test(taskname,taskinputs,log=self.log)
+
+            test = self.get_test(taskname, taskinputs, log=self.log)
             taskinputs = copy.deepcopy(test.inputs)
 
             structure = taskinputs['structure']
@@ -300,48 +301,47 @@ class Pipe(object):
                 ixstart = np.where(explog['ObsID'] == self.startobsid)[0][0]
                 explog = explog[ixstart:].copy()
 
-
             for it, taskitem in enumerate(tasksequence):
 
                 taskname, testkey, Nframes = taskitem
                 available = pilib.coarsefindTestinExpLog(
                     explog, testkey, Nframes)
-                
+
                 if available:
                     # print '%s available, doing nothing!' % taskname # TESTS
-                    if self.startobsid >0:
-                        self.inputs[taskname]['OBSID_lims'] = [self.startobsid,explog['ObsID'][-1]]                
+                    if self.startobsid > 0:
+                        self.inputs[taskname]['OBSID_lims'] = [
+                            self.startobsid, explog['ObsID'][-1]]
                     self.launchtask(taskname)
                     tasksequence.pop(it)
-            
+
             if len(tasksequence) == 0:
                 fahrtig = True
             else:
                 sleep(waittime)
                 if self.log is not None:
-                    self.log.info('Pipeline sleeping for %i seconds...' % waittime)
-        
+                    self.log.info(
+                        'Pipeline sleeping for %i seconds...' % waittime)
+
         tend = datetime.datetime.now()
         Dtm = ((tend-tini).seconds)/60.
-        
+
         summary = self.get_execution_summary(exectime=Dtm)
         if self.log is not None:
-            self.log.info(summary)        
-                    
-
+            self.log.info(summary)
 
         return None
 
     def dotask(self, taskname, inputs, drill=False, debug=False):
         """Generic test master function."""
-        
+
         tini = datetime.datetime.now()
-        
+
         Errors = False
 
         try:
             test = self.get_test(taskname, inputs, self.log, drill, debug)
-            test() # test execution
+            test()  # test execution
         except:
             self.catchtraceback()
             Errors = True
@@ -351,10 +351,10 @@ class Pipe(object):
             else:
                 print 'TASK "%s@%s" FAILED, QUITTING!' % (
                     taskname, self.Test_dict[taskname].__module__)
-        
+
         tend = datetime.datetime.now()
         dtm = ((tend-tini).seconds)/60.
-        
+
         execlog = OrderedDict()
         execlog['Task'] = taskname
         execlog['Errors'] = Errors
@@ -364,7 +364,7 @@ class Pipe(object):
         except:
             flags = []
         execlog['flags'] = flags.__repr__()
-        
+
         return execlog
 
     def catchtraceback(self):

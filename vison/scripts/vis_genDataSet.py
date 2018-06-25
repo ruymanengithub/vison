@@ -162,7 +162,6 @@ if __name__ == '__main__':
 
     #date0 = pilib.dtobj_default
     date0 = datetime.datetime(2018, 1, 19, 7, 0, 0)  # early riser
-    
 
     # TestsSelector = dict(BIAS01=1,DARK01=1,CHINJ01=1,CHINJ02=1,
     #                  FLAT01=1,FLAT02=1,PTC01=1,PTC02WAVE=0,PTC02TEMP=0,NL01=1,

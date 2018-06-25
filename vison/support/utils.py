@@ -21,13 +21,16 @@ import operator
 
 # END IMPORT
 
-credentials_path = os.path.join(os.environ['HOME'],'CREDENTIALS_VISON')
+credentials_path = os.path.join(os.environ['HOME'], 'CREDENTIALS_VISON')
 
-def getFromDict(dataDict,mapList):
-    return reduce(operator.getitem,mapList,dataDict)
 
-def setInDict(dataDict,mapList,value):
-    getFromDict(dataDict,mapList[:-1])[mapList[-1]] = value
+def getFromDict(dataDict, mapList):
+    return reduce(operator.getitem, mapList, dataDict)
+
+
+def setInDict(dataDict, mapList, value):
+    getFromDict(dataDict, mapList[:-1])[mapList[-1]] = value
+
 
 def countdictlayers(d):
     return max(countdictlayers(v) if isinstance(v, dict) else 0 for v in d.values()) + 1

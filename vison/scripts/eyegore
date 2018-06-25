@@ -2,16 +2,16 @@
 
 
 # IMPORT STUFF
-import sys, os
+import sys
+import os
 from pdb import set_trace as stop
 
 from optparse import OptionParser
-from vison.eyegore.eyegore import Eyegore,_extpath
+from vison.eyegore.eyegore import Eyegore, _extpath
 from vison.eyegore.eyegore import Eexecuter
 from vison.support import context
 # END IMPORT
 
 
-if __name__ == '__main__':    
+if __name__ == '__main__':
     Eexecuter()
-    

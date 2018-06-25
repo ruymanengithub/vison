@@ -90,7 +90,7 @@ def extract_injection_lines(quaddata, pattern, VSTART=0,
 
 def predict_inj_level(ID, IGs, id_timing, toi_ch, sectag):
     """ """
-    
+
     IDL, IDH = ID
     IG1, IG2 = IGs
     id_wid, id_dly = id_timing

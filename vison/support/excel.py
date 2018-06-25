@@ -37,6 +37,7 @@ def get_str_len(cell):
     else:
         return len(str(cell.value))
 
+
 class ReportXL(object):
 
     color_fills = color_fills
@@ -68,7 +69,7 @@ class ReportXL(object):
     def dict_to_sheet(self, indict, sheetname, keys=None, title=''):
         """ """
 
-        if keys is  None:
+        if keys is None:
             keys = indict.keys()
 
         printdict = OrderedDict()

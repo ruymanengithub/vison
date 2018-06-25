@@ -60,9 +60,9 @@ if __name__ == '__main__':
     if options.path == '':
         parser.print_help()
         sys.exit()
-    
-    debug = False # REDTAG
-    
+
+    debug = False  # REDTAG
+
     path = options.path
     roe = int(options.roe)
     elvis = options.elvis
@@ -94,44 +94,43 @@ if __name__ == '__main__':
     outpath = 'HKmonitor_%s' % datetag
     if not isthere(outpath):
         os.system('mkdir %s' % outpath)
-    
+
     if not debug:
-        
+
         obsids, dtobjs, tdeltasec, HK_keys, HKdata = parseHKfiles(
             HKlist, elvis=elvis)
 
         fOBSID = obsids[0]
         lOBSID = obsids[-1]
-    
+
         figlist = []
-    
+
         HKkeys = allHK_keys[elvis]
         if 'TimeStamp' in HKkeys:
             HKkeys.pop(HKkeys.index('TimeStamp'))
-        
 
-        for ik,key in enumerate(HKkeys):
-    
+        for ik, key in enumerate(HKkeys):
+
             figname = os.path.join(outpath, '%s_%s.eps' % (datetag, key,))
-            
-            HKvec = HKdata[:,0,ik+1].copy()
-            
+
+            HKvec = HKdata[:, 0, ik+1].copy()
+
             iHKlims = HKlims[elvis]['S'][key]
-            
+
             doHKSinglePlot(dtobjs, HKvec,
-                           HKkey=key, ylabel=key, HKlims=iHKlims[1:], 
+                           HKkey=key, ylabel=key, HKlims=iHKlims[1:],
                            filename=figname)
-            
-            figlist.append(figname)    
+
+            figlist.append(figname)
 
     reportroot = 'HKmonitor_%s_%i-%i_OBSIDs_ROE%i' % (
         datetag, fOBSID, lOBSID, roe)
-     
+
     report = repmod.Report(TestName='HKMonitor_%s' % datetag,
                            Model='XX')
-    
-    report.add_FigsTable(figlist,Ncols=2,figswidth='8',
-                         caption='HK plots, built from HK-OBSID files only.'+\
+
+    report.add_FigsTable(figlist, Ncols=2, figswidth='8',
+                         caption='HK plots, built from HK-OBSID files only.' +
                          ' CAUTION: HK collected inter-readouts is not shown here.')
-    report.doreport(reportroot,cleanafter=True)
+    report.doreport(reportroot, cleanafter=True)
     os.system('mv %s.pdf %s/' % (reportroot, outpath))

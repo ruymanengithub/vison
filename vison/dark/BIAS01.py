@@ -89,7 +89,7 @@ class BIAS01(DarkTask):
         self.HKKeys = HKKeys
         self.figdict = B01aux.B01figs.copy()
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
-                                       profiles='profiles',products='products')
+                                       profiles='profiles', products='products')
 
     def set_inpdefaults(self, **kwargs):
         self.inpdefaults = self.inputsclass(N=25)
@@ -142,7 +142,6 @@ class BIAS01(DarkTask):
         """
         super(BIAS01, self).prepare_images(
             doExtract=True, doMask=True, doOffset=True)
-        
 
     def basic_analysis(self):
         """ 
@@ -199,15 +198,14 @@ class BIAS01(DarkTask):
         profs1D2plot['ver'] = OrderedDict()
 
         for CCDk in CCDs:
-            for tag in ['hor','ver']:
+            for tag in ['hor', 'ver']:
                 profs1D2plot[tag][CCDk] = OrderedDict()
             for Q in Quads:
-                for tag in ['hor','ver']:
+                for tag in ['hor', 'ver']:
                     profs1D2plot[tag][CCDk][Q] = OrderedDict()
                     profs1D2plot[tag][CCDk][Q]['x'] = OrderedDict()
                     profs1D2plot[tag][CCDk][Q]['y'] = OrderedDict()
-                
-        
+
         if not self.drill:
 
             ccdpicklespath = self.inputs['subpaths']['ccdpickles']
@@ -218,7 +216,7 @@ class BIAS01(DarkTask):
                 OBSID = self.dd.mx['ObsID'][iObs]
 
                 for jCCD, CCDk in enumerate(CCDs):
-                    
+
                     vstart = self.dd.mx['vstart'][iObs, jCCD]
                     vend = self.dd.mx['vend'][iObs, jCCD]
 
@@ -231,8 +229,7 @@ class BIAS01(DarkTask):
                         ccdpicklespath, '%s.pick' % ccdobj_name)
 
                     ccdobj = copy.deepcopy(cPickleRead(fullccdobj_name))
-                    
-                    
+
                     CDP_header['DATE'] = self.get_time_tag()
 
                     iprofiles1D = cdp.CDP()
@@ -283,10 +280,11 @@ class BIAS01(DarkTask):
 
                         iprofiles1D.data[Q]['hor'] = copy.deepcopy(hor1Dprof)
                         iprofiles1D.data[Q]['ver'] = copy.deepcopy(ver1Dprof)
-                        
-                        for oritag in ['hor','ver']:
-                            for axtag in ['x','y']:
-                                profs1D2plot[oritag][CCDk][Q][axtag]['OBS%i' % OBSID]  = hor1Dprof.data[axtag]
+
+                        for oritag in ['hor', 'ver']:
+                            for axtag in ['x', 'y']:
+                                profs1D2plot[oritag][CCDk][Q][axtag]['OBS%i' %
+                                                                     OBSID] = hor1Dprof.data[axtag]
 
                     # save (2D model and) profiles in a pick file for each OBSID-CCD
 
@@ -303,23 +301,24 @@ class BIAS01(DarkTask):
                     # cPickleDumpDictionary(profiles,fprofilespickf)
 
                     self.dd.mx['profiles1D_name'][iObs,
-                              jCCD] = iprofiles1D.rootname
-                    self.dd.mx['mods2D_name'][iObs,jCCD] = iprofiles2D.rootname
+                                                  jCCD] = iprofiles1D.rootname
+                    self.dd.mx['mods2D_name'][iObs,
+                                              jCCD] = iprofiles2D.rootname
 
         # PLOTS
         # profiles 1D (Hor & Ver) x (CCD&Q)
         # histograms of RON per CCD&Q
-        
-        figkeys1 = ['B01basic_prof1D_hor','B01basic_prof1D_ver'] 
+
+        figkeys1 = ['B01basic_prof1D_hor', 'B01basic_prof1D_ver']
         self.figdict['B01basic_prof1D_hor'][1]['data'] = profs1D2plot['hor']
         self.figdict['B01basic_prof1D_ver'][1]['data'] = profs1D2plot['ver']
-        self.addFigures_ST(figkeys=figkeys1,dobuilddata=False)
+        self.addFigures_ST(figkeys=figkeys1, dobuilddata=False)
         #figkeys2 = ['B01basic_histosRON']
-        #self.figdict['B01basic_histosRON'][1]['data'] = None # PENDING
-        #self.addFigures_ST(figkeys=figkeys2,dobuilddata=True) # PENDING
-        
+        # self.figdict['B01basic_histosRON'][1]['data'] = None # PENDING
+        # self.addFigures_ST(figkeys=figkeys2,dobuilddata=True) # PENDING
+
         # REPORTS
-        
+
         # Table with median (Best Estimate) values of RON per CCD&Q
         # NEEDS REFACTORING?! (move somewhere else, abstractize it and recycle)
 
@@ -331,16 +330,16 @@ class BIAS01(DarkTask):
                               Quads=Quads,
                               meta=dict(),
                               header=CDP_header.copy())
-        
-        ron_cdp = self.init_and_fill_CDP(ron_cdp,header_title='BIAS01: RON')
+
+        ron_cdp = self.init_and_fill_CDP(ron_cdp, header_title='BIAS01: RON')
         self.save_CDP(ron_cdp)
-        
-        self.pack_CDP_to_dd(ron_cdp,'RON_CDP')
+
+        self.pack_CDP_to_dd(ron_cdp, 'RON_CDP')
 
         if self.report is not None:
             beRONtex = ron_cdp.get_textable(sheet='RON', caption='BIAS01: RON')
             self.report.add_Text(beRONtex)
-    
+
     def meta_analysis(self):
         """
 
@@ -367,21 +366,21 @@ class Test(unittest.TestCase):
     """
     Unit tests for the BIAS01 class.
     """
+
     def setUp(self):
-        
+
         inputs = dict()
-        self.b01 = BIAS01(inputs,log=None, drill=True, debug=False)
-        
+        self.b01 = BIAS01(inputs, log=None, drill=True, debug=False)
 
     def test_check_data(self):
         """
-        
+
         :return: None
         """
         self.b01.check_data()
 
+
 if __name__ == '__main__':
-    
+
     suite = unittest.TestLoader().loadTestsFromTestCase(Test)
     unittest.TextTestRunner(verbosity=3).run(suite)
-    

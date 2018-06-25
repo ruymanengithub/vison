@@ -35,7 +35,7 @@ def fitPTC(means, var):
     p = res[0]
     V = res[1]
     ep = np.sqrt(np.diag(V))
-    
+
     # Bad results flagging MISSING!
     quality = 0
 
@@ -48,7 +48,7 @@ def fitPTC(means, var):
 def foo_bloom(means, var):
     """DUMMY function (PLACE-HOLDER)
     (Will) Finds blooming limit (where variance drops, if it does...).
-    
+
     """
     res = dict(bloom=np.nan)
     return res

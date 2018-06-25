@@ -73,7 +73,6 @@ class PERSIST01(Task):
             exptLATEN=565.
         )
 
-
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """ 
         Builds PERSISTENCE01 script structure dictionary.
@@ -152,7 +151,7 @@ class PERSIST01(Task):
 
     def prep_data(self):
         """
-        
+
         PERSIST01: Preparation of data for further analysis.
         Calls task.prepare_images().
 
@@ -160,12 +159,10 @@ class PERSIST01(Task):
             offset subtraction
             cosmetics masking
 
-        
+
         """
         super(PERSIST01, self).prepare_images(
             doExtract=True, doMask=True, doOffset=True)
-
-        
 
     def basic_analysis(self):
         """

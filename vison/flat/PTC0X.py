@@ -64,12 +64,12 @@ HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
           'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
 
 PTC0X_commvalues = dict(program='CALCAMP',
-                        flushes=7, 
-                        exptime=0., 
-                        vstart=0, 
+                        flushes=7,
+                        exptime=0.,
+                        vstart=0,
                         vend=2086,
                         shuttr=1,
-                        siflsh=1, 
+                        siflsh=1,
                         siflsh_p=500,
                         wave=4,
                         source='flat',
@@ -81,21 +81,21 @@ PTC01_relfluences = np.array(
 
 PTC02_relfluences = np.array([10., 30., 50., 70., 80., 90.])
 
+
 def get_testdefaults_PTC0X(ogseobj=None):
-    
+
     if ogseobj is None:
         ogseobj = ogsemod.Ogse()
 
     tFWC800 = ogseobj.profile['tFWC_flat']['nm800']
-    
+
     PTC01_exptimes = (PTC01_relfluences / 100. *
                       tFWC800).tolist()  # ms
     PTC02waves = [590, 640, 730, 800, 880, 0]
-    
-    
+
     PTC02TEMP_exptimes = (PTC02_relfluences / 100. *
                           tFWC800).tolist()
-    
+
     testdefaults = dict(PTC01=dict(exptimes=PTC01_exptimes,
                                    frames=[10, 10, 10, 10, 10,
                                            10, 10, 10, 4, 4, 4],
@@ -106,13 +106,14 @@ def get_testdefaults_PTC0X(ogseobj=None):
                         PTC02TEMP=dict(frames=[4, 4, 4, 4, 4, 4],
                                        exptimes=PTC02TEMP_exptimes,
                                        wavelength=800))
-    
+
     for w in testdefaults['PTC02WAVE']['waves']:
         tFWCw = ogseobj.profile['tFWC_flat']['nm%i' % w]
         testdefaults['PTC02WAVE']['exptimes']['nm%i' % w] = (
             PTC02_relfluences/100.*tFWCw).tolist()
-    
+
     return testdefaults
+
 
 plusminus10pcent = 1.+np.array([-0.10, 0.10])
 
@@ -164,7 +165,7 @@ class PTC0X(FlatTask):
 
     def set_inpdefaults(self, **kwargs):
         """ """
-        
+
         testdefaults = get_testdefaults_PTC0X(self.ogse)
 
         try:
@@ -195,9 +196,8 @@ class PTC0X(FlatTask):
         self.inpdefaults = dict(test=testkey, wavelength=wavelength,
                                 frames=frames, exptimes=exptimes)
 
-
     def set_perfdefaults(self, **kwargs):
-        super(PTC0X,self).set_perfdefaults(**kwargs)
+        super(PTC0X, self).set_perfdefaults(**kwargs)
 
         try:
             testkey = kwargs['test']
@@ -458,7 +458,6 @@ class PTC0X(FlatTask):
         # fitting the PTCs
 
         for iCCD, CCDkey in enumerate(CCDs):
-
 
             for jQ, Q in enumerate(Quads):
 

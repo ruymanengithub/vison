@@ -119,7 +119,7 @@ class FLAT0X(FlatTask):
 
     def set_perfdefaults(self, **kwargs):
         #wavelength = self.inputs['wavelength']
-        super(FLAT0X,self).set_perfdefaults(**kwargs)
+        super(FLAT0X, self).set_perfdefaults(**kwargs)
         self.perfdefaults['FLU_lims'] = FLU_lims.copy()
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
@@ -184,7 +184,7 @@ class FLAT0X(FlatTask):
 
         """
         super(FLAT0X, self).prepare_images(doExtract=True,
-            doMask=True, doOffset=True, doBias=True)
+                                           doMask=True, doOffset=True, doBias=True)
 
     def do_indiv_flats(self):
         """
@@ -294,7 +294,7 @@ class FLAT0X(FlatTask):
         settings = dict()
 
         indices = copy.deepcopy(self.dd['indiv_flats'].indices)
-        
+
         CCDs = indices.get_vals('CCD')
 
         dpath = self.inputs['subpaths']['ccdflats']

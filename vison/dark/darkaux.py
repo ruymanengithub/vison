@@ -22,10 +22,10 @@ from vison.datamodel import cdp
 # END IMPORT
 
 
-def get_bgd_model(ccdobj,extension=-1):
-    
+def get_bgd_model(ccdobj, extension=-1):
+
     prescan = ccdobj.prescan
-    
+
     bgd = ccdmod.CCD()
     bgd.add_extension(np.zeros_like(
         ccdobj.extensions[extension].data, dtype='float32'))
@@ -46,7 +46,7 @@ def get_bgd_model(ccdobj,extension=-1):
         bgd.set_quad(Qmodel, Quad, canonical=True, extension=-1)
 
     return bgd.extensions[-1].data.copy()
-    
+
 
 def get_DarkDefectsMask(ccdobj, threshold, extension=-1):
     """ """
@@ -57,10 +57,10 @@ def get_DarkDefectsMask(ccdobj, threshold, extension=-1):
 
 def get_DarkDefectsMask_CDP(self, darkccdobj, threshold, subbgd=True, bgdmodel=None, extension=-1):
     """ """
-    
+
     if subbgd:
-        if bgdmodel is None:            
-            bgdmodel = get_bgd_model(darkccdobj,extension=extension)
+        if bgdmodel is None:
+            bgdmodel = get_bgd_model(darkccdobj, extension=extension)
 
         darkccdobj.sub_bias(bgdmodel, extension=extension)
 

@@ -93,7 +93,7 @@ def _update_fromscript(rowdict, scriptcol):
 
 
 def generate_Explog(scrdict, defaults, elvis=context.elvis, explog=None, OBSID0=1000,
-                    date=vistime.dtobj_default,CHAMBER=None):
+                    date=vistime.dtobj_default, CHAMBER=None):
     """ 
 
     Generates a fake ExposureLog from a test structure dictionary.
@@ -335,7 +335,7 @@ def IMG_bias_gen(ccdobj, ELdict, ogse=None):
 
 def IMG_flat_gen(ccdobj, ELdict, ogse=None):
     """ """
-    
+
     if ogse is None:
         ogse = ogsemod.Ogse()
 
@@ -344,7 +344,7 @@ def IMG_flat_gen(ccdobj, ELdict, ogse=None):
 
     waveID = ELdict['wave']
     exptime = ELdict['exptime']
-    
+
     wave = ogse.profile['FW']['F%i' % waveID]
     tsatur = ogse.profile['tFWC_flat']['nm%i' % wave]
 
@@ -423,7 +423,7 @@ def IMG_chinj_gen(ccdobj, ELdict, ogse=None):
 
 def IMG_point_gen(ccdobj, ELdict, ogse=None):
     """ """
-    
+
     if ogse is None:
         ogse = ogsemod.Ogse()
 
@@ -468,10 +468,10 @@ def IMG_point_gen(ccdobj, ELdict, ogse=None):
 
 def generate_FITS(ELdict, funct, filename='', elvis=context.elvis, ogse=None):
     """ """
-    
+
     if ogse is None:
         ogse = ogsemod.Ogse()
-    
+
     NAXIS1, NAXIS2 = ccd.NAXIS1, ccd.NAXIS2
 
     waivedkeys = ['File_name', 'fl_rdout', 'ci_rdout',
@@ -503,7 +503,7 @@ def generate_FITS(ELdict, funct, filename='', elvis=context.elvis, ogse=None):
 
 def generate_FITS_fromExpLog(explog, datapath, elvis=context.elvis, CHAMBER=None):
     """ """
-    
+
     ogse = ogsemod.Ogse(CHAMBER)
 
     IMGgens = dict(BIAS=IMG_bias_gen, FLAT=IMG_flat_gen,
@@ -543,7 +543,8 @@ def generate_FITS_fromExpLog(explog, datapath, elvis=context.elvis, CHAMBER=None
         if ispoint:
             FITSgen = IMGgens['POINT']
 
-        generate_FITS(row, funct=FITSgen, filename=FITSname, elvis=elvis, ogse=ogse)
+        generate_FITS(row, funct=FITSgen, filename=FITSname,
+                      elvis=elvis, ogse=ogse)
 
     t1 = time()
     dtmin = (t1-t0)/60.

@@ -76,6 +76,7 @@ def gt_check_fwhmx_dict(wave):
                           xlabel='Mirr [mm]',
                           ylabel='FWHMx [pix]'))
 
+
 def gt_check_fwhmy_dict(wave):
     return dict(stats=['chk_fwhmy'],
                 trendaxis='mirr_pos',
@@ -86,6 +87,7 @@ def gt_check_fwhmy_dict(wave):
                           suptitle='FOCUS00\_%i-checks: FWHM(y)' % wave,
                           xlabel='Mirr [mm]',
                           ylabel='FWHMy [pix]'))
+
 
 def gt_F00figs(wave):
     F00figs = dict()

@@ -109,11 +109,11 @@ def filterexposures(self, structure, explogf, datapath, OBSID_lims, colorblind=F
         selbool = (explog['test'] == testkey) & \
             (explog['ObsID'] >= OBSID_lims[0]) & \
             (explog['ObsID'] <= OBSID_lims[1])
-    
+
     explog = explog[np.where(selbool)]
 
     # Assess structure
-    
+
     checkreport = pilib.check_test_structure(explog, structure, CCDs=[1, 2, 3],
                                              wavedkeys=wavedkeys)
 
@@ -177,13 +177,15 @@ def addHKPlotsMatrix(self):
     self.report.add_FigsTable(HKfigs, Ncols=3, figswidth=4,
                               caption='Selected HK parameters during test.')
 
-def init_and_fill_CDP(self,cdpobj,header_title=''):
+
+def init_and_fill_CDP(self, cdpobj, header_title=''):
     cdpobj.init_workbook()
     cdpobj.fill_Header(title=header_title)
     cdpobj.fill_Meta()
     cdpobj.fill_allDataSheets()
     return cdpobj
-    
-def save_CDP(self,cdpobj):
+
+
+def save_CDP(self, cdpobj):
     cdpobj.savehardcopy()
     cdpobj.savetopickle()

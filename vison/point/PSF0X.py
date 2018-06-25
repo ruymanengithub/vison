@@ -69,37 +69,38 @@ HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
 PSF0X_commvalues = dict(program='CALCAMP',
                         IPHI1=1, IPHI2=1, IPHI3=1, IPHI4=0,
                         rdmode='fwd_bas',
-                        flushes=7, 
-                        exptime=0., 
-                        vstart=0, 
+                        flushes=7,
+                        exptime=0.,
+                        vstart=0,
                         vend=2086,
                         shuttr=1,
-                        siflsh=1, 
+                        siflsh=1,
                         siflush_p=500,
                         motr_on=1,
                         motr_cnt=2,
                         motr_siz=120,
                         source='point',
                         mirr_on=1,
-                        wave=4, 
+                        wave=4,
                         mirr_pos=ogsemod.mirror_nom['F4'],
                         comments='')
 
 PSF0X_relfluences = np.array([5., 25., 50., 75., 90.])
 
+
 def get_testdefaults(ogseobj=None):
-    
+
     if ogseobj is None:
         ogseobj = ogsemod.Ogse()
 
     testdefaults = dict(waves=[590, 640, 730, 800, 880, 0],
-                    exptimes=dict(),
-                    frames=[20, 14, 10, 4, 4])
-    
+                        exptimes=dict(),
+                        frames=[20, 14, 10, 4, 4])
+
     for w in testdefaults['waves']:
         tFWC_pointw = ogseobj.profile['tFWC_point']['nm%i' % w]
         testdefaults['exptimes']['nm%i' % w] = \
-                    (PSF0X_relfluences/100.*tFWC_pointw).tolist()
+            (PSF0X_relfluences/100.*tFWC_pointw).tolist()
 
     return testdefaults
 
@@ -108,25 +109,24 @@ def get_Flu_lims(relfluences):
 
     plusminus10pc = 1.+np.array([-0.1, 0.1])
     satur_fluence = 2.*2.E5 / performance.gains['CCD1']
-    
+
     Flu_lims = OrderedDict(
         CCD1=OrderedDict(
             E=OrderedDict(
-                ALPHA=OrderedDict()))) # +/-10%
-    
+                ALPHA=OrderedDict())))  # +/-10%
+
     Nfluences = len(relfluences)
-    for i in range(1,Nfluences+1):
+    for i in range(1, Nfluences+1):
         Flu_lims['CCD1']['E']['ALPHA']['col%i' % i] = \
-                2. * relfluences[i-1]*plusminus10pc*satur_fluence
-    
-    
+            2. * relfluences[i-1]*plusminus10pc*satur_fluence
+
     for Spot in ['BRAVO', 'CHARLIE', 'DELTA', 'ECHO']:
         Flu_lims['CCD1']['E'][Spot] = Flu_lims['CCD1']['E']['ALPHA']
     for Q in ['F', 'G', 'H']:
         Flu_lims['CCD1'][Q] = copy.deepcopy(Flu_lims['CCD1']['E'])
     for CCD in [2, 3]:
         Flu_lims['CCD%i' % CCD] = copy.deepcopy(Flu_lims['CCD1'])
-        
+
     return Flu_lims
 
 
@@ -192,7 +192,7 @@ class PSF0X(PointTask):
                                 exptimes=exptimes)
 
     def set_perfdefaults(self, **kwargs):
-        super(PSF0X,self).set_perfdefaults(**kwargs)
+        super(PSF0X, self).set_perfdefaults(**kwargs)
 
         self.perfdefaults['BGD_lims'] = BGD_lims  # ADUs
         self.perfdefaults['Flu_lims'] = get_Flu_lims(PSF0X_relfluences)  # ADUs
@@ -269,12 +269,12 @@ class PSF0X(PointTask):
 
             per spot:               
                 cuts-out and save stamps of pre-processed spots for further analysis.
-    
+
 
         """
         super(PSF0X, self).prepare_images(
             doExtract=True, doMask=True, doOffset=True, doBias=True, doFF=True)
-        
+
         dIndices = copy.deepcopy(self.dd.indices)
 
         CCDs = dIndices[dIndices.names.index('CCD')].vals
@@ -284,16 +284,15 @@ class PSF0X(PointTask):
         nObs = dIndices[dIndices.names.index('ix')].len
         SpotNames = dIndices[dIndices.names.index('Spot')].vals
         nSpots = len(SpotNames)
-        
+
         CIndices = copy.deepcopy(dIndices)
         CIndices.pop(CIndices.names.index('Quad'))
         CIndices.pop(CIndices.names.index('Spot'))
-        
-        
+
         # INITIALIZATIONS
 
         self.dd.initColumn('spots_name', CIndices, dtype='S100', valini='None')
-        
+
         if not self.drill:
 
             #rpath = self.inputs['resultspath']
@@ -305,10 +304,10 @@ class PSF0X(PointTask):
                 for jCCD, CCD in enumerate(CCDs):
 
                     CCDkey = 'CCD%i' % CCD
-                    
+
                     fullccdobj_name = os.path.join(
                         picklespath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs, jCCD])
-                    
+
                     ccdobj = copy.deepcopy(cPickleRead(fullccdobj_name))
 
                     # Cut-out "spots"
@@ -339,8 +338,6 @@ class PSF0X(PointTask):
 
         if self.log is not None:
             self.log.info('Saved spot "bag" files to %s' % spotspath)
-        
-
 
     def basic_analysis(self):
         """Performs basic analysis on spots:

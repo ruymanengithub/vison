@@ -29,7 +29,7 @@ def get_pixbounce_from_overscan(ccdobj, thresholds=None):
     keyword. Do not use on images acquired with irradiated CCDs.    
 
     """
-    
+
     if thresholds is None:
         thresholds = [0, 2.**16]
 
@@ -43,14 +43,14 @@ def get_pixbounce_from_overscan(ccdobj, thresholds=None):
     profiles['Npix_prof'] = Npix_prof
     profiles['ixjump'] = ixjump
 
-
     for Q in ccdobj.Quads:
-        
-        profiles[Q] = get_pixbounce_Quad(ccdobj,Q,Npix_prof,ixjump,thresholds)
 
-        
-def get_pixbounce_Quad(ccdobj,Q,Npix_prof,ixjump,thresholds):
-    
+        profiles[Q] = get_pixbounce_Quad(
+            ccdobj, Q, Npix_prof, ixjump, thresholds)
+
+
+def get_pixbounce_Quad(ccdobj, Q, Npix_prof, ixjump, thresholds):
+
     NAXIS1_Q = ccdobj.NAXIS1/2
 
     if ccdobj.voverscan > 0:
@@ -60,7 +60,7 @@ def get_pixbounce_Quad(ccdobj,Q,Npix_prof,ixjump,thresholds):
 
     xcol = np.arange(Npix_prof) + NAXIS1_Q-ccdobj.overscan - \
         ixjump  # col. count starts from 1
-    
+
     profiles = OrderedDict()
 
     qdata = ccdobj.get_quad(Q, canonical=True)

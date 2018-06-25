@@ -41,18 +41,18 @@ def dist_superellipse(n, center, q=1., pos_ang=0., c=0.):
     """
 
     # CHECK INPUTS
-    
-    criterio1 = isinstance(n,int) or \
-        (isinstance(n,collections.Sequence) and len(n) == 2)
+
+    criterio1 = isinstance(n, int) or \
+        (isinstance(n, collections.Sequence) and len(n) == 2)
 
     assert criterio1, 'n must be an scalar or a 2 elements tuple'
 
-    if not isinstance(n,collections.Sequence):
-        n = (n,n)
+    if not isinstance(n, collections.Sequence):
+        n = (n, n)
     else:
         n = tuple([int(x) for x in n])
 
-    criterio2 = isinstance(q,(int,float))
+    criterio2 = isinstance(q, (int, float))
 
     if not criterio2:
         print 'q must be an integer or float'
@@ -65,7 +65,7 @@ def dist_superellipse(n, center, q=1., pos_ang=0., c=0.):
     if criterio2 and criterio3:
         q = float(q)
 
-    criterio4 = isinstance(pos_ang,(int,float))
+    criterio4 = isinstance(pos_ang, (int, float))
     if not criterio4:
         print 'pos_ang must be an integer or float'
         criterio5 = 'False'
@@ -77,13 +77,13 @@ def dist_superellipse(n, center, q=1., pos_ang=0., c=0.):
     if criterio4 and criterio5:
         pos_ang = float(pos_ang)
 
-    criterio6 = isinstance(c,(int,float))
+    criterio6 = isinstance(c, (int, float))
     if not criterio6:
         print 'c must be an integer or float'
     else:
         c = float(c)
 
-    criterio7 = isinstance(center,collections.Sequence) and len(center) == 2
+    criterio7 = isinstance(center, collections.Sequence) and len(center) == 2
     if not criterio7:
         print 'center must be a 2 element tuple'
     else:
@@ -142,7 +142,6 @@ def effective_radius(area, q=1., c=0.):
 
     b_dummie = area / (a_dummie * c_dummie)
     r = (b_dummie/(q * (np.pi ** 0.5)))**(0.5)
-    
 
     return r
 
@@ -151,41 +150,45 @@ class TestEllipse(unittest.TestCase):
     """
     Unit tests for the ellipse module.
     """
-    
+
     def setUp(self):
-        
+
         self.tolerance = 1.e-7
         self.n = 5
-        self.center = (2.,2.)
+        self.center = (2., 2.)
         self.q = 1.
         self.pos_ang = 0.
         self.c = 0.
-        self.actual_ellipse = np.array([[ 2.82842708,  2.23606801,  2.,  2.23606801,  2.82842708],
-                [ 2.23606801,  1.41421354,  1.,  1.41421354,  2.23606801],
-                [ 2.        ,  1.        ,  0.        ,  1.        ,  2. ],
-                [ 2.23606801,  1.41421354,  1.        ,  1.41421354,  2.23606801],
-                [ 2.82842708,  2.23606801,  2.        ,  2.23606801,  2.82842708]], dtype='float32')
-    
+        self.actual_ellipse = np.array([[2.82842708,  2.23606801,  2.,  2.23606801,  2.82842708],
+                                        [2.23606801,  1.41421354,  1.,
+                                            1.41421354,  2.23606801],
+                                        [2.,  1.,  0.,  1.,  2.],
+                                        [2.23606801,  1.41421354,  1.,
+                                            1.41421354,  2.23606801],
+                                        [2.82842708,  2.23606801,  2.,  2.23606801,  2.82842708]], dtype='float32')
+
     def test_dse_squared(self):
-        
+
         n = self.n
-        ret = dist_superellipse((n,n), self.center, self.q, self.pos_ang, self.c)
+        ret = dist_superellipse((n, n), self.center,
+                                self.q, self.pos_ang, self.c)
         ans = ((ret-self.actual_ellipse)**2.).sum()
-        self.assertAlmostEqual(0.,ans,msg='expected=%f, got=%f' % (0., ans), 
+        self.assertAlmostEqual(0., ans, msg='expected=%f, got=%f' % (0., ans),
                                delta=self.tolerance)
-    
-    def test_area_superellip(self):        
-        r=1.
+
+    def test_area_superellip(self):
+        r = 1.
         ans = area_superellip(r, q=1., c=0.)
-        self.assertAlmostEqual(np.pi,ans,msg='expected=%f, got=%f' % (np.pi, ans), 
+        self.assertAlmostEqual(np.pi, ans, msg='expected=%f, got=%f' % (np.pi, ans),
                                delta=self.tolerance)
-    
+
     def test_effective_radius(self):
-        
+
         area = np.pi
         ans = effective_radius(area, q=1., c=0.)
-        self.assertAlmostEqual(1.,ans,msg='expected=%f, got=%f' % (1., ans), 
+        self.assertAlmostEqual(1., ans, msg='expected=%f, got=%f' % (1., ans),
                                delta=self.tolerance)
+
 
 if __name__ == '__main__':
     # testing section

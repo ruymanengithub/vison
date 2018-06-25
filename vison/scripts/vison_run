@@ -38,28 +38,39 @@ from vison.pipe.lib import broadcast_todo_flags
 
 
 def openconfigf(configf):
-    
+
     f = open(configf)
     exec f
     f.close()
     return inputdict
 
+
 if __name__ == '__main__':
 
-    usage='usage: %prog [options]'
+    usage = 'usage: %prog [options]'
     parser = OptionParser(usage)
-    parser.add_option("-c","--config",dest="config",default='',help="Configuration file to run the pipeline.")    
-    parser.add_option("-d","--day",dest="dayfolder",default='',help="Day-folder. Only needed in 'wait' mode.")
-    parser.add_option("-v","--elvis",dest="elvis",default='6.3.0',help="ELVIS vrsion. Only needed in 'wait' mode.")
-    parser.add_option("-W","--wait",dest="wait",action="store_true",default=False,help="Run in 'data-waiting/listening' mode.")
-    parser.add_option("-k","--check",dest="check",action="store_true",default=False,help="Check consistency and basic quality of data only.")   
-    parser.add_option("-l","--log",dest="log",action="store_true",default=False,help="Start an Execution Log.")
-    parser.add_option("-r","--drill",dest="drill",action="store_true", default=False, help="Do a drill execution.")
-    parser.add_option("-g","--debug",dest="debug",action="store_true", default=False, help="Run in 'debug' mode.")
-    parser.add_option("-T","--test",dest="test",action="store_true",default=False,help="Run in 'test' mode (just ingest inputs and initialize pipeline and output directories)")
-    parser.add_option("-O","--ObsID",dest="startobsid",default="0",help="Only use data from given ObsID and onwards. Only used in 'wait' mode.")
+    parser.add_option("-c", "--config", dest="config", default='',
+                      help="Configuration file to run the pipeline.")
+    parser.add_option("-d", "--day", dest="dayfolder", default='',
+                      help="Day-folder. Only needed in 'wait' mode.")
+    parser.add_option("-v", "--elvis", dest="elvis", default='6.3.0',
+                      help="ELVIS vrsion. Only needed in 'wait' mode.")
+    parser.add_option("-W", "--wait", dest="wait", action="store_true",
+                      default=False, help="Run in 'data-waiting/listening' mode.")
+    parser.add_option("-k", "--check", dest="check", action="store_true",
+                      default=False, help="Check consistency and basic quality of data only.")
+    parser.add_option("-l", "--log", dest="log", action="store_true",
+                      default=False, help="Start an Execution Log.")
+    parser.add_option("-r", "--drill", dest="drill", action="store_true",
+                      default=False, help="Do a drill execution.")
+    parser.add_option("-g", "--debug", dest="debug", action="store_true",
+                      default=False, help="Run in 'debug' mode.")
+    parser.add_option("-T", "--test", dest="test", action="store_true", default=False,
+                      help="Run in 'test' mode (just ingest inputs and initialize pipeline and output directories)")
+    parser.add_option("-O", "--ObsID", dest="startobsid", default="0",
+                      help="Only use data from given ObsID and onwards. Only used in 'wait' mode.")
     (options, args) = parser.parse_args()
-    
+
     configf = options.config
     dayfolder = options.dayfolder
     elvis = options.elvis
@@ -70,16 +81,15 @@ if __name__ == '__main__':
     debug = options.debug
     dotest = options.test
     startobsid = int(options.startobsid)
-    
+
     inputdict = openconfigf(configf)
-    
-    inputdict = broadcast_todo_flags(inputdict,docheck=docheck,dotest=dotest)
-    
-    pipe = Pipe(inputdict,dolog=dolog,drill=drill,debug=debug,startobsid=startobsid)
-    
+
+    inputdict = broadcast_todo_flags(inputdict, docheck=docheck, dotest=dotest)
+
+    pipe = Pipe(inputdict, dolog=dolog, drill=drill,
+                debug=debug, startobsid=startobsid)
+
     if wait:
-        pipe.wait_and_run(dayfolder,elvis=elvis)
+        pipe.wait_and_run(dayfolder, elvis=elvis)
     else:
         pipe.run()
-    
-    

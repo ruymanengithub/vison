@@ -53,6 +53,7 @@ def isNumeric(s):
             return False
     return numeric
 
+
 def changeNumeric(data):
     """
     if the data to be sorted is numeric change to float
@@ -64,6 +65,7 @@ def changeNumeric(data):
             new_data.append((float(child), col))
         return new_data
     return data
+
 
 class ExpLogDisplay(tk.Toplevel):
     """ """
@@ -141,14 +143,14 @@ class ExpLogDisplay(tk.Toplevel):
 
         self.update(startup=True)
 
-    def update(self,startup=False):
+    def update(self, startup=False):
 
         if self.updating:
 
             self.search_EXPLOGs()
             theresnewdata = self.get_data()
-            
-            if theresnewdata or startup: 
+
+            if theresnewdata or startup:
                 self.tree.yview_moveto(1)
                 self.build_elementList()
                 self.buildTree()
@@ -193,7 +195,7 @@ class ExpLogDisplay(tk.Toplevel):
 
     def search_EXPLOGs(self):
         """ """
-        
+
         if self.path is None:
             self.explogfs = None
             return
@@ -216,7 +218,6 @@ class ExpLogDisplay(tk.Toplevel):
         else:
             print 'EXPLOGs %s not found' % tmp_EL
             self.explogfs = None
-
 
     def loadExplogs(self):
         """ """
@@ -253,7 +254,7 @@ class ExpLogDisplay(tk.Toplevel):
 
         self.labels['NEntries']['var'].set('Nentries = %i' % len(EXPLOG))
         self.labels['NObsIDs']['var'].set('NObsIDs = %i' % NObsIDs)
-        
+
         return True
 
     def growTree(self):
@@ -322,7 +323,6 @@ class ExpLogDisplay(tk.Toplevel):
                 d.set("file %s" % iFITSf)
                 d.set("zoom to fit")
                 d.set("scale mode zscale")
-
 
     def sortBy(self, tree, col, descending):
         """

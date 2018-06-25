@@ -109,7 +109,7 @@ class FOCUS00_inputs(inputs.Inputs):
     manifesto.update(OrderedDict(sorted([
         ('exptime', ([float], 'Exposure time.')),
         ('wavelength', ([int], 'Wavelength')),
-        ('deltafocus',([float],'delta-focus step, mm'))
+        ('deltafocus', ([float], 'delta-focus step, mm'))
     ])))
 
 
@@ -131,14 +131,14 @@ class FOCUS00(PT.PointTask):
         self.inputs['subpaths'] = dict(figs='figs')
 
     def set_inpdefaults(self, **kwargs):
-        
+
         tFWC800 = self.ogse.profile['tFWC_point']['nm%i' % 800]
         self.inpdefaults = dict(wavelength=800,
                                 exptime=60./100.*tFWC800,
                                 deltafocus=0.1)
 
     def set_perfdefaults(self, **kwargs):
-        super(FOCUS00,self).set_perfdefaults(**kwargs)
+        super(FOCUS00, self).set_perfdefaults(**kwargs)
         self.perfdefaults['BGD_lims'] = copy.deepcopy(PT.BGD_lims)
         self.perfdefaults['FWHM_lims'] = copy.deepcopy(FWHM_lims)
         self.perfdefaults['Flu_lims'] = copy.deepcopy(Flu_lims)

@@ -23,9 +23,9 @@ import string as st
 isthere = os.path.exists
 
 
-def replace_in_template(texf,values):
+def replace_in_template(texf, values):
     """ """
-    
+
     fp = open(texf, 'r')
     texlines = fp.readlines()
     fp.close()
@@ -39,19 +39,21 @@ def replace_in_template(texf,values):
     tex = tex.replace('%%', '%')
 
     texList = st.split(tex, 'JOIN___LINES')
-    
+
     return texList
-    
+
 
 def generate_header(test, model, author, reference='7-XXX'):
     """ """
     headertexf = os.path.join(data.__path__[0], 'header_template.tex')
-    headerList = replace_in_template(headertexf,(author, model, test, reference))
+    headerList = replace_in_template(
+        headertexf, (author, model, test, reference))
     return headerList
 
 
-def generate_preamble(model, test, custodian='Ruyman Azzollini',reference='7-XXX'):
+def generate_preamble(model, test, custodian='Ruyman Azzollini', reference='7-XXX'):
 
     preambletexf = os.path.join(data.__path__[0], 'preamble_template.tex')
-    preambleList = replace_in_template(preambletexf,(model, test, reference, custodian))
+    preambleList = replace_in_template(
+        preambletexf, (model, test, reference, custodian))
     return preambleList

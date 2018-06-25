@@ -83,7 +83,7 @@ class HKButton(tk.Button, object):
 
     def __init__(self, master=None, **kwargs):
         """ """
-        
+
         options = dict(status=False)
         options.update(kwargs)
 
@@ -98,7 +98,8 @@ class HKButton(tk.Button, object):
         self.ir = ir
         self.ic = ic
         self.text = options['text']
-        self.status = status # True/False/None
+        self.status = status  # True/False/None
+
 
 def validate_within_HKlim(val, HKlim):
     """ 
@@ -107,7 +108,7 @@ def validate_within_HKlim(val, HKlim):
         -1: below lower limit
         1: above upper limit
         2: different from limit, if limit is a single value
-    
+
     """
 
     if len(HKlim) == 2:
@@ -119,6 +120,7 @@ def validate_within_HKlim(val, HKlim):
         if HKlim != val:
             return False, 2
     return True, 0
+
 
 def sort_HKfiles(HKfiles):
     """ """
@@ -148,6 +150,7 @@ def sort_HKfiles(HKfiles):
 
     return oHKfiles
 
+
 flagshelpList = ['HK Flags:  HK parameters monitoring',
                  'Green means HK flag is within limits ("lowered")',
                  'Red means HK flag is outside limits ("raised")',
@@ -155,6 +158,7 @@ flagshelpList = ['HK Flags:  HK parameters monitoring',
                  'Left-click: lower HK flag (reset to "green")',
                  'Right-click: show plot of HK parameter vs. time',
                  'Middle-click: mute/unmute HK parameter']
+
 
 class HKFlags(tk.Toplevel):
     """ """
@@ -196,7 +200,7 @@ class HKFlags(tk.Toplevel):
 
         for ir in range(nrows):
             for ic in range(ncols):
-                
+
                 ix = ir * ncols + ic
 
                 try:
@@ -210,8 +214,8 @@ class HKFlags(tk.Toplevel):
                                              ix=ix, ic=ic, ir=ir, status=False))
                 self.HKflags[-1].grid(column=ic, row=ir, sticky='nsew',
                                       in_=self.HKframe)
-                
-                self.bind_buttons_to_methods(-1) 
+
+                self.bind_buttons_to_methods(-1)
 
         if ic < ncols-1:
             icr = ic+1
@@ -224,34 +228,33 @@ class HKFlags(tk.Toplevel):
                                     ix=-1, ic=icr, ir=irr)
         self.resetButton.grid(column=icr, row=irr, sticky='nsew',
                               in_=self.HKframe)
-        
+
         self.resetButton.bind("<Button 1>", self.ResetAllFlags)
-        
-        self.HelpButton = HelpButton(self,helplist=flagshelpList,text='?', 
+
+        self.HelpButton = HelpButton(self, helplist=flagshelpList, text='?',
                                      font=small_font, bg='pink',
                                      label='HK Flags: HELP')
-        
-        self.HelpButton.grid(column=icr+1, row=irr,sticky='nsew',
+
+        self.HelpButton.grid(column=icr+1, row=irr, sticky='nsew',
                              in_=self.HKframe)
-        
-    
-    def ToggleMute(self,event):
+
+    def ToggleMute(self, event):
         #ix = event.widget
         status = event.widget.status
         if status is None:
             self.UnmuteFlag(event)
         else:
             self.MuteFlag(event)
-    
+
     def MuteFlag(self, event):
         """ """
         ix = event.widget.ix
-        self.changeColor(ix,'gray')
+        self.changeColor(ix, 'gray')
         self.HKflags[ix].status = None
         if self.log is not None:
             HKkey = self.HKflags[ix].text
             self.log.info('MUTING %s' % HKkey)
-    
+
     def UnmuteFlag(self, event):
         """ """
         ix = event.widget.ix
@@ -270,7 +273,7 @@ class HKFlags(tk.Toplevel):
             self.log.info('LOWERED %s' % HKkey)
 
     def ResetAllFlags(self, event):
-        for ix,HKflag in enumerate(self.HKflags):
+        for ix, HKflag in enumerate(self.HKflags):
             self.lowerflag(ix)
         if self.log is not None:
             self.log.info('LOWERED ALL FLAGS')
@@ -288,7 +291,7 @@ class HKFlags(tk.Toplevel):
             window.render(HKkey, HKlim, t, y)
         except KeyError:
             print 'Cant find %s in HK!\n' % HKkey
-        
+
     def update(self):
 
         try:
@@ -313,24 +316,25 @@ class HKFlags(tk.Toplevel):
             time_stamp = vistime.get_time_tag()
             self.raiseflag(ix)
             if self.log is not None:
-                self.log.info('RAISED %s: %s, lims=%s (timestamp=%s)' %\
-                    (HKkeys[ix],lastval.__str__(),HKlim.__str__(),time_stamp))
+                self.log.info('RAISED %s: %s, lims=%s (timestamp=%s)' %
+                              (HKkeys[ix], lastval.__str__(), HKlim.__str__(), time_stamp))
             if self.Warnings is not None and self.HKflags[ix].status is not None:
-                self.Warnings.process_event(HKkeys[ix],violation_type,lastval,HKlim,time_stamp)
-            
-    def isflagraised(self,ix):
+                self.Warnings.process_event(
+                    HKkeys[ix], violation_type, lastval, HKlim, time_stamp)
+
+    def isflagraised(self, ix):
         """ """
         return self.HKflags[ix].status
 
-    def lowerflag(self,ix):
+    def lowerflag(self, ix):
         """ """
         self.HKflags[ix].status = False
-        self.changeColor(ix,'green')
-    
-    def raiseflag(self,ix):
+        self.changeColor(ix, 'green')
+
+    def raiseflag(self, ix):
         """ """
         self.HKflags[ix].status = True
-        self.changeColor(ix,'red')
+        self.changeColor(ix, 'red')
 
     def changeColor(self, ix, color):
         """ """
@@ -344,14 +348,14 @@ class HKFlags(tk.Toplevel):
         self.HKflags[ix].grid(column=ic, row=ir, sticky='nsew',
                               in_=self.HKframe)
 
-        self.bind_buttons_to_methods(ix)        
+        self.bind_buttons_to_methods(ix)
 
-    def bind_buttons_to_methods(self,ix):
+    def bind_buttons_to_methods(self, ix):
         """ """
         self.HKflags[ix].bind("<Button 1>", self.ResetFlag)
         self.HKflags[ix].bind("<Button 3>", self.showHK)
         self.HKflags[ix].bind("<Button 2>", self.ToggleMute)
-        
+
 
 class HKDisplay(tk.Toplevel):
     """ """
@@ -374,9 +378,9 @@ class HKDisplay(tk.Toplevel):
 
         self.HKkeys = HKtools.allHK_keys[elvis]
         self.HKlims = HKtools.HKlims[elvis]['S']
-        
+
         if self.path is not None:
-             self.search_HKfiles()
+            self.search_HKfiles()
 
         tk.Toplevel.__init__(self, self.root)
 
@@ -428,10 +432,9 @@ class HKDisplay(tk.Toplevel):
         toolbar.update()
         canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-
     def search_HKfiles(self):
         """ """
-        
+
         if self.path is None:
             self.HKfiles = None
             return
@@ -485,7 +488,7 @@ class HKDisplay(tk.Toplevel):
         if self.HKfiles is None:
             yield self.HK
             return
- 
+
         sizeHK = get_bitsize(self.HKfiles)
 
         if sizeHK <= self.sizeHK:

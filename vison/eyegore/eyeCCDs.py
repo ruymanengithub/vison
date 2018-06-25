@@ -87,11 +87,11 @@ class ImageDisplay(tk.Toplevel):
         IMGs = dict(ObsID=-1)
         for CCD in [1, 2, 3]:
             IMGs['CCD%i' % CCD] = None
-        
+
         if self.path is None:
             yield IMGs
             return
-        
+
         FITSs = sorted(glob.glob(os.path.join(
             self.path, '*.fits')), key=os.path.getmtime)
         lastFITS = FITSs[-1]

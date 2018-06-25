@@ -82,6 +82,7 @@ def gt_check_fwhmx_dict(test):
                           xlabel='seconds',
                           ylabel='FWHMx [pix]'))
 
+
 def gt_check_fwhmy_dict(test):
     ntest = st.replace(test, '_', '\_')
     return dict(stats=['chk_fwhmy'],
@@ -93,6 +94,7 @@ def gt_check_fwhmy_dict(test):
                           suptitle='%s-checks: FWHM(y)' % ntest,
                           xlabel='seconds',
                           ylabel='FWHMy [pix]'))
+
 
 def gt_PSF0Xfigs(test):
     PSF0Xfigs = dict()

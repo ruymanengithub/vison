@@ -74,7 +74,7 @@ def simadd_points(ccdobj, flux, fwhm, CCDID='CCD1', dx=0, dy=0, extension=-1):
 
 
 def simadd_bias(ccdobj, levels=None, extension=-1):
-    
+
     if levels is None:
         levels = dict(E=2000, F=2000, G=2000, H=2000)
 

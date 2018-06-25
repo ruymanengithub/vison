@@ -258,8 +258,8 @@ class BF01(PTC0X):
                             kernel_Q, pitch=12.)
 
                         self.dd.products['BF'][CCDk][Q][ulabel] = OrderedDict(Asol=Asol_Q.copy(),
-                                                                             psmooth=psmooth_Q.copy(),
-                                                                             kernel=kernel_Q.copy())
+                                                                              psmooth=psmooth_Q.copy(),
+                                                                              kernel=kernel_Q.copy())
 
                         kernel_FWHMx[ix, jCCD, kQ] = kerQshape['FWHMx']
                         kernel_FWHMy[ix, jCCD, kQ] = kerQshape['FWHMy']

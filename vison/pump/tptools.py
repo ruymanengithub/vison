@@ -118,18 +118,17 @@ def find_dipoles_vtpump(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, ex
 
 def save_dipcat2D_as_ds9regs(df, regfilename, clobber=True):
     """ """
-    
+
     X = df['X']
     Y = df['Y']
-    R = np.ones_like(X,dtype='float32') * 6.0
-    
+    R = np.ones_like(X, dtype='float32') * 6.0
+
     data = dict(X=X,
                 Y=Y,
                 R=R)
-    
-    save_spots_as_ds9regs(data,regfilename,regtype='circle',
-                          clobber=True)
 
+    save_spots_as_ds9regs(data, regfilename, regtype='circle',
+                          clobber=True)
 
 
 def fcomp_distamp_dipoles(merged, mcat):

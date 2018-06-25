@@ -124,7 +124,7 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
         isconsistent = False
         failedkeys = ['all']
         failedcols = np.arange(1, Ncols+1).tolist()
-        msgs=[]
+        msgs = []
 
         report = dict(checksout=isconsistent,
                       failedkeys=failedkeys, failedcols=failedcols,
@@ -133,9 +133,9 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
         return report
 
     failedkeys = []
-    failedcols = []    
+    failedcols = []
     msgs = []
-    
+
     for iCCD in CCDs:
 
         cselbool = selbool & (explog['CCD'] == 'CCD%i' % iCCD)
@@ -170,15 +170,16 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
                 if val is None or key in wavedkeys:
                     continue
                 try:
-                    checksout = np.all(np.isclose(explog[key][ixsubsel], val,rtol=0.005))
+                    checksout = np.all(np.isclose(
+                        explog[key][ixsubsel], val, rtol=0.005))
                 except TypeError:
                     checksout = np.all(explog[key][ixsubsel] == val)
                 isconsistent &= checksout
                 if ~checksout:
                     failedkeys.append(key)
-                    
-                    msgs.append('%s: "%s" NE "%s"' % (key,val.__repr__(),explog[key][ixsubsel].tolist().__repr__()))
-                    
+
+                    msgs.append('%s: "%s" NE "%s"' % (
+                        key, val.__repr__(), explog[key][ixsubsel].tolist().__repr__()))
 
             ix0 += frames
 
@@ -189,7 +190,7 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
     report = dict(checksout=isconsistent,
                   failedkeys=failedkeys, failedcols=failedcols,
                   msgs=msgs)
-    
+
     return report
 
 
@@ -259,7 +260,7 @@ def addHK(dd, HKKeys, elvis=context.elvis):
         HKlist, elvis=elvis)
 
     HKix = copy.deepcopy(dd.mx['ObsID'].indices)
-    
+
     for HKKey in HKKeys:
 
         pre_HKKey = 'HK_%s' % HKKey
@@ -269,7 +270,6 @@ def addHK(dd, HKKeys, elvis=context.elvis):
         ixkey = readHKKeys.index(HKKey)
         dd.mx[pre_HKKey][:] = HKdata[:, 0, ixkey]
 
-    
     return dd
 
 
@@ -295,34 +295,33 @@ def coarsefindTestinExpLog(explog, testkey, Nframes):
     return wasacquired
 
 
-def broadcast_todo_flags_func(inputdict,tododict):
-    
+def broadcast_todo_flags_func(inputdict, tododict):
+
     for taskname in inputdict['tasks']:
         for key in inputdict[taskname]['todo_flags']:
             inputdict[taskname]['todo_flags'][key] = False
-    
+
     for taskname in inputdict['tasks']:
         inputdict[taskname]['todo_flags'].update(tododict)
-    
+
     return inputdict
 
+
 def broadcast_todo_flags(inputdict, docheck=False, dotest=False, doreport=False):
-    
+
     assert np.array([docheck, dotest]).sum(
     ) <= 1, 'At most 1 kwd should be True!'
-    #if np.array([docheck, dotest]).sum() == 0:
+    # if np.array([docheck, dotest]).sum() == 0:
     #    return inputdict
-    
-    _todocheck = dict(init=False,check=False,report=False)
+
+    _todocheck = dict(init=False, check=False, report=False)
     _todocheck['report'] = doreport
-    
+
     if docheck:
         _todocheck.update(dict(init=True, check=True, report=True))
     elif dotest:
         _todocheck.update(dict(init=True))
-    
-    inputdict = broadcast_todo_flags_func(inputdict,_todocheck)
-    
+
+    inputdict = broadcast_todo_flags_func(inputdict, _todocheck)
+
     return inputdict
-
-

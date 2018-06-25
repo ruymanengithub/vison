@@ -34,8 +34,8 @@ import matplotlib.pyplot as plt
 def show_spots_allCCDs(spots_bag, title='', filename='', dobar=True):
     """ """
     imgs = get_spots_images_allCCDs(spots_bag)
-    doplot_spots_allCCDs(imgs,title=title,filename=filename)
-    
+    doplot_spots_allCCDs(imgs, title=title, filename=filename)
+
 
 def get_spots_images_allCCDs(spots_bag):
 
@@ -74,7 +74,8 @@ def get_spots_images_allCCDs(spots_bag):
 
     return imgs
 
-def doplot_spots_allCCDs(imgs,title='',filename=''):
+
+def doplot_spots_allCCDs(imgs, title='', filename=''):
 
     fig = plt.figure(figsize=(12, 6))
     axs = []

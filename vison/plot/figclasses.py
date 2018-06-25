@@ -20,16 +20,17 @@ from vison.support import utils
 from matplotlib import pyplot as plt
 # END IMPORT
 
-#def getFromDict(dataDict,mapList):
+# def getFromDict(dataDict,mapList):
 #    return reduce(operator.getitem,mapList,dataDict)
 #
-#def setInDict(dataDict,mapList,value):
+# def setInDict(dataDict,mapList,value):
 #    getFromDict(dataDict,mapList[:-1])[mapList[-1]] = value
 #
 
+
 class Fig(object):
-    
-    plotclass = lambda x: None
+
+    def plotclass(x): return None
 
     def __init__(self, figname=''):
 
@@ -52,170 +53,172 @@ class Fig(object):
         if 'suptitle' in defaults:
             self.suptitle = defaults['suptitle']
 
-    def plot(self,**kwargs):
+    def plot(self, **kwargs):
         """ """
-        plotobj = self.plotclass(self.data,**kwargs)
+        plotobj = self.plotclass(self.data, **kwargs)
         plotobj.render(self.figname)
-        
-    def build_data(self,*args,**kwargs):
+
+    def build_data(self, *args, **kwargs):
         raise NotImplementedError("child class implements abstract method")
+
 
 class Fig_Beam2DPlot(Fig):
     plotclass = baseplotclasses.BeamPlotYvX
 
+
 class Fig_Beam1DHist(Fig):
     plotclass = baseplotclasses.Beam1DHist
-    
+
 
 class Fig_XY_fromDD(Fig):
 
-    
-    def _build_data_yvsx(self,subdd,stats,trendaxis,index2margin,indices2param):
-        
-        assert isinstance(subdd,dict)
-        assert isinstance(stats,list)
-        assert isinstance(trendaxis,str)
-                
+    def _build_data_yvsx(self, subdd, stats, trendaxis, index2margin, indices2param):
+
+        assert isinstance(subdd, dict)
+        assert isinstance(stats, list)
+        assert isinstance(trendaxis, str)
+
         #plnames = ['x','y']
-    
+
         iterable_data_keys = []
         for indname in indices2param:
-            iterable_data_keys.append(subdd[stats[0]].indices.get_vals(indname))
-        
+            iterable_data_keys.append(
+                subdd[stats[0]].indices.get_vals(indname))
+
 #        tagkeys = []
 #        if index2tag is not None:
 #            tagkeys = subdd[stats[0]].indices.get_vals(index2tag)
 #
 #        iterable_data_keys += [plnames] + tagkeys
-        
+
         data_keys_tuples = [item for item in product(*iterable_data_keys)]
-        
+
         trend_indices = subdd[trendaxis].indices
-        stats_indices = subdd[stats[0]].indices # all stats SHOULD have same indices
-        
-        def get_ix_tuples(indobj,indexlist,margin=None):
-           
-            iterable_ix = [] 
+        # all stats SHOULD have same indices
+        stats_indices = subdd[stats[0]].indices
+
+        def get_ix_tuples(indobj, indexlist, margin=None):
+
+            iterable_ix = []
             if margin is not None:
-                iterable_ix+= [[slice(None)]]
-            
+                iterable_ix += [[slice(None)]]
+
             for _ixname in indexlist:
                 iterable_ix.append(np.arange(indobj.get_len(_ixname)))
-            
+
 #            if tag is not None:
 #                iterable_ix.append(np.arange(indobj.get_len(tag)))
 #
             return [item for item in product(*iterable_ix)]
-        
-        ix_tuples = get_ix_tuples(stats_indices,indices2param,margin=index2margin)
-        
+
+        ix_tuples = get_ix_tuples(
+            stats_indices, indices2param, margin=index2margin)
+
         # nested dictionary based on recursion and collections.defaultdict
-        nested_dict = lambda: defaultdict(nested_dict)
+        def nested_dict(): return defaultdict(nested_dict)
         data = nested_dict()
-        
+
         NdimsTrend = len(trend_indices.shape)
         NdimsStats = len(stats_indices.shape)
-        
+
         # broadcasting trends axis matrix, if needed
-        
+
         sup_trendmx = subdd[trendaxis][:].copy()
-        
-        def add_axis(arr,repeats):
-            return arr[...,np.newaxis].repeat(repeats,axis=-1).copy()
-        
-        if NdimsStats>NdimsTrend:
+
+        def add_axis(arr, repeats):
+            return arr[..., np.newaxis].repeat(repeats, axis=-1).copy()
+
+        if NdimsStats > NdimsTrend:
             stats_shape = stats_indices.shape
             for i in stats_shape[NdimsTrend:]:
-                sup_trendmx = add_axis(sup_trendmx,i)
-        
-        # on-the-fly creation and assignation of values 
-        
+                sup_trendmx = add_axis(sup_trendmx, i)
+
+        # on-the-fly creation and assignation of values
+
         assert len(data_keys_tuples) == len(ix_tuples)
-        
+
         full_keys_tuples = []
-        
+
         for i in range(len(data_keys_tuples)):
-            
+
             keys_tuple = data_keys_tuples[i]
             ix_tuple = ix_tuples[i]
-            
+
             for stat in stats:
                 _keysx = tuple(list(keys_tuple)+['x']+[stat])
-                 
+
                 valuex = sup_trendmx[ix_tuple].copy()
-               
-                utils.setInDict(data,_keysx,valuex)
-                
+
+                utils.setInDict(data, _keysx, valuex)
+
                 _keysy = tuple(list(keys_tuple)+['y']+[stat])
-                
+
                 valuey = subdd[stat][ix_tuple].copy()
-                utils.setInDict(data,_keysy,valuey)
-                
-                full_keys_tuples += [_keysx,_keysy]
-            
+                utils.setInDict(data, _keysy, valuey)
+
+                full_keys_tuples += [_keysx, _keysy]
+
         # Convert defaultdict 'back' to dict()
-        
-        
+
         Nlevels = len(full_keys_tuples[0])
-        
+
         for keys_tuple in full_keys_tuples:
-            for j in range(1,Nlevels):
-                value = utils.getFromDict(data,keys_tuple[:-j])
-                if isinstance(value,defaultdict):
-                    utils.setInDict(data,keys_tuple[:-j],dict(value))
+            for j in range(1, Nlevels):
+                value = utils.getFromDict(data, keys_tuple[:-j])
+                if isinstance(value, defaultdict):
+                    utils.setInDict(data, keys_tuple[:-j], dict(value))
         data = dict(data)
-        
-        
+
         return data
-    
-    
+
+
 #    def old_build_data_yvsx(self,ddmx,indicesDict,indicesList,labels,trendaxis):
-#        
+#
 #        plnames = ['x','y']
-#    
+#
 #        iterable_keys = []
 #        for indname in indicesList:
 #            iterable_keys.append(indicesDict[indname])
 #        iterable_keys += [plnames] + [labels]
-#        
+#
 #        iterable_ix = []
 #        for indname in indicesList:
 #            iterable_ix.append(np.arange(len(indicesDict[indname])).tolist())
 #        iterable_ix += [[None]*len(plnames)] + [[None]*len(labels)]
-#        
-#        
+#
+#
 #        # nested dictionary based on recursion and collections.defaultdict
 #        nested_dict = lambda: defaultdict(nested_dict)
 #        data = nested_dict()
-#        
+#
 #        indices_tuples = [item for item in product(*iterable_keys)]
 #        ix_tuples = [item for item in product(*iterable_ix)]
-#        
+#
 #        # on-the-fly creation and assignation of values
-#        
-#        
+#
+#
 #        for i in range(len(indices_tuples)):
 #            indices_tuple = indices_tuples[i]
 #            ix_tuple = ix_tuples[i]
-#            
+#
 #            axis = indices_tuple[-2]
 #            stat = indices_tuple[-1]
 #            if axis == 'x':
 #                value = ddmx[trendaxis][ix_tuple[:-2]]
 #            elif axis == 'y':
 #                value = ddmx[stat][ix_tuple[:-2]]
-#                
+#
 #            utils.setInDict(data,indices_tuple,value)
-#        
+#
 #        # Convert defaultdict 'back' to dict()
-#        
+#
 #        for indices_tuple in indices_tuples:
 #            for j in range(1,len(indicesList)+2):
 #                value = utils.getFromDict(data,indices_tuple[:-j])
 #                if isinstance(value,defaultdict):
 #                    utils.setInDict(data,indices_tuple[:-j],dict(value))
 #        data = dict(data)
-#        
+#
 #        return data
 
 class BlueScreen(Fig):
@@ -244,7 +247,6 @@ class BlueScreen(Fig):
         path = defaults['path']
         self.figname = os.path.join(path, self.figname % defaults['tag'])
 
-    def build_data(self,*args,**kwargs):
+    def build_data(self, *args, **kwargs):
         """ """
         self.data = plt.imread(self.rootfigure)
-

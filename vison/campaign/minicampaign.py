@@ -35,9 +35,9 @@ from vison.support import context
 
 def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBER=None):
     """ """
-    
+
     ogse = ogsemod.Ogse(CHAMBER)
-    
+
     operator = equipment['operator']
     sn_ccd1 = equipment['sn_ccd1']
     sn_ccd2 = equipment['sn_ccd2']
@@ -58,7 +58,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBE
                           sn_ccd2=sn_ccd2, sn_ccd3=sn_ccd3, sn_roe=sn_roe,
                           sn_rpsu=sn_rpsu, operator=operator)
 
-        bias01 = BIAS01.BIAS01(inputs=dict(N=Nbias01, 
+        bias01 = BIAS01.BIAS01(inputs=dict(N=Nbias01,
                                            diffvalues=diffBIAS01,
                                            elvis=elvis,
                                            CHAMBER=CHAMBER))
@@ -113,8 +113,6 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBE
         #structCHINJ00 = chinj00.build_scriptdict(elvis=elvis)
         test_sequence['CHINJ00'] = copy.deepcopy(chinj00)
 
-
-
     # TRAP-PUMPING
 
     # TP00
@@ -143,7 +141,6 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBE
         #structTP00 = tp00.build_scriptdict(elvis=elvis)
         test_sequence['TP00'] = copy.deepcopy(tp00)
 
-
     # FLATS
 
     exptimes_FLAT0X = dict(nm0=ogse.profile['tFWC_flat']['nm0'],
@@ -165,7 +162,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBE
         diffFLAT01 = dict(sn_ccd1=sn_ccd1,
                           sn_ccd2=sn_ccd2, sn_ccd3=sn_ccd3, sn_roe=sn_roe,
                           sn_rpsu=sn_rpsu, operator=operator)
-        
+
         inpF01 = dict(exptimes=exptimesF01,
                       frames=framesF01,
                       wavelength=800,
@@ -174,11 +171,9 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBE
                       elvis=elvis,
                       CHAMBER=CHAMBER)
 
-        
         flat01 = FLAT0X.FLAT0X(inputs=inpF01)
-        
 
-        #structFLAT01 = flat01.build_scriptdict(
+        # structFLAT01 = flat01.build_scriptdict(
         #    diffvalues=diffFLAT01, elvis=elvis)
         test_sequence['FLAT01'] = copy.deepcopy(flat01)
 
@@ -212,7 +207,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBE
 
             flat02 = FLAT0X.FLAT0X(inputs=inpF02)
 
-            #istructFLAT02 = flat02.build_scriptdict(
+            # istructFLAT02 = flat02.build_scriptdict(
             #    diffvalues=diffFLAT02, elvis=elvis)
 
             test_sequence[itestkey] = copy.deepcopy(flat02)
@@ -230,7 +225,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBE
                             sn_rpsu=sn_rpsu, operator=operator)
 
         for iw, wave in enumerate(wavesFOCUS00w):
-            
+
             tFWC_pointw = ogse.profile['tFWC_point']['nm%i' % wave]
             iexptimeF00 = 60./100. * tFWC_pointw
 
@@ -245,7 +240,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBE
                                                   diffvalues=diffFOCUS00w,
                                                   elvis=elvis,
                                                   CHAMBER=CHAMBER))
-            #istructFOCUS00w = focus00.build_scriptdict(diffvalues=diffFOCUS00w,
+            # istructFOCUS00w = focus00.build_scriptdict(diffvalues=diffFOCUS00w,
             #                                           elvis=elvis)
             test_sequence[itestkey] = copy.deepcopy(focus00)
 
@@ -260,7 +255,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBE
         diffPSF01w = dict(sn_ccd1=sn_ccd1,
                           sn_ccd2=sn_ccd2, sn_ccd3=sn_ccd3, sn_roe=sn_roe,
                           sn_rpsu=sn_rpsu, operator=operator)
-        
+
         tFWC_pointPSF01 = ogse.profile['tFWC_point']['nm%i' % wavePSF01w]
         exptsPSF01w = (np.array([25., 50., 75.])/100. *
                        tFWC_pointPSF01).tolist()
@@ -279,7 +274,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBE
                                          elvis=elvis,
                                          CHAMBER=CHAMBER))
 
-        #istructPSF01w = psf01w.build_scriptdict(diffvalues=diffPSF01w,
+        # istructPSF01w = psf01w.build_scriptdict(diffvalues=diffPSF01w,
         #                                        elvis=elvis)
 
         test_sequence[itestkey] = copy.deepcopy(psf01w)

@@ -73,8 +73,8 @@ class InjTask(Task):
 
         expectation = OrderedDict()
 
-        for jCCD,CCDkey in enumerate(CCDs):
-            
+        for jCCD, CCDkey in enumerate(CCDs):
+
             expectation[CCDkey] = OrderedDict()
 
             for Q in Quads:
@@ -84,15 +84,16 @@ class InjTask(Task):
                 for icol in range(1, Ncols+1):
                     coldict = teststruct['col%i' % icol]
                     chinj = coldict['chinj']
-                    IGs = (coldict['IG1_%i_%s' % (jCCD+1, sectag)],coldict['IG2_%s' % sectag])
+                    IGs = (coldict['IG1_%i_%s' % (jCCD+1, sectag)],
+                           coldict['IG2_%s' % sectag])
                     ID = (coldict['IDL'], coldict['IDH'])
-                    id_timing = (coldict['id_wid'],coldict['id_dly'])
+                    id_timing = (coldict['id_wid'], coldict['id_dly'])
                     toi_ch = coldict['toi_ch']
 
                     if chinj == 0:
                         _inj = 0.
                     else:
-                        _inj = ilib.predict_inj_level(ID, IGs, id_timing, 
+                        _inj = ilib.predict_inj_level(ID, IGs, id_timing,
                                                       toi_ch, sectag)
 
                     expectation[CCDkey][Q]['col%i' % icol] = _inj

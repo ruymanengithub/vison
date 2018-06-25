@@ -81,7 +81,7 @@ class FlatTask(Task):
         nObs, _, _ = Xindices.shape
         CCDs = Xindices.get_vals('CCD')
         Quads = Xindices.get_vals('Quad')
-        
+
         # Get statistics in different regions
 
         if not self.drill:
@@ -193,7 +193,6 @@ class FlatTask(Task):
 
         _compliance_flu = self.check_stat_perCCDandCol(
             self.dd.mx['flu_med_img'], FLU_lims, CCDs)
-        
 
         if not self.IsComplianceMatrixOK(_compliance_flu):
             self.dd.flags.add('POORQUALDATA')

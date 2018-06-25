@@ -26,7 +26,6 @@ from vison.point import spot as spotmod
 # END IMPORT
 
 
-
 stampw = 75
 
 # ALPHA BRAVO
@@ -108,7 +107,7 @@ def extract_spot(ccdobj, coo, Quad, log=None, stampw=25):
     return spot
 
 
-def gen_point_mask(CCD, Quad, width=stampw, sources='all', coodict = Point_CooNom):
+def gen_point_mask(CCD, Quad, width=stampw, sources='all', coodict=Point_CooNom):
     """ """
 
     fkccdobj = ccdmod.CCD()
@@ -116,7 +115,7 @@ def gen_point_mask(CCD, Quad, width=stampw, sources='all', coodict = Point_CooNo
     NAXIS1, NAXIS2 = fkccdobj.NAXIS1, fkccdobj.NAXIS2
 
     msk = np.zeros((NAXIS1, NAXIS2), dtype='int8')
-    
+
     if sources == 'all':
         sourcelist = coodict['names']
     else:

@@ -92,7 +92,6 @@ class CHINJ00(InjTask):
             chinj_on=30,
             chinj_of=300)
 
-
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """
         Builds CHINJ00 script structure dictionary.
@@ -170,5 +169,3 @@ class CHINJ00(InjTask):
         wavedkeys = []
         return super(CHINJ00, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=True,
                                                     wavedkeys=wavedkeys)
-
-

@@ -94,7 +94,6 @@ class TP00(PumpTask):
             dwell_tpsv=[0, 16, 32],
         )
 
-
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """ """
 

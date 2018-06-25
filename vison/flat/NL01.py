@@ -116,7 +116,7 @@ class NL01(FlatTask):
     def set_inpdefaults(self, **kwargs):
 
         wave = 800
-        
+
         tFWCw = self.ogse.profile['tFWC_flat']['nm%i' % wave]
 
         expts = (NL01_relfluences/100. *
@@ -128,7 +128,7 @@ class NL01(FlatTask):
                                 )
 
     def set_perfdefaults(self, **kwargs):
-        super(NL01,self).set_perfdefaults(**kwargs)
+        super(NL01, self).set_perfdefaults(**kwargs)
         self.perfdefaults['FLU_lims'] = FLU_lims  # dict
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
@@ -352,7 +352,6 @@ class NL01(FlatTask):
         # Fitting the NL curves
 
         for iCCD, CCDkey in enumerate(CCDs):
-
 
             for jQ, Q in enumerate(Quads):
 

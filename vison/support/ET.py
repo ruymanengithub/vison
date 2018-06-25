@@ -21,6 +21,7 @@ from vison.support import utils
 
 testURL = "https://visonwarningcall.000webhostapp.com/visonwarningcall.xml"
 
+
 def grab_numbers_and_codes():
     """Retrieves phone numbers and access codes necessary to make the phone calls."""
 
@@ -48,26 +49,26 @@ class ET(object):
                     as intended.
 
         """
-        
+
         for number in self.DIAL_NUMBERS:
             print("Dialing " + number)
             # set the method to "GET" from default POST because Amazon S3 only
             # serves GET requests on files. Typically POST would be used for apps
             self.client.calls.create(to=number, from_=self.TWILIO_PHONE_NUMBER,
-                                url=url, method="GET")
-    
-    def send_sms(self,body):
+                                     url=url, method="GET")
+
+    def send_sms(self, body):
         """ """
         for number in self.DIAL_NUMBERS:
             print("Texting " + number)
             self.client.messages.create(
-               to=number,
-               from_=self.TWILIO_PHONE_NUMBER,
-               body=body)
+                to=number,
+                from_=self.TWILIO_PHONE_NUMBER,
+                body=body)
 
 
 def test_do_phonecall():
-    
+
     ETavailable = True
     try:
         et = ET()
@@ -77,6 +78,7 @@ def test_do_phonecall():
 
     if ETavailable:
         et.dial_numbers(testURL)
+
 
 def test_send_sms():
     ETavailable = True
@@ -89,12 +91,10 @@ def test_send_sms():
     if ETavailable:
         body = "Hellow World!"
         et.send_sms(body)
-        
+
 
 if __name__ == '__main__':
-    
-    #test_do_phonecall()
-    
-    test_send_sms()
 
-    
+    # test_do_phonecall()
+
+    test_send_sms()
