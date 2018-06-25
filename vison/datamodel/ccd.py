@@ -827,7 +827,8 @@ class CCDPile(CCD):
 
     def __init__(self, infitsList=[], ccdobjList=[], extension=-1, withpover=True):
         """ """
-
+        
+        self.masked = False
         self.extensions = []
 
         self.NAXIS1 = NAXIS1
@@ -855,12 +856,16 @@ class CCDPile(CCD):
                 self.extensions.append(iccdobj.extensions[extension])
 
         elif len(ccdobjList) > 0:
+            
 
             for i, iccdobj in enumerate(ccdobjList):
 
                 assert self.shape == iccdobj.shape
 
                 self.extensions.append(iccdobj.extensions[extension])
+                
+            self.masked = np.any([isinstance(item.data,np.ma.core.MaskedArray) for item\
+                                in self.extensions])
 
         else:
 
@@ -880,34 +885,49 @@ class CCDPile(CCD):
 
         self.QuadBound = QuadBound
 
-        self.masked = False
+        
 
     def stack(self, method='median', dostd=False):
         """ """
+        
+        fstack_dict = dict(
+                median=dict(
+                        masked=np.ma.median,
+                        unmasked=np.median),
+                mean=dict(
+                        masked=np.ma.mean,
+                        unmasked=np.mean))
+        if self.masked:
+            fstack = fstack_dict[method]['masked']
+            fstd = np.ma.std
+            stackimg = np.ma.zeros(self.shape,dtype='float32')
+            if dostd:
+                stackstd = np.ma.zeros(stackimg.shape, dtype='float32')
+            blankarray = np.ma.core.zeros
+        else:
+            fstack = fstack_dict[method]['unmasked']
+            fstd = np.std
+            stackimg = np.zeros(self.shape,dtype='float32')
+            if dostd:
+                stackstd = np.zeros_like(stackimg,dtype='float32')
+            blankarray = np.zeros
+        
 
-        if method == 'median':
-            fstack = np.median
-        elif method == 'mean':
-            fstack = np.mean
-        fstd = np.std
-
-        stackimg = np.zeros(self.shape, dtype='float32')
         NAXIS1 = self.NAXIS1
         NAXIS2 = self.NAXIS2
-        nimages = self.nextensions
-
-        if dostd:
-            stackstd = np.zeros_like(stackimg, dtype='float32')
-
+        
         for i in range(NAXIS2):
-            imgrow = np.zeros((NAXIS1, nimages), dtype='float32')
-            for j in range(nimages):
+            
+            imgrow = blankarray((NAXIS1, self.nextensions), dtype='float32')
+            
+            for j in range(self.nextensions):
                 imgrow[:, j] = self.extensions[j].data[:, i]
+            
             stackimg[:, i] = fstack(imgrow, axis=1).copy()
 
             if dostd:
                 stackstd[:, i] = fstd(imgrow, axis=1).copy()
-
+        
         if dostd:
             return stackimg, stackstd
         else:
