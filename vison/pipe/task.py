@@ -32,7 +32,7 @@ from vison.datamodel import ccd
 from vison.image import calibration
 from vison.ogse import ogse as ogsemod
 from vison.support.files import cPickleDumpDictionary
-from vison.datamodel import compliance
+from vison.datamodel import compliance as complimod
 from vison import __version__
 # END IMPORT
 
@@ -386,8 +386,9 @@ class Task(object):
 
     def addComplianceMatrix2Log(self, complidict, label=''):
         """ """
-        st_compl = complidict.__str__()
-        self.log.info('%s\n%s' % (label, st_compl))
+        #st_compl = complidict.__str__()
+        st_compl = st.split(complidict.get_compliance_txt(),'\n')        
+        self.log.info([label, st_compl])
 
     def addComplianceMatrix2Report(self, complidict, label=''):
         """ """
@@ -395,9 +396,10 @@ class Task(object):
         #st_compl = complidict.__str__()
 
         complitex = ['$\\bf{%s}$' % nicelabel]
-        complitex += compliance.gen_compliance_tex(complidict)
-        complitex = [st.replace(
-            item, 'False', '$\\textcolor{red}{\\bf{False}}$') for item in complitex]
+        #complitex += complimod.gen_compliance_tex(complidict)
+        complitex += complidict.get_compliance_tex()
+        #complitex = [st.replace(
+        #    item, 'False', '$\\textcolor{red}{\\bf{False}}$') for item in complitex]
 
         self.report.add_Text(complitex)
 
@@ -446,73 +448,44 @@ class Task(object):
         self.doPlot(key, **pmeta)
         self.addFigure2Report(key)
 
+
     def check_stat_perCCD(self, arr, CCDlims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
-        compliance = OrderedDict()
-        for iCCD, CCDkey in enumerate(CCDs):
-            #compliance[CCDkey] = OrderedDict()
-            _lims = CCDlims[CCDkey]
-            test = (np.isnan(arr[:, iCCD, ...]) |
-                    (arr[:, iCCD, ...] <= _lims[0]) | (arr[:, iCCD, ...] >= _lims[1]))
-            compliance[CCDkey] = not np.any(test, axis=(0, 1)).sum()
+        compliance = complimod.ComplianceMX_CCD(CCDs=CCDs,CCDlims=CCDlims.copy())
+        compliance.check_stat(arr)
         return compliance
+
 
     def check_stat_perCCDandQ(self, arr, CCDQlims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
-        compliance = OrderedDict()
-        for iCCD, CCDkey in enumerate(CCDs):
-            compliance[CCDkey] = OrderedDict()
-            for jQ, Q in enumerate(ccd.Quads):
-                # allowing for some flexibility in the granularity of the set 
-                # limits (common per CCD or Q). WATCH IT OUT.
-                if isinstance(CCDQlims[CCDkey],dict):
-                    _lims = CCDQlims[CCDkey][Q]
-                elif isinstance(CCDQlims[CCDkey],list):
-                    _lims = CCDQlims[CCDkey]
-                test = (np.isnan(arr[:, iCCD, jQ, ...]) |
-                        (arr[:, iCCD, jQ, ...] <= _lims[0]) | (arr[:, iCCD, jQ, ...] >= _lims[1]))
-                compliance[CCDkey][Q] = not np.any(test).sum()
+        compliance = complimod.ComplianceMX_CCDQ(CCDs=CCDs,CCDQlims=CCDQlims.copy())
+        compliance.check_stat(arr)
         return compliance
+
 
     def check_stat_perCCDandCol(self, arr, lims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
         colnames = lims[CCDs[0]].keys()
-
-        compliance = OrderedDict()
-        for iCCD, CCDkey in enumerate(CCDs):
-            compliance[CCDkey] = OrderedDict()
-            for jcol, colname in enumerate(colnames):
-                _lims = lims[CCDkey][colname]
-                ixsel = np.where(self.dd.mx['label'][:] == colname)
-
-                test = (np.isnan(arr[ixsel, iCCD, ...]) |
-                        (arr[ixsel, iCCD, ...] <= _lims[0]) | (arr[ixsel, iCCD, ...] >= _lims[1]))
-
-                compliance[CCDkey][colname] = not (
-                    np.any(test, axis=(0, 1)).sum() | (ixsel[0].shape[0] == 0))
+        compliance = complimod.ComplianceMX_CCDCol(colnames, 
+                                                   indexer=self.dd.mx['label'][:],
+                                                   CCDs=CCDs,lims=lims.copy())
+        compliance.check_stat(arr)
         return compliance
+
 
     def check_stat_perCCDQandCol(self, arr, lims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
         Qs = ['E', 'F', 'G', 'H']
         colnames = lims[CCDs[0]][Qs[0]].keys()
-
-        compliance = OrderedDict()
-        for iCCD, CCDkey in enumerate(CCDs):
-            compliance[CCDkey] = OrderedDict()
-            for iQ, Q in enumerate(Qs):
-                compliance[CCDkey][Q] = OrderedDict()
-                for jcol, colname in enumerate(colnames):
-                    _lims = lims[CCDkey][Q][colname]
-                    ixsel = np.where(self.dd.mx['label'][:] == colname)
-
-                    test = (np.isnan(arr[ixsel, iCCD, ...]) |
-                            (arr[ixsel, iCCD, ...] <= _lims[0]) | (arr[ixsel, iCCD, ...] >= _lims[1]))
-
-                    compliance[CCDkey][Q][colname] = not (
-                        np.any(test, axis=(0, 1)).sum() | (ixsel[0].shape[0] == 0))
-                    
+        
+        compliance = complimod.ComplianceMX_CCDQCol(colnames, 
+                                                   indexer=self.dd.mx['label'][:],
+                                                   CCDs=CCDs,
+                                                   Qs=Qs,
+                                                   lims=lims.copy())
+        compliance.check_stat(arr)
         return compliance
+
 
     def check_data(self, **kwargs):
         """Generic check_data method"""

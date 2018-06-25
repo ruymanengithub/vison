@@ -15,7 +15,7 @@ import numpy as np
 import os
 from collections import OrderedDict
 
-
+from vison.datamodel import compliance as complimod
 from vison.pipe.task import Task
 from vison.point import lib as polib
 from vison.point import startracker as strackermod
@@ -183,38 +183,24 @@ class PointTask(Task):
 
     def check_stat_perCCDQSpot(self, arr, lims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
-        #Qs = lims['CCD%i' % CCDs[0]].keys()
-        Spots = strackermod.starnames
+        spotnames = strackermod.starnames
         Qs = ccd.Quads
-
-        compliance = OrderedDict()
-
-        for iCCD, CCDkey in enumerate(CCDs):
-            compliance[CCDkey] = OrderedDict()
-
-            for jQ, Q in enumerate(Qs):
-                compliance[CCDkey][Q] = OrderedDict()
-                for kSpot, Spot in enumerate(Spots):
-                    compliance[CCDkey][Q][Spot] = OrderedDict()
-
-                    _lims = lims[CCDkey][Q][Spot]
-
-                    if isinstance(_lims, dict) or isinstance(_lims, OrderedDict):
-                        colnames = _lims.keys()
-                        compliance[CCDkey][Q][Spot] = OrderedDict()
-                        for kcol, colname in enumerate(colnames):
-                            _lims_col = lims[CCDkey][Q][Spot][colname]
-                            ixsel = np.where(self.dd.mx['label'] == colname)
-                            test = (np.isnan(arr[ixsel, iCCD, jQ, kSpot]) |
-                                    (arr[ixsel, iCCD, jQ, kSpot] <= _lims_col[0]) | (arr[ixsel, iCCD, jQ, kSpot] >= _lims_col[1]))
-                            compliance[CCDkey][Q][Spot][colname] = not (
-                                np.any(test, axis=(0, 1)).sum() | (ixsel[0].shape[0] == 0))
-                    else:
-
-                        test = (np.isnan(arr[:, iCCD, jQ, kSpot]) |
-                                (arr[:, iCCD, jQ, kSpot] <= _lims[0]) | (arr[:, iCCD, jQ, kSpot] >= _lims[1]))
-                        compliance[CCDkey][Q][Spot] = not np.any(test).sum()
-
+        
+        if isinstance(lims[CCDs[0]][Qs[0]][spotnames[0]],(dict,OrderedDict)):
+            colnames = lims[CCDs[0]][Qs[0]][spotnames[0]].keys()
+            indexer = self.dd.mx['label'][:].copy()            
+        elif isinstance(lims[CCDs[0]][Qs[0]][spotnames[0]],(list,tuple)):            
+            colnames = None
+            indexer = None
+        
+        compliance = complimod.ComplianceMX_CCDQColSpot(spotnames,
+                                colnames=colnames, 
+                                indexer=indexer,
+                                CCDs=CCDs,
+                                Qs=Qs,
+                                lims=lims.copy())
+        
+        compliance.check_stat(arr)
         return compliance
 
     def check_metrics_ST(self, **kwargs):
