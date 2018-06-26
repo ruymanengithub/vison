@@ -694,6 +694,7 @@ class Task(object):
 
         keys = self.inputs.manifesto.keys()
         values = []
+        stop()
         for key in keys:
             _val = self.inputs[key]
             if isinstance(_val, dict):
