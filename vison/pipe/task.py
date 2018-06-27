@@ -97,16 +97,17 @@ class Task(object):
         self.set_perfdefaults(**inputs)
         _perfdefaults = self.perfdefaults.copy()
         self.perflimits.update(_perfdefaults)
-        if 'perflimits' in self.inputs:
+        if 'perflimits' in self.inputs and self.inputs['perflimits'] is not None:
             self.perflimits.update(self.inputs['perflimits'])
 
-        if 'diffvalues' in inputs:
+        if 'diffvalues' in inputs and self.inputs['diffvalues'] is not None:
             diffvalues = inputs['diffvalues'].copy()
         else:
             diffvalues = {}
 
         self.inputs['structure'] = self.build_scriptdict(
             diffvalues, elvis=self.elvis)
+        
 
         self.CDP_header = OrderedDict()
 
@@ -694,7 +695,7 @@ class Task(object):
 
         keys = self.inputs.manifesto.keys()
         values = []
-        stop()
+
         for key in keys:
             _val = self.inputs[key]
             if isinstance(_val, dict):
