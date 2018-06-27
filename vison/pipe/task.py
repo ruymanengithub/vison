@@ -269,6 +269,9 @@ class Task(object):
     def addHK_2_dd(self):
         """ """
         self.dd = pilib.addHK(self.dd, self.HKKeys, elvis=self.elvis)
+        
+    def addmockHK_2_dd(self):
+        self.dd = pilib.addmockHK(self.dd,self.HKKeys,elvis=self.elvis)
 
     def ingest_data_SimpleTest(self):
 
@@ -286,13 +289,10 @@ class Task(object):
                                datapath=datapath)    
 
         # META-DATA WORK
-        stop()
         
         explog, checkreport = self.filterexposures(
             structure, explog, OBSID_lims)
         
-        stop()
-
         if self.log is not None:
             self.log.info('%s acquisition consistent with expectations: %s' % (
                 testkey, checkreport['checksout']))
@@ -341,7 +341,10 @@ class Task(object):
             self.dd.flags.add('MISSDATA')
 
         # Add HK information
-        self.addHK_2_dd()
+        if not self.drill:
+            self.addHK_2_dd()
+        else:
+            self.addmockHK_2_dd()
 
     def ingest_data_MetaTest(self):
         raise NotImplementedError("Method implemented in child-class")

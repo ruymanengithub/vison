@@ -259,19 +259,42 @@ def addHK(dd, HKKeys, elvis=context.elvis):
     obsids, dtobjs, tdeltasec, readHKKeys, HKdata = HKtools.parseHKfiles(
         HKlist, elvis=elvis)
 
-    HKix = copy.deepcopy(dd.mx['ObsID'].indices)
+    HKindices = copy.deepcopy(dd.mx['ObsID'].indices)
 
     for HKKey in HKKeys:
 
         pre_HKKey = 'HK_%s' % HKKey
 
-        dd.initColumn(pre_HKKey, HKix, dtype='float32', valini=np.nan)
+        dd.initColumn(pre_HKKey, HKindices, dtype='float32', valini=np.nan)
 
         ixkey = readHKKeys.index(HKKey)
         dd.mx[pre_HKKey][:] = HKdata[:, 0, ixkey]
 
     return dd
 
+def addmockHK(dd, HKKeys, elvis=context.elvis):
+    """Adds MOCK HK information to a DataDict object."""
+    
+    
+    HKindices = copy.deepcopy(dd.mx['ObsID'].indices)
+    
+    for HKKey in HKKeys:
+        
+        pre_HKKey = 'HK_%s' % HKKey
+
+        dd.initColumn(pre_HKKey, HKindices, dtype='float32', valini=np.nan)
+
+        _lims = HKtools.HKlims[elvis]['P'][HKKey]
+        limtype = _lims[0]
+        if limtype in ['R','A']:
+            val = np.mean(_lims[1:])
+        else:
+            val = _lims[1]
+        
+        dd.mx[pre_HKKey][:] = val
+        
+    
+    return dd
 
 def coarsefindTestinExpLog(explog, testkey, Nframes):
     """Checks whether the 'Nframes' of test with key 'testkey' are in 'explog'.
