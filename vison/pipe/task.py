@@ -44,6 +44,7 @@ class Task(object):
 
     from task_lib import check_HK, filterexposures, addHKPlotsMatrix, add_labels_to_explog
     from task_lib import init_and_fill_CDP, save_CDP
+    from task_lib import create_mockexplog
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
@@ -277,11 +278,20 @@ class Task(object):
         structure = self.inputs['structure']
         explogf = self.inputs['explogf']
         #elvis = self.inputs['elvis']
+        
+        if self.drill:
+            explog = self.create_mockexplog()
+        else:
+            explog = pilib.loadexplogs(explogf, elvis=self.elvis, addpedigree=True,
+                               datapath=datapath)    
 
         # META-DATA WORK
-
+        stop()
+        
         explog, checkreport = self.filterexposures(
-            structure, explogf, datapath, OBSID_lims)
+            structure, explog, OBSID_lims)
+        
+        stop()
 
         if self.log is not None:
             self.log.info('%s acquisition consistent with expectations: %s' % (
