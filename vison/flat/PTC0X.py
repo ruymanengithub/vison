@@ -259,12 +259,12 @@ class PTC0X(FlatTask):
 
         return PTC0X_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """
 
         """
         wavedkeys = ['motr_siz']
-        return super(PTC0X, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=False,
+        return super(PTC0X, self).filterexposures(structure, explog, OBSID_lims, colorblind=False,
                                                   wavedkeys=wavedkeys)
 
     def prepare_images(self):

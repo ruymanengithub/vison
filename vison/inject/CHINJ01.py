@@ -185,10 +185,10 @@ class CHINJ01(InjTask):
 
         return CHINJ01_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """ """
         wavedkeys = ['motr_siz']
-        return super(CHINJ01, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=True,
+        return super(CHINJ01, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
                                                     wavedkeys=wavedkeys)
 
     def extract_data(self):

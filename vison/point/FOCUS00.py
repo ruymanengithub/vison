@@ -193,10 +193,10 @@ class FOCUS00(PT.PointTask):
 
         return FOCUS00_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """ """
         wavedkeys = ['motr_siz']
-        return super(FOCUS00, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=False,
+        return super(FOCUS00, self).filterexposures(structure, explog, OBSID_lims, colorblind=False,
                                                     wavedkeys=wavedkeys)
         # return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,
         #                      wavedkeys=wavedkeys,elvis=elvis)

@@ -108,12 +108,12 @@ class BF01(PTC0X):
         raise NotImplementedError(
             "%s: This Task does not build a script, it uses data from another test" % self.name)
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """
 
         """
         wavedkeys = ['motr_siz']
-        return super(BF01, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=False,
+        return super(BF01, self).filterexposures(structure, explog, OBSID_lims, colorblind=False,
                                                  wavedkeys=wavedkeys, surrogate=self.inputs['surrogate'])
 
     def prepare_images(self):

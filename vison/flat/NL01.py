@@ -188,7 +188,7 @@ class NL01(FlatTask):
 
         return NL01_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """Loads a list of Exposure Logs and selects exposures from test PSF0X.
 
         The filtering takes into account an expected structure for the 
@@ -200,7 +200,7 @@ class NL01(FlatTask):
 
         """
         wavedkeys = []
-        return super(NL01, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=True,
+        return super(NL01, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
                                                  wavedkeys=wavedkeys)
 
     def prep_data(self):
