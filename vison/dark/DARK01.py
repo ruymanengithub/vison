@@ -78,16 +78,16 @@ class DARK01(DarkTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(DARK01, self).__init__(inputs, log, drill, debug)
-        self.name = 'DARK01'
-        self.type = 'Simple'
         self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
+        super(DARK01, self).__init__(inputs, log, drill, debug)
+        self.name = 'DARK01'
+        self.type = 'Simple'
+        
         self.HKKeys = HKKeys
         self.figdict = D01aux.D01figs.copy()
         self.inputs['subpaths'] = dict(figs='figs')
-        self.init_todo_flags()
 
     def set_inpdefaults(self, **kwargs):
         self.inpdefaults = dict(N=4, exptime=565)

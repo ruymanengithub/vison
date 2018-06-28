@@ -101,18 +101,18 @@ class NL01(FlatTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(NL01, self).__init__(inputs, log, drill, debug)
-        self.name = 'NL01'
-        self.type = 'Simple'
         self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
                          ('extract', self.extract_stats),
                          ('NL', self.produce_NLCs),
                          ('satCTE', self.do_satCTE)]
+        super(NL01, self).__init__(inputs, log, drill, debug)
+        self.name = 'NL01'
+        self.type = 'Simple'
+        
         self.HKKeys = HKKeys
         self.figdict = NL01aux.NL01figs.copy()
         # dict(figs='figs',pickles='ccdpickles')
         self.inputs['subpaths'] = dict(figs='figs')
-        self.init_todo_flags()
 
     def set_inpdefaults(self, **kwargs):
 

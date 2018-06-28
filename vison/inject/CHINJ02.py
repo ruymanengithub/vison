@@ -83,18 +83,19 @@ class CHINJ02(InjTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(CHINJ02, self).__init__(inputs, log, drill, debug)
-        self.name = 'CHINJ02'
-        self.type = 'Simple'
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
                          ('extract', self.extract_data),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
+        super(CHINJ02, self).__init__(inputs, log, drill, debug)
+        self.name = 'CHINJ02'
+        self.type = 'Simple'
+        
         self.HKKeys = HKKeys
         self.figdict = CH02aux.CH02figs.copy()
         self.inputs['subpaths'] = dict(figs='figs')
-        self.init_todo_flags()
+        
 
     def set_inpdefaults(self, **kwargs):
         """ """

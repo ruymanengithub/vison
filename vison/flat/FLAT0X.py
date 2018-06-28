@@ -82,19 +82,19 @@ class FLAT0X(FlatTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(FLAT0X, self).__init__(inputs, log, drill, debug)
-        self.name = 'FLAT0X'
-        self.type = 'Simple'
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
                          ('indivflats', self.do_indiv_flats),
                          ('masterflat', self.do_master_flat),
                          ('prmask', self.do_prdef_mask)]
+        super(FLAT0X, self).__init__(inputs, log, drill, debug)
+        self.name = 'FLAT0X'
+        self.type = 'Simple'
+        
         self.HKKeys = HKKeys
         self.figdict = FL0Xaux.gt_FL0Xfigs(self.inputs['test'])
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        ccdflats='ccdflats')
-        self.init_todo_flags()
 
     def set_inpdefaults(self, **kwargs):
         """ """

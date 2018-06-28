@@ -48,7 +48,7 @@ class Task(object):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-
+        
         self.ID = None
         if 'ID' in inputs:
             self.ID = inputs['ID']
@@ -79,23 +79,40 @@ class Task(object):
         self.type = 'Simple'
         self.HKKeys = []
         self.figdict = dict()
-        self.subtasks = [()]
+        if not hasattr(self,'subtasks'):
+            self.subtasks = [()]
         self.perflimits = dict()
         self.drill = drill
         self.debug = debug
         self.proc_histo = dict(Extract=False)
-        self.inputs['preprocessing'] = dict()
-        self.inputs['preprocessing']['offsetkwargs'] = dict(method='row',
+        
+        self.set_inpdefaults(**inputs)
+        _inputs = self.inpdefaults.copy()
+        
+        _inputs['preprocessing'] = dict()
+        _inputs['preprocessing']['offsetkwargs'] = dict(method='row',
                                                             scan='pre', trimscan=[5, 5],
                                                             ignore_pover=True,
                                                             extension=-1)
         
+        _inputs['todo_flags']=dict(init=True,check=False,report=False)
+        if len(self.subtasks[0])>0:
+            for v in self.subtasks: _inputs['todo_flags'][v[0]] = False
         
-        self.set_inpdefaults(**inputs)
-        _inputs = self.inpdefaults.copy()
         _inputs.update(inputs)
         self.inputs.update(_inputs)
         
+        
+        #self.inputs['preprocessing'] = dict()
+        #self.inputs['preprocessing']['offsetkwargs'] = dict(method='row',
+        #                                                    scan='pre', trimscan=[5, 5],
+        #                                                    ignore_pover=True,
+        #                                                    extension=-1)
+        
+        #self.inputs['todo_flags']=dict(init=True,check=False,report=False)
+        #if len(self.subtasks[0])>0:
+        #    for v in self.subtasks: self.inputs['todo_flags'][v[0]] = False
+         
 
         self.set_perfdefaults(**inputs)
         _perfdefaults = self.perfdefaults.copy()
@@ -112,14 +129,9 @@ class Task(object):
         self.inputs['structure'] = self.build_scriptdict(
             diffvalues, elvis=self.elvis)
         
-        self.inputs['todo_flags']=dict(init=True,check=False,report=False)
+        
 
         self.CDP_header = OrderedDict()
-    
-    def init_todo_flags(self):
-        if not isinstance(self.inputs['todo_flags'], dict):
-            self.inputs['todo_flags'] = dict()
-        for v in self.subtasks: self.inputs['todo_flags'][v[0]] = False
 
     def set_inpdefaults(self, **kwargs):
         pass

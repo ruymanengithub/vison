@@ -152,17 +152,17 @@ class PTC0X(FlatTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(PTC0X, self).__init__(inputs, log, drill, debug)
-        self.name = 'PTC0X'
-        self.type = 'Simple'
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
                          ('extract', self.extract_PTC),
                          ('meta', self.meta_analysis)]
+
+        super(PTC0X, self).__init__(inputs, log, drill, debug)
+        self.name = 'PTC0X'
+        self.type = 'Simple'
         self.HKKeys = HKKeys
         self.figdict = PTC0Xaux.gt_PTC0Xfigs(self.inputs['test'])
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles')
-        self.init_todo_flags()
 
     def set_inpdefaults(self, **kwargs):
         """ """

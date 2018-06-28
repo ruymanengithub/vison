@@ -76,14 +76,15 @@ class STRAY00(DarkTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
+        self.subtasks = [('check', self.check_data)]
         super(STRAY00, self).__init__(inputs, log, drill, debug)
         self.name = 'STRAY00'
         self.type = 'Simple'
-        self.subtasks = [('check', self.check_data)]
+        
         self.HKKeys = HKKeys
         self.figdict = dict()
         self.inputs['subpaths'] = dict(figs='figs')
-        self.init_todo_flags()
+        
 
     def set_inpdefaults(self, **kwargs):
         """ """

@@ -334,8 +334,6 @@ def broadcast_todo_flags(inputdict, docheck=False, dotest=False, doreport=False)
 
     assert np.array([docheck, dotest]).sum(
     ) <= 1, 'At most 1 kwd should be True!'
-    # if np.array([docheck, dotest]).sum() == 0:
-    #    return inputdict
 
     _todocheck = dict(init=False, check=False, report=False)
     _todocheck['report'] = doreport

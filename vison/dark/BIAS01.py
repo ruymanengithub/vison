@@ -80,19 +80,19 @@ class BIAS01(DarkTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        
-        super(BIAS01, self).__init__(inputs, log, drill, debug)
-        self.name = 'BIAS01'
-        self.type = 'Simple'
         self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
+
+        super(BIAS01, self).__init__(inputs, log, drill, debug)
+        self.name = 'BIAS01'
+        self.type = 'Simple'
+        
         
         self.HKKeys = HKKeys        
         self.figdict = B01aux.B01figs.copy()
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        profiles='profiles', products='products')
-        self.init_todo_flags()
         
 
     def set_inpdefaults(self, **kwargs):

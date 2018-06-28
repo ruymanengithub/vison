@@ -87,19 +87,20 @@ class TP01(PumpTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(TP01, self).__init__(inputs, log, drill, debug)
-        self.name = 'TP01'
-        self.type = 'Simple'
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
                          ('extract', self.extract),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
+        super(TP01, self).__init__(inputs, log, drill, debug)
+        self.name = 'TP01'
+        self.type = 'Simple'
+        
         self.HKKeys = HKKeys
         self.figdict = TP01aux.TP01figs.copy()
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        products='products')
-        self.init_todo_flags()
+        
 
     def set_inpdefaults(self, **kwargs):
         """ """

@@ -54,7 +54,8 @@ class Inputs(dict):
         for key in self.manifesto:
             kmv = self.manifesto[key]
             kmvl = list(kmv)
-            kmvl[0] += [type(None)]
+            if type(None) not in kmvl[0]:
+                kmvl[0] += [type(None)]
             self.manifesto[key] = tuple(kmvl)
             
         self._fill_with_Nones()

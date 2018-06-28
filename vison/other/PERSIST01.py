@@ -56,16 +56,17 @@ class PERSIST01(Task):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(PERSIST01, self).__init__(inputs, log, drill, debug)
-        self.name = 'PERSIST01'
-        self.type = 'Simple'
         self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
+        super(PERSIST01, self).__init__(inputs, log, drill, debug)
+        self.name = 'PERSIST01'
+        self.type = 'Simple'
+        
         self.HKKeys = HKKeys
         self.figdict = dict()
         self.inputs['subpaths'] = dict(figs='figs')
-        self.init_todo_flags()
+        
 
     def set_inpdefaults(self, **kwargs):
         """ """

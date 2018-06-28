@@ -76,14 +76,15 @@ class TP00(PumpTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
+        self.subtasks = [('check', self.check_data)]
         super(TP00, self).__init__(inputs, log, drill, debug)
         self.name = 'TP00'
         self.type = 'Simple'
-        self.subtasks = [('check', self.check_data)]
+        
         self.HKKeys = HKKeys
         self.figdict = dict()
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles')
-        self.init_todo_flags()
+        
 
     def set_inpdefaults(self, **kwargs):
         """ """

@@ -119,17 +119,18 @@ class FOCUS00(PT.PointTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(FOCUS00, self).__init__(inputs, log, drill, debug)
-        self.name = 'FOCUS00'
-        self.type = 'Simple'
         self.subtasks = [('check', self.check_data), 
                          #('prep', self.prep_data),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
+        super(FOCUS00, self).__init__(inputs, log, drill, debug)
+        self.name = 'FOCUS00'
+        self.type = 'Simple'
+        
         self.HKKeys = HKKeys
         self.figdict = F00aux.gt_F00figs(self.inputs['wavelength'])
         self.inputs['subpaths'] = dict(figs='figs')
-        self.init_todo_flags()
+        
 
     def set_inpdefaults(self, **kwargs):
 
