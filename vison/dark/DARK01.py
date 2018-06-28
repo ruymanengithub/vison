@@ -87,6 +87,7 @@ class DARK01(DarkTask):
         self.HKKeys = HKKeys
         self.figdict = D01aux.D01figs.copy()
         self.inputs['subpaths'] = dict(figs='figs')
+        self.init_todo_flags()
 
     def set_inpdefaults(self, **kwargs):
         self.inpdefaults = dict(N=4, exptime=565)

@@ -94,6 +94,7 @@ class FLAT0X(FlatTask):
         self.figdict = FL0Xaux.gt_FL0Xfigs(self.inputs['test'])
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        ccdflats='ccdflats')
+        self.init_todo_flags()
 
     def set_inpdefaults(self, **kwargs):
         """ """

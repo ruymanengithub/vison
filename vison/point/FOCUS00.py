@@ -129,6 +129,7 @@ class FOCUS00(PT.PointTask):
         self.HKKeys = HKKeys
         self.figdict = F00aux.gt_F00figs(self.inputs['wavelength'])
         self.inputs['subpaths'] = dict(figs='figs')
+        self.init_todo_flags()
 
     def set_inpdefaults(self, **kwargs):
 

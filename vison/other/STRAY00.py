@@ -83,6 +83,7 @@ class STRAY00(DarkTask):
         self.HKKeys = HKKeys
         self.figdict = dict()
         self.inputs['subpaths'] = dict(figs='figs')
+        self.init_todo_flags()
 
     def set_inpdefaults(self, **kwargs):
         """ """

@@ -89,11 +89,13 @@ class Task(object):
                                                             scan='pre', trimscan=[5, 5],
                                                             ignore_pover=True,
                                                             extension=-1)
-
+        
+        
         self.set_inpdefaults(**inputs)
         _inputs = self.inpdefaults.copy()
         _inputs.update(inputs)
         self.inputs.update(_inputs)
+        
 
         self.set_perfdefaults(**inputs)
         _perfdefaults = self.perfdefaults.copy()
@@ -105,12 +107,19 @@ class Task(object):
             diffvalues = inputs['diffvalues'].copy()
         else:
             diffvalues = {}
-
+        
+        
         self.inputs['structure'] = self.build_scriptdict(
             diffvalues, elvis=self.elvis)
         
+        self.inputs['todo_flags']=dict(init=True,check=False,report=False)
 
         self.CDP_header = OrderedDict()
+    
+    def init_todo_flags(self):
+        if not isinstance(self.inputs['todo_flags'], dict):
+            self.inputs['todo_flags'] = dict()
+        for v in self.subtasks: self.inputs['todo_flags'][v[0]] = False
 
     def set_inpdefaults(self, **kwargs):
         pass

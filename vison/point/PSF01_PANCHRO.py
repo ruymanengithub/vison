@@ -70,6 +70,7 @@ class PSF01_PANCHRO(Task):
         self.figdict = PSF0Xaux.PSF01_PANCHRO_figs
         self.perflimits.update(performance.perf_rdout)
         self.dd = dict()
+        self.init_todo_flags()
 
     def ingest_data_MetaTest(self):
         """ """

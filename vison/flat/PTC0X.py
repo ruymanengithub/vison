@@ -162,6 +162,7 @@ class PTC0X(FlatTask):
         self.HKKeys = HKKeys
         self.figdict = PTC0Xaux.gt_PTC0Xfigs(self.inputs['test'])
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles')
+        self.init_todo_flags()
 
     def set_inpdefaults(self, **kwargs):
         """ """

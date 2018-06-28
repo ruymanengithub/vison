@@ -87,6 +87,7 @@ class CHINJ01(InjTask):
         self.HKKeys = HKKeys
         self.figdict = CH01aux.CH01figs.copy()
         self.inputs['subpaths'] = dict(figs='figs')
+        self.init_todo_flags()
 
     def set_inpdefaults(self, **kwargs):
         """ """

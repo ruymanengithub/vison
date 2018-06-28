@@ -167,12 +167,15 @@ class PSF0X(PointTask):
         self.name = 'PSF0X'
         self.type = 'Simple'
         self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
-                         ('basic', self.basic_analysis), ('bayes',
-                                                          self.bayes_analysis),
+                         ('basic', self.basic_analysis), 
+                         ('bayes', self.bayes_analysis),
                          ('meta', self.meta_analysis)]
+        for v in self.subtasks: self.inputs['todo_flags'][v[0]] = False
         self.HKKeys = HKKeys
         self.figdict = PSF0Xaux.gt_PSF0Xfigs(self.inputs['test'])
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles')
+        self.init_todo_flags()
+        
 
     def set_inpdefaults(self, **kwargs):
 

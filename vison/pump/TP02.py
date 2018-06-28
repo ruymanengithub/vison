@@ -94,6 +94,7 @@ class TP02(PumpTask):
         self.HKKeys = HKKeys
         self.figdict = TP02aux.TP02figs.copy()
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles')
+        self.init_todo_flags()
 
     def set_inpdefaults(self, **kwargs):
         """ """

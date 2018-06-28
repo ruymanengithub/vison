@@ -99,6 +99,7 @@ class TP01(PumpTask):
         self.figdict = TP01aux.TP01figs.copy()
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        products='products')
+        self.init_todo_flags()
 
     def set_inpdefaults(self, **kwargs):
         """ """

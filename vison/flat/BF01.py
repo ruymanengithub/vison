@@ -79,6 +79,7 @@ class BF01(PTC0X):
         #self.HKKeys = HKKeys
         self.figdict = dict()  # BF01aux.gt_BF01figs(self.inputs['surrogate'])
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles')
+        self.init_todo_flags()
 
     def set_inpdefaults(self, **kwargs):
         """ """
