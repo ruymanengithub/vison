@@ -164,8 +164,8 @@ class CHINJ00(InjTask):
 
         return CHINJ00_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """ """
         wavedkeys = []
-        return super(CHINJ00, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=True,
+        return super(CHINJ00, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
                                                     wavedkeys=wavedkeys)

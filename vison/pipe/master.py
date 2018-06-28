@@ -277,6 +277,7 @@ class Pipe(object):
 
             test = self.get_test(taskname, taskinputs, log=self.log)
             taskinputs = copy.deepcopy(test.inputs)
+            
 
             structure = taskinputs['structure']
 

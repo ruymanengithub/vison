@@ -248,11 +248,11 @@ class PSF0X(PointTask):
 
         return PSF0X_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """
         """
         wavedkeys = []
-        return super(PSF0X, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=False,
+        return super(PSF0X, self).filterexposures(structure, explog, OBSID_lims, colorblind=False,
                                                   wavedkeys=wavedkeys)
 
     def prep_data(self):

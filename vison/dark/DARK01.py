@@ -123,10 +123,10 @@ class DARK01(DarkTask):
 
         return DARK01_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """ """
         wavedkeys = ['motr_siz']
-        return super(DARK01, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=True,
+        return super(DARK01, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
                                                    wavedkeys=wavedkeys)
 
     def prep_data(self):

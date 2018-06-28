@@ -44,6 +44,7 @@ class Task(object):
 
     from task_lib import check_HK, filterexposures, addHKPlotsMatrix, add_labels_to_explog
     from task_lib import init_and_fill_CDP, save_CDP
+    from task_lib import create_mockexplog
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
@@ -97,16 +98,17 @@ class Task(object):
         self.set_perfdefaults(**inputs)
         _perfdefaults = self.perfdefaults.copy()
         self.perflimits.update(_perfdefaults)
-        if 'perflimits' in self.inputs:
+        if 'perflimits' in self.inputs and self.inputs['perflimits'] is not None:
             self.perflimits.update(self.inputs['perflimits'])
 
-        if 'diffvalues' in inputs:
+        if 'diffvalues' in inputs and self.inputs['diffvalues'] is not None:
             diffvalues = inputs['diffvalues'].copy()
         else:
             diffvalues = {}
 
         self.inputs['structure'] = self.build_scriptdict(
             diffvalues, elvis=self.elvis)
+        
 
         self.CDP_header = OrderedDict()
 
@@ -267,6 +269,9 @@ class Task(object):
     def addHK_2_dd(self):
         """ """
         self.dd = pilib.addHK(self.dd, self.HKKeys, elvis=self.elvis)
+        
+    def addmockHK_2_dd(self):
+        self.dd = pilib.addmockHK(self.dd,self.HKKeys,elvis=self.elvis)
 
     def ingest_data_SimpleTest(self):
 
@@ -276,12 +281,18 @@ class Task(object):
         structure = self.inputs['structure']
         explogf = self.inputs['explogf']
         #elvis = self.inputs['elvis']
+        
+        if self.drill:
+            explog = self.create_mockexplog()
+        else:
+            explog = pilib.loadexplogs(explogf, elvis=self.elvis, addpedigree=True,
+                               datapath=datapath)    
 
         # META-DATA WORK
-
+        
         explog, checkreport = self.filterexposures(
-            structure, explogf, datapath, OBSID_lims)
-
+            structure, explog, OBSID_lims)
+        
         if self.log is not None:
             self.log.info('%s acquisition consistent with expectations: %s' % (
                 testkey, checkreport['checksout']))
@@ -330,7 +341,10 @@ class Task(object):
             self.dd.flags.add('MISSDATA')
 
         # Add HK information
-        self.addHK_2_dd()
+        if not self.drill:
+            self.addHK_2_dd()
+        else:
+            self.addmockHK_2_dd()
 
     def ingest_data_MetaTest(self):
         raise NotImplementedError("Method implemented in child-class")
@@ -694,6 +708,7 @@ class Task(object):
 
         keys = self.inputs.manifesto.keys()
         values = []
+
         for key in keys:
             _val = self.inputs[key]
             if isinstance(_val, dict):

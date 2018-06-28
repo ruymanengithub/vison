@@ -219,8 +219,8 @@ class STRAY00(DarkTask):
 
         return STRAY00_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """ """
         wavedkeys = []
-        return super(STRAY00, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=True,
+        return super(STRAY00, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
                                                     wavedkeys=wavedkeys)
