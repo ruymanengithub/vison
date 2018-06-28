@@ -151,12 +151,7 @@ class Pipe(object):
 
     def get_test(self, taskname, inputs=dict(), log=None, drill=False, debug=False):
         """ """
-        # self.Test_dict[taskname](inputs, self.log, drill, debug)
         test = self.Test_dict[taskname](inputs, log, drill, debug)
-        #test.ID = self.ID
-        #test.BLOCKID = self.BLOCKID
-        #test.CHAMBER = self.CHAMBER
-        #test.processes = self.processes
         return test
 
     def launchtask(self, taskname):
@@ -183,7 +178,8 @@ class Pipe(object):
 
         if self.log is not None:
             self.log.info(msg)
-
+        
+        
         taskreport = self.dotask(taskname, taskinputs,
                                  drill=self.drill, debug=self.debug)
 
@@ -341,7 +337,9 @@ class Pipe(object):
         Errors = False
 
         try:
+            
             test = self.get_test(taskname, inputs, self.log, drill, debug)
+            stop()
             test()  # test execution
         except:
             self.catchtraceback()
