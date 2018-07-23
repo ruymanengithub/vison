@@ -314,6 +314,40 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             #istructPTC02w = ptc02w.build_scriptdict(diffvalues=diffPTC02w,elvis=elvis)
             test_sequence[itestkey] = copy.deepcopy(ptc02w)
 
+
+    if toGen['FLATFLUX00']:
+
+        print 'FLATFLUX00...'
+
+        wavesFLATFLUX00 = [590, 640, 730, 800, 880, 0]
+
+        diffFLATFLUX00w = dict()
+        diffFLATFLUX00w.update(diffvalues)
+
+        for iw, wave in enumerate(wavesFLATFLUX00):
+
+            tFWC_flatw = ogse.profile['tFWC_point']['nm%i' % wave]
+            exptsFLATFLUX00w = (
+                np.array([0.25, 0.5, 0.75]) * tFWC_flatw).tolist()
+            frsFLATFLUX00 = [1, 1, 1]
+
+            itestkey = 'FLATFLUX00_%i' % wave
+            diffFLATFLUX00w['test'] = itestkey
+
+            print '%s...' % itestkey
+
+            flatflux00w = PTC0X.PTC0X(inputs=dict(elvis=elvis,
+                                                CHAMBER=CHAMBER,
+                                                wavelength=wave,
+                                                exptimes=exptsFLATFLUX00w,
+                                                frames=frsFLATFLUX00,
+                                                test=itestkey,
+                                                diffvalues=diffFLATFLUX00w))
+
+            test_sequence[itestkey] = copy.deepcopy(flatflux00w)
+
+
+
    # PTC-02 - Temp.
 
     if toGen['PTC02TEMP']:
