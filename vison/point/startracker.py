@@ -28,7 +28,10 @@ from vison import ogse_profiles
 _path = os.path.abspath(ogse_profiles.__file__)
 ogsepath = os.path.dirname(_path)
 
-default_patt_file = 'Pattern_CHAMBER_A_JUN18.txt'
+default_patt_files = OrderedDict(
+    CCD1=os.path.join(ogsepath, 'Pattern_CCD1_CHAMBER_A_JUN18.txt'),
+    CCD2=os.path.join(ogsepath, 'Pattern_CCD2_CHAMBER_A_JUN18.txt'),
+    CCD3=os.path.join(ogsepath, 'Pattern_CCD3_CHAMBER_A_JUN18.txt'),)
 
 
 starnames = ['ALPHA', 'BRAVO', 'CHARLIE', 'DELTA', 'ECHO']
@@ -36,14 +39,14 @@ starnames = ['ALPHA', 'BRAVO', 'CHARLIE', 'DELTA', 'ECHO']
 
 class StarTracker(object):
 
-    def __init__(self, CCD, withpover=True, patt_file=None):
+    def __init__(self, CCD, withpover=True, patt_files=None):
 
         self.Quads = ['E', 'F', 'G', 'H']
         self.starnames = starnames
-        if patt_file is None:
-            self.patt_file = copy.deepcopy(default_patt_file)
+        if patt_files is None:
+            self.patt_files = default_patt_files.copy()
         else:
-            self.patt_file = copy.deepcopy(patt_file)
+            self.patt_files = patt_files.copy()
 
         self.CCD = CCD
         self.withpover = withpover  # parallel overscans
