@@ -34,6 +34,7 @@ from pdb import set_trace as stop
 import os
 import copy
 from collections import OrderedDict
+import pandas as pd
 
 #from vison.pipe import lib as pilib
 from vison.support import context
@@ -50,6 +51,7 @@ from vison.datamodel import scriptic as sc
 from vison.point.spot import Spot as SpotObj
 from vison.point import display as pdspl
 from vison.support import vistime
+from vison.support import utils
 #from vison.pipe.task import Task
 import PointTask as PT
 #from PointTask import PointTask, BGD_lims
@@ -129,7 +131,8 @@ class FOCUS00(PT.PointTask):
         
         self.HKKeys = HKKeys
         self.figdict = F00aux.gt_F00figs(self.inputs['wavelength'])
-        self.inputs['subpaths'] = dict(figs='figs')
+        self.inputs['subpaths'] = dict(figs='figs',
+                                       products='products')
         
 
     def set_inpdefaults(self, **kwargs):
@@ -234,6 +237,8 @@ class FOCUS00(PT.PointTask):
         #                                         Best_mirr_pos(beam)
         # save Best Mirr pos as a "product"
         
+        wave = self.inputs['wavelength']
+        
         poldegree = 2
         
         CCDs = self.dd.indices.get_vals('CCD')
@@ -241,6 +246,11 @@ class FOCUS00(PT.PointTask):
         Spots = self.dd.indices.get_vals('Spot')
         
         xmirr = self.dd.mx['mirr_pos'][:].copy()
+        
+        nC = len(CCDs)
+        nQ = len(Quads)
+        nS = len(Spots)
+        NP = nC * nQ * nS
         
         def _fit_single_fwhmZ(x,fwhm,poldegree,tag):
             
@@ -256,6 +266,21 @@ class FOCUS00(PT.PointTask):
                          focus=np.nan)
             return zres
         
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        
+        Focus_dd = OrderedDict()
+        Focus_dd['CCD'] = np.zeros(NP,dtype='int32')
+        Focus_dd['Q'] = np.zeros(NP,dtype='int32')
+        Focus_dd['Spot'] = np.zeros(NP,dtype='int32')
+        Focus_dd['x_phys'] =  np.zeros(NP,dtype='float32')
+        Focus_dd['y_phys'] =  np.zeros(NP,dtype='float32')
+        Focus_dd['focusx'] =  np.zeros(NP,dtype='float32')
+        Focus_dd['best_fwhmx'] =  np.zeros(NP,dtype='float32')
+        Focus_dd['focusy'] =  np.zeros(NP,dtype='float32')
+        Focus_dd['best_fwhmy'] =  np.zeros(NP,dtype='float32')
+ 
         
         for iCCD, CCDk in enumerate(CCDs):
             
@@ -263,13 +288,50 @@ class FOCUS00(PT.PointTask):
                 
                 for lSpot, SpotName in enumerate(Spots):
 
+                    ix = iCCD  * (nQ*nS) + jQ * nS + lSpot
                     
                     fwhmx = self.dd.mx['fwhmx'][:,iCCD,jQ,lSpot].copy()
                     fwhmy = self.dd.mx['fwhmy'][:,iCCD,jQ,lSpot].copy()
-                    
-                    
+                                        
                     zresX = _fit_single_fwhmZ(xmirr[:,iCCD],fwhmx,poldegree,tag='X')
                     zresY = _fit_single_fwhmZ(xmirr[:,iCCD],fwhmy,poldegree,tag='Y')
                     
+                    Focus_dd['CCD'][ix] = iCCD 
+                    Focus_dd['Q'][ix] = jQ
+                    Focus_dd['Spot'][ix] = lSpot
+                    
+                    av_x_phys = np.nanmean(self.dd.mx['x_phys'][:,iCCD,jQ,lSpot])
+                    av_y_phys = np.nanmean(self.dd.mx['y_phys'][:,iCCD,jQ,lSpot])
+                                
+                    Focus_dd['x_phys'][ix] = av_x_phys
+                    Focus_dd['y_phys'][ix] = av_y_phys
+                    
+                    Focus_dd['focusx'][ix] = zresX['focus']
+                    Focus_dd['focusy'][ix] = zresY['focus']
+
         
+        #Focus_cdp_df = pd.DataFrame.from_dict(Focus_cdp_dd)
+        
+        focus_meta = OrderedDict(zip(
+                ['poldegree','CCDs','Quads','Spots'],
+                [poldegree,CCDs,Quads,Spots]))
+                
+        
+        focus_cdp = F00aux.CDP_lib['FOCUS']
+        focus_cdp.rootname += '_%snm' % wave
+        focus_cdp.path = self.inputs['subpaths']['products']
+        focus_cdp.ingest_inputs(Focus_dd = Focus_dd.copy(),                             
+                              meta=focus_meta.copy(),
+                              header=CDP_header.copy())
+        
+        
+        focus_cdp = self.init_and_fill_CDP(focus_cdp, 
+            header_title='FOCUS00_%i: FOCUS' % wave)
+        self.save_CDP(focus_cdp)
+        self.pack_CDP_to_dd(focus_cdp, 'FOCUS_CDP')
+
+        if self.report is not None:
+            FOCUStex = focus_cdp.get_textable(sheet='FOCUS', 
+                caption='FOCUS00 @ %i nm' % wave)
+            self.report.add_Text(FOCUStex)
 

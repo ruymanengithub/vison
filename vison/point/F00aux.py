@@ -16,7 +16,9 @@ from pdb import set_trace as stop
 import numpy as np
 import os
 from collections import OrderedDict
+import pandas as pd
 
+from vison.datamodel import cdp
 from vison.plot import figclasses
 from vison.plot import trends
 
@@ -105,3 +107,20 @@ def gt_F00figs(wave):
         trends.Fig_Basic_Checkstat, gt_check_fwhmy_dict(wave)]
     F00figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return F00figs
+
+
+class FOCUS_CDP(cdp.Tables_CDP):
+
+    def ingest_inputs(self, Focus_dd, meta=None, header=None, figs=None):
+
+        FOCUS_df = pd.DataFrame.from_dict(Focus_dd)  
+
+        _data = OrderedDict(FOCUS=FOCUS_df)
+        super(FOCUS_CDP, self).ingest_inputs(
+            _data, meta=meta, header=header, figs=figs)
+
+
+focus_cdp = FOCUS_CDP()
+focus_cdp.rootname = 'FOCUS00'
+
+CDP_lib = dict(FOCUS=focus_cdp)

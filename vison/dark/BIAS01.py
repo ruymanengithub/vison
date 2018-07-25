@@ -338,7 +338,6 @@ class BIAS01(DarkTask):
 
         ron_cdp = self.init_and_fill_CDP(ron_cdp, header_title='BIAS01: RON')
         self.save_CDP(ron_cdp)
-
         self.pack_CDP_to_dd(ron_cdp, 'RON_CDP')
 
         if self.report is not None:
