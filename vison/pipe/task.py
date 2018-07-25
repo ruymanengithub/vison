@@ -524,7 +524,10 @@ class Task(object):
             self.report.add_Section(
                 keyword='check_data', Title='Data Validation', level=0)
         # INVENTORY OF DATA
-        self.add_data_inventory_to_report()
+        tDict = self.get_data_inventory_table()
+        self.dd.meta['data_inventory'] = tDict.copy()
+        if self.report is not None:
+            self.add_data_inventory_to_report(tDict)
         # CHECK AND CROSS-CHECK HK
         self.check_HK_ST()
         # OBTAIN METRICS FROM IMAGES
@@ -745,8 +748,22 @@ class Task(object):
 
         self.report.add_Table(tDict, names=names,
                               caption=caption, col_align='|l|X|')
-
-    def add_data_inventory_to_report(self):
+    
+    def get_data_inventory_table(self):
+        
+        tDict = OrderedDict()
+        tDict['ObsID']= self.dd.mx['ObsID'][:].copy()
+        tDict['exptime']= self.dd.mx['exptime'][:, 0].copy()
+        tDict['chinj']= self.dd.mx['chinj'][:, 0].copy()
+        tDict['v_tpump']= self.dd.mx['v_tpump'][:, 0].copy()
+        tDict['s_tpump']= self.dd.mx['s_tpump'][:, 0].copy()
+        tDict['source']= self.dd.mx['source'][:, 0].copy()
+        tDict['wave']= self.dd.mx['wave'][:, 0].copy()
+        
+        return tDict
+        
+    
+    def add_data_inventory_to_report(self,tDict):
         """ """
 
         self.report.add_Text('\\textbf{Test Data}')
@@ -754,21 +771,9 @@ class Task(object):
         caption = 'Data Used by Task %s , Test $%s$. Datapath = "%s"' % (
             self.name, self.inputs['test'], self.inputs['datapath'])
         #ncaption = st.replace(caption,'_','\\_')
-
-        ObsID = self.dd.mx['ObsID'][:].copy()
-        exptime = self.dd.mx['exptime'][:, 0].copy()
-        chinj = self.dd.mx['chinj'][:, 0].copy()
-        v_tpump = self.dd.mx['v_tpump'][:, 0].copy()
-        s_tpump = self.dd.mx['s_tpump'][:, 0].copy()
-        source = self.dd.mx['source'][:, 0].copy()
-        wave = self.dd.mx['wave'][:, 0].copy()
-
-        names = ['ObsID', 'exptime', 'chinj',
-                 'v_tpump', 's_tpump', 'source', 'wave']
-
-        tDict = OrderedDict(ObsID=ObsID, exptime=exptime, chinj=chinj, v_tpump=v_tpump,
-                            s_tpump=s_tpump, source=source, wave=wave)
-
+        
+        names = tDict.keys()
+        
         self.report.add_Table(tDict, names=names,
                               caption=caption, longtable=True)
 
