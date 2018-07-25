@@ -234,25 +234,42 @@ class FOCUS00(PT.PointTask):
         #                                         Best_mirr_pos(beam)
         # save Best Mirr pos as a "product"
         
+        poldegree = 2
+        
         CCDs = self.dd.indices.get_vals('CCD')
         Quads = self.dd.indices.get_vals('Quad')
         Spots = self.dd.indices.get_vals('Spot')
         
-        xmirr = self.dd['mirr_pos'][:].copy()
+        xmirr = self.dd.mx['mirr_pos'][:].copy()
+        
+        def _fit_single_fwhmZ(x,fwhm,poldegree,tag):
+            
+            try:
+                zres = F00lib.fit_focus_single(x, fwhm, yerror=None, 
+                                 degree=poldegree, doplot=False)
+            except ValueError:
+                if self.log is not None:
+                    self.log.info('Focus-%s fit did not converge for %s-%s-%s' %
+                                  (tag,CCDk,Q,SpotName))
+                zres = dict(coeffs=np.zeros(poldegree+1)+np.nan,
+                         ecoeffs=np.zeros(poldegree+1)+np.nan,
+                         focus=np.nan)
+            return zres
+        
         
         for iCCD, CCDk in enumerate(CCDs):
             
             for jQ, Q in enumerate(Quads):
                 
                 for lSpot, SpotName in enumerate(Spots):
+
                     
-                    fwhm_x = self.dd['fwhm_x'][:,iCCD,jQ,lSpot].copy()
-                    fwhm_y = self.dd['fwhm_y'][:,iCCD,jQ,lSpot].copy()
+                    fwhmx = self.dd.mx['fwhmx'][:,iCCD,jQ,lSpot].copy()
+                    fwhmy = self.dd.mx['fwhmy'][:,iCCD,jQ,lSpot].copy()
                     
-                    zresX = F00lib.fit_focus_single(xmirr, fwhm_x, yerror=None, degree=2, 
-                                            doplot=False)
-                    zresY = F00lib.fit_focus_single(xmirr, fwhm_y, yerror=None, degree=2, 
-                                            doplot=False)
                     
-                    stop()
+                    zresX = _fit_single_fwhmZ(xmirr[:,iCCD],fwhmx,poldegree,tag='X')
+                    zresY = _fit_single_fwhmZ(xmirr[:,iCCD],fwhmy,poldegree,tag='Y')
+                    
+        
 

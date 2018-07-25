@@ -9,6 +9,8 @@ Created on Tue May  2 15:33:17 2017
 # IMPORT STUFF
 from pdb import set_trace as stop
 import numpy as np
+import warnings
+
 from vison.pipe import lib as pilib
 from vison.point import lib as polib
 
@@ -32,8 +34,19 @@ def fit_focus_single(x, y, yerror=None, degree=1, doplot=False):
 
     if yerror is not None:
         assert len(y) == len(yerror)
-
-    coeffs, Vcoeffs = np.polyfit(x, y, degree, full=False, cov=True)
+        weights = 1./yerror        
+    else:        
+        weights = np.ones_like(y)
+    
+    warnings.simplefilter('ignore',np.RankWarning)
+    coeffs, Vcoeffs = np.polyfit(x, y, degree, w=weights, full=False, cov=True)
+    #try:
+    #    coeffs, Vcoeffs = np.polyfit(x, y, degree, w=weights, full=False, cov=True)
+    #except ValueError:
+    #    res = dict(coeffs=np.zeros(degree+1)+np.nan, 
+    #               ecoeffs=np.zeros(degree+1)+np.nan, 
+    #               focus=np.nan)
+    #    return res
 
     ecoeffs = np.diag(Vcoeffs)**0.5
 
