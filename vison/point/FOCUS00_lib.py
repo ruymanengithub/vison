@@ -74,21 +74,45 @@ def fit_focus_single(x, y, yerror=None, degree=1, doplot=False):
 
     return res
 
+def build_fwhm_map_CQ(delta_fwhm, x, y, xlims, ylims):            
+    
+    N = 10            
+    x0, x1 = xlims
+    y0, y1 = ylims
+    
+    # TESTS
+    delta_fwhm = np.ones_like(delta_fwhm)
+    x = np.arange(5,dtype='float32')
+    y = np.arange(5,dtype='float32')
+    
+    # END TESTS
+    
+    flin = interpolate.interp2d(x, y, delta_fwhm, kind='linear')
+    
+    xQ = np.linspace(x0, x1, N)
+    yQ = np.linspace(y0, y1, N)
+    
+    xxQ, yyQ = np.meshgrid(xQ, yQ)
+    
+    img = flin(xxQ.flatten(), yyQ.flatten()).reshape((N,N))
+    
+    return img
 
-def fit_focus_all(shape_seq, doplot=True):
-    """ 
 
-    TODO:
-        - average of focus (mirr_pos) for each CCD-Q-pos: map
-        - overal average of focus (mirr_pos)
-        - map of fwhm_x for best-focus mirr_pos
-        - map of fwhm_y for best-focus mirr_pos
-        - map of fluence for best-focus mirr_pos
+#def fit_focus_all(shape_seq, doplot=True):
+#    """ 
+#
+#    TODO:
+#        - average of focus (mirr_pos) for each CCD-Q-pos: map
+#        - overal average of focus (mirr_pos)
+#        - map of fwhm_x for best-focus mirr_pos
+#        - map of fwhm_y for best-focus mirr_pos
+#        - map of fluence for best-focus mirr_pos
+#
+#    """
+#    raise NotImplementedError
 
-    """
-    raise NotImplementedError
 
-
-def inspect_focus_all(shape_seq, doplot=True):
-    """ """
-    raise NotImplementedError
+#def inspect_focus_all(shape_seq, doplot=True):
+#    """ """
+#    raise NotImplementedError

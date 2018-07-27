@@ -35,6 +35,8 @@ import os
 import copy
 from collections import OrderedDict
 import pandas as pd
+from scipy import stats
+from scipy import interpolate
 
 #from vison.pipe import lib as pilib
 from vison.support import context
@@ -214,13 +216,13 @@ class FOCUS00(PT.PointTask):
         """ 
         This is just an assignation of values measured in check_data.        
         """
-        
+
         CHKindices = copy.deepcopy(self.dd.indices)
         assert 'CCD' in CHKindices.names
         assert 'Quad' in CHKindices.names
         assert 'Spot' in CHKindices.names
         
-        newkeys = ['x','y','fluence','fwhmx','fwhmy']
+        newkeys = ['x','y','x_ccd','y_ccd','fluence','fwhmx','fwhmy']
         for key in newkeys:
             chkkey = 'chk_%s' % key
             self.dd.addColumn(self.dd.mx[chkkey][:].copy(), key, CHKindices)
@@ -252,20 +254,6 @@ class FOCUS00(PT.PointTask):
         nS = len(Spots)
         NP = nC * nQ * nS
         
-        def _fit_single_fwhmZ(x,fwhm,poldegree,tag):
-            
-            try:
-                zres = F00lib.fit_focus_single(x, fwhm, yerror=None, 
-                                 degree=poldegree, doplot=False)
-            except ValueError:
-                if self.log is not None:
-                    self.log.info('Focus-%s fit did not converge for %s-%s-%s' %
-                                  (tag,CCDk,Q,SpotName))
-                zres = dict(coeffs=np.zeros(poldegree+1)+np.nan,
-                         ecoeffs=np.zeros(poldegree+1)+np.nan,
-                         focus=np.nan)
-            return zres
-        
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
@@ -274,17 +262,20 @@ class FOCUS00(PT.PointTask):
         Focus_dd['CCD'] = np.zeros(NP,dtype='int32')
         Focus_dd['Q'] = np.zeros(NP,dtype='int32')
         Focus_dd['Spot'] = np.zeros(NP,dtype='int32')
-        Focus_dd['x_phys'] =  np.zeros(NP,dtype='float32')
-        Focus_dd['y_phys'] =  np.zeros(NP,dtype='float32')
-        Focus_dd['focusx'] =  np.zeros(NP,dtype='float32')
-        Focus_dd['best_fwhmx'] =  np.zeros(NP,dtype='float32')
-        Focus_dd['focusy'] =  np.zeros(NP,dtype='float32')
-        Focus_dd['best_fwhmy'] =  np.zeros(NP,dtype='float32')
- 
+        Focus_dd['x_ccd'] =  np.zeros(NP,dtype='float32')
+        Focus_dd['y_ccd'] =  np.zeros(NP,dtype='float32')
+        Focus_dd['focus'] =  np.zeros(NP,dtype='float32')
+        Focus_dd['belocal_fwhm'] =  np.zeros(NP,dtype='float32')
+        
+        zres = OrderedDict()
         
         for iCCD, CCDk in enumerate(CCDs):
             
+            zres[CCDk] = OrderedDict()
+            
             for jQ, Q in enumerate(Quads):
+                
+                zres[CCDk][Q] = OrderedDict()
                 
                 for lSpot, SpotName in enumerate(Spots):
 
@@ -292,30 +283,106 @@ class FOCUS00(PT.PointTask):
                     
                     fwhmx = self.dd.mx['fwhmx'][:,iCCD,jQ,lSpot].copy()
                     fwhmy = self.dd.mx['fwhmy'][:,iCCD,jQ,lSpot].copy()
-                                        
-                    zresX = _fit_single_fwhmZ(xmirr[:,iCCD],fwhmx,poldegree,tag='X')
-                    zresY = _fit_single_fwhmZ(xmirr[:,iCCD],fwhmy,poldegree,tag='Y')
+                    
+                    fwhm = np.sqrt(fwhmx**2.+fwhmy**2.) / np.sqrt(2.)
+                    
+                    
+                    try:
+                        p_zres = F00lib.fit_focus_single(xmirr[:,iCCD], 
+                                fwhm, yerror=None, 
+                                 degree=poldegree, doplot=False)
+                    except ValueError:
+                        if self.log is not None:
+                            self.log.info('Focus fit did not converge for %s-%s-%s' %
+                                  (CCDk,Q,SpotName))
+                        p_zres = dict(coeffs=np.zeros(poldegree+1)+np.nan,
+                         ecoeffs=np.zeros(poldegree+1)+np.nan,
+                         focus=np.nan)
                     
                     Focus_dd['CCD'][ix] = iCCD 
                     Focus_dd['Q'][ix] = jQ
                     Focus_dd['Spot'][ix] = lSpot
                     
-                    av_x_phys = np.nanmean(self.dd.mx['x_phys'][:,iCCD,jQ,lSpot])
-                    av_y_phys = np.nanmean(self.dd.mx['y_phys'][:,iCCD,jQ,lSpot])
+                    av_x_ccd = np.nanmean(self.dd.mx['x_ccd'][:,iCCD,jQ,lSpot])
+                    av_y_ccd = np.nanmean(self.dd.mx['y_ccd'][:,iCCD,jQ,lSpot])
                                 
-                    Focus_dd['x_phys'][ix] = av_x_phys
-                    Focus_dd['y_phys'][ix] = av_y_phys
+                    Focus_dd['x_ccd'][ix] = av_x_ccd
+                    Focus_dd['y_ccd'][ix] = av_y_ccd
                     
-                    Focus_dd['focusx'][ix] = zresX['focus']
-                    Focus_dd['focusy'][ix] = zresY['focus']
+                    Focus_dd['focus'][ix] = p_zres['focus']
+                    
+                    Focus_dd['belocal_fwhm'][ix] = np.polyval(p_zres['coeffs'],p_zres['focus'])
+                            
+                    zres[CCDk][Q][SpotName] = p_zres
 
+        # Find centroid of focus values, as Best Focus
         
-        #Focus_cdp_df = pd.DataFrame.from_dict(Focus_cdp_dd)
+        cbe_focus = np.nanmean(stats.sigmaclip(Focus_dd['focus'],4,4).clipped)
         
-        focus_meta = OrderedDict(zip(
-                ['poldegree','CCDs','Quads','Spots'],
-                [poldegree,CCDs,Quads,Spots]))
+        # Obtaining delta-focus map
+        
+        beglobal_fwhm = np.zeros_like(Focus_dd['belocal_fwhm'],dtype='float32')
+        
+        for iCCD, CCDk in enumerate(CCDs):
+            
+            for jQ, Q in enumerate(Quads):
+                                
+                for lSpot, SpotName in enumerate(Spots):
+
+                    ix = iCCD  * (nQ*nS) + jQ * nS + lSpot
+                    
+                    pcoeffs = zres[CCDk][Q][SpotName]['coeffs']
+                    beglobal_fwhm[ix] = np.polyval(pcoeffs,cbe_focus)
+        
+        cbe_fwhm = np.nanmean(stats.sigmaclip(beglobal_fwhm,4,4).clipped)
+        
+        delta_fwhm = beglobal_fwhm - Focus_dd['belocal_fwhm']
+        x_ccd = Focus_dd['x_ccd'].copy()
+        y_ccd = Focus_dd['y_ccd'].copy()
+        
+        
+        delta_fwhm_dict = OrderedDict()
+        
+        for iCCD, CCDk in enumerate(CCDs):
+            
+            delta_fwhm_dict[CCDk] = OrderedDict()
+            
+            for jQ, Q in enumerate(Quads):
                 
+                ixsel = (np.arange(nS)+iCCD*(nQ*nS)+jQ*nS,)
+                
+                # TO-DO:
+                # TASKS SHOULD KNOW WHAT IMAGE FORMAT WE HAVE
+                # AND DOING IMAGE COORDINATES CONVERSIONS SHOULD BE 
+                # STRAIGHTFORWARD.
+                # IMPLEMENT AND USE IT TO CREATE FUNCTIONS "F" BELOW.
+                
+                x_Q = f(x_ccd[ixsel])
+                yQ = f(y_ccd[ixsel])
+                
+                xlims = (0., 1.) # TESTS
+                ylims = (0., 1.) # TESTS
+                
+                delta_fwhm_dict[CCDk][Q] = dict(
+                        img = F00lib.build_fwhm_map_CQ(delta_fwhm[ixsel],
+                                                x_Q, y_Q,
+                                                xlims, ylims)
+                        )
+        
+        
+        # Figure
+        
+        fdict = self.figdict['F00meta_deltafwhm'][1]
+        fdict['data'] = delta_fwhm_dict.copy()
+        if self.report is not None:
+            self.addFigures_ST(figkey='F00meta_deltafwhm', dobuilddata=False)
+        
+        
+        # CDP with CBE FOCUS and related tables
+        
+        meta_contents = ['cbe_focus', 'cbe_fwhm', 'poldegree', 'CCDs', 'Quads', 'Spots']
+        focus_meta = OrderedDict((name, eval(name)) for name in meta_contents)
+        
         
         focus_cdp = F00aux.CDP_lib['FOCUS']
         focus_cdp.rootname += '_%snm' % wave

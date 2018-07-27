@@ -101,8 +101,9 @@ def extract_spot(ccdobj, coo, Quad, log=None, stampw=25):
 
     # Cut-out stamp of the spot
     stamp = ccdobj.get_cutout(corners, Quad, canonical=False)
-
-    spot = spotmod.Spot(stamp, log=log)
+    
+    lowerleft = (corners[0]+B[0], corners[2]+B[2])
+    spot = spotmod.Spot(stamp, log=log, lowerleft=lowerleft)
 
     return spot
 

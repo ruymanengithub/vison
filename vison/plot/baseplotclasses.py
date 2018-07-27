@@ -317,6 +317,12 @@ class BeamPlotYvX(BeamPlot):
 
         return handle, label
 
+class BeamImgShow(BeamPlot):
+    
+    def _ax_core_funct(self, ax, CQdict):        
+        ax.imshow(CQdict['img'])
+        
+
 
 class Beam1DHist(BeamPlot):
     """ """

@@ -69,6 +69,9 @@ class Fig_Beam2DPlot(Fig):
 class Fig_Beam1DHist(Fig):
     plotclass = baseplotclasses.Beam1DHist
 
+class Fig_BeamImgShow(Fig):
+    plotclass = baseplotclasses.BeamImgShow
+
 
 class Fig_XY_fromDD(Fig):
 
@@ -78,18 +81,12 @@ class Fig_XY_fromDD(Fig):
         assert isinstance(stats, list)
         assert isinstance(trendaxis, str)
 
-        #plnames = ['x','y']
 
         iterable_data_keys = []
         for indname in indices2param:
             iterable_data_keys.append(
                 subdd[stats[0]].indices.get_vals(indname))
 
-#        tagkeys = []
-#        if index2tag is not None:
-#            tagkeys = subdd[stats[0]].indices.get_vals(index2tag)
-#
-#        iterable_data_keys += [plnames] + tagkeys
 
         data_keys_tuples = [item for item in product(*iterable_data_keys)]
 
@@ -105,10 +102,6 @@ class Fig_XY_fromDD(Fig):
 
             for _ixname in indexlist:
                 iterable_ix.append(np.arange(indobj.get_len(_ixname)))
-
-#            if tag is not None:
-#                iterable_ix.append(np.arange(indobj.get_len(tag)))
-#
             return [item for item in product(*iterable_ix)]
 
         ix_tuples = get_ix_tuples(
@@ -172,54 +165,6 @@ class Fig_XY_fromDD(Fig):
         return data
 
 
-#    def old_build_data_yvsx(self,ddmx,indicesDict,indicesList,labels,trendaxis):
-#
-#        plnames = ['x','y']
-#
-#        iterable_keys = []
-#        for indname in indicesList:
-#            iterable_keys.append(indicesDict[indname])
-#        iterable_keys += [plnames] + [labels]
-#
-#        iterable_ix = []
-#        for indname in indicesList:
-#            iterable_ix.append(np.arange(len(indicesDict[indname])).tolist())
-#        iterable_ix += [[None]*len(plnames)] + [[None]*len(labels)]
-#
-#
-#        # nested dictionary based on recursion and collections.defaultdict
-#        nested_dict = lambda: defaultdict(nested_dict)
-#        data = nested_dict()
-#
-#        indices_tuples = [item for item in product(*iterable_keys)]
-#        ix_tuples = [item for item in product(*iterable_ix)]
-#
-#        # on-the-fly creation and assignation of values
-#
-#
-#        for i in range(len(indices_tuples)):
-#            indices_tuple = indices_tuples[i]
-#            ix_tuple = ix_tuples[i]
-#
-#            axis = indices_tuple[-2]
-#            stat = indices_tuple[-1]
-#            if axis == 'x':
-#                value = ddmx[trendaxis][ix_tuple[:-2]]
-#            elif axis == 'y':
-#                value = ddmx[stat][ix_tuple[:-2]]
-#
-#            utils.setInDict(data,indices_tuple,value)
-#
-#        # Convert defaultdict 'back' to dict()
-#
-#        for indices_tuple in indices_tuples:
-#            for j in range(1,len(indicesList)+2):
-#                value = utils.getFromDict(data,indices_tuple[:-j])
-#                if isinstance(value,defaultdict):
-#                    utils.setInDict(data,indices_tuple[:-j],dict(value))
-#        data = dict(data)
-#
-#        return data
 
 class BlueScreen(Fig):
     """ """

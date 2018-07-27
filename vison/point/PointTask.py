@@ -91,7 +91,9 @@ class PointTask(Task):
                 'Spot', vals=strackermod.starnames))
 
         self.dd.initColumn('chk_x', Sindices, dtype='float32', valini=valini)
+        self.dd.initColumn('chk_x_ccd', Sindices, dtype='float32', valini=valini)
         self.dd.initColumn('chk_y', Sindices, dtype='float32', valini=valini)
+        self.dd.initColumn('chk_y_ccd', Sindices, dtype='float32', valini=valini)
         self.dd.initColumn('chk_peak', Sindices,
                            dtype='float32', valini=valini)
         self.dd.initColumn('chk_fluence', Sindices,
@@ -101,7 +103,9 @@ class PointTask(Task):
         self.dd.initColumn('chk_fwhmy', Sindices,
                            dtype='float32', valini=valini)
 
-        chkkeycorr = dict(chk_x='x', chk_y='y', chk_peak='peak', chk_fluence='fluence',
+        chkkeycorr = dict(chk_x='x', chk_y='y', 
+                          chk_x_ccd='x_ccd', chk_y_ccd = 'y_ccd',
+                          chk_peak='peak', chk_fluence='fluence',
                           chk_fwhmx='fwhmx', chk_fwhmy='fwhmy')
 
         nObs, _, _ = Qindices.shape

@@ -40,13 +40,17 @@ class Spot(Shapemeter, Photometer, Gaussmeter):
     Settings dictionary contains all parameter values needed.
     """
 
-    def __init__(self, data, log=None, verbose=False, **kwargs):
+    def __init__(self, data, log=None, verbose=False, lowerleft=(None,), 
+                 **kwargs):
         """
         :param data: stamp to be analysed.
         :type data: ndarray
         :param log: logger
         :type log: instance
-        :param verbose: bool switch
+        :param verbose: verbosity switch
+        :type verbose: bool
+        :param lowerleft: lower left corner coordinates (x,y)
+        :type lowerleft: tuple
         :param kwargs: additional keyword arguments
         :type kwargs: dict
 
@@ -68,6 +72,10 @@ class Spot(Shapemeter, Photometer, Gaussmeter):
 
         self.xcen = NX/2
         self.ycen = NY/2
+        
+        if lowerleft[0] is not None: 
+           self.x0 = lowerleft[0]
+           self.y0 = lowerleft[1]
 
     def get_photom(self):
         """ 
@@ -172,7 +180,11 @@ class Spot(Shapemeter, Photometer, Gaussmeter):
                                      subbgd=True)
 
         x, y = self.xcen, self.ycen
+        x_phys = x + self.x0
+        y_phys = y + self.y0
+        
         res = dict(bgd=bgd, peak=peak, fluence=flu, efluence=eflu,
-                   x=x, y=y, fwhmx=fwhmx, fwhmy=fwhmy)
+                   x=x, y=y, x_phys=x_phys, y_phys=y_phys, 
+                   fwhmx=fwhmx, fwhmy=fwhmy)
 
         return res
