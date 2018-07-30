@@ -286,7 +286,6 @@ class FOCUS00(PT.PointTask):
                     
                     fwhm = np.sqrt(fwhmx**2.+fwhmy**2.) / np.sqrt(2.)
                     
-                    
                     try:
                         p_zres = F00lib.fit_focus_single(xmirr[:,iCCD], 
                                 fwhm, yerror=None, 
@@ -343,6 +342,11 @@ class FOCUS00(PT.PointTask):
         
         delta_fwhm_dict = OrderedDict()
         
+        ccalc = self.ccdcalc # ALIAS
+        xlims = (ccalc.prescan, 
+                         ccalc.prescan+ccalc.NcolsCCD-1.) 
+        ylims = (0., ccalc.NrowsCCD-1.) 
+        
         for iCCD, CCDk in enumerate(CCDs):
             
             delta_fwhm_dict[CCDk] = OrderedDict()
@@ -351,37 +355,37 @@ class FOCUS00(PT.PointTask):
                 
                 ixsel = (np.arange(nS)+iCCD*(nQ*nS)+jQ*nS,)
                 
-                # TO-DO:
-                # TASKS SHOULD KNOW WHAT IMAGE FORMAT WE HAVE
-                # AND DOING IMAGE COORDINATES CONVERSIONS SHOULD BE 
-                # STRAIGHTFORWARD.
-                # IMPLEMENT AND USE IT TO CREATE FUNCTIONS "F" BELOW.
+                Qsel = np.zeros_like(x_ccd[ixsel],dtype='S1')
+                Qsel[:] = Q
+                xQ, yQ = self.ccdcalc.cooconv_CCD_2_Qrel(x_ccd[ixsel],
+                                                           y_ccd[ixsel],
+                                                        Qsel)
                 
-                x_Q = f(x_ccd[ixsel])
-                yQ = f(y_ccd[ixsel])
-                
-                xlims = (0., 1.) # TESTS
-                ylims = (0., 1.) # TESTS
+                # TESTS        
+                print 'FOCUS00.meta_lib running in TEST-HACKED MODE'
+                xQ = np.array([100.,2000.,1000.,100.,2000.])
+                yQ = np.array([2000.,2000.,1000.,100.,1000.])
+                delta_fwhm_HK = xQ/xQ.max()+1.
+                # END TESTS
                 
                 delta_fwhm_dict[CCDk][Q] = dict(
-                        img = F00lib.build_fwhm_map_CQ(delta_fwhm[ixsel],
-                                                x_Q, y_Q,
-                                                xlims, ylims)
-                        )
-        
+                        img = F00lib.build_fwhm_map_CQ(delta_fwhm_HK, # [ixsel],
+                                                xQ, yQ,
+                                                xlims, ylims))
         
         # Figure
         
         fdict = self.figdict['F00meta_deltafwhm'][1]
         fdict['data'] = delta_fwhm_dict.copy()
         if self.report is not None:
-            self.addFigures_ST(figkey='F00meta_deltafwhm', dobuilddata=False)
+            self.addFigures_ST(figkeys=['F00meta_deltafwhm'], 
+                               dobuilddata=False)
         
         
         # CDP with CBE FOCUS and related tables
         
         meta_contents = ['cbe_focus', 'cbe_fwhm', 'poldegree', 'CCDs', 'Quads', 'Spots']
-        focus_meta = OrderedDict((name, eval(name)) for name in meta_contents)
+        focus_meta = OrderedDict([(name, eval(name)) for name in meta_contents])
         
         
         focus_cdp = F00aux.CDP_lib['FOCUS']

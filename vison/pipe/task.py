@@ -255,8 +255,7 @@ class Task(object):
                 self.ingest_data_SimpleTest()
             elif self.type == 'Meta':
                 self.ingest_data_MetaTest()
-                
-            stop()
+
 
             self.save_progress(DataDictFile, reportobjFile)
         else:
@@ -613,6 +612,7 @@ class Task(object):
         figspath = self.inputs['subpaths']['figs']
 
         for figkey in figkeys:
+            
             try:
                 pmeta = self.figdict[figkey][1]
                 pmeta['path'] = figspath

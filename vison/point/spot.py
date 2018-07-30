@@ -180,11 +180,11 @@ class Spot(Shapemeter, Photometer, Gaussmeter):
                                      subbgd=True)
 
         x, y = self.xcen, self.ycen
-        x_phys = x + self.x0
-        y_phys = y + self.y0
+        x_ccd = x + self.x0
+        y_ccd = y + self.y0
         
         res = dict(bgd=bgd, peak=peak, fluence=flu, efluence=eflu,
-                   x=x, y=y, x_phys=x_phys, y_phys=y_phys, 
+                   x=x, y=y, x_ccd=x_ccd, y_ccd=y_ccd, 
                    fwhmx=fwhmx, fwhmy=fwhmy)
 
         return res

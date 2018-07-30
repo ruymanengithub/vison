@@ -10,6 +10,7 @@ Created on Tue May  2 15:33:17 2017
 from pdb import set_trace as stop
 import numpy as np
 import warnings
+from scipy import interpolate
 
 from vison.pipe import lib as pilib
 from vison.point import lib as polib
@@ -81,10 +82,9 @@ def build_fwhm_map_CQ(delta_fwhm, x, y, xlims, ylims):
     y0, y1 = ylims
     
     # TESTS
-    delta_fwhm = np.ones_like(delta_fwhm)
-    x = np.arange(5,dtype='float32')
-    y = np.arange(5,dtype='float32')
-    
+    #delta_fwhm = np.ones_like(delta_fwhm)
+    #x = np.arange(5,dtype='float32')
+    #y = np.arange(5,dtype='float32')
     # END TESTS
     
     flin = interpolate.interp2d(x, y, delta_fwhm, kind='linear')
@@ -92,9 +92,9 @@ def build_fwhm_map_CQ(delta_fwhm, x, y, xlims, ylims):
     xQ = np.linspace(x0, x1, N)
     yQ = np.linspace(y0, y1, N)
     
-    xxQ, yyQ = np.meshgrid(xQ, yQ)
+    #xxQ, yyQ = np.meshgrid(xQ, yQ)
     
-    img = flin(xxQ.flatten(), yyQ.flatten()).reshape((N,N))
+    img = flin(xQ, yQ)
     
     return img
 
