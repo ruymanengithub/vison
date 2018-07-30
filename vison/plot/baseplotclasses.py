@@ -394,9 +394,33 @@ def testBeam2DPlot():
 
     beam2dplot.render(figname='')
 
-    stop()
+
+def testBeam2ImgShow():
+    """ """
+    
+    ccddict = dict()
+    for iQ, Q in enumerate(['E', 'F', 'G', 'H']):
+        #_x, _y = _squiggle_xy(iQ+1, iQ+1, iQ+2, iQ+2)
+        #xdict = OrderedDict(foo=_x, bar=_x*2.)
+        #ydict = OrderedDict(foo=_y, bar=_y*2.)
+        x = np.linspace(0.,1.,10)
+        y = np.linspace(0.,1.,10)
+        xx, yy = np.meshgrid(x,y)
+        img = np.sqrt(xx**2.+yy**2.)
+        ccddict[Q] = dict(img=img)
+
+    data = dict(CCD1=copy.deepcopy(ccddict),
+                CCD2=copy.deepcopy(ccddict),
+                CCD3=copy.deepcopy(ccddict))
+
+    meta = dict(suptitle='Test')
+    beamimgshow = BeamImgShow(data, meta=meta)
+
+    beamimgshow.render(figname='')
+
 
 
 if __name__ == '__main__':
 
-    testBeam2DPlot()
+    #testBeam2DPlot()
+    testBeam2ImgShow()
