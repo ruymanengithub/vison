@@ -65,6 +65,7 @@ class CHINJ01_inputs(inputs.Inputs):
         ('IDL', ([float], 'Injection Drain Low Voltage.')),
         ('IDH', ([float], 'Injection Drain High Voltage.')),
         ('IG1s', ([list], 'Injection Gate 1 Voltages.')),
+        ('dIG1', ([list], 'Injection Gate 1 Voltage Step.')),
         ('id_delays', ([list], 'Injection Drain Delays.')),
         ('toi_chinj', ([int], 'TOI Charge Injection.')),
     ])))
@@ -98,6 +99,7 @@ class CHINJ01(InjTask):
             IDL=11.,
             IDH=18.,
             IG1s=[2., 6.],
+            dIG1=0.25,
             id_delays=[toi_chinj*2.5, toi_chinj*1.5],
             toi_chinj=toi_chinj
         )
@@ -126,6 +128,7 @@ class CHINJ01(InjTask):
         IDL = self.inputs['IDL']
         IDH = self.inputs['IDH']
         IG1s = self.inputs['IG1s']
+        dIG1 = self.inputs['dIG1'] # 0.25  # V
         id_delays = self.inputs['id_delays']
         toi_chinj = self.inputs['toi_chinj']
 
@@ -135,7 +138,6 @@ class CHINJ01(InjTask):
         assert len(IG1s) == 2
         assert len(id_delays) == 2
 
-        dIG1 = 0.25  # V
         NIG1 = (IG1s[1]-IG1s[0])/dIG1+1
         IG1v = np.arange(NIG1)*dIG1+IG1s[0]
 
