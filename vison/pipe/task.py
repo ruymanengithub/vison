@@ -129,7 +129,11 @@ class Task(object):
         self.inputs['structure'] = self.build_scriptdict(
             diffvalues, elvis=self.elvis)
         
+        images_format = self.get_images_format()
         
+        NAXIS2withpover = 2*(ccd.NrowsCCD+ccd.voverscan)
+        emptyccd = ccd.CCD(withpover=images_format[1]==NAXIS2withpover)        
+        self.ccdcalc = copy.deepcopy(emptyccd)
 
         self.CDP_header = OrderedDict()
 
@@ -143,6 +147,36 @@ class Task(object):
     def build_scriptdict(self, diffvalues={}, elvis=context.elvis):
         """ """
         return dict()
+    
+    def get_images_format(self):
+        
+        strdict = self.inputs['structure']
+        Ncols = strdict['Ncols']
+        
+        vstarts = []
+        vends = []
+        for i in range(1,Ncols+1):
+            vstarts.append(strdict['col%i' % i]['vstart'])
+            vends.append(strdict['col%i' % i]['vend'])
+            
+        vstarts = np.array(vstarts)
+        vends = np.array(vends)
+        
+        assert np.all(vstarts == vstarts[0])
+        assert np.all(vends == vends[0])
+        
+        Nlines = vends-vstarts
+        
+        if Nlines[0] <= ccd.NrowsCCD:
+            images_format = (ccd.NAXIS1, 
+                            ccd.NrowsCCD*2)
+        elif Nlines[0] == ccd.NrowsCCD+ccd.voverscan:
+            images_format = (ccd.NAXIS1, 
+                            (ccd.NrowsCCD+ccd.voverscan)*2)
+        else:
+            raise RuntimeError
+            
+        return images_format
 
     def __call__(self):
         """Generic test master function."""
@@ -199,7 +233,7 @@ class Task(object):
                 os.system(
                     'find %s -maxdepth 1 -type f -exec rm -f {} \;' % resultspath)
 
-            # Creating/clearing subresultspath
+            # Creating/clearing sub-resultspath
             for _, subpath in self.inputs['subpaths'].iteritems():
                 if not isthere(subpath):
                     os.system('mkdir %s' % subpath)
@@ -221,6 +255,8 @@ class Task(object):
                 self.ingest_data_SimpleTest()
             elif self.type == 'Meta':
                 self.ingest_data_MetaTest()
+                
+            stop()
 
             self.save_progress(DataDictFile, reportobjFile)
         else:
