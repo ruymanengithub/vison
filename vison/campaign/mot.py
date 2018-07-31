@@ -20,9 +20,10 @@ import numpy as np
 import copy
 
 from vison.dark import BIAS01
-from vison.flat import PTC0X
+from vison.flat import PTC0X, BF01
 from vison.inject import CHINJ01
 from vison.pump import TP01, TP02
+from vison.other import MOT_FF
 from vison.ogse import ogse as ogsemod
 from vison.support import context
 # END IMPORT
@@ -67,7 +68,7 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis, CHAMBER=None):
         IDL = 11.
         IDH = 18.
         IG1s = [2., 6.]
-        dIG1 = 0.5
+        dIG1 = 1.0
         toi_chinj01 = 500
         id_delays = [toi_chinj01*2.5, toi_chinj01*1.5]
 
@@ -165,7 +166,32 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis, CHAMBER=None):
         #structPTC01 = ptc01.build_scriptdict(diffvalues=diffPTC01,elvis=elvis)
 
         test_sequence['PTC01'] = copy.deepcopy(ptc01)
+    
+    if toGen['MOT_FF']:
+        
+        print 'MOT_FF...'
 
+        diffMOT_FF = dict(mirr_on=0,
+                         vstart=0,
+                         vend=2086)
+
+        diffMOT_FF.update(diffvalues)
+        tFWC_flat800 = ogse.profile['tFWC_flat']['nm800']
+        # 5%, 10%, 20%, 30%, 50%, 70%, 80%, 90%, 100%, 110%, 120%
+        exptsMOT_FF = (np.array([10., 30.,50., 70., 90.])/100.*tFWC_flat800).tolist()  # ms
+        frsMOT_FF = [2, 2, 2, 2, 2]
+
+        mot_ff = MOT_FF.MOT_FF(inputs=dict(elvis=elvis,
+                                        CHAMBER=CHAMBER,
+                                        test='MOT_FF', 
+                                        surrogate='PTC01',
+                                        exptimes=exptsMOT_FF,
+                                        frames=frsMOT_FF, 
+                                        wavelength=800,
+                                        diffvalues=diffMOT_FF))
+        #structPTC01 = ptc01.build_scriptdict(diffvalues=diffPTC01,elvis=elvis)
+
+        test_sequence['MOT_FF'] = copy.deepcopy(mot_ff)
 
 
     return test_sequence
