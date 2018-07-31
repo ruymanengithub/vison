@@ -68,6 +68,7 @@ class Pipe(object):
     from vison.flat.NL01 import NL01
     from vison.flat.FLAT0X import FLAT0X
     from vison.flat.PTC0X import PTC0X
+    from vison.flat.BF01 import BF01
     from vison.inject.CHINJ00 import CHINJ00
     from vison.inject.CHINJ01 import CHINJ01
     from vison.inject.CHINJ02 import CHINJ02
@@ -79,16 +80,18 @@ class Pipe(object):
     from vison.pump.TP01 import TP01
     from vison.pump.TP02 import TP02
     from vison.other.STRAY00 import STRAY00
+    from vison.other.MOT_FF import MOT_FF
 
     Test_dict = dict(BIAS01=BIAS01, DARK01=DARK01,
                      NL01=NL01, FLAT01=FLAT0X,
-                     PTC01=PTC0X,
+                     PTC01=PTC0X,BF01=BF01,
                      CHINJ00=CHINJ00, CHINJ01=CHINJ01, CHINJ02=CHINJ02,
                      TP00=TP00,
                      TP01=TP01, TP02=TP02,
                      PERSIST01=PERSIST01,
                      PSF01_PANCHRO=PSF01_PANCHRO,
-                     STRAY00=STRAY00)
+                     STRAY00=STRAY00,
+                     MOT_FF=MOT_FF)
 
     for wave in [0, 590, 640, 730, 880]:
         Test_dict['FLAT02_%i' % wave] = FLAT0X

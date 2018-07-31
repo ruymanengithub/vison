@@ -336,6 +336,7 @@ class Task(object):
         OBSID_lims = self.inputs['OBSID_lims']
         structure = self.inputs['structure']
         explogf = self.inputs['explogf']
+        
         #elvis = self.inputs['elvis']
         
         if self.drill:
@@ -700,9 +701,9 @@ class Task(object):
         #nObs,nCCD,nQuad = DDindices.shape
         #Quads = DDindices[2].vals
 
-        #nObs = DDindices.get_len('ix')
-        nObs = 3  # TESTS!
-        print 'TESTS: task.prepare_images: LIMITTING TO 3 IMAGES!'
+        nObs = DDindices.get_len('ix')
+        #nObs = 3  # TESTS!
+        #print 'TESTS: task.prepare_images: LIMITTING TO 3 IMAGES!'
 
         CCDs = DDindices.get_vals('CCD')
 
