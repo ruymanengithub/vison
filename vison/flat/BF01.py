@@ -34,8 +34,9 @@ import ptc as ptclib
 from vison.image import performance
 #from FlatTask import FlatTask
 from PTC0X import PTC0X
+from vison.pipe.task import Task
 from vison.datamodel import inputs
-#import BF01aux
+import BF01aux
 from vison.analysis import Guyonnet15 as G15
 from vison.image import covariance as covlib
 
@@ -58,6 +59,7 @@ class BF01_inputs(inputs.Inputs):
         ('frames', ([list], 'Number of Frames for each fluence.')),
         ('wavelength', ([int], 'Wavelength')),
         ('Npix', ([int], 'Number of Pixels (linear) to consider for Covariance Matrix')),
+        ('surrogate', ([str], 'Test to use as surrogate'))
     ])))
 
 
@@ -78,7 +80,7 @@ class BF01(PTC0X):
         #self.type = 'Simple'
         
         #self.HKKeys = HKKeys
-        self.figdict = dict()  # BF01aux.gt_BF01figs(self.inputs['surrogate'])
+        self.figdict = BF01aux.gt_BF01figs(self.inputs['surrogate'])
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles')
 
     def set_inpdefaults(self, **kwargs):
@@ -105,21 +107,35 @@ class BF01(PTC0X):
         :param diffvalues: dict, opt, differential values.   
 
         """
-
-        raise NotImplementedError(
-            "%s: This Task does not build a script, it uses data from another test" % self.name)
+        BF01_sdict = super(BF01, self).build_scriptdict(diffvalues=diffvalues, elvis=elvis)
+        Ncols = BF01_sdict['Ncols']
+        for i in range(1, Ncols+1):
+            BF01_sdict['col%i' % i]['test'] = self.inputs['surrogate']
+        return BF01_sdict
+        #raise NotImplementedError(
+        #    "%s: This Task does not build a script, it uses data from another test" % self.name)
 
     def filterexposures(self, structure, explog, OBSID_lims):
         """
 
         """
-        wavedkeys = ['motr_siz']
-        return super(BF01, self).filterexposures(structure, explog, OBSID_lims, colorblind=False,
-                                                 wavedkeys=wavedkeys, surrogate=self.inputs['surrogate'])
-
+        return Task.filterexposures(self, structure, explog, OBSID_lims,
+                                    wavedkeys=['motr_siz'],colorblind=False,
+                                    surrogate=self.inputs['surrogate'])
+    
+    def check_data(self):
+        
+        kwargs = dict(figkeys=['BF01checks_offsets', 'BF01checks_stds',
+                                   'BF01checks_flu', 'BF01checks_imgstd'])
+        
+        Task.check_data(self, **kwargs)
+    
+    
     def prepare_images(self):
-        super(BF01, self).prepare_images(doExtract=True, doMask=True,
+        Task.prepare_images(self, doExtract=True, doMask=True,
                                          doOffset=True, doBias=False, doFF=False)
+        #super(BF01, self).prepare_images(doExtract=True, doMask=True,
+        #                                 doOffset=True, doBias=False, doFF=False)
 
     def extract_COV(self):
         """
@@ -284,5 +300,6 @@ class BF01(PTC0X):
 
 
         """
-
+        
+        return # TESTS
         raise NotImplementedError

@@ -317,8 +317,7 @@ class TP01(PumpTask):
 
         """
 
-        stop()
-
+        return # TESTS
         raise NotImplementedError
 
     def meta_analysis(self):
@@ -347,4 +346,5 @@ class TP01(PumpTask):
                 Total Count of Traps
 
         """
+        return # TESTS
         raise NotImplementedError

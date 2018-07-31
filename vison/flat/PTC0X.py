@@ -264,9 +264,9 @@ class PTC0X(FlatTask):
         """
 
         """
-        wavedkeys = ['motr_siz']
-        return super(PTC0X, self).filterexposures(structure, explog, OBSID_lims, colorblind=False,
-                                                  wavedkeys=wavedkeys)
+        
+        return super(PTC0X, self).filterexposures(structure, explog, OBSID_lims, 
+                    wavedkeys=['motr_siz'],colorblind=False)
 
     def prepare_images(self):
         super(PTC0X, self).prepare_images(doExtract=True, doMask=True,
@@ -490,7 +490,11 @@ class PTC0X(FlatTask):
         self.dd.products['bloom'] = copy.deepcopy(bloom_mx)
 
         # Build Tables
-
+        
+        
         # Do plots
+        
 
         # Add reports
+        
+        

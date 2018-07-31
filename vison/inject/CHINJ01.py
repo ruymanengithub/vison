@@ -111,7 +111,7 @@ class CHINJ01(InjTask):
 
         self.perfdefaults['Flu_lims'] = Flu_lims.copy()
         self.perfdefaults['FluGrad_lims'] = FluGrad_lims.copy()
-
+        
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """
         Builds CHINJ01 script structure dictionary.
@@ -214,7 +214,8 @@ class CHINJ01(InjTask):
 
 
         """
-
+        
+        return # TESTS
         raise NotImplementedError
 
     def basic_analysis(self):
@@ -245,5 +246,6 @@ class CHINJ01(InjTask):
             report injection stats as a table
 
         """
-
-        raise NotImplementedError
+        
+        return # TESTS
+        #raise NotImplementedError

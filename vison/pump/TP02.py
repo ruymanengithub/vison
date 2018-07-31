@@ -184,6 +184,7 @@ class TP02(PumpTask):
 
     def extract(self):
         """ """
+        return # TESTS
         raise NotImplementedError
 
     def basic_analysis(self):
@@ -208,6 +209,7 @@ class TP02(PumpTask):
                 Counts of dipoles (and E vs. W)
 
         """
+        return # TESTS
         raise NotImplementedError
 
     def meta_analysis(self):
@@ -237,4 +239,5 @@ class TP02(PumpTask):
 
 
         """
+        return #TESTS
         raise NotImplementedError

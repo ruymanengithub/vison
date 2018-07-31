@@ -362,8 +362,8 @@ class BIAS01(DarkTask):
             save name of MasterBias(s) to DataDict, report
 
         """
-
-        raise NotImplementedError
+        return
+        # raise NotImplementedError TESTS
 
 
 class Test(unittest.TestCase):
