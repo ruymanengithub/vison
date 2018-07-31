@@ -16,11 +16,23 @@ Created on Thu Sep 14 16:29:36 2017
 # IMPORT STUFF
 from pdb import set_trace as stop
 import numpy as np
+from collections import OrderedDict
+
+from vison.support import flags as flmod
 # END IMPORT
+
+
+fitPTC_flags = OrderedDict()
+fitPTC_flags['EXCEPTION'] = [2**0L]
+fitPTC_flags['POORFIT'] = [2**1L]
+fitPTC_flags['BADERRORS'] = [2**2L]
 
 
 def fitPTC(means, var):
     """Fits Photon Transfer Curve to obtain gain."""
+    
+    poldeg = 2
+    flags = flmod.Flags(fitPTC_flags)
 
     order = np.argsort(means)
     means = np.array(means)[order]
@@ -29,19 +41,29 @@ def fitPTC(means, var):
     ixmaxvar = np.argmax(var)
     maxvar = var[ixmaxvar]
     ixsel = np.where((means < means[ixmaxvar]) & (var < maxvar*0.95))
-
-    res = np.polyfit(means[ixsel], var[ixsel], 2, full=False, cov=True)
-
-    p = res[0]
-    V = res[1]
+    
+    try:
+        
+        res = np.polyfit(means[ixsel], var[ixsel], poldeg, full=False, cov=True)
+        p = res[0]
+        V = res[1]
+    
+    except:
+        p = np.zeros(poldeg+1)
+        p[0] = 0.01
+        V = np.zeros((poldeg+1,poldeg+1),dtype='float32')
+        
+        flags.add('EXCEPTION')
+    
     ep = np.sqrt(np.diag(V))
-
-    # Bad results flagging MISSING!
-    quality = 0
-
+    
+    if np.any((ep == 0.) | np.isinf(ep) | np.isnan(ep)):
+        flags.add('BADERRORS')
+    
+    quality = flags.value
     fitresults = dict(fit=p, efit=ep, gain=1./p[1],
                       cuadterm=p[0], rn=p[2], quality=quality)
-
+    
     return fitresults
 
 
