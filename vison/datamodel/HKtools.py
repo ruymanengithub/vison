@@ -448,7 +448,6 @@ def synthHK(HK):
 
     for key in HK.keys():
         values = HK[key].data.copy()
-
         try:
             mean = values.mean()
         except:
@@ -579,7 +578,10 @@ def parseHKfiles(HKlist, elvis=context.elvis):
         synthHKdict = synthHK(HK)
 
         for ik, key in enumerate(HK_keys):
-            data[ix, :, ik] = synthHKdict[key]
+            try: 
+                data[ix, :, ik] = synthHKdict[key]
+            except:
+                data[ix, :, ik] = np.nan # HACK
 
     # reordering
 
