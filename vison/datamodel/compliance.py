@@ -315,7 +315,7 @@ class ComplianceMX_CCDQCol(ComplianceMX):
         for iCCD, CCDkey in enumerate(self.CCDs):
             for jQ, Q in enumerate(self.Qs):
                 for kcol, colname in enumerate(self.colnames):
-                    _lims = self.lims[CCDkey][colname]
+                    _lims = self.lims[CCDkey][Q][colname]
                     ixsel = np.where(self.indexer == colname)
 
                     testv = (np.isnan(inparr[ixsel, iCCD, jQ, ...]) |
