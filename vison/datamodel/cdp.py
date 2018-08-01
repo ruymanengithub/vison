@@ -22,6 +22,7 @@ import string as st
 
 from vison import __version__
 from vison.support.files import cPickleDumpDictionary, cPickleRead
+from vison.datamodel import ccd as ccdmod
 from vison.support.excel import ReportXL
 # END IMPORT
 
@@ -142,3 +143,56 @@ class Tables_CDP(CDP):
         if os.path.exists(filef):
             os.system('rm %s' % filef)
         self.report.save(filef)
+
+
+class CCD_CDP(CDP):
+
+    def __init__(self, *args, **kwargs):
+        """ """
+        super(CCD_CDP, self).__init__(*args, **kwargs)
+        self.data = OrderedDict()
+        self.ccdobj = ccdmod.CCD()
+
+    def ingest_inputs(self, data, meta=None, header=None):
+        """ """
+        dmeta = OrderedDict()
+        dmeta['ID'] = self.ID
+        dmeta['BLOCKID'] = self.BLOCKID
+        dmeta['CHAMBER'] = self.CHAMBER
+                 
+        if meta is None:
+            dmeta = dmeta.copy()
+        else:
+            dmeta.update(meta)
+        if header is None:
+            header = OrderedDict()
+
+        self.meta.update(dmeta)
+        self.header.update(header)
+        self.data.update(data)
+        
+        if len(self.meta)>0:
+            self.ccdobj.add_extension(data=None,
+                                      headerdict=self.meta,
+                                      label='META')
+        
+        labels = self.data['labels']
+        
+        for i, label in enumerate(labels):
+            
+            if i==0:
+                self.ccdobj.add_extension(data=self.data[label],
+                                      label=label,
+                                      headerdict=self.header)
+            else:
+                self.ccdobj.add_extension(data=self.data[label],
+                                      label=label)
+
+    def savehardcopy(self, filef=''):
+        """ """
+        if filef == '':
+            filef = os.path.join(self.path, '%s.fits' % self.rootname)
+        if os.path.exists(filef):
+            os.system('rm %s' % filef)
+        self.ccdobj.writeto(filef)
+    
