@@ -35,7 +35,7 @@ from vison.datamodel import ccd as ccdmod
 from vison.image import cosmetics
 # END IMPORT
 
-
+isthere = os.path.exists
 
 def read_OBSID_list(ff):
     """ """
@@ -139,7 +139,7 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False):
     meta['SN']=sn_ccd
     meta['THRESH']=thresholds.__repr__()
     meta['SUBBGD'] = subbgd
-    meta['NORMBYBGD'] = normbybgd
+    meta['NORMED'] = normbybgd
     meta['FUNCTION']=inspect.stack()[0][3]
     
     maskcdp = cdp.CCD_CDP(ID=vistime.get_time_tag(),
@@ -159,22 +159,63 @@ def do_FlatMask(inputs):
     return do_Mask(inputs, 'flmask', subbgd=False, normbybgd=True)
 
 def do_MergeMasks(inputs):
-    pass
+    
+    sn_ccd = inputs['sn_ccd']
+    tag = inputs['tag']
+        
+    dkmask_f = 'EUC_DKMASK_%s_CCD_SN_%s.fits' % (tag, sn_ccd)
+    flmask_f = 'EUC_FLMASK_%s_CCD_SN_%s.fits' % (tag, sn_ccd)
+    assert isthere(dkmask_f) and isthere(flmask_f)
+    
+    outfilename = 'EUC_DKMASK_%s_CCD_SN_%s.fits' % (tag, sn_ccd)
+    
+    dkmaskobj = ccdmod.CCD(dkmask_f)
+    flmaskobj = ccdmod.CCD(dkmask_f)
+    
+    dkmask = dkmaskobj.extensions[-1].data.copy()
+    flmask = flmaskobj.extensions[-1].data.copy()
+    
+    mask = dkmask | flmask
+    
+    # SAVING to a CDP
+    
+    data = OrderedDict()
+    data['MASK'] = mask.copy()
+    data['labels'] = ['MASK']
+    meta = OrderedDict()
+    meta['MASKTYPE'] = 'COMBO'
+    meta['SN']=sn_ccd
+    meta['DKMASK']= os.path.split(dkmask_f)[-1]
+    meta['FLMASK'] = os.path.split(flmask_f)[-1]
+    meta['FUNCTION']=inspect.stack()[0][3]
+    
+    maskcdp = cdp.CCD_CDP(ID=vistime.get_time_tag(),
+                      BLOCKID='Uknown',
+                      CHAMBER='Unknown')
+    
+    maskcdp.ingest_inputs(data=data, meta=meta)
+    
+    maskcdp.savehardcopy(outfilename)
+    
+    return outfilename
+    
 
 def run_maskmaker(inputs):
     """ """
     
+    outpath = inputs['outpath']
+    if not isthere(outpath):
+        os.system('mkdir %s' % outpath)
+    
     if inputs['doDarkMask']:
-        do_DarkMask(inputs)
+        dkmask_f = do_DarkMask(inputs)
     
     if inputs['doFlatMask']:
-        do_FlatMask(inputs)
+        flmask_f = do_FlatMask(inputs)
     
     if inputs['doMerge']:
         do_MergeMasks(inputs)
     
-    
-
 
 if __name__ == '__main__':
 

@@ -17,7 +17,7 @@ from vison.datamodel import ccd as ccdmod
 from vison.datamodel import cdp
 # END IMPORT
 
-def get_bgd_model(ccdobj, extension=-1):
+def get_bgd_model(ccdobj, extension=-1, margins = None):
 
     prescan = ccdobj.prescan
 
@@ -32,9 +32,12 @@ def get_bgd_model(ccdobj, extension=-1):
                                              vstart=0, vend=2066, canonical=True, 
                                              extension=extension).imgmodel.copy()
 
-        # pre/overscans will get nulled
+        # pre/overscans will not be modified unles margins is not None
+        
         Qmodel = ccdobj.get_quad(
             Quad, canonical=True, extension=extension).copy()
+        if margins is not None:
+            Qmodel[:] = margins
 
         Qmodel[prescan:prescan+Qimgmodel.shape[0],
                0:Qimgmodel.shape[1]] = Qimgmodel.copy()
