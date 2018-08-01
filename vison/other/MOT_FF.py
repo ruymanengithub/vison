@@ -83,7 +83,9 @@ class MOT_FF(BF01):
         Task.check_data(self, **kwargs)
     
     def extract_ADC(self):
-        return
+        
+        stop()
+        
     
     def extract_HER(self):
         return
