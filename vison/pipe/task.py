@@ -643,7 +643,9 @@ class Task(object):
 
         def _loadCDP(cdpkey, msg):
             CDPData = calibration.load_FITS_CDPs(
-                self.inputs['inCDPs'][cdpkey], ccd.CCD)
+                self.inputs['inCDPs'][cdpkey], ccd.CCD,
+                           getallextensions=True, 
+                           withpover=self.ccdcalc.withpover)
             if self.log is not None:
                 cdpstr = self.inputs['inCDPs'][cdpkey].__str__()
                 cdpstr = st.replace(cdpstr, ',', ',\n')
@@ -658,15 +660,16 @@ class Task(object):
             if reportobj is not None:
                 reportobj.add_Text(msg)
 
-        if doMask and 'mask' in self.inputs['inCDPs']:
+        if doMask and 'Mask' in self.inputs['inCDPs']:
             # self.inputs['inCDPs']['Mask']['CCD%i']
             MaskData = _loadCDP('Mask', 'Loading cosmetics mask...')
             self.proc_histo['Masked'] = True
-        elif doMask and 'mask' not in self.inputs['inCDPs']:
+        elif doMask and 'Mask' not in self.inputs['inCDPs']:
             NotFoundMsg = 'Cosmetics Mask not Found!'
             self.log.info(NotFoundMsg)
             _reportNotFound(self.report, NotFoundMsg)
             doMask = False
+        
 
         if doOffset:
             self.proc_histo['SubOffset'] = True
