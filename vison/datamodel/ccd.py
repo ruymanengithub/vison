@@ -190,7 +190,8 @@ class CCD(object):
         self.chinjlines = 2
         self.prescan = prescan
         self.overscan = overscan
-        if withpover:
+        self.withpover = withpover
+        if self.withpover:
             self.voverscan = voverscan
         else:
             self.voverscan = 0
