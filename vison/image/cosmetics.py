@@ -28,7 +28,8 @@ def get_bgd_model(ccdobj, extension=-1, margins = None):
     for Quad in ccdobj.Quads:
 
         Qimgmodel = ccdobj.get_region2Dmodel(Quad, area='img', kind='poly2D',
-                                             pdegree=3, doFilter=True, filtsize=20,
+                                             pdegree=5, doFilter=False, 
+                                             doBin=False, filtsize=30,
                                              vstart=0, vend=2066, canonical=True, 
                                              extension=extension).imgmodel.copy()
 
