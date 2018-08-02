@@ -634,12 +634,13 @@ class Task(object):
                 keyword='prep_data', Title='Images Pre-Processing', level=0)
 
         if not doExtract:
-            self.report.add_Text('Not extracting FITS files: Nothing done.')
+            if self.report is not None:
+                self.report.add_Text('Not extracting FITS files: Nothing done.')
             self.proc_histo['Extract'] = False
             return
         else:
-            pass
-            # self.proc_histo['Extract']=True
+            if self.report is not None:
+                self.report.add_Text('Extracting FITS files to ccd.CCD objects.')
 
         def _loadCDP(cdpkey, msg):
             CDPData = calibration.load_FITS_CDPs(
@@ -653,7 +654,7 @@ class Task(object):
                 self.log.info(cdpstr)
                 if self.report is not None:
                     self.report.add_Text(msg)
-                    self.report.add_Text(cdpstr)
+                    self.report.add_Text(cdpstr, verbatim=True)
             return CDPData
 
         def _reportNotFound(reportobj, msg):
@@ -662,7 +663,7 @@ class Task(object):
 
         if doMask and 'Mask' in self.inputs['inCDPs']:
             # self.inputs['inCDPs']['Mask']['CCD%i']
-            MaskData = _loadCDP('Mask', 'Loading cosmetics mask...')
+            MaskData = _loadCDP('Mask', 'Loading and applying Cosmetics Mask...')
             self.proc_histo['Masked'] = True
         elif doMask and 'Mask' not in self.inputs['inCDPs']:
             NotFoundMsg = 'Cosmetics Mask not Found!'
@@ -670,13 +671,18 @@ class Task(object):
             _reportNotFound(self.report, NotFoundMsg)
             doMask = False
         
-
         if doOffset:
             self.proc_histo['SubOffset'] = True
             offsetkwargs = self.inputs['preprocessing']['offsetkwargs']
+            
+            if self.report is not None:
+                self.report.add_Text('Subtracting Offset.')
+                msg = 'offsetkwargs=%s' % offsetkwargs.__repr__()
+                self.report.add_Text(msg,verbatim=True)
+                
 
         if doBias and 'bias' in self.inputs['inCDPs']:
-            BiasData = _loadCDP('Bias', 'Loading Bias Structure...')
+            BiasData = _loadCDP('Bias', 'Loading And Subtracting Bias Structure...')
             self.proc_histo['SubBias'] = True
         elif doBias and 'bias' not in self.inputs['inCDPs']:
             NotFoundMsg = 'Bias Structure not found!'
