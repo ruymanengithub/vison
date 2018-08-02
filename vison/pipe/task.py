@@ -737,7 +737,7 @@ class Task(object):
                         picklespath, '%s.pick' % ccdobj_name)
 
                     if doMask:
-                        ccdobj.get_mask(MaskData[CCDkey].extensions[-1])
+                        ccdobj.get_mask(MaskData[CCDkey].extensions[-1].data)
 
                     if doOffset:
                         for Quad in ccdobj.Quads:
@@ -746,11 +746,13 @@ class Task(object):
                             ccdobj.sub_offset(Quad, **offsetkwargs)
 
                     if doBias:
-                        ccdobj.sub_bias(BiasData[CCDkey], extension=-1)
+                        ccdobj.sub_bias(BiasData[CCDkey].extensions[-1].data, 
+                                        extension=-1)
 
                     if doFF:
                         FF = FFData['nm%i' % wavelength][CCDkey]
-                        ccdobj.divide_by_flatfield(FF, extension=-1)
+                        ccdobj.divide_by_flatfield(FF.extensions[-1].data, 
+                                                   extension=-1)
 
                     # cPickleDumpDictionary(dict(ccdobj=ccdobj),fullccdobj_name)
                     cPickleDumpDictionary(ccdobj, fullccdobj_name)
