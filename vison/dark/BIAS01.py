@@ -211,6 +211,8 @@ class BIAS01(DarkTask):
                     profs1D2plot[tag][CCDk][Q]['y'] = OrderedDict()
 
         if not self.drill:
+            
+            CDP_header['DATE'] = self.get_time_tag()
 
             ccdpicklespath = self.inputs['subpaths']['ccdpickles']
             profilespath = self.inputs['subpaths']['profiles']
@@ -233,8 +235,6 @@ class BIAS01(DarkTask):
                         ccdpicklespath, '%s.pick' % ccdobj_name)
 
                     ccdobj = copy.deepcopy(cPickleRead(fullccdobj_name))
-
-                    CDP_header['DATE'] = self.get_time_tag()
 
                     iprofiles1D = cdp.CDP()
                     iprofiles1D.header = CDP_header.copy()

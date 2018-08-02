@@ -262,6 +262,7 @@ class Task(object):
             self.recover_progress(DataDictFile, reportobjFile)
 
         # DATA-WORK and ANALYSIS
+        
 
         for subtask in subtasks:
 
@@ -269,6 +270,7 @@ class Task(object):
 
             if subtaskname not in todo_flags:
                 todo_flags[subtaskname] = False
+            
 
             if todo_flags[subtaskname]:
 

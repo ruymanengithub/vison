@@ -40,6 +40,7 @@ import BF01aux
 from vison.analysis import Guyonnet15 as G15
 from vison.image import covariance as covlib
 
+from vison.support import utils
 from vison.support.files import cPickleRead, cPickleDumpDictionary
 # END IMPORT
 
@@ -70,18 +71,20 @@ class BF01(PTC0X):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
+        super(BF01, self).__init__(inputs, log, drill, debug)
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
                          ('extract_COV', self.extract_COV),
                          ('extract_BF', self.extract_BF),
-                         ('meta', self.meta_analysis)]
-        super(BF01, self).__init__(inputs, log, drill, debug)
+                         ('meta', self.meta_analysis)]        
         self.name = 'BF01'
         #self.type = 'Simple'
         
         #self.HKKeys = HKKeys
         self.figdict = BF01aux.gt_BF01figs(self.inputs['surrogate'])
-        self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles')
+        self.inputs['subpaths'] = dict(figs='figs', 
+                   ccdpickles='ccdpickles',
+                   covariance='covariance')
 
     def set_inpdefaults(self, **kwargs):
         """ """
@@ -91,6 +94,8 @@ class BF01(PTC0X):
         _kwargs['test'] = kwargs['surrogate']
         super(BF01, self).set_inpdefaults(**_kwargs)
         self.inpdefaults['test'] = kwargs['test']
+        self.inpdefaults['surrogate'] = kwargs['surrogate']
+        self.inpdefaults['Npix'] = 4
 
     def set_perfdefaults(self, **kwargs):
         # maskerading as PTC0X here...
@@ -148,49 +153,109 @@ class BF01(PTC0X):
         if self.report is not None:
             self.report.add_Section(
                 keyword='extractCOV', Title='Covariance-Matrices Extraction', level=0)
-
+        
         Npix = self.inputs['Npix']
 
         # labels should be the same accross CCDs. PATCH.
-        label = self.dd.mx['label'][:, 0].copy()
+        labels = self.dd.mx['label'][:, 0].copy()
+        ulabels = np.unique(labels)
+        nL = len(ulabels)
 
         indices = copy.deepcopy(self.dd.indices)
-        #nObs, nCCD, nQuad = indices.shape
+        nObs, nC, nQ = indices.shape
         CCDs = indices.get_vals('CCD')
         Quads = indices.get_vals('Quad')
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        
+        
+        profscov_1D = OrderedDict()
+        profscov_1D['hor'] = OrderedDict()
+        profscov_1D['ver'] = OrderedDict()
+        
+        for CCDk in CCDs:
+            for tag in ['hor','ver']:
+                profscov_1D[tag][CCDk] = OrderedDict()            
+            for Q in Quads:
+                for tag in ['hor','ver']:
+                    profscov_1D[tag][CCDk][Q] = OrderedDict()
+                    profscov_1D[tag][CCDk][Q]['x'] = OrderedDict()
+                    profscov_1D[tag][CCDk][Q]['y'] = OrderedDict()
+        
+        NP = nC * nQ * nL
+        
+        COV_dd = OrderedDict()
+        COV_dd['CCD'] = np.zeros(NP,dtype='S4')
+        COV_dd['Q'] = np.zeros(NP,dtype='S1')
+        COV_dd['col'] = np.zeros(NP,dtype='S10')
+        COV_dd['av_mu'] = np.zeros(NP,dtype='float32')
+        COV_dd['av_var'] = np.zeros(NP,dtype='float32')
+        COV_dd['COV_00'] = np.zeros(NP,dtype='float32')
+        COV_dd['COV_01'] = np.zeros(NP,dtype='float32')
+        COV_dd['COV_10'] = np.zeros(NP,dtype='float32')
+        COV_dd['COV_11'] = np.zeros(NP,dtype='float32')
+        
+        dpath = self.inputs['subpaths']['ccdpickles']
+        covpath = self.inputs['subpaths']['covariance']
+        
+        CDP_header['DATE'] = self.get_time_tag()
 
         if not self.drill:
-
-            self.dd.products['COV'] = OrderedDict()
-
-            dpath = self.inputs['subpaths']['ccdpickles']
-
+            
+            
             def fullinpath_adder(path): return os.path.join(dpath, path)
             vfullinpath_adder = np.vectorize(fullinpath_adder)
-
-            ulabels = np.unique(label)
-
+            
+            self.dd.products['COV'] = OrderedDict()
+            for CCDk in CCDs:
+                self.dd.products['COV'][CCDk] = OrderedDict()
+            
+ 
             for jCCD, CCDk in enumerate(CCDs):
 
-                self.dd.products['COV'][CCDk] = OrderedDict()
-                for Q in Quads:
-                    self.dd.products['COV'][CCDk][Q] = OrderedDict()
+                for ku, ulabel in enumerate(ulabels):
 
-                for ulabel in ulabels:
-
-                    six = np.where(label == ulabel)
-
-                    ccdobjList = vfullinpath_adder(
-                        self.dd.mx['ccdobj_name'][six[0], jCCD])
-
+                    six = np.where(labels == ulabel)
+                    
+                    ccdobjNamesList = vfullinpath_adder(
+                        ['%s.pick' % item for item in self.dd.mx['ccdobj_name'][six[0], jCCD]])
+                    
+                    ccdobjList = [cPickleRead(item) for item in ccdobjNamesList]
+                    
                     icovdict = covlib.get_cov_maps(
-                        ccdobjList, Npix=Npix, doTest=False)
+                        ccdobjList, Npix=Npix, doTest=True)                    
+                    
+                    self.dd.products['COV'][CCDk][ulabel] = copy.deepcopy(
+                            icovdict)
+                    
+                    for lQ, Q in enumerate(Quads):
+                        jj = jCCD * (nQ*nL) + ku * nQ + lQ
+                        
+                        COV_dd['CCD'][jj] = CCDk
+                        COV_dd['Q'][jj] = Q
+                        COV_dd['col'][jj] = ulabel
+                        COV_dd['av_mu'][jj] = icovdict['av_mu'][Q]
+                        COV_dd['av_var'][jj] = icovdict['av_var'][Q]
+                        COV_dd['COV_00'][jj] = icovdict['av_covmap'][Q][0,0]
+                        COV_dd['COV_01'][jj] = icovdict['av_covmap'][Q][0,1]
+                        COV_dd['COV_10'][jj] = icovdict['av_covmap'][Q][1,0]
+                        COV_dd['COV_11'][jj] = icovdict['av_covmap'][Q][1,1]
+                        
+                        profscov_1D['hor'][CCDk][Q]['x'][ulabel] = \
+                                   np.arange(Npix)
+                        profscov_1D['hor'][CCDk][Q]['y'][ulabel] = \
+                                   icovdict['av_covmap'][Q][:,0].copy()
+                        
+                        profscov_1D['ver'][CCDk][Q]['x'][ulabel] = \
+                                   np.arange(Npix)
+                        profscov_1D['ver'][CCDk][Q]['y'][ulabel] = \
+                                   icovdict['av_covmap'][Q][:,0].copy()
+                    
+        stop()
 
-                    for Q in Quads:
-                        self.dd.products['COV'][CCDk][Q][ulabel] = copy.deepcopy(
-                            icovdict[Q])
-
-        # Plots
+        # PLOTS
         # PENDING
 
         # REPORTING
