@@ -258,6 +258,9 @@ class BeamPlot(BasicPlot):
                     ax.set_xlabel(self.meta['xlabel'])
                 if 'ylabel' in self.meta and Q in ['E', 'H'] and CCD == 1:
                     ax.set_ylabel(self.meta['ylabel'])
+                
+                if 'ylim' in self.meta:
+                    ax.set_ylim(self.meta['ylim'])
 
             # self.axs[CCDkey][Q].locator_params(nticks=4,axis='x')
 
