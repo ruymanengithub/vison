@@ -122,6 +122,18 @@ class Tables_CDP(CDP):
         df = self.data[sheet]
         self.report.df_to_sheet(df, sheet, index=True, header=True)
 
+
+    def fill_allDataSheets(self):
+        """ """
+        for sheet in self.data.keys():
+            self.fill_Sheet(sheet)
+            
+    def init_wb_and_fillAll(self, header_title=''):
+        self.init_workbook()
+        self.fill_Header(title=header_title)
+        self.fill_Meta()
+        self.fill_allDataSheets()
+
     def get_textable(self, sheet, caption=''):
         """ """
         tex = self.data[sheet].to_latex(
@@ -131,10 +143,6 @@ class Tables_CDP(CDP):
             tex.insert(-2, r'\caption{%s}' % caption)
         return tex
 
-    def fill_allDataSheets(self):
-        """ """
-        for sheet in self.data.keys():
-            self.fill_Sheet(sheet)
 
     def savehardcopy(self, filef=''):
         """ """

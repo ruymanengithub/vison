@@ -190,14 +190,6 @@ def addHKPlotsMatrix(self):
                               caption='Selected HK parameters during test.')
 
 
-def init_and_fill_CDP(self, cdpobj, header_title=''):
-    cdpobj.init_workbook()
-    cdpobj.fill_Header(title=header_title)
-    cdpobj.fill_Meta()
-    cdpobj.fill_allDataSheets()
-    return cdpobj
-
-
 def save_CDP(self, cdpobj):
     cdpobj.savehardcopy()
     cdpobj.savetopickle()
