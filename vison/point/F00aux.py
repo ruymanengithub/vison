@@ -122,18 +122,8 @@ def gt_F00figs(wave):
     return F00figs
 
 
-class FOCUS_CDP(cdp.Tables_CDP):
 
-    def ingest_inputs(self, Focus_dd, meta=None, header=None, figs=None):
-
-        FOCUS_df = pd.DataFrame.from_dict(Focus_dd)  
-
-        _data = OrderedDict(FOCUS=FOCUS_df)
-        super(FOCUS_CDP, self).ingest_inputs(
-            _data, meta=meta, header=header, figs=figs)
-
-
-focus_cdp = FOCUS_CDP()
+focus_cdp = cdp.Tables_CDP()
 focus_cdp.rootname = 'FOCUS00'
 
 CDP_lib = dict(FOCUS=focus_cdp)

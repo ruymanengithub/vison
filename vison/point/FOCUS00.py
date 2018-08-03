@@ -387,17 +387,18 @@ class FOCUS00(PT.PointTask):
         meta_contents = ['cbe_focus', 'cbe_fwhm', 'poldegree', 'CCDs', 'Quads', 'Spots']
         focus_meta = OrderedDict([(name, eval(name)) for name in meta_contents])
         
+        FOCUS_dddf = OrderedDict(FOCUS=pd.DataFrame.from_dict(Focus_dd))
         
         focus_cdp = F00aux.CDP_lib['FOCUS']
         focus_cdp.rootname += '_%snm' % wave
         focus_cdp.path = self.inputs['subpaths']['products']
-        focus_cdp.ingest_inputs(Focus_dd = Focus_dd.copy(),                             
+        focus_cdp.ingest_inputs(data = FOCUS_dddf.copy(),                             
                               meta=focus_meta.copy(),
                               header=CDP_header.copy())
         
-        
         focus_cdp = self.init_and_fill_CDP(focus_cdp, 
             header_title='FOCUS00_%i: FOCUS' % wave)
+        focus_cdp.init_wb_and_fillAll(header_title='FOCUS00_%i: FOCUS' % wave)
         self.save_CDP(focus_cdp)
         self.pack_CDP_to_dd(focus_cdp, 'FOCUS_CDP')
 

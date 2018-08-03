@@ -196,7 +196,7 @@ class MOT_FF(BF01):
         profiles_ser.rootname = 'profs_HER_SERIAL_MOT_FF'
         profiles_ser.savetopickle()
         
-        self.dd.mx['profiles_ver_name'] = profiles_ver.rootname
-        self.dd.mx['profiles_ser_name'] = profiles_ser.rootname
+        self.dd.products['profiles_ver_name'] = profiles_ver.rootname
+        self.dd.products['profiles_ser_name'] = profiles_ser.rootname
 
         

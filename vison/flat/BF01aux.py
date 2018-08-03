@@ -17,15 +17,48 @@ import numpy as np
 import os
 from collections import OrderedDict
 import string as st
+import pandas as pd
 
 from vison.flat import PTC0Xaux
 from vison.plot import figclasses
 from vison.plot import trends
 
+from vison.datamodel import cdp
+
 # END IMPORT
 
 
+
+covtable_cdp = cdp.Tables_CDP()
+covtable_cdp.rootname = 'BF01_COVTABLE'
+
+CDP_lib = dict(COVTABLE=covtable_cdp)
+
+
+prof_COV_ver_dict = dict(
+    figname='BF01_COV_profs_ver.png',
+    caption='BF01: COV 1D profiles, vertical/parallel direction.',
+    meta=dict(doLegend=True,
+              ylabel='COV/VAR, ADIM.',
+              xlabel='Y',
+              ylim=[-0.05,1.0],
+              suptitle='BF01: COV 1D Profile, Vertical/Parallel.')
+)
+
+prof_COV_ser_dict = dict(
+    figname='BF01_COV_profs_ser.png',
+    caption='BF01: COV 1D profiles, serial direction.',
+    meta=dict(doLegend=True,
+              ylabel='COV/VAR, ADIM.',
+              xlabel='X',
+              ylim=[-0.05,1.0],
+              suptitle='BF01: COV 1D Profile, Serial.')
+)
+
+
+
 def gt_BF01figs(test):
+    
     BF01figs = dict()
     BF01figs['BF01checks_offsets'] = [
         trends.Fig_Basic_Checkstat, PTC0Xaux.gt_check_offsets_dict(test)]
@@ -53,5 +86,12 @@ def gt_BF01figs(test):
             if hasmeta:
                 if key in _mdict:
                     _mdict[key] = st.replace(_mdict[key],test,'BF01')
+    
+    
+    BF01figs['BF01_COV_ver'] = [
+    figclasses.Fig_Beam2DPlot, prof_COV_ver_dict]
+    
+    BF01figs['BF01_COV_hor'] = [
+    figclasses.Fig_Beam2DPlot, prof_COV_ser_dict]
     
     return BF01figs

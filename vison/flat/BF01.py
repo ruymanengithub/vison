@@ -22,13 +22,14 @@ import warnings
 import copy
 import string as st
 from collections import OrderedDict
+import pandas as pd
 
 from vison.support import context
 #from vison.pipe import lib as pilib
 from vison.point import lib as polib
 from vison.datamodel import scriptic as sc
 from vison.datamodel import HKtools
-from vison.datamodel import core, ccd
+from vison.datamodel import core, ccd, cdp
 from vison.image import calibration
 import ptc as ptclib
 from vison.image import performance
@@ -84,7 +85,8 @@ class BF01(PTC0X):
         self.figdict = BF01aux.gt_BF01figs(self.inputs['surrogate'])
         self.inputs['subpaths'] = dict(figs='figs', 
                    ccdpickles='ccdpickles',
-                   covariance='covariance')
+                   covariance='covariance',
+                   products='products')
 
     def set_inpdefaults(self, **kwargs):
         """ """
@@ -169,27 +171,37 @@ class BF01(PTC0X):
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
         
         
-        profscov_1D = OrderedDict()
-        profscov_1D['hor'] = OrderedDict()
-        profscov_1D['ver'] = OrderedDict()
+        dpath = self.inputs['subpaths']['ccdpickles']
+        covpath = self.inputs['subpaths']['covariance']
+        prodspath = self.inputs['subpaths']['products']
+        
+        profscov_1D = cdp.CDP()
+        profscov_1D.header = CDP_header.copy()
+        profscov_1D.path = covpath
+        profscov_1D.data = OrderedDict()
+        
+        
+        profscov_1D.data['hor'] = OrderedDict()
+        profscov_1D.data['ver'] = OrderedDict()
         
         for CCDk in CCDs:
             for tag in ['hor','ver']:
-                profscov_1D[tag][CCDk] = OrderedDict()            
+                profscov_1D.data[tag][CCDk] = OrderedDict()            
             for Q in Quads:
                 for tag in ['hor','ver']:
-                    profscov_1D[tag][CCDk][Q] = OrderedDict()
-                    profscov_1D[tag][CCDk][Q]['x'] = OrderedDict()
-                    profscov_1D[tag][CCDk][Q]['y'] = OrderedDict()
+                    profscov_1D.data[tag][CCDk][Q] = OrderedDict()
+                    profscov_1D.data[tag][CCDk][Q]['x'] = OrderedDict()
+                    profscov_1D.data[tag][CCDk][Q]['y'] = OrderedDict()
         
         NP = nC * nQ * nL
         
         COV_dd = OrderedDict()
-        COV_dd['CCD'] = np.zeros(NP,dtype='S4')
-        COV_dd['Q'] = np.zeros(NP,dtype='S1')
-        COV_dd['col'] = np.zeros(NP,dtype='S10')
+        COV_dd['CCD'] = np.zeros(NP,dtype='int32')
+        COV_dd['Q'] = np.zeros(NP,dtype='int32')
+        COV_dd['col'] = np.zeros(NP,dtype='int32')
         COV_dd['av_mu'] = np.zeros(NP,dtype='float32')
         COV_dd['av_var'] = np.zeros(NP,dtype='float32')
         COV_dd['COV_00'] = np.zeros(NP,dtype='float32')
@@ -197,10 +209,6 @@ class BF01(PTC0X):
         COV_dd['COV_10'] = np.zeros(NP,dtype='float32')
         COV_dd['COV_11'] = np.zeros(NP,dtype='float32')
         
-        dpath = self.inputs['subpaths']['ccdpickles']
-        covpath = self.inputs['subpaths']['covariance']
-        
-        CDP_header['DATE'] = self.get_time_tag()
 
         if not self.drill:
             
@@ -225,7 +233,7 @@ class BF01(PTC0X):
                     ccdobjList = [cPickleRead(item) for item in ccdobjNamesList]
                     
                     icovdict = covlib.get_cov_maps(
-                        ccdobjList, Npix=Npix, doTest=True)                    
+                        ccdobjList, Npix=Npix, doTest=False)                    
                     
                     self.dd.products['COV'][CCDk][ulabel] = copy.deepcopy(
                             icovdict)
@@ -233,9 +241,9 @@ class BF01(PTC0X):
                     for lQ, Q in enumerate(Quads):
                         jj = jCCD * (nQ*nL) + ku * nQ + lQ
                         
-                        COV_dd['CCD'][jj] = CCDk
-                        COV_dd['Q'][jj] = Q
-                        COV_dd['col'][jj] = ulabel
+                        COV_dd['CCD'][jj] = jCCD+1
+                        COV_dd['Q'][jj] = lQ+1
+                        COV_dd['col'][jj] = int(st.replace(ulabel,'col',''))
                         COV_dd['av_mu'][jj] = icovdict['av_mu'][Q]
                         COV_dd['av_var'][jj] = icovdict['av_var'][Q]
                         COV_dd['COV_00'][jj] = icovdict['av_covmap'][Q][0,0]
@@ -243,23 +251,77 @@ class BF01(PTC0X):
                         COV_dd['COV_10'][jj] = icovdict['av_covmap'][Q][1,0]
                         COV_dd['COV_11'][jj] = icovdict['av_covmap'][Q][1,1]
                         
-                        profscov_1D['hor'][CCDk][Q]['x'][ulabel] = \
+                        profscov_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
                                    np.arange(Npix)
-                        profscov_1D['hor'][CCDk][Q]['y'][ulabel] = \
+                        profscov_1D.data['hor'][CCDk][Q]['y'][ulabel] = \
                                    icovdict['av_covmap'][Q][:,0].copy()
                         
-                        profscov_1D['ver'][CCDk][Q]['x'][ulabel] = \
+                        profscov_1D.data['ver'][CCDk][Q]['x'][ulabel] = \
                                    np.arange(Npix)
-                        profscov_1D['ver'][CCDk][Q]['y'][ulabel] = \
+                        profscov_1D.data['ver'][CCDk][Q]['y'][ulabel] = \
                                    icovdict['av_covmap'][Q][:,0].copy()
+        
+        else:
+            
+            for jCCD, CCDk in enumerate(CCDs):
+
+                for ku, ulabel in enumerate(ulabels):
                     
-        stop()
+                    for lQ, Q in enumerate(Quads):
+            
+                        profscov_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
+                                               np.arange(Npix)
+                        profscov_1D.data['hor'][CCDk][Q]['y'][ulabel] = \
+                                               np.arange(Npix)
+                                    
+                        profscov_1D.data['ver'][CCDk][Q]['x'][ulabel] = \
+                                               np.arange(Npix)
+                        profscov_1D.data['ver'][CCDk][Q]['y'][ulabel] = \
+                                               np.arange(Npix)
+            
 
         # PLOTS
-        # PENDING
+                
+        for tag in ['ver','hor']:
+        
+            fdict_C = self.figdict['BF01_COV_%s' % tag][1]
+            fdict_C['data'] = profscov_1D.data[tag].copy()
+            if self.report is not None:
+                self.addFigures_ST(figkeys=['BF01_COV_%s' % tag], 
+                                   dobuilddata=False)
+        
+        # Saving Profiles
+        
+        profscov_1D.rootname = 'profs_COV1D_BF01'
+        profscov_1D.savetopickle()
+        self.dd.products['profscov_1D_name'] = profscov_1D.rootname
+        
+        # Table of Results
+        
+        COV_dddf = OrderedDict(COV = pd.DataFrame.from_dict(COV_dd))
+        
+        covtable_cdp = BF01aux.CDP_lib['COVTABLE']
+        covtable_cdp.path = self.inputs['subpaths']['products']
+        covtable_cdp.ingest_inputs(
+                data = COV_dddf.copy(),
+                meta=dict(),
+                header=CDP_header.copy()
+                )
+        #covtable_cdp.ingest_inputs(RONmx=RON.copy(),
+        #                      CCDs=CCDs,
+        #                      Quads=Quads,
+        #                      meta=dict(),
+        #                      header=CDP_header.copy())
 
-        # REPORTING
-        # PENDING
+        covtable_cdp.init_wb_and_fillAll(header_title='BF01: COVTABLE')
+        self.save_CDP(covtable_cdp)
+        self.pack_CDP_to_dd(covtable_cdp, 'COVTABLE_CDP')
+
+        if self.report is not None:
+            COVtex = covtable_cdp.get_textable(sheet='COV', caption='BF01: COV')
+            self.report.add_Text(COVtex)        
+        
+        
 
         return None
 

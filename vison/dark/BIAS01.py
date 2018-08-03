@@ -260,7 +260,6 @@ class BIAS01(DarkTask):
                         onlyRONimg = ccdobj.get_quad(
                             Q, canonical=False) - mod2D.imgmodel
                         _RON = onlyRONimg.std()
-                        stop()
 
                         self.dd.mx['RON'][iObs, jCCD, kQ] = _RON
 
@@ -335,8 +334,9 @@ class BIAS01(DarkTask):
                               Quads=Quads,
                               meta=dict(),
                               header=CDP_header.copy())
+        
+        ron_cdp.init_wb_and_fillAll(header_title='BIAS01: RON')
 
-        ron_cdp = self.init_and_fill_CDP(ron_cdp, header_title='BIAS01: RON')
         self.save_CDP(ron_cdp)
         self.pack_CDP_to_dd(ron_cdp, 'RON_CDP')
 

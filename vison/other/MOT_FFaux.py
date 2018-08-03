@@ -93,16 +93,17 @@ prof_HER_ver_dict = dict(
 
 
 def gt_MOT_FF_figs(test):
+    
     BF01_figs = BF01aux.gt_BF01figs(test)
     
     MOT_FF_figs = OrderedDict()
     
     for key in BF01_figs.keys():
-        if 'BF01' in key:
-            nkey = st.replace(key,'BF01','MOT_FF')
-        else:
-            nkey = key
-        MOT_FF_figs[nkey] = copy.deepcopy(BF01_figs[key])
+#        if 'BF01' in key:
+#            nkey = st.replace(key,'BF01','MOT_FF')
+#        else:
+#            nkey = key
+        MOT_FF_figs[key] = copy.deepcopy(BF01_figs[key])
     
     MOT_FF_figs['MOTFF_HER_ser'] = [
     figclasses.Fig_Beam2DPlot, prof_HER_ser_dict]
