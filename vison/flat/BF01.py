@@ -97,7 +97,7 @@ class BF01(PTC0X):
         super(BF01, self).set_inpdefaults(**_kwargs)
         self.inpdefaults['test'] = kwargs['test']
         self.inpdefaults['surrogate'] = kwargs['surrogate']
-        self.inpdefaults['Npix'] = 4
+        self.inpdefaults['Npix'] = 5
 
     def set_perfdefaults(self, **kwargs):
         # maskerading as PTC0X here...
@@ -182,7 +182,6 @@ class BF01(PTC0X):
         profscov_1D.header = CDP_header.copy()
         profscov_1D.path = covpath
         profscov_1D.data = OrderedDict()
-        
         
         profscov_1D.data['hor'] = OrderedDict()
         profscov_1D.data['ver'] = OrderedDict()
@@ -307,18 +306,26 @@ class BF01(PTC0X):
                 meta=dict(),
                 header=CDP_header.copy()
                 )
-        #covtable_cdp.ingest_inputs(RONmx=RON.copy(),
-        #                      CCDs=CCDs,
-        #                      Quads=Quads,
-        #                      meta=dict(),
-        #                      header=CDP_header.copy())
 
         covtable_cdp.init_wb_and_fillAll(header_title='BF01: COVTABLE')
         self.save_CDP(covtable_cdp)
         self.pack_CDP_to_dd(covtable_cdp, 'COVTABLE_CDP')
 
         if self.report is not None:
-            COVtex = covtable_cdp.get_textable(sheet='COV', caption='BF01: COV')
+            
+            fccd = lambda x: CCDs[x-1]
+            fq = lambda x: Quads[x-1]
+            fcol = lambda x: 'col%i' % x
+            fE = lambda x: '%.2E' % x
+            
+            cov_formatters=[fccd,fq,fcol]+[fE]*6
+            
+            COVtex = covtable_cdp.get_textable(sheet='COV', caption='BF01: COV',
+                                               fitwidth=True,
+                                               formatters=cov_formatters)
+            
+            COVtex = ['\\tiny']+COVtex+['\\normalsize']
+            
             self.report.add_Text(COVtex)        
         
         

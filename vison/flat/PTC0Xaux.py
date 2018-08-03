@@ -20,8 +20,25 @@ import string as st
 
 from vison.plot import figclasses
 from vison.plot import trends
+from vison.datamodel import cdp
 
 # END IMPORT
+
+gain_tb_cdp = cdp.Tables_CDP()
+gain_tb_cdp.rootname = '%s_%snm_GAIN_TB'
+
+CDP_lib = dict(GAIN_TB=gain_tb_cdp)
+
+def gt_PTC_curves_dict(test):
+    
+    return dict(
+    figname='%s_PTC_curves.png' % test,
+    caption='%s: PTC curves and best fits.' % test,
+    meta=dict(doLegend=True,
+              ylabel='VAR',
+              xlabel='MED',
+              suptitle='%s: PTC Curves.' % test)
+    )
 
 
 def gt_check_offsets_dict(test):
@@ -82,5 +99,7 @@ def gt_PTC0Xfigs(test):
         trends.Fig_Basic_Checkstat, gt_check_img_flu_dict(test)]
     PTC0Xfigs['PTC0Xchecks_imgstd'] = [
         trends.Fig_Basic_Checkstat, gt_check_img_std_dict(test)]
+    PTC0Xfigs['PTC0X_PTC_curves'] = [
+        figclasses.Fig_Beam2DPlot, gt_PTC_curves_dict(test)]
     PTC0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return PTC0Xfigs

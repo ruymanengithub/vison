@@ -62,7 +62,7 @@ def fitPTC(means, var):
     
     quality = flags.value
     fitresults = dict(fit=p, efit=ep, gain=1./p[1],
-                      cuadterm=p[0], rn=p[2], quality=quality)
+                      quadterm=p[0], rn=p[2], quality=quality)
     
     return fitresults
 

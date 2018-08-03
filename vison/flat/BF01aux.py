@@ -41,7 +41,7 @@ prof_COV_ver_dict = dict(
     meta=dict(doLegend=True,
               ylabel='COV/VAR, ADIM.',
               xlabel='Y',
-              ylim=[-0.05,1.0],
+              ylim=[-0.2,0.2],
               suptitle='BF01: COV 1D Profile, Vertical/Parallel.')
 )
 
@@ -51,7 +51,7 @@ prof_COV_ser_dict = dict(
     meta=dict(doLegend=True,
               ylabel='COV/VAR, ADIM.',
               xlabel='X',
-              ylim=[-0.05,1.0],
+              ylim=[-0.2,0.2],
               suptitle='BF01: COV 1D Profile, Serial.')
 )
 
