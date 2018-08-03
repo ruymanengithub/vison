@@ -188,6 +188,7 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis, CHAMBER=None):
                                         exptimes=exptsMOT_FF,
                                         frames=frsMOT_FF, 
                                         wavelength=800,
+                                        Npix=5,
                                         diffvalues=diffMOT_FF))
         #structPTC01 = ptc01.build_scriptdict(diffvalues=diffPTC01,elvis=elvis)
 

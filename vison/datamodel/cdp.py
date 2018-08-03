@@ -57,7 +57,6 @@ class CDP(object):
         """ """
         if pickf == '':
             pickf = os.path.join(self.path, '%s.pick' % self.rootname)
-
         outdict = copy.deepcopy(self.__dict__)
         cPickleDumpDictionary(outdict, pickf)
 
@@ -70,8 +69,9 @@ class CDP(object):
 
     def savehardcopy(self, filef=''):
         """ """
-        raise NotImplementedError(
-            'Subclass implements abstract method (if needed).')
+        pass # HACK
+        #raise NotImplementedError(
+        #    'Subclass implements abstract method (if needed).')
 
 
 class Tables_CDP(CDP):
@@ -134,11 +134,20 @@ class Tables_CDP(CDP):
         self.fill_Meta()
         self.fill_allDataSheets()
 
-    def get_textable(self, sheet, caption=''):
+    def get_textable(self, sheet, caption='', fitwidth=False, **kwargs):
         """ """
         tex = self.data[sheet].to_latex(
-            multicolumn=True, multirow=True, longtable=True, index=True)
+            multicolumn=True, multirow=True, longtable=True, index=True,
+            **kwargs)
         tex = st.split(tex, '\n')
+        
+        if fitwidth:
+            ncols = len(self.data[sheet].columns)+1
+            beglongtabu = '\\begin{longtabu} to \\textwidth {|%s}' % (ncols*'X|',)
+            endlongtabu = '\end{longtabu}'
+            tex[0] = beglongtabu
+            tex[-2] = endlongtabu
+        
         if caption != '':
             tex.insert(-2, r'\caption{%s}' % caption)
         return tex
