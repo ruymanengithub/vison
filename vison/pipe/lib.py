@@ -127,7 +127,8 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
         msgs = []
 
         report = dict(checksout=isconsistent,
-                      failedkeys=failedkeys, failedcols=failedcols,
+                      failedkeys=failedkeys, 
+                      failedcols=failedcols,
                       msgs=msgs)
 
         return report
@@ -139,7 +140,10 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
     for iCCD in CCDs:
 
         cselbool = selbool & (explog['CCD'] == 'CCD%i' % iCCD)
-
+        
+        Ncsel = len(np.where(cselbool==True)[0])
+        
+        Ncframes = 0
         ix0 = 0
         for iC in range(1, Ncols+1):
 
@@ -148,15 +152,18 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
             expectation = structure[colname]
 
             frames = expectation['frames']
+            
+            Ncframes += frames
 
             if frames > 0:
                 ix1 = ix0+frames
             else:
                 ix1 = None
-
-            if (ix1 is not None) and (ix1-ix0 != frames):
-                failedcols.append(iC)
-                continue
+            
+            #if (ix1 is not None) and (ix1-ix0 != frames):
+            #    failedcols.append(iC)
+            #    continue
+            
             try:
                 ixsubsel = np.where(cselbool)[0][ix0:ix1]
             except IndexError:
@@ -182,7 +189,12 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
                         key, val.__repr__(), explog[key][ixsubsel].tolist().__repr__()))
 
             ix0 += frames
-
+        
+        isconsistent &= Ncsel == Ncframes
+        
+        if Ncsel > Ncframes:
+            msgs.append('Number of Exposures exceeds Number of Expected Frames!')
+    
     failedkeys = np.unique(failedkeys).tolist()
     failedcols = np.unique(failedcols).tolist()
     msgs = np.unique(msgs).tolist()
@@ -190,32 +202,11 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
     report = dict(checksout=isconsistent,
                   failedkeys=failedkeys, failedcols=failedcols,
                   msgs=msgs)
+    
 
     return report
 
 
-# def oldDataDict_builder(explog,inputs,structure):
-#    """ """
-#
-#    # Build DataDict - And Labelling
-#
-#    DataDict = dict(meta = dict(inputs=inputs,structure=structure))
-#
-#    for CCDindex in [1,2,3]:
-#
-#        CCDkey = 'CCD%i' % CCDindex
-#
-#        DataDict[CCDkey] = dict()
-#
-#        CCDselbool = explog['CCD'] == CCDkey
-#
-#        if len(np.where(CCDselbool)[0]) == 0:
-#            continue
-#
-#        for key in explog.colnames:
-#            DataDict[CCDkey][key] = explog[key][CCDselbool].data.copy()
-#
-#    return DataDict
 
 def DataDict_builder(explog, inputs, structure):
     """ """
