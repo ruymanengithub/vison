@@ -47,7 +47,8 @@ class InjTask(Task):
 
         Task.check_data(self, **kwargs)
 
-    def prepare_images(self):
+    def prepare_images(self, doExtract=True, doMask=True, doOffset=True, 
+                       doBias=True, doFF=False):
         """
 
         InjTask: Preparation of data for further analysis.
@@ -60,7 +61,8 @@ class InjTask(Task):
 
         """
         super(InjTask, self).prepare_images(
-            doExtract=True, doMask=True, doOffset=True, doBias=True)
+            doExtract=doExtract, doMask=doMask, doOffset=doOffset, doBias=doBias,
+            doFF=doFF)
 
     def predict_expected_injlevels(self, teststruct):
         """ """
@@ -173,7 +175,7 @@ class InjTask(Task):
             for iObs in range(nObs):
 
                 if self.debug:
-                    print 'check_data: processing Obsid %i/%i' % (iObs+1, nObs)
+                    print 'InjTask.get_checkstats_ST: processing ObsID %i/%i' % (iObs+1, nObs)
 
                 for jCCD, CCDk in enumerate(CCDs):
                     dpath = self.dd.mx['datapath'][iObs, jCCD]

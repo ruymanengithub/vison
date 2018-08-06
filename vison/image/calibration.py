@@ -7,7 +7,9 @@ Created on Thu Nov  2 16:54:28 2017
 :contact: r.azzollini_at_ucl.ac.uk
 
 """
-
+# IMPORT STUFF
+from pdb import set_trace as stop
+# END IMPORT
 
 def load_FITS_CDPs(FDict, dataclass, **kwargs):
     """Dummy function to load CDPs for all 3 CCDs.

@@ -240,6 +240,7 @@ class Task(object):
                     os.system('rm -rf %s/*' % subpath)
 
             # Initialising Report Object
+            
 
             if todo_flags['report']:
                 self.report = Report(TestName=testkey, Model=self.Model,
@@ -249,6 +250,7 @@ class Task(object):
                 self.add_inputs_to_report()
             else:
                 self.report = None
+                
 
             if self.type == 'Simple':
                 self.ingest_data_SimpleTest()
@@ -350,6 +352,7 @@ class Task(object):
         
         explog, checkreport = self.filterexposures(
             structure, explog, OBSID_lims)
+        
         
         if self.log is not None:
             self.log.info('%s acquisition consistent with expectations: %s' % (
