@@ -551,7 +551,7 @@ class PTC0X(FlatTask):
                 curves_cdp.data[CCDk][Q]['x']['data'] = med.copy()
                 curves_cdp.data[CCDk][Q]['y']['data'] = var.copy()
                 
-                fkmed = np.linspace(0.,2.**16,2)
+                fkmed = np.linspace(0.,2.**16,100)
                 bfvar = np.polyval(_fitresults['fit'],fkmed)
                 
                 curves_cdp.data[CCDk][Q]['x']['fit'] = fkmed.copy()
