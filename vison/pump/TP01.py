@@ -191,6 +191,12 @@ class TP01(PumpTask):
         return super(TP01, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
                                                  wavedkeys=wavedkeys)
 
+    
+    def prepare_images(self):
+        super(TP01, self).prepare_images(doExtract=True, 
+             doMask=False, # ON TESTS!
+             doOffset=True, doBias=False, doFF=False)
+
     def extract(self):
         """ 
 
@@ -229,31 +235,7 @@ class TP01(PumpTask):
 
         id_dlys = np.unique(self.dd.mx['id_dly'][:, 0])
 
-        injprofiles = OrderedDict()
-
         if not self.drill:
-
-            # INJECTION PROFILES (models of the injection used to generate maps of relative amplitude of dipoles)
-
-            #            for id_dly in id_dlys:
-            #
-            #                injprofiles['ID_%i' % id_dly] = OrderedDict()
-            #
-            #                for jCCD, CCD in enumerate(CCDs):
-            #
-            #                    ixref = np.where((self.dd.mx['id_dly'][:] == id_dly) & (self.dd.mx['CCD'][:] == 'CCD%i' % CCD) &
-            #                                     (self.dd.mx['v_tpump'][:] == 0))
-            #
-            #                    ccdobj_ref_f = '%s.pick' % self.dd.mx['ccdobj_name'][ixref][0]
-            #
-            #                    # COMMENTED ON TESTS
-            #                    try :
-            #                        ccdobj_ref = copy.deepcopy(cPickleRead(os.path.join(ccdpicklespath,ccdobj_ref_f)))
-            #                        i_injprof_tpnorm = tptools.get_injprofile_tpnorm(ccdobj_ref,vstart=0,vend=ccd.NrowsCCD)
-            #
-            #                        injprofiles['ID_%i' % id_dly]['CCD%i' % CCD] = i_injprof_tpnorm.copy()
-            #                    except IOError: # TESTS
-            #                        pass
 
             # Computing maps of relative amplitude of dipoles
 
@@ -261,33 +243,30 @@ class TP01(PumpTask):
 
                 for jCCD, CCDk in enumerate(CCDs):
 
-                    try:
-                        injprofile = injprofiles['ID_%i' %
-                                                 id_dly][CCDk].copy()
-                    except:
-                        print 'exception caught on TESTS'  # TESTS
-
                     ixsel = np.where((self.dd.mx['id_dly'][:] == id_dly) & (
                         self.dd.mx['v_tpump'][:] != 0))
 
                     for ix in ixsel[0]:
                         ObsID = self.dd.mx['ObsID'][ix]
+                        vstart = self.dd.mx['vstart'][ix, jCCD]
+                        vend = self.dd.mx['vend'][ix,jCCD]
 
-                        ioutf = 'TP01_rawmap_%i_IDDLY_%i_%s.fits' % (
+
+                        ioutf = 'TP01_rawmap_%i_IDDLY_%i_ROE1_%s' % (
                             ObsID, id_dly, CCDk)
 
                         iccdobj_f = '%s.pick' % self.dd.mx['ccdobj_name'][ix, jCCD]
 
                         try:
-                            #injprofile = injprofiles['ID_%i' % id_dly]['CCD%i' % CCD].copy()
                             iccdobj = cPickleRead(
                                 os.path.join(ccdpicklespath, iccdobj_f))
                             irawmap = copy.deepcopy(iccdobj)
 
                             irawmap = tptools.gen_raw_dpmap_vtpump(
-                                irawmap, vstart=0, vend=ccd.NrowsCCD)
-                            # irawmap.divide_by_flatfield(injprofile,extension=-1)
-                            irawmap.writeto(os.path.join(productspath, ioutf))
+                                irawmap, Navgrows=-1, vstart=vstart, vend=vend)
+
+                            irawmap.writeto(os.path.join(productspath, \
+                                                         '%s.fits' % ioutf))
 
                             self.dd.mx['dipoles_raw'][ix, jCCD] = ioutf
 

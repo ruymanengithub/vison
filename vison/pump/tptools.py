@@ -54,7 +54,30 @@ def get_injprofile_tpnorm(ccdobj, vstart, vend):
     return injprofile_tpnorm
 
 
-def gen_raw_dpmap_vtpump(ccdobj, Nrows=-1, vstart=0, vend=ccdmod.NrowsCCD, extension=-1):
+def gen_raw_dpmap_vtpump(ccdobj, Navgrows=-1, vstart=0, vend=ccdmod.NrowsCCD, extension=-1):
+    """ """
+
+    Quads = ccdobj.Quads
+    prescan = ccdobj.prescan
+    overscan = ccdobj.overscan
+
+    for Q in Quads:
+        
+        model = get_InjProfile(ccdobj, Q, Navgrows=Navgrows, 
+                               vstart=vstart, vend=vend, 
+                               extension=extension)
+        
+        qdata = ccdobj.get_quad(Q, canonical=True, extension=extension).copy()        
+
+        dipmap = np.ones_like(qdata)
+        dipmap[prescan:-overscan, vstart:vend] = \
+              qdata[prescan:-overscan, vstart:vend]/model
+
+        ccdobj.set_quad(dipmap, Q, canonical=True, extension=extension)
+
+    return ccdobj
+
+def gen_raw_dpmap_stpump(ccdobj, injprofile, vstart=0, vend=ccdmod.NrowsCCD, extension=-1):
     """ """
 
     Quads = ccdobj.Quads
@@ -64,20 +87,30 @@ def gen_raw_dpmap_vtpump(ccdobj, Nrows=-1, vstart=0, vend=ccdmod.NrowsCCD, exten
     for Q in Quads:
         qdata = ccdobj.get_quad(Q, canonical=True, extension=extension).copy()
 
-        if Nrows == -1:
-            avgrow = qdata[prescan:-overscan, vstart:vend].mean(axis=1)
-            model = avgrow[:, None]
-        else:
-            model = nd.filters.median_filter(qdata[prescan:-overscan, vstart:vend], size=(1, Nrows),
-                                             mode='reflect')
-
         dipmap = np.ones_like(qdata)
-        dipmap[prescan:-overscan, vstart:vend] = qdata[prescan:-
-                                                       overscan, vstart:vend]/model
+        dipmap[prescan:-overscan, vstart:vend] = \
+              qdata[prescan:-overscan, vstart:vend] / injprofile
 
         ccdobj.set_quad(dipmap, Q, canonical=True, extension=extension)
 
     return ccdobj
+
+def get_InjProfile(ccdobj, Q, Navgrows=-1, vstart=0, vend=ccdmod.NrowsCCD, extension=-1):
+    """ """
+    
+    prescan = ccdobj.prescan
+    overscan = ccdobj.overscan
+    
+    qdata = ccdobj.get_quad(Q, canonical=True, extension=extension).copy()
+    
+    if Navgrows == -1:
+            avgrow = qdata[prescan:-overscan, vstart:vend].mean(axis=1)
+            model = avgrow[:, None]
+    else:
+        model = nd.filters.median_filter(qdata[prescan:-overscan, vstart:vend], 
+                                        size=(1, Navgrows),
+                                        mode='reflect')
+    return model
 
 
 def find_dipoles_vtpump(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, extension=-1):
