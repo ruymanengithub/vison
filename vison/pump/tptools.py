@@ -77,7 +77,7 @@ def gen_raw_dpmap_vtpump(ccdobj, Navgrows=-1, vstart=0, vend=ccdmod.NrowsCCD, ex
 
     return ccdobj
 
-def gen_raw_dpmap_stpump(ccdobj, injprofile, vstart=0, vend=ccdmod.NrowsCCD, extension=-1):
+def gen_raw_dpmap_stpump(ccdobj, injprofiles, vstart=0, vend=ccdmod.NrowsCCD, extension=-1):
     """ """
 
     Quads = ccdobj.Quads
@@ -86,10 +86,11 @@ def gen_raw_dpmap_stpump(ccdobj, injprofile, vstart=0, vend=ccdmod.NrowsCCD, ext
 
     for Q in Quads:
         qdata = ccdobj.get_quad(Q, canonical=True, extension=extension).copy()
+        
 
         dipmap = np.ones_like(qdata)
         dipmap[prescan:-overscan, vstart:vend] = \
-              qdata[prescan:-overscan, vstart:vend] / injprofile
+              qdata[prescan:-overscan, vstart:vend] / injprofiles[Q]
 
         ccdobj.set_quad(dipmap, Q, canonical=True, extension=extension)
 

@@ -214,7 +214,7 @@ class TP02(PumpTask):
 
             # Computing maps of relative amplitude of dipoles
 
-            for id_dly in id_dlys:
+            for id_dly in id_dlys: 
 
                 for jCCD, CCDk in enumerate(CCDs):
                     
@@ -232,6 +232,7 @@ class TP02(PumpTask):
                     InjProfiles = OrderedDict()
                     
                     for Q in ccdref.Quads:
+                        
                         InjProfiles[Q] = tptools.get_InjProfile(ccdref, 
                                    Q, Navgrows=-1, vstart=Rvstart, vend=Rvend, 
                                    extension=-1)
@@ -241,29 +242,34 @@ class TP02(PumpTask):
                         ObsID = self.dd.mx['ObsID'][ix]
                         vstart = self.dd.mx['vstart'][ix, jCCD]
                         vend = self.dd.mx['vend'][ix,jCCD]
-
+                        s_tp_mod = self.dd.mx['s_tp_mod'][ix,jCCD]
+                        
+                        
                         ioutf = 'TP02_rawmap_%i_IDDLY_%i_ROE1_%s' % (
                             ObsID, id_dly, CCDk)
 
                         iccdobj_f = '%s.pick' % self.dd.mx['ccdobj_name'][ix, jCCD]
 
-                        try:
-                            iccdobj = cPickleRead(
-                                os.path.join(ccdpicklespath, iccdobj_f))
-                            irawmap = copy.deepcopy(iccdobj)
+                        iccdobj = cPickleRead(
+                            os.path.join(ccdpicklespath, iccdobj_f))
+                        irawmap = copy.deepcopy(iccdobj)
 
+                        sh_injprofiles = OrderedDict()
+                        for Q in ccdref.Quads:
+                        
+                            if s_tp_mod == 31:
+                                sh_injprofiles[Q] = np.roll(InjProfiles[Q],-1,0)
+                            elif s_tp_mod == 23:
+                                sh_injprofiles[Q] = InjProfiles[Q].copy()
+                            
+                        irawmap = tptools.gen_raw_dpmap_stpump(
+                                irawmap, sh_injprofiles, vstart=vstart, vend=vend)
 
-                            irawmap = tptools.gen_raw_dpmap_stpump(
-                                irawmap, InjProfiles[Q], vstart=vstart, vend=vend)
+                        irawmap.writeto(os.path.join(productspath, \
+                                '%s.fits' % ioutf),clobber=True)
 
-                            irawmap.writeto(os.path.join(productspath, \
-                                                         '%s.fits' % ioutf))
+                        self.dd.mx['dipoles_raw'][ix, jCCD] = ioutf
 
-                            self.dd.mx['dipoles_raw'][ix, jCCD] = ioutf
-
-                        except:  # TESTS
-                            pass
-        
 
     def basic_analysis(self):
         """
