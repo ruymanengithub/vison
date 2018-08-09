@@ -73,6 +73,13 @@ class CHINJ01_inputs(inputs.Inputs):
     ])))
 
 
+def _get_CCDhalf(Q):
+    if Q in ['E','F']:
+        return 'B'
+    elif Q in ['G','H']:
+        return 'T'
+        
+    
 class CHINJ01(InjTask):
     """ """
 
@@ -222,7 +229,6 @@ class CHINJ01(InjTask):
                         extract average 2D injection pattern (and save)
                         produce average profile along/across lines
                         measure charge-inj. non-uniformity
-                        produce average profile across lines
                         measure charge spillover into non-injection
                         measure stats of injection (mean, med, std, min/max, percentiles)
 
@@ -231,7 +237,7 @@ class CHINJ01(InjTask):
             plot average inj. profiles across lines f. each CCD, Q and IG1
                 save as a rationalized set of  curves
        
-        Report injection stats as a table/tables
+            Report injection stats as a table/tables
 
         """
         
@@ -256,22 +262,49 @@ class CHINJ01(InjTask):
 
         self.dd.initColumn('chinj_nonuni', DDindices, dtype='float32', valini=valini)
         self.dd.initColumn('chinj_spill', DDindices, dtype='float32', valini=valini)
-        self.dd.initColumn('chinj_mean', DDindices, dtype='float32', valini=valini)
-        self.dd.initColumn('chinj_std', DDindices, dtype='float32', valini=valini)
-        self.dd.initColumn('chinj_min', DDindices, dtype='float32', valini=valini)
-        self.dd.initColumn('chinj_max', DDindices, dtype='float32', valini=valini)
-        self.dd.initColumn('chinj_p25', DDindices, dtype='float32', valini=valini)
-        self.dd.initColumn('chinj_p50', DDindices, dtype='float32', valini=valini)
-        self.dd.initColumn('chinj_p75', DDindices, dtype='float32', valini=valini)
+        statkeys = ['mean','std','min','max','p5','p25','p50','p75',
+                    'p95']
+        for statkey in statkeys:
+             self.dd.initColumn('chinj_%s' % statkey, DDindices, dtype='float32', valini=valini)
         
+        profiles_alrow = OrderedDict()
+        profiles_alcol = OrderedDict()
+        
+        
+        # Initializing injection profiles
+        
+        xdummy = np.arange(10,dtype='float32')
+        ydummy = np.zeros(10,dtype='float32')
+        for jCCD, CCDk in enumerate(CCDs):
+            profiles_alrow[CCDk] = OrderedDict()
+            profiles_alcol[CCDk] = OrderedDict()
+            
+            for kQ, Q in enumerate(Quads):
+                profiles_alrow[CCDk][Q] = OrderedDict(x=OrderedDict(),
+                                                      y=OrderedDict())
+                profiles_alcol[CCDk][Q] = OrderedDict(x=OrderedDict(),
+                                                  y=OrderedDict())
+                
+                for iObs in range(nObs):
+                    
+                    IG1_key = 'IG1_%i_%s' % (jCCD+1,_get_CCDhalf(Q))
+                    IG1_val = self.dd.mx[IG1_key][iObs,jCCD]
+                    IG1_tag = 'IG1_%.2fV' % IG1_val
+                    profiles_alrow[CCDk][Q]['x'][IG1_tag] = xdummy.copy()
+                    profiles_alrow[CCDk][Q]['y'][IG1_tag] = ydummy.copy()
+                    profiles_alcol[CCDk][Q]['x'][IG1_tag] = xdummy.copy()
+                    profiles_alcol[CCDk][Q]['y'][IG1_tag] = ydummy.copy()
+        
+        
+        ccdpicklespath = self.inputs['subpaths']['ccdpickles']
+        prodspath = self.inputs['subpaths']['products']
+        
+        # The hardwork
         
         if not self.drill:
             
-            ccdpicklespath = self.inputs['subpaths']['ccdpickles']
-            prodspath = self.inputs['subpaths']['products']
             
             for iObs in range(nObs):
-                
                 
                 for jCCD, CCDk in enumerate(CCDs):
                     
@@ -280,11 +313,11 @@ class CHINJ01(InjTask):
                     
                     ccdobj = files.cPickleRead(ccdpickf)
                     
-                    vstart = self.dd.mx['vstart'][iObs][jCCD]
-                    vend = self.dd.mx['vend'][iObs][jCCD]
-                    dochinj = self.dd.mx['chinj'][iObs][jCCD]
-                    non = self.dd.mx['chinj_on'][iObs][jCCD]
-                    noff = self.dd.mx['chinj_of'][iObs][jCCD]
+                    vstart = self.dd.mx['vstart'][iObs,jCCD]
+                    vend = self.dd.mx['vend'][iObs,jCCD]
+                    dochinj = self.dd.mx['chinj'][iObs,jCCD]
+                    non = self.dd.mx['chinj_on'][iObs,jCCD]
+                    noff = self.dd.mx['chinj_of'][iObs,jCCD]
                     nrep = (vend-vstart)/(non+noff)+1
                     pattern = (non, noff, nrep)
                     
@@ -292,12 +325,54 @@ class CHINJ01(InjTask):
                     
                         for kQ, Q in enumerate(Quads):
                             
-                            quaddata = ccdobj.get_quad(Q, canonical=True, extension=-1)
-                            extract_res = ilib.extract_injection_lines(quaddata, pattern, VSTART=vstart,
-                                                                  VEND=vend, suboffmean=False, 
-                                                                  lineoffset=ilib.lineoffsets[Q])
-                            stop()
-                    
+                            IG1_key = 'IG1_%i_%s' % (jCCD+1,_get_CCDhalf(Q))
+                            IG1_val = self.dd.mx[IG1_key][iObs,jCCD]
+                            IG1_tag = 'IG1_%.2fV' % IG1_val
+                            
+                            
+                            ext_res = ilib.extract_injection_lines(ccdobj, Q, pattern, VSTART=vstart,
+                                                                  VEND=vend, suboffmean=False)
+                            
+                            stats = ext_res['stats_injection']
+                            
+                            for skey in statkeys:
+                                self.dd.mx['chinj_%s' % skey][iObs,jCCD,kQ] = \
+                                       stats[skey]
+                            
+                            
+                            nonuni = (stats['p95']-stats['p5'])/stats['p50']
+                            
+                            self.dd.mx['chinj_nonuni'][iObs,jCCD,kQ] = nonuni
+                            
+                            spill = ilib.get_spill(ext_res['avprof_alcol'],pattern)
+                            
+                            self.dd.mx['chinj_spill'][iObs,jCCD,kQ] = spill
+                            
+                                      
+                            yalrows = ext_res['avprof_alrow'].copy()
+                            yalcols = ext_res['avprof_alcol'].copy()
+                            profiles_alrow[CCDk][Q]['y'][IG1_tag] = yalrows.copy()
+                            profiles_alrow[CCDk][Q]['x'][IG1_tag] = \
+                                          np.arange(len(yalrows),dtype='float32')
+                            
+                            profiles_alcol[CCDk][Q]['x'][IG1_tag] = yalcols.copy()
+                            profiles_alcol[CCDk][Q]['y'][IG1_tag] = \
+                                          np.arange(len(yalrows),dtype='float32')
+                            
+                            
+        # plot average inj. profiles along lines 
+        # save as a rationalized set of curves
+        
+        # PENDING
+        
+        # plot average inj. profiles across lines
+        # save as a rationalized set of  curves
+        
+        # PENDING
+        
+        # Report injection stats as a table/tables
+        
+        # PENDING
                     
         
     def meta_analysis(self):
