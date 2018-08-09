@@ -222,6 +222,11 @@ class TP01(PumpTask):
 
 
         """
+        
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='extract', Title='TP01 Extraction', level=0)
+        
         DDindices = copy.deepcopy(self.dd.indices)
         CCDs = DDindices.get_vals('CCD')
 

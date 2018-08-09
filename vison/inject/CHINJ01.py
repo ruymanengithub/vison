@@ -19,7 +19,7 @@ Created on Tue Aug 29 17:36:00 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
-from copy import deepcopy
+import copy
 from collections import OrderedDict
 
 from vison.support import context
@@ -36,6 +36,8 @@ from vison.datamodel import inputs
 from InjTask import InjTask
 from vison.image import performance
 import CH01aux
+from vison.support import files
+from vison.inject import lib as ilib
 # END IMPORT
 
 isthere = os.path.exists
@@ -80,15 +82,17 @@ class CHINJ01(InjTask):
         """ """
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
-                         ('extract', self.extract_data),
-                         ('basic', self.basic_analysis)]
+                         ('basic', self.basic_analysis),
+                         ('meta', self.meta_analysis)]
         super(CHINJ01, self).__init__(inputs, log, drill, debug)
         self.name = 'CHINJ01'
         self.type = 'Simple'
         
         self.HKKeys = HKKeys
         self.figdict = CH01aux.CH01figs.copy()
-        self.inputs['subpaths'] = dict(figs='figs')
+        self.inputs['subpaths'] = dict(figs='figs',
+                   ccdpickles='ccdpickles',
+                   products='products')
         
 
     def set_inpdefaults(self, **kwargs):
@@ -175,7 +179,7 @@ class CHINJ01(InjTask):
         Ncols = len(CHINJ01_sdict.keys())
         CHINJ01_sdict['Ncols'] = Ncols
 
-        commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+        commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(CHINJ01_commvalues)
 
         if len(diffvalues) == 0:
@@ -194,29 +198,14 @@ class CHINJ01(InjTask):
         wavedkeys = ['motr_siz']
         return super(CHINJ01, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
                                                     wavedkeys=wavedkeys)
-
-    def extract_data(self):
-        """
-
-        **NEEDED?** Could be merged with basic_analysis
-
-        **METACODE**
-
-        ::
-
-            Preparation of data for further analysis:
-
-            f.e. ObsID:
-                f.e.CCD:
-                    f.e.Q:
-                        subtract offset
-                        extract average 2D injection pattern and save
+    
+    def prepare_images(self):
+        super(CHINJ01, self).prepare_images(doExtract=True, 
+             doMask=True, # ON TESTS!
+             doOffset=True, 
+             doBias=False, doFF=False)
 
 
-        """
-        
-        return # TESTS
-        raise NotImplementedError
 
     def basic_analysis(self):
         """ 
@@ -230,8 +219,8 @@ class CHINJ01(InjTask):
             f. e. ObsID:
                 f.e.CCD:
                     f.e.Q:
-                        load average 2D injection pattern
-                        produce average profile along lines
+                        extract average 2D injection pattern (and save)
+                        produce average profile along/across lines
                         measure charge-inj. non-uniformity
                         produce average profile across lines
                         measure charge spillover into non-injection
@@ -241,11 +230,84 @@ class CHINJ01(InjTask):
                 save as a rationalized set of curves
             plot average inj. profiles across lines f. each CCD, Q and IG1
                 save as a rationalized set of  curves
-
-            plot charge injection vs. IG1
-            report injection stats as a table
+       
+        Report injection stats as a table/tables
 
         """
         
-        return # TESTS
-        #raise NotImplementedError
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='extract', Title='CHINJ01 Extraction', level=0)
+        
+        
+        DDindices = copy.deepcopy(self.dd.indices)
+        
+        nObs, nCCD, nQuad = DDindices.shape[0:3]
+        Quads = DDindices.get_vals('Quad')
+        CCDs = DDindices.get_vals('CCD')
+        
+        # Initializing new columns
+
+        valini = 0.
+        
+        # measure charge-inj. non-uniformity
+        # measure charge spillover into non-injection
+        # measure stats of injection (mean, med, std, min/max, percentiles)
+
+        self.dd.initColumn('chinj_nonuni', DDindices, dtype='float32', valini=valini)
+        self.dd.initColumn('chinj_spill', DDindices, dtype='float32', valini=valini)
+        self.dd.initColumn('chinj_mean', DDindices, dtype='float32', valini=valini)
+        self.dd.initColumn('chinj_std', DDindices, dtype='float32', valini=valini)
+        self.dd.initColumn('chinj_min', DDindices, dtype='float32', valini=valini)
+        self.dd.initColumn('chinj_max', DDindices, dtype='float32', valini=valini)
+        self.dd.initColumn('chinj_p25', DDindices, dtype='float32', valini=valini)
+        self.dd.initColumn('chinj_p50', DDindices, dtype='float32', valini=valini)
+        self.dd.initColumn('chinj_p75', DDindices, dtype='float32', valini=valini)
+        
+        
+        if not self.drill:
+            
+            ccdpicklespath = self.inputs['subpaths']['ccdpickles']
+            prodspath = self.inputs['subpaths']['products']
+            
+            for iObs in range(nObs):
+                
+                
+                for jCCD, CCDk in enumerate(CCDs):
+                    
+                    ccdpickf = os.path.join(ccdpicklespath,\
+                                            '%s.pick' % self.dd.mx['ccdobj_name'][iObs,jCCD])
+                    
+                    ccdobj = files.cPickleRead(ccdpickf)
+                    
+                    vstart = self.dd.mx['vstart'][iObs][jCCD]
+                    vend = self.dd.mx['vend'][iObs][jCCD]
+                    dochinj = self.dd.mx['chinj'][iObs][jCCD]
+                    non = self.dd.mx['chinj_on'][iObs][jCCD]
+                    noff = self.dd.mx['chinj_of'][iObs][jCCD]
+                    nrep = (vend-vstart)/(non+noff)+1
+                    pattern = (non, noff, nrep)
+                    
+                    if dochinj:
+                    
+                        for kQ, Q in enumerate(Quads):
+                            
+                            quaddata = ccdobj.get_quad(Q, canonical=True, extension=-1)
+                            extract_res = ilib.extract_injection_lines(quaddata, pattern, VSTART=vstart,
+                                                                  VEND=vend, suboffmean=False, 
+                                                                  lineoffset=ilib.lineoffsets[Q])
+                            stop()
+                    
+                    
+        
+    def meta_analysis(self):
+        """ 
+        
+        find injection threshold: Min IG1
+        plot and model charge injection vs. IG1
+        find notch injection amount
+        
+        
+        """
+        return
+

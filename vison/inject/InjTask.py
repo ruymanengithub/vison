@@ -210,7 +210,8 @@ class InjTask(Task):
                             quaddata = ccdobj.get_quad(
                                 Quad, canonical=True, extension=-1)
                             extract_res = extract_injection_lines(quaddata, pattern, VSTART=vstart,
-                                                                  VEND=vend, suboffmean=False, lineoffset=lineoffsets[Quad])
+                                                                  VEND=vend, suboffmean=False, 
+                                                                  lineoffset=lineoffsets[Quad])
 
                             self.dd.mx['chk_mea_inject'][iObs, jCCD,
                                                          kQ] = extract_res['avinjection']
