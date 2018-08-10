@@ -262,7 +262,8 @@ class BeamPlot(BasicPlot):
                 if 'ylim' in self.meta:
                     ax.set_ylim(self.meta['ylim'])
 
-            # self.axs[CCDkey][Q].locator_params(nticks=4,axis='x')
+        
+        # self.axs[CCDkey][Q].locator_params(nticks=4,axis='x')
 
     def plt_trimmer(self):
 
