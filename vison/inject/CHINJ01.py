@@ -401,7 +401,7 @@ class CHINJ01(InjTask):
         # plot average inj. profiles along/across lines 
         # save as a rationalized set of curves
         
-        maxmedinjection = np.nanmax(self.dd.mx['chinj_p50'])
+        maxmedinjection = np.nanmax(self.dd.mx['chinj_p50'][:])
 
         fdict_alrow = self.figdict['CH01_alrow'][1]
         fdict_alrow['data'] = prof_alrow_cdp.data.copy()
@@ -410,8 +410,9 @@ class CHINJ01(InjTask):
         
         fdict_alcol = self.figdict['CH01_alcol'][1]
         fdict_alcol['data'] = prof_alcol_cdp.data.copy()
-        fdict_alrow['meta']['ylim'] = [0.,maxmedinjection*1.5]
-                
+        fdict_alcol['meta']['ylim'] = [0.,maxmedinjection*1.5]
+        
+        
         if self.report is not None:
             self.addFigures_ST(figkeys=['CH01_alrow',
                                         'CH01_alcol'], 
@@ -453,11 +454,52 @@ class CHINJ01(InjTask):
     def meta_analysis(self):
         """ 
         
-        find injection threshold: Min IG1
-        plot and model charge injection vs. IG1
-        find notch injection amount
+        Find injection threshold: Min IG1
+        Plot and model charge injection vs. IG1
+        Find notch injection amount
         
         
         """
-        return
+        
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='extract', Title='CHINJ01 Analysis ("Meta")', level=0)
+        
+        DDindices = copy.deepcopy(self.dd.indices)
+        
+        nObs, nCCD, nQuad = DDindices.shape[0:3]
+        Quads = DDindices.get_vals('Quad')
+        CCDs = DDindices.get_vals('CCD')
+        
+        prodspath = self.inputs['subpaths']['products']
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+
+        toi_ch = self.dd.mx['toi_ch'][0,0]
+        
+        
+        for jCCD, CCDk in enumerate(CCDs):
+            
+            for kQ, Q in enumerate(Quads):
+                
+                if Q in ['E','F']:
+                    id_dly_opt = toi_ch * 2.5
+                elif Q in['G','H']:
+                    id_dly_opt = toi_ch * 1.5
+                                
+                selix = np.where((self.dd.mx['chinj'][:,jCCD]==1) &
+                        (np.isclose(self.dd.mx['id_dly'][:,jCCD],id_dly_opt)))
+                
+                
+                CCDhalf = _get_CCDhalf(Q)
+                IG1_key = 'IG1_%i_%s' % (jCCD+1,CCDhalf)
+                
+                IG1 = self.dd.mx[IG1_key][selix,jCCD].copy()                
+                med_inj = self.dd.mx['chinj_p50'][selix,jCCD,kQ].copy()
+                
+        
+        
 

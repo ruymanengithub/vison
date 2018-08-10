@@ -93,22 +93,28 @@ def extract_injection_lines(ccdobj, Q, pattern, VSTART=0,
 
     avprof_alcol = np.nanmean(stacked_2d, axis=0)
     avprof_alrow = np.nanmean(stacked_2d[:, 0:non], axis=1)
-
     
-    stats_injection = dict(mean=np.nanmean(stacked_2d[:, 0:non]),
-                       std=np.nanstd(stacked_2d[:, 0:non]),
-                       min=np.min(stacked_2d[:, 0:non]),
-                       max=np.max(stacked_2d[:, 0:non]),
-                       p5=np.percentile(stacked_2d[:, 0:non], 5),
-                       p25=np.percentile(stacked_2d[:, 0:non], 25),
-                       p50=np.percentile(stacked_2d[:, 0:non], 50),
-                       p75=np.percentile(stacked_2d[:, 0:non], 75),
-               p95=np.percentile(stacked_2d[:, 0:non], 95))
+    ixnan = np.where(np.isnan(stacked_2d))
+    if len(ixnan[0])>0:
+        stacked_2d.mask[ixnan] = True
+    
+    values = stacked_2d[:,0:non]
+    gvalues = values.data[np.where(~values.mask)]
+    
+    stats_injection = dict(mean=np.mean(gvalues),
+                       std=np.std(gvalues),
+                       min=np.min(gvalues),
+                       max=np.max(gvalues),
+                       p5=np.percentile(gvalues, 5),
+                       p25=np.percentile(gvalues, 25),
+                       p50=np.percentile(gvalues, 50),
+                       p75=np.percentile(gvalues, 75),
+               p95=np.percentile(gvalues, 95))
 
     results = dict(avprof_alrow=avprof_alrow,
                    avprof_alcol=avprof_alcol, 
                    stats_injection=stats_injection)
-
+    
     return results
 
 
