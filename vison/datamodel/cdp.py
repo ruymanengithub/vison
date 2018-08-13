@@ -142,7 +142,10 @@ class Tables_CDP(CDP):
         tex = st.split(tex, '\n')
         
         if fitwidth:
-            ncols = len(self.data[sheet].columns)+1
+            if 'columns' not in kwargs:
+                ncols = len(self.data[sheet].columns)+1
+            else:
+                ncols = len(kwargs['columns'])+1
             beglongtabu = '\\begin{longtabu} to \\textwidth {|%s}' % (ncols*'X|',)
             endlongtabu = '\end{longtabu}'
             tex[0] = beglongtabu

@@ -456,7 +456,7 @@ class CHINJ01(InjTask):
         
         Find injection threshold: Min IG1
         Plot and model charge injection vs. IG1
-        Find notch injection amount
+        Find notch injection amount.
         
         
         """
@@ -477,13 +477,56 @@ class CHINJ01(InjTask):
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
         CDP_header['DATE'] = self.get_time_tag()
-
+        
+        
+        
         toi_ch = self.dd.mx['toi_ch'][0,0]
+        assert np.all(np.isclose(self.dd.mx['toi_ch'][:],toi_ch))
+        
+        
+        # ANALYSIS TABLE
+        
+        NP = nCCD * nQuad
+        
+        MCH01_dd = OrderedDict()
+        MCH01_dd['CCD'] = np.zeros(NP,dtype='int32')
+        MCH01_dd['Q'] = np.zeros(NP,dtype='int32') 
+        MCH01_dd['ID_DLY'] = np.zeros(NP,dtype='float32') + np.nan
+        
+        fitkeys = ['BGD','DROP','IG1_THRESH','IG1_NOTCH','SLOPE','NOTCH']
+                
+        for fitkey in fitkeys:
+            MCH01_dd[fitkey] = np.zeros(NP,dtype='float32') + np.nan
+        
+        
+        # INJECTION CURVES
+        
+        inj_curves_cdp = cdp.CDP()
+        inj_curves_cdp.header = CDP_header.copy()
+        inj_curves_cdp.path = prodspath
+        inj_curves_cdp.data = OrderedDict()
+        
+        xdummy = np.arange(10,dtype='float32')
+        ydummy = np.zeros(10,dtype='float32')
+        for jCCD, CCDk in enumerate(CCDs):
+            
+            inj_curves_cdp.data[CCDk] = OrderedDict()
+            
+            for kQ, Q in enumerate(Quads):
+                inj_curves_cdp.data[CCDk][Q] = OrderedDict(x=OrderedDict(),
+                                                      y=OrderedDict())
+                
+                for tag in ['input','bestfit']:
+                    inj_curves_cdp.data[CCDk][Q]['x'][tag] = xdummy.copy()
+                    inj_curves_cdp.data[CCDk][Q]['y'][tag] = ydummy.copy()
         
         
         for jCCD, CCDk in enumerate(CCDs):
             
             for kQ, Q in enumerate(Quads):
+                
+                ix = jCCD * nQuad + kQ
+                
                 
                 if Q in ['E','F']:
                     id_dly_opt = toi_ch * 2.5
@@ -497,9 +540,82 @@ class CHINJ01(InjTask):
                 CCDhalf = _get_CCDhalf(Q)
                 IG1_key = 'IG1_%i_%s' % (jCCD+1,CCDhalf)
                 
-                IG1 = self.dd.mx[IG1_key][selix,jCCD].copy()                
-                med_inj = self.dd.mx['chinj_p50'][selix,jCCD,kQ].copy()
+                IG1 = self.dd.mx[IG1_key][selix,jCCD].flatten().copy()                
+                med_inj = self.dd.mx['chinj_p50'][selix,jCCD,kQ].flatten().copy()
                 
+                res = ilib.fit_Inj_vs_IG1(IG1,med_inj,doPlot=False)
+                didfit = res['didfit']
+                
+                inj_curves_cdp.data[CCDk][Q]['x']['input'] = IG1.copy()
+                inj_curves_cdp.data[CCDk][Q]['y']['input'] = med_inj.copy() / 2.**16
+                
+                
+                if didfit:
+                
+                    MCH01_dd['CCD'][ix] = jCCD
+                    MCH01_dd['Q'][ix] = kQ
+                    MCH01_dd['ID_DLY'][ix] = id_dly_opt
+                    
+                    for fitkey in fitkeys:                    
+                        MCH01_dd[fitkey][ix] = res[fitkey]
+
+                    xbf = res['IG1_BF'].copy()
+                    ybf = res['NORMINJ_BF']                        
+                    
+                else:
+                    
+                    xbf = IG1.copy()
+                    ybf = np.zeros_like(xbf)
+                
+                inj_curves_cdp.data[CCDk][Q]['x']['bestfit'] = xbf.copy()
+                inj_curves_cdp.data[CCDk][Q]['y']['bestfit'] = ybf.copy()
+                    
+        
+        # PLOT
+        
+        fdict_meta_plot = self.figdict['CH01_meta'][1]
+        fdict_meta_plot['data'] = inj_curves_cdp.data.copy()
+        
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['CH01_meta'], 
+                               dobuilddata=False)
+        
+        # REPORT RESULTS AS TABLE CDP
+        
+        
+        MCH01_dddf = OrderedDict(ANALYSIS=pd.DataFrame.from_dict(MCH01_dd))
+        MCH01_cdp = CH01aux.CDP_lib['META']
+        MCH01_cdp.path = prodspath
+        MCH01_cdp.ingest_inputs(
+                data=MCH01_dddf.copy(),
+                meta=dict(),
+                header=CDP_header.copy()
+                )
+        
+        MCH01_cdp.init_wb_and_fillAll(header_title='CHINJ01: META-ANALYSIS')
+        self.save_CDP(MCH01_cdp)
+        self.pack_CDP_to_dd(MCH01_cdp,'META_CDP')
+        
+        if self.report is not None:
+            
+            fccd = lambda x: CCDs[x-1]
+            fq = lambda x: Quads[x-1]
+            ff = lambda x: '%.2f' % x
+            
+            selcolumns = ['CCD','Q','BGD','IG1_THRESH','IG1_NOTCH','NOTCH']
+            
+            ext_formatters=[fccd,fq]+[ff,ff,ff,ff]
+            
+            caption = 'CHINJ01: META-ANALYSIS TABLE'
+            
+            Mtex = MCH01_cdp.get_textable(sheet='ANALYSIS', 
+                                          columns=selcolumns,
+                                          caption=caption,
+                                          fitwidth=True,
+                                          formatters=ext_formatters)
+            
+            Mtex = ['\\tiny']+Mtex+['\\normalsize']
+            self.report.add_Text(Mtex)  
         
         
 

@@ -78,6 +78,14 @@ extract_alrow_dict = dict(
               suptitle='CHINJ01: ALONG-ROWs.')
     )
 
+chinj01_meta_dict = dict(
+    figname='CHINJ01_Injection_profiles.png',
+    caption='CHINJ01: Injection profiles.',
+    meta=dict(doLegend=True,
+              ylabel='UNKNOWN',
+              xlabel='IG1 [V]',
+              suptitle='CHINJ01: INJECTION PROFILE.')
+    )
 
 CH01figs = dict()
 CH01figs['CH01checks_offsets'] = [
@@ -90,10 +98,16 @@ CH01figs['CH01_alrow'] = [
         figclasses.Fig_Beam2DPlot, extract_alrow_dict]
 CH01figs['CH01_alcol'] = [
         figclasses.Fig_Beam2DPlot, extract_alcol_dict]
+CH01figs['CH01_meta'] = [
+        figclasses.Fig_Beam2DPlot, chinj01_meta_dict]
 CH01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
 
 
 extract_cdp = cdp.Tables_CDP()
 extract_cdp.rootname = 'CHINJ01_EXTRACTION_TABLE'
 
-CDP_lib = dict(EXTRACT=extract_cdp)
+meta_cdp = cdp.Tables_CDP()
+meta_cdp.rootname = 'CHINJ01_META_TABLE'
+
+CDP_lib = dict(EXTRACT=extract_cdp,
+               META=meta_cdp)
