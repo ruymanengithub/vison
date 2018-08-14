@@ -30,7 +30,7 @@ HKKeys = []
 
 PER01_commvalues = dict(program='CALCAMP', test='PERSIST01',
                         rdmode='fwd_bas',
-                        flushes=3,  # exptime=0.,
+                        flushes=7,  # exptime=0.,
                         vstart=0, vend=2086,
                         shuttr=1,
                         siflsh=1, siflsh_p=500,
@@ -70,9 +70,10 @@ class PERSIST01(Task):
 
     def set_inpdefaults(self, **kwargs):
         """ """
+        wavelength = 590.
         self.inpdefaults = dict(
-            exptSATUR=15.,
-            exptLATEN=565.
+            exptSATUR=100.*self.ogse.profile['tFWC_point']['nm%i' % wavelength],
+            exptLATEN=565. # s
         )
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
