@@ -81,7 +81,7 @@ FOCUS00_commvalues = dict(program='CALCAMP', test='FOCUS_%i',
                           flushes=7,
                           shuttr=1,
                           vstart=0, vend=2086,
-                          siflsh=0, siflsh_p=500,
+                          siflsh=1, siflsh_p=500,
                           mirr_on=1,
                           motr_on=0,
                           source='point')
