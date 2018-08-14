@@ -95,7 +95,7 @@ def get_testdefaults(ogseobj=None):
 
     testdefaults = dict(waves=[590, 640, 730, 800, 880, 0],
                         exptimes=dict(),
-                        frames=[20, 14, 10, 4, 4])
+                        frames=[20, 15, 10, 4, 4])
 
     for w in testdefaults['waves']:
         tFWC_pointw = ogseobj.profile['tFWC_point']['nm%i' % w]
