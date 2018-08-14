@@ -46,7 +46,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         print 'BIAS01...'
 
-        Nbias01 = 25
+        Nbias01 = 15
         diffBIAS01 = dict(mirr_on=0)
         diffBIAS01.update(diffvalues)
 
