@@ -60,7 +60,7 @@ class CHINJ01_inputs(inputs.Inputs):
         ('IDL', ([float], 'Injection Drain Low Voltage.')),
         ('IDH', ([float], 'Injection Drain High Voltage.')),
         ('IG2', ([float], 'Injection Gate 2 Voltage.')),
-        ('IG1s', ([list], 'Injection Gate 1 Voltages.')),
+        ('IG1s', ([list], 'Injection Gate 1 Voltages, [min, max].')),
         ('dIG1', ([float], 'Injection Gate 1 Voltage Step.')),
         ('id_delays', ([list], 'Injection Drain Delays.')),
         ('toi_chinj', ([int], 'TOI Charge Injection.')),

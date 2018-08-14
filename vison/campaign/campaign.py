@@ -120,7 +120,9 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         IDLs = [10., 13.]
         IDH = 18.
-        #IG1s = [2000,6000]
+        dIDL = 0.25 # V
+        IG1 = 6.
+        IG2 = 4.
         toi_chinj02 = 500
         id_delays = [toi_chinj02*2.5, toi_chinj02*1.5]
         diffCHINJ02 = dict(mirr_on=0)
@@ -129,7 +131,9 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         chinj02 = CHINJ02.CHINJ02(inputs=dict(elvis=elvis,
                                               CHAMBER=CHAMBER,
                                               test='CHINJ02',
-                                              IDLs=IDLs, IDH=IDH, toi_chinj=toi_chinj02,
+                                              IDLs=IDLs, dIDL=dIDL, 
+                                              IDH=IDH, IG1=IG1, IG2=IG2, 
+                                              toi_chinj=toi_chinj02,
                                               id_delays=id_delays, diffvalues=diffCHINJ02))
         #structCHINJ02 = chinj02.build_scriptdict(elvis=elvis)
         test_sequence['CHINJ02'] = copy.deepcopy(chinj02)
