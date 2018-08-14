@@ -43,14 +43,16 @@ HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
           'CCD2_OD_B', 'CCD3_OD_B', 'COMM_RD_B', 'CCD2_IG1_B', 'CCD3_IG1_B', 'CCD1_TEMP_B',
           'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
 
-IG1 = 6.
-IG2 = 5.
+IDL=11.
+IDH=18.
+IG1 = 4.5
+IG2 = 6.
 
 TP01_commvalues = dict(program='CALCAMP', test='TP01',
                        flushes=7, exptime=0., shuttr=0,
                        e_shuttr=0, vstart=0, vend=2066,
                        siflsh=1, siflsh_p=500,
-                       IDL=11., IDH=18.,
+                       IDL=IDL, IDH=IDH,
                        IG1_1_T=IG1, IG1_2_T=IG1, IG1_3_T=IG1,
                        IG1_1_B=IG1, IG1_2_B=IG1, IG1_3_B=IG1,
                        IG2_T=IG2, IG2_B=IG2,
@@ -73,7 +75,6 @@ class TP01_inputs(inputs.Inputs):
          ([int], 'Number of Shuffles, Vertical/Parallel Pumping.')),
         ('id_delays',
          ([list], 'Injection Drain Delays [2, one per CCDs section].')),
-        ('toi_chinj', ([int], 'TOI Charge Injection.')),
         ('toi_tpv', ([list], 'Vector of TOI TP-V values.')),
         ('vpumpmodes',
          ([list], 'Vertical/Parallel Pumping Starting points.'))
@@ -105,7 +106,7 @@ class TP01(PumpTask):
     def set_inpdefaults(self, **kwargs):
         """ """
 
-        toi_chinjTP01 = 500
+        toi_chinjTP01 = 250
         self.inpdefaults = dict(toi_chinj=toi_chinjTP01,
                                 Nshuffles_V=5000,
                                 id_delays=np.array([2.5, 1.5]) * toi_chinjTP01,
