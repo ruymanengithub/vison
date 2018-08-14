@@ -92,6 +92,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         IDL = 11.
         IDH = 18.
+        IG2 = 5.5
         IG1s = [2., 6.]
         toi_chinj01 = 500
         id_delays = [toi_chinj01*2.5, toi_chinj01*1.5]
@@ -102,7 +103,8 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         chinj01 = CHINJ01.CHINJ01(inputs=dict(elvis=elvis,
                                               CHAMBER=CHAMBER,
                                               test='CHINJ01',
-                                              IDL=IDL, IDH=IDH, IG1s=IG1s,
+                                              IDL=IDL, IDH=IDH, 
+                                              IG2=IG2, IG1s=IG1s,
                                               toi_chinj=toi_chinj01,
                                               id_delays=id_delays,
                                               diffvalues=diffCHINJ01))

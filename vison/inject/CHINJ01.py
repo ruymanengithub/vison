@@ -43,7 +43,6 @@ HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
           'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
 
 CHINJ01_commvalues = dict(program='CALCAMP', test='CHINJ01',
-                          IG2_T=5.5, IG2_B=5.5,
                           IPHI1=1, IPHI2=1, IPHI3=1, IPHI4=0,
                           rdmode='fwd_bas',
                           flushes=7, exptime=0., vstart=0, vend=2086,
@@ -60,6 +59,7 @@ class CHINJ01_inputs(inputs.Inputs):
     manifesto.update(OrderedDict(sorted([
         ('IDL', ([float], 'Injection Drain Low Voltage.')),
         ('IDH', ([float], 'Injection Drain High Voltage.')),
+        ('IG2', ([float], 'Injection Gate 2 Voltage.')),
         ('IG1s', ([list], 'Injection Gate 1 Voltages.')),
         ('dIG1', ([float], 'Injection Gate 1 Voltage Step.')),
         ('id_delays', ([list], 'Injection Drain Delays.')),
@@ -103,6 +103,7 @@ class CHINJ01(InjTask):
         self.inpdefaults = dict(
             IDL=11.,
             IDH=18.,
+            IG2=5.5,
             IG1s=[2., 6.],
             dIG1=0.25,
             id_delays=[toi_chinj*2.5, toi_chinj*1.5],
@@ -121,10 +122,11 @@ class CHINJ01(InjTask):
         """
         Builds CHINJ01 script structure dictionary.
 
-        #:param IDL: int, [mV], value of IDL (Inject. Drain Low).
-        #:param IDH: int, [mV], Injection Drain High.
-        #:param IG1s: list of 2 ints, [mV], [min,max] values of IG1.
-        #:param id_delays: list of 2 ints, [mV], injection drain delays (2).
+        #:param IDL: float, [mV], value of IDL (Inject. Drain Low).
+        #:param IDH: float, [mV], Injection Drain High.
+        #:param IG2: float, [mV], Injection Gate 2.
+        #:param IG1s: list of 2 floats, [mV], [min,max] values of IG1.
+        #:param id_delays: list of 2 floats, [mV], injection drain delays (2).
         #:param toi_chinj: int, [us], TOI-charge injection.
         :param diffvalues: dict, opt, differential values.
 
@@ -132,6 +134,7 @@ class CHINJ01(InjTask):
 
         IDL = self.inputs['IDL']
         IDH = self.inputs['IDH']
+        IG2 = self.inputs['IG2']
         IG1s = self.inputs['IG1s']
         dIG1 = self.inputs['dIG1'] # 0.25  # V
         id_delays = self.inputs['id_delays']
@@ -155,6 +158,7 @@ class CHINJ01(InjTask):
             colkey = 'col%i' % colcounter
             #print colkey
             CHINJ01_sdict[colkey] = dict(frames=1, IDL=IDL, IDH=IDH,
+                                         IG2_T=IG2, IG2_B=IG2,
                                          id_dly=id_delays[0], toi_ch=toi_chinj)
 
             for CCD in CCDs:
@@ -169,6 +173,7 @@ class CHINJ01(InjTask):
             colkey = 'col%i' % colcounter
             #print colkey
             CHINJ01_sdict[colkey] = dict(frames=1, IDL=IDL, IDH=IDH,
+                                         IG2_T=IG2,IG2_B=IG2,
                                          id_dly=id_delays[1], toi_ch=toi_chinj)
 
             for CCD in CCDs:
