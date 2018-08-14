@@ -42,15 +42,16 @@ HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
           'CCD1_IG1_T', 'COMM_IG2_T', 'FPGA_PCB_TEMP_T', 'CCD1_OD_B',
           'CCD2_OD_B', 'CCD3_OD_B', 'COMM_RD_B', 'CCD2_IG1_B', 'CCD3_IG1_B', 'CCD1_TEMP_B',
           'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
-
-IG1 = 6
-IG2 = 5
+IDL=11.
+IDH=18.
+IG1 = 4.5
+IG2 = 6.
 
 TP02_commvalues = dict(program='CALCAMP', test='TP02',
                        exptime=0., shuttr=0,
                        vstart=0, vend=100,
                        siflsh=1, siflsh_p=500,
-                       IDL=11, IDH=18,
+                       IDL=IDL, IDH=IDH,
                        IG1_1_T=IG1, IG1_2_T=IG1, IG1_3_T=IG1,
                        IG1_1_B=IG1, IG1_2_B=IG1, IG1_3_B=IG1,
                        IG2_T=IG2, IG2_B=IG2,
@@ -62,7 +63,6 @@ TP02_commvalues = dict(program='CALCAMP', test='TP02',
                        v_tp_cnt=0, dwell_v=0, dwell_s=0,
                        comments='')
 
-
 class TP02_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
@@ -72,7 +72,6 @@ class TP02_inputs(inputs.Inputs):
         ('dwell_sv', ([list], 'Dwell Times list [serial].')),
         ('id_delays',
          ([list], 'Injection Drain Delays [2, one per CCDs section].')),
-        ('toi_chinj', ([int], 'TOI Charge Injection.')),
         ('spumpmodes',
          ([list], 'Horizontal/Serial Pumping Starting points.'))
     ])))
@@ -102,7 +101,7 @@ class TP02(PumpTask):
 
     def set_inpdefaults(self, **kwargs):
         """ """
-        toi_chinj = 500
+        toi_chinj = 250
         self.inpdefaults = dict(toi_chinj=toi_chinj,
                                 Nshuffles_H=5000,
                                 dwell_sv=[0., 4.75, 14.3, 28.6],
