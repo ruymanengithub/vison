@@ -145,9 +145,12 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
     if toGen['TP01']:
 
         print 'TP01...'
-
-        TOI_TPv = [200, 1000, 2000, 4000, 8000]
+        
         toi_chinjTP01 = 250  # quick injection
+        Nshuffles_V=5000
+        TOI_TPv = [200, 1000, 2000, 4000, 8000]
+        vpumpmodes=[123,234,341,412]
+        
         id_delays_TP01 = (np.array([2.5, 1.5]) * toi_chinjTP01).tolist()
 
         diffTP01 = dict()
@@ -156,8 +159,11 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         tp01 = TP01.TP01(inputs=dict(elvis=elvis,
                                      CHAMBER=CHAMBER,
                                      test='TP01',
-                                     toi_tpv=TOI_TPv, toi_chinj=toi_chinjTP01,
+                                     toi_chinj=toi_chinjTP01,
+                                     Nshuffles_V=Nshuffles_V,
                                      id_delays=id_delays_TP01,
+                                     toi_tpv=TOI_TPv,
+                                     vpumpmodes=vpumpmodes,
                                      diffvalues=diffTP01))
         #structTP01 = tp01.build_scriptdict(elvis=elvis)
 
@@ -173,6 +179,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         dwell_sv = [0., 4.75, 14.3, 28.6]  # us
         toi_chinjTP02 = 250  # quick injection
         id_delays_TP02 = (np.array([2.5, 1.5])*toi_chinjTP02).tolist()
+        spumpmodes=[23,31]
 
         diffTP02 = dict(mirr_on=0)
         diffTP02.update(diffvalues)
@@ -180,9 +187,11 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         tp02 = TP02.TP02(inputs=dict(elvis=elvis,
                                      CHAMBER=CHAMBER,
                                      test='TP02',
+                                     toi_chinj=toi_chinjTP02,
                                      Nshuffles_H=Nshuffles_H,
-                                     dwell_sv=dwell_sv, toi_chinj=toi_chinjTP02,
+                                     dwell_sv=dwell_sv,
                                      id_delays=id_delays_TP02,
+                                     spumpmodes=spumpmodes,
                                      diffvalues=diffTP02))
 
         #structTP02 = tp02.build_scriptdict(elvis=elvis)
@@ -276,8 +285,10 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         ptc01 = PTC0X.PTC0X(inputs=dict(elvis=elvis,
                                         CHAMBER=CHAMBER,
-                                        test='PTC01', exptimes=exptsPTC01,
-                                        frames=frsPTC01, wavelength=800,
+                                        test='PTC01', 
+                                        exptimes=exptsPTC01,
+                                        frames=frsPTC01, 
+                                        wavelength=800,
                                         diffvalues=diffPTC01))
         #structPTC01 = ptc01.build_scriptdict(diffvalues=diffPTC01,elvis=elvis)
 
@@ -289,7 +300,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         print 'PTC02WAVE...'
 
-        wavesPTC02w = [590, 640, 730, 880]
+        wavesPTC02w = [590, 640, 880]
 
         diffPTC02w = dict(mirr_on=0)
         diffPTC02w.update(diffvalues)
@@ -312,9 +323,9 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             ptc02w = PTC0X.PTC0X(inputs=dict(elvis=elvis,
                                              CHAMBER=CHAMBER,
                                              test=itestkey,
-                                             wavelength=wave,
                                              exptimes=exptsPTC02w,
                                              frames=frsPTC02w,
+                                             wavelength=wave,
                                              diffvalues=diffPTC02w))
 
             #istructPTC02w = ptc02w.build_scriptdict(diffvalues=diffPTC02w,elvis=elvis)
@@ -370,16 +381,18 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         # 5 frames per fluence: 1%, 2%, 3%, 5%, 10%, 20%,30%, 50%,70%,80%,85%,90%,95%
         tFWC_flatNL01 = ogse.profile['tFWC_flat']['nm%i' % waveNL01]
-        exptsNL01 = (np.array([5., 10., 20., 30., 50., 70., 80., 90., 100.,
-                               110., 120.])/100. * tFWC_flatNL01).tolist()  # ms
+        exptsNL01 = (np.array([1., 2., 3., 5., 10., 20., 30., 50., 70., 80., 85.,
+                               90., 95., 100.,110.])/100. * tFWC_flatNL01).tolist()  # ms
         exptinterNL01 = 0.5 * tFWC_flatNL01
-        frsNL01 = (np.ones(11, dtype='int32')*5).tolist()
+        frsNL01 = (np.ones(len(exptsNL01), dtype='int32')*5).tolist()
 
         nl01 = NL01.NL01(inputs=dict(elvis=elvis,
                                      CHAMBER=CHAMBER,
                                      test='NL01',
-                                     exptimes=exptsNL01, exptinter=exptinterNL01,
-                                     frames=frsNL01, wavelength=waveNL01,
+                                     exptimes=exptsNL01, 
+                                     exptinter=exptinterNL01,
+                                     frames=frsNL01, 
+                                     wavelength=waveNL01,
                                      diffvalues=diffNL01))
 
         #structNL01 = nl01.build_scriptdict(diffvalues=diffNL01,elvis=elvis)
@@ -402,6 +415,8 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             tFWC_pointw = ogse.profile['tFWC_point']['nm%i' % wave]
 
             iexptimeF00 = 60./100. * tFWC_pointw
+            
+            deltafocusF00 = 0.1 # mm
 
             itestkey = 'FOCUS00_%i' % wave
 
@@ -412,8 +427,9 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             focus00 = FOCUS00.FOCUS00(inputs=dict(elvis=elvis,
                                                   CHAMBER=CHAMBER,
                                                   test=itestkey,
-                                                  wavelength=wave,
                                                   exptime=iexptimeF00,
+                                                  wavelength=wave,
+                                                  deltafocus=deltafocusF00,
                                                   diffvalues=diffFOCUS00w))
             # istructFOCUS00w = focus00.build_scriptdict(diffvalues=diffFOCUS00w,
             #                                                   elvis=elvis)
