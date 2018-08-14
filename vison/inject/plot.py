@@ -244,15 +244,17 @@ if __name__ == '__main__':
 
     # TEST
 
-    IG1 = 6.  # [1.5,6.]
-    IG2 = 5.  # 5.5
+    IG1 = [2.,7.]  # [1.5,6.]
+    IG2 = 6.5  # 5.5
     IDL = 11.
     IDH = 18.
-    delay = 500*2.5
+    TOI = 500.
+    delay = TOI*2.5
     figname0_TEST = ''
-    rchpar = 10. - 0.2
+    chpar = 10.
+    rchpar = chpar - 0.2
     
     
 
     draw_gate_voltages(IG1, IG2, IDL, IDH, delay, figname=figname0_TEST,
-                       chpar=10, rchpar=rchpar, TOI=500)
+                       chpar=chpar, rchpar=rchpar, TOI=TOI)
