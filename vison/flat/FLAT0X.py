@@ -54,7 +54,7 @@ FLAT0X_commvalues = dict(program='CALCAMP',
                          rdmode='fwd_bas',
                          flushes=7, vstart=0, vend=2086,
                          exptime=0., shuttr=1,
-                         siflush=0,
+                         siflsh=1, siflsh_p=1,
                          wave=4,
                          comments='')
 
