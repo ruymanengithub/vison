@@ -71,7 +71,7 @@ NL01_commvalues = dict(program='CALCAMP',
 plusminus10pcent = 1.+np.array([-0.10, 0.10])
 
 NL01_relfluences = np.array(
-    [5., 10., 20., 30., 50., 70., 80., 90., 100., 110., 120.])
+    [1.,2.,3.,5., 10., 20., 30., 50., 70., 80., 85., 90., 95., 100., 110.])
 
 FLU_lims = dict(CCD1=dict())
 for iflu, rflu in enumerate(NL01_relfluences):
@@ -116,7 +116,7 @@ class NL01(FlatTask):
 
     def set_inpdefaults(self, **kwargs):
 
-        wave = 800
+        wave = 880
 
         tFWCw = self.ogse.profile['tFWC_flat']['nm%i' % wave]
 
@@ -124,7 +124,7 @@ class NL01(FlatTask):
                  tFWCw).tolist()  # ms
         self.inpdefaults = dict(exptimes=expts,
                                 exptinter=0.5 * tFWCw,
-                                frames=(np.ones(11, dtype='int32')*5).tolist(),
+                                frames=(np.ones(len(expts), dtype='int32')*5).tolist(),
                                 wavelength=wave,
                                 )
 
@@ -146,6 +146,9 @@ class NL01(FlatTask):
         exptinter = self.inputs['exptinter']
         frames = self.inputs['frames']
         wavelength = self.inputs['wavelength']
+        
+        Nbgd=3
+        Nstab0 = 1
 
         assert len(expts) == len(frames)
 
@@ -156,8 +159,8 @@ class NL01(FlatTask):
 
         NL01_sdict = dict()
 
-        NL01_sdict['col1'] = dict(frames=4, exptime=0, comment='BGD')
-        NL01_sdict['col2'] = dict(frames=1, exptime=exptinter, comment='STAB')
+        NL01_sdict['col1'] = dict(frames=Nbgd, exptime=0, comment='BGD')
+        NL01_sdict['col2'] = dict(frames=Nstab0, exptime=exptinter, comment='STAB')
 
         for ix, ifra in enumerate(frames):
 
