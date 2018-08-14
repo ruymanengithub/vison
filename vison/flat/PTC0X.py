@@ -32,28 +32,19 @@ Created on Mon Apr  3 17:00:24 2017
 
 # IMPORT STUFF
 import numpy as np
-from pdb import set_trace as stop
 import os
-import warnings
 import copy
-import string as st
 from collections import OrderedDict
 import pandas as pd
 
 from vison.support import context
 #from vison.pipe import lib as pilib
 from vison.ogse import ogse as ogsemod
-from vison.point import lib as polib
 from vison.datamodel import scriptic as sc
-from vison.datamodel import HKtools
-from vison.datamodel import core, ccd
-from vison.image import calibration
 import ptc as ptclib
-from vison.image import performance
 from FlatTask import FlatTask
 from vison.datamodel import inputs
 import PTC0Xaux
-from vison.support.files import cPickleRead, cPickleDumpDictionary
 from vison.support import utils
 from vison.datamodel import cdp
 # END IMPORT
