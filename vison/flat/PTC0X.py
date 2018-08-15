@@ -47,6 +47,7 @@ from vison.datamodel import inputs
 import PTC0Xaux
 from vison.support import utils
 from vison.datamodel import cdp
+from vison.support.files import cPickleRead
 # END IMPORT
 
 isthere = os.path.exists
@@ -176,6 +177,7 @@ class PTC0X(FlatTask):
         self.figdict = PTC0Xaux.gt_PTC0Xfigs(self.inputs['test'])
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                    products='products')
+        self.window = dict(wpx=300,hpx=300)
 
     def set_inpdefaults(self, **kwargs):
         """ """
@@ -315,15 +317,13 @@ class PTC0X(FlatTask):
         """
         
         # HARDWIRED VALUES
-        wpx = 300
-        hpx = 300
+        wpx = self.window['wpx']
+        hpx = self.window['hpx']
 
         if self.report is not None:
             self.report.add_Section(
                 keyword='extract', Title='PTC Extraction', level=0)
             self.report.add_Text('Segmenting on %i x %i windows...' % (wpx,hpx))
-
-        
 
         # labels should be the same accross CCDs. PATCH.
         label = self.dd.mx['label'][:, 0].copy()
@@ -393,10 +393,10 @@ class PTC0X(FlatTask):
                         dpath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs_pair, jCCD])
 
                     ccdobj_odd = copy.deepcopy(
-                        cPickleRead(ccdobj_odd_f))  # ['ccdobj'])
+                        cPickleRead(ccdobj_odd_f))  
                     ccdobj_eve = copy.deepcopy(
-                        cPickleRead(ccdobj_eve_f))  # ['ccdobj'])
-
+                        cPickleRead(ccdobj_eve_f)) 
+                    
                     evedata = ccdobj_eve.extensions[-1].data.copy()
 
                     # easy way to subtract one image from the other
