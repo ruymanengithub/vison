@@ -33,23 +33,24 @@ def get_exptime_atmiddynrange(flu1D, exp1D):
     return t50
 
 
-def fitNL(fluences, exptimes):
+def fitNL(fluencesNL, exptimes):
     """ """
 
-    assert fluences.shape[0] == exptimes.shape[0]
-    assert fluences.ndim <= 2
+    assert fluencesNL.shape[0] == exptimes.shape[0]
+    assert fluencesNL.ndim <= 2
     assert exptimes.ndim == 1
 
     Nexp = len(exptimes)
 
-    if fluences.ndim == 2:
-        Nsec = fluences.shape[1]
+    if fluencesNL.ndim == 2:
+        
+        Nsec = fluencesNL.shape[1]
         #_exptimes = np.repeat(exptimes.reshape(Nexp,1),Nsec,axis=1)
 
         t50 = np.zeros(Nsec, dtype='float32') + np.nan
 
         for i in range(Nsec):
-            t50[i] = get_exptime_atmiddynrange(fluences[:, i], exptimes)
+            t50[i] = get_exptime_atmiddynrange(fluencesNL[:, i], exptimes)
 
         t50 = np.repeat(t50.reshape(1, Nsec), Nexp, axis=0)
 
@@ -57,27 +58,37 @@ def fitNL(fluences, exptimes):
 
     else:
 
-        t50 = get_exptime_atmiddynrange(fluences[:, i], exptimes)
+        t50 = get_exptime_atmiddynrange(fluencesNL[:, i], exptimes)
 
         exptimes_bc = exptimes.copy()
 
-    YL = exptimes_bc/t50*FullDynRange/2.
+    YL = exptimes_bc/t50 * FullDynRange/2.
 
-    Z = 100.*(YL/fluences-1.)
+    Z = 100.*(fluencesNL/YL-1.)
 
-    NLfit = np.polyfit(YL.flatten(), Z.flatten(), deg=NLdeg, full=False)
+    NLfit = np.polyfit(fluencesNL.flatten(), Z.flatten(), deg=NLdeg, full=False)
 
     NLpol = np.poly1d(NLfit)
 
-    xNL = np.arange(1, FullDynRange, dtype='float32')
+    fkfluencesNL = np.arange(1, FullDynRange, dtype='float32')
     # array with NL fluences (1 to 2**16, in steps of ADU)
+    Z_bestfit = NLpol(fkfluencesNL)
+    
+    ixmax = Z_bestfit.argmax()
+    maxNLpc = Z_bestfit[ixmax]
+    flu_maxNLpc = fkfluencesNL[ixmax]
 
-    ixmax = NLpol(xNL).argmax()
-    maxNLpc = NLpol[ixmax]
-    flu_maxNLpc = xNL[ixmax]
-
-    fitresults = OrderedDict(coeffs=NLfit, NLdeg=NLdeg, maxNLpc=maxNLpc,
-                             flu_maxNLpc=flu_maxNLpc)
+    fitresults = OrderedDict(
+                             coeffs=NLfit, 
+                             NLdeg=NLdeg, 
+                             maxNLpc=maxNLpc,
+                             flu_maxNLpc=flu_maxNLpc,
+                             inputcurve = OrderedDict(
+                                     YL=fluencesNL.flatten().copy(),
+                                     Z=Z.flatten().copy()),
+                             outputcurve = OrderedDict(
+                                     YL=fkfluencesNL.copy(),
+                                     Z=Z_bestfit.copy()))
     return fitresults
 
 
@@ -102,6 +113,8 @@ def wrap_fitNL(raw_data, exptimes, col_labels, times=np.array([]), TrackFlux=Tru
         bgd = np.nanmean(raw_data[ixboo_bgd, :], axis=0)
         bgd = np.repeat(bgd.reshape(1, Nsecs), NObsIDs, axis=0).copy()
         raw_data -= bgd
+    else:
+        bgd = 0.
 
     if TrackFlux and len(times) == NObsIDs:
 
@@ -119,6 +132,7 @@ def wrap_fitNL(raw_data, exptimes, col_labels, times=np.array([]), TrackFlux=Tru
         raw_data[ixboo_fluences, :] /= track_bc
 
     fitresults = fitNL(raw_data[ixboo_fluences, :], exptimes[ixboo_fluences],)
+    fitresults['bgd'] = bgd
 
     return fitresults
 
