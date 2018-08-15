@@ -18,7 +18,7 @@ Created on Tue Aug 29 17:38:00 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
-from copy import deepcopy
+import copy
 from collections import OrderedDict
 
 from vison.pipe import lib as pilib
@@ -30,7 +30,9 @@ from vison.datamodel import scriptic as sc
 from PumpTask import PumpTask
 from vison.image import performance
 from vison.datamodel import inputs
+from vison.support.files import cPickleRead
 import TP02aux
+import tptools
 # END IMPORT
 
 isthere = os.path.exists
@@ -40,15 +42,16 @@ HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
           'CCD1_IG1_T', 'COMM_IG2_T', 'FPGA_PCB_TEMP_T', 'CCD1_OD_B',
           'CCD2_OD_B', 'CCD3_OD_B', 'COMM_RD_B', 'CCD2_IG1_B', 'CCD3_IG1_B', 'CCD1_TEMP_B',
           'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
-
-IG1 = 6
-IG2 = 5
+IDL=11.
+IDH=18.
+IG1 = 4.5
+IG2 = 6.
 
 TP02_commvalues = dict(program='CALCAMP', test='TP02',
                        exptime=0., shuttr=0,
                        vstart=0, vend=100,
                        siflsh=1, siflsh_p=500,
-                       IDL=11, IDH=18,
+                       IDL=IDL, IDH=IDH,
                        IG1_1_T=IG1, IG1_2_T=IG1, IG1_3_T=IG1,
                        IG1_1_B=IG1, IG1_2_B=IG1, IG1_3_B=IG1,
                        IG2_T=IG2, IG2_B=IG2,
@@ -60,7 +63,6 @@ TP02_commvalues = dict(program='CALCAMP', test='TP02',
                        v_tp_cnt=0, dwell_v=0, dwell_s=0,
                        comments='')
 
-
 class TP02_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
@@ -70,7 +72,6 @@ class TP02_inputs(inputs.Inputs):
         ('dwell_sv', ([list], 'Dwell Times list [serial].')),
         ('id_delays',
          ([list], 'Injection Drain Delays [2, one per CCDs section].')),
-        ('toi_chinj', ([int], 'TOI Charge Injection.')),
         ('spumpmodes',
          ([list], 'Horizontal/Serial Pumping Starting points.'))
     ])))
@@ -83,21 +84,24 @@ class TP02(PumpTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(TP02, self).__init__(inputs, log, drill, debug)
-        self.name = 'TP02'
-        self.type = 'Simple'
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
                          ('extract', self.extract),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
+        super(TP02, self).__init__(inputs, log, drill, debug)
+        self.name = 'TP02'
+        self.type = 'Simple'
+        
         self.HKKeys = HKKeys
         self.figdict = TP02aux.TP02figs.copy()
-        self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles')
+        self.inputs['subpaths'] = dict(figs='figs', 
+                   ccdpickles='ccdpickles',
+                   products='products')
 
     def set_inpdefaults(self, **kwargs):
         """ """
-        toi_chinj = 500
+        toi_chinj = 250
         self.inpdefaults = dict(toi_chinj=toi_chinj,
                                 Nshuffles_H=5000,
                                 dwell_sv=[0., 4.75, 14.3, 28.6],
@@ -162,7 +166,7 @@ class TP02(PumpTask):
         Ncols = len(TP02_sdict.keys())
         TP02_sdict['Ncols'] = Ncols
 
-        commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+        commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(TP02_commvalues)
 
         if len(diffvalues) == 0:
@@ -175,15 +179,96 @@ class TP02(PumpTask):
 
         return TP02_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """ """
         wavedkeys = ['motr_siz']
-        return super(TP02, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=True,
+        return super(TP02, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
                                                  wavedkeys=wavedkeys)
-
+    
+    def prepare_images(self):
+        super(TP02, self).prepare_images(doExtract=True, 
+             doMask=False, # ON TESTS!
+             doOffset=True, doBias=False, doFF=False)
+    
     def extract(self):
-        """ """
-        raise NotImplementedError
+        """ 
+        Obtain Maps of Serial Dipoles.
+        
+        """
+        
+        DDindices = copy.deepcopy(self.dd.indices)
+        CCDs = DDindices.get_vals('CCD')
+
+        ccdpicklespath = self.inputs['subpaths']['ccdpickles']
+        productspath = self.inputs['subpaths']['products']
+
+        # Initialisations
+
+        self.dd.initColumn('dipoles_raw', self.dd.mx['ccdobj_name'].indices,
+                           dtype='S100', valini='None')
+
+        id_dlys = np.unique(self.dd.mx['id_dly'][:, 0])
+
+        if not self.drill:
+
+            # Computing maps of relative amplitude of dipoles
+
+            for id_dly in id_dlys: 
+
+                for jCCD, CCDk in enumerate(CCDs):
+                    
+                    ixsel = np.where((self.dd.mx['id_dly'][:,jCCD] == id_dly) & (
+                        self.dd.mx['s_tpump'][:,jCCD] != 0))
+                    ixref = np.where((self.dd.mx['id_dly'][:,jCCD] == id_dly) & (
+                        self.dd.mx['s_tpump'][:,jCCD] == 0))
+                    
+                    Rvstart = self.dd.mx['vstart'][ixref[0][0], jCCD]
+                    Rvend = self.dd.mx['vend'][ixref[0][0], jCCD]
+                    
+                    ccdref_f = '%s.pick' % self.dd.mx['ccdobj_name'][ixref[0][0], jCCD]
+                    ccdref = cPickleRead( os.path.join(ccdpicklespath, ccdref_f))
+                    
+                    InjProfiles = OrderedDict()
+                    
+                    for Q in ccdref.Quads:
+                        
+                        InjProfiles[Q] = tptools.get_InjProfile(ccdref, 
+                                   Q, Navgrows=-1, vstart=Rvstart, vend=Rvend, 
+                                   extension=-1)
+
+                    for ix in ixsel[0]:
+                        
+                        ObsID = self.dd.mx['ObsID'][ix]
+                        vstart = self.dd.mx['vstart'][ix, jCCD]
+                        vend = self.dd.mx['vend'][ix,jCCD]
+                        s_tp_mod = self.dd.mx['s_tp_mod'][ix,jCCD]
+                        
+                        
+                        ioutf = 'TP02_rawmap_%i_IDDLY_%i_ROE1_%s' % (
+                            ObsID, id_dly, CCDk)
+
+                        iccdobj_f = '%s.pick' % self.dd.mx['ccdobj_name'][ix, jCCD]
+
+                        iccdobj = cPickleRead(
+                            os.path.join(ccdpicklespath, iccdobj_f))
+                        irawmap = copy.deepcopy(iccdobj)
+
+                        sh_injprofiles = OrderedDict()
+                        for Q in ccdref.Quads:
+                        
+                            if s_tp_mod == 31:
+                                sh_injprofiles[Q] = np.roll(InjProfiles[Q],-1,0)
+                            elif s_tp_mod == 23:
+                                sh_injprofiles[Q] = InjProfiles[Q].copy()
+                            
+                        irawmap = tptools.gen_raw_dpmap_stpump(
+                                irawmap, sh_injprofiles, vstart=vstart, vend=vend)
+
+                        irawmap.writeto(os.path.join(productspath, \
+                                '%s.fits' % ioutf),clobber=True)
+
+                        self.dd.mx['dipoles_raw'][ix, jCCD] = ioutf
+
 
     def basic_analysis(self):
         """
@@ -207,6 +292,7 @@ class TP02(PumpTask):
                 Counts of dipoles (and E vs. W)
 
         """
+        return # TESTS
         raise NotImplementedError
 
     def meta_analysis(self):
@@ -236,4 +322,5 @@ class TP02(PumpTask):
 
 
         """
+        return #TESTS
         raise NotImplementedError

@@ -14,7 +14,6 @@ from pdb import set_trace as stop
 import copy
 import os
 
-from vison.inject import extract_injection_lines
 from vison.pipe.task import Task
 from vison.datamodel import core, ccd
 from vison.pipe import lib as pilib

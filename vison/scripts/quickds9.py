@@ -26,7 +26,9 @@ isthere = os.path.exists
 
 if __name__ == '__main__':
 
-    usage = 'usage: %prog [options] arg1 [arg2]'
+    usage = 'usage: %prog [options] arg1 [arg2]\n'+\
+            'arg1: starting OBSID\n'+\
+            '[arg2]: optional, end OBSID. If not provided, arg2==arg1.'
     parser = OptionParser(usage)
     parser.add_option("-p", "--path", dest="path", default='',
                       help="path where to look for FITS files. Search is not recursive.")
@@ -62,10 +64,11 @@ if __name__ == '__main__':
     for iobs in range(obsid0, obsid1+1):
         tantFITS = os.path.join(
             path, template % (iobs, roe, ccd))
+        
         try:
             FITS = glob(tantFITS)[0]
             FITSlist.append(FITS)
-        except IOError:
+        except IndexError, IOError:
             sys.exit("Image %s not found!" % tantFITS)
 
     try:

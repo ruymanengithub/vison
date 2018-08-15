@@ -425,9 +425,14 @@ class Report(Container):
         """ """
         self.add_to_Contents(FigsTable(FigsList, Ncols, figswidth, caption))
 
-    def add_Text(self, text):
+    def add_Text(self, text, verbatim=False):
         """ """
-        self.add_to_Contents(Text(text))
+        if verbatim:
+            self.add_to_Contents(Text('\\begin{lstlisting}'))
+            self.add_to_Contents(Text(text))
+            self.add_to_Contents(Text('\\end{lstlisting}'))
+        else:
+            self.add_to_Contents(Text(text))
 
     def doreport(self, reportname, cleanafter=False, silent=True):
 

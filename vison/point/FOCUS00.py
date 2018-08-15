@@ -34,6 +34,9 @@ from pdb import set_trace as stop
 import os
 import copy
 from collections import OrderedDict
+import pandas as pd
+from scipy import stats
+from scipy import interpolate
 
 #from vison.pipe import lib as pilib
 from vison.support import context
@@ -47,9 +50,10 @@ from vison.datamodel import HKtools
 from vison.datamodel import ccd
 from vison.datamodel import generator
 from vison.datamodel import scriptic as sc
-from vison.point.spot import Spot
+from vison.point.spot import Spot as SpotObj
 from vison.point import display as pdspl
 from vison.support import vistime
+from vison.support import utils
 #from vison.pipe.task import Task
 import PointTask as PT
 #from PointTask import PointTask, BGD_lims
@@ -77,11 +81,10 @@ FOCUS00_commvalues = dict(program='CALCAMP', test='FOCUS_%i',
                           flushes=7,
                           shuttr=1,
                           vstart=0, vend=2086,
-                          siflsh=0, siflsh_p=500,
+                          siflsh=1, siflsh_p=500,
                           mirr_on=1,
                           motr_on=0,
                           source='point')
-
 
 FWHM_lims = OrderedDict(CCD1=OrderedDict(
     E=OrderedDict(ALPHA=[0.5, 10.])))  # CCD-Q-Spot, pixels
@@ -120,15 +123,19 @@ class FOCUS00(PT.PointTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
+        self.subtasks = [('check', self.check_data), 
+                         #('prep', self.prep_data),
+                         ('basic', self.basic_analysis),
+                         ('meta', self.meta_analysis)]
         super(FOCUS00, self).__init__(inputs, log, drill, debug)
         self.name = 'FOCUS00'
         self.type = 'Simple'
-        self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
-                         ('basic', self.basic_analysis),
-                         ('meta', self.meta_analysis)]
+        
         self.HKKeys = HKKeys
         self.figdict = F00aux.gt_F00figs(self.inputs['wavelength'])
-        self.inputs['subpaths'] = dict(figs='figs')
+        self.inputs['subpaths'] = dict(figs='figs',
+                                       products='products')
+        
 
     def set_inpdefaults(self, **kwargs):
 
@@ -193,10 +200,10 @@ class FOCUS00(PT.PointTask):
 
         return FOCUS00_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """ """
         wavedkeys = ['motr_siz']
-        return super(FOCUS00, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=False,
+        return super(FOCUS00, self).filterexposures(structure, explog, OBSID_lims, colorblind=False,
                                                     wavedkeys=wavedkeys)
         # return pilib.filterexposures(structure,explogf,datapath,OBSID_lims,colorblind=False,
         #                      wavedkeys=wavedkeys,elvis=elvis)
@@ -206,541 +213,197 @@ class FOCUS00(PT.PointTask):
         raise NotImplementedError
 
     def basic_analysis(self):
-        """ """
-        raise NotImplementedError
+        """ 
+        This is just an assignation of values measured in check_data.        
+        """
+
+        CHKindices = copy.deepcopy(self.dd.indices)
+        assert 'CCD' in CHKindices.names
+        assert 'Quad' in CHKindices.names
+        assert 'Spot' in CHKindices.names
+        
+        newkeys = ['x','y','x_ccd','y_ccd','fluence','fwhmx','fwhmy']
+        for key in newkeys:
+            chkkey = 'chk_%s' % key
+            self.dd.addColumn(self.dd.mx[chkkey][:].copy(), key, CHKindices)
 
     def meta_analysis(self):
         """ """
-        raise NotImplementedError
+        # fit fwhmZ vs mirror_pos across focal plane (CCDxQxSpot)> 
+        #                          best_mirr_pos(x,y)
+        #   repeat for Z=x,y
+        # find & report mean(medians) of best_mirror_posX/Y across focal plane> 
+        #                          Best_mirr_pos(beam)
+        # plot fwhmZ vs. mirror_pos with fits and Best_mirr_pos(beam)
+        # plot predicted (surface) delta-fwhmZ across focal plane for 
+        #                                         Best_mirr_pos(beam)
+        # save Best Mirr pos as a "product"
+        
+        wave = self.inputs['wavelength']
+        
+        poldegree = 2
+        
+        CCDs = self.dd.indices.get_vals('CCD')
+        Quads = self.dd.indices.get_vals('Quad')
+        Spots = self.dd.indices.get_vals('Spot')
+        
+        xmirr = self.dd.mx['mirr_pos'][:].copy()
+        
+        nC = len(CCDs)
+        nQ = len(Quads)
+        nS = len(Spots)
+        NP = nC * nQ * nS
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        
+        Focus_dd = OrderedDict()
+        Focus_dd['CCD'] = np.zeros(NP,dtype='int32')
+        Focus_dd['Q'] = np.zeros(NP,dtype='int32')
+        Focus_dd['Spot'] = np.zeros(NP,dtype='int32')
+        Focus_dd['x_ccd'] =  np.zeros(NP,dtype='float32')
+        Focus_dd['y_ccd'] =  np.zeros(NP,dtype='float32')
+        Focus_dd['focus'] =  np.zeros(NP,dtype='float32')
+        Focus_dd['belocal_fwhm'] =  np.zeros(NP,dtype='float32')
+        
+        zres = OrderedDict()
+        
+        for iCCD, CCDk in enumerate(CCDs):
+            
+            zres[CCDk] = OrderedDict()
+            
+            for jQ, Q in enumerate(Quads):
+                
+                zres[CCDk][Q] = OrderedDict()
+                
+                for lSpot, SpotName in enumerate(Spots):
 
+                    ix = iCCD  * (nQ*nS) + jQ * nS + lSpot
+                    
+                    fwhmx = self.dd.mx['fwhmx'][:,iCCD,jQ,lSpot].copy()
+                    fwhmy = self.dd.mx['fwhmy'][:,iCCD,jQ,lSpot].copy()
+                    
+                    fwhm = np.sqrt(fwhmx**2.+fwhmy**2.) / np.sqrt(2.)
+                    
+                    try:
+                        p_zres = F00lib.fit_focus_single(xmirr[:,iCCD], 
+                                fwhm, yerror=None, 
+                                 degree=poldegree, doplot=False)
+                    except ValueError:
+                        if self.log is not None:
+                            self.log.info('Focus fit did not converge for %s-%s-%s' %
+                                  (CCDk,Q,SpotName))
+                        p_zres = dict(coeffs=np.zeros(poldegree+1)+np.nan,
+                         ecoeffs=np.zeros(poldegree+1)+np.nan,
+                         focus=np.nan)
+                    
+                    Focus_dd['CCD'][ix] = iCCD 
+                    Focus_dd['Q'][ix] = jQ
+                    Focus_dd['Spot'][ix] = lSpot
+                    
+                    av_x_ccd = np.nanmean(self.dd.mx['x_ccd'][:,iCCD,jQ,lSpot])
+                    av_y_ccd = np.nanmean(self.dd.mx['y_ccd'][:,iCCD,jQ,lSpot])
+                                
+                    Focus_dd['x_ccd'][ix] = av_x_ccd
+                    Focus_dd['y_ccd'][ix] = av_y_ccd
+                    
+                    Focus_dd['focus'][ix] = p_zres['focus']
+                    
+                    Focus_dd['belocal_fwhm'][ix] = np.polyval(p_zres['coeffs'],p_zres['focus'])
+                            
+                    zres[CCDk][Q][SpotName] = p_zres
 
-# def get_basic_spot_FOCUS00(stamp,x0,y0,log=None,debug=False):
-#    """
-#    # TODO:
-#    #   get basic statistics, measure and subtract background
-#    #   update centroid
-#    #   do aperture photometry
-#    #   pack-up results and return
-#    """
-#
-#    rap = 5
-#    rin = 10
-#    rout = max(stamp.shape)
-#    gain = 3.5 # used to compute photom. error
-#
-#    if debug:
-#        return dict(bgd=0.,peak=1.,fluence=1.,efluence=0.,
-#               x=1.,y=1.,fwhmx=1.,fwhmy=1.,stamp=stamp.copy())
-#
-#    spot = Spot(stamp,log)
-#    spot.xcen = x0
-#    spot.ycen = y0
-#
-#    bgd,sbgd = spot.measure_bgd(rin,rout)
-#    spot.sub_bgd(rin,rout)
-#    peak = spot.data.max()
-#    xcen,ycen,fwhmx,fwhmy = spot.get_centroid(full=True)
-#    centre = spot.xcen,spot.ycen
-#
-#    flu,eflu = spot.doap_photom(centre,rap,rin,rout,gain=gain,doErrors=True,
-#                    subbgd=True)
-#
-#    x,y = spot.xcen,spot.ycen
-#    res = dict(bgd=bgd,peak=peak,fluence=flu,efluence=eflu,
-#               x=x,y=y,fwhmx=fwhmx,fwhmy=fwhmy,stamp=spot.data.copy())
-#
-#    return res
-#
-#
-# def get_shape_spot_FOCUS00(stamp,x0,y0,method='G',log=None,debug=False):
-#    """
-#    # TODO:
-#    #   get basic statistics, measure and subtract background
-#    #   update centroid
-#    #   do aperture photometry
-#    #   pack-up results and return
-#    """
-#
-#    if debug and method == 'G':
-#        return dict()
-#
-#    if debug and method == 'M':
-#        return dict()
-#
-#    spot = Spot(stamp,log)
-#    spot.xcen = x0
-#    spot.ycen = y0
-#
-#    if method == 'G':
-#        # gauss(): i00, xcen, self.ycen, x_stddev=0.5, y_stddev=0.5
-#        # G_keys = ['x','ey','y','ey','i0','ei0','sigma_x','esigma_x',
-#        # 'sigma_y','esigma_y','fwhm_x','efwhm_x','fwhm_y','efwhm_y',
-#        # 'fluence','efluence']
-#
-#        Gpars, eGpars = spot.fit_Gauss()
-#
-#        res = dict(i0=Gpars[0],ei0=eGpars[0],
-#                  x=Gpars[1],ex=eGpars[1],y=Gpars[2],ey=eGpars[2],
-#                  sigma_x=Gpars[3],esigma_x=eGpars[3],
-#                  sigma_y=Gpars[4],esigma_y=eGpars[4])
-#        res['fwhm_x'] = res['sigma_x']*2.355
-#        res['efwhm_x'] = res['esigma_x']*2.355
-#        res['fwhm_y'] = res['sigma_y']*2.355
-#        res['efwhm_y'] = res['esigma_y']*2.355
-#        sigma_maj = np.max([res['sigma_x'],res['sigma_y']])
-#        sigma_min = np.min([res['sigma_x'],res['sigma_y']])#
-#        q = sigma_min/sigma_maj
-#
-#        res['fluence'] = 2.*np.pi*res['i0']*q*sigma_maj**2.
-#        res['efluence'] = 2.*np.pi*res['ei0']*q*sigma_maj**2.
-#
-#
-#    if method == 'M':
-#        #res = dict(centreX=quad['centreX']+1, centreY=quad['centreY']+1,
-#        #           e1=quad['e1'], e2=quad['e2'],
-#        #           ellipticity=quad['ellipticity'],
-#        #           R2=R2,
-#        #           R2arcsec=R2arcsec,
-#        #           GaussianWeighted=GaussianWeighted,
-#        #           a=quad['a'], b=quad['b'])
-#        #M_keys = ['x','y','ellip','e1','e2','R2','a','b']
-#        rawres = spot.measureRefinedEllipticity()
-#        res = dict(x=rawres['centreX']-1.,y=rawres['centreY']-1.,
-#                   ellip=rawres['ellipticity'],e1=rawres['e1'],
-#                   e2=rawres['e2'],R2=rawres['R2'],
-#                   a=rawres['a'],b=rawres['b'])
-#
-#
-#    return res
-#
-#
-# def prep_data_FOCUS00(DataDict,Report,inputs,log=None,debug=False):
-#    """Takes Raw Data and prepares it for further analysis.
-#    Also checks that data quality is enough."""
-#
-#    # Inputs un-packing
-#
-#    FFs = inputs['FFs'] # flat-fields for each CCD (1,2,3)
-#    resultspath = inputs['resultspath']
-#
-#    # Load Flat-Field data for each CCD
-#
-#    FFdata = dict()
-#    for CCDindex in range(1,4):
-#        CCDkey = 'CCD%i' % CCDindex
-#        if CCDkey in FFs.keys():
-#            FFdata[CCDkey] = FFing.FlatField(fitsfile=FFs[CCDkey])
-#
-#    ThisSectionTitle = 'Data Pre-Processing and QA'
-#    try:
-#        lastsection = Report.Contents[-1]
-#        if (lastsection.type == 'section') and \
-#           (lastsection.Title == ThisSectionTitle):
-#               _ = Report.Contents.pop(-1)
-#        Report.add_Section(Title=ThisSectionTitle,level=0)
-#    except:
-#        pass
-#
-#    Report.add_Section(Title='Data Pre-Processing and QA',level=0)
-#
-#    # Initialization of columns to be added to DataDict
-#
-#
-#    ccd_keys = ['spots_file']
-#
-#    ccd_keys_Q = ['offset','med_pre','std_pre','med_ove','std_ove','med_img',
-#                   'std_img']
-#    ccd_formats = dict(spots_file='S30')
-#
-#    spot_basic_keys = ['x','y','peak','fluence', 'efluence','bgd','fwhmy', 'fwhmx']
-#
-#    coo_dict_CCDQ = polib.Point_CooNom['CCD1']['E']
-#    spotIDs = polib.Point_CooNom['names']
-#
-#
-#    for CCDindex in range(1,4):
-#
-#        CCDkey = 'CCD%i' % CCDindex
-#
-#        if CCDkey in DataDict:
-#
-#            # Loop over ObsIDs
-#
-#            Nobs = len(DataDict[CCDkey]['ObsID'].copy())
-#
-#            for key in ccd_keys:
-#                try: dtype = ccd_formats[key]
-#                except: dtype = 'float32'
-#                DataDict[CCDkey][key] = (np.zeros(Nobs) + np.nan).astype(dtype)
-#
-#            for key in ccd_keys_Q:
-#                try: dtype = ccd_formats[key]
-#                except: dtype = 'float32'
-#                for Q in pilib.Quads:
-#                    DataDict[CCDkey]['%s_%s' % (key,Q)] = (np.zeros(Nobs) + np.nan).astype(dtype)
-#
-#            for key in spot_basic_keys:
-#                dtype = 'float32'
-#                for Q in pilib.Quads:
-#                    for spotID in spotIDs:
-#                        DataDict[CCDkey]['bas_%s_%s_%s' % (key,Q,spotID)] = \
-#                         (np.zeros(Nobs) + np.nan).astype(dtype)
-#
-#    # Loop over CCDs
-#
-#    for CCDindex in range(1,4):
-#
-#        CCDkey = 'CCD%i' % CCDindex
-#
-#        if CCDkey in DataDict:
-#
-#            # Loop over ObsIDs
-#
-#            ObsIDs = DataDict[CCDkey]['ObsID'].copy()
-#            label = DataDict[CCDkey]['label'].copy()
-#
-#
-#            for iObs, ObsID in enumerate(ObsIDs):
-#
-#                ilabel = label[iObs]
-#
-#                # log object-id being analyzed: ObsID
-#
-#                if log is not None: log.info('working on ObsID %i' % ObsID)
-#
-#                # retrieve FITS file and open it
-#
-#                idatapath = DataDict[CCDkey]['datapath'][iObs]
-#
-#                fitsf = os.path.join(idatapath,DataDict[CCDkey]['Files'][iObs])
-#
-#
-#                # subtract offset and add to DataDict
-#                # measure basic image statistics and add to DataDict
-#
-#                ccdobj = ccd.CCD(fitsf)
-#
-#
-#                for Q in pilib.Quads:
-#
-#                    Qoffset = ccdobj.sub_offset(Q,method='median',scan='pre',trimscan=[5,5])[0]
-#                    DataDict[CCDkey]['offset_%s' % Q][iObs] = Qoffset
-#
-#                    med_pre,std_pre = ccdobj.get_stats(Q,sector='pre',statkeys=['median','std'],trimscan=[5,5])
-#                    med_ove,std_ove = ccdobj.get_stats(Q,sector='ove',statkeys=['median','std'],trimscan=[5,5])
-#                    med_img,std_img = ccdobj.get_stats(Q,sector='img',statkeys=['median','std'],trimscan=[10,10])
-#
-#                    DataDict[CCDkey]['med_pre_%s' % Q][iObs] = med_pre
-#                    DataDict[CCDkey]['std_pre_%s' % Q][iObs] = std_pre
-#                    DataDict[CCDkey]['med_ove_%s' % Q][iObs] = med_ove
-#                    DataDict[CCDkey]['std_ove_%s' % Q][iObs] = std_ove
-#                    DataDict[CCDkey]['med_img_%s' % Q][iObs] = med_img
-#                    DataDict[CCDkey]['std_img_%s' % Q][iObs] = std_img
-#
-#
-#                if ilabel != 'BGD':
-#
-#                    spots_bag = dict()
-#
-#
-#                    # Divide by flat-field
-#
-#                    if not debug:
-#                        ccdobj.divide_by_flatfield(FFdata[CCDkey].Flat)
-#                        if log is not None: log.info('Divided Image by Flat-field')
-#
-#
-#                    for Q in pilib.Quads:
-#
-#                        spots_bag[Q] = dict()
-#
-#                        coo_dict_CCDQ = polib.Point_CooNom[CCDkey][Q]
-#                        spotIDs = coo_dict_CCDQ.keys()
-#                        B=ccdobj.QuadBound[Q]
-#
-#                        for spotID in spotIDs:
-#
-#                            if log is not None: log.info('ObsID - CCD - spotID = %s-%s' % (ObsID,CCDkey,spotID))
-#
-#                            # get coordinates of spotID
-#
-#                            coo = coo_dict_CCDQ[spotID]
-#
-#                            x0Q,y0Q = tuple([int(np.round(item)) for item in coo])
-#                            x0Q -= B[0]
-#                            y0Q -= B[2]
-#
-#                            corners = [x0Q-stampw/2,x0Q-stampw/2+stampw,
-#                                       y0Q-stampw/2,y0Q-stampw/2+stampw]
-#
-#                            # Cut-out stamp of the spot
-#                            stamp = ccdobj.get_cutout(corners,Q,canonical=False)
-#
-#                            x0 = stampw/2
-#                            y0 = stampw/2
-#
-#                            # do basic measurements on each spot and add to DataDict:
-#                            # spot_basic.keys()
-#                            # ['x,','y','peak','fluence', 'efluence','bgd',
-#                            # 'fwhmy', 'fwhmx']
-#
-#                            spot_basic = get_basic_spot_FOCUS00(stamp,x0,y0,debug=debug)
-#                            stamp = spot_basic['stamp'].copy()
-#
-#                            for key in spot_basic_keys:
-#                                DataDict[CCDkey]['bas_%s_%s_%s' % (key,Q,spotID)][iObs] =\
-#                                    spot_basic[key]
-#
-#                            spots_bag[Q][spotID] = spot_basic.copy()
-#
-#                    # save spot-data to a hard-file and add path to DataDict
-#
-#                    spots_bag_f = 'SPOTS_%i_%s.pick' % (ObsID,CCDkey)
-#                    DataDict[CCDkey]['spots_file'][iObs] = spots_bag_f
-#                    spots_bag_f = os.path.join(resultspath,spots_bag_f)
-#                    files.cPickleDumpDictionary(spots_bag,spots_bag_f)
-#
-#
-#
-#    for CCDindex in range(1,4):
-#        if 'CCD%i' % CCDindex in DataDict:
-#            CCDindex_ref = CCDindex
-#    ObsIDs = DataDict['CCD%i' % CCDindex_ref]['ObsID'].copy()
-#    label = DataDict['CCD%i' % CCDindex_ref]['label'].copy()
-#
-#    for iObs,ObsID in enumerate(ObsIDs):
-#
-#        ilabel = label[iObs]
-#
-#        if ilabel == 'BGD': continue
-#
-#        spots_bag_FP = dict()
-#
-#        for CCDindex in range(1,4):
-#
-#            spots_bag_f = os.path.join(resultspath,DataDict[CCDkey]['spots_file'][iObs])
-#            spots_bag_FP['CCD%i' % CCDindex] = files.cPickleRead(spots_bag_f)
-#
-#        spots_disp_f = os.path.join(resultspath,'STAMPS_spots_%i.png' % (ObsID,))
-#        spots_disp_title = 'ObsID - %i' % (ObsID,)
-#        pdspl.show_spots_allCCDs(spots_bag_FP,title=spots_disp_title,
-#                                 filename=spots_disp_f,dobar=True)
-#
-#
-#    # Data Quality Assessment:
-#    # TODO:
-#    #plotF00_CCDkey_vstime(DataDict,'offset')
-#    #plotF00_CCDkey_vstime(DataDict,'std_pre')
-#
-#    #spot_basic_keys = ['x','y','peak','fluence', 'efluence','bgd','fwhmy', 'fwhmx']
-#
-#    #TODO:
-# for CCDindex in range(1,4):
-##
-##        CCDkey = 'CCD%i' % CCDindex
-##
-# if CCDkey not in DataDict: continue
-##
-# plotF00_spotkey_vstime(DataDict,'peak',ccdkey=CCDkey,filename='')
-# plotF00_spotkey_vstime(DataDict,'fluence',error='efluence',
-# ccdkey=CCDkey,filename='')
-##
-# plotF00_spotkey_vstime(DataDict,'fwhmx',ccdkey=CCDkey,filename='')
-# plotF00_spotkey_vstime(DataDict,'fwhmy',ccdkey=CCDkey,filename='')
-#
-#
-#    # TODO:
-#    # Check all parameters are within expected ranges:
-#    #    offsets, STDs, peak fluence, fwhm, ellipticity
-#    #    save reports to RepDict
-#
-#
-#
-#    return DataDict, Report
-#
-#
-# def basic_analysis_FOCUS00(DataDict,Report,inputs,log=None,debug=False):
-#    """Performs basic analysis on spots:
-#         - 2D Gaussian Model shape measurements
-#         - Quadrupole Moments shape measurements
-#    """
-#
-#    # Inputs un-packing
-#
-#    resultspath = inputs['resultspath']
-#
-#
-#    ThisSectionTitle = 'Data Analysis: Basic'
-#    try:
-#        lastsection = Report.Contents[-1]
-#        if (lastsection.type == 'section') and \
-#           (lastsection.Title == ThisSectionTitle):
-#               _ = Report.Contents.pop(-1)
-#        Report.add_Section(Title=ThisSectionTitle,level=0)
-#    except:
-#        pass
-#
-#    # Initialization of columns to be added to DataDict
-#
-#    Quadrants = pilib.Quads
-#
-#    G_keys = ['x','ex','y','ey','i0','ei0','sigma_x','esigma_x',
-#    'sigma_y','esigma_y','fwhm_x','efwhm_x','fwhm_y','efwhm_y',
-#    'fluence','efluence']
-#
-#    M_keys = ['x','y','ellip','e1','e2','R2','a','b']
-#
-#
-#    spotIDs = polib.Point_CooNom['names']
-#
-#    for CCDindex in range(1,4):
-#
-#        CCDkey = 'CCD%i' % CCDindex
-#
-#        if CCDkey in DataDict:
-#
-#            # Loop over ObsIDs
-#
-#            Nobs = len(DataDict[CCDkey]['ObsID'].copy())
-#
-#
-#            for key in G_keys:
-#                dtype = 'float32'
-#                for Q in pilib.Quads:
-#                    for spotID in spotIDs:
-#                        DataDict[CCDkey]['G_%s_%s_%s' % (key,Q,spotID)] = \
-#                         (np.zeros(Nobs) + np.nan).astype(dtype)
-#
-#            for key in M_keys:
-#                dtype = 'float32'
-#                for Q in pilib.Quads:
-#                    for spotID in spotIDs:
-#                        DataDict[CCDkey]['M_%s_%s_%s' % (key,Q,spotID)] = \
-#                         (np.zeros(Nobs) + np.nan).astype(dtype)
-#
-#    # Loop over CCDs, Obsids, quadrants and spots
-#
-#    for CCDindex in range(1,4):
-#        if 'CCD%i' % CCDindex in DataDict:
-#            CCDindex_ref = CCDindex
-#    ObsIDs = DataDict['CCD%i' % CCDindex_ref]['ObsID'].copy()
-#    label = DataDict['CCD%i' % CCDindex_ref]['label'].copy()
-#
-#    for iObs,ObsID in enumerate(ObsIDs):
-#        ilabel = label[iObs]
-#
-#        if ilabel == 'BGD': continue
-#
-#        for CCDindex in range(1,4):
-#
-#            CCDkey = 'CCD%i' % CCDindex
-#
-#            spots_bag_f = os.path.join(resultspath,DataDict[CCDkey]['spots_file'][iObs])
-#            spots_bag = files.cPickleRead(spots_bag_f)
-#
-#            for Q in Quadrants:
-#                for spotID in spotIDs:
-#                    data = spots_bag[Q][spotID]
-#
-#                    stamp = data['stamp'].copy()
-#                    x0,y0 = data['x'],data['y']
-#
-#                    spot_shape_G = get_shape_spot_FOCUS00(stamp,x0,y0,method='G',
-#                                                          log=log,debug=debug)
-#
-#                    for key in G_keys:
-#                        DataDict[CCDkey]['G_%s_%s_%s' % (key,Q,spotID)][iObs] =\
-#                           spot_shape_G[key]
-#
-#                    spot_shape_M = get_shape_spot_FOCUS00(stamp,x0,y0,method='M',
-#                                                          log=log,debug=debug)
-#
-#                    for key in M_keys:
-#                        DataDict[CCDkey]['M_%s_%s_%s' % (key,Q,spotID)][iObs] =\
-#                           spot_shape_M[key]
-#
-#    # QA
-#    return DataDict, Report
-#
-#
-#
-# def meta_analysis_FOCUS00(DataDict,Report,inputs,log=None):
-#    """
-#
-#    Analyzes the relation between PSF shape and mirror position.
-#
-#    :param DataDict: Dictionary with input data
-#    :param Report: Report Objects
-#    :param inputs: Dictionary with inputs
-#
-#    """
-#
-#    ThisSectionTitle = 'Data Analysis: Meta'
-#    try:
-#        lastsection = Report.Contents[-1]
-#        if (lastsection.type == 'section') and \
-#           (lastsection.Title == ThisSectionTitle):
-#               _ = Report.Contents.pop(-1)
-#        Report.add_Section(Title=ThisSectionTitle,level=0)
-#    except:
-#        pass
-#
-#    Quadrants = pilib.Quads
-#    spotIDs = polib.Point_CooNom['names']
-#
-#    G_keys = ['x','y','i0','fwhm_x','fwhm_y','fluence']
-#    keys_to_fit = ['fwhm_x','fwhm_y']
-#
-#    # Loop over CCDs, Obsids, quadrants and spots
-#
-#    for CCDindex in range(1,4):
-#        if 'CCD%i' % CCDindex in DataDict:
-#            CCDindex_ref = CCDindex
-#
-#    #ObsIDs = DataDict['CCD%i' % CCDindex_ref]['ObsID'].copy()
-#    label = DataDict['CCD%i' % CCDindex_ref]['label'].copy()
-#    selix = label != 'BGD'
-#
-#    shape_seq = dict()
-#
-#    for CCDindex in range(1,4):
-#        CCDkey = 'CCD%i' % CCDindex
-#        shape_seq[CCDkey] = dict()
-#        shape_seq[CCDkey]['Mirr_pos'] = DataDict[CCDkey]['Mirr_pos'][selix].copy()
-#
-#        for Q in Quadrants:
-#
-#            for spotID in spotIDs:
-#
-#                for key in G_keys:
-#                    spkey = 'G_%s_%s_%s' % (key,Q,spotID)
-#                    espkey = 'G_e%s_%s_%s' % (key,Q,spotID)
-#                    shape_seq[CCDkey][spkey] = dict()
-#                    val = DataDict[CCDkey][spkey][selix].copy()
-#                    erval = DataDict[CCDkey][espkey][selix].copy()
-#                    shape_seq[CCDkey][spkey]['val'] = val
-#                    shape_seq[CCDkey][spkey]['eval'] = erval
-#
-#                    if key in keys_to_fit:
-#
-#                        pfit = F00lib.fit_focus_single(shape_seq[CCDkey]['Mirr_pos'],
-#                                                     val,yerror=erval,
-#                                                     degree=2,doplot=False)
-#                        shape_seq[CCDkey][spkey]['coeffs'] = pfit['coeffs']
-#                        shape_seq[CCDkey][spkey]['ecoeffs'] = pfit['ecoeffs']
-#                        shape_seq[CCDkey][spkey]['focus'] = pfit['focus']
-#
-#
-#    F00lib.fit_focus_all(shape_seq,doplot=True)
-#
-#    F00lib.inspect_focus_all(shape_seq,doplot=True)
-#
-#
-#
-#    return DataDict, Report
-#
-#
-#
-#
-#
-#
+        # Find centroid of focus values, as Best Focus
+        
+        cbe_focus = np.nanmean(stats.sigmaclip(Focus_dd['focus'],4,4).clipped)
+        
+        # Obtaining delta-focus map
+        
+        beglobal_fwhm = np.zeros_like(Focus_dd['belocal_fwhm'],dtype='float32')
+        
+        for iCCD, CCDk in enumerate(CCDs):
+            
+            for jQ, Q in enumerate(Quads):
+                                
+                for lSpot, SpotName in enumerate(Spots):
+
+                    ix = iCCD  * (nQ*nS) + jQ * nS + lSpot
+                    
+                    pcoeffs = zres[CCDk][Q][SpotName]['coeffs']
+                    beglobal_fwhm[ix] = np.polyval(pcoeffs,cbe_focus)
+        
+        cbe_fwhm = np.nanmean(stats.sigmaclip(beglobal_fwhm,4,4).clipped)
+        
+        delta_fwhm = beglobal_fwhm - Focus_dd['belocal_fwhm']
+        x_ccd = Focus_dd['x_ccd'].copy()
+        y_ccd = Focus_dd['y_ccd'].copy()
+        
+        
+        delta_fwhm_dict = OrderedDict()
+        
+        ccalc = self.ccdcalc # ALIAS
+        xlims = (ccalc.prescan, 
+                         ccalc.prescan+ccalc.NcolsCCD-1.) 
+        ylims = (0., ccalc.NrowsCCD-1.) 
+        
+        for iCCD, CCDk in enumerate(CCDs):
+            
+            delta_fwhm_dict[CCDk] = OrderedDict()
+            
+            for jQ, Q in enumerate(Quads):
+                
+                ixsel = (np.arange(nS)+iCCD*(nQ*nS)+jQ*nS,)
+                
+                Qsel = np.zeros_like(x_ccd[ixsel],dtype='S1')
+                Qsel[:] = Q
+                xQ, yQ = self.ccdcalc.cooconv_CCD_2_Qrel(x_ccd[ixsel],
+                                                           y_ccd[ixsel],
+                                                        Qsel)
+                
+                # TESTS        
+                print 'FOCUS00.meta_lib running in TEST-HACKED MODE'
+                xQ = np.array([100.,2000.,1000.,100.,2000.])
+                yQ = np.array([2000.,2000.,1000.,100.,1000.])
+                delta_fwhm_HK = xQ/xQ.max()+1.
+                # END TESTS
+                
+                delta_fwhm_dict[CCDk][Q] = dict(
+                        img = F00lib.build_fwhm_map_CQ(delta_fwhm_HK, # [ixsel],
+                                                xQ, yQ,
+                                                xlims, ylims))
+        
+        # Figure
+        
+        fdict = self.figdict['F00meta_deltafwhm'][1]
+        fdict['data'] = delta_fwhm_dict.copy()
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['F00meta_deltafwhm'], 
+                               dobuilddata=False)
+        
+        
+        # CDP with CBE FOCUS and related tables
+        
+        meta_contents = ['cbe_focus', 'cbe_fwhm', 'poldegree', 'CCDs', 'Quads', 'Spots']
+        focus_meta = OrderedDict([(name, eval(name)) for name in meta_contents])
+        
+        FOCUS_dddf = OrderedDict(FOCUS=pd.DataFrame.from_dict(Focus_dd))
+        
+        focus_cdp = F00aux.CDP_lib['FOCUS']
+        focus_cdp.rootname += '_%snm' % wave
+        focus_cdp.path = self.inputs['subpaths']['products']
+        focus_cdp.ingest_inputs(data = FOCUS_dddf.copy(),                             
+                              meta=focus_meta.copy(),
+                              header=CDP_header.copy())
+        
+        focus_cdp = self.init_and_fill_CDP(focus_cdp, 
+            header_title='FOCUS00_%i: FOCUS' % wave)
+        focus_cdp.init_wb_and_fillAll(header_title='FOCUS00_%i: FOCUS' % wave)
+        self.save_CDP(focus_cdp)
+        self.pack_CDP_to_dd(focus_cdp, 'FOCUS_CDP')
+
+        if self.report is not None:
+            FOCUStex = focus_cdp.get_textable(sheet='FOCUS', 
+                caption='FOCUS00 @ %i nm' % wave)
+            self.report.add_Text(FOCUStex)
+

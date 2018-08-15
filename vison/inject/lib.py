@@ -14,20 +14,24 @@ Created on Thu Sep 14 15:32:10 2017
 """
 
 # IMPORT STUFF
-
 import numpy as np
 from pdb import set_trace as stop
+import copy
 
+from astropy.io import fits as fts
+#from pylab import plot,imshow,show
+from scipy.optimize import curve_fit
+from scipy import special
+from matplotlib import pyplot as plt
 # END IMPORT
 
-
+def_bgd_drop = [0., 10.]
 lineoffsets = dict(E=0, F=0, G=0, H=0)
 
-
-def extract_injection_lines(quaddata, pattern, VSTART=0,
-                            VEND=2066, suboffmean=False, lineoffset=0):
+def extract_injection_lines(ccdobj, Q, pattern, VSTART=0,
+                            VEND=2066, suboffmean=False):
     """     
-    quaddata: quadrant data, array
+    ccdobj: ccd.CCD object
     pattern: non,noff,nrep (lines on, off, repeatitions)
     VSTART: VSTART
     VEND: VEND
@@ -35,9 +39,17 @@ def extract_injection_lines(quaddata, pattern, VSTART=0,
     lineoffset: integer, to account for a shift between readout lines and charge
                    injection pattern.
     """
+    
+    lineoffset = lineoffsets[Q]
 
-    npre = 51
-    npost = 20
+    npre = ccdobj.prescan
+    npost = ccdobj.overscan
+    
+    quaddata = ccdobj.get_quad(Q, canonical=True, extension=-1)
+    
+    masked=False
+    if isinstance(quaddata,np.ma.masked_array):
+        masked=True
 
     non, noff, nrep = pattern
 
@@ -53,39 +65,151 @@ def extract_injection_lines(quaddata, pattern, VSTART=0,
 
     stack_2d = np.zeros((nrep, NX-(npre+npost), npercycle),
                         dtype='float32') + np.nan
+    
+    if masked:
+        stack_2d = np.ma.masked_array(stack_2d)
 
     for ii in (rowix):
 
         row = quaddata[npre:-1*npost, ii].copy()
-
+        
         rowmedians[ii-VSTART] = np.nanmedian(row)
-        rowstds[ii-VSTART] = np.nanmedian(row)
+        rowstds[ii-VSTART] = np.nanstd(row)
 
         icycle = max((ii+lineoffset) / npercycle, 0)
         ix_in_cycle = (ii+lineoffset) - npercycle * icycle
 
         stack_2d[icycle, :, ix_in_cycle] = row.copy()
+    
+    if masked:
+        stack_2d.mask[np.where(np.isnan(stack_2d.data))]=True
 
     if suboffmean:
         for icycle in range(nrep):
             stack_2d[icycle, :, :] -= np.nanmean(stack_2d[icycle, :, non:])
-
+    
+    
     stacked_2d = np.nanmean(stack_2d, axis=0)
+    
+    #mask2d = np.sum(stack_2d.mask,axis=0) # TESTS    
+    #fts.writeto('stacked_2d.fits',stacked_2d.data.transpose(),overwrite=True) # TESTS
+    #fts.writeto('mask2d.fits',mask2d.transpose().astype('float32'),overwrite=True) # TESTS
 
-    avprof_alcol = np.nanmean(stacked_2d[:, :], axis=0)
+    avprof_alcol = np.nanmean(stacked_2d, axis=0)
     avprof_alrow = np.nanmean(stacked_2d[:, 0:non], axis=1)
+    
+    ixnan = np.where(np.isnan(stacked_2d))
+    if len(ixnan[0])>0:
+        stacked_2d.mask[ixnan] = True
+    
+    values = stacked_2d[:,0:non]
+    gvalues = values.data[np.where(~values.mask)]
+    
+    stats_injection = dict(mean=np.mean(gvalues),
+                       std=np.std(gvalues),
+                       min=np.min(gvalues),
+                       max=np.max(gvalues),
+                       p5=np.percentile(gvalues, 5),
+                       p25=np.percentile(gvalues, 25),
+                       p50=np.percentile(gvalues, 50),
+                       p75=np.percentile(gvalues, 75),
+               p95=np.percentile(gvalues, 95))
 
-    avinjection = np.mean(stacked_2d[:, 0:non])
-
-    stats_injection = [np.nanmedian(stacked_2d[:, 0:non]),
-                       np.nanstd(stacked_2d[:, 0:non]),
-                       np.percentile(stacked_2d[:, 0:non], 5),
-                       np.percentile(stacked_2d[:, 0:non], 95)]
-
-    results = dict(avinjection=avinjection, avprof_alrow=avprof_alrow,
-                   avprof_alcol=avprof_alcol, stats_injection=stats_injection)
-
+    results = dict(avprof_alrow=avprof_alrow,
+                   avprof_alcol=avprof_alcol, 
+                   stats_injection=stats_injection)
+    
     return results
+
+
+def get_spill(avprof_alcol,pattern):
+    """ """
+    non, noff, _ = pattern
+    
+    bgd = np.nanmean(avprof_alcol[non:])    
+    y = avprof_alcol - bgd
+    
+    injection = np.nanmedian(y[0:non])
+    maxspill = y[non]
+    spill = maxspill / injection
+    
+    return spill
+
+def msoftplus(IG1, a, xt):
+    """ """
+    return np.log10(1.+np.exp(-a*(IG1-xt)))
+
+def f_Inj_vs_IG1(IG1,b,k,xt,xN,a,N):
+    """ """
+    M = b + special.expit(k*(IG1-xt)) * (msoftplus(IG1,a,xN) + N)
+    return M
+
+
+def redf_Inj_vs_IG1(IG1, xt, xN, a, N):
+    bgd, drop = def_bgd_drop
+    return f_Inj_vs_IG1(IG1, bgd, drop, xt, xN, a, N)
+
+def fit_Inj_vs_IG1(IG1,med_inj,doPlot=False):
+    """ """
+    
+    Npoints = len(IG1)
+    IG1half = np.median(IG1)
+    
+    if 4 <= Npoints <= 6:
+        reduced = True
+        fmodel = redf_Inj_vs_IG1
+        p0 = [IG1half, IG1half+3., 1., 0.01]
+    elif Npoints > 6:
+        reduced = False
+        fmodel = f_Inj_vs_IG1
+        p0 = def_bgd_drop+[IG1half, IG1half +3., 1., 0.01]
+    elif Npoints < 4:
+        return dict(didfit=False)
+    
+    nmed_inj = med_inj / 2.**16  # Handy scaling
+    
+    xIG1 = np.linspace(IG1.min(),IG1.max(),1000)
+    
+    try: 
+        popt, pcov = curve_fit(fmodel,IG1,nmed_inj,p0=p0,
+                               method='lm',
+                               absolute_sigma=False)
+        
+        
+        Inj_bf = fmodel(xIG1, *popt)
+        
+        didfit = True
+        
+    except RuntimeError:
+        
+        didfit = False
+        
+        popt = np.zeros(len(p0)) + np.nan
+        Inj_bf = np.zeros_like(xIG1)
+    
+    
+    if doPlot:
+        
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.plot(IG1,nmed_inj,'bo')
+        ax.plot(xIG1,Inj_bf,'r--')
+        plt.show()
+    
+    if reduced:
+        arrsolution = def_bgd_drop+popt.tolist()
+    else:
+        arrsolution = copy.deepcopy(popt.tolist())
+    
+    solution = dict(zip(['BGD','DROP','IG1_THRESH', 'IG1_NOTCH', 'SLOPE', 'NOTCH'],
+                    arrsolution)
+                    )
+    solution['didfit'] = didfit
+            
+    solution['IG1_BF'] = xIG1.copy()
+    solution['NORMINJ_BF'] = Inj_bf.copy()
+    
+    return solution
 
 
 def predict_inj_level(ID, IGs, id_timing, toi_ch, sectag):

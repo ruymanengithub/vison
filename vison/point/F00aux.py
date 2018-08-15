@@ -16,7 +16,9 @@ from pdb import set_trace as stop
 import numpy as np
 import os
 from collections import OrderedDict
+import pandas as pd
 
+from vison.datamodel import cdp
 from vison.plot import figclasses
 from vison.plot import trends
 
@@ -88,9 +90,16 @@ def gt_check_fwhmy_dict(wave):
                           xlabel='Mirr [mm]',
                           ylabel='FWHMy [pix]'))
 
+def gt_meta_deltafwhm_dict(wave):
+    return dict(figname='FOCUS00_%i_deltafwhm_map.png' % wave,
+                caption='FOCUS00\_%i: Delta-FWHM for best focus position' % wave,
+                meta=dict(suptitle='FOCUS00\_%i-checks: FWHM(y)' % wave))
 
 def gt_F00figs(wave):
     F00figs = dict()
+    
+    # CHECKS
+    
     F00figs['F00checks_offsets'] = [
         trends.Fig_Basic_Checkstat, gt_check_offsets_dict(wave)]
     F00figs['F00checks_stds'] = [
@@ -103,5 +112,18 @@ def gt_F00figs(wave):
         trends.Fig_Basic_Checkstat, gt_check_fwhmx_dict(wave)]
     F00figs['F00checks_fwhmy'] = [
         trends.Fig_Basic_Checkstat, gt_check_fwhmy_dict(wave)]
+    
+    # META
+    
+    F00figs['F00meta_deltafwhm'] = [
+        figclasses.Fig_BeamImgShow, gt_meta_deltafwhm_dict(wave)]
+    
     F00figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return F00figs
+
+
+
+focus_cdp = cdp.Tables_CDP()
+focus_cdp.rootname = 'FOCUS00'
+
+CDP_lib = dict(FOCUS=focus_cdp)

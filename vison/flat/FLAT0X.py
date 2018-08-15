@@ -54,7 +54,7 @@ FLAT0X_commvalues = dict(program='CALCAMP',
                          rdmode='fwd_bas',
                          flushes=7, vstart=0, vend=2086,
                          exptime=0., shuttr=1,
-                         siflush=0,
+                         siflsh=1, siflsh_p=1,
                          wave=4,
                          comments='')
 
@@ -82,14 +82,15 @@ class FLAT0X(FlatTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(FLAT0X, self).__init__(inputs, log, drill, debug)
-        self.name = 'FLAT0X'
-        self.type = 'Simple'
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
                          ('indivflats', self.do_indiv_flats),
                          ('masterflat', self.do_master_flat),
                          ('prmask', self.do_prdef_mask)]
+        super(FLAT0X, self).__init__(inputs, log, drill, debug)
+        self.name = 'FLAT0X'
+        self.type = 'Simple'
+        
         self.HKKeys = HKKeys
         self.figdict = FL0Xaux.gt_FL0Xfigs(self.inputs['test'])
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
@@ -165,10 +166,10 @@ class FLAT0X(FlatTask):
 
         return FLAT0X_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """ """
         wavedkeys = ['motr_siz']
-        return super(FLAT0X, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=True,
+        return super(FLAT0X, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
                                                    wavedkeys=wavedkeys)
 
     def prepare_images(self):

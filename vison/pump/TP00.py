@@ -76,13 +76,15 @@ class TP00(PumpTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
+        self.subtasks = [('check', self.check_data)]
         super(TP00, self).__init__(inputs, log, drill, debug)
         self.name = 'TP00'
         self.type = 'Simple'
-        self.subtasks = [('check', self.check_data)]
+        
         self.HKKeys = HKKeys
         self.figdict = dict()
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles')
+        
 
     def set_inpdefaults(self, **kwargs):
         """ """
@@ -166,10 +168,10 @@ class TP00(PumpTask):
 
         return TP00_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """ """
         wavedkeys = []
-        return super(TP00, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=True,
+        return super(TP00, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
                                                  wavedkeys=wavedkeys)
 
     def check_data(self):

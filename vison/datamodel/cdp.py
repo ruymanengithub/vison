@@ -22,6 +22,7 @@ import string as st
 
 from vison import __version__
 from vison.support.files import cPickleDumpDictionary, cPickleRead
+from vison.datamodel import ccd as ccdmod
 from vison.support.excel import ReportXL
 # END IMPORT
 
@@ -56,7 +57,6 @@ class CDP(object):
         """ """
         if pickf == '':
             pickf = os.path.join(self.path, '%s.pick' % self.rootname)
-
         outdict = copy.deepcopy(self.__dict__)
         cPickleDumpDictionary(outdict, pickf)
 
@@ -69,8 +69,9 @@ class CDP(object):
 
     def savehardcopy(self, filef=''):
         """ """
-        raise NotImplementedError(
-            'Subclass implements abstract method (if needed).')
+        pass # HACK
+        #raise NotImplementedError(
+        #    'Subclass implements abstract method (if needed).')
 
 
 class Tables_CDP(CDP):
@@ -121,19 +122,39 @@ class Tables_CDP(CDP):
         df = self.data[sheet]
         self.report.df_to_sheet(df, sheet, index=True, header=True)
 
-    def get_textable(self, sheet, caption=''):
-        """ """
-        tex = self.data[sheet].to_latex(
-            multicolumn=True, multirow=True, longtable=True, index=True)
-        tex = st.split(tex, '\n')
-        if caption != '':
-            tex.insert(-2, r'\caption{%s}' % caption)
-        return tex
 
     def fill_allDataSheets(self):
         """ """
         for sheet in self.data.keys():
             self.fill_Sheet(sheet)
+            
+    def init_wb_and_fillAll(self, header_title=''):
+        self.init_workbook()
+        self.fill_Header(title=header_title)
+        self.fill_Meta()
+        self.fill_allDataSheets()
+
+    def get_textable(self, sheet, caption='', fitwidth=False, **kwargs):
+        """ """
+        tex = self.data[sheet].to_latex(
+            multicolumn=True, multirow=True, longtable=True, index=True,
+            **kwargs)
+        tex = st.split(tex, '\n')
+        
+        if fitwidth:
+            if 'columns' not in kwargs:
+                ncols = len(self.data[sheet].columns)+1
+            else:
+                ncols = len(kwargs['columns'])+1
+            beglongtabu = '\\begin{longtabu} to \\textwidth {|%s}' % (ncols*'X|',)
+            endlongtabu = '\end{longtabu}'
+            tex[0] = beglongtabu
+            tex[-2] = endlongtabu
+        
+        if caption != '':
+            tex.insert(-2, r'\caption{%s}' % caption)
+        return tex
+
 
     def savehardcopy(self, filef=''):
         """ """
@@ -142,3 +163,56 @@ class Tables_CDP(CDP):
         if os.path.exists(filef):
             os.system('rm %s' % filef)
         self.report.save(filef)
+
+
+class CCD_CDP(CDP):
+
+    def __init__(self, *args, **kwargs):
+        """ """
+        super(CCD_CDP, self).__init__(*args, **kwargs)
+        self.data = OrderedDict()
+        self.ccdobj = ccdmod.CCD()
+
+    def ingest_inputs(self, data, meta=None, header=None):
+        """ """
+        dmeta = OrderedDict()
+        dmeta['ID'] = self.ID
+        dmeta['BLOCKID'] = self.BLOCKID
+        dmeta['CHAMBER'] = self.CHAMBER
+                 
+        if meta is None:
+            dmeta = dmeta.copy()
+        else:
+            dmeta.update(meta)
+        if header is None:
+            header = OrderedDict()
+
+        self.meta.update(dmeta)
+        self.header.update(header)
+        self.data.update(data)
+        
+        if len(self.meta)>0:
+            self.ccdobj.add_extension(data=None,
+                                      headerdict=self.meta,
+                                      label='META')
+        
+        labels = self.data['labels']
+        
+        for i, label in enumerate(labels):
+            
+            if i==0:
+                self.ccdobj.add_extension(data=self.data[label],
+                                      label=label,
+                                      headerdict=self.header)
+            else:
+                self.ccdobj.add_extension(data=self.data[label],
+                                      label=label)
+
+    def savehardcopy(self, filef=''):
+        """ """
+        if filef == '':
+            filef = os.path.join(self.path, '%s.fits' % self.rootname)
+        if os.path.exists(filef):
+            os.system('rm %s' % filef)
+        self.ccdobj.writeto(filef)
+    

@@ -46,9 +46,11 @@ flagsdict = OrderedDict(MISSDATA=[2**0L],
 class Flags(object):
     """ """
 
-    def __init__(self,):
+    def __init__(self,indict=None):
+        if indict is None:
+            indict = flagsdict
         self.value = 0L
-        self.dict = flagsdict
+        self.dict = indict.copy()
 
     def isflagon(self, flag):
         return bool(self.value & self.dict[flag][0] == self.dict[flag][0])

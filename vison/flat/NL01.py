@@ -71,7 +71,7 @@ NL01_commvalues = dict(program='CALCAMP',
 plusminus10pcent = 1.+np.array([-0.10, 0.10])
 
 NL01_relfluences = np.array(
-    [5., 10., 20., 30., 50., 70., 80., 90., 100., 110., 120.])
+    [1.,2.,3.,5., 10., 20., 30., 50., 70., 80., 85., 90., 95., 100., 110.])
 
 FLU_lims = dict(CCD1=dict())
 for iflu, rflu in enumerate(NL01_relfluences):
@@ -101,21 +101,24 @@ class NL01(FlatTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(NL01, self).__init__(inputs, log, drill, debug)
-        self.name = 'NL01'
-        self.type = 'Simple'
         self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
                          ('extract', self.extract_stats),
                          ('NL', self.produce_NLCs),
                          ('satCTE', self.do_satCTE)]
+        super(NL01, self).__init__(inputs, log, drill, debug)
+        self.name = 'NL01'
+        self.type = 'Simple'
+        
         self.HKKeys = HKKeys
         self.figdict = NL01aux.NL01figs.copy()
         # dict(figs='figs',pickles='ccdpickles')
-        self.inputs['subpaths'] = dict(figs='figs')
+        self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
+                   products='products')
+        self.window = dict(wpx=300,hpx=300)
 
     def set_inpdefaults(self, **kwargs):
 
-        wave = 800
+        wave = 880
 
         tFWCw = self.ogse.profile['tFWC_flat']['nm%i' % wave]
 
@@ -123,7 +126,7 @@ class NL01(FlatTask):
                  tFWCw).tolist()  # ms
         self.inpdefaults = dict(exptimes=expts,
                                 exptinter=0.5 * tFWCw,
-                                frames=(np.ones(11, dtype='int32')*5).tolist(),
+                                frames=(np.ones(len(expts), dtype='int32')*5).tolist(),
                                 wavelength=wave,
                                 )
 
@@ -145,6 +148,9 @@ class NL01(FlatTask):
         exptinter = self.inputs['exptinter']
         frames = self.inputs['frames']
         wavelength = self.inputs['wavelength']
+        
+        Nbgd=3
+        Nstab0 = 1
 
         assert len(expts) == len(frames)
 
@@ -155,8 +161,8 @@ class NL01(FlatTask):
 
         NL01_sdict = dict()
 
-        NL01_sdict['col1'] = dict(frames=4, exptime=0, comment='BGD')
-        NL01_sdict['col2'] = dict(frames=1, exptime=exptinter, comment='STAB')
+        NL01_sdict['col1'] = dict(frames=Nbgd, exptime=0, comment='BGD')
+        NL01_sdict['col2'] = dict(frames=Nstab0, exptime=exptinter, comment='STAB')
 
         for ix, ifra in enumerate(frames):
 
@@ -188,7 +194,7 @@ class NL01(FlatTask):
 
         return NL01_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """Loads a list of Exposure Logs and selects exposures from test PSF0X.
 
         The filtering takes into account an expected structure for the 
@@ -200,7 +206,7 @@ class NL01(FlatTask):
 
         """
         wavedkeys = []
-        return super(NL01, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=True,
+        return super(NL01, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
                                                  wavedkeys=wavedkeys)
 
     def prep_data(self):
@@ -222,7 +228,8 @@ class NL01(FlatTask):
 
         """
         super(NL01, self).prepare_images(doExtract=True, doMask=True,
-                                         doOffset=True, doBias=True, doFF=True)
+                                         doOffset=True, doBias=True, 
+                                         doFF=True)
 
     def extract_stats(self):
         """
@@ -244,16 +251,17 @@ class NL01(FlatTask):
                             measure variance
 
         """
+        
+        # HARDWIRED VALUES
+        wpx = self.window['wpx']
+        hpx = self.window['hpx']
 
         if self.report is not None:
             self.report.add_Section(
                 keyword='extract', Title='Image Extraction', level=0)
-
-        # HARDWIRED VALUES
-        wpx = 300
-        hpx = 300
-
-        # label = self.dd.mx['label'][:,0].copy() # labels should be the same accross CCDs. PATCH.
+            self.report.add_Text('Segmenting on %i x %i windows...' % (wpx,hpx))    
+        
+        
         ObsIDs = self.dd.mx['ObsID'][:].copy()
 
         indices = copy.deepcopy(self.dd.indices)
@@ -262,11 +270,10 @@ class NL01(FlatTask):
 
         Quads = indices.get_vals('Quad')
         CCDs = indices.get_vals('CCD')
-
-        emptyccdobj = ccdmodule.CCD()
+        
         tile_coos = dict()
         for Quad in Quads:
-            tile_coos[Quad] = emptyccdobj.get_tile_coos(Quad, wpx, hpx)
+            tile_coos[Quad] = self.ccdcalc.get_tile_coos(Quad, wpx, hpx)
         Nsectors = tile_coos[Quads[0]]['Nsamps']
         sectornames = np.arange(Nsectors)
 

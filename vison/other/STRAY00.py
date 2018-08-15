@@ -76,13 +76,15 @@ class STRAY00(DarkTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
+        self.subtasks = [('check', self.check_data)]
         super(STRAY00, self).__init__(inputs, log, drill, debug)
         self.name = 'STRAY00'
         self.type = 'Simple'
-        self.subtasks = [('check', self.check_data)]
+        
         self.HKKeys = HKKeys
         self.figdict = dict()
         self.inputs['subpaths'] = dict(figs='figs')
+        
 
     def set_inpdefaults(self, **kwargs):
         """ """
@@ -219,8 +221,8 @@ class STRAY00(DarkTask):
 
         return STRAY00_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """ """
         wavedkeys = []
-        return super(STRAY00, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=True,
+        return super(STRAY00, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
                                                     wavedkeys=wavedkeys)

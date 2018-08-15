@@ -95,7 +95,7 @@ def get_testdefaults(ogseobj=None):
 
     testdefaults = dict(waves=[590, 640, 730, 800, 880, 0],
                         exptimes=dict(),
-                        frames=[20, 14, 10, 4, 4])
+                        frames=[20, 15, 10, 4, 4])
 
     for w in testdefaults['waves']:
         tFWC_pointw = ogseobj.profile['tFWC_point']['nm%i' % w]
@@ -163,16 +163,19 @@ class PSF0X(PointTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
+        self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
+                         ('basic', self.basic_analysis), 
+                         ('bayes', self.bayes_analysis),
+                         ('meta', self.meta_analysis)]
         super(PSF0X, self).__init__(inputs, log, drill, debug)
         self.name = 'PSF0X'
         self.type = 'Simple'
-        self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
-                         ('basic', self.basic_analysis), ('bayes',
-                                                          self.bayes_analysis),
-                         ('meta', self.meta_analysis)]
+        
         self.HKKeys = HKKeys
         self.figdict = PSF0Xaux.gt_PSF0Xfigs(self.inputs['test'])
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles')
+        
+        
 
     def set_inpdefaults(self, **kwargs):
 
@@ -248,11 +251,11 @@ class PSF0X(PointTask):
 
         return PSF0X_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """
         """
         wavedkeys = []
-        return super(PSF0X, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=False,
+        return super(PSF0X, self).filterexposures(structure, explog, OBSID_lims, colorblind=False,
                                                   wavedkeys=wavedkeys)
 
     def prep_data(self):

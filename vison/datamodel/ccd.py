@@ -28,6 +28,7 @@ isthere = os.path.exists
 
 NAXIS1 = 4238
 NrowsCCD = 2066
+NcolsCCD = 2048
 NAXIS2 = (NrowsCCD+20)*2  # 4132
 prescan = 51
 overscan = 20
@@ -134,6 +135,7 @@ class CCD(object):
     """
 
     NrowsCCD = NrowsCCD
+    NcolsCCD = NcolsCCD
     Quads = Quads
 
     get_1Dprofile = ccd_aux.get_1Dprofile
@@ -188,7 +190,8 @@ class CCD(object):
         self.chinjlines = 2
         self.prescan = prescan
         self.overscan = overscan
-        if withpover:
+        self.withpover = withpover
+        if self.withpover:
             self.voverscan = voverscan
         else:
             self.voverscan = 0

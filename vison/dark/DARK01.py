@@ -78,12 +78,13 @@ class DARK01(DarkTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(DARK01, self).__init__(inputs, log, drill, debug)
-        self.name = 'DARK01'
-        self.type = 'Simple'
         self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
+        super(DARK01, self).__init__(inputs, log, drill, debug)
+        self.name = 'DARK01'
+        self.type = 'Simple'
+        
         self.HKKeys = HKKeys
         self.figdict = D01aux.D01figs.copy()
         self.inputs['subpaths'] = dict(figs='figs')
@@ -123,10 +124,10 @@ class DARK01(DarkTask):
 
         return DARK01_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """ """
         wavedkeys = ['motr_siz']
-        return super(DARK01, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=True,
+        return super(DARK01, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
                                                    wavedkeys=wavedkeys)
 
     def prep_data(self):

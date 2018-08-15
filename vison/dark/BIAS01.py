@@ -56,7 +56,7 @@ HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
 BIAS01_commvalues = dict(program='CALCAMP', test='BIAS01',
                          flushes=7, exptime=0., shuttr=0,
                          e_shuttr=0, vstart=0, vend=2086,
-                         siflush=0,  # sinvflushp=500,
+                         siflsh=1, siflsh_p=500,
                          chinj=0,
                          s_tpump=0,
                          v_tpump=0,
@@ -80,16 +80,20 @@ class BIAS01(DarkTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(BIAS01, self).__init__(inputs, log, drill, debug)
-        self.name = 'BIAS01'
-        self.type = 'Simple'
         self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
-        self.HKKeys = HKKeys
+
+        super(BIAS01, self).__init__(inputs, log, drill, debug)
+        self.name = 'BIAS01'
+        self.type = 'Simple'
+        
+        
+        self.HKKeys = HKKeys        
         self.figdict = B01aux.B01figs.copy()
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        profiles='profiles', products='products')
+        
 
     def set_inpdefaults(self, **kwargs):
         self.inpdefaults = self.inputsclass(N=25)
@@ -123,10 +127,10 @@ class BIAS01(DarkTask):
 
         return BIAS01_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """ """
         wavedkeys = ['motr_siz']
-        return super(BIAS01, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=True,
+        return super(BIAS01, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
                                                    wavedkeys=wavedkeys)
 
     def prep_data(self):
@@ -207,6 +211,8 @@ class BIAS01(DarkTask):
                     profs1D2plot[tag][CCDk][Q]['y'] = OrderedDict()
 
         if not self.drill:
+            
+            CDP_header['DATE'] = self.get_time_tag()
 
             ccdpicklespath = self.inputs['subpaths']['ccdpickles']
             profilespath = self.inputs['subpaths']['profiles']
@@ -229,8 +235,6 @@ class BIAS01(DarkTask):
                         ccdpicklespath, '%s.pick' % ccdobj_name)
 
                     ccdobj = copy.deepcopy(cPickleRead(fullccdobj_name))
-
-                    CDP_header['DATE'] = self.get_time_tag()
 
                     iprofiles1D = cdp.CDP()
                     iprofiles1D.header = CDP_header.copy()
@@ -256,7 +260,6 @@ class BIAS01(DarkTask):
                         onlyRONimg = ccdobj.get_quad(
                             Q, canonical=False) - mod2D.imgmodel
                         _RON = onlyRONimg.std()
-                        stop()
 
                         self.dd.mx['RON'][iObs, jCCD, kQ] = _RON
 
@@ -312,7 +315,8 @@ class BIAS01(DarkTask):
         figkeys1 = ['B01basic_prof1D_hor', 'B01basic_prof1D_ver']
         self.figdict['B01basic_prof1D_hor'][1]['data'] = profs1D2plot['hor']
         self.figdict['B01basic_prof1D_ver'][1]['data'] = profs1D2plot['ver']
-        self.addFigures_ST(figkeys=figkeys1, dobuilddata=False)
+        if self.report is not None:
+            self.addFigures_ST(figkeys=figkeys1, dobuilddata=False)
         #figkeys2 = ['B01basic_histosRON']
         # self.figdict['B01basic_histosRON'][1]['data'] = None # PENDING
         # self.addFigures_ST(figkeys=figkeys2,dobuilddata=True) # PENDING
@@ -330,10 +334,10 @@ class BIAS01(DarkTask):
                               Quads=Quads,
                               meta=dict(),
                               header=CDP_header.copy())
+        
+        ron_cdp.init_wb_and_fillAll(header_title='BIAS01: RON')
 
-        ron_cdp = self.init_and_fill_CDP(ron_cdp, header_title='BIAS01: RON')
         self.save_CDP(ron_cdp)
-
         self.pack_CDP_to_dd(ron_cdp, 'RON_CDP')
 
         if self.report is not None:
@@ -358,8 +362,8 @@ class BIAS01(DarkTask):
             save name of MasterBias(s) to DataDict, report
 
         """
-
-        raise NotImplementedError
+        return
+        # raise NotImplementedError TESTS
 
 
 class Test(unittest.TestCase):

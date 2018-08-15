@@ -68,6 +68,7 @@ class Pipe(object):
     from vison.flat.NL01 import NL01
     from vison.flat.FLAT0X import FLAT0X
     from vison.flat.PTC0X import PTC0X
+    from vison.flat.BF01 import BF01
     from vison.inject.CHINJ00 import CHINJ00
     from vison.inject.CHINJ01 import CHINJ01
     from vison.inject.CHINJ02 import CHINJ02
@@ -79,16 +80,18 @@ class Pipe(object):
     from vison.pump.TP01 import TP01
     from vison.pump.TP02 import TP02
     from vison.other.STRAY00 import STRAY00
+    from vison.other.MOT_FF import MOT_FF
 
     Test_dict = dict(BIAS01=BIAS01, DARK01=DARK01,
                      NL01=NL01, FLAT01=FLAT0X,
-                     PTC01=PTC0X,
+                     PTC01=PTC0X,BF01=BF01,
                      CHINJ00=CHINJ00, CHINJ01=CHINJ01, CHINJ02=CHINJ02,
                      TP00=TP00,
                      TP01=TP01, TP02=TP02,
                      PERSIST01=PERSIST01,
                      PSF01_PANCHRO=PSF01_PANCHRO,
-                     STRAY00=STRAY00)
+                     STRAY00=STRAY00,
+                     MOT_FF=MOT_FF)
 
     for wave in [0, 590, 640, 730, 880]:
         Test_dict['FLAT02_%i' % wave] = FLAT0X
@@ -151,12 +154,7 @@ class Pipe(object):
 
     def get_test(self, taskname, inputs=dict(), log=None, drill=False, debug=False):
         """ """
-        # self.Test_dict[taskname](inputs, self.log, drill, debug)
         test = self.Test_dict[taskname](inputs, log, drill, debug)
-        #test.ID = self.ID
-        #test.BLOCKID = self.BLOCKID
-        #test.CHAMBER = self.CHAMBER
-        #test.processes = self.processes
         return test
 
     def launchtask(self, taskname):
@@ -183,7 +181,8 @@ class Pipe(object):
 
         if self.log is not None:
             self.log.info(msg)
-
+        
+        
         taskreport = self.dotask(taskname, taskinputs,
                                  drill=self.drill, debug=self.debug)
 
@@ -277,6 +276,7 @@ class Pipe(object):
 
             test = self.get_test(taskname, taskinputs, log=self.log)
             taskinputs = copy.deepcopy(test.inputs)
+            
 
             structure = taskinputs['structure']
 
@@ -340,6 +340,7 @@ class Pipe(object):
         Errors = False
 
         try:
+            
             test = self.get_test(taskname, inputs, self.log, drill, debug)
             test()  # test execution
         except:

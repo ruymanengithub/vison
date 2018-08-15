@@ -16,6 +16,7 @@ import numpy as np
 from collections import OrderedDict
 import copy
 
+from vison.datamodel.generator import generate_Explog
 from vison.datamodel import HKtools
 from vison.pipe import lib as pilib
 # END IMPORT
@@ -64,8 +65,23 @@ def add_checkHK_report(self, report_HK, tag):
 
     return msg_HK
 
+def create_mockexplog(self):
+    """ """
+    
+    logdefaults = {'egse_ver': self.elvis, 'con_file': 'vis_roe_config_cotsqm_273_vn.txt',
+                   'fl_rdout': 0, 'ci_rdout': 0,
+                   'fpga_ver': '2AC',
+                   'cdpu_clk':0, 'v_tp_mod': 123, 's_tp_mod':31,
+                   'motr': 1,
+                   'R1C1_TT': -153., 'R1C2_TT': -153., 'R1C3_TT': -153.,
+                   'R1C1_TB': -153., 'R1C2_TB': -153., 'R1C3_TB': -153., }
+    
+    explog = generate_Explog(self.inputs['structure'],defaults=logdefaults,
+                    elvis=self.elvis,explog=None,
+                    OBSID0=1000,CHAMBER=self.inputs['CHAMBER'])
+    return explog
 
-def filterexposures(self, structure, explogf, datapath, OBSID_lims, colorblind=False, wavedkeys=[],
+def filterexposures(self, structure, explog, OBSID_lims, colorblind=False, wavedkeys=[],
                     surrogate=''):
     """Loads a list of Exposure Logs and selects exposures from test 'test'.
 
@@ -78,11 +94,7 @@ def filterexposures(self, structure, explogf, datapath, OBSID_lims, colorblind=F
 
 
     """
-
-    # load exposure log(s)
-    explog = pilib.loadexplogs(explogf, elvis=self.elvis, addpedigree=True,
-                               datapath=datapath)
-
+    
     if len(OBSID_lims) == 0:
         OBSID_lims = [explog['ObsID'][0], explog['ObsID'][-1]]
 
@@ -176,14 +188,6 @@ def addHKPlotsMatrix(self):
 
     self.report.add_FigsTable(HKfigs, Ncols=3, figswidth=4,
                               caption='Selected HK parameters during test.')
-
-
-def init_and_fill_CDP(self, cdpobj, header_title=''):
-    cdpobj.init_workbook()
-    cdpobj.fill_Header(title=header_title)
-    cdpobj.fill_Meta()
-    cdpobj.fill_allDataSheets()
-    return cdpobj
 
 
 def save_CDP(self, cdpobj):

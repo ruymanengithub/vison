@@ -46,10 +46,20 @@ CommonTaskInputs = OrderedDict(sorted([
 class Inputs(dict):
     """Class to hold, transfer and 'document' Task Inputs."""
 
-    manifesto = OrderedDict([('a', (int, 'first variable')),
-                             ('b', (int, 'second variable'))])
+    manifesto = OrderedDict([('a', ([int], 'first variable')),
+                             ('b', ([int], 'second variable'))])
 
     def __init__(self, *args, **kwargs):
+        
+        for key in self.manifesto:
+            kmv = self.manifesto[key]
+            kmvl = list(kmv)
+            if type(None) not in kmvl[0]:
+                kmvl[0] += [type(None)]
+            self.manifesto[key] = tuple(kmvl)
+            
+        self._fill_with_Nones()
+        
         if 'args' in locals():
             for item in locals()['args']:
                 _key, _val = item
@@ -58,6 +68,11 @@ class Inputs(dict):
             for key in kwargs:
                 self.assertinputs(key, kwargs[key])
         super(Inputs, self).__init__(*args, **kwargs)
+        
+    def _fill_with_Nones(self):
+        for key in self.manifesto.keys():
+            self[key] = None
+    
 
     def assertinputs(self, key, value):
         # return # TESTS

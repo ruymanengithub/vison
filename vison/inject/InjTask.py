@@ -16,7 +16,6 @@ import os
 from collections import OrderedDict
 
 #from vison.support import context
-from vison.inject import extract_injection_lines
 from vison.inject import lib as ilib
 from vison.pipe.task import Task
 from vison.datamodel import core, ccd
@@ -47,7 +46,8 @@ class InjTask(Task):
 
         Task.check_data(self, **kwargs)
 
-    def prepare_images(self):
+    def prepare_images(self, doExtract=True, doMask=True, doOffset=True, 
+                       doBias=True, doFF=False):
         """
 
         InjTask: Preparation of data for further analysis.
@@ -60,7 +60,8 @@ class InjTask(Task):
 
         """
         super(InjTask, self).prepare_images(
-            doExtract=True, doMask=True, doOffset=True, doBias=True)
+            doExtract=doExtract, doMask=doMask, doOffset=doOffset, doBias=doBias,
+            doFF=doFF)
 
     def predict_expected_injlevels(self, teststruct):
         """ """
@@ -173,7 +174,7 @@ class InjTask(Task):
             for iObs in range(nObs):
 
                 if self.debug:
-                    print 'check_data: processing Obsid %i/%i' % (iObs+1, nObs)
+                    print 'InjTask.get_checkstats_ST: processing ObsID %i/%i' % (iObs+1, nObs)
 
                 for jCCD, CCDk in enumerate(CCDs):
                     dpath = self.dd.mx['datapath'][iObs, jCCD]
@@ -205,17 +206,18 @@ class InjTask(Task):
 
                             ccdobj.sub_offset(Quad, method='row', scan='pre', trimscan=[5, 5],
                                               ignore_pover=True, extension=-1)
-                            quaddata = ccdobj.get_quad(
-                                Quad, canonical=True, extension=-1)
-                            extract_res = extract_injection_lines(quaddata, pattern, VSTART=vstart,
-                                                                  VEND=vend, suboffmean=False, lineoffset=lineoffsets[Quad])
+                            
+                            extract_res = ilib.extract_injection_lines(ccdobj, 
+                                            Quad, pattern, VSTART=vstart,
+                                            VEND=vend, suboffmean=False)
+                            istats = extract_res['stats_injection']
 
                             self.dd.mx['chk_mea_inject'][iObs, jCCD,
-                                                         kQ] = extract_res['avinjection']
+                                                         kQ] = istats['mean']
                             self.dd.mx['chk_med_inject'][iObs, jCCD,
-                                                         kQ] = extract_res['stats_injection'][0]
+                                                         kQ] = istats['p50']
                             self.dd.mx['chk_std_inject'][iObs, jCCD,
-                                                         kQ] = extract_res['stats_injection'][1]
+                                                         kQ] = istats['std']
 
     def check_metrics_ST(self, **kwargs):
         """ 

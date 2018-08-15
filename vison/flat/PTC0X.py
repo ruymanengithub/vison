@@ -32,27 +32,22 @@ Created on Mon Apr  3 17:00:24 2017
 
 # IMPORT STUFF
 import numpy as np
-from pdb import set_trace as stop
 import os
-import warnings
 import copy
-import string as st
 from collections import OrderedDict
+import pandas as pd
 
 from vison.support import context
 #from vison.pipe import lib as pilib
 from vison.ogse import ogse as ogsemod
-from vison.point import lib as polib
 from vison.datamodel import scriptic as sc
-from vison.datamodel import HKtools
-from vison.datamodel import core, ccd
-from vison.image import calibration
 import ptc as ptclib
-from vison.image import performance
 from FlatTask import FlatTask
 from vison.datamodel import inputs
 import PTC0Xaux
-from vison.support.files import cPickleRead, cPickleDumpDictionary
+from vison.support import utils
+from vison.datamodel import cdp
+from vison.support.files import cPickleRead
 # END IMPORT
 
 isthere = os.path.exists
@@ -81,7 +76,7 @@ PTC01_relfluences = np.array(
 
 PTC02_relfluences = np.array([10., 30., 50., 70., 80., 90.])
 
-FLATFLUX00_relfluences = np.array([25.,50.,75.])
+FLATFLUX00_relfluences = np.array([5., 20., 50., 80.])
 
 def get_testdefaults_PTC0X(ogseobj=None):
 
@@ -93,6 +88,7 @@ def get_testdefaults_PTC0X(ogseobj=None):
     PTC01_exptimes = (PTC01_relfluences / 100. *
                       tFWC800).tolist()  # ms
     PTC02waves = [590, 640, 730, 800, 880, 0]
+    FLATFLUX00waves = [590, 640, 730, 800, 880, 0]
 
     PTC02TEMP_exptimes = (PTC02_relfluences / 100. *
                           tFWC800).tolist()
@@ -103,6 +99,9 @@ def get_testdefaults_PTC0X(ogseobj=None):
                                    wavelength=800),
                         PTC02WAVE=dict(waves=PTC02waves,
                                        frames=[4, 4, 4, 4, 4, 4],
+                                       exptimes=dict()),
+                        FLATFLUX00=dict(waves=FLATFLUX00waves,
+                                       frames=[1, 1, 1, 1],
                                        exptimes=dict()),
                         PTC02TEMP=dict(frames=[4, 4, 4, 4, 4, 4],
                                        exptimes=PTC02TEMP_exptimes,
@@ -144,6 +143,15 @@ for iflu, rflu in enumerate(PTC02_relfluences):
 for i in [2, 3]:
     FLU_lims_PTC02['CCD%i' % i] = copy.deepcopy(FLU_lims_PTC02['CCD1'])
 
+FLU_lims_FLATFLUX00 = dict(CCD1=dict())
+for iflu, rflu in enumerate(FLATFLUX00_relfluences):
+    _cenval = min(rflu / 100., 1.) * 2.**16
+    _lims = _cenval * plusminus10pcent
+    FLU_lims_FLATFLUX00['CCD1']['col%i' % (iflu+1)] = _lims
+
+for i in [2, 3]:
+    FLU_lims_FLATFLUX00['CCD%i' % i] = copy.deepcopy(FLU_lims_FLATFLUX00['CCD1'])
+
 
 FLU_lims_FLATFLUX00 = dict(CCD1=dict())
 for iflu, rflu in enumerate(FLATFLUX00_relfluences):
@@ -171,16 +179,19 @@ class PTC0X(FlatTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(PTC0X, self).__init__(inputs, log, drill, debug)
-        self.name = 'PTC0X'
-        self.type = 'Simple'
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
                          ('extract', self.extract_PTC),
                          ('meta', self.meta_analysis)]
+
+        super(PTC0X, self).__init__(inputs, log, drill, debug)
+        self.name = 'PTC0X'
+        self.type = 'Simple'
         self.HKKeys = HKKeys
         self.figdict = PTC0Xaux.gt_PTC0Xfigs(self.inputs['test'])
-        self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles')
+        self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
+                   products='products')
+        self.window = dict(wpx=300,hpx=300)
 
     def set_inpdefaults(self, **kwargs):
         """ """
@@ -193,7 +204,10 @@ class PTC0X(FlatTask):
             testkey = 'PTC01'
 
         if testkey == 'PTC01':
-            _testkey = 'PTC01'
+            _testkey = 'PTC01' 
+        if 'FLATFLUX00' in testkey:
+            _testkey = 'FLATFLUX00'
+        
         if 'PTC02' in testkey:
             if testkey[-1] == 'K':
                 _testkey = 'PTC02TEMP'
@@ -282,13 +296,13 @@ class PTC0X(FlatTask):
 
         return PTC0X_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """
 
         """
-        wavedkeys = ['motr_siz']
-        return super(PTC0X, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=False,
-                                                  wavedkeys=wavedkeys)
+        
+        return super(PTC0X, self).filterexposures(structure, explog, OBSID_lims, 
+                    wavedkeys=['motr_siz'],colorblind=False)
 
     def prepare_images(self):
         super(PTC0X, self).prepare_images(doExtract=True, doMask=True,
@@ -317,14 +331,15 @@ class PTC0X(FlatTask):
                             measure variance
 
         """
+        
+        # HARDWIRED VALUES
+        wpx = self.window['wpx']
+        hpx = self.window['hpx']
 
         if self.report is not None:
             self.report.add_Section(
                 keyword='extract', Title='PTC Extraction', level=0)
-
-        # HARDWIRED VALUES
-        wpx = 300
-        hpx = 300
+            self.report.add_Text('Segmenting on %i x %i windows...' % (wpx,hpx))
 
         # labels should be the same accross CCDs. PATCH.
         label = self.dd.mx['label'][:, 0].copy()
@@ -332,15 +347,14 @@ class PTC0X(FlatTask):
 
         indices = copy.deepcopy(self.dd.indices)
 
-        nObs, nCCD, nQuad = indices.shape
+        nObs, nCCD, nQuad = indices.shape[0:3]
 
         Quads = indices.get_vals('Quad')
         CCDs = indices.get_vals('CCD')
 
-        emptyccdobj = ccd.CCD()
         tile_coos = dict()
         for Quad in Quads:
-            tile_coos[Quad] = emptyccdobj.get_tile_coos(Quad, wpx, hpx)
+            tile_coos[Quad] = self.ccdcalc.get_tile_coos(Quad, wpx, hpx)
         Nsectors = tile_coos[Quads[0]]['Nsamps']
         sectornames = np.arange(Nsectors)
 
@@ -369,6 +383,7 @@ class PTC0X(FlatTask):
             ixodd = np.arange(1, nsix, 2)
 
             self.dd.mx['ObsID_pair'][six[0][ixeven]] = ObsIDs[six[0][ixodd]]
+        
 
         if not self.drill:
 
@@ -389,19 +404,20 @@ class PTC0X(FlatTask):
                 for jCCD, CCDk in enumerate(CCDs):
 
                     ccdobj_odd_f = os.path.join(
-                        dpath, self.dd.mx['ccdobj_name'][iObs, jCCD])
+                        dpath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs, jCCD])
                     ccdobj_eve_f = os.path.join(
-                        dpath, self.dd.mx['ccdobj_name'][iObs_pair, jCCD])
+                        dpath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs_pair, jCCD])
 
                     ccdobj_odd = copy.deepcopy(
-                        cPickleRead(ccdobj_odd_f))  # ['ccdobj'])
+                        cPickleRead(ccdobj_odd_f))  
                     ccdobj_eve = copy.deepcopy(
-                        cPickleRead(ccdobj_eve_f))  # ['ccdobj'])
-
+                        cPickleRead(ccdobj_eve_f)) 
+                    
                     evedata = ccdobj_eve.extensions[-1].data.copy()
 
                     # easy way to subtract one image from the other
-                    ccdobj_odd.sub_bias(evedata, extension=-1)
+                    ccdobj_sub = copy.deepcopy(ccdobj_odd)
+                    ccdobj_sub.sub_bias(evedata, extension=-1)
 
                     for kQ in range(nQuad):
 
@@ -409,15 +425,21 @@ class PTC0X(FlatTask):
 
                         _tile_coos = tile_coos[Quad]
 
-                        _meds = ccdobj_odd.get_tile_stats(
+                        _meds = ccdobj_odd.get_tiles_stats(
                             Quad, _tile_coos, 'median', extension=-1)
-                        _vars = ccdobj_odd.get_tile_stats(
-                            Quad, _tile_coos, 'std', extension=-1)**2.
+                        
+                        # IT'S A SUBTRACTION, SO WE HAVE TO DIVIDE BY 2 THE VARIANCE!
+                        _vars = ccdobj_sub.get_tiles_stats(
+                            Quad, _tile_coos, 'std', extension=-1)**2./2. 
 
                         self.dd.mx['sec_med'][iObs, jCCD, kQ, :] = _meds.copy()
                         self.dd.mx['sec_var'][iObs, jCCD, kQ, :] = _vars.copy()
+                        
+        # MISSING: any figure?
+        # MISSING: any Table?
+        
 
-        return None
+        return 
 
     def meta_analysis(self):
         """
@@ -451,21 +473,55 @@ class PTC0X(FlatTask):
         dIndices = copy.deepcopy(self.dd.indices)
 
         CCDs = dIndices.get_vals('CCD')
+        nC = len(CCDs)
         Quads = dIndices.get_vals('Quad')
+        nQ = len(Quads)
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+        
+        prodspath = self.inputs['subpaths']['products']
 
         # Initializations of output data-products
-
+        
+        NP = nC * nQ
+        
+        GAIN_TB = OrderedDict()
+        
+        GAIN_TB['CCD'] = np.zeros(NP,dtype='int32')
+        GAIN_TB['Q'] = np.zeros(NP,dtype='int32')
+        GAIN_TB['gain'] = np.zeros(NP,dtype='float32')
+        GAIN_TB['egain'] = np.zeros(NP,dtype='float32')
+        GAIN_TB['alpha'] = np.zeros(NP,dtype='float32')
+        GAIN_TB['fqual'] = np.zeros(NP,dtype='int32')
+        GAIN_TB['bloom'] = np.zeros(NP,dtype='float32')
+        
+        curves_cdp = cdp.CDP()
+        curves_cdp.header = CDP_header.copy()
+        curves_cdp.path = prodspath
+        curves_cdp.data = OrderedDict()
+        
+        
+        for CCDk in CCDs:
+            curves_cdp.data[CCDk] = OrderedDict()            
+            for Q in Quads:
+                curves_cdp.data[CCDk][Q] = OrderedDict()
+                curves_cdp.data[CCDk][Q]['x'] = OrderedDict()
+                curves_cdp.data[CCDk][Q]['y'] = OrderedDict()
+        
         gain_mx = OrderedDict()
 
         g_tmp_keys = ['a0', 'ea0', 'a1', 'ea1', 'a2',
                       'ea2', 'gain', 'egain', 'alpha', 'rn']
 
-        for CCDkey in CCDs:
-            gain_mx[CCDkey] = dict()
-            for Quad in Quads:
-                gain_mx[CCDkey][Quad] = dict()
+        for CCDk in CCDs:
+            gain_mx[CCDk] = dict()
+            for Q in Quads:
+                gain_mx[CCDk][Q] = dict()
                 for key in g_tmp_keys:
-                    gain_mx[CCDkey][Quad][key] = np.nan
+                    gain_mx[CCDk][Q][key] = np.nan
 
         b_tmp_keys = ['bloom_ADU', 'bloom_e']
 
@@ -480,13 +536,16 @@ class PTC0X(FlatTask):
 
         # fitting the PTCs
 
-        for iCCD, CCDkey in enumerate(CCDs):
+        for iCCD, CCDk in enumerate(CCDs):
 
             for jQ, Q in enumerate(Quads):
+                
+                
+                ixsel = np.where(~np.isnan(self.dd.mx['ObsID_pair'][:]))
 
-                raw_var = self.dd.mx['sec_var'][:, iCCD, jQ, :]
-                raw_med = self.dd.mx['sec_med'][:, iCCD, jQ, :]
-
+                raw_var = self.dd.mx['sec_var'][ixsel, iCCD, jQ, :]
+                raw_med = self.dd.mx['sec_med'][ixsel, iCCD, jQ, :]
+                
                 ixnonan = np.where(~np.isnan(raw_var) & ~np.isnan(raw_med))
                 var = raw_var[ixnonan]
                 med = raw_med[ixnonan]
@@ -495,24 +554,89 @@ class PTC0X(FlatTask):
 
                 _fitresults = ptclib.fitPTC(med, var)
 
-                for zx in range(2):
-                    gain_mx[CCDkey][Q]['a%i' % zx] = _fitresults['fit'][2-zx]
-                    gain_mx[CCDkey][Q]['ea%i' % zx] = _fitresults['efit'][2-zx]
+                for zx in range(2+1):
+                    gain_mx[CCDk][Q]['a%i' % zx] = _fitresults['fit'][2-zx]
+                    gain_mx[CCDk][Q]['ea%i' % zx] = _fitresults['efit'][2-zx]
 
-                gain_mx[CCDkey][Q]['gain'] = _fitresults['gain']
-                gain_mx[CCDkey][Q]['rn'] = _fitresults['rn']
-                gain_mx[CCDkey][Q]['quality'] = _fitresults['quality']
-
+                gain_mx[CCDk][Q]['gain'] = _fitresults['gain']
+                gain_mx[CCDk][Q]['egain'] = _fitresults['efit'][1]/_fitresults['gain']**2.
+                gain_mx[CCDk][Q]['alpha'] = -_fitresults['quadterm']
+                gain_mx[CCDk][Q]['rn'] = _fitresults['rn']
+                gain_mx[CCDk][Q]['quality'] = _fitresults['quality']
+                
                 _bloom = ptclib.foo_bloom(med, var)
 
-                bloom_mx[CCDkey][Q]['bloom_ADU'] = _bloom['bloom']
-                bloom_mx[CCDkey][Q]['bloom_ADU'] = _bloom['bloom']
+                bloom_mx[CCDk][Q]['bloom_ADU'] = _bloom['bloom']
+                
+                kk = iCCD * nQ + jQ
+                
+                GAIN_TB['CCD'][kk] = iCCD+1
+                GAIN_TB['Q'][kk] = jQ+1
+                GAIN_TB['gain'][kk] = gain_mx[CCDk][Q]['gain']
+                GAIN_TB['egain'][kk] = gain_mx[CCDk][Q]['egain']
+                GAIN_TB['alpha'][kk] = gain_mx[CCDk][Q]['alpha']
+                GAIN_TB['fqual'][kk] = gain_mx[CCDk][Q]['quality']
+                GAIN_TB['bloom'][kk] = bloom_mx[CCDk][Q]['bloom_ADU']
+                
+                curves_cdp.data[CCDk][Q]['x']['data'] = med.copy()
+                curves_cdp.data[CCDk][Q]['y']['data'] = var.copy()
+                
+                fkmed = np.linspace(0.,2.**16,100)
+                bfvar = np.polyval(_fitresults['fit'],fkmed)
+                
+                curves_cdp.data[CCDk][Q]['x']['fit'] = fkmed.copy()
+                curves_cdp.data[CCDk][Q]['y']['fit'] = bfvar.copy()
 
-        self.dd.products['gain'] = copy.deepcopy(gain_mx)
-        self.dd.products['bloom'] = copy.deepcopy(bloom_mx)
+        self.dd.products['gain_mx'] = copy.deepcopy(gain_mx)
+        self.dd.products['bloom_mx'] = copy.deepcopy(bloom_mx)
 
         # Build Tables
+        
+        GAIN_TB_dddf = OrderedDict(GAIN_TB = pd.DataFrame.from_dict(GAIN_TB))
+        
+        gain_tb_cdp = PTC0Xaux.CDP_lib['GAIN_TB']
+        gain_tb_cdp.rootname = gain_tb_cdp.rootname % \
+          (self.inputs['test'],self.inputs['wavelength'])
+        gain_tb_cdp.path = self.inputs['subpaths']['products']
+        gain_tb_cdp.ingest_inputs(
+                data = GAIN_TB_dddf.copy(),
+                meta=dict(),
+                header=CDP_header.copy()
+                )
 
+        gain_tb_cdp.init_wb_and_fillAll(header_title='%s (%inm): PTC TABLE' % \
+                (self.inputs['test'],self.inputs['wavelength']))
+        self.save_CDP(gain_tb_cdp)
+        self.pack_CDP_to_dd(gain_tb_cdp, 'GAIN_TB_CDP')
+
+        if self.report is not None:
+            
+            fccd = lambda x: CCDs[x-1]
+            fq = lambda x: Quads[x-1]
+            fi = lambda x: '%i' % x
+            ff = lambda x: '%.2f' % x
+            fE = lambda x: '%.2E' % x
+            
+            cov_formatters=[fccd,fq,ff,fE,fE,fi,fE]
+            
+            caption = '%s (%inm): PTC TABLE' % \
+                (self.inputs['test'],self.inputs['wavelength'])
+            Gtex = gain_tb_cdp.get_textable(sheet='GAIN_TB', caption=caption,
+                                               fitwidth=True,
+                                               formatters=cov_formatters)
+            
+            Gtex = ['\\tiny']+Gtex+['\\normalsize']
+            
+            self.report.add_Text(Gtex)        
+        
+        
         # Do plots
+        
+        fdict_PTC = self.figdict['PTC0X_PTC_curves'][1]
+        fdict_PTC['data'] = curves_cdp.data.copy()
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['PTC0X_PTC_curves'], 
+                               dobuilddata=False)
+        
 
-        # Add reports
+       

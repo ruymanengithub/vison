@@ -61,15 +61,17 @@ class PSF01_PANCHRO(Task):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
+        self.subtasks = [('check', self.check_data),
+                         ('meta', self.meta)]
         super(PSF01_PANCHRO, self).__init__(inputs, log, drill, debug)
         self.name = 'PSF01_PANCHRO'
         self.type = 'Meta'
-        self.subtasks = [('check', self.check_data),
-                         ('meta', self.meta)]
+        
         #self.HKKeys = HKKeys
         self.figdict = PSF0Xaux.PSF01_PANCHRO_figs
         self.perflimits.update(performance.perf_rdout)
         self.dd = dict()
+        
 
     def ingest_data_MetaTest(self):
         """ """

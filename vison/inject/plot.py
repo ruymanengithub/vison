@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 
-NEEDSREVISION
 
 Charge Injection Plotting Tools.
 
@@ -35,22 +34,35 @@ import matplotlib.cm as cm
 # END IMPORT
 
 
+
+
 def get_phaseV(phaseID, delay, TOI=500):
-    """A1=Iphi2
-    A = [G,H]
-    TOI=500 us
+    """
+    A1=Iphi2
+    A2=Iphi3
+    A3=Iphi4
+    A4=Iphi1
+    D1=Iphi1
+    D2=Iphi2
+    D3=Iphi3
+    D4=Iphi4
+    A => [E,F]
+    D => [G,H]
     """
 
     waveform = [0, -3, 8, 8]
-
-    steps0 = dict(A1=3, A2=2, A3=1, A4=0,
-                  D1=0, D2=3, D3=2, D4=1)
+    
+    steps0 = dict(A4=0,A1=3,A2=2,A3=1,
+            D1=0,D2=3,D3=2,D4=1
+            )
 
     step0 = steps0[phaseID]
 
-    step = ((delay / float(TOI)) + step0) % 4
-
+    step = int(np.floor(((delay / float(TOI)) + step0) % 4))
+    
+    
     V = waveform[step]
+    
     return V
 
 
@@ -232,13 +244,17 @@ if __name__ == '__main__':
 
     # TEST
 
-    IG1 = 7.  # [1.5,6.]
-    IG2 = 5.  # 5.5
-    IDL = 13.
+    IG1 = [2.,7.]  # [1.5,6.]
+    IG2 = 6.5  # 5.5
+    IDL = 11.
     IDH = 18.
-    delay = 250*2-5
+    TOI = 500.
+    delay = TOI*2.5
     figname0_TEST = ''
-    rchpar = 10. - 0.2
+    chpar = 10.
+    rchpar = chpar - 0.2
+    
+    
 
     draw_gate_voltages(IG1, IG2, IDL, IDH, delay, figname=figname0_TEST,
-                       chpar=10, rchpar=rchpar, TOI=250)
+                       chpar=chpar, rchpar=rchpar, TOI=TOI)

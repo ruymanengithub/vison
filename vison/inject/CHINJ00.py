@@ -74,14 +74,15 @@ class CHINJ00(InjTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
+        self.subtasks = [('check', self.check_data)]
         super(CHINJ00, self).__init__(inputs, log, drill, debug)
         self.name = 'CHINJ00'
         self.type = 'Simple'
-        self.subtasks = [('check', self.check_data)]
+        
         self.HKKeys = HKKeys
         self.figdict = dict()
         self.inputs['subpaths'] = dict(figs='figs')
-
+ 
     def set_inpdefaults(self, **kwargs):
         """ """
         toi_chinj = 500
@@ -164,8 +165,8 @@ class CHINJ00(InjTask):
 
         return CHINJ00_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """ """
         wavedkeys = []
-        return super(CHINJ00, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=True,
+        return super(CHINJ00, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
                                                     wavedkeys=wavedkeys)

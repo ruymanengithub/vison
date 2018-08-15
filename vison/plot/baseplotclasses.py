@@ -258,8 +258,12 @@ class BeamPlot(BasicPlot):
                     ax.set_xlabel(self.meta['xlabel'])
                 if 'ylabel' in self.meta and Q in ['E', 'H'] and CCD == 1:
                     ax.set_ylabel(self.meta['ylabel'])
+                
+                if 'ylim' in self.meta:
+                    ax.set_ylim(self.meta['ylim'])
 
-            # self.axs[CCDkey][Q].locator_params(nticks=4,axis='x')
+        
+        # self.axs[CCDkey][Q].locator_params(nticks=4,axis='x')
 
     def plt_trimmer(self):
 
@@ -316,6 +320,12 @@ class BeamPlotYvX(BeamPlot):
             handle, label = None, None
 
         return handle, label
+
+class BeamImgShow(BeamPlot):
+    
+    def _ax_core_funct(self, ax, CQdict):        
+        ax.imshow(CQdict['img'])
+        
 
 
 class Beam1DHist(BeamPlot):
@@ -388,9 +398,33 @@ def testBeam2DPlot():
 
     beam2dplot.render(figname='')
 
-    stop()
+
+def testBeam2ImgShow():
+    """ """
+    
+    ccddict = dict()
+    for iQ, Q in enumerate(['E', 'F', 'G', 'H']):
+        #_x, _y = _squiggle_xy(iQ+1, iQ+1, iQ+2, iQ+2)
+        #xdict = OrderedDict(foo=_x, bar=_x*2.)
+        #ydict = OrderedDict(foo=_y, bar=_y*2.)
+        x = np.linspace(0.,1.,10)
+        y = np.linspace(0.,1.,10)
+        xx, yy = np.meshgrid(x,y)
+        img = np.sqrt(xx**2.+yy**2.)
+        ccddict[Q] = dict(img=img)
+
+    data = dict(CCD1=copy.deepcopy(ccddict),
+                CCD2=copy.deepcopy(ccddict),
+                CCD3=copy.deepcopy(ccddict))
+
+    meta = dict(suptitle='Test')
+    beamimgshow = BeamImgShow(data, meta=meta)
+
+    beamimgshow.render(figname='')
+
 
 
 if __name__ == '__main__':
 
-    testBeam2DPlot()
+    #testBeam2DPlot()
+    testBeam2ImgShow()

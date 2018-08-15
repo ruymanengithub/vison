@@ -84,7 +84,7 @@ def texarize_complidict(indict):
             else:
                 compmsg = indict[key]
                 llim, ulim = tuple(compmsg[2])
-                tex = '%.2f^{(%.2f,%.2f)}' % (compmsg[1], llim, ulim)
+                tex = '%.2f_{L%.2f}^{U%.2f}' % (compmsg[1], llim, ulim)
                 if not compmsg[0]:
                     tex = '\\textcolor{red}{%s}' % tex
                 tex = '$%s$' % tex
@@ -315,7 +315,7 @@ class ComplianceMX_CCDQCol(ComplianceMX):
         for iCCD, CCDkey in enumerate(self.CCDs):
             for jQ, Q in enumerate(self.Qs):
                 for kcol, colname in enumerate(self.colnames):
-                    _lims = self.lims[CCDkey][colname]
+                    _lims = self.lims[CCDkey][Q][colname]
                     ixsel = np.where(self.indexer == colname)
 
                     testv = (np.isnan(inparr[ixsel, iCCD, jQ, ...]) |

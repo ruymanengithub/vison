@@ -30,7 +30,7 @@ HKKeys = []
 
 PER01_commvalues = dict(program='CALCAMP', test='PERSIST01',
                         rdmode='fwd_bas',
-                        flushes=3,  # exptime=0.,
+                        flushes=7,  # exptime=0.,
                         vstart=0, vend=2086,
                         shuttr=1,
                         siflsh=1, siflsh_p=500,
@@ -56,21 +56,24 @@ class PERSIST01(Task):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(PERSIST01, self).__init__(inputs, log, drill, debug)
-        self.name = 'PERSIST01'
-        self.type = 'Simple'
         self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
+        super(PERSIST01, self).__init__(inputs, log, drill, debug)
+        self.name = 'PERSIST01'
+        self.type = 'Simple'
+        
         self.HKKeys = HKKeys
         self.figdict = dict()
         self.inputs['subpaths'] = dict(figs='figs')
+        
 
     def set_inpdefaults(self, **kwargs):
         """ """
+        wavelength = 590.
         self.inpdefaults = dict(
-            exptSATUR=15.,
-            exptLATEN=565.
+            exptSATUR=100.*self.ogse.profile['tFWC_point']['nm%i' % wavelength],
+            exptLATEN=565. # s
         )
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
@@ -108,10 +111,10 @@ class PERSIST01(Task):
 
         return PER01_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """ """
         wavedkeys = []
-        return super(PERSIST01, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=True,
+        return super(PERSIST01, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
                                                       wavedkeys=wavedkeys)
 
     def check_data(self):

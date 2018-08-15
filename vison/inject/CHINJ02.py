@@ -51,14 +51,11 @@ IG1comm = 6.
 IG2comm = 4.
 
 CHINJ02_commvalues = dict(program='CALCAMP', test='CHINJ02',
-                          IG1_1_T=IG1comm, IG1_2_T=IG1comm, IG1_3_T=IG1comm,
-                          IG1_1_B=IG1comm, IG1_2_B=IG1comm, IG1_3_B=IG1comm,
-                          IG2_T=IG2comm, IG2_B=IG2comm,
                           IPHI1=1, IPHI2=1, IPHI3=1, IPHI4=0,
                           rdmode='fwd_bas',
                           flushes=7, vstart=0, vend=2086,
                           exptime=0., shuttr=0,
-                          siflsh=0,
+                          siflsh=1,siflsh_p=1,
                           chinj=1, chinj_on=30,
                           chinj_of=100,
                           id_wid=60,
@@ -69,8 +66,11 @@ CHINJ02_commvalues = dict(program='CALCAMP', test='CHINJ02',
 class CHINJ02_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
-        ('IDLs', ([list], 'Injection Drain Low Voltages List.')),
+        ('IDLs', ([list], 'Injection Drain Low Voltages List: [min, max].')),
+        ('dIDL', ([float], 'Injection Drain Voltage Step.')),
         ('IDH', ([float], 'Injection Drain High Voltage.')),
+        ('IG1', ([float], 'Injection Gate 1 Voltage.')),
+        ('IG2', ([float], 'Injection Gate 2 Voltage.')),
         ('id_delays', ([list], 'Injection Drain Delays.')),
         ('toi_chinj', ([int], 'TOI Charge Injection.')),
     ])))
@@ -83,17 +83,19 @@ class CHINJ02(InjTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(CHINJ02, self).__init__(inputs, log, drill, debug)
-        self.name = 'CHINJ02'
-        self.type = 'Simple'
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
                          ('extract', self.extract_data),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
+        super(CHINJ02, self).__init__(inputs, log, drill, debug)
+        self.name = 'CHINJ02'
+        self.type = 'Simple'
+        
         self.HKKeys = HKKeys
         self.figdict = CH02aux.CH02figs.copy()
         self.inputs['subpaths'] = dict(figs='figs')
+        
 
     def set_inpdefaults(self, **kwargs):
         """ """
@@ -101,6 +103,9 @@ class CHINJ02(InjTask):
 
         self.inpdefaults = dict(
             IDLs=[10., 13.],
+            dIDL=0.25,
+            IG1=IG1comm,
+            IG2=IG2comm,
             IDH=18.,
             id_delays=[toi_chinj*2.5, toi_chinj*1.5],
             toi_chinj=toi_chinj
@@ -127,14 +132,16 @@ class CHINJ02(InjTask):
         """
 
         IDLs = self.inputs['IDLs']
+        dIDL = self.inputs['dIDL']
         IDH = self.inputs['IDH']
+        IG1 = self.inputs['IG1']
+        IG2 = self.inputs['IG2']
         id_delays = self.inputs['id_delays']
         toi_chinj = self.inputs['toi_chinj']
 
         assert len(IDLs) == 2
         assert len(id_delays) == 2
 
-        dIDL = 0.25  # V
         NIDL = (IDLs[1]-IDLs[0])/dIDL+1
         IDLv = np.arange(NIDL)*dIDL+IDLs[0]
 
@@ -146,6 +153,9 @@ class CHINJ02(InjTask):
         for i, IDL in enumerate(IDLv):
             colkey = 'col%i' % (i+1,)
             CHINJ02_sdict[colkey] = dict(frames=1, IDL=IDL, IDH=IDH,
+                                         IG1_1_T=IG1, IG1_2_T=IG1, IG1_3_T=IG1,
+                                         IG1_1_B=IG1, IG1_2_B=IG1, IG1_3_B=IG1,
+                                         IG2_T=IG2, IG2_B=IG2,
                                          id_dly=id_delays[0], toi_ch=toi_chinj)
             colcounter += 1
 
@@ -156,6 +166,9 @@ class CHINJ02(InjTask):
         for j, IDL in enumerate(IDLv):
             colkey = 'col%i' % (colstart+j,)
             CHINJ02_sdict[colkey] = dict(frames=1, IDL=IDL, IDH=IDH,
+                                         IG1_1_T=IG1, IG1_2_T=IG1, IG1_3_T=IG1,
+                                         IG1_1_B=IG1, IG1_2_B=IG1, IG1_3_B=IG1,
+                                         IG2_T=IG2, IG2_B=IG2,
                                          id_dly=id_delays[1], toi_ch=toi_chinj)
 
         Ncols = len(CHINJ02_sdict.keys())
@@ -175,10 +188,10 @@ class CHINJ02(InjTask):
 
         return CHINJ02_sdict
 
-    def filterexposures(self, structure, explogf, datapath, OBSID_lims):
+    def filterexposures(self, structure, explog, OBSID_lims):
         """ """
         wavedkeys = ['motr_siz']
-        return super(CHINJ02, self).filterexposures(structure, explogf, datapath, OBSID_lims, colorblind=True,
+        return super(CHINJ02, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
                                                     wavedkeys=wavedkeys)
 
     def extract_data(self):

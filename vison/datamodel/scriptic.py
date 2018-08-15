@@ -214,7 +214,7 @@ script_dictionary['6.5.X']['defaults'] = {
     'RD_T': 16.0, 'RD_B': 16.0,
     'IPHI1': 1, 'IPHI2': 1, 'IPHI3': 1, 'IPHI4': 0,
     'rdmode': 'fwd_bas',
-    'flushes': 7, 'siflsh': 0, 'siflsh_p': 500,
+    'flushes': 7, 'siflsh': 1, 'siflsh_p': 500,
     'swellw': context.sumwell['fwd_bas'][0], 'swelldly': context.sumwell['fwd_bas'][1],
     'inisweep': 1,
     'vstart': 0, 'vend': 2086,

@@ -43,11 +43,11 @@ class Task(object):
     """ """
 
     from task_lib import check_HK, filterexposures, addHKPlotsMatrix, add_labels_to_explog
-    from task_lib import init_and_fill_CDP, save_CDP
+    from task_lib import save_CDP, create_mockexplog
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-
+        
         self.ID = None
         if 'ID' in inputs:
             self.ID = inputs['ID']
@@ -78,35 +78,61 @@ class Task(object):
         self.type = 'Simple'
         self.HKKeys = []
         self.figdict = dict()
-        self.subtasks = [()]
+        if not hasattr(self,'subtasks'):
+            self.subtasks = [()]
         self.perflimits = dict()
         self.drill = drill
         self.debug = debug
         self.proc_histo = dict(Extract=False)
-        self.inputs['preprocessing'] = dict()
-        self.inputs['preprocessing']['offsetkwargs'] = dict(method='row',
+        
+        self.set_inpdefaults(**inputs)
+        _inputs = self.inpdefaults.copy()
+        
+        _inputs['preprocessing'] = dict()
+        _inputs['preprocessing']['offsetkwargs'] = dict(method='row',
                                                             scan='pre', trimscan=[5, 5],
                                                             ignore_pover=True,
                                                             extension=-1)
-
-        self.set_inpdefaults(**inputs)
-        _inputs = self.inpdefaults.copy()
+        
+        _inputs['todo_flags']=dict(init=True,check=False,report=False)
+        if len(self.subtasks[0])>0:
+            for v in self.subtasks: _inputs['todo_flags'][v[0]] = False
+        
         _inputs.update(inputs)
         self.inputs.update(_inputs)
+        
+        
+        #self.inputs['preprocessing'] = dict()
+        #self.inputs['preprocessing']['offsetkwargs'] = dict(method='row',
+        #                                                    scan='pre', trimscan=[5, 5],
+        #                                                    ignore_pover=True,
+        #                                                    extension=-1)
+        
+        #self.inputs['todo_flags']=dict(init=True,check=False,report=False)
+        #if len(self.subtasks[0])>0:
+        #    for v in self.subtasks: self.inputs['todo_flags'][v[0]] = False
+         
 
         self.set_perfdefaults(**inputs)
         _perfdefaults = self.perfdefaults.copy()
         self.perflimits.update(_perfdefaults)
-        if 'perflimits' in self.inputs:
+        if 'perflimits' in self.inputs and self.inputs['perflimits'] is not None:
             self.perflimits.update(self.inputs['perflimits'])
 
-        if 'diffvalues' in inputs:
+        if 'diffvalues' in inputs and self.inputs['diffvalues'] is not None:
             diffvalues = inputs['diffvalues'].copy()
         else:
             diffvalues = {}
-
+        
+        
         self.inputs['structure'] = self.build_scriptdict(
             diffvalues, elvis=self.elvis)
+        
+        images_format = self.get_images_format()
+        
+        NAXIS2withpover = 2*(ccd.NrowsCCD+ccd.voverscan)
+        emptyccd = ccd.CCD(withpover=images_format[1]==NAXIS2withpover)        
+        self.ccdcalc = copy.deepcopy(emptyccd)
 
         self.CDP_header = OrderedDict()
 
@@ -120,6 +146,36 @@ class Task(object):
     def build_scriptdict(self, diffvalues={}, elvis=context.elvis):
         """ """
         return dict()
+    
+    def get_images_format(self):
+        
+        strdict = self.inputs['structure']
+        Ncols = strdict['Ncols']
+        
+        vstarts = []
+        vends = []
+        for i in range(1,Ncols+1):
+            vstarts.append(strdict['col%i' % i]['vstart'])
+            vends.append(strdict['col%i' % i]['vend'])
+            
+        vstarts = np.array(vstarts)
+        vends = np.array(vends)
+        
+        assert np.all(vstarts == vstarts[0])
+        assert np.all(vends == vends[0])
+        
+        Nlines = vends-vstarts
+        
+        if Nlines[0] <= ccd.NrowsCCD:
+            images_format = (ccd.NAXIS1, 
+                            ccd.NrowsCCD*2)
+        elif Nlines[0] == ccd.NrowsCCD+ccd.voverscan:
+            images_format = (ccd.NAXIS1, 
+                            (ccd.NrowsCCD+ccd.voverscan)*2)
+        else:
+            raise RuntimeError
+            
+        return images_format
 
     def __call__(self):
         """Generic test master function."""
@@ -176,7 +232,7 @@ class Task(object):
                 os.system(
                     'find %s -maxdepth 1 -type f -exec rm -f {} \;' % resultspath)
 
-            # Creating/clearing subresultspath
+            # Creating/clearing sub-resultspath
             for _, subpath in self.inputs['subpaths'].iteritems():
                 if not isthere(subpath):
                     os.system('mkdir %s' % subpath)
@@ -184,6 +240,7 @@ class Task(object):
                     os.system('rm -rf %s/*' % subpath)
 
             # Initialising Report Object
+            
 
             if todo_flags['report']:
                 self.report = Report(TestName=testkey, Model=self.Model,
@@ -193,17 +250,20 @@ class Task(object):
                 self.add_inputs_to_report()
             else:
                 self.report = None
+                
 
             if self.type == 'Simple':
                 self.ingest_data_SimpleTest()
             elif self.type == 'Meta':
                 self.ingest_data_MetaTest()
 
+
             self.save_progress(DataDictFile, reportobjFile)
         else:
             self.recover_progress(DataDictFile, reportobjFile)
 
         # DATA-WORK and ANALYSIS
+        
 
         for subtask in subtasks:
 
@@ -211,6 +271,7 @@ class Task(object):
 
             if subtaskname not in todo_flags:
                 todo_flags[subtaskname] = False
+            
 
             if todo_flags[subtaskname]:
 
@@ -267,6 +328,9 @@ class Task(object):
     def addHK_2_dd(self):
         """ """
         self.dd = pilib.addHK(self.dd, self.HKKeys, elvis=self.elvis)
+        
+    def addmockHK_2_dd(self):
+        self.dd = pilib.addmockHK(self.dd,self.HKKeys,elvis=self.elvis)
 
     def ingest_data_SimpleTest(self):
 
@@ -275,13 +339,21 @@ class Task(object):
         OBSID_lims = self.inputs['OBSID_lims']
         structure = self.inputs['structure']
         explogf = self.inputs['explogf']
+        
         #elvis = self.inputs['elvis']
+        
+        if self.drill:
+            explog = self.create_mockexplog()
+        else:
+            explog = pilib.loadexplogs(explogf, elvis=self.elvis, addpedigree=True,
+                               datapath=datapath)    
 
         # META-DATA WORK
-
+        
         explog, checkreport = self.filterexposures(
-            structure, explogf, datapath, OBSID_lims)
-
+            structure, explog, OBSID_lims)
+        
+        
         if self.log is not None:
             self.log.info('%s acquisition consistent with expectations: %s' % (
                 testkey, checkreport['checksout']))
@@ -330,7 +402,10 @@ class Task(object):
             self.dd.flags.add('MISSDATA')
 
         # Add HK information
-        self.addHK_2_dd()
+        if not self.drill:
+            self.addHK_2_dd()
+        else:
+            self.addmockHK_2_dd()
 
     def ingest_data_MetaTest(self):
         raise NotImplementedError("Method implemented in child-class")
@@ -489,7 +564,10 @@ class Task(object):
             self.report.add_Section(
                 keyword='check_data', Title='Data Validation', level=0)
         # INVENTORY OF DATA
-        self.add_data_inventory_to_report()
+        tDict = self.get_data_inventory_table()
+        self.dd.meta['data_inventory'] = tDict.copy()
+        if self.report is not None:
+            self.add_data_inventory_to_report(tDict)
         # CHECK AND CROSS-CHECK HK
         self.check_HK_ST()
         # OBTAIN METRICS FROM IMAGES
@@ -539,6 +617,7 @@ class Task(object):
         figspath = self.inputs['subpaths']['figs']
 
         for figkey in figkeys:
+            
             try:
                 pmeta = self.figdict[figkey][1]
                 pmeta['path'] = figspath
@@ -559,16 +638,19 @@ class Task(object):
                 keyword='prep_data', Title='Images Pre-Processing', level=0)
 
         if not doExtract:
-            self.report.add_Text('Not extracting FITS files: Nothing done.')
+            if self.report is not None:
+                self.report.add_Text('Not extracting FITS files: Nothing done.')
             self.proc_histo['Extract'] = False
             return
         else:
-            pass
-            # self.proc_histo['Extract']=True
+            if self.report is not None:
+                self.report.add_Text('Extracting FITS files to ccd.CCD objects.')
 
         def _loadCDP(cdpkey, msg):
             CDPData = calibration.load_FITS_CDPs(
-                self.inputs['inCDPs'][cdpkey], ccd.CCD)
+                self.inputs['inCDPs'][cdpkey], ccd.CCD,
+                           getallextensions=True, 
+                           withpover=self.ccdcalc.withpover)
             if self.log is not None:
                 cdpstr = self.inputs['inCDPs'][cdpkey].__str__()
                 cdpstr = st.replace(cdpstr, ',', ',\n')
@@ -576,29 +658,35 @@ class Task(object):
                 self.log.info(cdpstr)
                 if self.report is not None:
                     self.report.add_Text(msg)
-                    self.report.add_Text(cdpstr)
+                    self.report.add_Text(cdpstr, verbatim=True)
             return CDPData
 
         def _reportNotFound(reportobj, msg):
             if reportobj is not None:
                 reportobj.add_Text(msg)
 
-        if doMask and 'mask' in self.inputs['inCDPs']:
+        if doMask and 'Mask' in self.inputs['inCDPs']:
             # self.inputs['inCDPs']['Mask']['CCD%i']
-            MaskData = _loadCDP('Mask', 'Loading cosmetics mask...')
+            MaskData = _loadCDP('Mask', 'Loading and applying Cosmetics Mask...')
             self.proc_histo['Masked'] = True
-        elif doMask and 'mask' not in self.inputs['inCDPs']:
+        elif doMask and 'Mask' not in self.inputs['inCDPs']:
             NotFoundMsg = 'Cosmetics Mask not Found!'
             self.log.info(NotFoundMsg)
             _reportNotFound(self.report, NotFoundMsg)
             doMask = False
-
+        
         if doOffset:
             self.proc_histo['SubOffset'] = True
             offsetkwargs = self.inputs['preprocessing']['offsetkwargs']
+            
+            if self.report is not None:
+                self.report.add_Text('Subtracting Offset.')
+                msg = 'offsetkwargs=%s' % offsetkwargs.__repr__()
+                self.report.add_Text(msg,verbatim=True)
+                
 
         if doBias and 'bias' in self.inputs['inCDPs']:
-            BiasData = _loadCDP('Bias', 'Loading Bias Structure...')
+            BiasData = _loadCDP('Bias', 'Loading And Subtracting Bias Structure...')
             self.proc_histo['SubBias'] = True
         elif doBias and 'bias' not in self.inputs['inCDPs']:
             NotFoundMsg = 'Bias Structure not found!'
@@ -626,9 +714,9 @@ class Task(object):
         #nObs,nCCD,nQuad = DDindices.shape
         #Quads = DDindices[2].vals
 
-        #nObs = DDindices.get_len('ix')
-        nObs = 3  # TESTS!
-        print 'TESTS: task.prepare_images: LIMITTING TO 3 IMAGES!'
+        nObs = DDindices.get_len('ix')
+        #nObs = 3  # TESTS!
+        #print 'TESTS: task.prepare_images: LIMITTING TO 3 IMAGES!'
 
         CCDs = DDindices.get_vals('CCD')
 
@@ -659,7 +747,7 @@ class Task(object):
                         picklespath, '%s.pick' % ccdobj_name)
 
                     if doMask:
-                        ccdobj.get_mask(MaskData[CCDkey].extensions[-1])
+                        ccdobj.get_mask(MaskData[CCDkey].extensions[-1].data)
 
                     if doOffset:
                         for Quad in ccdobj.Quads:
@@ -668,11 +756,13 @@ class Task(object):
                             ccdobj.sub_offset(Quad, **offsetkwargs)
 
                     if doBias:
-                        ccdobj.sub_bias(BiasData[CCDkey], extension=-1)
+                        ccdobj.sub_bias(BiasData[CCDkey].extensions[-1].data, 
+                                        extension=-1)
 
                     if doFF:
                         FF = FFData['nm%i' % wavelength][CCDkey]
-                        ccdobj.divide_by_flatfield(FF, extension=-1)
+                        ccdobj.divide_by_flatfield(FF.extensions[-1].data, 
+                                                   extension=-1)
 
                     # cPickleDumpDictionary(dict(ccdobj=ccdobj),fullccdobj_name)
                     cPickleDumpDictionary(ccdobj, fullccdobj_name)
@@ -694,6 +784,7 @@ class Task(object):
 
         keys = self.inputs.manifesto.keys()
         values = []
+
         for key in keys:
             _val = self.inputs[key]
             if isinstance(_val, dict):
@@ -709,8 +800,22 @@ class Task(object):
 
         self.report.add_Table(tDict, names=names,
                               caption=caption, col_align='|l|X|')
-
-    def add_data_inventory_to_report(self):
+    
+    def get_data_inventory_table(self):
+        
+        tDict = OrderedDict()
+        tDict['ObsID']= self.dd.mx['ObsID'][:].copy()
+        tDict['exptime']= self.dd.mx['exptime'][:, 0].copy()
+        tDict['chinj']= self.dd.mx['chinj'][:, 0].copy()
+        tDict['v_tpump']= self.dd.mx['v_tpump'][:, 0].copy()
+        tDict['s_tpump']= self.dd.mx['s_tpump'][:, 0].copy()
+        tDict['source']= self.dd.mx['source'][:, 0].copy()
+        tDict['wave']= self.dd.mx['wave'][:, 0].copy()
+        
+        return tDict
+        
+    
+    def add_data_inventory_to_report(self,tDict):
         """ """
 
         self.report.add_Text('\\textbf{Test Data}')
@@ -718,21 +823,9 @@ class Task(object):
         caption = 'Data Used by Task %s , Test $%s$. Datapath = "%s"' % (
             self.name, self.inputs['test'], self.inputs['datapath'])
         #ncaption = st.replace(caption,'_','\\_')
-
-        ObsID = self.dd.mx['ObsID'][:].copy()
-        exptime = self.dd.mx['exptime'][:, 0].copy()
-        chinj = self.dd.mx['chinj'][:, 0].copy()
-        v_tpump = self.dd.mx['v_tpump'][:, 0].copy()
-        s_tpump = self.dd.mx['s_tpump'][:, 0].copy()
-        source = self.dd.mx['source'][:, 0].copy()
-        wave = self.dd.mx['wave'][:, 0].copy()
-
-        names = ['ObsID', 'exptime', 'chinj',
-                 'v_tpump', 's_tpump', 'source', 'wave']
-
-        tDict = OrderedDict(ObsID=ObsID, exptime=exptime, chinj=chinj, v_tpump=v_tpump,
-                            s_tpump=s_tpump, source=source, wave=wave)
-
+        
+        names = tDict.keys()
+        
         self.report.add_Table(tDict, names=names,
                               caption=caption, longtable=True)
 
