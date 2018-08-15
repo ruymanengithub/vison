@@ -138,6 +138,15 @@ for iflu, rflu in enumerate(PTC02_relfluences):
 for i in [2, 3]:
     FLU_lims_PTC02['CCD%i' % i] = copy.deepcopy(FLU_lims_PTC02['CCD1'])
 
+FLU_lims_FLATFLUX00 = dict(CCD1=dict())
+for iflu, rflu in enumerate(FLATFLUX00_relfluences):
+    _cenval = min(rflu / 100., 1.) * 2.**16
+    _lims = _cenval * plusminus10pcent
+    FLU_lims_FLATFLUX00['CCD1']['col%i' % (iflu+1)] = _lims
+
+for i in [2, 3]:
+    FLU_lims_FLATFLUX00['CCD%i' % i] = copy.deepcopy(FLU_lims_FLATFLUX00['CCD1'])
+
 
 class PTC0X_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
@@ -216,6 +225,8 @@ class PTC0X(FlatTask):
             FLU_lims = FLU_lims_PTC01
         elif 'PTC02' in testkey:
             FLU_lims = FLU_lims_PTC02
+        elif 'FLATFLUX00' in testkey:
+            FLU_lims = FLU_lims_FLATFLUX00
 
         self.perfdefaults['FLU_lims'] = FLU_lims  # dict
 
