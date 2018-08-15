@@ -92,8 +92,8 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         IDL = 11.
         IDH = 18.
-        IG2 = 5.5
-        IG1s = [2., 6.]
+        IG2 = 7.5
+        IG1s = [2., 8.]
         toi_chinj01 = 500
         id_delays = [toi_chinj01*2.5, toi_chinj01*1.5]
 
@@ -204,7 +204,8 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                            nm640=ogse.profile['tFWC_flat']['nm640'],
                            nm730=ogse.profile['tFWC_flat']['nm730'],
                            nm800=ogse.profile['tFWC_flat']['nm800'],
-                           nm880=ogse.profile['tFWC_flat']['nm880'])
+                           nm880=ogse.profile['tFWC_flat']['nm880'],
+                           nm0=ogse.profile['tFWC_flat']['nm0'])
 
     if toGen['FLATFLUX00']:
 
