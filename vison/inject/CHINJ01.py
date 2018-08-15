@@ -122,7 +122,7 @@ class CHINJ01(InjTask):
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """
         Builds CHINJ01 script structure dictionary.
-
+        
         #:param IDL: float, [mV], value of IDL (Inject. Drain Low).
         #:param IDH: float, [mV], Injection Drain High.
         #:param IG2: float, [mV], Injection Gate 2.
@@ -130,9 +130,9 @@ class CHINJ01(InjTask):
         #:param id_delays: list of 2 floats, [mV], injection drain delays (2).
         #:param toi_chinj: int, [us], TOI-charge injection.
         :param diffvalues: dict, opt, differential values.
-
+        
         """
-
+        
         IDL = self.inputs['IDL']
         IDH = self.inputs['IDH']
         IG2 = self.inputs['IG2']
@@ -140,20 +140,20 @@ class CHINJ01(InjTask):
         dIG1 = self.inputs['dIG1'] # 0.25  # V
         id_delays = self.inputs['id_delays']
         toi_chinj = self.inputs['toi_chinj']
-
+        
         CCDs = [1, 2, 3]
         halves = ['T', 'B']
-
+        
         assert len(IG1s) == 2
         assert len(id_delays) == 2
-
+        
         NIG1 = (IG1s[1]-IG1s[0])/dIG1+1
         IG1v = np.arange(NIG1)*dIG1+IG1s[0]
-
+        
         CHINJ01_sdict = dict()
-
+        
         # First Injection Drain Delay
-
+        
         colcounter = 1
         for i, IG1 in enumerate(IG1v):
             colkey = 'col%i' % colcounter
@@ -161,7 +161,7 @@ class CHINJ01(InjTask):
             CHINJ01_sdict[colkey] = dict(frames=1, IDL=IDL, IDH=IDH,
                                          IG2_T=IG2, IG2_B=IG2,
                                          id_dly=id_delays[0], toi_ch=toi_chinj)
-
+           
             for CCD in CCDs:
                 for half in halves:
                     CHINJ01_sdict[colkey]['IG1_%i_%s' % (CCD, half)] = IG1
