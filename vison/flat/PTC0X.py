@@ -74,7 +74,7 @@ PTC01_relfluences = np.array(
     [5., 10., 20., 30., 50., 70., 80., 90., 100., 110., 120.])
 
 PTC02_relfluences = np.array([10., 30., 50., 70., 80., 90.])
-
+FLATFLUX00_relfluences = np.array([5., 20., 50., 80.])
 
 def get_testdefaults_PTC0X(ogseobj=None):
 
@@ -86,6 +86,7 @@ def get_testdefaults_PTC0X(ogseobj=None):
     PTC01_exptimes = (PTC01_relfluences / 100. *
                       tFWC800).tolist()  # ms
     PTC02waves = [590, 640, 730, 800, 880, 0]
+    FLATFLUX00waves = [590, 640, 730, 800, 880, 0]
 
     PTC02TEMP_exptimes = (PTC02_relfluences / 100. *
                           tFWC800).tolist()
@@ -97,6 +98,9 @@ def get_testdefaults_PTC0X(ogseobj=None):
                         PTC02WAVE=dict(waves=PTC02waves,
                                        frames=[4, 4, 4, 4, 4, 4],
                                        exptimes=dict()),
+                        FLATFLUX00=dict(waves=FLATFLUX00waves,
+                                       frames=[1, 1, 1, 1],
+                                       exptimes=dict()),
                         PTC02TEMP=dict(frames=[4, 4, 4, 4, 4, 4],
                                        exptimes=PTC02TEMP_exptimes,
                                        wavelength=800))
@@ -105,6 +109,11 @@ def get_testdefaults_PTC0X(ogseobj=None):
         tFWCw = ogseobj.profile['tFWC_flat']['nm%i' % w]
         testdefaults['PTC02WAVE']['exptimes']['nm%i' % w] = (
             PTC02_relfluences/100.*tFWCw).tolist()
+        
+    for w in testdefaults['FLATFLUX00']['waves']:
+        tFWCw = ogseobj.profile['tFWC_flat']['nm%i' % w]
+        testdefaults['FLATFLUX00']['exptimes']['nm%i' % w] = (
+            FLATFLUX00_relfluences/100.*tFWCw).tolist()
 
     return testdefaults
 
@@ -170,14 +179,17 @@ class PTC0X(FlatTask):
             testkey = 'PTC01'
 
         if testkey == 'PTC01':
-            _testkey = 'PTC01'
+            _testkey = 'PTC01' 
+        if 'FLATFLUX00' in testkey:
+            _testkey = 'FLATFLUX00'
+        
         if 'PTC02' in testkey:
             if testkey[-1] == 'K':
                 _testkey = 'PTC02TEMP'
             else:
                 _testkey = 'PTC02WAVE'
 
-        if _testkey == 'PTC02WAVE':
+        if _testkey in ['PTC02WAVE','FLATFLUX00']:
             try:
                 wavelength = kwargs['wavelength']
             except KeyError:
