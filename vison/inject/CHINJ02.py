@@ -23,16 +23,7 @@ from copy import deepcopy
 from collections import OrderedDict
 
 from vison.support import context
-#from vison.pipe import lib as pilib
-#from vison.point import lib as polib
-#from vison.datamodel import ccd
 from vison.datamodel import scriptic as sc
-#from vison.datamodel import EXPLOGtools as ELtools
-#from vison.datamodel import HKtools
-#from vison.datamodel import ccd
-#from vison.datamodel import generator
-#import datetime
-#from vison.pipe.task import Task
 from vison.datamodel import inputs
 from InjTask import InjTask
 from vison.image import performance
