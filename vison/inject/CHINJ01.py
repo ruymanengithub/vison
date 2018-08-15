@@ -68,11 +68,6 @@ class CHINJ01_inputs(inputs.Inputs):
     ])))
 
 
-def _get_CCDhalf(Q):
-    if Q in ['E','F']:
-        return 'B'
-    elif Q in ['G','H']:
-        return 'T'
         
     
 class CHINJ01(InjTask):
@@ -212,9 +207,10 @@ class CHINJ01(InjTask):
              doOffset=True, 
              doBias=False, doFF=False)
 
-
-
     def basic_analysis(self):
+        self.BROKEN_basic_analysis()
+
+    def old_basic_analysis(self):
         """ 
 
         Basic analysis of data.
@@ -276,8 +272,6 @@ class CHINJ01(InjTask):
         for statkey in statkeys:
              self.dd.initColumn('chinj_%s' % statkey, DDindices, dtype='float32', valini=valini)
 
-        
-        
         # EXTRACTION TABLE
         
         NP = nObs * nCCD * nQuad
@@ -362,6 +356,8 @@ class CHINJ01(InjTask):
                             IG1_key = 'IG1_%i_%s' % (jCCD+1,_get_CCDhalf(Q))
                             IG1_val = self.dd.mx[IG1_key][iObs,jCCD]
                             IG1_tag = 'IG1_%.2fV' % IG1_val
+                            
+                            
                             id_dly = self.dd.mx['id_dly'][iObs,jCCD]
                             
                             ext_res = ilib.extract_injection_lines(ccdobj, Q, pattern, VSTART=vstart,
@@ -418,6 +414,8 @@ class CHINJ01(InjTask):
         fdict_alcol['data'] = prof_alcol_cdp.data.copy()
         fdict_alcol['meta']['ylim'] = [0.,maxmedinjection*1.5]
         
+        self.pack_CDP_to_dd(prof_alrow_cdp,'PROFS_ALROW')
+        self.pack_CDP_to_dd(prof_alcol_cdp,'PROFS_ALCOL')
         
         if self.report is not None:
             self.addFigures_ST(figkeys=['CH01_alrow',
