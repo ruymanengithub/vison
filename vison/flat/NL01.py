@@ -112,7 +112,9 @@ class NL01(FlatTask):
         self.HKKeys = HKKeys
         self.figdict = NL01aux.NL01figs.copy()
         # dict(figs='figs',pickles='ccdpickles')
-        self.inputs['subpaths'] = dict(figs='figs')
+        self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
+                   products='products')
+        self.window = dict(wpx=300,hpx=300)
 
     def set_inpdefaults(self, **kwargs):
 
@@ -226,7 +228,8 @@ class NL01(FlatTask):
 
         """
         super(NL01, self).prepare_images(doExtract=True, doMask=True,
-                                         doOffset=True, doBias=True, doFF=True)
+                                         doOffset=True, doBias=True, 
+                                         doFF=True)
 
     def extract_stats(self):
         """
@@ -248,16 +251,17 @@ class NL01(FlatTask):
                             measure variance
 
         """
+        
+        # HARDWIRED VALUES
+        wpx = self.window['wpx']
+        hpx = self.window['hpx']
 
         if self.report is not None:
             self.report.add_Section(
                 keyword='extract', Title='Image Extraction', level=0)
-
-        # HARDWIRED VALUES
-        wpx = 300
-        hpx = 300
-
-        # label = self.dd.mx['label'][:,0].copy() # labels should be the same accross CCDs. PATCH.
+            self.report.add_Text('Segmenting on %i x %i windows...' % (wpx,hpx))    
+        
+        
         ObsIDs = self.dd.mx['ObsID'][:].copy()
 
         indices = copy.deepcopy(self.dd.indices)
@@ -266,11 +270,10 @@ class NL01(FlatTask):
 
         Quads = indices.get_vals('Quad')
         CCDs = indices.get_vals('CCD')
-
-        emptyccdobj = ccdmodule.CCD()
+        
         tile_coos = dict()
         for Quad in Quads:
-            tile_coos[Quad] = emptyccdobj.get_tile_coos(Quad, wpx, hpx)
+            tile_coos[Quad] = self.ccdcalc.get_tile_coos(Quad, wpx, hpx)
         Nsectors = tile_coos[Quads[0]]['Nsamps']
         sectornames = np.arange(Nsectors)
 
