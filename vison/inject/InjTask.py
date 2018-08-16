@@ -23,7 +23,8 @@ from vison.datamodel import core, ccd
 #from vison.pipe import lib as pilib
 from vison.support import context
 #from vison.pipe.task import Task
-from vison.support import utils, cdp, files
+from vison.datamodel import cdp
+from vison.support import utils, files
 # END IMPORT
 
 lineoffsets = ilib.lineoffsets
