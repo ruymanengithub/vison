@@ -111,6 +111,7 @@ class NL01(FlatTask):
         self.type = 'Simple'
         
         self.HKKeys = HKKeys
+        self.CDP_lib = NL01aux.CDP_lib.copy()
         self.figdict = NL01aux.NL01figs.copy()
         # dict(figs='figs',pickles='ccdpickles')
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
@@ -431,7 +432,7 @@ class NL01(FlatTask):
         
         NL_TB_dddf = OrderedDict(NL_TB = pd.DataFrame.from_dict(NL_TB))
         
-        nl_tb_cdp = NL01aux.CDP_lib['NL_TB']
+        nl_tb_cdp = self.CDP_lib['NL_TB']
         nl_tb_cdp.path = prodspath
         nl_tb_cdp.ingest_inputs(
                 data = NL_TB_dddf.copy(),

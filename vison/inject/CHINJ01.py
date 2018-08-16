@@ -86,6 +86,7 @@ class CHINJ01(InjTask):
         self.type = 'Simple'
         
         self.HKKeys = HKKeys
+        self.CDP_lib = CH01aux.CDP_lib
         self.figdict = CH01aux.CH01figs.copy()
         self.inputs['subpaths'] = dict(figs='figs',
                    ccdpickles='ccdpickles',
@@ -427,7 +428,7 @@ class CHINJ01(InjTask):
         # OBSID CCD Q IG1 id_dly MEAN MEDIAN NONUNI
         
         EXT_dddf = OrderedDict(EXTRACT=pd.DataFrame.from_dict(CH01_dd))
-        EXT_cdp = CH01aux.CDP_lib['EXTRACT']
+        EXT_cdp = self.CDP_lib['EXTRACT']
         EXT_cdp.path = prodspath
         EXT_cdp.ingest_inputs(
                 data=EXT_dddf.copy(),
@@ -588,7 +589,7 @@ class CHINJ01(InjTask):
         
         
         MCH01_dddf = OrderedDict(ANALYSIS=pd.DataFrame.from_dict(MCH01_dd))
-        MCH01_cdp = CH01aux.CDP_lib['META']
+        MCH01_cdp = self.CDP_lib['META']
         MCH01_cdp.path = prodspath
         MCH01_cdp.ingest_inputs(
                 data=MCH01_dddf.copy(),

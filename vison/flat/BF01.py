@@ -82,6 +82,7 @@ class BF01(PTC0X):
         #self.type = 'Simple'
         
         #self.HKKeys = HKKeys
+        self.CDP_lib = BF01aux.CDP_lib.copy()
         self.figdict = BF01aux.gt_BF01figs(self.inputs['surrogate'])
         self.inputs['subpaths'] = dict(figs='figs', 
                    ccdpickles='ccdpickles',
@@ -299,7 +300,7 @@ class BF01(PTC0X):
         
         COV_dddf = OrderedDict(COV = pd.DataFrame.from_dict(COV_dd))
         
-        covtable_cdp = BF01aux.CDP_lib['COVTABLE']
+        covtable_cdp = self.CDP_lib['COVTABLE']
         covtable_cdp.path = self.inputs['subpaths']['products']
         covtable_cdp.ingest_inputs(
                 data = COV_dddf.copy(),

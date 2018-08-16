@@ -132,6 +132,7 @@ class FOCUS00(PT.PointTask):
         self.type = 'Simple'
         
         self.HKKeys = HKKeys
+        self.CDP_lib = F00aux.CDP_lib.copy()
         self.figdict = F00aux.gt_F00figs(self.inputs['wavelength'])
         self.inputs['subpaths'] = dict(figs='figs',
                                        products='products')
@@ -389,7 +390,7 @@ class FOCUS00(PT.PointTask):
         
         FOCUS_dddf = OrderedDict(FOCUS=pd.DataFrame.from_dict(Focus_dd))
         
-        focus_cdp = F00aux.CDP_lib['FOCUS']
+        focus_cdp = self.CDP_lib['FOCUS']
         focus_cdp.rootname += '_%snm' % wave
         focus_cdp.path = self.inputs['subpaths']['products']
         focus_cdp.ingest_inputs(data = FOCUS_dddf.copy(),                             

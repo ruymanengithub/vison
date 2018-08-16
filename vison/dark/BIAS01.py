@@ -91,6 +91,7 @@ class BIAS01(DarkTask):
         
         self.HKKeys = HKKeys        
         self.figdict = B01aux.B01figs.copy()
+        self.CDP_lib = B01aux.CDP_lib.copy()
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        profiles='profiles', products='products')
         
@@ -327,7 +328,7 @@ class BIAS01(DarkTask):
         # NEEDS REFACTORING?! (move somewhere else, abstractize it and recycle)
 
         RON = self.dd.mx['RON'][:].copy()
-        ron_cdp = B01aux.CDP_lib['RON']
+        ron_cdp = self.CDP_lib['RON']
         ron_cdp.path = self.inputs['subpaths']['products']
         ron_cdp.ingest_inputs(RONmx=RON.copy(),
                               CCDs=CCDs,

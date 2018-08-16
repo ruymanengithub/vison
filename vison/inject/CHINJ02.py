@@ -84,6 +84,7 @@ class CHINJ02(InjTask):
         self.type = 'Simple'
         
         self.HKKeys = HKKeys
+        self.CDP_lib = CH02aux.CDP_lib.copy()
         self.figdict = CH02aux.CH02figs.copy()
         self.inputs['subpaths'] = dict(figs='figs')
         
