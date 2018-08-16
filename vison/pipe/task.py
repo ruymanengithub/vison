@@ -77,6 +77,7 @@ class Task(object):
         self.name = ''
         self.type = 'Simple'
         self.HKKeys = []
+        self.CDP_lib = dict()
         self.figdict = dict()
         if not hasattr(self,'subtasks'):
             self.subtasks = [()]
