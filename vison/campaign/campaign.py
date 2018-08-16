@@ -416,7 +416,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
     if toGen['NL01']:
 
         print 'NL01...'
-        waveNL01 = 880
+        waveNL01 = 0
 
         diffNL01 = dict(mirr_on=0)
         diffNL01.update(diffvalues)
