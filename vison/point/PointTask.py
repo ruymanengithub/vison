@@ -15,6 +15,7 @@ import numpy as np
 import os
 from collections import OrderedDict
 
+from vison.image import sextractor as sex
 from vison.datamodel import compliance as complimod
 from vison.pipe.task import Task
 from vison.point import lib as polib
@@ -341,19 +342,27 @@ class PointTask(Task):
         
         strackers = self.ogse.startrackers
         
-        psCCDcoodicts = OrderedDict(names=strackers['CCD1'].starnames)
-        for jCCD, CCDk in enumerate(CCDs):
-            psCCDcoodicts[CCDk] = strackers[CCDk].get_allCCDcoos(
-                    nested=True)
-
-            for iObs in range(nObs):
-                for jCCD, CCDk in enumerate(CCDs):
+        iObs = 0
         
-        dpath = self.dd.mx['datapath'][iObs, jCCD]
-                    ffits = os.path.join(dpath, '%s.fits' %
+        for jCCD, CCDk in enumerate(CCDs):
+        
+            dpath = self.dd.mx['datapath'][iObs, jCCD]
+            ffits = os.path.join(dpath, '%s.fits' %
                                          self.dd.mx['File_name'][iObs, jCCD])
-                    vstart = self.dd.mx['vstart'][iObs][jCCD]
-                    vend = self.dd.mx['vend'][iObs][jCCD]
-
-                    ccdobj = ccd.CCD(ffits)
+            #vstart = self.dd.mx['vstart'][iObs][jCCD]
+            #vend = self.dd.mx['vend'][iObs][jCCD]
+            
+            ccdobj = ccd.CCD(ffits)
+            
+            img = ccdobj.extensions[-1].data.T.copy() # ??
+            SExCatroot = 'StarFinder_%s' % CCDk
+            SExCat = sex.easy_run_SEx(img, SExCatroot, cleanafter=True)
+            X_IMAGE = SExCat['X_IMAGE'].copy() - 1.
+            Y_IMAGE = SExCat['Y_IMAGE'].copy() - 1.
+            
+            X_PHYS, Y_PHYS = self.ccdcalc.cooconv_Phys_2_CCD(X_IMAGE,Y_IMAGE)
+            
+            ans = strackers[CCDk].find_patt_transform(X_PHYS,Y_PHYS)
+            
+            stop()
         

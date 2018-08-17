@@ -35,29 +35,6 @@ Quads = ['E', 'F', 'G', 'H']
 Starnames = ['ALPHA', 'BRAVO', 'CHARLIE', 'DELTA', 'ECHO']
 
 
-def run_SEx(img, catroot):
-
-    vSEx = sex.VSExtractor(img=img.copy())
-    vSEx.internals['params'] = ['NUMBER', 'EXT_NUMBER', 'X_IMAGE', 'Y_IMAGE',
-                                'A_IMAGE', 'B_IMAGE', 'THETA_IMAGE', 'ELONGATION', 'FWHM_IMAGE', 'MAG_AUTO']
-    vSEx.internals.update(
-        dict(MINAREA=3,
-             DET_THRESH=13.,
-             MAG_ZERPOINT=20.,
-             SATUR_LEVEL=65535.,
-             SEEING_FWHM=1.2,
-             PIXEL_SCALE=1.,
-             GAIN=1.
-             )
-    )
-
-    SExCatFile = vSEx.run_sex(catroot,
-                              checks=['BACKGROUND', 'SEGMENTATION'],
-                              cleanafter=False)
-    os.system('rm sex.param')
-    SExCat = sex.aw.utils.ldac.get_table_from_ldac(SExCatFile)
-
-    return SExCat
 
 
 def write_ID_chart(filename, Quads, Starnames):
@@ -154,7 +131,7 @@ def run_starfinder(FITS, tag=''):
 
         SExCatroot = 'StarFinder_%s' % CCDkey
 
-        SExCat = run_SEx(img, SExCatroot)
+        SExCat = sex.easy_run_SEx(img, SExCatroot, cleanafter=False)
 
         SEG_FITS = '%s_SEGM.fits' % SExCatroot
         BGD_FITS = '%s_BACK.fits' % SExCatroot

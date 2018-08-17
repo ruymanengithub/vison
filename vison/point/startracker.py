@@ -178,6 +178,12 @@ class StarTracker(object):
 
     def find_patt_transform(self, X, Y):
         """ """
+        from pylab import plot,show
+        plot(X,Y,'ro')
+        plot(self.Pattern['X'], self.Pattern['Y'],'ko')
+        show()
+        
+        stop()
         source = zip(self.Pattern['X'], self.Pattern['Y'])
         target = zip(X, Y)
         transf, (s_list, t_list) = aa.find_transform(source, target)

@@ -28,6 +28,8 @@ default_params = ['NUMBER', 'EXT_NUMBER', 'X_IMAGE', 'Y_IMAGE',
 config_default_file = 'sexconfig.default'
 
 
+
+
 class VSExtractor(object):
 
     def __init__(self, img=None):
@@ -124,7 +126,7 @@ class VSExtractor(object):
 
         return kwargs
 
-    def run_sex(self, catroot, config=None, checks=None, cleanafter=False):
+    def run_SEx(self, catroot, config=None, checks=None, cleanafter=False):
         """ """
         kwargs = self.get_sex_kwargs(catroot, config, checks)
         sextractor = aw.api.Astromatic(**kwargs)
@@ -153,3 +155,28 @@ class VSExtractor(object):
         """ """
         catalog = aw.utils.ldac.get_table_from_ldac(catpath)
         return catalog
+
+
+def easy_run_SEx(img, catroot, cleanafter=False):
+
+    vSEx = VSExtractor(img=img.copy())
+    vSEx.internals['params'] = ['NUMBER', 'EXT_NUMBER', 'X_IMAGE', 'Y_IMAGE',
+                                'A_IMAGE', 'B_IMAGE', 'THETA_IMAGE', 'ELONGATION', 'FWHM_IMAGE', 'MAG_AUTO']
+    vSEx.internals.update(
+        dict(MINAREA=3,
+             DET_THRESH=14.,
+             MAG_ZERPOINT=20.,
+             SATUR_LEVEL=65535.,
+             SEEING_FWHM=1.2,
+             PIXEL_SCALE=1.,
+             GAIN=1.
+             )
+    )
+
+    SExCatFile = vSEx.run_SEx(catroot,
+                              checks=['BACKGROUND', 'SEGMENTATION'],
+                              cleanafter=cleanafter)
+    os.system('rm sex.param')
+    SExCat = aw.utils.ldac.get_table_from_ldac(SExCatFile)
+
+    return SExCat
