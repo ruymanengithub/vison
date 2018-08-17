@@ -344,16 +344,19 @@ class Task(object):
         #elvis = self.inputs['elvis']
         
         if self.drill:
-            explog = self.create_mockexplog()
+            if len(OBSID_lims)>0:
+                OBSID0 = OBSID_lims[0]
+            else:
+                OBSID0 = 1000
+            explog = self.create_mockexplog(OBSID0=OBSID0)
         else:
             explog = pilib.loadexplogs(explogf, elvis=self.elvis, addpedigree=True,
                                datapath=datapath)    
+            
 
         # META-DATA WORK
-        
         explog, checkreport = self.filterexposures(
             structure, explog, OBSID_lims)
-        
         
         if self.log is not None:
             self.log.info('%s acquisition consistent with expectations: %s' % (
@@ -396,6 +399,7 @@ class Task(object):
             map(vistime.get_dtobj, explog['date'])).copy()
 
         # Building DataDict
+        
 
         self.dd = pilib.DataDict_builder(explog, self.inputs, structure)
 
