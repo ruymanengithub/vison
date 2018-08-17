@@ -21,7 +21,6 @@ import os
 from astropy.io import ascii
 from collections import OrderedDict
 import numpy as np
-import copy
 import tempfile
 import subprocess
 import string as st

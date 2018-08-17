@@ -173,7 +173,7 @@ class StarTracker(object):
         """
 
         ss = skimage.transform.SimilarityTransform(scale=scale,
-                                                   rotation=np.radians(rotation_deg), translation=translation)
+                    rotation=np.radians(rotation_deg), translation=translation)
         return ss.params
 
     def find_patt_transform(self, X, Y):

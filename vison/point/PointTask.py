@@ -331,3 +331,29 @@ class PointTask(Task):
         if self.report is not None:
             self.addComplianceMatrix2Report(
                 _compliance_flu, label='COMPLIANCE FLUENCE:')
+
+    def lock_on_stars(self):
+        """ """
+        
+        Qindices = copy.deepcopy(self.dd.indices)
+
+        CCDs = Qindices.get_vals('CCD')
+        
+        strackers = self.ogse.startrackers
+        
+        psCCDcoodicts = OrderedDict(names=strackers['CCD1'].starnames)
+        for jCCD, CCDk in enumerate(CCDs):
+            psCCDcoodicts[CCDk] = strackers[CCDk].get_allCCDcoos(
+                    nested=True)
+
+            for iObs in range(nObs):
+                for jCCD, CCDk in enumerate(CCDs):
+        
+        dpath = self.dd.mx['datapath'][iObs, jCCD]
+                    ffits = os.path.join(dpath, '%s.fits' %
+                                         self.dd.mx['File_name'][iObs, jCCD])
+                    vstart = self.dd.mx['vstart'][iObs][jCCD]
+                    vend = self.dd.mx['vend'][iObs][jCCD]
+
+                    ccdobj = ccd.CCD(ffits)
+        
