@@ -38,6 +38,7 @@ from collections import OrderedDict
 import pandas as pd
 
 from vison.support import context
+from vison.datamodel import core
 #from vison.pipe import lib as pilib
 from vison.ogse import ogse as ogsemod
 from vison.datamodel import scriptic as sc
