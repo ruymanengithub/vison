@@ -67,8 +67,8 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis, CHAMBER=None):
 
         IDL = 11.
         IDH = 18.
-        IG2 = 5.5
-        IG1s = [2., 6.]
+        IG2 = 7.5
+        IG1s = [3., 8.]
         dIG1 = 1.0
         toi_chinj01 = 500
         id_delays = [toi_chinj01*2.5, toi_chinj01*1.5]
