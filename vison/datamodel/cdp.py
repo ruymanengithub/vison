@@ -151,7 +151,7 @@ class Tables_CDP(CDP):
             tex[0] = beglongtabu
             tex[-2] = endlongtabu
         
-        tex = ['\\begin{table}','\center']+tex+['\end{table}']
+        tex = ['\\begin{table}[!htb]','\center']+tex+['\end{table}']
         
         if caption != '':
             tex.insert(-2, r'\caption{%s}' % caption)
