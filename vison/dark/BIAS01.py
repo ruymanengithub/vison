@@ -394,13 +394,16 @@ class BIAS01(DarkTask):
         self.pack_CDP_to_dd(ron_cdp, 'RON_CDP')
 
         if self.report is not None:
-            beRONtex = ron_cdp.get_textable(sheet='RON_ALL', caption='BIAS01: RON (quadrant, minus model)')
+            beRONtex = ron_cdp.get_textable(sheet='RON_ALL', caption='BIAS01: RON (quadrant, minus model)',
+                                            longtable=False)
             self.report.add_Text(beRONtex)
             
-            bePRERONtex = ron_cdp.get_textable(sheet='RON_PRE', caption='BIAS01: RON (pre-scan)')
+            bePRERONtex = ron_cdp.get_textable(sheet='RON_PRE', caption='BIAS01: RON (pre-scan)',
+                                               longtable=False)
             self.report.add_Text(bePRERONtex)
             
-            beOVERONtex = ron_cdp.get_textable(sheet='RON_OVE', caption='BIAS01: RON (over-scan)')
+            beOVERONtex = ron_cdp.get_textable(sheet='RON_OVE', caption='BIAS01: RON (over-scan)',
+                                               longtable=False)
             self.report.add_Text(beOVERONtex)
 
 
