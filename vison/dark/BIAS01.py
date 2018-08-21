@@ -210,6 +210,8 @@ class BIAS01(DarkTask):
                     profs1D2plot[tag][CCDk][Q] = OrderedDict()
                     profs1D2plot[tag][CCDk][Q]['x'] = OrderedDict()
                     profs1D2plot[tag][CCDk][Q]['y'] = OrderedDict()
+        
+        prof_all = []
 
         if not self.drill:
             
@@ -255,9 +257,9 @@ class BIAS01(DarkTask):
                         # measure and save RON after subtracting large scale structure
 
                         mod2D = ccdobj.get_region2Dmodel(Q=Q, area='all', kind='poly2D',
-                                                         pdegree=5, doFilter=False, doBin=True, binsize=300,
-                                                         vstart=vstart, vend=vend, canonical=False, extension=-1)
-
+                                        pdegree=5, doFilter=False, doBin=True, binsize=300,
+                                        vstart=vstart, vend=vend, canonical=False, extension=-1)
+                        
                         onlyRONimg = ccdobj.get_quad(
                             Q, canonical=False) - mod2D.imgmodel
                         _RON = onlyRONimg.std()
@@ -284,11 +286,22 @@ class BIAS01(DarkTask):
 
                         iprofiles1D.data[Q]['hor'] = copy.deepcopy(hor1Dprof)
                         iprofiles1D.data[Q]['ver'] = copy.deepcopy(ver1Dprof)
+                        
+                        _profs = dict(hor=hor1Dprof,ver=ver1Dprof)
 
                         for oritag in ['hor', 'ver']:
-                            for axtag in ['x', 'y']:
-                                profs1D2plot[oritag][CCDk][Q][axtag]['OBS%i' %
-                                                                     OBSID] = hor1Dprof.data[axtag]
+                            _profdata = _profs[oritag].data.copy()
+                            xorder = np.argsort(_profdata['x'])
+                            _y = _profdata['y'][xorder]
+                            _x = np.arange(len(_y))
+                            profs1D2plot[oritag][CCDk][Q]['y']['OBS%i' %
+                                                                 OBSID] = _y.copy()
+                            profs1D2plot[oritag][CCDk][Q]['x']['OBS%i' %
+                                                                 OBSID] = _x.copy()
+                            
+                            prof_all += _y.tolist()
+                            
+                            
 
                     # save (2D model and) profiles in a pick file for each OBSID-CCD
 
@@ -312,10 +325,45 @@ class BIAS01(DarkTask):
         # PLOTS
         # profiles 1D (Hor & Ver) x (CCD&Q)
         # histograms of RON per CCD&Q
+        
+        if len(prof_all) != 0:        
+             ylim_1D = [np.percentile(prof_all,5)-20.,
+                       np.percentile(prof_all,95)+20.]
+        else:
+            ylim_1D= [0, 2.**16]
 
-        figkeys1 = ['B01basic_prof1D_hor', 'B01basic_prof1D_ver']
+        figkeys1 = ['B01basic_prof1D_hor', 'B01basic_prof1D_ver',
+                    'B01basic_histosRON']
         self.figdict['B01basic_prof1D_hor'][1]['data'] = profs1D2plot['hor']
+        self.figdict['B01basic_prof1D_hor'][1]['meta']['ylim'] = ylim_1D
         self.figdict['B01basic_prof1D_ver'][1]['data'] = profs1D2plot['ver']
+        self.figdict['B01basic_prof1D_ver'][1]['meta']['ylim'] = ylim_1D
+        
+        def _load_histo(histos,data,label):
+           
+           hist, bin_edges = np.histogram(data,bins=10,normed=False)
+           histos['x'][label] = bin_edges.copy()
+           histos['y'][label] = hist.copy()
+           
+           return histos
+        
+        RON_histos = OrderedDict()
+        for jCCD, CCDk in enumerate(CCDs):
+            RON_histos[CCDk] = OrderedDict()
+            for kQ, Q in enumerate(Quads):
+                RON_histos[CCDk][Q] = OrderedDict()
+                Rh_cq = RON_histos[CCDk][Q]
+                Rh_cq['x'] = OrderedDict()
+                Rh_cq['y'] = OrderedDict()
+                Rh_cq = _load_histo(Rh_cq,self.dd.mx['RON'][:,jCCD,kQ],'ALL')
+                Rh_cq = _load_histo(Rh_cq,self.dd.mx['std_pre'][:,jCCD,kQ],'PRE')
+                Rh_cq = _load_histo(Rh_cq,self.dd.mx['std_ove'][:,jCCD,kQ],'OVE')
+        
+        
+        
+        self.figdict['B01basic_histosRON'][1]['data'] = RON_histos.copy()
+        
+        
         if self.report is not None:
             self.addFigures_ST(figkeys=figkeys1, dobuilddata=False)
         #figkeys2 = ['B01basic_histosRON']
@@ -326,11 +374,15 @@ class BIAS01(DarkTask):
 
         # Table with median (Best Estimate) values of RON per CCD&Q
         # NEEDS REFACTORING?! (move somewhere else, abstractize it and recycle)
-
-        RON = self.dd.mx['RON'][:].copy()
+        
+        RONdct = OrderedDict()
+        RONdct['RON_ALL'] = self.dd.mx['RON'][:].copy()
+        RONdct['RON_PRE'] = self.dd.mx['std_pre'][:].copy()
+        RONdct['RON_OVE'] = self.dd.mx['std_ove'][:].copy()
+        
         ron_cdp = self.CDP_lib['RON']
         ron_cdp.path = self.inputs['subpaths']['products']
-        ron_cdp.ingest_inputs(RONmx=RON.copy(),
+        ron_cdp.ingest_inputs(mx_dct=RONdct.copy(),
                               CCDs=CCDs,
                               Quads=Quads,
                               meta=dict(),
@@ -342,8 +394,15 @@ class BIAS01(DarkTask):
         self.pack_CDP_to_dd(ron_cdp, 'RON_CDP')
 
         if self.report is not None:
-            beRONtex = ron_cdp.get_textable(sheet='RON', caption='BIAS01: RON')
+            beRONtex = ron_cdp.get_textable(sheet='RON_ALL', caption='BIAS01: RON (quadrant, minus model)')
             self.report.add_Text(beRONtex)
+            
+            bePRERONtex = ron_cdp.get_textable(sheet='RON_PRE', caption='BIAS01: RON (pre-scan)')
+            self.report.add_Text(bePRERONtex)
+            
+            beOVERONtex = ron_cdp.get_textable(sheet='RON_OVE', caption='BIAS01: RON (over-scan)')
+            self.report.add_Text(beOVERONtex)
+
 
     def meta_analysis(self):
         """
@@ -363,8 +422,40 @@ class BIAS01(DarkTask):
             save name of MasterBias(s) to DataDict, report
 
         """
-        return
-        # raise NotImplementedError TESTS
+        
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='meta', Title='BIAS01 Meta-Analysis', level=0)
+        
+        DDindices = copy.deepcopy(self.dd.indices)
+        
+        nObs, nCCD, nQuad = DDindices.shape
+        Quads = DDindices[2].vals
+        CCDs = DDindices.get_vals('CCD')
+        
+        # The "Hard"-work
+
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+
+        if not self.drill:
+            
+            CDP_header['DATE'] = self.get_time_tag()
+            ccdpicklespath = self.inputs['subpaths']['ccdpickles']
+            profilespath = self.inputs['subpaths']['profiles']
+            
+            for jCCD, CCDk in enumerate(CCDs):
+                
+                
+                ccdobj_names = self.dd.mx['ccdobj_name'][:, jCCD]
+                fullccdobj_names = map(lambda x: os.path.join('%s.pick' % x), 
+                                       ccdobj_names)
+                
+                ccdobjs_list = [copy.deepcopy(cPickleRead(item)) \
+                                for item in fullccdobj_names]
+                
+                stop()
 
 
 class Test(unittest.TestCase):

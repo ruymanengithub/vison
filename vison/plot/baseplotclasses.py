@@ -333,24 +333,25 @@ class Beam1DHist(BeamPlot):
 
     def _ax_core_funct(self, ax, CQdict, key=''):
 
-        hist_kwargs = dict(range=None, density=False, weights=None,
+        hist_kwargs = dict(range=None, weights=None,
                            cumulative=False, histtype='bar', align='mid',
                            orientation='vertical', log=False)
-        for key in hist_kwargs.keys():
-            if key in self.meta:
-                hist_kwargs[key] = self.meta[key]
-
+        
+        for mkey in hist_kwargs.keys():
+            if mkey in self.meta:
+                hist_kwargs[mkey] = self.meta[mkey]
+        
         if key != '':
             label = st.replace(key, '_', '\_')
-            bins = CQdict['bins'][key]
-            x = CQdict['x'][key]
+            bins = CQdict['x'][key]
+            h = CQdict['y'][key]
             hist_kwargs['label'] = label
         else:
-            bins = CQdict['bins']
-            x = CQdict['x']
+            bins = CQdict['x']
+            h = CQdict['y']
             label = None
-
-        _, _, patch = ax.hist(x, bins, **hist_kwargs)
+        
+        _, _, patch = ax.hist(h, bins, **hist_kwargs)
 
         return patch, label
 
