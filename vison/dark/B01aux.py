@@ -65,9 +65,10 @@ basic_prof1Dver_dict = dict(
 basic_histosRON_dict = dict(
     figname='BIAS01_RON_distro_allOBSIDs.png',
     caption='BIAS01: RON distribution',
-    meta=dict(doLegend=False,
+    meta=dict(doLegend=True,
               ylabel='N',
               xlabel='RON [ADU]',
+              xlim=[0.,4.],
               suptitle='BIAS01: RON Distribution'),
 )
 
@@ -118,5 +119,8 @@ class RON_CDP(cdp.Tables_CDP):
 
 ron_cdp = RON_CDP()
 ron_cdp.rootname = 'RON_BIAS01'
+off_cdp = RON_CDP()
+off_cdp.rootname = 'OFFSET_BIAS01'
 
-CDP_lib = dict(RON=ron_cdp)
+CDP_lib = dict(RON=ron_cdp,
+               OFF=off_cdp)

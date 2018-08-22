@@ -274,12 +274,12 @@ class BIAS01(DarkTask):
 
                         # produce average profile along rows
 
-                        hor1Dprof = ccdobj.get_1Dprofile(Q=Q, orient='hor', area='img', stacker='mean',
+                        hor1Dprof = ccdobj.get_1Dprofile(Q=Q, orient='hor', area='all', stacker='mean',
                                                          vstart=vstart, vend=vend)
 
                         # produce average profile along cols
 
-                        ver1Dprof = ccdobj.get_1Dprofile(Q=Q, orient='ver', area='img', stacker='mean',
+                        ver1Dprof = ccdobj.get_1Dprofile(Q=Q, orient='ver', area='all', stacker='mean',
                                                          vstart=vstart, vend=vend)
 
                         # save profiles in locally for plotting
@@ -339,14 +339,20 @@ class BIAS01(DarkTask):
         self.figdict['B01basic_prof1D_ver'][1]['data'] = profs1D2plot['ver']
         self.figdict['B01basic_prof1D_ver'][1]['meta']['ylim'] = ylim_1D
         
-        def _load_histo(histos,data,label):
+        def _load_histo(histos,data,label,ronrange):
            
-           hist, bin_edges = np.histogram(data,bins=10,normed=False)
+           hist, bin_edges = np.histogram(data,bins=10,range=ronrange,
+                                          normed=False)
            histos['x'][label] = bin_edges.copy()
            histos['y'][label] = hist.copy()
            
            return histos
         
+        medron = np.nanmedian(self.dd.mx['std_pre'][:])
+        minron = np.int((medron-1)/0.5)*0.5
+        maxron = np.int((medron+1)/0.5)*0.5
+        ronrange = [minron,maxron]
+            
         RON_histos = OrderedDict()
         for jCCD, CCDk in enumerate(CCDs):
             RON_histos[CCDk] = OrderedDict()
@@ -355,14 +361,17 @@ class BIAS01(DarkTask):
                 Rh_cq = RON_histos[CCDk][Q]
                 Rh_cq['x'] = OrderedDict()
                 Rh_cq['y'] = OrderedDict()
-                Rh_cq = _load_histo(Rh_cq,self.dd.mx['RON'][:,jCCD,kQ],'ALL')
-                Rh_cq = _load_histo(Rh_cq,self.dd.mx['std_pre'][:,jCCD,kQ],'PRE')
-                Rh_cq = _load_histo(Rh_cq,self.dd.mx['std_ove'][:,jCCD,kQ],'OVE')
+                Rh_cq = _load_histo(Rh_cq,self.dd.mx['RON'][:,jCCD,kQ],'ALL', 
+                                    ronrange)
+                Rh_cq = _load_histo(Rh_cq,self.dd.mx['std_pre'][:,jCCD,kQ],'PRE', 
+                                    ronrange)
+                Rh_cq = _load_histo(Rh_cq,self.dd.mx['std_ove'][:,jCCD,kQ],'OVE', 
+                                    ronrange)
         
         
         
         self.figdict['B01basic_histosRON'][1]['data'] = RON_histos.copy()
-        
+        self.figdict['B01basic_histosRON'][1]['meta']['xlim'] = ronrange
         
         if self.report is not None:
             self.addFigures_ST(figkeys=figkeys1, dobuilddata=False)
@@ -373,8 +382,8 @@ class BIAS01(DarkTask):
         # REPORTS
 
         # Table with median (Best Estimate) values of RON per CCD&Q
-        # NEEDS REFACTORING?! (move somewhere else, abstractize it and recycle)
         
+                            
         RONdct = OrderedDict()
         RONdct['RON_ALL'] = self.dd.mx['RON'][:].copy()
         RONdct['RON_PRE'] = self.dd.mx['std_pre'][:].copy()
@@ -389,7 +398,6 @@ class BIAS01(DarkTask):
                               header=CDP_header.copy())
         
         ron_cdp.init_wb_and_fillAll(header_title='BIAS01: RON')
-
         self.save_CDP(ron_cdp)
         self.pack_CDP_to_dd(ron_cdp, 'RON_CDP')
 
@@ -405,6 +413,40 @@ class BIAS01(DarkTask):
             beOVERONtex = ron_cdp.get_textable(sheet='RON_OVE', caption='BIAS01: RON (over-scan)',
                                                longtable=False)
             self.report.add_Text(beOVERONtex)
+            
+        # OFFSETS
+
+        OFFdct = OrderedDict()
+        OFFdct['OFF_PRE'] = self.dd.mx['offset_pre'][:].copy()
+        OFFdct['OFF_IMG'] = self.dd.mx['offset_img'][:].copy()
+        OFFdct['OFF_OVE'] = self.dd.mx['offset_ove'][:].copy()
+        
+        off_cdp = self.CDP_lib['OFF']
+        off_cdp.path = self.inputs['subpaths']['products']
+        off_cdp.ingest_inputs(mx_dct=OFFdct.copy(),
+                              CCDs=CCDs,
+                              Quads=Quads,
+                              meta=dict(),
+                              header=CDP_header.copy())
+        
+        off_cdp.init_wb_and_fillAll(header_title='BIAS01: OFFSETS')
+
+        self.save_CDP(off_cdp)
+        self.pack_CDP_to_dd(off_cdp, 'OFF_CDP')
+
+        if self.report is not None:
+            PREOFFtex = off_cdp.get_textable(sheet='OFF_PRE', caption='BIAS01: Offsets, pre-scan.',
+                                            longtable=False)
+            self.report.add_Text(PREOFFtex)
+            
+            IMGOFFtex = off_cdp.get_textable(sheet='OFF_IMG', caption='BIAS01: Offsets, image area.',
+                                               longtable=False)
+            self.report.add_Text(IMGOFFtex)
+            
+            OVEOFFtex = off_cdp.get_textable(sheet='OFF_OVE', caption='BIAS01: Offsets, over-scan.',
+                                               longtable=False)
+            self.report.add_Text(OVEOFFtex)
+
 
 
     def meta_analysis(self):
@@ -415,15 +457,16 @@ class BIAS01(DarkTask):
         ::
 
             f. each CCD:
-               f. e. Q:
-                   stack all ObsIDs to produce Master Bias
+               stack all ObsIDs to produce Master Bias
+               f. e. Q:    
                    measure average profile along rows
                    measure average profile along cols
             plot average profiles of Master Bias(s) f. each CCD,Q
-            produce table(s) with summary of results, include in report
-            show Master Bias(s) (3 images), include in report
-            save name of MasterBias(s) to DataDict, report
-
+            (produce table(s) with summary of results, include in report)
+            save Master Bias(s) (3 images) to FITS CDPs
+            show Master Bias(s) (3 images) in report
+            save name of MasterBias(s) CDPs to DataDict, report
+        
         """
         
         if self.report is not None:
@@ -447,18 +490,62 @@ class BIAS01(DarkTask):
             CDP_header['DATE'] = self.get_time_tag()
             ccdpicklespath = self.inputs['subpaths']['ccdpickles']
             profilespath = self.inputs['subpaths']['profiles']
+            productspath = self.inputs['subpaths']['products']
             
             for jCCD, CCDk in enumerate(CCDs):
                 
+                vstart = self.dd.mx['vstart'][0, jCCD]
+                vend = self.dd.mx['vend'][0, jCCD]
                 
                 ccdobj_names = self.dd.mx['ccdobj_name'][:, jCCD]
-                fullccdobj_names = map(lambda x: os.path.join('%s.pick' % x), 
+                fullccdobj_names = map(lambda x: os.path.join(ccdpicklespath,
+                                                             '%s.pick' % x), 
                                        ccdobj_names)
                 
-                ccdobjs_list = [copy.deepcopy(cPickleRead(item)) \
+                ccdobjList = [copy.deepcopy(cPickleRead(item)) \
                                 for item in fullccdobj_names]
                 
+                ccdpile = ccd.CCDPile(ccdobjList=ccdobjList,
+                                      withpover=ccdobjList[0].withpover)
+                
+                stackimg, stackstd = ccdpile.stack(method='median',dostd=True)
+                
+                stackccdobj = ccd.CCD(withpover=ccdpile.withpover)
+                stackccdobj.add_extension(stackimg, label='STACK')
+                stackccdobj.add_extension(stackstd, label='STD')
+                
+                for kQ, Q in Quads:
+                
+                    hor1Dprof = stackccdobj.get_1Dprofile(Q=Q, orient='hor',
+                                    area='all',stacker='mean',
+                                    vstart=vstart,vend=vend,extension=0)
+                    ver1Dprof = stackccdobj.get_1Dprofile(Q=Q, orient='ver',
+                                    area='all',stacker='mean',
+                                    vstart=vstart,vend=vend,extension=0)
+                
+                # SAVING to a CDP - UNFINISHED
+                
                 stop()
+    
+                #data = OrderedDict()
+                #data['STACK'] = mask.copy()
+                #data['labels'] = ['MASK']
+                #meta = OrderedDict()
+                #meta['MASKTYPE'] = masktype
+                #meta['SN']=sn_ccd
+                #meta['THRESH']=thresholds.__repr__()
+                #meta['SUBBGD'] = subbgd
+                #meta['NORMED'] = normbybgd
+                #meta['FUNCTION']=inspect.stack()[0][3]
+    
+                #maskcdp = cdp.CCD_CDP(ID=self.ID,
+                #BLOCKID=self.BLOCKID,
+                #CHAMBER=self.CHAMBER)
+    
+                #maskcdp.ingest_inputs(data=data, meta=meta)
+    
+                #maskcdp.savehardcopy(outfilename)
+        
 
 
 class Test(unittest.TestCase):

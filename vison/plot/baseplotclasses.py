@@ -67,13 +67,18 @@ class BasicPlot(object):
         self.populate_axes()
 
         self.plt_trimmer()
+        
+        #figname = '' # TESTS
 
         if figname == '':
             plt.show()
         else:
             plt.savefig(figname)
-
+            #import pickle as pl
+            #pl.dump(self.fig, file('test.pickle','w'))        
+            
         plt.close()
+        
 
 
 class CCD2DPlot(BasicPlot):
@@ -261,6 +266,8 @@ class BeamPlot(BasicPlot):
                 
                 if 'ylim' in self.meta:
                     ax.set_ylim(self.meta['ylim'])
+                if 'xlim' in self.meta:
+                    ax.set_xlim(self.meta['xlim'])
 
         
         # self.axs[CCDkey][Q].locator_params(nticks=4,axis='x')
@@ -334,7 +341,7 @@ class Beam1DHist(BeamPlot):
     def _ax_core_funct(self, ax, CQdict, key=''):
 
         hist_kwargs = dict(range=None, weights=None,
-                           cumulative=False, histtype='bar', align='mid',
+                           cumulative=False, histtype='step', align='mid',
                            orientation='vertical', log=False)
         
         for mkey in hist_kwargs.keys():
@@ -346,6 +353,7 @@ class Beam1DHist(BeamPlot):
             bins = CQdict['x'][key]
             h = CQdict['y'][key]
             hist_kwargs['label'] = label
+            #print bins.min(), bins.max()
         else:
             bins = CQdict['x']
             h = CQdict['y']

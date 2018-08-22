@@ -461,6 +461,7 @@ class Task(object):
         else:
             meta = {}
         figobj.plot(**meta)
+        
         self.figdict[figkey][0] = copy.deepcopy(figobj)
 
     def addComplianceMatrix2Log(self, complidict, label=''):

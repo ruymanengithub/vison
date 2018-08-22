@@ -835,7 +835,8 @@ class CCDPile(CCD):
         self.extensions = []
 
         self.NAXIS1 = NAXIS1
-        if withpover:
+        self.withpover = withpover
+        if self.withpover:
             self.NAXIS2 = NAXIS2
         else:
             self.NAXIS2 = NAXIS2-40
@@ -851,7 +852,7 @@ class CCDPile(CCD):
                 assert isthere(
                     infits), 'infits:%s is just not there :-(' % infits
 
-                iccdobj = CCD(infits, extensions=[extension], withpover=withpover,
+                iccdobj = CCD(infits, extensions=[extension], withpover=self.withpover,
                               getallextensions=False)
 
                 assert self.shape == iccdobj.shape
@@ -878,7 +879,7 @@ class CCDPile(CCD):
 
         self.prescan = prescan
         self.overscan = overscan
-        if withpover:
+        if self.withpover:
             self.voverscan = voverscan
         else:
             self.voverscan = 0
