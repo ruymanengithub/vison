@@ -323,9 +323,9 @@ class BF01(PTC0X):
             
             COVtex = covtable_cdp.get_textable(sheet='COV', caption='BF01: COV',
                                                fitwidth=True,
+                                               tiny=True,
                                                formatters=cov_formatters)
             
-            COVtex = ['\\tiny']+COVtex+['\\normalsize']
             
             self.report.add_Text(COVtex)        
         

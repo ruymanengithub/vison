@@ -455,9 +455,9 @@ class NL01(FlatTask):
             caption = 'NL01 results TABLE' 
             Ntex = nl_tb_cdp.get_textable(sheet='NL_TB', caption=caption,
                                                fitwidth=True,
+                                               tiny=True,
                                                formatters=formatters)
             
-            Ntex = ['\\tiny']+Ntex+['\\normalsize']
             
             self.report.add_Text(Ntex)        
 

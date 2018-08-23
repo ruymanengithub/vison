@@ -609,9 +609,9 @@ class PTC0X(FlatTask):
                 (self.inputs['test'],self.inputs['wavelength'])
             Gtex = gain_tb_cdp.get_textable(sheet='GAIN_TB', caption=caption,
                                                fitwidth=True,
+                                               tiny=True,
                                                formatters=cov_formatters)
             
-            Gtex = ['\\tiny']+Gtex+['\\normalsize']
             
             self.report.add_Text(Gtex)        
         

@@ -588,7 +588,7 @@ class InjTask(Task):
             caption = '%s: EXTRACTION TABLE' % testname
             Etex = EXT_cdp.get_textable(sheet='EXTRACT', caption=caption,
                                                fitwidth=True,
+                                               tiny=True,
                                                formatters=ext_formatters)
             
-            Etex = ['\\tiny']+Etex+['\\normalsize']
             self.report.add_Text(Etex)
