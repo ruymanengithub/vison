@@ -252,14 +252,15 @@ class BF01(PTC0X):
                         COV_dd['COV_11'][jj] = icovdict['av_covmap'][Q][1,1]
                         
                         profscov_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
-                                   np.arange(Npix)
+                                   np.arange(Npix-1)
                         profscov_1D.data['hor'][CCDk][Q]['y'][ulabel] = \
-                                   icovdict['av_covmap'][Q][:,0].copy()
+                                   icovdict['av_covmap'][Q][1:,0].copy()
                         
                         profscov_1D.data['ver'][CCDk][Q]['x'][ulabel] = \
-                                   np.arange(Npix)
+                                   np.arange(Npix-1)
                         profscov_1D.data['ver'][CCDk][Q]['y'][ulabel] = \
-                                   icovdict['av_covmap'][Q][:,0].copy()
+                                   icovdict['av_covmap'][Q][1:,0].copy()
+                        
         
         else:
             
@@ -270,14 +271,14 @@ class BF01(PTC0X):
                     for lQ, Q in enumerate(Quads):
             
                         profscov_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
-                                               np.arange(Npix)
+                                               np.arange(Npix-1)
                         profscov_1D.data['hor'][CCDk][Q]['y'][ulabel] = \
-                                               np.arange(Npix)
+                                               np.arange(Npix-1)
                                     
                         profscov_1D.data['ver'][CCDk][Q]['x'][ulabel] = \
-                                               np.arange(Npix)
+                                               np.arange(Npix-1)
                         profscov_1D.data['ver'][CCDk][Q]['y'][ulabel] = \
-                                               np.arange(Npix)
+                                               np.arange(Npix-1)
             
 
         # PLOTS
