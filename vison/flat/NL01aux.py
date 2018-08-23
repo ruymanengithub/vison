@@ -18,10 +18,17 @@ import os
 from collections import OrderedDict
 import string as st
 
+from vison.datamodel import cdp
 from vison.plot import figclasses
 from vison.plot import trends
 
 # END IMPORT
+
+nl_tb_cdp = cdp.Tables_CDP()
+nl_tb_cdp.rootname = 'NL01_RESULTS_TABLE'
+
+CDP_lib = dict(NL_TB=nl_tb_cdp)
+
 
 check_offsets_dict = dict(stats=['offset_pre', 'offset_ove'],
                           trendaxis='time',
@@ -60,6 +67,15 @@ check_img_std_dict = dict(stats=['flu_std_img'],
                                     ylabel='[ADU]',
                                     xlabel='exptime [s]'))
 
+NL_curves_dict = dict(
+    figname='NL01_curves.png',
+    caption='NL01: Relative non-linearity vs. fluence and best fits.',
+    meta=dict(doLegend=True,
+              ylabel='Z',
+              xlabel='YNL',
+              suptitle='NL01: Non-Linearity Curves.')
+    )
+
 NL01figs = dict()
 NL01figs['NL01checks_offsets'] = [
     trends.Fig_Basic_Checkstat, check_offsets_dict.copy()]
@@ -69,4 +85,6 @@ NL01figs['NL01checks_flu'] = [
     trends.Fig_Basic_Checkstat, check_img_flu_dict.copy()]
 NL01figs['NL01checks_imgstd'] = [
     trends.Fig_Basic_Checkstat, check_img_std_dict.copy()]
+NL01figs['NL01_fit_curves'] = [
+        figclasses.Fig_Beam2DPlot, NL_curves_dict.copy()]
 NL01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]

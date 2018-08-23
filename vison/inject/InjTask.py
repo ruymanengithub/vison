@@ -14,6 +14,7 @@ from pdb import set_trace as stop
 import copy
 import os
 from collections import OrderedDict
+import pandas as pd
 
 #from vison.support import context
 from vison.inject import lib as ilib
@@ -22,9 +23,17 @@ from vison.datamodel import core, ccd
 #from vison.pipe import lib as pilib
 from vison.support import context
 #from vison.pipe.task import Task
+from vison.datamodel import cdp
+from vison.support import utils, files
 # END IMPORT
 
 lineoffsets = ilib.lineoffsets
+
+def _get_CCDhalf(Q):
+    if Q in ['E','F']:
+        return 'B'
+    elif Q in ['G','H']:
+        return 'T'
 
 
 class InjTask(Task):
@@ -328,3 +337,258 @@ class InjTask(Task):
         if self.report is not None:
             self.addComplianceMatrix2Report(
                 _compliance_flugrad, label='COMPLIANCE FLUENCE GRADIENT:')
+
+
+    def BROKEN_basic_analysis(self):
+        """ 
+
+        Basic analysis of data.
+
+        **METACODE**
+
+        ::
+
+            f. e. ObsID:
+                f.e.CCD:
+                    f.e.Q:
+                        extract average 2D injection pattern (and save)
+                        produce average profile along/across lines
+                        measure charge-inj. non-uniformity
+                        measure charge spillover into non-injection
+                        measure stats of injection (mean, med, std, min/max, percentiles)
+
+            plot average inj. profiles along lines f. each CCD, Q and IG1
+                save as a rationalized set of curves
+            plot average inj. profiles across lines f. each CCD, Q and IG1
+                save as a rationalized set of  curves
+       
+            Report injection stats as a table/tables
+
+        """
+        
+        sys.exit('BROKEN! TODO: address polymorphism correctly, for figures, cdps, etc.')
+        
+        testname = self.inputs['test']
+        
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='extract', Title='%s Extraction' % testname, 
+                level=0)
+        
+        
+        DDindices = copy.deepcopy(self.dd.indices)
+        
+        nObs, nCCD, nQuad = DDindices.shape[0:3]
+        Quads = DDindices.get_vals('Quad')
+        CCDs = DDindices.get_vals('CCD')
+        
+        ccdpicklespath = self.inputs['subpaths']['ccdpickles']
+        prodspath = self.inputs['subpaths']['products']
+        
+        # Initializing new columns
+        
+
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+
+        valini = 0.
+        
+        # measure charge-inj. non-uniformity
+        # measure charge spillover into non-injection
+        # measure stats of injection (mean, med, std, min/max, percentiles)
+
+        self.dd.initColumn('chinj_nonuni', DDindices, dtype='float32', valini=valini)
+        self.dd.initColumn('chinj_spill', DDindices, dtype='float32', valini=valini)
+        statkeys = ['mean','std','min','max','p5','p25','p50','p75',
+                    'p95']
+        for statkey in statkeys:
+             self.dd.initColumn('chinj_%s' % statkey, DDindices, dtype='float32', valini=valini)
+
+        # EXTRACTION TABLE
+        
+        NP = nObs * nCCD * nQuad
+        
+        # OBSID CCD Q IG1 id_dly MEAN MEDIAN NONUNI
+        
+        CH0X_dd = OrderedDict()
+        CH0X_dd['ObsID'] = np.zeros(NP,dtype='int32')
+        CH0X_dd['CCD'] = np.zeros(NP,dtype='int32')
+        CH0X_dd['Q'] = np.zeros(NP,dtype='int32')
+        if testname == 'CHINJ01':
+            CH0X_dd['IG1'] = np.zeros(NP,dtype='float32')
+        CH0X_dd['ID_DLY'] = np.zeros(NP,dtype='float32')
+        CH0X_dd['MEAN_INJ'] = np.zeros(NP,dtype='float32')
+        CH0X_dd['MED_INJ'] = np.zeros(NP,dtype='float32')
+        CH0X_dd['NU_INJ'] = np.zeros(NP,dtype='float32')
+        
+        # Initializing injection profiles
+        
+        
+        prof_alrow_cdp = cdp.CDP()
+        prof_alrow_cdp.header = CDP_header.copy()
+        prof_alrow_cdp.path = prodspath
+        prof_alrow_cdp.data = OrderedDict()
+        
+        prof_alcol_cdp = cdp.CDP()
+        prof_alcol_cdp.header = CDP_header.copy()
+        prof_alcol_cdp.path = prodspath
+        prof_alcol_cdp.data = OrderedDict()
+        
+        xdummy = np.arange(10,dtype='float32')
+        ydummy = np.zeros(10,dtype='float32')
+        for jCCD, CCDk in enumerate(CCDs):
+            prof_alrow_cdp.data[CCDk] = OrderedDict()
+            prof_alcol_cdp.data[CCDk] = OrderedDict()
+            
+            for kQ, Q in enumerate(Quads):
+                prof_alrow_cdp.data[CCDk][Q] = OrderedDict(x=OrderedDict(),
+                                                      y=OrderedDict())
+                prof_alcol_cdp.data[CCDk][Q] = OrderedDict(x=OrderedDict(),
+                                                  y=OrderedDict())
+                
+                for iObs in range(nObs):
+                    
+                    if testname == 'CHINJ01':
+                        IG1_key = 'IG1_%i_%s' % (jCCD+1,_get_CCDhalf(Q))
+                        IG1_val = self.dd.mx[IG1_key][iObs,jCCD]
+                        sub_tag = 'IG1_%.2fV' % IG1_val
+                    
+                    
+                    prof_alrow_cdp.data[CCDk][Q]['x'][sub_tag] = xdummy.copy()
+                    prof_alrow_cdp.data[CCDk][Q]['y'][sub_tag] = ydummy.copy()
+                    prof_alcol_cdp.data[CCDk][Q]['x'][sub_tag] = xdummy.copy()
+                    prof_alcol_cdp.data[CCDk][Q]['y'][sub_tag] = ydummy.copy()
+        
+        
+        # The hardwork
+        
+        if not self.drill:
+            
+            for iObs in range(nObs):
+                
+                ObsID = self.dd.mx['ObsID'][iObs]
+                
+                for jCCD, CCDk in enumerate(CCDs):
+                    
+                    ccdpickf = os.path.join(ccdpicklespath,\
+                                            '%s.pick' % self.dd.mx['ccdobj_name'][iObs,jCCD])
+                    
+                    ccdobj = files.cPickleRead(ccdpickf)
+                    
+                    vstart = self.dd.mx['vstart'][iObs,jCCD]
+                    vend = self.dd.mx['vend'][iObs,jCCD]
+                    dochinj = self.dd.mx['chinj'][iObs,jCCD]
+                    non = self.dd.mx['chinj_on'][iObs,jCCD]
+                    noff = self.dd.mx['chinj_of'][iObs,jCCD]
+                    nrep = (vend-vstart)/(non+noff)+1
+                    pattern = (non, noff, nrep)
+                    
+                    for kQ, Q in enumerate(Quads):
+                        
+                        ix = iObs * nCCD * nQuad + jCCD * nQuad + kQ
+                    
+                        if dochinj:
+                            
+                            if testname == 'CHINJ01':
+                                IG1_key = 'IG1_%i_%s' % (jCCD+1,_get_CCDhalf(Q))
+                                IG1_val = self.dd.mx[IG1_key][iObs,jCCD]
+                                sub_tag = 'IG1_%.2fV' % IG1_val
+                            
+                            id_dly = self.dd.mx['id_dly'][iObs,jCCD]
+                            
+                            ext_res = ilib.extract_injection_lines(ccdobj, Q, pattern, VSTART=vstart,
+                                                                  VEND=vend, suboffmean=False)
+                            
+                            stats = ext_res['stats_injection']
+                            
+                            for skey in statkeys:
+                                self.dd.mx['chinj_%s' % skey][iObs,jCCD,kQ] = \
+                                       stats[skey]
+                            
+                            
+                            nonuni = (stats['p95']-stats['p5'])/stats['p50']
+                            
+                            self.dd.mx['chinj_nonuni'][iObs,jCCD,kQ] = nonuni
+                            
+                            spill = ilib.get_spill(ext_res['avprof_alcol'],pattern)
+                            
+                            self.dd.mx['chinj_spill'][iObs,jCCD,kQ] = spill
+                            
+                                      
+                            yalrows = ext_res['avprof_alrow'].copy()
+                            yalcols = ext_res['avprof_alcol'].copy()
+                            prof_alrow_cdp.data[CCDk][Q]['y'][sub_tag] = yalrows.copy()
+                            prof_alrow_cdp.data[CCDk][Q]['x'][sub_tag] = \
+                                          np.arange(len(yalrows),dtype='float32')
+                            
+                            prof_alcol_cdp.data[CCDk][Q]['y'][sub_tag] = yalcols.copy()
+                            prof_alcol_cdp.data[CCDk][Q]['x'][sub_tag] = \
+                                          np.arange(len(yalcols),dtype='float32')
+                            
+                            
+                            CH0X_dd['ObsID'][ix] = ObsID
+                            CH0X_dd['CCD'][ix] = jCCD
+                            CH0X_dd['Q'][ix] = kQ
+                            if testname == 'CHINJ01':
+                                   CH0X_dd['IG1'][ix] = IG1_val                            
+                            CH0X_dd['ID_DLY'][ix] = id_dly
+                            CH0X_dd['MEAN_INJ'][ix] = self.dd.mx['chinj_mean'][iObs,jCCD,kQ]
+                            CH0X_dd['MED_INJ'][ix] = self.dd.mx['chinj_p50'][iObs,jCCD,kQ]
+                            CH0X_dd['NU_INJ'][ix] = self.dd.mx['chinj_nonuni'][iObs,jCCD,kQ]
+                            
+                            
+        # plot average inj. profiles along/across lines 
+        # save as a rationalized set of curves
+        
+        maxmedinjection = np.nanmax(self.dd.mx['chinj_p50'][:])
+
+        fdict_alrow = self.figdict['CH0X_alrow'][1]
+        fdict_alrow['data'] = prof_alrow_cdp.data.copy()
+        fdict_alrow['meta']['ylim'] = [0.,maxmedinjection*1.5]
+
+        
+        fdict_alcol = self.figdict['CH0X_alcol'][1]
+        fdict_alcol['data'] = prof_alcol_cdp.data.copy()
+        fdict_alcol['meta']['ylim'] = [0.,maxmedinjection*1.5]
+        
+        self.pack_CDP_to_dd(prof_alrow_cdp,'PROFS_ALROW')
+        self.pack_CDP_to_dd(prof_alcol_cdp,'PROFS_ALCOL')
+        
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['CH0X_alrow',
+                                        'CH0X_alcol'], 
+                               dobuilddata=False)
+        
+        # Report injection stats as a table/tables
+        
+        # OBSID CCD Q IG1 id_dly MEAN MEDIAN NONUNI
+        
+        EXT_dddf = OrderedDict(EXTRACT=pd.DataFrame.from_dict(CH0X_dd))
+        EXT_cdp = CH01aux.CDP_lib['EXTRACT']
+        EXT_cdp.path = prodspath
+        EXT_cdp.ingest_inputs(
+                data=EXT_dddf.copy(),
+                meta=dict(),
+                header=CDP_header.copy())
+        
+        EXT_cdp.init_wb_and_fillAll(header_title='%s: EXTRACTION' % testname)
+        self.save_CDP(EXT_cdp)
+        self.pack_CDP_to_dd(EXT_cdp, 'EXTRACT_CDP')
+        
+        if self.report is not None:
+            fi = lambda x: '%i' % x
+            fccd = lambda x: CCDs[x-1]
+            fq = lambda x: Quads[x-1]
+            ff = lambda x: '%.2f' % x
+            
+            ext_formatters=[fi,fccd,fq,ff,ff,ff,ff,ff]
+            
+            caption = '%s: EXTRACTION TABLE' % testname
+            Etex = EXT_cdp.get_textable(sheet='EXTRACT', caption=caption,
+                                               fitwidth=True,
+                                               tiny=True,
+                                               formatters=ext_formatters)
+            
+            self.report.add_Text(Etex)

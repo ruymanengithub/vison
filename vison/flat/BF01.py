@@ -82,6 +82,7 @@ class BF01(PTC0X):
         #self.type = 'Simple'
         
         #self.HKKeys = HKKeys
+        self.CDP_lib = BF01aux.CDP_lib.copy()
         self.figdict = BF01aux.gt_BF01figs(self.inputs['surrogate'])
         self.inputs['subpaths'] = dict(figs='figs', 
                    ccdpickles='ccdpickles',
@@ -251,14 +252,15 @@ class BF01(PTC0X):
                         COV_dd['COV_11'][jj] = icovdict['av_covmap'][Q][1,1]
                         
                         profscov_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
-                                   np.arange(Npix)
+                                   np.arange(Npix-1)
                         profscov_1D.data['hor'][CCDk][Q]['y'][ulabel] = \
-                                   icovdict['av_covmap'][Q][:,0].copy()
+                                   icovdict['av_covmap'][Q][1:,0].copy()
                         
                         profscov_1D.data['ver'][CCDk][Q]['x'][ulabel] = \
-                                   np.arange(Npix)
+                                   np.arange(Npix-1)
                         profscov_1D.data['ver'][CCDk][Q]['y'][ulabel] = \
-                                   icovdict['av_covmap'][Q][:,0].copy()
+                                   icovdict['av_covmap'][Q][1:,0].copy()
+                        
         
         else:
             
@@ -269,14 +271,14 @@ class BF01(PTC0X):
                     for lQ, Q in enumerate(Quads):
             
                         profscov_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
-                                               np.arange(Npix)
+                                               np.arange(Npix-1)
                         profscov_1D.data['hor'][CCDk][Q]['y'][ulabel] = \
-                                               np.arange(Npix)
+                                               np.arange(Npix-1)
                                     
                         profscov_1D.data['ver'][CCDk][Q]['x'][ulabel] = \
-                                               np.arange(Npix)
+                                               np.arange(Npix-1)
                         profscov_1D.data['ver'][CCDk][Q]['y'][ulabel] = \
-                                               np.arange(Npix)
+                                               np.arange(Npix-1)
             
 
         # PLOTS
@@ -299,7 +301,7 @@ class BF01(PTC0X):
         
         COV_dddf = OrderedDict(COV = pd.DataFrame.from_dict(COV_dd))
         
-        covtable_cdp = BF01aux.CDP_lib['COVTABLE']
+        covtable_cdp = self.CDP_lib['COVTABLE']
         covtable_cdp.path = self.inputs['subpaths']['products']
         covtable_cdp.ingest_inputs(
                 data = COV_dddf.copy(),
@@ -322,9 +324,9 @@ class BF01(PTC0X):
             
             COVtex = covtable_cdp.get_textable(sheet='COV', caption='BF01: COV',
                                                fitwidth=True,
+                                               tiny=True,
                                                formatters=cov_formatters)
             
-            COVtex = ['\\tiny']+COVtex+['\\normalsize']
             
             self.report.add_Text(COVtex)        
         

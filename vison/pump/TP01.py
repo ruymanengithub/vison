@@ -45,8 +45,8 @@ HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
 
 IDL=11.
 IDH=18.
-IG1 = 4.5
-IG2 = 6.
+IG1 = 6.
+IG2 = 5.
 
 TP01_commvalues = dict(program='CALCAMP', test='TP01',
                        flushes=7, exptime=0., shuttr=0,

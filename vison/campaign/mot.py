@@ -67,9 +67,9 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis, CHAMBER=None):
 
         IDL = 11.
         IDH = 18.
-        IG2 = 5.5
-        IG1s = [2., 6.]
-        dIG1 = 1.0
+        IG2 = 7.5
+        IG1s = [3., 8.]
+        dIG1 = 0.75
         toi_chinj01 = 500
         id_delays = [toi_chinj01*2.5, toi_chinj01*1.5]
 
@@ -98,10 +98,10 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis, CHAMBER=None):
 
         print 'TP01...'
 
-        TOI_TPv = [200, 500, 1000]
+        TOI_TPv = [200]
         toi_chinjTP01 = 250  # quick injection
         id_delays_TP01 = (np.array([2.5, 1.5]) * toi_chinjTP01).tolist()
-        vpumpmodes = [123]
+        vpumpmodes = [123,234,341,412]
 
         diffTP01 = dict()
         diffTP01.update(diffvalues)

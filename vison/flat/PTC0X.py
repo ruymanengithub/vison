@@ -38,6 +38,7 @@ from collections import OrderedDict
 import pandas as pd
 
 from vison.support import context
+from vison.datamodel import core
 #from vison.pipe import lib as pilib
 from vison.ogse import ogse as ogsemod
 from vison.datamodel import scriptic as sc
@@ -188,6 +189,7 @@ class PTC0X(FlatTask):
         self.name = 'PTC0X'
         self.type = 'Simple'
         self.HKKeys = HKKeys
+        self.CDP_lib = PTC0Xaux.CDP_lib.copy()
         self.figdict = PTC0Xaux.gt_PTC0Xfigs(self.inputs['test'])
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                    products='products')
@@ -594,7 +596,7 @@ class PTC0X(FlatTask):
         
         GAIN_TB_dddf = OrderedDict(GAIN_TB = pd.DataFrame.from_dict(GAIN_TB))
         
-        gain_tb_cdp = PTC0Xaux.CDP_lib['GAIN_TB']
+        gain_tb_cdp = self.CDP_lib['GAIN_TB']
         gain_tb_cdp.rootname = gain_tb_cdp.rootname % \
           (self.inputs['test'],self.inputs['wavelength'])
         gain_tb_cdp.path = self.inputs['subpaths']['products']
@@ -623,9 +625,9 @@ class PTC0X(FlatTask):
                 (self.inputs['test'],self.inputs['wavelength'])
             Gtex = gain_tb_cdp.get_textable(sheet='GAIN_TB', caption=caption,
                                                fitwidth=True,
+                                               tiny=True,
                                                formatters=cov_formatters)
             
-            Gtex = ['\\tiny']+Gtex+['\\normalsize']
             
             self.report.add_Text(Gtex)        
         

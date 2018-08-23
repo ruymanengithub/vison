@@ -145,6 +145,7 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
         
         Ncframes = 0
         ix0 = 0
+        
         for iC in range(1, Ncols+1):
 
             colname = 'col%i' % iC
@@ -154,20 +155,24 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
             frames = expectation['frames']
             
             Ncframes += frames
+            
+            ix1 = ix0+frames
+            
+            #print ix0, ix1
 
-            if frames > 0:
-                ix1 = ix0+frames
-            else:
-                ix1 = None
+            #if frames > 0:
+            #    ix1 = ix0+frames
+            #else:
+            #    ix1 = None
             
             #if (ix1 is not None) and (ix1-ix0 != frames):
             #    failedcols.append(iC)
             #    continue
             
-            try:
-                ixsubsel = np.where(cselbool)[0][ix0:ix1]
-            except IndexError:
+            ixsubsel = np.where(cselbool)[0][ix0:ix1]
+            if len(ixsubsel) ==0:
                 failedcols.append(iC)
+                ix0 += frames
                 continue
 
             rowdict = _update_fromscript(dummyrowdict, expectation)
@@ -189,11 +194,14 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
                         key, val.__repr__(), explog[key][ixsubsel].tolist().__repr__()))
 
             ix0 += frames
+            
         
         isconsistent &= Ncsel == Ncframes
         
         if Ncsel > Ncframes:
             msgs.append('Number of Exposures exceeds Number of Expected Frames!')
+        elif Ncsel < Ncframes:
+            msgs.append('Test ended Too Early: missing Frames!')
     
     failedkeys = np.unique(failedkeys).tolist()
     failedcols = np.unique(failedcols).tolist()
@@ -203,7 +211,7 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
                   failedkeys=failedkeys, failedcols=failedcols,
                   msgs=msgs)
     
-
+    
     return report
 
 

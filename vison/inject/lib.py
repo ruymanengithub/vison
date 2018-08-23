@@ -65,9 +65,9 @@ def extract_injection_lines(ccdobj, Q, pattern, VSTART=0,
 
     stack_2d = np.zeros((nrep, NX-(npre+npost), npercycle),
                         dtype='float32') + np.nan
-    
-    if masked:
-        stack_2d = np.ma.masked_array(stack_2d)
+    stack_2d = np.ma.masked_array(data=stack_2d,
+                                  mask=np.zeros_like(stack_2d,dtype='bool'))
+               
 
     for ii in (rowix):
 
@@ -81,8 +81,9 @@ def extract_injection_lines(ccdobj, Q, pattern, VSTART=0,
 
         stack_2d[icycle, :, ix_in_cycle] = row.copy()
     
-    if masked:
-        stack_2d.mask[np.where(np.isnan(stack_2d.data))]=True
+    #if masked:
+    
+    stack_2d.mask[np.where(np.isnan(stack_2d.data))]=True
 
     if suboffmean:
         for icycle in range(nrep):

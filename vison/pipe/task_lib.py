@@ -65,7 +65,7 @@ def add_checkHK_report(self, report_HK, tag):
 
     return msg_HK
 
-def create_mockexplog(self):
+def create_mockexplog(self,OBSID0=1000):
     """ """
     
     logdefaults = {'egse_ver': self.elvis, 'con_file': 'vis_roe_config_cotsqm_273_vn.txt',
@@ -78,7 +78,7 @@ def create_mockexplog(self):
     
     explog = generate_Explog(self.inputs['structure'],defaults=logdefaults,
                     elvis=self.elvis,explog=None,
-                    OBSID0=1000,CHAMBER=self.inputs['CHAMBER'])
+                    OBSID0=OBSID0,CHAMBER=self.inputs['CHAMBER'])
     return explog
 
 def filterexposures(self, structure, explog, OBSID_lims, colorblind=False, wavedkeys=[],

@@ -15,6 +15,7 @@ import numpy as np
 import os
 from collections import OrderedDict
 
+from vison.image import sextractor as sex
 from vison.datamodel import compliance as complimod
 from vison.pipe.task import Task
 from vison.point import lib as polib
@@ -331,3 +332,37 @@ class PointTask(Task):
         if self.report is not None:
             self.addComplianceMatrix2Report(
                 _compliance_flu, label='COMPLIANCE FLUENCE:')
+
+    def lock_on_stars(self):
+        """ """
+        
+        Qindices = copy.deepcopy(self.dd.indices)
+
+        CCDs = Qindices.get_vals('CCD')
+        
+        strackers = self.ogse.startrackers
+        
+        iObs = 0
+        
+        for jCCD, CCDk in enumerate(CCDs):
+        
+            dpath = self.dd.mx['datapath'][iObs, jCCD]
+            ffits = os.path.join(dpath, '%s.fits' %
+                                         self.dd.mx['File_name'][iObs, jCCD])
+            #vstart = self.dd.mx['vstart'][iObs][jCCD]
+            #vend = self.dd.mx['vend'][iObs][jCCD]
+            
+            ccdobj = ccd.CCD(ffits)
+            
+            img = ccdobj.extensions[-1].data.T.copy() # ??
+            SExCatroot = 'StarFinder_%s' % CCDk
+            SExCat = sex.easy_run_SEx(img, SExCatroot, cleanafter=True)
+            X_IMAGE = SExCat['X_IMAGE'].copy() - 1.
+            Y_IMAGE = SExCat['Y_IMAGE'].copy() - 1.
+            
+            X_PHYS, Y_PHYS = self.ccdcalc.cooconv_Phys_2_CCD(X_IMAGE,Y_IMAGE)
+            
+            ans = strackers[CCDk].find_patt_transform(X_PHYS,Y_PHYS)
+            
+            stop()
+        

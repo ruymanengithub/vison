@@ -76,6 +76,12 @@ def removescalars_from_dict(indict):
 
 
 def texarize_complidict(indict):
+    
+    def ff(value):
+        if np.abs(value) < 100:
+            return '%.2f'
+        else:
+            return '%.2e'
 
     def traverse_tree(indict):
         for key, value in indict.iteritems():
@@ -84,7 +90,8 @@ def texarize_complidict(indict):
             else:
                 compmsg = indict[key]
                 llim, ulim = tuple(compmsg[2])
-                tex = '%.2f_{L%.2f}^{U%.2f}' % (compmsg[1], llim, ulim)
+                textmp = '%s_{%s}^{%s}' % (ff(compmsg[1]),ff(llim),ff(ulim))
+                tex = textmp % (compmsg[1], llim, ulim)
                 if not compmsg[0]:
                     tex = '\\textcolor{red}{%s}' % tex
                 tex = '$%s$' % tex
@@ -98,6 +105,8 @@ def texarize_complidict(indict):
 
 def gen_compliance_tex(indict, escape=True):
     """ """
+    
+    pd.options.display.max_colwidth=200
 
     complidict = copy.deepcopy(indict)
     tcomplidict = texarize_complidict(complidict)
@@ -122,10 +131,13 @@ def gen_compliance_tex(indict, escape=True):
         tex = series.to_latex(multicolumn=True, multirow=True,
                               longtable=True, index=True,
                               escape=escape)
-        tex = st.split(tex, '\n')
+        tex = ['\\tiny'] + st.split(tex, '\n') + ['\\normalsize']
     else:
         tex = convert_compl_to_nesteditemlist(tcomplidict)
-
+        tex = ['\\tiny'] + st.split(tex, '\n') + ['\\normalsize']
+    
+    pd.reset_option('display.max_colwidth')
+    
     return tex
 
 

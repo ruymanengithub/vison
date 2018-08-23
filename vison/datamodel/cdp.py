@@ -134,11 +134,12 @@ class Tables_CDP(CDP):
         self.fill_Meta()
         self.fill_allDataSheets()
 
-    def get_textable(self, sheet, caption='', fitwidth=False, **kwargs):
+    def get_textable(self, sheet, caption='', fitwidth=False, tiny=False, 
+                     **kwargs):
         """ """
-        tex = self.data[sheet].to_latex(
-            multicolumn=True, multirow=True, longtable=True, index=True,
-            **kwargs)
+        _kwargs = dict(multicolumn=True, multirow=True, longtable=True, index=True)
+        _kwargs.update(kwargs)
+        tex = self.data[sheet].to_latex(**_kwargs)
         tex = st.split(tex, '\n')
         
         if fitwidth:
@@ -150,6 +151,11 @@ class Tables_CDP(CDP):
             endlongtabu = '\end{longtabu}'
             tex[0] = beglongtabu
             tex[-2] = endlongtabu
+        
+        if tiny:
+            tex = ['\\tiny','\center']+tex+['\\normalsize']
+        
+        tex = ['\\begin{table}[!htb]','\center']+tex+['\end{table}']
         
         if caption != '':
             tex.insert(-2, r'\caption{%s}' % caption)

@@ -256,11 +256,13 @@ class TP02(PumpTask):
                         sh_injprofiles = OrderedDict()
                         for Q in ccdref.Quads:
                         
-                            if s_tp_mod == 31:
-                                sh_injprofiles[Q] = np.roll(InjProfiles[Q],-1,0)
-                            elif s_tp_mod == 23:
-                                sh_injprofiles[Q] = InjProfiles[Q].copy()
-                            
+                            #if s_tp_mod == 31:
+                            #    sh_injprofiles[Q] = np.roll(InjProfiles[Q],-1,0)
+                            #elif s_tp_mod == 23:
+                            #    sh_injprofiles[Q] = InjProfiles[Q].copy()
+                        
+                            sh_injprofiles[Q] = np.roll(InjProfiles[Q],-1,0)
+                        
                         irawmap = tptools.gen_raw_dpmap_stpump(
                                 irawmap, sh_injprofiles, vstart=vstart, vend=vend)
 

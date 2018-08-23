@@ -34,15 +34,16 @@ from pdb import set_trace as stop
 import os
 import copy
 from collections import OrderedDict
+import pandas as pd
 
 from vison.support import context
+from vison.datamodel import cdp
 from vison.datamodel import scriptic as sc
 from vison.support import files
 #from vison.pipe.task import Task
 from FlatTask import FlatTask
-from vison.image import performance
 from vison.datamodel import inputs, core
-from vison.datamodel import ccd as ccdmodule
+from vison.support import utils
 import NL01aux
 import nl as nllib
 # END IMPORT
@@ -110,6 +111,7 @@ class NL01(FlatTask):
         self.type = 'Simple'
         
         self.HKKeys = HKKeys
+        self.CDP_lib = NL01aux.CDP_lib.copy()
         self.figdict = NL01aux.NL01figs.copy()
         # dict(figs='figs',pickles='ccdpickles')
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
@@ -344,53 +346,133 @@ class NL01(FlatTask):
         dIndices = copy.deepcopy(self.dd.indices)
         CCDs = dIndices.get_vals('CCDs')
         Quads = dIndices.get_vals('Quads')
+        
+        nC = len(CCDs)
+        nQ = len(Quads)        
+        NP = nC * nQ
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+        
+        prodspath = self.inputs['subpaths']['products']
+        
+        # INITIALISATIONS
+        
+        
+        # NON-LINEARITY TABLE
+        
+        NL_TB = OrderedDict()
+        
+        NL_TB['CCD'] = np.zeros(NP,dtype='int32')
+        NL_TB['Q'] = np.zeros(NP,dtype='int32')
+        NL_TB['MAXNLPC'] = np.zeros(NP,dtype='float32')
+        NL_TB['FLU_MAXNLPC'] = np.zeros(NP,dtype='float32')
+        
+        
+        # NON LINEARITY RESULTS
 
-        NL_mx = OrderedDict()
-
-        #NL_tmp_keys = ['maxNLpc','flu_maxNLpc', 'coeffs']
+        NLall_mx = OrderedDict()
 
         for CCDkey in CCDs:
-            NL_mx[CCDkey] = dict()
+            NLall_mx[CCDkey] = OrderedDict()
             for Quad in Quads:
-                NL_mx[CCDkey][Quad] = OrderedDict()
-#                for key in NL_tmp_keys:
-#                    NL_mx[CCDkey][Quad][key] = np.nan
+                NLall_mx[CCDkey][Quad] = OrderedDict()
+                
+        # NL CURVES
+        
+        curves_cdp = cdp.CDP()
+        curves_cdp.header = CDP_header.copy()
+        curves_cdp.path = prodspath
+        curves_cdp.data = OrderedDict()
+        
+        for CCDk in CCDs:
+            curves_cdp.data[CCDk] = OrderedDict()            
+            for Q in Quads:
+                curves_cdp.data[CCDk][Q] = OrderedDict()
+                curves_cdp.data[CCDk][Q]['x'] = OrderedDict()
+                curves_cdp.data[CCDk][Q]['y'] = OrderedDict()
+        
 
         # Fitting the NL curves
 
         for iCCD, CCDkey in enumerate(CCDs):
 
             for jQ, Q in enumerate(Quads):
+                
+                
+                kk = iCCD * nQ + jQ
 
                 raw_med = self.dd.mx['sec_med'][:, iCCD, jQ, :].copy()
                 col_labels = self.dd.mx['label'][:, iCCD].copy()
                 exptimes = self.dd.mx['exptime'][:, iCCD].copy()
                 dtobjs = self.dd.mx['time'][:, iCCD].copy()
-
-                #ixnonan = np.where(~np.isnan(raw_med))
-                #med = raw_med[ixnonan]
-
-                # col1 == BGD
-                # colEVEN = Fluences != 0
-                # colODD, >1 =  STAB
-
-                # fitresults = dict(coeffs=NLfit,NLdeg=NLdeg,maxNLpc=maxNLpc,
-                #      flu_maxNLpc=flu_maxNLpc)
+                
+                # fitresults = OrderedDict(coeffs, NLdeg, maxNLpc,flu_maxNLpc, bgd)
                 _fitresults = nllib.wrap_fitNL(raw_med, exptimes, col_labels, dtobjs, TrackFlux=True,
                                                subBgd=True)
+                
+                NLall_mx[CCDkey][Quad].update(_fitresults)
+                
+                NL_TB['CCD'][kk] = iCCD+1
+                NL_TB['Q'][kk] = jQ+1
+                NL_TB['MAXNLPC'] = _fitresults['maxNLpc']
+                NL_TB['FLU_MAXNLPC'] = _fitresults['flu_maxNLpc']
+                
+                curves_cdp.data[CCDkey][Q]['x']['data'] = _fitresults['inputcurve']['YL'].copy()
+                curves_cdp.data[CCDkey][Q]['y']['data'] = _fitresults['inputcurve']['Z'].copy()
+                curves_cdp.data[CCDkey][Q]['x']['fit'] = _fitresults['outputcurve']['YL'].copy()
+                curves_cdp.data[CCDkey][Q]['y']['fit'] = _fitresults['outputcurve']['Z'].copy()
+                
 
-                NL_mx[CCDkey][Quad].update(_fitresults)
-
-        self.dd.products['NL'] = copy.deepcopy(NL_mx)
+        self.dd.products['NL'] = copy.deepcopy(NLall_mx)
 
         # Build Tables
-        # PENDING
+        
+        NL_TB_dddf = OrderedDict(NL_TB = pd.DataFrame.from_dict(NL_TB))
+        
+        nl_tb_cdp = self.CDP_lib['NL_TB']
+        nl_tb_cdp.path = prodspath
+        nl_tb_cdp.ingest_inputs(
+                data = NL_TB_dddf.copy(),
+                meta=dict(),
+                header=CDP_header.copy()
+                )
+
+        nl_tb_cdp.init_wb_and_fillAll(header_title='NL01: RESULTS TABLE')
+        self.save_CDP(nl_tb_cdp)
+        self.pack_CDP_to_dd(nl_tb_cdp, 'NL_TB_CDP')
+        
+        if self.report is not None:
+            
+            fccd = lambda x: CCDs[x-1]
+            fq = lambda x: Quads[x-1]
+            ff = lambda x: '%.2f' % x
+            
+            formatters=[fccd,fq,ff,ff]
+            
+            caption = 'NL01 results TABLE' 
+            Ntex = nl_tb_cdp.get_textable(sheet='NL_TB', caption=caption,
+                                               fitwidth=True,
+                                               tiny=True,
+                                               formatters=formatters)
+            
+            
+            self.report.add_Text(Ntex)        
 
         # Do plots
-        # PENDING
+        
 
-        # Add reports
-        # PENDING
+        fdict_NL = self.figdict['NL01_fit_curves'][1]
+        fdict_NL['data'] = curves_cdp.data.copy()
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['NL01_fit_curves'], 
+                               dobuilddata=False)
+        
+        
+        
+        
 
     def do_satCTE(self):
         """

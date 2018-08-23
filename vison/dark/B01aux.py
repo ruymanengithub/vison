@@ -48,6 +48,7 @@ basic_prof1Dhor_dict = dict(
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Column [pix]',
+              ylim = [0., 2.**16],
               suptitle='BIAS01: Profiles across columns.')
 )
 
@@ -57,15 +58,17 @@ basic_prof1Dver_dict = dict(
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Row [pix]',
+              ylim = [0., 2.**16],
               suptitle='BIAS01: Profiles across rows.')
 )
 
 basic_histosRON_dict = dict(
     figname='BIAS01_RON_distro_allOBSIDs.png',
     caption='BIAS01: RON distribution',
-    meta=dict(doLegend=False,
+    meta=dict(doLegend=True,
               ylabel='N',
               xlabel='RON [ADU]',
+              xlim=[0.,4.],
               suptitle='BIAS01: RON Distribution'),
 )
 
@@ -85,26 +88,39 @@ B01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
 
 class RON_CDP(cdp.Tables_CDP):
 
-    def ingest_inputs(self, RONmx, CCDs, Quads, meta=None, header=None, figs=None):
+    def ingest_inputs(self, mx_dct, CCDs, Quads, meta=None, header=None, figs=None):
+        
+        keys = mx_dct.keys()
+        
+        _data = dict()
+        
+        for key in keys:
+            
+            mx = mx_dct[key].copy()
 
-        RONmsk = np.zeros_like(RONmx, dtype='int32')
-        RONmsk[np.where((np.isclose(RONmx, 0.)) | (np.isnan(RONmx)))] = 1
-        beRON = np.ma.median(np.ma.masked_array(
-            RONmx, mask=RONmsk), axis=1).data.copy()  # best estimate of RON
-
-        beRONdict = OrderedDict()
-        for jCCD, CCDk in enumerate(CCDs):
-            beRONdict[CCDk] = OrderedDict()
-            for kQ, Q in enumerate(Quads):
-                beRONdict[CCDk][Q] = beRON[jCCD, kQ]
-        beRONdf = pd.DataFrame.from_dict(beRONdict)  # PENDING
-
-        _data = OrderedDict(RON=beRONdf)
+            msk = np.zeros_like(mx, dtype='int32')
+            msk[np.where((np.isclose(mx, 0.)) | (np.isnan(mx)))] = 1
+            cbe = np.ma.median(np.ma.masked_array(
+                mx, mask=msk), axis=1).data.copy()  # best estimate of RON
+    
+            cbe_dict = OrderedDict()
+            for jCCD, CCDk in enumerate(CCDs):
+                cbe_dict[CCDk] = OrderedDict()
+                for kQ, Q in enumerate(Quads):
+                    cbe_dict[CCDk][Q] = cbe[jCCD, kQ]
+            df = pd.DataFrame.from_dict(cbe_dict)  # PENDING
+    
+            _data[key] = df
+        
+        
         super(RON_CDP, self).ingest_inputs(
             _data, meta=meta, header=header, figs=figs)
 
 
 ron_cdp = RON_CDP()
 ron_cdp.rootname = 'RON_BIAS01'
+off_cdp = RON_CDP()
+off_cdp.rootname = 'OFFSET_BIAS01'
 
-CDP_lib = dict(RON=ron_cdp)
+CDP_lib = dict(RON=ron_cdp,
+               OFF=off_cdp)
