@@ -273,6 +273,8 @@ class BIAS01(DarkTask):
                             mod2D.polyfunc)
 
                         # produce average profile along rows
+                        
+                        
 
                         hor1Dprof = ccdobj.get_1Dprofile(Q=Q, orient='hor', area='all', stacker='mean',
                                                          vstart=vstart, vend=vend)

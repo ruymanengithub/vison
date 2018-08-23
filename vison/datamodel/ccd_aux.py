@@ -64,10 +64,10 @@ def extract_region(ccdobj, Q, area='img', vstart=0, vend=2086,
         BB[1] = prescan + imgx
     elif area == 'ove':
         BB[0] = prescan + imgx
-        BB[1] = None
+        BB[1] = prescan + imgx + overscan
     elif area == 'all':
         BB[0] = 0
-        BB[1] = None
+        BB[1] = prescan + imgx + overscan
 
     BB[2] = vstart
     BB[3] = vend
@@ -291,6 +291,7 @@ class Profile1D(object):
         """ """
         assert len(x) == len(y)
         assert x.shape == y.shape
+        
 
         self.data = OrderedDict()
         self.data['x'] = x.copy()
@@ -305,7 +306,8 @@ def get_1Dprofile(ccdobj, Q, orient='hor', area='img', stacker='mean', vstart=0,
     overscan = ccdobj.overscan
     imgx = ccdobj.NAXIS1/2 - prescan - overscan
 
-    subregion, BB = ccdobj.extract_region(Q, area=area, vstart=vstart, vend=vend,
+    subregion, BB = ccdobj.extract_region(Q, area=area, vstart=vstart, 
+                                          vend=vend,
                                           Full=True,
                                           extension=extension)
 
@@ -331,7 +333,6 @@ def get_1Dprofile(ccdobj, Q, orient='hor', area='img', stacker='mean', vstart=0,
             x = np.arange(BB[2], BB[3])
         elif Q in ['E', 'F']:
             x = np.arange(BB[3], BB[2], -1)+ccdobj.NAXIS2/2
-
     v1d = Profile1D(x, y)
 
     return v1d
