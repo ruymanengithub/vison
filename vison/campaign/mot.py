@@ -99,6 +99,7 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis, CHAMBER=None):
         print 'TP01...'
 
         TOI_TPv = [200]
+        Nshuffles_V = 5000
         toi_chinjTP01 = 250  # quick injection
         id_delays_TP01 = (np.array([2.5, 1.5]) * toi_chinjTP01).tolist()
         vpumpmodes = [123,234,341,412]
@@ -109,7 +110,9 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis, CHAMBER=None):
         tp01 = TP01.TP01(inputs=dict(elvis=elvis,
                                      CHAMBER=CHAMBER,
                                      test='TP01',
-                                     toi_tpv=TOI_TPv, toi_chinj=toi_chinjTP01,
+                                     toi_tpv=TOI_TPv, 
+                                     toi_chinj=toi_chinjTP01,
+                                     Nshuffles_V=Nshuffles_V,
                                      id_delays=id_delays_TP01,
                                      vpumpmodes=vpumpmodes,
                                      diffvalues=diffTP01))
