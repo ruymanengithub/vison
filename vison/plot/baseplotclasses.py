@@ -218,6 +218,11 @@ class BeamPlot(BasicPlot):
 
     def populate_axes(self):
         """ """
+        
+        try:
+            labelkeys = self.data['keys']
+        except KeyError:
+            labelkeys = []
 
         for CCD in self.CCDs:
             CCDkey = 'CCD%i' % CCD
@@ -226,19 +231,9 @@ class BeamPlot(BasicPlot):
                 ax = self.axs[CCDkey][Q]
                 CQdict = self.data[CCDkey][Q]
 
-                try:
-                    xkeys = CQdict['x'].keys()
-                except AttributeError:
-                    xkeys = None
-
-                if xkeys is not None:
-                    ykeys = CQdict['y'].keys()
-                    isconsistent = np.all([xkeys[i] == ykeys[i]
-                                           for i in range(len(xkeys))])
-                    assert (len(xkeys) == len(ykeys)) and isconsistent
-
-                    for key in xkeys:
-                        handle, label = self._ax_core_funct(ax, CQdict, key)
+                if len(labelkeys) > 0:
+                    for labelkey in labelkeys:
+                        handle, label = self._ax_core_funct(ax, CQdict, labelkey)
                         if Q == 'E' and CCD == 1:
                             self.handles += handle
                             self.labels.append(label)

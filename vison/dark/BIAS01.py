@@ -336,6 +336,11 @@ class BIAS01(DarkTask):
 
         figkeys1 = ['B01basic_prof1D_hor', 'B01basic_prof1D_ver',
                     'B01basic_histosRON']
+        
+        for tag in ['hor','ver']:    
+            profs1D2plot[tag]['labelkeys'] = \
+                        profs1D2plot[tag][CCDs[0]][Quads[0]]['x'].keys()
+        
         self.figdict['B01basic_prof1D_hor'][1]['data'] = profs1D2plot['hor']
         self.figdict['B01basic_prof1D_hor'][1]['meta']['ylim'] = ylim_1D
         self.figdict['B01basic_prof1D_ver'][1]['data'] = profs1D2plot['ver']
