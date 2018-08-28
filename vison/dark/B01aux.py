@@ -62,6 +62,8 @@ basic_prof1Dver_dict = dict(
               suptitle='BIAS01: Profiles across rows.')
 )
 
+
+
 basic_histosRON_dict = dict(
     figname='BIAS01_RON_distro_allOBSIDs.png',
     caption='BIAS01: RON distribution',
@@ -73,6 +75,35 @@ basic_histosRON_dict = dict(
 )
 
 
+meta_prof1Dhor_dict = dict(
+    figname='BIAS01_profs1D_hor_MASTERBIAS.png',
+    caption='BIAS01: Average profiles across columns of Master Bias.',
+    meta=dict(doLegend=False,
+              ylabel='ADU',
+              xlabel='Column [pix]',
+              ylim = [0., 2.**16],
+              suptitle='BIAS01/Master: Profiles across columns.')
+)
+
+meta_prof1Dver_dict = dict(
+    figname='BIAS01_profs1D_ver_MASTERBIAS.png',
+    caption='BIAS01: Average profiles across rows of Master Bias.',
+    meta=dict(doLegend=False,
+              ylabel='ADU',
+              xlabel='Row [pix]',
+              ylim = [0., 2.**16],
+              suptitle='BIAS01/Master: Profiles across rows.')
+)
+
+meta_MB2D_dict = dict(
+    figname='BIAS01_MASTERBIAS_2Dimgshow.png',
+    caption='BIAS01: Master Bias for the CCDs.',
+    meta=dict(doLegend=False,
+              ylabel='ADU',
+              xlabel='Row [pix]',
+              ylim = [0., 2.**16],
+              suptitle='BIAS01/Master: Profiles across rows.'))
+
 B01figs = dict()
 B01figs['B01checks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]
 #B01figs['B01checks_stds'] = [plB01check,dict(stat='std')]
@@ -83,6 +114,12 @@ B01figs['B01basic_prof1D_ver'] = [
     figclasses.Fig_Beam2DPlot, basic_prof1Dver_dict]
 B01figs['B01basic_histosRON'] = [
     figclasses.Fig_Beam1DHist, basic_histosRON_dict]
+B01figs['B01meta_prof1D_hor'] = [
+    figclasses.Fig_Beam2DPlot, meta_prof1Dhor_dict]
+B01figs['B01meta_prof1D_ver'] = [
+    figclasses.Fig_Beam2DPlot, meta_prof1Dver_dict]
+B01figs['B01meta_MasterBias_2D'] = [
+    figclasses.Fig_BeamImgShow, meta_MB2D_dict]
 B01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
 
 

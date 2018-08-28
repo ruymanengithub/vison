@@ -439,17 +439,19 @@ class Task(object):
 
     def doPlot(self, figkey, **kwargs):
         """ """
+         
         try:
             figobj = self.figdict[figkey][0]()
         except:
             print 'DEBUGGING IN Task.doPlot...'
             msg_trbk = traceback.format_exc()
             self.log.info(msg_trbk)
-            self.log.info('%s, %s, %s' %
-                          (figkey, figobj, type(self.figdict[figkey][0])))
+            self.log.info('%s, %s' %
+                          (figkey, type(self.figdict[figkey][0])))
             raise RuntimeError
 
         figobj.configure(**kwargs)
+
         if kwargs['dobuilddata']:
             figobj.build_data(self.dd)
             # except:

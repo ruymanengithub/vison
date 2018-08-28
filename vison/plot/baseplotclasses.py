@@ -172,7 +172,8 @@ class BeamPlot(BasicPlot):
 
         super(BeamPlot, self).__init__(**kwargs)
 
-        meta = dict(suptitle='', ccdtitles=dict(CCD1='CCD1', CCD2='CCD2', CCD3='CCD3'),
+        meta = dict(suptitle='', 
+                    ccdtitles=dict(CCD1='CCD1', CCD2='CCD2', CCD3='CCD3'),
                     doLegend=False,
                     doNiceXDate=False)
         meta.update(kwargs)

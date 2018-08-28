@@ -377,9 +377,6 @@ class BIAS01(DarkTask):
         
         if self.report is not None:
             self.addFigures_ST(figkeys=figkeys1, dobuilddata=False)
-        #figkeys2 = ['B01basic_histosRON']
-        # self.figdict['B01basic_histosRON'][1]['data'] = None # PENDING
-        # self.addFigures_ST(figkeys=figkeys2,dobuilddata=True) # PENDING
 
         # REPORTS
 
@@ -486,15 +483,32 @@ class BIAS01(DarkTask):
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
+        
+        profs1D2plot = OrderedDict()
+        profs1D2plot['hor'] = OrderedDict()
+        profs1D2plot['ver'] = OrderedDict()
+        
+        for CCDk in CCDs:
+            for tag in ['hor', 'ver']:
+                profs1D2plot[tag][CCDk] = OrderedDict()
+            for Q in Quads:
+                for tag in ['hor', 'ver']:
+                    profs1D2plot[tag][CCDk][Q] = OrderedDict()
+                    profs1D2plot[tag][CCDk][Q]['x'] = np.arange(100,dtype='float32')
+                    profs1D2plot[tag][CCDk][Q]['y'] = np.zeros(100,dtype='float32')
+        
 
         if not self.drill:
             
             CDP_header['DATE'] = self.get_time_tag()
             ccdpicklespath = self.inputs['subpaths']['ccdpickles']
             profilespath = self.inputs['subpaths']['profiles']
-            productspath = self.inputs['subpaths']['products']
+            prodspath = self.inputs['subpaths']['products']
+            
             
             for jCCD, CCDk in enumerate(CCDs):
+                
+                sn_ccd = self.inputs['diffvalues']['sn_%s' % CCDk.lower()]
                 
                 vstart = self.dd.mx['vstart'][0, jCCD]
                 vend = self.dd.mx['vend'][0, jCCD]
@@ -504,50 +518,86 @@ class BIAS01(DarkTask):
                                                              '%s.pick' % x), 
                                        ccdobj_names)
                 
-                ccdobjList = [copy.deepcopy(cPickleRead(item)) \
-                                for item in fullccdobj_names]
+                devel = True # TESTS
                 
-                ccdpile = ccd.CCDPile(ccdobjList=ccdobjList,
-                                      withpover=ccdobjList[0].withpover)
+                if not devel:
                 
-                stackimg, stackstd = ccdpile.stack(method='median',dostd=True)
+                    ccdobjList = [copy.deepcopy(cPickleRead(item)) \
+                                    for item in fullccdobj_names]
+                    
+                    ccdpile = ccd.CCDPile(ccdobjList=ccdobjList,
+                                          withpover=ccdobjList[0].withpover)
+                    
+                    stackimg, stackstd = ccdpile.stack(method='median',dostd=True)
                 
-                stackccdobj = ccd.CCD(withpover=ccdpile.withpover)
+                else:
+                    
+                    stackimg = np.zeros((4238,4172),dtype='float32')
+                    stackstd = np.ones((4238,4172),dtype='float32')
+                
+                #stackccdobj = ccd.CCD(withpover=ccdpile.withpover)
+                stackccdobj = ccd.CCD(withpover=True) # TESTS
+                
                 stackccdobj.add_extension(stackimg, label='STACK')
                 stackccdobj.add_extension(stackstd, label='STD')
                 
-                for kQ, Q in Quads:
+                
+                for kQ, Q in enumerate(Quads):
                 
                     hor1Dprof = stackccdobj.get_1Dprofile(Q=Q, orient='hor',
                                     area='all',stacker='mean',
                                     vstart=vstart,vend=vend,extension=0)
+                    
+                    profs1D2plot['hor'][CCDk][Q]['x'] = hor1Dprof.data['x'].copy()
+                    profs1D2plot['hor'][CCDk][Q]['y'] = hor1Dprof.data['y'].copy()
+                    
                     ver1Dprof = stackccdobj.get_1Dprofile(Q=Q, orient='ver',
                                     area='all',stacker='mean',
                                     vstart=vstart,vend=vend,extension=0)
                 
-                # SAVING to a CDP - UNFINISHED
+                    profs1D2plot['ver'][CCDk][Q]['x'] = ver1Dprof.data['x'].copy()
+                    profs1D2plot['ver'][CCDk][Q]['y'] = ver1Dprof.data['y'].copy()
+                    
+                    
                 
-                stop()
+                # SAVING Master Bias to a CDP
+                
+                data = OrderedDict()
+                data['STACK'] = stackimg.copy()
+                data['STD'] = stackstd.copy()
+                data['labels'] = ['STACK','STD']
+                meta = OrderedDict()
+                meta['CCD_SN']= sn_ccd
     
-                #data = OrderedDict()
-                #data['STACK'] = mask.copy()
-                #data['labels'] = ['MASK']
-                #meta = OrderedDict()
-                #meta['MASKTYPE'] = masktype
-                #meta['SN']=sn_ccd
-                #meta['THRESH']=thresholds.__repr__()
-                #meta['SUBBGD'] = subbgd
-                #meta['NORMED'] = normbybgd
-                #meta['FUNCTION']=inspect.stack()[0][3]
+                masterbiascdp = cdp.CCD_CDP(ID=self.ID,
+                                      BLOCKID=self.BLOCKID,
+                                      CHAMBER=self.CHAMBER)
     
-                #maskcdp = cdp.CCD_CDP(ID=self.ID,
-                #BLOCKID=self.BLOCKID,
-                #CHAMBER=self.CHAMBER)
-    
-                #maskcdp.ingest_inputs(data=data, meta=meta)
-    
-                #maskcdp.savehardcopy(outfilename)
+                masterbiascdp.ingest_inputs(data=data, meta=meta, header=CDP_header)
+                
+                masterbiascdp.path = prodspath
+                masterbiascdp.rootname = 'EUC_MASTERBIAS_%s_SN_%s_%s' % \
+                                           (CCDk, sn_ccd, self.inputs['BLOCKID'])
+                
+                self.save_CDP(masterbiascdp)
+                self.pack_CDP_to_dd(masterbiascdp,'MASTERBIAS_%s' % CCDk)
+                
         
+        # PLOTTING 1D PROFILES OF MATER BIAS
+        
+        self.figdict['B01meta_prof1D_hor'][1]['data'] = profs1D2plot['hor'].copy()
+        self.figdict['B01meta_prof1D_ver'][1]['data'] = profs1D2plot['ver'].copy()
+        
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['B01meta_prof1D_hor',
+                                        'B01meta_prof1D_ver'],
+                               dobuilddata=False)
+        
+        # DISPLAYING THE MASTER BIAS FRAMES
+        
+        if self.report is not None:
+            
+            self.addFigures_ST(figkeys=['B01meta_MasterBias_2D'])
 
 
 class Test(unittest.TestCase):
