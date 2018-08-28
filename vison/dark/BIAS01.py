@@ -588,7 +588,7 @@ class BIAS01(DarkTask):
                 self.pack_CDP_to_dd(masterbiascdp,'MASTERBIAS_%s' % CCDk)
                 
         
-        # PLOTTING 1D PROFILES OF MATER BIAS
+        # PLOTTING 1D PROFILES OF MASTER BIAS
         
         self.figdict['B01meta_prof1D_hor'][1]['data'] = profs1D2plot['hor'].copy()
         self.figdict['B01meta_prof1D_ver'][1]['data'] = profs1D2plot['ver'].copy()
@@ -598,11 +598,18 @@ class BIAS01(DarkTask):
                                         'B01meta_prof1D_ver'],
                                dobuilddata=False)
         
+        # SAVING 1D PROFILES OF MASTER BIAS 
+        
+        # PENDING
+        
+        
         # DISPLAYING THE MASTER BIAS FRAMES
         
+        self.figdict['B01meta_MasterBias_2D'][1]['data'] = OrderedDict()
+        
         if self.report is not None:
-            
-            self.addFigures_ST(figkeys=['B01meta_MasterBias_2D'])
+            self.addFigures_ST(figkeys=['B01meta_MasterBias_2D'],
+                               dobuilddata=False)
 
 
 class Test(unittest.TestCase):

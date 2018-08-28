@@ -326,7 +326,8 @@ class BeamPlotYvX(BeamPlot):
 
 class BeamImgShow(BeamPlot):
     
-    def _ax_core_funct(self, ax, CQdict):        
+    def _ax_core_funct(self, ax, CQdict):
+        stop()        
         ax.imshow(CQdict['img'])
         
 
