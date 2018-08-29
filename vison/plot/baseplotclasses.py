@@ -176,17 +176,25 @@ class BeamPlot(BasicPlot):
                     ccdtitles=dict(CCD1='CCD1', CCD2='CCD2', CCD3='CCD3'),
                     doLegend=False,
                     doNiceXDate=False)
-        meta.update(kwargs)
+        if 'meta' in kwargs:
+            meta.update(kwargs['meta'])
+        
 
         self.figsize = (15, 6)
         self.Quads = ['E', 'F', 'H', 'G']
         self.CCDs = [1, 2, 3]
         self.data = copy.deepcopy(data)
-        self.meta = meta.copy()
+        self.meta = dict()
+        self.meta.update(meta)
         self.handles = []
         self.labels = []
         self.fig = None
         self.axs = dict()
+        
+        self.corekwargs = dict()
+        if 'corekwargs' in kwargs:
+            self.corekwargs.update(kwargs['corekwargs']) 
+        
 
     def init_fig(self):
         self._init_fig_and_axes()
@@ -215,6 +223,10 @@ class BeamPlot(BasicPlot):
             CCDkey = 'CCD%i' % plotlist[k-1][0]
             Q = plotlist[k-1][1]
             self.axs[CCDkey][Q] = axsarr.flatten()[k-1]
+            
+    def _ax_core_funct(self, ax, CQdict, key=''):
+        """ """
+        raise NotImplementedError("Subclass must implement abstract method")
 
     def populate_axes(self):
         """ """
@@ -310,16 +322,18 @@ class BeamPlot(BasicPlot):
 class BeamPlotYvX(BeamPlot):
 
     def _ax_core_funct(self, ax, CQdict, key=''):
+        
+        ckwargs = self.corekwargs.copy()
 
         if key != '':
             xarr = CQdict['x'][key]
             yarr = CQdict['y'][key]
             label = st.replace(key, '_', '\_')
-            handle = ax.plot(xarr, yarr, '-', label=label)
+            handle = ax.plot(xarr, yarr, '-', label=label, **ckwargs)
         else:
             xarr = CQdict['x']
             yarr = CQdict['y']
-            ax.plot(xarr, yarr, '_')
+            ax.plot(xarr, yarr, '_', **ckwargs)
             handle, label = None, None
 
         return handle, label
@@ -327,8 +341,10 @@ class BeamPlotYvX(BeamPlot):
 class BeamImgShow(BeamPlot):
     
     def _ax_core_funct(self, ax, CQdict):
-        stop()        
-        ax.imshow(CQdict['img'])
+        ckwargs = self.corekwargs.copy()
+        ax.imshow(CQdict['img'], **ckwargs)
+        handle, label = None, None
+        return handle, label
         
 
 
@@ -341,9 +357,11 @@ class Beam1DHist(BeamPlot):
                            cumulative=False, histtype='step', align='mid',
                            orientation='vertical', log=False)
         
-        for mkey in hist_kwargs.keys():
-            if mkey in self.meta:
-                hist_kwargs[mkey] = self.meta[mkey]
+        hist_kwargs.update(self.corekwargs)
+        
+        #for mkey in hist_kwargs.keys():
+        #    if mkey in self.meta:
+        #        hist_kwargs[mkey] = self.meta[mkey]
         
         if key != '':
             label = st.replace(key, '_', '\_')
