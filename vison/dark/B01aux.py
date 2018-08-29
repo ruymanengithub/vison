@@ -21,6 +21,7 @@ import pandas as pd
 from vison.plot import figclasses
 from vison.plot import trends
 from vison.datamodel import cdp
+from matplotlib import cm
 
 # END IMPORT
 
@@ -71,7 +72,7 @@ basic_histosRON_dict = dict(
               ylabel='N',
               xlabel='RON [ADU]',
               xlim=[0.,4.],
-              suptitle='BIAS01: RON Distribution'),
+              suptitle='BIAS01: RON Distribution')
 )
 
 
@@ -102,7 +103,9 @@ meta_MB2D_dict = dict(
               ylabel='ADU',
               xlabel='Row [pix]',
               ylim = [0., 2.**16],
-              suptitle='BIAS01/Master: Profiles across rows.'))
+              suptitle='BIAS01/Master: Profiles across rows.'),
+    corekwargs=dict(cmap=cm.rainbow,aspect='auto',norm=None,origin='lower left',
+                    ))
 
 B01figs = dict()
 B01figs['B01checks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]

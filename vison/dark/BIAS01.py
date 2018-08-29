@@ -18,28 +18,20 @@ Created on Tue Aug 29 16:53:40 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
-import datetime
 import copy
-import string as st
 from collections import OrderedDict
-import pandas as pd
 import unittest
+from matplotlib.colors import Normalize
+
 
 from vison.support import context
-from vison.pipe import lib as pilib
 from vison.datamodel import scriptic as sc
 from vison.datamodel import ccd
-from vison.image import calibration
-from vison.datamodel import core
 import B01aux
-#from vison.pipe.task import Task
 from DarkTask import DarkTask
-from vison.image import performance
 from vison.datamodel import inputs, cdp
-from vison.support.files import cPickleRead, cPickleDumpDictionary
 from vison.support import utils
-#from vison.support.report import Report
-
+from vison.support.files import cPickleRead
 
 # END IMPORT
 
@@ -489,6 +481,8 @@ class BIAS01(DarkTask):
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
         
+        # 1D Profiles of Master Bias
+        
         profs1D2plot = OrderedDict()
         profs1D2plot['hor'] = OrderedDict()
         profs1D2plot['ver'] = OrderedDict()
@@ -502,6 +496,17 @@ class BIAS01(DarkTask):
                     profs1D2plot[tag][CCDk][Q]['x'] = np.arange(100,dtype='float32')
                     profs1D2plot[tag][CCDk][Q]['y'] = np.zeros(100,dtype='float32')
         
+        
+        # Master Bias Data to be plotted
+        
+        MB_2PLOT = OrderedDict()
+        
+        for CCDk in CCDs:
+            MB_2PLOT[CCDk] = OrderedDict()
+            for Q in Quads:
+                MB_2PLOT[CCDk][Q] = OrderedDict()
+        MB_p5s = []
+        MB_p95s = []
 
         if not self.drill:
             
@@ -510,6 +515,18 @@ class BIAS01(DarkTask):
             profilespath = self.inputs['subpaths']['profiles']
             prodspath = self.inputs['subpaths']['products']
             
+            
+            def _pack_profs(CQdict,prof):
+                """ """
+                _x = prof.data['x'].copy()
+                xorder = np.argsort(prof.data['x'])
+                _y = prof.data['y'][xorder].copy()
+                _x = np.arange(len(_y))
+                
+                CQdict['x'] = _x.copy()
+                CQdict['y'] = _y.copy()
+                
+                return CQdict
             
             for jCCD, CCDk in enumerate(CCDs):
                 
@@ -523,7 +540,7 @@ class BIAS01(DarkTask):
                                                              '%s.pick' % x), 
                                        ccdobj_names)
                 
-                devel = True # TESTS
+                devel = False # TESTS
                 
                 if not devel:
                 
@@ -540,11 +557,20 @@ class BIAS01(DarkTask):
                     stackimg = np.zeros((4238,4172),dtype='float32')
                     stackstd = np.ones((4238,4172),dtype='float32')
                 
+                if isinstance(stackimg,np.ma.MaskedArray):
+                    mask = stackimg.mask.copy()
+                    stackimg = stackimg.data.copy()
+                    stackstd = stackstd.data.copy()
+                else:
+                    mask = np.zeros_like(stackimg)
+                    
+                
                 #stackccdobj = ccd.CCD(withpover=ccdpile.withpover)
                 stackccdobj = ccd.CCD(withpover=True) # TESTS
                 
                 stackccdobj.add_extension(stackimg, label='STACK')
                 stackccdobj.add_extension(stackstd, label='STD')
+                stackccdobj.get_mask(mask)
                 
                 
                 for kQ, Q in enumerate(Quads):
@@ -553,36 +579,41 @@ class BIAS01(DarkTask):
                                     area='all',stacker='mean',
                                     vstart=vstart,vend=vend,extension=0)
                     
-                    profs1D2plot['hor'][CCDk][Q]['x'] = hor1Dprof.data['x'].copy()
-                    profs1D2plot['hor'][CCDk][Q]['y'] = hor1Dprof.data['y'].copy()
-                    
+                    profs1D2plot['hor'][CCDk][Q] = _pack_profs(profs1D2plot['hor'][CCDk][Q],hor1Dprof)
+                                        
                     ver1Dprof = stackccdobj.get_1Dprofile(Q=Q, orient='ver',
                                     area='all',stacker='mean',
                                     vstart=vstart,vend=vend,extension=0)
-                
-                    profs1D2plot['ver'][CCDk][Q]['x'] = ver1Dprof.data['x'].copy()
-                    profs1D2plot['ver'][CCDk][Q]['y'] = ver1Dprof.data['y'].copy()
                     
+                    profs1D2plot['ver'][CCDk][Q] = _pack_profs(profs1D2plot['ver'][CCDk][Q],ver1Dprof)
                     
                 
                 # SAVING Master Bias to a CDP
                 
-                data = OrderedDict()
-                data['STACK'] = stackimg.copy()
-                data['STD'] = stackstd.copy()
-                data['labels'] = ['STACK','STD']
-                meta = OrderedDict()
-                meta['CCD_SN']= sn_ccd
+                mb_data = OrderedDict()
+                mb_data['STACK'] = stackimg.copy()
+                mb_data['STD'] = stackstd.copy()
+                mb_data['MASK'] = mask.astype('int32').copy()
+                mb_data['labels'] = ['STACK','STD','MASK']
+                mb_meta = OrderedDict()
+                mb_meta['CCD_SN']= sn_ccd
     
                 masterbiascdp = cdp.CCD_CDP(ID=self.ID,
                                       BLOCKID=self.BLOCKID,
                                       CHAMBER=self.CHAMBER)
     
-                masterbiascdp.ingest_inputs(data=data, meta=meta, header=CDP_header)
+                masterbiascdp.ingest_inputs(data=mb_data, meta=mb_meta, header=CDP_header)
                 
                 masterbiascdp.path = prodspath
                 masterbiascdp.rootname = 'EUC_MASTERBIAS_%s_SN_%s_%s' % \
                                            (CCDk, sn_ccd, self.inputs['BLOCKID'])
+                
+                
+                for Q in Quads:
+                    qdata = masterbiascdp.ccdobj.get_quad(Q,canonical=False,extension=1).copy()
+                    MB_p5s.append(np.percentile(qdata,5))
+                    MB_p95s.append(np.percentile(qdata,95))
+                    MB_2PLOT[CCDk][Q]['img'] = qdata.transpose()
                 
                 self.save_CDP(masterbiascdp)
                 self.pack_CDP_to_dd(masterbiascdp,'MASTERBIAS_%s' % CCDk)
@@ -598,14 +629,29 @@ class BIAS01(DarkTask):
                                         'B01meta_prof1D_ver'],
                                dobuilddata=False)
         
-        # SAVING 1D PROFILES OF MASTER BIAS 
+        # SAVING 1D PROFILES OF MASTER BIAS as a CDP
         
-        # PENDING
+        MB_profiles_cdp = cdp.CDP()
+        MB_profiles_cdp.header = CDP_header.copy()
+        MB_profiles_cdp.path = profilespath
+        MB_profiles_cdp.data = profs1D2plot.copy()
+        
+        self.save_CDP(MB_profiles_cdp)
+        self.pack_CDP_to_dd(MB_profiles_cdp, 'MB_PROFILES')
         
         
         # DISPLAYING THE MASTER BIAS FRAMES
         
-        self.figdict['B01meta_MasterBias_2D'][1]['data'] = OrderedDict()
+        self.figdict['B01meta_MasterBias_2D'][1]['data'] = MB_2PLOT.copy()
+        
+        # UPDATING scaling based on data
+        
+        if len(MB_p5s)>0:
+            normfunction = Normalize(vmin=np.min(MB_p5s),vmax=np.max(MB_p95s),clip=False)
+        else:
+            normfunction = False
+        
+        self.figdict['B01meta_MasterBias_2D'][1]['corekwargs']['norm'] = normfunction
         
         if self.report is not None:
             self.addFigures_ST(figkeys=['B01meta_MasterBias_2D'],
