@@ -103,7 +103,7 @@ def texarize_complidict(indict):
     return outdict
 
 
-def gen_compliance_tex(indict, escape=True):
+def gen_compliance_tex(indict, escape=True, caption=''):
     """ """
     
     pd.options.display.max_colwidth=200
@@ -136,6 +136,10 @@ def gen_compliance_tex(indict, escape=True):
         tex = convert_compl_to_nesteditemlist(tcomplidict)
         tex = ['\\tiny'] + st.split(tex, '\n') + ['\\normalsize']
     
+    if caption != '':
+        captiontex = r'\caption{%s}\n' % caption
+        tex.insert(-2,captiontex)
+    
     pd.reset_option('display.max_colwidth')
     
     return tex
@@ -150,8 +154,8 @@ class ComplianceMX(OrderedDict):
     def check_stat(self, inparr):
         raise NotImplementedError("Subclass must implement abstract method")
 
-    def get_compliance_tex(self):
-        return gen_compliance_tex(dict(self), escape=False)
+    def get_compliance_tex(self,caption=''):
+        return gen_compliance_tex(dict(self), escape=False, caption=caption)
 
     def get_compliance_txt(self):
         return vjson.dumps_to_json(self)
@@ -238,7 +242,7 @@ class ComplianceMX_CCDQ(ComplianceMX):
             for jQ, Q in enumerate(self.Qs):
                 if isinstance(self.CCDQlims[CCDkey], dict):
                     _lims = self.CCDQlims[CCDkey][Q]
-                elif isinstance(self.CCDQlims[CCDkey], list):
+                elif isinstance(self.CCDQlims[CCDkey], (list,np.ndarray)):
                     _lims = self.CCDQlims[CCDkey]
                 test = (np.isnan(inparr[:, iCCD, jQ, ...]) |
                         (inparr[:, iCCD, jQ, ...] <= _lims[0]) | (inparr[:, iCCD, jQ, ...] >= _lims[1]))
