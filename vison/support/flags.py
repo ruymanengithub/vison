@@ -40,7 +40,8 @@ flagsdict = OrderedDict(MISSDATA=[2**0L],
                         FLUENCEGRAD_OOL=[2**20L],
                         FOCUS_OOL=[2**21L],
                         BGD_OOL=[2**22L],
-                        CCDSATUR=[2**23L])
+                        CCDSATUR=[2**23L],
+                        FLUX_OOL=[2**24L])
 
 
 class Flags(object):

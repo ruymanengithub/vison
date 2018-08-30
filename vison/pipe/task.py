@@ -472,14 +472,15 @@ class Task(object):
         st_compl = st.split(complidict.get_compliance_txt(), '\n')
         self.log.info([label, st_compl])
 
-    def addComplianceMatrix2Report(self, complidict, label=''):
+    def addComplianceMatrix2Report(self, complidict, label='',
+                                   caption=''):
         """ """
         nicelabel = st.replace(label, ' ', '\ ')
         #st_compl = complidict.__str__()
 
         complitex = ['$\\bf{%s}$' % nicelabel]
         #complitex += complimod.gen_compliance_tex(complidict)
-        complitex += complidict.get_compliance_tex()
+        complitex += complidict.get_compliance_tex(caption)
         # complitex = [st.replace(
         #    item, 'False', '$\\textcolor{red}{\\bf{False}}$') for item in complitex]
 
