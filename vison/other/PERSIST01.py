@@ -29,19 +29,20 @@ from vison.datamodel import inputs
 HKKeys = []
 
 PER01_commvalues = dict(program='CALCAMP', test='PERSIST01',
-                        rdmode='fwd_bas',
-                        flushes=7,  # exptime=0.,
+                        flushes=7, siflsh=1, siflsh_p=500,
+                        inisweep=1,
                         vstart=0, vend=2086,
-                        shuttr=1,
-                        siflsh=1, siflsh_p=500,
+                        toi_fl=143., toi_tp=1000., toi_ro=1000., toi_ch=1000.,
                         chinj=0,
                         s_tpump=0,
                         v_tpump=0,
-                        source='point',
-                        motr_on=0,
-                        wave=1,
-                        mirr_pos=ogsemod.mirror_nom['F1'],
+                        exptime=0., shuttr=1, e_shuttr=0,
+                        mirr_on=0,
+                        wave=3,
                         mirr_on=1,
+                        mirr_pos=ogsemod.mirror_nom['F3'],
+                        motr_on=0,
+                        source='point',
                         comments='')
 
 
