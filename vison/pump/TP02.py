@@ -133,7 +133,7 @@ class TP02(PumpTask):
 
         TP02_sdict = dict()
 
-        TP02_commvalues['ser_shuffles'] = Nshuffles_H
+        TP02_commvalues['s_tp_cnt'] = Nshuffles_H
 
         # First Injection Drain Delay
 
@@ -146,14 +146,17 @@ class TP02(PumpTask):
             for k, sermode in enumerate(spumpmodes):
                 colkey = 'col%i' % colcounter
                 TP02_sdict[colkey] = dict(frames=1, dwell_s=dwell_s,
-                                          id_dly=id_delays[0], s_tpmod=sermode, toi_ch=toi_chinj)
+                                          v_tpump=0,s_tpump=1,
+                                          id_dly=id_delays[0], s_tpmod=sermode, 
+                                          toi_ch=toi_chinj)
 
                 colcounter += 1
 
         # Second Injection Drain Delay
 
         TP02_sdict['col%i' % colcounter] = dict(frames=1, v_tpump=0, s_tpump=0,
-                                                comments='BGD', id_dly=id_delays[1], toi_ch=toi_chinj)
+                                                comments='BGD', 
+                                                id_dly=id_delays[1], toi_ch=toi_chinj)
         colcounter += 1
 
         for j, dwell_s in enumerate(dwell_sv):
@@ -163,7 +166,9 @@ class TP02(PumpTask):
                 colkey = 'col%i' % colcounter
                 #print colkey
                 TP02_sdict[colkey] = dict(frames=1, dwell_s=dwell_s,
-                                          id_dly=id_delays[1], s_tpmod=sermode, toi_ch=toi_chinj)
+                                          v_tpump=0, s_tpump=1,
+                                          id_dly=id_delays[1], s_tpmod=sermode, 
+                                          toi_ch=toi_chinj)
 
                 colcounter += 1
 

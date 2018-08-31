@@ -180,8 +180,8 @@ class FOCUS00(PT.PointTask):
 
         FOCUS00_sdict = dict()
 
-        for i, j in enumerate(range(-3, 4, 1)):
-            FOCUS00_sdict['col%i' % (i+1,)] = dict(frames=2,
+        for i, j in enumerate(range(-4, 5, 1)):
+            FOCUS00_sdict['col%i' % (i+1,)] = dict(frames=1,
                                                    test='FOCUS00_%i' % wavelength,
                                                    exptime=exptime,
                                                    mirr_pos=mirror_nom +

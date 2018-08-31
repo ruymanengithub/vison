@@ -136,7 +136,7 @@ class TP01(PumpTask):
 
         TP01_sdict = dict()
 
-        TP01_commvalues['ver_shuffles'] = Nshuffles_V
+        TP01_commvalues['v_tp_cnt'] = Nshuffles_V
 
         # First Injection Drain Delay
 
@@ -145,7 +145,6 @@ class TP01(PumpTask):
 
         colcounter = 2
         for i, toi_tp in enumerate(toi_tpv):
-
             for k, vpumpmode in enumerate(vpumpmodes):
                 colkey = 'col%i' % colcounter
                 TP01_sdict[colkey] = dict(frames=1, toi_tp=toi_tp,

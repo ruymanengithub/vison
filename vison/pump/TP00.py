@@ -129,7 +129,9 @@ class TP00(PumpTask):
                     colkey = 'col%i' % colcounter
 
                     TP00_sdict[colkey] = dict(frames=1, toi_tp=toi_tp,
-                                              id_dly=id_delay, v_tpump=1, v_tpmod=vpumpmode,
+                                              id_dly=id_delay, 
+                                              s_tpump=0,
+                                              v_tpump=1, v_tpmod=vpumpmode,
                                               v_tp_cnt=Nshuffles_V,
                                               comments='V%i_%i' % (vpumpmode, toi_tp))
 
@@ -146,7 +148,10 @@ class TP00(PumpTask):
                     colkey = 'col%i' % colcounter
 
                     TP00_sdict[colkey] = dict(frames=1,
-                                              id_dly=id_delay, s_tpump=0, s_tpmod=spumpmode,
+                                              id_dly=id_delay, 
+                                              v_tpump=0,
+                                              s_tpump=1, 
+                                              s_tpmod=spumpmode,
                                               s_tp_cnt=Nshuffles_S, dwell_s=dwell_tps,
                                               comments='S%i_%i' % (spumpmode, dwell_tps))
 

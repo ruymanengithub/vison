@@ -116,9 +116,9 @@ class CHINJ02(InjTask):
         """ 
         Builds CHINJ02 script structure dictionary.
 
-        #:param IDLs: list of 2 ints, [mV], [min,max] values of IDL (Inject. Drain Low).
-        #:param IDH: int, [mV], Injection Drain High.
-        #:param id_delays: list of 2 ints, [mV], injection drain delays (2).
+        #:param IDLs: list of 2 ints, [V], [min,max] values of IDL (Inject. Drain Low).
+        #:param IDH: int, [V], Injection Drain High.
+        #:param id_delays: list of 2 ints, [us], injection drain delays.
         #:param toi_chinj: int, [us], TOI-charge injection.
         :param diffvalues: dict, opt, differential values.
 

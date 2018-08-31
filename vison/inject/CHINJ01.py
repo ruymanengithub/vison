@@ -120,11 +120,11 @@ class CHINJ01(InjTask):
         """
         Builds CHINJ01 script structure dictionary.
         
-        #:param IDL: float, [mV], value of IDL (Inject. Drain Low).
-        #:param IDH: float, [mV], Injection Drain High.
-        #:param IG2: float, [mV], Injection Gate 2.
-        #:param IG1s: list of 2 floats, [mV], [min,max] values of IG1.
-        #:param id_delays: list of 2 floats, [mV], injection drain delays (2).
+        #:param IDL: float, [V], value of IDL (Inject. Drain Low).
+        #:param IDH: float, [V], Injection Drain High.
+        #:param IG2: float, [V], Injection Gate 2.
+        #:param IG1s: list of 2 floats, [V], [min,max] values of IG1.
+        #:param id_delays: list of 2 floats, [us], injection drain delays.
         #:param toi_chinj: int, [us], TOI-charge injection.
         :param diffvalues: dict, opt, differential values.
         
@@ -157,7 +157,8 @@ class CHINJ01(InjTask):
             #print colkey
             CHINJ01_sdict[colkey] = dict(frames=1, IDL=IDL, IDH=IDH,
                                          IG2_T=IG2, IG2_B=IG2,
-                                         id_dly=id_delays[0], toi_ch=toi_chinj)
+                                         id_dly=id_delays[0], 
+                                         toi_ch=toi_chinj)
            
             for CCD in CCDs:
                 for half in halves:
@@ -172,7 +173,8 @@ class CHINJ01(InjTask):
             #print colkey
             CHINJ01_sdict[colkey] = dict(frames=1, IDL=IDL, IDH=IDH,
                                          IG2_T=IG2,IG2_B=IG2,
-                                         id_dly=id_delays[1], toi_ch=toi_chinj)
+                                         id_dly=id_delays[1], 
+                                         toi_ch=toi_chinj)
 
             for CCD in CCDs:
                 for half in halves:
