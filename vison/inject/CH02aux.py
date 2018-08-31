@@ -66,3 +66,5 @@ CH02figs['CH02checks_injlevel'] = [
     trends.Fig_Basic_Checkstat, check_injlevel_dict]
 CH02figs['CH02checks_injstd'] = [trends.Fig_Basic_Checkstat, check_injstd_dict]
 CH02figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
+
+CDP_lib = dict()
