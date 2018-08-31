@@ -405,11 +405,15 @@ class CHINJ01(InjTask):
         # save as a rationalized set of curves
         
         maxmedinjection = np.nanmax(self.dd.mx['chinj_p50'][:])
+        
+        prof_alrow_cdp.data['labelkeys'] = prof_alrow_cdp.data[CCDs[0]][Quads[0]]['x'].keys()
 
         fdict_alrow = self.figdict['CH01_alrow'][1]
         fdict_alrow['data'] = prof_alrow_cdp.data.copy()
         fdict_alrow['meta']['ylim'] = [0.,maxmedinjection*1.5]
-
+        
+        
+        prof_alcol_cdp.data['labelkeys'] = prof_alcol_cdp.data[CCDs[0]][Quads[0]]['x'].keys()
         
         fdict_alcol = self.figdict['CH01_alcol'][1]
         fdict_alcol['data'] = prof_alcol_cdp.data.copy()

@@ -36,6 +36,9 @@ default_patt_files = OrderedDict(
 
 starnames = ['ALPHA', 'BRAVO', 'CHARLIE', 'DELTA', 'ECHO']
 
+def sort_coordinate_pairs(coopairs):
+    """ """
+    return sorted(coopairs, key=lambda k: [k[0],k[1]])
 
 class StarTracker(object):
 
@@ -178,15 +181,27 @@ class StarTracker(object):
 
     def find_patt_transform(self, X, Y):
         """ """
-        from pylab import plot,show
-        plot(X,Y,'ro')
-        plot(self.Pattern['X'], self.Pattern['Y'],'ko')
-        show()
-        
-        stop()
         source = zip(self.Pattern['X'], self.Pattern['Y'])
         target = zip(X, Y)
-        transf, (s_list, t_list) = aa.find_transform(source, target)
+        
+        source = sort_coordinate_pairs(source)
+        target = sort_coordinate_pairs(target)
+        
+        xs, ys = tuple(zip(*source))
+        xt, yt = tuple(zip(*target))
+        
+        from pylab import plot,show
+        plot(xs, ys,'ro-')
+        plot(xt, yt,'ko-')
+        show()
+        
+        
+        try:
+            transf, (s_list, t_list) = aa.find_transform(source, target)
+        except ValueError:
+            stop()
+        stop()
+        
         return transf
 
     def _apply_transform(self, X, Y, similaritymx):

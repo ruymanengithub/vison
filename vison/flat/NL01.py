@@ -394,6 +394,7 @@ class NL01(FlatTask):
                 curves_cdp.data[CCDk][Q]['x'] = OrderedDict()
                 curves_cdp.data[CCDk][Q]['y'] = OrderedDict()
         
+        curves_cdp.data['labelkeys'] = ['data','fit']
 
         # Fitting the NL curves
 
@@ -462,6 +463,7 @@ class NL01(FlatTask):
             self.report.add_Text(Ntex)        
 
         # Do plots
+        
         
 
         fdict_NL = self.figdict['NL01_fit_curves'][1]

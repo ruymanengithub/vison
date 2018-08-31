@@ -39,10 +39,33 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
     print 'GENERATING TEST SEQUENCE...'
 
     test_sequence = OrderedDict()
+    
+    _toGen = dict(BIAS01=False,
+                  DARK01=False,
+                  CHINJ01=False,
+                  CHINJ02=False,
+                  TP01=False,
+                  TP02=False,
+                  FLATFLUX00=False,
+                  FLAT01=False,
+                  FLAT02=False,
+                  PTC01=False,
+                  PTC02WAVE=False,
+                  PTC02TEMP=False,
+                  NL01=False,
+                  FOCUS00=False,
+                  PSF01=False,
+                  PSFLUX00=False,
+                  PSF02=False,
+                  PERSIST01=False
+                  )
+    
+    _toGen.update(toGen)
+
 
     # BIAS
 
-    if toGen['BIAS01']:
+    if _toGen['BIAS01']:
 
         print 'BIAS01...'
 
@@ -61,7 +84,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     # DARKS
 
-    if toGen['DARK01']:
+    if _toGen['DARK01']:
 
         print 'DARK01...'
 
@@ -84,7 +107,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     # CHINJ01
 
-    if toGen['CHINJ01']:
+    if _toGen['CHINJ01']:
 
         print 'CHINJ01...'
 
@@ -114,7 +137,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     # CHINJ02
 
-    if toGen['CHINJ02']:
+    if _toGen['CHINJ02']:
 
         print 'CHINJ02...'
 
@@ -142,7 +165,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     # TP01
 
-    if toGen['TP01']:
+    if _toGen['TP01']:
 
         print 'TP01...'
         
@@ -171,7 +194,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     # TP02
 
-    if toGen['TP02']:
+    if _toGen['TP02']:
 
         print 'TP02...'
 
@@ -207,7 +230,8 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                            nm880=ogse.profile['tFWC_flat']['nm880'],
                            nm0=ogse.profile['tFWC_flat']['nm0'])
 
-    if toGen['FLATFLUX00']:
+
+    if _toGen['FLATFLUX00']:
 
         print 'FLATFLUX00...'
 
@@ -243,12 +267,11 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                                              diffvalues=diffFLATFLUX00w))
             
             test_sequence[itestkey] = copy.deepcopy(flatflux00w)
-            
-            
+                
 
     # FLAT-01
 
-    if toGen['FLAT01']:
+    if _toGen['FLAT01']:
 
         print 'FLAT01...'
 
@@ -274,7 +297,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     # FLAT-02
 
-    if toGen['FLAT02']:
+    if _toGen['FLAT02']:
 
         wavesFLAT02 = [590, 640, 880]
         t_dummy_F02 = np.array([25., 75])/100.
@@ -309,7 +332,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     # PTC-01
 
-    if toGen['PTC01']:
+    if _toGen['PTC01']:
 
         print 'PTC01...'
 
@@ -338,7 +361,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     # PTC-02 - wavelength
 
-    if toGen['PTC02WAVE']:
+    if _toGen['PTC02WAVE']:
 
         print 'PTC02WAVE...'
 
@@ -409,7 +432,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
    # PTC-02 - Temp.
 
-    if toGen['PTC02TEMP']:
+    if _toGen['PTC02TEMP']:
 
         print 'PTC02TEMP...'
 
@@ -447,7 +470,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     # NL-01
 
-    if toGen['NL01']:
+    if _toGen['NL01']:
 
         print 'NL01...'
         waveNL01 = 0
@@ -476,7 +499,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     # FOCUS
 
-    if toGen['FOCUS00']:
+    if _toGen['FOCUS00']:
 
         print 'FOCUS00...'
 
@@ -513,7 +536,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     # PSF
 
-    if toGen['PSF01']:
+    if _toGen['PSF01']:
 
         print 'PSF01...'
 
@@ -548,7 +571,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
             test_sequence[itestkey] = copy.deepcopy(psf01w)
 
-    if toGen['PSFLUX00']:
+    if _toGen['PSFLUX00']:
 
         print 'PSFLUX00...'
 
@@ -581,7 +604,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     # PSF02
 
-    if toGen['PSF02']:
+    if _toGen['PSF02']:
 
         print 'PSF02...'
 
@@ -622,7 +645,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     # PERSIST
 
-    if toGen['PERSIST01']:
+    if _toGen['PERSIST01']:
 
         print 'PERSIST01...'
 

@@ -41,6 +41,9 @@ class FlatTask(Task):
         elif test == 'PTC01':
             kwargs = dict(figkeys=['PTC0Xchecks_offsets', 'PTC0Xchecks_stds',
                                    'PTC0Xchecks_flu', 'PTC0Xchecks_imgstd'])
+        elif 'FLATFLUX00' in test:
+            kwargs = dict(figkeys=['PTC0Xchecks_offsets', 'PTC0Xchecks_stds',
+                                   'PTC0Xchecks_flu', 'PTC0Xchecks_imgstd'])
         elif 'PTC02' in test:
             kwargs = dict(figkeys=['PTC0Xchecks_offsets', 'PTC0Xchecks_stds',
                                    'PTC0Xchecks_flu', 'PTC0Xchecks_imgstd'])
@@ -48,7 +51,6 @@ class FlatTask(Task):
             kwargs = dict(figkeys=['NL01checks_offsets', 'NL01checks_stds',
                                    'NL01checks_flu',
                                    'NL01checks_imgstd'])
-
         Task.check_data(self, **kwargs)
 
     def get_checkstats_ST(self, **kwargs):
@@ -108,8 +110,9 @@ class FlatTask(Task):
 
                         stats_img = ccdobj.get_stats(Quad, sector='img', statkeys=['median', 'std'], trimscan=[5, 5],
                                                      ignore_pover=True, extension=-1)
+                        
                         self.dd.mx['flu_med_img'][iObs,
-                                                  jCCD, kQ] = stats_img[0]
+                                                  jCCD, kQ] = stats_img[0]-stats_bias[0]
                         self.dd.mx['flu_std_img'][iObs,
                                                   jCCD, kQ] = stats_img[1]
 
@@ -193,7 +196,36 @@ class FlatTask(Task):
 
         _compliance_flu = self.check_stat_perCCDandCol(
             self.dd.mx['flu_med_img'], FLU_lims, CCDs)
+        
+        
+        # IMG FLUXES
+        
+        fluences = self.dd.mx['flu_med_img'][:].copy()
+        exptime = self.dd.mx['exptime'][:].copy()
+        
+        fluxes = np.mean((fluences/np.expand_dims(exptime,axis=-1)),axis=0) # CRUDE!
+        sat_times = 2.**16/fluxes
+        sat_times = np.expand_dims(sat_times,axis=0)
+        
+        exp_sat_time = self.ogse.profile['tFWC_flat']['nm%i' % self.inputs['wavelength']]
+        sat_time_lims = dict()
+        for CCD in CCDs:
+            sat_time_lims[CCD] = (exp_sat_time * np.array([0.7,1.3])).tolist()
+        
+        _compliance_flux = self.check_stat_perCCDandQ(
+                sat_times, sat_time_lims, CCDs)
 
+        if not self.IsComplianceMatrixOK(_compliance_flux):
+            self.dd.flags.add('POORQUALDATA')
+            self.dd.flags.add('FLUX_OOL')
+        if self.log is not None:
+            self.addComplianceMatrix2Log(
+                _compliance_flux, label='COMPLIANCE SATURATION TIME (FLUX)')
+        if self.report is not None:
+            self.addComplianceMatrix2Report(
+            _compliance_flux, label='COMPLIANCE SATURATION TIME (FLUX)',
+            caption='Saturation times in seconds.')
+        
         if not self.IsComplianceMatrixOK(_compliance_flu):
             self.dd.flags.add('POORQUALDATA')
             self.dd.flags.add('FLUENCE_OOL')

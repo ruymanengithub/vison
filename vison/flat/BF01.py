@@ -282,7 +282,11 @@ class BF01(PTC0X):
             
 
         # PLOTS
-                
+        
+        for tag in ['hor','ver']:    
+            profscov_1D.data[tag]['labelkeys'] = \
+                            profscov_1D.data[tag][CCDs[0]][Quads[0]]['x'].keys()
+        
         for tag in ['ver','hor']:
         
             fdict_C = self.figdict['BF01_COV_%s' % tag][1]

@@ -107,6 +107,8 @@ class Pipe(object):
         Test_dict['PSF02_%iK' % temp] = PSF0X
     for wave in [590, 640, 730, 800, 880, 0]:
         Test_dict['PSFLUX00_%i' % wave] = PSF0X
+    for wave in [590, 640, 730, 800, 880, 0]:
+        Test_dict['FLATFLUX00_%i' % wave] = PTC0X
 
     def __init__(self, inputdict, dolog=True, drill=False, debug=False, startobsid=0,
                  processes=1):

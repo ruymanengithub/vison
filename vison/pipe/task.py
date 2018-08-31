@@ -439,17 +439,19 @@ class Task(object):
 
     def doPlot(self, figkey, **kwargs):
         """ """
+         
         try:
             figobj = self.figdict[figkey][0]()
         except:
             print 'DEBUGGING IN Task.doPlot...'
             msg_trbk = traceback.format_exc()
             self.log.info(msg_trbk)
-            self.log.info('%s, %s, %s' %
-                          (figkey, figobj, type(self.figdict[figkey][0])))
+            self.log.info('%s, %s' %
+                          (figkey, type(self.figdict[figkey][0])))
             raise RuntimeError
 
         figobj.configure(**kwargs)
+
         if kwargs['dobuilddata']:
             figobj.build_data(self.dd)
             # except:
@@ -470,14 +472,15 @@ class Task(object):
         st_compl = st.split(complidict.get_compliance_txt(), '\n')
         self.log.info([label, st_compl])
 
-    def addComplianceMatrix2Report(self, complidict, label=''):
+    def addComplianceMatrix2Report(self, complidict, label='',
+                                   caption=''):
         """ """
         nicelabel = st.replace(label, ' ', '\ ')
         #st_compl = complidict.__str__()
 
         complitex = ['$\\bf{%s}$' % nicelabel]
         #complitex += complimod.gen_compliance_tex(complidict)
-        complitex += complidict.get_compliance_tex()
+        complitex += complidict.get_compliance_tex(caption)
         # complitex = [st.replace(
         #    item, 'False', '$\\textcolor{red}{\\bf{False}}$') for item in complitex]
 

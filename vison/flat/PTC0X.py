@@ -513,6 +513,8 @@ class PTC0X(FlatTask):
                 curves_cdp.data[CCDk][Q]['x'] = OrderedDict()
                 curves_cdp.data[CCDk][Q]['y'] = OrderedDict()
         
+        curves_cdp.data['labelkeys'] = ['data','fit']
+        
         gain_mx = OrderedDict()
 
         g_tmp_keys = ['a0', 'ea0', 'a1', 'ea1', 'a2',

@@ -804,9 +804,9 @@ class CCD(object):
             for iext in range(1, self.nextensions):
 
                 if self.masked:
-                    idata = self.extensions[iext].data.data.transpose().copy()
+                    idata = self.extensions[iext].data.data.T.copy()
                 else:
-                    idata = self.extensions[iext].data.transpose().copy()
+                    idata = self.extensions[iext].data.T.copy()
 
                 iheader = self.extensions[iext].header
                 iname = self.extensions[iext].label

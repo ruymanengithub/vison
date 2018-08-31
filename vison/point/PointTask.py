@@ -336,13 +336,22 @@ class PointTask(Task):
     def lock_on_stars(self):
         """ """
         
+        sexconfig = dict(MINAREA=3,
+             DET_THRESH=14.,
+             MAG_ZERPOINT=20.,
+             SATUR_LEVEL=65535.,
+             SEEING_FWHM=1.2,
+             PIXEL_SCALE=1.,
+             GAIN=1.
+             )
+        
         Qindices = copy.deepcopy(self.dd.indices)
 
         CCDs = Qindices.get_vals('CCD')
         
         strackers = self.ogse.startrackers
         
-        iObs = 0
+        iObs = 0 # TODO: Use first frame to lock... this should be an input parameter
         
         for jCCD, CCDk in enumerate(CCDs):
         
@@ -356,9 +365,19 @@ class PointTask(Task):
             
             img = ccdobj.extensions[-1].data.T.copy() # ??
             SExCatroot = 'StarFinder_%s' % CCDk
-            SExCat = sex.easy_run_SEx(img, SExCatroot, cleanafter=True)
-            X_IMAGE = SExCat['X_IMAGE'].copy() - 1.
-            Y_IMAGE = SExCat['Y_IMAGE'].copy() - 1.
+            SExCat = sex.easy_run_SEx(img, SExCatroot, 
+                                      sexconfig=sexconfig,                                      
+                                      cleanafter=False)
+            
+            sel = np.where((SExCat['ELONGATION']<2.) &
+                           (SExCat['A_IMAGE']<3.) &
+                           (SExCat['A_IMAGE']>0.5) &
+                           (SExCat['B_IMAGE']<3.) &
+                           (SExCat['B_IMAGE']>0.5)
+                           )
+            
+            X_IMAGE = SExCat['X_IMAGE'][sel].copy() - 1.
+            Y_IMAGE = SExCat['Y_IMAGE'][sel].copy() - 1.
             
             X_PHYS, Y_PHYS = self.ccdcalc.cooconv_Phys_2_CCD(X_IMAGE,Y_IMAGE)
             

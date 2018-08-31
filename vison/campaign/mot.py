@@ -36,9 +36,20 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis, CHAMBER=None):
 
     test_sequence = OrderedDict()
 
+    _toGen = dict(
+            BIAS01 = False,
+            CHINJ01 = False,
+            TP01 = False,
+            TP02 = False,
+            PTC01 = False,
+            MOT_FF = False
+            ) 
+    
+    _toGen.update(toGen)
+
     # BIAS
 
-    if toGen['BIAS01']:
+    if _toGen['BIAS01']:
 
         print 'BIAS01...'
 
@@ -59,7 +70,7 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis, CHAMBER=None):
 
     # CHINJ01
 
-    if toGen['CHINJ01']:
+    if _toGen['CHINJ01']:
 
         print 'CHINJ01...'
 
@@ -92,13 +103,15 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis, CHAMBER=None):
 
     # TRAP-PUMPING
     
+    
     # TP01
 
-    if toGen['TP01']:
+    if _toGen['TP01']:
 
         print 'TP01...'
 
         TOI_TPv = [200]
+        Nshuffles_V = 5000
         toi_chinjTP01 = 250  # quick injection
         id_delays_TP01 = (np.array([2.5, 1.5]) * toi_chinjTP01).tolist()
         vpumpmodes = [123,234,341,412]
@@ -109,7 +122,9 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis, CHAMBER=None):
         tp01 = TP01.TP01(inputs=dict(elvis=elvis,
                                      CHAMBER=CHAMBER,
                                      test='TP01',
-                                     toi_tpv=TOI_TPv, toi_chinj=toi_chinjTP01,
+                                     toi_tpv=TOI_TPv, 
+                                     toi_chinj=toi_chinjTP01,
+                                     Nshuffles_V=Nshuffles_V,
                                      id_delays=id_delays_TP01,
                                      vpumpmodes=vpumpmodes,
                                      diffvalues=diffTP01))
@@ -117,9 +132,10 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis, CHAMBER=None):
 
         test_sequence['TP01'] = copy.deepcopy(tp01)
 
-    # TP02
+    # TP02   
+    
 
-    if toGen['TP02']:
+    if _toGen['TP02']:
 
         print 'TP02...'
 
@@ -142,11 +158,11 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis, CHAMBER=None):
         #structTP02 = tp02.build_scriptdict(elvis=elvis)
 
         test_sequence['TP02'] = copy.deepcopy(tp02)
-    
 
+    
      # PTC
     
-    if toGen['PTC01']:
+    if _toGen['PTC01']:
 
         print 'PTC01...'
 
@@ -168,8 +184,9 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis, CHAMBER=None):
         #structPTC01 = ptc01.build_scriptdict(diffvalues=diffPTC01,elvis=elvis)
 
         test_sequence['PTC01'] = copy.deepcopy(ptc01)
+
     
-    if toGen['MOT_FF']:
+    if _toGen['MOT_FF']:
         
         print 'MOT_FF...'
 

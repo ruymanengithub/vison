@@ -142,8 +142,10 @@ class ExpLogDisplay(tk.Toplevel):
         self.fr0.grid_rowconfigure(0, weight=1)
 
         self.update(startup=True)
+        #self.update()
 
-    def update(self, startup=False):
+
+    def update(self,startup=False):
 
         if self.updating:
 
@@ -186,6 +188,8 @@ class ExpLogDisplay(tk.Toplevel):
 
     def build_elementList(self):
         """ """
+        
+        self.elementList = []
 
         for ix in range(len(self.EXPLOG)):
             row = []

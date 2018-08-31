@@ -157,20 +157,29 @@ class VSExtractor(object):
         return catalog
 
 
-def easy_run_SEx(img, catroot, cleanafter=False):
+def easy_run_SEx(img, catroot, sexconfig=None, cleanafter=False):
 
     vSEx = VSExtractor(img=img.copy())
     vSEx.internals['params'] = ['NUMBER', 'EXT_NUMBER', 'X_IMAGE', 'Y_IMAGE',
                                 'A_IMAGE', 'B_IMAGE', 'THETA_IMAGE', 'ELONGATION', 'FWHM_IMAGE', 'MAG_AUTO']
-    vSEx.internals.update(
-        dict(MINAREA=3,
-             DET_THRESH=14.,
-             MAG_ZERPOINT=20.,
-             SATUR_LEVEL=65535.,
+    
+    MAG_ZERO = 20.
+    DET_THRESH = -2.5 * np.log10(100.) + MAG_ZERO
+    
+    configupdate = dict(MINAREA=3,
+             DET_THRESH=DET_THRESH,
+             MAG_ZERPOINT=MAG_ZERO,
+             SATUR_LEVEL=2.**16,
              SEEING_FWHM=1.2,
              PIXEL_SCALE=1.,
              GAIN=1.
              )
+    
+    if sexconfig is not None:
+        configupdate.update(sexconfig)
+    
+    vSEx.internals.update(
+        configupdate
     )
 
     SExCatFile = vSEx.run_SEx(catroot,
