@@ -106,10 +106,7 @@ def get_testdefaults_PTC0X(ogseobj=None):
                                        exptimes=dict()),
                         PTC02TEMP=dict(frames=[4, 4, 4, 4, 4, 4],
                                        exptimes=PTC02TEMP_exptimes,
-                                       wavelength=800),
-                        FLATFLUX00=dict(waves=PTC02waves,
-                                        frames=[1,1,1],
-                                        exptimes=dict()))
+                                       wavelength=800))
 
     for w in testdefaults['PTC02WAVE']['waves']:
         tFWCw = ogseobj.profile['tFWC_flat']['nm%i' % w]
