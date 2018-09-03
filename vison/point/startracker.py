@@ -166,7 +166,7 @@ class StarTracker(object):
         Xc, Yc = self.convert_Phys_2_CCD(Xp, Yp)
         return (Xc, Yc)
 
-    def get_similaritymx(scale, rotation_deg, translation):
+    def get_similaritymx(self,scale, rotation_deg, translation):
         """ 
 
         :param scale: float, scale factor.
@@ -179,30 +179,30 @@ class StarTracker(object):
                     rotation=np.radians(rotation_deg), translation=translation)
         return ss.params
 
-    def find_patt_transform(self, X, Y):
+    def find_patt_transform(self, X, Y, Full = False, debug=False):
         """ """
-        source = zip(self.Pattern['X'], self.Pattern['Y'])
-        target = zip(X, Y)
+        target = zip(self.Pattern['X'], self.Pattern['Y'])
+        source = zip(X, Y)
         
+                
         source = sort_coordinate_pairs(source)
         target = sort_coordinate_pairs(target)
         
         xs, ys = tuple(zip(*source))
         xt, yt = tuple(zip(*target))
         
-        from pylab import plot,show
-        plot(xs, ys,'ro-')
-        plot(xt, yt,'ko-')
-        show()
+        if debug:
+            from pylab import plot,show
+            plot(xs, ys,'ro-')
+            plot(xt, yt,'ko-')
+            show()
         
+        transf, (s_list, t_list) = aa.find_transform(source, target)
         
-        try:
-            transf, (s_list, t_list) = aa.find_transform(source, target)
-        except ValueError:
-            stop()
-        stop()
-        
-        return transf
+        if Full:
+            return transf, (s_list, t_list)
+        else:
+            transf
 
     def _apply_transform(self, X, Y, similaritymx):
 

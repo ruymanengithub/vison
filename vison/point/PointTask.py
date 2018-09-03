@@ -333,7 +333,7 @@ class PointTask(Task):
             self.addComplianceMatrix2Report(
                 _compliance_flu, label='COMPLIANCE FLUENCE:')
 
-    def lock_on_stars(self):
+    def lock_on_stars(self, iObs=0):
         """ """
         
         sexconfig = dict(MINAREA=3,
@@ -346,12 +346,20 @@ class PointTask(Task):
              )
         
         Qindices = copy.deepcopy(self.dd.indices)
-
         CCDs = Qindices.get_vals('CCD')
+        
+        
+        scale_lims = [0.95,1.05]
+        rot_lims = np.array([-1.,1.])*1./180.*np.pi
+        trans_lims = [-1.,1000.]
+        
+        # INITIALISATIONS
+        # PENDING
         
         strackers = self.ogse.startrackers
         
-        iObs = 0 # TODO: Use first frame to lock... this should be an input parameter
+        transfs_dict = OrderedDict()
+        
         
         for jCCD, CCDk in enumerate(CCDs):
         
@@ -363,7 +371,7 @@ class PointTask(Task):
             
             ccdobj = ccd.CCD(ffits)
             
-            img = ccdobj.extensions[-1].data.T.copy() # ??
+            img = ccdobj.extensions[-1].data.T.copy() 
             SExCatroot = 'StarFinder_%s' % CCDk
             SExCat = sex.easy_run_SEx(img, SExCatroot, 
                                       sexconfig=sexconfig,                                      
@@ -379,9 +387,28 @@ class PointTask(Task):
             X_IMAGE = SExCat['X_IMAGE'][sel].copy() - 1.
             Y_IMAGE = SExCat['Y_IMAGE'][sel].copy() - 1.
             
-            X_PHYS, Y_PHYS = self.ccdcalc.cooconv_Phys_2_CCD(X_IMAGE,Y_IMAGE)
+            X_PHYS, Y_PHYS = self.ccdcalc.cooconv_CCD_2_Phys(X_IMAGE,Y_IMAGE)
             
-            ans = strackers[CCDk].find_patt_transform(X_PHYS,Y_PHYS)
+            transf, (s_list, t_list) = strackers[CCDk].find_patt_transform(X_PHYS,Y_PHYS,
+                              Full=True)
+            scale = transf.scale
+            rotation = transf.rotation
+            translation = transf.translation
+            translation_mod = np.sqrt(np.sum(translation*translation))
+            
+            transfs_dict[CCDk] = transf
+            
+            simmx = strackers[CCDk].get_similaritymx(scale, rotation, translation)
             
             stop()
+            
+            strackers[CCDk].apply_patt_transform(simmx)
+            
+            stop()
+        
+        # CHECK COMPLIANCE of transformations against allowed changes in
+        #       scale, rotation and translation
+        
+        
+        
         
