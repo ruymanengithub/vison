@@ -21,6 +21,7 @@ import pandas as pd
 from vison.datamodel import cdp
 from vison.plot import figclasses
 from vison.plot import trends
+from vison.point import Paux
 
 # END IMPORT
 
@@ -127,3 +128,4 @@ focus_cdp = cdp.Tables_CDP()
 focus_cdp.rootname = 'FOCUS00'
 
 CDP_lib = dict(FOCUS=focus_cdp)
+CDP_lib.update(Paux.CDP_lib)

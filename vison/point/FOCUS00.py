@@ -213,6 +213,11 @@ class FOCUS00(PT.PointTask):
     def prep_data(self):
         """ """
         raise NotImplementedError
+        
+    def lock_on_stars(self):
+        """ """
+        PT.PointTask.lock_on_stars(self,iObs=0)
+        
 
     def basic_analysis(self):
         """ 

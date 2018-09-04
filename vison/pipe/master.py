@@ -367,6 +367,7 @@ class Pipe(object):
         except:
             flags = []
         execlog['flags'] = flags.__repr__()
+        
 
         return execlog
 

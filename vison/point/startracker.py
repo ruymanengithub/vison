@@ -197,7 +197,10 @@ class StarTracker(object):
             plot(xt, yt,'ko-')
             show()
         
-        transf, (s_list, t_list) = aa.find_transform(source, target)
+        try:
+            transf, (s_list, t_list) = aa.find_transform(source, target)
+        except:
+            stop()
         
         if Full:
             return transf, (s_list, t_list)

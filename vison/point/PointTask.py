@@ -14,6 +14,8 @@ from pdb import set_trace as stop
 import numpy as np
 import os
 from collections import OrderedDict
+import pandas as pd
+import string as st
 
 from vison.image import sextractor as sex
 from vison.datamodel import compliance as complimod
@@ -23,6 +25,7 @@ from vison.point import startracker as strackermod
 from vison.datamodel import core, ccd
 #from vison.pipe import lib as pilib
 from vison.support import context
+from vison.support import utils
 # END IMPORT
 
 BGD_lims = OrderedDict(CCD1=OrderedDict(E=[-5., 10.]))
@@ -333,33 +336,62 @@ class PointTask(Task):
             self.addComplianceMatrix2Report(
                 _compliance_flu, label='COMPLIANCE FLUENCE:')
 
-    def lock_on_stars(self, iObs=0):
+    def lock_on_stars(self, iObs=0, sexconfig=None):
         """ """
+                
+        devel = False # TESTS
         
-        sexconfig = dict(MINAREA=3,
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='lock', Title='Stars Locking', level=0)
+        
+        _sexconfig = dict(MINAREA=1.5,
              DET_THRESH=14.,
              MAG_ZERPOINT=20.,
              SATUR_LEVEL=65535.,
-             SEEING_FWHM=1.2,
+             SEEING_FWHM=1.,
              PIXEL_SCALE=1.,
              GAIN=1.
              )
+        
+        if sexconfig is not None:
+            _sexconfig.update(sexconfig)
+        
+        class _Transf(object):
+            rotation = 1.4*np.pi
+            scale = 2.0
+            translation = [2000.0,2000.0]
+            
         
         Qindices = copy.deepcopy(self.dd.indices)
         CCDs = Qindices.get_vals('CCD')
         
         
-        scale_lims = [0.95,1.05]
-        rot_lims = np.array([-1.,1.])*1./180.*np.pi
-        trans_lims = [-1.,1000.]
+        scale_lims = [0.95,1.05] # adim.
+        rot_lims = np.array([-1.,1.])*1./180.*np.pi # radians
+        trans_lims = [-1.,1000.] # pixels
+        maxSTDpix = 50. # pixel-rms variations in rot/scale/trans across CCDs
         
         # INITIALISATIONS
-        # PENDING
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+        
+        LOCK_TB = OrderedDict()
+        NCCDs = len(CCDs)
+        LOCK_TB['CCD'] = np.zeros(NCCDs,dtype='int32')
+        LOCK_TB['NMATCH'] = np.zeros(NCCDs,dtype='int32')
+        LOCK_TB['SCALE'] = np.zeros(NCCDs,dtype='float32')
+        LOCK_TB['ROTATION'] = np.zeros(NCCDs,dtype='float32')
+        LOCK_TB['TRANS_X'] = np.zeros(NCCDs,dtype='float32')
+        LOCK_TB['TRANS_Y'] = np.zeros(NCCDs,dtype='float32')
+        
         
         strackers = self.ogse.startrackers
         
         transfs_dict = OrderedDict()
-        
         
         for jCCD, CCDk in enumerate(CCDs):
         
@@ -369,45 +401,151 @@ class PointTask(Task):
             #vstart = self.dd.mx['vstart'][iObs][jCCD]
             #vend = self.dd.mx['vend'][iObs][jCCD]
             
-            ccdobj = ccd.CCD(ffits)
+            # DEFAULTS
+            transf = _Transf()
+            s_list = np.arange(5).tolist()
+            t_list = copy.deepcopy(s_list)
             
-            img = ccdobj.extensions[-1].data.T.copy() 
-            SExCatroot = 'StarFinder_%s' % CCDk
-            SExCat = sex.easy_run_SEx(img, SExCatroot, 
-                                      sexconfig=sexconfig,                                      
-                                      cleanafter=False)
             
-            sel = np.where((SExCat['ELONGATION']<2.) &
-                           (SExCat['A_IMAGE']<3.) &
-                           (SExCat['A_IMAGE']>0.5) &
-                           (SExCat['B_IMAGE']<3.) &
-                           (SExCat['B_IMAGE']>0.5)
-                           )
+            if not devel:
             
-            X_IMAGE = SExCat['X_IMAGE'][sel].copy() - 1.
-            Y_IMAGE = SExCat['Y_IMAGE'][sel].copy() - 1.
-            
-            X_PHYS, Y_PHYS = self.ccdcalc.cooconv_CCD_2_Phys(X_IMAGE,Y_IMAGE)
-            
-            transf, (s_list, t_list) = strackers[CCDk].find_patt_transform(X_PHYS,Y_PHYS,
-                              Full=True)
-            scale = transf.scale
-            rotation = transf.rotation
-            translation = transf.translation
-            translation_mod = np.sqrt(np.sum(translation*translation))
+                ccdobj = ccd.CCD(ffits)
+                
+                img = ccdobj.extensions[-1].data.T.copy() 
+                SExCatroot = 'StarFinder_%s' % CCDk
+                SExCat = sex.easy_run_SEx(img, SExCatroot, 
+                                          sexconfig=_sexconfig,                                      
+                                          cleanafter=True)
+                
+                sel = np.where((SExCat['ELONGATION']<5.) &
+                               (SExCat['A_IMAGE']<10.) &
+                               (SExCat['A_IMAGE']>0.25) &
+                               (SExCat['B_IMAGE']<10.) &
+                               (SExCat['B_IMAGE']>0.25)
+                               )
+                
+                if len(sel[0])> 0:
+                    X_IMAGE = SExCat['X_IMAGE'][sel].copy() - 1.
+                    Y_IMAGE = SExCat['Y_IMAGE'][sel].copy() - 1.
+                
+                    X_PHYS, Y_PHYS = self.ccdcalc.cooconv_CCD_2_Phys(X_IMAGE,Y_IMAGE)
+                
+                    try:
+                        transf, (s_list, t_list) = strackers[CCDk].find_patt_transform(X_PHYS,Y_PHYS,
+                                  Full=True, debug=True)
+                    except:
+                    
+                        if self.log is not None:
+                            self.log.info('Failed Locking Stars on %s' % CCDk)
+                else:
+                    if self.log is not None:
+                            self.log.info('Did not Find enough Stars to Lock-on on %s' % CCDk)
+                
             
             transfs_dict[CCDk] = transf
+                
+            LOCK_TB['CCD'][jCCD] = jCCD+1
+            LOCK_TB['NMATCH'][jCCD] = len(s_list)
+            LOCK_TB['SCALE'][jCCD] = transf.scale
+            LOCK_TB['ROTATION'][jCCD] = transf.rotation
+            LOCK_TB['TRANS_X'] = transf.translation[0]
+            LOCK_TB['TRANS_Y'][jCCD] = transf.translation[1]
+        
+        # REPORT LOCK_TB
+        
+        LOCK_TB_dddf =OrderedDict(LOCK_TB = pd.DataFrame.from_dict(LOCK_TB))
+        
+        meta_cdp = OrderedDict()
+        meta_cdp['scale_lims'] = scale_lims
+        meta_cdp['rot_lims'] = rot_lims 
+        meta_cdp['trans_lims'] = trans_lims
+        meta_cdp['maxSTDpix'] = maxSTDpix
+        meta_cdp.update(_sexconfig)
+        
+        lock_tb_cdp = self.CDP_lib['LOCK_TB']
+        lock_tb_cdp.rootname = lock_tb_cdp.rootname % self.inputs['test']
+        lock_tb_cdp.path = self.inputs['subpaths']['products']
+        lock_tb_cdp.ingest_inputs(
+                data = LOCK_TB_dddf.copy(),
+                meta=meta_cdp.copy(),
+                header=CDP_header.copy()
+                )
+        
+        lock_tb_cdp.init_wb_and_fillAll(header_title='%s: STARS LOCK TABLE' % \
+                self.inputs['test'])
+        self.save_CDP(lock_tb_cdp)
+        self.pack_CDP_to_dd(lock_tb_cdp, 'LOCK_TB_CDP')
+        
+        if self.report is not None:
             
-            simmx = strackers[CCDk].get_similaritymx(scale, rotation, translation)
+            fccd = lambda x: CCDs[x-1]
+            fi = lambda x: '%i' % x
+            ff = lambda x: '%.2f' % x
+            fE = lambda x: '%.2E' % x
             
-            stop()
+            cov_formatters=[fccd,fi,ff,fE,ff,ff]
             
-            strackers[CCDk].apply_patt_transform(simmx)
+            caption = '%s: Star Lock Table' % self.inputs['test']
+            nicecaption = st.replace(caption,'_','\_')
+            Ltex = lock_tb_cdp.get_textable(sheet='LOCK_TB', caption=nicecaption,
+                                               fitwidth=True,
+                                               tiny=True,
+                                               formatters=cov_formatters)
             
-            stop()
+            
+            self.report.add_Text(Ltex)        
+    
+        
+        
         
         # CHECK COMPLIANCE of transformations against allowed changes in
         #       scale, rotation and translation
+        
+        rotation_inlims = np.all((rot_lims[0] <= LOCK_TB['ROTATION']) & \
+                             (LOCK_TB['ROTATION']<= rot_lims[1]))
+        
+        rotation_ok = rotation_inlims and \
+            np.std(LOCK_TB['ROTATION'] * 4096.) < maxSTDpix
+        
+        scale_inlims = np.all((scale_lims[0] <= LOCK_TB['SCALE']) & \
+                             (LOCK_TB['SCALE']<= scale_lims[1]))
+        
+        scale_ok = scale_inlims and \
+            np.std(LOCK_TB['SCALE'] * 4096.) < maxSTDpix
+        
+        trans_mod = np.sqrt(LOCK_TB['TRANS_X']**2.+LOCK_TB['TRANS_Y']**2.)
+        
+        trans_inlims = np.all((trans_mod>=trans_lims[0]) & \
+                           (trans_mod<=trans_lims[1]))
+        
+        trans_ok = trans_inlims and \
+            np.std(trans_mod) < maxSTDpix
+        
+        all_ok = rotation_ok and scale_ok and trans_ok
+        
+        if all_ok:
+            
+            if self.report is not None:
+                self.report.add_Text('Updating Point Source Locations!')
+            if self.log is not None:
+                self.log.info('Updating Point Source Locations!')
+            
+                            
+            for jCCD, CCDk in enumerate(CCDs):
+            
+                tr = transfs_dict[CCDk]
+                
+                simmx = strackers[CCDk].get_similaritymx(tr.scale, 
+                                 tr.rotation, tr.translation)
+                
+                strackers[CCDk].apply_patt_transform(simmx)
+        
+        else:
+            # raise FLAG
+            
+            self.dd.flags.add('STARS_MISSING')
+        
+        stop()
         
         
         
