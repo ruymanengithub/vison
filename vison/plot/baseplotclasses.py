@@ -176,10 +176,8 @@ class BeamPlot(BasicPlot):
                     ccdtitles=dict(CCD1='CCD1', CCD2='CCD2', CCD3='CCD3'),
                     doLegend=False,
                     doNiceXDate=False)
-        if 'meta' in kwargs:
-            meta.update(kwargs['meta'])
+        meta.update(kwargs)
         
-
         self.figsize = (15, 6)
         self.Quads = ['E', 'F', 'H', 'G']
         self.CCDs = [1, 2, 3]
@@ -333,7 +331,7 @@ class BeamPlotYvX(BeamPlot):
         else:
             xarr = CQdict['x']
             yarr = CQdict['y']
-            ax.plot(xarr, yarr, '-', **ckwargs)
+            ax.plot(xarr, yarr, '_', **ckwargs)
             handle, label = None, None
 
         return handle, label
