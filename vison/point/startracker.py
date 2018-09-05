@@ -185,8 +185,8 @@ class StarTracker(object):
         source = zip(X, Y)
         
                 
-        #source = sort_coordinate_pairs(source)
-        #target = sort_coordinate_pairs(target)
+        source = sort_coordinate_pairs(source)
+        target = sort_coordinate_pairs(target)
         
         xs, ys = tuple(zip(*source))
         xt, yt = tuple(zip(*target))
