@@ -572,16 +572,16 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             test_sequence[itestkey] = copy.deepcopy(psf01w)
 
     if _toGen['PSFLUX00']:
-
+        
         print 'PSFLUX00...'
-
+        
         wavesPSFLUX00 = [590, 640, 730, 800, 880, 0]
-
+        
         diffPSFLUX00w = dict()
         diffPSFLUX00w.update(diffvalues)
-
+        
         for iw, wave in enumerate(wavesPSFLUX00):
-
+            
             tFWC_pointw = ogse.profile['tFWC_point']['nm%i' % wave]
             exptsPSFLUX00w = (
                 np.array([0.1, 0.3, 0.6, 0.8]) * tFWC_pointw).tolist()
