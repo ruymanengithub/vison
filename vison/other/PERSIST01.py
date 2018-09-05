@@ -39,7 +39,6 @@ PER01_commvalues = dict(program='CALCAMP', test='PERSIST01',
                         exptime=0., shuttr=1, e_shuttr=0,
                         wave=3,
                         mirr_on=1,
-                        mirr_pos=ogsemod.mirror_nom['F3'],
                         motr_on=0,
                         source='point',
                         comments='')
@@ -92,11 +91,21 @@ class PERSIST01(Task):
         """
         exptSATUR = self.inputs['exptSATUR']
         exptLATEN = self.inputs['exptLATEN']
+        wavelength = self.ogse.profile['FW']['F3']
+        mirror_pos = self.ogse.profile['mirror_nom']['F3']
 
-        PER01_sdict = dict(col1=dict(frames=5, exptime=0, shuttr=0, comments='RESET'),
-                           col2=dict(frames=3, exptime=exptLATEN, shuttr=0, comments='REFER.'),
-                           col3=dict(frames=1, exptime=exptSATUR, comments='EXPOSE'),
-                           col4=dict(frames=3, exptime=exptLATEN, shuttr=0, comments='LATENT'))
+        PER01_sdict = dict(col1=dict(frames=5, exptime=0, shuttr=0, 
+                                     wavelength=wavelength,mirror_pos=mirror_pos,
+                                     comments='RESET'),
+                           col2=dict(frames=3, exptime=exptLATEN, shuttr=0, 
+                                     wavelength=wavelength,mirror_pos=mirror_pos,
+                                     comments='REFER.'),
+                           col3=dict(frames=1, exptime=exptSATUR, 
+                                     wavelength=wavelength,mirror_pos=mirror_pos,
+                                     comments='EXPOSE'),
+                           col4=dict(frames=3, exptime=exptLATEN, shuttr=0, 
+                                     wavelength=wavelength,mirror_pos=mirror_pos,
+                                     comments='LATENT'))
 
         Ncols = len(PER01_sdict.keys())
         PER01_sdict['Ncols'] = Ncols
