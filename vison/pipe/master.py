@@ -275,6 +275,7 @@ class Pipe(object):
                 resultsroot, taskinputs['resultspath'])
             taskinputs['explogf'] = explogfs
             taskinputs['elvis'] = elvis
+            taskinputs['datapath'] = dayfolder
 
             test = self.get_test(taskname, taskinputs, log=self.log)
             taskinputs = copy.deepcopy(test.inputs)
