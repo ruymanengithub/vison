@@ -345,7 +345,7 @@ class PointTask(Task):
             self.report.add_Section(
                 keyword='lock', Title='Stars Locking', level=0)
         
-        _sexconfig = dict(MINAREA=1.5,
+        _sexconfig = dict(MINAREA=2.,
              DET_THRESH=14.,
              MAG_ZERPOINT=20.,
              SATUR_LEVEL=65535.,
@@ -415,20 +415,25 @@ class PointTask(Task):
                 SExCatroot = 'StarFinder_%s' % CCDk
                 SExCat = sex.easy_run_SEx(img, SExCatroot, 
                                           sexconfig=_sexconfig,                                      
-                                          cleanafter=True)
+                                          cleanafter=False)
                 
                 sel = np.where((SExCat['ELONGATION']<5.) &
-                               (SExCat['A_IMAGE']<10.) &
-                               (SExCat['A_IMAGE']>0.25) &
-                               (SExCat['B_IMAGE']<10.) &
-                               (SExCat['B_IMAGE']>0.25)
+                               (SExCat['A_IMAGE']<50.) &
+                               (SExCat['A_IMAGE']>0.5) &
+                               (SExCat['B_IMAGE']<50.) &
+                               (SExCat['B_IMAGE']>0.5)
                                )
                 
                 if len(sel[0])> 0:
+                    
                     X_IMAGE = SExCat['X_IMAGE'][sel].copy() - 1.
                     Y_IMAGE = SExCat['Y_IMAGE'][sel].copy() - 1.
                 
                     X_PHYS, Y_PHYS = self.ccdcalc.cooconv_CCD_2_Phys(X_IMAGE,Y_IMAGE)
+                    ixnonan = np.where(~(np.isnan(X_PHYS) | np.isnan(Y_PHYS)))
+                    X_PHYS = X_PHYS[ixnonan]
+                    Y_PHYS = Y_PHYS[ixnonan]
+                    
                 
                     try:
                         transf, (s_list, t_list) = strackers[CCDk].find_patt_transform(X_PHYS,Y_PHYS,
@@ -440,15 +445,14 @@ class PointTask(Task):
                 else:
                     if self.log is not None:
                             self.log.info('Did not Find enough Stars to Lock-on on %s' % CCDk)
-                
             
-            transfs_dict[CCDk] = transf
-                
-            LOCK_TB['CCD'][jCCD] = jCCD+1
+            transfs_dict[CCDk] = copy.deepcopy(transf)
+            stop()
+            LOCK_TB['CCD'][jCCD] = jCCD + 1
             LOCK_TB['NMATCH'][jCCD] = len(s_list)
             LOCK_TB['SCALE'][jCCD] = transf.scale
             LOCK_TB['ROTATION'][jCCD] = transf.rotation
-            LOCK_TB['TRANS_X'] = transf.translation[0]
+            LOCK_TB['TRANS_X'][jCCD] = transf.translation[0]
             LOCK_TB['TRANS_Y'][jCCD] = transf.translation[1]
         
         # REPORT LOCK_TB

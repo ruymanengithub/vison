@@ -216,7 +216,14 @@ class FOCUS00(PT.PointTask):
         
     def lock_on_stars(self):
         """ """
-        PT.PointTask.lock_on_stars(self,iObs=0)
+        mirr_pos = self.dd.mx['mirr_pos'][:,0]
+        iObs = np.where(mirr_pos == np.median(mirr_pos))[0][-1]
+        
+        PT.PointTask.lock_on_stars(self,iObs=iObs,
+                                   sexconfig=dict(
+                                           MINAREA=3.,
+                                           DET_THRESH=15.,
+                                           MAG_ZEROPOINT=20.))
         
 
     def basic_analysis(self):
