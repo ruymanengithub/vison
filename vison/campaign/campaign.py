@@ -480,10 +480,10 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         # 5 frames per fluence: 1%, 2%, 3%, 5%, 10%, 20%,30%, 50%,70%,80%,85%,90%,95%
         tFWC_flatNL01 = ogse.profile['tFWC_flat']['nm%i' % waveNL01]
-        exptsNL01 = (np.array([1., 2., 3., 5., 10., 20., 30., 50., 70., 80., 85.,
+        exptsNL01 = (np.array([0.5, 0.7, 1., 2., 3., 5., 10., 20., 30., 50., 70., 80., 85.,
                                90., 95., 100.,110.])/100. * tFWC_flatNL01).tolist()  # ms
         exptinterNL01 = 0.5 * tFWC_flatNL01
-        frsNL01 = (np.ones(len(exptsNL01), dtype='int32')*5).tolist()
+        frsNL01 = (np.ones(len(exptsNL01), dtype='int32')*4).tolist()
 
         nl01 = NL01.NL01(inputs=dict(elvis=elvis,
                                      CHAMBER=CHAMBER,
