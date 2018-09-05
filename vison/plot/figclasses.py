@@ -161,6 +161,8 @@ class Fig_XY_fromDD(Fig):
                 if isinstance(value, defaultdict):
                     utils.setInDict(data, keys_tuple[:-j], dict(value))
         data = dict(data)
+        
+        data['labelkeys'] = stats
 
         return data
 

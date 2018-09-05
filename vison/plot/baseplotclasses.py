@@ -232,7 +232,7 @@ class BeamPlot(BasicPlot):
         """ """
         
         try:
-            labelkeys = self.data['keys']
+            labelkeys = self.data['labelkeys']
         except KeyError:
             labelkeys = []
 
@@ -333,7 +333,7 @@ class BeamPlotYvX(BeamPlot):
         else:
             xarr = CQdict['x']
             yarr = CQdict['y']
-            ax.plot(xarr, yarr, '_', **ckwargs)
+            ax.plot(xarr, yarr, '-', **ckwargs)
             handle, label = None, None
 
         return handle, label
