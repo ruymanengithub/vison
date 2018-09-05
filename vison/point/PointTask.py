@@ -417,11 +417,14 @@ class PointTask(Task):
                                           sexconfig=_sexconfig,                                      
                                           cleanafter=False)
                 
-                sel = np.where((SExCat['ELONGATION']<5.) &
-                               (SExCat['A_IMAGE']<50.) &
-                               (SExCat['A_IMAGE']>0.5) &
-                               (SExCat['B_IMAGE']<50.) &
-                               (SExCat['B_IMAGE']>0.5)
+                sel = np.where((SExCat['ELONGATION']<2.) &
+                               (SExCat['A_IMAGE']<5.) &
+                               (SExCat['A_IMAGE']>0.2) &
+                               (SExCat['B_IMAGE']<5.) &
+                               (SExCat['B_IMAGE']>0.2) &
+                               (SExCat['FLUX_AUTO']>5000.) &
+                               (SExCat['ISOAREA_IMAGE']>3.) &
+                               (SExCat['ISOAREA_IMAGE']<100.)
                                )
                 
                 if len(sel[0])> 0:

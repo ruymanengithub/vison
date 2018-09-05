@@ -161,7 +161,8 @@ def easy_run_SEx(img, catroot, sexconfig=None, cleanafter=False):
 
     vSEx = VSExtractor(img=img.copy())
     vSEx.internals['params'] = ['NUMBER', 'EXT_NUMBER', 'X_IMAGE', 'Y_IMAGE',
-                                'A_IMAGE', 'B_IMAGE', 'THETA_IMAGE', 'ELONGATION', 'FWHM_IMAGE', 'MAG_AUTO']
+                  'A_IMAGE', 'B_IMAGE', 'THETA_IMAGE', 'ELONGATION', 'FWHM_IMAGE',
+                  'FLUX_AUTO', 'MAG_AUTO', 'ISOAREA_IMAGE']
     
     MAG_ZERO = 20.
     DET_THRESH = -2.5 * np.log10(100.) + MAG_ZERO
