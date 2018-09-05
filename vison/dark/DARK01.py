@@ -50,9 +50,14 @@ HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
           'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
 
 
+
 DARK01_commvalues = dict(program='CALCAMP', test='DARK01',
-                         flushes=7, shuttr=0,
-                         siflsh=1, siflsh_p=500,
+                         flushes=7,siflsh=1, siflsh_p=500,
+                         inisweep=1,
+                         vstart=0,vend=2086,
+                         shuttr=0,e_shuttr=0,
+                         wave=4,
+                         source='flat',                         
                          comments='DARK')
 
 

@@ -41,16 +41,17 @@ HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
 IG1comm = 6.
 IG2comm = 4.
 
-CHINJ02_commvalues = dict(program='CALCAMP', test='CHINJ02',
-                          IPHI1=1, IPHI2=1, IPHI3=1, IPHI4=0,
-                          rdmode='fwd_bas',
-                          flushes=7, vstart=0, vend=2086,
-                          exptime=0., shuttr=0,
-                          siflsh=1,siflsh_p=1,
-                          chinj=1, chinj_on=30,
-                          chinj_of=100,
+CHINJ02_commvalues = dict(program='CALCAMP', test='CHINJ02',                          
+                          flushes=7, siflsh=1,siflsh_p=500,
+                          inisweep=1,
+                          vstart=0, vend=2086,
+                          chinj=1, chinj_on=30, chinj_of=100,
                           id_wid=60,
-                          chin_dly=1,
+                          exptime=0., shuttr=0, e_shuttr=0,
+                          mirr_on=0,
+                          wave=4,
+                          motr_on=0,
+                          source='flat',
                           comments='')
 
 
@@ -115,9 +116,9 @@ class CHINJ02(InjTask):
         """ 
         Builds CHINJ02 script structure dictionary.
 
-        #:param IDLs: list of 2 ints, [mV], [min,max] values of IDL (Inject. Drain Low).
-        #:param IDH: int, [mV], Injection Drain High.
-        #:param id_delays: list of 2 ints, [mV], injection drain delays (2).
+        #:param IDLs: list of 2 ints, [V], [min,max] values of IDL (Inject. Drain Low).
+        #:param IDH: int, [V], Injection Drain High.
+        #:param id_delays: list of 2 ints, [us], injection drain delays.
         #:param toi_chinj: int, [us], TOI-charge injection.
         :param diffvalues: dict, opt, differential values.
 

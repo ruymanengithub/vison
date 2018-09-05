@@ -57,14 +57,14 @@ HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
           'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
 
 
-NL01_commvalues = dict(program='CALCAMP',
-                       test='NL01',
-                       IPHI1=1, IPHI2=1, IPHI3=1, IPHI4=0,
-                       rdmode='fwd_bas',
-                       flushes=7, vstart=0, vend=2086,
-                       exptime=0., shuttr=1,
-                       siflsh=1, siflsh_p=500,
-                       wave=5,
+NL01_commvalues = dict(program='CALCAMP',test='NL01',
+                       flushes=7, siflsh=1, siflsh_p=500,
+                       inisweep=1,
+                       vstart=0, vend=2086,
+                       exptime=0., shuttr=1,e_shuttr=0,
+                       mirr_on=0,
+                       wave=6,
+                       motr_on=0,
                        source='flat',
                        comments='')
 

@@ -40,21 +40,21 @@ IG1 = 6
 IG2 = 5
 
 TP00_commvalues = dict(program='CALCAMP', test='TP00',
-                       flushes=7, exptime=0., shuttr=0,
-                       e_shuttr=0, vstart=0, vend=20,
-                       siflsh=1, siflsh_p=500,
                        IDL=11, IDH=18,
                        IG1_1_T=IG1, IG1_2_T=IG1, IG1_3_T=IG1,
                        IG1_1_B=IG1, IG1_2_B=IG1, IG1_3_B=IG1,
-                       IG2_T=IG2, IG2_B=IG2,
-                       chinj=1, chinj_on=2066, chinj_of=0,
-                       chin_dly=0,
+                       IG2_T=IG2, IG2_B=IG2,                       
+                       flushes=7, siflsh=1, siflsh_p=500,
+                       inisweep=1,
+                       vstart=0, vend=20,
+                       toi_fl=143., toi_ro=1000.,
+                       chinj=1,chinj_on=2066, chinj_of=0,                       
                        id_wid=60,
-                       v_tpump=0, s_tpump=0,
-                       # v_tp_cnt=1000,
-                       dwell_v=0,
-                       # dwell_s=0,
+                       exptime=0., shuttr=0,e_shuttr=0,
+                       mirr_on=0,
+                       wave=4,
                        motr_on=0,
+                       source='flat',
                        comments='')
 
 
@@ -129,7 +129,9 @@ class TP00(PumpTask):
                     colkey = 'col%i' % colcounter
 
                     TP00_sdict[colkey] = dict(frames=1, toi_tp=toi_tp,
-                                              id_dly=id_delay, v_tpump=1, v_tpmod=vpumpmode,
+                                              id_dly=id_delay, 
+                                              s_tpump=0,
+                                              v_tpump=1, v_tpmod=vpumpmode,
                                               v_tp_cnt=Nshuffles_V,
                                               comments='V%i_%i' % (vpumpmode, toi_tp))
 
@@ -146,7 +148,10 @@ class TP00(PumpTask):
                     colkey = 'col%i' % colcounter
 
                     TP00_sdict[colkey] = dict(frames=1,
-                                              id_dly=id_delay, s_tpump=0, s_tpmod=spumpmode,
+                                              id_dly=id_delay, 
+                                              v_tpump=0,
+                                              s_tpump=1, 
+                                              s_tpmod=spumpmode,
                                               s_tp_cnt=Nshuffles_S, dwell_s=dwell_tps,
                                               comments='S%i_%i' % (spumpmode, dwell_tps))
 

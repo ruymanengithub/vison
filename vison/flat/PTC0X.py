@@ -59,15 +59,16 @@ HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
           'CCD2_OD_B', 'CCD3_OD_B', 'COMM_RD_B', 'CCD2_IG1_B', 'CCD3_IG1_B', 'CCD1_TEMP_B',
           'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
 
+
+
 PTC0X_commvalues = dict(program='CALCAMP',
-                        flushes=7,
-                        exptime=0.,
-                        vstart=0,
-                        vend=2086,
-                        shuttr=1,
-                        siflsh=1,
-                        siflsh_p=500,
+                        flushes=7,siflsh=1,siflsh_p=500,                        
+                        inisweep=1,
+                        vstart=0,vend=2086,
+                        exptime=0.,shuttr=1,e_shuttr=0,
+                        mirr_on=0,
                         wave=4,
+                        motr_on=0,
                         source='flat',
                         comments='')
 

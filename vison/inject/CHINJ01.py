@@ -43,15 +43,16 @@ HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
           'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
 
 CHINJ01_commvalues = dict(program='CALCAMP', test='CHINJ01',
-                          IPHI1=1, IPHI2=1, IPHI3=1, IPHI4=0,
-                          rdmode='fwd_bas',
-                          flushes=7, exptime=0., vstart=0, vend=2086,
-                          siflsh=1, siflsh_p=500,
-                          shuttr=0,
-                          chinj=1, chinj_on=30,
-                          chinj_of=100,
-                          id_wid=60, chin_dly=1,
-                          operator='who',
+                          flushes=7, siflsh=1, siflsh_p=500,
+                          inisweep=1,
+                          vstart=0, vend=2086,
+                          chinj=1, chinj_on=30, chinj_of=100,
+                          id_wid=60,
+                          exptime=0., shuttr=0, e_shuttr=0,
+                          mirr_on=0,
+                          wave=4,
+                          motr_on=0,
+                          source='flat',
                           comments='')
 
 
@@ -119,11 +120,11 @@ class CHINJ01(InjTask):
         """
         Builds CHINJ01 script structure dictionary.
         
-        #:param IDL: float, [mV], value of IDL (Inject. Drain Low).
-        #:param IDH: float, [mV], Injection Drain High.
-        #:param IG2: float, [mV], Injection Gate 2.
-        #:param IG1s: list of 2 floats, [mV], [min,max] values of IG1.
-        #:param id_delays: list of 2 floats, [mV], injection drain delays (2).
+        #:param IDL: float, [V], value of IDL (Inject. Drain Low).
+        #:param IDH: float, [V], Injection Drain High.
+        #:param IG2: float, [V], Injection Gate 2.
+        #:param IG1s: list of 2 floats, [V], [min,max] values of IG1.
+        #:param id_delays: list of 2 floats, [us], injection drain delays.
         #:param toi_chinj: int, [us], TOI-charge injection.
         :param diffvalues: dict, opt, differential values.
         
@@ -156,7 +157,8 @@ class CHINJ01(InjTask):
             #print colkey
             CHINJ01_sdict[colkey] = dict(frames=1, IDL=IDL, IDH=IDH,
                                          IG2_T=IG2, IG2_B=IG2,
-                                         id_dly=id_delays[0], toi_ch=toi_chinj)
+                                         id_dly=id_delays[0], 
+                                         toi_ch=toi_chinj)
            
             for CCD in CCDs:
                 for half in halves:
@@ -171,7 +173,8 @@ class CHINJ01(InjTask):
             #print colkey
             CHINJ01_sdict[colkey] = dict(frames=1, IDL=IDL, IDH=IDH,
                                          IG2_T=IG2,IG2_B=IG2,
-                                         id_dly=id_delays[1], toi_ch=toi_chinj)
+                                         id_dly=id_delays[1], 
+                                         toi_ch=toi_chinj)
 
             for CCD in CCDs:
                 for half in halves:

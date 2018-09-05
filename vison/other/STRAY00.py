@@ -47,16 +47,19 @@ HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
           'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
 
 STRAY00_commvalues = dict(program='CALCAMP', test='STRAY00',
-                          flushes=7, exptime=0., shuttr=0,
-                          e_shuttr=0, vstart=0, vend=2086,
-                          siflush=0,  # sinvflushp=500,
-                          chinj=0,
-                          s_tpump=0,
-                          v_tpump=0,
-                          motr_on=0,
-                          toi_fl=143., toi_tp=1000., toi_ro=1000., toi_ch=1000.,
-                          wave=4,
-                          comments='')
+                         flushes=7, siflsh=1, siflsh_p=500,
+                         inisweep=1,
+                         vstart=0, vend=2086,
+                         toi_fl=143., toi_tp=1000., toi_ro=1000., toi_ch=1000.,
+                         chinj=0,
+                         s_tpump=0,
+                         v_tpump=0,
+                         exptime=0., shuttr=0, e_shuttr=0,
+                         mirr_on=0,
+                         wave=4,
+                         motr_on=0,
+                         source='flat',
+                         comments='')
 
 
 class STRAY00_inputs(inputs.Inputs):

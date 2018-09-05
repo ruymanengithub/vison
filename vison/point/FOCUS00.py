@@ -76,16 +76,20 @@ dtobj_default = vistime.dtobj_default
 stampw = 25
 
 FOCUS00_commvalues = dict(program='CALCAMP', test='FOCUS_%i',
-                          IPHI1=1, IPHI2=1, IPHI3=1, IPHI4=0,
-                          rdmode='fwd_bas',
-                          flushes=7,
-                          shuttr=1,
-                          vstart=0, vend=2086,
-                          siflsh=1, siflsh_p=500,
-                          mirr_on=1,
-                          motr_on=0,
-                          source='point')
-
+                         flushes=7, siflsh=1, siflsh_p=500,
+                         inisweep=1,
+                         vstart=0, vend=2086,
+                         toi_fl=143., toi_tp=1000., toi_ro=1000., toi_ch=1000.,
+                         chinj=0,
+                         s_tpump=0,
+                         v_tpump=0,
+                         shuttr=1, e_shuttr=0,
+                         mirr_on=1,
+                         wave=4,
+                         motr_on=0,
+                         source='point',
+                         comments='')
+                         
 FWHM_lims = OrderedDict(CCD1=OrderedDict(
     E=OrderedDict(ALPHA=[0.5, 10.])))  # CCD-Q-Spot, pixels
 for Spotname in polib.Point_CooNom['names'][1:]:
@@ -176,8 +180,8 @@ class FOCUS00(PT.PointTask):
 
         FOCUS00_sdict = dict()
 
-        for i, j in enumerate(range(-3, 4, 1)):
-            FOCUS00_sdict['col%i' % (i+1,)] = dict(frames=2,
+        for i, j in enumerate(range(-4, 5, 1)):
+            FOCUS00_sdict['col%i' % (i+1,)] = dict(frames=1,
                                                    test='FOCUS00_%i' % wavelength,
                                                    exptime=exptime,
                                                    mirr_pos=mirror_nom +
