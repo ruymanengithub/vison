@@ -173,7 +173,10 @@ def easy_run_SEx(img, catroot, sexconfig=None, cleanafter=False):
              SATUR_LEVEL=2.**16,
              SEEING_FWHM=1.2,
              PIXEL_SCALE=1.,
-             GAIN=1.
+             GAIN=1.,
+             BACKPHOTO_TYPE='LOCAL',
+             BACK_SIZE=100,
+             BACK_FILTERSIZE=3
              )
     
     if sexconfig is not None:
