@@ -100,7 +100,7 @@ class Fig_Basic_Checkstat(figclasses.Fig_XY_fromDD):
         defaults.update(kwargs)
         self.stats = defaults['stats']
         self.trendaxis = defaults['trendaxis']
-
+        
         super(Fig_Basic_Checkstat, self).configure(**defaults)
 
     def plot(self, **kwargs):

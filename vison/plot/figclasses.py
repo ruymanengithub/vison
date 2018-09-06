@@ -52,9 +52,11 @@ class Fig(object):
         self.figname = os.path.join(path, self.figname)
         if 'suptitle' in defaults:
             self.suptitle = defaults['suptitle']
+        
 
     def plot(self, **kwargs):
         """ """
+        
         plotobj = self.plotclass(self.data, **kwargs)
         plotobj.render(self.figname)
 
