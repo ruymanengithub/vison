@@ -340,8 +340,8 @@ class Pipe(object):
                     if rlist:
                         ans = sys.stdin.readline().lower()
                     else:
-                        ans = 'n'
-                        print "No input. Assuming that's a 'no' and quitting."
+                        ans = 'y'
+                        print "No input. Assuming that's a 'y' and hence quitting."
                     
                     
                     if ans == 'y':
