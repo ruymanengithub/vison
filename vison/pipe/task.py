@@ -462,6 +462,7 @@ class Task(object):
             meta = kwargs['meta']
         else:
             meta = {}
+        
         figobj.plot(**meta)
         
         self.figdict[figkey][0] = copy.deepcopy(figobj)

@@ -43,6 +43,7 @@ import sys
 import traceback
 import glob
 from collections import OrderedDict
+import select
 
 from vison import __version__
 from vison.support import logger as lg
@@ -58,7 +59,7 @@ isthere = os.path.exists
 defaults = dict(BLOCKID='R00P00CC000000', CHAMBER='A_JUN18')
 
 waittime = 120  # seconds
-
+waitTO = 3600.*4. # seconds
 
 class Pipe(object):
     """Master Class of FM-analysis """
@@ -295,6 +296,7 @@ class Pipe(object):
 
         fahrtig = False
         tini = datetime.datetime.now()
+        tlastavailable = datetime.datetime.now()
 
         while not fahrtig:
 
@@ -317,14 +319,36 @@ class Pipe(object):
                             self.startobsid, explog['ObsID'][-1]]
                     self.launchtask(taskname)
                     tasksequence.pop(it)
+                    
+                    tlastavailable = datetime.datetime.now()
 
             if len(tasksequence) == 0:
                 fahrtig = True
             else:
-                sleep(waittime)
                 if self.log is not None:
                     self.log.info(
                         'Pipeline sleeping for %i seconds...' % waittime)
+                sleep(waittime)
+                justnow = datetime.datetime.now()
+                tsincelastavailable = ((justnow-tlastavailable).seconds)/60.
+                
+                if tsincelastavailable > waitTO:
+                    
+                    print " Im bored of waiting... do you want to give up? y/n"
+                    rlist, _, _ = select([sys.stdin], [], [], 60.) # 1 minute to answer
+
+                    if rlist:
+                        ans = sys.stdin.readline().lower()
+                    else:
+                        ans = 'n'
+                        print "No input. Assuming that's a 'no' and quitting."
+                    
+                    
+                    if ans == 'y':
+                        if self.log is not None:
+                            self.log.info('%.1f hours since last test was available... abandoning' % tsincelastavailable/3600.)
+                        fahrtig = True
+                    
 
         tend = datetime.datetime.now()
         Dtm = ((tend-tini).seconds)/60.
