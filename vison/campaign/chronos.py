@@ -13,6 +13,8 @@ Created on Wed Apr 25 10:26:58 2018
 from pdb import set_trace as stop
 # END IMPORT
 
+transf_overhead = 20.
+
 
 def get_dt_ro(**kwargs):
     """ """
@@ -94,6 +96,8 @@ def get_test_duration(teststruct):
             iduration += get_dt_stpump(**col)
         if col['v_tpump'] == 1:
             iduration += get_dt_vtpump(**col)
+            
+        iduration += transf_overhead
 
         iduration *= col['frames']
         #print iduration
