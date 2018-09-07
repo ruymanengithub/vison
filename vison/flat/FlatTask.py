@@ -203,7 +203,12 @@ class FlatTask(Task):
         fluences = self.dd.mx['flu_med_img'][:].copy()
         exptime = self.dd.mx['exptime'][:].copy()
         
-        fluxes = np.mean((fluences/np.expand_dims(exptime,axis=-1)),axis=0) # CRUDE!
+        ixnozero = np.where(exptime[:,0]>0)
+        
+        _f = np.squeeze(fluences[ixnozero,...])
+        _e = np.expand_dims(np.squeeze(exptime[ixnozero,...]),axis=-1)
+        
+        fluxes = np.nanmean(_f/_e,axis=0) # CRUDE!
         sat_times = 2.**16/fluxes
         sat_times = np.expand_dims(sat_times,axis=0)
         
@@ -214,6 +219,8 @@ class FlatTask(Task):
         
         _compliance_flux = self.check_stat_perCCDandQ(
                 sat_times, sat_time_lims, CCDs)
+        
+        
 
         if not self.IsComplianceMatrixOK(_compliance_flux):
             self.dd.flags.add('POORQUALDATA')

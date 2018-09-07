@@ -72,16 +72,20 @@ NL01_commvalues = dict(program='CALCAMP',test='NL01',
 plusminus10pcent = 1.+np.array([-0.10, 0.10])
 
 NL01_relfluences = np.array(
-    [1.,2.,3.,5., 10., 20., 30., 50., 70., 80., 85., 90., 95., 100., 110.])
+    [0.5, 0.7, 1.,2.,3.,5., 10., 20., 30., 50., 70., 80., 85., 90., 95., 100., 110.])
 
-FLU_lims = dict(CCD1=dict())
-for iflu, rflu in enumerate(NL01_relfluences):
-    _cenval = min(rflu / 100., 1.) * 2.**16
-    _lims = _cenval * plusminus10pcent
-    FLU_lims['CCD1']['col%i' % (iflu+1)] = _lims
+def get_Flu_lims(NL01_relfluences):
 
-for i in [2, 3]:
-    FLU_lims['CCD%i' % i] = copy.deepcopy(FLU_lims['CCD1'])
+    FLU_lims = dict(CCD1=dict())
+    for iflu, rflu in enumerate(NL01_relfluences):
+        _cenval = min(rflu / 100., 1.) * 2.**16
+        _lims = _cenval * plusminus10pcent
+        FLU_lims['CCD1']['col%i' % (iflu+1)] = _lims
+    
+    for i in [2, 3]:
+        FLU_lims['CCD%i' % i] = copy.deepcopy(FLU_lims['CCD1'])
+
+    return FLU_lims
 
 
 class NL01_inputs(inputs.Inputs):
@@ -134,7 +138,14 @@ class NL01(FlatTask):
 
     def set_perfdefaults(self, **kwargs):
         super(NL01, self).set_perfdefaults(**kwargs)
-        self.perfdefaults['FLU_lims'] = FLU_lims  # dict
+        
+        wave = self.inputs['wavelength']
+        exptimes = np.array(self.inputs['exptimes'])
+        tsatur = self.ogse.profile['tFWC_flat']['nm%i' % wave]
+        
+        NL01_relfluences = exptimes / tsatur
+        
+        self.perfdefaults['FLU_lims'] = get_Flu_lims(NL01_relfluences)  # dict
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """Builds NL01 script structure dictionary.
