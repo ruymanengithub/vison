@@ -78,6 +78,9 @@ def extract_injection_lines(ccdobj, Q, pattern, VSTART=0,
 
         icycle = max((ii+lineoffset) / npercycle, 0)
         ix_in_cycle = (ii+lineoffset) - npercycle * icycle
+                      
+        if icycle >= nrep:
+            break
 
         stack_2d[icycle, :, ix_in_cycle] = row.copy()
     

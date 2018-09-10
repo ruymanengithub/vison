@@ -219,6 +219,7 @@ class InjTask(Task):
                             extract_res = ilib.extract_injection_lines(ccdobj, 
                                             Quad, pattern, VSTART=vstart,
                                             VEND=vend, suboffmean=False)
+                            
                             istats = extract_res['stats_injection']
 
                             self.dd.mx['chk_mea_inject'][iObs, jCCD,
