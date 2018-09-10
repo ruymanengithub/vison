@@ -649,11 +649,11 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         print 'PERSIST01...'
         
-        wavePERS = 730
+        wavePERS = 800
 
         tFWC_point_PERS = ogse.profile['tFWC_point']['nm%i' % wavePERS]
 
-        exptPER01_SATUR = tFWC_point_PERS*100.   # s
+        exptPER01_SATUR = tFWC_point_PERS*500.   # s
         exptPER01_LATEN = 565.  # s
 
         diffPER01 = dict()
