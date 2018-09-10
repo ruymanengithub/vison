@@ -50,13 +50,13 @@ def convert_compl_to_nesteditemlist(complidict):
                 ]
         return nesteditemlist
 
-    tex = ['\\begingroup'] +\
+    texList = ['\\begingroup'] +\
         ['\\scriptsize'] +\
         ['\\begin{itemize}'] +\
         traverse_tree(complidict, []) +\
         ['\\end{itemize}']
 
-    return tex
+    return texList
 
 
 def removescalars_from_dict(indict):
@@ -133,8 +133,8 @@ def gen_compliance_tex(indict, escape=True, caption=''):
                               escape=escape)
         tex = ['\\tiny'] + st.split(tex, '\n') + ['\\normalsize']
     else:
-        tex = convert_compl_to_nesteditemlist(tcomplidict)
-        tex = ['\\tiny'] + st.split(tex, '\n') + ['\\normalsize']
+        texList = convert_compl_to_nesteditemlist(tcomplidict)
+        tex = ['\\tiny'] + texList + ['\\normalsize']
     
     if caption != '':
         captiontex = r'\caption{%s}\n' % caption
