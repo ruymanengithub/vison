@@ -37,7 +37,7 @@ PER01_commvalues = dict(program='CALCAMP', test='PERSIST01',
                         s_tpump=0,
                         v_tpump=0,
                         exptime=0., shuttr=1, e_shuttr=0,
-                        wave=3,
+                        wave=2,
                         mirr_on=1,
                         motr_on=0,
                         source='point',
@@ -91,27 +91,30 @@ class PERSIST01(Task):
         """
         exptSATUR = self.inputs['exptSATUR']
         exptLATEN = self.inputs['exptLATEN']
-        wavelength = self.ogse.profile['FW']['F3']
-        mirr_pos = self.ogse.profile['mirror_nom']['F3']
+        wave = 2 
+        mirr_pos = self.ogse.profile['mirror_nom']['F%i' % wave]
 
         PER01_sdict = dict(col1=dict(frames=5, exptime=0, shuttr=0, 
-                                     wavelength=wavelength,mirr_pos=mirr_pos,
+                                     wave=4,mirr_pos=self.ogse.profile['mirror_nom']['F4'],
+                                     source='flat',
                                      comments='RESET'),
                            col2=dict(frames=3, exptime=exptLATEN, shuttr=0, 
-                                     wavelength=wavelength,mirr_pos=mirr_pos,
+                                     wave=wave,mirr_pos=mirr_pos,
+                                     source='flat',
                                      comments='REFER.'),
                            col3=dict(frames=1, exptime=exptSATUR, 
-                                     wavelength=wavelength,mirr_pos=mirr_pos,
+                                     wave=wave,mirr_pos=mirr_pos,
                                      comments='EXPOSE'),
                            col4=dict(frames=3, exptime=exptLATEN, shuttr=0, 
-                                     wavelength=wavelength,mirr_pos=mirr_pos,
+                                     wave=4,mirr_pos=self.ogse.profile['mirror_nom']['F4'],
+                                     source='flat',
                                      comments='LATENT'))
 
         Ncols = len(PER01_sdict.keys())
         PER01_sdict['Ncols'] = Ncols
 
         commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
-        PER01_commvalues['mirror_pos'] = self.ogse.profile['mirror_nom']['F4']
+        PER01_commvalues['mirror_pos'] = self.ogse.profile['mirror_nom']['F%i' % wave]
         commvalues.update(PER01_commvalues)
 
         if len(diffvalues) == 0:
