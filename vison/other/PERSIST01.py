@@ -99,7 +99,7 @@ class PERSIST01(Task):
                                      source='flat',
                                      comments='RESET'),
                            col2=dict(frames=3, exptime=exptLATEN, shuttr=0, 
-                                     wave=wave,mirr_pos=mirr_pos,
+                                     wave=4,mirr_pos=self.ogse.profile['mirror_nom']['F4'],
                                      source='flat',
                                      comments='REFER.'),
                            col3=dict(frames=1, exptime=exptSATUR, 
