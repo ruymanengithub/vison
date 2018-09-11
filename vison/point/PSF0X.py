@@ -92,7 +92,7 @@ def get_testdefaults(ogseobj=None):
     if ogseobj is None:
         ogseobj = ogsemod.Ogse()
 
-    testdefaults = dict(waves=[590, 640, 730, 800, 880, 0],
+    testdefaults = dict(waves=[590, 730, 800, 880, 0],
                         exptimes=dict(),
                         frames=[20, 15, 10, 4, 4])
 

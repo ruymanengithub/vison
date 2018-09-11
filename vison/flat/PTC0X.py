@@ -89,8 +89,8 @@ def get_testdefaults_PTC0X(ogseobj=None):
 
     PTC01_exptimes = (PTC01_relfluences / 100. *
                       tFWC800).tolist()  # ms
-    PTC02waves = [590, 640, 730, 800, 880, 0]
-    FLATFLUX00waves = [590, 640, 730, 800, 880, 0]
+    PTC02waves = [590, 730, 800, 880, 0]
+    FLATFLUX00waves = [590, 730, 800, 880, 0]
 
     PTC02TEMP_exptimes = (PTC02_relfluences / 100. *
                           tFWC800).tolist()

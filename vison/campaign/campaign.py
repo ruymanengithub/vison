@@ -225,7 +225,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
     # FLATS
 
     exptimes_FLAT0X = dict(nm590=ogse.profile['tFWC_flat']['nm590'],
-                           nm640=ogse.profile['tFWC_flat']['nm640'],
+                           nm2000=ogse.profile['tFWC_flat']['nm2000'],
                            nm730=ogse.profile['tFWC_flat']['nm730'],
                            nm800=ogse.profile['tFWC_flat']['nm800'],
                            nm880=ogse.profile['tFWC_flat']['nm880'],
