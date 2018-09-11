@@ -89,9 +89,12 @@ class ExpLogDisplay(tk.Toplevel):
         self.tree = None
         #self.NObsID = 0
         #self.Nentries = 0
-        self.updating = True
+        #self.updating = True
 
         tk.Toplevel.__init__(self, parent)
+        
+        self.updating = tk.BooleanVar()
+        self.updating.set(True)
 
         # self.minsize(width=850,height=500)
 
@@ -126,6 +129,13 @@ class ExpLogDisplay(tk.Toplevel):
                                                   font=medium_font, bd=2, relief='groove')
         self.labels['NEntries']['app'].grid(
             row=0, column=1, in_=self.fr1, sticky='w')
+        
+        
+        pause_check = tk.Checkbutton(self,text='PAUSED',variable=self.updating,
+                                     onvalue=False,offvalue=True,height=5,
+                                     width=20,command=self.print_paused)
+        
+        pause_check.grid(column=0, row=1, sticky='w', padx=0, in_=self.fr1)
 
         self.fr1.grid_columnconfigure(0, weight=1)
         self.fr1.grid_rowconfigure(0, weight=1)
@@ -143,11 +153,15 @@ class ExpLogDisplay(tk.Toplevel):
 
         self.update(startup=True)
         #self.update()
-
+        
+    def print_paused(self):
+        print 'self.updating is %s' % self.updating.get()
 
     def update(self,startup=False):
+        
 
-        if self.updating:
+        if self.updating.get():
+            
 
             self.search_EXPLOGs()
             theresnewdata = self.get_data()
