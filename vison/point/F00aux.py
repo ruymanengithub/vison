@@ -45,7 +45,7 @@ def gt_check_std_dict(wave):
                 meta=dict(doLegend=True,
                           doNiceXDate=True,
                           suptitle='FOCUS00\_%i-checks: std' % wave,
-                          trends.RON_lims))
+                          ylim=trends.RON_lims))
 
 
 def gt_check_bgd_dict(wave):
