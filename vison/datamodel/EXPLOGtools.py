@@ -5,7 +5,7 @@ from pdb import set_trace as stop
 
 
 from astropy.io import ascii
-from astropy.table import Table, Column
+from astropy.table import Table, Column, vstack
 import os
 import copy
 import numpy as np
@@ -215,20 +215,26 @@ def mergeExpLogs(explogList, addpedigree=False, verbose=False):
             print 'merging explog %i/%i...' % (iexp+1, nexplogs)
 
         # Check format compatibility of columns
-
+        
+        
         for ic, colname in enumerate(colnames):
 
             if iexplog[colname].dtype.kind == 'S' and not explog[colname].dtype.kind == 'S':
                 explog[colname] = explog[colname].astype(str)
+            if iexplog[colname].dtype.kind == 'S':
+                Smax = max([int(str(iexplog[colname].dtype)[2:]),
+                            int(str(explog[colname].dtype)[2:])])
+                explog[colname] = explog[colname].astype('S%i' % Smax)
 
         if addpedigree:
             iexplog['explognumber'] = np.ones(
                 len(iexplog), dtype='int32') * iexp
+                    
+        explog = vstack([explog,iexplog])
 
         # Row-by-Row appending of the "iexp" added catalog
-
-        for iL in range(len(iexplog)):
-            explog.add_row(iexplog[iL].as_void().tolist())
+        #for iL in range(len(iexplog)):
+        #    explog.add_row(iexplog[iL].as_void().tolist())
 
     return explog
 
