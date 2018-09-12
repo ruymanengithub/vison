@@ -32,7 +32,8 @@ def gt_check_offsets_dict(test):
                 caption='%s: offset vs. time.' % (ntest,),
                 meta=dict(doLegend=True,
                           doNiceXDate=True,
-                          suptitle='%s-checks: offsets' % ntest))
+                          suptitle='%s-checks: offsets' % ntest),
+                          ylim=trends.offset_lims)
 
 
 def gt_check_std_dict(test):
@@ -43,7 +44,8 @@ def gt_check_std_dict(test):
                 caption='%s: std vs. time.' % ntest,
                 meta=dict(doLegend=True,
                           doNiceXDate=True,
-                          suptitle='%s-checks: std' % ntest))
+                          suptitle='%s-checks: std' % ntest,
+                          ylim=trends.RON_lims))
 
 
 def gt_check_img_flu_dict(test):

@@ -20,6 +20,8 @@ from vison.plot import baseplotclasses
 from vison.datamodel.core import vColumn
 # END IMPORT
 
+offset_lims = [1000.,4000.] # ADUs
+RON_lims = [0.,5.] # ADUs
 
 class Fig_Basic_Checkstat(figclasses.Fig_XY_fromDD):
 

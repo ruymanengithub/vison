@@ -33,7 +33,8 @@ def gt_check_offsets_dict(wave):
                 caption='FOCUS00\_%i: offset vs. time.' % wave,
                 meta=dict(doLegend=True,
                           doNiceXDate=True,
-                          suptitle='FOCUS01\_%i-checks: offsets' % wave))
+                          suptitle='FOCUS01\_%i-checks: offsets' % wave,
+                          ylim=trends.offset_lims))
 
 
 def gt_check_std_dict(wave):
@@ -43,7 +44,8 @@ def gt_check_std_dict(wave):
                 caption='FOCUS00\_%i: std vs. time.' % wave,
                 meta=dict(doLegend=True,
                           doNiceXDate=True,
-                          suptitle='FOCUS00\_%i-checks: std' % wave))
+                          suptitle='FOCUS00\_%i-checks: std' % wave,
+                          trends.RON_lims))
 
 
 def gt_check_bgd_dict(wave):

@@ -29,7 +29,8 @@ check_offsets_dict = dict(stats=['offset_pre', 'offset_ove'],
                           caption='TP02: offset vs. time.',
                           meta=dict(doLegend=True,
                                     doNiceXDate=True,
-                                    suptitle='TP02-checks: offsets'))
+                                    suptitle='TP02-checks: offsets',
+                                    ylim=trends.offset_lims))
 
 check_std_dict = dict(stats=['std_pre', 'std_ove'],
                       trendaxis='time',
@@ -37,7 +38,8 @@ check_std_dict = dict(stats=['std_pre', 'std_ove'],
                       caption='TP02: std vs. time.',
                       meta=dict(doLegend=True,
                                 doNiceXDate=True,
-                                suptitle='TP02-checks: std'))
+                                suptitle='TP02-checks: std',
+                                ylim=trends.RON_lims))
 
 check_injlevel_dict = dict(stats=['chk_mea_inject', 'chk_med_inject'],
                            trendaxis='time',

@@ -32,7 +32,8 @@ check_offsets_dict = dict(stats=['offset_pre', 'offset_img', 'offset_ove'],
                           caption='BIAS01: offset vs. time.',
                           meta=dict(doLegend=True,
                                     doNiceXDate=True,
-                                    suptitle='BIAS01-checks: offsets'))
+                                    suptitle='BIAS01-checks: offsets',
+                                    ylim=trends.offset_lims))
 
 check_std_dict = dict(stats=['std_pre', 'std_img', 'std_ove'],
                       trendaxis='time',
@@ -40,7 +41,8 @@ check_std_dict = dict(stats=['std_pre', 'std_img', 'std_ove'],
                       caption='BIAS01: std vs. time.',
                       meta=dict(doLegend=True,
                                 doNiceXDate=True,
-                                suptitle='BIAS01-checks: std')
+                                suptitle='BIAS01-checks: std',
+                                ylim=trends.RON_lims)
                       )
 
 basic_prof1Dhor_dict = dict(

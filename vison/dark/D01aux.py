@@ -29,7 +29,8 @@ check_offsets_dict = dict(stats=['offset_pre', 'offset_ove'],
                           caption='DARK01: offset vs. time.',
                           meta=dict(doLegend=True,
                                     doNiceXDate=True,
-                                    suptitle='DARK01-checks: offsets'))
+                                    suptitle='DARK01-checks: offsets',
+                                    ylim=trends.offset_lims))
 
 check_std_dict = dict(stats=['std_pre', 'std_ove'],
                       trendaxis='time',
@@ -37,7 +38,8 @@ check_std_dict = dict(stats=['std_pre', 'std_ove'],
                       caption='DARK01: std vs. time.',
                       meta=dict(doLegend=True,
                                 doNiceXDate=True,
-                                suptitle='DARK01-checks: std')
+                                suptitle='DARK01-checks: std',
+                                ylim=trends.RON_lims)
                       )
 
 check_flu_dict = dict(stats=['chk_flu_img'],
