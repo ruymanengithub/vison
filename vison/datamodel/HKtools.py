@@ -317,9 +317,10 @@ def loadHK_preQM(filename, elvis='5.7.07'):
     :return: dictionary with pairs parameter:[values]
 
     """
-    f = open(filename)
-    lines = f.readlines()
-    f.close()
+    
+    with open(filename) as f:
+        lines = f.readlines()
+        f.close()
 
     data = {}
 
@@ -345,7 +346,13 @@ def loadHK_QFMsingle(filename, elvis=context.elvis, validate=False):
     :return: astropy table with pairs parameter:[values]
 
     """
-    table = ascii.read(filename)
+    
+    with open(filename) as f:
+        lines = f.readlines()
+        f.close()
+        table = ascii.read(lines)
+        
+    
     if validate:
         expectedkeys = allHK_keys[elvis]
         assert table.keys() == expectedkeys, \
