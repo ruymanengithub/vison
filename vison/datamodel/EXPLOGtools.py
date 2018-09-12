@@ -12,6 +12,7 @@ import numpy as np
 from vison.support import vistime
 #from vison.pipe import lib as pilib
 from vison.support import context
+import datetime
 
 # END IMPORT
 
@@ -181,11 +182,16 @@ def iniExplog(elvis):
 def loadExpLog(expfile, elvis=context.elvis):
     """Loads an Exposure Log from file."""
     
+    #t0 = datetime.datetime.now()
     with open(expfile) as f:
         lines = f.readlines()
         f.close()
+        #t1 = datetime.datetime.now()
         explog = ascii.read(lines, data_start=1, delimiter='\t', guess=False,
                         names=columnlist[elvis], format='no_header')
+        #t2 = datetime.datetime.now()
+    #print '%.2f ms in reading lines of %s' % ((t1-t0).microseconds/1.E3,expfile)
+    #print '%.2f ms in doing ascii.read on lines of %s' % ((t2-t1).microseconds/1.e3,expfile)
     
     return explog
 
