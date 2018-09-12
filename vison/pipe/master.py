@@ -312,9 +312,12 @@ class Pipe(object):
             #t2 = datetime.datetime.now()
             #print '%.1f seconds in loading explogs...' % (t2-t1).seconds
             
+            
+                                                          
             if self.startobsid > 0:
                 ixstart = np.where(explog['ObsID'] == self.startobsid)[0][0]
                 explog = explog[ixstart:].copy()
+            
 
             for it, taskitem in enumerate(tasksequence):
 
