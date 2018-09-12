@@ -185,15 +185,21 @@ class Pipe(object):
         if self.log is not None:
             self.log.info(msg)
         
+        print 'Running: %s' % taskname
         
         taskreport = self.dotask(taskname, taskinputs,
                                  drill=self.drill, debug=self.debug)
-
+        
+        timemsg = '%.1f minutes in running Task: %s' %\
+                          (taskreport['exectime'], taskname)
+        errormsg = 'Task %s exited with Errors: %s' %\
+                          (taskname, taskreport['Errors'])
+        print timemsg
+        print errormsg
+        
         if self.log is not None:
-            self.log.info('%.1f minutes in running Task: %s' %
-                          (taskreport['exectime'], taskname))
-            self.log.info('Task %s exited with Errors: %s' %
-                          (taskname, taskreport['Errors']))
+            self.log.info(timemsg)
+            self.log.info(errormsg)
 
         self.completion[taskname] = copy.deepcopy(taskreport)
 
@@ -251,10 +257,6 @@ class Pipe(object):
     def wait_and_run(self, dayfolder, elvis=context.elvis):
         """ """
 
-        tmpEL = os.path.join(dayfolder, 'EXP_LOG_*.txt')
-        explogfs = glob.glob(tmpEL)
-        explogfs = pilib.sortbydateexplogfs(explogfs)
-
         tasknames = self.tasks
         resultsroot = self.inputs['resultsroot']
         if not os.path.exists(resultsroot):
@@ -266,6 +268,7 @@ class Pipe(object):
         # Learn how many ObsIDs will generate each task
 
         tasksequence = []
+        
 
         for taskname in tasknames:
 
@@ -274,7 +277,6 @@ class Pipe(object):
             testkey = taskinputs['test']
             taskinputs['resultspath'] = os.path.join(
                 resultsroot, taskinputs['resultspath'])
-            taskinputs['explogf'] = explogfs
             taskinputs['elvis'] = elvis
             taskinputs['datapath'] = dayfolder
 
@@ -299,9 +301,17 @@ class Pipe(object):
         tlastavailable = datetime.datetime.now()
 
         while not fahrtig:
-
+            
+            tmpEL = os.path.join(dayfolder, 'EXP_LOG_*.txt')
+            explogfs = glob.glob(tmpEL)
+            explogfs = pilib.sortbydateexplogfs(explogfs)
+            
+            
+            #t1 = datetime.datetime.now()
             explog = pilib.loadexplogs(explogfs, elvis)
-
+            #t2 = datetime.datetime.now()
+            #print '%.1f seconds in loading explogs...' % (t2-t1).seconds
+            
             if self.startobsid > 0:
                 ixstart = np.where(explog['ObsID'] == self.startobsid)[0][0]
                 explog = explog[ixstart:].copy()
@@ -311,9 +321,11 @@ class Pipe(object):
                 taskname, testkey, Nframes = taskitem
                 available = pilib.coarsefindTestinExpLog(
                     explog, testkey, Nframes)
+                
 
                 if available:
                     # print '%s available, doing nothing!' % taskname # TESTS
+                    self.inputs[taskname]['explogf'] = explogfs
                     if self.startobsid > 0:
                         self.inputs[taskname]['OBSID_lims'] = [
                             self.startobsid, explog['ObsID'][-1]]
