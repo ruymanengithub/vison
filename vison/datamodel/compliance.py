@@ -137,7 +137,7 @@ def gen_compliance_tex(indict, escape=True, caption=''):
         tex = ['\\tiny'] + texList + ['\\normalsize']
     
     if caption != '':
-        captiontex = r'\caption{%s}\n' % caption
+        captiontex = r'\caption{%s}' % caption
         tex.insert(-2,captiontex)
     
     pd.reset_option('display.max_colwidth')

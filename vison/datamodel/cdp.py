@@ -19,6 +19,7 @@ from collections import OrderedDict
 import copy
 import os
 import string as st
+import numpy as np
 
 from vison import __version__
 from vison.support.files import cPickleDumpDictionary, cPickleRead
@@ -155,10 +156,12 @@ class Tables_CDP(CDP):
         if tiny:
             tex = ['\\tiny','\center']+tex+['\\normalsize']
         
-        tex = ['\\begin{table}[!htb]','\center']+tex+['\end{table}']
+        #tex = ['\\begin{table}[!htb]','\center']+tex+['\end{table}']
         
         if caption != '':
-            tex.insert(-2, r'\caption{%s}' % caption)
+            ixendlongtabu = np.where(['\end{longtabu}' in item for item in tex])
+            tex.insert(ixendlongtabu[0][-1], r'\caption{%s}' % caption)
+            
         return tex
 
 
