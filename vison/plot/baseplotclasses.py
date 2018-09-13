@@ -301,9 +301,10 @@ class BeamPlot(BasicPlot):
             self.fig.autofmt_xdate()
             # plt.locator_params(nticks=4,axis='x',prune='both')
 
-        plt.locator_params(axis='y', nticks=7, prune='both')
+        plt.locator_params(axis='y', nbins=5, prune='both')
+        #plt.locator_params(axis='y',prune='both')
         if not self.meta['doNiceXDate']:
-            plt.locator_params(axis='x', nticks=4, prune='both')
+            plt.locator_params(axis='x', nbins=3, prune='both')
 
         plt.subplots_adjust(hspace=0.0)
         plt.subplots_adjust(wspace=0.0)
