@@ -310,7 +310,7 @@ class NL01(FlatTask):
                 for jCCD, CCDk in enumerate(CCDs):
 
                     ccdobj_f = os.path.join(
-                        dpath, self.dd.mx['ccdobj_name'][iObs, jCCD])
+                        dpath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs, jCCD])
 
                     ccdobj = copy.deepcopy(files.cPickleRead(ccdobj_f))
 
@@ -320,9 +320,9 @@ class NL01(FlatTask):
 
                         _tile_coos = tile_coos[Quad]
 
-                        _meds = ccdobj.get_tile_stats(
+                        _meds = ccdobj.get_tiles_stats(
                             Quad, _tile_coos, 'median', extension=-1)
-                        _vars = ccdobj.get_tile_stats(
+                        _vars = ccdobj.get_tiles_stats(
                             Quad, _tile_coos, 'std', extension=-1)**2.
 
                         self.dd.mx['sec_med'][iObs, jCCD, kQ, :] = _meds.copy()
