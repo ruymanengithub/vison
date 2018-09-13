@@ -312,7 +312,6 @@ class Pipe(object):
             #t2 = datetime.datetime.now()
             #print '%.1f seconds in loading explogs...' % (t2-t1).seconds
             
-            
                                                           
             if self.startobsid > 0:
                 ixstart = np.where(explog['ObsID'] == self.startobsid)[0][0]
@@ -382,7 +381,6 @@ class Pipe(object):
         Errors = False
 
         try:
-            
             test = self.get_test(taskname, inputs, self.log, drill, debug)
             test()  # test execution
         except:
