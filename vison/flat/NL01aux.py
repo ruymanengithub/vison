@@ -75,7 +75,8 @@ NL_curves_dict = dict(
     meta=dict(doLegend=True,
               ylabel='Z',
               xlabel='YNL',
-              suptitle='NL01: Non-Linearity Curves.')
+              suptitle='NL01: Non-Linearity Curves.',
+              ylim=[-10.,10.])
     )
 
 NL01figs = dict()

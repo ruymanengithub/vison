@@ -355,8 +355,9 @@ class NL01(FlatTask):
                 keyword='NL', Title='Non-Linearity Analysis', level=0)
 
         dIndices = copy.deepcopy(self.dd.indices)
-        CCDs = dIndices.get_vals('CCDs')
-        Quads = dIndices.get_vals('Quads')
+        
+        CCDs = dIndices.get_vals('CCD')
+        Quads = dIndices.get_vals('Quad')
         
         nC = len(CCDs)
         nQ = len(Quads)        
@@ -417,20 +418,21 @@ class NL01(FlatTask):
                 kk = iCCD * nQ + jQ
 
                 raw_med = self.dd.mx['sec_med'][:, iCCD, jQ, :].copy()
+                raw_var = self.dd.mx['sec_var'][:,iCCD,jQ, :].copy()
                 col_labels = self.dd.mx['label'][:, iCCD].copy()
                 exptimes = self.dd.mx['exptime'][:, iCCD].copy()
                 dtobjs = self.dd.mx['time'][:, iCCD].copy()
                 
                 # fitresults = OrderedDict(coeffs, NLdeg, maxNLpc,flu_maxNLpc, bgd)
-                _fitresults = nllib.wrap_fitNL(raw_med, exptimes, col_labels, dtobjs, TrackFlux=True,
+                _fitresults = nllib.wrap_fitNL(raw_med, raw_var, exptimes, col_labels, dtobjs, TrackFlux=True,
                                                subBgd=True)
                 
                 NLall_mx[CCDkey][Quad].update(_fitresults)
                 
                 NL_TB['CCD'][kk] = iCCD+1
                 NL_TB['Q'][kk] = jQ+1
-                NL_TB['MAXNLPC'] = _fitresults['maxNLpc']
-                NL_TB['FLU_MAXNLPC'] = _fitresults['flu_maxNLpc']
+                NL_TB['MAXNLPC'][kk] = _fitresults['maxNLpc']
+                NL_TB['FLU_MAXNLPC'][kk] = _fitresults['flu_maxNLpc']
                 
                 curves_cdp.data[CCDkey][Q]['x']['data'] = _fitresults['inputcurve']['YL'].copy()
                 curves_cdp.data[CCDkey][Q]['y']['data'] = _fitresults['inputcurve']['Z'].copy()
@@ -474,16 +476,12 @@ class NL01(FlatTask):
             self.report.add_Text(Ntex)        
 
         # Do plots
-        
-        
 
         fdict_NL = self.figdict['NL01_fit_curves'][1]
         fdict_NL['data'] = curves_cdp.data.copy()
         if self.report is not None:
             self.addFigures_ST(figkeys=['NL01_fit_curves'], 
                                dobuilddata=False)
-        
-        
         
         
 
