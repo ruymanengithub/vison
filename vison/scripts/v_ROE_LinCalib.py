@@ -22,12 +22,13 @@ from collections import OrderedDict
 import sys
 import datetime
 
-import NL_lib
+from vison.roe_fft import NL_lib
 from vison.datamodel.ccd import CCD as CCDClass
 from vison.support.files import cPickleDumpDictionary, cPickleRead
 from vison.support import vjson
 from vison.support.excel import ReportXL
 
+from pylab import plot,show
 from matplotlib import pyplot as plt
 
 # END IMPORT
@@ -63,7 +64,7 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
     """ """
 
     run_ttag = (datetime.datetime.now()).strftime('%d%b%y_%H%M%S')
-    degROE = 9
+    degROE = 7
 
     inputs = vjson.load_jsonfile(inputsfile)['inputs']
     Date = inputs['Date']
@@ -113,8 +114,8 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
     reportdict['ROE_NONLIN_pol'] = []
 
     reportdict['ROE_NONLIN'] = OrderedDict()
-    reportdict['ROE_NONLIN']['MaxNL'] = []
-    reportdict['ROE_NONLIN']['MaxNL_ADU'] = []
+    reportdict['ROE_NONLIN']['MaxNL_pc'] = []
+    reportdict['ROE_NONLIN']['MaxNL_V'] = []
 
     # Main Loop
 
@@ -125,8 +126,9 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
         Q = CHAN[1]
 
         ixRT = injCHANs.index(CHAN)
+        
 
-        RT_pol_V2DN = InjectorCal['RT_pol_V2DN'][ixRT]
+        RT_pol_DN2V = InjectorCal['RT_ADU_2_V'][ixRT]
 
         # EXTRACTING LEVELS FROM IMAGE (ADUs)
 
@@ -144,43 +146,39 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
         else:
 
             adu_levels = cPickleRead(adus_pickf)[CHAN]
+            
+        #Vfitlevels = NL_lib.f_pol_byorigin(RTlevels, *RT_pol_V2DN)
+        
+        Vfitlevels = np.polyval(RT_pol_DN2V,RTlevels)
 
         # NON-LINEARITY OF ROE
 
-        ixgood = np.where(adu_levels < 2.**16-2.)
+        ixgood = np.where((adu_levels < 2.**16-1.) & (Vfitlevels>0.))
 
-        adu_levels -= adu_levels[0]  # BIAS subtraction
-
-        Vfitlevels = NL_lib.f_pol_byorigin(RTlevels, *RT_pol_V2DN)
-
+        #adu_levels -= adu_levels[0]  # BIAS subtraction
+        
         reportdict['data']['RT_V'].append(Vfitlevels)
         reportdict['data']['ADU'].append(adu_levels)
 
-        R_pol_NL = NL_lib.find_NL_pol(Vfitlevels[ixgood], adu_levels[ixgood],
-                                      deg=degROE)
-
-        R_pol_LIN = NL_lib.fit_pol_byorigin(Vfitlevels[ixgood], adu_levels[ixgood],
-                                            deg=1)
-
-        R_data_LIN = NL_lib.f_pol_byorigin(Vfitlevels, *R_pol_LIN)
-
-        R_data_NL = (adu_levels - R_data_LIN)/R_data_LIN * 100.
-
-        xR = np.linspace(Vfitlevels[0], Vfitlevels[-1], 1000)
-
-        R_bestfit_NL = NL_lib.f_pol_byorigin(xR, *R_pol_NL) * 100.
+        R_pol_NL, R_data_NL = NL_lib.find_NL_pol(Vfitlevels[ixgood], adu_levels[ixgood],
+                                      deg=degROE,Full=True, debug=False)
+        
+        xR = np.linspace(Vfitlevels[1], Vfitlevels[-1], 1000)
+        
+        R_bestfit_NL = np.polyval(R_pol_NL,xR) * 100.
 
         reportdict['ROE_NONLIN_pol'].append(R_pol_NL)
 
-        ixmaxNL = np.argmax(R_bestfit_NL)
+        ixmaxNL = np.argmax(np.abs(R_bestfit_NL))
         MaxNL = R_bestfit_NL[ixmaxNL]
-        MaxNL_ADU = xR[ixmaxNL]
+        MaxNL_V = xR[ixmaxNL]
 
-        reportdict['ROE_NONLIN']['MaxNL'].append(MaxNL)
-        reportdict['ROE_NONLIN']['MaxNL_ADU'].append(MaxNL_ADU)
+        reportdict['ROE_NONLIN']['MaxNL_pc'].append(MaxNL)
+        reportdict['ROE_NONLIN']['MaxNL_V'].append(MaxNL_V)
+
 
         pldatasetRNL = dict(
-            data=dict(x=Vfitlevels, y=R_data_NL, marker='o', color='k'),
+            data=dict(x=Vfitlevels[ixgood], y=R_data_NL, marker='o', color='k'),
             bestfit=dict(x=xR, y=R_bestfit_NL, ls='--', color='r')
         )
 
@@ -189,9 +187,11 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
 
         NL_lib.myplot_NL(pldatasetRNL, xlabel='V', ylabel='NL[pc]', ylim=[-10., 10.],
                          title='ROE NonLin. CHAN=%s' % CHAN,
-                         figname=figs[CHAN])
+                         figname='') #figs[CHAN])# TESTS
 
     reportdict['figs'] = figs
+              
+    stop()
 
     report = ReportXL_ROENL(reportdict)
 

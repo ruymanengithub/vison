@@ -40,6 +40,7 @@ def configuration():
     config.add_subpackage('vison/plot')
     config.add_subpackage('vison/point')
     config.add_subpackage('vison/pump')
+    config.add_subpackage('vison/roe_fft')
     config.add_subpackage('vison/sandbox')
     config.add_subpackage('vison/scripts')
     config.add_subpackage('vison/support')

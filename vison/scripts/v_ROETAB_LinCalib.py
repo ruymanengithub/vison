@@ -5,6 +5,7 @@
 Linearity Calibration of ROE-TAB.
 
 Created on Tue Mar 27 14:42:00 2018
+Modified on Fri Sep 14 10:53:00 2018
 
 :author: Ruyman Azzollini
 :contact: r.azzollini_at_ucl.ac.uk
@@ -12,9 +13,9 @@ Created on Tue Mar 27 14:42:00 2018
 """
 
 # IMPORT STUFF
+from pdb import set_trace as stop
 from itertools import islice
 import numpy as np
-from pdb import set_trace as stop
 from astropy.io import ascii
 from scipy import ndimage, stats
 from sklearn.cluster import KMeans
@@ -26,10 +27,11 @@ from collections import OrderedDict
 import pandas
 import datetime
 
+from pylab import plot,show
 from matplotlib import pyplot as plt
 
-import NL_lib
-import Wave_bayes as WaveBay
+from vison.roe_fft import NL_lib
+from vison.roe_fft import Wave_bayes as WaveBay
 from vison.datamodel.ccd import CCD as CCDClass
 from vison.support.files import cPickleDumpDictionary, cPickleRead
 from vison.support import vjson
@@ -68,7 +70,7 @@ def plot_waveform(WF, disc_voltages=[], figname='', chan='Unknown'):
     ax.plot(timex, Vy)
 
     for idislev in disc_voltages:
-        ax.axhline(y=idislev, ls='--', color='r')
+        ax.axhline(y=idislev, ls='--', c='r')
 
     ax.set_xlabel('time [s]')
     ax.set_ylabel('Voltage')
@@ -87,7 +89,7 @@ def filter_Voltage(rV, filt_kernel):
     return fV
 
 
-def find_discrete_voltages_inwaveform(rV, levels, filtered=None):
+def find_discrete_voltages_inwaveform(rV, levels, filtered=None, debug=False):
     """ """
 
     if filtered is not None:
@@ -114,6 +116,12 @@ def find_discrete_voltages_inwaveform(rV, levels, filtered=None):
     #discrete_levels = kmeans.cluster_centers_.flatten()
 
     sorted_levels = np.sort(discrete_levels)
+    
+    if debug:
+        fktimex = np.arange(len(filtered))
+        Wf = (fktimex[0:5000],filtered[0:5000])
+        plot_waveform(Wf, disc_voltages=sorted_levels, 
+                      figname='', chan='Unknown')
 
     return sorted_levels
 
@@ -209,7 +217,7 @@ class ReportXL_RTLIN(ReportXL):
         indict['CHANNEL'] = CHANNELS
 
         for jCHAN, CHAN in enumerate(CHANNELS):
-            indict['MaxNL'] = RT_NONLIN['MaxNL'][jCHAN]
+            indict['MaxNL_pc'] = RT_NONLIN['MaxNL_pc'][jCHAN]
             indict['MaxNL_DN'] = RT_NONLIN['MaxNL_DN'][jCHAN]
 
         df = pandas.DataFrame.from_dict(indict)
@@ -245,9 +253,9 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
     RTlevels = np.array(inputs['RTlevels'])
     Injector = inputs['Injector']
     Date = inputs['Date']
-
-    outexcelfile = os.path.join(
-        respath, 'ROETAB_NLCAL_%s_%s.xlsx' % (Injector, Date))
+    outfileroot = 'ROETAB_NLCAL_%s_%s' % (Injector, Date)
+    outexcelfile = os.path.join(respath, '%s.xlsx' % outfileroot)
+    outpickfile = os.path.join(respath, '%s.pick' % outfileroot)
 
     pixT0 = 14.245E-6  # s
     pixTx0 = int(np.round(pixT0 / SampInter))
@@ -292,7 +300,7 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
     reportdict['RT_NONLIN_pol'] = []
 
     reportdict['RT_NONLIN'] = OrderedDict()
-    reportdict['RT_NONLIN']['MaxNL'] = []
+    reportdict['RT_NONLIN']['MaxNL_pc'] = []
     reportdict['RT_NONLIN']['MaxNL_DN'] = []
 
     for ix, CHAN in enumerate(CHANNELS):
@@ -305,8 +313,9 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
 
         # EXTRACTING INJECTED VOLTAGE LEVELS
 
-        v_levels = find_discrete_voltages_inwaveform(rV, RTlevels, filtered=fV)
-        ev_levels = np.ones_like(v_levels)*v_levels*0.1
+        v_levels = find_discrete_voltages_inwaveform(rV, RTlevels, filtered=fV,
+                                                     debug=False) # TESTS
+        ev_levels = np.ones_like(v_levels)*np.abs(v_levels)*0.1 # 10% uncertainty
 
         if doBayes:
 
@@ -331,8 +340,13 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
             ixsort = np.argsort(ai)
             v_levels = np.array(ai)[ixsort]
             ev_levels = np.array(eai)[ixsort]
-
+            
+        
+        
         relerr_v_levels = ev_levels/v_levels
+        
+        # voltage grounding
+        v_levels[0] -= v_levels[0]
 
         reportdict['data']['RT_V'].append(v_levels)
         reportdict['data']['RT_eV'].append(ev_levels)
@@ -352,42 +366,37 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
 
         #  V-DN calibration and NON-LINEARITY of ROE-TAB
 
-        RT_pol_DN2V = NL_lib.fit_pol_byorigin(RTlevels, v_levels,
-                                              deg=degRT, sigma=relerr_v_levels)
+        RT_pol_NL, v_RT_data_NL = NL_lib.find_NL_pol(RTlevels[1:], v_levels[1:],
+                                       deg=degRT, sigma=relerr_v_levels[1:],
+                                        Full=True)
+        
+        RT_pol_DN2V = np.polyfit(RTlevels,v_levels,deg=degRT,w=relerr_v_levels)
 
-        RT_pol_NL = NL_lib.find_NL_pol(RTlevels, v_levels,
-                                       deg=degRT, sigma=relerr_v_levels)
-
-        RT_pol_LIN = NL_lib.fit_pol_byorigin(RTlevels, v_levels, deg=1,
-                                             sigma=relerr_v_levels)
-
-        RT_V_LIN = NL_lib.f_pol_byorigin(RTlevels, *RT_pol_LIN)
-        v_RT_data_NL = (v_levels - RT_V_LIN)/RT_V_LIN * 100.
-
-        xRT = np.linspace(RTlevels[0], RTlevels[-1], 1000)
-
-        v_RT_bestfit_NL = NL_lib.f_pol_byorigin(xRT, *RT_pol_NL) * 100.
+        xRT = np.linspace(RTlevels[1], RTlevels[-1], 1000)
+        
+        v_RT_bestfit_NL = np.polyval(RT_pol_NL,xRT) * 100.
+        
 
         pldatasetRTNL = dict(
-            data=dict(x=RTlevels, y=v_RT_data_NL, marker='o', color='k'),
+            data=dict(x=RTlevels[1:], y=v_RT_data_NL*100., marker='o', color='k'),
             bestfit=dict(x=xRT, y=v_RT_bestfit_NL, ls='--', color='r')
         )
 
         figs['NL_RT'][CHAN] = os.path.join(
             respath, '%s_%s_%s_NL.png' % (CHAN, Injector, Date))
 
-        NL_lib.myplot_NL(pldatasetRTNL, xlabel='', ylabel='NL[pc]', ylim=[-200., 100.],
+        NL_lib.myplot_NL(pldatasetRTNL, xlabel='', ylabel='NL[pc]', ylim=[-10., 10.],
                          title='ROE-TAB NonLin. CHAN=%s' % CHAN,
                          figname=figs['NL_RT'][CHAN])
 
         reportdict['RT_ADU_2_V'].append(RT_pol_DN2V)
         reportdict['RT_NONLIN_pol'].append(RT_pol_NL)
 
-        ixmaxNL = np.argmax(v_RT_bestfit_NL)
+        ixmaxNL = np.argmax(np.abs(v_RT_bestfit_NL))
         MaxNL = v_RT_bestfit_NL[ixmaxNL]
         MaxNL_DN = xRT[ixmaxNL]
 
-        reportdict['RT_NONLIN']['MaxNL'].append(MaxNL)
+        reportdict['RT_NONLIN']['MaxNL_pc'].append(MaxNL)
         reportdict['RT_NONLIN']['MaxNL_DN'].append(MaxNL_DN)
 
     reportdict['figs'] = figs
@@ -402,6 +411,8 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
     report.fill_Figures()
 
     report.save(outexcelfile)
+    
+    cPickleDumpDictionary(reportdict,outpickfile)
 
 
 if __name__ == '__main__':
