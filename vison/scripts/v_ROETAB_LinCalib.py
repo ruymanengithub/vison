@@ -346,7 +346,7 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
         relerr_v_levels = ev_levels/v_levels
         
         # voltage grounding
-        v_levels[0] -= v_levels[0]
+        v_levels -= v_levels[0]
 
         reportdict['data']['RT_V'].append(v_levels)
         reportdict['data']['RT_eV'].append(ev_levels)
@@ -371,12 +371,11 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
                                         Full=True)
         
         RT_pol_DN2V = np.polyfit(RTlevels,v_levels,deg=degRT,w=relerr_v_levels)
-
+        
         xRT = np.linspace(RTlevels[1], RTlevels[-1], 1000)
         
         v_RT_bestfit_NL = np.polyval(RT_pol_NL,xRT) * 100.
         
-
         pldatasetRTNL = dict(
             data=dict(x=RTlevels[1:], y=v_RT_data_NL*100., marker='o', color='k'),
             bestfit=dict(x=xRT, y=v_RT_bestfit_NL, ls='--', color='r')

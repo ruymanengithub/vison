@@ -407,13 +407,12 @@ class NL01(FlatTask):
                 curves_cdp.data[CCDk][Q]['y'] = OrderedDict()
         
         curves_cdp.data['labelkeys'] = ['data','fit']
-
+        
         # Fitting the NL curves
-
+        
         for iCCD, CCDkey in enumerate(CCDs):
-
+            
             for jQ, Q in enumerate(Quads):
-                
                 
                 kk = iCCD * nQ + jQ
 
