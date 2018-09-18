@@ -104,9 +104,15 @@ class Tables_CDP(CDP):
         self.report = ReportXL(OrderedDict())
         self.report.wb.create_sheet('Header', 0)
         self.report.wb.create_sheet('Meta', 1)
+        
+        sheetcounter = 2
 
         for i, k in enumerate(self.data.iterkeys()):
-            self.report.wb.create_sheet(k, i+2)
+            sheetcounter += i
+            self.report.wb.create_sheet(k, sheetcounter)
+            
+        if len(self.figs)>0:
+            self.report.wb.create_sheet('figs',sheetcounter+1)
 
     def fill_Header(self, title=''):
         """ """
@@ -128,12 +134,27 @@ class Tables_CDP(CDP):
         """ """
         for sheet in self.data.keys():
             self.fill_Sheet(sheet)
-            
+    
+    def fill_Figures(self):
+        figsdict = self.figs
+        if len(figsdict)==0:
+            return
+        
+        figskeys= figsdict['keys']
+        jump = figsdict['jump']
+        
+        for ik,key in enumerate(figskeys):
+            figpath = figsdict[key]
+            cellnum = 1 + ik * jump
+            self.report.add_image(figpath,'figs',cell='A%i' % cellnum)
+        
+    
     def init_wb_and_fillAll(self, header_title=''):
         self.init_workbook()
         self.fill_Header(title=header_title)
         self.fill_Meta()
         self.fill_allDataSheets()
+        self.fill_Figures()
 
     def get_textable(self, sheet, caption='', fitwidth=False, tiny=False, 
                      **kwargs):
