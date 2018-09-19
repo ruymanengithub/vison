@@ -30,6 +30,7 @@ from vison.support import vjson
 #from vison.support.excel import ReportXL
 from vison.datamodel import cdp
 from vison.support import utils
+from vison import __version__ as vison_version
 
 from pylab import plot,show
 from matplotlib import pyplot as plt
@@ -88,6 +89,7 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
     CDP_header['function'] = function
     CDP_header['module'] = module
     CDP_header['DATE'] = run_ttag
+    CDP_header['vison version'] = vison_version
 
     outfile = os.path.join('ROE_NLCAL_%s_%s' % (ROE, Date))
 
@@ -96,7 +98,7 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
     meta = OrderedDict(
             degROE=degROE)
     meta.update(inputs)
-    meta['CHANNELS'] = CHANNELS.__repr__()
+    meta['CHANNELS'] = CHANNELS.tolist().__repr__()
     
     figs = OrderedDict(keys=CHANNELS,
                        jump=26)
@@ -217,20 +219,11 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
             figs = figs.copy()
             )
     
-    cdpRNL.init_wb_and_fillAll(header_title='ROE NON LINEARITY')
+    cdpRNL.init_wb_and_fillAll(header_title='ROE NON LINEARITY Calibration Report')
     cdpRNL.savetopickle()
     cdpRNL.savehardcopy()
     
 
-    #report = ReportXL_ROENL(reportdict)
-
-    #report.fill_Header()
-    #report.fill_Data()
-    #report.fill_NONLINpols()
-    #report.fill_NONLINMaxima()
-    #report.fill_Figures()
-
-    #report.save(outexcelfile)
 
 
 if __name__ == '__main__':

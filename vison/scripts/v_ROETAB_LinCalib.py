@@ -24,19 +24,21 @@ import copy
 import sys
 from optparse import OptionParser
 from collections import OrderedDict
-import pandas
+import pandas as pd
 import datetime
 
 from pylab import plot,show
 from matplotlib import pyplot as plt
 
+from vison.datamodel import cdp
+from vison.support import utils
 from vison.roe_fft import NL_lib
 from vison.roe_fft import Wave_bayes as WaveBay
 from vison.datamodel.ccd import CCD as CCDClass
 from vison.support.files import cPickleDumpDictionary, cPickleRead
 from vison.support import vjson
 from vison.support.excel import ReportXL
-from vison import __version__
+from vison import __version__ as vison_version
 # END IMPORT
 
 
@@ -126,122 +128,6 @@ def find_discrete_voltages_inwaveform(rV, levels, filtered=None, debug=False):
     return sorted_levels
 
 
-class ReportXL_RTLIN(ReportXL):
-    """ """
-
-    def __init__(self, datadict):
-        """ """
-        super(ReportXL_RTLIN, self).__init__(datadict)
-
-        self.wb.create_sheet('Header', 0)
-        self.wb.create_sheet('Data', 1)
-        self.wb.create_sheet('RTADU_to_V', 2)
-        self.wb.create_sheet('RT_NONLINpol', 3)
-        self.wb.create_sheet('RT_NONLIN', 4)
-        self.wb.create_sheet('Figures', 5)
-
-    def fill_Header(self):
-        """ """
-        headerdict = self.data['meta']
-        headerdict.update(dict(vison=__version__))
-        headkeys = ['Date', 'Injector', 'Injector_FW', 'degRT', 'RTlevels', 'SampInter',
-                    'Analysis_Date', 'vison']
-
-        self.dict_to_sheet(headerdict, 'Header', keys=headkeys,
-                           title='ROE-TAB Non-Linearity Calibration Report')
-
-    def fill_Data(self):
-        """ """
-        CHANNELS = self.data['CHANNELS']
-        RT_DN = self.data['data']['RT_DN']
-        RT_V = self.data['data']['RT_V']
-        RT_eV = self.data['data']['RT_eV']
-
-        indict = OrderedDict()
-
-        indict['DN'] = RT_DN
-
-        for i, CHAN in enumerate(CHANNELS):
-            indict['V_%s' % CHAN] = RT_V[i]
-            indict['eV_%s' % CHAN] = RT_eV[i]
-
-        df = pandas.DataFrame.from_dict(indict)
-        self.df_to_sheet(df, 'Data', index=False, header=True)
-
-    def fill_RTADU2V(self):
-        """ """
-
-        CHANNELS = self.data['CHANNELS']
-        RT_ADU_2_V = self.data['RT_ADU_2_V']
-        Npol = len(RT_ADU_2_V[0])
-
-        indict = OrderedDict()
-        indict['CHANNEL'] = CHANNELS
-
-        for jCHAN, CHAN in enumerate(CHANNELS):
-
-            for i in range(Npol):
-                indict['p_%i' % (i+1)] = RT_ADU_2_V[jCHAN][i]
-
-        df = pandas.DataFrame.from_dict(indict)
-        self.df_to_sheet(df, 'RTADU_to_V', index=False, header=True)
-        self.adjust_columns_width('RTADU_to_V', minwidth=10)
-
-    def fill_RTNONLINpols(self):
-        """ """
-
-        CHANNELS = self.data['CHANNELS']
-        RT_NONLIN_pol = self.data['RT_NONLIN_pol']
-        Npol = len(RT_NONLIN_pol[0])
-
-        indict = OrderedDict()
-        indict['CHANNEL'] = CHANNELS
-
-        for jCHAN, CHAN in enumerate(CHANNELS):
-
-            for i in range(Npol):
-                indict['p_%i' % (i+1)] = RT_NONLIN_pol[jCHAN][i]
-
-        df = pandas.DataFrame.from_dict(indict)
-        self.df_to_sheet(df, 'RT_NONLINpol', index=False, header=True)
-
-        self.adjust_columns_width('RT_NONLINpol', minwidth=10)
-
-    def fill_RTNONLINMaxima(self):
-        """ """
-
-        CHANNELS = self.data['CHANNELS']
-        RT_NONLIN = self.data['RT_NONLIN']
-
-        indict = OrderedDict()
-        indict['CHANNEL'] = CHANNELS
-
-        for jCHAN, CHAN in enumerate(CHANNELS):
-            indict['MaxNL_pc'] = RT_NONLIN['MaxNL_pc'][jCHAN]
-            indict['MaxNL_DN'] = RT_NONLIN['MaxNL_DN'][jCHAN]
-
-        df = pandas.DataFrame.from_dict(indict)
-        self.df_to_sheet(df, 'RT_NONLIN', index=False, header=True)
-
-        self.adjust_columns_width('RT_NONLIN', minwidth=10)
-
-    def fill_Figures(self):
-        """ """
-        figsdict = self.data['figs']
-        CHANNELS = self.data['CHANNELS']
-
-        rowcounter = 1
-        rowjump = 26
-
-        for iCHAN, CHAN in enumerate(CHANNELS):
-
-            self.add_image(figsdict['WF'][CHAN], 'Figures', 'A%i' % rowcounter)
-            self.add_image(figsdict['NL_RT'][CHAN],
-                           'Figures', 'M%i' % rowcounter)
-
-            rowcounter += rowjump
-
-
 def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=True):
     """ """
 
@@ -254,8 +140,8 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
     Injector = inputs['Injector']
     Date = inputs['Date']
     outfileroot = 'ROETAB_NLCAL_%s_%s' % (Injector, Date)
-    outexcelfile = os.path.join(respath, '%s.xlsx' % outfileroot)
-    outpickfile = os.path.join(respath, '%s.pick' % outfileroot)
+    #outexcelfile = os.path.join(respath, '%s.xlsx' % outfileroot)
+    #outpickfile = os.path.join(respath, '%s.pick' % outfileroot)
 
     pixT0 = 14.245E-6  # s
     pixTx0 = int(np.round(pixT0 / SampInter))
@@ -277,45 +163,64 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
 
     # Loop over CHANNELS to be calibrated
 
-    figs = dict()
-    figs['WF'] = dict()
-    figs['NL_RT'] = dict()
+    figs = OrderedDict()
 
-    CHANNELS = [CHANNELS[0]]  # TESTS
+    CHANNELS = np.array([CHANNELS[0]])  # TESTS
 
     # Initialisations
+    
+    function, module = utils.get_function_module()
+    CDP_header = OrderedDict()
+    CDP_header['function'] = function
+    CDP_header['module'] = module
+    CDP_header['DATE'] = run_ttag
+    CDP_header['vison version'] = vison_version
+    
+    meta = OrderedDict(degRT=degRT)
+    meta.update(inputs)
+    meta['CHANNELS'] = CHANNELS.tolist().__repr__()
 
-    reportdict = OrderedDict()
-    reportdict['meta'] = OrderedDict(degRT=degRT,
-                                     Analysis_Date=run_ttag)
-    reportdict['meta'].update(inputs)
-
-    reportdict['CHANNELS'] = CHANNELS
-
-    reportdict['data'] = OrderedDict()
-    reportdict['data']['RT_DN'] = RTlevels
-    reportdict['data']['RT_V'] = []
-    reportdict['data']['RT_eV'] = []
-    reportdict['RT_ADU_2_V'] = []
-    reportdict['RT_NONLIN_pol'] = []
-
-    reportdict['RT_NONLIN'] = OrderedDict()
-    reportdict['RT_NONLIN']['MaxNL_pc'] = []
-    reportdict['RT_NONLIN']['MaxNL_DN'] = []
-
+    data = OrderedDict()    
+    
+    for CHAN in CHANNELS:
+        data[CHAN] = OrderedDict()
+        data[CHAN]['RT_DN'] = RTlevels
+        data[CHAN]['RT_mV'] = np.zeros_like(RTlevels,dtype='float32')+np.nan
+        data[CHAN]['RT_emV'] = np.zeros_like(RTlevels,dtype='float32')+np.nan
+        data[CHAN]['RT_NL_pc'] = np.zeros_like(RTlevels,dtype='float32')+np.nan
+    
+    data['RT_ADU_2_mV'] = OrderedDict()
+    data['RT_ADU_2_mV']['CHANNEL'] = CHANNELS.copy()
+    for i in range(degRT+1):
+        data['RT_ADU_2_mV']['P%i' % i] = np.zeros_like(CHANNELS,dtype='float32')+np.nan
+    
+    
+    data['RT_NONLIN_pol'] = OrderedDict()
+    data['RT_NONLIN_pol']['CHANNEL'] = CHANNELS.copy()
+    for i in range(degRT+1):
+        data['RT_NONLIN_pol']['P%i' % i] = np.zeros_like(CHANNELS,dtype='float32')+np.nan
+    
+    
+    data['RT_NONLIN'] = OrderedDict()
+    data['RT_NONLIN']['CHANNEL'] = CHANNELS.copy()
+    data['RT_NONLIN']['MaxNL_pc'] = np.zeros_like(CHANNELS,dtype='float32')+np.nan
+    data['RT_NONLIN']['MaxNL_DN'] = np.zeros_like(CHANNELS,dtype='float32')+np.nan
+    
+    
     for ix, CHAN in enumerate(CHANNELS):
-
+        
         WFf = os.path.join(datapath, WFList[ix])
-
+        
         timex, rV = load_WF(WFf, chkNsamp=1.E5, chkSampInter=SampInter)
+        rmV = rV * 1000.
 
-        fV = filter_Voltage(rV, filt_kernel)
+        fmV = filter_Voltage(rmV, filt_kernel)
 
         # EXTRACTING INJECTED VOLTAGE LEVELS
 
-        v_levels = find_discrete_voltages_inwaveform(rV, RTlevels, filtered=fV,
+        mv_levels = find_discrete_voltages_inwaveform(rmV, RTlevels, filtered=fmV,
                                                      debug=False) # TESTS
-        ev_levels = np.ones_like(v_levels)*np.abs(v_levels)*0.1 # 10% uncertainty
+        emv_levels = np.ones_like(mv_levels)*np.abs(mv_levels)*0.1 # 10% uncertainty
 
         if doBayes:
 
@@ -324,9 +229,9 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
 
             # ... DOING BAYESIAN ANALYSIS OF WAVEFORM
 
-            Vrange = [min(v_levels), max(v_levels)]
+            mVrange = [min(mv_levels), max(mv_levels)]
 
-            bayresults = WaveBay.forwardModel(fV, Vrange, pixTx0, Nlevels, burn=1000, run=2000, cores=8,
+            bayresults = WaveBay.forwardModel(fmV, mVrange, pixTx0, Nlevels, burn=1000, run=2000, cores=8,
                                               doPlot=True, figkey='%s_%s_%s' % (CHAN, Injector, Date), figspath=respath)
 
             cPickleDumpDictionary(bayresults, bayespick)
@@ -338,80 +243,95 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
                 eai.append(bayresults['ea%i' % i])
 
             ixsort = np.argsort(ai)
-            v_levels = np.array(ai)[ixsort]
-            ev_levels = np.array(eai)[ixsort]
+            mv_levels = np.array(ai)[ixsort]
+            emv_levels = np.array(eai)[ixsort]
             
         
         
-        relerr_v_levels = ev_levels/v_levels
+        relerr_mv_levels = emv_levels/mv_levels
         
         # voltage grounding
-        v_levels -= v_levels[0]
+        mv_levels -= mv_levels[0]
 
-        reportdict['data']['RT_V'].append(v_levels)
-        reportdict['data']['RT_eV'].append(ev_levels)
+        data[CHAN]['RT_mV'] = mv_levels
+        data[CHAN]['RT_emV'] = emv_levels
 
         pldataset1 = dict(filtered=dict(x=timex[0:5000],
-                                        y=fV[0:5000],
+                                        y=fmV[0:5000],
                                         ls='-',
                                         color='b'
                                         ))
 
-        figs['WF'][CHAN] = os.path.join(
+        figs['WF_%s' % CHAN] = os.path.join(
             respath, '%s_%s_%s_WAVEFORM.png' % (CHAN, Injector, Date))
 
-        NL_lib.myplot_NL(pldataset1, xlabel='t[s]', ylabel='V', ylim=[],
+        NL_lib.myplot_NL(pldataset1, xlabel='t[s]', ylabel='mV', ylim=[],
                          title='ROE-TAB Injection. CHAN=%s' % CHAN,
-                         figname=figs['WF'][CHAN])
+                         figname=figs['WF_%s' % CHAN])
 
         #  V-DN calibration and NON-LINEARITY of ROE-TAB
-
-        RT_pol_NL, v_RT_data_NL = NL_lib.find_NL_pol(RTlevels[1:], v_levels[1:],
-                                       deg=degRT, sigma=relerr_v_levels[1:],
-                                        Full=True)
         
-        RT_pol_DN2V = np.polyfit(RTlevels,v_levels,deg=degRT,w=relerr_v_levels)
+        ixgood = np.where(RTlevels>0.)
+
+        RT_pol_NL, mv_RT_data_NL = NL_lib.find_NL_pol(RTlevels[ixgood], mv_levels[ixgood],
+                                       deg=degRT, sigma=relerr_mv_levels[ixgood],
+                                        Full=True)        
+        
+        data[CHAN]['RT_NL_pc'][ixgood] = mv_RT_data_NL.copy() * 100.
+        
+        RT_pol_DN2V = np.polyfit(RTlevels,mv_levels,deg=degRT,w=relerr_mv_levels)
         
         xRT = np.linspace(RTlevels[1], RTlevels[-1], 1000)
         
-        v_RT_bestfit_NL = np.polyval(RT_pol_NL,xRT) * 100.
+        mv_RT_bestfit_NL = np.polyval(RT_pol_NL,xRT) * 100.
         
         pldatasetRTNL = dict(
-            data=dict(x=RTlevels[1:], y=v_RT_data_NL*100., marker='o', color='k'),
-            bestfit=dict(x=xRT, y=v_RT_bestfit_NL, ls='--', color='r')
+            data=dict(x=RTlevels[1:], y=mv_RT_data_NL*100., marker='o', color='k'),
+            bestfit=dict(x=xRT, y=mv_RT_bestfit_NL, ls='--', color='r')
         )
 
-        figs['NL_RT'][CHAN] = os.path.join(
+        figs['NL_RT_%s' % CHAN] = os.path.join(
             respath, '%s_%s_%s_NL.png' % (CHAN, Injector, Date))
 
         NL_lib.myplot_NL(pldatasetRTNL, xlabel='', ylabel='NL[pc]', ylim=[-10., 10.],
                          title='ROE-TAB NonLin. CHAN=%s' % CHAN,
-                         figname=figs['NL_RT'][CHAN])
+                         figname=figs['NL_RT_%s' % CHAN])
+        
+        for ip in range(degRT):
+            data['RT_ADU_2_mV']['P%i' % ip][ix] = RT_pol_DN2V[ip]
+        
+        for ip in range(degRT):
+            data['RT_NONLIN_pol']['P%i' % ip][ix] = RT_pol_NL[ip]
+        
 
-        reportdict['RT_ADU_2_V'].append(RT_pol_DN2V)
-        reportdict['RT_NONLIN_pol'].append(RT_pol_NL)
-
-        ixmaxNL = np.argmax(np.abs(v_RT_bestfit_NL))
-        MaxNL = v_RT_bestfit_NL[ixmaxNL]
+        ixmaxNL = np.argmax(np.abs(mv_RT_bestfit_NL))
+        MaxNL = mv_RT_bestfit_NL[ixmaxNL]
         MaxNL_DN = xRT[ixmaxNL]
 
-        reportdict['RT_NONLIN']['MaxNL_pc'].append(MaxNL)
-        reportdict['RT_NONLIN']['MaxNL_DN'].append(MaxNL_DN)
+        data['RT_NONLIN']['MaxNL_pc'][ix] = MaxNL
+        data['RT_NONLIN']['MaxNL_DN'][ix] = MaxNL_DN
+            
+    figs['keys'] = figs.keys()
+    figs['jump'] = 26
 
-    reportdict['figs'] = figs
-
-    report = ReportXL_RTLIN(reportdict)
-
-    report.fill_Header()
-    report.fill_Data()
-    report.fill_RTADU2V()
-    report.fill_RTNONLINpols()
-    report.fill_RTNONLINMaxima()
-    report.fill_Figures()
-
-    report.save(outexcelfile)
+    dddf = OrderedDict()
+    for key in data.keys():
+        dddf[key] = pd.DataFrame.from_dict(data[key])
     
-    cPickleDumpDictionary(reportdict,outpickfile)
+    cdpRTNL = cdp.Tables_CDP()
+    cdpRTNL.rootname = outfileroot
+    cdpRTNL.path = respath
+    
+    cdpRTNL.ingest_inputs(
+            data = dddf.copy(),
+            meta = meta.copy(),
+            header  = CDP_header.copy(),
+            figs = figs.copy()
+            )
+    
+    cdpRTNL.init_wb_and_fillAll(header_title='ROE-TAB NON LINEARITY Calibration Report')
+    cdpRTNL.savetopickle()
+    cdpRTNL.savehardcopy()
 
 
 if __name__ == '__main__':
