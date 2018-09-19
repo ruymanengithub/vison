@@ -87,7 +87,7 @@ def plot_waveform(WF, disc_voltages=[], figname='', chan='Unknown'):
 
 def filter_Voltage(rV, filt_kernel):
     """ """
-    fV = ndimage.filters.median_filter(rV, filt_kernel)
+    fV = ndimage.filters.uniform_filter(rV, filt_kernel)
     return fV
 
 
@@ -101,7 +101,7 @@ def find_discrete_voltages_inwaveform(rV, levels, filtered=None, debug=False):
         iV = copy.deepcopy(rV)
 
     Nsamp = len(iV)
-    Nclust = len(levels)
+    Nclust = len(levels)+1
 
     kmeans = KMeans(n_clusters=Nclust, verbose=0,
                     n_jobs=-1).fit(iV.reshape(Nsamp, 1))
@@ -121,14 +121,14 @@ def find_discrete_voltages_inwaveform(rV, levels, filtered=None, debug=False):
     
     if debug:
         fktimex = np.arange(len(filtered))
-        Wf = (fktimex[0:5000],filtered[0:5000])
+        Wf = (fktimex[0:50000],filtered[0:50000])
         plot_waveform(Wf, disc_voltages=sorted_levels, 
                       figname='', chan='Unknown')
 
     return sorted_levels
 
 
-def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=True):
+def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=False):
     """ """
 
     run_ttag = (datetime.datetime.now()).strftime('%d%b%y_%H%M%S')
@@ -147,7 +147,7 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
     pixTx0 = int(np.round(pixT0 / SampInter))
     toi0 = pixT0/3.
     # SampInter = 100.E-9 # s
-    filt_kernel = int(np.round(toi0/SampInter)/4.)  # waveform filtering kernel
+    filt_kernel = max([10,int(np.round(toi0/SampInter)/32.)])  # waveform filtering kernel
 
     #print 'filt_kernel = %i' % filt_kernel
 
@@ -209,6 +209,8 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
     
     for ix, CHAN in enumerate(CHANNELS):
         
+        print 'Processing Channel %s...' % CHAN
+        
         WFf = os.path.join(datapath, WFList[ix])
         
         timex, rV = load_WF(WFf, chkNsamp=1.E5, chkSampInter=SampInter)
@@ -219,8 +221,9 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
         # EXTRACTING INJECTED VOLTAGE LEVELS
 
         mv_levels = find_discrete_voltages_inwaveform(rmV, RTlevels, filtered=fmV,
-                                                     debug=False) # TESTS
+                                                     debug=True) # TESTS
         emv_levels = np.ones_like(mv_levels)*np.abs(mv_levels)*0.1 # 10% uncertainty
+        
 
         if doBayes:
 
@@ -230,9 +233,12 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
             # ... DOING BAYESIAN ANALYSIS OF WAVEFORM
 
             mVrange = [min(mv_levels), max(mv_levels)]
+            
+            print 'Doing Bayesian Analysis...'
 
             bayresults = WaveBay.forwardModel(fmV, mVrange, pixTx0, Nlevels, burn=1000, run=2000, cores=8,
-                                              doPlot=True, figkey='%s_%s_%s' % (CHAN, Injector, Date), figspath=respath)
+                                              doPlot=True, figkey='%s_%s_%s' % (CHAN, Injector, Date), 
+                                             figspath=respath,debug=True)
 
             cPickleDumpDictionary(bayresults, bayespick)
 
@@ -247,21 +253,21 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
             emv_levels = np.array(eai)[ixsort]
             
         
-        
         relerr_mv_levels = emv_levels/mv_levels
         
         # voltage grounding
-        mv_levels -= mv_levels[0]
+        mv_levels -= mv_levels.min()
 
         data[CHAN]['RT_mV'] = mv_levels
         data[CHAN]['RT_emV'] = emv_levels
+            
+        Np2plot = pixTx0*Nlevels*2
 
-        pldataset1 = dict(filtered=dict(x=timex[0:5000],
-                                        y=fmV[0:5000],
+        pldataset1 = dict(filtered=dict(x=timex[0:Np2plot],
+                                        y=fmV[0:Np2plot],
                                         ls='-',
-                                        color='b'
-                                        ))
-
+                                        color='b'))
+        
         figs['WF_%s' % CHAN] = os.path.join(
             respath, '%s_%s_%s_WAVEFORM.png' % (CHAN, Injector, Date))
 
@@ -275,7 +281,7 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
 
         RT_pol_NL, mv_RT_data_NL = NL_lib.find_NL_pol(RTlevels[ixgood], mv_levels[ixgood],
                                        deg=degRT, sigma=relerr_mv_levels[ixgood],
-                                        Full=True)        
+                                        Full=True)
         
         data[CHAN]['RT_NL_pc'][ixgood] = mv_RT_data_NL.copy() * 100.
         
@@ -287,12 +293,11 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
         
         pldatasetRTNL = dict(
             data=dict(x=RTlevels[1:], y=mv_RT_data_NL*100., marker='o', color='k'),
-            bestfit=dict(x=xRT, y=mv_RT_bestfit_NL, ls='--', color='r')
-        )
-
+            bestfit=dict(x=xRT, y=mv_RT_bestfit_NL, ls='--', color='r'))
+        
         figs['NL_RT_%s' % CHAN] = os.path.join(
             respath, '%s_%s_%s_NL.png' % (CHAN, Injector, Date))
-
+        
         NL_lib.myplot_NL(pldatasetRTNL, xlabel='', ylabel='NL[pc]', ylim=[-10., 10.],
                          title='ROE-TAB NonLin. CHAN=%s' % CHAN,
                          figname=figs['NL_RT_%s' % CHAN])
@@ -363,7 +368,7 @@ if __name__ == '__main__':
     if respath != '' and not os.path.exists(respath):
         os.system('mkdir %s' % respath)
 
-    header = '\n\n#########################################################\n' +\
+    banner = '\n\n#########################################################\n' +\
              '#                                                       #\n' +\
              '#                                                       #\n' +\
              '#       running ROE-TAB NON-LINEARITY ANALYSIS          #\n' +\
@@ -371,7 +376,8 @@ if __name__ == '__main__':
              '#                                                       #\n' +\
              '#########################################################\n'
 
-    print header
+    print banner
+    
 
     run_ROETAB_LinCalib(inputsfile, incat, datapath=datapath, respath=respath,
                         doBayes=doBayes)

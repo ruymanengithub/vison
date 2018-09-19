@@ -161,7 +161,7 @@ def log_likelihood(theta, Varr, var):
 
 
 def forwardModel(Varr, Vrange, pixTx, Nlevels, burn=500, run=700, cores=8,figkey='',doPlot=False,
-                 figspath=''):
+                 figspath='',debug=False):
     """
     Forward models the Non-Linearity waveform: extracts reliable estimates of level voltages.
 
@@ -240,9 +240,12 @@ def forwardModel(Varr, Vrange, pixTx, Nlevels, burn=500, run=700, cores=8,figkey
     
     if doPlot:
         
-        figname1 = os.path.join(figspath,'%s_WaveformBayes.png' % figkey)
+        if debug:
+            figname1 = ''
+        else:
+            figname1 = os.path.join(figspath,'%s_WaveformBayes.png' % figkey)
         
-        maxix = min(5000,len(Varr))
+        maxix = min(50000,len(Varr))
         
         fig = plt.figure()
         ax = fig.add_subplot(111)
