@@ -17,7 +17,7 @@ from pdb import set_trace as stop
 from itertools import islice
 import numpy as np
 from astropy.io import ascii
-from scipy import ndimage, stats
+from scipy import ndimage, stats, signal
 from sklearn.cluster import KMeans
 import os
 import copy
@@ -73,7 +73,7 @@ def plot_waveform(WF, disc_voltages=[], figname='', chan='Unknown'):
 
     for idislev in disc_voltages:
         ax.axhline(y=idislev, ls='--', c='r')
-
+    
     ax.set_xlabel('time [s]')
     ax.set_ylabel('Voltage')
     ax.set_title('Linearity Calib. ROE-TAB. CHAN=%s' % chan)
@@ -85,10 +85,25 @@ def plot_waveform(WF, disc_voltages=[], figname='', chan='Unknown'):
     plt.close()
 
 
-def filter_Voltage(rV, filt_kernel):
+def filter_Voltage_uni(rV, filt_kernel):
     """ """
     fV = ndimage.filters.uniform_filter(rV, filt_kernel)
     return fV
+
+def filter_Voltage_digital(rV):
+    b, a = signal.butter(8, 0.125)
+    fV = signal.filtfilt(b,a,rV,method='gust')
+    return fV
+
+def get_slope(y):
+    x = np.arange(len(y))
+    p = np.polyfit(x,y,deg=1)
+    return p[0]
+
+def get_local_slope(y,size):
+    slopes = ndimage.generic_filter(y,get_slope,size=size)
+    return slopes
+
 
 
 def find_discrete_voltages_inwaveform(rV, levels, filtered=None, debug=False):
@@ -100,28 +115,54 @@ def find_discrete_voltages_inwaveform(rV, levels, filtered=None, debug=False):
     else:
         iV = copy.deepcopy(rV)
 
-    Nsamp = len(iV)
-    Nclust = len(levels)+1
+    #Nsamp = len(iV)
+    Nclust = len(levels)+1 # AD-HOC, including reference level
+    
+    slopes = get_local_slope(iV,size=100)
+    ixflat = np.where(np.abs(slopes) <= 0.01)
+    
+    cloud = iV[ixflat]
+    
+    cloud = cloud.reshape(len(cloud),-1)
 
     kmeans = KMeans(n_clusters=Nclust, verbose=0,
-                    n_jobs=-1).fit(iV.reshape(Nsamp, 1))
+                    n_jobs=-1).fit(cloud)
 
     labels = kmeans.labels_.copy()
     ulabels = np.unique(labels)
-
+    
     discrete_levels = np.zeros(len(ulabels), dtype='float32')
-
-    for i in range(len(ulabels)):
-        discrete_levels[i] = np.mean(stats.sigmaclip(
-            rV[np.where(labels == ulabels[i])], 3, 3).clipped)
-
-    #discrete_levels = kmeans.cluster_centers_.flatten()
-
-    sorted_levels = np.sort(discrete_levels)
     
     if debug:
-        fktimex = np.arange(len(filtered))
-        Wf = (fktimex[0:50000],filtered[0:50000])
+        fktimex = np.arange(len(iV))
+    
+
+    for i in range(len(ulabels)):
+        
+        ixsel = np.where(labels == ulabels[i])
+        
+#        if debug:
+#            fig = plt.figure()
+#            ax = fig.add_subplot(111)
+#            ax.plot(fktimex,iV,'r.')
+#            ax.plot(fktimex[ixflat][ixsel],iV[ixflat][ixsel],'b.')
+#            ax.set_xlim([0,50000])
+#            show()
+        
+        discrete_levels[i] = np.mean(stats.sigmaclip(
+            iV[ixflat][ixsel], 3, 3).clipped)
+
+    #discrete_levels = kmeans.cluster_centers_.flatten()    
+    
+
+    sorted_levels = np.sort(discrete_levels)
+    foo = sorted_levels.tolist()
+    foo.pop(1)
+    sorted_levels = np.array(foo) # TESTS, AD-HOC
+    #sorted_levels -= sorted_levels[0]
+    
+    if debug:
+        Wf = (fktimex[0:50000],iV[0:50000])
         plot_waveform(Wf, disc_voltages=sorted_levels, 
                       figname='', chan='Unknown')
 
@@ -147,7 +188,7 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
     pixTx0 = int(np.round(pixT0 / SampInter))
     toi0 = pixT0/3.
     # SampInter = 100.E-9 # s
-    filt_kernel = max([10,int(np.round(toi0/SampInter)/32.)])  # waveform filtering kernel
+    filt_kernel = max([10,int(np.round(toi0/SampInter)/8.)])  # waveform filtering kernel
 
     #print 'filt_kernel = %i' % filt_kernel
 
@@ -165,7 +206,7 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
 
     figs = OrderedDict()
 
-    CHANNELS = np.array([CHANNELS[0]])  # TESTS
+    #CHANNELS = np.array([CHANNELS[0]])  # TESTS
 
     # Initialisations
     
@@ -216,12 +257,14 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
         timex, rV = load_WF(WFf, chkNsamp=1.E5, chkSampInter=SampInter)
         rmV = rV * 1000.
 
-        fmV = filter_Voltage(rmV, filt_kernel)
+        fmV = filter_Voltage_digital(rmV) # digital filtering
+        fmV = filter_Voltage_uni(fmV, filt_kernel) # median filtering
+        
 
         # EXTRACTING INJECTED VOLTAGE LEVELS
 
         mv_levels = find_discrete_voltages_inwaveform(rmV, RTlevels, filtered=fmV,
-                                                     debug=True) # TESTS
+                                                     debug=False) # TESTS
         emv_levels = np.ones_like(mv_levels)*np.abs(mv_levels)*0.1 # 10% uncertainty
         
 
@@ -236,7 +279,7 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
             
             print 'Doing Bayesian Analysis...'
 
-            bayresults = WaveBay.forwardModel(fmV, mVrange, pixTx0, Nlevels, burn=1000, run=2000, cores=8,
+            bayresults = WaveBay.forwardModel(fmV, mVrange, pixTx0, Nlevels, burn=10, run=30, cores=1,
                                               doPlot=True, figkey='%s_%s_%s' % (CHAN, Injector, Date), 
                                              figspath=respath,debug=True)
 
@@ -256,24 +299,21 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
         relerr_mv_levels = emv_levels/mv_levels
         
         # voltage grounding
-        mv_levels -= mv_levels.min()
+        gnd = mv_levels.min()
+        mv_levels -= gnd
 
         data[CHAN]['RT_mV'] = mv_levels
         data[CHAN]['RT_emV'] = emv_levels
             
         Np2plot = pixTx0*Nlevels*2
 
-        pldataset1 = dict(filtered=dict(x=timex[0:Np2plot],
-                                        y=fmV[0:Np2plot],
-                                        ls='-',
-                                        color='b'))
         
         figs['WF_%s' % CHAN] = os.path.join(
             respath, '%s_%s_%s_WAVEFORM.png' % (CHAN, Injector, Date))
 
-        NL_lib.myplot_NL(pldataset1, xlabel='t[s]', ylabel='mV', ylim=[],
-                         title='ROE-TAB Injection. CHAN=%s' % CHAN,
-                         figname=figs['WF_%s' % CHAN])
+        plot_waveform((timex[0:Np2plot],fmV[0:Np2plot]-gnd), 
+                      disc_voltages=mv_levels, chan=CHAN,
+                      figname = figs['WF_%s' % CHAN])
 
         #  V-DN calibration and NON-LINEARITY of ROE-TAB
         
@@ -302,10 +342,10 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
                          title='ROE-TAB NonLin. CHAN=%s' % CHAN,
                          figname=figs['NL_RT_%s' % CHAN])
         
-        for ip in range(degRT):
+        for ip in range(degRT+1):
             data['RT_ADU_2_mV']['P%i' % ip][ix] = RT_pol_DN2V[ip]
         
-        for ip in range(degRT):
+        for ip in range(degRT+1):
             data['RT_NONLIN_pol']['P%i' % ip][ix] = RT_pol_NL[ip]
         
 

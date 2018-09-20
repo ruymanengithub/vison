@@ -70,31 +70,6 @@ def myplot_NL(datasets,xlabel='',ylabel='',ylim=[],title='',figname=''):
         plt.show()
     plt.close()
     
-
-#
-#def f_pol_byorigin(x,*theta):
-#    """ """
-#    res = np.zeros_like(x)
-#    for i in range(len(theta)):
-#        try: res += theta[i]*x**(i+1)
-#        except: stop()
-#    
-#    return res
-
-#def fit_pol_byorigin(x,y,deg=2,sigma=None):
-#    """ """
-#    
-#    if sigma is not None:
-#        assert len(y) == len(sigma)
-#    
-#    p0 = np.zeros(deg,dtype='float32')
-#    ixnoinf = np.where(~np.isinf(x) & ~np.isnan(x) & ~np.isinf(y) & ~np.isnan(y))
-#    
-#
-#    pfit,_ = opt.curve_fit(f_pol_byorigin, x[ixnoinf],y[ixnoinf],
-#                        p0=p0,method='lm',sigma=sigma[ixnoinf],absolute_sigma=False)
-#    
-#    return pfit
     
 def find_NL_pol(x,y,deg=2,sigma=None,Full=False, debug=False):
     """ """

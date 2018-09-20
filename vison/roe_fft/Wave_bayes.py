@@ -154,6 +154,9 @@ def log_likelihood(theta, Varr, var):
     """
     
     model = waveform_generator(theta,len(Varr))   
+    plot(model)
+    show()
+    stop()
     
     lnL = - 0.5 * np.sum((Varr - model)**2. / var)
     #print lnL

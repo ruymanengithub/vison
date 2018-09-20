@@ -80,7 +80,7 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
 
     # Loop over CHANNELS to be calibrated
 
-    CHANNELS = np.array([CHANNELS[0]])  # TESTS
+    #CHANNELS = np.array([CHANNELS[0]])  # TESTS
 
     # Initialisations
     
@@ -124,12 +124,10 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
         data[CHAN]['fit_LS'] = np.zeros_like(RTlevels,dtype='float32')+np.nan
         data[CHAN]['NLpc_LS'] = np.zeros_like(RTlevels,dtype='float32')+np.nan
         
-
-
     # Main Loop
-
+    
     injCHANs = InjectorCal['CHANNELS']
-
+    
     for ix, CHAN in enumerate(CHANNELS):
         
         print 'Processing Channel %s...' % CHAN
@@ -213,6 +211,7 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
     cdpRNL = cdp.Tables_CDP()
     cdpRNL.rootname = outfile
     cdpRNL.path = respath
+    stop()
     
     cdpRNL.ingest_inputs(
             data = dddf.copy(),
