@@ -58,7 +58,11 @@ class CDP(object):
         """ """
         if pickf == '':
             pickf = os.path.join(self.path, '%s.pick' % self.rootname)
+        
         outdict = copy.deepcopy(self.__dict__)
+        if 'report' in outdict:
+            if isinstance(outdict['report'], ReportXL):
+                outdict['report'].wb = None # gives trouble... HACK
         cPickleDumpDictionary(outdict, pickf)
 
     def loadfrompickle(self, pickf=''):
