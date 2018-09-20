@@ -52,7 +52,8 @@ def find_adu_levels(qdata, Nlevels):
 
 
 
-def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFits=True):
+def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFits=True,
+                     dopolyRT=False):
     """ """
 
     run_ttag = (datetime.datetime.now()).strftime('%d%b%y_%H%M%S')
@@ -98,7 +99,7 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
     meta = OrderedDict(
             degROE=degROE)
     meta.update(inputs)
-    meta['CHANNELS'] = CHANNELS.tolist().__repr__()
+    meta['CHANNELS'] = CHANNELS.copy() # 
     
     figs = OrderedDict(keys=CHANNELS,
                        jump=26)
@@ -126,7 +127,9 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
         
     # Main Loop
     
-    injCHANs = InjectorCal['CHANNELS']
+    degRT = InjectorCal['meta']['degRT']
+    injCHANs = InjectorCal['meta']['CHANNELS']
+    
     
     for ix, CHAN in enumerate(CHANNELS):
         
@@ -135,11 +138,22 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
         adus_pickf = os.path.join(respath, '%s_%s_%s_NL_ADUs.pick' % (ROE, Date, CHAN))
 
         Q = CHAN[1]
+        
+        ixRT = np.where(injCHANs == CHAN)
+        
+        if dopolyRT:
 
-        ixRT = injCHANs.index(CHAN)
-
-        RT_pol_DN2V = InjectorCal['RT_ADU_2_V'][ixRT]
-
+            RT_pol_DN2mV = np.zeros(degRT+1)
+            for ip in range(degRT+1):
+                RT_pol_DN2mV[ip] = InjectorCal['data']['RT_ADU_2_mV']['P%i' % ip].as_matrix()[ixRT][0]
+            mVfitlevels = np.polyval(RT_pol_DN2mV,RTlevels) 
+            
+        else:
+            assert np.all(RTlevels == InjectorCal['data'][CHAN]['RT_DN'].as_matrix())
+            mVfitlevels = InjectorCal['data'][CHAN]['RT_mV'].as_matrix()
+            
+            
+            
         # EXTRACTING LEVELS FROM IMAGE (ADUs)
 
         if doExtractFits:
@@ -157,9 +171,7 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
 
             adu_levels = cPickleRead(adus_pickf)[CHAN]
             
-        #Vfitlevels = NL_lib.f_pol_byorigin(RTlevels, *RT_pol_V2DN)
         
-        mVfitlevels = np.polyval(RT_pol_DN2V,RTlevels) * 1000.
 
         # NON-LINEARITY OF ROE
 
@@ -211,7 +223,7 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
     cdpRNL = cdp.Tables_CDP()
     cdpRNL.rootname = outfile
     cdpRNL.path = respath
-    stop()
+    
     
     cdpRNL.ingest_inputs(
             data = dddf.copy(),
@@ -240,6 +252,9 @@ if __name__ == '__main__':
                       default='', help="Master inputs file.")
     parser.add_option("-F", "--FITS", dest="doExtractFits",
                       action="store_true", default=False, help="Extract ADUs from FITS?")
+    parser.add_option("-P", "--polynomial", dest="dopolyRT", 
+                      default=False,action="store_true",
+                      help="Use Polynomial fit of RT-DN vs. RT-mV?")
 
     (options, args) = parser.parse_args()
 
@@ -248,6 +263,7 @@ if __name__ == '__main__':
     incat = options.incat
     inputsfile = options.inputs
     doExtractFits = options.doExtractFits
+    dopolyRT = options.dopolyRT
 
     if incat == '' or inputsfile == '':
         parser.print_help()
@@ -267,4 +283,5 @@ if __name__ == '__main__':
     print header
 
     run_ROE_LinCalib(inputsfile, incat, datapath=datapath, respath=respath,
-                     doExtractFits=doExtractFits)
+                     doExtractFits=doExtractFits,
+                     dopolyRT=dopolyRT)

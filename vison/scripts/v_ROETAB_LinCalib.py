@@ -219,7 +219,7 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
     
     meta = OrderedDict(degRT=degRT)
     meta.update(inputs)
-    meta['CHANNELS'] = CHANNELS.tolist().__repr__()
+    meta['CHANNELS'] = CHANNELS.copy() # .tolist().__repr__()
 
     data = OrderedDict()    
     
