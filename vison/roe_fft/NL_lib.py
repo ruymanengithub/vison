@@ -86,7 +86,11 @@ def find_NL_pol(x,y,deg=2,sigma=None,Full=False, debug=False):
     
     
     if debug:
-        stop()
+        plotset = dict(Nlin=dict(x=x,y=y-yLin,
+                                 ls='-',color='b'))
+        myplot_NL(plotset,xlabel='mV',ylabel='y-yLin',title='',figname='')
+        
+        
     
     if Full:
         return pfitNLin,NLin
