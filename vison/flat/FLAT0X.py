@@ -39,6 +39,7 @@ from vison.flat.FlatTask import FlatTask
 from vison.image import performance
 from vison.datamodel import inputs
 import FLAT0Xaux as FL0Xaux
+from vison.support import utils
 # END IMPORT
 
 isthere = os.path.exists
@@ -224,8 +225,9 @@ class FLAT0X(FlatTask):
         # INITIALISATION
 
         indices = copy.deepcopy(self.dd.indices)
+        
+        nObs, nCCD, nQuad = indices.shape
 
-        ObsIDs = indices.get_vals('ObsID')
         CCDs = indices.get_vals('CCD')
 
         ccdindices = copy.deepcopy(self.dd.mx['CCD'].indices)
@@ -239,27 +241,29 @@ class FLAT0X(FlatTask):
 
             dpath = self.inputs['subpaths']['ccdpickles']
             fpath = self.inputs['subpaths']['ccdflats']
-
-            def fullinpath_adder(path): return os.path.join(dpath, path)
-            vfullinpath_adder = np.vectorize(fullinpath_adder)
-            fccdobj_names = vfullinpath_adder(self.dd.mx['ccdobj_name'])
-
+                
+            vfullinpath_adder = utils.get_path_decorator(dpath)
+            
+            fccdobj_names = vfullinpath_adder(self.dd.mx['ccdobj_name'][:],'pick')
+            
             wavelength = self.inputs['wavelength']
 
-            for iObs, ObsID in enumerate(ObsIDs):
+            for iObs in range(nObs):
+                
+                ObsID = self.dd.mx['ObsID'][iObs]
 
                 for jCCD, CCDk in enumerate(CCDs):
                     ilabel = self.dd.mx['label'][iObs, jCCD]
 
-                    self.dd.mx['indiv_flats'][iObs, jCCD] = 'EUC_FF_%inm_%s_ROE1_%s.fits' %\
+                    self.dd.mx['indiv_flats'][iObs, jCCD] = 'EUC_FF_%inm_%s_ROE1_%i_%s.fits' %\
                         (wavelength, ilabel, ObsID, CCDk)
 
-            def fulloutpath_adder(path): return os.path.join(fpath, path)
-            vfulloutpath_adder = np.vectorize(fulloutpath_adder)
-            findiv_flats = vfulloutpath_adder(self.dd.mx['indiv_flats'])
+            vfulloutpath_adder = utils.get_path_decorator(fpath)
+            
+            findiv_flats = vfulloutpath_adder(self.dd.mx['indiv_flats'][:])
 
             ffsettings = dict()
-
+            
             FFing.produce_IndivFlats(fccdobj_names.flatten(), findiv_flats.flatten(),
                                      settings=ffsettings,
                                      runonTests=False,
@@ -330,10 +334,15 @@ class FLAT0X(FlatTask):
 
                     FFlist = self.dd.mx['indiv_flats'][selix].flatten().copy()
 
-                    def fullinpath_adder(
-                        path): return os.path.join(dpath, path)
+                    def fullinpath_adder(path,extension=''):
+                        if len(extension)==0:
+                            return os.path.join(dpath, path)
+                        else:
+                            return os.path.join(dpath,'%s.%s' % (path,extension))
+                        
                     vfullinpath_adder = np.vectorize(fullinpath_adder)
-                    FFlist = vfullinpath_adder(FFlist)
+                    stop()
+                    FFlist = vfullinpath_adder(FFlist,'.fits')
 
                     # MISSING: proper defects and useful area masking
                     #   (mask-out pre/over scans)

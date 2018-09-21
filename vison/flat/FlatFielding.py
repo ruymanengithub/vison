@@ -35,40 +35,41 @@ from astropy.io import fits as fts
 Quads = ['E', 'F', 'G', 'H']
 
 
-def produce_SingleFlatfield(infits, outfits, settings={}, runonTests=False):
+def produce_SingleFlatfield(infits, outfits, settings=None, runonTests=False):
     """ """
     #runonTests = False
 
     insettings = dict(kind='spline', splinemethod='cubic',
-                      doFilter=True, filtsize=50, filtertype='mean')
-    insettings.update(settings)
+                      doBin=True,binsize=50,filtertype='median')
+                      #doFilter=True, filtsize=50, filtertype='mean')
+    
+    if settings is not None:
+        insettings.update(settings)
+    
 
-    ccdin = cPickleRead(infits)['ccdobj']
+    ccdin = cPickleRead(infits)
+    inwithpover = ccdin.withpover
+    NrowsCCD = ccdin.NrowsCCD
 
-    shape = ccdin.shape
+    ccdout = ccdmodule.CCD(withpover=True)
+    oshape = ccdout.shape
 
-    ccdout = ccdmodule.CCD()
-    ccdout.shape = shape
-    ccdout.NAXIS1 = ccdin.NAXIS1
-    ccdout.NAXIS2 = ccdin.NAXIS2
-    ccdout.prescan = ccdin.prescan
-    ccdout.overscan = ccdin.overscan
-
-    ccdout.add_extension(np.ones(shape, dtype='float32'), label='FLAT')
-    ccdout.add_extension(np.zeros(shape, dtype='float32'), label='MODEL')
+    ccdout.add_extension(np.ones(oshape, dtype='float32'), label='FLAT')
+    ccdout.add_extension(np.zeros(oshape, dtype='float32'), label='MODEL')
 
     for Q in Quads:
-
-        Qregmodel = ccdin.get_region2Dmodel(Q, area='img', vstart=0, vend=2066,
+        Qregmodel = ccdin.get_region2Dmodel(Q, area='img', vstart=0, vend=NrowsCCD,
                                             canonical=True, extension=-1,
                                             **insettings)
+        
+        stop()
 
         # Set 1st Extension: image
 
         Qimg = ccdin.get_quad(Q, canonical=True, extension=-1).copy()
         QFF = np.ones_like(Qimg)
         QFF[ccdin.prescan:-ccdin.overscan,
-            0:2066] = Qimg[ccdin.prescan:-ccdin.overscan, 0:2066].copy()
+            0:NrowsCCD] = Qimg[ccdin.prescan:-ccdin.overscan, 0:NrowsCCD].copy()
 
         ccdout.set_quad(QFF, Q, canonical=True, extension=0)
 
@@ -76,15 +77,19 @@ def produce_SingleFlatfield(infits, outfits, settings={}, runonTests=False):
 
         QMod = np.ones(Qimg.shape, dtype='float32')
         QMod[ccdout.prescan:-ccdout.overscan,
-             0:2066] = Qregmodel.imgmodel.copy()
+             0:NrowsCCD] = Qregmodel.imgmodel.copy()
 
         ccdout.set_quad(QMod, Q, canonical=True, extension=1)
 
         # divide image by model
+        
+        stop()
 
-        ccdout.divide_by_flatfield(QMod, extension=0)
+        ccdout.divide_by_flatfield(QMod[:,0:2066], extension=0)
 
     ccdout.writeto(outfits, clobber=True)
+    
+    stop()
 
     return None
 
@@ -102,11 +107,12 @@ def produce_IndivFlats(infitsList, outfitsList, settings, runonTests, processes=
 
     for ix in range(len(infitsList)):
         arglist.append((infitsList[ix], outfitsList[ix], settings, runonTests))
-
+    
+    
     # generate flats using multiprocessing
     pool = Pool(processes=processes)
-    # _produce_SingleFlatfield(arglist[0]) # TESTS
-    pool.map(_produce_SingleFlatfield, arglist)
+    _produce_SingleFlatfield(arglist[0]) # TESTS
+    #pool.map(_produce_SingleFlatfield, arglist)
 
 
 def produce_MasterFlat(infitsList, outfits, mask=None, settings={}):
