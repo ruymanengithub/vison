@@ -169,7 +169,8 @@ def find_discrete_voltages_inwaveform(rV, levels, filtered=None, debug=False):
     return sorted_levels
 
 
-def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=False):
+def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=False,
+                        debug=False):
     """ """
 
     run_ttag = (datetime.datetime.now()).strftime('%d%b%y_%H%M%S')
@@ -205,8 +206,9 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
     # Loop over CHANNELS to be calibrated
 
     figs = OrderedDict()
-
-    #CHANNELS = np.array([CHANNELS[0]])  # TESTS
+    
+    if debug:
+        CHANNELS = np.array([CHANNELS[0]])  # TESTS
 
     # Initialisations
     
@@ -384,6 +386,9 @@ if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option("-p", "--path", dest="path",
                       default='', help="Data Path.")
+    parser.add_option("-d", "--debug", dest="debug",
+                      action="store_true", default=False,
+                      help="Debug mode")
     parser.add_option("-r", "--respath", dest="respath",
                       default='', help="Results Path.")
     parser.add_option("-c", "--incat", dest="incat",
@@ -396,6 +401,7 @@ if __name__ == '__main__':
     (options, args) = parser.parse_args()
 
     datapath = options.path
+    debug = options.debug
     respath = options.respath
     incat = options.incat
     inputsfile = options.inputs
@@ -420,4 +426,4 @@ if __name__ == '__main__':
     
 
     run_ROETAB_LinCalib(inputsfile, incat, datapath=datapath, respath=respath,
-                        doBayes=doBayes)
+                        doBayes=doBayes, debug=debug)

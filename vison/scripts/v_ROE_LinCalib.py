@@ -53,11 +53,11 @@ def find_adu_levels(qdata, Nlevels):
 
 
 def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFits=True,
-                     dopolyRT=False):
+                     dopolyRT=False, debug=False):
     """ """
 
     run_ttag = (datetime.datetime.now()).strftime('%d%b%y_%H%M%S')
-    degROE = 10
+    degROE = 6
 
     inputs = vjson.load_jsonfile(inputsfile)['inputs']
     Date = inputs['Date']
@@ -80,8 +80,10 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
     FitsList = indata['FITS'].data.copy()
 
     # Loop over CHANNELS to be calibrated
-
-    #CHANNELS = np.array([CHANNELS[0]])  # TESTS
+    
+    if debug:
+        ixchansel = np.where(CHANNELS=='3G')
+        CHANNELS = CHANNELS[ixchansel]  # TESTS
 
     # Initialisations
     
@@ -151,9 +153,12 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
         else:
             assert np.all(RTlevels == InjectorCal['data'][CHAN]['RT_DN'].as_matrix())
             mVfitlevels = InjectorCal['data'][CHAN]['RT_mV'].as_matrix()
+            if debug:
+                #mVfitlevels = np.array([0.,120.,240.,350.,460.,580.,680.,780.,880.,1000.,1120.,1220.,1360.,1440.,1540.,1660.,1750.])
+                #mVfitlevels = InjectorCal['data'][CHAN]['RT_DN'].as_matrix() # TESTS
+                pass
             
-            
-            
+        
         # EXTRACTING LEVELS FROM IMAGE (ADUs)
 
         if doExtractFits:
@@ -181,9 +186,9 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
         
         data[CHAN]['RT_mV'] = mVfitlevels
         data[CHAN]['ADC_ADUS'] = adu_levels
-
+        
         R_pol_NL, R_data_NL = NL_lib.find_NL_pol(mVfitlevels[ixgood], 
-                adu_levels[ixgood], deg=degROE, Full=True, debug=False)
+                adu_levels[ixgood], deg=degROE, Full=True, debug=debug)
         
         xR = np.linspace(mVfitlevels[ixgood][0], mVfitlevels[ixgood][-1], 1000)
         
@@ -244,6 +249,9 @@ if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option("-p", "--path", dest="path",
                       default='', help="Data Path.")
+    parser.add_option("-d", "--debug", dest="debug",
+                      action="store_true", default=False,
+                      help="Debug mode")
     parser.add_option("-r", "--respath", dest="respath",
                       default='', help="Results Path.")
     parser.add_option("-c", "--incat", dest="incat",
@@ -260,6 +268,7 @@ if __name__ == '__main__':
 
     datapath = options.path
     respath = options.respath
+    debug = options.debug
     incat = options.incat
     inputsfile = options.inputs
     doExtractFits = options.doExtractFits
@@ -284,4 +293,5 @@ if __name__ == '__main__':
 
     run_ROE_LinCalib(inputsfile, incat, datapath=datapath, respath=respath,
                      doExtractFits=doExtractFits,
-                     dopolyRT=dopolyRT)
+                     dopolyRT=dopolyRT,
+                     debug=debug)
