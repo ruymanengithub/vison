@@ -51,3 +51,12 @@ def get_function_module(level=1, reference='vison'):
     module = os.path.join(*mod_path_split[ixref:])
 
     return funcname, module
+
+
+def get_path_decorator(dpath):
+    def fullinpath_adder(path,extension=''): 
+        if len(extension)==0:
+            return os.path.join(dpath, path)
+        else:
+            return os.path.join(dpath,'%s.%s' % (path,extension))
+    return np.vectorize(fullinpath_adder)
