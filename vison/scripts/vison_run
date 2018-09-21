@@ -31,6 +31,7 @@ import numpy as np
 from optparse import OptionParser
 import sys
 import imp
+import multiprocessing
 
 from vison import Pipe
 from vison.pipe.lib import broadcast_todo_flags
@@ -69,6 +70,8 @@ if __name__ == '__main__':
                       help="Run in 'test' mode (just ingest inputs and initialize pipeline and output directories)")
     parser.add_option("-O", "--ObsID", dest="startobsid", default="0",
                       help="Only use data from given ObsID and onwards. Only used in 'wait' mode.")
+    parser.add_option("-m", "--multithread", dest="multithread", action="store_true", default=False,
+                      help="Use all CPUs available? Default=False [single thread]")
     (options, args) = parser.parse_args()
 
     configf = options.config
@@ -81,6 +84,7 @@ if __name__ == '__main__':
     debug = options.debug
     dotest = options.test
     startobsid = int(options.startobsid)
+    multithread = options.multithread
 
     inputdict = openconfigf(configf)
     
@@ -89,8 +93,14 @@ if __name__ == '__main__':
         inputdict = broadcast_todo_flags(inputdict, docheck=docheck, dotest=dotest)
     
     
+    if multithread:
+        cpu_count = multiprocessing.cpu_count()
+    else:
+        cpu_count = 1
+    
     pipe = Pipe(inputdict, dolog=dolog, drill=drill,
-                debug=debug, startobsid=startobsid)
+                debug=debug, startobsid=startobsid,
+                processes=cpu_count)
 
     if wait:
         pipe.wait_and_run(dayfolder, elvis=elvis)
