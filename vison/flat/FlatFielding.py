@@ -62,8 +62,6 @@ def produce_SingleFlatfield(infits, outfits, settings=None, runonTests=False):
                                             canonical=True, extension=-1,
                                             **insettings)
         
-        stop()
-
         # Set 1st Extension: image
 
         Qimg = ccdin.get_quad(Q, canonical=True, extension=-1).copy()
@@ -72,7 +70,7 @@ def produce_SingleFlatfield(infits, outfits, settings=None, runonTests=False):
             0:NrowsCCD] = Qimg[ccdin.prescan:-ccdin.overscan, 0:NrowsCCD].copy()
 
         ccdout.set_quad(QFF, Q, canonical=True, extension=0)
-
+        
         # Set 2nd Extension: model
 
         QMod = np.ones(Qimg.shape, dtype='float32')
@@ -83,14 +81,10 @@ def produce_SingleFlatfield(infits, outfits, settings=None, runonTests=False):
 
         # divide image by model
         
-        stop()
-
-        ccdout.divide_by_flatfield(QMod[:,0:2066], extension=0)
+    ccdout.divide_by_flatfield(ccdout.extensions[1].data, extension=0)
 
     ccdout.writeto(outfits, clobber=True)
     
-    stop()
-
     return None
 
 
@@ -107,12 +101,11 @@ def produce_IndivFlats(infitsList, outfitsList, settings, runonTests, processes=
 
     for ix in range(len(infitsList)):
         arglist.append((infitsList[ix], outfitsList[ix], settings, runonTests))
-    
-    
+
     # generate flats using multiprocessing
     pool = Pool(processes=processes)
-    _produce_SingleFlatfield(arglist[0]) # TESTS
-    #pool.map(_produce_SingleFlatfield, arglist)
+    #_produce_SingleFlatfield(arglist[0]) # TESTS
+    pool.map(_produce_SingleFlatfield, arglist)
 
 
 def produce_MasterFlat(infitsList, outfits, mask=None, settings={}):

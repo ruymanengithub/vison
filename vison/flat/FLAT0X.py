@@ -96,7 +96,8 @@ class FLAT0X(FlatTask):
         self.HKKeys = HKKeys
         self.figdict = FL0Xaux.gt_FL0Xfigs(self.inputs['test'])
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
-                                       ccdflats='ccdflats')
+                                       ccdflats='ccdflats',
+                                       cdps='cdps')
 
     def set_inpdefaults(self, **kwargs):
         """ """
@@ -299,15 +300,17 @@ class FLAT0X(FlatTask):
         wavelength = self.inputs['wavelength']
         settings = dict()
 
-        indices = copy.deepcopy(self.dd['indiv_flats'].indices)
+        indices = copy.deepcopy(self.dd.indices)
 
         CCDs = indices.get_vals('CCD')
-
+        
         dpath = self.inputs['subpaths']['ccdflats']
         cdppath = self.inputs['subpaths']['cdps']
+        
+        vCCDs = self.dd.mx['CCD'][:].copy()
 
-        labels = self.dd.mx['label'][:].copy()
-        ulabels = np.unique(labels)
+        vlabels = self.dd.mx['label'][:].copy()
+        ulabels = np.unique(vlabels)
 
         if not self.drill:
 
@@ -330,22 +333,17 @@ class FLAT0X(FlatTask):
 
                     FFpath = os.path.join(cdppath, FFname)
 
-                    selix = np.where((labels == ulabel) & (CCDs == CCDk))
+                    selix = np.where((vlabels == ulabel) & (vCCDs == CCDk))
 
                     FFlist = self.dd.mx['indiv_flats'][selix].flatten().copy()
+                    
+                    vfullinpath_adder = utils.get_path_decorator(dpath)
 
-                    def fullinpath_adder(path,extension=''):
-                        if len(extension)==0:
-                            return os.path.join(dpath, path)
-                        else:
-                            return os.path.join(dpath,'%s.%s' % (path,extension))
-                        
-                    vfullinpath_adder = np.vectorize(fullinpath_adder)
-                    stop()
-                    FFlist = vfullinpath_adder(FFlist,'.fits')
+                    FFlist = vfullinpath_adder(FFlist)
 
                     # MISSING: proper defects and useful area masking
                     #   (mask-out pre/over scans)
+                    
 
                     FFing.produce_MasterFlat(
                         FFlist, FFpath, mask=None, settings=settings)

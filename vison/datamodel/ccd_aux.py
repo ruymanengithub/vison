@@ -99,7 +99,7 @@ class Model2D():
         """ """
         assert isinstance(img, np.ndarray)
         self.img = img.copy()
-        self.binimg = None
+        self.binnedimg = None
         self.XXbin = None
         self.YYbin = None
 
@@ -128,7 +128,7 @@ class Model2D():
 
         sxx, syy = np.meshgrid(sx, sy, indexing='ij')
 
-        self.bin_img = rebinned.copy()
+        self.binnedimg = rebinned.copy()
         self.XXbin = sxx.copy()
         self.YYbin = syy.copy()
 
@@ -162,7 +162,7 @@ class Model2D():
 
             sxx = self.XXbin.copy()
             syy = self.YYbin.copy()
-            zz = self.bin_img.copy()
+            zz = self.binnedimg.copy()
 
         else:
 
@@ -178,20 +178,22 @@ class Model2D():
 
             zz = self.img[(sxx, syy)]
 
-        xx, yy = np.mgrid[0:NX:NX*1j, 0:NY:NY*1j]
-
+        
         if isinstance(zz, np.ma.masked_array):
             selix = np.where(~zz.mask)
-            xx = xx[selix]
-            yy = yy[selix]
+            sxx = sxx[selix]
+            syy = syy[selix]
             zz = zz[selix]
+            
+        xx, yy = np.mgrid[0:NX:NX*1j, 0:NY:NY*1j]
+
 
         pilum = interpolate.griddata((sxx.flatten(), syy.flatten()), zz.flatten(),
                                      (xx, yy), method=splinemethod, fill_value=np.nan)
 
         nans = np.isnan(pilum)
         pilum[nans] = self.img[nans].copy()
-
+        
         self.imgmodel = pilum.copy()
 
         return None
@@ -219,7 +221,7 @@ class Model2D():
 
             xx = self.XXbin.copy()
             yy = self.YYbin.copy()
-            zz = self.bin_img.copy()
+            zz = self.binnedimg.copy()
 
         else:
 

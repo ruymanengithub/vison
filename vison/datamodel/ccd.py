@@ -846,9 +846,12 @@ class CCDPile(CCD):
         if len(infitsList) > 0:
 
             for i, infits in enumerate(infitsList):
+                
+                infits = str(infits)
 
-                assert type(
-                    infits) is str, "'%s' can't be a name for a file!" % infits
+                assert type(infits) is str,\
+                                "'%s' can't be a name for a file!" % infits
+
                 assert isthere(
                     infits), 'infits:%s is just not there :-(' % infits
 
