@@ -6,7 +6,7 @@ TEST: MOT_FF
 
 Brighter-Fatter Analysis
    Using data from test PTC01 (via BF01)
-Hard Edge Response in serial / paralle
+Hard Edge Response in serial / parallel
 Bit Correlations (ADC health)
 
 Created on Tue Jul 31 18:04:00 2018

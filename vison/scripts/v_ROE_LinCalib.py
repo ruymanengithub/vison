@@ -47,6 +47,10 @@ def find_adu_levels(qdata, Nlevels):
 
     raw_levels = kmeans.cluster_centers_.flatten()
     adu_levels = np.sort(raw_levels)
+    
+    #from astropy.io import fits as fts
+    #anomaly = qdata - raw_levels[kmeans.labels_].reshape(qdata.shape)
+    #stop()
 
     return adu_levels
 
