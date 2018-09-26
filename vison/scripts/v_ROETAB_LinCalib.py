@@ -180,7 +180,7 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
     SampInter = inputs['SampInter']
     RTlevels = np.array(inputs['RTlevels'])
     Injector = inputs['Injector']
-    Date = inputs['Date']
+    Date = inputs['AcqDate']
     outfileroot = 'ROETAB_NLCAL_%s_%s' % (Injector, Date)
     #outexcelfile = os.path.join(respath, '%s.xlsx' % outfileroot)
     #outpickfile = os.path.join(respath, '%s.pick' % outfileroot)
@@ -221,7 +221,7 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
     
     meta = OrderedDict(degRT=degRT)
     meta.update(inputs)
-    meta['CHANNELS'] = CHANNELS.copy() # .tolist().__repr__()
+    meta['CHANNELS'] = CHANNELS.tolist() # .tolist().__repr__()
 
     data = OrderedDict()    
     
@@ -321,9 +321,11 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
         
         ixgood = np.where(RTlevels>0.)
 
-        RT_pol_NL, mv_RT_data_NL = NL_lib.find_NL_pol(RTlevels[ixgood], mv_levels[ixgood],
+        RT_pol_NL, bag_NL = NL_lib.find_NL_pol(RTlevels[ixgood], mv_levels[ixgood],
                                        deg=degRT, sigma=relerr_mv_levels[ixgood],
                                         Full=True)
+        
+        mv_RT_data_NL = bag_NL[-1]
         
         data[CHAN]['RT_NL_pc'][ixgood] = mv_RT_data_NL.copy() * 100.
         

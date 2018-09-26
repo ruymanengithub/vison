@@ -93,7 +93,7 @@ def find_NL_pol(x,y,deg=2,sigma=None,Full=False, debug=False):
         
     
     if Full:
-        return pfitNLin,NLin
+        return pfitNLin,(x,y,yLin,yLin_throughzero,NLin)
     else:
         return pfitNLin
     
