@@ -98,7 +98,7 @@ libxslt=1.1.28=0
 llvmlite=0.5.0=py27_0
 lxml=3.4.4=py27_0
 markupsafe=0.23=py27_2
-matplotlib=2.0.2=np112py27_0
+#matplotlib=2.0.2=np112py27_0
 mercurial=3.5.2=py27_0
 mistune=0.7.3=py27_0
 mkl=2017.0.1=0
@@ -190,7 +190,7 @@ subprocess32=3.2.7=py27_0
 sympy=0.7.6=py27_0
 system=5.8=2
 terminado=0.5=py27_0
-theano=0.7.0=np19py27_0
+#theano=0.7.0=np19py27_0
 tk=8.5.18=0
 toolz=0.7.2=py27_0
 tornado=4.4.2=py27_0
