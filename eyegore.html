@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Monitoring (“Eyegore”) &#8212; vison 0.4+119.g8cde5f6 documentation</title>
+    <title>Monitoring (“Eyegore”) &#8212; vison 0.6+72.g9be0399 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4+119.g8cde5f6',
+        VERSION:     '0.6+72.g9be0399',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="image.html" title="Image Analysis"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+72.g9be0399 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -77,7 +77,7 @@
 </table>
 <dl class="class">
 <dt id="vison.eyegore.eyegore.Eyegore">
-<em class="property">class </em><code class="descclassname">vison.eyegore.eyegore.</code><code class="descname">Eyegore</code><span class="sig-paren">(</span><em>path, broadcast, intervals=[20000, 20000, 1000, 20000, 20000, 20000], elvis='6.5.X', dolite=False, altpath=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.Eyegore" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.eyegore.eyegore.</code><code class="descname">Eyegore</code><span class="sig-paren">(</span><em>path</em>, <em>broadcast</em>, <em>intervals=None</em>, <em>elvis='6.5.X'</em>, <em>dolite=False</em>, <em>altpath=''</em>, <em>doWarnings=False</em>, <em>dolog=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.Eyegore" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.eyegore.eyegore.Eyegore.setup_MasterWG">
 <code class="descname">setup_MasterWG</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyegore.Eyegore.setup_MasterWG" title="Permalink to this definition">¶</a></dt>
@@ -98,14 +98,13 @@
 </div>
 <div class="section" id="module-vison.eyegore.eyeCCDs">
 <span id="eyeccds-py"></span><h2>eyeCCDs.py<a class="headerlink" href="#module-vison.eyegore.eyeCCDs" title="Permalink to this headline">¶</a></h2>
+<p>Eyegore: CCDs display.</p>
 <p>Created on Fri Oct 13 16:16:08 2017</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">raf</td>
-</tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
 </tr>
 </tbody>
 </table>
@@ -127,6 +126,7 @@
 </div>
 <div class="section" id="module-vison.eyegore.eyeHK">
 <span id="eyehk-py"></span><h2>eyeHK.py<a class="headerlink" href="#module-vison.eyegore.eyeHK" title="Permalink to this headline">¶</a></h2>
+<p>Eyegore: House Keeping Monitoring.</p>
 <p>Created on Fri Oct 13 14:11:41 2017</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -134,19 +134,12 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">raf</td>
 </tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
-</tr>
 </tbody>
 </table>
 <dl class="class">
 <dt id="vison.eyegore.eyeHK.HKDisplay">
 <em class="property">class </em><code class="descclassname">vison.eyegore.eyeHK.</code><code class="descname">HKDisplay</code><span class="sig-paren">(</span><em>root</em>, <em>path</em>, <em>interval</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKDisplay" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="vison.eyegore.eyeHK.HKDisplay.get_bitsize">
-<code class="descname">get_bitsize</code><span class="sig-paren">(</span><em>filelist</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKDisplay.get_bitsize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="vison.eyegore.eyeHK.HKDisplay.get_data">
 <code class="descname">get_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKDisplay.get_data" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -161,19 +154,49 @@
 <code class="descname">select_HKkeys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKDisplay.select_HKkeys" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="vison.eyegore.eyeHK.HKDisplay.sort_HKfiles">
-<code class="descname">sort_HKfiles</code><span class="sig-paren">(</span><em>HKfiles</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKDisplay.sort_HKfiles" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="class">
 <dt id="vison.eyegore.eyeHK.HKFlags">
 <em class="property">class </em><code class="descclassname">vison.eyegore.eyeHK.</code><code class="descname">HKFlags</code><span class="sig-paren">(</span><em>root</em>, <em>parent</em>, <em>interval=5000</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKFlags" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
+<dt id="vison.eyegore.eyeHK.HKFlags.MuteFlag">
+<code class="descname">MuteFlag</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKFlags.MuteFlag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="vison.eyegore.eyeHK.HKFlags.ResetFlag">
 <code class="descname">ResetFlag</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKFlags.ResetFlag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.eyegore.eyeHK.HKFlags.UnmuteFlag">
+<code class="descname">UnmuteFlag</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKFlags.UnmuteFlag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.eyegore.eyeHK.HKFlags.bind_buttons_to_methods">
+<code class="descname">bind_buttons_to_methods</code><span class="sig-paren">(</span><em>ix</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKFlags.bind_buttons_to_methods" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.eyegore.eyeHK.HKFlags.changeColor">
+<code class="descname">changeColor</code><span class="sig-paren">(</span><em>ix</em>, <em>color</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKFlags.changeColor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.eyegore.eyeHK.HKFlags.isflagraised">
+<code class="descname">isflagraised</code><span class="sig-paren">(</span><em>ix</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKFlags.isflagraised" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.eyegore.eyeHK.HKFlags.lowerflag">
+<code class="descname">lowerflag</code><span class="sig-paren">(</span><em>ix</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKFlags.lowerflag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.eyegore.eyeHK.HKFlags.raiseflag">
+<code class="descname">raiseflag</code><span class="sig-paren">(</span><em>ix</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKFlags.raiseflag" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -183,17 +206,33 @@
 <em class="property">class </em><code class="descclassname">vison.eyegore.eyeHK.</code><code class="descname">SingleHKplot</code><span class="sig-paren">(</span><em>root</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.SingleHKplot" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="function">
+<dt id="vison.eyegore.eyeHK.sort_HKfiles">
+<code class="descclassname">vison.eyegore.eyeHK.</code><code class="descname">sort_HKfiles</code><span class="sig-paren">(</span><em>HKfiles</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.sort_HKfiles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.eyegore.eyeHK.validate_within_HKlim">
+<code class="descclassname">vison.eyegore.eyeHK.</code><code class="descname">validate_within_HKlim</code><span class="sig-paren">(</span><em>val</em>, <em>HKlim</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.validate_within_HKlim" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>violation:</dt>
+<dd>0: None
+-1: below lower limit
+1: above upper limit
+2: different from limit, if limit is a single value</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="section" id="module-vison.eyegore.eyeObs">
 <span id="eyeobs-py"></span><h2>eyeObs.py<a class="headerlink" href="#module-vison.eyegore.eyeObs" title="Permalink to this headline">¶</a></h2>
+<p>Eyegore: Exposure Log Monitoring.</p>
 <p>Created on Fri Oct 13 16:22:36 2017</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">raf</td>
-</tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
 </tr>
 </tbody>
 </table>
@@ -206,26 +245,9 @@
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="vison.eyegore.eyeObs.ExpLogDisplay.changeNumeric">
-<code class="descname">changeNumeric</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeObs.ExpLogDisplay.changeNumeric" title="Permalink to this definition">¶</a></dt>
-<dd><p>if the data to be sorted is numeric change to float</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.eyegore.eyeObs.ExpLogDisplay.get_bitsize">
-<code class="descname">get_bitsize</code><span class="sig-paren">(</span><em>filelist</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeObs.ExpLogDisplay.get_bitsize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="vison.eyegore.eyeObs.ExpLogDisplay.get_data">
 <code class="descname">get_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeObs.ExpLogDisplay.get_data" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="method">
-<dt id="vison.eyegore.eyeObs.ExpLogDisplay.isNumeric">
-<code class="descname">isNumeric</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeObs.ExpLogDisplay.isNumeric" title="Permalink to this definition">¶</a></dt>
-<dd><p>test if a string s is numeric</p>
-</dd></dl>
 
 <dl class="method">
 <dt id="vison.eyegore.eyeObs.ExpLogDisplay.loadExplogs">
@@ -244,6 +266,36 @@
 </dd></dl>
 
 </dd></dl>
+
+<dl class="function">
+<dt id="vison.eyegore.eyeObs.changeNumeric">
+<code class="descclassname">vison.eyegore.eyeObs.</code><code class="descname">changeNumeric</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeObs.changeNumeric" title="Permalink to this definition">¶</a></dt>
+<dd><p>if the data to be sorted is numeric change to float</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.eyegore.eyeObs.isNumeric">
+<code class="descclassname">vison.eyegore.eyeObs.</code><code class="descname">isNumeric</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeObs.isNumeric" title="Permalink to this definition">¶</a></dt>
+<dd><p>test if a string s is numeric</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vison.eyegore.eyeWarnings">
+<span id="eyewarnings-py"></span><h2>eyeWarnings.py<a class="headerlink" href="#module-vison.eyegore.eyeWarnings" title="Permalink to this headline">¶</a></h2>
+<p>Module to handle HK-OOL Warnings</p>
+<p>Created on Thu Apr 19 16:09:02 2018</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="vison.eyegore.eyeWarnings.test_URLs">
+<code class="descclassname">vison.eyegore.eyeWarnings.</code><code class="descname">test_URLs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeWarnings.test_URLs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 </div>
@@ -264,6 +316,7 @@
 <li><a class="reference internal" href="#module-vison.eyegore.eyeCCDs">eyeCCDs.py</a></li>
 <li><a class="reference internal" href="#module-vison.eyegore.eyeHK">eyeHK.py</a></li>
 <li><a class="reference internal" href="#module-vison.eyegore.eyeObs">eyeObs.py</a></li>
+<li><a class="reference internal" href="#module-vison.eyegore.eyeWarnings">eyeWarnings.py</a></li>
 </ul>
 </li>
 </ul>
@@ -310,7 +363,7 @@
         <li class="right" >
           <a href="image.html" title="Image Analysis"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+72.g9be0399 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

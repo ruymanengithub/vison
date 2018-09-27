@@ -36,3 +36,9 @@ eyeObs.py
 .. automodule:: vison.eyegore.eyeObs
         :members:
 
+eyeWarnings.py
+--------------
+
+.. automodule:: vison.eyegore.eyeWarnings
+        :members:
+

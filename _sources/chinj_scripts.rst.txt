@@ -1,7 +1,7 @@
 Charge Injection Scripts
 ========================
 
-.. currentmodule::
+.. currentmodule:: inject
 
 CHINJ01
 -------

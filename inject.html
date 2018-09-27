@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Charge Injection Tools &#8212; vison 0.4+119.g8cde5f6 documentation</title>
+    <title>Charge Injection Tools &#8212; vison 0.6+72.g9be0399 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4+119.g8cde5f6',
+        VERSION:     '0.6+72.g9be0399',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="analysis.html" title="Analysis (Shared)"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+72.g9be0399 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -56,6 +56,95 @@
             
   <div class="section" id="charge-injection-tools">
 <h1>Charge Injection Tools<a class="headerlink" href="#charge-injection-tools" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-vison.inject.InjTask">
+<span id="injtask-py"></span><h2>InjTask.py<a class="headerlink" href="#module-vison.inject.InjTask" title="Permalink to this headline">¶</a></h2>
+<p>Created on Wed Dec  6 15:56:00 2017</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="vison.inject.InjTask.InjTask">
+<em class="property">class </em><code class="descclassname">vison.inject.InjTask.</code><code class="descname">InjTask</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.InjTask.InjTask" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.inject.InjTask.InjTask.BROKEN_basic_analysis">
+<code class="descname">BROKEN_basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.InjTask.InjTask.BROKEN_basic_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic analysis of data.</p>
+<p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
+            <span class="n">extract</span> <span class="n">average</span> <span class="mi">2</span><span class="n">D</span> <span class="n">injection</span> <span class="n">pattern</span> <span class="p">(</span><span class="ow">and</span> <span class="n">save</span><span class="p">)</span>
+            <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span><span class="o">/</span><span class="n">across</span> <span class="n">lines</span>
+            <span class="n">measure</span> <span class="n">charge</span><span class="o">-</span><span class="n">inj</span><span class="o">.</span> <span class="n">non</span><span class="o">-</span><span class="n">uniformity</span>
+            <span class="n">measure</span> <span class="n">charge</span> <span class="n">spillover</span> <span class="n">into</span> <span class="n">non</span><span class="o">-</span><span class="n">injection</span>
+            <span class="n">measure</span> <span class="n">stats</span> <span class="n">of</span> <span class="n">injection</span> <span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">med</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="nb">min</span><span class="o">/</span><span class="nb">max</span><span class="p">,</span> <span class="n">percentiles</span><span class="p">)</span>
+
+<span class="n">plot</span> <span class="n">average</span> <span class="n">inj</span><span class="o">.</span> <span class="n">profiles</span> <span class="n">along</span> <span class="n">lines</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span> <span class="ow">and</span> <span class="n">IG1</span>
+    <span class="n">save</span> <span class="k">as</span> <span class="n">a</span> <span class="n">rationalized</span> <span class="nb">set</span> <span class="n">of</span> <span class="n">curves</span>
+<span class="n">plot</span> <span class="n">average</span> <span class="n">inj</span><span class="o">.</span> <span class="n">profiles</span> <span class="n">across</span> <span class="n">lines</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span> <span class="ow">and</span> <span class="n">IG1</span>
+    <span class="n">save</span> <span class="k">as</span> <span class="n">a</span> <span class="n">rationalized</span> <span class="nb">set</span> <span class="n">of</span>  <span class="n">curves</span>
+
+<span class="n">Report</span> <span class="n">injection</span> <span class="n">stats</span> <span class="k">as</span> <span class="n">a</span> <span class="n">table</span><span class="o">/</span><span class="n">tables</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.inject.InjTask.InjTask.check_data">
+<code class="descname">check_data</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.InjTask.InjTask.check_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.inject.InjTask.InjTask.check_metrics_ST">
+<code class="descname">check_metrics_ST</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.InjTask.InjTask.check_metrics_ST" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO:</p>
+<blockquote>
+<div><ul class="simple">
+<li>offset levels (pre and over-scan), abs. and relative</li>
+<li>RON in pre and overscan</li>
+<li>mean fluence/signal in image area [script-column-dependent]</li>
+<li>med fluence/signal in image area [script-column-dependent]</li>
+<li>std in image area [script-column-dependent]</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.inject.InjTask.InjTask.get_FluenceAndGradient_limits">
+<code class="descname">get_FluenceAndGradient_limits</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.InjTask.InjTask.get_FluenceAndGradient_limits" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.inject.InjTask.InjTask.get_checkstats_ST">
+<code class="descname">get_checkstats_ST</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.InjTask.InjTask.get_checkstats_ST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.inject.InjTask.InjTask.predict_expected_injlevels">
+<code class="descname">predict_expected_injlevels</code><span class="sig-paren">(</span><em>teststruct</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.InjTask.InjTask.predict_expected_injlevels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.inject.InjTask.InjTask.prepare_images">
+<code class="descname">prepare_images</code><span class="sig-paren">(</span><em>doExtract=True</em>, <em>doMask=True</em>, <em>doOffset=True</em>, <em>doBias=True</em>, <em>doFF=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.InjTask.InjTask.prepare_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>InjTask: Preparation of data for further analysis.
+Calls task.prepare_images().</p>
+<dl class="docutils">
+<dt>Applies:</dt>
+<dd>offset subtraction
+[bias structure subtraction, if available]
+cosmetics masking</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-vison.inject.lib">
 <span id="lib-py"></span><h2>lib.py<a class="headerlink" href="#module-vison.inject.lib" title="Permalink to this headline">¶</a></h2>
 <p>NEEDSREVISION</p>
@@ -67,14 +156,11 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
 </tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini__at__ucl.ac.uk</td>
-</tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="module-vison.inject.plot">
 <span id="plot-py"></span><h2>plot.py<a class="headerlink" href="#module-vison.inject.plot" title="Permalink to this headline">¶</a></h2>
-<p>NEEDSREVISION</p>
 <p>Charge Injection Plotting Tools.</p>
 <p>Created on Thu Sep 14 15:39:34 2017</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -82,8 +168,6 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
 </tr>
 </tbody>
 </table>
@@ -102,6 +186,7 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Charge Injection Tools</a><ul>
+<li><a class="reference internal" href="#module-vison.inject.InjTask">InjTask.py</a></li>
 <li><a class="reference internal" href="#module-vison.inject.lib">lib.py</a></li>
 <li><a class="reference internal" href="#module-vison.inject.plot">plot.py</a></li>
 </ul>
@@ -150,7 +235,7 @@
         <li class="right" >
           <a href="analysis.html" title="Analysis (Shared)"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+72.g9be0399 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

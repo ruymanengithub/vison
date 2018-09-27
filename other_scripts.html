@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Other Scripts &#8212; vison 0.4+119.g8cde5f6 documentation</title>
+    <title>Other Scripts &#8212; vison 0.6+72.g9be0399 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4+119.g8cde5f6',
+        VERSION:     '0.6+72.g9be0399',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -41,7 +41,7 @@
         <li class="right" >
           <a href="tp_scripts.html" title="Trap-Pumping Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+72.g9be0399 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -52,6 +52,36 @@
             
   <div class="section" id="other-scripts">
 <h1>Other Scripts<a class="headerlink" href="#other-scripts" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-vison.other.MOT_FF">
+<span id="mot-ff"></span><h2>MOT_FF<a class="headerlink" href="#module-vison.other.MOT_FF" title="Permalink to this headline">¶</a></h2>
+<p>VIS Ground Calibration
+TEST: MOT_FF</p>
+<dl class="docutils">
+<dt>Brighter-Fatter Analysis</dt>
+<dd>Using data from test PTC01 (via BF01)</dd>
+</dl>
+<p>Hard Edge Response in serial / parallel
+Bit Correlations (ADC health)</p>
+<p>Created on Tue Jul 31 18:04:00 2018</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">raf</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="vison.other.MOT_FF.MOT_FF">
+<em class="property">class </em><code class="descclassname">vison.other.MOT_FF.</code><code class="descname">MOT_FF</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.MOT_FF.MOT_FF" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.other.MOT_FF.MOT_FF.extract_HER">
+<code class="descname">extract_HER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.MOT_FF.MOT_FF.extract_HER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-vison.other.PERSIST01">
 <span id="persist01"></span><h2>PERSIST01<a class="headerlink" href="#module-vison.other.PERSIST01" title="Permalink to this headline">¶</a></h2>
 <p>VIS Ground Calibration
@@ -63,8 +93,6 @@ TEST: PERSIST01</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini__at__ucl.ac.uk</td>
 </tr>
 </tbody>
 </table>
@@ -135,7 +163,7 @@ TEST: PERSIST01</p>
 
 <dl class="method">
 <dt id="vison.other.PERSIST01.PERSIST01.filterexposures">
-<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01.filterexposures" title="Permalink to this definition">¶</a></dt>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -156,25 +184,18 @@ TEST: PERSIST01</p>
 <dl class="method">
 <dt id="vison.other.PERSIST01.PERSIST01.prep_data">
 <code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01.prep_data" title="Permalink to this definition">¶</a></dt>
-<dd><p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Preparation</span> <span class="n">of</span> <span class="n">data</span> <span class="k">for</span> <span class="n">further</span> <span class="n">analysis</span><span class="p">:</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span> <span class="p">[</span><span class="n">images</span> <span class="k">with</span> <span class="n">TPing</span> <span class="n">only</span><span class="p">]:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">subtract</span> <span class="n">offset</span>
-</pre></div>
-</div>
+<dd><p>PERSIST01: Preparation of data for further analysis.
+Calls task.prepare_images().</p>
+<dl class="docutils">
+<dt>Applies:</dt>
+<dd>offset subtraction
+cosmetics masking</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="vison.other.PERSIST01.PERSIST01.set_inpdefaults">
 <code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vison.other.PERSIST01.PERSIST01.set_perfdefaults">
-<code class="descname">set_perfdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01.set_perfdefaults" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -194,6 +215,7 @@ TEST: PERSIST01</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Other Scripts</a><ul>
+<li><a class="reference internal" href="#module-vison.other.MOT_FF">MOT_FF</a></li>
 <li><a class="reference internal" href="#module-vison.other.PERSIST01">PERSIST01</a></li>
 </ul>
 </li>
@@ -235,7 +257,7 @@ TEST: PERSIST01</p>
         <li class="right" >
           <a href="tp_scripts.html" title="Trap-Pumping Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+72.g9be0399 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
