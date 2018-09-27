@@ -156,7 +156,7 @@ python-dateutil=2.4.2=py27_0
 pytz=2016.10=py27_0
 pyyaml=3.11=py27_1
 pyzmq=16.0.2=py27_0
-qt=5.6.2=0
+#qt=5.6.2=0
 qtawesome=0.4.3=py27_0
 qtconsole=4.2.1=py27_1
 qtpy=1.2.1=py27_0
@@ -181,7 +181,7 @@ sockjs-tornado=1.0.1=py27_0
 sphinx=1.5.1=py27_0
 sphinx_rtd_theme=0.1.9=py27_0
 spyder=3.1.2=py27_0
-spyder-app=2.3.5.2=py27_0
+#spyder-app=2.3.5.2=py27_0
 sqlalchemy=1.0.5=py27_0
 sqlite=3.13.0=0
 ssl_match_hostname=3.4.0.2=py27_1
