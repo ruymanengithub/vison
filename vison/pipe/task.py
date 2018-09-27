@@ -7,7 +7,7 @@ Generic Task (Test) Class.
 Created on Tue Nov 14 14:20:04 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
+
 """
 
 # IMPORT STUFF

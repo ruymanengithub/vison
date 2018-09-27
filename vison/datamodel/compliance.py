@@ -7,7 +7,7 @@ Some functions to present COMPLIANCE MATRICES.
 Created on Mon Apr  9 17:32:03 2018
 
 :author: raf
-:contact: r.azzollini_at_ucl.ac.uk
+
 """
 
 # IMPORT STUFF

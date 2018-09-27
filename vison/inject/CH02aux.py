@@ -7,7 +7,6 @@ Auxiliary Functions and resources to CHINJ02.
 Created on Tue Jan 30 14:28:00 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
 """
 

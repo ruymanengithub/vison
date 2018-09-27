@@ -7,7 +7,6 @@ General Purpose Utilities
 Created on Tue Apr 10 15:18:07 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

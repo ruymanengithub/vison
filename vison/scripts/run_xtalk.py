@@ -10,7 +10,6 @@ injecting a "ladder" of signal on each of the 12 channels, using the ROE-TAB.
 Created on Thu Mar 22 16:17:39 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

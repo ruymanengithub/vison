@@ -5,7 +5,7 @@
 Auxiliary module with functions to generate generalized ellipse masks.
 
 :author: Ruyman Azzollini
-:contact: r.azzollini@ucl.ac.uk
+
 """
 
 # IMPORT STUFF

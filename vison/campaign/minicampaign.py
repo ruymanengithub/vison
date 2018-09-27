@@ -10,7 +10,6 @@ ahead of running the campaign itself.
 Created on Mon Jan 15 15:56:00 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

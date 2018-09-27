@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 """
 
+Test Durations
+
 Created on Wed Apr 25 10:26:58 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

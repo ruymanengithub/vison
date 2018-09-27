@@ -8,11 +8,11 @@ Simple class to do aperture photometry on a stamp of a point-source.
 
 :requires: NumPy
 
-:author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
-
-
 Created on Thu Apr 20 14:37:46 2017
+
+
+:author: Ruyman Azzollini
+
 
 """
 

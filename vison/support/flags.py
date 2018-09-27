@@ -1,14 +1,11 @@
 """
 
-VIS Ground Calibration
-
 
 Functions and variables related to flags for vison.
 
 Created on Wed Sep 20 17:05:00 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 # IMPORT STUFF

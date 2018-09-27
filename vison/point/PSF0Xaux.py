@@ -7,7 +7,6 @@ Auxiliary Functions and resources to PSF0X.
 Created on Tue Jan 30 16:31:00 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
 """
 

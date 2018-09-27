@@ -9,7 +9,6 @@ Image bits analysis tools.
 Created on Thu Sep 14 15:54:14 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

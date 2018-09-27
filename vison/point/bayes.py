@@ -56,7 +56,6 @@ We therefore adopt a Gaussian kernel that is centred with the Airy disc."
 
 
 :author: R. Azzollini, Sami-Matias Niemi
-:contact: r.azzollini@ucl.ac.uk
 
 """
 import matplotlib

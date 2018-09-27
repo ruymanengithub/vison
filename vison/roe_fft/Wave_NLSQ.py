@@ -8,7 +8,6 @@ Module to fit the Non-Linearity waveform using Levenberg-Marquardt
 Created on Wed Mar 21 14:54:00 2018
 
 :author: raf
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

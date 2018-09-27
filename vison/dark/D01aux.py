@@ -7,7 +7,6 @@ Auxiliary Functions and resources to DARK01.
 Created on Sat Jan 27 16:11:00 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
 """
 

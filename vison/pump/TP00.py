@@ -10,7 +10,6 @@ TEST: TP00 - used to test charge injection functionality using ELVIS.
 Created on Tue Jan 13 16:12:00 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
 """
 

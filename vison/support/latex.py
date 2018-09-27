@@ -2,13 +2,12 @@
 
 """
 
-Just a collection of LaTeX templates for use in report.py
+Just a collection of LaTeX-generating functions for use in report.py
 
 :History:
 Created on Mon Jan 30 2017
 
 :author: Ruyman Azzollini 
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

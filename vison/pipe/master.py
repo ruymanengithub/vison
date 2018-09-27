@@ -28,7 +28,6 @@ Some Guidelines for Development:
 Created on Wed Jul 27 12:16:40 2016
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

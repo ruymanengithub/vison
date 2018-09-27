@@ -9,7 +9,6 @@ Module with tools used in NL analysis.
 Created on Mon Feb 5 15:51:00 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

@@ -1,10 +1,12 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
+
+Inputs Handling Classes and utilities.
+
 Created on Thu Jan 11 10:34:43 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

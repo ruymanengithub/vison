@@ -9,7 +9,6 @@ checks.
 Created on Wed Nov  1 09:57:44 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

@@ -10,7 +10,6 @@ TEST: CHINJ00 - used to test charge injection functionality using ELVIS.
 Created on Tue Jan 13 12:08:00 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
 """
 

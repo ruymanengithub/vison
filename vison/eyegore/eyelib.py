@@ -1,10 +1,13 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
+
+
+Eyegore: common use library.
+
 Created on Thu Apr 19 15:55:48 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 # IMPORT STUFF

@@ -4,11 +4,12 @@
 Display Library for Point-Source Analysis
 =========================================
 
+Created on Fri Apr 21 14:02:57 2017
+
+
 :requires: matplotlib
 :author: Ruyman Azzollini
-:contact: r.azzollini _at_ ucl.ac.uk
 
-Created on Fri Apr 21 14:02:57 2017
 
 """
 # IMPORT STUFF

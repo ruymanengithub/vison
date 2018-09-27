@@ -3,12 +3,14 @@
 """
 
 Module to issue WARNING / ALERT phone calls to designated phone numbers.
+Uses Twilio.
 
 '... E.T. phone home...'
 
 Created on Thu Sep 14 10:13:12 2017
 
-@author: raf
+:author: raf
+
 """
 
 # IMPORT STUFF

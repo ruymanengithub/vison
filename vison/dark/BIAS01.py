@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 
-VIS Ground Calibration
 TEST: BIAS01
 
 Bias-structure/RON analysis script
@@ -10,7 +9,6 @@ Bias-structure/RON analysis script
 Created on Tue Aug 29 16:53:40 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
 """
 

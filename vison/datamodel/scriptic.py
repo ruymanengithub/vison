@@ -7,7 +7,6 @@ Classes and functions to generate ELVIS commanding scripts automatically.
 Created on Wed May 24 15:31:54 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
 """
 

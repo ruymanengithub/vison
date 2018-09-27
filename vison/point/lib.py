@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 
-FM-Calib. Campaign.
 
 Library module with useful data and functions for processing of point-source 
 imaging data.
@@ -9,7 +8,6 @@ imaging data.
 Created on Wed Apr  5 10:21:05 2017
 
 :author: Ruyman Azzollini (except where indicated)
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

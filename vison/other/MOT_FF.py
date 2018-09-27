@@ -12,7 +12,6 @@ Bit Correlations (ADC health)
 Created on Tue Jul 31 18:04:00 2018
 
 :author: raf
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

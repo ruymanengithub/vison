@@ -8,7 +8,6 @@ Common Values which are used by functions and classes throughout pipeline.
 Created on Tue Jan 16 10:53:40 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

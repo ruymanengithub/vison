@@ -9,7 +9,6 @@ Module with tools used in PTC analysis.
 Created on Thu Sep 14 16:29:36 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

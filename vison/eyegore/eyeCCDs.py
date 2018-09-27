@@ -1,10 +1,12 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
+
+Eyegore: CCDs display.
+
 Created on Fri Oct 13 16:16:08 2017
 
 :author: raf
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

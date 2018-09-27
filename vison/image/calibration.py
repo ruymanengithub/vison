@@ -1,10 +1,12 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
+
+Common use CDP functions / methods.
+
 Created on Thu Nov  2 16:54:28 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 # IMPORT STUFF

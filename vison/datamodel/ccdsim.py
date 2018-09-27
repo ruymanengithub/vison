@@ -7,7 +7,7 @@ Methods to simulate data. Used by ccd.CCD class.
 Created on Wed Apr  4 11:13:30 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
+
 
 """
 

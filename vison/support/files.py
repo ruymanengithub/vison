@@ -5,7 +5,7 @@ IO related functions.
 :requires: NumPy
 
 :author: Sami-Matias Niemi
-:contact: r.azzollini_at_ucl.ac.uk
+
 """
 import datetime
 import cPickle

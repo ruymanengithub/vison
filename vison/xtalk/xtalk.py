@@ -7,7 +7,6 @@ Module for analysis of Cross-Talk data obtained with ROE-Tab injection.
 Created on Thu Sep 14 16:11:09 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

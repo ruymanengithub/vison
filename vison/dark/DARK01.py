@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 
-VIS Ground Calibration
 TEST: DARK01
 
 "Dark Current" analysis script
@@ -10,7 +9,6 @@ TEST: DARK01
 Created on Tue Aug 29 17:21:00 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
 """
 

@@ -17,7 +17,6 @@ Notes:
 Created on Thu Sep 22 11:38:24 2016
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

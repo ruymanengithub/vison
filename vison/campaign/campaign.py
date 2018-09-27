@@ -8,7 +8,7 @@ Description of the Ground Calibration Campaign.
 Created on Wed Oct 11 11:43:54 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
+
 """
 
 # IMPORT STUFF

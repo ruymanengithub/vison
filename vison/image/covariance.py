@@ -7,8 +7,7 @@ Used in the context of Brighter-Fatter analysis, mainly.
 
 Created on Wed Mar  7 11:54:54 2018
 
-@author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
+:author: Ruyman Azzollini
 
 """
 

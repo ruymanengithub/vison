@@ -3,7 +3,6 @@
 
 
 :author: Ruyman Azzollini
-:contact: r.azzollini _at_ ucl.ac.uk
 
 Created on Thu Apr 20 18:56:40 2017
 

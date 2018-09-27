@@ -2,14 +2,11 @@
 # -*- coding: utf-8 -*-
 """
 
-EUCLID-VIS Ground Calibration Campaign
-
 Model of the calibration OGSE
 
 Created on Fri Sep  8 12:11:55 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
 """
 

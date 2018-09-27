@@ -7,7 +7,6 @@ Auxiliary Functions and resources to MOT_FF
 Created on Tue Jul 31 17:50:00 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
 """
 

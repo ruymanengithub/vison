@@ -8,7 +8,7 @@ House-Keeping inspection and handling tools.
 Created on Thu Mar 10 12:11:58 2016
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
+
 """
 
 # IMPORT STUFF

@@ -10,7 +10,6 @@ Brighter-Fatter Analysis
 Created on Wed Mar 7 10:57:00 2018
 
 :author: raf
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

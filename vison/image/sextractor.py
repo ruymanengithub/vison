@@ -6,7 +6,7 @@ Sextractor interface.
 
 Created on Thu May 17 13:29:05 2018
 
-@author: raf
+:author: raf
 """
 
 # IMPORT STUFF

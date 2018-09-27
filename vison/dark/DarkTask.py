@@ -1,10 +1,12 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
+
+Common Use Dark acquisitions Analysis Task: Bias and Darks.
+
 Created on Wed Dec  6 15:54:00 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

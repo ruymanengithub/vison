@@ -7,7 +7,6 @@ Auxiliary Functions and resources to TP02.
 Created on Wed Jan 31 14:59:00 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
 """
 

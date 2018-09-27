@@ -2,14 +2,12 @@
 # -*- coding: utf-8 -*-
 """
 
-VIS Ground Calibration Campaign
-
 ELVIS variables dictionaries.
 
 Created on Fri Sep 22 12:04:09 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
+
 """
 
 script_keys = ['frames',

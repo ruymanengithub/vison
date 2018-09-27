@@ -11,7 +11,6 @@ TEST: STRAY00 - used to investigate STRAY-LIGHT sources in OGSE.
 Created on Thu Feb 08 14:07:00 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
 """
 

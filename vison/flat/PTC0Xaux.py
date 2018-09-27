@@ -7,7 +7,6 @@ Auxiliary Functions and resources to PTC0X.
 Created on Tue Jan 30 17:51:00 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
 """
 

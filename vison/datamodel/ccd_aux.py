@@ -7,7 +7,6 @@ Auxiliary script to ccd.py
 Created on Mon Feb 19 13:14:02 2018
 
 :author: raf
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 """
 
+Trap-pumping Analysis Tools.
 
 Created on Fri Mar 16 14:38:51 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

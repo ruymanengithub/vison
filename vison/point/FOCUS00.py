@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 
-VIS Ground Calibration
 TEST: FOCUS00
 
 Focus analysis script
@@ -24,7 +23,6 @@ Tasks:
 Created on Mon Apr 03 16:21:00 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

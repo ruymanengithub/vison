@@ -9,7 +9,6 @@ M.O.T. Test Set: used to inspect PERFORMANCE at the lowest level possible
 Created on Mon Jul 30 17:07:00 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

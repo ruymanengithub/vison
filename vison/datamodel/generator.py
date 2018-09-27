@@ -7,7 +7,6 @@ Script to generate simulated data for pipeline testing purposes.
 Created on Tue Aug 29 11:08:56 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
 """
 

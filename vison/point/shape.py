@@ -7,7 +7,6 @@ Simple class to measure quadrupole moments and ellipticity of an object.
 :requires: NumPy, PyFITS
 
 :author: Sami-Matias Niemi, Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 import os

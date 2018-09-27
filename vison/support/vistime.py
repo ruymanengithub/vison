@@ -7,7 +7,6 @@ Accesory library: time related operations
 Created on Tue Oct 10 15:08:28 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
 """
 

@@ -6,7 +6,6 @@ Data model for Euclid-VIS CCDs (ground testing at MSSL)
 Created on Fri Nov 13 17:42:36 2015
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

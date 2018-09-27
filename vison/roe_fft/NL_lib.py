@@ -1,10 +1,12 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
+
+Some utilities for analysis of Non-Linearity of ROE and ROE-TAB.
+
 Created on Wed Mar 21 16:32:19 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

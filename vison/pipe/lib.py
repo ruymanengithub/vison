@@ -7,7 +7,7 @@ Created on Wed Nov 30 11:11:27 2016
 
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
+
 """
 
 # IMPORT STUFF

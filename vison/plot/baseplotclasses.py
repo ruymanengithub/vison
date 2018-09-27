@@ -7,7 +7,6 @@ vison pipeline: Classes to do plots.
 Created on Mon Nov 13 17:54:08 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 # IMPORT STUFF

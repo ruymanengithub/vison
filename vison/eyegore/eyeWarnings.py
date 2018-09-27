@@ -7,7 +7,6 @@ Module to handle HK-OOL Warnings
 Created on Thu Apr 19 16:09:02 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

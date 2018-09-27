@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 
-Euclid-VIS Calibration Programme Pipeline: vison
-
-Reporting Utilities.
+LaTEx - PDF Reporting Utilities.
 
 :History:
 Created on Wed Jan 25 16:58:33 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

@@ -1,15 +1,12 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Euclid Ground Calibration Campaign
-
 
 Classes to store Calibration Data Products.
 
 Created on Tue Feb 27 10:58:42 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

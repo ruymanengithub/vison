@@ -7,7 +7,6 @@ Auxiliary Functions and resources to TP01.
 Created on Wed Jan 31 15:11:00 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
 """
 

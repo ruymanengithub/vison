@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 
-VIS Ground Calibration
 TEST: PSF0X
 
 PSF vs. Fluence, and Wavelength
@@ -27,7 +26,6 @@ Tasks:
 Created on Thu Dec 29 15:01:07 2016
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

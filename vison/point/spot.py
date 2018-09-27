@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 
+Spot Stamp Class.
 
+Created on Thu Apr 20 15:35:08 2017
 
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
-Created on Thu Apr 20 15:35:08 2017
 
 """
 

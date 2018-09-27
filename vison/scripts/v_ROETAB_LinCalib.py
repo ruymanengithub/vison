@@ -8,7 +8,6 @@ Created on Tue Mar 27 14:42:00 2018
 Modified on Fri Sep 14 10:53:00 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

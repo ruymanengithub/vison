@@ -5,7 +5,6 @@ These functions can be used for logging information.
 .. Warning:: logger is not multiprocessing safe.
 
 :author: Sami-Matias Niemi
-:contact: r.azzollini_at_ucl.ac.uk
 
 :version: 0.3
 """

@@ -10,7 +10,6 @@ CCD Persistence test
 Created on Tue Aug 29 17:39:00 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
 """
 

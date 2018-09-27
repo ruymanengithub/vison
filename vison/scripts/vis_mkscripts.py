@@ -1,15 +1,12 @@
 #! $HOME/SOFTWARE/anaconda2/envs/vison/bin/ python
 """
 
-VIS Ground Calibration Campaign
-
-
-Automatically Generating Calibration Campaign Scripts.
+Automatically Generating Calibration Campaign Data Acquisition Scripts.
+Aimed at ELVIS.
 
 Created on Fri Sep 08 12:03:00 2017
 
 :autor: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

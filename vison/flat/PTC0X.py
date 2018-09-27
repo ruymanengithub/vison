@@ -26,7 +26,6 @@ Tasks:
 Created on Mon Apr  3 17:00:24 2017
 
 :author: raf
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

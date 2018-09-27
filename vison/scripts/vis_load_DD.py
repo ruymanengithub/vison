@@ -1,14 +1,11 @@
 #! $HOME/SOFTWARE/anaconda2/envs/vison/bin/ python
 """
 
-VIS Ground Calibration Campaign
-
 Loading a DataDict object for inspection.
 
 Created on Wed Aug 01 10:00:00 2018
 
 :autor: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

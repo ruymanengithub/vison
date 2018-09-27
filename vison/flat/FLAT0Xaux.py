@@ -7,7 +7,6 @@ Auxiliary Functions and resources to FLAT0X.
 Created on Tue Jan 30 17:39:00 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
 """
 

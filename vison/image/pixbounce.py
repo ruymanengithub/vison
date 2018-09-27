@@ -2,14 +2,11 @@
 # -*- coding: utf-8 -*-
 """
 
-Euclid-VIS Ground Calibration Campaign
-
 Pixel Bounce Analysis methods.
 
 Created on Fri Mar  9 09:50:16 2018
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

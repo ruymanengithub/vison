@@ -4,7 +4,6 @@
 Created on Wed Dec  6 15:56:00 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

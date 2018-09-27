@@ -1,10 +1,12 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
+
+Aux. to task.py
+
 Created on Fri Nov 17 19:11:53 2017
 
 :author: raf
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

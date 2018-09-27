@@ -7,7 +7,7 @@ Algorithms useful to point-source analysis.
 Created on Wed Nov  1 16:57:31 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
+
 """
 
 # IMPORT STUFF

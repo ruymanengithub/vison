@@ -9,7 +9,6 @@ This is the CORE data-structure used to do analysis and report results.
 Created on Thu Sep 21 16:47:09 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 

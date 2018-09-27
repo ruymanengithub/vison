@@ -10,7 +10,6 @@ Trap-Pumping calibration (vertical)
 Created on Tue Aug 29 17:37:00 2017
 
 :author: Ruyman Azzollini
-:contact: r.azzollini__at__ucl.ac.uk
 
 """
 

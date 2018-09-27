@@ -7,10 +7,11 @@ Simple class to do Gaussian Fitting to a spot.
 
 :requires: NumPy, astropy
 
-:author: Ruyman Azzollini
-:contact: r.azzollini_at_ucl.ac.uk
-
 Created on Thu Apr 20 16:42:47 2017
+
+
+:author: Ruyman Azzollini
+
 
 
 """

@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 """
 
+Eyegore: House Keeping Monitoring.
 
 Created on Fri Oct 13 14:11:41 2017
 
 :author: raf
-:contact: r.azzollini_at_ucl.ac.uk
 
 """
 
