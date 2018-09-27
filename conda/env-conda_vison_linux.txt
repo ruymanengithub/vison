@@ -60,7 +60,7 @@ greenlet=0.4.7=py27_0
 grin=1.2.1=py27_1
 gst-plugins-base=1.8.0=0
 gstreamer=1.8.0=0
-h5py=2.5.0=np19py27_3
+#h5py=2.5.0=np19py27_3
 harfbuzz=0.9.39=1
 hdf5=1.8.15.1=1
 html5lib=0.999=py27_0
