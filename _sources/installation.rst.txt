@@ -72,6 +72,10 @@ Use the OS version that may correspond in your case (by now, only linux-64 bits 
   ::
     ~$ source activate vison
 
+* Update pipe
+  ::
+    ~$ pip install --upgrade pip
+
 * Install the packages that are accessed via `pip`, within the conda environment:
   ::
     ~$ pip install -r env-pip_vison.txt
@@ -109,6 +113,7 @@ within the `vison` conda environment. For example:
     >>> import vison
     >>> dir(vison)
     ['Eyegore', 'FlatFielding', 'Pipe', 'Report', '__all__', '__builtins__', '__doc__', '__file__', 
-    '__name__', '__package__', '__path__', '__version__', 'analysis', 'data', 'datamodel', 
-         'eyegore', 'pipe', 'point', 'support']
+    '__name__', '__package__', '__path__', '__version__', '_version', 'analysis', 'blocks', 'dark', 
+    'data', 'datamodel', 'eyegore', 'flat', 'image', 'inject', 'matplotlib', 'ogse', 'ogse_profiles', 
+    'other', 'pipe', 'plot', 'point', 'pump', 'stop', 'support']
 
