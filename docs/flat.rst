@@ -2,7 +2,18 @@
 ==========================
 
 
-.. currentmodule:: flat
+.. currentmodule:: vison.flat
+
+FlatTask.py
+-----------
+
+.. automodule:: vison.flat.FlatTask
+        :members:
+
+.. autoclass:: FlatTask
+    :members:
+
+
 
 
 FlatFielding.py
@@ -10,6 +21,12 @@ FlatFielding.py
 
 .. automodule:: vison.pipe.FlatFielding
         :members:
+
+nl.py
+-----
+
+.. automodule:: vison.flat.nl
+    :members:
 
 
 
@@ -20,9 +37,4 @@ ptc.py
     :members:
 
 
-nl.py
------
-
-.. automodule:: vison.flat.nl
-    :members:
 

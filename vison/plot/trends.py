@@ -7,7 +7,8 @@ They have in common that they show trends with time of some variables / stats.
 
 Created on Fri Jan 26 16:18:43 2018
 
-@author: raf
+:author: raf
+
 """
 
 # IMPORT STUFF

@@ -5,7 +5,7 @@
 22 Dec 2016: created
 
 :author: Ruyman Azzollini (MSSL)
-:contact: r.azzollini_at_ucl.ac.uk
+
 """
 
 from setuptools import setup, Extension
