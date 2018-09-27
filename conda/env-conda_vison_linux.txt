@@ -7,7 +7,7 @@ alabaster=0.7.9=py27_0
 #anaconda=2.3.0=np19py27_0
 argcomplete=0.8.9=py27_0
 astroid=1.4.9=py27_0
-astropy=1.3.1=np112py27_0
+#astropy=1.3.1=np112py27_0
 atlas-generic=3.10.2=1
 babel=2.3.4=py27_0
 backports=1.0=py27_0
@@ -21,7 +21,7 @@ blaze-core=0.8.0=np19py27_0
 #blz=0.6.2=np19py27_1
 bokeh=0.9.0=np19py27_0
 boto=2.38.0=py27_0
-bottleneck=1.0.0=np19py27_0
+#bottleneck=1.0.0=np19py27_0
 cairo=1.12.18=6
 cdecimal=2.3=py27_0
 certifi=14.05.14=py27_0
