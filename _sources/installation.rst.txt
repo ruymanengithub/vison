@@ -46,7 +46,8 @@ Installing conda and creating `vison` environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Once you have succesfully installed conda, we will create an environment that will
-allow you to install the pipeline and meet all its dependencies.
+allow you to install the pipeline and meet all its dependencies (save for SAO DS9, which 
+is only used in real-time monitoring, optionally).
 
 
 Step-by-Step:

@@ -39,9 +39,11 @@ Detailed instructions:
 Dependencies
 ------------
 
-Instructions to acquire a copy of the "conda" environment that provides all 
+Instructions to acquire a copy of the "conda" environment that provides almost all 
 dependencies is included in the package. See :ref:`installation` instructions for 
-details.
+details. The only package that will not be installed by this means is SAO-DS9,
+which must be installed separetly, in order to be able to use some of the
+interactive inspection capabilities of Eyegore (data acquisition monitoring).
 
 
 Pipeline Core
