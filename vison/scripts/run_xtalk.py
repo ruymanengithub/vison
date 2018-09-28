@@ -52,10 +52,10 @@ def run_xtalk(incat, inpath='', respath='', metafile='', doCompute=False):
 
     meta = copy.deepcopy(meta_defaults)
     if metafile != '':
-        inmeta = vjson.load_jsonfile(metafile)["metadata"]
+        inmeta = vjson.load_jsonfile(metafile)["inputs"]
         meta.update(inmeta)
 
-    datetag = meta["Date"]
+    datetag = meta["AcqDate"]
 
     label = meta['Label']
     if label != '':
@@ -122,7 +122,8 @@ def run_xtalk(incat, inpath='', respath='', metafile='', doCompute=False):
     xtalk.PlotSummaryFig(Xtalks, suptitle, figname_R, scale='RATIO')
     xtalk.PlotSummaryFig(Xtalks, suptitle, figname_A, scale='ADU')
 
-    Xtalks['figs'] = dict(RATIO=figname_R, ADU=figname_A)
+    Xtalks['figs'] = dict(
+    RATIO=figname_R, ADU=figname_A)
     Xtalks['meta']['Analysis_Date'] = run_ttag
 
     report = xtalk.ReportXL_Xtalk(Xtalks)
