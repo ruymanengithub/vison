@@ -19,7 +19,7 @@ import copy
 
 from vison.point import FOCUS00, PSF0X
 from vison.dark import BIAS01, DARK01
-from vison.flat import NL01, PTC0X, FLAT0X
+from vison.flat import NL01, PTC0X, FLAT0X, BF01
 from vison.inject import CHINJ01, CHINJ02
 from vison.pump import TP01, TP02
 from vison.other import PERSIST01 as PER01
@@ -31,11 +31,11 @@ from vison.support import context
 
 
 def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
-                           CHAMBER=None):
+                           CHAMBER=None, purpose='scripts'):
     """ """
 
     ogse = ogsemod.Ogse(CHAMBER)
-
+    
     print 'GENERATING TEST SEQUENCE...'
 
     test_sequence = OrderedDict()
@@ -60,6 +60,14 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                   PERSIST01=False
                   )
     
+    if purpose == 'analysis':
+        _toGen.update(
+                dict(
+                    BF01=False,
+                    BF01WAVE=False,
+                    MOT_FF=False
+                        )
+                )
     _toGen.update(toGen)
 
 
@@ -397,6 +405,73 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
             #istructPTC02w = ptc02w.build_scriptdict(diffvalues=diffPTC02w,elvis=elvis)
             test_sequence[itestkey] = copy.deepcopy(ptc02w)
+
+
+    if _toGen['BF01']:
+        
+        diffBF01 = dict(mirr_on=0,
+                         vstart=0,
+                         vend=2086)
+
+        diffBF01.update(diffvalues)
+        tFWC_flat800 = ogse.profile['tFWC_flat']['nm800']
+        # 5%, 10%, 20%, 30%, 50%, 70%, 80%, 90%, 100%, 110%, 120%
+        exptsBF01 = (np.array([5., 10., 20., 30., 50., 70., 80., 90.,
+                                100., 110., 120.])/100.*tFWC_flat800).tolist()  # ms
+        frsBF01 = [10, 10, 10, 10, 10, 10, 10, 10, 4, 4, 4]
+        
+        
+        bf01 = BF01.BF01(inputs=dict(
+                elvis=elvis,
+                CHAMBER=CHAMBER,
+                test='BF01',
+                exptimes=exptsBF01,
+                frames=frsBF01,
+                wavelength=800,
+                Npix=5,
+                surrogate='PTC01'
+                ))
+        
+        test_sequence['BF01'] = copy.deepcopy(bf01)
+        
+    
+    if _toGen['BF01WAVE']:
+        
+        print 'BF01WAVE...'
+
+        wavesBF01w = [590, 730, 880]
+
+        diffBF01w = dict(mirr_on=0)
+        diffBF01w.update(diffvalues)
+
+        for iw, wave in enumerate(wavesBF01w):
+
+            # 10%, 30%, 50%, 70%, 80%, 90% x FWC. 4 frames per fluence.
+
+            tFWC_flatw = ogse.profile['tFWC_flat']['nm%i' % wave]
+
+            exptsBF01w = (np.array(
+                [10., 30., 50., 70., 80., 90.])/100.*tFWC_flatw).tolist()
+            frsBF01w = [4, 4, 4, 4, 4, 4]
+
+            itestkey = 'BF01_%i' % wave
+            diffBF01w['test'] = itestkey
+            isurrogate = 'PTC02_%i' % wave
+
+            print '%s...' % itestkey
+
+            bf01w = BF01.BF01(inputs=dict(elvis=elvis,
+                                             CHAMBER=CHAMBER,
+                                             test=itestkey,
+                                             exptimes=exptsBF01w,
+                                             frames=frsBF01w,
+                                             wavelength=wave,
+                                             surrogate=isurrogate,
+                                             diffvalues=diffBF01w))
+
+            test_sequence[itestkey] = copy.deepcopy(bf01w)
+
+        
 
 
     if toGen['FLATFLUX00']:

@@ -17,7 +17,6 @@ Created on Wed Mar 7 10:57:00 2018
 import numpy as np
 from pdb import set_trace as stop
 import os
-import warnings
 import copy
 import string as st
 from collections import OrderedDict
@@ -176,7 +175,7 @@ class BF01(PTC0X):
         
         dpath = self.inputs['subpaths']['ccdpickles']
         covpath = self.inputs['subpaths']['covariance']
-        prodspath = self.inputs['subpaths']['products']
+        #prodspath = self.inputs['subpaths']['products']
         
         profscov_1D = cdp.CDP()
         profscov_1D.header = CDP_header.copy()
@@ -208,17 +207,14 @@ class BF01(PTC0X):
         COV_dd['COV_10'] = np.zeros(NP,dtype='float32')
         COV_dd['COV_11'] = np.zeros(NP,dtype='float32')
         
+        self.dd.products['COV'] = OrderedDict()
+        for CCDk in CCDs:
+            self.dd.products['COV'][CCDk] = OrderedDict()
+        
 
         if not self.drill:
             
-            
-            def fullinpath_adder(path): return os.path.join(dpath, path)
-            vfullinpath_adder = np.vectorize(fullinpath_adder)
-            
-            self.dd.products['COV'] = OrderedDict()
-            for CCDk in CCDs:
-                self.dd.products['COV'][CCDk] = OrderedDict()
-            
+            vfullinpath_adder = utils.get_path_decorator(dpath)
  
             for jCCD, CCDk in enumerate(CCDs):
 
@@ -226,8 +222,7 @@ class BF01(PTC0X):
 
                     six = np.where(labels == ulabel)
                     
-                    ccdobjNamesList = vfullinpath_adder(
-                        ['%s.pick' % item for item in self.dd.mx['ccdobj_name'][six[0], jCCD]])
+                    ccdobjNamesList = vfullinpath_adder(self.dd.mx['ccdobj_name'][six[0],jCCD],'pick')
                     
                     ccdobjList = [cPickleRead(item) for item in ccdobjNamesList]
                     
@@ -260,7 +255,6 @@ class BF01(PTC0X):
                         profscov_1D.data['ver'][CCDk][Q]['y'][ulabel] = \
                                    icovdict['av_covmap'][Q][1:,0].copy()
                         
-        
         else:
             
             for jCCD, CCDk in enumerate(CCDs):
@@ -389,37 +383,44 @@ class BF01(PTC0X):
             self.dd.products['BF']['fluence'] = fluence.copy()
 
         if not self.drill:
-
+            
             singlepixmap = np.zeros((101, 101), dtype='float32') + 0.01
             singlepixmap[50, 50] = 1.
 
             for jCCD, CCDk in enumerate(CCDs):
+                
+                
+                for ix, ulabel in enumerate(ulabels):
+                    
+                    COV_dict = self.dd.products['COV'][CCDk][ulabel].copy()
 
-                for kQ, Q in enumerate(Quads):
+                    for kQ, Q in enumerate(Quads):
 
-                    for ix, ulabel in enumerate(ulabels):
 
-                        COV_dict = self.dd.products['COV'][CCDk][Q][ulabel]
+                        COV_mx = COV_dict['av_covmap'][Q].copy()
 
-                        COV_mx = COV_dict['av_covmap'].copy()
+                        fluence[ix] = COV_dict['av_mu'][Q].copy()
+                        
+                        try:
+                            Asol_Q, psmooth_Q = G15.solve_for_A_linalg(
+                                COV_mx, var=1., mu=1., returnAll=True, doplot=False,
+                                verbose=False)
+                        
+                            kernel_Q = G15.degrade_estatic(singlepixmap, Asol_Q)
 
-                        fluence[ix] = COV_dict['av_mu'].copy()
-
-                        Asol_Q, psmooth_Q = G15.solve_for_A_linalg(
-                            COV_mx, var=1., mu=1., returnAll=True, doplot=False)
-
-                        kernel_Q = G15.degrade_estatic(singlepixmap, Asol_Q)
-
-                        kerQshape = G15.get_cross_shape_rough(
-                            kernel_Q, pitch=12.)
-
-                        self.dd.products['BF'][CCDk][Q][ulabel] = OrderedDict(Asol=Asol_Q.copy(),
-                                                                              psmooth=psmooth_Q.copy(),
+                            kerQshape = G15.get_cross_shape_rough(
+                                    kernel_Q, pitch=12.)
+                        
+                            self.dd.products['BF'][CCDk][Q][ulabel] = OrderedDict(Asol=Asol_Q.copy(),
+                                                                              psmooth=copy.deepcopy(psmooth_Q),
                                                                               kernel=kernel_Q.copy())
+                        
 
-                        kernel_FWHMx[ix, jCCD, kQ] = kerQshape['FWHMx']
-                        kernel_FWHMy[ix, jCCD, kQ] = kerQshape['FWHMy']
-                        kernel_e[ix, jCCD, kQ] = kerQshape['e']
+                            kernel_FWHMx[ix, jCCD, kQ] = kerQshape['fwhmx']
+                            kernel_FWHMy[ix, jCCD, kQ] = kerQshape['fwhmy']
+                            kernel_e[ix, jCCD, kQ] = kerQshape['e']
+                        except:
+                            self.dd.products['BF'][CCDk][Q][ulabel] = OrderedDict()
 
         self.dd.products['BF']['kernel_FWHMx'] = kernel_FWHMx.copy()
         self.dd.products['BF']['kernel_FWHMy'] = kernel_FWHMy.copy()

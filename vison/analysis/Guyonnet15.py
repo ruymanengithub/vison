@@ -27,7 +27,7 @@ from astropy.io import fits as fts
 import numpy as np
 from scipy.special import expi as Ei
 from scipy import optimize as optimize
-import copy
+#import copy
 from scipy.signal import convolve2d
 
 from matplotlib import pyplot as plt
@@ -322,7 +322,8 @@ def _build_aijb(X, indepBounds, psmooth):
     return aijb
 
 
-def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnAll=False):
+def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnAll=False,
+                       verbose=False):
     """Function to retrieve the A matrix of pixel boundaries
     displacements, given a matrix of pixel covariances, variance, and mu.
 
@@ -337,6 +338,7 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
     :param doplot: if True, plot the fit of the fpred(ijb) function
     :param psmooth: coefficients of the fpred(aijb) function (Eq. 18)
     :param returnAll: bool, controls return values
+    :param verbose: bool, be verbose or not.
 
     :return: if returnAll == True, return (aijb, psmooth), otherwise return aijb only
 
@@ -394,8 +396,9 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
 
                         if (i == ip) and (j == jp):
                             Afull[ixx, jyy] = 1.
-
-    print 'sum(A)=%.1f' % Afull.sum()
+    
+    if verbose:
+        print 'sum(A)=%.1f' % Afull.sum()
 
     #  REDUCING THE COEFFICIENTS MATRIX
 
@@ -577,8 +580,9 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
 
     Nindep = len(indepBounds)
 
-    print '\n Independent Coeffs. = %i / %i' % (Nindep, Nraw)
-    print '\n A.shape = ', A.shape
+    if verbose:
+        print '\n Independent Coeffs. = %i / %i' % (Nindep, Nraw)
+        print '\n A.shape = ', A.shape
 
     Atrans = A.transpose()
 
@@ -588,14 +592,17 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
 
     # verify matrix
 
-    print '\nMatrix Verification'
+    if verbose:
+        print '\nMatrix Verification'
     res = Rij - aijb.sum(axis=2)  # should be close to zero, except on (0,0)
     ii, jj = np.meshgrid(np.arange(N), np.arange(N), indexing='ij')
     sel = ((ii > 0) | (jj > 0))
+    
+    if verbose:
 
-    print 'mean res = %.1e' % res[sel].mean()
-    print 'max res = %.1e' % res[sel].max()
-    print 'min res = %.1e' % res[sel].min()
+        print 'mean res = %.1e' % res[sel].mean()
+        print 'max res = %.1e' % res[sel].max()
+        print 'min res = %.1e' % res[sel].min()
 
     if returnAll:
         return aijb, psmooth
@@ -740,7 +747,7 @@ def get_Rdisp(img, aijb):
     return Rdisp
 
 
-def get_deltaQ(img, aijb, writeFits=False):
+def get_deltaQ(img, aijb):
     """
 
     Retrieves deltaQ map for input image and aijb matrix.
@@ -750,14 +757,13 @@ def get_deltaQ(img, aijb, writeFits=False):
 
     :param img: image, 2D array
     :param aijb: Aijb matrix, 3D array
-    :param writeFits: save FITS file with resulting dQ map (optional)
 
     :return: array, matrix with delta-Q for each pixel in img, given aijb
 
     """
     sign = 1.
 
-    kernel = get_kernel(aijb, writeFits)*sign
+    kernel = get_kernel(aijb)*sign
 
     dimg = np.zeros_like(img, dtype='float32')
 
@@ -1034,6 +1040,8 @@ def test_solve():
     psmooth, epsmooth = solve_for_psmooth(covij, var, mu)
 
     Abest = solve_for_A_linalg(covij, var=1., mu=1.)
+    
+    return Abest
 
 
 def test_selfconsist():
@@ -1085,8 +1093,6 @@ def test_selfconsist():
     singlepixmap = np.zeros((101, 101), dtype='float32') + 0.01
     singlepixmap[50, 50] = 1.
 
-    k = get_kernel(Asynth, writeFits=True)
-
     kernel = degrade_estatic(singlepixmap, Abest)
     deltaQ = get_deltaQ(singlepixmap, Abest)
     kernelsynth = degrade_estatic(singlepixmap, Asynth)
@@ -1118,7 +1124,9 @@ def test_getkernel():
     for i in range(4):
         aijb[:, :, i] = (xx**2.+yy**2.)**0.5
 
-    kernel = get_kernel(aijb, writeFits=True)
+    kernel = get_kernel(aijb)
+    
+    return kernel
 
 
 if __name__ == '__main__':
