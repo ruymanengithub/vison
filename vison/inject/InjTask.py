@@ -14,6 +14,7 @@ import copy
 import os
 from collections import OrderedDict
 import pandas as pd
+import sys
 
 #from vison.support import context
 from vison.inject import lib as ilib
@@ -339,7 +340,7 @@ class InjTask(Task):
                 _compliance_flugrad, label='COMPLIANCE FLUENCE GRADIENT:')
 
 
-    def BROKEN_basic_analysis(self):
+    def basic_analysis(self):
         """ 
 
         Basic analysis of data.
@@ -366,9 +367,12 @@ class InjTask(Task):
 
         """
         
-        sys.exit('BROKEN! TODO: address polymorphism correctly, for figures, cdps, etc.')
+        print 'WARNING! task InjTask.basic_analysis has not been properly tested!'
+        #sys.exit('BROKEN! TODO: address polymorphism correctly, for figures, cdps, etc.')
         
         testname = self.inputs['test']
+        testkey = dict(CHINJ01='CH01',
+                       CHINJ02='CH02')[testname]
         
         if self.report is not None:
             self.report.add_Section(
@@ -454,13 +458,13 @@ class InjTask(Task):
                         IG1_key = 'IG1_%i_%s' % (jCCD+1,_get_CCDhalf(Q))
                         IG1_val = self.dd.mx[IG1_key][iObs,jCCD]
                         sub_tag = 'IG1_%.2fV' % IG1_val
-                    
+                    elif testname == 'CHINJ02':
+                        sys.exit('Unfinished code!')
                     
                     prof_alrow_cdp.data[CCDk][Q]['x'][sub_tag] = xdummy.copy()
                     prof_alrow_cdp.data[CCDk][Q]['y'][sub_tag] = ydummy.copy()
                     prof_alcol_cdp.data[CCDk][Q]['x'][sub_tag] = xdummy.copy()
                     prof_alcol_cdp.data[CCDk][Q]['y'][sub_tag] = ydummy.copy()
-        
         
         # The hardwork
         
@@ -495,6 +499,8 @@ class InjTask(Task):
                                 IG1_key = 'IG1_%i_%s' % (jCCD+1,_get_CCDhalf(Q))
                                 IG1_val = self.dd.mx[IG1_key][iObs,jCCD]
                                 sub_tag = 'IG1_%.2fV' % IG1_val
+                            elif testname == 'CHINJ02':
+                                sys.exit('Not ready for CHINJ02!')
                             
                             id_dly = self.dd.mx['id_dly'][iObs,jCCD]
                             
@@ -532,7 +538,9 @@ class InjTask(Task):
                             CH0X_dd['CCD'][ix] = jCCD
                             CH0X_dd['Q'][ix] = kQ
                             if testname == 'CHINJ01':
-                                   CH0X_dd['IG1'][ix] = IG1_val                            
+                                   CH0X_dd['IG1'][ix] = IG1_val    
+                            elif testname == 'CHINJ02':
+                                sys.exit('Not ready for CHINJ02!')
                             CH0X_dd['ID_DLY'][ix] = id_dly
                             CH0X_dd['MEAN_INJ'][ix] = self.dd.mx['chinj_mean'][iObs,jCCD,kQ]
                             CH0X_dd['MED_INJ'][ix] = self.dd.mx['chinj_p50'][iObs,jCCD,kQ]
@@ -546,14 +554,14 @@ class InjTask(Task):
         
         prof_alrow_cdp.data['labelkeys'] = prof_alrow_cdp.data[CCDs[0]][Quads[0]]['x'].keys()
 
-        fdict_alrow = self.figdict['CH0X_alrow'][1]
+        fdict_alrow = self.figdict['%s_alrow' % testkey][1]
         fdict_alrow['data'] = prof_alrow_cdp.data.copy()
         fdict_alrow['meta']['ylim'] = [0.,maxmedinjection*1.5]
 
         
         prof_alcol_cdp.data['labelkeys'] = prof_alcol_cdp.data[CCDs[0]][Quads[0]]['x'].keys()
         
-        fdict_alcol = self.figdict['CH0X_alcol'][1]
+        fdict_alcol = self.figdict['%s_alcol' % testkey][1]
         fdict_alcol['data'] = prof_alcol_cdp.data.copy()
         fdict_alcol['meta']['ylim'] = [0.,maxmedinjection*1.5]
         
@@ -561,8 +569,8 @@ class InjTask(Task):
         self.pack_CDP_to_dd(prof_alcol_cdp,'PROFS_ALCOL')
         
         if self.report is not None:
-            self.addFigures_ST(figkeys=['CH0X_alrow',
-                                        'CH0X_alcol'], 
+            self.addFigures_ST(figkeys=['%s_alrow' % testkey,
+                                        '%s_alcol' % testkey], 
                                dobuilddata=False)
         
         # Report injection stats as a table/tables
@@ -570,7 +578,7 @@ class InjTask(Task):
         # OBSID CCD Q IG1 id_dly MEAN MEDIAN NONUNI
         
         EXT_dddf = OrderedDict(EXTRACT=pd.DataFrame.from_dict(CH0X_dd))
-        EXT_cdp = CH01aux.CDP_lib['EXTRACT']
+        EXT_cdp = self.CDP_lib['EXTRACT']
         EXT_cdp.path = prodspath
         EXT_cdp.ingest_inputs(
                 data=EXT_dddf.copy(),

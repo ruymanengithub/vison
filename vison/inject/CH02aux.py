@@ -15,6 +15,7 @@ from pdb import set_trace as stop
 import numpy as np
 import os
 from collections import OrderedDict
+from vison.datamodel import cdp
 
 from vison.plot import figclasses
 from vison.plot import trends
@@ -68,4 +69,8 @@ CH02figs['CH02checks_injlevel'] = [
 CH02figs['CH02checks_injstd'] = [trends.Fig_Basic_Checkstat, check_injstd_dict]
 CH02figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
 
-CDP_lib = dict()
+extract_cdp = cdp.Tables_CDP()
+extract_cdp.rootname = 'CHINJ02_EXTRACTION_TABLE'
+
+
+CDP_lib = dict(EXTRACT=extract_cdp)
