@@ -248,7 +248,7 @@ class BF01(PTC0X):
                         profscov_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
                                    np.arange(Npix-1)
                         profscov_1D.data['hor'][CCDk][Q]['y'][ulabel] = \
-                                   icovdict['av_covmap'][Q][1:,0].copy()
+                                   icovdict['av_covmap'][Q][0,1:].copy()
                         
                         profscov_1D.data['ver'][CCDk][Q]['x'][ulabel] = \
                                    np.arange(Npix-1)
@@ -354,15 +354,15 @@ class BF01(PTC0X):
         ulabels = np.unique(label)
 
         # INITIALISATIONS
+        
+        figspath = self.inputs['subpaths']['figs']
+        
+        oshape = (len(ulabels), len(CCDs), len(Quads))
 
-        kernel_FWHMx = np.zeros(
-            (len(ulabels), len(CCDs), len(Quads)), dtype='float32')
-        kernel_FWHMy = np.zeros(
-            (len(ulabels), len(CCDs), len(Quads)), dtype='float32')
-        kernel_e = np.zeros(
-            (len(ulabels), len(CCDs), len(Quads)), dtype='float32')
-
-        fluence = np.zeros(len(ulabels), dtype='float32') + np.nan
+        kernel_FWHMx = np.zeros(oshape, dtype='float32') + np.nan
+        kernel_FWHMy = np.zeros(oshape, dtype='float32') + np.nan
+        kernel_e = np.zeros(oshape, dtype='float32') + np.nan
+        fluence = np.zeros(oshape, dtype='float32') + np.nan
 
         self.dd.products['BF'] = OrderedDict()
         self.dd.products['BF']['ulabels'] = ulabels.copy()
@@ -399,9 +399,10 @@ class BF01(PTC0X):
 
                         COV_mx = COV_dict['av_covmap'][Q].copy()
 
-                        fluence[ix] = COV_dict['av_mu'][Q].copy()
+                        fluence[ix,jCCD,kQ] = COV_dict['av_mu'][Q].copy()
                         
                         try:
+                            
                             Asol_Q, psmooth_Q = G15.solve_for_A_linalg(
                                 COV_mx, var=1., mu=1., returnAll=True, doplot=False,
                                 verbose=False)
@@ -419,6 +420,16 @@ class BF01(PTC0X):
                             kernel_FWHMx[ix, jCCD, kQ] = kerQshape['fwhmx']
                             kernel_FWHMy[ix, jCCD, kQ] = kerQshape['fwhmy']
                             kernel_e[ix, jCCD, kQ] = kerQshape['e']
+                            
+                            # BEWARE, PENDING: dispfig is saved but NOT REPORTED anywhere!
+                            
+                            dispfig = os.path.join(figspath,'DISTORT_BF01_%s_%s%s.png' % (ulabel,CCDk,Q))
+                            
+                            G15.show_disps_CCD273(Asol_Q,stretch=10.,peak=fluence[ix,jCCD,kQ],
+                                                  N=13,sigma=1.6,
+                                                  title='%s:%s%s' % (ulabel,CCDk,Q),
+                                                  figname=dispfig)
+                            
                         except:
                             self.dd.products['BF'][CCDk][Q][ulabel] = OrderedDict()
 
