@@ -62,12 +62,13 @@ def configuration():
                         'vison/scripts/eyegore',
                         'vison/scripts/vison_run',
                         'vison/scripts/vis_explogs_merger.py',
-                        'vison/scripts/run_xtalk.py',
-                        'vison/scripts/v_ROE_LinCalib.py',
-                        'vison/scripts/v_ROETAB_LinCalib.py',
+                        'vison/scripts/vis_run_xtalk.py',
+                        'vison/scripts/vis_ROE_LinCalib.py',
+                        'vison/scripts/vis_ROETAB_LinCalib.py',
                         'vison/scripts/vis_star_finder.py',
                         'vison/scripts/vis_load_DD.py',
-                        'vison/scripts/vis_cosmetics_masker.py'])
+                        'vison/scripts/vis_cosmetics_masker.py',
+                        'vison/scripts/vison'])
 
     return config
 

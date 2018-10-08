@@ -1,0 +1,51 @@
+#! $HOME/SOFTWARE/anaconda2/envs/vison/bin/ python
+# -*- coding: utf-8 -*-
+"""
+
+Just a script used to display some help for the analysis suite.
+
+Created on Mon Oct  8 17:12:45 2018
+
+:author: R. Azzollini
+"""
+
+# IMPORT STUFF
+import os
+from pdb import set_trace as stop
+from optparse import OptionParser
+import sys
+from glob import glob
+
+
+import vison
+# END IMPORT
+
+
+def list_scripts():
+    vison_path = os.path.split(os.path.abspath(vison.__file__))[0]
+    scripts_path = os.path.join(vison_path,'scripts')
+    allfiles = glob('%s/*' % scripts_path)
+    
+    allfiles = [os.path.split(item)[-1] for item in allfiles]
+    
+    filtered = [item for item in allfiles if (os.path.splitext(item)[-1] != '.pyc' and\
+                                              '__init__' not in item)]
+    
+    for item in filtered:
+        print item
+    
+    
+    
+
+if __name__ == '__main__':
+    
+    usage = 'usage: %prog [options]'
+    parser = OptionParser(usage)
+    parser.add_option("-l", "--list", dest="list", default=False,
+                      action="store_true", help="List vison scripts.")
+    
+    (options, args) = parser.parse_args()
+    
+    if options.list:
+        list_scripts()
+        
