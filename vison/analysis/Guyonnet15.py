@@ -639,8 +639,6 @@ def get_kernel(aijb):
     directions around a pixel at (0,0).
 
     :param aijb: array, matrix with displacements in 1st quadrant
-    :param writeFits: save kernel to 4 FITS files
-
     :return: kernel matrix, (2N-1)x(2N-1)x4
 
     """
@@ -733,7 +731,7 @@ def get_Rdisp(img, aijb):
 
     """
 
-    kernel = get_kernel(aijb, writeFits=False)
+    kernel = get_kernel(aijb)
 
     NX, NY = img.shape
 

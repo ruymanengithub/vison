@@ -36,6 +36,7 @@ import copy
 from collections import OrderedDict
 import pandas as pd
 
+from vison.pipe.task import Task
 from vison.support import context
 from vison.datamodel import core
 #from vison.pipe import lib as pilib
@@ -304,6 +305,8 @@ class PTC0X(FlatTask):
                     wavedkeys=['motr_siz'],colorblind=False)
 
     def prepare_images(self):
+        Task.prepare_images(self, doExtract=True, doMask=True,
+                                         doOffset=True, doBias=False, doFF=False)
         super(PTC0X, self).prepare_images(doExtract=True, doMask=True,
                                           doOffset=True, doBias=False, doFF=False)
 

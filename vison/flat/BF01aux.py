@@ -31,7 +31,11 @@ from vison.datamodel import cdp
 covtable_cdp = cdp.Tables_CDP()
 covtable_cdp.rootname = 'BF01_COVTABLE'
 
-CDP_lib = dict(COVTABLE=covtable_cdp)
+bftable_cdp = cdp.Tables_CDP()
+bftable_cdp.rootname = 'BF01_G15TABLE'
+
+CDP_lib = dict(COVTABLE=covtable_cdp,
+               BFTABLE=bftable_cdp)
 
 
 prof_COV_ver_dict = dict(

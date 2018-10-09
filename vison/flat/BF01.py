@@ -139,9 +139,7 @@ class BF01(PTC0X):
     
     def prepare_images(self):
         Task.prepare_images(self, doExtract=True, doMask=True,
-                                         doOffset=True, doBias=False, doFF=False)
-        #super(BF01, self).prepare_images(doExtract=True, doMask=True,
-        #                                 doOffset=True, doBias=False, doFF=False)
+                                         doOffset=True, doBias=False, doFF=False)        
 
     def extract_COV(self):
         """
@@ -347,41 +345,50 @@ class BF01(PTC0X):
         label = self.dd.mx['label'][:, 0].copy()
 
         indices = copy.deepcopy(self.dd.indices)
-        #nObs, nCCD, nQuad = indices.shape
+        nObs, nC, nQ = indices.shape
         CCDs = np.array(indices.get_vals('CCD'))
         Quads = np.array(indices.get_vals('Quad'))
 
         ulabels = np.unique(label)
+        nL = len(ulabels)
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
 
         # INITIALISATIONS
         
         figspath = self.inputs['subpaths']['figs']
         
-        oshape = (len(ulabels), len(CCDs), len(Quads))
-
-        kernel_FWHMx = np.zeros(oshape, dtype='float32') + np.nan
-        kernel_FWHMy = np.zeros(oshape, dtype='float32') + np.nan
-        kernel_e = np.zeros(oshape, dtype='float32') + np.nan
-        fluence = np.zeros(oshape, dtype='float32') + np.nan
+        #kernel_FWHMx = np.zeros(oshape, dtype='float32') + np.nan
+        #kernel_FWHMy = np.zeros(oshape, dtype='float32') + np.nan
+        #kernel_e = np.zeros(oshape, dtype='float32') + np.nan
+        #fluence = np.zeros(oshape, dtype='float32') + np.nan
+        
+        NP = nC * nQ * nL
 
         self.dd.products['BF'] = OrderedDict()
         self.dd.products['BF']['ulabels'] = ulabels.copy()
         self.dd.products['BF']['CCDs'] = CCDs.copy()
         self.dd.products['BF']['Quads'] = Quads.copy()
+        
+        
+        BF_dd = OrderedDict()
+        BF_dd['CCD'] = np.zeros(NP,dtype='int32')
+        BF_dd['Q'] = np.zeros(NP,dtype='int32')
+        BF_dd['FWHMx'] =  np.zeros(NP,dtype='float32')
+        BF_dd['FWHMy'] =  np.zeros(NP,dtype='float32')
+        BF_dd['e'] =  np.zeros(NP,dtype='float32')
+        BF_dd['fluence'] =  np.zeros(NP,dtype='float32')
 
         for jCCD, CCDk in enumerate(CCDs):
 
             self.dd.products['BF'][CCDk] = OrderedDict()
 
             for kQ, Q in enumerate(Quads):
-
                 self.dd.products['BF'][CCDk][Q] = OrderedDict()
-
-            self.dd.products['BF']['kernel_FWHMx'] = kernel_FWHMx.copy()
-            self.dd.products['BF']['kernel_FWHMy'] = kernel_FWHMy.copy()
-            self.dd.products['BF']['kernel_e'] = kernel_e.copy()
-            self.dd.products['BF']['fluence'] = fluence.copy()
-
+        
         if not self.drill:
             
             singlepixmap = np.zeros((101, 101), dtype='float32') + 0.01
@@ -395,11 +402,13 @@ class BF01(PTC0X):
                     COV_dict = self.dd.products['COV'][CCDk][ulabel].copy()
 
                     for kQ, Q in enumerate(Quads):
+                        
+                        jj = jCCD * (nQ*nL) + ix * nQ + kQ
 
 
                         COV_mx = COV_dict['av_covmap'][Q].copy()
 
-                        fluence[ix,jCCD,kQ] = COV_dict['av_mu'][Q].copy()
+                        BF_dd['fluence'][jj] = COV_dict['av_mu'][Q].copy()
                         
                         try:
                             
@@ -415,34 +424,63 @@ class BF01(PTC0X):
                             self.dd.products['BF'][CCDk][Q][ulabel] = OrderedDict(Asol=Asol_Q.copy(),
                                                                               psmooth=copy.deepcopy(psmooth_Q),
                                                                               kernel=kernel_Q.copy())
-                        
+                            
+                            BF_dd['FWHMx'][jj] = kerQshape['fwhmx']
+                            BF_dd['FWHMy'][jj] = kerQshape['fwhmy']
+                            BF_dd['e'][jj] = kerQshape['e']
 
-                            kernel_FWHMx[ix, jCCD, kQ] = kerQshape['fwhmx']
-                            kernel_FWHMy[ix, jCCD, kQ] = kerQshape['fwhmy']
-                            kernel_e[ix, jCCD, kQ] = kerQshape['e']
+                            
                             
                             # BEWARE, PENDING: dispfig is saved but NOT REPORTED anywhere!
                             
                             dispfig = os.path.join(figspath,'DISTORT_BF01_%s_%s%s.png' % (ulabel,CCDk,Q))
                             
-                            G15.show_disps_CCD273(Asol_Q,stretch=10.,peak=fluence[ix,jCCD,kQ],
+                            
+                            G15.show_disps_CCD273(Asol_Q,stretch=10.,peak=BF_dd['fluence'][jj],
                                                   N=13,sigma=1.6,
                                                   title='%s:%s%s' % (ulabel,CCDk,Q),
                                                   figname=dispfig)
-                            
+                        
                         except:
                             self.dd.products['BF'][CCDk][Q][ulabel] = OrderedDict()
 
-        self.dd.products['BF']['kernel_FWHMx'] = kernel_FWHMx.copy()
-        self.dd.products['BF']['kernel_FWHMy'] = kernel_FWHMy.copy()
-        self.dd.products['BF']['kernel_e'] = kernel_e.copy()
-        self.dd.products['BF']['fluence'] = fluence.copy()
 
         # Plots
         # PENDING
 
         # REPORTING
-        # PENDING
+        
+        BF_dddf = OrderedDict(BF = pd.DataFrame.from_dict(BF_dd))
+        
+        bftable_cdp = self.CDP_lib['BFTABLE']
+        bftable_cdp.path = self.inputs['subpaths']['products']
+        bftable_cdp.ingest_inputs(
+                data = BF_dddf.copy(),
+                meta=dict(),
+                header=CDP_header.copy()
+                )
+
+        bftable_cdp.init_wb_and_fillAll(header_title='BF01: G15 TABLE')
+        self.save_CDP(bftable_cdp)
+        self.pack_CDP_to_dd(bftable_cdp, 'BFTABLE_CDP')
+
+        if self.report is not None:
+            
+            fccd = lambda x: CCDs[x-1]
+            fq = lambda x: Quads[x-1]
+            fcol = lambda x: 'col%i' % x
+            fE = lambda x: '%.2E' % x
+            
+            cov_formatters=[fccd,fq,fcol]+[fE]*4
+            
+            BFtex = bftable_cdp.get_textable(sheet='BF', caption='BF01: G15 results',
+                                               fitwidth=True,
+                                               tiny=True,
+                                               formatters=cov_formatters)
+            
+            
+            self.report.add_Text(BFtex)
+        
 
     def meta_analysis(self):
         """
