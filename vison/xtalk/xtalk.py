@@ -784,7 +784,7 @@ class ReportXL_Xtalk(ReportXL):
         """ """
         figsdict = self.data['figs']
         
-        figskeys = ['keys']
+        figskeys = figsdict['keys']
         jump = figsdict['jump']
         
         ws = self.wb['Figures']

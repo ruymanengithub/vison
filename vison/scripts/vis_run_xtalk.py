@@ -108,7 +108,8 @@ def run_xtalk(incat, inpath='', respath='', metafile='', doCompute=False):
                 
                 for CCD in CCDs:
                     Xtalks['figs']['CCD%i_R%i%s' % (CCD,CCDref,Qref)] = fignames['CCD%i' % CCD]
-                    Xtalks['figs']['keys'].append(fignames['CCD%i' % CCD])
+                    Xtalks['figs']['keys'].append('CCD%i_R%i%s' % (CCD,CCDref,Qref))
+                
 
         cPickleDumpDictionary(Xtalks, outpickfile)
 
