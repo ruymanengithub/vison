@@ -35,6 +35,7 @@ import multiprocessing
 
 from vison import Pipe
 from vison.pipe.lib import broadcast_todo_flags
+from vison.support import vjson
 # END IMPORT
 
 
@@ -45,6 +46,10 @@ def openpyconfigf(configf):
     f.close()
     return inputdict
 
+def parse_jsonconfig(jsonfile):
+    rawjson = vjson.load_jsonfile(json,useyaml=True)
+    #PENDING
+    sys.exit('PENDING: finish ingestion of json inputs in vison_run')
 
 if __name__ == '__main__':
 
@@ -52,6 +57,8 @@ if __name__ == '__main__':
     parser = OptionParser(usage)
     parser.add_option("-y", "--pyconfig", dest="pyconfig", default='',
                       help="Python configuration file to run the pipeline.")
+    parser.add_option("-j", "--json", dest="json", default='',
+                      help="Json configuration file to run the pipeline.")
     parser.add_option("-d", "--day", dest="dayfolder", default='',
                       help="Day-folder. Only needed in 'wait' mode.")
     parser.add_option("-v", "--elvis", dest="elvis", default='6.3.0',
@@ -75,6 +82,10 @@ if __name__ == '__main__':
     (options, args) = parser.parse_args()
 
     pyconfig = options.pyconfig
+    json = options.json
+    
+    assert (len(pyconfig) >0 ) != (len(json)>0), "pyconfig XOR json should be provided as input, not both, QUITTING!"
+    
     dayfolder = options.dayfolder
     elvis = options.elvis
     wait = options.wait
@@ -88,7 +99,10 @@ if __name__ == '__main__':
     
     if len(pyconfig)>0:
         inputdict = openpyconfigf(pyconfig)
+    elif len(json)>=0:
+        inputdict = parse_jsonconfig(json)
     
+    stop()
     
     if docheck or dotest:
         inputdict = broadcast_todo_flags(inputdict, docheck=docheck, dotest=dotest)
