@@ -292,6 +292,7 @@ def processXtalk_single(CCDref, Qref, OBSID, thresholdinj=0., colstart=1, colend
     fts.writeto(maskfits, mask.astype('float32').transpose(), overwrite=True)
 
     Xtalk = {}
+    fignames = dict()
 
     for CCD in CCDs:
 
@@ -359,9 +360,11 @@ def processXtalk_single(CCDref, Qref, OBSID, thresholdinj=0., colstart=1, colend
         try:
             plotXtalk(Xtalk['CCD%i' % CCD], suptitle, figname)
         except KeyError:
-            pass
+            figname = ''
+            
+        fignames['CCD%i' % CCD] = figname
 
-    return Xtalk
+    return Xtalk, fignames
 
 
 def PlotSummaryFig(Xtalk, suptitle, figname='', scale='RATIO'):
@@ -780,6 +783,13 @@ class ReportXL_Xtalk(ReportXL):
     def fill_Figures(self):
         """ """
         figsdict = self.data['figs']
+        
+        figskeys = ['keys']
+        jump = figsdict['jump']
+        
         ws = self.wb['Figures']
-        ws.add_image(oxl.drawing.image.Image(figsdict['RATIO']), 'A1')
-        ws.add_image(oxl.drawing.image.Image(figsdict['ADU']), 'A40')
+        
+        for ik, key in enumerate(figskeys):
+            cellnum = 1 + ik * jump
+            ws.add_image(oxl.drawing.image.Image(figsdict[key]), 
+            'A%i' % cellnum)
