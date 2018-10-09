@@ -38,7 +38,7 @@ from vison.pipe.lib import broadcast_todo_flags
 # END IMPORT
 
 
-def openconfigf(configf):
+def openpyconfigf(configf):
 
     f = open(configf)
     exec f
@@ -50,8 +50,8 @@ if __name__ == '__main__':
 
     usage = 'usage: %prog [options]'
     parser = OptionParser(usage)
-    parser.add_option("-c", "--config", dest="config", default='',
-                      help="Configuration file to run the pipeline.")
+    parser.add_option("-y", "--pyconfig", dest="pyconfig", default='',
+                      help="Python configuration file to run the pipeline.")
     parser.add_option("-d", "--day", dest="dayfolder", default='',
                       help="Day-folder. Only needed in 'wait' mode.")
     parser.add_option("-v", "--elvis", dest="elvis", default='6.3.0',
@@ -74,7 +74,7 @@ if __name__ == '__main__':
                       help="Use all CPUs available? Default=False [single thread]")
     (options, args) = parser.parse_args()
 
-    configf = options.config
+    pyconfig = options.pyconfig
     dayfolder = options.dayfolder
     elvis = options.elvis
     wait = options.wait
@@ -85,8 +85,9 @@ if __name__ == '__main__':
     dotest = options.test
     startobsid = int(options.startobsid)
     multithread = options.multithread
-
-    inputdict = openconfigf(configf)
+    
+    if len(pyconfig)>0:
+        inputdict = openpyconfigf(pyconfig)
     
     
     if docheck or dotest:
