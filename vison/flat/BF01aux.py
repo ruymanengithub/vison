@@ -34,8 +34,17 @@ covtable_cdp.rootname = 'BF01_COVTABLE'
 bftable_cdp = cdp.Tables_CDP()
 bftable_cdp.rootname = 'BF01_G15TABLE'
 
+profscov_cdp = cdp.CDP()
+profscov_cdp.rootname  = 'profs_COV1D_BF01'
+
+profsker_cdp = cdp.CDP()
+profsker_cdp.rootname  = 'profs_KER1D_BF01'
+
+
 CDP_lib = dict(COVTABLE=covtable_cdp,
-               BFTABLE=bftable_cdp)
+               PROFSCOV1D=profscov_cdp,
+               BFTABLE=bftable_cdp,
+               PROFSKER1D=profsker_cdp)
 
 
 prof_COV_ver_dict = dict(
@@ -56,6 +65,44 @@ prof_COV_ser_dict = dict(
               xlabel='X',
               ylim=[-0.005,0.03],
               suptitle='BF01: COV 1D Profile, Serial.')
+)
+
+prof_KER_ver_dict = dict(
+    figname='BF01_KER_profs_ver.png',
+    caption='BF01: KERNEL 1D profiles, vertical/parallel direction.',
+    meta=dict(doLegend=True,
+              ylabel='ADIM.',
+              xlabel='Y [pix]',
+              ylim=[-0.03,0.05],
+              suptitle='BF01: Kernels 1D Profile, Vertical/Parallel.')
+)
+
+prof_KER_ser_dict = dict(
+    figname='BF01_KER_profs_ser.png',
+    caption='BF01: KERNEL 1D profiles, serial direction.',
+    meta=dict(doLegend=True,
+              ylabel='ADIM.',
+              xlabel='X [pix]',
+              ylim=[-0.03,0.05],
+              suptitle='BF01: Kernels 1D Profile, Serial.')
+)
+
+FWHMx_v_flu_dict = dict(
+    figname='BF01_FWHMx_v_flu.png',
+    caption='BF01: FWHM(x) vs. Fluence.',
+    meta=dict(doLegend=True,
+              ylabel='FWHM(x), [pix]',
+              xlabel='ADU',
+              suptitle='BF01: FWHMx vs. Fluence')
+)
+
+FWHMy_v_flu_dict = dict(
+    figname='BF01_FWHMy_v_flu.png',
+    caption='BF01: FWHM(y) vs. Fluence.',
+    meta=dict(doLegend=True,
+              ylabel='FWHM(y), [pix]',
+              xlabel='ADU',
+              suptitle='BF01: FWHMy vs. Fluence')
 )
 
 
@@ -96,5 +143,18 @@ def gt_BF01figs(test):
     
     BF01figs['BF01_COV_hor'] = [
     figclasses.Fig_Beam2DPlot, prof_COV_ser_dict]
+    
+    BF01figs['BF01_KER_ver'] = [
+    figclasses.Fig_Beam2DPlot, prof_KER_ver_dict]
+    
+    BF01figs['BF01_KER_hor'] = [
+    figclasses.Fig_Beam2DPlot, prof_KER_ser_dict]
+    
+    BF01figs['BF01_fwhmx_v_flu'] = [
+    figclasses.Fig_Beam2DPlot, FWHMx_v_flu_dict]
+    
+    BF01figs['BF01_fwhmy_v_flu'] = [
+    figclasses.Fig_Beam2DPlot, FWHMy_v_flu_dict]
+    
     
     return BF01figs

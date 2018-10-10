@@ -31,7 +31,7 @@ from vison.datamodel import core, ccd, cdp
 from vison.image import calibration
 import ptc as ptclib
 from vison.image import performance
-#from FlatTask import FlatTask
+from FlatTask import FlatTask
 from PTC0X import PTC0X
 from vison.pipe.task import Task
 from vison.datamodel import inputs
@@ -70,12 +70,17 @@ class BF01(PTC0X):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        super(BF01, self).__init__(inputs, log, drill, debug)
+        #super(BF01, self).__init__(inputs, log, drill, debug) 
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
                          ('extract_COV', self.extract_COV),
                          ('extract_BF', self.extract_BF),
-                         ('meta', self.meta_analysis)]        
+                         ('meta', self.meta_analysis)]
+        FlatTask.__init__(self,inputs,log,drill,debug)
+        #self.inputs['todo_flags'] = self.init_todo_flags()
+        #if 'todo_flags' in inputs:
+        #    self.inputs['todo_flags'].update(inputs['todo_flags'])
+        
         self.name = 'BF01'
         #self.type = 'Simple'
         
@@ -85,6 +90,7 @@ class BF01(PTC0X):
         self.inputs['subpaths'] = dict(figs='figs', 
                    ccdpickles='ccdpickles',
                    covariance='covariance',
+                   kernels='kernels',
                    products='products')
 
     def set_inpdefaults(self, **kwargs):
@@ -175,7 +181,7 @@ class BF01(PTC0X):
         covpath = self.inputs['subpaths']['covariance']
         #prodspath = self.inputs['subpaths']['products']
         
-        profscov_1D = cdp.CDP()
+        profscov_1D = self.CDP_lib['PROFSCOV1D']
         profscov_1D.header = CDP_header.copy()
         profscov_1D.path = covpath
         profscov_1D.data = OrderedDict()
@@ -183,11 +189,11 @@ class BF01(PTC0X):
         profscov_1D.data['hor'] = OrderedDict()
         profscov_1D.data['ver'] = OrderedDict()
         
-        for CCDk in CCDs:
-            for tag in ['hor','ver']:
+        for tag in ['hor','ver']:
+            profscov_1D.data[tag] = OrderedDict()
+            for CCDk in CCDs:
                 profscov_1D.data[tag][CCDk] = OrderedDict()            
-            for Q in Quads:
-                for tag in ['hor','ver']:
+                for Q in Quads:
                     profscov_1D.data[tag][CCDk][Q] = OrderedDict()
                     profscov_1D.data[tag][CCDk][Q]['x'] = OrderedDict()
                     profscov_1D.data[tag][CCDk][Q]['y'] = OrderedDict()
@@ -288,7 +294,7 @@ class BF01(PTC0X):
         
         # Saving Profiles
         
-        profscov_1D.rootname = 'profs_COV1D_BF01'
+        
         profscov_1D.savetopickle()
         self.dd.products['profscov_1D_name'] = profscov_1D.rootname
         
@@ -360,11 +366,7 @@ class BF01(PTC0X):
         # INITIALISATIONS
         
         figspath = self.inputs['subpaths']['figs']
-        
-        #kernel_FWHMx = np.zeros(oshape, dtype='float32') + np.nan
-        #kernel_FWHMy = np.zeros(oshape, dtype='float32') + np.nan
-        #kernel_e = np.zeros(oshape, dtype='float32') + np.nan
-        #fluence = np.zeros(oshape, dtype='float32') + np.nan
+        kerpath = self.inputs['subpaths']['kernels']
         
         NP = nC * nQ * nL
 
@@ -373,7 +375,6 @@ class BF01(PTC0X):
         self.dd.products['BF']['CCDs'] = CCDs.copy()
         self.dd.products['BF']['Quads'] = Quads.copy()
         
-        
         BF_dd = OrderedDict()
         BF_dd['CCD'] = np.zeros(NP,dtype='int32')
         BF_dd['Q'] = np.zeros(NP,dtype='int32')
@@ -381,6 +382,26 @@ class BF01(PTC0X):
         BF_dd['FWHMy'] =  np.zeros(NP,dtype='float32')
         BF_dd['e'] =  np.zeros(NP,dtype='float32')
         BF_dd['fluence'] =  np.zeros(NP,dtype='float32')
+        
+        
+        profsker_1D = self.CDP_lib['PROFSKER1D']
+        profsker_1D.header = CDP_header.copy()
+        profsker_1D.path = kerpath
+        profsker_1D.data = OrderedDict()
+        
+        profsker_1D.data['hor'] = OrderedDict()
+        profsker_1D.data['ver'] = OrderedDict()
+        
+        
+        for tag in ['hor','ver']:
+            profsker_1D.data[tag] = OrderedDict()
+            for CCDk in CCDs:
+                profsker_1D.data[tag][CCDk] = OrderedDict()            
+                for Q in Quads:
+                    profsker_1D.data[tag][CCDk][Q] = OrderedDict()
+                    profsker_1D.data[tag][CCDk][Q]['x'] = OrderedDict()
+                    profsker_1D.data[tag][CCDk][Q]['y'] = OrderedDict()
+        
 
         for jCCD, CCDk in enumerate(CCDs):
 
@@ -389,10 +410,15 @@ class BF01(PTC0X):
             for kQ, Q in enumerate(Quads):
                 self.dd.products['BF'][CCDk][Q] = OrderedDict()
         
+        Npix = 101
+        Npixplot=11
+        
         if not self.drill:
             
-            singlepixmap = np.zeros((101, 101), dtype='float32') + 0.01
-            singlepixmap[50, 50] = 1.
+            
+            
+            singlepixmap = np.zeros((Npix, Npix), dtype='float32') + 0.01
+            singlepixmap[(Npix-1)/2, (Npix-1)/2] = 1.
 
             for jCCD, CCDk in enumerate(CCDs):
                 
@@ -407,7 +433,9 @@ class BF01(PTC0X):
 
 
                         COV_mx = COV_dict['av_covmap'][Q].copy()
-
+                        
+                        BF_dd['CCD'][jj] = jCCD +1 
+                        BF_dd['Q'][jj] = kQ + 1
                         BF_dd['fluence'][jj] = COV_dict['av_mu'][Q].copy()
                         
                         try:
@@ -428,8 +456,18 @@ class BF01(PTC0X):
                             BF_dd['FWHMx'][jj] = kerQshape['fwhmx']
                             BF_dd['FWHMy'][jj] = kerQshape['fwhmy']
                             BF_dd['e'][jj] = kerQshape['e']
-
                             
+                            
+                            profsker_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
+                                   np.arange(Npixplot)-Npixplot/2
+                            profsker_1D.data['hor'][CCDk][Q]['y'][ulabel] = \
+                                   kernel_Q[Npix/2,Npix/2-Npixplot/2:Npix/2+Npixplot/2+1].copy()
+                        
+                            profsker_1D.data['ver'][CCDk][Q]['x'][ulabel] = \
+                                   np.arange(Npixplot)-Npixplot/2
+                            
+                            profsker_1D.data['ver'][CCDk][Q]['y'][ulabel] = \
+                                   kernel_Q[Npix/2-Npixplot/2:Npix/2+Npixplot/2+1,Npix/2].copy()
                             
                             # BEWARE, PENDING: dispfig is saved but NOT REPORTED anywhere!
                             
@@ -444,9 +482,38 @@ class BF01(PTC0X):
                         except:
                             self.dd.products['BF'][CCDk][Q][ulabel] = OrderedDict()
 
+        else:
+            
+            for jCCD, CCDk in enumerate(CCDs):
+
+                for ku, ulabel in enumerate(ulabels):
+                    
+                    for lQ, Q in enumerate(Quads):
+            
+                        profsker_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
+                                               np.arange(Npixplot)-Npixplot/2
+                        profsker_1D.data['hor'][CCDk][Q]['y'][ulabel] = \
+                                               np.zeros(Npixplot)
+                                    
+                        profsker_1D.data['ver'][CCDk][Q]['x'][ulabel] = \
+                                               np.arange(Npixplot)-Npixplot/2
+                        profsker_1D.data['ver'][CCDk][Q]['y'][ulabel] = \
+                                               np.zeros(Npixplot)
 
         # Plots
-        # PENDING
+        
+        for tag in ['hor','ver']:    
+            profsker_1D.data[tag]['labelkeys'] = \
+                            profsker_1D.data[tag][CCDs[0]][Quads[0]]['x'].keys()
+        
+        for tag in ['ver','hor']:
+        
+            fdict_K = self.figdict['BF01_KER_%s' % tag][1]
+            fdict_K['data'] = profsker_1D.data[tag].copy()
+            if self.report is not None:
+                self.addFigures_ST(figkeys=['BF01_KER_%s' % tag], 
+                                   dobuilddata=False)
+        
 
         # REPORTING
         
@@ -490,5 +557,63 @@ class BF01(PTC0X):
 
         """
         
-        return # TESTS
-        raise NotImplementedError
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='meta', Title='Meta-Analysis', level=0)
+        
+        BFTABLE_CDP_pick = self.dd.products['BFTABLE_CDP']
+        BFTABLE_CDP = cPickleRead(BFTABLE_CDP_pick)
+        
+        BF_df =BFTABLE_CDP['data']['BF']
+        CCDv = BF_df['CCD'].as_matrix()
+        Qv = BF_df['Q'].as_matrix()
+        FWHMx = BF_df['FWHMx'].as_matrix()
+        FWHMy = BF_df['FWHMy'].as_matrix()
+        ell = BF_df['e'].as_matrix()
+        flu = BF_df['fluence'].as_matrix()
+        
+        CCDs = ['CCD%i' for item in np.arange(CCDv.min(),CCDv.max()+1)-1]
+        Quads = ['E','F','G','H']
+        
+        
+        plot_FWHM_dict = OrderedDict()
+        
+        for tag in ['fwhmx','fwhmy']:
+            plot_FWHM_dict[tag] = OrderedDict(labelkeys=['data'])
+            for CCDk in CCDs:
+                plot_FWHM_dict[tag][CCDk] = OrderedDict()            
+                for Q in Quads:
+                    plot_FWHM_dict[tag][CCDk][Q] = OrderedDict()
+                    plot_FWHM_dict[tag][CCDk][Q]['x'] = OrderedDict()
+                    plot_FWHM_dict[tag][CCDk][Q]['y'] = OrderedDict()
+        
+        
+        for iCCD, CCDk in enumerate(CCDs):
+            
+            for kQ, Q in enumerate(Quads):
+                               
+                ixsel = np.where((iCCD+1 == CCDv) & (kQ+1 == Qv))
+                
+                iflu = flu[ixsel]
+                ifwhmx = FWHMx[ixsel]
+                ifwhmy = FWHMx[ixsel]
+                ixorder = iflu.argsort()
+                iflu = iflu[ixorder]
+                ifwhmx = ifwhmx[ixorder]
+                ifwhmy = ifwhmy[ixorder]
+                
+                plot_FWHM_dict['fwhmx'][CCDk][Q]['x']['data'] = iflu.copy()
+                plot_FWHM_dict['fwhmx'][CCDk][Q]['y']['data'] = ifwhmx.copy()
+                
+                plot_FWHM_dict['fwhmy'][CCDk][Q]['x']['data'] = iflu.copy()
+                plot_FWHM_dict['fwhmy'][CCDk][Q]['x']['data'] = ifwhmx.copy()
+        
+        
+        for tag in ['fwhmx','fwhmy']:
+        
+            fdict_FF = self.figdict['BF01_%s_v_flu' % tag][1]
+            fdict_FF['data'] = plot_FWHM_dict[tag].copy()
+            if self.report is not None:
+                self.addFigures_ST(figkeys=['BF01_%s_v_flu' % tag], 
+                                   dobuilddata=False)
+                

@@ -180,10 +180,9 @@ class PTC0X(FlatTask):
         """ """
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
-                         ('extract', self.extract_PTC),
+                         ('extract_PTC', self.extract_PTC),
                          ('meta', self.meta_analysis)]
-
-        super(PTC0X, self).__init__(inputs, log, drill, debug)
+        FlatTask.__init__(self,inputs, log, drill, debug)
         self.name = 'PTC0X'
         self.type = 'Simple'
         self.HKKeys = HKKeys

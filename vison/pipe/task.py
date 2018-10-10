@@ -95,11 +95,10 @@ class Task(object):
                                                             ignore_pover=True,
                                                             extension=-1)
         
-        _inputs['todo_flags']=dict(init=True,check=False,report=False)
-        if len(self.subtasks[0])>0:
-            for v in self.subtasks: _inputs['todo_flags'][v[0]] = False
-        
+        _inputs['todo_flags']= self.init_todo_flags()
+
         _inputs.update(inputs)
+        
         self.inputs.update(_inputs)
         
         
@@ -136,7 +135,13 @@ class Task(object):
         self.ccdcalc = copy.deepcopy(emptyccd)
 
         self.CDP_header = OrderedDict()
-
+    
+    def init_todo_flags(self):        
+        init_todo_flags=dict(init=True,check=False,report=False)
+        if len(self.subtasks[0])>0:
+            for v in self.subtasks: init_todo_flags[v[0]] = False
+        return init_todo_flags
+    
     def set_inpdefaults(self, **kwargs):
         pass
 
