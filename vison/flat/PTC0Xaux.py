@@ -30,13 +30,17 @@ CDP_lib = dict(GAIN_TB=gain_tb_cdp)
 
 def gt_PTC_curves_dict(test):
     
+    nicetest = st.replace(test,'_','\_')
+    
     return dict(
     figname='%s_PTC_curves.png' % test,
-    caption='%s: PTC curves and best fits.' % test,
+    caption='%s: PTC curves and best fits.' % nicetest,
     meta=dict(doLegend=True,
               ylabel='VAR',
               xlabel='MED',
-              suptitle='%s: PTC Curves.' % test)
+              xlim=[0.,2**16],
+              ylim=[0.,2.**16/3.],
+              suptitle='%s: PTC Curves.' % nicetest)
     )
 
 

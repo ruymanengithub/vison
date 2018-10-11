@@ -35,6 +35,8 @@ import os
 import copy
 from collections import OrderedDict
 import pandas as pd
+import string as st
+from pdb import set_trace as stop
 
 from vison.pipe.task import Task
 from vison.support import context
@@ -624,7 +626,8 @@ class PTC0X(FlatTask):
             
             caption = '%s (%inm): PTC TABLE' % \
                 (self.inputs['test'],self.inputs['wavelength'])
-            Gtex = gain_tb_cdp.get_textable(sheet='GAIN_TB', caption=caption,
+            nicecaption = st.replace(caption,'_','\_')
+            Gtex = gain_tb_cdp.get_textable(sheet='GAIN_TB', caption=nicecaption,
                                                fitwidth=True,
                                                tiny=True,
                                                formatters=cov_formatters)
@@ -637,6 +640,7 @@ class PTC0X(FlatTask):
         
         fdict_PTC = self.figdict['PTC0X_PTC_curves'][1]
         fdict_PTC['data'] = curves_cdp.data.copy()
+        
         if self.report is not None:
             self.addFigures_ST(figkeys=['PTC0X_PTC_curves'], 
                                dobuilddata=False)
