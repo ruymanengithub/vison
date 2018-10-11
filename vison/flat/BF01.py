@@ -572,7 +572,7 @@ class BF01(PTC0X):
         ell = BF_df['e'].as_matrix()
         flu = BF_df['fluence'].as_matrix()
         
-        CCDs = ['CCD%i' for item in np.arange(CCDv.min(),CCDv.max()+1)-1]
+        CCDs = ['CCD%i' % item for item in np.arange(CCDv.min(),CCDv.max()+1)]
         Quads = ['E','F','G','H']
         
         
@@ -606,13 +606,14 @@ class BF01(PTC0X):
                 plot_FWHM_dict['fwhmx'][CCDk][Q]['y']['data'] = ifwhmx.copy()
                 
                 plot_FWHM_dict['fwhmy'][CCDk][Q]['x']['data'] = iflu.copy()
-                plot_FWHM_dict['fwhmy'][CCDk][Q]['x']['data'] = ifwhmx.copy()
+                plot_FWHM_dict['fwhmy'][CCDk][Q]['y']['data'] = ifwhmx.copy()
         
         
         for tag in ['fwhmx','fwhmy']:
         
             fdict_FF = self.figdict['BF01_%s_v_flu' % tag][1]
             fdict_FF['data'] = plot_FWHM_dict[tag].copy()
+            
             if self.report is not None:
                 self.addFigures_ST(figkeys=['BF01_%s_v_flu' % tag], 
                                    dobuilddata=False)

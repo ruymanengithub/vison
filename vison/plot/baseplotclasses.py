@@ -326,6 +326,7 @@ class BeamPlotYvX(BeamPlot):
         if key != '':
             xarr = CQdict['x'][key]
             yarr = CQdict['y'][key]
+            
             label = st.replace(key, '_', '\_')
             handle = ax.plot(xarr, yarr, '-', label=label, **ckwargs)
         else:
