@@ -366,8 +366,8 @@ class InjTask(Task):
             Report injection stats as a table/tables
 
         """
-        
-        print 'WARNING! task InjTask.basic_analysis has not been properly tested!'
+        import warnings
+        warnings.warn('WARNING! task InjTask.basic_analysis has not been properly tested!')
         #sys.exit('BROKEN! TODO: address polymorphism correctly, for figures, cdps, etc.')
         
         testname = self.inputs['test']
@@ -391,7 +391,6 @@ class InjTask(Task):
         
         # Initializing new columns
         
-
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
@@ -422,13 +421,14 @@ class InjTask(Task):
         CH0X_dd['Q'] = np.zeros(NP,dtype='int32')
         if testname == 'CHINJ01':
             CH0X_dd['IG1'] = np.zeros(NP,dtype='float32')
+        elif testname == 'CHINJ02':
+            CH0X_dd['IDL'] = np.zeros(NP,dtype='float32')
         CH0X_dd['ID_DLY'] = np.zeros(NP,dtype='float32')
         CH0X_dd['MEAN_INJ'] = np.zeros(NP,dtype='float32')
         CH0X_dd['MED_INJ'] = np.zeros(NP,dtype='float32')
         CH0X_dd['NU_INJ'] = np.zeros(NP,dtype='float32')
         
         # Initializing injection profiles
-        
         
         prof_alrow_cdp = cdp.CDP()
         prof_alrow_cdp.header = CDP_header.copy()
@@ -459,7 +459,8 @@ class InjTask(Task):
                         IG1_val = self.dd.mx[IG1_key][iObs,jCCD]
                         sub_tag = 'IG1_%.2fV' % IG1_val
                     elif testname == 'CHINJ02':
-                        sys.exit('Unfinished code!')
+                        IDL_val = self.dd.mx['IDL'][iObs,jCCD]
+                        sub_tag = 'IDL_%.2fV' % IDL_val
                     
                     prof_alrow_cdp.data[CCDk][Q]['x'][sub_tag] = xdummy.copy()
                     prof_alrow_cdp.data[CCDk][Q]['y'][sub_tag] = ydummy.copy()
@@ -473,6 +474,7 @@ class InjTask(Task):
             for iObs in range(nObs):
                 
                 ObsID = self.dd.mx['ObsID'][iObs]
+                print 'Processing Obsid %i/%i' % (iObs+1,nObs)
                 
                 for jCCD, CCDk in enumerate(CCDs):
                     
@@ -500,7 +502,8 @@ class InjTask(Task):
                                 IG1_val = self.dd.mx[IG1_key][iObs,jCCD]
                                 sub_tag = 'IG1_%.2fV' % IG1_val
                             elif testname == 'CHINJ02':
-                                sys.exit('Not ready for CHINJ02!')
+                                IDL_val = self.dd.mx['IDL'][iObs,jCCD]
+                                sub_tag = 'IDL_%.2fV' % IDL_val
                             
                             id_dly = self.dd.mx['id_dly'][iObs,jCCD]
                             
@@ -538,9 +541,9 @@ class InjTask(Task):
                             CH0X_dd['CCD'][ix] = jCCD
                             CH0X_dd['Q'][ix] = kQ
                             if testname == 'CHINJ01':
-                                   CH0X_dd['IG1'][ix] = IG1_val    
+                                CH0X_dd['IG1'][ix] = IG1_val 
                             elif testname == 'CHINJ02':
-                                sys.exit('Not ready for CHINJ02!')
+                                CH0X_dd['IDL'][ix] = IDL_val
                             CH0X_dd['ID_DLY'][ix] = id_dly
                             CH0X_dd['MEAN_INJ'][ix] = self.dd.mx['chinj_mean'][iObs,jCCD,kQ]
                             CH0X_dd['MED_INJ'][ix] = self.dd.mx['chinj_p50'][iObs,jCCD,kQ]
