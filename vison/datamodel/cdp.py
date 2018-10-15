@@ -176,15 +176,26 @@ class Tables_CDP(CDP):
             tex[0] = beglongtabu
             tex[-2] = endlongtabu
         
+        if not _kwargs['longtable']:
+            tex = ['\\begin{table}[!htb]'] + tex + ['\end{table}']
+        
         if tiny:
             tex = ['\\tiny','\center']+tex+['\\normalsize']
         
         #tex = ['\\begin{table}[!htb]','\center']+tex+['\end{table}']
         
         if caption != '':
-            ixendlongtabu = np.where(['\end{longtabu}' in item for item in tex])
-            tex.insert(ixendlongtabu[0][-1], r'\caption{%s}' % caption)
-            
+        
+            if fitwidth:
+                ixendlongtabu = np.where(['\end{longtabu}' in item for item in tex])
+                tex.insert(ixendlongtabu[0][-1], r'\caption{%s}' % caption)
+            elif not fitwidth and _kwargs['longtable']:
+                ixendlongtable = np.where(['\end{longtable}' in item for item in tex])
+                tex.insert(ixendlongtable[0][-1], r'\caption{%s}' % caption)
+            elif not fitwidth and ~_kwargs['longtable']:
+                ixendtable = np.where(['\end{table}' in item for item in tex])
+                tex.insert(ixendtable[0][-1], r'\caption{%s}' % caption)
+        
         return tex
 
 
