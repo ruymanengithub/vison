@@ -26,7 +26,7 @@ from vison.support import context
 from vison.datamodel import scriptic as sc
 from vison.support import utils
 from vison.datamodel import inputs
-from InjTask import InjTask
+from InjTask import InjTask, _get_CCDhalf
 import CH01aux
 from vison.support import files
 from vison.inject import lib as ilib
@@ -214,8 +214,8 @@ class CHINJ01(InjTask):
     def meta_analysis(self):
         """ 
         
-        Find injection threshold: Min IG1
         Plot and model charge injection vs. IG1
+        Find injection threshold: Min IG1
         Find notch injection amount.
         
         
@@ -223,7 +223,7 @@ class CHINJ01(InjTask):
         
         if self.report is not None:
             self.report.add_Section(
-                keyword='extract', Title='CHINJ01 Analysis ("Meta")', level=0)
+                keyword='meta', Title='CHINJ01 Analysis ("Meta")', level=0)
         
         DDindices = copy.deepcopy(self.dd.indices)
         
@@ -237,7 +237,6 @@ class CHINJ01(InjTask):
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
         CDP_header['DATE'] = self.get_time_tag()
-        
         
         
         toi_ch = self.dd.mx['toi_ch'][0,0]
@@ -265,6 +264,7 @@ class CHINJ01(InjTask):
         inj_curves_cdp.header = CDP_header.copy()
         inj_curves_cdp.path = prodspath
         inj_curves_cdp.data = OrderedDict()
+        inj_curves_cdp.data['labelkeys'] = ['input','bestfit']
         
         xdummy = np.arange(10,dtype='float32')
         ydummy = np.zeros(10,dtype='float32')
@@ -309,11 +309,11 @@ class CHINJ01(InjTask):
                 inj_curves_cdp.data[CCDk][Q]['x']['input'] = IG1.copy()
                 inj_curves_cdp.data[CCDk][Q]['y']['input'] = med_inj.copy() / 2.**16
                 
+                MCH01_dd['CCD'][ix] = jCCD+1
+                MCH01_dd['Q'][ix] = kQ+1
                 
                 if didfit:
                 
-                    MCH01_dd['CCD'][ix] = jCCD
-                    MCH01_dd['Q'][ix] = kQ
                     MCH01_dd['ID_DLY'][ix] = id_dly_opt
                     
                     for fitkey in fitkeys:                    
@@ -333,6 +333,7 @@ class CHINJ01(InjTask):
         
         # PLOT
         
+
         fdict_meta_plot = self.figdict['CH01_meta'][1]
         fdict_meta_plot['data'] = inj_curves_cdp.data.copy()
         
@@ -341,6 +342,7 @@ class CHINJ01(InjTask):
                                dobuilddata=False)
         
         # REPORT RESULTS AS TABLE CDP
+        
         
         
         MCH01_dddf = OrderedDict(ANALYSIS=pd.DataFrame.from_dict(MCH01_dd))
@@ -362,9 +364,9 @@ class CHINJ01(InjTask):
             fq = lambda x: Quads[x-1]
             ff = lambda x: '%.2f' % x
             
-            selcolumns = ['CCD','Q','BGD','IG1_THRESH','IG1_NOTCH','NOTCH']
+            selcolumns = ['CCD','Q','BGD','IG1_THRESH','IG1_NOTCH','SLOPE','NOTCH']
             
-            ext_formatters=[fccd,fq]+[ff,ff,ff,ff]
+            ext_formatters=[fccd,fq]+[ff,ff,ff,ff,ff]
             
             caption = 'CHINJ01: META-ANALYSIS TABLE'
             
@@ -372,7 +374,8 @@ class CHINJ01(InjTask):
                                           columns=selcolumns,
                                           caption=caption,
                                           fitwidth=True,
-                                          formatters=ext_formatters)
+                                          formatters=ext_formatters,
+                                          index=False)
             
             Mtex = ['\\tiny']+Mtex+['\\normalsize']
             self.report.add_Text(Mtex)  

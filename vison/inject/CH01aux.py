@@ -12,8 +12,6 @@ Created on Tue Jan 30 14:09:00 2018
 
 # IMPORT STUFF
 from pdb import set_trace as stop
-import numpy as np
-import os
 from collections import OrderedDict
 
 from vison.datamodel import cdp
@@ -83,7 +81,7 @@ chinj01_meta_dict = dict(
     figname='CHINJ01_Injection_profiles.png',
     caption='CHINJ01: Injection profiles.',
     meta=dict(doLegend=True,
-              ylabel='UNKNOWN',
+              ylabel='Injection/2**16',
               xlabel='IG1 [V]',
               suptitle='CHINJ01: INJECTION PROFILE.')
     )

@@ -538,8 +538,8 @@ class InjTask(Task):
                             
                             
                             CH0X_dd['ObsID'][ix] = ObsID
-                            CH0X_dd['CCD'][ix] = jCCD
-                            CH0X_dd['Q'][ix] = kQ
+                            CH0X_dd['CCD'][ix] = jCCD+1
+                            CH0X_dd['Q'][ix] = kQ+1
                             if testname == 'CHINJ01':
                                 CH0X_dd['IG1'][ix] = IG1_val 
                             elif testname == 'CHINJ02':
