@@ -399,16 +399,17 @@ class BIAS01(DarkTask):
         self.pack_CDP_to_dd(ron_cdp, 'RON_CDP')
 
         if self.report is not None:
+            
             beRONtex = ron_cdp.get_textable(sheet='RON_ALL', caption='BIAS01: RON (quadrant, minus model)',
-                                            longtable=False)
+                                            longtable=False, fitwidth=True)
             self.report.add_Text(beRONtex)
             
             bePRERONtex = ron_cdp.get_textable(sheet='RON_PRE', caption='BIAS01: RON (pre-scan)',
-                                               longtable=False)
+                                               longtable=False,fitwidth=True)
             self.report.add_Text(bePRERONtex)
             
             beOVERONtex = ron_cdp.get_textable(sheet='RON_OVE', caption='BIAS01: RON (over-scan)',
-                                               longtable=False)
+                                               longtable=False, fitwidth=True)
             self.report.add_Text(beOVERONtex)
             
         # OFFSETS
@@ -433,15 +434,15 @@ class BIAS01(DarkTask):
 
         if self.report is not None:
             PREOFFtex = off_cdp.get_textable(sheet='OFF_PRE', caption='BIAS01: Offsets, pre-scan.',
-                                            longtable=False)
+                                            longtable=False, fitwidth=True)
             self.report.add_Text(PREOFFtex)
             
             IMGOFFtex = off_cdp.get_textable(sheet='OFF_IMG', caption='BIAS01: Offsets, image area.',
-                                               longtable=False)
+                                               longtable=False, fitwidth=True)
             self.report.add_Text(IMGOFFtex)
             
             OVEOFFtex = off_cdp.get_textable(sheet='OFF_OVE', caption='BIAS01: Offsets, over-scan.',
-                                               longtable=False)
+                                               longtable=False, fitwidth=True)
             self.report.add_Text(OVEOFFtex)
 
 
