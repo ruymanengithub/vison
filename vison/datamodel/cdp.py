@@ -165,6 +165,7 @@ class Tables_CDP(CDP):
         tex = self.data[sheet].to_latex(**_kwargs)
         tex = st.split(tex, '\n')
         
+        
         if fitwidth:
             if 'columns' not in kwargs:
                 ncols = len(self.data[sheet].columns)+1
