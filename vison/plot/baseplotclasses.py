@@ -374,7 +374,7 @@ class Beam1DHist(BeamPlot):
             label = None
         
         _, _, patch = ax.hist(h, bins, **hist_kwargs)
-
+        
         return patch, label
 
 

@@ -224,8 +224,8 @@ class BIAS01(DarkTask):
 
                     ccdobj_name = self.dd.mx['ccdobj_name'][iObs, jCCD]
 
-                    if ccdobj_name == 'None':
-                        continue  # TESTS
+                    #if ccdobj_name == 'None':
+                    #    continue  # TESTS
 
                     fullccdobj_name = os.path.join(
                         ccdpicklespath, '%s.pick' % ccdobj_name)
@@ -249,21 +249,27 @@ class BIAS01(DarkTask):
                         # produce a 2D poly model of bias, [save coefficients?]
                         # measure and save RON after subtracting large scale structure
 
-                        mod2D = ccdobj.get_region2Dmodel(Q=Q, area='all', kind='poly2D',
+                        imgmod2D = ccdobj.get_region2Dmodel(Q=Q, area='img', kind='poly2D',
                                         pdegree=5, doFilter=False, doBin=True, binsize=300,
-                                        vstart=vstart, vend=vend, canonical=False, extension=-1)
+                                        vstart=vstart, vend=vend, canonical=True, extension=-1)
                         
-                        onlyRONimg = ccdobj.get_quad(
-                            Q, canonical=False) - mod2D.imgmodel
+                        qimg = ccdobj.get_quad(Q, canonical=True)
+                        
+                        onlyRONimg = qimg[ccdobj.prescan:-ccdobj.overscan,vstart:vend]-\
+                                         imgmod2D.imgmodel
+                        
+                        
+                        #onlyRONimg = ccdobj.get_quad(
+                        #    Q, canonical=False) - mod2D.imgmodel
                         _RON = onlyRONimg.std()
 
                         self.dd.mx['RON'][iObs, jCCD, kQ] = _RON
 
                         iprofiles2D.data[Q] = OrderedDict()
                         iprofiles2D.data[Q]['polycoeffs'] = copy.deepcopy(
-                            mod2D.polycoeffs)
+                            imgmod2D.polycoeffs)
                         iprofiles2D.data[Q]['polyfunc'] = copy.deepcopy(
-                            mod2D.polyfunc)
+                            imgmod2D.polyfunc)
 
                         # produce average profile along rows
                         
@@ -348,11 +354,12 @@ class BIAS01(DarkTask):
            
            return histos
         
-        medron = np.nanmedian(self.dd.mx['std_pre'][:])
-        minron = np.int((medron-1)/0.5)*0.5
-        maxron = np.int((medron+1)/0.5)*0.5
-        ronrange = [minron,maxron]
-            
+        #medron = np.nanmedian(self.dd.mx['std_pre'][:])
+        #minron = np.int((medron-1)/0.5)*0.5
+        #maxron = np.int((medron+1)/0.5)*0.5
+        #ronrange = [minron,maxron]        
+        ronrange = [0.5,2.]
+        
         RON_histos = OrderedDict()
         for jCCD, CCDk in enumerate(CCDs):
             RON_histos[CCDk] = OrderedDict()
@@ -361,13 +368,14 @@ class BIAS01(DarkTask):
                 Rh_cq = RON_histos[CCDk][Q]
                 Rh_cq['x'] = OrderedDict()
                 Rh_cq['y'] = OrderedDict()
-                Rh_cq = _load_histo(Rh_cq,self.dd.mx['RON'][:,jCCD,kQ],'ALL', 
+                Rh_cq = _load_histo(Rh_cq,self.dd.mx['RON'][:,jCCD,kQ],'IMG', 
                                     ronrange)
                 Rh_cq = _load_histo(Rh_cq,self.dd.mx['std_pre'][:,jCCD,kQ],'PRE', 
                                     ronrange)
                 Rh_cq = _load_histo(Rh_cq,self.dd.mx['std_ove'][:,jCCD,kQ],'OVE', 
                                     ronrange)
         
+        RON_histos['labelkeys'] = ['IMG','PRE','OVE']
         
         
         self.figdict['B01basic_histosRON'][1]['data'] = RON_histos.copy()
@@ -382,7 +390,7 @@ class BIAS01(DarkTask):
         
                             
         RONdct = OrderedDict()
-        RONdct['RON_ALL'] = self.dd.mx['RON'][:].copy()
+        RONdct['RON_IMG'] = self.dd.mx['RON'][:].copy()
         RONdct['RON_PRE'] = self.dd.mx['std_pre'][:].copy()
         RONdct['RON_OVE'] = self.dd.mx['std_ove'][:].copy()
         
@@ -400,7 +408,7 @@ class BIAS01(DarkTask):
 
         if self.report is not None:
             
-            beRONtex = ron_cdp.get_textable(sheet='RON_ALL', caption='BIAS01: RON (quadrant, minus model)',
+            beRONtex = ron_cdp.get_textable(sheet='RON_IMG', caption='BIAS01: RON (quadrant-img, minus model)',
                                             longtable=False, fitwidth=True)
             self.report.add_Text(beRONtex)
             

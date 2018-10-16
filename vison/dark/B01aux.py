@@ -50,7 +50,7 @@ basic_prof1Dhor_dict = dict(
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Column [pix]',
-              ylim = [0., 2.**16],
+              ylim = [-10., 20.],
               suptitle='BIAS01: Profiles across columns.')
 )
 
@@ -60,7 +60,7 @@ basic_prof1Dver_dict = dict(
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Row [pix]',
-              ylim = [0., 2.**16],
+              ylim = [-10., 20.],
               suptitle='BIAS01: Profiles across rows.')
 )
 
@@ -101,10 +101,7 @@ meta_MB2D_dict = dict(
     figname='BIAS01_MASTERBIAS_2Dimgshow.png',
     caption='BIAS01: Master Bias for the CCDs.',
     meta=dict(doLegend=False,
-              ylabel='ADU',
-              xlabel='Row [pix]',
-              ylim = [0., 2.**16],
-              suptitle='BIAS01/Master: Profiles across rows.'),
+              suptitle='BIAS01/Master:Quadrant Images'),
     corekwargs=dict(cmap=cm.rainbow,aspect='auto',norm=None,origin='lower left',
                     ))
 
