@@ -243,7 +243,7 @@ class FLAT0X(FlatTask):
         
         # 1D Profiles
         
-        _foox = np.zeros(10)
+        _foox = np.linspace(0,2000,100)
         _fooy = np.ones(10)*1.E4
         
         profs_1D = OrderedDict()
