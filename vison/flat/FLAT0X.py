@@ -20,6 +20,7 @@ import os
 import datetime
 import copy
 from collections import OrderedDict
+import string as st
 
 from vison.support import context
 from vison.pipe import lib as pilib
@@ -229,15 +230,45 @@ class FLAT0X(FlatTask):
         nObs, nCCD, nQuad = indices.shape
 
         CCDs = indices.get_vals('CCD')
+        Quads = indices.get_vals('Quad')
 
         ccdindices = copy.deepcopy(self.dd.mx['CCD'].indices)
 
         self.dd.initColumn('indiv_flats', ccdindices,
                            dtype='S100', valini='None')
+        
+        vCCDs = self.dd.mx['CCD'][:].copy()
+        vlabels = self.dd.mx['label'][:].copy()
+        ulabels = np.unique(vlabels)
+        
+        # 1D Profiles
+        
+        _foox = np.zeros(10)
+        _fooy = np.ones(10)*1.E4
+        
+        profs_1D = OrderedDict()
+        for dire in ['hor','ver']:
+            profs_1D[dire] = OrderedDict()
+            for ulabel in ulabels:
+                profs_1D[dire][ulabel] = OrderedDict()                
+                for CCD in CCDs:
+                    profs_1D[dire][ulabel][CCD] = OrderedDict()
+                    for Q in Quads:
+                        profs_1D[dire][ulabel][CCD][Q] = OrderedDict()
+                        profs_1D[dire][ulabel][CCD][Q]['x'] = OrderedDict()
+                        profs_1D[dire][ulabel][CCD][Q]['y'] = OrderedDict()
+                        
+                        for i in range(3):
+                            profs_1D[dire][ulabel][CCD][Q]['x']['OBS%i' % i] = _foox.copy()
+                            profs_1D[dire][ulabel][CCD][Q]['y']['OBS%i' % i] = _fooy.copy()
+        
 
         # The heavy-lifting
+        
+        onTests = True # TESTS
 
         if not self.drill:
+            
 
             dpath = self.inputs['subpaths']['ccdpickles']
             fpath = self.inputs['subpaths']['ccdflats']
@@ -264,15 +295,91 @@ class FLAT0X(FlatTask):
 
             ffsettings = dict()
             
-            FFing.produce_IndivFlats(fccdobj_names.flatten(), findiv_flats.flatten(),
-                                     settings=ffsettings,
-                                     runonTests=False,
-                                     processes=self.processes)
+            if not onTests:
+                FFing.produce_IndivFlats(fccdobj_names.flatten(), findiv_flats.flatten(),
+                                         settings=ffsettings,
+                                         runonTests=False,
+                                         processes=self.processes)
 
-            # MISSING: 1D profiles. Do as part of produce_IndivFlats, or separate?
+            # 1D profiles.
+            
+            
+            for ulabel in ulabels:
+                
+                vstart = self.inputs['structure'][ulabel]['vstart']
+                truevend = self.inputs['structure'][ulabel]['vend']
+                
+                iswithpover = truevend==(ccd.NrowsCCD+ccd.voverscan)
+                
+                vend1D = ccd.NrowsCCD
+                
+                for jCCD, CCDk in enumerate(CCDs):
+                    
+                    selix = np.where((vlabels == ulabel) & (vCCDs == CCDk))
+                    
+                    _indiv_flats = self.dd.mx['indiv_flats'][selix].copy()
+                    f_indiv_flats = vfulloutpath_adder(_indiv_flats)
+                    
+                    _OBSIDS = self.dd.mx['ObsID'][selix[0]].copy()
+                    
+                    for ix,f_indiv_flat in enumerate(f_indiv_flats):
+                        
+                        OBSID = _OBSIDS[ix]
+                        
+                        ccdobj = ccd.CCD(infits=str(f_indiv_flat),getallextensions=True,
+                                         withpover=iswithpover)
+                        
+                        for kQ, Q in enumerate(Quads):
+                            
+                            _pro1Dhor = ccdobj.get_1Dprofile(Q=Q,orient='hor',area='img',
+                                    stacker='mean', vstart=vstart, vend=vend1D,
+                                    extension=-1)
+                            _pro1Dver = ccdobj.get_1Dprofile(Q=Q,orient='ver',area='img',
+                                    stacker='mean',vstart=vstart, vend=vend1D,
+                                    extension=-1)
+                            
+                            profs_1D['hor'][ulabel][CCD][Q]['x']['OBS%i' % OBSID] = \
+                                    _pro1Dhor.data['x'].copy()
+                            profs_1D['hor'][ulabel][CCD][Q]['y']['OBS%i' % OBSID] = \
+                                    _pro1Dhor.data['y'].copy()
+                                    
+                            profs_1D['ver'][ulabel][CCD][Q]['x']['OBS%i' % OBSID] = \
+                                    _pro1Dver.data['x'].copy()
+                            profs_1D['ver'][ulabel][CCD][Q]['y']['OBS%i' % OBSID] = \
+                                    _pro1Dver.data['y'].copy()           
+                
 
-            # Show 1D Profiles for each fluence across CCDs:
-            #   2 profiles x N-fluences = 2N plots (each with 4Qx3CCD subplots)
+        # Show 1D Profiles (hor/ver) for each OBSID/fluence across CCDs/Quads:
+        #   2 profiles x N-fluences = 2N plots (each with 4Qx3CCD subplots)
+        
+        for ulabel in ulabels:
+            for dire in ['hor','ver']:
+                
+                figkey = 'FL0Xindiv_prof1D_%s_%s' % (dire,ulabel)
+                
+                self.figdict[figkey]=copy.deepcopy(self.figdict['FL0Xindiv_prof1D_%s_generic' % dire])
+                self.figdict[figkey][1]['figname'] = '%s_profs1D_%s_%s.png' % \
+                            (self.inputs['test'],dire,ulabel)
+                self.figdict[figkey][1]['caption'] = st.replace(self.figdict[figkey][1]['caption'],
+                            'PLACEHOLDER',ulabel)
+                self.figdict[figkey][1]['meta']['suptitle'] = st.replace(self.figdict[figkey][1]['meta']['suptitle'],
+                            'PLACEHOLDER',ulabel)
+                
+                self.figdict[figkey][1]['data'] = profs_1D[dire][ulabel].copy()
+                labelkeys = profs_1D[dire][ulabel]['CCD1'][Q]['x'].keys()
+                self.figdict[figkey][1]['data']['labelkeys'] = labelkeys
+        
+        
+        figkeys = []
+        for ulabel in ulabels:
+            figkeys += [
+                    'FL0Xindiv_prof1D_hor_%s' % ulabel,
+                    'FL0Xindiv_prof1D_ver_%s' % ulabel,
+                    ]
+
+        if self.report is not None:
+            self.addFigures_ST(figkeys=figkeys, dobuilddata=False)
+            
 
     def do_master_flat(self):
         """ 
@@ -368,6 +475,8 @@ class FLAT0X(FlatTask):
         # REPORT PRNU results
 
         # SHOW FFs
+        
+        
 
     def do_prdef_mask(self):
         """

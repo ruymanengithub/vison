@@ -67,6 +67,28 @@ def gt_check_img_std_dict(test):
                           doNiceXDate=True,
                           suptitle='%s-checks: Image-Area STD' % ntest,
                           ylabel='[ADU]'))
+def gt_indiv_prof1Dhor_dict(test):
+    ntest = st.replace(test, '_', '\_')
+    return dict(
+        #figname='%s_profs1D_hor_allOBSIDs.png' % test,
+        caption='%s: Average profiles across columns, PLACEHOLDER.' % ntest,
+        meta=dict(doLegend=False,
+                  ylabel='ADU',
+                  xlabel='Column [pix]',
+                  suptitle='%s: Profiles across columns, PLACEHOLDER.' % ntest)
+        )
+
+def gt_indiv_prof1Dver_dict(test):
+    ntest = st.replace(test, '_', '\_')
+    return dict(
+        #figname='%s_profs1D_ver_allOBSIDs.png' % test,
+        caption='%s: Average profiles across rows, PLACEHOLDER.' % ntest,
+        meta=dict(doLegend=False,
+                  ylabel='ADU',
+                  xlabel='Row [pix]',
+                  suptitle='%s: Profiles across rows, PLACEHOLDER.' % ntest)
+        )
+
 
 
 def gt_FL0Xfigs(test):
@@ -79,5 +101,11 @@ def gt_FL0Xfigs(test):
         trends.Fig_Basic_Checkstat, gt_check_img_flu_dict(test)]
     FL0Xfigs['FL0Xchecks_imgstd'] = [
         trends.Fig_Basic_Checkstat, gt_check_img_std_dict(test)]
+    
+    FL0Xfigs['FL0Xindiv_prof1D_hor_generic'] = [
+            figclasses.Fig_Beam2DPlot, gt_indiv_prof1Dhor_dict(test)]
+    FL0Xfigs['FL0Xindiv_prof1D_ver_generic'] = [
+            figclasses.Fig_Beam2DPlot, gt_indiv_prof1Dver_dict(test)]
+    
     FL0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return FL0Xfigs
