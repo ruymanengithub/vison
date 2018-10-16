@@ -122,6 +122,8 @@ class Section(Container):
 
         for item in self.Contents:
             tex += item.generate_Latex()
+        
+        if self.level == 0: tex+=['\clearpage']
 
         return tex
 
