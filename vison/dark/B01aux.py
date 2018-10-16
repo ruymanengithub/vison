@@ -50,7 +50,7 @@ basic_prof1Dhor_dict = dict(
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Column [pix]',
-              ylim = [-10., 20.],
+              ylim = [-20., 20.],
               suptitle='BIAS01: Profiles across columns.')
 )
 
@@ -60,7 +60,7 @@ basic_prof1Dver_dict = dict(
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Row [pix]',
-              ylim = [-10., 20.],
+              ylim = [-20., 20.],
               suptitle='BIAS01: Profiles across rows.')
 )
 
@@ -83,7 +83,7 @@ meta_prof1Dhor_dict = dict(
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Column [pix]',
-              ylim = [0., 2.**16],
+              ylim = [-20., 20.],
               suptitle='BIAS01/Master: Profiles across columns.')
 )
 
@@ -93,7 +93,7 @@ meta_prof1Dver_dict = dict(
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Row [pix]',
-              ylim = [0., 2.**16],
+              ylim = [-20., 20.],
               suptitle='BIAS01/Master: Profiles across rows.')
 )
 
