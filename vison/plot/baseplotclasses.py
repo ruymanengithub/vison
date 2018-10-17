@@ -340,6 +340,7 @@ class BeamPlotYvX(BeamPlot):
 class BeamImgShow(BeamPlot):
     
     def _ax_core_funct(self, ax, CQdict):
+        
         ckwargs = self.corekwargs.copy()
         ax.imshow(CQdict['img'], **ckwargs)
         handle, label = None, None

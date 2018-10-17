@@ -55,7 +55,6 @@ class Fig(object):
 
     def plot(self, **kwargs):
         """ """
-        
         plotobj = self.plotclass(self.data, **kwargs)
         plotobj.render(self.figname)
 

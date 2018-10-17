@@ -406,7 +406,7 @@ class FLAT0X(FlatTask):
             self.report.add_Section(
                 keyword='MasterFF', Title='Master Flat-Fields', level=0)
             
-        OnTests = True # True on TESTS
+        OnTests = False # True on TESTS
 
         wavelength = self.inputs['wavelength']
         settings = dict(
@@ -526,11 +526,11 @@ class FLAT0X(FlatTask):
                         PRNU_TBs[ulabel]['AVFLUENCE'][kk] = jsettings['AVFLU_%s' % Q]
                         
                         qdata = FF.get_quad(Q,canonical=False,extension=1).copy()
-                        sqdata = ndimage.filters.gaussian_filter(qdata,sigma=3.,
+                        sqdata = ndimage.filters.gaussian_filter(qdata,sigma=5.,
                                                                  mode='constant',
                                                                  cval=1.)
-                        MFF_p5s.append(np.percentile(sqdata,5))
-                        MFF_p95s.append(np.percentile(sqdata,95))
+                        #MFF_p5s.append(np.percentile(sqdata,5))
+                        #MFF_p95s.append(np.percentile(sqdata,95))
                         MFF_2PLOT[ulabel][CCDk][Q]['img'] = sqdata.transpose()
 
         # REPORT PRNU results
@@ -581,16 +581,16 @@ class FLAT0X(FlatTask):
         for ulabel in ulabels:
             
             self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel] =  copy.deepcopy(self.figdict['FL0Xmeta_MFF_2D'])
-            self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel]['figname'] =\
-                        st.replace(self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel]['figname'],
+            self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['figname'] =\
+                        st.replace(self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['figname'],
                                    'PLACEHOLDER',
                                    ulabel)
-            self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel]['caption'] =\
-                        st.replace(self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel]['caption'],
+            self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['caption'] =\
+                        st.replace(self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['caption'],
                                    'PLACEHOLDER',
                                    ulabel)
-            self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel]['meta']['suptitle'] =\
-                st.replace(self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel]['meta']['suptitle'],
+            self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['meta']['suptitle'] =\
+                st.replace(self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['meta']['suptitle'],
                                    'PLACEHOLDER',
                                    ulabel)
             
@@ -598,15 +598,16 @@ class FLAT0X(FlatTask):
         
             # UPDATING scaling based on data
             
-            if len(MFF_p5s)>0:
-                normfunction = Normalize(vmin=np.nanmin(MFF_p5s),vmax=np.nanmax(MFF_p95s),clip=False)
-            else:
-                normfunction = False
             
-            self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['corekwargs']['norm'] = normfunction
+            if len(MFF_p5s)>0:
+                normfunction = Normalize(vmin=np.nanmin(MFF_p5s),vmax=np.nanmax(MFF_p95s),clip=True)
+            else:
+                normfunction = Normalize(vmin=0.99,vmax=1.01,clip=False)
+            
+            self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['meta']['corekwargs']['norm'] = normfunction
             
         if self.report is not None:
-            MFFfigkeys = ['B01meta_MasterBias_2D_%s' % ulabel for ulabel in ulabels]
+            MFFfigkeys = ['FL0Xmeta_MFF_2D_%s' % ulabel for ulabel in ulabels]
             self.addFigures_ST(figkeys=MFFfigkeys,
                            dobuilddata=False)
 

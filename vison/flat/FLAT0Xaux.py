@@ -102,12 +102,12 @@ def gt_meta_MFF2D_dict(test):
     ntest = st.replace(test,'_','\_')
     return dict(
             figname='%s_MASTERFLATFIELD_2Dimgshow_PLACEHOLDER.png' % test,
-            caption='%s: Master FlatField for the CCDs [PLACEHOLDER].' % ntest,
-              meta=dict(doLegend=False,
-              suptitle='%s/Master:Quadrant Images [PLACEHOLDER]' % ntest),
-                corekwargs=dict(cmap=cm.rainbow,aspect='auto',norm=None,
-                                origin='lower left',
-                    ))
+            caption='%s: Master FlatField for the CCDs [PLACEHOLDER]. Smoothed with gaussian kernel to highlight details.' % ntest,
+            meta=dict(doLegend=False,
+              suptitle='%s/Master:Quadrant Images [PLACEHOLDER].' % ntest,
+              corekwargs=dict(cmap=cm.rainbow,aspect='auto',norm=None,
+                                origin='lower left'))
+                )
 
 
 def gt_FL0Xfigs(test):
