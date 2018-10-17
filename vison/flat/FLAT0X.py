@@ -21,6 +21,9 @@ import datetime
 import copy
 from collections import OrderedDict
 import string as st
+import pandas as pd
+from matplotlib.colors import Normalize
+from scipy import ndimage
 
 from vison.support import context
 from vison.pipe import lib as pilib
@@ -92,12 +95,12 @@ class FLAT0X(FlatTask):
         super(FLAT0X, self).__init__(inputs, log, drill, debug)
         self.name = 'FLAT0X'
         self.type = 'Simple'
-        
+        self.CDP_lib = FL0Xaux.CDP_lib.copy()
         self.HKKeys = HKKeys
         self.figdict = FL0Xaux.gt_FL0Xfigs(self.inputs['test'])
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        ccdflats='ccdflats',
-                                       cdps='cdps')
+                                       products='products')
 
     def set_inpdefaults(self, **kwargs):
         """ """
@@ -265,7 +268,7 @@ class FLAT0X(FlatTask):
 
         # The heavy-lifting
         
-        onTests = True # TESTS
+        onTests = False # True on TESTS
 
         if not self.drill:
             
@@ -402,21 +405,58 @@ class FLAT0X(FlatTask):
         if self.report is not None:
             self.report.add_Section(
                 keyword='MasterFF', Title='Master Flat-Fields', level=0)
+            
+        OnTests = True # True on TESTS
 
         wavelength = self.inputs['wavelength']
-        settings = dict()
+        settings = dict(
+                WAVEL=wavelength,
+                ID=self.ID,
+                BLOCKID=self.BLOCKID,
+                CHAMBER=self.CHAMBER
+                )
 
         indices = copy.deepcopy(self.dd.indices)
 
         CCDs = indices.get_vals('CCD')
+        nC = len(CCDs)
+        Quads = indices.get_vals('Quad')
+        nQ = len(Quads)
         
         dpath = self.inputs['subpaths']['ccdflats']
-        cdppath = self.inputs['subpaths']['cdps']
+        productspath = self.inputs['subpaths']['products']
         
         vCCDs = self.dd.mx['CCD'][:].copy()
 
         vlabels = self.dd.mx['label'][:].copy()
         ulabels = np.unique(vlabels)
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+        
+        NP = nC * nQ
+        
+        PRNU_TBs = OrderedDict()
+        
+        for ulabel in ulabels:
+            PRNU_TBs[ulabel] = OrderedDict()
+            PRNU_TBs[ulabel]['CCD'] = np.zeros(NP,dtype='int32')
+            PRNU_TBs[ulabel]['Q'] = np.zeros(NP,dtype='int32')
+            PRNU_TBs[ulabel]['AVFLUENCE'] = np.zeros(NP,dtype='float32')
+            PRNU_TBs[ulabel]['PRNU_PC'] = np.zeros(NP,dtype='float32')
+            
+            
+        MFF_2PLOT = OrderedDict()
+        for ulabel in ulabels:
+            MFF_2PLOT[ulabel] = OrderedDict()
+            for CCDk in CCDs:
+                MFF_2PLOT[ulabel][CCDk] = OrderedDict()
+                for Q in Quads:
+                    MFF_2PLOT[ulabel][CCDk][Q] = OrderedDict()
+        MFF_p5s = []
+        MFF_p95s = []
 
         if not self.drill:
 
@@ -437,7 +477,7 @@ class FLAT0X(FlatTask):
                     FFname = 'EUC_FF_%inm_%s_ROE1_%s.fits' % \
                         (wavelength, ulabel, CCDk)
 
-                    FFpath = os.path.join(cdppath, FFname)
+                    FFpath = os.path.join(productspath, FFname)
 
                     selix = np.where((vlabels == ulabel) & (vCCDs == CCDk))
 
@@ -450,9 +490,17 @@ class FLAT0X(FlatTask):
                     # MISSING: proper defects and useful area masking
                     #   (mask-out pre/over scans)
                     
+                    if OnTests:
+                        FFlist = FFlist[0:2]
+                    
+                    jsettings = copy.deepcopy(settings)
+                    
+                    for kQ,Q in enumerate(Quads):
+                        jsettings['AVFLU_%s' % Q] = \
+                                 np.nanmedian(self.dd.mx['flu_med_img'][:,:,kQ][selix])
 
                     FFing.produce_MasterFlat(
-                        FFlist, FFpath, mask=None, settings=settings)
+                        FFlist, FFpath, mask=None, settings=jsettings)
 
                     self.dd.products['MasterFFs'][ulabel][CCDk] = FFpath
 
@@ -464,19 +512,105 @@ class FLAT0X(FlatTask):
 
                     Quads = FF.Quads
 
-                    for Q in Quads:
-
-                        iQ_PRNU = FF.get_stats(Q, sector='img', statkeys=['std'],
+                    for jQ, Q in enumerate(Quads):
+                        
+                        kk = jCCD * nQ + jQ
+                        
+                        kQ_PRNU = FF.get_stats(Q, sector='img', statkeys=['std'],
                                                ignore_pover=True,
                                                extension=iFextension)[0]
-
-                        PRNU[ulabel][CCDk][Q] = iQ_PRNU
+                        
+                        PRNU_TBs[ulabel]['CCD'][kk] = jCCD+1
+                        PRNU_TBs[ulabel]['Q'][kk] = jQ+1
+                        PRNU_TBs[ulabel]['PRNU_PC'][kk] = kQ_PRNU * 100.
+                        PRNU_TBs[ulabel]['AVFLUENCE'][kk] = jsettings['AVFLU_%s' % Q]
+                        
+                        qdata = FF.get_quad(Q,canonical=False,extension=1).copy()
+                        sqdata = ndimage.filters.gaussian_filter(qdata,sigma=3.,
+                                                                 mode='constant',
+                                                                 cval=1.)
+                        MFF_p5s.append(np.percentile(sqdata,5))
+                        MFF_p95s.append(np.percentile(sqdata,95))
+                        MFF_2PLOT[ulabel][CCDk][Q]['img'] = sqdata.transpose()
 
         # REPORT PRNU results
+        
+        
+        PRNU_TB_dddf = OrderedDict()
+        for ulabel in ulabels:
+            PRNU_TB_dddf['PRNU_%s' % ulabel] = pd.DataFrame.from_dict(PRNU_TBs[ulabel])
+        
+        prnu_tb_cdp = self.CDP_lib['PRNU_TB']
+        prnu_tb_cdp.rootname = prnu_tb_cdp.rootname % \
+          (self.inputs['test'],self.inputs['wavelength'])
+        prnu_tb_cdp.path = self.inputs['subpaths']['products']
+        prnu_tb_cdp.ingest_inputs(
+                data = PRNU_TB_dddf.copy(),
+                meta=dict(),
+                header=CDP_header.copy()
+                )
+
+        prnu_tb_cdp.init_wb_and_fillAll(header_title='%s (%inm): PRNU TABLE' % \
+                (self.inputs['test'],self.inputs['wavelength']))
+        self.save_CDP(prnu_tb_cdp)
+        self.pack_CDP_to_dd(prnu_tb_cdp, 'PRNU_TB_CDP')
+    
+        for ulabel in ulabels:
+            
+            if self.report is not None:
+                
+                fccd = lambda x: CCDs[x-1]
+                fq = lambda x: Quads[x-1]
+                ff = lambda x: '%.2f' % x
+                fE = lambda x: '%.2E' % x
+                
+                cov_formatters=[fccd,fq,fE,ff]
+                
+                caption = '%s (%inm): PRNU TABLE [%s]' % \
+                    (self.inputs['test'],self.inputs['wavelength'],ulabel)
+                nicecaption = st.replace(caption,'_','\_')
+                Ptex = prnu_tb_cdp.get_textable(sheet='PRNU_%s' % ulabel, 
+                                                   caption=nicecaption,
+                                                   fitwidth=True,
+                                                   tiny=True,
+                                                   formatters=cov_formatters)
+                self.report.add_Text(Ptex)
 
         # SHOW FFs
         
+        for ulabel in ulabels:
+            
+            self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel] =  copy.deepcopy(self.figdict['FL0Xmeta_MFF_2D'])
+            self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel]['figname'] =\
+                        st.replace(self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel]['figname'],
+                                   'PLACEHOLDER',
+                                   ulabel)
+            self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel]['caption'] =\
+                        st.replace(self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel]['caption'],
+                                   'PLACEHOLDER',
+                                   ulabel)
+            self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel]['meta']['suptitle'] =\
+                st.replace(self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel]['meta']['suptitle'],
+                                   'PLACEHOLDER',
+                                   ulabel)
+            
+            self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['data'] = MFF_2PLOT[ulabel].copy()
         
+            # UPDATING scaling based on data
+            
+            if len(MFF_p5s)>0:
+                normfunction = Normalize(vmin=np.nanmin(MFF_p5s),vmax=np.nanmax(MFF_p95s),clip=False)
+            else:
+                normfunction = False
+            
+            self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['corekwargs']['norm'] = normfunction
+            
+        if self.report is not None:
+            MFFfigkeys = ['B01meta_MasterBias_2D_%s' % ulabel for ulabel in ulabels]
+            self.addFigures_ST(figkeys=MFFfigkeys,
+                           dobuilddata=False)
+
+            
 
     def do_prdef_mask(self):
         """

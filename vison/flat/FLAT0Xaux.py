@@ -16,11 +16,19 @@ import numpy as np
 import os
 from collections import OrderedDict
 import string as st
+from matplotlib import cm
 
+from vison.datamodel import cdp
 from vison.plot import figclasses
 from vison.plot import trends
 
+
 # END IMPORT
+
+prnu_tb_cdp = cdp.Tables_CDP()
+prnu_tb_cdp.rootname = '%s_%snm_PRNU_TB'
+
+CDP_lib = dict(PRNU_TB=prnu_tb_cdp)
 
 
 def gt_check_offsets_dict(test):
@@ -67,6 +75,7 @@ def gt_check_img_std_dict(test):
                           doNiceXDate=True,
                           suptitle='%s-checks: Image-Area STD' % ntest,
                           ylabel='[ADU]'))
+    
 def gt_indiv_prof1Dhor_dict(test):
     ntest = st.replace(test, '_', '\_')
     return dict(
@@ -89,6 +98,16 @@ def gt_indiv_prof1Dver_dict(test):
                   suptitle='%s: Profiles across rows, PLACEHOLDER.' % ntest)
         )
 
+def gt_meta_MFF2D_dict(test):
+    ntest = st.replace(test,'_','\_')
+    return dict(
+            figname='%s_MASTERFLATFIELD_2Dimgshow_PLACEHOLDER.png' % test,
+            caption='%s: Master FlatField for the CCDs [PLACEHOLDER].' % ntest,
+              meta=dict(doLegend=False,
+              suptitle='%s/Master:Quadrant Images [PLACEHOLDER]' % ntest),
+                corekwargs=dict(cmap=cm.rainbow,aspect='auto',norm=None,
+                                origin='lower left',
+                    ))
 
 
 def gt_FL0Xfigs(test):
@@ -106,6 +125,8 @@ def gt_FL0Xfigs(test):
             figclasses.Fig_Beam2DPlot, gt_indiv_prof1Dhor_dict(test)]
     FL0Xfigs['FL0Xindiv_prof1D_ver_generic'] = [
             figclasses.Fig_Beam2DPlot, gt_indiv_prof1Dver_dict(test)]
+    FL0Xfigs['FL0Xmeta_MFF_2D'] = [
+    figclasses.Fig_BeamImgShow, gt_meta_MFF2D_dict(test)]
     
     FL0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return FL0Xfigs

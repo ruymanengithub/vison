@@ -130,6 +130,7 @@ def produce_MasterFlat(infitsList, outfits, mask=None, settings={}):
 
     if mask is not None:
         mff.get_mask(mask)
+    
 
     mff.writeto(outfits, clobber=True, unsigned16bit=False)
 
@@ -169,6 +170,7 @@ class FlatField(ccdmodule.CCD, CDPClass):
                                label=None, headerdict=meta)
             self.add_extension(data=data['Flat'].copy(), label='FLAT')
             self.add_extension(data=data['eFlat'].copy(), label='EFLAT')
+            
 
             if 'Mask' in data.keys():
                 self.add_extension(data=data['Mask'].copy(), label='MASK')

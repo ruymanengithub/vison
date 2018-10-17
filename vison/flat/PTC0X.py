@@ -597,6 +597,7 @@ class PTC0X(FlatTask):
 
         # Build Tables
         
+        
         GAIN_TB_dddf = OrderedDict(GAIN_TB = pd.DataFrame.from_dict(GAIN_TB))
         
         gain_tb_cdp = self.CDP_lib['GAIN_TB']
