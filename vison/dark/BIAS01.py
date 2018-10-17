@@ -661,7 +661,7 @@ class BIAS01(DarkTask):
         else:
             normfunction = False
         
-        self.figdict['B01meta_MasterBias_2D'][1]['corekwargs']['norm'] = normfunction
+        self.figdict['B01meta_MasterBias_2D'][1]['meta']['corekwargs']['norm'] = normfunction
         
         if self.report is not None:
             self.addFigures_ST(figkeys=['B01meta_MasterBias_2D'],
