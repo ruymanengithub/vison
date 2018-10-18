@@ -105,7 +105,7 @@ def get_testdefaults(ogseobj=None):
 def get_Flu_lims(relfluences):
 
     plusminus10pc = 1.+np.array([-0.1, 0.1])
-    satur_fluence = 2.*2.E5 / performance.gains['CCD1']
+    satur_fluence = 2.**16
 
     Flu_lims = OrderedDict(
         CCD1=OrderedDict(
@@ -114,8 +114,10 @@ def get_Flu_lims(relfluences):
 
     Nfluences = len(relfluences)
     for i in range(1, Nfluences+1):
+        relflu = min( relfluences[i-1]/100.,1)
+        
         Flu_lims['CCD1']['E']['ALPHA']['col%03i' % i] = \
-            2. * relfluences[i-1]*plusminus10pc*satur_fluence
+            2. * relflu * plusminus10pc*satur_fluence
 
     for Spot in ['BRAVO', 'CHARLIE', 'DELTA', 'ECHO']:
         Flu_lims['CCD1']['E'][Spot] = Flu_lims['CCD1']['E']['ALPHA']

@@ -65,11 +65,11 @@ FLAT0X_commvalues = dict(program='CALCAMP',
 
 plusminus10pcent = 1.+np.array([-0.10, 0.10])
 
-def get_Flu_lims(FL0X_relfluences):
+def get_Flu_lims(relfluences):
     
     FLU_lims = OrderedDict(CCD1=OrderedDict())
     
-    for iflu,rflu in enumerate(FL0X_relfluences):
+    for iflu,rflu in enumerate(relfluences):
         _cenval = min(rflu / 100., 1.) * 2.**16
         _lims = _cenval * plusminus10pcent
         FLU_lims['CCD1']['col%03i' % (iflu+1,)] = _lims
@@ -141,9 +141,9 @@ class FLAT0X(FlatTask):
         wave = self.inputs['wavelength']
         exptimes = np.array(self.inputs['exptimes'])
         tsatur = self.ogse.profile['tFWC_flat']['nm%i' % wave]
-        FL0X_relfluences = exptimes / tsatur
+        FL0X_relfluences = exptimes / tsatur * 100.
         
-        self.perfdefaults['FLU_lims'] = get_flu_lims(FL0X_relfluences)
+        self.perfdefaults['FLU_lims'] = get_Flu_lims(FL0X_relfluences)
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """Builds FLAT0X script structure dictionary.

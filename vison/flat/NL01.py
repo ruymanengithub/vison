@@ -73,7 +73,7 @@ plusminus10pcent = 1.+np.array([-0.10, 0.10])
 NL01_relfluences = np.array(
     [0.5, 0.7, 1.,2.,3.,5., 10., 20., 30., 50., 70., 80., 85., 90., 95., 100., 110.])
 
-def get_Flu_lims(NL01_relfluences):
+def get_Flu_lims(relfluences):
     
     reflims = 0.5*2**16*plusminus10pcent
 
@@ -81,7 +81,7 @@ def get_Flu_lims(NL01_relfluences):
     FLU_lims['CCD1']['col001'] = np.array([-10.,20.]) # BGD. ADU
     FLU_lims['CCD1']['col002'] = reflims
     
-    for iflu, rflu in enumerate(NL01_relfluences):
+    for iflu, rflu in enumerate(relfluences):
         _cenval = min(rflu / 100., 1.) * 2.**16
         _lims = _cenval * plusminus10pcent
         FLU_lims['CCD1']['col%03i' % (2*iflu+3,)] = _lims
@@ -90,6 +90,7 @@ def get_Flu_lims(NL01_relfluences):
     for i in [2, 3]:
         FLU_lims['CCD%i' % i] = copy.deepcopy(FLU_lims['CCD1'])
     
+    stop()
 
     return FLU_lims
 
@@ -152,9 +153,9 @@ class NL01(FlatTask):
         exptimes = np.array(self.inputs['exptimes'])
         tsatur = self.ogse.profile['tFWC_flat']['nm%i' % wave]
         
-        NL01_relfluences = exptimes / tsatur
+        relfluences = exptimes / tsatur * 100.
         
-        self.perfdefaults['FLU_lims'] = get_Flu_lims(NL01_relfluences)  # dict
+        self.perfdefaults['FLU_lims'] = get_Flu_lims(relfluences)  # dict
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """Builds NL01 script structure dictionary.
