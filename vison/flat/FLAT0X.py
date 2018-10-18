@@ -63,12 +63,22 @@ FLAT0X_commvalues = dict(program='CALCAMP',
                          source='flat',
                          comments='')
 
-FLU_lims = dict(CCD1=dict(
-    col1=0.25 * 2**16 * (1.+np.array([-0.10, 0.10])),
-    col2=0.50 * 2**16 * (1.+np.array([-0.10, 0.10])),
-    col3=0.75 * 2**16 * (1.+np.array([-0.10, 0.10]))))
-for i in [2, 3]:
-    FLU_lims['CCD%i' % i] = copy.deepcopy(FLU_lims['CCD1'])
+plusminus10pcent = 1.+np.array([-0.10, 0.10])
+
+def get_Flu_lims(FL0X_relfluences):
+    
+    FLU_lims = OrderedDict(CCD1=OrderedDict())
+    
+    for iflu,rflu in enumerate(FL0X_relfluences):
+        _cenval = min(rflu / 100., 1.) * 2.**16
+        _lims = _cenval * plusminus10pcent
+        FLU_lims['CCD1']['col%03i' % (iflu+1,)] = _lims
+
+    for i in [2, 3]:
+        FLU_lims['CCD%i' % i] = copy.deepcopy(FLU_lims['CCD1'])
+    
+    return FLU_lims
+
 
 
 class FLATS0X_inputs(inputs.Inputs):
@@ -127,7 +137,13 @@ class FLAT0X(FlatTask):
     def set_perfdefaults(self, **kwargs):
         #wavelength = self.inputs['wavelength']
         super(FLAT0X, self).set_perfdefaults(**kwargs)
-        self.perfdefaults['FLU_lims'] = FLU_lims.copy()
+        
+        wave = self.inputs['wavelength']
+        exptimes = np.array(self.inputs['exptimes'])
+        tsatur = self.ogse.profile['tFWC_flat']['nm%i' % wave]
+        FL0X_relfluences = exptimes / tsatur
+        
+        self.perfdefaults['FLU_lims'] = get_flu_lims(FL0X_relfluences)
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """Builds FLAT0X script structure dictionary.
@@ -152,7 +168,7 @@ class FLAT0X(FlatTask):
 
         FLAT0X_sdict = dict()
         for i, exptime in enumerate(exptimes):
-            FLAT0X_sdict['col%i' % (i+1,)] = dict(frames=frames[i], exptime=exptimes[i],
+            FLAT0X_sdict['col%03i' % (i+1,)] = dict(frames=frames[i], exptime=exptimes[i],
                                                   comments='EXP%.1e' % exptime)  # ,comments=flags[i])
 
         Ncols = len(FLAT0X_sdict.keys())
