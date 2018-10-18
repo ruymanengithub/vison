@@ -176,7 +176,7 @@ class vColumn(object):
 class DataDict(object):
     """ """
 
-    def __init__(self, meta=dict()):
+    def __init__(self, meta=OrderedDict()):
         """ """
 
         self.meta = meta
@@ -185,6 +185,7 @@ class DataDict(object):
         self.indices = vMultiIndex()
         self.products = dict()  # data products
         self.flags = flags.Flags()
+        self.compliances = OrderedDict()
 
     def loadExpLog(self, explog):
         """ """
