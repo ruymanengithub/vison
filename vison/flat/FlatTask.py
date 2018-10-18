@@ -227,7 +227,7 @@ class FlatTask(Task):
         exp_sat_time = self.ogse.profile['tFWC_flat']['nm%i' % self.inputs['wavelength']]
         sat_time_lims = dict()
         for CCD in CCDs:
-            sat_time_lims[CCD] = (exp_sat_time * np.array([0.7,1.3])).tolist()
+            sat_time_lims[CCD] = (exp_sat_time * np.array([0.9,1.1])).tolist()
         
         _compliance_flux = self.check_stat_perCCDandQ(
                 sat_times, sat_time_lims, CCDs)

@@ -90,7 +90,6 @@ def get_Flu_lims(relfluences):
     for i in [2, 3]:
         FLU_lims['CCD%i' % i] = copy.deepcopy(FLU_lims['CCD1'])
     
-    stop()
 
     return FLU_lims
 
@@ -313,6 +312,8 @@ class NL01(FlatTask):
             dpath = self.inputs['subpaths']['ccdpickles']
 
             for iObs, ObsID in enumerate(ObsIDs):
+                
+                print 'Extracting from OBSID %i/%i' % (iObs+1,nObs)
 
                 for jCCD, CCDk in enumerate(CCDs):
 
