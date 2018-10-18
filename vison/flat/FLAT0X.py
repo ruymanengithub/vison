@@ -406,7 +406,7 @@ class FLAT0X(FlatTask):
             self.report.add_Section(
                 keyword='MasterFF', Title='Master Flat-Fields', level=0)
             
-        OnTests = False # True on TESTS
+        OnTests = True # True on TESTS
 
         wavelength = self.inputs['wavelength']
         settings = dict(

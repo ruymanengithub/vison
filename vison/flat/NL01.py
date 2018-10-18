@@ -75,7 +75,7 @@ NL01_relfluences = np.array(
 
 def get_Flu_lims(NL01_relfluences):
 
-    FLU_lims = dict(CCD1=dict())
+    FLU_lims = OrderedDict(CCD1=OrderedDict())
     for iflu, rflu in enumerate(NL01_relfluences):
         _cenval = min(rflu / 100., 1.) * 2.**16
         _lims = _cenval * plusminus10pcent

@@ -107,19 +107,48 @@ def gen_compliance_tex(indict, escape=True, caption=''):
     """ """
     
     pd.options.display.max_colwidth=200
-
+    
     complidict = copy.deepcopy(indict)
     tcomplidict = texarize_complidict(complidict)
     level = countdictlayers(tcomplidict)
+
 
     if level < 3:
         if level == 1:
             tcomplidict = removescalars_from_dict(tcomplidict)
         df = pd.DataFrame.from_dict(tcomplidict)
+        
         tex = df.to_latex(multicolumn=True, multirow=True,
                           longtable=True, index=level > 1,
                           escape=escape)
         tex = st.split(tex, '\n')
+    
+#    if level == 1:
+#        tcomplidict = removescalars_from_dict(tcomplidict)
+#        df = pd.DataFrame.from_dict(tcomplidict)
+#        
+#        tex = df.to_latex(multicolumn=True, multirow=True,
+#                          longtable=True, index=level > 1,
+#                          escape=escape)
+#        tex = st.split(tex, '\n')
+    
+#    elif level in [2,3]:
+#        keys = []
+#        frames = []
+#        for key, d in tcomplidict.iteritems():
+#            keys.append(key)
+#            try: frames.append(pd.DataFrame.from_dict(d))
+#            except: stop()
+#        series = pd.concat(frames, keys=keys)
+#
+#        tex = series.to_latex(multicolumn=True, multirow=True,
+#                              longtable=True, index=True,
+#                              escape=escape)
+#        tex = st.split(tex, '\n')
+#        
+#        if level == 3:
+#            tex = ['\\tiny'] +tex + ['\\normalsize']
+    
     elif level == 3:
         keys = []
         frames = []
@@ -155,7 +184,7 @@ class ComplianceMX(OrderedDict):
         raise NotImplementedError("Subclass must implement abstract method")
 
     def get_compliance_tex(self,caption=''):
-        return gen_compliance_tex(dict(self), escape=False, caption=caption)
+        return gen_compliance_tex(OrderedDict(self), escape=False, caption=caption)
 
     def get_compliance_txt(self):
         return vjson.dumps_to_json(self)
@@ -197,6 +226,7 @@ class ComplianceMX_CCD(ComplianceMX):
 
     def check_stat(self, inparr):
         """ """
+        
         for iCCD, CCDkey in enumerate(self.CCDs):
 
             _lims = self.CCDQlims[CCDkey]
@@ -238,6 +268,7 @@ class ComplianceMX_CCDQ(ComplianceMX):
 
     def check_stat(self, inparr):
         """ """
+        
         for iCCD, CCDkey in enumerate(self.CCDs):
             for jQ, Q in enumerate(self.Qs):
                 if isinstance(self.CCDQlims[CCDkey], dict):
@@ -278,6 +309,7 @@ class ComplianceMX_CCDCol(ComplianceMX):
 
     def check_stat(self, inparr):
         """ """
+        
         for iCCD, CCDkey in enumerate(self.CCDs):
             for jcol, colname in enumerate(self.colnames):
                 _lims = self.lims[CCDkey][colname]

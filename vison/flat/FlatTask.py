@@ -89,6 +89,9 @@ class FlatTask(Task):
             # if 3==2: # DEBUG!
 
             for iObs in range(nObs):
+            #for iObs in range(3): # TESTS
+            #    print 'WARNING: reduced count to just 3 frames for TESTS!'
+                print 'get_checkstats_ST: Getting metrics from frame %i/%i' % (iObs+1,nObs,)
                 for jCCD, CCDk in enumerate(CCDs):
                     dpath = self.dd.mx['datapath'][iObs, jCCD]
                     ffits = os.path.join(dpath, '%s.fits' %
