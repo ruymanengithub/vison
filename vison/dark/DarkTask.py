@@ -128,6 +128,8 @@ class DarkTask(Task):
             arr = self.dd.mx['offset_%s' % reg]
             _compliance_offsets = self.check_stat_perCCDandQ(
                 arr, offsets_lims, CCDs)
+            
+            self.addComplianceMatrix2Self(_compliance_offsets,'offsets_%s' % reg)
 
             # if not self.IsComplianceMatrixOK(_compliance_offsets):
             if not _compliance_offsets.IsCompliant():
@@ -154,6 +156,8 @@ class DarkTask(Task):
                 _lims[CCDk] = offsets_gradients[CCDk][reg]
             arr = self.dd.mx['offset_%s' % reg][:]-self.dd.mx['offset_pre'][:]
             _xcheck_offsets = self.check_stat_perCCDandQ(arr, _lims, CCDs)
+            
+            self.addComplianceMatrix2Self(_xcheck_offsets,'offsets_grad_%s' % reg)
 
             if not self.IsComplianceMatrixOK(_xcheck_offsets):
                 self.dd.flags.add('POORQUALDATA')
@@ -175,6 +179,9 @@ class DarkTask(Task):
         for reg in regs_std:
             _compliance_std = self.check_stat_perCCDandQ(
                 self.dd.mx['std_%s' % reg], RONs_lims, CCDs)
+            
+            self.addComplianceMatrix2Self(_compliance_std,'std_%s' % reg)
+
 
             if not self.IsComplianceMatrixOK(_compliance_std):
                 self.dd.flags.add('POORQUALDATA')
@@ -193,13 +200,15 @@ class DarkTask(Task):
             Flu_lims = self.perflimits['Flu_lims']
 
             arr = self.dd.mx['chk_flu_img'][:].copy()
-            _compliance_Flu = self.check_stat_perCCDandQ(arr, Flu_lims, CCDs)
+            _compliance_flu = self.check_stat_perCCDandQ(arr, Flu_lims, CCDs)
+            
+            self.addComplianceMatrix2Self(_compliance_flu,'fluence')
 
-            if not self.IsComplianceMatrixOK(_compliance_Flu):
+            if not self.IsComplianceMatrixOK(_compliance_flu):
                 self.dd.flags.add('POORQUALDATA')
             if self.log is not None:
                 self.addComplianceMatrix2Log(
-                    _compliance_Flu, label='COMPLIANCE FLUENCE [img]:')
+                    _compliance_flu, label='COMPLIANCE FLUENCE [img]:')
             if self.report is not None:
                 self.addComplianceMatrix2Report(
-                    _compliance_Flu, label='COMPLIANCE FLUENCE [img]:')
+                    _compliance_flu, label='COMPLIANCE FLUENCE [img]:')

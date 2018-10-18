@@ -88,9 +88,9 @@ class FlatTask(Task):
         if not self.drill:
             # if 3==2: # DEBUG!
 
-            for iObs in range(nObs):
-            #for iObs in range(3): # TESTS
-            #    print 'WARNING: reduced count to just 3 frames for TESTS!'
+            #for iObs in range(nObs):
+            for iObs in range(3): # TESTS
+                print 'WARNING: reduced count to just 3 frames for TESTS!'
                 print 'get_checkstats_ST: Getting metrics from frame %i/%i' % (iObs+1,nObs,)
                 for jCCD, CCDk in enumerate(CCDs):
                     dpath = self.dd.mx['datapath'][iObs, jCCD]
@@ -145,6 +145,11 @@ class FlatTask(Task):
             arr = self.dd.mx['offset_%s' % reg]
             _compliance_offsets = self.check_stat_perCCDandQ(
                 arr, offsets_lims, CCDs)
+            
+            
+            self.addComplianceMatrix2Self(_compliance_offsets,'offset_%s' % reg)
+            
+            
 
             if not self.IsComplianceMatrixOK(_compliance_offsets):
                 self.dd.flags.add('POORQUALDATA')
@@ -164,6 +169,8 @@ class FlatTask(Task):
                 _lims[CCDk] = offsets_gradients[CCDk][reg]
             arr = self.dd.mx['offset_%s' % reg][:]-self.dd.mx['offset_pre'][:]
             _xcheck_offsets = self.check_stat_perCCDandQ(arr, _lims, CCDs)
+            
+            self.addComplianceMatrix2Self(_xcheck_offsets,'offsets_grad_%s' % reg)
 
             if not self.IsComplianceMatrixOK(_xcheck_offsets):
                 self.dd.flags.add('POORQUALDATA')
@@ -182,6 +189,8 @@ class FlatTask(Task):
         for reg in regs_std:
             _compliance_std = self.check_stat_perCCDandQ(
                 self.dd.mx['std_%s' % reg], RONs_lims, CCDs)
+            
+            self.addComplianceMatrix2Self(_compliance_std,'std_%s' % reg)
 
             if not self.IsComplianceMatrixOK(_compliance_std):
                 self.dd.flags.add('POORQUALDATA')
@@ -199,6 +208,7 @@ class FlatTask(Task):
         _compliance_flu = self.check_stat_perCCDandCol(
             self.dd.mx['flu_med_img'], FLU_lims, CCDs)
         
+        self.addComplianceMatrix2Self(_compliance_flu,'fluence')
         
         # IMG FLUXES
         
@@ -222,7 +232,7 @@ class FlatTask(Task):
         _compliance_flux = self.check_stat_perCCDandQ(
                 sat_times, sat_time_lims, CCDs)
         
-        
+        self.addComplianceMatrix2Self(_compliance_flux,'flux')        
 
         if not self.IsComplianceMatrixOK(_compliance_flux):
             self.dd.flags.add('POORQUALDATA')

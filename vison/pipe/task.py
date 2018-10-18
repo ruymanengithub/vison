@@ -71,6 +71,7 @@ class Task(object):
         self.inputs = self.inputsclass()
         self.inpdefaults = dict()
         self.perfdefaults = dict()
+        self.compliances = OrderedDict()
         self.log = log
         self.report = None
         self.TestReference = '7-XXX'
@@ -472,6 +473,9 @@ class Task(object):
         figobj.plot(**meta)
         
         self.figdict[figkey][0] = copy.deepcopy(figobj)
+    
+    def addComplianceMatrix2Self(self,complidict,label):
+        self.compliances[label] = OrderedDict(complidict).copy()
 
     def addComplianceMatrix2Log(self, complidict, label=''):
         """ """

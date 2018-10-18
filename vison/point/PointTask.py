@@ -237,6 +237,8 @@ class PointTask(Task):
             arr = self.dd.mx['offset_%s' % reg]
             _compliance_offsets = self.check_stat_perCCDandQ(
                 arr, offsets_lims, CCDs)
+            
+            self.addComplianceMatrix2Self(_compliance_offsets,'offsets_lims_%s' % reg)
 
             if not self.IsComplianceMatrixOK(_compliance_offsets):
                 self.dd.flags.add('POORQUALDATA')
@@ -256,6 +258,8 @@ class PointTask(Task):
                 _lims[CCDk] = offsets_gradients[CCDk][reg]
             arr = self.dd.mx['offset_%s' % reg][:]-self.dd.mx['offset_pre'][:]
             _xcheck_offsets = self.check_stat_perCCDandQ(arr, _lims, CCDs)
+            
+            self.addComplianceMatrix2Self(_xcheck_offsets,'offsets_gradients_%s' % reg)
 
             if not self.IsComplianceMatrixOK(_xcheck_offsets):
                 self.dd.flags.add('POORQUALDATA')
@@ -274,6 +278,8 @@ class PointTask(Task):
         for reg in regs_std:
             _compliance_std = self.check_stat_perCCDandQ(
                 self.dd.mx['std_%s' % reg], RONs_lims, CCDs)
+            
+            self.addComplianceMatrix2Self(_compliance_std,'std_%s' % reg)
 
             if not self.IsComplianceMatrixOK(_compliance_std):
                 self.dd.flags.add('POORQUALDATA')
@@ -290,6 +296,8 @@ class PointTask(Task):
         BGD_lims = self.perflimits['BGD_lims']  # dict
         _compliance_bgd = self.check_stat_perCCDandQ(
             self.dd.mx['bgd_img'], BGD_lims, CCDs)
+        
+        self.addComplianceMatrix2Self(_compliance_bgd,'bgd_img')
 
         if not self.IsComplianceMatrixOK(_compliance_bgd):
             self.dd.flags.add('POORQUALDATA')
@@ -308,6 +316,8 @@ class PointTask(Task):
                     self.dd.mx['chk_fwhmy'][:]**2.)**0.5
         _compliance_fwhm = self.check_stat_perCCDQSpot(
             chk_fwhm, FWHM_lims, CCDs)
+        
+        self.addComplianceMatrix2Self(_compliance_fwhm,'fwhm')
 
         if not self.IsComplianceMatrixOK(_compliance_fwhm):
             self.dd.flags.add('POORQUALDATA')
@@ -324,6 +334,8 @@ class PointTask(Task):
         Flu_lims = self.perflimits['Flu_lims']  # dict
         _compliance_flu = self.check_stat_perCCDQSpot(
             self.dd.mx['chk_fluence'], Flu_lims, CCDs)
+        
+        self.addComplianceMatrix2Self(_compliance_flu,'fluence')
 
         if not self.IsComplianceMatrixOK(_compliance_flu):
             self.dd.flags.add('POORQUALDATA')

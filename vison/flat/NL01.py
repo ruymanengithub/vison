@@ -88,7 +88,8 @@ def get_Flu_lims(NL01_relfluences):
         FLU_lims['CCD1']['col%03i' % (2*iflu+3+1,)] = reflims
     
     for i in [2, 3]:
-        FLU_lims['CCD%03i' % i] = copy.deepcopy(FLU_lims['CCD1'])
+        FLU_lims['CCD%i' % i] = copy.deepcopy(FLU_lims['CCD1'])
+    
 
     return FLU_lims
 

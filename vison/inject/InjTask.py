@@ -258,6 +258,8 @@ class InjTask(Task):
             arr = self.dd.mx['offset_%s' % reg]
             _compliance_offsets = self.check_stat_perCCDandQ(
                 arr, offsets_lims, CCDs)
+            
+            self.addComplianceMatrix2Self(_compliance_offsets,'offsets_%s' % reg)
 
             if not self.IsComplianceMatrixOK(_compliance_offsets):
                 self.dd.flags.add('POORQUALDATA')
@@ -277,6 +279,8 @@ class InjTask(Task):
                 _lims[CCDk] = offsets_gradients[CCDk][reg]
             arr = self.dd.mx['offset_%s' % reg][:]-self.dd.mx['offset_pre'][:]
             _xcheck_offsets = self.check_stat_perCCDandQ(arr, _lims, CCDs)
+            
+            self.addComplianceMatrix2Self(_xcheck_offsets,'offsets_grad_%s' % reg)
 
             if not self.IsComplianceMatrixOK(_xcheck_offsets):
                 self.dd.flags.add('POORQUALDATA')
@@ -295,6 +299,9 @@ class InjTask(Task):
         for reg in regs_std:
             _compliance_std = self.check_stat_perCCDandQ(
                 self.dd.mx['std_%s' % reg], RONs_lims, CCDs)
+            
+            self.addComplianceMatrix2Self(_compliance_std,'std_%s' % reg)
+
 
             if not self.IsComplianceMatrixOK(_compliance_std):
                 self.dd.flags.add('POORQUALDATA')
@@ -311,6 +318,8 @@ class InjTask(Task):
 
         _compliance_flu = self.check_stat_perCCDQandCol(
             self.dd.mx['chk_med_inject'], Flu_lims, CCDs)
+        
+        self.addComplianceMatrix2Self(_compliance_flu,'fluence')
 
         if not self.IsComplianceMatrixOK(_compliance_flu):
             self.dd.flags.add('POORQUALDATA')
