@@ -74,12 +74,18 @@ NL01_relfluences = np.array(
     [0.5, 0.7, 1.,2.,3.,5., 10., 20., 30., 50., 70., 80., 85., 90., 95., 100., 110.])
 
 def get_Flu_lims(NL01_relfluences):
+    
+    reflims = 0.5*2**16*plusminus10pcent
 
     FLU_lims = OrderedDict(CCD1=OrderedDict())
+    FLU_lims['CCD1']['col1'] = np.array([-10.,20.]) # BGD. ADU
+    FLU_lims['CCD1']['col2'] = reflims
+    
     for iflu, rflu in enumerate(NL01_relfluences):
         _cenval = min(rflu / 100., 1.) * 2.**16
         _lims = _cenval * plusminus10pcent
-        FLU_lims['CCD1']['col%i' % (iflu+1)] = _lims
+        FLU_lims['CCD1']['col%i' % (2*iflu+3,)] = _lims
+        FLU_lims['CCD1']['col%i' % (2*iflu+3+1,)] = reflims
     
     for i in [2, 3]:
         FLU_lims['CCD%i' % i] = copy.deepcopy(FLU_lims['CCD1'])
@@ -105,6 +111,8 @@ class NL01(FlatTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
+        self.Nbgd = 3
+        self.Nstab0 = 1
         self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
                          ('extract', self.extract_stats),
                          ('NL', self.produce_NLCs),
@@ -120,6 +128,7 @@ class NL01(FlatTask):
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                    products='products')
         self.window = dict(wpx=300,hpx=300)
+        
 
     def set_inpdefaults(self, **kwargs):
 
@@ -160,9 +169,6 @@ class NL01(FlatTask):
         exptinter = self.inputs['exptinter']
         frames = self.inputs['frames']
         wavelength = self.inputs['wavelength']
-        
-        Nbgd=3
-        Nstab0 = 1
 
         assert len(expts) == len(frames)
 
@@ -173,8 +179,8 @@ class NL01(FlatTask):
 
         NL01_sdict = dict()
 
-        NL01_sdict['col1'] = dict(frames=Nbgd, exptime=0, comment='BGD')
-        NL01_sdict['col2'] = dict(frames=Nstab0, exptime=exptinter, comment='STAB')
+        NL01_sdict['col1'] = dict(frames=self.Nbgd, exptime=0, comment='BGD')
+        NL01_sdict['col2'] = dict(frames=self.Nstab0, exptime=exptinter, comment='STAB')
 
         for ix, ifra in enumerate(frames):
 
