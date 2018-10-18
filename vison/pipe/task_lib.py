@@ -106,11 +106,11 @@ def filterexposures(self, structure, explog, OBSID_lims, colorblind=False, waved
         testkey = surrogate
     else:
         testkey = self.inputs['test']
-    #testkey = structure['col1']['test']
+    #testkey = structure['col001']['test']
 
     if not colorblind:
 
-        Filters = [structure['col%i' % i]['wave'] for i in range(1, Ncols+1)]
+        Filters = [structure['col%03i' % i]['wave'] for i in range(1, Ncols+1)]
         Filter = Filters[0]
         assert np.all(np.array(Filters) == Filter)
 
@@ -139,9 +139,9 @@ def filterexposures(self, structure, explog, OBSID_lims, colorblind=False, waved
 #
 #    frcounter = 0
 #    for ic in range(1,Ncols+1):
-#        _frames = structure['col%i' % ic]['frames']
+#        _frames = structure['col%03i' % ic]['frames']
 #        #print frcounter,frcounter+_frames*3
-#        explog['label'][frcounter:frcounter+_frames*3] = 'col%i' % ic
+#        explog['label'][frcounter:frcounter+_frames*3] = 'col%03i' % ic
 #        frcounter += _frames*3
 
     return explog, checkreport
@@ -155,9 +155,9 @@ def add_labels_to_explog(self, explog, structure):
 
     frcounter = 0
     for ic in range(1, Ncols+1):
-        _frames = structure['col%i' % ic]['frames']
+        _frames = structure['col%03i' % ic]['frames']
         #print frcounter,frcounter+_frames*3
-        explog['label'][frcounter:frcounter+_frames*3] = 'col%i' % ic
+        explog['label'][frcounter:frcounter+_frames*3] = 'col%03i' % ic
         frcounter += _frames*3
 
     return explog

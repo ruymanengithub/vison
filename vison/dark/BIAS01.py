@@ -102,7 +102,7 @@ class BIAS01(DarkTask):
         """
 
         N = self.inputs['N']
-        BIAS01_sdict = dict(col1=dict(frames=N, exptime=0))
+        BIAS01_sdict = dict(col001=dict(frames=N, exptime=0))
 
         Ncols = len(BIAS01_sdict.keys())
         BIAS01_sdict['Ncols'] = Ncols

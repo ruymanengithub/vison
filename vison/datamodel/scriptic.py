@@ -255,7 +255,7 @@ def update_structdict(sdict, commvalues, diffvalues):
     Ndiff = len(diffvalues.keys())
 
     for ic in range(1, Ncols+1):
-        ickey = 'col%i' % ic
+        ickey = 'col%03i' % ic
 
         for comkey in commvalues.keys():
 
@@ -307,7 +307,7 @@ class Script(object):
         # self.cargo.append([aliases[key] for key in keys]) # first column, aliases
         self.cargo.append(keys)  # first column, aliases
 
-        cols = ['col%i' % (i+1,) for i in range(stru['Ncols'])]
+        cols = ['col%03i' % (i+1,) for i in range(stru['Ncols'])]
 
         cumframes = 0
 
@@ -342,7 +342,7 @@ class Script(object):
 
         ncols = len(self.cargo)
 
-        colnames = ['col%04i' % i for i in range(ncols)]
+        colnames = ['col%03i' % i for i in range(ncols)]
 
         datadict = {}
 
@@ -370,7 +370,7 @@ class Script(object):
         structure['Ncols'] = Ncols
 
         for i in range(1, Ncols+1):
-            structure['col%i' % i] = dict(zip(keys, self.cargo[i]))
+            structure['col%03i' % i] = dict(zip(keys, self.cargo[i]))
 
         return structure
 

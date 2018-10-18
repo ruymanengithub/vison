@@ -143,7 +143,7 @@ class CHINJ02(InjTask):
 
         colcounter = 1
         for i, IDL in enumerate(IDLv):
-            colkey = 'col%i' % (i+1,)
+            colkey = 'col%03i' % (i+1,)
             CHINJ02_sdict[colkey] = dict(frames=1, IDL=IDL, IDH=IDH,
                                          IG1_1_T=IG1, IG1_2_T=IG1, IG1_3_T=IG1,
                                          IG1_1_B=IG1, IG1_2_B=IG1, IG1_3_B=IG1,
@@ -156,7 +156,7 @@ class CHINJ02(InjTask):
         colstart = colcounter
 
         for j, IDL in enumerate(IDLv):
-            colkey = 'col%i' % (colstart+j,)
+            colkey = 'col%03i' % (colstart+j,)
             CHINJ02_sdict[colkey] = dict(frames=1, IDL=IDL, IDH=IDH,
                                          IG1_1_T=IG1, IG1_2_T=IG1, IG1_3_T=IG1,
                                          IG1_1_B=IG1, IG1_2_B=IG1, IG1_3_B=IG1,

@@ -126,7 +126,7 @@ def scwriter(toWrite, test_generator, outpath, equipment, elvis=context.elvis, C
         duration += testduration
 
         iNcols = structtest['Ncols']
-        frameslist = [structtest['col%i' % i]['frames']
+        frameslist = [structtest['col03%i' % i]['frames']
                       for i in range(1, iNcols+1)]
         iNframes = np.sum(frameslist)
 

@@ -80,7 +80,7 @@ def get_test_duration(teststruct):
     Ncols = teststruct['Ncols']
 
     for ixcol in range(1, Ncols+1):
-        col = teststruct['col%i' % ixcol]
+        col = teststruct['col%03i' % ixcol]
         iduration = col['exptime']
 
         if col['siflsh'] == 1:

@@ -139,7 +139,7 @@ def generate_Explog(scrdict, defaults, elvis=context.elvis, explog=None, OBSID0=
 
     for iscrcol in range(1, Nscriptcols+1):
 
-        scriptcol = scrdict['col%i' % iscrcol]
+        scriptcol = scrdict['col%03i' % iscrcol]
         N = scriptcol['frames']
         inputkeys = [key for key in scriptcol.keys() if key != 'frames']
 

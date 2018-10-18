@@ -152,7 +152,7 @@ class CHINJ01(InjTask):
         
         colcounter = 1
         for i, IG1 in enumerate(IG1v):
-            colkey = 'col%i' % colcounter
+            colkey = 'col%03i' % colcounter
             #print colkey
             CHINJ01_sdict[colkey] = dict(frames=1, IDL=IDL, IDH=IDH,
                                          IG2_T=IG2, IG2_B=IG2,
@@ -168,7 +168,7 @@ class CHINJ01(InjTask):
         # Second Injection Drain Delay
 
         for j, IG1 in enumerate(IG1v):
-            colkey = 'col%i' % colcounter
+            colkey = 'col%03i' % colcounter
             #print colkey
             CHINJ01_sdict[colkey] = dict(frames=1, IDL=IDL, IDH=IDH,
                                          IG2_T=IG2,IG2_B=IG2,

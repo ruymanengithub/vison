@@ -114,7 +114,7 @@ def get_Flu_lims(relfluences):
 
     Nfluences = len(relfluences)
     for i in range(1, Nfluences+1):
-        Flu_lims['CCD1']['E']['ALPHA']['col%i' % i] = \
+        Flu_lims['CCD1']['E']['ALPHA']['col%03i' % i] = \
             2. * relfluences[i-1]*plusminus10pc*satur_fluence
 
     for Spot in ['BRAVO', 'CHARLIE', 'DELTA', 'ECHO']:
@@ -228,7 +228,7 @@ class PSF0X(PointTask):
         PSF0X_sdict = dict()
 
         for ic in range(ncols):
-            colid = 'col%i' % (ic+1,)
+            colid = 'col%03i' % (ic+1,)
             PSF0X_sdict[colid] = dict(frames=frames[ic], exptime=exptimes[ic],
                                       test=test)
 

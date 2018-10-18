@@ -131,7 +131,7 @@ class CHINJ00(InjTask):
                 IDL = IDLs[i]
                 IG2 = IG2s[i]
 
-                colkey = 'col%i' % colcounter
+                colkey = 'col%03i' % colcounter
                 #print colkey
 
                 CHINJ00_sdict[colkey] = dict(frames=1, IDL=IDL, IDH=IDH,

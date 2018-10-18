@@ -92,7 +92,7 @@ class InjTask(Task):
                 sectag = SecTags[Q]
 
                 for icol in range(1, Ncols+1):
-                    coldict = teststruct['col%i' % icol]
+                    coldict = teststruct['col%03i' % icol]
                     chinj = coldict['chinj']
                     IGs = (coldict['IG1_%i_%s' % (jCCD+1, sectag)],
                            coldict['IG2_%s' % sectag])
@@ -106,7 +106,7 @@ class InjTask(Task):
                         _inj = ilib.predict_inj_level(ID, IGs, id_timing,
                                                       toi_ch, sectag)
 
-                    expectation[CCDkey][Q]['col%i' % icol] = _inj
+                    expectation[CCDkey][Q]['col%03i' % icol] = _inj
 
         return expectation
 

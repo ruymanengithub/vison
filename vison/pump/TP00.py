@@ -125,7 +125,7 @@ class TP00(PumpTask):
 
                 for t, toi_tp in enumerate(toi_tpv):
 
-                    colkey = 'col%i' % colcounter
+                    colkey = 'col%03i' % colcounter
 
                     TP00_sdict[colkey] = dict(frames=1, toi_tp=toi_tp,
                                               id_dly=id_delay, 
@@ -144,7 +144,7 @@ class TP00(PumpTask):
 
                 for d, dwell_tps in enumerate(dwell_tpsv):
 
-                    colkey = 'col%i' % colcounter
+                    colkey = 'col%03i' % colcounter
 
                     TP00_sdict[colkey] = dict(frames=1,
                                               id_dly=id_delay, 

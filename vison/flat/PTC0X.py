@@ -130,7 +130,7 @@ FLU_lims_PTC01 = dict(CCD1=dict())
 for iflu, rflu in enumerate(PTC01_relfluences):
     _cenval = min(rflu / 100., 1.) * 2.**16
     _lims = _cenval * plusminus10pcent
-    FLU_lims_PTC01['CCD1']['col%i' % (iflu+1)] = _lims
+    FLU_lims_PTC01['CCD1']['col%03i' % (iflu+1)] = _lims
 
 for i in [2, 3]:
     FLU_lims_PTC01['CCD%i' % i] = copy.deepcopy(FLU_lims_PTC01['CCD1'])
@@ -139,7 +139,7 @@ FLU_lims_PTC02 = dict(CCD1=dict())
 for iflu, rflu in enumerate(PTC02_relfluences):
     _cenval = min(rflu / 100., 1.) * 2.**16
     _lims = _cenval * plusminus10pcent
-    FLU_lims_PTC02['CCD1']['col%i' % (iflu+1)] = _lims
+    FLU_lims_PTC02['CCD1']['col%03i' % (iflu+1)] = _lims
 
 for i in [2, 3]:
     FLU_lims_PTC02['CCD%i' % i] = copy.deepcopy(FLU_lims_PTC02['CCD1'])
@@ -148,7 +148,7 @@ FLU_lims_FLATFLUX00 = dict(CCD1=dict())
 for iflu, rflu in enumerate(FLATFLUX00_relfluences):
     _cenval = min(rflu / 100., 1.) * 2.**16
     _lims = _cenval * plusminus10pcent
-    FLU_lims_FLATFLUX00['CCD1']['col%i' % (iflu+1)] = _lims
+    FLU_lims_FLATFLUX00['CCD1']['col%03i' % (iflu+1)] = _lims
 
 for i in [2, 3]:
     FLU_lims_FLATFLUX00['CCD%i' % i] = copy.deepcopy(FLU_lims_FLATFLUX00['CCD1'])
@@ -158,7 +158,7 @@ FLU_lims_FLATFLUX00 = dict(CCD1=dict())
 for iflu, rflu in enumerate(FLATFLUX00_relfluences):
     _cenval = min(rflu / 100., 1.) * 2.**16
     _lims = _cenval * plusminus10pcent
-    FLU_lims_FLATFLUX00['CCD1']['col%i' % (iflu+1)] = _lims
+    FLU_lims_FLATFLUX00['CCD1']['col%03i' % (iflu+1)] = _lims
 
 for i in [2, 3]:
     FLU_lims_FLATFLUX00['CCD%i' % i] = copy.deepcopy(FLU_lims_FLATFLUX00['CCD1'])
@@ -277,7 +277,7 @@ class PTC0X(FlatTask):
         for ix, ifra in enumerate(frames):
             iexp = exptimes[ix]
 
-            colkey = 'col%i' % (ix+1,)
+            colkey = 'col%03i' % (ix+1,)
 
             PTC0X_sdict[colkey] = dict(frames=ifra, exptime=iexp)
 

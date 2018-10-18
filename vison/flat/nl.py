@@ -153,7 +153,7 @@ def fitNL(fluencesNL, exptimes, display=False):
 
 def wrap_fitNL(fluences, variances, exptimes, col_labels, times=np.array([]), TrackFlux=True, subBgd=True):
     """ """
-    # col1 == BGD
+    # col001 == BGD
     # colEVEN = STAB
     # colODD = Fluences != 0
 
@@ -202,29 +202,29 @@ def wrap_fitNL(fluences, variances, exptimes, col_labels, times=np.array([]), Tr
 def test_wrap_fitNL():
     """ """
 
-    col_labels = np.array(['col1', 'col1', 'col1', 'col1',
-                           'col2', 'col2', 'col2', 'col2', 'col2',
-                           'col3',
-                           'col4', 'col4', 'col4', 'col4', 'col4',
-                           'col5',
-                           'col6', 'col6', 'col6', 'col6', 'col6',
-                           'col7',
-                           'col8', 'col8', 'col8', 'col8', 'col8',
-                           'col9',
-                           'col10', 'col10', 'col10', 'col10', 'col10',
-                           'col13',
-                           'col14', 'col14', 'col14', 'col14', 'col14',
-                           'col15',
-                           'col16', 'col16', 'col16', 'col16', 'col16',
-                           'col17',
-                           'col18', 'col18', 'col18', 'col18', 'col18',
-                           'col19',
-                           'col20', 'col20', 'col20', 'col20', 'col20',
-                           'col21',
-                           'col22', 'col22', 'col22', 'col22', 'col22',
-                           'col23',
-                           'col24', 'col24', 'col24', 'col24', 'col24',
-                           'col25'],
+    col_labels = np.array(['col001', 'col001', 'col001', 'col001',
+                           'col002', 'col002', 'col002', 'col002', 'col002',
+                           'col003',
+                           'col004', 'col004', 'col004', 'col004', 'col004',
+                           'col005',
+                           'col006', 'col006', 'col006', 'col006', 'col006',
+                           'col007',
+                           'col008', 'col008', 'col008', 'col008', 'col008',
+                           'col009',
+                           'col010', 'col010', 'col010', 'col010', 'col010',
+                           'col013',
+                           'col014', 'col014', 'col014', 'col014', 'col014',
+                           'col015',
+                           'col016', 'col016', 'col016', 'col016', 'col016',
+                           'col017',
+                           'col018', 'col018', 'col018', 'col018', 'col018',
+                           'col019',
+                           'col020', 'col020', 'col020', 'col020', 'col020',
+                           'col021',
+                           'col022', 'col022', 'col022', 'col022', 'col022',
+                           'col023',
+                           'col024', 'col024', 'col024', 'col024', 'col024',
+                           'col025'],
                           dtype='|S12')
 
     exptimes = np.array([0.,   0.,   0.,   0.,   1.5,   1.5,   1.5,   1.5,   1.5,

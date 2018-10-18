@@ -161,8 +161,8 @@ class Task(object):
         vstarts = []
         vends = []
         for i in range(1,Ncols+1):
-            vstarts.append(strdict['col%i' % i]['vstart'])
-            vends.append(strdict['col%i' % i]['vend'])
+            vstarts.append(strdict['col%03i' % i]['vstart'])
+            vends.append(strdict['col%03i' % i]['vend'])
             
         vstarts = np.array(vstarts)
         vends = np.array(vends)

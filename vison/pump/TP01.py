@@ -139,13 +139,13 @@ class TP01(PumpTask):
 
         # First Injection Drain Delay
 
-        TP01_sdict['col1'] = dict(frames=1, v_tpump=0, comments='BGD',
+        TP01_sdict['col001'] = dict(frames=1, v_tpump=0, comments='BGD',
                                   id_dly=id_delays[0], toi_ch=toi_chinj)
 
         colcounter = 2
         for i, toi_tp in enumerate(toi_tpv):
             for k, vpumpmode in enumerate(vpumpmodes):
-                colkey = 'col%i' % colcounter
+                colkey = 'col%03i' % colcounter
                 TP01_sdict[colkey] = dict(frames=1, toi_tp=toi_tp,
                                           id_dly=id_delays[0], v_tpmod=vpumpmode,
                                           toi_ch=toi_chinj)
@@ -154,7 +154,7 @@ class TP01(PumpTask):
 
         # Second Injection Drain Delay
 
-        TP01_sdict['col%i' % colcounter] = dict(frames=1, v_tpump=0, comments='BGD',
+        TP01_sdict['col%03i' % colcounter] = dict(frames=1, v_tpump=0, comments='BGD',
                                                 id_dly=id_delays[1], toi_ch=toi_chinj)
         colcounter += 1
 
@@ -162,7 +162,7 @@ class TP01(PumpTask):
 
             for k, vpumpmode in enumerate(vpumpmodes):
 
-                colkey = 'col%i' % colcounter
+                colkey = 'col%03i' % colcounter
                 #print colkey
                 TP01_sdict[colkey] = dict(frames=1, toi_tp=toi_tp,
                                           id_dly=id_delays[1], v_tpmod=vpumpmode,

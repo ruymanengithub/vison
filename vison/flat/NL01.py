@@ -78,17 +78,17 @@ def get_Flu_lims(NL01_relfluences):
     reflims = 0.5*2**16*plusminus10pcent
 
     FLU_lims = OrderedDict(CCD1=OrderedDict())
-    FLU_lims['CCD1']['col1'] = np.array([-10.,20.]) # BGD. ADU
-    FLU_lims['CCD1']['col2'] = reflims
+    FLU_lims['CCD1']['col001'] = np.array([-10.,20.]) # BGD. ADU
+    FLU_lims['CCD1']['col002'] = reflims
     
     for iflu, rflu in enumerate(NL01_relfluences):
         _cenval = min(rflu / 100., 1.) * 2.**16
         _lims = _cenval * plusminus10pcent
-        FLU_lims['CCD1']['col%i' % (2*iflu+3,)] = _lims
-        FLU_lims['CCD1']['col%i' % (2*iflu+3+1,)] = reflims
+        FLU_lims['CCD1']['col%03i' % (2*iflu+3,)] = _lims
+        FLU_lims['CCD1']['col%03i' % (2*iflu+3+1,)] = reflims
     
     for i in [2, 3]:
-        FLU_lims['CCD%i' % i] = copy.deepcopy(FLU_lims['CCD1'])
+        FLU_lims['CCD%03i' % i] = copy.deepcopy(FLU_lims['CCD1'])
 
     return FLU_lims
 
@@ -179,19 +179,19 @@ class NL01(FlatTask):
 
         NL01_sdict = dict()
 
-        NL01_sdict['col1'] = dict(frames=self.Nbgd, exptime=0, comment='BGD')
-        NL01_sdict['col2'] = dict(frames=self.Nstab0, exptime=exptinter, comment='STAB')
+        NL01_sdict['col001'] = dict(frames=self.Nbgd, exptime=0, comment='BGD')
+        NL01_sdict['col002'] = dict(frames=self.Nstab0, exptime=exptinter, comment='STAB')
 
         for ix, ifra in enumerate(frames):
 
             iexp = expts[ix]
 
-            colkeyFlu = 'col%i' % (ix*2+3,)
+            colkeyFlu = 'col%03i' % (ix*2+3,)
 
             NL01_sdict[colkeyFlu] = dict(
                 frames=ifra, exptime=iexp, comment='Fluence%i' % (ix+1,))
 
-            colkeySta = 'col%i' % (ix*2+3+1,)
+            colkeySta = 'col%03i' % (ix*2+3+1,)
 
             NL01_sdict[colkeySta] = dict(
                 frames=1, exptime=exptinter, comment='STAB')

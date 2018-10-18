@@ -93,18 +93,18 @@ class PERSIST01(Task):
         wave = 2 
         mirr_pos = self.ogse.profile['mirror_nom']['F%i' % wave]
 
-        PER01_sdict = dict(col1=dict(frames=5, exptime=0, shuttr=0, 
+        PER01_sdict = dict(col001=dict(frames=5, exptime=0, shuttr=0, 
                                      wave=4,mirr_pos=self.ogse.profile['mirror_nom']['F4'],
                                      source='flat',
                                      comments='RESET'),
-                           col2=dict(frames=3, exptime=exptLATEN, shuttr=0, 
+                           col002=dict(frames=3, exptime=exptLATEN, shuttr=0, 
                                      wave=4,mirr_pos=self.ogse.profile['mirror_nom']['F4'],
                                      source='flat',
                                      comments='REFER.'),
-                           col3=dict(frames=1, exptime=exptSATUR, 
+                           col003=dict(frames=1, exptime=exptSATUR, 
                                      wave=wave,mirr_pos=mirr_pos,
                                      comments='EXPOSE'),
-                           col4=dict(frames=3, exptime=exptLATEN, shuttr=0, 
+                           col004=dict(frames=3, exptime=exptLATEN, shuttr=0, 
                                      wave=4,mirr_pos=self.ogse.profile['mirror_nom']['F4'],
                                      source='flat',
                                      comments='LATENT'))

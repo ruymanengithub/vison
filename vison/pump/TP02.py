@@ -136,14 +136,14 @@ class TP02(PumpTask):
 
         # First Injection Drain Delay
 
-        TP02_sdict['col1'] = dict(frames=1, v_tpump=0, s_tpump=0,
+        TP02_sdict['col001'] = dict(frames=1, v_tpump=0, s_tpump=0,
                                   comments='BGD', id_dly=id_delays[0], toi_ch=toi_chinj)
 
         colcounter = 2
         for i, dwell_s in enumerate(dwell_sv):
 
             for k, sermode in enumerate(spumpmodes):
-                colkey = 'col%i' % colcounter
+                colkey = 'col%03i' % colcounter
                 TP02_sdict[colkey] = dict(frames=1, dwell_s=dwell_s,
                                           v_tpump=0,s_tpump=1,
                                           id_dly=id_delays[0], s_tpmod=sermode, 
@@ -153,7 +153,7 @@ class TP02(PumpTask):
 
         # Second Injection Drain Delay
 
-        TP02_sdict['col%i' % colcounter] = dict(frames=1, v_tpump=0, s_tpump=0,
+        TP02_sdict['col%03i' % colcounter] = dict(frames=1, v_tpump=0, s_tpump=0,
                                                 comments='BGD', 
                                                 id_dly=id_delays[1], toi_ch=toi_chinj)
         colcounter += 1
@@ -162,7 +162,7 @@ class TP02(PumpTask):
 
             for k, sermode in enumerate(spumpmodes):
 
-                colkey = 'col%i' % colcounter
+                colkey = 'col%03i' % colcounter
                 #print colkey
                 TP02_sdict[colkey] = dict(frames=1, dwell_s=dwell_s,
                                           v_tpump=0, s_tpump=1,

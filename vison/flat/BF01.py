@@ -122,7 +122,7 @@ class BF01(PTC0X):
         BF01_sdict = super(BF01, self).build_scriptdict(diffvalues=diffvalues, elvis=elvis)
         Ncols = BF01_sdict['Ncols']
         for i in range(1, Ncols+1):
-            BF01_sdict['col%i' % i]['test'] = self.inputs['surrogate']
+            BF01_sdict['col%03i' % i]['test'] = self.inputs['surrogate']
         return BF01_sdict
         #raise NotImplementedError(
         #    "%s: This Task does not build a script, it uses data from another test" % self.name)
@@ -318,7 +318,7 @@ class BF01(PTC0X):
             
             fccd = lambda x: CCDs[x-1]
             fq = lambda x: Quads[x-1]
-            fcol = lambda x: 'col%i' % x
+            fcol = lambda x: 'col%03i' % x
             fE = lambda x: '%.2E' % x
             
             cov_formatters=[fccd,fq,fcol]+[fE]*6
@@ -535,7 +535,7 @@ class BF01(PTC0X):
             
             fccd = lambda x: CCDs[x-1]
             fq = lambda x: Quads[x-1]
-            fcol = lambda x: 'col%i' % x
+            fcol = lambda x: 'col%03i' % x
             fE = lambda x: '%.2E' % x
             
             cov_formatters=[fccd,fq,fcol]+[fE]*4

@@ -291,7 +291,7 @@ class Pipe(object):
 
             Nframes = 0
             for ic in range(1, Ncols+1):
-                Nframes += structure['col%i' % ic]['frames']
+                Nframes += structure['col%03i' % ic]['frames']
 
             tasksequence.append((taskname, testkey, Nframes))
 

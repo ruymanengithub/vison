@@ -108,7 +108,7 @@ class DARK01(DarkTask):
 
         N = self.inputs['N']
         exptime = self.inputs['exptime']
-        DARK01_sdict = dict(col1=dict(frames=N, exptime=exptime))
+        DARK01_sdict = dict(col001=dict(frames=N, exptime=exptime))
 
         Ncols = len(DARK01_sdict.keys())
         DARK01_sdict['Ncols'] = Ncols

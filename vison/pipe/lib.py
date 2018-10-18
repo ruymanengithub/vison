@@ -148,7 +148,7 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
         
         for iC in range(1, Ncols+1):
 
-            colname = 'col%i' % iC
+            colname = 'col%03i' % iC
 
             expectation = structure[colname]
 

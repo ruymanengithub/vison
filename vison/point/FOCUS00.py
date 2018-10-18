@@ -172,14 +172,14 @@ class FOCUS00(PT.PointTask):
         FW_IDX = int(FW_ID[-1])
         mirror_nom = self.ogse.profile['mirror_nom'][FW_ID]
 
-        # FOCUS00_sdict = dict(col1=dict(frames=5,wave=FW_IDX,exptime=0,
+        # FOCUS00_sdict = dict(col001=dict(frames=5,wave=FW_IDX,exptime=0,
         #                               mirr_pos=mirror_nom-5,
         #                               comments='BGD'))
 
         FOCUS00_sdict = dict()
 
         for i, j in enumerate(range(-4, 5, 1)):
-            FOCUS00_sdict['col%i' % (i+1,)] = dict(frames=1,
+            FOCUS00_sdict['col%03i' % (i+1,)] = dict(frames=1,
                                                    test='FOCUS00_%i' % wavelength,
                                                    exptime=exptime,
                                                    mirr_pos=mirror_nom +
