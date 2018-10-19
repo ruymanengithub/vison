@@ -291,8 +291,8 @@ class NL01(FlatTask):
         CCDs = indices.get_vals('CCD')
         
         tile_coos = dict()
-        for Quad in Quads:
-            tile_coos[Quad] = self.ccdcalc.get_tile_coos(Quad, wpx, hpx)
+        for Q in Quads:
+            tile_coos[Q] = self.ccdcalc.get_tile_coos(Q, wpx, hpx)
         Nsectors = tile_coos[Quads[0]]['Nsamps']
         sectornames = np.arange(Nsectors)
 
@@ -324,14 +324,14 @@ class NL01(FlatTask):
 
                     for kQ in range(nQuad):
 
-                        Quad = Quads[kQ]
+                        Q = Quads[kQ]
 
-                        _tile_coos = tile_coos[Quad]
+                        _tile_coos = tile_coos[Q]
 
                         _meds = ccdobj.get_tiles_stats(
-                            Quad, _tile_coos, 'median', extension=-1)
+                            Q, _tile_coos, 'median', extension=-1)
                         _vars = ccdobj.get_tiles_stats(
-                            Quad, _tile_coos, 'std', extension=-1)**2.
+                            Q, _tile_coos, 'std', extension=-1)**2.
 
                         self.dd.mx['sec_med'][iObs, jCCD, kQ, :] = _meds.copy()
                         self.dd.mx['sec_var'][iObs, jCCD, kQ, :] = _vars.copy()
@@ -431,10 +431,11 @@ class NL01(FlatTask):
                 dtobjs = self.dd.mx['time'][:, iCCD].copy()
                 
                 # fitresults = OrderedDict(coeffs, NLdeg, maxNLpc,flu_maxNLpc, bgd)
-                _fitresults = nllib.wrap_fitNL(raw_med, raw_var, exptimes, col_labels, dtobjs, TrackFlux=True,
+                _fitresults = nllib.wrap_fitNL(raw_med, raw_var, exptimes, col_labels, dtobjs, 
+                                               TrackFlux=True,
                                                subBgd=True)
                 
-                NLall_mx[CCDkey][Quad].update(_fitresults)
+                NLall_mx[CCDkey][Q].update(_fitresults)
                 
                 NL_TB['CCD'][kk] = iCCD+1
                 NL_TB['Q'][kk] = jQ+1
@@ -445,8 +446,7 @@ class NL01(FlatTask):
                 curves_cdp.data[CCDkey][Q]['y']['data'] = _fitresults['inputcurve']['Z'].copy()
                 curves_cdp.data[CCDkey][Q]['x']['fit'] = _fitresults['outputcurve']['YL'].copy()
                 curves_cdp.data[CCDkey][Q]['y']['fit'] = _fitresults['outputcurve']['Z'].copy()
-                
-
+        
         self.dd.products['NL'] = copy.deepcopy(NLall_mx)
 
         # Build Tables

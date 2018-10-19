@@ -61,16 +61,16 @@ def get_exptime_atmiddynrange(flu1D, exp1D, method='spline', debug=False):
     
 
 
-def fitNL(fluencesNL, exptimes, display=False):
+def fitNL(fluencesNL, exptimes, nomG, minfitFl, maxfitFl, display=False):
     """ """
 
     assert fluencesNL.shape[0] == exptimes.shape[0]
     assert fluencesNL.ndim <= 2
     assert exptimes.ndim == 1
 
-    nomG = 3.5 # e/ADU
-    minfitFl = 2000. # ADU
-    maxfitFl = FullDynRange-10000. # ADU
+    #nomG = 3.5 # e/ADU, used for noise estimates
+    #minfitFl = 2000. # ADU
+    #maxfitFl = FullDynRange-10000. # ADU
 
     Nexp = len(exptimes)
 
@@ -156,6 +156,10 @@ def wrap_fitNL(fluences, variances, exptimes, col_labels, times=np.array([]), Tr
     # col001 == BGD
     # colEVEN = STAB
     # colODD = Fluences != 0
+    
+    nomG = 3.5 # e/ADU, used for noise estimates
+    minfitFl = 2000. # ADU
+    maxfitFl = FullDynRange-10000. # ADU
 
     NObsIDs, Nsecs = fluences.shape
 
@@ -190,8 +194,9 @@ def wrap_fitNL(fluences, variances, exptimes, col_labels, times=np.array([]), Tr
         fluences[ixboo_fluences, :] /= track.reshape(track.shape[0],-1)
     else:
         track = np.ones_like(fluences[ixboo_fluences,0])
-    
+    # fitNL(fluencesNL, exptimes, nomG, minfitFl, maxfitFl, display=False)
     fitresults = fitNL(fluences[ixboo_fluences, :], exptimes[ixboo_fluences],
+                       nomG, minfitFl, maxfitFl,
                        display=False)
     fitresults['bgd'] = bgd
     fitresults['stability_pc'] = np.std(track)*100.
