@@ -552,7 +552,7 @@ class ReportXL_Xtalk(ReportXL):
 
         headerdict = self.data['meta']
 
-        headkeys = ['ROE', 'ROE_FW', 'Injector', 'Injector_FW', 'Label',
+        headkeys = ['AcqDate','ROE', 'ROE_FW', 'Injector', 'Injector_FW', 'Label',
                     'Analysis_Date', 'vison']
 
         headerdict.update(dict(vison=__version__))
