@@ -165,9 +165,27 @@ allHK_keys['7.2.X'] = ['TimeStamp', 'CCD3_OD_T', 'CCD2_OD_T', 'CCD1_OD_T', 'COMM
                        'RPSU_28V_PRI_I', 'RPSU_TEMP_2', 'ProtOvRideFlg', 'hkInvalidFlg', 'SPI_Inh_n',
                        '3v3ProtErr', '5vProtErr', 'V3v3ProtCnt', 'V5ProtCnt', 'VccdErrFlg', 'VclkErrFlg',
                        'VanErrFlg', 'dacExeErr', 'hkTmErr', 'spwTmTOFlg', 'spwTmRspErrFlg', 'spwTcPktErrFlg',
-                       'adcBsyErrFlg', 'CDPUClkSt', 'CDPUClkLost', 'hkRamErr', 'ADC_BSY_ERR_CNT', 'SPW_STATUS_REG',
+                       'adcBsyErrFlg', 
+                       'CDPUClkSt', 'CDPUClkLost', 'hkRamErr', 'ADC_BSY_ERR_CNT', 'SPW_STATUS_REG',
                        'Out_of_range']
 
+allHK_keys['7.5.X'] = ['TimeStamp','CCD3_OD_T','CCD2_OD_T','CCD1_OD_T','COMM_RD_T',
+                      'CCD2_IG1_T','CCD1_IG1_T','CCD3_TEMP_T','CCD2_TEMP_T','CCD1_TEMP_T','CCD3_IG1_T',
+                      'COMM_IG2_T','VID_PCB_TEMP_T','FPGA_PCB_TEMP_T','CCD1_OD_B','CCD2_OD_B',
+                      'CCD3_OD_B','COMM_RD_B','CCD2_IG1_B','CCD3_IG1_B','	CCD1_TEMP_B',
+                      'CCD2_TEMP_B','CCD3_TEMP_B','CCD1_IG1_B','COMM_IG2_B','VID_PCB_TEMP_B',
+                      'FPGA_PCB_TEMP_B','FPGA_BIAS_DD','FPGA_BIAS_OG','FPGA_BIAS_ID1','FPGA_BIAS_ID2',
+                      'FPGA_BIAS_ID_T','FPGA_BIAS_ID_B','FPGA_VRCLK_V','FPGA_10VA_P_V','FPGA_VICLK_V',
+                      'FPGA_5VA_P_V','FPGA_5VREF_V','FPGA_VCCD_V','FPGA_1V5VD_P_V','FPGA_3V2_N_V',
+                      'FPGA_5VA_N_V','RPSU_VCCD_V','RPSU_VCLK_V','RPSU_VAN_P_V','RPSU_VAN_N_V',
+                      'RPSU_3V3VD_V','RPSU_1V5VD_V','RPSU_28V_PRI_V','RPSU_TEMP1','RPSU_VCCD_I',
+                      'RPSU_VCLK_I','RPSU_VAN_P_I','RPSU_VAN_N_I','RPSU_3V3VD_I','RPSU_1V5VD_I',
+                      'RPSU_28V_PRI_I','RPSU_TEMP_2','ProtOvRideFlg','hkInvalidFlg','SPI_Inh_n',
+                      '3v3ProtErr','5vProtErr','V3v3ProtCnt','V5ProtCnt','VccdErrFlg','VclkErrFlg',
+                      'VanErrFlg','dacExeErr','hkTmErr','spwTmTOFlg','spwTmRspErrFlg','spwTcPktErrFlg',
+                      'adcBsyErrFlg',
+                      'CDPUClkSw','	hkRamErr','ADC_BSY_ERR_CNT','pixelToErr','spwStatus',
+                      'spwTmPtypeFlag','TwoCmdsErr','SPW_STATUS_REG','Out_of_range']
 
 # HKlims = dict(Performance=dict(key=[Relative/Absolute/Identity,min,max]))
 
@@ -253,15 +271,24 @@ HKlims['6.5.X']['S'].update({'ProtOvRideFlg': ['I', 0], 'hkInvalidFlg': ['I', 0]
                              'ADC_BSY_ERR_CNT': ['I', 0], 'SPW_STATUS_REG': ['I', 12192], 'Out_of_range': ['I', 0]})
 
 HKlims['7.2.X'] = dict()
-HKlims['7.2.X']['P'] = HKlims['6.5.X']['P']
+HKlims['7.2.X']['P'] = HKlims['6.5.X']['P'].copy()
 ignore = map(HKlims['7.2.X']['P'].pop, ['fpgaSpwErr'])
 HKlims['7.2.X']['P'].update({'dacExeErr': ['I', 0], 'spwTmRspErrFlg': ['I', 0], 'spwTcPktErrFlg': ['I', 0], 'adcBsyErrFlg': ['I', 0],
                              'CDPUClkLost': ['I', 0]})
 
-HKlims['7.2.X']['S'] = HKlims['6.5.X']['S']
+HKlims['7.2.X']['S'] = HKlims['6.5.X']['S'].copy()
 ignore = map(HKlims['7.2.X']['S'].pop, ['fpgaSpwErr'])
 HKlims['7.2.X']['S'].update({'dacExeErr': ['I', 0], 'spwTmRspErrFlg': ['I', 0], 'spwTcPktErrFlg': ['I', 0], 'adcBsyErrFlg': ['I', 0],
                              'CDPUClkLost': ['I', 0]})
+
+HKlims['7.5.X'] = dict()
+
+for q in ['P','S']:
+    HKlims['7.5.X'][q] = HKlims['7.5.X'][q].copy()
+    ignore = map(HKlims['7.2.X'][q].pop, ['CDPUClkLost','CDPUClkSt'])
+    HKlims['7.5.X'][q].update(dict(CDPUClkSw=['I',0],pixelToErr=['I',0],spwStatus=['I',0],spwTmPtypeFlag=['I',0],
+          TwoCmdsErr=['I',0]))
+
 
 
 HKcorr = {}
@@ -297,9 +324,14 @@ HKcorr['6.3.0'] = {'CCD1_OD_T': 'OD_1_T', 'CCD2_OD_T': 'OD_2_T', 'CCD3_OD_T': 'O
 HKcorr['6.5.X'] = HKcorr['6.3.0'].copy()
 
 HKcorr['7.2.X'] = HKcorr['6.5.X'].copy()
-map(HKcorr['7.2.X'].pop, ['fpgaSpwErr'])
+ignore = map(HKcorr['7.2.X'].pop, ['fpgaSpwErr'])
 HKcorr['7.2.X'].update({'dacExeErr': None, 'spwTmRspErrFlg': None, 'spwTcPktErrFlg': None, 'adcBsyErrFlg': None,
                         'CDPUClkLost': None})
+
+HKcorr['7.5.X'] = HKcorr['7.2.X'].copy()
+ignore = map(HKcorr['7.2.X'].pop, ['CDPUClkLost','CDPUClkSt'])
+HKcorr['7.5.X'].update(dict(CDPUClkSw=None,pixelToErr=None,spwStatus=None,spwTmPtypeFlag=None,
+          TwoCmdsErr=None))
 
 allstats = ['mean', 'std', 'min', 'max']
 

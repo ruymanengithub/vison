@@ -238,6 +238,7 @@ script_dictionary['6.5.X']['defaults'] = {
 
 script_dictionary['7.2.X'] = copy.deepcopy(script_dictionary['6.5.X'])
 
+script_dictionary['7.5.X'] = copy.deepcopy(script_dictionary['7.2.X'])
 
 def update_structdict(sdict, commvalues, diffvalues):
     """Updates an script structure with common values and differential values.
