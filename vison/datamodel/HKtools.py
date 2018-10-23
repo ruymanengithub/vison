@@ -284,7 +284,7 @@ HKlims['7.2.X']['S'].update({'dacExeErr': ['I', 0], 'spwTmRspErrFlg': ['I', 0], 
 HKlims['7.5.X'] = dict()
 
 for q in ['P','S']:
-    HKlims['7.5.X'][q] = HKlims['7.5.X'][q].copy()
+    HKlims['7.5.X'][q] = HKlims['7.2.X'][q].copy()
     ignore = map(HKlims['7.2.X'][q].pop, ['CDPUClkLost','CDPUClkSt'])
     HKlims['7.5.X'][q].update(dict(CDPUClkSw=['I',0],pixelToErr=['I',0],spwStatus=['I',0],spwTmPtypeFlag=['I',0],
           TwoCmdsErr=['I',0]))
