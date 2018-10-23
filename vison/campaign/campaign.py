@@ -19,7 +19,7 @@ import copy
 
 from vison.point import FOCUS00, PSF0X
 from vison.dark import BIAS01, DARK01
-from vison.flat import NL01, PTC0X, FLAT0X, BF01
+from vison.flat import NL01, NL02, PTC0X, FLAT0X, BF01
 from vison.inject import CHINJ01, CHINJ02
 from vison.pump import TP01, TP02
 from vison.other import PERSIST01 as PER01
@@ -54,6 +54,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                   PTC02WAVE=False,
                   PTC02TEMP=False,
                   NL01=False,
+                  NL02=False,
                   FOCUS00=False,
                   PSF01=False,
                   PSFLUX00=False,
@@ -574,6 +575,54 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         #structNL01 = nl01.build_scriptdict(diffvalues=diffNL01,elvis=elvis)
         test_sequence['NL01'] = copy.deepcopy(nl01)
+
+
+    # NL-02
+
+    if _toGen['NL02']:
+
+        print 'NL02...'
+        
+        diffNL02 = dict(mirr_on=0)
+        diffNL02.update(diffvalues)
+        
+        FLUDIVIDE = 3.
+        
+        relfluencesNL02 = np.array([0.5, 0.7, 1., 2., 3., 5., 10., 20., 30., 50., 70., 80., 85.,
+                               90., 95., 100.,110.])
+        
+        waveNL02A = 0
+        tFWCwA = ogse.profile['tFWC_flat']['nm%i' % waveNL02A]
+        
+        ixLOWFLU = np.where(relfluencesNL02<FLUDIVIDE)
+        exptsNL02A = (relfluencesNL02[ixLOWFLU]/100. * tFWCwA).tolist()  # ms
+        framesNL02A = (np.ones(len(exptsNL02A), dtype='int32')*4).tolist()
+        
+        
+        waveNL02B = 880
+        tFWCwB = ogse.profile['tFWC_flat']['nm%i' % waveNL02B]
+        
+        ixHIFLU = np.where(relfluencesNL02>=FLUDIVIDE)
+        exptsNL02B = (relfluencesNL02[ixHIFLU]/100. * tFWCwB).tolist()  # ms
+        framesNL02B = (np.ones(len(exptsNL02B), dtype='int32')*4).tolist()
+        
+        
+
+        nl02 = NL02.NL02(inputs=dict(elvis=elvis,
+                                     CHAMBER=CHAMBER,
+                                     test='NL02',
+                                     waveA=waveNL02A,
+                                     exptimesA=exptsNL02A,
+                                     framesA=framesNL02A,
+                                     waveB=waveNL02B,
+                                     exptimesB=exptsNL02B,
+                                     framesB=framesNL02B,
+                                     exptinter=0.5*tFWCwB,
+                                     diffvalues=diffNL02))
+
+
+        test_sequence['NL02'] = copy.deepcopy(nl02)
+
 
     # FOCUS
 

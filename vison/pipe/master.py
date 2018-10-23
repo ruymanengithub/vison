@@ -66,6 +66,7 @@ class Pipe(object):
     from vison.dark.BIAS01 import BIAS01
     from vison.dark.DARK01 import DARK01
     from vison.flat.NL01 import NL01
+    from vison.flat.NL02 import NL02
     from vison.flat.FLAT0X import FLAT0X
     from vison.flat.PTC0X import PTC0X
     from vison.flat.BF01 import BF01
@@ -84,7 +85,8 @@ class Pipe(object):
     from vison.other.MOT_WARM import MOT_WARM
 
     Test_dict = dict(BIAS01=BIAS01, DARK01=DARK01,
-                     NL01=NL01, FLAT01=FLAT0X,
+                     NL01=NL01, NL02=NL02, 
+                     FLAT01=FLAT0X,
                      PTC01=PTC0X,BF01=BF01,
                      CHINJ00=CHINJ00, CHINJ01=CHINJ01, CHINJ02=CHINJ02,
                      TP00=TP00,

@@ -2,7 +2,11 @@
 """
 
 VIS Ground Calibration
-TEST: NL01
+TEST: NL02
+
+Similar to NL01, but using 2 wavelengths:
+        - ND4 for low fluences
+        - 880 nm fo high fluences
 
 End-To-End Non-Linearity Curve
 
@@ -21,7 +25,7 @@ Tasks:
     - Save results.
 
 
-Created on Mon Apr  3 17:38:00 2017
+Created on Tue Oct 23 15:22:00 2018
 
 :author: raf
 
@@ -43,7 +47,8 @@ from vison.support import files
 from FlatTask import FlatTask
 from vison.datamodel import inputs, core
 from vison.support import utils
-import NL01aux
+from vison.flat.NL01 import NL01
+from vison.flat import NL01aux
 import nl as nllib
 # END IMPORT
 
@@ -56,108 +61,76 @@ HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
           'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
 
 
-NL01_commvalues = dict(program='CALCAMP',test='NL01',
+NL02_commvalues = dict(program='CALCAMP',test='NL02',
                        flushes=7, siflsh=1, siflsh_p=500,
                        inisweep=1,
                        vstart=0, vend=2086,
                        exptime=0., shuttr=1,e_shuttr=0,
                        mirr_on=0,
-                       wave=6,
                        motr_on=0,
                        source='flat',
                        comments='')
 
 
-plusminus10pcent = 1.+np.array([-0.10, 0.10])
-
-NL01_relfluences = np.array(
-    [0.5, 0.7, 1.,2.,3.,5., 10., 20., 30., 50., 70., 80., 85., 90., 95., 100., 110.])
-
-def get_Flu_lims(relfluences):
-    
-    reflims = 0.5*2**16*plusminus10pcent
-
-    FLU_lims = OrderedDict(CCD1=OrderedDict())
-    FLU_lims['CCD1']['col001'] = np.array([-10.,20.]) # BGD. ADU
-    FLU_lims['CCD1']['col002'] = reflims
-    
-    for iflu, rflu in enumerate(relfluences):
-        _cenval = min(rflu / 100., 1.) * 2.**16
-        _lims = _cenval * plusminus10pcent
-        FLU_lims['CCD1']['col%03i' % (2*iflu+3,)] = _lims
-        FLU_lims['CCD1']['col%03i' % (2*iflu+3+1,)] = reflims
-    
-    for i in [2, 3]:
-        FLU_lims['CCD%i' % i] = copy.deepcopy(FLU_lims['CCD1'])
-    
-
-    return FLU_lims
-
-
-class NL01_inputs(inputs.Inputs):
+class NL02_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
-        ('exptimes', ([dict, list], 'Exposure times for each fluence.')),
+        ('exptimesA', ([dict, list], 'Exposure times for each fluence, PART A.')),
+        ('framesA', ([list], 'Number of Frames for each fluence, PART A.')),
+        ('wavelengthA', ([int], 'Wavelength, PART A')),
+        ('exptimesB', ([dict, list], 'Exposure times for each fluence, PART B.')),
+        ('framesB', ([list], 'Number of Frames for each fluence, PART B.')),
+        ('wavelengthB', ([int], 'Wavelength, PART B')),
         ('exptinter', ([
-            float], 'Exposure time for interleaved fluence stability control frames.')),
-        ('frames', ([list], 'Number of Frames for each fluence.')),
-        ('wavelength', ([int], 'Wavelength'))
+            float], 'Exposure time for interleaved fluence stability control frames.'))
     ])))
 
 
-class NL01(FlatTask):
+class NL02(NL01):
     """ """
 
-    inputsclass = NL01_inputs
+    inputsclass = NL02_inputs
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        self.Nbgd = 3
-        self.Nstab0 = 1
-        self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
-                         ('extract', self.extract_stats),
-                         ('NL', self.produce_NLCs),
-                         ('satCTE', self.do_satCTE)]
-        super(NL01, self).__init__(inputs, log, drill, debug)
-        self.name = 'NL01'
-        self.type = 'Simple'
-        
-        self.HKKeys = HKKeys
-        self.CDP_lib = NL01aux.CDP_lib.copy()
-        self.figdict = NL01aux.NL01figs.copy()
-        # dict(figs='figs',pickles='ccdpickles')
-        self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
-                   products='products')
-        self.window = dict(wpx=300,hpx=300)
+        super(NL02, self).__init__(inputs, log, drill, debug)
+        self.name = 'NL02'
+        self.FLUDIVIDE = 3. # pc
         
 
     def set_inpdefaults(self, **kwargs):
-        wave = 0
-        tFWCw = self.ogse.profile['tFWC_flat']['nm%i' % wave]
-        expts = (NL01_relfluences/100. *
-                 tFWCw).tolist()  # ms
-        self.inpdefaults = dict(exptimes=expts,
-                                exptinter=0.5 * tFWCw,
-                                frames=(np.ones(len(expts), dtype='int32')*4).tolist(),
-                                wavelength=wave,
+        
+        
+
+        waveA = 0
+        tFWCwA = self.ogse.profile['tFWC_flat']['nm%i' % waveA]
+        
+        ixLOWFLU = np.where(NL01.NL01_relfluences<self.FLUDIVIDE)
+        exptsA = (NL01.NL01_relfluences[ixLOWFLU]/100. *
+                 tFWCwA).tolist()  # ms
+        framesA = (np.ones(len(exptsA), dtype='int32')*4).tolist()
+        
+        waveB = 880
+        tFWCwB = self.ogse.profile['tFWC_flat']['nm%i' % waveB]
+        ixHIFLU = np.where(NL01.NL01_relfluences>=self.FLUDIVIDE)
+        exptsB = (NL01.NL01_relfluences[ixHIFLU]/100. *
+                 tFWCwB).tolist()  # ms
+        framesB = (np.ones(len(exptsB), dtype='int32')*4).tolist()
+        
+        self.inpdefaults = dict(
+                                wavelengthA=waveA,
+                                exptimesA=exptsA,
+                                framesA=framesA,
+                                wavelengthB=waveB,
+                                exptimesB=exptsB,
+                                framesB=framesB,
+                                exptinter=0.5 * tFWCwB,
                                 )
 
-    def set_perfdefaults(self, **kwargs):
-        super(NL01, self).set_perfdefaults(**kwargs)
-        #wave = self.inputs['wavelength']
-        #exptimes = np.array(self.inputs['exptimes'])
-        #tsatur = self.ogse.profile['tFWC_flat']['nm%i' % wave]        
-        #relfluences = exptimes / tsatur * 100.
-        self.perfdefaults['FLU_lims'] = get_Flu_lims(NL01_relfluences)  # dict
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
-        """Builds NL01 script structure dictionary.
+        """Builds NL02 script structure dictionary.
 
-        #:param expts: list of ints [ms], exposure times.
-        #:param exptinter: int, ms, exposure time of interleaved source-stability exposures.
-        #:param frames: list of ints, number of frames for each exposure time.
-        #:param wavelength: int, wavelength. Default: 0 (Neutral Density Filter)
-        :param diffvalues: dict, opt, differential values.
         """
 
         expts = self.inputs['exptimes']
@@ -207,128 +180,7 @@ class NL01(FlatTask):
 
         return NL01_sdict
 
-    def filterexposures(self, structure, explog, OBSID_lims):
-        """Loads a list of Exposure Logs and selects exposures from test PSF0X.
 
-        The filtering takes into account an expected structure for the 
-        acquisition script.
-
-        The datapath becomes another column in DataDict. This helps dealing
-        with tests that run overnight and for which the input data is in several
-        date-folders.
-
-        """
-        wavedkeys = []
-        return super(NL01, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
-                                                 wavedkeys=wavedkeys)
-
-    def prep_data(self):
-        """
-
-        Takes Raw Data and prepares it for further analysis. 
-
-        **METACODE**
-
-        ::
-
-            f.e. ObsID:
-                f.e.CCD:
-                    f.e.Q:
-                        subtract offset
-                    opt: [sub bias frame]
-                    opt: [divide by FF]
-                    opt: [mask-out defects]
-
-        """
-        super(NL01, self).prepare_images(doExtract=True, doMask=True,
-                                         doOffset=True, doBias=True, 
-                                         doFF=True)
-
-    def extract_stats(self):
-        """
-
-        Performs basic analysis: extracts statistics from 
-        image regions to later build NLC.
-
-        **METACODE**
-
-        ::
-
-            create segmentation map given grid parameters    
-
-            f.e. ObsID:
-                f.e.CCD:
-                    f.e.Q:
-                        f.e. "img-segment": (done elsewhere)
-                            measure central value
-                            measure variance
-
-        """
-        
-        # HARDWIRED VALUES
-        wpx = self.window['wpx']
-        hpx = self.window['hpx']
-
-        if self.report is not None:
-            self.report.add_Section(
-                keyword='extract', Title='Image Extraction', level=0)
-            self.report.add_Text('Segmenting on %i x %i windows...' % (wpx,hpx))    
-        
-        
-        ObsIDs = self.dd.mx['ObsID'][:].copy()
-
-        indices = copy.deepcopy(self.dd.indices)
-
-        nObs, nCCD, nQuad = indices.shape
-
-        Quads = indices.get_vals('Quad')
-        CCDs = indices.get_vals('CCD')
-        
-        tile_coos = dict()
-        for Q in Quads:
-            tile_coos[Q] = self.ccdcalc.get_tile_coos(Q, wpx, hpx)
-        Nsectors = tile_coos[Quads[0]]['Nsamps']
-        sectornames = np.arange(Nsectors)
-
-        Sindices = copy.deepcopy(self.dd.indices)
-        if 'Sector' not in Sindices.names:
-            Sindices.append(core.vIndex('Sector', vals=sectornames))
-
-        # Initializing new columns
-
-        valini = 0.
-
-        self.dd.initColumn('sec_med', Sindices, dtype='float32', valini=valini)
-        self.dd.initColumn('sec_var', Sindices, dtype='float32', valini=valini)
-
-        if not self.drill:
-
-            dpath = self.inputs['subpaths']['ccdpickles']
-
-            for iObs, ObsID in enumerate(ObsIDs):
-                
-                print 'Extracting from OBSID %i/%i' % (iObs+1,nObs)
-
-                for jCCD, CCDk in enumerate(CCDs):
-
-                    ccdobj_f = os.path.join(
-                        dpath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs, jCCD])
-
-                    ccdobj = copy.deepcopy(files.cPickleRead(ccdobj_f))
-
-                    for kQ in range(nQuad):
-
-                        Q = Quads[kQ]
-
-                        _tile_coos = tile_coos[Q]
-
-                        _meds = ccdobj.get_tiles_stats(
-                            Q, _tile_coos, 'median', extension=-1)
-                        _vars = ccdobj.get_tiles_stats(
-                            Q, _tile_coos, 'std', extension=-1)**2.
-
-                        self.dd.mx['sec_med'][iObs, jCCD, kQ, :] = _meds.copy()
-                        self.dd.mx['sec_var'][iObs, jCCD, kQ, :] = _vars.copy()
 
     def produce_NLCs(self):
         """ 
@@ -355,6 +207,8 @@ class NL01(FlatTask):
         if self.report is not None:
             self.report.add_Section(
                 keyword='NL', Title='Non-Linearity Analysis', level=0)
+        
+        raise NotImplementedError
 
         dIndices = copy.deepcopy(self.dd.indices)
         
