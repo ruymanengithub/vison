@@ -47,7 +47,7 @@ from vison.support import files
 from FlatTask import FlatTask
 from vison.datamodel import inputs, core
 from vison.support import utils
-from vison.flat.NL01 import NL01
+from vison.flat import NL01
 from vison.flat import NL01aux
 import nl as nllib
 # END IMPORT
@@ -86,22 +86,20 @@ class NL02_inputs(inputs.Inputs):
     ])))
 
 
-class NL02(NL01):
+class NL02(NL01.NL01):
     """ """
 
     inputsclass = NL02_inputs
+    FLUDIVIDE = 20. # pc
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
         super(NL02, self).__init__(inputs, log, drill, debug)
         self.name = 'NL02'
-        self.FLUDIVIDE = 3. # pc
-        
 
     def set_inpdefaults(self, **kwargs):
         
         
-
         waveA = 0
         tFWCwA = self.ogse.profile['tFWC_flat']['nm%i' % waveA]
         
@@ -133,42 +131,80 @@ class NL02(NL01):
 
         """
 
-        expts = self.inputs['exptimes']
+        wavelengthA = self.inputs['wavelengthA'] 
+        exptsA = self.inputs['exptimesA']
+        framesA = self.inputs['framesA']
+        
+        wavelengthB = self.inputs['wavelengthB'] 
+        exptsB = self.inputs['exptimesB']
+        framesB = self.inputs['framesB']
+        
         exptinter = self.inputs['exptinter']
-        frames = self.inputs['frames']
-        wavelength = self.inputs['wavelength']
+        
 
-        assert len(expts) == len(frames)
+        assert (len(exptsA) == len(framesA)) and \
+               (len(exptsB) == len(framesB))
 
-        FW_ID = self.ogse.get_FW_ID(wavelength)
-        FW_IDX = int(FW_ID[-1])
+        FW_IDA = self.ogse.get_FW_ID(wavelengthA)
+        FW_IDXA = int(FW_IDA[-1])
+        
+        FW_IDB = self.ogse.get_FW_ID(wavelengthB)
+        FW_IDXB = int(FW_IDB[-1])
 
-        NL01_commvalues['wave'] = FW_IDX
+        #NL02_commvalues['wave'] = FW_IDX
 
-        NL01_sdict = dict()
+        NL02_sdict = dict()
 
-        NL01_sdict['col001'] = dict(frames=self.Nbgd, exptime=0, comment='BGD')
-        NL01_sdict['col002'] = dict(frames=self.Nstab0, exptime=exptinter, comment='STAB')
+        NL02_sdict['col001'] = dict(frames=self.Nbgd, exptime=0, comments='BGD',
+                  wave=FW_IDXB)
+        NL02_sdict['col002'] = dict(frames=self.Nstab0, exptime=exptinter, comments='STAB',
+                  wave=FW_IDXB)
+        
+        colcountbase = 3
 
-        for ix, ifra in enumerate(frames):
+        for ix, ifraA in enumerate(framesA):
 
-            iexp = expts[ix]
+            iexpA = exptsA[ix]
 
-            colkeyFlu = 'col%03i' % (ix*2+3,)
+            colkeyFlu = 'col%03i' % (ix*2+colcountbase,)
 
-            NL01_sdict[colkeyFlu] = dict(
-                frames=ifra, exptime=iexp, comment='Fluence%i' % (ix+1,))
+            NL02_sdict[colkeyFlu] = dict(
+                frames=ifraA, exptime=iexpA, 
+                wave=FW_IDXA,
+                comments='Fluence%i' % (ix+1,))
 
-            colkeySta = 'col%03i' % (ix*2+3+1,)
+            colkeySta = 'col%03i' % (ix*2+colcountbase+1,)
 
-            NL01_sdict[colkeySta] = dict(
-                frames=1, exptime=exptinter, comment='STAB')
+            NL02_sdict[colkeySta] = dict(
+                frames=1, exptime=exptinter, 
+                wave=FW_IDXB,
+                comments='STAB')
+        
+        colcountbase = colcountbase + 2*len(framesA)
+        
+        for jx, jfraB in enumerate(framesB):
 
-        Ncols = len(NL01_sdict.keys())
-        NL01_sdict['Ncols'] = Ncols
+            jexpB = exptsB[jx]
+
+            colkeyFlu = 'col%03i' % (jx*2+colcountbase,)
+
+            NL02_sdict[colkeyFlu] = dict(
+                frames=jfraB, exptime=jexpB, 
+                wave=FW_IDXB,
+                comments='Fluence%i' % (jx+len(framesA)+1,))
+
+            colkeySta = 'col%03i' % (jx*2+colcountbase+1,)
+
+            NL02_sdict[colkeySta] = dict(
+                frames=1, exptime=exptinter, 
+                wave=FW_IDXB,
+                comments='STAB')
+
+        Ncols = len(NL02_sdict.keys())
+        NL02_sdict['Ncols'] = Ncols
 
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
-        commvalues.update(NL01_commvalues)
+        commvalues.update(NL02_commvalues)
 
         if len(diffvalues) == 0:
             try:
@@ -176,9 +212,9 @@ class NL02(NL01):
             except:
                 diffvalues = diffvalues = dict()
 
-        NL01_sdict = sc.update_structdict(NL01_sdict, commvalues, diffvalues)
+        NL02_sdict = sc.update_structdict(NL02_sdict, commvalues, diffvalues)
 
-        return NL01_sdict
+        return NL02_sdict
 
 
 

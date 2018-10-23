@@ -174,8 +174,8 @@ class NL01(FlatTask):
 
         NL01_sdict = dict()
 
-        NL01_sdict['col001'] = dict(frames=self.Nbgd, exptime=0, comment='BGD')
-        NL01_sdict['col002'] = dict(frames=self.Nstab0, exptime=exptinter, comment='STAB')
+        NL01_sdict['col001'] = dict(frames=self.Nbgd, exptime=0, comments='BGD')
+        NL01_sdict['col002'] = dict(frames=self.Nstab0, exptime=exptinter, comments='STAB')
 
         for ix, ifra in enumerate(frames):
 
@@ -184,12 +184,12 @@ class NL01(FlatTask):
             colkeyFlu = 'col%03i' % (ix*2+3,)
 
             NL01_sdict[colkeyFlu] = dict(
-                frames=ifra, exptime=iexp, comment='Fluence%i' % (ix+1,))
+                frames=ifra, exptime=iexp, comments='Fluence%i' % (ix+1,))
 
             colkeySta = 'col%03i' % (ix*2+3+1,)
 
             NL01_sdict[colkeySta] = dict(
-                frames=1, exptime=exptinter, comment='STAB')
+                frames=1, exptime=exptinter, comments='STAB')
 
         Ncols = len(NL01_sdict.keys())
         NL01_sdict['Ncols'] = Ncols

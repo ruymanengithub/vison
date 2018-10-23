@@ -586,7 +586,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         diffNL02 = dict(mirr_on=0)
         diffNL02.update(diffvalues)
         
-        FLUDIVIDE = 3.
+        FLUDIVIDE = 20.
         
         relfluencesNL02 = np.array([0.5, 0.7, 1., 2., 3., 5., 10., 20., 30., 50., 70., 80., 85.,
                                90., 95., 100.,110.])
@@ -611,10 +611,10 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         nl02 = NL02.NL02(inputs=dict(elvis=elvis,
                                      CHAMBER=CHAMBER,
                                      test='NL02',
-                                     waveA=waveNL02A,
+                                     wavelengthA=waveNL02A,
                                      exptimesA=exptsNL02A,
                                      framesA=framesNL02A,
-                                     waveB=waveNL02B,
+                                     wavelengthB=waveNL02B,
                                      exptimesB=exptsNL02B,
                                      framesB=framesNL02B,
                                      exptinter=0.5*tFWCwB,
