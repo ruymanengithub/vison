@@ -134,6 +134,8 @@ def get_FW_ID(wavelength, FW=FW):  # REDTAG: DEFAULT FW ON TESTS ONLY
     """
     return [key for key in FW if FW[key] == wavelength][0]
 
+def get_wavelength(FW_ID,FW=FW):
+    return FW['F%i' % FW_ID]
 
 class Ogse(object):
 
@@ -194,3 +196,7 @@ class Ogse(object):
     def get_FW_ID(self, wavelength):
         """ """
         return get_FW_ID(wavelength, self.profile['FW'])
+
+    def get_wavelength(self, FW_ID):
+        return get_wavelength(FW_ID, self.profile['FW'])
+    

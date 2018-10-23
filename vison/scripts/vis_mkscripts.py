@@ -99,7 +99,8 @@ def scwriter(toWrite, test_generator, outpath, equipment, elvis=context.elvis, C
     checksums = []
 
     test_sequence = test_generator(
-        equipment, toWrite, elvis=elvis, CHAMBER=CHAMBER)
+        equipment, toWrite, elvis=elvis, CHAMBER=CHAMBER,
+        purpose='scripts')
 
     Nframes = 0
     duration = 0
@@ -126,7 +127,8 @@ def scwriter(toWrite, test_generator, outpath, equipment, elvis=context.elvis, C
         duration += testduration
 
         iNcols = structtest['Ncols']
-        frameslist = [structtest['col03%i' % i]['frames']
+        
+        frameslist = [structtest['col%03i' % i]['frames']
                       for i in range(1, iNcols+1)]
         iNframes = np.sum(frameslist)
 

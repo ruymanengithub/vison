@@ -28,7 +28,8 @@ from vison.support import context
 # END IMPORT
 
 
-def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis, CHAMBER=None):
+def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis, 
+                          CHAMBER=None, purpose='scripts'):
     """ """
 
     ogse = ogsemod.Ogse(CHAMBER)

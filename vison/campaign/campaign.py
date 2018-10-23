@@ -23,6 +23,7 @@ from vison.flat import NL01, PTC0X, FLAT0X, BF01
 from vison.inject import CHINJ01, CHINJ02
 from vison.pump import TP01, TP02
 from vison.other import PERSIST01 as PER01
+from vison.other import MOT_WARM
 from vison.point import lib as polib
 from vison.ogse import ogse as ogsemod
 #from vison.pipe import lib as pilib
@@ -57,10 +58,11 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                   PSF01=False,
                   PSFLUX00=False,
                   PSF02=False,
-                  PERSIST01=False
+                  PERSIST01=False,
+                  MOT_WARM=False
                   )
     
-    if purpose == 'analysis':
+    if purpose == 'scripts':
         _toGen.update(
                 dict(
                     BF01=False,
@@ -745,5 +747,23 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         #structPER01 = persist01.build_scriptdict(diffvalues=diffPER01,elvis=elvis)
 
         test_sequence['PERSIST01'] = copy.deepcopy(persist01)
+
+    
+    if _toGen['MOT_WARM']:
+
+        print 'MOT_WARM...'
+        
+        
+        diffMOT_WM = dict()
+        diffMOT_WM.update(diffvalues)
+
+        mot_wm = MOT_WARM.MOT_WARM(inputs=dict(elvis=elvis,
+                                                CHAMBER=CHAMBER,
+                                                test='MOT_WARM',
+                                                diffvalues=diffMOT_WM))
+
+        test_sequence['MOT_WARM'] = copy.deepcopy(mot_wm)
+
+
 
     return test_sequence

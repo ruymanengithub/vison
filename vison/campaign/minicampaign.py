@@ -32,7 +32,8 @@ from vison.support import context
 # END IMPORT
 
 
-def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, CHAMBER=None):
+def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, 
+                                   CHAMBER=None, purpose='scripts'):
     """ """
 
     ogse = ogsemod.Ogse(CHAMBER)
