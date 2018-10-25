@@ -113,47 +113,61 @@ def find_discrete_voltages_inwaveform(rV, levels, filtered=None, debug=False):
         iV = copy.deepcopy(filtered)
     else:
         iV = copy.deepcopy(rV)
+        
+    slope_nsamp = 100
+    slope_tol = 0.01
+    Vmargin = 50. # mV
 
     #Nsamp = len(iV)
-    Nclust = len(levels)+1 # AD-HOC, including reference level
+    Nclust = len(levels)
+    NclustP1 = Nclust+1 # AD-HOC, including reference level
     
-    slopes = get_local_slope(iV,size=100)
-    ixflat = np.where(np.abs(slopes) <= 0.01)
+    slopes = get_local_slope(iV,size=slope_nsamp)
+    ixflat = np.where(np.abs(slopes) <= slope_tol)
     
-    cloud = iV[ixflat]
+    cloudFirst = iV[ixflat]
     
-    cloud = cloud.reshape(len(cloud),-1)
+    cloudFirst = cloudFirst.reshape(len(cloudFirst),-1)
 
-    kmeans = KMeans(n_clusters=Nclust, verbose=0,
-                    n_jobs=-1).fit(cloud)
-
-    labels = kmeans.labels_.copy()
-    ulabels = np.unique(labels)
+    kmeansFirst = KMeans(n_clusters=NclustP1, verbose=0,
+                    n_jobs=-1).fit(cloudFirst)
     
-    discrete_levels = np.zeros(len(ulabels), dtype='float32')
+    Vmin = kmeansFirst.cluster_centers_.min()
+    Vmax = kmeansFirst.cluster_centers_.max()
+    
+    ixVmin = kmeansFirst.cluster_centers_.argmin()
+    
+    ixselREF = np.where(kmeansFirst.labels_ == (ixVmin))
+    
+    discrete_levels = np.zeros(NclustP1)
+    discrete_levels[0] = np.mean(stats.sigmaclip(
+            cloudFirst[ixselREF,0], 3, 3).clipped)
+    
+    lev_min_nozero = np.min(levels[np.where(levels>0.)])
+    lev_max = np.max(levels)
+    
+    sigthresh = (Vmax-Vmin)*lev_min_nozero/lev_max+Vmin-Vmargin
+    
+    ixflatnsignal = np.where((np.abs(slopes) <= slope_tol) &\
+                            (iV >= sigthresh))
+    
+    cloudSec = iV[ixflatnsignal]
+    cloudSec = cloudSec.reshape(len(cloudSec),-1)
+    
+    kmeansSec = KMeans(n_clusters=Nclust, verbose=0,
+                    n_jobs=-1).fit(cloudSec)
+    
+    labelsSEC = kmeansSec.labels_.copy()
+    ulabelsSEC = np.unique(labelsSEC)
     
     if debug:
         fktimex = np.arange(len(iV))
     
-
-    for i in range(len(ulabels)):
-        
-        ixsel = np.where(labels == ulabels[i])
-        
-#        if debug:
-#            fig = plt.figure()
-#            ax = fig.add_subplot(111)
-#            ax.plot(fktimex,iV,'r.')
-#            ax.plot(fktimex[ixflat][ixsel],iV[ixflat][ixsel],'b.')
-#            ax.set_xlim([0,50000])
-#            show()
-        
+    for i in range(1,NclustP1):
+        ixsel = np.where(labelsSEC == ulabelsSEC[i-1])
         discrete_levels[i] = np.mean(stats.sigmaclip(
-            iV[ixflat][ixsel], 3, 3).clipped)
-
-    #discrete_levels = kmeans.cluster_centers_.flatten()    
-    
-
+            cloudSec[ixsel], 3, 3).clipped)
+   
     sorted_levels = np.sort(discrete_levels)
     foo = sorted_levels.tolist()
     foo.pop(1)
@@ -164,6 +178,7 @@ def find_discrete_voltages_inwaveform(rV, levels, filtered=None, debug=False):
         Wf = (fktimex[0:50000],iV[0:50000])
         plot_waveform(Wf, disc_voltages=sorted_levels, 
                       figname='', chan='Unknown')
+        stop()
 
     return sorted_levels
 
@@ -265,7 +280,7 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
         # EXTRACTING INJECTED VOLTAGE LEVELS
 
         mv_levels = find_discrete_voltages_inwaveform(rmV, RTlevels, filtered=fmV,
-                                                     debug=False) # TESTS
+                                                     debug=debug) # TESTS
         emv_levels = np.ones_like(mv_levels)*np.abs(mv_levels)*0.1 # 10% uncertainty
         
 
