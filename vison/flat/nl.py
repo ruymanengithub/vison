@@ -137,7 +137,7 @@ def fitNL(fluencesNL, exptimes, nomG, minfitFl, maxfitFl, display=False):
         ax.plot(fkfluencesNL,Y_bestfit,'r--')
         #ax.set_ylim([-10.,10.])
         plt.show()
-
+    
     fitresults = OrderedDict(
                              coeffs=NLfit, 
                              NLdeg=NLdeg, 
