@@ -60,17 +60,12 @@ def get_exptime_atmiddynrange(flu1D, exp1D, method='spline', debug=False):
         return t50poly
     
 
-
-def fitNL(fluencesNL, exptimes, nomG, minfitFl, maxfitFl, display=False):
+def getXYW_NL(fluencesNL,exptimes,nomG):
     """ """
-
+    
     assert fluencesNL.shape[0] == exptimes.shape[0]
     assert fluencesNL.ndim <= 2
     assert exptimes.ndim == 1
-
-    #nomG = 3.5 # e/ADU, used for noise estimates
-    #minfitFl = 2000. # ADU
-    #maxfitFl = FullDynRange-10000. # ADU
 
     Nexp = len(exptimes)
 
@@ -91,7 +86,7 @@ def fitNL(fluencesNL, exptimes, nomG, minfitFl, maxfitFl, display=False):
 
     else:
 
-        t50 = get_exptime_atmiddynrange(fluencesNL[:, i], exptimes,
+        t50 = get_exptime_atmiddynrange(fluencesNL, exptimes,
                                         method='spline')
 
         exptimes_bc = exptimes.copy()
@@ -109,19 +104,28 @@ def fitNL(fluencesNL, exptimes, nomG, minfitFl, maxfitFl, display=False):
     X = X[ixsort].copy()
     Y = Y[ixsort].copy()
     W = W.flatten()[ixsort].copy()
-    
-    selix = np.where((X>minfitFl) & (X<maxfitFl))
 
+    
+    return X, Y, W
+    
+
+
+def fitNL(fluencesNL, exptimes, nomG, minfitFl, maxfitFl, display=False):
+    """ """
+    
+    X,Y,W = getXYW_NL(fluencesNL, exptimes, nomG, minfitFl, maxfitFl)
+    selix = np.where((X>minfitFl) & (X<maxfitFl))
+    
     NLfit = np.polyfit(X[selix], Y[selix], w=W[selix], deg=NLdeg, full=False)
 
     NLpol = np.poly1d(NLfit)
 
     fkfluencesNL = np.arange(minfitFl, maxfitFl, dtype='float32')
     # array with NL fluences (1 to 2**16, in steps of ADU)
-    Z_bestfit = NLpol(fkfluencesNL)
+    Y_bestfit = NLpol(fkfluencesNL)
     
-    ixmax = np.abs(Z_bestfit).argmax()
-    maxNLpc = Z_bestfit[ixmax]
+    ixmax = np.abs(Y_bestfit).argmax()
+    maxNLpc = Y_bestfit[ixmax]
     flu_maxNLpc = fkfluencesNL[ixmax]
     
     if display:
@@ -130,7 +134,7 @@ def fitNL(fluencesNL, exptimes, nomG, minfitFl, maxfitFl, display=False):
         ax = fig.add_subplot(111)
         ax.plot(X,Y,'k.')
         ax.plot(X[selix],Y[selix],'b.')
-        ax.plot(fkfluencesNL,Z_bestfit,'r--')
+        ax.plot(fkfluencesNL,Y_bestfit,'r--')
         #ax.set_ylim([-10.,10.])
         plt.show()
 
@@ -140,14 +144,12 @@ def fitNL(fluencesNL, exptimes, nomG, minfitFl, maxfitFl, display=False):
                              maxNLpc=maxNLpc,
                              flu_maxNLpc=flu_maxNLpc,
                              inputcurve = OrderedDict(
-                                     YL=fluencesNL.flatten().copy(),
-                                     Z=Z.flatten().copy()),
+                                     X=X.copy(),
+                                     Y=Y.copy()),
                              outputcurve = OrderedDict(
-                                     YL=fkfluencesNL.copy(),
-                                     Z=Z_bestfit.copy()))
+                                     X=fkfluencesNL.copy(),
+                                     Y=Y_bestfit.copy()))
                              
-    
-    
     return fitresults
 
 

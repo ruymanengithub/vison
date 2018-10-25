@@ -326,10 +326,10 @@ class NL02(NL01.NL01):
                 NL_TB['MAXNLPC'][kk] = _fitresults['maxNLpc']
                 NL_TB['FLU_MAXNLPC'][kk] = _fitresults['flu_maxNLpc']
                 
-                curves_cdp.data[CCDkey][Q]['x']['data'] = _fitresults['inputcurve']['YL'].copy()
-                curves_cdp.data[CCDkey][Q]['y']['data'] = _fitresults['inputcurve']['Z'].copy()
-                curves_cdp.data[CCDkey][Q]['x']['fit'] = _fitresults['outputcurve']['YL'].copy()
-                curves_cdp.data[CCDkey][Q]['y']['fit'] = _fitresults['outputcurve']['Z'].copy()
+                curves_cdp.data[CCDkey][Q]['x']['data'] = _fitresults['inputcurve']['X'].copy()
+                curves_cdp.data[CCDkey][Q]['y']['data'] = _fitresults['inputcurve']['Y'].copy()
+                curves_cdp.data[CCDkey][Q]['x']['fit'] = _fitresults['outputcurve']['X'].copy()
+                curves_cdp.data[CCDkey][Q]['y']['fit'] = _fitresults['outputcurve']['Y'].copy()
         
         self.dd.products['NL'] = copy.deepcopy(NLall_mx)
 
