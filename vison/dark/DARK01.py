@@ -20,8 +20,9 @@ import datetime
 from copy import deepcopy
 from collections import OrderedDict
 import copy
+from scipy import ndimage
 
-from vison.support import context
+from vison.support import context, utils
 #from vison.pipe import lib as pilib
 #from vison.point import lib as polib
 from vison.datamodel import scriptic as sc
@@ -34,7 +35,7 @@ from vison.datamodel import scriptic as sc
 #from vison.datamodel import generator
 #from vison.pipe.task import Task
 from DarkTask import DarkTask
-import D01aux
+from vison.dark import D01aux, darkaux
 from vison.image import performance
 from vison.datamodel import inputs
 # END IMPORT
@@ -83,14 +84,17 @@ class DARK01(DarkTask):
         """ """
         self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
                          ('basic', self.basic_analysis),
-                         ('meta', self.meta_analysis)]
+                         ('meta', self.stack_analysis)]
         super(DARK01, self).__init__(inputs, log, drill, debug)
         self.name = 'DARK01'
         self.type = 'Simple'
         
         self.HKKeys = HKKeys
         self.figdict = D01aux.D01figs.copy()
-        self.inputs['subpaths'] = dict(figs='figs')
+        self.inputs['subpaths'] = dict(figs='figs',
+                   ccdpickles='ccdpickles',
+                   profiles='profiles',
+                   products='products')
 
     def set_inpdefaults(self, **kwargs):
         self.inpdefaults = dict(N=4, exptime=565)
@@ -161,20 +165,20 @@ class DARK01(DarkTask):
                 f.e.CCD:
                     f.e.Q:
                         produce mask of hot pixels
-                        count hot pixels / columns
+                        ## count hot pixels / columns
                         produce a 2D poly model of masked-image, save coefficients
                         produce average profile along rows
                         produce average profile along cols
-                        measure and save RON after subtracting large scale structure
+                        ## measure and save STD after subtracting large scale structure
                     save 2D model and profiles in a pick file for each OBSID-CCD
 
             plot average profiles f. each CCD and Q (color coded by time)
 
         """
 
-        raise NotImplementedError
 
-    def meta_analysis(self):
+
+    def stack_analysis(self):
         """ 
 
         **METACODE**
@@ -198,4 +202,120 @@ class DARK01(DarkTask):
 
         """
 
-        raise NotImplementedError
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='MasterDK', Title='Master Darks', level=0)
+            
+        OnTests = False # True on TESTS
+
+        settings = dict(
+                ID=self.ID,
+                BLOCKID=self.BLOCKID,
+                CHAMBER=self.CHAMBER
+                )
+
+        indices = copy.deepcopy(self.dd.indices)
+        
+        CCDs = indices.get_vals('CCD')
+        nC = len(CCDs)
+        Quads = indices.get_vals('Quad')
+        nQ = len(Quads)
+        
+        dpath = self.inputs['subpaths']['ccdpickles']
+        productspath = self.inputs['subpaths']['products']
+        
+        vCCDs = self.dd.mx['CCD'][:].copy()
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+        
+        NP = nC * nQ
+        
+        DK_TB = OrderedDict()
+        
+        DK_TB = OrderedDict()
+        DK_TB['CCD'] = np.zeros(NP,dtype='int32')
+        DK_TB['Q'] = np.zeros(NP,dtype='int32')
+        DK_TB['AVSIGNAL'] = np.zeros(NP,dtype='float32')
+        DK_TB['N_HOT'] = np.zeros(NP,dtype='int32')
+        
+        
+        MDK_2PLOT = OrderedDict()
+        for CCDk in CCDs:
+            MDK_2PLOT[CCDk] = OrderedDict()
+            for Q in Quads:
+                MDK_2PLOT[CCDk][Q] = OrderedDict()
+        MDK_p5s = []
+        MDK_p95s = []
+        
+        if not self.drill:
+
+
+            self.dd.products['MasterDKs'] = OrderedDict()
+
+            for jCCD, CCDk in enumerate(CCDs):
+
+                DKname = 'EUC_DK_ROE1_%s.fits' % (CCDk,)
+
+                DKpath = os.path.join(productspath, DKname)
+
+                selix = np.where(vCCDs == CCDk)
+
+                DKlist = self.dd.mx['ccdobj_name'][selix].flatten().copy()
+                
+                vfullinpath_adder = utils.get_path_decorator(dpath)
+
+                DKlist = vfullinpath_adder(DKlist)
+
+                # MISSING: proper defects and useful area masking
+                #   (mask-out pre/over scans)
+                
+                if OnTests:
+                    DKlist = DKlist[0:2]
+                
+                
+                jsettings = copy.deepcopy(settings)
+                try:
+                    jsettings['CCDSerial'] = self.inputs['diffvalues']['sn_ccd%i' % (jCCD+1)]
+                except KeyError:
+                    pass
+                
+                jsettings['CCDTempTop'] = self.dd.mx['HK_CCD%i_TEMP_T' % (jCCD+1,)][:].mean()
+                jsettings['CCDTempBot'] = self.dd.mx['HK_CCD%i_TEMP_B' % (jCCD+1,)][:].mean()
+                
+                for kQ,Q in enumerate(Quads):
+                    jsettings['AVFLU_%s' % Q] = \
+                             np.nanmedian(self.dd.mx['flu_med_img'][:,:,kQ][selix])
+
+                darkaux.produce_MasterDark(DKlist, DKpath, mask=None, 
+                    settings=jsettings)
+
+                self.dd.products['MasterDKs'][CCDk] = DKpath
+
+                DK = darkaux.DarkCDP(DKpath)
+
+                iDext = DK.extnames.index('DARK')
+
+                Quads = DK.Quads
+
+                for jQ, Q in enumerate(Quads):
+                    
+                    kk = jCCD * nQ + jQ
+                    
+                    
+                    DK_TB['CCD'][kk] = jCCD+1
+                    DK_TB['Q'][kk] = jQ+1
+                    DK_TB['N_HOT'][kk] = 0 # PENDING!
+                    DK_TB['AVSIGNAL'][kk] = jsettings['AVFLU_%s' % Q]
+                    
+                    qdata = DK.get_quad(Q,canonical=False,extension=iDext).copy()
+                    sqdata = ndimage.filters.gaussian_filter(qdata,sigma=5.,
+                                                             mode='constant',
+                                                             cval=1.)
+                    MDK_2PLOT[CCDk][Q]['img'] = sqdata.transpose()
+        
+        # REPORTS: MISSING
+        
+        

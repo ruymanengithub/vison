@@ -117,12 +117,14 @@ def produce_MasterFlat(infitsList, outfits, mask=None, settings={}):
 
     stackimg, stackstd = ccdpile.stack(method='median', dostd=True)
 
-    metabag = dict(WAVEL=-1, ID='0', BLOCKID='0', CHAMBER='None')
+    metabag = dict(WAVEL=-1, ID='0', BLOCKID='0', CHAMBER='None',
+                   CCDSerial='Uknown')
     metabag.update(settings)
 
     fdata = dict(Flat=stackimg, eFlat=stackstd)
     fmeta = dict(NCOMB=len(infitsList),
-                 WAVEL=metabag['WAVEL'])
+                 WAVEL=metabag['WAVEL'],
+                 CCDSN=metabag['CCDSerial'])
 
     mff = FlatField(data=fdata, meta=fmeta, withpover=True,
                     ID=metabag['ID'], BLOCKID=metabag['BLOCKID'],
@@ -182,11 +184,11 @@ class FlatField(ccdmodule.CCD, CDPClass):
 
         self.ncomb = self.extensions[0].header['NCOMB']
         self.wavelength = self.extensions[0].header['WAVEL']
+        
         assert self.extensions[1].label.upper() == 'FLAT'
         self.Flat = self.extensions[1].data
-
-        ekey = self.extensions[2].label.upper()
-        assert (ekey == 'EFLAT')
+        
+        assert self.extensions[2].label.upper() == 'EFLAT'
         self.eFlat = self.extensions[2].data
 
         if self.nextensions > 3:

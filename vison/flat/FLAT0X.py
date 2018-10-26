@@ -422,7 +422,7 @@ class FLAT0X(FlatTask):
             self.report.add_Section(
                 keyword='MasterFF', Title='Master Flat-Fields', level=0)
             
-        OnTests = True # True on TESTS
+        OnTests = False # True on TESTS
 
         wavelength = self.inputs['wavelength']
         settings = dict(
@@ -476,19 +476,16 @@ class FLAT0X(FlatTask):
 
         if not self.drill:
 
-            PRNU = OrderedDict()
-
+ 
             self.dd.products['MasterFFs'] = OrderedDict()
 
             for ulabel in ulabels:
 
-                PRNU[ulabel] = OrderedDict()
-
+ 
                 self.dd.products['MasterFFs'][ulabel] = OrderedDict()
 
                 for jCCD, CCDk in enumerate(CCDs):
 
-                    PRNU[ulabel][CCDk] = OrderedDict()
 
                     FFname = 'EUC_FF_%inm_%s_ROE1_%s.fits' % \
                         (wavelength, ulabel, CCDk)
@@ -524,7 +521,7 @@ class FLAT0X(FlatTask):
 
                     FF = FFing.FlatField(FFpath)
 
-                    iFextension = FF.extnames.index('FLAT')
+                    iFext = FF.extnames.index('FLAT')
 
                     Quads = FF.Quads
 
@@ -534,14 +531,14 @@ class FLAT0X(FlatTask):
                         
                         kQ_PRNU = FF.get_stats(Q, sector='img', statkeys=['std'],
                                                ignore_pover=True,
-                                               extension=iFextension)[0]
+                                               extension=iFext)[0]
                         
                         PRNU_TBs[ulabel]['CCD'][kk] = jCCD+1
                         PRNU_TBs[ulabel]['Q'][kk] = jQ+1
                         PRNU_TBs[ulabel]['PRNU_PC'][kk] = kQ_PRNU * 100.
                         PRNU_TBs[ulabel]['AVFLUENCE'][kk] = jsettings['AVFLU_%s' % Q]
                         
-                        qdata = FF.get_quad(Q,canonical=False,extension=1).copy()
+                        qdata = FF.get_quad(Q,canonical=False,extension=iFext).copy()
                         sqdata = ndimage.filters.gaussian_filter(qdata,sigma=5.,
                                                                  mode='constant',
                                                                  cval=1.)
