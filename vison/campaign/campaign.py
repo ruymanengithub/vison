@@ -60,17 +60,11 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                   PSFLUX00=False,
                   PSF02=False,
                   PERSIST01=False,
-                  MOT_WARM=False
-                  )
+                  MOT_WARM=False,
+                  BF01=False,
+                  BF01WAVE=False,
+                  MOT_FF=False)
     
-    if purpose == 'scripts':
-        _toGen.update(
-                dict(
-                    BF01=False,
-                    BF01WAVE=False,
-                    MOT_FF=False
-                        )
-                )
     _toGen.update(toGen)
 
 
@@ -559,7 +553,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         # 5 frames per fluence: 1%, 2%, 3%, 5%, 10%, 20%,30%, 50%,70%,80%,85%,90%,95%
         tFWC_flatNL01 = ogse.profile['tFWC_flat']['nm%i' % waveNL01]
-        exptsNL01 = (np.array([0.5, 0.7, 1., 2., 3., 5., 10., 20., 30., 50., 70., 80., 85.,
+        exptsNL01 = (np.array([0.5, 0.7, 1., 2., 3., 5., 10., 20., 30., 55., 70., 80., 85.,
                                90., 95., 100.,110.])/100. * tFWC_flatNL01).tolist()  # ms
         exptinterNL01 = 0.5 * tFWC_flatNL01
         frsNL01 = (np.ones(len(exptsNL01), dtype='int32')*4).tolist()
@@ -588,7 +582,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         
         FLUDIVIDE = 20.
         
-        relfluencesNL02 = np.array([0.5, 0.7, 1., 2., 3., 5., 10., 20., 30., 50., 70., 80., 85.,
+        relfluencesNL02 = np.array([0.5, 0.7, 1., 2., 3., 5., 10., 20., 30., 55., 70., 80., 85.,
                                90., 95., 100.,110.])
         
         waveNL02A = 0
