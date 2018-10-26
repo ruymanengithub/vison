@@ -110,10 +110,12 @@ def getXYW_NL(fluencesNL,exptimes,nomG):
     
 
 
-def fitNL(fluencesNL, exptimes, nomG, minfitFl, maxfitFl, display=False):
-    """ """
-    
-    X,Y,W = getXYW_NL(fluencesNL, exptimes, nomG, minfitFl, maxfitFl)
+#def fitNL(fluencesNL, exptimes, nomG, minfitFl, maxfitFl, display=False):
+#    """ """
+def fitNL(X, Y, W, minfitFl, maxfitFl, display=False):
+    """ """    
+        
+    #X,Y,W = getXYW_NL(fluencesNL, exptimes, nomG, minfitFl, maxfitFl)
     selix = np.where((X>minfitFl) & (X<maxfitFl))
     
     NLfit = np.polyfit(X[selix], Y[selix], w=W[selix], deg=NLdeg, full=False)
@@ -153,7 +155,8 @@ def fitNL(fluencesNL, exptimes, nomG, minfitFl, maxfitFl, display=False):
     return fitresults
 
 
-def wrap_fitNL(fluences, variances, exptimes, col_labels, times=np.array([]), TrackFlux=True, subBgd=True):
+def wrap_fitNL_SingleFilter(fluences, variances, exptimes, times=np.array([]), 
+                            TrackFlux=True, subBgd=True):
     """ """
     # col001 == BGD
     # colEVEN = STAB
@@ -164,15 +167,32 @@ def wrap_fitNL(fluences, variances, exptimes, col_labels, times=np.array([]), Tr
     maxfitFl = FullDynRange-10000. # ADU
 
     NObsIDs, Nsecs = fluences.shape
+    
+    if TrackFlux:
+        assert len(times) == len(exptimes)
 
-    dtimes = np.array(
-        [(times[i]-times[0]).seconds for i in range(NObsIDs)], dtype='float32')
+        dtimes = np.array(
+                [(times[i]-times[0]).seconds for i in range(NObsIDs)], dtype='float32')
 
-    col_numbers = np.array([int(item[3:]) for item in col_labels])
-
-    ixboo_bgd = col_numbers == 1
-    ixboo_stab = (col_numbers % 2 == 0) & (col_numbers > 1)  # EVEN
-    ixboo_fluences = (col_numbers % 2 != 0)  & (col_numbers > 1)# ODD
+    #col_numbers = np.array([int(item[3:]) for item in col_labels])
+    
+    nonzeroexptimes = exptimes[exptimes>0.]
+    unonzeroexptimes = np.unique(nonzeroexptimes)
+    
+    # the stability exposure time repeats the most
+    _ixstab = np.array([(exptimes==iexptime).sum() for iexptime in unonzeroexptimes]).argmax()
+    exptimestab = unonzeroexptimes[_ixstab]
+    
+    # boolean indices of the different types of exposures
+    
+    ixboo_bgd = exptimes == 0.
+    ixboo_stab = exptimes == exptimestab
+    ixboo_fluences = ((exptimes >0.) & (exptimes != exptimestab))
+    
+    # Not used any more
+    #ixboo_bgd = col_numbers == 1
+    #ixboo_stab = (col_numbers % 2 == 0) & (col_numbers > 1)  # EVEN
+    #ixboo_fluences = (col_numbers % 2 != 0)  & (col_numbers > 1)# ODD
 
     if subBgd:
         bgd = np.nanmean(fluences[ixboo_bgd, :], axis=0)
@@ -188,6 +208,7 @@ def wrap_fitNL(fluences, variances, exptimes, col_labels, times=np.array([]), Tr
 
         track_fit = np.polyfit(st_dtimes, st_fluences,
                                2, full=False, cov=False)
+        
         track_pol = np.poly1d(track_fit)
 
         track = track_pol(dtimes[ixboo_fluences])
@@ -196,14 +217,105 @@ def wrap_fitNL(fluences, variances, exptimes, col_labels, times=np.array([]), Tr
         fluences[ixboo_fluences, :] /= track.reshape(track.shape[0],-1)
     else:
         track = np.ones_like(fluences[ixboo_fluences,0])
-    # fitNL(fluencesNL, exptimes, nomG, minfitFl, maxfitFl, display=False)
-    fitresults = fitNL(fluences[ixboo_fluences, :], exptimes[ixboo_fluences],
-                       nomG, minfitFl, maxfitFl,
-                       display=False)
+    
+    X,Y,W = getXYW_NL(fluences[ixboo_fluences, :], 
+                      exptimes[ixboo_fluences], nomG)
+    
+    fitresults = fitNL(X, Y, W, minfitFl, maxfitFl, display=False)
     fitresults['bgd'] = bgd
     fitresults['stability_pc'] = np.std(track)*100.
-
+              
     return fitresults
+
+
+
+def wrap_fitNL_TwoFilter(fluences, variances, exptimes, wave, times=np.array([]), 
+                            TrackFlux=True, subBgd=True):
+    """ """
+    
+    nomG = 3.5 # e/ADU, used for noise estimates
+    minfitFl = 2000. # ADU
+    maxfitFl = FullDynRange-10000. # ADU
+
+    NObsIDs, Nsecs = fluences.shape
+    
+    if TrackFlux:
+        assert len(times) == len(exptimes)
+
+        dtimes = np.array(
+                [(times[i]-times[0]).seconds for i in range(NObsIDs)], dtype='float32')
+
+    #col_numbers = np.array([int(item[3:]) for item in col_labels])
+    
+    nonzeroexptimes = exptimes[exptimes>0.]
+    unonzeroexptimes = np.unique(nonzeroexptimes)
+    
+    # the stability exposure time repeats the most
+    _ixstab = np.array([(exptimes==iexptime).sum() for iexptime in unonzeroexptimes]).argmax()
+    exptimestab = unonzeroexptimes[_ixstab]
+    
+    # boolean indices of the different types of exposures
+    
+    uwaves=np.unique(wave)
+    
+    ixboo_bgd = exptimes == 0.
+    ixboo_stab = exptimes == exptimestab
+    ixboo_fluA = ((exptimes >0.) & (exptimes != exptimestab) & (wave == uwaves[0]))
+    ixboo_fluB = ((exptimes >0.) & (exptimes != exptimestab) & (wave == uwaves[1]))
+    
+    #ixboo_bgd = col_numbers == 1
+    #ixboo_stab = (col_numbers % 2 == 0) & (col_numbers > 1)  # EVEN
+    #ixboo_fluences = (col_numbers % 2 != 0)  & (col_numbers > 1)# ODD
+    
+    # assuming here the background is not affected by wavelength selection
+    # in FW.. could be WRONG
+    if subBgd:
+        bgd = np.nanmean(fluences[ixboo_bgd, :], axis=0)
+        bgd = np.repeat(bgd.reshape(1, Nsecs), NObsIDs, axis=0).copy()
+        fluences -= bgd
+    else:
+        bgd = 0.
+
+    if TrackFlux and len(times) == NObsIDs:
+        st_dtimes = dtimes[ixboo_stab].copy()
+        st_fluences = np.nanmean(fluences[ixboo_stab, :], axis=1).copy()
+
+        track_fit = np.polyfit(st_dtimes, st_fluences,
+                               2, full=False, cov=False)
+        
+        track_pol = np.poly1d(track_fit)
+
+        trackA = track_pol(dtimes[ixboo_fluA])
+        trackA /= np.median(trackA)
+        
+        trackB = track_pol(dtimes[ixboo_fluB])
+        trackB /= np.median(trackB)
+        
+        #track_bc = np.repeat(track.reshape(len(track), 1), Nsecs, axis=1)
+        fluences[ixboo_fluA, :] /= trackA.reshape(trackA.shape[0],-1)
+        fluences[ixboo_fluB, :] /= trackB.reshape(trackB.shape[0],-1)
+        trackstab = np.mean([trackA.std(), trackB.std()])*100.
+    else:
+        trackstab = 0.
+    
+    
+    X_A,Y_A,W_A = getXYW_NL(fluences[ixboo_fluA, :], 
+                      exptimes[ixboo_fluA], nomG)
+    
+    X_B,Y_B,W_B = getXYW_NL(fluences[ixboo_fluB, :], 
+                      exptimes[ixboo_fluB], nomG)
+    
+    X = np.concatenate((X_A,X_B))
+    Y = np.concatenate((Y_A,Y_B))
+    W = np.concatenate((W_A,W_B))
+    
+    fitresults = fitNL(X, Y, W, minfitFl, maxfitFl, display=False)
+    fitresults['bgd'] = bgd
+    fitresults['stability_pc'] = trackstab
+              
+    return fitresults
+
+
 
 
 def test_wrap_fitNL():

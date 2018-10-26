@@ -71,7 +71,7 @@ NL01_commvalues = dict(program='CALCAMP',test='NL01',
 plusminus10pcent = 1.+np.array([-0.10, 0.10])
 
 NL01_relfluences = np.array(
-    [0.5, 0.7, 1.,2.,3.,5., 10., 20., 30., 50., 70., 80., 85., 90., 95., 100., 110.])
+    [0.5, 0.7, 1.,2.,3.,5., 10., 20., 30., 55., 70., 80., 85., 90., 95., 100., 110.])
 
 def get_Flu_lims(relfluences):
     
@@ -420,12 +420,14 @@ class NL01(FlatTask):
 
                 raw_med = self.dd.mx['sec_med'][:, iCCD, jQ, :].copy()
                 raw_var = self.dd.mx['sec_var'][:,iCCD,jQ, :].copy()
-                col_labels = self.dd.mx['label'][:, iCCD].copy()
+                #col_labels = self.dd.mx['label'][:, iCCD].copy()                
                 exptimes = self.dd.mx['exptime'][:, iCCD].copy()
                 dtobjs = self.dd.mx['time'][:, iCCD].copy()
                 
                 # fitresults = OrderedDict(coeffs, NLdeg, maxNLpc,flu_maxNLpc, bgd)
-                _fitresults = nllib.wrap_fitNL(raw_med, raw_var, exptimes, col_labels, dtobjs, 
+                _fitresults = nllib.wrap_fitNL_SingleFilter(raw_med, raw_var, 
+                                               exptimes, 
+                                               dtobjs, 
                                                TrackFlux=True,
                                                subBgd=True)
                 

@@ -310,14 +310,16 @@ class NL02(NL01.NL01):
 
                 raw_med = self.dd.mx['sec_med'][:, iCCD, jQ, :].copy()
                 raw_var = self.dd.mx['sec_var'][:,iCCD,jQ, :].copy()
-                col_labels = self.dd.mx['label'][:, iCCD].copy()
+                #col_labels = self.dd.mx['label'][:, iCCD].copy()
                 exptimes = self.dd.mx['exptime'][:, iCCD].copy()
+                wave = self.dd.mx['wave'][:, iCCD].copy()
                 dtobjs = self.dd.mx['time'][:, iCCD].copy()
                 
                 # fitresults = OrderedDict(coeffs, NLdeg, maxNLpc,flu_maxNLpc, bgd)
-                _fitresults = nllib.wrap_fitNL(raw_med, raw_var, exptimes, col_labels, dtobjs, 
-                                               TrackFlux=True,
-                                               subBgd=True)
+                _fitresults = nllib.wrap_fitNL_TwoFilters(raw_med, raw_var, exptimes, wave, 
+                                            dtobjs, 
+                                            TrackFlux=True,
+                                            subBgd=True)
                 
                 NLall_mx[CCDkey][Q].update(_fitresults)
                 
