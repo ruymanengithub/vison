@@ -21,6 +21,7 @@ from vison import __version__
 from vison.image import cosmetics
 from vison.datamodel import ccd as ccdmod
 from vison.datamodel import cdp
+from vison.support.files import cPickleRead
 # END IMPORT
 
 
@@ -52,14 +53,30 @@ def get_DarkDefectsMask_CDP(taskobj, darkccdobj, threshold, subbgd=True, bgdmode
     return maskcdp
 
 
-def produce_MasterDark(infitsList, outfits, mask=None, settings={}):
+def produce_MasterDark(outfits, infitsList=[], ccdpickList=[],  mask=None, settings={}):
     """Produces a Master Flat out of a number of flat-illumination exposures.
     Takes the outputs from produce_IndivFlats."""
-
-    ccdpile = ccdmod.CCDPile(
-        infitsList=infitsList, extension=0, withpover=True)
+    
+    assert (len(infitsList)==0) != (len(ccdpickList)==0)
+    
+    
+    if len(ccdpickList)>0:
+        ccdobjList = [copy.deepcopy(cPickleRead(item)) for item in ccdpickList]
+        ccdpile = ccdmod.CCDPile(ccdobjList=ccdobjList, extension=-1, withpover=True)
+    elif len(infitsList)> 0:
+        ccdpile = ccdmod.CCDPile(
+            infitsList=infitsList, extension=0, withpover=True)
 
     stackimg, stackstd = ccdpile.stack(method='median', dostd=True)
+    
+    if isinstance(stackimg, np.ma.MaskedArray):
+        stackmask = stackimg.mask.copy()
+        stackimg = stackimg.data.copy()
+        stackstd = stackstd.data.copy()
+        if mask is not None:
+            mask = mask | stackmask
+        else:
+            mask = stackmask.copy()
 
     metabag = dict(CCDTempTop=np.nan,
                    CCDTempBot=np.nan,
@@ -71,7 +88,7 @@ def produce_MasterDark(infitsList, outfits, mask=None, settings={}):
     dkmeta = dict(NCOMB=len(infitsList),
                   CCDTTOP=metabag['CCDTempTop'],
                   CCDTBOT=metabag['CCDTempBot'],
-                  CCDSERIAL=metabag['CCDSerial']
+                  CCDSN=metabag['CCDSerial']
                   )
 
     mdk = DarkCDP(data=dkdata, meta=dkmeta, withpover=True,
@@ -81,7 +98,6 @@ def produce_MasterDark(infitsList, outfits, mask=None, settings={}):
     if mask is not None:
         mdk.get_mask(mask)
     
-
     mdk.writeto(outfits, clobber=True, unsigned16bit=False)
 
 

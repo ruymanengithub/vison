@@ -767,8 +767,9 @@ class CCD(object):
         assert self.shape == mask.shape
 
         for iext in range(self.nextensions):
-            masked = np.ma.masked_array(self.extensions[iext].data, mask)
-            self.extensions[iext].data = masked.copy()
+            if self.extensions[iext].data is not None:
+                masked = np.ma.masked_array(self.extensions[iext].data, mask)
+                self.extensions[iext].data = masked.copy()
 
         self.masked = True
 

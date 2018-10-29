@@ -538,17 +538,17 @@ class BIAS01(DarkTask):
                 
                 return CQdict
             
+            vfullinpath_adder = utils.get_path_decorator(ccdpicklespath)
+            
             for jCCD, CCDk in enumerate(CCDs):
                 
-                sn_ccd = self.inputs['diffvalues']['sn_%s' % CCDk.lower()]
-                
+                sn_ccd = self.inputs['diffvalues']['sn_%s' % CCDk.lower()]                
                 vstart = self.dd.mx['vstart'][0, jCCD]
                 vend = self.dd.mx['vend'][0, jCCD]
                 
                 ccdobj_names = self.dd.mx['ccdobj_name'][:, jCCD]
-                fullccdobj_names = map(lambda x: os.path.join(ccdpicklespath,
-                                                             '%s.pick' % x), 
-                                       ccdobj_names)
+                fullccdobj_names = vfullinpath_adder(ccdobj_names,extension='pick')
+                
                 
                 devel = False # TESTS
                 

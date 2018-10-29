@@ -21,11 +21,14 @@ from copy import deepcopy
 from collections import OrderedDict
 import copy
 from scipy import ndimage
+from matplotlib.colors import Normalize
+import pandas as pd
 
 from vison.support import context, utils
 #from vison.pipe import lib as pilib
 #from vison.point import lib as polib
 from vison.datamodel import scriptic as sc
+from vison.datamodel import cdp
 #from vison.pipe import FlatFielding as FFing
 #from vison.support.report import Report
 #from vison.support import files
@@ -83,7 +86,6 @@ class DARK01(DarkTask):
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
         self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
-                         ('basic', self.basic_analysis),
                          ('meta', self.stack_analysis)]
         super(DARK01, self).__init__(inputs, log, drill, debug)
         self.name = 'DARK01'
@@ -91,6 +93,7 @@ class DARK01(DarkTask):
         
         self.HKKeys = HKKeys
         self.figdict = D01aux.D01figs.copy()
+        self.CDP_lib = D01aux.CDP_lib.copy()
         self.inputs['subpaths'] = dict(figs='figs',
                    ccdpickles='ccdpickles',
                    profiles='profiles',
@@ -152,29 +155,29 @@ class DARK01(DarkTask):
         super(DARK01, self).prepare_images(
             doExtract=True, doMask=True, doOffset=True, doBias=True)
 
-    def basic_analysis(self):
-        """ 
-
-        DARK01: Basic analysis of data.
-
-        **METACODE**
-
-        ::
-
-            f. e. ObsID:
-                f.e.CCD:
-                    f.e.Q:
-                        produce mask of hot pixels
-                        ## count hot pixels / columns
-                        produce a 2D poly model of masked-image, save coefficients
-                        produce average profile along rows
-                        produce average profile along cols
-                        ## measure and save STD after subtracting large scale structure
-                    save 2D model and profiles in a pick file for each OBSID-CCD
-
-            plot average profiles f. each CCD and Q (color coded by time)
-
-        """
+#    def basic_analysis(self):
+#        """ 
+#
+#        DARK01: Basic analysis of data.
+#
+#        **METACODE**
+#
+#        ::
+#
+#            f. e. ObsID:
+#                f.e.CCD:
+#                    f.e.Q:
+#                        produce mask of hot pixels
+#                        ## count hot pixels / columns
+#                        produce a 2D poly model of masked-image, save coefficients
+#                        produce average profile along rows
+#                        produce average profile along cols
+#                        ## measure and save STD after subtracting large scale structure
+#                    save 2D model and profiles in a pick file for each OBSID-CCD
+#
+#            plot average profiles f. each CCD and Q (color coded by time)
+#
+#        """
 
 
 
@@ -205,7 +208,8 @@ class DARK01(DarkTask):
         if self.report is not None:
             self.report.add_Section(
                 keyword='MasterDK', Title='Master Darks', level=0)
-            
+        
+        
         OnTests = False # True on TESTS
 
         settings = dict(
@@ -223,8 +227,8 @@ class DARK01(DarkTask):
         
         dpath = self.inputs['subpaths']['ccdpickles']
         productspath = self.inputs['subpaths']['products']
+        profilespath = self.inputs['subpaths']['profiles']
         
-        vCCDs = self.dd.mx['CCD'][:].copy()
         
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
@@ -250,24 +254,48 @@ class DARK01(DarkTask):
         MDK_p5s = []
         MDK_p95s = []
         
+        # 1D Profiles of Master Dark
+        
+        profs1D2plot = OrderedDict()
+        profs1D2plot['hor'] = OrderedDict()
+        profs1D2plot['ver'] = OrderedDict()
+        
+        for CCDk in CCDs:
+            for tag in ['hor', 'ver']:
+                profs1D2plot[tag][CCDk] = OrderedDict()
+            for Q in Quads:
+                for tag in ['hor', 'ver']:
+                    profs1D2plot[tag][CCDk][Q] = OrderedDict()
+                    profs1D2plot[tag][CCDk][Q]['x'] = np.arange(100,dtype='float32')
+                    profs1D2plot[tag][CCDk][Q]['y'] = np.zeros(100,dtype='float32')
+        
         if not self.drill:
 
 
             self.dd.products['MasterDKs'] = OrderedDict()
-
+            
+            def _pack_profs(CQdict,prof):
+                """ """
+                _x = prof.data['x'].copy()
+                xorder = np.argsort(prof.data['x'])
+                _y = prof.data['y'][xorder].copy()
+                _x = np.arange(len(_y))
+                
+                CQdict['x'] = _x.copy()
+                CQdict['y'] = _y.copy()
+                
+                return CQdict
+            
+            vfullinpath_adder = utils.get_path_decorator(dpath)
+            
             for jCCD, CCDk in enumerate(CCDs):
 
                 DKname = 'EUC_DK_ROE1_%s.fits' % (CCDk,)
-
                 DKpath = os.path.join(productspath, DKname)
 
-                selix = np.where(vCCDs == CCDk)
+                DKlist = np.squeeze(self.dd.mx['ccdobj_name'][:,jCCD]).copy()
 
-                DKlist = self.dd.mx['ccdobj_name'][selix].flatten().copy()
-                
-                vfullinpath_adder = utils.get_path_decorator(dpath)
-
-                DKlist = vfullinpath_adder(DKlist)
+                DKlist = vfullinpath_adder(DKlist,extension='pick')
 
                 # MISSING: proper defects and useful area masking
                 #   (mask-out pre/over scans)
@@ -276,21 +304,22 @@ class DARK01(DarkTask):
                     DKlist = DKlist[0:2]
                 
                 
+                vstart = self.dd.mx['vstart'][0, jCCD]
+                vend = self.dd.mx['vend'][0, jCCD]
+                
                 jsettings = copy.deepcopy(settings)
-                try:
-                    jsettings['CCDSerial'] = self.inputs['diffvalues']['sn_ccd%i' % (jCCD+1)]
-                except KeyError:
-                    pass
+                jsettings['CCDSerial'] = self.inputs['diffvalues']['sn_ccd%i' % (jCCD+1)]
                 
                 jsettings['CCDTempTop'] = self.dd.mx['HK_CCD%i_TEMP_T' % (jCCD+1,)][:].mean()
                 jsettings['CCDTempBot'] = self.dd.mx['HK_CCD%i_TEMP_B' % (jCCD+1,)][:].mean()
                 
                 for kQ,Q in enumerate(Quads):
                     jsettings['AVFLU_%s' % Q] = \
-                             np.nanmedian(self.dd.mx['flu_med_img'][:,:,kQ][selix])
-
-                darkaux.produce_MasterDark(DKlist, DKpath, mask=None, 
-                    settings=jsettings)
+                             np.nanmedian(self.dd.mx['chk_flu_img'][:,jCCD,kQ])
+                             
+                
+                darkaux.produce_MasterDark(DKpath, ccdpickList=DKlist, mask=None, 
+                    settings=jsettings)# COMMENTED ON TESTS
 
                 self.dd.products['MasterDKs'][CCDk] = DKpath
 
@@ -315,7 +344,90 @@ class DARK01(DarkTask):
                                                              mode='constant',
                                                              cval=1.)
                     MDK_2PLOT[CCDk][Q]['img'] = sqdata.transpose()
+                    MDK_p5s.append(np.percentile(sqdata,5))
+                    MDK_p95s.append(np.percentile(sqdata,95))
+                    
+                    
+                    hor1Dprof = DK.get_1Dprofile(Q=Q, orient='hor',
+                                    area='all',stacker='mean',
+                                    vstart=vstart,vend=vend,extension=iDext)
+                    
+                    profs1D2plot['hor'][CCDk][Q] = _pack_profs(profs1D2plot['hor'][CCDk][Q],hor1Dprof)
+                                        
+                    ver1Dprof = DK.get_1Dprofile(Q=Q, orient='ver',
+                                    area='all',stacker='mean',
+                                    vstart=vstart,vend=vend,extension=iDext)
+                    
+                    profs1D2plot['ver'][CCDk][Q] = _pack_profs(profs1D2plot['ver'][CCDk][Q],ver1Dprof)
         
-        # REPORTS: MISSING
+        # PLOTTING 1D PROFILES OF MASTER BIAS
         
+        self.figdict['D01meta_prof1D_hor'][1]['data'] = profs1D2plot['hor'].copy()
+        self.figdict['D01meta_prof1D_ver'][1]['data'] = profs1D2plot['ver'].copy()
         
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['D01meta_prof1D_hor',
+                                        'D01meta_prof1D_ver'],
+                               dobuilddata=False)
+        
+        # SAVING 1D PROFILES OF MASTER BIAS as a CDP
+        
+        MB_profiles_cdp = cdp.CDP()
+        MB_profiles_cdp.header = CDP_header.copy()
+        MB_profiles_cdp.path = profilespath
+        MB_profiles_cdp.data = profs1D2plot.copy()
+        
+        self.save_CDP(MB_profiles_cdp)
+        self.pack_CDP_to_dd(MB_profiles_cdp, 'MB_PROFILES')
+        
+        # DISPLAYING THE MASTER BIAS FRAMES
+        
+        self.figdict['D01meta_MasterDark_2D'][1]['data'] = MDK_2PLOT.copy()
+        
+        # UPDATING scaling based on data
+        
+        if len(MDK_p5s)>0:
+            normfunction = Normalize(vmin=np.min(MDK_p5s),vmax=np.max(MDK_p95s),clip=False)
+        else:
+            normfunction = False
+        
+        self.figdict['D01meta_MasterDark_2D'][1]['meta']['corekwargs']['norm'] = normfunction
+        
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['D01meta_MasterDark_2D'],
+                               dobuilddata=False)
+
+        # REPORT DARK results
+                
+        DK_TB_dddf = OrderedDict()
+        DK_TB_dddf['DARK'] = pd.DataFrame.from_dict(DK_TB)
+        
+        dk_tb_cdp = self.CDP_lib['DARK_TB']
+        dk_tb_cdp.path = self.inputs['subpaths']['products']
+        dk_tb_cdp.ingest_inputs(
+                data = DK_TB_dddf.copy(),
+                meta=dict(),
+                header=CDP_header.copy()
+                )
+
+        dk_tb_cdp.init_wb_and_fillAll(header_title='DARK01 TABLE')
+        self.save_CDP(dk_tb_cdp)
+        self.pack_CDP_to_dd(dk_tb_cdp, 'DARK_TB_CDP')
+                    
+        if self.report is not None:
+            
+            fccd = lambda x: CCDs[x-1]
+            fq = lambda x: Quads[x-1]
+            fE = lambda x: '%.2E' % x
+            fi = lambda x: '%i' % x
+            
+            cov_formatters=[fccd,fq,fE,fi]
+            
+            caption = 'DARK Results Table.'
+            DKtex = dk_tb_cdp.get_textable(sheet='DARK', 
+                                               caption=caption,
+                                               fitwidth=True,
+                                               tiny=True,
+                                               formatters=cov_formatters)
+            self.report.add_Text(DKtex)
+

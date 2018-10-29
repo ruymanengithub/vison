@@ -101,10 +101,11 @@ meta_MB2D_dict = dict(
     figname='BIAS01_MASTERBIAS_2Dimgshow.png',
     caption='BIAS01: Master Bias for the CCDs.',
     meta=dict(doLegend=False,
-              suptitle='BIAS01/Master:Quadrant Images'),
-    corekwargs=dict(cmap=cm.rainbow,aspect='auto',norm=None,origin='lower left',
+              suptitle='BIAS01/Master:Quadrant Images',
+              corekwargs=dict(cmap=cm.rainbow,aspect='auto',norm=None,origin='lower left',
                     ))
-
+)
+    
 B01figs = dict()
 B01figs['B01checks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]
 #B01figs['B01checks_stds'] = [plB01check,dict(stat='std')]
