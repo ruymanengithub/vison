@@ -124,22 +124,21 @@ class FOCUS00(PT.PointTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
+        
         self.subtasks = [('lock', self.lock_on_stars),
-                         ('check', self.check_data), 
+                         ('check', self.check_data),
                          #('prep', self.prep_data),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
         super(FOCUS00, self).__init__(inputs, log, drill, debug)
         self.name = 'FOCUS00'
-        self.type = 'Simple'
-        
+        self.type = 'Simple'        
         self.HKKeys = HKKeys
         self.CDP_lib = F00aux.CDP_lib.copy()
         self.figdict = F00aux.gt_F00figs(self.inputs['wavelength'])
         self.inputs['subpaths'] = dict(figs='figs',
                                        products='products')
         
-
     def set_inpdefaults(self, **kwargs):
        
         tFWC800 = self.ogse.profile['tFWC_point']['nm%i' % 800]
