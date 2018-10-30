@@ -41,16 +41,10 @@ from collections import OrderedDict
 from vison.support import context
 from vison.point import lib as polib
 from vison.ogse import ogse as ogsemod
-#from vison.datamodel import HKtools
 from vison.datamodel import scriptic as sc
-#from vison.point import lib as polib
-#from vison.support.report import Report
 from vison.support import files
-#from vison.pipe.task import Task
-from PointTask import PointTask
+from vison.point import PointTask as PT
 import PSF0Xaux
-from vison.image import performance
-from vison.datamodel import inputs
 from vison.support.files import cPickleRead
 # END IMPORT
 
@@ -147,8 +141,8 @@ for CCD in [2, 3]:
     BGD_lims['CCD%i' % CCD] = copy.deepcopy(BGD_lims['CCD1'])
 
 
-class PSF0X_inputs(inputs.Inputs):
-    manifesto = inputs.CommonTaskInputs.copy()
+class PSF0X_inputs(PT.Point_inputs):
+    manifesto = PT.Point_inputs.manifesto.copy()
     manifesto.update(OrderedDict(sorted([
         ('exptimes', ([list], 'Exposure times for each fluence.')),
         ('frames', ([list], 'Number of Frames for each fluence.')),
@@ -156,7 +150,7 @@ class PSF0X_inputs(inputs.Inputs):
     ])))
 
 
-class PSF0X(PointTask):
+class PSF0X(PT.PointTask):
 
     inputsclass = PSF0X_inputs
 

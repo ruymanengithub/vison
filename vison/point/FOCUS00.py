@@ -57,7 +57,6 @@ import PointTask as PT
 #from PointTask import PointTask, BGD_lims
 import FOCUS00_lib as F00lib
 from vison.image import performance
-from vison.datamodel import inputs
 import F00aux
 # END IMPORT
 
@@ -109,8 +108,8 @@ for iCCD in [2, 3]:
     Flu_lims['CCD%i' % iCCD] = copy.deepcopy(Flu_lims['CCD1'])
 
 
-class FOCUS00_inputs(inputs.Inputs):
-    manifesto = inputs.CommonTaskInputs.copy()
+class FOCUS00_inputs(PT.Point_inputs):
+    manifesto = PT.Point_inputs.manifesto.copy()
     manifesto.update(OrderedDict(sorted([
         ('exptime', ([float], 'Exposure time.')),
         ('wavelength', ([int], 'Wavelength')),
@@ -142,9 +141,11 @@ class FOCUS00(PT.PointTask):
         
 
     def set_inpdefaults(self, **kwargs):
-
+       
         tFWC800 = self.ogse.profile['tFWC_point']['nm%i' % 800]
-        self.inpdefaults = dict(wavelength=800,
+        self.inpdefaults = dict(
+                                offsetxy=[0.,0.],
+                                wavelength=800,
                                 exptime=60./100.*tFWC800,
                                 deltafocus=0.1)
 

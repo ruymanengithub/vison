@@ -21,7 +21,7 @@ from vison.datamodel import compliance as complimod
 from vison.pipe.task import Task
 from vison.point import lib as polib
 from vison.point import startracker as strackermod
-from vison.datamodel import core, ccd
+from vison.datamodel import core, ccd, inputs
 #from vison.pipe import lib as pilib
 from vison.support import context
 from vison.support import utils
@@ -32,6 +32,13 @@ for Q in ['F', 'G', 'H']:
     BGD_lims['CCD1'][Q] = copy.deepcopy(BGD_lims['CCD1']['E'])
 for iCCD in [2, 3]:
     BGD_lims['CCD%i' % iCCD] = copy.deepcopy(BGD_lims['CCD1'])
+
+
+class Point_inputs(inputs.Inputs):
+    manifesto = inputs.CommonTaskInputs.copy()
+    manifesto.update(OrderedDict(sorted([
+        ('offsetxy', ([list, tuple], 'Point Sources Offset wrt nominal positions (x,y)/[x,y]'))
+    ])))
 
 
 class PointTask(Task):
