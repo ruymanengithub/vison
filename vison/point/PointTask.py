@@ -49,7 +49,7 @@ class PointTask(Task):
         super(PointTask, self).__init__(*args, **kwargs)
         
         CCDs = self.ogse.startrackers.keys()
-        offsetxy = self.inputs['offsetxy']
+        offsetxy = np.array(self.inputs['offsetxy'])
         if not np.isclose(np.abs(np.sqrt(np.dot(offsetxy,offsetxy))),0.):
             for jCCD, CCDk in enumerate(CCDs):
                 simmx = self.ogse.startrackers[CCDk].get_similaritymx(1.0, 
