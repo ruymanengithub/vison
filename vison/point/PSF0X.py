@@ -156,7 +156,9 @@ class PSF0X(PT.PointTask):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
+        self.subtasks = [('lock', self.lock_on_stars),
+                         ('check', self.check_data), 
+                         ('prep', self.prep_data),
                          ('basic', self.basic_analysis), 
                          ('bayes', self.bayes_analysis),
                          ('meta', self.meta_analysis)]

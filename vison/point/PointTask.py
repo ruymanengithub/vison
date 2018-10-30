@@ -47,6 +47,14 @@ class PointTask(Task):
 
     def __init__(self, *args, **kwargs):
         super(PointTask, self).__init__(*args, **kwargs)
+        
+        CCDs = self.ogse.startrackers.keys()
+        offsetxy = self.inputs['offsetxy']
+        if not np.isclose(np.abs(np.sqrt(np.dot(offsetxy,offsetxy))),0.):
+            for jCCD, CCDk in enumerate(CCDs):
+                simmx = self.ogse.startrackers[CCDk].get_similaritymx(1.0, 
+                                     0., offsetxy)
+                self.ogse.startrackers[CCDk].apply_patt_transform(simmx)
 
     def check_data(self, **kwargs):
         """ """
@@ -379,11 +387,9 @@ class PointTask(Task):
             rotation = 1.4*np.pi
             scale = 2.0
             translation = [2000.0,2000.0]
-            
         
         Qindices = copy.deepcopy(self.dd.indices)
         CCDs = Qindices.get_vals('CCD')
-        
         
         scale_lims = [0.95,1.05] # adim.
         rot_lims = np.array([-1.,1.])*1./180.*np.pi # radians
@@ -424,16 +430,15 @@ class PointTask(Task):
             s_list = np.arange(5).tolist()
             t_list = copy.deepcopy(s_list)
             
-            
             if not devel:
-            
+                
                 ccdobj = ccd.CCD(ffits)
                 
-                img = ccdobj.extensions[-1].data.T.copy() 
+                img = ccdobj.extensions[-1].data.T.copy()
                 SExCatroot = 'StarFinder_%s' % CCDk
                 SExCat = sex.easy_run_SEx(img, SExCatroot, 
-                                          sexconfig=_sexconfig,                                      
-                                          cleanafter=False)
+                            sexconfig=_sexconfig,                                      
+                            cleanafter=False)
                 
                 sel = np.where((SExCat['ELONGATION']<2.) &
                                (SExCat['A_IMAGE']<5.) &
@@ -458,7 +463,7 @@ class PointTask(Task):
                 
                     try:
                         transf, (s_list, t_list) = strackers[CCDk].find_patt_transform(X_PHYS,Y_PHYS,
-                                  Full=True, debug=True)
+                                  Full=True, debug=False)
                     except:
                     
                         if self.log is not None:
@@ -468,7 +473,7 @@ class PointTask(Task):
                             self.log.info('Did not Find enough Stars to Lock-on on %s' % CCDk)
             
             transfs_dict[CCDk] = copy.deepcopy(transf)
-            stop()
+            
             LOCK_TB['CCD'][jCCD] = jCCD + 1
             LOCK_TB['NMATCH'][jCCD] = len(s_list)
             LOCK_TB['SCALE'][jCCD] = transf.scale
@@ -564,13 +569,11 @@ class PointTask(Task):
                                  tr.rotation, tr.translation)
                 
                 strackers[CCDk].apply_patt_transform(simmx)
-        
+                
         else:
             # raise FLAG
-            
             self.dd.flags.add('STARS_MISSING')
         
-        stop()
         
         
         
