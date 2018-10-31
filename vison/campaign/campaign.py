@@ -120,8 +120,8 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         IDL = 11.
         IDH = 18.
-        IG2 = 7.5
-        IG1s = [2., 8.]
+        IG2 = 6.5
+        IG1s = [2.5, 7.]
         toi_chinj01 = 500
         id_delays = [toi_chinj01*2.5, toi_chinj01*1.5]
 
