@@ -241,7 +241,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         print 'FLATFLUX00...'
 
-        wavesFLATFLUX00 = [590, 640, 730, 800, 880, 0]
+        wavesFLATFLUX00 = [590, 2000, 730, 800, 880, 0]
         
 
         diffFLATFLUX00w = dict()
@@ -475,7 +475,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         print 'FLATFLUX00...'
 
-        wavesFLATFLUX00 = [590, 640, 730, 800, 880, 0]
+        wavesFLATFLUX00 = [590, 730, 800, 880, 0]
 
         diffFLATFLUX00w = dict()
         diffFLATFLUX00w.update(diffvalues)
@@ -625,7 +625,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         print 'FOCUS00...'
 
         # wavesFOCUS00w = [590,640,730,800,880] # TESTS
-        wavesFOCUS00w = [590, 640, 730, 800, 880]
+        wavesFOCUS00w = [590, 730, 800, 880]
 
         diffFOCUS00w = dict()
         diffFOCUS00w.update(diffvalues)
@@ -696,7 +696,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         
         print 'PSFLUX00...'
         
-        wavesPSFLUX00 = [590, 640, 730, 800, 880, 0]
+        wavesPSFLUX00 = [590, 730, 800, 880, 0]
         
         diffPSFLUX00w = dict()
         diffPSFLUX00w.update(diffvalues)
@@ -770,11 +770,11 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         print 'PERSIST01...'
         
-        wavePERS = 2000
+        #wavePERS = 2000
+        #tFWC_point_PERS = ogse.profile['tFWC_point']['nm%i' % wavePERS]
 
-        tFWC_point_PERS = ogse.profile['tFWC_point']['nm%i' % wavePERS]
-
-        exptPER01_SATUR = tFWC_point_PERS*2500.   # s
+        #exptPER01_SATUR = tFWC_point_PERS*2500.   # s
+        exptPER01_SATUR = 600. # s., HARDWIRED
         exptPER01_LATEN = 565.  # s
 
         diffPER01 = dict()

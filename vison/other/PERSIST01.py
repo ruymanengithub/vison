@@ -91,7 +91,7 @@ class PERSIST01(Task):
         exptSATUR = self.inputs['exptSATUR']
         exptLATEN = self.inputs['exptLATEN']
         wave = 2 
-        mirr_pos = self.ogse.profile['mirror_nom']['F%i' % wave]
+        mirr_pos = self.ogse.profile['mirror_nom']['F%i' % wave]-15.
 
         PER01_sdict = dict(col001=dict(frames=5, exptime=0, shuttr=0, 
                                      wave=4,mirr_pos=self.ogse.profile['mirror_nom']['F4'],

@@ -185,7 +185,9 @@ class PSF0X(PT.PointTask):
         exptimes = testdefaults['exptimes']['nm%i' % wavelength]
         frames = testdefaults['frames']
 
-        self.inpdefaults = dict(wavelength=wavelength,
+        self.inpdefaults = dict(
+                                offsetxy=[0.,0.],
+                                wavelength=wavelength,
                                 frames=frames,
                                 exptimes=exptimes)
 
