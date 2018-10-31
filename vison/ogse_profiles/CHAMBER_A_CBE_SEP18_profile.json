@@ -38,5 +38,10 @@
         "F4": 800, 
         "F5": 880, 
         "F6": 0
+    },
+    "PATTERN": {
+        "CCD1": "Pattern_CCD1_CHAMBER_A_CBE_AUG18.txt",
+        "CCD2": "Pattern_CCD2_CHAMBER_A_CBE_AUG18.txt",
+        "CCD3": "Pattern_CCD3_CHAMBER_A_CBE_AUG18.txt"
     }
 }
