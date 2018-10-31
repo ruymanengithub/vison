@@ -146,7 +146,7 @@ class Ogse(object):
         self.profile = OrderedDict()
         self.load_ogse_profile(CHAMBER)
         self.startrackers = OrderedDict()
-        self.load_startrackers(CHAMBER, withpover=withpover)
+        self.load_startrackers(withpover=withpover)
 
     def get_profile_path(self, CHAMBER):
         profilef = 'CHAMBER_%s_profile.json' % CHAMBER
@@ -165,23 +165,42 @@ class Ogse(object):
 
         self.profile = profile.copy()
 
-    def get_pspattern_paths(self, CHAMBER):
+#    def get_pspattern_paths(self, CHAMBER):
+#        pspattern_paths = OrderedDict()
+#        for CCD in self.CCDs:
+#            pspatternf = 'Pattern_CCD%i_CHAMBER_%s.txt' % (CCD, CHAMBER)
+#            fpath = os.path.join(ogsepath, pspatternf)
+#            pspattern_paths['CCD%i' % CCD] = fpath
+#        return pspattern_paths
+
+    def get_pspattern_paths(self):
         pspattern_paths = OrderedDict()
         for CCD in self.CCDs:
-            pspatternf = 'Pattern_CCD%i_CHAMBER_%s.txt' % (CCD, CHAMBER)
+            pspatternf = str(self.profile['PATTERN']['CCD%i' % CCD])
             fpath = os.path.join(ogsepath, pspatternf)
             pspattern_paths['CCD%i' % CCD] = fpath
         return pspattern_paths
 
-    def load_startrackers(self, CHAMBER, withpover=True):
+#    def load_startrackers_old(self, CHAMBER, withpover=True):
+#        """ """
+#
+#        if CHAMBER is None:
+#            return
+#
+#        pspattern_paths = self.get_pspattern_paths(CHAMBER)
+#
+#        for CCD in self.CCDs:
+#            istartracker = strmod.StarTracker(
+#                CCD, withpover, patt_files=pspattern_paths)
+#            self.startrackers['CCD%i' % CCD] = copy.deepcopy(istartracker)
+            
+    def load_startrackers(self, withpover=True):
         """ """
-
-        if CHAMBER is None:
-            return
-
-        pspattern_paths = self.get_pspattern_paths(CHAMBER)
-
+        
+        pspattern_paths = self.get_pspattern_paths()
+        
         for CCD in self.CCDs:
+            
             istartracker = strmod.StarTracker(
                 CCD, withpover, patt_files=pspattern_paths)
             self.startrackers['CCD%i' % CCD] = copy.deepcopy(istartracker)
