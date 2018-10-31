@@ -24,7 +24,7 @@ import pandas as pd
 
 import vison
 from vison.datamodel import scriptic as sc
-from vison.campaign import campaign, minicampaign, mot
+from vison.campaign import campaign, minicampaign, mot, devel
 from vison.support import context
 from vison.campaign.chronos import get_test_duration
 from vison.support import vjson
@@ -215,6 +215,8 @@ if __name__ == '__main__':
         test_generator = minicampaign.generate_reduced_test_sequence
     elif inputs['camptype'] == 'MOT':
         test_generator = mot.generate_mot_sequence
+    elif inputs['camptype'] == "devel":
+        test_generator = devel.generate_test_sequence
 
     scwriter(inputs['toWrite'], test_generator, inputs['outpath'],
              inputs['equipment'], inputs['elvis'], inputs['CHAMBER'])
