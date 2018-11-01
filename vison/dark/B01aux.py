@@ -16,11 +16,12 @@ import numpy as np
 import os
 from collections import OrderedDict
 import pandas as pd
+from matplotlib import cm
 
 from vison.plot import figclasses
 from vison.plot import trends
 from vison.datamodel import cdp
-from matplotlib import cm
+
 
 # END IMPORT
 
