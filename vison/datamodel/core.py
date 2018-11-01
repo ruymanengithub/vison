@@ -231,7 +231,8 @@ class DataDict(object):
 
         if name in self.colnames:
             self.dropColumn(name)
-
+            
+        
         self.addColumn(array, name, indices)
 
     def addColumn(self, array, name, indices):
@@ -284,6 +285,7 @@ class DataDict(object):
 
         self.mx.pop(colname)
         self.colnames.pop(self.colnames.index(colname))
+        
 
     def saveToFile(self, outfile, format='ascii.commented_header'):
         """ """
