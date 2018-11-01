@@ -191,5 +191,6 @@ def easy_run_SEx(img, catroot, sexconfig=None, cleanafter=False):
                               cleanafter=cleanafter)
     os.system('rm sex.param')
     SExCat = aw.utils.ldac.get_table_from_ldac(SExCatFile)
+    os.system('rm %s' % SExCatFile)
 
     return SExCat
