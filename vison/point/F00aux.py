@@ -16,6 +16,7 @@ import numpy as np
 import os
 from collections import OrderedDict
 import pandas as pd
+from matplotlib import cm
 
 from vison.datamodel import cdp
 from vison.plot import figclasses
@@ -95,7 +96,16 @@ def gt_check_fwhmy_dict(wave):
 def gt_meta_deltafwhm_dict(wave):
     return dict(figname='FOCUS00_%i_deltafwhm_map.png' % wave,
                 caption='FOCUS00\_%i: Delta-FWHM for best focus position' % wave,
-                meta=dict(suptitle='FOCUS00\_%i-checks: FWHM(y)' % wave))
+                meta=dict(
+                        doLegend=False,
+                        suptitle='FOCUS00\_%i-checks: Delta-FWHM' % wave,
+                        doColorbar=True,
+                        corekwargs=dict(
+                                cmap=cm.rainbow,
+                                aspect='auto',
+                                norm=None,
+                                origin='lower left'                                
+                                )))
 
 def gt_F00figs(wave):
     F00figs = dict()
@@ -127,6 +137,5 @@ def gt_F00figs(wave):
 
 focus_cdp = cdp.Tables_CDP()
 focus_cdp.rootname = 'FOCUS00'
-
 CDP_lib = dict(FOCUS=focus_cdp)
 CDP_lib.update(Paux.CDP_lib)

@@ -174,6 +174,7 @@ class BeamPlot(BasicPlot):
         meta = dict(suptitle='', 
                     ccdtitles=dict(CCD1='CCD1', CCD2='CCD2', CCD3='CCD3'),
                     doLegend=False,
+                    doColorbar=False,
                     doNiceXDate=False)
         meta.update(kwargs)
         
@@ -294,6 +295,10 @@ class BeamPlot(BasicPlot):
 
         if self.meta['doLegend']:
             plt.figlegend(self.handles, self.labels, loc='center right')
+            
+        if self.meta['doColorbar']:
+            cbar_ax = self.fig.add_axes([0.85, 0.15, 0.05, 0.7])
+            self.fig.colorbar(cax=cbar_ax, im=self.mappables[0],orientation='vertical')
 
         if self.meta['doNiceXDate']:
             plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))
@@ -339,10 +344,14 @@ class BeamPlotYvX(BeamPlot):
 
 class BeamImgShow(BeamPlot):
     
+    mappables = []
+    
     def _ax_core_funct(self, ax, CQdict):
         
+        internals = dict(origin='lower left')
         ckwargs = self.corekwargs.copy()
-        ax.imshow(CQdict['img'], **ckwargs)
+        internals.update(ckwargs)
+        self.mappables.append(ax.imshow(CQdict['img'], **internals))
         handle, label = None, None
         return handle, label
         

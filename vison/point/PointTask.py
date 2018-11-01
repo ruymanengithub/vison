@@ -85,13 +85,17 @@ class PointTask(Task):
         # Initialize new columns
 
         Qindices = copy.deepcopy(self.dd.indices)
-
+    
         if 'Quad' not in Qindices.names:
             Qindices.append(core.vIndex('Quad', vals=context.Quads))
+            
+        if 'Spot' in Qindices.names:
+            Qindices.pop(Qindices.find('Spot'))
 
         valini = 0.
 
         newcolnames_off = ['offset_pre', 'offset_ove']
+        
         for newcolname_off in newcolnames_off:
             self.dd.initColumn(newcolname_off, Qindices,
                                dtype='float32', valini=valini)
@@ -104,9 +108,8 @@ class PointTask(Task):
                                dtype='float32', valini=valini)
 
         Sindices = copy.deepcopy(Qindices)
-        if 'Spot' not in Sindices.names:
-            Sindices.append(core.vIndex(
-                'Spot', vals=strackermod.starnames))
+        Sindices.append(core.vIndex(
+            'Spot', vals=strackermod.starnames))
 
         self.dd.initColumn('chk_x', Sindices, dtype='float32', valini=valini)
         self.dd.initColumn('chk_x_ccd', Sindices, dtype='float32', valini=valini)
@@ -125,8 +128,8 @@ class PointTask(Task):
                           chk_x_ccd='x_ccd', chk_y_ccd = 'y_ccd',
                           chk_peak='peak', chk_fluence='fluence',
                           chk_fwhmx='fwhmx', chk_fwhmy='fwhmy')
-
-        nObs, _, _ = Qindices.shape
+        
+        nObs = Qindices[0].len
         CCDs = Qindices.get_vals('CCD')
         Quads = Qindices.get_vals('Quad')
         Spots = Sindices.get_vals('Spot')
@@ -438,7 +441,7 @@ class PointTask(Task):
                 SExCatroot = 'StarFinder_%s' % CCDk
                 SExCat = sex.easy_run_SEx(img, SExCatroot, 
                             sexconfig=_sexconfig,                                      
-                            cleanafter=False)
+                            cleanafter=True)
                 
                 sel = np.where((SExCat['ELONGATION']<2.) &
                                (SExCat['A_IMAGE']<5.) &

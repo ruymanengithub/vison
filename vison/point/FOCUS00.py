@@ -35,6 +35,7 @@ from collections import OrderedDict
 import pandas as pd
 from scipy import stats
 from scipy import interpolate
+from matplotlib.colors import Normalize
 
 #from vison.pipe import lib as pilib
 from vison.support import context
@@ -226,8 +227,7 @@ class FOCUS00(PT.PointTask):
                                            MINAREA=3.,
                                            DET_THRESH=15.,
                                            MAG_ZEROPOINT=20.))
-        
-
+    
     def basic_analysis(self):
         """ 
         This is just an assignation of values measured in check_data.        
@@ -242,7 +242,8 @@ class FOCUS00(PT.PointTask):
         for key in newkeys:
             chkkey = 'chk_%s' % key
             self.dd.addColumn(self.dd.mx[chkkey][:].copy(), key, CHKindices)
-
+    
+    
     def meta_analysis(self):
         """ """
         # fit fwhmZ vs mirror_pos across focal plane (CCDxQxSpot)> 
@@ -254,6 +255,11 @@ class FOCUS00(PT.PointTask):
         # plot predicted (surface) delta-fwhmZ across focal plane for 
         #                                         Best_mirr_pos(beam)
         # save Best Mirr pos as a "product"
+        
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='meta', Title='Focus Analysis', level=0)
+        
         
         wave = self.inputs['wavelength']
         
@@ -329,6 +335,7 @@ class FOCUS00(PT.PointTask):
                     Focus_dd['belocal_fwhm'][ix] = np.polyval(p_zres['coeffs'],p_zres['focus'])
                             
                     zres[CCDk][Q][SpotName] = p_zres
+                    
 
         # Find centroid of focus values, as Best Focus
         
@@ -350,11 +357,9 @@ class FOCUS00(PT.PointTask):
                     beglobal_fwhm[ix] = np.polyval(pcoeffs,cbe_focus)
         
         cbe_fwhm = np.nanmean(stats.sigmaclip(beglobal_fwhm,4,4).clipped)
-        
         delta_fwhm = beglobal_fwhm - Focus_dd['belocal_fwhm']
         x_ccd = Focus_dd['x_ccd'].copy()
         y_ccd = Focus_dd['y_ccd'].copy()
-        
         
         delta_fwhm_dict = OrderedDict()
         
@@ -362,6 +367,9 @@ class FOCUS00(PT.PointTask):
         xlims = (ccalc.prescan, 
                          ccalc.prescan+ccalc.NcolsCCD-1.) 
         ylims = (0., ccalc.NrowsCCD-1.) 
+        
+        DFWHM_p5s = []
+        DFWHM_p95s = []
         
         for iCCD, CCDk in enumerate(CCDs):
             
@@ -371,55 +379,70 @@ class FOCUS00(PT.PointTask):
                 
                 ixsel = (np.arange(nS)+iCCD*(nQ*nS)+jQ*nS,)
                 
+                
                 Qsel = np.zeros_like(x_ccd[ixsel],dtype='S1')
                 Qsel[:] = Q
                 xQ, yQ = self.ccdcalc.cooconv_CCD_2_Qrel(x_ccd[ixsel],
-                                                           y_ccd[ixsel],
+                                                        y_ccd[ixsel],
                                                         Qsel)
                 
-                # TESTS        
-                print 'FOCUS00.meta_lib running in TEST-HACKED MODE'
-                xQ = np.array([100.,2000.,1000.,100.,2000.])
-                yQ = np.array([2000.,2000.,1000.,100.,1000.])
-                delta_fwhm_HK = xQ/xQ.max()+1.
-                # END TESTS
-                
                 delta_fwhm_dict[CCDk][Q] = dict(
-                        img = F00lib.build_fwhm_map_CQ(delta_fwhm_HK, # [ixsel],
+                        img = F00lib.build_fwhm_map_CQ(delta_fwhm[ixsel],
                                                 xQ, yQ,
                                                 xlims, ylims))
+                
+                DFWHM_p5s.append(np.percentile(delta_fwhm_dict[CCDk][Q]['img'],5.))
+                DFWHM_p95s.append(np.percentile(delta_fwhm_dict[CCDk][Q]['img'],95.))
+        
+        
         
         # Figure
         
         fdict = self.figdict['F00meta_deltafwhm'][1]
         fdict['data'] = delta_fwhm_dict.copy()
-        if self.report is not None:
-            self.addFigures_ST(figkeys=['F00meta_deltafwhm'], 
-                               dobuilddata=False)
         
+        normfunction = Normalize(vmin=np.median(DFWHM_p5s)*0.50,vmax=np.median(DFWHM_p95s)*2.,clip=False)
+        
+        self.figdict['F00meta_deltafwhm'][1]['meta']['corekwargs']['norm'] = normfunction
+        
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['F00meta_deltafwhm'],
+                               dobuilddata=False)
         
         # CDP with CBE FOCUS and related tables
         
         meta_contents = ['cbe_focus', 'cbe_fwhm', 'poldegree', 'CCDs', 'Quads', 'Spots']
         focus_meta = OrderedDict([(name, eval(name)) for name in meta_contents])
-        
+                
         FOCUS_dddf = OrderedDict(FOCUS=pd.DataFrame.from_dict(Focus_dd))
         
         focus_cdp = self.CDP_lib['FOCUS']
         focus_cdp.rootname += '_%snm' % wave
         focus_cdp.path = self.inputs['subpaths']['products']
-        focus_cdp.ingest_inputs(data = FOCUS_dddf.copy(),                             
+        focus_cdp.ingest_inputs(data = FOCUS_dddf.copy(),
                               meta=focus_meta.copy(),
                               header=CDP_header.copy())
         
-        focus_cdp = self.init_and_fill_CDP(focus_cdp, 
+        focus_cdp.init_wb_and_fillAll(
             header_title='FOCUS00_%i: FOCUS' % wave)
-        focus_cdp.init_wb_and_fillAll(header_title='FOCUS00_%i: FOCUS' % wave)
+        
         self.save_CDP(focus_cdp)
         self.pack_CDP_to_dd(focus_cdp, 'FOCUS_CDP')
-
+        
         if self.report is not None:
-            FOCUStex = focus_cdp.get_textable(sheet='FOCUS', 
-                caption='FOCUS00 @ %i nm' % wave)
-            self.report.add_Text(FOCUStex)
+            
+            fccd = lambda x: CCDs[x-1]
+            fq = lambda x: Quads[x-1]
+            fS = lambda x: Spots[x]
+            ff = lambda x: '%.2f' % x
+            
+            cov_formatters=[fccd,fq,fS,ff,ff,ff,ff]
+            
+            F00tex = focus_cdp.get_textable(sheet='FOCUS',
+                caption='FOCUS00 @ %i nm.\nCBE\_FOCUS=%.2f mm\nCBE\_FWHM=%.2f pix.' % \
+                   (wave,cbe_focus,cbe_fwhm),
+                fitwidth=True,
+                tiny=True,
+                formatters=cov_formatters)
+            self.report.add_Text(F00tex)
 
