@@ -95,10 +95,10 @@ def gt_check_fwhmy_dict(wave):
 
 def gt_meta_deltafwhm_dict(wave):
     return dict(figname='FOCUS00_%i_deltafwhm_map.png' % wave,
-                caption='FOCUS00\_%i: Delta-FWHM for best focus position' % wave,
+                caption='FOCUS00\_%i: Delta-FWHM [pixels] for best focus position.' % wave,
                 meta=dict(
                         doLegend=False,
-                        suptitle='FOCUS00\_%i-checks: Delta-FWHM' % wave,
+                        suptitle='FOCUS00\_%i-checks: Delta-FWHM [pix]' % wave,
                         doColorbar=True,
                         corekwargs=dict(
                                 cmap=cm.rainbow,

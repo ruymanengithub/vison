@@ -188,6 +188,7 @@ class BeamPlot(BasicPlot):
         self.labels = []
         self.fig = None
         self.axs = dict()
+        self.axsarr = []
         
         self.corekwargs = dict()
         if 'corekwargs' in kwargs:
@@ -203,6 +204,8 @@ class BeamPlot(BasicPlot):
         fig, axsarr = plt.subplots(
             2, 6, sharex=True, sharey=True, figsize=self.figsize)
         self.fig = fig
+        
+        self.axsarr = axsarr
 
         # initialisation of self.axs
 
@@ -212,7 +215,7 @@ class BeamPlot(BasicPlot):
             for Q in self.Quads:
                 self.axs[CCDkey][Q] = None
 
-        self.axs['CCD1']['E'] = axsarr[0, 0]
+        self.axs['CCD1']['E'] = self.axsarr[0, 0]
 
         plotlist = [item for item in itertools.product(self.CCDs, ['E', 'F'])] +\
                    [item for item in itertools.product(self.CCDs, ['H', 'G'])]
@@ -220,7 +223,7 @@ class BeamPlot(BasicPlot):
         for k in range(1, len(plotlist)+1):
             CCDkey = 'CCD%i' % plotlist[k-1][0]
             Q = plotlist[k-1][1]
-            self.axs[CCDkey][Q] = axsarr.flatten()[k-1]
+            self.axs[CCDkey][Q] = self.axsarr.flatten()[k-1]
             
     def _ax_core_funct(self, ax, CQdict, key=''):
         """ """
@@ -296,10 +299,6 @@ class BeamPlot(BasicPlot):
         if self.meta['doLegend']:
             plt.figlegend(self.handles, self.labels, loc='center right')
             
-        if self.meta['doColorbar']:
-            cbar_ax = self.fig.add_axes([0.85, 0.15, 0.05, 0.7])
-            self.fig.colorbar(cax=cbar_ax, im=self.mappables[0],orientation='vertical')
-
         if self.meta['doNiceXDate']:
             plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))
             self.fig.autofmt_xdate()
@@ -315,11 +314,18 @@ class BeamPlot(BasicPlot):
 
         plt.margins(0.05)
 
+
         plt.suptitle(self.meta['suptitle'])
         # plt.tight_layout()
         plt.subplots_adjust(top=0.85)
         if self.meta['doLegend']:
             plt.subplots_adjust(right=0.85)
+
+        if self.meta['doColorbar']:
+            #cbar_ax = self.fig.add_axes([0.85, 0.15, 0.05, 0.7])
+            #plt.colorbar(cax=cbar_ax, mappable=self.mappables[0],orientation='vertical')
+            self.fig.colorbar(self.mappables[0], ax=self.axsarr.flatten().tolist(), orientation='vertical', fraction=.1)
+        
 
 
 class BeamPlotYvX(BeamPlot):
