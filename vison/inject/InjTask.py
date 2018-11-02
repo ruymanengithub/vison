@@ -367,9 +367,9 @@ class InjTask(Task):
                         measure charge spillover into non-injection
                         measure stats of injection (mean, med, std, min/max, percentiles)
 
-            plot average inj. profiles along lines f. each CCD, Q and IG1
+            plot average inj. profiles along lines f. each CCD, Q and VOLTAGE
                 save as a rationalized set of curves
-            plot average inj. profiles across lines f. each CCD, Q and IG1
+            plot average inj. profiles across lines f. each CCD, Q and VOLTAGE
                 save as a rationalized set of  curves
        
             Report injection stats as a table/tables

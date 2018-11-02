@@ -59,6 +59,26 @@ check_injstd_dict = dict(stats=['chk_std_inject'],
                                    suptitle='CHINJ02-checks: Injection STD')
                          )
 
+extract_alcol_dict = dict(
+    figname='CHINJ02_along_columns_profiles.png',
+    caption='CHINJ02: Average along-columns profiles.',
+    meta=dict(doLegend=True,
+              ylabel='ADU',
+              xlabel='ROW [REL.]',
+              ylim=[0,2**16],
+              suptitle='CHINJ02: ALONG-COLUMNs.')
+    )
+
+extract_alrow_dict = dict(
+    figname='CHINJ02_along_rows_profiles.png',
+    caption='CHINJ02: Average along-rows profiles.',
+    meta=dict(doLegend=True,
+              ylabel='ADU',
+              xlabel='COL. [REL.]',
+              ylim=[0,2**16],
+              suptitle='CHINJ02: ALONG-ROWs.')
+    )
+
 
 CH02figs = dict()
 CH02figs['CH02checks_offsets'] = [
@@ -67,6 +87,10 @@ CH02figs['CH02checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
 CH02figs['CH02checks_injlevel'] = [
     trends.Fig_Basic_Checkstat, check_injlevel_dict]
 CH02figs['CH02checks_injstd'] = [trends.Fig_Basic_Checkstat, check_injstd_dict]
+CH02figs['CH02_alrow'] = [
+        figclasses.Fig_Beam2DPlot, extract_alrow_dict]
+CH02figs['CH02_alcol'] = [
+        figclasses.Fig_Beam2DPlot, extract_alcol_dict]
 CH02figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
 
 extract_cdp = cdp.Tables_CDP()

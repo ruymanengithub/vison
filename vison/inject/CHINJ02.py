@@ -86,7 +86,9 @@ class CHINJ02(InjTask):
         self.HKKeys = HKKeys
         self.CDP_lib = CH02aux.CDP_lib.copy()
         self.figdict = CH02aux.CH02figs.copy()
-        self.inputs['subpaths'] = dict(figs='figs')
+        self.inputs['subpaths'] = dict(figs='figs',
+                   ccdpickles='ccdpickles',
+                   products='products')
         
 
     def set_inpdefaults(self, **kwargs):
@@ -208,37 +210,37 @@ class CHINJ02(InjTask):
 
         raise NotImplementedError
 
-    def basic_analysis(self):
-        """ 
-
-        Basic analysis of data.
-        AS IT IS, REPEATS WHAT'S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
-
-        **METACODE**
-
-        ::
-
-            f. e. ObsID:
-                f.e.CCD:
-                    f.e.Q:
-                        load average 2D injection pattern
-                        produce average profile along lines
-                        [measure charge-inj. non-uniformity]
-                        [produce average profile across lines]
-                        [measure charge spillover into non-injection]
-                        measure stats of injection (mean, med, std, min/max, percentiles)
-
-            [plot average inj. profiles along lines f. each CCD, Q and IG1]
-            [    save as a rationalized set of curves]
-            [plot average inj. profiles across lines f. each CCD, Q and IG1]
-            [    save as a rationalized set of  curves]
-
-            save&plot charge injection vs. IDL
-            report injection stats as a table
-
-        """
-
-        raise NotImplementedError
+#    def basic_analysis(self):
+#        """ 
+#
+#        Basic analysis of data.
+#        AS IT IS, REPEATS WHAT'S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
+#
+#        **METACODE**
+#
+#        ::
+#
+#            f. e. ObsID:
+#                f.e.CCD:
+#                    f.e.Q:
+#                        load average 2D injection pattern
+#                        produce average profile along lines
+#                        [measure charge-inj. non-uniformity]
+#                        [produce average profile across lines]
+#                        [measure charge spillover into non-injection]
+#                        measure stats of injection (mean, med, std, min/max, percentiles)
+#
+#            [plot average inj. profiles along lines f. each CCD, Q and IG1]
+#            [    save as a rationalized set of curves]
+#            [plot average inj. profiles across lines f. each CCD, Q and IG1]
+#            [    save as a rationalized set of  curves]
+#
+#            save&plot charge injection vs. IDL
+#            report injection stats as a table
+#
+#        """
+#
+#        raise NotImplementedError
 
     def meta_analysis(self):
         """ 
