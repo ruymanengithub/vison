@@ -180,7 +180,7 @@ class Tables_CDP(CDP):
             tex = ['\\begin{table}[!htb]'] + tex + ['\end{table}']
         
         if tiny:
-            tex = ['\\tiny','\center']+tex+['\\normalsize']
+            tex = ['\\tiny']+tex+['\\normalsize']
         
         #tex = ['\\begin{table}[!htb]','\center']+tex+['\end{table}']
         
