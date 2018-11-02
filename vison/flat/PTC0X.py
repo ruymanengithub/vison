@@ -264,7 +264,7 @@ class PTC0X(FlatTask):
         frames = self.inputs['frames']
         wavelength = self.inputs['wavelength']
 
-        assert len(exptimes) == len(frames)
+        assert len(exptimes) == len(frames)        
 
         FW_ID = self.ogse.get_FW_ID(wavelength)
         FW_IDX = int(FW_ID[-1])
