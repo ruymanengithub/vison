@@ -18,10 +18,11 @@ Created on Tue Aug 29 17:36:00 2017
 import numpy as np
 from pdb import set_trace as stop
 import os
-from copy import deepcopy
+import copy
 from collections import OrderedDict
+import pandas as pd
 
-from vison.support import context
+from vison.support import context, utils
 from vison.datamodel import scriptic as sc
 from vison.datamodel import inputs
 from InjTask import InjTask
@@ -76,7 +77,6 @@ class CHINJ02(InjTask):
         """ """
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
-                         ('extract', self.extract_data),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
         super(CHINJ02, self).__init__(inputs, log, drill, debug)
@@ -168,7 +168,7 @@ class CHINJ02(InjTask):
         Ncols = len(CHINJ02_sdict.keys())
         CHINJ02_sdict['Ncols'] = Ncols
 
-        commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+        commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
         commvalues.update(CHINJ02_commvalues)
 
         if len(diffvalues) == 0:
@@ -231,41 +231,110 @@ class CHINJ02(InjTask):
         
         CCDhalves = ['top','bottom']
         
-        NP = nCCD * nQuad
+        NP = nObs
         
         MCH02_dd = OrderedDict()
+        MCH02_dd['meta'] = OrderedDict()
+        
+        _Quads_dict = dict(top = ['E','F'],
+                           bottom = ['G','H'])
         
         for CCDhalf in CCDhalves:
-            MCH02_dd[CCDhalf]['CCD'] = np.zeros(NP,dtype='int32')
-            MCH02_dd[CCDhalf]['Q'] = np.zeros(NP,dtype='int32') 
-            MCH02_dd[CCDhalf]['ID_DLY'] = np.zeros(NP,dtype='float32') + np.nan
+            MCH02_dd[CCDhalf] = OrderedDict()
+            MCH02_dd['meta'][CCDhalf] = OrderedDict()
+            #MCH02_dd[CCDhalf]['CCD'] = np.zeros(NP,dtype='int32')
+            #MCH02_dd[CCDhalf]['Q'] = np.zeros(NP,dtype='int32')
+            
             MCH02_dd[CCDhalf]['IDL'] = np.zeros(NP,dtype='float32') + np.nan
-            MCH02_dd[CCDhalf]['INJ'] = np.zeros(NP,dtype='float32') + np.nan
-                
+            
+            for jCCD,CCDk in enumerate(CCDs):
+                for Q in _Quads_dict[CCDhalf]:                    
+                    MCH02_dd[CCDhalf]['INJ_%s%s' % (jCCD+1,Q)] = np.zeros(NP,dtype='float32') + np.nan
+            
         
         for CCDhalf in CCDhalves:
             
+            _Quads = _Quads_dict[CCDhalf]
+            
             if CCDhalf == 'top':
-                id_dly_opt = toi_ch * 2.5
-                _Quads = ['E','F']
+                id_dly_opt = toi_ch * 2.5                
             elif CCDhalf == 'bottom':
                 id_dly_opt = toi_ch * 1.5
                 
             for jCCD, CCDk in enumerate(CCDs):
             
-                 selix = np.where((self.dd.mx['chinj'][:,jCCD]==1) &
+                selix = np.where((self.dd.mx['chinj'][:,jCCD]==1) &
                             (np.isclose(self.dd.mx['id_dly'][:,jCCD],id_dly_opt)))
+                                  
+                IDL = self.dd.mx['IDL'][selix,jCCD].flatten().copy()
                  
-                 IG2_key = 'IG2_%s' % CCDhalf[0].upper()
-                 
-                 IG2 = self.dd.mx[IG2_key][selix,jCCD].flatten().copy()
-                 
-                 for Q in _Quads:
+                for Q in _Quads:
                       
-                     kQ = Quads.index(Q)
+                    kQ = Quads.index(Q)
                      
-                     med_inj = self.dd.mx['chinj_p50'][selix,jCCD,kQ].flatten().copy()
+                    med_inj = self.dd.mx['chinj_p50'][selix,jCCD,kQ].flatten().copy()
              
-                 
-                     stop()
-                 
+                    MCH02_dd[CCDhalf]['IDL'] = IDL.copy()
+                    MCH02_dd[CCDhalf]['INJ_%s%s' % (jCCD+1, Q)] = med_inj.copy()
+                    
+                
+                MCH02_dd['meta'][CCDhalf]['toi_ch'] = toi_ch
+                MCH02_dd['meta'][CCDhalf]['id_dly'] = id_dly_opt
+                MCH02_dd['meta'][CCDhalf]['IDH'] = self.dd.mx['IDH'][selix,jCCD].flatten()[0]
+                IG1key = 'IG1_1_%s' % CCDhalf[0].upper()
+                MCH02_dd['meta'][CCDhalf]['IG1'] = self.dd.mx[IG1key][selix,jCCD].flatten()[0]
+                IG2key = 'IG2_%s' % CCDhalf[0].upper()
+                MCH02_dd['meta'][CCDhalf]['IG2'] = self.dd.mx[IG2key][selix,jCCD].flatten()[0]
+                
+        
+        # REPORT RESULTS AS TABLE CDPs 
+        
+        for CCDhalf in CCDhalves:
+            
+            MCH02half_dddf = OrderedDict(ANALYSIS=pd.DataFrame.from_dict(MCH02_dd[CCDhalf]))
+            MCH02half_cdp = self.CDP_lib['META']
+            MCH02half_cdp.path = prodspath
+            MCH02half_cdp.rootname += '_%s' % CCDhalf
+            MCH02half_cdp.ingest_inputs(
+                    data=MCH02half_dddf.copy(),
+                    meta=MCH02_dd['meta'][CCDhalf].copy(),
+                    header=CDP_header.copy()
+                    )
+            
+            MCH02half_cdp.init_wb_and_fillAll(header_title='CHINJ02: META-ANALYSIS [%s]' % CCDhalf)
+            self.save_CDP(MCH02half_cdp)
+            self.pack_CDP_to_dd(MCH02half_cdp,'META_CDP_%s' % CCDhalf)
+            
+            
+            if self.report is not None:
+                
+                ff = lambda x: '%.2f' % x
+                
+                selcolumns = ['IDL']
+                
+                for jCCD,CCDk in enumerate(CCDs):
+                    for Q in _Quads_dict[CCDhalf]:                    
+                        selcolumns.append('INJ_%s%s' % (jCCD+1,Q)) 
+                
+                ext_formatters=[ff]*len(selcolumns)
+                
+                caption = 'CHINJ02: META-ANALYSIS TABLE. CCD-half = %s. '+\
+                 'IDH = %.2f V,  IG1 = %.2f V, IG2 = %.2f V, toi\_chj = % us, '+\
+                 'id\_dly=%.1f us.'
+                caption = caption % (CCDhalf, 
+                                     MCH02half_cdp.meta['IDH'], 
+                                     MCH02half_cdp.meta['IG1'], 
+                                     MCH02half_cdp.meta['IG2'], 
+                                     MCH02half_cdp.meta['toi_ch'], 
+                                     MCH02half_cdp.meta['id_dly'])
+                
+                Mtex = MCH02half_cdp.get_textable(sheet='ANALYSIS', 
+                                              columns=selcolumns,
+                                              caption=caption,
+                                              fitwidth=True,
+                                              tiny=True,
+                                              formatters=ext_formatters,
+                                              index=False)
+                
+                self.report.add_Text(Mtex)  
+        

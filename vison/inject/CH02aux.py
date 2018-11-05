@@ -96,5 +96,9 @@ CH02figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
 extract_cdp = cdp.Tables_CDP()
 extract_cdp.rootname = 'CHINJ02_EXTRACTION_TABLE'
 
+meta_cdp = cdp.Tables_CDP()
+meta_cdp.rootname = 'CHINJ01_META_TABLE'
 
-CDP_lib = dict(EXTRACT=extract_cdp)
+
+CDP_lib = dict(EXTRACT=extract_cdp,
+               META=meta_cdp)

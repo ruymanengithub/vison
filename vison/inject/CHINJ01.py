@@ -343,7 +343,6 @@ class CHINJ01(InjTask):
         # REPORT RESULTS AS TABLE CDP
         
         
-        
         MCH01_dddf = OrderedDict(ANALYSIS=pd.DataFrame.from_dict(MCH01_dd))
         MCH01_cdp = self.CDP_lib['META']
         MCH01_cdp.path = prodspath
@@ -373,10 +372,10 @@ class CHINJ01(InjTask):
                                           columns=selcolumns,
                                           caption=caption,
                                           fitwidth=True,
+                                          tiny=True,
                                           formatters=ext_formatters,
                                           index=False)
             
-            Mtex = ['\\tiny']+Mtex+['\\normalsize']
             self.report.add_Text(Mtex)  
         
         
