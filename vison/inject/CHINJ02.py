@@ -188,59 +188,6 @@ class CHINJ02(InjTask):
         return super(CHINJ02, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
                                                     wavedkeys=wavedkeys)
 
-    def extract_data(self):
-        """
-
-        **NEEDED?** Could be merged with basic_analysis
-
-        **METACODE**
-
-        ::
-
-            Preparation of data for further analysis:
-
-            f.e. ObsID:
-                f.e.CCD:
-                    f.e.Q:
-                        subtract offset
-                        extract average 2D injection pattern and save
-
-
-        """
-
-        raise NotImplementedError
-
-#    def basic_analysis(self):
-#        """ 
-#
-#        Basic analysis of data.
-#        AS IT IS, REPEATS WHAT'S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
-#
-#        **METACODE**
-#
-#        ::
-#
-#            f. e. ObsID:
-#                f.e.CCD:
-#                    f.e.Q:
-#                        load average 2D injection pattern
-#                        produce average profile along lines
-#                        [measure charge-inj. non-uniformity]
-#                        [produce average profile across lines]
-#                        [measure charge spillover into non-injection]
-#                        measure stats of injection (mean, med, std, min/max, percentiles)
-#
-#            [plot average inj. profiles along lines f. each CCD, Q and IG1]
-#            [    save as a rationalized set of curves]
-#            [plot average inj. profiles across lines f. each CCD, Q and IG1]
-#            [    save as a rationalized set of  curves]
-#
-#            save&plot charge injection vs. IDL
-#            report injection stats as a table
-#
-#        """
-#
-#        raise NotImplementedError
 
     def meta_analysis(self):
         """ 
@@ -260,4 +207,65 @@ class CHINJ02(InjTask):
 
         """
 
-        raise NotImplementedError
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='meta', Title='CHINJ02 Analysis ("Meta")', level=0)
+        
+        DDindices = copy.deepcopy(self.dd.indices)
+        
+        nObs, nCCD, nQuad = DDindices.shape[0:3]
+        Quads = DDindices.get_vals('Quad')
+        CCDs = DDindices.get_vals('CCD')
+        
+        prodspath = self.inputs['subpaths']['products']
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+        
+        toi_ch = self.dd.mx['toi_ch'][0,0]
+        assert np.all(np.isclose(self.dd.mx['toi_ch'][:],toi_ch))
+        
+        # ANALYSIS TABLE
+        
+        CCDhalves = ['top','bottom']
+        
+        NP = nCCD * nQuad
+        
+        MCH02_dd = OrderedDict()
+        
+        for CCDhalf in CCDhalves:
+            MCH02_dd[CCDhalf]['CCD'] = np.zeros(NP,dtype='int32')
+            MCH02_dd[CCDhalf]['Q'] = np.zeros(NP,dtype='int32') 
+            MCH02_dd[CCDhalf]['ID_DLY'] = np.zeros(NP,dtype='float32') + np.nan
+            MCH02_dd[CCDhalf]['IDL'] = np.zeros(NP,dtype='float32') + np.nan
+            MCH02_dd[CCDhalf]['INJ'] = np.zeros(NP,dtype='float32') + np.nan
+                
+        
+        for CCDhalf in CCDhalves:
+            
+            if CCDhalf == 'top':
+                id_dly_opt = toi_ch * 2.5
+                _Quads = ['E','F']
+            elif CCDhalf == 'bottom':
+                id_dly_opt = toi_ch * 1.5
+                
+            for jCCD, CCDk in enumerate(CCDs):
+            
+                 selix = np.where((self.dd.mx['chinj'][:,jCCD]==1) &
+                            (np.isclose(self.dd.mx['id_dly'][:,jCCD],id_dly_opt)))
+                 
+                 IG2_key = 'IG2_%s' % CCDhalf[0].upper()
+                 
+                 IG2 = self.dd.mx[IG2_key][selix,jCCD].flatten().copy()
+                 
+                 for Q in _Quads:
+                      
+                     kQ = Quads.index(Q)
+                     
+                     med_inj = self.dd.mx['chinj_p50'][selix,jCCD,kQ].flatten().copy()
+             
+                 
+                     stop()
+                 

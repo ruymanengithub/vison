@@ -217,8 +217,7 @@ class CHINJ01(InjTask):
         Plot and model charge injection vs. IG1
         Find injection threshold: Min IG1
         Find notch injection amount.
-        
-        
+                
         """
         
         if self.report is not None:
