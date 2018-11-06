@@ -21,8 +21,9 @@ import copy
 from collections import OrderedDict
 import unittest
 from matplotlib.colors import Normalize
+from scipy import interpolate
 
-
+from vison.images import bits
 from vison.datamodel import core
 from vison.pipe.task import Task
 from vison.point.PointTask import PointTask
@@ -33,8 +34,8 @@ from vison.datamodel import ccd
 from vison.dark.DarkTask import DarkTask
 from vison.datamodel import inputs, cdp
 from vison.support import utils
-from vison.support.files import cPickleRead
-
+from vison.other import MOT_FFaux
+from vison.other import MOT_WARMaux as MWaux
 # END IMPORT
 
 isthere = os.path.exists
@@ -90,8 +91,8 @@ class MOT_WARM(DarkTask):
         
         
         self.HKKeys = HKKeys        
-        #self.figdict = B01aux.B01figs.copy()
-        #self.CDP_lib = B01aux.CDP_lib.copy()
+        self.figdict = MWaux.MW_figs.copy()
+        #self.CDP_lib = MWaux.CDP_lib.copy()
         self.inputs['subpaths'] = dict(figs='figs',
                                        profiles='profiles', 
                                        products='products')
@@ -334,10 +335,6 @@ class MOT_WARM(DarkTask):
                 self.addComplianceMatrix2Report(
                     _compliance_std, label='COMPLIANCE RON [%s]:' % reg)
 
-
-
-        
-
     def basic_analysis(self):
         """ 
         EXPOSURES:
@@ -345,5 +342,170 @@ class MOT_WARM(DarkTask):
             
         """
         
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='basic', Title='MOT\_WARM: ANALYSIS', level=0)
         
+        # The following OBSIDs are HARDWIRED
+        
+        ObsIDdict = OrderedDict(
+                BIAS=0,
+                RAMP=1,
+                CHINJ=2,
+                FLAT=3)
+        for i, wavenm in enumerate([590,730,880]):
+            ObsIDdict['PNT_%inm'] = i+4
+        
+        
+        
+        DDindices = copy.deepcopy(self.dd.indices)
+        
+        nObs, nCCD, nQuad = DDindices.shape
+        Quads = DDindices[2].vals
+        CCDs = DDindices.get_vals('CCD')
+        
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        
+        profilespath = self.inputs['subpaths']['profiles']
+        figspath = self.inputs['subpaths']['figs']
+        
+        def _load_fits(dd,iObs,jCCD):
+            dpath = dd.mx['datapath'][iObs, jCCD]
+            infits = os.path.join(dpath, '%s.fits' % 
+                          dd.mx['File_name'][iObs, jCCD])
+            ccdobj = ccd.CCD(infits)
+            return ccdobj
+        
+        def get_1Dvprofile(ccdobj,profs1D2plot,CCDk,subtag=''):
+                            
+            for Q in Quads:
+            
+                vQ = ccdobj.get_1Dprofile(Q=Q, orient='hor',
+                                           area='img',
+                                           stacker='median',
+                                           vstart=vstart,
+                                           vend=vend)
+                
+                x = vQ.data['x'].copy()
+                y = vQ.data['y'].copy()
+                
+                if subtag != '':
+                    xsub = profs1D2plot[subtag][CCDk][Q]['x'].copy()
+                    ysub = profs1D2plot[subtag][CCDk][Q]['y'].copy()
+                    spfunc = interpolate.interp1d(xsub,ysub,kind='linear')
+                    y -= spfunc(x)
+                
+            
+                return x, y 
+        
+        profiles1D = cdp.CDP()
+        profiles1D.header = CDP_header.copy()
+        profiles1D.path = profilespath
+        profiles1D.data = OrderedDict()
+        
+        profs1D2plot = OrderedDict()
+        for tag in ['RAMP', 'HER', 'CHINJ', 'RAMP']:
+            profs1D2plot[tag] = OrderedDict()            
+            for CCDk in CCDs:            
+                profs1D2plot[tag][CCDk] = OrderedDict()
+                for Q in Quads:                    
+                    profs1D2plot[tag][CCDk][Q] = OrderedDict()
+                    profs1D2plot[tag][CCDk][Q]['x'] = np.arange(10)
+                    profs1D2plot[tag][CCDk][Q]['y'] = np.zeros(10)
+            
+        
+        if not self.drill:
+        
+            
+            for jCCD, CCDk in enumerate(CCDs):
+                
+                vstart = self.dd.mx['vstart'][0, jCCD]
+                vend = self.dd.mx['vend'][0, jCCD]
+            
+                # BIAS: RON matrix (CCDs x Qs)
+                
+                #ccdobjBIAS = _load_fits(self.dd,ObsIDdict['BIAS'],jCCD)
+                # PENDING
+                
+                # vertical profile of RAMP exposure
+                
+                ccdobjRAMP = _load_fits(self.dd,ObsIDdict['RAMP'],jCCD)
+                
+                xRAMP, yRAMP = get_1Dvprofile(ccdobjRAMP,profs1D2plot, CCDk, subtag='')
+                profs1D2plot['RAMP'][CCDk][Q]['x'] = xRAMP.copy()
+                profs1D2plot['RAMP'][CCDk][Q]['y'] = yRAMP.copy()
+                    
+                # RAMP; bit-correlations analysis
+                
+                fignamebitshisto = 'MOT_WARM_bits_histo_%s.png' % CCDk
+                fullfignamebitshisto = os.path.join(figspath,fignamebitshisto)
+                bits.show_histo_bits(ccdobjRAMP, 
+                                     suptitle = 'MOT\_WARM: bits histo, %s' % CCDk,
+                                     figname = fullfignamebitshisto)
+                
+                self.figsdict['RAMP_bits_histo_%s' % CCDk][1]['figname'] = fignamebitshisto
+                self.figsdict['RAMP_bits_histo_%s' % CCDk][1]['caption'] = \
+                             'MOT\_WARM-%s: Bits Histogram on RAMP image.' % CCDk
+                
+                # RAMP: HER analysis
+                
+                profs1D2plot['HER'][CCDk] = MOT_FFaux.extract_overscan_profiles(ccdobjRAMP, 
+                                                    [1.E3, 4.E4], 
+                                                    direction='serial')
+                
+                                 
+                # vertical profile of CHINJ exposure with RAMP subtracted
+                
+                ccdobjCHINJ = _load_fits(self.dd,ObsIDdict['BIAS'],jCCD)
+                
+                xCHINJ, yCHINJ = get_1Dvprofile(ccdobjCHINJ,profs1D2plot, CCDk, subtag='RAMP')
+                profs1D2plot['CHINJ'][CCDk][Q]['x'] = xCHINJ.copy()
+                profs1D2plot['CHINJ'][CCDk][Q]['y'] = yCHINJ.copy()
+                                
+                # vertical profile of FLAT exposure with RAMP subtracted
+                
+                ccdobjFLAT = _load_fits(self.dd, ObsIDdict['FLAT'], jCCD)
+                
+                xFLAT, yFLAT = get_1Dvprofile(ccdobjFLAT,profs1D2plot, CCDk, subtag='RAMP')
+                profs1D2plot['FLAT'][CCDk][Q]['x'] = xFLAT.copy()
+                profs1D2plot['FLAT'][CCDk][Q]['y'] = yFLAT.copy()
+                
+                
+        
+        # Display of 1D vertical profiles
+        
+        proffigkeys = []
+        for tag in ['RAMP', 'CHINJ', 'FLAT']:
+            tkey = 'MOTWbasic_prof1D_ver_%s' % tag
+            self.figdict[tkey][1]['data'] = profs1D2plot[tag]
+            proffigkeys.append(tkey)
+            
+        if self.report is not None:
+            self.addFigures_ST(figkeys=proffigkeys, dobuilddata=False)
+        
+        # Display of HER-serial profile
+        
+        if self.report is not None:
+            self.figdict['MOTWbasic_HER_serial'][1]['data'] = profs1D2plot['HER']
+            self.addFigures_ST(figkeys=['MOTWbasic_HER_serial'], dobuilddata=False)
+        
+        
+        # Display of bits-histo fig
+        
+        if self.report is not None:
+            figkeysH = []
+            for CCDk in CCDs:
+                figkeysH.append('RAMP_bits_histo_%s' % CCDk)
+            self.addFigures_ST(figkeys=figkeysH, dobuilddata=False)
+        
+        
+        # display of cutouts of (visible) point sources in 3 wavelengths        
+        # PENDING
+        
+        
+
+
 
