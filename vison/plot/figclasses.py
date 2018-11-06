@@ -62,6 +62,15 @@ class Fig(object):
         raise NotImplementedError("child class implements abstract method")
 
 
+class Fig_Husk(Fig):
+    """ """
+    
+    def plot(self, **kwargs):
+        pass
+    def build_data(self, *args, **kwargs):
+        pass
+    
+
 class Fig_Beam2DPlot(Fig):
     plotclass = baseplotclasses.BeamPlotYvX
 
