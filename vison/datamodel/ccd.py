@@ -158,7 +158,7 @@ class CCD(object):
             extensions = [-1]
 
         self.extnames = []
-        self.extensions = extensions
+        self.extensions = []
 
         if infits is not None:
 
