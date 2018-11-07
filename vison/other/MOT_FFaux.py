@@ -39,6 +39,8 @@ def extract_overscan_profiles(ccdobj, thresholds, direction='serial'):
     x = np.arange(25) + detedge - ixjump + 1
     
     profiles = dict()
+    profiles['ixjump'] = ixjump
+    
     
     for Q in Qs:
         

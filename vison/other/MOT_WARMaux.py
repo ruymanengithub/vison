@@ -57,8 +57,6 @@ RAMP_bits_histo_dict = dict(
     meta=dict()
     )
 
-
-
 MW_figs = OrderedDict()
 
 MW_figs['MOTWbasic_HER_serial'] = [figclasses.Fig_Beam2DPlot, prof_HER_ser_dict]

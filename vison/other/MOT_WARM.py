@@ -23,7 +23,7 @@ import unittest
 from matplotlib.colors import Normalize
 from scipy import interpolate
 
-from vison.images import bits
+from vison.image import bits
 from vison.datamodel import core
 from vison.pipe.task import Task
 from vison.point.PointTask import PointTask
@@ -65,6 +65,17 @@ MW_commvalues = dict(program='CALCAMP', test='MOT_WARM',
                          source='flat',
                          comments='BIAS')
 
+# The following OBSIDs are HARDWIRED
+        
+ObsIDdict = OrderedDict(
+      BIAS=0,
+      RAMP=1,
+      CHINJ=2,
+      FLAT=3)
+wavesPNT = [590,730,880]
+for i, wavenm in enumerate(wavesPNT):
+    ObsIDdict['PNT_%inm'] = i+4
+            
 
 class MOT_WARM_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
@@ -123,22 +134,24 @@ class MOT_WARM(DarkTask):
         exptimeFL = self.ogse.profile['tFWC_flat']['nm%i' % waveflat]/2.
         
         
+        MW_sdict = OrderedDict()
         
-        MW_sdict = dict(col001=dict(frames=1, exptime=0, rdmode='rwd_bas_vs',
+        MW_sdict['col%03i' % ObsIDdict['BIAS']] = dict(frames=1, exptime=0, rdmode='rwd_bas_vs',
                                     swellw=context.sumwell['rwd_bas_vs'][0],
                                     swelldly=context.sumwell['rwd_bas_vs'][1],
                                     vstart=0,vend=2086,toi_ro=toi_ro,
                                     shuttr=0, mirr_on=0,motr_on=0,
                                     source='flat',
-                                    comments='BIAS'),
-                        col002=dict(frames=1, exptime=0, rdmode='fwd_bas',
+                                    comments='BIAS')
+
+        MW_sdict['col%03i' % ObsIDdict['RAMP']]=dict(frames=1, exptime=0, rdmode='fwd_bas',
                                     swellw=context.sumwell['fwd_bas'][0],
                                     swelldly=context.sumwell['fwd_bas'][1],
                                     vstart=0,vend=2086,toi_ro=toi_ro,
                                     shuttr=0, mirr_on=0,motr_on=0,
                                     source='flat',
-                                    comments='RAMP'),
-                        col003=dict(frames=1, 
+                                    comments='RAMP')
+        MW_sdict['col%03i' % ObsIDdict['CHINJ']]=dict(frames=1, 
                                     IDL=IDLinj,IDH=IDHinj,
                                     IG1_1_T=IG1inj, IG1_2_T=IG1inj, IG1_3_T=IG1inj,
                                     IG1_1_B=IG1inj, IG1_2_B=IG1inj, IG1_3_B=IG1inj,
@@ -148,20 +161,22 @@ class MOT_WARM(DarkTask):
                                     chin_dly=0,chinj=1,chinj_on=30,chinj_of=50,
                                     exptime=0,shuttr=0,vstart=0,vend=2086,
                                     source='flat',
-                                    comments='CHINJ'),
-                        col004=dict(frames=1, exptime=exptimeFL, 
+                                    comments='CHINJ')
+        
+        MW_sdict['col%03i' % ObsIDdict['FLAT']]=dict(frames=1, exptime=exptimeFL, 
                                     wave=FW_IDflatx,
                                     vstart=0,vend=2086,toi_ro=toi_ro,
                                     shuttr=1, mirr_on=0,motr_on=0,
                                     source='flat',
-                                    comments='FLAT'))
+                                    comments='FLAT')
                         
-        for i, wavenm in enumerate([590,730,880]):
-            colnr = i+5
+        for i, wavenm in enumerate(wavesPNT):
+            #colnr = i+5
             FWIDx = int(self.ogse.get_FW_ID(wavenm)[-1])
             iexptimeps = self.ogse.profile['tFWC_point']['nm%i' % wavenm] * 0.5
             imirror = self.ogse.profile['mirror_nom']['F%i' % FWIDx]
-            MW_sdict['col%03i' % colnr] = dict(frames=1,
+            
+            MW_sdict['col%03i' % ObsIDdict['PNT_%inm' % wavenm]]=dict(frames=1,
                     wave=FWIDx,exptime=iexptimeps,
                     vstart=0,vend=2086,toi_ro=toi_ro,
                     shuttr=1,mirr_on=1,mirr_pos=imirror,
@@ -269,11 +284,13 @@ class MOT_WARM(DarkTask):
         # absolute value of offsets
 
         offsets_lims = self.perflimits['offsets_lims']
+        
+        BIAS_ix = ObsIDdict['BIAS']
 
         regs_off = ['pre', 'ove']
 
         for reg in regs_off:
-            arr = self.dd.mx['offset_%s' % reg]
+            arr = self.dd.mx['offset_%s' % reg][BIAS_ix+1:,...].copy()
             _compliance_offsets = self.check_stat_perCCDandQ(
                 arr, offsets_lims, CCDs)
             
@@ -299,7 +316,7 @@ class MOT_WARM(DarkTask):
             _lims = dict()
             for CCDk in CCDs:
                 _lims[CCDk] = offsets_gradients[CCDk][reg]
-            arr = self.dd.mx['offset_%s' % reg][:]-self.dd.mx['offset_pre'][:]
+            arr = self.dd.mx['offset_%s' % reg][BIAS_ix+1:,...]-self.dd.mx['offset_pre'][BIAS_ix+1:,...]
             _xcheck_offsets = self.check_stat_perCCDandQ(arr, _lims, CCDs)
             
             self.addComplianceMatrix2Self(_xcheck_offsets,'offsets_grad_%s' % reg)
@@ -320,7 +337,7 @@ class MOT_WARM(DarkTask):
         RONs_lims = self.perflimits['RONs_lims']
         for reg in regs_std:
             _compliance_std = self.check_stat_perCCDandQ(
-                self.dd.mx['std_%s' % reg], RONs_lims, CCDs)
+                self.dd.mx['std_%s' % reg][BIAS_ix+1:,...], RONs_lims, CCDs)
             
             self.addComplianceMatrix2Self(_compliance_std,'std_%s' % reg)
 
@@ -345,17 +362,6 @@ class MOT_WARM(DarkTask):
         if self.report is not None:
             self.report.add_Section(
                 keyword='basic', Title='MOT\_WARM: ANALYSIS', level=0)
-        
-        # The following OBSIDs are HARDWIRED
-        
-        ObsIDdict = OrderedDict(
-                BIAS=0,
-                RAMP=1,
-                CHINJ=2,
-                FLAT=3)
-        for i, wavenm in enumerate([590,730,880]):
-            ObsIDdict['PNT_%inm'] = i+4
-        
         
         
         DDindices = copy.deepcopy(self.dd.indices)
@@ -401,34 +407,45 @@ class MOT_WARM(DarkTask):
             
                 return x, y 
         
-        profiles1D = cdp.CDP()
-        profiles1D.header = CDP_header.copy()
-        profiles1D.path = profilespath
-        profiles1D.data = OrderedDict()
+        #profiles1D = cdp.CDP()
+        #profiles1D.header = CDP_header.copy()
+        #profiles1D.path = profilespath
+        #profiles1D.data = OrderedDict()
         
         profs1D2plot = OrderedDict()
         for tag in ['RAMP', 'HER', 'CHINJ', 'RAMP']:
-            profs1D2plot[tag] = OrderedDict()            
-            for CCDk in CCDs:            
+            profs1D2plot[tag] = OrderedDict()
+            for CCDk in CCDs:
                 profs1D2plot[tag][CCDk] = OrderedDict()
-                for Q in Quads:                    
+                for Q in Quads:
                     profs1D2plot[tag][CCDk][Q] = OrderedDict()
                     profs1D2plot[tag][CCDk][Q]['x'] = np.arange(10)
                     profs1D2plot[tag][CCDk][Q]['y'] = np.zeros(10)
+        
+        # HER
+        HERdata = np.zeros((1,len(CCDs),len(Quads)), dtype='float32') + np.nan
+        
+        if not self.drill:        
             
-        
-        if not self.drill:
-        
+            # BIAS: RON matrix (CCDs x Qs)
+                
+            _RON_matrix = self.dd.mx['std_img'][ObsIDdict['BIAS'],...].copy()
+            RON_lims = self.perflimits['RONs_lims']
+            
+            _compliance_RON = Task.check_stat_perCCDandQ(_RON_matrix,
+                                                         RON_lims, CCDs)
+            self.addComplianceMatrix2Self(_compliance_RON,'RON')
+            if self.report is not None:
+                self.addComplianceMatrix2Report(
+                    _compliance_RON, label='COMPLIANCE RON [BIAS frame]')
             
             for jCCD, CCDk in enumerate(CCDs):
                 
                 vstart = self.dd.mx['vstart'][0, jCCD]
                 vend = self.dd.mx['vend'][0, jCCD]
-            
-                # BIAS: RON matrix (CCDs x Qs)
+                
                 
                 #ccdobjBIAS = _load_fits(self.dd,ObsIDdict['BIAS'],jCCD)
-                # PENDING
                 
                 # vertical profile of RAMP exposure
                 
@@ -452,11 +469,16 @@ class MOT_WARM(DarkTask):
                 
                 # RAMP: HER analysis
                 
-                profs1D2plot['HER'][CCDk] = MOT_FFaux.extract_overscan_profiles(ccdobjRAMP, 
+                HERprof = MOT_FFaux.extract_overscan_profiles(ccdobjRAMP, 
                                                     [1.E3, 4.E4], 
                                                     direction='serial')
+                ixjump = HERprof.pop('ixjump')
+                for kQ,Q in enumerate(Quads):
+                    HERdata[0,jCCD,kQ] = HERprof['y'][ixjump+1]
                 
-                                 
+                profs1D2plot['HER'][CCDk] = HERprof.copy()
+                
+                
                 # vertical profile of CHINJ exposure with RAMP subtracted
                 
                 ccdobjCHINJ = _load_fits(self.dd,ObsIDdict['BIAS'],jCCD)
@@ -473,7 +495,7 @@ class MOT_WARM(DarkTask):
                 profs1D2plot['FLAT'][CCDk][Q]['x'] = xFLAT.copy()
                 profs1D2plot['FLAT'][CCDk][Q]['y'] = yFLAT.copy()
                 
-                
+        
         
         # Display of 1D vertical profiles
         
@@ -491,6 +513,22 @@ class MOT_WARM(DarkTask):
         if self.report is not None:
             self.figdict['MOTWbasic_HER_serial'][1]['data'] = profs1D2plot['HER']
             self.addFigures_ST(figkeys=['MOTWbasic_HER_serial'], dobuilddata=False)
+        
+        # Matrix with HER results
+        
+        HER_lims = OrderedDict()
+        for CCD in CCDs:
+            HER_lims[CCD] = OrderedDict()
+            for Q in Quads:
+                HER_lims[CCD][Q] = 1.5e-3 * np.array([-1.,1.])
+        
+        _compliance_HER = Task.check_stat_perCCDandQ(_RON_matrix,
+                                                         RON_lims, CCDs)
+        
+        self.addComplianceMatrix2Self(_compliance_HER,'HER')
+        if self.report is not None:
+            self.addComplianceMatrix2Report(
+                _compliance_HER, label='COMPLIANCE HER')
         
         
         # Display of bits-histo fig

@@ -63,8 +63,7 @@ class Fig(object):
 
 
 class Fig_Husk(Fig):
-    """ """
-    
+    """ """    
     def plot(self, **kwargs):
         pass
     def build_data(self, *args, **kwargs):
