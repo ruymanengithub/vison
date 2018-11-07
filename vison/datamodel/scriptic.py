@@ -272,7 +272,7 @@ def update_structdict(sdict, commvalues, diffvalues):
 class Script(object):
     """Core Class that provides automatic test script generation and validation."""
 
-    def __init__(self, defaults={}, structure={}, elvis=context.elvis):
+    def __init__(self, defaults=None, structure=None, elvis=context.elvis):
         """Initialization.
 
         :param defaults: dict, default values.
@@ -280,6 +280,11 @@ class Script(object):
         :param elvis: ELVIS version.
 
         """
+        
+        if defaults is None:
+            defaults = dict()
+        if structure is None:
+            structure = dict()
 
         self.scriptname = ''
         self.defaults = defaults

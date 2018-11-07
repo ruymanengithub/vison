@@ -151,11 +151,14 @@ class CCD(object):
 
     #rebin = ccd_aux.rebin
 
-    def __init__(self, infits=None, extensions=[-1], getallextensions=False, withpover=True):
+    def __init__(self, infits=None, extensions=None, getallextensions=False, withpover=True):
         """ """
+        
+        if extensions is None:
+            extensions = [-1]
 
         self.extnames = []
-        self.extensions = []
+        self.extensions = extensions
 
         if infits is not None:
 
@@ -828,8 +831,13 @@ class CCDPile(CCD):
     Each image (a single extension picked from each) becomes an extension in the pile.
     """
 
-    def __init__(self, infitsList=[], ccdobjList=[], extension=-1, withpover=True):
+    def __init__(self, infitsList=None, ccdobjList=None, extension=-1, withpover=True):
         """ """
+        
+        if infitsList is None:
+            infitsList = []
+        if ccdobjList is None:
+            ccdobjList = None
         
         self.masked = False
         self.extensions = []

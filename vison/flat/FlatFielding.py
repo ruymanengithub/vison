@@ -140,8 +140,14 @@ def produce_MasterFlat(infitsList, outfits, mask=None, settings={}):
 class FlatField(ccdmodule.CCD, CDPClass):
     """ """
 
-    def __init__(self, fitsfile='', data=dict(), meta=dict(), withpover=True, ID=None, BLOCKID=None, CHAMBER=None):
+    def __init__(self, fitsfile='', data=None, meta=None, withpover=True, ID=None, BLOCKID=None, CHAMBER=None):
         """ """
+        
+        if data is None:
+            data = dict()
+        if meta is None:
+            meta = dict()
+            
 
         self.BLOCKID = BLOCKID
         self.ID = ID

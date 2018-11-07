@@ -92,9 +92,9 @@ class MOT_WARM(DarkTask):
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
         self.subtasks = [
-                         ('lock', self.lock_on_stars),
-                         ('check', self.check_data)]
-#                         ('basic', self.basic_analysis)]
+#                         ('lock', self.lock_on_stars),
+                         ('check', self.check_data),
+                         ('basic', self.basic_analysis)]
 
         super(MOT_WARM, self).__init__(inputs, log, drill, debug)
         self.name = 'MOT_WARM'
@@ -355,7 +355,7 @@ class MOT_WARM(DarkTask):
     def basic_analysis(self):
         """ 
         EXPOSURES:
-            BIAS, RAMP, CHINJ, FLAT, POINT_590, POINT_730, POINT_880
+            BIAS, RAMP, CHINJ, FLAT, POINT_w x waves_PNT
             
         """
         
@@ -407,10 +407,9 @@ class MOT_WARM(DarkTask):
             
                 return x, y 
         
-        #profiles1D = cdp.CDP()
-        #profiles1D.header = CDP_header.copy()
-        #profiles1D.path = profilespath
-        #profiles1D.data = OrderedDict()
+        profiles1D_cdp = cdp.CDP()
+        profiles1D_cdp.header = CDP_header.copy()
+        profiles1D_cdp.path = profilespath
         
         profs1D2plot = OrderedDict()
         for tag in ['RAMP', 'HER', 'CHINJ', 'RAMP']:
@@ -425,7 +424,7 @@ class MOT_WARM(DarkTask):
         # HER
         HERdata = np.zeros((1,len(CCDs),len(Quads)), dtype='float32') + np.nan
         
-        if not self.drill:        
+        if not self.drill:
             
             # BIAS: RON matrix (CCDs x Qs)
                 
@@ -443,8 +442,7 @@ class MOT_WARM(DarkTask):
                 
                 vstart = self.dd.mx['vstart'][0, jCCD]
                 vend = self.dd.mx['vend'][0, jCCD]
-                
-                
+                                
                 #ccdobjBIAS = _load_fits(self.dd,ObsIDdict['BIAS'],jCCD)
                 
                 # vertical profile of RAMP exposure
@@ -496,7 +494,6 @@ class MOT_WARM(DarkTask):
                 profs1D2plot['FLAT'][CCDk][Q]['y'] = yFLAT.copy()
                 
         
-        
         # Display of 1D vertical profiles
         
         proffigkeys = []
@@ -513,6 +510,13 @@ class MOT_WARM(DarkTask):
         if self.report is not None:
             self.figdict['MOTWbasic_HER_serial'][1]['data'] = profs1D2plot['HER']
             self.addFigures_ST(figkeys=['MOTWbasic_HER_serial'], dobuilddata=False)
+        
+        # Saving profiles
+        
+        profiles1D_cdp.data = profs1D2plot.copy()
+        
+        self.save_CDP(profiles1D_cdp)
+        self.pack_CDP_to_dd(profiles1D_cdp, 'MB_PROFILES')
         
         # Matrix with HER results
         

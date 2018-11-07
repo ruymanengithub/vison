@@ -94,8 +94,12 @@ def extract_region(ccdobj, Q, area='img', vstart=0, vend=2086,
 class Model2D():
     """Class for 2D models of images and images sections."""
 
-    def __init__(self, img, corners=[]):
+    def __init__(self, img, corners=None):
         """ """
+        
+        if corners is None:
+            corners = []
+        
         assert isinstance(img, np.ndarray)
         self.img = img.copy()
         self.binnedimg = None

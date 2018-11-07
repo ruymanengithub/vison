@@ -46,7 +46,7 @@ import select
 
 from vison import __version__
 from vison.support import logger as lg
-from vison.support.report import Report
+#from vison.support.report import Report
 from vison.support import vistime
 #from lib import get_time_tag
 from vison.pipe import lib as pilib

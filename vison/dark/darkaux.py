@@ -104,13 +104,19 @@ def produce_MasterDark(outfits, infitsList=[], ccdpickList=[],  mask=None, setti
 class DarkCDP(ccdmod.CCD, CDPClass):
     """ """
 
-    def __init__(self, fitsfile='', data=dict(), meta=dict(), withpover=True, ID=None, BLOCKID=None, CHAMBER=None):
+    def __init__(self, fitsfile='', data=None, meta=None, withpover=True, ID=None, BLOCKID=None, CHAMBER=None):
         """ """
 
         self.BLOCKID = BLOCKID
         self.ID = ID
         self.CHAMBER = CHAMBER
         self.vison = __version__
+        
+        if data is None:
+            data = dict()
+        if meta is None:
+            meta = dict()
+            
         
         print 'TODO: darkaux.DarkCDP needs improvemenents: masking'
 

@@ -32,9 +32,12 @@ from vison.support import flags
 class vIndex(object):
     """ """
 
-    def __init__(self, name, vals=[], N=0):
+    def __init__(self, name, vals=None, N=0):
         """ """
         self.name = name
+        if vals is None:
+            vals = []
+        
         if len(vals) != 0:
             self.vals = vals
             self.len = len(self.vals)
@@ -59,7 +62,10 @@ class vIndex(object):
 
 class vMultiIndex(list, object):
 
-    def __init__(self, IndexList=[]):
+    def __init__(self, IndexList=None):
+        
+        if IndexList is None:
+            IndexList = []
 
         assert (isinstance(IndexList, list) or isinstance(IndexList, vMultiIndex) or
                 (isinstance(IndexList, vIndex)))
@@ -176,8 +182,11 @@ class vColumn(object):
 class DataDict(object):
     """ """
 
-    def __init__(self, meta=OrderedDict()):
+    def __init__(self, meta=None):
         """ """
+        
+        if meta is None:
+            meta = OrderedDict()
 
         self.meta = meta
         self.mx = OrderedDict()

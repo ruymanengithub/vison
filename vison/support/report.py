@@ -233,13 +233,17 @@ class Table(Content):
 
     """
 
-    def __init__(self, tableDict, formats=dict(), names=[], caption=None, col_align=None,
+    def __init__(self, tableDict, formats=None, names=None, caption=None, col_align=None,
                  longtable=False):
-
+        
+        if names is None:
+            names = []
         table = astable.Table(data=tableDict, names=names)
 
         self.type = 'table'
         self.table = table
+        if formats is None:
+            formats = dict()
         self.formatDict = formats
         self.caption = caption
         self.col_align = col_align
@@ -327,18 +331,23 @@ class Text(Content):
 
 class Report(Container):
 
-    def __init__(self, TestName='Test', Model='XM', Contents=[], Texheader=default_header,
-                 Texbody=[r'\begin{document}'], Reference='7-XXX'):
+    def __init__(self, TestName='Test', Model='XM', Contents=None, Texheader=None,
+                 Texbody=None, Reference='7-XXX'):
         """ """
 
         self.TestName = st.replace(TestName, '_', '\_')
         self.Model = Model
         #self.timestamp = vistime.get_time_tag()
 
+        if Texheader is None:
+            Texheader = default_header
         self.Texheader = Texheader
+        if Texbody is None:
+            Texbody = [r'\begin{document}']
         self.Texbody = Texbody
         self.Texfooter = [r'\end{document}']
-
+        if Contents is None:
+            Contents = []
         self.Contents = Contents
 
         self.Reference = Reference

@@ -257,8 +257,7 @@ class Task(object):
                 self.add_inputs_to_report()
             else:
                 self.report = None
-                
-
+            
             if self.type == 'Simple':
                 self.ingest_data_SimpleTest()
             elif self.type == 'Meta':
