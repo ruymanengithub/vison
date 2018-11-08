@@ -187,6 +187,10 @@ class ComplianceMX(OrderedDict):
         return gen_compliance_tex(OrderedDict(self), escape=False, caption=caption)
 
     def get_compliance_txt(self):
+        #return vjson.dumps_to_json(self)
+         return self.__str__()
+        
+    def get_compliance_txt_asjson(self):
         return vjson.dumps_to_json(self)
         # return self.__str__()
 
