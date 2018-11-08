@@ -582,15 +582,14 @@ class BIAS01(DarkTask):
                 stackccdobj.add_extension(stackstd, label='STD')
                 stackccdobj.get_mask(mask)
                 
-                
                 for kQ, Q in enumerate(Quads):
-                
+                    
                     hor1Dprof = stackccdobj.get_1Dprofile(Q=Q, orient='hor',
                                     area='all',stacker='mean',
                                     vstart=vstart,vend=vend,extension=0)
                     
                     profs1D2plot['hor'][CCDk][Q] = _pack_profs(profs1D2plot['hor'][CCDk][Q],hor1Dprof)
-                                        
+                    
                     ver1Dprof = stackccdobj.get_1Dprofile(Q=Q, orient='ver',
                                     area='all',stacker='mean',
                                     vstart=vstart,vend=vend,extension=0)
