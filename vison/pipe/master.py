@@ -235,6 +235,13 @@ class Pipe(object):
             self.inputs[taskname] = taskinputs
 
             self.launchtask(taskname)
+            
+            tpart = datetime.datetime.now()
+            partdtm = ((tpart-tini).seconds)/60.
+            
+            partsummary = self.get_execution_summary(exectime=partdtm)
+            if self.log is not None:
+                self.log.info(partsummary)
 
         tend = datetime.datetime.now()
         Dtm = ((tend-tini).seconds)/60.
@@ -250,12 +257,16 @@ class Pipe(object):
             self._get_log_header()
 
         for task in self.tasks:
-            _compl = self.completion[task]
-            summary += ['_', '%s' % task]
-            summary += ['Executed in %.1f minutes' % _compl['exectime']]
-            summary += ['Raised Flags = %s' % _compl['flags']]
-            if _compl['Errors']:
-                summary += ['Executed with ERROR(s)']
+            if task in self.completion:
+                _compl = self.completion[task]
+                summary += ['_', '%s' % task]
+                summary += ['Executed in %.1f minutes' % _compl['exectime']]
+                summary += ['Raised Flags = %s' % _compl['flags']]
+                if _compl['Errors']:
+                    summary += ['Executed with ERROR(s)']
+
+        summary += ['_', '_', '_', '_',
+                   '######################################################################']
 
         return summary
 
@@ -327,8 +338,7 @@ class Pipe(object):
 
                 taskname, testkey, Nframes = taskitem
                 available = pilib.coarsefindTestinExpLog(
-                    explog, testkey, Nframes)
-                
+                    explog, testkey, Nframes)                
 
                 if available:
                     # print '%s available, doing nothing!' % taskname # TESTS
@@ -340,6 +350,12 @@ class Pipe(object):
                     tasksequence.pop(it)
                     
                     tlastavailable = datetime.datetime.now()
+
+                    partdtm = ((tlastavailable-tini).seconds)/60.
+            
+                    partsummary = self.get_execution_summary(exectime=partdtm)
+                    if self.log is not None:
+                        self.log.info(partsummary)
 
             if len(tasksequence) == 0:
                 fahrtig = True
