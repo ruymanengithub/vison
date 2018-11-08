@@ -262,7 +262,7 @@ class FLAT0X(FlatTask):
         
         # 1D Profiles
         
-        _foox = np.linspace(0,2000,100)
+        _foox = np.linspace(0,2000,10)
         _fooy = np.ones(10)*1.E4
         
         profs_1D = OrderedDict()
@@ -285,8 +285,26 @@ class FLAT0X(FlatTask):
         # The heavy-lifting
         
         onTests = False # True on TESTS
+        
+                
+        def _pack_profs(outdict,inprof,tag):
+            """ """
+            _x = inprof.data['x'].copy()
+            xorder = np.argsort(_x)
+            _y = inprof.data['y'][xorder].copy()
+            _x = np.arange(len(_x))
+            outdict['x'][tag] = _x.copy()
+            outdict['y'][tag] = _y.copy()
+            
 
         if not self.drill:
+            
+            for dire in ['hor','ver']:
+                for ulabel in ulabels:
+                    for CCD in CCDs:
+                        for Q in Quads:
+                            profs_1D[dire][ulabel][CCD][Q]['x'] = OrderedDict()
+                            profs_1D[dire][ulabel][CCD][Q]['y'] = OrderedDict()
             
 
             dpath = self.inputs['subpaths']['ccdpickles']
@@ -341,7 +359,7 @@ class FLAT0X(FlatTask):
                     
                     _OBSIDS = self.dd.mx['ObsID'][selix[0]].copy()
                     
-                    for ix,f_indiv_flat in enumerate(f_indiv_flats):
+                    for ix,f_indiv_flat in enumerate(f_indiv_flats): # TESTS
                         
                         OBSID = _OBSIDS[ix]
                         
@@ -357,15 +375,15 @@ class FLAT0X(FlatTask):
                                     stacker='mean',vstart=vstart, vend=vend1D,
                                     extension=-1)
                             
-                            profs_1D['hor'][ulabel][CCD][Q]['x']['OBS%i' % OBSID] = \
-                                    _pro1Dhor.data['x'].copy()
-                            profs_1D['hor'][ulabel][CCD][Q]['y']['OBS%i' % OBSID] = \
-                                    _pro1Dhor.data['y'].copy()
-                                    
-                            profs_1D['ver'][ulabel][CCD][Q]['x']['OBS%i' % OBSID] = \
-                                    _pro1Dver.data['x'].copy()
-                            profs_1D['ver'][ulabel][CCD][Q]['y']['OBS%i' % OBSID] = \
-                                    _pro1Dver.data['y'].copy()           
+                            
+                            _pack_profs(profs_1D['hor'][ulabel][CCDk][Q],
+                                        _pro1Dhor,
+                                        tag='OBS%i' % OBSID)
+                            
+                            _pack_profs(profs_1D['ver'][ulabel][CCDk][Q],
+                                        _pro1Dver,
+                                        tag='OBS%i' % OBSID)
+                                     
                 
 
         # Show 1D Profiles (hor/ver) for each OBSID/fluence across CCDs/Quads:
