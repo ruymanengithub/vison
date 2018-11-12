@@ -617,7 +617,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 #
 #        test_sequence['NL02'] = copy.deepcopy(nl02)
 
-    if _toGen['NL02']:
+    if _toGen['HENK01']:
 
         print 'NL02... HACKED FOR HENK'
         
@@ -647,11 +647,11 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         exptsNL02B = (relfluencesNL02B/100. * tFWCwB).tolist()  # ms
         framesNL02B = (np.ones(len(exptsNL02B), dtype='int32')*4).tolist()
-        
+
 
         nl02 = NL02.NL02(inputs=dict(elvis=elvis,
                                      CHAMBER=CHAMBER,
-                                     test='NL02',
+                                     test='HENK01',
                                      wavelengthA=waveNL02A,
                                      exptimesA=exptsNL02A,
                                      framesA=framesNL02A,
@@ -661,7 +661,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                                      exptinter=0.5*tFWCwB,
                                      diffvalues=diffNL02))
 
-        test_sequence['NL02'] = copy.deepcopy(nl02)
+        test_sequence['HENK01'] = copy.deepcopy(nl02)
 
     # FOCUS
 
