@@ -74,8 +74,8 @@ ObsIDdict = OrderedDict(
       FLAT=3)
 wavesPNT = [590,730,880]
 for i, wavenm in enumerate(wavesPNT):
-    ObsIDdict['PNT_%inm'] = i+4
-            
+    ObsIDdict['PNT_%inm' % wavenm] = i+4
+    
 
 class MOT_WARM_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
@@ -136,7 +136,7 @@ class MOT_WARM(DarkTask):
         
         MW_sdict = OrderedDict()
         
-        MW_sdict['col%03i' % ObsIDdict['BIAS']] = dict(frames=1, exptime=0, rdmode='rwd_bas_vs',
+        MW_sdict['col%03i' % (ObsIDdict['BIAS']+1,)] = dict(frames=1, exptime=0, rdmode='rwd_bas_vs',
                                     swellw=context.sumwell['rwd_bas_vs'][0],
                                     swelldly=context.sumwell['rwd_bas_vs'][1],
                                     vstart=0,vend=2086,toi_ro=toi_ro,
@@ -144,14 +144,14 @@ class MOT_WARM(DarkTask):
                                     source='flat',
                                     comments='BIAS')
 
-        MW_sdict['col%03i' % ObsIDdict['RAMP']]=dict(frames=1, exptime=0, rdmode='fwd_bas',
+        MW_sdict['col%03i' % (ObsIDdict['RAMP']+1,)]=dict(frames=1, exptime=0, rdmode='fwd_bas',
                                     swellw=context.sumwell['fwd_bas'][0],
                                     swelldly=context.sumwell['fwd_bas'][1],
                                     vstart=0,vend=2086,toi_ro=toi_ro,
                                     shuttr=0, mirr_on=0,motr_on=0,
                                     source='flat',
                                     comments='RAMP')
-        MW_sdict['col%03i' % ObsIDdict['CHINJ']]=dict(frames=1, 
+        MW_sdict['col%03i' % (ObsIDdict['CHINJ']+1,)]=dict(frames=1, 
                                     IDL=IDLinj,IDH=IDHinj,
                                     IG1_1_T=IG1inj, IG1_2_T=IG1inj, IG1_3_T=IG1inj,
                                     IG1_1_B=IG1inj, IG1_2_B=IG1inj, IG1_3_B=IG1inj,
@@ -163,7 +163,7 @@ class MOT_WARM(DarkTask):
                                     source='flat',
                                     comments='CHINJ')
         
-        MW_sdict['col%03i' % ObsIDdict['FLAT']]=dict(frames=1, exptime=exptimeFL, 
+        MW_sdict['col%03i' % (ObsIDdict['FLAT']+1,)]=dict(frames=1, exptime=exptimeFL, 
                                     wave=FW_IDflatx,
                                     vstart=0,vend=2086,toi_ro=toi_ro,
                                     shuttr=1, mirr_on=0,motr_on=0,
@@ -176,7 +176,7 @@ class MOT_WARM(DarkTask):
             iexptimeps = self.ogse.profile['tFWC_point']['nm%i' % wavenm] * 0.5
             imirror = self.ogse.profile['mirror_nom']['F%i' % FWIDx]
             
-            MW_sdict['col%03i' % ObsIDdict['PNT_%inm' % wavenm]]=dict(frames=1,
+            MW_sdict['col%03i' % (ObsIDdict['PNT_%inm' % wavenm]+1,)]=dict(frames=1,
                     wave=FWIDx,exptime=iexptimeps,
                     vstart=0,vend=2086,toi_ro=toi_ro,
                     shuttr=1,mirr_on=1,mirr_pos=imirror,
@@ -194,9 +194,11 @@ class MOT_WARM(DarkTask):
                 diffvalues = self.inputs['diffvalues']
             except:
                 diffvalues = diffvalues = dict()
-
+        
+        
         MW_sdict = sc.update_structdict(
             MW_sdict, commvalues, diffvalues)
+        
 
         return MW_sdict
 
