@@ -109,9 +109,9 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         test_sequence['DARK01'] = copy.deepcopy(dark01)
 
     # CHARGE INJECTION
-
+    
     # CHINJ01
-
+    
     if _toGen['CHINJ01']:
 
         print 'CHINJ01...'
@@ -776,7 +776,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         #exptPER01_SATUR = tFWC_point_PERS*2500.   # s
         exptPER01_SATUR = 600. # s., HARDWIRED
         exptPER01_LATEN = 565.  # s
-
+        
         diffPER01 = dict()
         diffPER01.update(diffvalues)
 
