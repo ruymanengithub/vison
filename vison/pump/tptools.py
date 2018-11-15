@@ -12,7 +12,7 @@ Created on Fri Mar 16 14:38:51 2018
 
 # IMPORT STUFF
 from pdb import set_trace as stop
-import os
+#import os
 import numpy as np
 import copy
 from scipy import ndimage as nd
@@ -122,6 +122,8 @@ def find_dipoles_vtpump(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, ex
 
     qrawmap = ccdobj.get_quad(Q, canonical=True, extension=extension)[
         prescan:-overscan, vstart:vend].copy()
+    
+    asymmetry = 0.2
 
     qraw_p1 = qrawmap[:, 1:].copy()
     qraw_m1 = qrawmap[:, 0:-1].copy()
@@ -130,8 +132,8 @@ def find_dipoles_vtpump(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, ex
     rows0, cols0 = np.where((np.abs(deltamap) > threshold*2.) &
                             (np.abs(qraw_m1-1.) > threshold) &
                             (np.abs(qraw_p1-1.) > threshold) &
-                            ((2.*np.abs(qraw_m1-1.)-np.abs(deltamap)) < 0.2*threshold) &
-                            ((2.*np.abs(qraw_p1-1.)-np.abs(deltamap)) < 0.2*threshold))
+                            ((2.*np.abs(qraw_m1-1.)-np.abs(deltamap)) < asymmetry*threshold) &
+                            ((2.*np.abs(qraw_p1-1.)-np.abs(deltamap)) < asymmetry*threshold))
 
     if len(rows0) == 0:
         return pd.DataFrame(dict(X=[], Y=[], S=[], A=[]), columns=['X', 'Y', 'S', 'A'])
