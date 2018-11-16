@@ -301,9 +301,59 @@ class TP01(PumpTask):
                 Counts of dipoles (and N vs. S)
 
         """
+        
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='basic', Title='TP01 Basic Analysis', level=0)
+        
+        threshold = 0.01
+        
+        DDindices = copy.deepcopy(self.dd.indices)
+        CCDs = DDindices.get_vals('CCD')
+        Quads = DDindices.get_vals('Quad')
 
-        return # TESTS
-        raise NotImplementedError
+        productspath = self.inputs['subpaths']['products']
+
+
+        id_dlys = np.unique(self.dd.mx['id_dly'][:, 0])
+
+        
+        if not self.drill:
+
+            # Getting dipole catalogues
+
+            for id_dly in id_dlys:
+
+                for jCCD, CCDk in enumerate(CCDs):
+
+                    ixsel = np.where((self.dd.mx['id_dly'][:] == id_dly) & (
+                        self.dd.mx['v_tpump'][:] != 0))
+
+                    for ix in ixsel[0]:
+                        ObsID = self.dd.mx['ObsID'][ix]
+                        vstart = self.dd.mx['vstart'][ix, jCCD]
+                        vend = self.dd.mx['vend'][ix,jCCD]
+
+
+                        imapf = 'TP01_rawmap_%i_IDDLY_%i_ROE1_%s' % (
+                            ObsID, id_dly, CCDk)
+
+                        
+                        for iQ, Q in enumerate(Quads):
+                        
+                            #try:
+                            imapccdobj = cPickleRead(
+                                os.path.join(productspath, imapf))
+                                
+                            idf = tptools.find_dipoles_vtpump(imapccdobj,threshold,
+                                  Q,vstart=vstart,vend=vend,
+                                  extensions=-1)
+                                
+                            stop()
+    
+                            #except:  # TESTS
+                            #    pass
+
 
     def meta_analysis(self):
         """

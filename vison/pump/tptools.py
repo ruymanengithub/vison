@@ -114,7 +114,7 @@ def get_InjProfile(ccdobj, Q, Navgrows=-1, vstart=0, vend=ccdmod.NrowsCCD, exten
     return model
 
 
-def find_dipoles_vtpump(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, extension=-1):
+def find_dipoles_vtpump_old(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, extension=-1):
     """ """
 
     prescan = ccdobj.prescan
@@ -145,6 +145,68 @@ def find_dipoles_vtpump(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, ex
     S[np.where(deltamap[rows0, cols0] > 0)] = 1
     S[np.where(deltamap[rows0, cols0] < 0)] = 0
     A = deltamap[rows0, cols0]/2.
+
+    indict = OrderedDict(X=X, Y=Y, S=S, A=A)
+    df = pd.DataFrame(indict, columns=['X', 'Y', 'S', 'A'])
+
+    return df
+
+def find_dipoles_vtpump(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, extension=-1):
+    """Using Jesper Skottfelt's algorithm, as described in 
+    Trap_Pumping_Analysis_GCALCAMP_17OCT17_Azzollini.pdf
+    
+    'South' dipole: brighter pixel closer to serial register than dimmer pixel.
+    'North' dipole: brighter pixel farther to serial register than dimmer pixel.
+    
+    """
+
+    prescan = ccdobj.prescan
+    overscan = ccdobj.overscan
+
+    qrawmap = ccdobj.get_quad(Q, canonical=True, extension=extension)[
+        prescan:-overscan, vstart:vend].copy()
+    
+    above_thresh = qrawmap > threshold
+    below_thresh = qrawmap < threshold
+    within_thresh = ~above_thresh & ~below_thresh
+    
+    def rollit(array,disp):
+        if disp == 0: return array
+        return np.roll(array,disp,axis=1)
+    
+    dipoles_S = rollit(within_thresh,0) & rollit(above_thresh,-1) & \
+                      rollit(below_thresh,-2) & rollit(within_thresh,-3)
+    dipoles_N = rollit(within_thresh,0) & rollit(below_thresh,-1) & \
+                      rollit(above_thresh,-2) & rollit(within_thresh,-3)
+    
+    def get_metrics(dipoles_mask,qrawmap):
+        NaxisY = dipoles_mask.shape[1]
+        rows0, cols0 = np.where(dipoles_mask)
+        X = rows0 + prescan
+        Y = cols0 + vstart + 1
+        ixnonrolled = np.where(Y<NaxisY-4)
+        A = (np.abs(rollit(qrawmap,-1))+np.abs(rollit(qrawmap,-2)))[(rows0,cols0)]/2.
+        stop()
+        X = X[ixnonrolled]
+        Y = Y[ixnonrolled]
+        A = A[ixnonrolled]
+        return X,Y,A
+    
+    XS, YS, AS = get_metrics(dipoles_S,qrawmap)
+    XN, YN, AN = get_metrics(dipoles_N,qrawmap)
+    
+    Ndip = len(XS)+len(XN)
+    S = np.zeros((Ndip,))+np.nan
+                
+    S[0:len(XS)] = 1
+    S[len(XS):-1] = 0
+     
+    X = np.concatenate((XS,XN))
+    Y = np.concatenate((YS,YN))
+    A = np.concatenate((AS,AN))
+
+    if len(X) == 0:
+        return pd.DataFrame(dict(X=[], Y=[], S=[], A=[]), columns=['X', 'Y', 'S', 'A'])
 
     indict = OrderedDict(X=X, Y=Y, S=S, A=A)
     df = pd.DataFrame(indict, columns=['X', 'Y', 'S', 'A'])
