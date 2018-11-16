@@ -52,7 +52,7 @@ MW_commvalues = dict(program='CALCAMP', test='MOT_WARM',
                          flushes=7, siflsh=1, siflsh_p=500,
                          inisweep=1,
                          vstart=0, vend=2086,
-                         toi_fl=143., toi_tp=1000., toi_ro=1000., toi_ch=1000.,
+                         toi_fl=143., toi_tp=1000., toi_ro=500., toi_ch=1000.,
                          chinj=0,
                          s_tpump=0,
                          v_tpump=0,
@@ -120,7 +120,7 @@ class MOT_WARM(DarkTask):
 
         """
         
-        toi_ro = 250
+        toi_ro = 500
         
         IDLinj=11.
         IDHinj=18.
