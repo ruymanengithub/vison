@@ -279,8 +279,10 @@ class ComplianceMX_CCDQ(ComplianceMX):
                     _lims = self.CCDQlims[CCDkey][Q]
                 elif isinstance(self.CCDQlims[CCDkey], (list,np.ndarray)):
                     _lims = self.CCDQlims[CCDkey]
+                
                 test = (np.isnan(inparr[:, iCCD, jQ, ...]) |
-                        (inparr[:, iCCD, jQ, ...] <= _lims[0]) | (inparr[:, iCCD, jQ, ...] >= _lims[1]))
+                    (inparr[:, iCCD, jQ, ...] <= _lims[0]) | (inparr[:, iCCD, jQ, ...] >= _lims[1]))
+                
                 try:
                     avvalue = float(np.nanmean(inparr[:, iCCD, jQ, ...]))
                 except:

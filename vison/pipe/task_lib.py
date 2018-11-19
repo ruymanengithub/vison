@@ -110,7 +110,7 @@ def filterexposures(self, structure, explog, OBSID_lims, colorblind=False, waved
 
     if not colorblind:
 
-        Filters = [structure['col%03i' % i]['wave'] for i in range(1, Ncols+1)]
+        Filters = np.array([structure['col%03i' % i]['wave'] for i in range(1, Ncols+1)])
         Filter = Filters[0]
         assert np.all(np.array(Filters) == Filter)
 

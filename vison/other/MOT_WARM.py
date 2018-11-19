@@ -206,7 +206,7 @@ class MOT_WARM(DarkTask):
         """ """
         wavedkeys = []
         return super(MOT_WARM, self).filterexposures(structure, explog, OBSID_lims, 
-                                    colorblind=False,
+                                    colorblind=True,
                                     wavedkeys=wavedkeys)
     
     def lock_on_stars(self):
@@ -234,12 +234,12 @@ class MOT_WARM(DarkTask):
 
         valini = 0.
 
-        newcolnames_off = ['offset_pre', 'offset_ove']
+        newcolnames_off = ['offset_pre', 'offset_img', 'offset_ove']
         for newcolname_off in newcolnames_off:
             self.dd.initColumn(newcolname_off, Xindices,
                                dtype='float32', valini=valini)
 
-        newcolnames_std = ['std_pre', 'std_ove']
+        newcolnames_std = ['std_pre', 'std_img', 'std_ove']
         for newcolname_std in newcolnames_std:
             self.dd.initColumn(newcolname_std, Xindices,
                                dtype='float32', valini=valini)
@@ -263,7 +263,7 @@ class MOT_WARM(DarkTask):
 
                     for kQ, Quad in enumerate(Quads):
 
-                        for reg in ['pre', 'ove']:
+                        for reg in ['pre', 'img', 'ove']:
                             stats = ccdobj.get_stats(Quad, sector=reg, statkeys=['median', 'std'], trimscan=[5, 5],
                                                      ignore_pover=True, extension=-1, VSTART=vstart, VEND=vend)
                             self.dd.mx['offset_%s' %
@@ -431,9 +431,10 @@ class MOT_WARM(DarkTask):
             # BIAS: RON matrix (CCDs x Qs)
                 
             _RON_matrix = self.dd.mx['std_img'][ObsIDdict['BIAS'],...].copy()
+            _RON_matrix = _RON_matrix[np.newaxis,...].copy()
             RON_lims = self.perflimits['RONs_lims']
             
-            _compliance_RON = Task.check_stat_perCCDandQ(_RON_matrix,
+            _compliance_RON = Task.check_stat_perCCDandQ(self,_RON_matrix,
                                                          RON_lims, CCDs)
             self.addComplianceMatrix2Self(_compliance_RON,'RON')
             if self.report is not None:
@@ -463,8 +464,8 @@ class MOT_WARM(DarkTask):
                                      suptitle = 'MOT\_WARM: bits histo, %s' % CCDk,
                                      figname = fullfignamebitshisto)
                 
-                self.figsdict['RAMP_bits_histo_%s' % CCDk][1]['figname'] = fignamebitshisto
-                self.figsdict['RAMP_bits_histo_%s' % CCDk][1]['caption'] = \
+                self.figdict['RAMP_bits_histo_%s' % CCDk][1]['figname'] = fignamebitshisto
+                self.figdict['RAMP_bits_histo_%s' % CCDk][1]['caption'] = \
                              'MOT\_WARM-%s: Bits Histogram on RAMP image.' % CCDk
                 
                 # RAMP: HER analysis

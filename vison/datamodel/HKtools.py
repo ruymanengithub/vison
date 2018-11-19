@@ -383,7 +383,6 @@ def loadHK_QFMsingle(filename, elvis=context.elvis, validate=False):
         lines = f.readlines()
         f.close()
         table = ascii.read(lines)
-        
     
     if validate:
         expectedkeys = allHK_keys[elvis]

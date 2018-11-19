@@ -208,7 +208,7 @@ class NL01(FlatTask):
         return NL01_sdict
 
     def filterexposures(self, structure, explog, OBSID_lims):
-        """Loads a list of Exposure Logs and selects exposures from test PSF0X.
+        """Loads a list of Exposure Logs and selects exposures from test NL01.
 
         The filtering takes into account an expected structure for the 
         acquisition script.
