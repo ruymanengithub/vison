@@ -28,7 +28,11 @@ def get_bitsize(filelist):
     """ """
     bitsize = 0
     for item in filelist:
-        bitsize += get_bitsize_file(item)
+        try: 
+            nbitsize = get_bitsize(item)
+        except: 
+            nbitsize=0
+        bitsize += nbitsize
     return bitsize
 
 
