@@ -260,7 +260,11 @@ class ExpLogDisplay(tk.Toplevel):
         if sEL <= self.sEL:
             return False
 
-        EXPLOG = self.loadExplogs()
+        try: 
+            EXPLOG = self.loadExplogs()
+        except IOError:
+            return False
+            
         #EXPLOG = ELtools.loadExpLog(self.explogf,elvis=self.elvis)
 
         NObsIDs = len(np.unique(EXPLOG['ObsID']))
