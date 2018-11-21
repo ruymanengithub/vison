@@ -78,7 +78,13 @@ class Eyegore(tk.Tk):
         tk.Tk.__init__(self)
 
         if intervals is None:
-            intervals = [20000, 20000, 1000, 20000, 20000, 20000]
+            intervals = dict(EYE=20000, 
+         image=20000, 
+         HK=1000, 
+         HKplots=3000, 
+         HKflags=3000, 
+         EXP=20000)
+
         if path is not None:
             if path[-1] == os.path.sep:
                 path = path[:-1]
@@ -158,18 +164,18 @@ class Eyegore(tk.Tk):
 
         if not self.dolite:
             display1 = Ds['image'](self, self.path, elvis=self.elvis)
-            ani1 = display1.start_updating(self.intervals[1])
+            ani1 = display1.start_updating(self.intervals['image'])
 
         display2 = Ds['hk'](
-            self, self.path, self.intervals[2], elvis=self.elvis)
+            self, self.path, self.intervals['HK'], elvis=self.elvis)
 
-        ani2 = display2.start_updating(self.intervals[3])
+        ani2 = display2.start_updating(self.intervals['HKplots'])
 
         display2b = Ds['hkflags'](
-            self, display2, self.intervals[4], elvis=self.elvis)
+            self, display2, self.intervals['HKflags'], elvis=self.elvis)
 
         display4 = Ds['explog'](
-            self, self.path, self.intervals[5], elvis=self.elvis)
+            self, self.path, self.intervals['EXP'], elvis=self.elvis)
 
         self.update()
 
@@ -187,7 +193,7 @@ class Eyegore(tk.Tk):
         if self.altpath != '':
             rsync_to_altlocalpath(self.path, self.altpath)
 
-        self.after(self.intervals[0], self.update)
+        self.after(self.intervals['EYE'], self.update)
 
 
 def Eexecuter():

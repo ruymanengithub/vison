@@ -244,7 +244,6 @@ class NL02(NL01.NL01):
             self.report.add_Section(
                 keyword='NL', Title='Non-Linearity Analysis', level=0)
         
-        raise NotImplementedError
 
         dIndices = copy.deepcopy(self.dd.indices)
         
@@ -347,7 +346,7 @@ class NL02(NL01.NL01):
                 header=CDP_header.copy()
                 )
 
-        nl_tb_cdp.init_wb_and_fillAll(header_title='NL01: RESULTS TABLE')
+        nl_tb_cdp.init_wb_and_fillAll(header_title='NL02: RESULTS TABLE')
         self.save_CDP(nl_tb_cdp)
         self.pack_CDP_to_dd(nl_tb_cdp, 'NL_TB_CDP')
         
@@ -359,7 +358,7 @@ class NL02(NL01.NL01):
             
             formatters=[fccd,fq,ff,ff]
             
-            caption = 'NL01 results TABLE' 
+            caption = 'NL02 results TABLE' 
             Ntex = nl_tb_cdp.get_textable(sheet='NL_TB', caption=caption,
                                                fitwidth=True,
                                                tiny=True,
@@ -370,10 +369,10 @@ class NL02(NL01.NL01):
 
         # Do plots
 
-        fdict_NL = self.figdict['NL01_fit_curves'][1]
+        fdict_NL = self.figdict['NL02fit_curves'][1]
         fdict_NL['data'] = curves_cdp.data.copy()
         if self.report is not None:
-            self.addFigures_ST(figkeys=['NL01_fit_curves'], 
+            self.addFigures_ST(figkeys=['NL02_fit_curves'], 
                                dobuilddata=False)
         
         

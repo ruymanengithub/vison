@@ -46,6 +46,7 @@ from vison.support import context
 #               rwd_bas_v=[6.5,0.175],rwd_bas_s=[6.5,0.175],
 #               rwd_bas_vs=[6.5,0.175])
 
+
 def extract_date_explogf(explogf):
     """ """
     items = st.split(explogf, '_')
