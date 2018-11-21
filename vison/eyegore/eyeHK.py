@@ -499,7 +499,10 @@ class HKDisplay(tk.Toplevel):
 
         print 'loading HK...'
 
-        HK = HKtools.loadHK_QFM(self.HKfiles, elvis=self.elvis)
+        try: HK = HKtools.loadHK_QFM(self.HKfiles, elvis=self.elvis)
+        except IOError:
+            yield self.HK
+            return
 
         print 'done loading HK!'
 
