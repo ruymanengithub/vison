@@ -339,13 +339,13 @@ class BeamPlotYvX(BeamPlot):
             yarr = CQdict['y'][key]
             
             label = st.replace(key, '_', '\_')
-            kwargs=dict(label=label,marker='.')
+            kwargs=dict(label=label,marker='.',linestyle='')
             kwargs.update(ckwargs)
             handle = ax.plot(xarr, yarr, **kwargs)
         else:
             xarr = CQdict['x']
             yarr = CQdict['y']
-            kwargs=dict(marker='.')
+            kwargs=dict(marker='.',linestyle='')
             kwargs.update(ckwargs)
             ax.plot(xarr, yarr, **kwargs)
             handle, label = None, None
