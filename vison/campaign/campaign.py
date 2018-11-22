@@ -53,6 +53,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                   PTC01=False,
                   PTC02WAVE=False,
                   PTC02TEMP=False,
+                  PTC02RD=False,
                   NL01=False,
                   NL02=False,
                   FOCUS00=False,
@@ -503,7 +504,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
 
 
-   # PTC-02 - Temp.
+    # PTC-02 - Temp.
 
     if _toGen['PTC02TEMP']:
 
@@ -540,6 +541,49 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             #                                        elvis=elvis)
 
             test_sequence[itestkey] = copy.deepcopy(ptc02t)
+            
+
+    # PTC-02 - RD.
+
+    if _toGen['PTC02RD']:
+
+        print 'PTC02RD...'
+
+        wavePTC02RD = 800
+        PTC02RDs = [15.5, 16.0,16.5]
+
+        
+        # 10%, 30%, 50%, 70%, 80%, 90% x FWC. 4 frames per fluence.
+        tFWC_flatw = ogse.profile['tFWC_flat']['nm%i' % wavePTC02RD]
+        exptsPTC02RD = (np.array([10., 30., 50., 70., 80., 90.]) /
+                       100.*tFWC_flatw).tolist()
+        frsPTC02RD = [4, 4, 4, 4, 4, 4]
+
+        for ir, RD in enumerate(PTC02RDs):
+            
+            diffPTC02RD = dict(mirr_on=0, RD_T=RD,
+                               RD_B=RD)
+            diffPTC02RD.update(diffvalues)
+
+            itestkey = 'PTC02_%iR' % (RD*10.,)
+            print '%s...' % itestkey
+
+            diffPTC02RD['test'] = itestkey
+
+            ptc02rd = PTC0X.PTC0X(inputs=dict(elvis=elvis,
+                                             CHAMBER=CHAMBER,
+                                             test=itestkey,
+                                             wavelength=wavePTC02RD,
+                                             frames=frsPTC02RD,
+                                             exptimes=exptsPTC02RD,
+                                             diffvalues=diffPTC02RD))
+
+            # istructPTC02T = ptc02t.build_scriptdict(diffvalues=diffPTC02T,
+            #                                        elvis=elvis)
+
+            test_sequence[itestkey] = copy.deepcopy(ptc02rd)
+            
+    
 
     # NL-01
 

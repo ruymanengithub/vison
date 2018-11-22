@@ -105,6 +105,8 @@ class Pipe(object):
         Test_dict['BF01_%i' % wave] = BF01
     for temp in [150, 156]:
         Test_dict['PTC02_%iK' % temp] = PTC0X
+    for RD in [15.5, 16.0, 16.5]:
+        Test_dict['PTC02_%iR' % (RD*100,)] = PTC0X
     for wave in [590, 640, 730, 800, 880]:
         Test_dict['FOCUS00_%i' % wave] = FOCUS00
     for wave in [590, 640, 730, 800, 880]:

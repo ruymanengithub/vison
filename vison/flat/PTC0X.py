@@ -2,11 +2,12 @@
 """
 
 VIS Ground Calibration
-TEST: PTC_0X
+TEST: PTC0X
 
 Photon-Transfer-Curve Analysis
    PTC01 - nominal temperature and wavelength
    PTC02 - alternative temperatures / wavelengths
+   PTC03 - alternative Reset Drain (QM Stability Programme)
 
 Tasks:
 
@@ -108,6 +109,9 @@ def get_testdefaults_PTC0X(ogseobj=None):
                                        frames=[1, 1, 1, 1],
                                        exptimes=dict()),
                         PTC02TEMP=dict(frames=[4, 4, 4, 4, 4, 4],
+                                       exptimes=PTC02TEMP_exptimes,
+                                       wavelength=800),
+                        PTC02RD=dict(frames=[4, 4, 4, 4, 4, 4],
                                        exptimes=PTC02TEMP_exptimes,
                                        wavelength=800))
 
@@ -212,6 +216,8 @@ class PTC0X(FlatTask):
         if 'PTC02' in testkey:
             if testkey[-1] == 'K':
                 _testkey = 'PTC02TEMP'
+            elif testkey[-1] == 'R':
+                _testkey = 'PTC02RD'
             else:
                 _testkey = 'PTC02WAVE'
         if 'FLATFLUX00' in testkey:
