@@ -38,6 +38,7 @@ import os
 import copy
 from collections import OrderedDict
 import pandas as pd
+import string as st
 
 from vison.support import context
 from vison.datamodel import cdp
@@ -371,6 +372,10 @@ class NL02(NL01.NL01):
 
         fdict_NL = self.figdict['NL01_fit_curves'][1]
         fdict_NL['data'] = curves_cdp.data.copy()
+        fdict_NL['caption'] = st.replace(fdict_NL['caption'],'NL01','NL02')
+        fdict_NL['meta']['suptitle'] = st.replace(fdict_NL['meta']['suptitle'],'NL01','NL02')
+        fdict_NL['figname'] = st.replace(fdict_NL['figname'],'NL01','NL02')
+        
         if self.report is not None:
             self.addFigures_ST(figkeys=['NL01_fit_curves'], 
                                dobuilddata=False)

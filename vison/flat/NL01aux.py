@@ -73,7 +73,7 @@ NL_curves_dict = dict(
     caption='NL01: Relative non-linearity vs. fluence and best fits.',
     meta=dict(doLegend=True,
               ylabel='Z [percentage]',
-              xlabel=r'$Y_NL [ADU]$',
+              xlabel=r'$Y_{NL} [ADU]$',
               suptitle='NL01: Non-Linearity Curves.',
               ylim=[-10.,10.])
     )
