@@ -369,10 +369,10 @@ class NL02(NL01.NL01):
 
         # Do plots
 
-        fdict_NL = self.figdict['NL02fit_curves'][1]
+        fdict_NL = self.figdict['NL01_fit_curves'][1]
         fdict_NL['data'] = curves_cdp.data.copy()
         if self.report is not None:
-            self.addFigures_ST(figkeys=['NL02_fit_curves'], 
+            self.addFigures_ST(figkeys=['NL01_fit_curves'], 
                                dobuilddata=False)
         
         

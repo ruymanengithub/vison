@@ -17,6 +17,7 @@ from pdb import set_trace as stop
 import numpy as np
 import datetime
 from collections import OrderedDict
+from pylab import plot,show # TESTS
 
 from scipy import interpolate
 # END IMPORT
@@ -34,12 +35,13 @@ def get_exptime_atmiddynrange(flu1D, exp1D, method='spline', debug=False):
     X = X[ixsort].copy()
     Y = Y[ixsort].copy()
     
-    splinefunc = interpolate.interp1d(X,Y,kind='linear')
-    
-    mod1d_fit = np.polyfit(X, Y, 2)  # a linear approx. is fine
-    mod1d_pol = np.poly1d(mod1d_fit)
-    t50poly = mod1d_pol(0.5)
-    t50spline = splinefunc(0.5)
+    if method == 'spline':
+        splinefunc = interpolate.interp1d(X,Y,kind='linear')
+        t50 = splinefunc(0.5)
+    elif method == 'poly':        
+        mod1d_fit = np.polyfit(X, Y, 1)  # a linear approx. is fine
+        mod1d_pol = np.poly1d(mod1d_fit)
+        t50 = mod1d_pol(0.5)
     
     if debug:
         try:
@@ -48,19 +50,15 @@ def get_exptime_atmiddynrange(flu1D, exp1D, method='spline', debug=False):
             ax = fig.add_subplot(111)
             ax.plot(X,Y,'b.-')
             ax.axvline(0.5,c='k',ls='--')
-            ax.axhline(t50poly,c='r',ls='--')
-            ax.axhline(t50spline,c='b',ls='-')
+            ax.axhline(t50,c='r',ls='--')
             plt.show()
         except:
             stop()
     
-    if method == 'spline':
-        return t50spline
-    elif method == 'poly':
-        return t50poly
+    return t50
     
 
-def getXYW_NL(fluencesNL,exptimes,nomG):
+def getXYW_NL(fluencesNL,exptimes,nomG,method='spline'):
     """ """
     
     assert fluencesNL.shape[0] == exptimes.shape[0]
@@ -78,7 +76,7 @@ def getXYW_NL(fluencesNL,exptimes,nomG):
 
         for i in range(Nsec):
             t50[i] = get_exptime_atmiddynrange(fluencesNL[:, i], exptimes, 
-               method='spline', debug=False)
+               method=method, debug=False)
 
         t50 = np.repeat(t50.reshape(1, Nsec), Nexp, axis=0)
 
@@ -87,7 +85,7 @@ def getXYW_NL(fluencesNL,exptimes,nomG):
     else:
 
         t50 = get_exptime_atmiddynrange(fluencesNL, exptimes,
-                                        method='spline')
+                                        method=method)
 
         exptimes_bc = exptimes.copy()
 
@@ -119,6 +117,7 @@ def fitNL(X, Y, W, minfitFl, maxfitFl, display=False):
     selix = np.where((X>minfitFl) & (X<maxfitFl))
     
     NLfit = np.polyfit(X[selix], Y[selix], w=W[selix], deg=NLdeg, full=False)
+    
 
     NLpol = np.poly1d(NLfit)
 
@@ -219,7 +218,7 @@ def wrap_fitNL_SingleFilter(fluences, variances, exptimes, times=np.array([]),
         track = np.ones_like(fluences[ixboo_fluences,0])
     
     X,Y,W = getXYW_NL(fluences[ixboo_fluences, :], 
-                      exptimes[ixboo_fluences], nomG)
+                      exptimes[ixboo_fluences], nomG, method='spline')
     
     fitresults = fitNL(X, Y, W, minfitFl, maxfitFl, display=False)
     fitresults['bgd'] = bgd
@@ -229,7 +228,7 @@ def wrap_fitNL_SingleFilter(fluences, variances, exptimes, times=np.array([]),
 
 
 
-def wrap_fitNL_TwoFilter(fluences, variances, exptimes, wave, times=np.array([]), 
+def wrap_fitNL_TwoFilters(fluences, variances, exptimes, wave, times=np.array([]), 
                             TrackFlux=True, subBgd=True):
     """ """
     
@@ -300,10 +299,11 @@ def wrap_fitNL_TwoFilter(fluences, variances, exptimes, wave, times=np.array([])
     
     
     X_A,Y_A,W_A = getXYW_NL(fluences[ixboo_fluA, :], 
-                      exptimes[ixboo_fluA], nomG)
+                      exptimes[ixboo_fluA], nomG, method='poly')
     
     X_B,Y_B,W_B = getXYW_NL(fluences[ixboo_fluB, :], 
-                      exptimes[ixboo_fluB], nomG)
+                      exptimes[ixboo_fluB], nomG, method='poly')
+    
     
     X = np.concatenate((X_A,X_B))
     Y = np.concatenate((Y_A,Y_B))
