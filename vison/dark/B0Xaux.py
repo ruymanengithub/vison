@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 
-Auxiliary Functions and resources to BIAS01.
+Auxiliary Functions and resources to BIAS0X.
 
 Created on Tue Nov 14 13:54:34 2017
 
@@ -28,102 +28,102 @@ from vison.datamodel import cdp
 
 check_offsets_dict = dict(stats=['offset_pre', 'offset_img', 'offset_ove'],
                           trendaxis='time',
-                          figname='BIAS01_offset_vs_time.png',
-                          caption='BIAS01: offset vs. time.',
+                          figname='BIAS0X_offset_vs_time.png',
+                          caption='BIAS0X: offset vs. time.',
                           meta=dict(doLegend=True,
                                     doNiceXDate=True,
-                                    suptitle='BIAS01-checks: offsets',
+                                    suptitle='BIAS0X-checks: offsets',
                                     ylim=trends.offset_lims))
 
 check_std_dict = dict(stats=['std_pre', 'std_img', 'std_ove'],
                       trendaxis='time',
-                      figname='BIAS01_std_vs_time.png',
-                      caption='BIAS01: std vs. time.',
+                      figname='BIAS0X_std_vs_time.png',
+                      caption='BIAS0X: std vs. time.',
                       meta=dict(doLegend=True,
                                 doNiceXDate=True,
-                                suptitle='BIAS01-checks: std',
+                                suptitle='BIAS0X-checks: std',
                                 ylim=trends.RON_lims)
                       )
 
 basic_prof1Dhor_dict = dict(
-    figname='BIAS01_profs1D_hor_allOBSIDs.png',
-    caption='BIAS01: Average profiles across columns.',
+    figname='BIAS0X_profs1D_hor_allOBSIDs.png',
+    caption='BIAS0X: Average profiles across columns.',
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Column [pix]',
               ylim = [-20., 20.],
-              suptitle='BIAS01: Profiles across columns.')
+              suptitle='BIAS0X: Profiles across columns.')
 )
 
 basic_prof1Dver_dict = dict(
-    figname='BIAS01_profs1D_ver_allOBSIDs.png',
-    caption='BIAS01: Average profiles across rows.',
+    figname='BIAS0X_profs1D_ver_allOBSIDs.png',
+    caption='BIAS0X: Average profiles across rows.',
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Row [pix]',
               ylim = [-20., 20.],
-              suptitle='BIAS01: Profiles across rows.')
+              suptitle='BIAS0X: Profiles across rows.')
 )
 
 
 
 basic_histosRON_dict = dict(
-    figname='BIAS01_RON_distro_allOBSIDs.png',
-    caption='BIAS01: RON distribution',
+    figname='BIAS0X_RON_distro_allOBSIDs.png',
+    caption='BIAS0X: RON distribution',
     meta=dict(doLegend=True,
               ylabel='N',
               xlabel='RON [ADU]',
               xlim=[0.,4.],
-              suptitle='BIAS01: RON Distribution')
+              suptitle='BIAS0X: RON Distribution')
 )
 
 
 meta_prof1Dhor_dict = dict(
-    figname='BIAS01_profs1D_hor_MASTERBIAS.png',
-    caption='BIAS01: Average profiles across columns of Master Bias.',
+    figname='BIAS0X_profs1D_hor_MASTERBIAS.png',
+    caption='BIAS0X: Average profiles across columns of Master Bias.',
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Column [pix]',
               ylim = [-20., 20.],
-              suptitle='BIAS01/Master: Profiles across columns.')
+              suptitle='BIAS0X/Master: Profiles across columns.')
 )
 
 meta_prof1Dver_dict = dict(
-    figname='BIAS01_profs1D_ver_MASTERBIAS.png',
-    caption='BIAS01: Average profiles across rows of Master Bias.',
+    figname='BIAS0X_profs1D_ver_MASTERBIAS.png',
+    caption='BIAS0X: Average profiles across rows of Master Bias.',
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Row [pix]',
               ylim = [-20., 20.],
-              suptitle='BIAS01/Master: Profiles across rows.')
+              suptitle='BIAS0X/Master: Profiles across rows.')
 )
 
 meta_MB2D_dict = dict(
-    figname='BIAS01_MASTERBIAS_2Dimgshow.png',
-    caption='BIAS01: Master Bias for the CCDs.',
+    figname='BIAS0X_MASTERBIAS_2Dimgshow.png',
+    caption='BIAS0X: Master Bias for the CCDs.',
     meta=dict(doLegend=False,
-              suptitle='BIAS01/Master:Quadrant Images',
+              suptitle='BIAS0X/Master:Quadrant Images',
               corekwargs=dict(cmap=cm.rainbow,aspect='auto',norm=None,origin='lower left',
                     ))
 )
     
-B01figs = dict()
-B01figs['B01checks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]
+B0Xfigs = dict()
+B0Xfigs['B0Xchecks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]
 #B01figs['B01checks_stds'] = [plB01check,dict(stat='std')]
-B01figs['B01checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
-B01figs['B01basic_prof1D_hor'] = [
+B0Xfigs['B0Xchecks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
+B0Xfigs['B0Xbasic_prof1D_hor'] = [
     figclasses.Fig_Beam2DPlot, basic_prof1Dhor_dict]
-B01figs['B01basic_prof1D_ver'] = [
+B0Xfigs['B0Xbasic_prof1D_ver'] = [
     figclasses.Fig_Beam2DPlot, basic_prof1Dver_dict]
-B01figs['B01basic_histosRON'] = [
+B0Xfigs['B0Xbasic_histosRON'] = [
     figclasses.Fig_Beam1DHist, basic_histosRON_dict]
-B01figs['B01meta_prof1D_hor'] = [
+B0Xfigs['B0Xmeta_prof1D_hor'] = [
     figclasses.Fig_Beam2DPlot, meta_prof1Dhor_dict]
-B01figs['B01meta_prof1D_ver'] = [
+B0Xfigs['B0Xmeta_prof1D_ver'] = [
     figclasses.Fig_Beam2DPlot, meta_prof1Dver_dict]
-B01figs['B01meta_MasterBias_2D'] = [
+B0Xfigs['B0Xmeta_MasterBias_2D'] = [
     figclasses.Fig_BeamImgShow, meta_MB2D_dict]
-B01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
+B0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
 
 
 class RON_CDP(cdp.Tables_CDP):
@@ -158,9 +158,9 @@ class RON_CDP(cdp.Tables_CDP):
 
 
 ron_cdp = RON_CDP()
-ron_cdp.rootname = 'RON_BIAS01'
+ron_cdp.rootname = 'RON_BIAS0X'
 off_cdp = RON_CDP()
-off_cdp.rootname = 'OFFSET_BIAS01'
+off_cdp.rootname = 'OFFSET_BIAS0X'
 
 CDP_lib = dict(RON=ron_cdp,
                OFF=off_cdp)

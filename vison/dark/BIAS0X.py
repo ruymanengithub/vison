@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 
-TEST: BIAS01
+TEST: BIAS0X
 
 Bias-structure/RON analysis script
 
@@ -26,7 +26,7 @@ from vison.pipe.task import HKKeys
 from vison.support import context
 from vison.datamodel import scriptic as sc
 from vison.datamodel import ccd
-import B01aux
+import B0Xaux
 from DarkTask import DarkTask
 from vison.datamodel import inputs, cdp
 from vison.support import utils
@@ -37,12 +37,15 @@ from vison.support.files import cPickleRead
 isthere = os.path.exists
 
 
-BIAS01_commvalues = dict(program='CALCAMP', test='BIAS01', 
+BIAS01_commvalues = dict(program='CALCAMP', test='BIAS01',
                          flushes=7, siflsh=1, siflsh_p=500,
                          inisweep=1,
                          vstart=0, vend=2086,
                          toi_fl=143., toi_tp=1000., toi_ro=1000., toi_ch=1000.,
                          chinj=0,
+                         rdmode='fwd_bas',
+                         swellw=context.sumwell['fwd_bas'][0],
+                         swelldly=context.sumwell['fwd_bas'][1],
                          s_tpump=0,
                          v_tpump=0,
                          exptime=0., shuttr=0, e_shuttr=0,
@@ -52,18 +55,24 @@ BIAS01_commvalues = dict(program='CALCAMP', test='BIAS01',
                          source='flat',
                          comments='BIAS')
 
+BIAS02_commvalues = BIAS01_commvalues.copy()
+BIAS02_commvalues['test'] = 'BIAS02'
+BIAS02_commvalues['rdmode'] = 'rwd_bas_vs'
+BIAS02_commvalues['swellw'] = context.sumwell['rwd_bas_vs'][0]
+BIAS02_commvalues['swelldly'] = context.sumwell['rwd_bas_vs'][1]
 
-class BIAS01_inputs(inputs.Inputs):
+
+class BIAS0X_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
         ('N', ([int], 'Number of Frame Acquisitions.')),
     ])))
 
 
-class BIAS01(DarkTask):
+class BIAS0X(DarkTask):
     """ """
 
-    inputsclass = BIAS01_inputs
+    inputsclass = BIAS0X_inputs
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
@@ -71,14 +80,13 @@ class BIAS01(DarkTask):
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
 
-        super(BIAS01, self).__init__(inputs, log, drill, debug)
-        self.name = 'BIAS01'
+        super(BIAS0X, self).__init__(inputs, log, drill, debug)
+        self.name = 'BIAS0X'
         self.type = 'Simple'
-        
-        
+                
         self.HKKeys = HKKeys        
-        self.figdict = B01aux.B01figs.copy()
-        self.CDP_lib = B01aux.CDP_lib.copy()
+        self.figdict = B0Xaux.B0Xfigs.copy()
+        self.CDP_lib = B0Xaux.CDP_lib.copy()
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        profiles='profiles', products='products')
         
@@ -87,7 +95,7 @@ class BIAS01(DarkTask):
         self.inpdefaults = self.inputsclass(N=25)
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
-        """Builds BIAS01 script structure dictionary.
+        """Builds BIAS0X script structure dictionary.
 
         ###:param N: integer, number of frames to acquire.
         :param diffvalues: dict, opt, differential values.
@@ -96,13 +104,16 @@ class BIAS01(DarkTask):
         """
 
         N = self.inputs['N']
-        BIAS01_sdict = dict(col001=dict(frames=N, exptime=0))
+        BIAS0X_sdict = dict(col001=dict(frames=N, exptime=0))
 
-        Ncols = len(BIAS01_sdict.keys())
-        BIAS01_sdict['Ncols'] = Ncols
+        Ncols = len(BIAS0X_sdict.keys())
+        BIAS0X_sdict['Ncols'] = Ncols
 
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
-        commvalues.update(BIAS01_commvalues)
+        if self.inputs['test'] == 'BIAS01':
+            commvalues.update(BIAS01_commvalues)
+        elif self.inputs['test'] == 'BIAS02':
+            commvalues.update(BIAS02_commvalues)
 
         if len(diffvalues) == 0:
             try:
@@ -110,21 +121,21 @@ class BIAS01(DarkTask):
             except:
                 diffvalues = diffvalues = dict()
 
-        BIAS01_sdict = sc.update_structdict(
-            BIAS01_sdict, commvalues, diffvalues)
+        BIAS0X_sdict = sc.update_structdict(
+            BIAS0X_sdict, commvalues, diffvalues)
 
-        return BIAS01_sdict
+        return BIAS0X_sdict
 
     def filterexposures(self, structure, explog, OBSID_lims):
         """ """
         wavedkeys = ['motr_siz']
-        return super(BIAS01, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
+        return super(BIAS0X, self).filterexposures(structure, explog, OBSID_lims, colorblind=True,
                                                    wavedkeys=wavedkeys)
 
     def prep_data(self):
         """
 
-        BIAS01: Preparation of data for further analysis.
+        BIAS0X: Preparation of data for further analysis.
         Calls task.prepare_images().
 
         Applies:
@@ -132,13 +143,13 @@ class BIAS01(DarkTask):
             cosmetics masking
 
         """
-        super(BIAS01, self).prepare_images(
+        super(BIAS0X, self).prepare_images(
             doExtract=True, doMask=True, doOffset=True)
 
     def basic_analysis(self):
         """ 
 
-        BIAS01: Basic analysis of data.
+        BIAS0X: Basic analysis of data.
 
         **METACODE**
 
@@ -163,7 +174,9 @@ class BIAS01(DarkTask):
 
         if self.report is not None:
             self.report.add_Section(
-                keyword='extract', Title='BIAS01 Extraction', level=0)
+                keyword='extract', 
+                Title='%s Extraction' % self.inputs['test'], 
+                level=0)
 
         Cindices = copy.deepcopy(self.dd.mx['File_name'].indices)
         self.dd.initColumn('profiles1D_name', Cindices,
@@ -300,10 +313,10 @@ class BIAS01(DarkTask):
 
                     # save (2D model and) profiles in a pick file for each OBSID-CCD
 
-                    iprofiles1D.rootname = 'profs1D_%i_%s_BIAS01' % (
-                        OBSID, CCDk)
-                    iprofiles2D.rootname = 'mod2D_%i_%s_BIAS01' % (
-                        OBSID, CCDk)
+                    iprofiles1D.rootname = 'profs1D_%i_%s_%s' % (
+                        OBSID, CCDk, self.inputs['test'])
+                    iprofiles2D.rootname = 'mod2D_%i_%s_%s' % (
+                        OBSID, CCDk, self.inputs['test'])
 
                     #fprofilespickf = os.path.join(profilespath,profilespickf)
 
@@ -327,17 +340,17 @@ class BIAS01(DarkTask):
         else:
             ylim_1D= [0, 2.**16]
 
-        figkeys1 = ['B01basic_prof1D_hor', 'B01basic_prof1D_ver',
-                    'B01basic_histosRON']
+        figkeys1 = ['B0Xbasic_prof1D_hor', 'B0Xbasic_prof1D_ver',
+                    'B0Xbasic_histosRON']
         
         for tag in ['hor','ver']:    
             profs1D2plot[tag]['labelkeys'] = \
                         profs1D2plot[tag][CCDs[0]][Quads[0]]['x'].keys()
         
-        self.figdict['B01basic_prof1D_hor'][1]['data'] = profs1D2plot['hor']
-        self.figdict['B01basic_prof1D_hor'][1]['meta']['ylim'] = ylim_1D
-        self.figdict['B01basic_prof1D_ver'][1]['data'] = profs1D2plot['ver']
-        self.figdict['B01basic_prof1D_ver'][1]['meta']['ylim'] = ylim_1D
+        self.figdict['B0Xbasic_prof1D_hor'][1]['data'] = profs1D2plot['hor']
+        self.figdict['B0Xbasic_prof1D_hor'][1]['meta']['ylim'] = ylim_1D
+        self.figdict['B0Xbasic_prof1D_ver'][1]['data'] = profs1D2plot['ver']
+        self.figdict['B0Xbasic_prof1D_ver'][1]['meta']['ylim'] = ylim_1D
         
         def _load_histo(histos,data,label,ronrange):
            
@@ -372,8 +385,8 @@ class BIAS01(DarkTask):
         RON_histos['labelkeys'] = ['IMG','PRE','OVE']
         
         
-        self.figdict['B01basic_histosRON'][1]['data'] = RON_histos.copy()
-        self.figdict['B01basic_histosRON'][1]['meta']['xlim'] = ronrange
+        self.figdict['B0Xbasic_histosRON'][1]['data'] = RON_histos.copy()
+        self.figdict['B0Xbasic_histosRON'][1]['meta']['xlim'] = ronrange
         
         if self.report is not None:
             self.addFigures_ST(figkeys=figkeys1, dobuilddata=False)
@@ -396,22 +409,27 @@ class BIAS01(DarkTask):
                               meta=dict(),
                               header=CDP_header.copy())
         
-        ron_cdp.init_wb_and_fillAll(header_title='BIAS01: RON')
+        ron_cdp.init_wb_and_fillAll(header_title='%s: RON' % self.inputs['test'])
         self.save_CDP(ron_cdp)
         self.pack_CDP_to_dd(ron_cdp, 'RON_CDP')
 
         if self.report is not None:
             
-            beRONtex = ron_cdp.get_textable(sheet='RON_IMG', caption='BIAS01: RON (quadrant-img, minus model)',
+            beRONtex = ron_cdp.get_textable(sheet='RON_IMG', 
+                                            caption='%s: RON (quadrant-img, minus model)' % \
+                                                             self.inputs['test'],
                                             longtable=False, fitwidth=True)
             self.report.add_Text(beRONtex)
             
-            bePRERONtex = ron_cdp.get_textable(sheet='RON_PRE', caption='BIAS01: RON (pre-scan)',
+            bePRERONtex = ron_cdp.get_textable(sheet='RON_PRE', 
+                                               caption='%s: RON (pre-scan)' %\
+                                                    self.inputs['test'],
                                                longtable=False,fitwidth=True)
             self.report.add_Text(bePRERONtex)
             
-            beOVERONtex = ron_cdp.get_textable(sheet='RON_OVE', caption='BIAS01: RON (over-scan)',
-                                               longtable=False, fitwidth=True)
+            beOVERONtex = ron_cdp.get_textable(sheet='RON_OVE', 
+                            caption='%s: RON (over-scan)' % self.inputs['test'],
+                            longtable=False, fitwidth=True)
             self.report.add_Text(beOVERONtex)
             
         # OFFSETS
@@ -429,21 +447,24 @@ class BIAS01(DarkTask):
                               meta=dict(),
                               header=CDP_header.copy())
         
-        off_cdp.init_wb_and_fillAll(header_title='BIAS01: OFFSETS')
+        off_cdp.init_wb_and_fillAll(header_title='%s: OFFSETS' % self.inputs['test'])
 
         self.save_CDP(off_cdp)
         self.pack_CDP_to_dd(off_cdp, 'OFF_CDP')
 
         if self.report is not None:
-            PREOFFtex = off_cdp.get_textable(sheet='OFF_PRE', caption='BIAS01: Offsets, pre-scan.',
+            PREOFFtex = off_cdp.get_textable(sheet='OFF_PRE', 
+                                caption='%s: Offsets, pre-scan.' % self.inputs['test'],
                                             longtable=False, fitwidth=True)
             self.report.add_Text(PREOFFtex)
             
-            IMGOFFtex = off_cdp.get_textable(sheet='OFF_IMG', caption='BIAS01: Offsets, image area.',
+            IMGOFFtex = off_cdp.get_textable(sheet='OFF_IMG', 
+                            caption='%s: Offsets, image area.' % self.inputs['test'],
                                                longtable=False, fitwidth=True)
             self.report.add_Text(IMGOFFtex)
             
-            OVEOFFtex = off_cdp.get_textable(sheet='OFF_OVE', caption='BIAS01: Offsets, over-scan.',
+            OVEOFFtex = off_cdp.get_textable(sheet='OFF_OVE', 
+                            caption='%s: Offsets, over-scan.' % self.inputs['test'],
                                                longtable=False, fitwidth=True)
             self.report.add_Text(OVEOFFtex)
 
@@ -471,7 +492,9 @@ class BIAS01(DarkTask):
         
         if self.report is not None:
             self.report.add_Section(
-                keyword='meta', Title='BIAS01 Meta-Analysis', level=0)
+                keyword='meta', 
+                Title='%s Meta-Analysis' % self.inputs['test'], 
+                level=0)
         
         DDindices = copy.deepcopy(self.dd.indices)
         
@@ -624,12 +647,12 @@ class BIAS01(DarkTask):
         
         # PLOTTING 1D PROFILES OF MASTER BIAS
         
-        self.figdict['B01meta_prof1D_hor'][1]['data'] = profs1D2plot['hor'].copy()
-        self.figdict['B01meta_prof1D_ver'][1]['data'] = profs1D2plot['ver'].copy()
+        self.figdict['B0Xmeta_prof1D_hor'][1]['data'] = profs1D2plot['hor'].copy()
+        self.figdict['B0Xmeta_prof1D_ver'][1]['data'] = profs1D2plot['ver'].copy()
         
         if self.report is not None:
-            self.addFigures_ST(figkeys=['B01meta_prof1D_hor',
-                                        'B01meta_prof1D_ver'],
+            self.addFigures_ST(figkeys=['B0Xmeta_prof1D_hor',
+                                        'B0Xmeta_prof1D_ver'],
                                dobuilddata=False)
         
         # SAVING 1D PROFILES OF MASTER BIAS as a CDP
@@ -645,7 +668,7 @@ class BIAS01(DarkTask):
         
         # DISPLAYING THE MASTER BIAS FRAMES
         
-        self.figdict['B01meta_MasterBias_2D'][1]['data'] = MB_2PLOT.copy()
+        self.figdict['B0Xmeta_MasterBias_2D'][1]['data'] = MB_2PLOT.copy()
         
         # UPDATING scaling based on data
         
@@ -654,22 +677,22 @@ class BIAS01(DarkTask):
         else:
             normfunction = False
         
-        self.figdict['B01meta_MasterBias_2D'][1]['meta']['corekwargs']['norm'] = normfunction
+        self.figdict['B0Xmeta_MasterBias_2D'][1]['meta']['corekwargs']['norm'] = normfunction
         
         if self.report is not None:
-            self.addFigures_ST(figkeys=['B01meta_MasterBias_2D'],
+            self.addFigures_ST(figkeys=['B0Xmeta_MasterBias_2D'],
                                dobuilddata=False)
 
 
 class Test(unittest.TestCase):
     """
-    Unit tests for the BIAS01 class.
+    Unit tests for the BIAS0X class.
     """
 
     def setUp(self):
 
-        inputs = dict()
-        self.b01 = BIAS01(inputs, log=None, drill=True, debug=False)
+        inputs = dict(test='BIAS01')
+        self.b01 = BIAS0X(inputs, log=None, drill=True, debug=False)
 
     def test_check_data(self):
         """
