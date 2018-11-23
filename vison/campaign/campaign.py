@@ -18,7 +18,7 @@ import numpy as np
 import copy
 
 from vison.point import FOCUS00, PSF0X
-from vison.dark import BIAS01, DARK01
+from vison.dark import BIAS0X, DARK01
 from vison.flat import NL01, NL02, PTC0X, FLAT0X, BF01
 from vison.inject import CHINJ01, CHINJ02
 from vison.pump import TP01, TP02
@@ -42,6 +42,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
     test_sequence = OrderedDict()
     
     _toGen = dict(BIAS01=False,
+                  BIAS02=False,
                   DARK01=False,
                   CHINJ01=False,
                   CHINJ02=False,
@@ -79,7 +80,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         diffBIAS01 = dict(mirr_on=0)
         diffBIAS01.update(diffvalues)
 
-        bias01 = BIAS01.BIAS01(inputs=dict(elvis=elvis,
+        bias01 = BIAS0X.BIAS0X(inputs=dict(elvis=elvis,
                                            CHAMBER=CHAMBER,
                                            test='BIAS01',
                                            N=Nbias01,
@@ -87,6 +88,28 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         #structBIAS01 = bias01.build_scriptdict(elvis=elvis)
         test_sequence['BIAS01'] = copy.deepcopy(bias01)
+        
+    # BIAS
+
+    if _toGen['BIAS02']:
+
+        print 'BIAS02...'
+
+        Nbias02 = 10
+        diffBIAS02 = dict(mirr_on=0, 
+                          rdmode='rwd_bas_vs',
+                          swellw=context.sumwell['rwd_bas_vs'][0],
+                          swelldly=context.sumwell['rwd_bas_vs'][1])
+        diffBIAS02.update(diffvalues)
+
+        bias02 = BIAS0X.BIAS0X(inputs=dict(elvis=elvis,
+                                           CHAMBER=CHAMBER,
+                                           test='BIAS02',
+                                           N=Nbias02,
+                                           diffvalues=diffBIAS02))
+
+        #structBIAS01 = bias01.build_scriptdict(elvis=elvis)
+        test_sequence['BIAS02'] = copy.deepcopy(bias02)
 
     # DARKS
 

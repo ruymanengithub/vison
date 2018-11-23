@@ -63,7 +63,7 @@ waitTO = 3600.*4. # seconds
 class Pipe(object):
     """Master Class of FM-analysis """
 
-    from vison.dark.BIAS01 import BIAS01
+    from vison.dark.BIAS0X import BIAS0X
     from vison.dark.DARK01 import DARK01
     from vison.flat.NL01 import NL01
     from vison.flat.NL02 import NL02
@@ -84,7 +84,9 @@ class Pipe(object):
     from vison.other.MOT_FF import MOT_FF
     from vison.other.MOT_WARM import MOT_WARM
 
-    Test_dict = dict(BIAS01=BIAS01, DARK01=DARK01,
+    Test_dict = dict(BIAS01=BIAS0X, 
+                     BIAS02=BIAS0X,
+                     DARK01=DARK01,
                      NL01=NL01, NL02=NL02, 
                      FLAT01=FLAT0X,
                      PTC01=PTC0X,BF01=BF01,
