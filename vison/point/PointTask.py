@@ -580,6 +580,7 @@ class PointTask(Task):
                 
                 strackers[CCDk].apply_patt_transform(simmx)
                 
+                
         else:
             # raise FLAG
             self.dd.flags.add('STARS_MISSING')

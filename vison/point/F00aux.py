@@ -12,10 +12,6 @@ Created on Tue Nov 14 13:54:34 2017
 
 # IMPORT STUFF
 from pdb import set_trace as stop
-import numpy as np
-import os
-from collections import OrderedDict
-import pandas as pd
 from matplotlib import cm
 
 from vison.datamodel import cdp
@@ -67,7 +63,8 @@ def gt_check_flu_dict(wave):
                           doNiceXDate=False,
                           suptitle='FOCUS00\_%i-checks: Fluence' % wave,
                           xlabel='Mirr [mm]',
-                          ylabel='Flu.[ADU]'))
+                          ylabel='Flu.[ADU]',
+                        corekwargs=dict(marker='.',linestyle='-')))
 
 
 def gt_check_fwhmx_dict(wave):
@@ -79,7 +76,8 @@ def gt_check_fwhmx_dict(wave):
                           doNiceXDate=False,
                           suptitle='FOCUS00\_%i-checks: FWHM(x)' % wave,
                           xlabel='Mirr [mm]',
-                          ylabel='FWHMx [pix]'))
+                          ylabel='FWHMx [pix]',
+                        corekwargs=dict(marker='.',linestyle='-')))
 
 
 def gt_check_fwhmy_dict(wave):
@@ -91,7 +89,8 @@ def gt_check_fwhmy_dict(wave):
                           doNiceXDate=False,
                           suptitle='FOCUS00\_%i-checks: FWHM(y)' % wave,
                           xlabel='Mirr [mm]',
-                          ylabel='FWHMy [pix]'))
+                          ylabel='FWHMy [pix]',
+                        corekwargs=dict(marker='.',linestyle='-')))
 
 def gt_meta_deltafwhm_dict(wave):
     return dict(figname='FOCUS00_%i_deltafwhm_map.png' % wave,

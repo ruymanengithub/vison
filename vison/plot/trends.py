@@ -25,6 +25,8 @@ offset_lims = [1000.,4000.] # ADUs
 RON_lims = [0.,5.] # ADUs
 
 class Fig_Basic_Checkstat(figclasses.Fig_XY_fromDD):
+    
+    plotclass = baseplotclasses.BeamPlotYvX
 
     def __init__(self, *args, **kwargs):
         super(Fig_Basic_Checkstat, self).__init__(*args, **kwargs)
@@ -36,7 +38,7 @@ class Fig_Basic_Checkstat(figclasses.Fig_XY_fromDD):
         self.caption = ''
         self.texfraction = 1.1
         self.data = dict()
-        self.plotclass = baseplotclasses.BeamPlotYvX
+        
 
     def build_data(self, dd, **kwargs):
         """ """

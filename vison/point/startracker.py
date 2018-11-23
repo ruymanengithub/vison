@@ -179,17 +179,17 @@ class StarTracker(object):
                     rotation=np.radians(rotation_deg), translation=translation)
         return ss.params
 
-    def find_patt_transform(self, X, Y, Full = False, discardQ=None,debug=False):
+    def find_patt_transform(self, Xt, Yt, Full = False, discardQ=None,debug=False):
         """ """
-        Xt = self.Pattern['X']
-        Yt = self.Pattern['Y']
+        Xs = self.Pattern['X']
+        Ys = self.Pattern['Y']
         if discardQ is not None:
             ID = self.Pattern['ID']
             sel = np.array([i for i in range(len(ID)) if ID[i][0] not in discardQ])
-            Xt = Xt[sel].copy()
-            Yt = Yt[sel].copy()
+            Xs = Xs[sel].copy()
+            Ys = Ys[sel].copy()
         
-        source = zip(X, Y)
+        source = zip(Xs, Ys)
         target = zip(Xt, Yt)
         
         source = sort_coordinate_pairs(source)
@@ -216,7 +216,6 @@ class StarTracker(object):
             ax2 = fig.add_subplot(122)
             ax2.plot(xtp-t_list[:,0],ytp-t_list[:,1],'bo')
             plt.show()
-        
         
         if Full:
             return transf, (s_list, t_list)
