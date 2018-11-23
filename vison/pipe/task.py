@@ -38,6 +38,14 @@ from vison import __version__
 
 isthere = os.path.exists
 
+HKKeys = ['CCD3_OD_T','CCD2_OD_T','CCD1_OD_T','COMM_RD_T',
+          'CCD2_IG1_T','CCD1_IG1_T','CCD3_TEMP_T','CCD2_TEMP_T','CCD1_TEMP_T','CCD3_IG1_T',
+          'COMM_IG2_T','VID_PCB_TEMP_T','FPGA_PCB_TEMP_T','CCD1_OD_B','CCD2_OD_B',
+          'CCD3_OD_B','COMM_RD_B','CCD2_IG1_B','CCD3_IG1_B','CCD1_TEMP_B',
+          'CCD2_TEMP_B','CCD3_TEMP_B','CCD1_IG1_B','COMM_IG2_B','VID_PCB_TEMP_B',
+          'FPGA_PCB_TEMP_B','RPSU_TEMP1',
+          'RPSU_28V_PRI_I','RPSU_TEMP_2']
+
 
 class Task(object):
     """ """

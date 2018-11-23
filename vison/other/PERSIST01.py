@@ -18,6 +18,7 @@ from pdb import set_trace as stop
 from copy import deepcopy
 from collections import OrderedDict
 
+from vison.pipe.task import HKKeys
 from vison.support import context
 from vison.ogse import ogse as ogsemod
 from vison.datamodel import scriptic as sc
@@ -25,7 +26,7 @@ from vison.pipe.task import Task
 from vison.datamodel import inputs
 # END IMPORT
 
-HKKeys = []
+#HKKeys = []
 
 PER01_commvalues = dict(program='CALCAMP', test='PERSIST01',
                         flushes=7, siflsh=1, siflsh_p=500,
