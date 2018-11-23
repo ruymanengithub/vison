@@ -457,16 +457,20 @@ class PointTask(Task):
                     
                     X_IMAGE = SExCat['X_IMAGE'][sel].copy() - 1.
                     Y_IMAGE = SExCat['Y_IMAGE'][sel].copy() - 1.
-                
-                    X_PHYS, Y_PHYS = self.ccdcalc.cooconv_CCD_2_Phys(X_IMAGE,Y_IMAGE)
-                    ixnonan = np.where(~(np.isnan(X_PHYS) | np.isnan(Y_PHYS)))
+                                    
+                    
+                    X_PHYS, Y_PHYS = self.ccdcalc.cooconv_CCD_2_Phys(X_IMAGE,Y_IMAGE)                    
+                    whatQ = self.ccdcalc.get_Q_of_CCDcoo(X_IMAGE,Y_IMAGE)[0]
+                    
+                    ixnonan = np.where(~(np.isnan(X_PHYS) | np.isnan(Y_PHYS)) &
+                            (whatQ != 'G'))
                     X_PHYS = X_PHYS[ixnonan]
                     Y_PHYS = Y_PHYS[ixnonan]
                     
-                
+                    
                     try:
                         transf, (s_list, t_list) = strackers[CCDk].find_patt_transform(X_PHYS,Y_PHYS,
-                                  Full=True, debug=False)
+                                  Full=True, discardQ=['G'],debug=False)
                     except:
                     
                         if self.log is not None:
@@ -483,6 +487,7 @@ class PointTask(Task):
             LOCK_TB['ROTATION'][jCCD] = transf.rotation
             LOCK_TB['TRANS_X'][jCCD] = transf.translation[0]
             LOCK_TB['TRANS_Y'][jCCD] = transf.translation[1]
+            
         
         # REPORT LOCK_TB
         
@@ -508,6 +513,8 @@ class PointTask(Task):
                 self.inputs['test'])
         self.save_CDP(lock_tb_cdp)
         self.pack_CDP_to_dd(lock_tb_cdp, 'LOCK_TB_CDP')
+        
+        
         
         if self.report is not None:
             

@@ -179,27 +179,44 @@ class StarTracker(object):
                     rotation=np.radians(rotation_deg), translation=translation)
         return ss.params
 
-    def find_patt_transform(self, X, Y, Full = False, debug=False):
+    def find_patt_transform(self, X, Y, Full = False, discardQ=None,debug=False):
         """ """
-        target = zip(self.Pattern['X'], self.Pattern['Y'])
-        source = zip(X, Y)
+        Xt = self.Pattern['X']
+        Yt = self.Pattern['Y']
+        if discardQ is not None:
+            ID = self.Pattern['ID']
+            sel = np.array([i for i in range(len(ID)) if ID[i][0] not in discardQ])
+            Xt = Xt[sel].copy()
+            Yt = Yt[sel].copy()
         
-                
+        source = zip(X, Y)
+        target = zip(Xt, Yt)
+        
         source = sort_coordinate_pairs(source)
         target = sort_coordinate_pairs(target)
         
         xs, ys = tuple(zip(*source))
         xt, yt = tuple(zip(*target))
         
-        if debug:
-            from pylab import plot,show
-            plot(xs, ys,'ro-')
-            plot(xt, yt,'ko-')
-            show()
         try:
             transf, (s_list, t_list) = aa.find_transform(source, target)
+            
         except:
             raise RuntimeError
+        
+        if debug:
+            #from pylab import plot,show
+            from matplotlib import pyplot as plt
+            mx = self.get_similaritymx(transf.scale, transf.rotation, transf.translation)
+            xtp, ytp = self._apply_transform(s_list[:,0], s_list[:,1], mx)
+            fig = plt.figure()
+            ax1 = fig.add_subplot(121)
+            ax1.plot(xtp, ytp,'ro')
+            ax1.plot(xt, yt,'k.')
+            ax2 = fig.add_subplot(122)
+            ax2.plot(xtp-t_list[:,0],ytp-t_list[:,1],'bo')
+            plt.show()
+        
         
         if Full:
             return transf, (s_list, t_list)
