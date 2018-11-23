@@ -46,10 +46,11 @@ class FlatTask(Task):
         elif 'PTC02' in test:
             kwargs = dict(figkeys=['PTC0Xchecks_offsets', 'PTC0Xchecks_stds',
                                    'PTC0Xchecks_flu', 'PTC0Xchecks_imgstd'])
-        elif test == 'NL01':
+        elif test in ['NL01','NL02']:
             kwargs = dict(figkeys=['NL01checks_offsets', 'NL01checks_stds',
                                    'NL01checks_flu',
                                    'NL01checks_imgstd'])
+        
         Task.check_data(self, **kwargs)
 
     def get_checkstats_ST(self, **kwargs):
@@ -202,55 +203,57 @@ class FlatTask(Task):
                 self.addComplianceMatrix2Report(
                     _compliance_std, label='COMPLIANCE RON [%s]:' % reg)
 
-        # IMG FLUENCES
-        FLU_lims = self.perflimits['FLU_lims']  # dict
-
-        _compliance_flu = self.check_stat_perCCDandCol(
-            self.dd.mx['flu_med_img'], FLU_lims, CCDs)
+        if self.inputs['test'] != 'NL02':
         
-        self.addComplianceMatrix2Self(_compliance_flu,'fluence')
-        
-        # IMG FLUXES
-        
-        fluences = self.dd.mx['flu_med_img'][:].copy()
-        exptime = self.dd.mx['exptime'][:].copy()
-        
-        ixnozero = np.where(exptime[:,0]>0)
-        
-        _f = np.squeeze(fluences[ixnozero,...])
-        _e = np.expand_dims(np.squeeze(exptime[ixnozero,...]),axis=-1)
-        
-        fluxes = np.nanmean(_f/_e,axis=0) # CRUDE!
-        sat_times = 2.**16/fluxes
-        sat_times = np.expand_dims(sat_times,axis=0)
-        
-        exp_sat_time = self.ogse.profile['tFWC_flat']['nm%i' % self.inputs['wavelength']]
-        sat_time_lims = dict()
-        for CCD in CCDs:
-            sat_time_lims[CCD] = (exp_sat_time * np.array([0.9,1.1])).tolist()
-        
-        _compliance_flux = self.check_stat_perCCDandQ(
-                sat_times, sat_time_lims, CCDs)
-        
-        self.addComplianceMatrix2Self(_compliance_flux,'flux')        
-
-        if not self.IsComplianceMatrixOK(_compliance_flux):
-            self.dd.flags.add('POORQUALDATA')
-            self.dd.flags.add('FLUX_OOL')
-        if self.log is not None:
-            self.addComplianceMatrix2Log(
-                _compliance_flux, label='COMPLIANCE SATURATION TIME (FLUX)')
-        if self.report is not None:
-            self.addComplianceMatrix2Report(
-            _compliance_flux, label='COMPLIANCE SATURATION TIME (FLUX)',
-            caption='Saturation times in seconds.')
-        
-        if not self.IsComplianceMatrixOK(_compliance_flu):
-            self.dd.flags.add('POORQUALDATA')
-            self.dd.flags.add('FLUENCE_OOL')
-        if self.log is not None:
-            self.addComplianceMatrix2Log(
-                _compliance_flu, label='COMPLIANCE FLUENCE:')
-        if self.report is not None:
-            self.addComplianceMatrix2Report(
-                _compliance_flu, label='COMPLIANCE FLUENCE:')
+            # IMG FLUENCES
+            FLU_lims = self.perflimits['FLU_lims']  # dict
+    
+            _compliance_flu = self.check_stat_perCCDandCol(
+                self.dd.mx['flu_med_img'], FLU_lims, CCDs)
+            
+            self.addComplianceMatrix2Self(_compliance_flu,'fluence')
+            
+            # IMG FLUXES
+            
+            fluences = self.dd.mx['flu_med_img'][:].copy()
+            exptime = self.dd.mx['exptime'][:].copy()
+            
+            ixnozero = np.where(exptime[:,0]>0)
+            
+            _f = np.squeeze(fluences[ixnozero,...])
+            _e = np.expand_dims(np.squeeze(exptime[ixnozero,...]),axis=-1)
+            
+            fluxes = np.nanmean(_f/_e,axis=0) # CRUDE!
+            sat_times = 2.**16/fluxes
+            sat_times = np.expand_dims(sat_times,axis=0)
+            
+            exp_sat_time = self.ogse.profile['tFWC_flat']['nm%i' % self.inputs['wavelength']]
+            sat_time_lims = dict()
+            for CCD in CCDs:
+                sat_time_lims[CCD] = (exp_sat_time * np.array([0.9,1.1])).tolist()
+            
+            _compliance_flux = self.check_stat_perCCDandQ(
+                    sat_times, sat_time_lims, CCDs)
+            
+            self.addComplianceMatrix2Self(_compliance_flux,'flux')        
+    
+            if not self.IsComplianceMatrixOK(_compliance_flux):
+                self.dd.flags.add('POORQUALDATA')
+                self.dd.flags.add('FLUX_OOL')
+            if self.log is not None:
+                self.addComplianceMatrix2Log(
+                    _compliance_flux, label='COMPLIANCE SATURATION TIME (FLUX)')
+            if self.report is not None:
+                self.addComplianceMatrix2Report(
+                _compliance_flux, label='COMPLIANCE SATURATION TIME (FLUX)',
+                caption='Saturation times in seconds.')
+            
+            if not self.IsComplianceMatrixOK(_compliance_flu):
+                self.dd.flags.add('POORQUALDATA')
+                self.dd.flags.add('FLUENCE_OOL')
+            if self.log is not None:
+                self.addComplianceMatrix2Log(
+                    _compliance_flu, label='COMPLIANCE FLUENCE:')
+            if self.report is not None:
+                self.addComplianceMatrix2Report(
+                    _compliance_flu, label='COMPLIANCE FLUENCE:')

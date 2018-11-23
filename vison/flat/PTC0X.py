@@ -6,8 +6,7 @@ TEST: PTC0X
 
 Photon-Transfer-Curve Analysis
    PTC01 - nominal temperature and wavelength
-   PTC02 - alternative temperatures / wavelengths
-   PTC03 - alternative Reset Drain (QM Stability Programme)
+   PTC02 - alternative temperatures / wavelengths / RD
 
 Tasks:
 

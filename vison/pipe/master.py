@@ -98,7 +98,10 @@ class Pipe(object):
                      STRAY00=STRAY00,
                      MOT_FF=MOT_FF,
                      MOT_WARM=MOT_WARM)
-
+    
+    for RD in [15.5, 16.0, 16.5]:
+        Test_dict['NL02_%iR' % (RD*100,)] = NL02
+    
     for wave in [0, 590, 640, 730, 880]:
         Test_dict['FLAT02_%i' % wave] = FLAT0X
     for wave in [590, 640, 730, 800, 880, 0]:

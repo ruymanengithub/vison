@@ -6,10 +6,9 @@ TEST: NL02
 
 Similar to NL01, but using 2 wavelengths:
         - ND4 for low fluences
-        - 880 nm fo high fluences
-
+        - 880 nm for high fluences
+        - Also possible to use with different values of RD (stability tests)
 End-To-End Non-Linearity Curve
-
 
 Tasks:
 
@@ -72,7 +71,6 @@ NL02_commvalues = dict(program='CALCAMP',test='NL02',
                        motr_on=0,
                        source='flat',
                        comments='')
-
 
 class NL02_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
