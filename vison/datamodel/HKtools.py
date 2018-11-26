@@ -172,7 +172,7 @@ allHK_keys['7.2.X'] = ['TimeStamp', 'CCD3_OD_T', 'CCD2_OD_T', 'CCD1_OD_T', 'COMM
 allHK_keys['7.5.X'] = ['TimeStamp','CCD3_OD_T','CCD2_OD_T','CCD1_OD_T','COMM_RD_T',
                       'CCD2_IG1_T','CCD1_IG1_T','CCD3_TEMP_T','CCD2_TEMP_T','CCD1_TEMP_T','CCD3_IG1_T',
                       'COMM_IG2_T','VID_PCB_TEMP_T','FPGA_PCB_TEMP_T','CCD1_OD_B','CCD2_OD_B',
-                      'CCD3_OD_B','COMM_RD_B','CCD2_IG1_B','CCD3_IG1_B','	CCD1_TEMP_B',
+                      'CCD3_OD_B','COMM_RD_B','CCD2_IG1_B','CCD3_IG1_B','CCD1_TEMP_B',
                       'CCD2_TEMP_B','CCD3_TEMP_B','CCD1_IG1_B','COMM_IG2_B','VID_PCB_TEMP_B',
                       'FPGA_PCB_TEMP_B','FPGA_BIAS_DD','FPGA_BIAS_OG','FPGA_BIAS_ID1','FPGA_BIAS_ID2',
                       'FPGA_BIAS_ID_T','FPGA_BIAS_ID_B','FPGA_VRCLK_V','FPGA_10VA_P_V','FPGA_VICLK_V',
@@ -184,7 +184,7 @@ allHK_keys['7.5.X'] = ['TimeStamp','CCD3_OD_T','CCD2_OD_T','CCD1_OD_T','COMM_RD_
                       '3v3ProtErr','5vProtErr','V3v3ProtCnt','V5ProtCnt','VccdErrFlg','VclkErrFlg',
                       'VanErrFlg','dacExeErr','hkTmErr','spwTmTOFlg','spwTmRspErrFlg','spwTcPktErrFlg',
                       'adcBsyErrFlg',
-                      'CDPUClkSw','	hkRamErr','ADC_BSY_ERR_CNT','pixelToErr','spwStatus',
+                      'CDPUClkSw','hkRamErr','ADC_BSY_ERR_CNT','pixelToErr','spwStatus',
                       'spwTmPtypeFlag','TwoCmdsErr','SPW_STATUS_REG','Out_of_range']
 
 # HKlims = dict(Performance=dict(key=[Relative/Absolute/Identity,min,max]))
@@ -389,6 +389,7 @@ def loadHK_QFMsingle(filename, elvis=context.elvis, validate=False):
         assert table.keys() == expectedkeys, \
             'HK keys in %s not mathing expectation for ELVIS=%s' % \
                          (filename, elvis)
+    
     return table
 
 
@@ -590,6 +591,7 @@ def parseHKfiles(HKlist, elvis=context.elvis):
 
     nfiles = len(HKlist)
     HK_keys = allHK_keys[elvis]
+    stop()
     nkeys = len(HK_keys)
 
     ver = int(st.split(elvis, '.')[0])
@@ -614,7 +616,7 @@ def parseHKfiles(HKlist, elvis=context.elvis):
         HK = HKloader(HKfname, elvis=elvis)
 
         synthHKdict = synthHK(HK)
-
+        
         for ik, key in enumerate(HK_keys):
             try: 
                 data[ix, :, ik] = synthHKdict[key]
