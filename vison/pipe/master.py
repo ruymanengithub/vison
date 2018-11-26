@@ -51,6 +51,7 @@ from vison.support import vistime
 #from lib import get_time_tag
 from vison.pipe import lib as pilib
 from vison.support import context
+from vison.support import utils
 # END IMPORT
 
 isthere = os.path.exists
@@ -199,6 +200,7 @@ class Pipe(object):
         
         print 'Running: %s' % taskname
         
+        
         taskreport = self.dotask(taskname, taskinputs,
                                  drill=self.drill, debug=self.debug)
         
@@ -302,8 +304,10 @@ class Pipe(object):
                 resultsroot, taskinputs['resultspath'])
             taskinputs['elvis'] = elvis
             taskinputs['datapath'] = dayfolder
-
-            test = self.get_test(taskname, taskinputs, log=self.log)
+                      
+                      
+            strip_taskname = utils.remove_iter_tag(taskname, Full=False)
+            test = self.get_test(strip_taskname, taskinputs, log=self.log)
             taskinputs = copy.deepcopy(test.inputs)
             
 
@@ -403,20 +407,22 @@ class Pipe(object):
 
     def dotask(self, taskname, inputs, drill=False, debug=False):
         """Generic test master function."""
+        
+        strip_taskname = utils.remove_iter_tag(taskname,Full=False)
 
         tini = datetime.datetime.now()
 
         Errors = False
 
         try:
-            test = self.get_test(taskname, inputs, self.log, drill, debug)
+            test = self.get_test(strip_taskname, inputs, self.log, drill, debug)
             test()  # test execution
         except:
             self.catchtraceback()
             Errors = True
             if self.log is not None:
                 self.log.info('TASK "%s@%s" FAILED, QUITTING!' %
-                              (taskname, self.Test_dict[taskname].__module__))
+                              (taskname, self.Test_dict[strip_taskname].__module__))
             else:
                 print 'TASK "%s@%s" FAILED, QUITTING!' % (
                     taskname, self.Test_dict[taskname].__module__)

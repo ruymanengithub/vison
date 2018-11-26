@@ -28,16 +28,33 @@ from vison.point import lib as polib
 from vison.ogse import ogse as ogsemod
 #from vison.pipe import lib as pilib
 from vison.support import context
+from vison.support import utils
 # END IMPORT
 
 
-#def generate_test_sequence_new(diffvalues,toGen, elvis=context.elvis,
-#                               CHAMBER=None,purpose='scripst'):
-#    """Now supporting test repetitions."""
+
+def generate_test_sequence(diffvalues,toGen, elvis=context.elvis,
+                               CHAMBER=None,purpose='scripst'):
+    """Now supporting test repetitions."""
+    taskslist = toGen.keys()
+    test_sequence = OrderedDict()
+    for taskname in taskslist:
+        strip_taskname, iteration = utils.remove_iter_tag(taskname,Full=True)
+        _toGen = OrderedDict()
+        _toGen[strip_taskname] = True
+        ans =  _generate_test_sequence(diffvalues,_toGen,
+                                      elvis,CHAMBER,purpose)
+        if iteration is not None:
+            for key in ans.keys():
+                test_sequence['%s.%i' % (key,iteration)] = ans[key]
+        else:
+            for key in ans.keys():
+                test_sequence[key] = ans[key]
     
+    return test_sequence
     
 
-def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
+def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                            CHAMBER=None, purpose='scripts'):
     """ """
 
@@ -75,7 +92,6 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                   MOT_FF=False)
     
     _toGen.update(toGen)
-
 
     # BIAS
 
@@ -502,7 +518,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         
 
 
-    if toGen['FLATFLUX00']:
+    if _toGen['FLATFLUX00']:
 
         print 'FLATFLUX00...'
 

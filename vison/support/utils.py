@@ -59,3 +59,21 @@ def get_path_decorator(dpath):
         else:
             return os.path.join(dpath,'%s.%s' % (path,extension))
     return np.vectorize(fullinpath_adder)
+
+
+def remove_iter_tag(taskname,Full=False):
+    if '.' in taskname:
+        _t =  taskname[0:taskname.find('.')]
+        iteration = int(taskname[taskname.find('.')+1:])
+        if Full:
+            return _t, iteration
+        else:
+            return _t
+    else:
+        if Full:
+            return taskname, None
+        else:
+            return taskname
+
+def vec_remove_iter_tag(taskslist,Full=False):
+    return np.vectorize(remove_iter_tag)(taskslist,Full).tolist()
