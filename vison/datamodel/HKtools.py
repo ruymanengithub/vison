@@ -591,7 +591,7 @@ def parseHKfiles(HKlist, elvis=context.elvis):
 
     nfiles = len(HKlist)
     HK_keys = allHK_keys[elvis]
-    stop()
+    
     nkeys = len(HK_keys)
 
     ver = int(st.split(elvis, '.')[0])
