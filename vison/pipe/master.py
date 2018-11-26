@@ -101,8 +101,7 @@ class Pipe(object):
                      MOT_WARM=MOT_WARM)
     
     for RD in [15.5, 16.0, 16.5]:
-        Test_dict['NL02_%iR' % (RD*100,)] = NL02
-    
+        Test_dict['NL02_%iR' % (RD*10,)] = NL02
     for wave in [0, 590, 640, 730, 880]:
         Test_dict['FLAT02_%i' % wave] = FLAT0X
     for wave in [590, 640, 730, 800, 880, 0]:
@@ -112,7 +111,7 @@ class Pipe(object):
     for temp in [150, 156]:
         Test_dict['PTC02_%iK' % temp] = PTC0X
     for RD in [15.5, 16.0, 16.5]:
-        Test_dict['PTC02_%iR' % (RD*100,)] = PTC0X
+        Test_dict['PTC02_%iR' % (RD*10,)] = PTC0X
     for wave in [590, 640, 730, 800, 880]:
         Test_dict['FOCUS00_%i' % wave] = FOCUS00
     for wave in [590, 640, 730, 800, 880]:
