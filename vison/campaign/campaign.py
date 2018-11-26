@@ -31,6 +31,12 @@ from vison.support import context
 # END IMPORT
 
 
+#def generate_test_sequence_new(diffvalues,toGen, elvis=context.elvis,
+#                               CHAMBER=None,purpose='scripst'):
+#    """Now supporting test repetitions."""
+    
+    
+
 def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                            CHAMBER=None, purpose='scripts'):
     """ """
