@@ -33,8 +33,8 @@ class DarkTask(Task):
     def check_data(self):
         """ """
         test = self.inputs['test']
-        if test == 'BIAS01':
-            kwargs = dict(figkeys=['B01checks_offsets', 'B01checks_stds'])
+        if test in ['BIAS01','BIAS02']:
+            kwargs = dict(figkeys=['B0Xchecks_offsets', 'B0Xchecks_stds'])
         elif test == 'DARK01':
             kwargs = dict(figkeys=['D01checks_offsets', 'D01checks_stds',
                                    'D01checks_flu'])
@@ -119,7 +119,7 @@ class DarkTask(Task):
 
         offsets_lims = self.perflimits['offsets_lims']
 
-        if test == 'BIAS01':
+        if test in ['BIAS01','BIAS02']:
             regs_off = ['pre', 'img', 'ove']
         elif test == 'DARK01':
             regs_off = ['pre', 'ove']
@@ -145,7 +145,7 @@ class DarkTask(Task):
 
         offsets_gradients = self.perflimits['offsets_gradients']
 
-        if test == 'BIAS01':
+        if test in ['BIAS01','BIAS02']:
             regs_grad = ['img', 'ove']
         elif test == 'DARK01':
             regs_grad = ['ove']
@@ -170,7 +170,7 @@ class DarkTask(Task):
 
         # absolute value of std
 
-        if test == 'BIAS01':
+        if test in ['BIAS01','BIAS02']:
             regs_std = ['pre', 'img', 'ove']
         elif test == 'DARK01':
             regs_std = ['pre', 'ove']
