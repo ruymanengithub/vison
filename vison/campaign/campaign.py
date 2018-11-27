@@ -60,7 +60,7 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     ogse = ogsemod.Ogse(CHAMBER)
     
-    print 'GENERATING TEST SEQUENCE...'
+    #print 'GENERATING TEST SEQUENCE...'
 
     test_sequence = OrderedDict()
     
