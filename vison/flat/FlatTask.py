@@ -46,7 +46,7 @@ class FlatTask(Task):
         elif 'PTC02' in test:
             kwargs = dict(figkeys=['PTC0Xchecks_offsets', 'PTC0Xchecks_stds',
                                    'PTC0Xchecks_flu', 'PTC0Xchecks_imgstd'])
-        elif test in ['NL01','NL02']:
+        elif test in ['NL01','NL02'] or 'NL02' in test:
             kwargs = dict(figkeys=['NL01checks_offsets', 'NL01checks_stds',
                                    'NL01checks_flu',
                                    'NL01checks_imgstd'])
