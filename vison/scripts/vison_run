@@ -32,6 +32,7 @@ from optparse import OptionParser
 import sys
 import imp
 import multiprocessing
+import importlib
 
 from vison import Pipe
 from vison.pipe.lib import broadcast_todo_flags
@@ -40,11 +41,22 @@ from vison.support import vjson
 
 
 def openpyconfigf(configf):
-
-    f = open(configf)
-    exec f
-    f.close()
+    
+    with open(configf) as f:
+        exec(f,dict(RUNs=['D21']))
+        f.close()
+    stop()
     return inputdict
+
+def loadpyconfig(configf):
+    stop()
+    c = importlib.import_module(configf)
+    #import sys
+    #__import__(configf)
+    #c = sys.modules[configf]
+    stop()
+    return c.get_inputdict
+
 
 def parse_jsonconfig(jsonfile):
     rawjson = vjson.load_jsonfile(json,useyaml=True)
@@ -99,6 +111,8 @@ if __name__ == '__main__':
     
     if len(pyconfig)>0:
         inputdict = openpyconfigf(pyconfig)
+        #inputdictgetter = loadpyconfig(pyconfig)
+        stop()
     elif len(json)>=0:
         inputdict = parse_jsonconfig(json)
     
