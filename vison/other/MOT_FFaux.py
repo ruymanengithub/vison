@@ -64,11 +64,13 @@ def extract_overscan_profiles(ccdobj, thresholds, direction='serial'):
         nstrip = (strip - bias[ixgood]) / (injection[ixgood]-bias[ixgood])
         
         profile = np.mean(nstrip,axis=1)
-        
-        ixgood2 = np.where(profile.mask == False)
-        
-        profiles[Q] = dict(y=profile[ixgood2].data.copy(),
+        if isinstance(profile,np.ma.masked_array):
+            ixgood2 = np.where(profile.mask == False)
+            profiles[Q] = dict(y=profile[ixgood2].data.copy(),
                           x=x[ixgood2].copy())
+        else:
+            profiles[Q] = dict(y=profile.copy(),
+                          x=x.copy())
         
     return profiles
 

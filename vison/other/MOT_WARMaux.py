@@ -54,7 +54,8 @@ def get_basic_prof1Dver_dict(tag):
 RAMP_bits_histo_dict = dict(
     figname='',
     caption='MOT\_WARM-%s: Bits Histogram on RAMP image.',
-    meta=dict()
+    meta=dict(),
+    data=None
     )
 
 def get_MW_figs():
@@ -63,7 +64,7 @@ def get_MW_figs():
     MW_figs['MOTWbasic_HER_serial'] = [figclasses.Fig_Beam2DPlot, prof_HER_ser_dict]
     
     for tag in ['RAMP','CHINJ','FLAT']:
-        MW_figs['MOTWbasic_prof1D_ver_%s' % tag] = get_basic_prof1Dver_dict(tag)
+        MW_figs['MOTWbasic_prof1D_ver_%s' % tag] = [figclasses.Fig_Beam2DPlot,get_basic_prof1Dver_dict(tag)]
     
     for jCCD in [1,2,3]:
         MW_figs['RAMP_bits_histo_CCD%i' % jCCD] = [figclasses.Fig_Husk, RAMP_bits_histo_dict]
