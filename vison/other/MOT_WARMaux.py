@@ -57,14 +57,16 @@ RAMP_bits_histo_dict = dict(
     meta=dict()
     )
 
-MW_figs = OrderedDict()
-
-MW_figs['MOTWbasic_HER_serial'] = [figclasses.Fig_Beam2DPlot, prof_HER_ser_dict]
-
-for tag in ['RAMP','CHINJ','FLAT']:
-    MW_figs['MOTWbasic_prof1D_ver_%s' % tag] = get_basic_prof1Dver_dict(tag)
-
-for jCCD in [1,2,3]:
-    MW_figs['RAMP_bits_histo_CCD%i' % jCCD] = [figclasses.Fig_Husk, RAMP_bits_histo_dict]
-
-MW_figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
+def get_MW_figs():
+    MW_figs = OrderedDict()
+    
+    MW_figs['MOTWbasic_HER_serial'] = [figclasses.Fig_Beam2DPlot, prof_HER_ser_dict]
+    
+    for tag in ['RAMP','CHINJ','FLAT']:
+        MW_figs['MOTWbasic_prof1D_ver_%s' % tag] = get_basic_prof1Dver_dict(tag)
+    
+    for jCCD in [1,2,3]:
+        MW_figs['RAMP_bits_histo_CCD%i' % jCCD] = [figclasses.Fig_Husk, RAMP_bits_histo_dict]
+    
+    MW_figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
+    return MW_figs

@@ -25,10 +25,12 @@ from vison.plot import trends
 
 # END IMPORT
 
-prnu_tb_cdp = cdp.Tables_CDP()
-prnu_tb_cdp.rootname = '%s_%snm_PRNU_TB'
-
-CDP_lib = dict(PRNU_TB=prnu_tb_cdp)
+def get_CDP_lib():
+    prnu_tb_cdp = cdp.Tables_CDP()
+    prnu_tb_cdp.rootname = '%s_%snm_PRNU_TB'
+    
+    CDP_lib = dict(PRNU_TB=prnu_tb_cdp)
+    return CDP_lib
 
 
 def gt_check_offsets_dict(test):

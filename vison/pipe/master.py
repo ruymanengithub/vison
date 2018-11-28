@@ -43,6 +43,7 @@ import traceback
 import glob
 from collections import OrderedDict
 import select
+import inspect
 
 from vison import __version__
 from vison.support import logger as lg
@@ -169,7 +170,10 @@ class Pipe(object):
 
     def get_test(self, taskname, inputs=dict(), log=None, drill=False, debug=False):
         """ """
-        test = self.Test_dict[taskname](inputs, log, drill, debug)
+        testclass = self.Test_dict[taskname]
+        #pathtotest = os.path.split(inspect.getfile(testclass))[0]
+        #os.system('rm %s/*.pyc' % pathtotest) # avoids problems with .pyc files from previous tasks in the run... DIRTY HACK
+        test = testclass(inputs, log, drill, debug)
         return test
 
     def launchtask(self, taskname):
@@ -439,6 +443,7 @@ class Pipe(object):
             flags = []
         execlog['flags'] = flags.__repr__()
         
+        test = None
 
         return execlog
 

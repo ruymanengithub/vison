@@ -85,8 +85,8 @@ class BIAS0X(DarkTask):
         self.type = 'Simple'
                 
         self.HKKeys = HKKeys        
-        self.figdict = B0Xaux.B0Xfigs.copy()
-        self.CDP_lib = B0Xaux.CDP_lib.copy()
+        self.figdict = B0Xaux.get_B0Xfigs()
+        self.CDP_lib = B0Xaux.get_CDP_lib()
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        profiles='profiles', products='products')
         

@@ -86,27 +86,31 @@ chinj01_meta_dict = dict(
               suptitle='CHINJ01: INJECTION PROFILE.')
     )
 
-CH01figs = dict()
-CH01figs['CH01checks_offsets'] = [
-    trends.Fig_Basic_Checkstat, check_offsets_dict]
-CH01figs['CH01checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
-CH01figs['CH01checks_injlevel'] = [
-    trends.Fig_Basic_Checkstat, check_injlevel_dict]
-CH01figs['CH01checks_injstd'] = [trends.Fig_Basic_Checkstat, check_injstd_dict]
-CH01figs['CH01_alrow'] = [
-        figclasses.Fig_Beam2DPlot, extract_alrow_dict]
-CH01figs['CH01_alcol'] = [
-        figclasses.Fig_Beam2DPlot, extract_alcol_dict]
-CH01figs['CH01_meta'] = [
-        figclasses.Fig_Beam2DPlot, chinj01_meta_dict]
-CH01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
+def get_CH01figs():
+    CH01figs = dict()
+    CH01figs['CH01checks_offsets'] = [
+        trends.Fig_Basic_Checkstat, check_offsets_dict]
+    CH01figs['CH01checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
+    CH01figs['CH01checks_injlevel'] = [
+        trends.Fig_Basic_Checkstat, check_injlevel_dict]
+    CH01figs['CH01checks_injstd'] = [trends.Fig_Basic_Checkstat, check_injstd_dict]
+    CH01figs['CH01_alrow'] = [
+            figclasses.Fig_Beam2DPlot, extract_alrow_dict]
+    CH01figs['CH01_alcol'] = [
+            figclasses.Fig_Beam2DPlot, extract_alcol_dict]
+    CH01figs['CH01_meta'] = [
+            figclasses.Fig_Beam2DPlot, chinj01_meta_dict]
+    CH01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
+    return CH01figs
 
 
-extract_cdp = cdp.Tables_CDP()
-extract_cdp.rootname = 'CHINJ01_EXTRACTION_TABLE'
-
-meta_cdp = cdp.Tables_CDP()
-meta_cdp.rootname = 'CHINJ01_META_TABLE'
-
-CDP_lib = dict(EXTRACT=extract_cdp,
-               META=meta_cdp)
+def get_CDP_lib():
+    extract_cdp = cdp.Tables_CDP()
+    extract_cdp.rootname = 'CHINJ01_EXTRACTION_TABLE'
+    
+    meta_cdp = cdp.Tables_CDP()
+    meta_cdp.rootname = 'CHINJ01_META_TABLE'
+    
+    CDP_lib = dict(EXTRACT=extract_cdp,
+                   META=meta_cdp)
+    return CDP_lib

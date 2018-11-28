@@ -124,8 +124,8 @@ class NL01(FlatTask):
         self.type = 'Simple'
         
         self.HKKeys = HKKeys
-        self.CDP_lib = NL01aux.CDP_lib.copy()
-        self.figdict = NL01aux.NL01figs.copy()
+        self.CDP_lib = NL01aux.get_CDP_lib()
+        self.figdict = NL01aux.get_NL01figs()
         # dict(figs='figs',pickles='ccdpickles')
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                    products='products')

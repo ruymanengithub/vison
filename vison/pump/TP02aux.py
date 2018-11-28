@@ -57,12 +57,13 @@ check_injstd_dict = dict(stats=['chk_std_inject'],
                                    suptitle='TP02-checks: Injection STD')
                          )
 
-
-TP02figs = dict()
-TP02figs['TP02checks_offsets'] = [
-    trends.Fig_Basic_Checkstat, check_offsets_dict]
-TP02figs['TP02checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
-TP02figs['TP02checks_injlevel'] = [
-    trends.Fig_Basic_Checkstat, check_injlevel_dict]
-TP02figs['TP02checks_injstd'] = [trends.Fig_Basic_Checkstat, check_injstd_dict]
-TP02figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
+def get_TP02figs():
+    TP02figs = dict()
+    TP02figs['TP02checks_offsets'] = [
+        trends.Fig_Basic_Checkstat, check_offsets_dict]
+    TP02figs['TP02checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
+    TP02figs['TP02checks_injlevel'] = [
+        trends.Fig_Basic_Checkstat, check_injlevel_dict]
+    TP02figs['TP02checks_injstd'] = [trends.Fig_Basic_Checkstat, check_injstd_dict]
+    TP02figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
+    return TP02figs

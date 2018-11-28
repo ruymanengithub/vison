@@ -103,7 +103,7 @@ class MOT_WARM(DarkTask):
         
         
         self.HKKeys = HKKeys        
-        self.figdict = MWaux.MW_figs.copy()
+        self.figdict = MWaux.get_MW_figs()
         #self.CDP_lib = MWaux.CDP_lib.copy()
         self.inputs['subpaths'] = dict(figs='figs',
                                        profiles='profiles', 

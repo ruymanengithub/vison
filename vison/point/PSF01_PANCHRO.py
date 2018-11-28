@@ -67,7 +67,7 @@ class PSF01_PANCHRO(Task):
         self.type = 'Meta'
         
         #self.HKKeys = HKKeys
-        self.figdict = PSF0Xaux.PSF01_PANCHRO_figs
+        self.figdict = PSF0Xaux.get_PSF01_PANCHRO_figs()
         self.perflimits.update(performance.perf_rdout)
         self.dd = dict()
         

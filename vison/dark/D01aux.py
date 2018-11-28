@@ -24,10 +24,12 @@ from vison.datamodel import cdp
 # END IMPORT
 
 
-dk_tb_cdp = cdp.Tables_CDP()
-dk_tb_cdp.rootname = 'DARK01_TB'
-
-CDP_lib = dict(DARK_TB=dk_tb_cdp)
+def get_CDP_lib():
+    
+    dk_tb_cdp = cdp.Tables_CDP()
+    dk_tb_cdp.rootname = 'DARK01_TB'
+    CDP_lib = dict(DARK_TB=dk_tb_cdp)
+    return CDP_lib
 
 check_offsets_dict = dict(stats=['offset_pre', 'offset_ove'],
                           trendaxis='time',
@@ -87,16 +89,18 @@ meta_MDK2D_dict = dict(
                     )))
 
 
-D01figs = dict()
-D01figs['D01checks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]
-D01figs['D01checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
-D01figs['D01checks_flu'] = [trends.Fig_Basic_Checkstat, check_flu_dict]
-D01figs['D01meta_prof1D_hor'] = [
-    figclasses.Fig_Beam2DPlot, meta_prof1Dhor_dict]
-D01figs['D01meta_prof1D_ver'] = [
-    figclasses.Fig_Beam2DPlot, meta_prof1Dver_dict]
-D01figs['D01meta_MasterDark_2D'] = [
-    figclasses.Fig_BeamImgShow, meta_MDK2D_dict]
-D01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
+def get_D01figs():
+    D01figs = dict()
+    D01figs['D01checks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]
+    D01figs['D01checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
+    D01figs['D01checks_flu'] = [trends.Fig_Basic_Checkstat, check_flu_dict]
+    D01figs['D01meta_prof1D_hor'] = [
+            figclasses.Fig_Beam2DPlot, meta_prof1Dhor_dict]
+    D01figs['D01meta_prof1D_ver'] = [
+            figclasses.Fig_Beam2DPlot, meta_prof1Dver_dict]
+    D01figs['D01meta_MasterDark_2D'] = [
+            figclasses.Fig_BeamImgShow, meta_MDK2D_dict]
+    D01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
+    return D01figs
 
 

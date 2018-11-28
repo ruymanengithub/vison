@@ -27,24 +27,26 @@ from vison.datamodel import cdp
 # END IMPORT
 
 
+def get_CDP_lib():
 
-covtable_cdp = cdp.Tables_CDP()
-covtable_cdp.rootname = 'BF01_COVTABLE'
-
-bftable_cdp = cdp.Tables_CDP()
-bftable_cdp.rootname = 'BF01_G15TABLE'
-
-profscov_cdp = cdp.CDP()
-profscov_cdp.rootname  = 'profs_COV1D_BF01'
-
-profsker_cdp = cdp.CDP()
-profsker_cdp.rootname  = 'profs_KER1D_BF01'
-
-
-CDP_lib = dict(COVTABLE=covtable_cdp,
-               PROFSCOV1D=profscov_cdp,
-               BFTABLE=bftable_cdp,
-               PROFSKER1D=profsker_cdp)
+    covtable_cdp = cdp.Tables_CDP()
+    covtable_cdp.rootname = 'BF01_COVTABLE'
+    
+    bftable_cdp = cdp.Tables_CDP()
+    bftable_cdp.rootname = 'BF01_G15TABLE'
+    
+    profscov_cdp = cdp.CDP()
+    profscov_cdp.rootname  = 'profs_COV1D_BF01'
+    
+    profsker_cdp = cdp.CDP()
+    profsker_cdp.rootname  = 'profs_KER1D_BF01'
+    
+    
+    CDP_lib = dict(COVTABLE=covtable_cdp,
+                   PROFSCOV1D=profscov_cdp,
+                   BFTABLE=bftable_cdp,
+                   PROFSKER1D=profsker_cdp)
+    return CDP_lib
 
 
 prof_COV_ver_dict = dict(

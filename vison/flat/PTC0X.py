@@ -192,7 +192,7 @@ class PTC0X(FlatTask):
         self.name = 'PTC0X'
         self.type = 'Simple'
         self.HKKeys = HKKeys
-        self.CDP_lib = PTC0Xaux.CDP_lib.copy()
+        self.CDP_lib = PTC0Xaux.get_CDP_lib()
         self.figdict = PTC0Xaux.gt_PTC0Xfigs(self.inputs['test'])
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                    products='products')
@@ -608,7 +608,7 @@ class PTC0X(FlatTask):
         
         gain_tb_cdp = self.CDP_lib['GAIN_TB']
         gain_tb_cdp.rootname = gain_tb_cdp.rootname % \
-          (self.inputs['test'],self.inputs['wavelength'])
+            (self.inputs['test'],self.inputs['wavelength'])
         gain_tb_cdp.path = self.inputs['subpaths']['products']
         gain_tb_cdp.ingest_inputs(
                 data = GAIN_TB_dddf.copy(),

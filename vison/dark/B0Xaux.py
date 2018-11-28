@@ -106,24 +106,27 @@ meta_MB2D_dict = dict(
               corekwargs=dict(cmap=cm.rainbow,aspect='auto',norm=None,origin='lower left',
                     ))
 )
-    
-B0Xfigs = dict()
-B0Xfigs['B0Xchecks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]
-#B01figs['B01checks_stds'] = [plB01check,dict(stat='std')]
-B0Xfigs['B0Xchecks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
-B0Xfigs['B0Xbasic_prof1D_hor'] = [
-    figclasses.Fig_Beam2DPlot, basic_prof1Dhor_dict]
-B0Xfigs['B0Xbasic_prof1D_ver'] = [
-    figclasses.Fig_Beam2DPlot, basic_prof1Dver_dict]
-B0Xfigs['B0Xbasic_histosRON'] = [
-    figclasses.Fig_Beam1DHist, basic_histosRON_dict]
-B0Xfigs['B0Xmeta_prof1D_hor'] = [
-    figclasses.Fig_Beam2DPlot, meta_prof1Dhor_dict]
-B0Xfigs['B0Xmeta_prof1D_ver'] = [
-    figclasses.Fig_Beam2DPlot, meta_prof1Dver_dict]
-B0Xfigs['B0Xmeta_MasterBias_2D'] = [
-    figclasses.Fig_BeamImgShow, meta_MB2D_dict]
-B0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
+
+
+def get_B0Xfigs():
+    B0Xfigs = dict()
+    B0Xfigs['B0Xchecks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]
+    #B01figs['B01checks_stds'] = [plB01check,dict(stat='std')]
+    B0Xfigs['B0Xchecks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
+    B0Xfigs['B0Xbasic_prof1D_hor'] = [
+        figclasses.Fig_Beam2DPlot, basic_prof1Dhor_dict]
+    B0Xfigs['B0Xbasic_prof1D_ver'] = [
+        figclasses.Fig_Beam2DPlot, basic_prof1Dver_dict]
+    B0Xfigs['B0Xbasic_histosRON'] = [
+        figclasses.Fig_Beam1DHist, basic_histosRON_dict]
+    B0Xfigs['B0Xmeta_prof1D_hor'] = [
+        figclasses.Fig_Beam2DPlot, meta_prof1Dhor_dict]
+    B0Xfigs['B0Xmeta_prof1D_ver'] = [
+        figclasses.Fig_Beam2DPlot, meta_prof1Dver_dict]
+    B0Xfigs['B0Xmeta_MasterBias_2D'] = [
+        figclasses.Fig_BeamImgShow, meta_MB2D_dict]
+    B0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
+    return B0Xfigs
 
 
 class RON_CDP(cdp.Tables_CDP):
@@ -157,10 +160,14 @@ class RON_CDP(cdp.Tables_CDP):
             _data, meta=meta, header=header, figs=figs)
 
 
-ron_cdp = RON_CDP()
-ron_cdp.rootname = 'RON_BIAS0X'
-off_cdp = RON_CDP()
-off_cdp.rootname = 'OFFSET_BIAS0X'
 
-CDP_lib = dict(RON=ron_cdp,
+def get_CDP_lib():
+    """ """
+    ron_cdp = RON_CDP()
+    ron_cdp.rootname = 'RON_BIAS0X'
+    off_cdp = RON_CDP()
+    off_cdp.rootname = 'OFFSET_BIAS0X'
+    
+    CDP_lib = dict(RON=ron_cdp,
                OFF=off_cdp)
+    return CDP_lib

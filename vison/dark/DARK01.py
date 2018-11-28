@@ -93,8 +93,8 @@ class DARK01(DarkTask):
         self.type = 'Simple'
         
         self.HKKeys = HKKeys
-        self.figdict = D01aux.D01figs.copy()
-        self.CDP_lib = D01aux.CDP_lib.copy()
+        self.figdict = D01aux.get_D01figs()
+        self.CDP_lib = D01aux.get_CDP_lib()
         self.inputs['subpaths'] = dict(figs='figs',
                    ccdpickles='ccdpickles',
                    profiles='profiles',

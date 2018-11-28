@@ -115,4 +115,6 @@ def gt_PSF0Xfigs(test):
     return PSF0Xfigs
 
 
-PSF01_PANCHRO_figs = dict()
+def get_PSF01_PANCHRO_figs():
+    PSF01_PANCHRO_figs = dict()
+    return PSF01_PANCHRO_figs

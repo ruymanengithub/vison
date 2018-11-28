@@ -23,10 +23,12 @@ from vison.plot import trends
 
 # END IMPORT
 
-nl_tb_cdp = cdp.Tables_CDP()
-nl_tb_cdp.rootname = 'NL01_RESULTS_TABLE'
-
-CDP_lib = dict(NL_TB=nl_tb_cdp)
+def get_CDP_lib():
+    nl_tb_cdp = cdp.Tables_CDP()
+    nl_tb_cdp.rootname = 'NL01_RESULTS_TABLE'
+    
+    CDP_lib = dict(NL_TB=nl_tb_cdp)
+    return CDP_lib
 
 
 check_offsets_dict = dict(stats=['offset_pre', 'offset_ove'],
@@ -78,15 +80,17 @@ NL_curves_dict = dict(
               ylim=[-10.,10.])
     )
 
-NL01figs = dict()
-NL01figs['NL01checks_offsets'] = [
-    trends.Fig_Basic_Checkstat, check_offsets_dict.copy()]
-NL01figs['NL01checks_stds'] = [
-    trends.Fig_Basic_Checkstat, check_std_dict.copy()]
-NL01figs['NL01checks_flu'] = [
-    trends.Fig_Basic_Checkstat, check_img_flu_dict.copy()]
-NL01figs['NL01checks_imgstd'] = [
-    trends.Fig_Basic_Checkstat, check_img_std_dict.copy()]
-NL01figs['NL01_fit_curves'] = [
-        figclasses.Fig_Beam2DPlot, NL_curves_dict.copy()]
-NL01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
+def get_NL01figs():
+    NL01figs = dict()
+    NL01figs['NL01checks_offsets'] = [
+        trends.Fig_Basic_Checkstat, check_offsets_dict.copy()]
+    NL01figs['NL01checks_stds'] = [
+        trends.Fig_Basic_Checkstat, check_std_dict.copy()]
+    NL01figs['NL01checks_flu'] = [
+        trends.Fig_Basic_Checkstat, check_img_flu_dict.copy()]
+    NL01figs['NL01checks_imgstd'] = [
+        trends.Fig_Basic_Checkstat, check_img_std_dict.copy()]
+    NL01figs['NL01_fit_curves'] = [
+            figclasses.Fig_Beam2DPlot, NL_curves_dict.copy()]
+    NL01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
+    return NL01figs

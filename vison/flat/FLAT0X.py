@@ -106,7 +106,7 @@ class FLAT0X(FlatTask):
         super(FLAT0X, self).__init__(inputs, log, drill, debug)
         self.name = 'FLAT0X'
         self.type = 'Simple'
-        self.CDP_lib = FL0Xaux.CDP_lib.copy()
+        self.CDP_lib = FL0Xaux.get_CDP_lib()
         self.HKKeys = HKKeys
         self.figdict = FL0Xaux.gt_FL0Xfigs(self.inputs['test'])
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',

@@ -133,8 +133,10 @@ def gt_F00figs(wave):
     return F00figs
 
 
+def get_CDP_lib():
 
-focus_cdp = cdp.Tables_CDP()
-focus_cdp.rootname = 'FOCUS00'
-CDP_lib = dict(FOCUS=focus_cdp)
-CDP_lib.update(Paux.CDP_lib)
+    focus_cdp = cdp.Tables_CDP()
+    focus_cdp.rootname = 'FOCUS00'
+    CDP_lib = dict(FOCUS=focus_cdp)
+    CDP_lib.update(Paux.CDP_lib)
+    return CDP_lib

@@ -23,9 +23,12 @@ from vison.datamodel import cdp
 
 # END IMPORT
 
-gain_tb_cdp = cdp.Tables_CDP()
-gain_tb_cdp.rootname = '%s_%snm_GAIN_TB'
-CDP_lib = dict(GAIN_TB=gain_tb_cdp)
+
+def get_CDP_lib():
+    gain_tb_cdp = cdp.Tables_CDP()
+    gain_tb_cdp.rootname = '%s_%snm_GAIN_TB'    
+    CDP_lib = dict(GAIN_TB=gain_tb_cdp)
+    return CDP_lib
 
 def gt_PTC_curves_dict(test):
     

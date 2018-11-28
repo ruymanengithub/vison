@@ -99,7 +99,7 @@ class TP02(PumpTask):
         self.type = 'Simple'
         
         self.HKKeys = HKKeys
-        self.figdict = TP02aux.TP02figs.copy()
+        self.figdict = TP02aux.get_TP02figs()
         self.inputs['subpaths'] = dict(figs='figs', 
                    ccdpickles='ccdpickles',
                    products='products')

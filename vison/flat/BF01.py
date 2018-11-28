@@ -86,7 +86,7 @@ class BF01(PTC0X):
         #self.type = 'Simple'
         
         #self.HKKeys = HKKeys
-        self.CDP_lib = BF01aux.CDP_lib.copy()
+        self.CDP_lib = BF01aux.get_CDP_lib()
         self.figdict = BF01aux.gt_BF01figs(self.inputs['surrogate'])
         self.inputs['subpaths'] = dict(figs='figs', 
                    ccdpickles='ccdpickles',

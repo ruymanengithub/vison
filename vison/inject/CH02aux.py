@@ -80,25 +80,29 @@ extract_alrow_dict = dict(
     )
 
 
-CH02figs = dict()
-CH02figs['CH02checks_offsets'] = [
-    trends.Fig_Basic_Checkstat, check_offsets_dict]
-CH02figs['CH02checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
-CH02figs['CH02checks_injlevel'] = [
-    trends.Fig_Basic_Checkstat, check_injlevel_dict]
-CH02figs['CH02checks_injstd'] = [trends.Fig_Basic_Checkstat, check_injstd_dict]
-CH02figs['CH02_alrow'] = [
-        figclasses.Fig_Beam2DPlot, extract_alrow_dict]
-CH02figs['CH02_alcol'] = [
-        figclasses.Fig_Beam2DPlot, extract_alcol_dict]
-CH02figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
+def get_CH02figs():
+    CH02figs = dict()
+    CH02figs['CH02checks_offsets'] = [
+        trends.Fig_Basic_Checkstat, check_offsets_dict]
+    CH02figs['CH02checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
+    CH02figs['CH02checks_injlevel'] = [
+        trends.Fig_Basic_Checkstat, check_injlevel_dict]
+    CH02figs['CH02checks_injstd'] = [trends.Fig_Basic_Checkstat, check_injstd_dict]
+    CH02figs['CH02_alrow'] = [
+            figclasses.Fig_Beam2DPlot, extract_alrow_dict]
+    CH02figs['CH02_alcol'] = [
+            figclasses.Fig_Beam2DPlot, extract_alcol_dict]
+    CH02figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
+    return CH02figs
 
-extract_cdp = cdp.Tables_CDP()
-extract_cdp.rootname = 'CHINJ02_EXTRACTION_TABLE'
-
-meta_cdp = cdp.Tables_CDP()
-meta_cdp.rootname = 'CHINJ01_META_TABLE'
-
-
-CDP_lib = dict(EXTRACT=extract_cdp,
-               META=meta_cdp)
+def get_CDP_lib():
+    extract_cdp = cdp.Tables_CDP()
+    extract_cdp.rootname = 'CHINJ02_EXTRACTION_TABLE'
+    
+    meta_cdp = cdp.Tables_CDP()
+    meta_cdp.rootname = 'CHINJ01_META_TABLE'
+    
+    
+    CDP_lib = dict(EXTRACT=extract_cdp,
+                   META=meta_cdp)
+    return CDP_lib

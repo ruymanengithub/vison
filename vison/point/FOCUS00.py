@@ -136,7 +136,7 @@ class FOCUS00(PT.PointTask):
         self.name = 'FOCUS00'
         self.type = 'Simple'        
         self.HKKeys = HKKeys
-        self.CDP_lib = F00aux.CDP_lib.copy()
+        self.CDP_lib = F00aux.get_CDP_lib()
         self.figdict = F00aux.gt_F00figs(self.inputs['wavelength'])
         self.inputs['subpaths'] = dict(figs='figs',
                                        products='products')

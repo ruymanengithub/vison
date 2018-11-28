@@ -194,6 +194,7 @@ class Task(object):
 
     def __call__(self):
         """Generic test master function."""
+        
 
         self.CDP_header = OrderedDict(ID=self.ID,
                                       BLOCKID=self.BLOCKID,
@@ -278,7 +279,6 @@ class Task(object):
 
         # DATA-WORK and ANALYSIS
         
-
         for subtask in subtasks:
 
             subtaskname, subtaskmethod = subtask
@@ -455,7 +455,7 @@ class Task(object):
         """ """
          
         try:
-            figobj = self.figdict[figkey][0]()
+            figobj = copy.deepcopy(self.figdict[figkey][0]())
         except:
             print 'DEBUGGING IN Task.doPlot...'
             msg_trbk = traceback.format_exc()
