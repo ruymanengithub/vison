@@ -156,31 +156,6 @@ class DARK01(DarkTask):
         super(DARK01, self).prepare_images(
             doExtract=True, doMask=True, doOffset=True, doBias=True)
 
-#    def basic_analysis(self):
-#        """ 
-#
-#        DARK01: Basic analysis of data.
-#
-#        **METACODE**
-#
-#        ::
-#
-#            f. e. ObsID:
-#                f.e.CCD:
-#                    f.e.Q:
-#                        produce mask of hot pixels
-#                        ## count hot pixels / columns
-#                        produce a 2D poly model of masked-image, save coefficients
-#                        produce average profile along rows
-#                        produce average profile along cols
-#                        ## measure and save STD after subtracting large scale structure
-#                    save 2D model and profiles in a pick file for each OBSID-CCD
-#
-#            plot average profiles f. each CCD and Q (color coded by time)
-#
-#        """
-
-
 
     def stack_analysis(self):
         """ 
