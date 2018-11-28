@@ -484,6 +484,7 @@ class HKDisplay(tk.Toplevel):
         """ """
 
         self.select_HKkeys()
+        self.search_HKfiles()
 
         if self.HKfiles is None:
             yield self.HK
