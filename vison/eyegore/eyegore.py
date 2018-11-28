@@ -80,9 +80,9 @@ class Eyegore(tk.Tk):
         if intervals is None:
             intervals = dict(EYE=20000, 
          image=20000, 
-         HK=1000, 
-         HKplots=3000, 
-         HKflags=3000, 
+         HK=2000, 
+         HKplots=1000, 
+         HKflags=1000, 
          EXP=20000)
 
         if path is not None:
@@ -242,7 +242,7 @@ def Eexecuter():
     header = '\n\n#########################################################\n' +\
              '#                                                       #\n' +\
              '#                                                       #\n' +\
-             '#       starting EYEGORE on path:                        #\n' +\
+             '#       starting EYEGORE on path:                       #\n' +\
              '            "%s"                                         \n' +\
              '#                                                       #\n' +\
              '#                                                       #\n' +\
