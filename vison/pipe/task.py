@@ -195,7 +195,8 @@ class Task(object):
     def __call__(self):
         """Generic test master function."""
         
-
+        Errors = False
+        
         self.CDP_header = OrderedDict(ID=self.ID,
                                       BLOCKID=self.BLOCKID,
                                       CHAMBER=self.CHAMBER,
@@ -304,6 +305,8 @@ class Task(object):
                     #print 'saving progress!'
                     self.save_progress(DataDictFile, reportobjFile)
                 except:
+                    Errors = True
+                    self.dd.flags.add('SUBTASKCRASH')
                     self.catchtraceback()
                     # self.save_progress(DataDictFile,reportobjFile)
                     if not self.debug:
@@ -330,6 +333,8 @@ class Task(object):
 
         if self.log is not None:
             self.log.info('Finished %s' % self.name)
+        
+        return Errors
 
     def catchtraceback(self):
         """ """

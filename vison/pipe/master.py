@@ -419,7 +419,7 @@ class Pipe(object):
 
         try:
             test = self.get_test(strip_taskname, inputs, self.log, drill, debug)
-            test()  # test execution
+            Errors = test()  # test execution
         except:
             self.catchtraceback()
             Errors = True
