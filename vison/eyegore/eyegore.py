@@ -78,7 +78,7 @@ class Eyegore(tk.Tk):
         tk.Tk.__init__(self)
 
         if intervals is None:
-            intervals = dict(EYE=5000, 
+            intervals = dict(EYE=20000, 
          image=20000,
          HK=10000, 
          HKplots=500, 
