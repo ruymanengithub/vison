@@ -408,6 +408,8 @@ class HKDisplay(tk.Toplevel):
         pentry.bind('<Return>', update_page)
 
         self.setup_plotgrid()
+        
+        self.update()
 
     def setup_plotgrid(self):
 
@@ -487,22 +489,22 @@ class HKDisplay(tk.Toplevel):
         self.search_HKfiles()
 
         if self.HKfiles is None:
-            yield self.HK
+            #yield self.HK
             return
 
         sizeHK = get_bitsize(self.HKfiles)
 
         if sizeHK <= self.sizeHK:
-            yield self.HK
+            #yield self.HK
             return
-
+        
         self.sizeHK = sizeHK
 
         print 'loading HK...'
 
         try: HK = HKtools.loadHK_QFM(self.HKfiles, elvis=self.elvis)
         except IOError:
-            yield self.HK
+            #yield self.HK
             return
 
         print 'done loading HK!'
@@ -519,13 +521,16 @@ class HKDisplay(tk.Toplevel):
 
         self.HK = pHK.copy()
 
-        yield pHK
+        #yield pHK
 
     def gen_render(self):
 
         HKlims = self.HKlims
 
-        def render(pHK):
+        def render(dummyvar):
+            
+            
+            pHK = self.HK
 
             nHK = len(self.HKkeys_to_plot)
 
@@ -561,8 +566,14 @@ class HKDisplay(tk.Toplevel):
             plt.tight_layout(rect=[0, 0, 1, 1])
 
         return render
+    
+    def update(self):
+        
+        self.get_data()
+        self.after(self.interval, self.update)
 
-    def start_updating(self, interval):
+    def start_updating_display(self, interval):
         f = self.f
         render = self.gen_render()
-        return animation.FuncAnimation(f, render, self.get_data, interval=interval)
+        #return animation.FuncAnimation(f, render, self.get_data, interval=interval)
+        return animation.FuncAnimation(f,render,None,interval=interval)

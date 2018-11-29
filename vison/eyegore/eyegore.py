@@ -78,11 +78,11 @@ class Eyegore(tk.Tk):
         tk.Tk.__init__(self)
 
         if intervals is None:
-            intervals = dict(EYE=20000, 
-         image=20000, 
-         HK=2000, 
-         HKplots=1000, 
-         HKflags=1000, 
+            intervals = dict(EYE=5000, 
+         image=20000,
+         HK=10000, 
+         HKplots=500, 
+         HKflags=500, 
          EXP=20000)
 
         if path is not None:
@@ -169,7 +169,7 @@ class Eyegore(tk.Tk):
         display2 = Ds['hk'](
             self, self.path, self.intervals['HK'], elvis=self.elvis)
 
-        ani2 = display2.start_updating(self.intervals['HKplots'])
+        ani2 = display2.start_updating_display(self.intervals['HKplots'])
 
         display2b = Ds['hkflags'](
             self, display2, self.intervals['HKflags'], elvis=self.elvis)
