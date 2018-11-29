@@ -40,23 +40,24 @@ from vison.support import vjson
 # END IMPORT
 
 
-def openpyconfigf(configf):
+def openpyconfigf(configf,RUN):
     
     with open(configf) as f:
-        exec(f,dict(RUNs=['D21']))
+        #execfile(configf,dict(RUNs=['D21']))
+        RUNs=[RUN]
+        exec f
         f.close()
-    stop()
+    
     return inputdict
 
-def loadpyconfig(configf):
-    stop()
-    c = importlib.import_module(configf)
-    #import sys
-    #__import__(configf)
-    #c = sys.modules[configf]
-    stop()
-    return c.get_inputdict
-
+#def loadpyconfig(configf):
+#   
+#   c = importlib.import_module(configf)
+#   #import sys
+#   #__import__(configf)
+#   #c = sys.modules[configf]
+#   stop()
+#   return c.get_inputdict
 
 def parse_jsonconfig(jsonfile):
     rawjson = vjson.load_jsonfile(json,useyaml=True)
@@ -69,6 +70,8 @@ if __name__ == '__main__':
     parser = OptionParser(usage)
     parser.add_option("-y", "--pyconfig", dest="pyconfig", default='',
                       help="Python configuration file to run the pipeline.")
+    parser.add_option("-R", "--run", dest="run", default='',
+                      help="Run to process - TESTS.")
     parser.add_option("-j", "--json", dest="json", default='',
                       help="Json configuration file to run the pipeline.")
     parser.add_option("-d", "--day", dest="dayfolder", default='',
@@ -98,6 +101,7 @@ if __name__ == '__main__':
     
     assert (len(pyconfig) >0 ) != (len(json)>0), "pyconfig XOR json should be provided as input, not both, QUITTING!"
     
+    run = options.run
     dayfolder = options.dayfolder
     elvis = options.elvis
     wait = options.wait
@@ -110,9 +114,8 @@ if __name__ == '__main__':
     multithread = options.multithread
     
     if len(pyconfig)>0:
-        inputdict = openpyconfigf(pyconfig)
+        inputdict = openpyconfigf(pyconfig,run)
         #inputdictgetter = loadpyconfig(pyconfig)
-        stop()
     elif len(json)>=0:
         inputdict = parse_jsonconfig(json)
     
@@ -126,6 +129,7 @@ if __name__ == '__main__':
     else:
         cpu_count = 1
     
+    stop()
     pipe = Pipe(inputdict, dolog=dolog, drill=drill,
                 debug=debug, startobsid=startobsid,
                 processes=cpu_count)
