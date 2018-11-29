@@ -203,7 +203,7 @@ class FlatTask(Task):
                 self.addComplianceMatrix2Report(
                     _compliance_std, label='COMPLIANCE RON [%s]:' % reg)
 
-        if self.inputs['test'] != 'NL02':
+        if not ('NL02' in self.inputs['test']):
         
             # IMG FLUENCES
             FLU_lims = self.perflimits['FLU_lims']  # dict
