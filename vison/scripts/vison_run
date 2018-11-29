@@ -129,7 +129,6 @@ if __name__ == '__main__':
     else:
         cpu_count = 1
     
-    stop()
     pipe = Pipe(inputdict, dolog=dolog, drill=drill,
                 debug=debug, startobsid=startobsid,
                 processes=cpu_count)
