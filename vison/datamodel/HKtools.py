@@ -734,7 +734,7 @@ def _ax_render_HK(ax, x, y, HKlims, HKkey, fontsize=10):
         yp = y.copy()
         yp[np.isnan(y)] = 0
         ax.plot(x, yp)
-        ax.plot(x[np.isnan(y)], yp[np.isnan(y)], 'ro:')
+        ax.plot(x[np.isnan(y)], yp[np.isnan(y)], 'ro')
     else:
         ax.plot(x, y, 'b.', ms=3)
 
