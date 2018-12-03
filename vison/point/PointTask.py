@@ -509,12 +509,11 @@ class PointTask(Task):
                 header=CDP_header.copy()
                 )
         
+        
         lock_tb_cdp.init_wb_and_fillAll(header_title='%s: STARS LOCK TABLE' % \
                 self.inputs['test'])
         self.save_CDP(lock_tb_cdp)
         self.pack_CDP_to_dd(lock_tb_cdp, 'LOCK_TB_CDP')
-        
-        
         
         if self.report is not None:
             

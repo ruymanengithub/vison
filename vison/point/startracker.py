@@ -166,7 +166,7 @@ class StarTracker(object):
         Xc, Yc = self.convert_Phys_2_CCD(Xp, Yp)
         return (Xc, Yc)
 
-    def get_similaritymx(self,scale, rotation_deg, translation):
+    def get_similaritymx(self,scale, rotation_rad, translation):
         """ 
 
         :param scale: float, scale factor.
@@ -175,8 +175,10 @@ class StarTracker(object):
 
         """
 
+        #ss = skimage.transform.SimilarityTransform(scale=scale,
+        #            rotation=np.radians(rotation_deg), translation=translation)
         ss = skimage.transform.SimilarityTransform(scale=scale,
-                    rotation=np.radians(rotation_deg), translation=translation)
+                    rotation=rotation_rad, translation=translation)
         return ss.params
 
     def find_patt_transform(self, Xt, Yt, Full = False, discardQ=None,debug=False):
@@ -216,6 +218,8 @@ class StarTracker(object):
             ax2 = fig.add_subplot(122)
             ax2.plot(xtp-t_list[:,0],ytp-t_list[:,1],'bo')
             plt.show()
+            
+            
         
         if Full:
             return transf, (s_list, t_list)
