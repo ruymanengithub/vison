@@ -28,7 +28,12 @@ def get_CDP_lib():
     
     dk_tb_cdp = cdp.Tables_CDP()
     dk_tb_cdp.rootname = 'DARK01_TB'
-    CDP_lib = dict(DARK_TB=dk_tb_cdp)
+    
+    MB_profiles_cdp = cdp.CDP()
+    MB_profiles_cdp.rootname = 'MB_profiles_DARK01'
+    
+    CDP_lib = dict(DARK_TB=dk_tb_cdp,
+                   MB_profiles=MB_profiles_cdp)
     return CDP_lib
 
 check_offsets_dict = dict(stats=['offset_pre', 'offset_ove'],

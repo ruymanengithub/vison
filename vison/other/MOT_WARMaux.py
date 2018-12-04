@@ -18,6 +18,7 @@ from collections import OrderedDict
 import string as st
 import copy
 
+from vison.datamodel import cdp
 from vison.flat import BF01aux
 from vison.plot import figclasses
 from vison.plot import trends
@@ -71,3 +72,13 @@ def get_MW_figs():
     
     MW_figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return MW_figs
+
+
+def get_CDP_lib():
+    
+    MW_profiles_cdp = cdp.CDP()
+    MW_profiles_cdp.rootname = 'Profiles1D_MOT_WARM'
+    
+    CDP_lib = dict(MW_profiles=MW_profiles_cdp)
+    
+    return CDP_lib

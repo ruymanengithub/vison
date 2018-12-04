@@ -43,7 +43,7 @@ class CDP(object):
     def __init__(self, *args, **kwargs):
         """ """
 
-        defaults = dict(rootname='Uknown', path='', header=OrderedDict(),
+        defaults = dict(rootname='Unknown', path='', header=OrderedDict(),
                         meta=OrderedDict(), data=None)
         defaults.update(args)
         defaults.update(kwargs)

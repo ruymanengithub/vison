@@ -348,7 +348,7 @@ class DARK01(DarkTask):
         
         # SAVING 1D PROFILES OF MASTER BIAS as a CDP
         
-        MB_profiles_cdp = cdp.CDP()
+        MB_profiles_cdp = self.CDP_lib['MB_profiles']
         MB_profiles_cdp.header = CDP_header.copy()
         MB_profiles_cdp.path = profilespath
         MB_profiles_cdp.data = profs1D2plot.copy()

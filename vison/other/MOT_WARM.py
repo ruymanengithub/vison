@@ -104,7 +104,7 @@ class MOT_WARM(DarkTask):
         
         self.HKKeys = HKKeys        
         self.figdict = MWaux.get_MW_figs()
-        #self.CDP_lib = MWaux.CDP_lib.copy()
+        self.CDP_lib = MWaux.get_CDP_lib()
         self.inputs['subpaths'] = dict(figs='figs',
                                        profiles='profiles', 
                                        products='products')
@@ -409,7 +409,8 @@ class MOT_WARM(DarkTask):
         
             return x, y 
         
-        profiles1D_cdp = cdp.CDP()
+        profiles1D_cdp = self.CDP_lib['MW_profiles']
+
         profiles1D_cdp.header = CDP_header.copy()
         profiles1D_cdp.path = profilespath
         
@@ -523,7 +524,7 @@ class MOT_WARM(DarkTask):
         profiles1D_cdp.data = profs1D2plot.copy()
         
         self.save_CDP(profiles1D_cdp)
-        self.pack_CDP_to_dd(profiles1D_cdp, 'MB_PROFILES')
+        self.pack_CDP_to_dd(profiles1D_cdp, 'MW_PROFILES')
         
         # Matrix with HER results
         

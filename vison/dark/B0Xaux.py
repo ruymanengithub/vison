@@ -168,6 +168,11 @@ def get_CDP_lib():
     off_cdp = RON_CDP()
     off_cdp.rootname = 'OFFSET_BIAS0X'
     
+    MB_profiles_cdp = cdp.CDP()
+    MB_profiles_cdp.rootname = 'MB_profiles_BIAS0X'
+    
+    
     CDP_lib = dict(RON=ron_cdp,
-               OFF=off_cdp)
+               OFF=off_cdp,
+               MB_profiles=MB_profiles_cdp)
     return CDP_lib
