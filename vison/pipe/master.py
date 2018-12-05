@@ -43,7 +43,7 @@ import traceback
 import glob
 from collections import OrderedDict
 import select
-import inspect
+#import inspect
 
 from vison import __version__
 from vison.support import logger as lg
