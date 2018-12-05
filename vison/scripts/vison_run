@@ -40,14 +40,15 @@ from vison.support import vjson
 # END IMPORT
 
 
-def openpyconfigf(configf,RUN):
+def openpyconfigf(configf,RUN,wait):
     
     with open(configf) as f:
         #execfile(configf,dict(RUNs=['D21']))
         RUNs=[RUN]
+        doWait=wait
         exec f
         f.close()
-    
+
     return inputdict
 
 #def loadpyconfig(configf):
@@ -114,7 +115,7 @@ if __name__ == '__main__':
     multithread = options.multithread
     
     if len(pyconfig)>0:
-        inputdict = openpyconfigf(pyconfig,run)
+        inputdict = openpyconfigf(pyconfig,run,wait)
         #inputdictgetter = loadpyconfig(pyconfig)
     elif len(json)>=0:
         inputdict = parse_jsonconfig(json)
@@ -129,10 +130,11 @@ if __name__ == '__main__':
     else:
         cpu_count = 1
     
+    
     pipe = Pipe(inputdict, dolog=dolog, drill=drill,
                 debug=debug, startobsid=startobsid,
                 processes=cpu_count)
-
+    
     if wait:
         pipe.wait_and_run(dayfolder, elvis=elvis)
     else:
