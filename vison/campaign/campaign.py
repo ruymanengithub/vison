@@ -23,7 +23,7 @@ from vison.flat import NL01, NL02, PTC0X, FLAT0X, BF01
 from vison.inject import CHINJ01, CHINJ02
 from vison.pump import TP01, TP02
 from vison.other import PERSIST01 as PER01
-from vison.other import MOT_WARM
+from vison.other import MOT_WARM, COSMETICS00
 from vison.point import lib as polib
 from vison.ogse import ogse as ogsemod
 #from vison.pipe import lib as pilib
@@ -64,7 +64,9 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     test_sequence = OrderedDict()
     
-    _toGen = dict(BIAS01=False,
+    _toGen = dict(
+                  COSMETICS00=False,
+                  BIAS01=False,
                   BIAS02=False,
                   DARK01=False,
                   CHINJ01=False,
@@ -947,6 +949,20 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         test_sequence['MOT_WARM'] = copy.deepcopy(mot_wm)
 
+    if _toGen['COSMETICS00']:
+
+        print 'COSMETICS00...'
+        
+        
+        diffCOS = dict()
+        diffCOS.update(diffvalues)
+
+        cos = COSMETICS00.COSMETICS00(inputs=dict(elvis=elvis,
+                                                CHAMBER=CHAMBER,
+                                                test='COSMETICS00',
+                                                diffvalues=diffCOS))
+
+        test_sequence['COSMETICS00'] = copy.deepcopy(cos)
 
 
     return test_sequence

@@ -91,13 +91,16 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None):
     tag = inputs['tag']
     outpath = inputs['outpath']
     sp_inputs = inputs['inputs_%s' % masktype]
-    OBSID_list_f = sp_inputs['OBSID_list']
+    OBSID_list_raw = sp_inputs['OBSID_list']
     datapath = sp_inputs['datapath']
     thresholds = sp_inputs['thresholds']
     
     outfilename = os.path.join(outpath,'EUC_%s_%s_CCD_SN_%s.fits' % (masktype.upper(), tag, sn_ccd))
     
-    OBSID_list = read_OBSID_list(OBSID_list_f)
+    if isinstance(OBSID_list_raw,(list,)):
+        OBSID_list = OBSID_list_raw
+    elif isinstance(OBSID_list_raw,(str,)):
+        OBSID_list = read_OBSID_list(OBSID_list_raw)
     
     FITS_list = get_FITS_list(datapath, OBSID_list, CCD)
     
@@ -224,8 +227,8 @@ def run_maskmaker(inputs):
     
     outpath = inputs['outpath']
     if not isthere(outpath):
-        os.system('mkdir %s' % outpath)
-    
+        os.system('mkdir -p %s' % outpath)
+     
     if inputs['doDarkMask']:
         print 'Generating Defects in Darkness Mask...'
         dkmask_f = do_DarkMask(inputs)

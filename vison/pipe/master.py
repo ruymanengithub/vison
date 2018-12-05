@@ -85,6 +85,7 @@ class Pipe(object):
     from vison.other.STRAY00 import STRAY00
     from vison.other.MOT_FF import MOT_FF
     from vison.other.MOT_WARM import MOT_WARM
+    from vison.other.COSMECTICS00 import COSMETICS00
 
     Test_dict = dict(BIAS01=BIAS0X, 
                      BIAS02=BIAS0X,
