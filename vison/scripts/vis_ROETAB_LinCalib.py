@@ -120,6 +120,8 @@ def find_discrete_voltages_inwaveform(rV, levels, filtered=None, debug=False):
 
     #Nsamp = len(iV)
     Nclust = len(levels)
+    if 0. in levels:
+        Nclust -= 1
     NclustP1 = Nclust+1 # AD-HOC, including reference level
     
     slopes = get_local_slope(iV,size=slope_nsamp)
@@ -170,12 +172,12 @@ def find_discrete_voltages_inwaveform(rV, levels, filtered=None, debug=False):
    
     sorted_levels = np.sort(discrete_levels)
     foo = sorted_levels.tolist()
-    foo.pop(1)
+    #foo.pop(1)
     sorted_levels = np.array(foo) # TESTS, AD-HOC
     #sorted_levels -= sorted_levels[0]
     
     if debug:
-        Wf = (fktimex[0:50000],iV[0:50000])
+        Wf = (fktimex[0:100000],iV[0:100000])
         plot_waveform(Wf, disc_voltages=sorted_levels, 
                       figname='', chan='Unknown')
         stop()
@@ -321,8 +323,7 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
         data[CHAN]['RT_mV'] = mv_levels
         data[CHAN]['RT_emV'] = emv_levels
             
-        Np2plot = pixTx0*Nlevels*2
-
+        Np2plot = pixTx0*Nlevels*4
         
         figs['WF_%s' % CHAN] = os.path.join(
             respath, '%s_%s_%s_WAVEFORM.png' % (CHAN, Injector, Date))
