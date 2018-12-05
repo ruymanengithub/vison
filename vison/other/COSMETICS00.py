@@ -115,13 +115,13 @@ class COSMETICS00(DarkTask):
         
         COS_sdict = OrderedDict()
         
-        COS_sdict['col1'] = dict(frames=5, exptime=0, 
+        COS_sdict['col001'] = dict(frames=5, exptime=0, 
                                     shuttr=0, mirr_on=0,motr_on=0,
                                     source='flat',
                                     comments='BIAS')
 
         
-        COS_sdict['col2']=dict(frames=1, exptime=exptimeFL, 
+        COS_sdict['col002']=dict(frames=5, exptime=exptimeFL, 
                                     wave=FW_IDflatx,
                                     shuttr=1, mirr_on=0,motr_on=0,
                                     source='flat',
