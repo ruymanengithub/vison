@@ -99,7 +99,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['BIAS01']:
 
-        print 'BIAS01...'
 
         Nbias01 = 10
         diffBIAS01 = dict(mirr_on=0)
@@ -118,7 +117,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['BIAS02']:
 
-        print 'BIAS02...'
 
         Nbias02 = 10
         diffBIAS02 = dict(mirr_on=0, 
@@ -140,7 +138,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['DARK01']:
 
-        print 'DARK01...'
 
         Ndark01 = 4
         exptime_dark01 = 565.  # s
@@ -163,7 +160,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
     
     if _toGen['CHINJ01']:
 
-        print 'CHINJ01...'
 
         # CHINJ01
 
@@ -193,7 +189,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['CHINJ02']:
 
-        print 'CHINJ02...'
 
         IDLs = [10., 13.]
         IDH = 18.
@@ -222,7 +217,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['TP01']:
 
-        print 'TP01...'
         
         toi_chinjTP01 = 250  # quick injection
         Nshuffles_V=5000
@@ -251,7 +245,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['TP02']:
 
-        print 'TP02...'
 
         Nshuffles_H = 5000
         dwell_sv = [0., 4.75, 14.3, 28.6]  # us
@@ -288,7 +281,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['FLATFLUX00']:
 
-        print 'FLATFLUX00...'
 
         wavesFLATFLUX00 = [590, 2000, 730, 800, 880, 0]
         
@@ -312,7 +304,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             itestkey = 'FLATFLUX00_%i' % wave
             diffFLATFLUX00w['test'] = itestkey
 
-            print '%s...' % itestkey
 
             flatflux00w = PTC0X.PTC0X(inputs=dict(elvis=elvis,
                                              CHAMBER=CHAMBER,
@@ -329,7 +320,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['FLAT01']:
 
-        print 'FLAT01...'
 
         t_dummy_F01 = np.array([25., 50., 75])/100.
         exptimesF01 = (exptimes_FLAT0X['nm800'] * t_dummy_F01).tolist()  # s
@@ -365,7 +355,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         for iw, wave in enumerate(wavesFLAT02):
 
             itestkey = 'FLAT02_%i' % wave
-            print '%s...' % itestkey
 
             iexptimesF02 = (
                 exptimes_FLAT0X['nm%i' % wave] * t_dummy_F02).tolist()
@@ -390,7 +379,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['PTC01']:
 
-        print 'PTC01...'
 
         diffPTC01 = dict(mirr_on=0,
                          vstart=0,
@@ -419,7 +407,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['PTC02WAVE']:
 
-        print 'PTC02WAVE...'
 
         wavesPTC02w = [590, 730, 880]
 
@@ -439,7 +426,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             itestkey = 'PTC02_%i' % wave
             diffPTC02w['test'] = itestkey
 
-            print '%s...' % itestkey
 
             ptc02w = PTC0X.PTC0X(inputs=dict(elvis=elvis,
                                              CHAMBER=CHAMBER,
@@ -482,8 +468,7 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         
     
     if _toGen['BF01WAVE']:
-        
-        print 'BF01WAVE...'
+
 
         wavesBF01w = [590, 730, 880]
 
@@ -504,7 +489,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             diffBF01w['test'] = itestkey
             isurrogate = 'PTC02_%i' % wave
 
-            print '%s...' % itestkey
 
             bf01w = BF01.BF01(inputs=dict(elvis=elvis,
                                              CHAMBER=CHAMBER,
@@ -522,7 +506,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['FLATFLUX00']:
 
-        print 'FLATFLUX00...'
 
         wavesFLATFLUX00 = [590, 730, 800, 880, 0]
 
@@ -538,7 +521,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             itestkey = 'FLATFLUX00_%i' % wave
             diffFLATFLUX00w['test'] = itestkey
 
-            print '%s...' % itestkey
 
             flatflux00w = PTC0X.PTC0X(inputs=dict(elvis=elvis,
                                                 CHAMBER=CHAMBER,
@@ -556,7 +538,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['PTC02TEMP']:
 
-        print 'PTC02TEMP...'
 
         wavePTC02T = 800
         TempsPTC02T = [150., 156.]
@@ -573,7 +554,7 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         for it, T in enumerate(TempsPTC02T):
 
             itestkey = 'PTC02_%iK' % T
-            print '%s...' % itestkey
+
 
             diffPTC02T['test'] = itestkey
 
@@ -595,7 +576,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['PTC02RD']:
 
-        print 'PTC02RD...'
 
         wavePTC02RD = 800
         PTC02RDs = [15.5, 16.0,16.5]
@@ -614,7 +594,7 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             diffPTC02RD.update(diffvalues)
 
             itestkey = 'PTC02_%iR' % (RD*10.,)
-            print '%s...' % itestkey
+
 
             diffPTC02RD['test'] = itestkey
 
@@ -637,7 +617,7 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['NL01']:
 
-        print 'NL01...'
+
         waveNL01 = 0
 
         diffNL01 = dict(mirr_on=0)
@@ -667,7 +647,7 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['NL02']:
 
-        print 'NL02...'
+
         
         diffNL02 = dict(mirr_on=0)
         diffNL02.update(diffvalues)
@@ -713,7 +693,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['NL02RD']:
 
-        print 'NL02RD...'
         
         RDs = [15.5,16.0,16.5]
         
@@ -764,7 +743,7 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['FOCUS00']:
 
-        print 'FOCUS00...'
+
 
         # wavesFOCUS00w = [590,640,730,800,880] # TESTS
         wavesFOCUS00w = [590, 730, 800, 880]
@@ -784,7 +763,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
             diffFOCUS00w['test'] = itestkey
 
-            print '%s...' % itestkey
 
             focus00 = FOCUS00.FOCUS00(inputs=dict(elvis=elvis,
                                                   CHAMBER=CHAMBER,
@@ -801,7 +779,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['PSF01']:
 
-        print 'PSF01...'
 
         #
         PSF0Xtestdefaults = PSF0X.get_testdefaults(ogse)
@@ -819,7 +796,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             itestkey = 'PSF01_%i' % wave
             diffPSF01w['test'] = itestkey
 
-            print '%s...' % itestkey
 
             psf01w = PSF0X.PSF0X(inputs=dict(elvis=elvis,
                                              CHAMBER=CHAMBER,
@@ -835,8 +811,7 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             test_sequence[itestkey] = copy.deepcopy(psf01w)
 
     if _toGen['PSFLUX00']:
-        
-        print 'PSFLUX00...'
+
         
         wavesPSFLUX00 = [590, 730, 800, 880, 0]
         
@@ -853,7 +828,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             itestkey = 'PSFLUX00_%i' % wave
             diffPSFLUX00w['test'] = itestkey
 
-            print '%s...' % itestkey
 
             psflux00w = PSF0X.PSF0X(inputs=dict(elvis=elvis,
                                                 CHAMBER=CHAMBER,
@@ -869,7 +843,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['PSF02']:
 
-        print 'PSF02...'
 
         wPSF02 = 800
         temps_PSF02 = [150, 156]
@@ -889,7 +862,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
             diffPSF02['test'] = itestkey
 
-            print '%s...' % itestkey
 
             psf02k = PSF0X.PSF0X(inputs=dict(elvis=elvis,
                                              CHAMBER=CHAMBER,
@@ -910,7 +882,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['PERSIST01']:
 
-        print 'PERSIST01...'
         
         #wavePERS = 2000
         #tFWC_point_PERS = ogse.profile['tFWC_point']['nm%i' % wavePERS]
@@ -936,7 +907,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
     
     if _toGen['MOT_WARM']:
 
-        print 'MOT_WARM...'
         
         
         diffMOT_WM = dict()
@@ -951,7 +921,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['COSMETICS00']:
 
-        print 'COSMETICS00...'
         
         
         diffCOS = dict()
