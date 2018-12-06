@@ -33,17 +33,21 @@ from vison.support import utils
 
 
 
-def generate_test_sequence(diffvalues,toGen, elvis=context.elvis,
-                               CHAMBER=None,purpose='scripst'):
+def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
+                               CHAMBER=None,purpose='scripts'):
     """Now supporting test repetitions."""
     taskslist = toGen.keys()
     test_sequence = OrderedDict()
     for taskname in taskslist:
+        if not toGen[taskname]:
+            continue
+        
         strip_taskname, iteration = utils.remove_iter_tag(taskname,Full=True)
         _toGen = OrderedDict()
         _toGen[strip_taskname] = True
         ans =  _generate_test_sequence(diffvalues,_toGen,
                                       elvis,CHAMBER,purpose)
+        
         if iteration is not None:
             for key in ans.keys():
                 test_sequence['%s.%i' % (key,iteration)] = copy.deepcopy(ans[key])
@@ -94,6 +98,7 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                   MOT_FF=False)
     
     _toGen.update(toGen)
+    
 
     # BIAS
 

@@ -217,6 +217,7 @@ if __name__ == '__main__':
         test_generator = mot.generate_mot_sequence
     elif inputs['camptype'] == "devel":
         test_generator = devel.generate_test_sequence
+    
 
     scwriter(inputs['toWrite'], test_generator, inputs['outpath'],
              inputs['equipment'], inputs['elvis'], inputs['CHAMBER'])
