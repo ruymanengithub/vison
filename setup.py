@@ -68,6 +68,7 @@ def configuration():
                         'vison/scripts/vis_star_finder.py',
                         'vison/scripts/vis_load_DD.py',
                         'vison/scripts/vis_cosmetics_masker.py',
+                        'vison/scripts/vis_clear_space.py',
                         'vison/scripts/vison'])
 
     return config
