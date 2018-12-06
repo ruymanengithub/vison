@@ -34,8 +34,7 @@ from vison.datamodel import ccd
 from vison.dark.DarkTask import DarkTask
 from vison.datamodel import inputs, cdp
 from vison.support import utils
-
-import vis_cosmetics_masker as vcm
+from vison.scripts import vis_cosmetics_masker as vcm
 # END IMPORT
 
 isthere = os.path.exists
