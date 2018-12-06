@@ -55,7 +55,6 @@ def rsync_to_remote(path, broadcast):
     #extpath = os.path.join(_extpath,path)
     command = "rsync -e 'ssh' -L -avzq %s raf@msslus:%s%s" % (
         path, broadcast, os.sep)
-    #command = "rsync -avqz TEST_DATA/24_Feb_80 /home/raf/Desktop/24_Feb_80"
     print 'syncing to MSSLUS: %s' % command
     os.system(command)
 
