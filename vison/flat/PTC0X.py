@@ -427,6 +427,7 @@ class PTC0X(FlatTask):
                     # easy way to subtract one image from the other
                     ccdobj_sub = copy.deepcopy(ccdobj_odd)
                     ccdobj_sub.sub_bias(evedata, extension=-1)
+                    
 
                     for kQ in range(nQuad):
 
@@ -546,6 +547,8 @@ class PTC0X(FlatTask):
                     bloom_mx[CCDkey][Quad][key] = np.nan
 
         # fitting the PTCs
+        
+        debug = False
 
         for iCCD, CCDk in enumerate(CCDs):
 
@@ -562,8 +565,12 @@ class PTC0X(FlatTask):
                 med = raw_med[ixnonan]
 
                 #fitresults = dict(fit=p,efit=ep,gain=g,cuadterm=cuadterm,rn=rn,badresult=badresult)
+                
+                
+                #if (CCDk == 'CCD1') and (Q == 'E'):
+                #    debug=True
 
-                _fitresults = ptclib.fitPTC(med, var)
+                _fitresults = ptclib.fitPTC(med, var, debug=debug)
 
                 for zx in range(2+1):
                     gain_mx[CCDk][Q]['a%i' % zx] = _fitresults['fit'][2-zx]
