@@ -534,8 +534,8 @@ class MOT_WARM(DarkTask):
             for Q in Quads:
                 HER_lims[CCD][Q] = 1.5e-3 * np.array([-1.,1.])
         
-        _compliance_HER = Task.check_stat_perCCDandQ(self,_RON_matrix,
-                                                         RON_lims, CCDs)
+        _compliance_HER = Task.check_stat_perCCDandQ(self,HERdata,
+                                                         HER_lims, CCDs)
         
         self.addComplianceMatrix2Self(_compliance_HER,'HER')
         if self.report is not None:
