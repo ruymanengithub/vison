@@ -28,7 +28,7 @@ import lib as pilib
 from vison.support import context
 #import task_lib as tlib
 from vison.image import performance
-from vison.datamodel import ccd
+from vison.datamodel import ccd, core
 from vison.image import calibration
 from vison.ogse import ogse as ogsemod
 from vison.support.files import cPickleDumpDictionary
@@ -602,9 +602,11 @@ class Task(object):
             self.add_data_inventory_to_report(tDict)
         # CHECK AND CROSS-CHECK HK
         self.check_HK_ST()
-        # OBTAIN METRICS FROM IMAGES
+        #OBTAIN METRICS FROM IMAGES - TASK
+        self.get_checkstats_T()
+        # OBTAIN METRICS FROM IMAGES - SUB-TASK
         self.get_checkstats_ST(**kwargs)
-        # METRICS ASSESSMENT
+        # METRICS ASSESSMENT - SUB TASK
         self.check_metrics_ST(**kwargs)
         # PLOTs
         if self.report is not None:
@@ -638,6 +640,47 @@ class Task(object):
 
         if (not HK_perf_ok) or (not HK_safe_ok):
             self.dd.flags.add('HK_OOL')
+            
+
+    def get_checkstats_T(self):
+        """" """
+        Xindices = copy.deepcopy(self.dd.indices)
+
+        if 'Quad' not in Xindices.names:
+            Xindices.append(core.vIndex('Quad', vals=context.Quads))
+
+        valini = 0.
+        
+        newcolnames = ['chk_NPIXOFF', 'chk_NPIXSAT']
+        for newcolname in newcolnames:
+            self.dd.initColumn(newcolname, Xindices,
+                               dtype='int32', valini=valini)
+            
+        nObs, _, _ = Xindices.shape
+        CCDs = Xindices.get_vals('CCD')
+        Quads = Xindices.get_vals('Quad')
+
+        if not self.drill:
+            
+            for iObs in range(nObs):
+                for jCCD, CCDk in enumerate(CCDs):
+                    dpath = self.dd.mx['datapath'][iObs, jCCD]
+                    ffits = os.path.join(dpath, '%s.fits' %
+                                         self.dd.mx['File_name'][iObs, jCCD])
+                    ccdobj = ccd.CCD(ffits)
+                    vstart = self.dd.mx['vstart'][iObs][jCCD]
+                    vend = self.dd.mx['vend'][iObs][jCCD]
+
+                    for kQ, Quad in enumerate(Quads):
+                        
+                        qdata = ccdobj.get_quad(Quad,canonical=True,extension=-1)
+                        NPIXOFF = len(np.where(qdata[:,vstart:vend]==0)[0])
+                        NPIXSATUR = len(np.where(qdata[:,vstart:vend]==(2**16-1))[0])
+                        
+                        self.dd.mx['chk_NPIXOFF'][iObs, jCCD, kQ] = NPIXOFF
+                        self.dd.mx['chk_NPIXSAT'][iObs, jCCD, kQ] = NPIXSATUR
+
+        
 
     def addFigures_ST(self, dobuilddata=True, **kwargs):
         """ """
