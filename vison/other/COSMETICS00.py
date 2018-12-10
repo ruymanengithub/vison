@@ -306,7 +306,7 @@ class COSMETICS00(DarkTask):
         
         DDindices = copy.deepcopy(self.dd.indices)
         
-        nObs, nCCD, nQuad = DDindices.shape
+        nObs, nCCD = DDindices.shape
         #Quads = DDindices.get_vals('Quad')
         CCDs = DDindices.get_vals('CCD')
         
