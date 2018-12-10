@@ -235,8 +235,8 @@ class ComplianceMX_CCD(ComplianceMX):
 
             _lims = self.CCDQlims[CCDkey]
             test = (np.isnan(inparr[:, iCCD, ...]) |
-                    (inparr[:, iCCD, ...] <= _lims[0]) |
-                    (inparr[:, iCCD, ...] >= _lims[1]))
+                    (inparr[:, iCCD, ...] < _lims[0]) |
+                    (inparr[:, iCCD, ...] > _lims[1]))
 
             try:
                 avvalue = float(np.nanmean(inparr[:, iCCD, ...]))
@@ -281,7 +281,7 @@ class ComplianceMX_CCDQ(ComplianceMX):
                     _lims = self.CCDQlims[CCDkey]
                 
                 test = (np.isnan(inparr[:, iCCD, jQ, ...]) |
-                    (inparr[:, iCCD, jQ, ...] <= _lims[0]) | (inparr[:, iCCD, jQ, ...] >= _lims[1]))
+                    (inparr[:, iCCD, jQ, ...] <= _lims[0]) | (inparr[:, iCCD, jQ, ...] > _lims[1]))
                 
                 try:
                     avvalue = float(np.nanmean(inparr[:, iCCD, jQ, ...]))
@@ -322,13 +322,14 @@ class ComplianceMX_CCDCol(ComplianceMX):
                 ixsel = np.where(self.indexer == colname)
 
                 testv = (np.isnan(inparr[ixsel, iCCD, ...]) |
-                         (inparr[ixsel, iCCD, ...] <= _lims[0]) | (inparr[ixsel, iCCD, ...] >= _lims[1]))
+                         (inparr[ixsel, iCCD, ...] < _lims[0]) | (inparr[ixsel, iCCD, ...] > _lims[1]))
+                
 
                 try:
                     avvalue = float(np.nanmean(inparr[ixsel, iCCD, ...]))
                 except:
                     avvalue = np.nan
-
+                
                 test = not (
                     np.any(testv, axis=(0, 1)).sum() | (ixsel[0].shape[0] == 0))
                 
@@ -374,8 +375,8 @@ class ComplianceMX_CCDQCol(ComplianceMX):
                     ixsel = np.where(self.indexer == colname)
 
                     testv = (np.isnan(inparr[ixsel, iCCD, jQ, ...]) |
-                             (inparr[ixsel, iCCD, jQ, ...] <= _lims[0]) |
-                             (inparr[ixsel, iCCD, jQ, ...] >= _lims[1]))
+                             (inparr[ixsel, iCCD, jQ, ...] < _lims[0]) |
+                             (inparr[ixsel, iCCD, jQ, ...] > _lims[1]))
 
                     try:
                         avvalue = float(np.nanmean(
@@ -435,8 +436,8 @@ class ComplianceMX_CCDQColSpot(ComplianceMX):
                             _lims_col = self.lims[CCDkey][Q][spot][colname]
                             ixsel = np.where(self.indexer == colname)
                             testv = (np.isnan(inparr[ixsel, iCCD, jQ, kspot]) |
-                                     (inparr[ixsel, iCCD, jQ, kspot] <= _lims_col[0]) |
-                                     (inparr[ixsel, iCCD, jQ, kspot] >= _lims_col[1]))
+                                     (inparr[ixsel, iCCD, jQ, kspot] < _lims_col[0]) |
+                                     (inparr[ixsel, iCCD, jQ, kspot] > _lims_col[1]))
                             test = not (
                                 np.any(testv, axis=(0, 1)).sum() | (ixsel[0].shape[0] == 0))
                             try:
@@ -450,8 +451,8 @@ class ComplianceMX_CCDQColSpot(ComplianceMX):
                     else:
 
                         testv = (np.isnan(inparr[:, iCCD, jQ, kspot, ...]) |
-                                 (inparr[:, iCCD, jQ, kspot, ...] <= _lims[0]) |
-                                 (inparr[:, iCCD, jQ, kspot] >= _lims[1]))
+                                 (inparr[:, iCCD, jQ, kspot, ...] < _lims[0]) |
+                                 (inparr[:, iCCD, jQ, kspot] > _lims[1]))
 
                         test = not np.any(testv).sum()
                         try:
