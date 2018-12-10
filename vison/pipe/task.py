@@ -28,7 +28,7 @@ import lib as pilib
 from vison.support import context
 #import task_lib as tlib
 from vison.image import performance
-from vison.datamodel import ccd, core
+from vison.datamodel import ccd
 from vison.image import calibration
 from vison.ogse import ogse as ogsemod
 from vison.support.files import cPickleDumpDictionary
@@ -51,7 +51,7 @@ class Task(object):
     """ """
 
     from task_lib import check_HK, filterexposures, addHKPlotsMatrix, add_labels_to_explog
-    from task_lib import save_CDP, create_mockexplog
+    from task_lib import save_CDP, create_mockexplog, get_checkstats_T, check_metrics_T
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
@@ -110,17 +110,6 @@ class Task(object):
         
         self.inputs.update(_inputs)
         
-        
-        #self.inputs['preprocessing'] = dict()
-        #self.inputs['preprocessing']['offsetkwargs'] = dict(method='row',
-        #                                                    scan='pre', trimscan=[5, 5],
-        #                                                    ignore_pover=True,
-        #                                                    extension=-1)
-        
-        #self.inputs['todo_flags']=dict(init=True,check=False,report=False)
-        #if len(self.subtasks[0])>0:
-        #    for v in self.subtasks: self.inputs['todo_flags'][v[0]] = False
-         
 
         self.set_perfdefaults(**inputs)
         _perfdefaults = self.perfdefaults.copy()
@@ -155,8 +144,11 @@ class Task(object):
         pass
 
     def set_perfdefaults(self, **kwargs):
-        self.perfdefaults = dict()
-        self.perfdefaults.update(performance.get_perf_rdout(self.BLOCKID))
+        self.perfdefaults = OrderedDict()
+        self.perfdefaults.update(performance.get_perf_rdout(self.BLOCKID))        
+        self.perfdefaults['SATUR'] = OrderedDict()
+        for CCD in ['CCD1','CCD2','CCD3']:
+            self.perfdefaults['SATUR'][CCD] = 0.1
 
     def build_scriptdict(self, diffvalues={}, elvis=context.elvis):
         """ """
@@ -604,6 +596,8 @@ class Task(object):
         self.check_HK_ST()
         #OBTAIN METRICS FROM IMAGES - TASK
         self.get_checkstats_T()
+        # METRICS ASSESSMENT - TASK
+        self.check_metrics_T()
         # OBTAIN METRICS FROM IMAGES - SUB-TASK
         self.get_checkstats_ST(**kwargs)
         # METRICS ASSESSMENT - SUB TASK
@@ -642,45 +636,7 @@ class Task(object):
             self.dd.flags.add('HK_OOL')
             
 
-    def get_checkstats_T(self):
-        """" """
-        Xindices = copy.deepcopy(self.dd.indices)
-
-        if 'Quad' not in Xindices.names:
-            Xindices.append(core.vIndex('Quad', vals=context.Quads))
-
-        valini = 0.
-        
-        newcolnames = ['chk_NPIXOFF', 'chk_NPIXSAT']
-        for newcolname in newcolnames:
-            self.dd.initColumn(newcolname, Xindices,
-                               dtype='int32', valini=valini)
-            
-        nObs, _, _ = Xindices.shape
-        CCDs = Xindices.get_vals('CCD')
-        Quads = Xindices.get_vals('Quad')
-
-        if not self.drill:
-            
-            for iObs in range(nObs):
-                for jCCD, CCDk in enumerate(CCDs):
-                    dpath = self.dd.mx['datapath'][iObs, jCCD]
-                    ffits = os.path.join(dpath, '%s.fits' %
-                                         self.dd.mx['File_name'][iObs, jCCD])
-                    ccdobj = ccd.CCD(ffits)
-                    vstart = self.dd.mx['vstart'][iObs][jCCD]
-                    vend = self.dd.mx['vend'][iObs][jCCD]
-
-                    for kQ, Quad in enumerate(Quads):
-                        
-                        qdata = ccdobj.get_quad(Quad,canonical=True,extension=-1)
-                        NPIXOFF = len(np.where(qdata[:,vstart:vend]==0)[0])
-                        NPIXSATUR = len(np.where(qdata[:,vstart:vend]==(2**16-1))[0])
-                        
-                        self.dd.mx['chk_NPIXOFF'][iObs, jCCD, kQ] = NPIXOFF
-                        self.dd.mx['chk_NPIXSAT'][iObs, jCCD, kQ] = NPIXSATUR
-
-        
+    
 
     def addFigures_ST(self, dobuilddata=True, **kwargs):
         """ """

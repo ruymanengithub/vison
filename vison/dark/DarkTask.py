@@ -114,7 +114,7 @@ class DarkTask(Task):
         if self.report is not None:
             self.report.add_Section(
                 keyword='check_ronoffset', Title='Offsets and RON', level=1)
-
+        
         # absolute value of offsets
 
         offsets_lims = self.perflimits['offsets_lims']

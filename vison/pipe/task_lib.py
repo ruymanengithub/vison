@@ -21,6 +21,8 @@ import copy
 from vison.datamodel.generator import generate_Explog
 from vison.datamodel import HKtools
 from vison.pipe import lib as pilib
+from vison.datamodel import core, ccd
+from vison.support import context
 # END IMPORT
 
 
@@ -195,3 +197,85 @@ def addHKPlotsMatrix(self):
 def save_CDP(self, cdpobj):
     cdpobj.savehardcopy()
     cdpobj.savetopickle()
+
+
+def get_checkstats_T(self):
+    """" """
+    Xindices = copy.deepcopy(self.dd.indices)
+
+    if 'Quad' not in Xindices.names:
+        Xindices.append(core.vIndex('Quad', vals=context.Quads))
+
+    valini = 0.
+    
+    newcolnames = ['chk_NPIXOFF', 'chk_NPIXSAT']
+    for newcolname in newcolnames:
+        self.dd.initColumn(newcolname, Xindices,
+                           dtype='int32', valini=valini)
+        
+    nObs, _, _ = Xindices.shape
+    CCDs = Xindices.get_vals('CCD')
+    Quads = Xindices.get_vals('Quad')
+
+    if not self.drill:
+        
+        for iObs in range(nObs):
+            for jCCD, CCDk in enumerate(CCDs):
+                dpath = self.dd.mx['datapath'][iObs, jCCD]
+                ffits = os.path.join(dpath, '%s.fits' %
+                                     self.dd.mx['File_name'][iObs, jCCD])
+                ccdobj = ccd.CCD(ffits)
+                vstart = self.dd.mx['vstart'][iObs][jCCD]
+                vend = self.dd.mx['vend'][iObs][jCCD]
+
+                for kQ, Quad in enumerate(Quads):
+                    
+                    qdata = ccdobj.get_quad(Quad,canonical=True,extension=-1)
+                    NPIXOFF = len(np.where(qdata[:,vstart:vend]==0)[0])
+                    NPIXSATUR = len(np.where(qdata[:,vstart:vend]==(2**16-1))[0])
+                    
+                    self.dd.mx['chk_NPIXOFF'][iObs, jCCD, kQ] = NPIXOFF
+                    self.dd.mx['chk_NPIXSAT'][iObs, jCCD, kQ] = NPIXSATUR
+
+def check_metrics_T(self):
+    """ """
+    
+    Xindices = self.dd.indices
+    CCDs = Xindices.get_vals('CCD')
+    Quads = Xindices.get_vals('Quad')
+
+    if self.report is not None:
+        self.report.add_Section(
+            keyword='check_basics', Title='Offsets and RON', level=1)
+    
+    # FRACTION OF SATURATED PIXELS
+    
+    _satur_lims = self.perflimits['SATUR']    
+    Ncols = self.inputs['structure']['Ncols']
+    satur_lims = OrderedDict()
+    for CCD in CCDs:
+        satur_lims[CCD] = OrderedDict()
+        for icol in range(1,Ncols+1):
+            satur_lims[CCD]['col%03i' % icol] = _satur_lims[CCD]
+    arrSAT = self.dd.mx['chk_NPIXSAT'][:].copy()
+    
+    NQactive = self.ccdcalc.NAXIS1 * (self.dd.mx['vend'][:]-self.dd.mx['vstart'][:])
+    NQactive = np.repeat(NQactive[...,np.newaxis],4,axis=-1) # extend to Quads
+    
+    FracSat = arrSAT / NQactive
+    
+    _compliance_sat = self.check_stat_perCCDandCol(FracSat, satur_lims, CCDs)
+    
+    self.addComplianceMatrix2Self(_compliance_sat,'saturation')
+    
+    if not self.IsComplianceMatrixOK(_compliance_sat):
+                self.dd.flags.add('POORQUALDATA')
+                self.dd.flags.add('SATURATION')
+    if self.log is not None:
+                self.addComplianceMatrix2Log(
+                    _compliance_sat, label='COMPLIANCE SATURATION FRACTION')
+    
+    # MISSING PIXELS
+    
+    stop()
+    
