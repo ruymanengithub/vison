@@ -148,7 +148,7 @@ class Task(object):
         self.perfdefaults.update(performance.get_perf_rdout(self.BLOCKID))        
         self.perfdefaults['SATUR'] = OrderedDict()
         for CCD in ['CCD1','CCD2','CCD3']:
-            self.perfdefaults['SATUR'][CCD] = 0.1
+            self.perfdefaults['SATUR'][CCD] = [0.,0.1]
 
     def build_scriptdict(self, diffvalues={}, elvis=context.elvis):
         """ """
