@@ -95,7 +95,7 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None):
     datapath = sp_inputs['datapath']
     thresholds = sp_inputs['thresholds']
     
-    outfilename = os.path.join(outpath,'EUC_%s_%s_CCD_SN_%s.fits' % (masktype.upper(), tag, sn_ccd))
+    outfilename = os.path.join(outpath,'EUC_%s_%s_CCD%i_SN_%s.fits' % (masktype.upper(), tag, CCD, sn_ccd))
     
     if isinstance(OBSID_list_raw,(list,)):
         OBSID_list = OBSID_list_raw
@@ -181,15 +181,16 @@ def do_FlatMask(inputs):
 
 def do_MergeMasks(inputs):
     
+    CCD = inputs['CCD']
     sn_ccd = inputs['sn_ccd']
     tag = inputs['tag']
     outpath = inputs['outpath']
         
-    dkmask_f = os.path.join(outpath,'EUC_DKMASK_%s_CCD_SN_%s.fits' % (tag, sn_ccd))
-    flmask_f = os.path.join(outpath,'EUC_FLMASK_%s_CCD_SN_%s.fits' % (tag, sn_ccd))
+    dkmask_f = os.path.join(outpath,'EUC_DKMASK_%s_CCD%i_SN_%s.fits' % (tag, CCD, sn_ccd))
+    flmask_f = os.path.join(outpath,'EUC_FLMASK_%s_CCD%i_SN_%s.fits' % (tag, CCD, sn_ccd))
     assert isthere(dkmask_f) and isthere(flmask_f)
     
-    outfilename = os.path.join(outpath,'EUC_MASK_%s_CCD_SN_%s.fits' % (tag, sn_ccd))
+    outfilename = os.path.join(outpath,'EUC_MASK_%s_CCD%i_SN_%s.fits' % (tag, CCD, sn_ccd))
     
     dkmaskobj = ccdmod.CCD(dkmask_f)
     flmaskobj = ccdmod.CCD(flmask_f)
