@@ -331,6 +331,7 @@ class ComplianceMX_CCDCol(ComplianceMX):
 
                 test = not (
                     np.any(testv, axis=(0, 1)).sum() | (ixsel[0].shape[0] == 0))
+                
 
                 self[CCDkey][colname] = [test, avvalue, tuple(_lims)]
 

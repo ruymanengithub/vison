@@ -246,7 +246,7 @@ def check_metrics_T(self):
 
     if self.report is not None:
         self.report.add_Section(
-            keyword='check_basics', Title='Offsets and RON', level=1)
+            keyword='check_basics', Title='SATURATIONS \& LOST PIXELS', level=1)
     
     # FRACTION OF SATURATED PIXELS
     
@@ -269,13 +269,17 @@ def check_metrics_T(self):
     self.addComplianceMatrix2Self(_compliance_sat,'saturation')
     
     if not self.IsComplianceMatrixOK(_compliance_sat):
-                self.dd.flags.add('POORQUALDATA')
-                self.dd.flags.add('SATURATION')
+        self.dd.flags.add('POORQUALDATA')
+        self.dd.flags.add('SATURATION')
     if self.log is not None:
-                self.addComplianceMatrix2Log(
-                    _compliance_sat, label='COMPLIANCE SATURATION FRACTION')
+        self.addComplianceMatrix2Log(
+            _compliance_sat, label='COMPLIANCE SATURATION FRACTION')
+    if self.report is not None:
+        self.addComplianceMatrix2Report(
+            _compliance_sat, label='COMPLIANCE SATURATION FRACTION',
+            caption='Fraction of CCD image saturated.'
+                )
     
     # MISSING PIXELS
     
-    stop()
     
