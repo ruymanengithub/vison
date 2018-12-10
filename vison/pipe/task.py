@@ -564,7 +564,7 @@ class Task(object):
         """ """
         colnames = lims[CCDs[0]].keys()
         compliance = complimod.ComplianceMX_CCDCol(colnames,
-                                                   indexer=self.dd.mx['label'][:],
+                                                   indexer=self.dd.mx['label'][:,0],
                                                    CCDs=CCDs, lims=lims.copy())
         compliance.check_stat(arr)
         return compliance

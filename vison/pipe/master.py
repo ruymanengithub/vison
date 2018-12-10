@@ -89,6 +89,7 @@ class Pipe(object):
 
     Test_dict = dict(BIAS01=BIAS0X, 
                      BIAS02=BIAS0X,
+                     COSMETICS00=COSMETICS00,
                      DARK01=DARK01,
                      NL01=NL01, NL02=NL02, 
                      FLAT01=FLAT0X,

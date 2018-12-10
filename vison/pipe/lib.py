@@ -212,7 +212,6 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
                   failedkeys=failedkeys, failedcols=failedcols,
                   msgs=msgs)
     
-    
     return report
 
 

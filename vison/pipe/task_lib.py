@@ -125,7 +125,7 @@ def filterexposures(self, structure, explog, OBSID_lims, colorblind=False, waved
         selbool = (explog['test'] == testkey) & \
             (explog['ObsID'] >= OBSID_lims[0]) & \
             (explog['ObsID'] <= OBSID_lims[1])
-    
+        
     explog = explog[np.where(selbool)]
 
     # Assess structure
@@ -277,9 +277,33 @@ def check_metrics_T(self):
     if self.report is not None:
         self.addComplianceMatrix2Report(
             _compliance_sat, label='COMPLIANCE SATURATION FRACTION',
-            caption='Fraction of CCD image saturated.'
+            caption='Fraction (over 1) of CCD image saturated.'
                 )
     
     # MISSING PIXELS
+    
+    NPIX_LOST_mx = self.dd.mx['chk_NPIXOFF'][:].copy()
+    NPIX_LOST = np.sum(NPIX_LOST_mx,axis=(1,2))
+    #NPIX_LOST[:] = 1 # TESTS
+    ObsID = self.dd.mx['ObsID'][:].copy()
+    
+    NPIX_LOST_summ = 'LOST PIXELS: '
+    
+    if np.any(NPIX_LOST>0):
+        for iObs, Obs in enumerate(ObsID):
+            _NPIX = NPIX_LOST[iObs]
+            if _NPIX>0:
+                NPIX_LOST_summ += '%i (OBSID:%i), ' % (_NPIX,Obs)
+    
+        NPIX_LOST_summ = NPIX_LOST_summ[0:-2]
+        
+        self.dd.flags.add('LOSTPIXELS')
+        
+        if self.log is not None:
+            self.log.info(NPIX_LOST_summ)
+        
+        if self.report is not None:
+            self.report.add_Text(NPIX_LOST_summ)
+    
     
     
