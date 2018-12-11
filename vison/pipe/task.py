@@ -682,14 +682,14 @@ class Task(object):
                 self.inputs['inCDPs'][cdpkey], ccd.CCD,
                            getallextensions=True, 
                            withpover=self.ccdcalc.withpover)
-            if self.log is not None:
-                cdpstr = self.inputs['inCDPs'][cdpkey].__str__()
-                cdpstr = st.replace(cdpstr, ',', ',\n')
+            cdpstr = self.inputs['inCDPs'][cdpkey].__str__()
+            cdpstr = st.replace(cdpstr, ',', ',\n')
+            if self.log is not None:                
                 self.log.info(msg)
                 self.log.info(cdpstr)
-                if self.report is not None:
-                    self.report.add_Text(msg)
-                    self.report.add_Text(cdpstr, verbatim=True)
+            if self.report is not None:
+                self.report.add_Text(msg)
+                self.report.add_Text(cdpstr, verbatim=True)
             return CDPData
 
         def _reportNotFound(reportobj, msg):
@@ -698,6 +698,8 @@ class Task(object):
         
         if doBadPixels:
             self.proc_histo['BadPixels'] = True
+            if self.report is not None:
+                self.report.add_Text('Masking out saturated and missing (zero) pixels.')
         
         if doMask and 'Mask' in self.inputs['inCDPs']:
             # self.inputs['inCDPs']['Mask']['CCD%i']
@@ -758,10 +760,8 @@ class Task(object):
 
             picklespath = self.inputs['subpaths']['ccdpickles']
 
-            for iObs in range(nObs):
-                
-                
-                
+            for iObs in range(nObs): 
+            #for iObs in range(3): # TESTS
                 if doFF:
                     FW_ID = self.dd.mx['wave'][iObs,0]
                     wavelength = self.ogse['FW']['F%i' % FW_ID]
@@ -789,11 +789,12 @@ class Task(object):
                     
                     if doBadPixels:
                         imgdata = ccdobj.extensions[-1].data.copy()
-                        BPmask = np.isclose(imgdata,2**16-1.) | (imgdata == 0)
+                        BPmask = np.isclose(imgdata,2**16-1.) | np.isclose(imgdata, 0.0)
                         ccdobj.get_mask(BPmask)
-
+                    
                     if doMask:
                         ccdobj.get_mask(MaskData[CCDkey].extensions[-1].data)
+                    
 
                     if doOffset:
                         for Quad in ccdobj.Quads:
@@ -809,6 +810,8 @@ class Task(object):
                         FF = FFData['nm%i' % wavelength][CCDkey]
                         ccdobj.divide_by_flatfield(FF.extensions[-1].data, 
                                                    extension=-1)
+                        
+                    
 
                     # cPickleDumpDictionary(dict(ccdobj=ccdobj),fullccdobj_name)
                     cPickleDumpDictionary(ccdobj, fullccdobj_name)

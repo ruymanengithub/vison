@@ -693,14 +693,14 @@ class CCD(object):
             offsets = []
             for ix in range(self.NAXIS2/2):
                 offset = median(quaddata[hlims[0]:hlims[1], ix])
-                quaddata[:, ix] -= offset
+                quaddata[:, ix] = quaddata[:, ix] - offset
                 offsets.append(offset)
 
         elif method == 'median':
 
             offset = median(quaddata[hlims[0]:hlims[1], vlims[0]:vlims[1]])
             #if self.masked : offset = offset.data
-            quaddata -= offset
+            quaddata = quaddata - offset
             offsets = [offset]
 
         B = self.QuadBound[Quad]

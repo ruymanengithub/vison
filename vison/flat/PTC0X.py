@@ -434,6 +434,7 @@ class PTC0X(FlatTask):
                         Quad = Quads[kQ]
 
                         _tile_coos = tile_coos[Quad]
+                        
 
                         _meds = ccdobj_odd.get_tiles_stats(
                             Quad, _tile_coos, 'median', extension=-1)
