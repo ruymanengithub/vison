@@ -342,7 +342,13 @@ def broadcast_todo_flags(inputdict, docheck=False, dotest=False, doreport=False)
         _todocheck.update(dict(init=True, check=True, report=True))
     elif dotest:
         _todocheck.update(dict(init=True))
+    
 
     inputdict = broadcast_todo_flags_func(inputdict, _todocheck)
-
+    
+    for task in inputdict['tasks']:
+        tinputs = inputdict[task]
+        if 'lock' in tinputs['todo_flags'].keys() and docheck:
+            tinputs['todo_flags']['lock'] = True
+    
     return inputdict

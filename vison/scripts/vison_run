@@ -135,6 +135,7 @@ if __name__ == '__main__':
                 debug=debug, startobsid=startobsid,
                 processes=cpu_count)
     
+    
     if wait:
         pipe.wait_and_run(dayfolder, elvis=elvis)
     else:
