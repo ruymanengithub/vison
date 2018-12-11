@@ -63,7 +63,8 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                   MOT_WARM=False,
                   BF01=False,
                   BF01WAVE=False,
-                  MOT_FF=False)
+                  MOT_FF=False,
+                  HENK01=False)
     
     _toGen.update(toGen)
 

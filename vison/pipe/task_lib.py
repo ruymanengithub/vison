@@ -300,11 +300,15 @@ def check_metrics_T(self):
         
         self.dd.flags.add('LOSTPIXELS')
         
-        if self.log is not None:
-            self.log.info(NPIX_LOST_summ)
-        
-        if self.report is not None:
-            self.report.add_Text(NPIX_LOST_summ)
     
+    else:
+        
+        NPIX_LOST_summ += ' None'
+    
+    if self.log is not None:
+        self.log.info(NPIX_LOST_summ)
+    
+    if self.report is not None:
+        self.report.add_Text(NPIX_LOST_summ)
     
     
