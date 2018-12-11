@@ -145,8 +145,8 @@ class BF01(PTC0X):
     
     
     def prepare_images(self):
-        Task.prepare_images(self, doExtract=True, doMask=True,
-                                         doOffset=True, doBias=False, doFF=False)        
+        Task.prepare_images(self, doExtract=True, doBadPixels=True,
+                            doMask=True,doOffset=True, doBias=False, doFF=False)        
 
     def extract_COV(self):
         """

@@ -154,7 +154,8 @@ class DARK01(DarkTask):
 
         """
         super(DARK01, self).prepare_images(
-            doExtract=True, doMask=True, doOffset=True, doBias=True)
+            doExtract=True, doBadPixels=True,
+            doMask=True, doOffset=True, doBias=True, doFF=False)
 
 
     def stack_analysis(self):

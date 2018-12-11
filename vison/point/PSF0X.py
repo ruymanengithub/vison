@@ -276,7 +276,8 @@ class PSF0X(PT.PointTask):
 
         """
         super(PSF0X, self).prepare_images(
-            doExtract=True, doMask=True, doOffset=True, doBias=True, doFF=True)
+            doExtract=True, doBadPixels=True,            
+            doMask=True, doOffset=True, doBias=True, doFF=True)
 
         dIndices = copy.deepcopy(self.dd.indices)
 

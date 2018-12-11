@@ -241,7 +241,9 @@ class NL01(FlatTask):
                     opt: [mask-out defects]
 
         """
-        super(NL01, self).prepare_images(doExtract=True, doMask=True,
+        super(NL01, self).prepare_images(doExtract=True, 
+                                         doBadPixels=True,
+                                         doMask=True,
                                          doOffset=True, doBias=True, 
                                          doFF=True)
 

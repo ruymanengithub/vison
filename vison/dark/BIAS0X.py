@@ -144,7 +144,8 @@ class BIAS0X(DarkTask):
 
         """
         super(BIAS0X, self).prepare_images(
-            doExtract=True, doMask=True, doOffset=True)
+            doExtract=True, doBadPixels=True,
+            doMask=True, doOffset=True,doBias=False,doFF=False)
 
     def basic_analysis(self):
         """ 

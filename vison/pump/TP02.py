@@ -197,6 +197,7 @@ class TP02(PumpTask):
     
     def prepare_images(self):
         super(TP02, self).prepare_images(doExtract=True, 
+             doBadPixels=True,
              doMask=False, # ON TESTS!
              doOffset=True, doBias=False, doFF=False)
     

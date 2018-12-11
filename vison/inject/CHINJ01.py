@@ -207,9 +207,11 @@ class CHINJ01(InjTask):
     
     def prepare_images(self):
         super(CHINJ01, self).prepare_images(doExtract=True, 
+             doBadPixels=True,
              doMask=True, # ON TESTS!
              doOffset=True, 
-             doBias=False, doFF=False)
+             doBias=False, 
+             doFF=False)
 
         
     def meta_analysis(self):

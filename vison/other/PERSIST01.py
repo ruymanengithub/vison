@@ -181,7 +181,8 @@ class PERSIST01(Task):
 
         """
         super(PERSIST01, self).prepare_images(
-            doExtract=True, doMask=True, doOffset=True)
+            doExtract=True, doBadPixels=False,
+            doMask=True, doOffset=True)
 
     def basic_analysis(self):
         """

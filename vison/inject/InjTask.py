@@ -55,7 +55,7 @@ class InjTask(Task):
 
         Task.check_data(self, **kwargs)
 
-    def prepare_images(self, doExtract=True, doMask=True, doOffset=True, 
+    def prepare_images(self, doExtract=True, doBadPixels=True, doMask=True, doOffset=True, 
                        doBias=True, doFF=False):
         """
 
@@ -69,7 +69,8 @@ class InjTask(Task):
 
         """
         super(InjTask, self).prepare_images(
-            doExtract=doExtract, doMask=doMask, doOffset=doOffset, doBias=doBias,
+            doExtract=doExtract, doBadPixels=doBadPixels,
+            doMask=doMask, doOffset=doOffset, doBias=doBias,
             doFF=doFF)
 
     def predict_expected_injlevels(self, teststruct):

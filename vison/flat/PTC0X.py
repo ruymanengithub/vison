@@ -312,10 +312,10 @@ class PTC0X(FlatTask):
                     wavedkeys=['motr_siz'],colorblind=False)
 
     def prepare_images(self):
-        Task.prepare_images(self, doExtract=True, doMask=True,
+        Task.prepare_images(self, doExtract=True, doBadPixels=True, doMask=True,
                                          doOffset=True, doBias=False, doFF=False)
-        super(PTC0X, self).prepare_images(doExtract=True, doMask=True,
-                                          doOffset=True, doBias=False, doFF=False)
+        #super(PTC0X, self).prepare_images(doExtract=True, doMask=True,
+        #                                  doOffset=True, doBias=False, doFF=False)
 
     def extract_PTC(self):
         """

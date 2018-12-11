@@ -26,6 +26,7 @@ from matplotlib.colors import Normalize
 from scipy import ndimage
 
 from vison.pipe.task import HKKeys
+from vison.pipe.task import Task
 from vison.support import context
 from vison.pipe import lib as pilib
 from vison.point import lib as polib
@@ -207,8 +208,10 @@ class FLAT0X(FlatTask):
             cosmetics masking
 
         """
-        super(FLAT0X, self).prepare_images(doExtract=True,
-                                           doMask=True, doOffset=True, doBias=True)
+        Task.prepare_images(self, doExtract=True, doBadPixels=True, doMask=True,
+                                         doOffset=True, doBias=False, doFF=False)
+        #super(FLAT0X, self).prepare_images(doExtract=True,doBadPixels=True,
+        #                                   doMask=True, doOffset=True, doBias=True)
 
     def do_indiv_flats(self):
         """

@@ -660,7 +660,7 @@ class Task(object):
                 nfigkey = 'BS_%s' % figkey
                 self.skipMissingPlot(nfigkey, ref=figkey)
 
-    def prepare_images(self, doExtract=True, doMask=False, doOffset=False, doBias=False,
+    def prepare_images(self, doExtract=True, doBadPixels=False, doMask=False, doOffset=False, doBias=False,
                        doFF=False):
         """ """
 
@@ -695,7 +695,10 @@ class Task(object):
         def _reportNotFound(reportobj, msg):
             if reportobj is not None:
                 reportobj.add_Text(msg)
-
+        
+        if doBadPixels:
+            self.proc_histo['BadPixels'] = True
+        
         if doMask and 'Mask' in self.inputs['inCDPs']:
             # self.inputs['inCDPs']['Mask']['CCD%i']
             MaskData = _loadCDP('Mask', 'Loading and applying Cosmetics Mask...')
@@ -756,11 +759,17 @@ class Task(object):
             picklespath = self.inputs['subpaths']['ccdpickles']
 
             for iObs in range(nObs):
+                
+                
+                
                 if doFF:
-                    FW_ID = self.dd.mx['wavelength'][iObs]
+                    FW_ID = self.dd.mx['wave'][iObs,0]
                     wavelength = self.ogse['FW']['F%i' % FW_ID]
 
                 for jCCD, CCDkey in enumerate(CCDs):
+                    
+                    #vstart = self.dd.mx['vstart'][iObs, jCCD]
+                    #vend = self.dd.mx['vend'][iObs, jCCD]
 
                     ccdobj_name = '%s_proc' % self.dd.mx['File_name'][iObs, jCCD]
 
@@ -776,6 +785,12 @@ class Task(object):
 
                     fullccdobj_name = os.path.join(
                         picklespath, '%s.pick' % ccdobj_name)
+                    
+                    
+                    if doBadPixels:
+                        imgdata = ccdobj.extensions[-1].data.copy()
+                        BPmask = np.isclose(imgdata,2**16-1.) | (imgdata == 0)
+                        ccdobj.get_mask(BPmask)
 
                     if doMask:
                         ccdobj.get_mask(MaskData[CCDkey].extensions[-1].data)

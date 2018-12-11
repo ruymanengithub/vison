@@ -764,10 +764,27 @@ class CCD(object):
                 tmp, Quad).copy()
 
         return VscanMask
+    
+    def or_mask(self, mask):
+        """ """
+        assert self.shape == mask.shape
+        
+        if not self.masked:
+            self.get_mask(mask)
+        
+        for iext in range(self.nextensions):
+            if self.extensions[iext].data is not None:
+                self.extensions[iext].data.mask |= mask.astype('bool') # addition: logical OR
+
+        self.masked = True # still True
 
     def get_mask(self, mask):
         """ """
         assert self.shape == mask.shape
+        
+        if self.masked:
+            self.or_mask(mask)
+            return
 
         for iext in range(self.nextensions):
             if self.extensions[iext].data is not None:
