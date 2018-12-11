@@ -119,7 +119,7 @@ def get_PSF01_PANCHRO_figs():
     PSF01_PANCHRO_figs = dict()
     return PSF01_PANCHRO_figs
 
-def gt_CDP_lib():
+def gt_CDP_lib(test):
     """ """
     CDP_lib = OrderedDict()
     CDP_lib.update(Paux.CDP_lib)
