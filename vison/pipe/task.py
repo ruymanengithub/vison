@@ -513,7 +513,7 @@ class Task(object):
                     isOK = isOK and traverse_tree(value, isOK)
                 else:
                     #print key,value
-                    isOK = isOK and value
+                    isOK = isOK and value[0]
             return isOK
 
         isOK = traverse_tree(complidict, True)

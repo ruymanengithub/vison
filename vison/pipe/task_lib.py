@@ -242,7 +242,7 @@ def check_metrics_T(self):
     
     Xindices = self.dd.indices
     CCDs = Xindices.get_vals('CCD')
-    Quads = Xindices.get_vals('Quad')
+    #Quads = Xindices.get_vals('Quad')
 
     if self.report is not None:
         self.report.add_Section(
@@ -267,6 +267,7 @@ def check_metrics_T(self):
     _compliance_sat = self.check_stat_perCCDandCol(FracSat, satur_lims, CCDs)
     
     self.addComplianceMatrix2Self(_compliance_sat,'saturation')
+    
     
     if not self.IsComplianceMatrixOK(_compliance_sat):
         self.dd.flags.add('POORQUALDATA')
