@@ -123,3 +123,4 @@ def gt_CDP_lib(test):
     """ """
     CDP_lib = OrderedDict()
     CDP_lib.update(Paux.CDP_lib)
+    return CDP_lib
