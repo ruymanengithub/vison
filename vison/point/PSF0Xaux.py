@@ -19,7 +19,7 @@ import string as st
 
 from vison.plot import figclasses
 from vison.plot import trends
-
+from vison.point import Paux
 # END IMPORT
 
 
@@ -118,3 +118,8 @@ def gt_PSF0Xfigs(test):
 def get_PSF01_PANCHRO_figs():
     PSF01_PANCHRO_figs = dict()
     return PSF01_PANCHRO_figs
+
+def get_CDP_lib():
+    """ """
+    CDP_lib = OrderedDict()
+    CDP_lib.update(Paux.CDP_lib)
