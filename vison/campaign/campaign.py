@@ -545,8 +545,8 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
 
         wavePTC02T = 800
-        TempsPTC02T = [150., 156.]
-
+        TempsPTC02T = [148., 158.]
+        
         diffPTC02T = dict(mirr_on=0)
         diffPTC02T.update(diffvalues)
 
@@ -850,7 +850,7 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
 
         wPSF02 = 800
-        temps_PSF02 = [150, 156]
+        temps_PSF02 = [148, 158]
 
         tFWC_pointPSF02 = ogse.profile['tFWC_point']['nm%i' % wPSF02]
 
