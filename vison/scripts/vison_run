@@ -100,7 +100,8 @@ if __name__ == '__main__':
     pyconfig = options.pyconfig
     json = options.json
     
-    assert (len(pyconfig) >0 ) != (len(json)>0), "pyconfig XOR json should be provided as input, not both, QUITTING!"
+    assert ((len(pyconfig)>0) or (len(json)>0)), "\npyconfig OR json has to be provided as input, QUITTING!\n"
+    assert (len(pyconfig) >0 ) != (len(json)>0), "\npyconfig XOR json should be provided as input, not both, QUITTING!\n"
     
     run = options.run
     dayfolder = options.dayfolder
