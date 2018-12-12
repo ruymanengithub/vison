@@ -25,8 +25,11 @@ from vison.plot import trends
 
 
 
+def get_CDP_lib():
 
-lock_cdp = cdp.Tables_CDP()
-lock_cdp.rootname = 'LOCK_TB_%s'
+    lock_cdp = cdp.Tables_CDP()
+    lock_cdp.rootname = 'LOCK_TB_%s'
 
-CDP_lib = dict(LOCK_TB=lock_cdp)
+    CDP_lib = dict(LOCK_TB=lock_cdp)
+    
+    return CDP_lib

@@ -24,7 +24,7 @@ from vison.point import spot as spotmod
 # END IMPORT
 
 
-stampw = 150
+stampw = 75
 
 # ALPHA BRAVO
 #    CHARLIE

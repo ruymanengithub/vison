@@ -23,7 +23,7 @@ from vison.point import Paux
 # END IMPORT
 
 
-def gt_check_offsets_dict(test):
+def get_check_offsets_dict(test):
     ntest = st.replace(test, '_', '\_')
     return dict(stats=['offset_pre', 'offset_ove'],
                 trendaxis='time',
@@ -35,7 +35,7 @@ def gt_check_offsets_dict(test):
                           ylim=trends.offset_lims))
 
 
-def gt_check_std_dict(test):
+def get_check_std_dict(test):
     ntest = st.replace(test, '_', '\_')
     return dict(stats=['std_pre', 'std_ove'],
                 trendaxis='time',
@@ -47,7 +47,7 @@ def gt_check_std_dict(test):
                           ylim=trends.RON_lims))
 
 
-def gt_check_bgd_dict(test):
+def get_check_bgd_dict(test):
     ntest = st.replace(test, '_', '\_')
     return dict(stats=['bgd_img'],
                 trendaxis='time',
@@ -58,7 +58,7 @@ def gt_check_bgd_dict(test):
                           suptitle='%s-checks: BGD' % ntest))
 
 
-def gt_check_flu_dict(test):
+def get_check_flu_dict(test):
     ntest = st.replace(test, '_', '\_')
     return dict(stats=['chk_fluence'],
                 trendaxis='exptime',
@@ -71,7 +71,7 @@ def gt_check_flu_dict(test):
                           ylabel='Flu.[ADU]'))
 
 
-def gt_check_fwhmx_dict(test):
+def get_check_fwhmx_dict(test):
     ntest = st.replace(test, '_', '\_')
     return dict(stats=['chk_fwhmx'],
                 trendaxis='exptime',
@@ -84,7 +84,7 @@ def gt_check_fwhmx_dict(test):
                           ylabel='FWHMx [pix]'))
 
 
-def gt_check_fwhmy_dict(test):
+def get_check_fwhmy_dict(test):
     ntest = st.replace(test, '_', '\_')
     return dict(stats=['chk_fwhmy'],
                 trendaxis='exptime',
@@ -97,20 +97,20 @@ def gt_check_fwhmy_dict(test):
                           ylabel='FWHMy [pix]'))
 
 
-def gt_PSF0Xfigs(test):
+def get_PSF0Xfigs(test):
     PSF0Xfigs = dict()
     PSF0Xfigs['PSF0Xchecks_offsets'] = [
-        trends.Fig_Basic_Checkstat, gt_check_offsets_dict(test)]
+        trends.Fig_Basic_Checkstat, get_check_offsets_dict(test)]
     PSF0Xfigs['PSF0Xchecks_stds'] = [
-        trends.Fig_Basic_Checkstat, gt_check_std_dict(test)]
+        trends.Fig_Basic_Checkstat, get_check_std_dict(test)]
     PSF0Xfigs['PSF0Xchecks_bgd'] = [
-        trends.Fig_Basic_Checkstat, gt_check_bgd_dict(test)]
+        trends.Fig_Basic_Checkstat, get_check_bgd_dict(test)]
     PSF0Xfigs['PSF0Xchecks_fluence'] = [
-        trends.Fig_Basic_Checkstat, gt_check_flu_dict(test)]
+        trends.Fig_Basic_Checkstat, get_check_flu_dict(test)]
     PSF0Xfigs['PSF0Xchecks_fwhmx'] = [
-        trends.Fig_Basic_Checkstat, gt_check_fwhmx_dict(test)]
+        trends.Fig_Basic_Checkstat, get_check_fwhmx_dict(test)]
     PSF0Xfigs['PSF0Xchecks_fwhmy'] = [
-        trends.Fig_Basic_Checkstat, gt_check_fwhmy_dict(test)]
+        trends.Fig_Basic_Checkstat, get_check_fwhmy_dict(test)]
     PSF0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return PSF0Xfigs
 
@@ -119,8 +119,8 @@ def get_PSF01_PANCHRO_figs():
     PSF01_PANCHRO_figs = dict()
     return PSF01_PANCHRO_figs
 
-def gt_CDP_lib(test):
+def get_CDP_lib(test):
     """ """
     CDP_lib = OrderedDict()
-    CDP_lib.update(Paux.CDP_lib)
+    CDP_lib.update(Paux.get_CDP_lib())
     return CDP_lib
