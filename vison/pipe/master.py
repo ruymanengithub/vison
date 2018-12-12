@@ -127,9 +127,9 @@ class Pipe(object):
         Test_dict['FLATFLUX00_%i' % wave] = PTC0X
 
     def __init__(self, inputdict, dolog=True, drill=False, debug=False, startobsid=0,
-                 processes=1):
+                 processes=1,tag=''):
         """ """
-
+        
         self.inputs = defaults.copy()
         self.inputs.update(inputdict)
         self.tasks = self.inputs['tasks']
@@ -140,12 +140,13 @@ class Pipe(object):
         self.debug = debug
         self.startobsid = startobsid
         self.processes = processes
+        self.tag = tag
         self.completion = OrderedDict()
 
         if self.debug:
-            self.ID = 'PipeDebug'
+            self.ID = 'PipeDebug%s' % self.tag
         else:
-            self.ID = 'FM%s' % vistime.get_time_tag()  # ID of the analysis "session"
+            self.ID = 'FM%s%s' % (vistime.get_time_tag(),self.tag)  # ID of the analysis "session"
 
         self.inputs['ID'] = self.ID
 

@@ -95,6 +95,8 @@ if __name__ == '__main__':
                       help="Only use data from given ObsID and onwards. Only used in 'wait' mode.")
     parser.add_option("-m", "--multithread", dest="multithread", action="store_true", default=False,
                       help="Use all CPUs available? Default=False [single thread]")
+    parser.add_option("-t", "--tag", dest="tag", default="",
+                      help="Tag to be added to log-file name for ease of identification. Optional.")
     (options, args) = parser.parse_args()
 
     pyconfig = options.pyconfig
@@ -114,6 +116,7 @@ if __name__ == '__main__':
     dotest = options.test
     startobsid = int(options.startobsid)
     multithread = options.multithread
+    tag = options.tag
     
     if len(pyconfig)>0:
         inputdict = openpyconfigf(pyconfig,run,wait)
@@ -134,7 +137,7 @@ if __name__ == '__main__':
     
     pipe = Pipe(inputdict, dolog=dolog, drill=drill,
                 debug=debug, startobsid=startobsid,
-                processes=cpu_count)
+                processes=cpu_count,tag=tag)
     
     
     if wait:
