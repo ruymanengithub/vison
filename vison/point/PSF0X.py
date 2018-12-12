@@ -257,6 +257,23 @@ class PSF0X(PT.PointTask):
         wavedkeys = []
         return super(PSF0X, self).filterexposures(structure, explog, OBSID_lims, colorblind=False,
                                                   wavedkeys=wavedkeys)
+        
+    def lock_on_stars(self):
+        """ """
+        
+        FW_ID = self.dd.mx['wave'][0,0]
+        wave = self.ogse.get_wavelength(FW_ID)
+        tFWC_point = self.ogse.profile['tFWC_point']['nm%i' % wave]
+        exptime = self.dd.mx['exptime'][:,0]
+        
+        iObs = np.abs(exptime-tFWC_point/2.).argmin()
+        
+        
+        PT.PointTask.lock_on_stars(self,iObs=iObs,
+                                   sexconfig=dict(
+                                           MINAREA=3.,
+                                           DET_THRESH=15.,
+                                           MAG_ZEROPOINT=20.)) 
 
     def prep_data(self):
         """

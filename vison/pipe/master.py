@@ -57,14 +57,14 @@ from vison.support import utils
 
 isthere = os.path.exists
 
-defaults = dict(BLOCKID='R00P00CC000000', CHAMBER='A_JUN18')
+defaults = dict(BLOCKID='R00P00CC000000', 
+                CHAMBER='A_JUN18')
 
 waittime = 120  # seconds
 waitTO = 3600.*4. # seconds
 
 class Pipe(object):
     """Master Class of FM-analysis """
-
     from vison.dark.BIAS0X import BIAS0X
     from vison.dark.DARK01 import DARK01
     from vison.flat.NL01 import NL01
