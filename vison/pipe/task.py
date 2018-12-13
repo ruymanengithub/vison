@@ -777,8 +777,8 @@ class Task(object):
                     infits = os.path.join(dpath, '%s.fits' %
                                           self.dd.mx['File_name'][iObs, jCCD])
 
-                    print 'Test %s: preparing %s...' % (
-                        self.inputs['test'], infits)
+                    print 'Test %s, OBS %i/%i: preparing %s...' % (
+                        iObs+1,nObs,self.inputs['test'], infits)
 
                     # converting the FITS file into a CCD Object
                     ccdobj = ccd.CCD(infits)
