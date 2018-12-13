@@ -18,6 +18,7 @@ import numpy as np
 import datetime
 from collections import OrderedDict
 from pylab import plot,show # TESTS
+from sklearn import linear_model
 
 from scipy import interpolate
 # END IMPORT
@@ -26,70 +27,96 @@ FullDynRange = 2.**16
 NLdeg = 7
 
 
-def get_exptime_atmiddynrange(flu1D, exp1D, method='spline', debug=False):
+def get_exptime_atfracdynrange(flu1D, exp1D, frac=0.5, method='spline', 
+                               maxrelflu=None,
+                               debug=False):
     """ """
     
     X = flu1D/FullDynRange
     Y = exp1D.copy()
+    if maxrelflu is None:
+        ixvalid = np.where(~np.isnan(X))
+    else:
+        ixvalid = np.where(~np.isnan(X) & (X<maxrelflu))
+        
+    X=X[ixvalid].copy()
+    Y=Y[ixvalid].copy()
+    
     ixsort = np.argsort(X)
     X = X[ixsort].copy()
     Y = Y[ixsort].copy()
+        
     
     if method == 'spline':
-        splinefunc = interpolate.interp1d(X,Y,kind='linear')
-        t50 = splinefunc(0.5)
-    elif method == 'poly':        
-        mod1d_fit = np.polyfit(X, Y, 1)  # a linear approx. is fine
-        mod1d_pol = np.poly1d(mod1d_fit)
-        t50 = mod1d_pol(0.5)
+        predictor = interpolate.interp1d(X,Y,kind='linear')
+        tfrac = predictor(frac)
+    elif method == 'poly':
+        mod1d_fit = np.polyfit(X, Y, 1)  # a linear approx. is fine        
+        predictor = np.poly1d(mod1d_fit)
+        tfrac = predictor(frac)
+    elif method == 'ransac':
+        ransac = linear_model.RANSACRegressor()
+        ransac.fit(np.expand_dims(X,1),np.expand_dims(Y,1))
+        predictor = ransac.predict
+        tfrac = predictor(frac)[0,0]
+    
     
     if debug:
         try:
             from matplotlib import pyplot as plt
             fig = plt.figure()
             ax = fig.add_subplot(111)
-            ax.plot(X,Y,'b.-')
-            ax.axvline(0.5,c='k',ls='--')
-            ax.axhline(t50,c='r',ls='--')
+            ax.plot(X,Y,'bo')
+            Xplot = np.array([0.,1.])
+            if method=='ransac':
+                Yplot = predictor(np.expand_dims(Xplot))[:,0]
+            else:
+                Yplot = predictor(Xplot)
+            ax.plot(Xplot,Yplot,'k--')
+            ax.axvline(frac,c='k',ls='--')
+            ax.axhline(tfrac,c='r',ls='--')
+            ax.set_xlabel('Flu/DynRange')
+            ax.set_ylabel('exptime')
             plt.show()
         except:
             stop()
     
-    return t50
+    return tfrac
     
 
-def getXYW_NL(fluencesNL,exptimes,nomG,method='spline'):
+def getXYW_NL(fluencesNL,exptimes,nomG,pivotfrac=0.5,maxrelflu=None,method='spline'):
     """ """
     
     assert fluencesNL.shape[0] == exptimes.shape[0]
     assert fluencesNL.ndim <= 2
     assert exptimes.ndim == 1
-
+   
     Nexp = len(exptimes)
-
+    
     if fluencesNL.ndim == 2:
         
         Nsec = fluencesNL.shape[1]
         #_exptimes = np.repeat(exptimes.reshape(Nexp,1),Nsec,axis=1)
 
-        t50 = np.zeros(Nsec, dtype='float32') + np.nan
+        tpivot = np.zeros(Nsec, dtype='float32') + np.nan
 
         for i in range(Nsec):
-            t50[i] = get_exptime_atmiddynrange(fluencesNL[:, i], exptimes, 
-               method=method, debug=False)
-
-        t50 = np.repeat(t50.reshape(1, Nsec), Nexp, axis=0)
+            tpivot[i] = get_exptime_atfracdynrange(fluencesNL[:, i], exptimes, 
+               frac=pivotfrac, method=method, maxrelflu=maxrelflu,debug=False)
+        tpivot = np.repeat(tpivot.reshape(1, Nsec), Nexp, axis=0)
 
         exptimes_bc = np.repeat(exptimes.reshape(Nexp, 1), Nsec, axis=1)
 
     else:
 
-        t50 = get_exptime_atmiddynrange(fluencesNL, exptimes,
+        tpivot = get_exptime_atfracdynrange(fluencesNL, exptimes,
+                                        frac=pivotfrac, 
+                                        maxrelflu=maxrelflu,
                                         method=method)
 
         exptimes_bc = exptimes.copy()
 
-    YL = exptimes_bc/t50 * FullDynRange/2.
+    YL = exptimes_bc/tpivot * FullDynRange*pivotfrac
     Z = 100.*(fluencesNL/YL-1.) 
     
     efNL = np.sqrt(fluencesNL*nomG)/nomG
@@ -102,7 +129,8 @@ def getXYW_NL(fluencesNL,exptimes,nomG,method='spline'):
     X = X[ixsort].copy()
     Y = Y[ixsort].copy()
     W = W.flatten()[ixsort].copy()
-
+    
+    #if len(np.where(np.abs(Y)>5.)[0])>10: stop()# TESTS
     
     return X, Y, W
     
@@ -118,7 +146,6 @@ def fitNL(X, Y, W, minfitFl, maxfitFl, display=False):
     
     NLfit = np.polyfit(X[selix], Y[selix], w=W[selix], deg=NLdeg, full=False)
     
-
     NLpol = np.poly1d(NLfit)
 
     fkfluencesNL = np.arange(minfitFl, maxfitFl, dtype='float32')
@@ -136,6 +163,8 @@ def fitNL(X, Y, W, minfitFl, maxfitFl, display=False):
         ax.plot(X,Y,'k.')
         ax.plot(X[selix],Y[selix],'b.')
         ax.plot(fkfluencesNL,Y_bestfit,'r--')
+        ax.set_xlabel('NL Fluence')
+        ax.set_ylabel('NLpc')
         #ax.set_ylim([-10.,10.])
         plt.show()
     
@@ -164,6 +193,7 @@ def wrap_fitNL_SingleFilter(fluences, variances, exptimes, times=np.array([]),
     nomG = 3.5 # e/ADU, used for noise estimates
     minfitFl = 2000. # ADU
     maxfitFl = FullDynRange-10000. # ADU
+    maxrelflu = 0.8 # used in determination of t_pivot
 
     NObsIDs, Nsecs = fluences.shape
     
@@ -218,7 +248,9 @@ def wrap_fitNL_SingleFilter(fluences, variances, exptimes, times=np.array([]),
         track = np.ones_like(fluences[ixboo_fluences,0])
     
     X,Y,W = getXYW_NL(fluences[ixboo_fluences, :], 
-                      exptimes[ixboo_fluences], nomG, method='spline')
+                      exptimes[ixboo_fluences], nomG, 
+                              maxrelflu=maxrelflu,
+                              method='ransac')
     
     fitresults = fitNL(X, Y, W, minfitFl, maxfitFl, display=False)
     fitresults['bgd'] = bgd
@@ -229,12 +261,14 @@ def wrap_fitNL_SingleFilter(fluences, variances, exptimes, times=np.array([]),
 
 
 def wrap_fitNL_TwoFilters(fluences, variances, exptimes, wave, times=np.array([]), 
-                            TrackFlux=True, subBgd=True):
+                            TrackFlux=True, subBgd=True, debug=False):
     """ """
     
     nomG = 3.5 # e/ADU, used for noise estimates
-    minfitFl = 2000. # ADU
+    minfitFl = 1000. # ADU
     maxfitFl = FullDynRange-10000. # ADU
+    pivotfrac = 0.2
+    maxrelflu = 0.8
 
     NObsIDs, Nsecs = fluences.shape
     
@@ -279,8 +313,7 @@ def wrap_fitNL_TwoFilters(fluences, variances, exptimes, wave, times=np.array([]
         st_dtimes = dtimes[ixboo_stab].copy()
         st_fluences = np.nanmean(fluences[ixboo_stab, :], axis=1).copy()
 
-        track_fit = np.polyfit(st_dtimes, st_fluences,
-                               2, full=False, cov=False)
+        track_fit = np.polyfit(st_dtimes, st_fluences, 2, full=False, cov=False)
         
         track_pol = np.poly1d(track_fit)
 
@@ -297,22 +330,28 @@ def wrap_fitNL_TwoFilters(fluences, variances, exptimes, wave, times=np.array([]
     else:
         trackstab = 0.
     
-    
     X_A,Y_A,W_A = getXYW_NL(fluences[ixboo_fluA, :], 
-                      exptimes[ixboo_fluA], nomG, method='poly')
+                                exptimes[ixboo_fluA], nomG, 
+                            pivotfrac=pivotfrac,
+                            maxrelflu=maxrelflu,
+                            method='ransac')
     
     X_B,Y_B,W_B = getXYW_NL(fluences[ixboo_fluB, :], 
-                      exptimes[ixboo_fluB], nomG, method='poly')
+                      exptimes[ixboo_fluB], nomG, 
+                    pivotfrac=pivotfrac,
+                    maxrelflu=maxrelflu,
+                    method='ransac')
     
     
     X = np.concatenate((X_A,X_B))
     Y = np.concatenate((Y_A,Y_B))
     W = np.concatenate((W_A,W_B))
     
-    fitresults = fitNL(X, Y, W, minfitFl, maxfitFl, display=False)
+    fitresults = fitNL(X, Y, W, minfitFl, maxfitFl, display=debug)
     fitresults['bgd'] = bgd
     fitresults['stability_pc'] = trackstab
-              
+    
+    
     return fitresults
 
 

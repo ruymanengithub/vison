@@ -244,6 +244,7 @@ class NL02(NL01.NL01):
             self.report.add_Section(
                 keyword='NL', Title='Non-Linearity Analysis', level=0)
         
+        debug=False # TESTS
 
         dIndices = copy.deepcopy(self.dd.indices)
         
@@ -314,11 +315,15 @@ class NL02(NL01.NL01):
                 wave = self.dd.mx['wave'][:, iCCD].copy()
                 dtobjs = self.dd.mx['time'][:, iCCD].copy()
                 
+                
                 # fitresults = OrderedDict(coeffs, NLdeg, maxNLpc,flu_maxNLpc, bgd)
+                if debug:
+                    print('\n%s%s\n' % (CCDkey,Q))
                 _fitresults = nllib.wrap_fitNL_TwoFilters(raw_med, raw_var, exptimes, wave, 
                                             dtobjs, 
                                             TrackFlux=True,
-                                            subBgd=True)
+                                            subBgd=True, 
+                                            debug=debug) 
                 
                 NLall_mx[CCDkey][Q].update(_fitresults)
                 
