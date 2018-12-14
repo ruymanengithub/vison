@@ -22,7 +22,8 @@ import openpyxl as oxl
 #import string as st
 
 from scipy.optimize import curve_fit
-
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
 from vison.support.excel import ReportXL

@@ -27,6 +27,8 @@ import pandas as pd
 import datetime
 
 from pylab import plot,show
+#import matplotlib
+#matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
 from vison.datamodel import cdp

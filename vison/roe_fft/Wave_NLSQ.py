@@ -21,7 +21,7 @@ import scipy.optimize as opt
 
 from pylab import plot,show
 import matplotlib
-#matplotlib.use('pdf')
+#matplotlib.use('Agg')
 #matplotlib.rc('text', usetex=True)
 matplotlib.rcParams['font.size'] = 17
 matplotlib.rc('xtick', labelsize=14)

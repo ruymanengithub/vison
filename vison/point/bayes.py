@@ -59,7 +59,7 @@ We therefore adopt a Gaussian kernel that is centred with the Airy disc."
 
 """
 import matplotlib
-# matplotlib.use('pdf')
+matplotlib.use('Agg')
 #matplotlib.rc('text', usetex=True)
 matplotlib.rcParams['font.size'] = 17
 matplotlib.rc('xtick', labelsize=14)
@@ -516,9 +516,7 @@ def forwardModel(log, img, stampkey='Unknown', modeltype='gauss', gain=3.1, size
 
         # plot
         samples = sampler.chain.reshape((-1, ndim))
-
-        fig = corner.corner(samples,
-                            labels=parnames)
+        fig = corner.corner(samples,labels=parnames)
         fig.suptitle('%s, GoF=%.3f' % (modeltype, gof))
         fig.savefig(stampkey+'_Triangle.png')
         plt.close()

@@ -19,7 +19,7 @@ import corner
 import os
 
 import matplotlib
-#matplotlib.use('pdf')
+#matplotlib.use('Agg')
 #matplotlib.rc('text', usetex=True)
 matplotlib.rcParams['font.size'] = 17
 matplotlib.rc('xtick', labelsize=14)

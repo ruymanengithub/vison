@@ -35,6 +35,8 @@ from vison.support import utils
 from vison import __version__ as vison_version
 
 from pylab import plot,show
+#import matplotlib
+#matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
 # END IMPORT

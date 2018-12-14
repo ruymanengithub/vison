@@ -2,7 +2,7 @@
 
 from pdb import set_trace as stop
 import matplotlib
-matplotlib.use("TkAgg")
+matplotlib.use("Agg")
 
 from _version import get_versions
 __version__ = get_versions()['version']

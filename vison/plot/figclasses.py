@@ -16,6 +16,8 @@ from itertools import product
 from vison.plot import baseplotclasses
 from vison.support import utils
 
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 # END IMPORT
 

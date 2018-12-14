@@ -19,8 +19,9 @@ import itertools
 import os
 import string as st
 
-from matplotlib import pyplot as plt
 import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
 matplotlib.rcParams['font.size'] = 17
 matplotlib.rc('xtick', labelsize=14)
 matplotlib.rc('axes', linewidth=1.1)
