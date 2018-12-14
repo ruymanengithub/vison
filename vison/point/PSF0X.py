@@ -171,7 +171,7 @@ class PSF0X(PT.PointTask):
         self.CDP_lib = PSF0Xaux.get_CDP_lib(self.inputs['test'])
         self.figdict = PSF0Xaux.get_PSF0Xfigs(self.inputs['test'])
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
-                   products='products')
+                   products='products', spots='spots')
         
         
 
