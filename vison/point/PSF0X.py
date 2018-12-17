@@ -321,10 +321,10 @@ class PSF0X(PT.PointTask):
             spotspath = self.inputs['subpaths']['spots']
 
             for iObs in range(nObs):
+            #for iObs in range(3): # TESTS
 
-                for jCCD, CCD in enumerate(CCDs):
-
-                    CCDkey = 'CCD%i' % CCD
+                for jCCD, CCDk in enumerate(CCDs):
+                    
 
                     fullccdobj_name = os.path.join(
                         picklespath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs, jCCD])
@@ -339,7 +339,7 @@ class PSF0X(PT.PointTask):
 
                         for lS, SpotName in enumerate(SpotNames):
 
-                            coo = polib.Point_CooNom[CCDkey][Quad][SpotName]
+                            coo = polib.Point_CooNom[CCDk][Quad][SpotName]
                             lSpot = polib.extract_spot(
                                 ccdobj, coo, Quad, stampw=stampw)
 

@@ -763,7 +763,7 @@ class Task(object):
             picklespath = self.inputs['subpaths']['ccdpickles']
 
             for iObs in range(nObs): 
-            #for iObs in range(3): # TESTS
+            #for iObs in range(2): # TESTS
                 if doFF:
                     FW_ID = self.dd.mx['wave'][iObs,0]
                     wavelength = self.ogse['FW']['F%i' % FW_ID]
