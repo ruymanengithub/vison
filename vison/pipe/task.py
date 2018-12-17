@@ -619,6 +619,8 @@ class Task(object):
         HKKeys = self.HKKeys
         if self.report is not None:
             self.report.add_Section(keyword='check_HK', Title='HK', level=1)
+            HKKeys_tex = st.replace(HKKeys.__repr__(),'_', '\_')
+            self.report.add_Text(['Selected HK Keys: %s' % HKKeys_tex,'\\newline'])
 
         report_HK_perf = self.check_HK(HKKeys, reference='command', limits='P', tag='Performance',
                                        doReport=self.report is not None,
@@ -836,8 +838,9 @@ class Task(object):
 
         for key in keys:
             _val = self.inputs[key]
-            if isinstance(_val, dict):
-                values.append('dict()')
+            #if isinstance(_val, dict):
+            if key in ['structure','subpaths','perflimits','inCDPs','preprocessing']:
+                values.append('Too long dict()')
             else:
                 _val = _val.__repr__()
                 #n_val = st.replace(_val,'_','\\_')
