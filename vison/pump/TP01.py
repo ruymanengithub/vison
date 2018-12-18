@@ -19,7 +19,11 @@ from pdb import set_trace as stop
 import os
 import copy
 from collections import OrderedDict
+import pandas as pd
+import string as st
 
+from vison.datamodel import cdp
+from vison.support import utils
 from vison.pipe.task import HKKeys
 from vison.pipe import lib as pilib
 from vison.support import context
@@ -101,6 +105,7 @@ class TP01(PumpTask):
         
         self.HKKeys = HKKeys
         self.figdict = TP01aux.get_TP01figs()
+        self.CDP_lib = TP01aux.get_CDP_lib()
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        products='products')
         
@@ -309,53 +314,213 @@ class TP01(PumpTask):
                 keyword='basic', Title='TP01 Basic Analysis', level=0)
         
         threshold = 0.01
+        #CCDhalves = ['top','bottom']
+        _Quads_dict = dict(top = ['E','F'],
+                           bottom = ['G','H'])
         
         DDindices = copy.deepcopy(self.dd.indices)
         CCDs = DDindices.get_vals('CCD')
-        Quads = DDindices.get_vals('Quad')
+        allQuads = DDindices.get_vals('Quad')
 
         productspath = self.inputs['subpaths']['products']
 
 
         id_dlys = np.unique(self.dd.mx['id_dly'][:, 0])
-
+        
+        mods = np.unique(self.dd.mx['v_tp_mod'][:,0])
+        modkeys = ['m%i' % item for item in mods]
+        
+        tois = np.unique(self.dd.mx['toi_tp'][:,0])
+        toikeys = ['u%04i' % item for item in tois]
+        
+        # initialisation
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        
+        masterdict = OrderedDict()
+        
+        for CCDk in CCDs:
+            masterdict[CCDk] = OrderedDict()
+            for Q in allQuads:
+                masterdict[CCDk][Q] = OrderedDict()
+                for modkey in modkeys:
+                    masterdict[CCDk][Q][modkey] = OrderedDict()
+                    for toikey in toikeys:
+                        masterdict[CCDk][Q][modkey][toikey] = None
+        
         
         if not self.drill:
 
             # Getting dipole catalogues
+            
+            ontests = True
+            
+            if not ontests:
 
-            for id_dly in id_dlys:
-
-                for jCCD, CCDk in enumerate(CCDs):
-
-                    ixsel = np.where((self.dd.mx['id_dly'][:] == id_dly) & (
-                        self.dd.mx['v_tpump'][:] != 0))
-
-                    for ix in ixsel[0]:
-                        ObsID = self.dd.mx['ObsID'][ix]
-                        vstart = self.dd.mx['vstart'][ix, jCCD]
-                        vend = self.dd.mx['vend'][ix,jCCD]
-
-
-                        imapf = 'TP01_rawmap_%i_IDDLY_%i_ROE1_%s' % (
-                            ObsID, id_dly, CCDk)
-
-                        
-                        for iQ, Q in enumerate(Quads):
-                        
-                            #try:
-                            imapccdobj = cPickleRead(
-                                os.path.join(productspath, imapf))
-                                
-                            idf = tptools.find_dipoles_vtpump(imapccdobj,threshold,
-                                  Q,vstart=vstart,vend=vend,
-                                  extensions=-1)
-                                
-                            stop()
+                for id_dly in id_dlys:
     
-                            #except:  # TESTS
-                            #    pass
+                    for jCCD, CCDk in enumerate(CCDs):
+    
+                        ixsel = np.where((self.dd.mx['id_dly'][:] == id_dly) & (
+                            self.dd.mx['v_tpump'][:] != 0))
+    
+                        for ix in ixsel[0]:
+                            ObsID = self.dd.mx['ObsID'][ix]
+                            vstart = self.dd.mx['vstart'][ix, jCCD]
+                            vend = self.dd.mx['vend'][ix,jCCD]
+                            toi_ch = float(self.dd.mx['toi_ch'][ix,jCCD])
+                            v_tp_mod = self.dd.mx['v_tp_mod'][ix,jCCD]
+                            toi_tp = self.dd.mx['toi_tp'][ix,jCCD]
+                            
+                            modkey = 'm%i' % v_tp_mod
+                            toikey = 'u%04i' % toi_tp
+                            
+                            if np.isclose(id_dly/toi_ch,1.5):
+                                CCDhalf = 'bottom'
+                            elif np.isclose(id_dly/toi_ch,2.5):
+                                CCDhalf = 'top'
+                                
+                            Quads = _Quads_dict[CCDhalf]
+    
+    
+                            imapf = 'TP01_rawmap_%i_IDDLY_%i_ROE1_%s.fits' % (
+                                ObsID, id_dly, CCDk)
+                            
+                            imapccdobj = ccd.CCD(os.path.join(productspath,imapf))
+    
+                            
+                            for iQ, Q in enumerate(Quads):
+                               
+                                    
+                                idd = tptools.find_dipoles_vtpump(imapccdobj,threshold,
+                                      Q,vstart=vstart,vend=vend,
+                                      extension=-1)
+                                 
+                                masterdict[CCDk][Q][modkey][toikey] = idd.copy()
+                
+                mastercat = self.CDP_lib['MASTERCAT']
+                mastercat.header = CDP_header.copy()
+                mastercat.meta = OrderedDict(THRESHOLD=threshold)
+                mastercat.path = productspath
+                mastercat.data = masterdict.copy()
+            
+                self.save_CDP(mastercat)
+                
+            else:
+                
+                masterdict = cPickleRead('results/DTEST/TP01/products/TP01_MasterCat.pick')['data'].copy()
+            
+            
+            def _get_N(dipdict):
+                return np.nansum(dipdict['S'])
+            
+            def _get_Ratio(dipdict):
+                
+                NN = len(np.where(dipdict['S']==1)[0])
+                NS = len(np.where(dipdict['S']==0)[0])
+                if NS>0:
+                    Ratio = float(NN)/float(NS)
+                else:
+                    Ratio = np.nan
+                return Ratio
+            
+            def _get_A(dipdict):
+                return np.nanmedian(dipdict['A'])
+                
+            
+            
+            def _aggregate(masterdict):
+                """ """
+                
+                allfuncts = OrderedDict()
+                extracts = ['N','R','A']
+                allfuncts['N'] = _get_N
+                allfuncts['R'] = _get_Ratio
+                allfuncts['A'] = _get_A
+                
+                #funct = allfuncts[extract]
+                
+                outdict = copy.deepcopy(masterdict)
+                
+                for CCDk in CCDs:
+                    for Q in allQuads:
+                        for modkey in modkeys:
+                            for toikey in toikeys:
+                                values = []
+                                for extract in extracts:
+                                    values.append(allfuncts[extract](masterdict[CCDk][Q][modkey][toikey]))                                
+                                outdict[CCDk][Q][modkey][toikey] = values
+                
+               
+                reform = {(level1_key, level2_key, level3_key, level4_key): value
+                          for level1_key, level2_dict in outdict.items()
+                          for level2_key, level3_dict in level2_dict.items()
+                          for level3_key, level4_dict in level3_dict.items()
+                          for level4_key, value       in level4_dict.items()}
+                
+                
+                outdf = pd.DataFrame(reform).T
+                colnames = dict()
+                for i,c in enumerate(extracts):
+                    colnames[i] = c
+                outdf.rename(columns=colnames,inplace=True)
+                names=['CCD','Q','mod','toi']
+                outdf.index.set_names(names,inplace=True)
+                
+                
+                #index_list = [allQuads,modkeys,toikeys]
+                #index = pd.MultiIndex.from_product(index_list, names=['Quad','mod','toi'])
+                #outdf = pd.DataFrame(outdict,index=index)
 
+                
+                return outdf
+            
+            
+            def _get_tex(df):
+                
+                coretex =  df.to_latex(multicolumn=True,multirow=True,
+                               longtable=True,index=True,
+                               escape=True)
+                
+                #tex = ['\\tiny'] + st.split(coretex,'\\\\\n') +['\\normalsize']
+                
+                return coretex
+            
+            def _get_txt(df):
+                fok = st.split(df.to_string(),'\n')
+                txt = ['\\begin{verbatim}']+fok+['\\end{verbatim}']
+                return txt 
+            
+            df =_aggregate(masterdict)
+            #texreport = _get_tex(df)
+            txtreport = _get_txt(df)
+            #Ntex = _get_tex(dfN)
+            #dfRatio=_aggregate(masterdict,extract='Ratio')
+            #Ratiotex = _get_tex(dfRatio)
+            #dfA = _aggregate(masterdict,extract='A')
+            #Atex = _get_tex(dfA)
+            
+            
+            if self.report is not None:                
+                self.report.add_Text(txtreport)
+            
+            
+            # Saving the MasterCat
+            
+            mastercat = self.CDP_lib['MASTERCAT']
+            mastercat.header = CDP_header.copy()
+            mastercat.meta = OrderedDict(THRESHOLD=threshold)
+            mastercat.path = productspath
+            mastercat.data = masterdict.copy()
+            
+            self.save_CDP(mastercat)
+            self.pack_CDP_to_dd(mastercat,'MASTERCAT')
+            
+            
+            
+    
 
     def meta_analysis(self):
         """

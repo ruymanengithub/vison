@@ -165,9 +165,10 @@ def find_dipoles_vtpump(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, ex
 
     qrawmap = ccdobj.get_quad(Q, canonical=True, extension=extension)[
         prescan:-overscan, vstart:vend].copy()
+    qresmap = qrawmap - 1.
     
-    above_thresh = qrawmap > threshold
-    below_thresh = qrawmap < threshold
+    above_thresh = qresmap > threshold
+    below_thresh = qresmap < -threshold
     within_thresh = ~above_thresh & ~below_thresh
     
     def rollit(array,disp):
@@ -179,28 +180,28 @@ def find_dipoles_vtpump(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, ex
     dipoles_N = rollit(within_thresh,0) & rollit(below_thresh,-1) & \
                       rollit(above_thresh,-2) & rollit(within_thresh,-3)
     
-    def get_metrics(dipoles_mask,qrawmap):
+    
+    def get_metrics(dipoles_mask,qresmap):
         NaxisY = dipoles_mask.shape[1]
         rows0, cols0 = np.where(dipoles_mask)
         X = rows0 + prescan
         Y = cols0 + vstart + 1
         ixnonrolled = np.where(Y<NaxisY-4)
-        A = (np.abs(rollit(qrawmap,-1))+np.abs(rollit(qrawmap,-2)))[(rows0,cols0)]/2.
-        stop()
+        A = (np.abs(rollit(qresmap,-1))+np.abs(rollit(qresmap,-2)))[(rows0,cols0)]/2.
         X = X[ixnonrolled]
         Y = Y[ixnonrolled]
         A = A[ixnonrolled]
         return X,Y,A
     
-    XS, YS, AS = get_metrics(dipoles_S,qrawmap)
-    XN, YN, AN = get_metrics(dipoles_N,qrawmap)
+    XS, YS, AS = get_metrics(dipoles_S,qresmap)
+    XN, YN, AN = get_metrics(dipoles_N,qresmap)
     
     Ndip = len(XS)+len(XN)
     S = np.zeros((Ndip,))+np.nan
                 
     S[0:len(XS)] = 1
-    S[len(XS):-1] = 0
-     
+    S[len(XS):None] = 0
+    
     X = np.concatenate((XS,XN))
     Y = np.concatenate((YS,YN))
     A = np.concatenate((AS,AN))
@@ -208,10 +209,10 @@ def find_dipoles_vtpump(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, ex
     if len(X) == 0:
         return pd.DataFrame(dict(X=[], Y=[], S=[], A=[]), columns=['X', 'Y', 'S', 'A'])
 
-    indict = OrderedDict(X=X, Y=Y, S=S, A=A)
-    df = pd.DataFrame(indict, columns=['X', 'Y', 'S', 'A'])
+    outdict = OrderedDict(X=X, Y=Y, S=S, A=A)
+    #df = pd.DataFrame(outdict, columns=['X', 'Y', 'S', 'A'])
 
-    return df
+    return outdict
 
 
 def save_dipcat2D_as_ds9regs(df, regfilename, clobber=True):
