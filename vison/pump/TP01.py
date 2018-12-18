@@ -286,6 +286,9 @@ class TP01(PumpTask):
                         except:  # TESTS
                             pass
 
+        if self.report is not None:
+            self.report.add_Text('All Done!')
+
     def basic_analysis(self):
         """
 
@@ -355,7 +358,8 @@ class TP01(PumpTask):
 
             # Getting dipole catalogues
             
-            ontests = True
+            ontests = False
+            print 'WARNING: TP01.basic_analysis incomplete, TESTS'
             
             if not ontests:
 
@@ -400,17 +404,17 @@ class TP01(PumpTask):
                                  
                                 masterdict[CCDk][Q][modkey][toikey] = idd.copy()
                 
-                mastercat = self.CDP_lib['MASTERCAT']
-                mastercat.header = CDP_header.copy()
-                mastercat.meta = OrderedDict(THRESHOLD=threshold)
-                mastercat.path = productspath
-                mastercat.data = masterdict.copy()
+                #mastercat = self.CDP_lib['MASTERCAT']
+                #mastercat.header = CDP_header.copy()
+                #mastercat.meta = OrderedDict(THRESHOLD=threshold)
+                #mastercat.path = productspath
+                #mastercat.data = masterdict.copy()
             
-                self.save_CDP(mastercat)
+                #self.save_CDP(mastercat)
                 
-            else:
-                
-                masterdict = cPickleRead('results/DTEST/TP01/products/TP01_MasterCat.pick')['data'].copy()
+            #else:
+            #    
+            #    masterdict = cPickleRead('results/DTEST/TP01/products/TP01_MasterCat.pick')['data'].copy()
             
             
             def _get_N(dipdict):
@@ -503,7 +507,8 @@ class TP01(PumpTask):
             #Atex = _get_tex(dfA)
             
             
-            if self.report is not None:                
+            if self.report is not None:
+                self.report.add_Text('Dipole Statistics: Number, Ratio N/S, <Amplitude>')
                 self.report.add_Text(txtreport)
             
             
@@ -517,8 +522,6 @@ class TP01(PumpTask):
             
             self.save_CDP(mastercat)
             self.pack_CDP_to_dd(mastercat,'MASTERCAT')
-            
-            
             
     
 

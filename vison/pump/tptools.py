@@ -165,7 +165,11 @@ def find_dipoles_vtpump(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, ex
 
     qrawmap = ccdobj.get_quad(Q, canonical=True, extension=extension)[
         prescan:-overscan, vstart:vend].copy()
-    qresmap = qrawmap - 1.
+    
+    qmod = nd.filters.uniform_filter(qrawmap, size=21,mode='reflect')
+    qresmap = qrawmap - qmod
+    
+    #qresmap = qrawmap - np.nanmedian(qrawmap)
     
     above_thresh = qresmap > threshold
     below_thresh = qresmap < -threshold
