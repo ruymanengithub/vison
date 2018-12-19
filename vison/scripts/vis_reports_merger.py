@@ -25,15 +25,15 @@ from vison.support.files import cPickleRead
 
 # END IMPORT
 
-def run_merger(infile):
+def run_merger(infile, programme='FM', block='BLOCK', reference='6_666'):
     """ """
     
     indata = ascii.read(infile)
     
-    report = Report(TestName='All',Model='FQM',
-                    Reference='6-666')
+    report = Report(TestName='All Calibration Tests',Model=programme,
+                    Reference=reference)
     
-    reportroot = 'All_report'
+    reportroot = 'EUCL_MSS_TR_%s_%s' % (reference,block)
     
     N2merge = len(indata)
     
@@ -43,7 +43,6 @@ def run_merger(infile):
         ireport = cPickleRead(ipick)
         
         # TEMPORARY AD-HOC
-        
         path, filename = os.path.split(ipick)
         testname = st.replace(filename,'_Report.pick', '')
         testname = st.replace(testname,'_', '\_')
@@ -55,7 +54,7 @@ def run_merger(infile):
         report.Contents += ireport.Contents
     
     
-    outfiles = report.doreport(reportroot, cleanafter=True, silent=True)
+    _ = report.doreport(reportroot, cleanafter=False, silent=True)
     
     
 
@@ -65,10 +64,20 @@ if __name__ == '__main__':
     
     parser.add_option("-i", "--infile", dest="infile",
                       default='', help="Inputs file with list of reports to be merged.")
+    parser.add_option("-p", "--programme", dest="programme", 
+                      default="FM", help="Calibration programme (QM/FQM/FM).")
+    parser.add_option("-b", "--block", dest="block",
+                      default="BLOCK", help="Name of the block being calibrated.")
+    parser.add_options("-r", "--reference", dest="reference",
+                       default="6_666", help="")
 
     (options, args) = parser.parse_args()
 
     infile = options.infile
+    programme = options.programme
+    block = options.block
+    reference = options.reference
+    
 
     if infile == '':
         parser.print_help()
@@ -84,5 +93,5 @@ if __name__ == '__main__':
 
     print header
 
-    run_merger(infile)
+    run_merger(infile, programme, block, reference)
     
