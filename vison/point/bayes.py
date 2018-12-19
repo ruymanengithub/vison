@@ -59,7 +59,7 @@ We therefore adopt a Gaussian kernel that is centred with the Airy disc."
 
 """
 import matplotlib
-matplotlib.use('Agg')
+#matplotlib.use('Agg')
 #matplotlib.rc('text', usetex=True)
 matplotlib.rcParams['font.size'] = 17
 matplotlib.rc('xtick', labelsize=14)

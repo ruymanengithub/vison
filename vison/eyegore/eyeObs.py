@@ -12,8 +12,8 @@ Created on Fri Oct 13 16:22:36 2017
 
 # IMPORT STUFF
 from pdb import set_trace as stop
-import matplotlib
-matplotlib.use("TkAgg")
+#import matplotlib
+#matplotlib.use("TkAgg")
 import glob
 from astropy.table import Table
 

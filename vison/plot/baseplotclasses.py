@@ -20,7 +20,7 @@ import os
 import string as st
 
 import matplotlib
-matplotlib.use('Agg')
+#matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 matplotlib.rcParams['font.size'] = 17
 matplotlib.rc('xtick', labelsize=14)

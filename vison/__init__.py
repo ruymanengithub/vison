@@ -12,7 +12,7 @@ del get_versions
 from flat import FlatFielding
 from pipe.master import Pipe
 from support.report import Report
-from eyegore.eyegore import Eyegore
+#from eyegore.eyegore import Eyegore
 
 
-__all__ = ['Pipe', 'FlatFielding', 'Report', 'Eyegore', '__version__']
+__all__ = ['Pipe', 'FlatFielding', 'Report', '__version__']

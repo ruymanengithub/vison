@@ -11,8 +11,8 @@ Created on Fri Oct 13 16:16:08 2017
 """
 
 # IMPORT STUFF
-import matplotlib
-matplotlib.use("TkAgg")
+#import matplotlib
+#matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 import matplotlib.animation as animation
 from matplotlib import pyplot as plt
