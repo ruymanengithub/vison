@@ -315,8 +315,7 @@ class Task(object):
         # Write automatic Report of Results
 
         if todo_flags['report']:
-            self.report.doreport(reportroot, cleanafter, silent=True)
-            outfiles = self.report.writeto(reportroot, cleanafter, silent=True)
+            outfiles = self.report.doreport(reportroot, cleanafter, silent=True)
 
             for outfile in outfiles:
                 os.system('mv %s %s/' % (outfile, resultspath))
