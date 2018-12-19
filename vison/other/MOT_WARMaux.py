@@ -34,7 +34,8 @@ prof_HER_ser_dict = dict(
               ylabel='ADU',
               xlabel='Row [pix]',
               ylim=[-0.002,0.005],
-              suptitle='MOT\_WARM: Serial HER.')
+              suptitle='MOT\_WARM: Serial HER.',
+              corekwargs=dict(marker='.',linestyle='-'))
 )
 
 

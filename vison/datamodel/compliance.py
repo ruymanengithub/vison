@@ -78,7 +78,7 @@ def removescalars_from_dict(indict):
 def texarize_complidict(indict):
     
     def ff(value):
-        if np.abs(value) < 100:
+        if (np.abs(value) < 100) and (np.abs(value)> 1.e-2):
             return '%.2f'
         else:
             return '%.2e'

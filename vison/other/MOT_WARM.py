@@ -482,6 +482,7 @@ class MOT_WARM(DarkTask):
                 
                 for kQ,Q in enumerate(Quads):
                     HERdata[0,jCCD,kQ] = HERprof[Q]['y'][ixjump+1]
+                    
                 
                 profs1D2plot['HER'][CCDk] = HERprof.copy()
                 
