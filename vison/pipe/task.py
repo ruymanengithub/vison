@@ -224,7 +224,7 @@ class Task(object):
         self.inputs['subpaths'] = _paths
 
         if todo_flags['init']:
-
+            
             if self.log is not None:
                 self.log.info('Initializing: %s' %
                               (self.__module__,))
