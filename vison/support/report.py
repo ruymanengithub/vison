@@ -135,6 +135,35 @@ class Section(Container):
         return txt
 
 
+
+class Chapter(Container):
+    """ """
+
+    def __init__(self, Title=''):
+
+        
+        self.Title = Title
+        self.Contents = []
+
+    def generate_Latex(self):
+        """ """
+        tex = ['\chapter{%s}' % self.Title, '\n']
+
+        for item in self.Contents:
+            tex += item.generate_Latex()
+        
+        tex+=['\clearpage']
+
+        return tex
+
+    def __str__(self):
+
+        txt = '%s (%s) ' % (self.keyword)
+        for item in self.Contents:
+            txt += item.__str__()
+        return txt
+
+
 class Figure(Content):
     """ """
 
@@ -389,7 +418,12 @@ class Report(Container):
             self.add_Text(r'\texttt{local time: %s}' % str(ttag))
             self.add_Text(
                 r'\texttt{vison version: %s}\newline' % str(__version__))
-
+    
+    def add_Chapter(self,Title=''):
+        """ """
+        self.add_to_Contents(Chapter(Title))
+    
+    
     def drop_Section(self, keyword):
 
         ix2remove = []
