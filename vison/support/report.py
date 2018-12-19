@@ -158,7 +158,7 @@ class Chapter(Container):
 
     def __str__(self):
 
-        txt = '%s (%s) ' % (self.keyword)
+        txt = 'chapter'
         for item in self.Contents:
             txt += item.__str__()
         return txt
