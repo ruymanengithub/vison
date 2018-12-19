@@ -46,6 +46,7 @@ def run_merger(infile):
         
         path, filename = os.path.split(ipick)
         testname = st.replace(filename,'_Report.pick', '')
+        testname = st.replace(testname,'_', '\_')
         path = os.path.normpath(path)
         folders = path.split(os.sep)
         session = folders[1]
