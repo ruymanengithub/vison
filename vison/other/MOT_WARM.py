@@ -441,10 +441,11 @@ class MOT_WARM(DarkTask):
                     _compliance_RON, label='COMPLIANCE RON [BIAS frame]')
             
             
+            vstart = self.dd.mx['vstart'][0, 0]
+            vend = self.dd.mx['vend'][0, 0]
+            
             for jCCD, CCDk in enumerate(CCDs):
                 
-                vstart = self.dd.mx['vstart'][0, jCCD]
-                vend = self.dd.mx['vend'][0, jCCD]
                                 
                 #ccdobjBIAS = _load_fits(self.dd,ObsIDdict['BIAS'],jCCD)
                 
@@ -453,11 +454,10 @@ class MOT_WARM(DarkTask):
                 ccdobjRAMP = _load_fits(self.dd,ObsIDdict['RAMP'],jCCD)
                 
                 for kQ,Q in enumerate(Quads):
-                    _, yRAMP = _get_1Dvprofile(ccdobjRAMP,profs1D2plot, CCDk, Q, subtag='')
-                    xRAMP = np.arange(len(yRAMP))
+                    xRAMP, yRAMP = _get_1Dvprofile(ccdobjRAMP,profs1D2plot, CCDk, Q, subtag='')
+                    #xRAMP = np.arange(len(yRAMP))
                     profs1D2plot['RAMP'][CCDk][Q]['x'] = xRAMP.copy()
                     profs1D2plot['RAMP'][CCDk][Q]['y'] = yRAMP.copy()
-                    stop()
                     
                 self.figdict['MOTWbasic_prof1D_ver_RAMP'][1]['xlim']=[vstart,vend]
                 
@@ -510,12 +510,27 @@ class MOT_WARM(DarkTask):
                 
                 self.figdict['MOTWbasic_prof1D_ver_FLAT'][1]['xlim']=[vstart,vend]
                 
+                # rewriting xRAMP to be from vstar to vend, for plotting.
+                
+                
+                for kQ,Q in enumerate(Quads):
+                    yRAMP = profs1D2plot['RAMP'][CCDk][Q]['y'].copy()
+                    xRAMP = np.arange(len(yRAMP))
+                    profs1D2plot['RAMP'][CCDk][Q]['x'] = xRAMP.copy()
+
+                
+                
+        else:
+            
+            vstart = 0
+            vend = 2086
         
         # Display of 1D vertical profiles
         
         proffigkeys = []
         for tag in ['RAMP', 'CHINJ', 'FLAT']:
             tkey = 'MOTWbasic_prof1D_ver_%s' % tag
+            
             self.figdict[tkey][1]['data'] = profs1D2plot[tag]
             self.figdict[tkey][1]['xlim'] = [vstart,vend]
             proffigkeys.append(tkey)

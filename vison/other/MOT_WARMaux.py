@@ -47,7 +47,8 @@ def get_basic_prof1Dver_dict(tag):
               ylabel='ADU',
               xlabel='Row [pix]',
               suptitle='MOT\_WARM-%s: Profiles across rows.' % tag,
-              xlim=[0,2086])
+              xlim=[0,2086],
+              corekwargs=dict(marker='.',linestyle='-'))
     )
     return basic_prof1Dver_dict
 
