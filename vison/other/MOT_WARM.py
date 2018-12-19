@@ -388,9 +388,9 @@ class MOT_WARM(DarkTask):
             ccdobj = ccd.CCD(infits)
             return ccdobj
         
-        def get_1Dvprofile(ccdobj,profs1D2plot,CCDk, Q, subtag=''):
+        def _get_1Dvprofile(ccdobj,profs1D2plot,CCDk, Q, subtag=''):
                             
-            vQ = ccdobj.get_1Dprofile(Q=Q, orient='hor',
+            vQ = ccdobj.get_1Dprofile(Q=Q, orient='ver',
                                        area='img',
                                        stacker='median',
                                        vstart=vstart,
@@ -404,8 +404,6 @@ class MOT_WARM(DarkTask):
                 ysub = profs1D2plot[subtag][CCDk][Q]['y'].copy()
                 spfunc = interpolate.interp1d(xsub,ysub,kind='linear')
                 y -= spfunc(x)
-
-            
         
             return x, y 
         
@@ -442,6 +440,7 @@ class MOT_WARM(DarkTask):
                 self.addComplianceMatrix2Report(
                     _compliance_RON, label='COMPLIANCE RON [BIAS frame]')
             
+            
             for jCCD, CCDk in enumerate(CCDs):
                 
                 vstart = self.dd.mx['vstart'][0, jCCD]
@@ -454,9 +453,13 @@ class MOT_WARM(DarkTask):
                 ccdobjRAMP = _load_fits(self.dd,ObsIDdict['RAMP'],jCCD)
                 
                 for kQ,Q in enumerate(Quads):
-                    xRAMP, yRAMP = get_1Dvprofile(ccdobjRAMP,profs1D2plot, CCDk, Q, subtag='')
+                    _, yRAMP = _get_1Dvprofile(ccdobjRAMP,profs1D2plot, CCDk, Q, subtag='')
+                    xRAMP = np.arange(len(yRAMP))
                     profs1D2plot['RAMP'][CCDk][Q]['x'] = xRAMP.copy()
                     profs1D2plot['RAMP'][CCDk][Q]['y'] = yRAMP.copy()
+                    stop()
+                    
+                self.figdict['MOTWbasic_prof1D_ver_RAMP'][1]['xlim']=[vstart,vend]
                 
                 # RAMP; bit-correlations analysis
                 
@@ -488,18 +491,24 @@ class MOT_WARM(DarkTask):
                 ccdobjCHINJ = _load_fits(self.dd,ObsIDdict['CHINJ'],jCCD)
                 
                 for kQ,Q in enumerate(Quads):
-                    xCHINJ, yCHINJ = get_1Dvprofile(ccdobjCHINJ,profs1D2plot, CCDk, Q, subtag='RAMP')
+                    _, yCHINJ = _get_1Dvprofile(ccdobjCHINJ,profs1D2plot, CCDk, Q, subtag='RAMP')
+                    xCHINJ = np.arange(len(yCHINJ))
                     profs1D2plot['CHINJ'][CCDk][Q]['x'] = xCHINJ.copy()
                     profs1D2plot['CHINJ'][CCDk][Q]['y'] = yCHINJ.copy()
+                
+                self.figdict['MOTWbasic_prof1D_ver_CHINJ'][1]['xlim']=[vstart,vend]
                                 
                 # vertical profile of FLAT exposure with RAMP subtracted
                 
                 ccdobjFLAT = _load_fits(self.dd, ObsIDdict['FLAT'], jCCD)
                 
                 for kQ,Q in enumerate(Quads):
-                    xFLAT, yFLAT = get_1Dvprofile(ccdobjFLAT,profs1D2plot, CCDk, Q, subtag='RAMP')
+                    _, yFLAT = _get_1Dvprofile(ccdobjFLAT,profs1D2plot, CCDk, Q, subtag='RAMP')
+                    xFLAT = np.arange(len(yFLAT))
                     profs1D2plot['FLAT'][CCDk][Q]['x'] = xFLAT.copy()
                     profs1D2plot['FLAT'][CCDk][Q]['y'] = yFLAT.copy()
+                
+                self.figdict['MOTWbasic_prof1D_ver_FLAT'][1]['xlim']=[vstart,vend]
                 
         
         # Display of 1D vertical profiles
@@ -508,6 +517,7 @@ class MOT_WARM(DarkTask):
         for tag in ['RAMP', 'CHINJ', 'FLAT']:
             tkey = 'MOTWbasic_prof1D_ver_%s' % tag
             self.figdict[tkey][1]['data'] = profs1D2plot[tag]
+            self.figdict[tkey][1]['xlim'] = [vstart,vend]
             proffigkeys.append(tkey)
             
         if self.report is not None:
