@@ -764,7 +764,6 @@ class PTC0X(FlatTask):
 
         
         
-        
         # Plotting HER profiles
         
         self.figdict['PTC0X_HER'][1]['data'] = HERprofiles.copy()

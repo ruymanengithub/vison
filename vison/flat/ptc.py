@@ -26,6 +26,23 @@ fitPTC_flags['EXCEPTION'] = [2**0L]
 fitPTC_flags['POORFIT'] = [2**1L]
 fitPTC_flags['BADERRORS'] = [2**2L]
 
+
+def _prune_smear(means,var):
+    """ """
+    mask = np.ones_like(means)
+    bins = np.linspace(2**16*0.5,2**16,50)
+    threshold = 0.1
+    
+    for i in range(len(bins)-1):        
+        sel=np.where((means>=bins[i]) & (means < bins[i+1]))
+        if len(sel[0])>0:
+            relrange = (var[sel].max()-var[sel].min())/var[sel].mean()
+            if relrange >threshold:
+                mask[sel] = 0
+    return mask
+   
+    
+
 def fitPTC(means, var, debug=False):
     """Fits Photon Transfer Curve to obtain gain."""
     from sklearn.linear_model import RANSACRegressor
@@ -43,7 +60,12 @@ def fitPTC(means, var, debug=False):
     order = np.argsort(means)
     means = np.array(means)[order]
     var = np.array(var)[order]
-
+    
+    smearmask = _prune_smear(means,var)
+    
+    means = means[np.where(smearmask)]
+    var = var[np.where(smearmask)]
+    
     #ixmaxvar = np.argmax(var)
     #maxvar = var[ixmaxvar]
     #ixsel = np.where((means < means[ixmaxvar]) & (var < maxvar*0.95))
@@ -55,9 +77,10 @@ def fitPTC(means, var, debug=False):
         pipe.fit(np.expand_dims(means,1),np.expand_dims(var,1))
         robpredict = np.squeeze(pipe.predict(np.expand_dims(means,1)))
         
-        ixsel = np.where(np.abs(var-robpredict)/np.sqrt(robpredict)<sigmathresh)
+        ixsel = np.where((np.abs(var-robpredict)/np.sqrt(robpredict)<sigmathresh))
         
         res = np.polyfit(means[ixsel], var[ixsel], poldeg, full=False, cov=True)
+        
         p = res[0]
         V = res[1]
     
