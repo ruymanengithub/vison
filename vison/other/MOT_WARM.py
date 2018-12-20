@@ -370,7 +370,7 @@ class MOT_WARM(DarkTask):
         DDindices = copy.deepcopy(self.dd.indices)
         
         nObs, nCCD, nQuad = DDindices.shape
-        Quads = DDindices[2].vals
+        Quads = DDindices.get_vals('Quad')
         CCDs = DDindices.get_vals('CCD')
         
         
@@ -481,7 +481,7 @@ class MOT_WARM(DarkTask):
                 ixjump = HERprof.pop('ixjump')
                 
                 for kQ,Q in enumerate(Quads):
-                    HERdata[0,jCCD,kQ] = HERprof[Q]['y'][ixjump+1]
+                    HERdata[0,jCCD,kQ] = HERprof[Q]['y'][ixjump]
                     
                 
                 profs1D2plot['HER'][CCDk] = HERprof.copy()
