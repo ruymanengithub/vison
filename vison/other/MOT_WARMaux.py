@@ -31,7 +31,7 @@ prof_HER_ser_dict = dict(
     figname='MOTWARM_profs_HER_ser.png',
     caption='MOT\_WARM: HER profiles, serial direction.',
     meta=dict(doLegend=True,
-              ylabel=r'$\delta ADU/FWC$',
+              ylabel=r'$\delta ADU/Cliff Value$',
               xlabel='Row [pix]',
               ylim=[-0.002,0.005],
               suptitle='MOT\_WARM: Serial HER.',

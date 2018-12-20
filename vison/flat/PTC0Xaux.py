@@ -139,7 +139,7 @@ def gt_HER_dict(test):
             figname='%s_profs_HER_ser.png' % test,
             caption='%s: HER profiles, serial direction.' % ntest,
             meta=dict(doLegend=True,
-              ylabel=r'$\delta ADU/FWC$',
+              ylabel=r'$\delta ADU/Cliff Value$',
               xlabel='Row [pix]',
               ylim=[-0.002,0.005],
               suptitle='%s: Serial HER.' % ntest,
