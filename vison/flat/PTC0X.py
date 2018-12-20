@@ -38,6 +38,7 @@ import pandas as pd
 import string as st
 from pdb import set_trace as stop
 
+from vison.datamodel import ccd
 from vison.pipe.task import HKKeys
 from vison.pipe.task import Task
 from vison.support import context
@@ -52,6 +53,7 @@ import PTC0Xaux
 from vison.support import utils
 from vison.datamodel import cdp
 from vison.support.files import cPickleRead
+from vison.other import MOT_FFaux
 # END IMPORT
 
 isthere = os.path.exists
@@ -167,6 +169,12 @@ for iflu, rflu in enumerate(FLATFLUX00_relfluences):
 for i in [2, 3]:
     FLU_lims_FLATFLUX00['CCD%i' % i] = copy.deepcopy(FLU_lims_FLATFLUX00['CCD1'])
 
+HER_lims = OrderedDict()
+for iC in [1,2,3]:
+    HER_lims['CCD%i' % iC] = OrderedDict()
+    for Q in ['E','F','G','H']:
+        HER_lims['CCD%i' % iC][Q] = 1.5e-3 * np.array([-1.,1.])
+
 
 class PTC0X_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
@@ -187,12 +195,13 @@ class PTC0X(FlatTask):
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
                          ('extract_PTC', self.extract_PTC),
-                         ('meta', self.meta_analysis)]
+                         ('meta', self.meta_analysis),
+                         ('extract_HER', self.extract_HER)]
         FlatTask.__init__(self,inputs, log, drill, debug)
         self.name = 'PTC0X'
         self.type = 'Simple'
         self.HKKeys = HKKeys
-        self.CDP_lib = PTC0Xaux.get_CDP_lib()
+        self.CDP_lib = PTC0Xaux.get_CDP_lib(self.inputs['test'])
         self.figdict = PTC0Xaux.gt_PTC0Xfigs(self.inputs['test'])
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                    products='products')
@@ -247,13 +256,14 @@ class PTC0X(FlatTask):
             testkey = 'PTC01'
 
         if 'PTC01' in testkey:
-            FLU_lims = FLU_lims_PTC01
+            FLU_lims = FLU_lims_PTC01.copy()
         elif 'PTC02' in testkey:
-            FLU_lims = FLU_lims_PTC02
+            FLU_lims = FLU_lims_PTC02.copy()
         elif 'FLATFLUX00' in testkey:
-            FLU_lims = FLU_lims_FLATFLUX00
+            FLU_lims = FLU_lims_FLATFLUX00.copy()
 
-        self.perfdefaults['FLU_lims'] = FLU_lims  # dict
+        self.perfdefaults['FLU_lims'] = FLU_lims.copy()  # dict
+        self.perfdefaults['HER_lims'] = HER_lims.copy()
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """Builds PTC0X script structure dictionary.
@@ -615,8 +625,6 @@ class PTC0X(FlatTask):
         GAIN_TB_dddf = OrderedDict(GAIN_TB = pd.DataFrame.from_dict(GAIN_TB))
         
         gain_tb_cdp = self.CDP_lib['GAIN_TB']
-        gain_tb_cdp.rootname = gain_tb_cdp.rootname % \
-            (self.inputs['test'],self.inputs['wavelength'])
         gain_tb_cdp.path = self.inputs['subpaths']['products']
         gain_tb_cdp.ingest_inputs(
                 data = GAIN_TB_dddf.copy(),
@@ -661,4 +669,117 @@ class PTC0X(FlatTask):
                                dobuilddata=False)
         
 
-       
+    def extract_HER(self):
+        """Hard Edge Response Analysis"""
+         
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='HER', Title='Hard Edge Response Analysis', level=0)
+        
+        HERmeta = OrderedDict()
+        HERmeta['TARGETFLU'] = 2.**16/2.
+        HERmeta['FLULIMS'] = [1.E4, 5.E4]
+        
+        DDindices = copy.deepcopy(self.dd.indices)
+        
+        nObs, nCCD, nQuad, nSec = DDindices.shape
+        Quads = DDindices.get_vals('Quad')
+        CCDs = DDindices.get_vals('CCD')
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        
+        productspath = self.inputs['subpaths']['products']
+        
+        # Initialisations
+        
+        HERdata = np.zeros((1,len(CCDs),len(Quads)), dtype='float32') + np.nan
+
+        HERprofiles = OrderedDict()        
+        for CCDk in CCDs:
+            HERprofiles[CCDk] = OrderedDict()
+            for Q in Quads:  
+                HERprofiles[CCDk][Q] = OrderedDict()
+                HERprofiles[CCDk][Q]['x'] = np.arange(100,dtype='float32')
+                HERprofiles[CCDk][Q]['y'] = np.zeros(100,dtype='float32')
+        
+        # COMPUTATION OF PROFILES
+        
+        if not self.drill:
+            
+            for jCCD, CCDk in enumerate(CCDs):
+                
+                
+                medfluences = np.mean(self.dd.mx['flu_med_img'][:,jCCD,:],axis=1)
+                ixsel = np.argmin(np.abs(medfluences-HERmeta['TARGETFLU']))
+                HERfluence = medfluences[ixsel]
+                HERmeta['FLU_%s' % CCDk] = HERfluence
+                
+                dpath = self.dd.mx['datapath'][ixsel, jCCD]
+                infits = os.path.join(dpath, '%s.fits' % 
+                          self.dd.mx['File_name'][ixsel, jCCD])
+                ccdobj = ccd.CCD(infits)
+                                
+                
+                HERprof = MOT_FFaux.extract_overscan_profiles(ccdobj, 
+                                                    HERmeta['FLULIMS'], 
+                                                    direction='serial')
+                
+                ixjump = HERprof.pop('ixjump')
+                
+                HERmeta['JUMP_%s' % CCDk] = ixjump
+                
+                for kQ,Q in enumerate(Quads):
+                    HERdata[0,jCCD,kQ] = HERprof[Q]['y'][ixjump]
+                
+                
+                HERprofiles[CCDk] = HERprof.copy()
+                
+        
+        # REPORTING HER on first pixel
+        
+        HER_lims = self.perflimits['HER_lims'].copy()
+        
+        _compliance_HER = Task.check_stat_perCCDandQ(self,HERdata,
+                                                         HER_lims, CCDs)
+        
+        self.addComplianceMatrix2Self(_compliance_HER,'HER')
+        if self.report is not None:
+            self.addComplianceMatrix2Report(
+                _compliance_HER, label='COMPLIANCE HER')
+        
+        her_cdp = self.CDP_lib['HER']
+        her_cdp.path = productspath
+        her_cdp.ingest_inputs(mx_dct=OrderedDict(HER=HERdata[0,...].copy()),
+                              CCDs=CCDs,
+                              Quads=Quads,
+                              meta=HERmeta,
+                              header=CDP_header.copy())
+        
+        her_cdp.init_wb_and_fillAll(header_title='%s: HER' % self.inputs['test'])
+
+        self.save_CDP(her_cdp)
+        self.pack_CDP_to_dd(her_cdp, 'HER_CDP')
+
+        
+        
+        
+        # Plotting HER profiles
+        
+        self.figdict['PTC0X_HER'][1]['data'] = HERprofiles.copy()
+        
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['PTC0X_HER'],
+                               dobuilddata=False)
+            
+        # SAVING HER PROFILES as a CDP
+        
+        HER_profiles_cdp = self.CDP_lib['HER_PROFILES']
+        HER_profiles_cdp.header = CDP_header.copy()
+        HER_profiles_cdp.meta = HERmeta.copy()
+        HER_profiles_cdp.path = productspath
+        HER_profiles_cdp.data = HERprofiles.copy()
+        
+        self.save_CDP(HER_profiles_cdp)
+        self.pack_CDP_to_dd(HER_profiles_cdp, 'HER_PROFILES')
