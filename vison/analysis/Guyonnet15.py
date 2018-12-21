@@ -765,7 +765,8 @@ def get_deltaQ(img, aijb):
 
     dimg = np.zeros_like(img, dtype='float32')
 
-    shift = [[1, 0], [1, 1], [-1, 0], [-1, 1]]
+    #shift = [[1, 0], [1, 1], [-1, 0], [-1, 1]]
+    shift = [[-1,1],[-1,0],[1,1],[1,0]]
 
     for ixside in range(4):
         sidekernel = kernel[:, :, ixside].copy()
