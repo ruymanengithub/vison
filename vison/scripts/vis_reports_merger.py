@@ -68,7 +68,7 @@ if __name__ == '__main__':
                       default="FM", help="Calibration programme (QM/FQM/FM).")
     parser.add_option("-b", "--block", dest="block",
                       default="BLOCK", help="Name of the block being calibrated.")
-    parser.add_options("-r", "--reference", dest="reference",
+    parser.add_option("-r", "--reference", dest="reference",
                        default="6_666", help="")
 
     (options, args) = parser.parse_args()
