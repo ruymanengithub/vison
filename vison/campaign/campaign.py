@@ -466,8 +466,8 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                 frames=frsBF01,
                 wavelength=800,
                 Npix=5,
-                surrogate='PTC01'
-                ))
+                surrogate='PTC01',
+                diffvalues=diffBF01))
         
         test_sequence['BF01'] = copy.deepcopy(bf01)
         
