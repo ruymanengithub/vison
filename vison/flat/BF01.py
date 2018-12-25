@@ -379,6 +379,7 @@ class BF01(PTC0X):
         BF_dd = OrderedDict()
         BF_dd['CCD'] = np.zeros(NP,dtype='int32')
         BF_dd['Q'] = np.zeros(NP,dtype='int32')
+        BF_dd['col'] = np.zeros(NP,dtype='S6')
         BF_dd['FWHMx'] =  np.zeros(NP,dtype='float32')
         BF_dd['FWHMy'] =  np.zeros(NP,dtype='float32')
         BF_dd['e'] =  np.zeros(NP,dtype='float32')
@@ -437,6 +438,7 @@ class BF01(PTC0X):
                         
                         BF_dd['CCD'][jj] = jCCD +1 
                         BF_dd['Q'][jj] = kQ + 1
+                        BF_dd['col'][jj] = ulabel
                         BF_dd['fluence'][jj] = COV_dict['av_mu'][Q].copy()
                         
                         try:
@@ -536,7 +538,7 @@ class BF01(PTC0X):
             
             fccd = lambda x: CCDs[x-1]
             fq = lambda x: Quads[x-1]
-            fcol = lambda x: 'col%03i' % x
+            fcol = lambda x: x
             fE = lambda x: '%.2E' % x
             
             cov_formatters=[fccd,fq,fcol]+[fE]*4
