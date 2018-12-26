@@ -96,7 +96,7 @@ def get_cov_maps(ccdobjList, Npix=4, doTest=False):
                 sq2 = ccd2.extract_region(
                     Q, area='img', canonical=True, extension=-1)
 
-                covmap, mu, var = f_get_covmap(sq1, sq2, Npix)
+                covmap, mu, var = f_get_covmap(sq1, sq2, Npix, debug=True)
 
                 covmapv[Q][:, :, iP] = covmap.copy()
                 muv[Q][iP] = mu
