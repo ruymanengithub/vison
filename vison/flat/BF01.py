@@ -166,6 +166,10 @@ class BF01(PTC0X):
         labels = self.dd.mx['label'][:, 0].copy()
         ulabels = np.unique(labels)
         nL = len(ulabels)
+	
+	# vstart and vend should be the same for all OBSIDs in test
+	vstart = self.dd.mx['vstart'][0,0]
+	vend = self.dd.mx['vend'][0,0]
 
         indices = copy.deepcopy(self.dd.indices)
         nObs, nC, nQ = indices.shape
@@ -232,7 +236,8 @@ class BF01(PTC0X):
                     ccdobjList = [cPickleRead(item) for item in ccdobjNamesList]
                     
                     icovdict = covlib.get_cov_maps(
-                        ccdobjList, Npix=Npix, doTest=False)                    
+                        ccdobjList, Npix=Npix, vstart=vstart, vend=vend,
+			doTest=False)                    
                     
                     self.dd.products['COV'][CCDk][ulabel] = copy.deepcopy(
                             icovdict)
