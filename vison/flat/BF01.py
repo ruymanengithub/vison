@@ -451,9 +451,10 @@ class BF01(PTC0X):
                                 verbose=False)
                         
                             kernel_Q = G15.degrade_estatic(singlepixmap, Asol_Q)
-
+                            
+                            cross_Q = kernel_Q[Npix/2-1:Npix/2+2,Npix/2-1:Npix/2+2].copy()
                             kerQshape = G15.get_cross_shape_rough(
-                                    kernel_Q, pitch=12.)
+                                    cross_Q, pitch=12.)
                         
                             self.dd.products['BF'][CCDk][Q][ulabel] = OrderedDict(Asol=Asol_Q.copy(),
                                                                               psmooth=copy.deepcopy(psmooth_Q),
@@ -463,7 +464,6 @@ class BF01(PTC0X):
                             BF_dd['FWHMy'][jj] = kerQshape['fwhmy']
                             BF_dd['e'][jj] = kerQshape['e']
                             
-                            stop()
                             
                             profsker_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
                                    np.arange(Npixplot)-Npixplot/2
