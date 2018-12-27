@@ -465,6 +465,7 @@ class BF01(PTC0X):
                             BF_dd['FWHMy'][jj] = kerQshape['fwhmy']
                             BF_dd['e'][jj] = kerQshape['e']
                             
+                            stop()
                             
                             profsker_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
                                    np.arange(Npixplot)-Npixplot/2
@@ -616,7 +617,7 @@ class BF01(PTC0X):
                 plot_FWHM_dict['fwhmy'][CCDk][Q]['x']['data'] = iflu.copy()
                 plot_FWHM_dict['fwhmy'][CCDk][Q]['y']['data'] = ifwhmy.copy()
         
-        stop()
+        
         for tag in ['fwhmx','fwhmy']:
         
             fdict_FF = self.figdict['BF01_%s_v_flu' % tag][1]
