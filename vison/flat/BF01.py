@@ -237,7 +237,7 @@ class BF01(PTC0X):
                     
                     icovdict = covlib.get_cov_maps(
                         ccdobjList, Npix=Npix, vstart=vstart, vend=vend,
-			doTest=False, debug=True)                    
+			doTest=False, debug=False)                    
                     
                     self.dd.products['COV'][CCDk][ulabel] = copy.deepcopy(
                             icovdict)
