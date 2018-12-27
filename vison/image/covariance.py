@@ -33,7 +33,6 @@ def get_model2d(img, pdegree=5, doFilter=False, doBin=True,
     regmodel.get_model_poly2D(
         sampling=filtsize, pdegree=pdegree, useBin=doBin)
     
-    stop()
     return regmodel
 
 def f_get_covmap(sq1, sq2, N, submodel=False, debug=False):
@@ -45,7 +44,7 @@ def f_get_covmap(sq1, sq2, N, submodel=False, debug=False):
     
     if submodel:
         model2d = get_model2d(difimg,pdegree=5)
-        difimg -= model2d
+        difimg -= model2d.img
 
     NAXIS1 = difimg.shape[0]
     NAXIS2 = difimg.shape[1]
