@@ -37,13 +37,17 @@ def get_model2d(img, pdegree=5, doFilter=False, doBin=True,
 
 def f_get_covmap(sq1, sq2, N, submodel=False, debug=False):
     """ """
+    from time import time
 
     difimg = sq1 - sq2
 
     difimg -= np.median(difimg)  # ?
     
     if submodel:
+        t1 = time()
         model2d = get_model2d(difimg,pdegree=5)
+        t2 = time()
+        print '%.1f seconds in computing 2D model...' % (t2-t1,)
         difimg -= model2d.imgmodel
 
     NAXIS1 = difimg.shape[0]
