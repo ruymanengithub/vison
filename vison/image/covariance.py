@@ -58,7 +58,7 @@ def f_get_covmap(sq1, sq2, N, debug=False):
     return covmap, mu, var
 
 
-def get_cov_maps(ccdobjList, Npix=4, vstart=0,vend=2066, doTest=False):
+def get_cov_maps(ccdobjList, Npix=4, vstart=0,vend=2066, doTest=False, debug=False):
     """ """
 
     Quads = ccdobjList[0].Quads
@@ -98,7 +98,7 @@ def get_cov_maps(ccdobjList, Npix=4, vstart=0,vend=2066, doTest=False):
                     Q, area='img', canonical=True, vstart=vstart,
 		    vend=vend,extension=-1)
 
-                covmap, mu, var = f_get_covmap(sq1, sq2, Npix, debug=False)
+                covmap, mu, var = f_get_covmap(sq1, sq2, Npix, debug=debug)
 
                 covmapv[Q][:, :, iP] = covmap.copy()
                 muv[Q][iP] = mu
