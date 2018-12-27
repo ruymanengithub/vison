@@ -614,7 +614,7 @@ class BF01(PTC0X):
                 plot_FWHM_dict['fwhmx'][CCDk][Q]['y']['data'] = ifwhmx.copy()
                 
                 plot_FWHM_dict['fwhmy'][CCDk][Q]['x']['data'] = iflu.copy()
-                plot_FWHM_dict['fwhmy'][CCDk][Q]['y']['data'] = ifwhmx.copy()
+                plot_FWHM_dict['fwhmy'][CCDk][Q]['y']['data'] = ifwhmy.copy()
         
         
         for tag in ['fwhmx','fwhmy']:
