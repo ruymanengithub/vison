@@ -417,14 +417,12 @@ class BF01(PTC0X):
             for kQ, Q in enumerate(Quads):
                 self.dd.products['BF'][CCDk][Q] = OrderedDict()
         
-        Npix = 101
+        Npix = 51
         Npixplot=11
         
         if not self.drill:
             
-            
-            
-            singlepixmap = np.zeros((Npix, Npix), dtype='float32') + 0.01
+            singlepixmap = np.zeros((Npix, Npix), dtype='float32') + 0.0
             singlepixmap[(Npix-1)/2, (Npix-1)/2] = 1.
 
             for jCCD, CCDk in enumerate(CCDs):
