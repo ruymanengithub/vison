@@ -45,7 +45,7 @@ def f_get_covmap(sq1, sq2, N, submodel=False, debug=False):
     
     if submodel:
         t1 = time()
-        model2d = get_model2d(difimg,pdegree=5)
+        model2d = get_model2d(difimg,pdegree=5,doBin=True,binsize=300,doFilter=False)
         t2 = time()
         print '%.1f seconds in computing 2D model...' % (t2-t1,)
         difimg -= model2d.imgmodel
