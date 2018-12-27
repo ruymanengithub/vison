@@ -15,15 +15,37 @@ Created on Wed Mar  7 11:54:54 2018
 from pdb import set_trace as stop
 import numpy as np
 from scipy import stats
+from vison.datamodel.ccd_aux import Model2D
 # END IMPORT
 
+def get_model2d(img, pdegree=5, doFilter=False, doBin=True,
+                filtsize=1, binsize=1, filtertype='mean'):
 
-def f_get_covmap(sq1, sq2, N, debug=False):
+    regmodel = Model2D(img)
+
+    if doFilter:
+        if filtsize > 1:
+            regmodel.filter_img(filtsize=filtsize, filtertype=filtertype,
+                                Tests=False)
+    if doBin:
+        regmodel.bin_img(boxsize=binsize, stat=filtertype)
+
+    regmodel.get_model_poly2D(
+        sampling=filtsize, pdegree=pdegree, useBin=doBin)
+    
+    stop()
+    return regmodel
+
+def f_get_covmap(sq1, sq2, N, submodel=False, debug=False):
     """ """
 
     difimg = sq1 - sq2
 
     difimg -= np.median(difimg)  # ?
+    
+    if submodel:
+        model2d = get_model2d(difimg,pdegree=5)
+        difimg -= model2d
 
     NAXIS1 = difimg.shape[0]
     NAXIS2 = difimg.shape[1]
@@ -42,16 +64,16 @@ def f_get_covmap(sq1, sq2, N, debug=False):
 
     for i in range(N):
         for j in range(N):
-
+            
             EXY = clip(difimg[x2d, y2d]*difimg[x2d+i, y2d+j]).mean()
             EX = clip(difimg[x2d, y2d]).mean()
             EY = clip(difimg[x2d+i, y2d+j]).mean()
-
+            
             covmap[i, j] = (EXY-EX*EY) / var
             # covmap[i,j] = j # test
-
+    
     # covmap[0,0] = 0. # not terribly interesting to see correlation of a pixel with itself
-
+    
     if debug:
         stop()
 
@@ -98,7 +120,8 @@ def get_cov_maps(ccdobjList, Npix=4, vstart=0,vend=2066, doTest=False, debug=Fal
                     Q, area='img', canonical=True, vstart=vstart,
 		    vend=vend,extension=-1)
 
-                covmap, mu, var = f_get_covmap(sq1, sq2, Npix, debug=debug)
+                covmap, mu, var = f_get_covmap(sq1, sq2, Npix, submodel=True,
+                                               debug=debug)
 
                 covmapv[Q][:, :, iP] = covmap.copy()
                 muv[Q][iP] = mu

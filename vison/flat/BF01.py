@@ -167,9 +167,9 @@ class BF01(PTC0X):
         ulabels = np.unique(labels)
         nL = len(ulabels)
 	
-	# vstart and vend should be the same for all OBSIDs in test
-	vstart = self.dd.mx['vstart'][0,0]
-	vend = self.dd.mx['vend'][0,0]
+    	# vstart and vend should be the same for all OBSIDs in test
+        vstart = self.dd.mx['vstart'][0,0]
+        vend = min(self.dd.mx['vend'][0,0],self.ccdcalc.NrowsCCD)
 
         indices = copy.deepcopy(self.dd.indices)
         nObs, nC, nQ = indices.shape
