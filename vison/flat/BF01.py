@@ -577,7 +577,7 @@ class BF01(PTC0X):
         Qv = BF_df['Q'].as_matrix()
         FWHMx = BF_df['FWHMx'].as_matrix()
         FWHMy = BF_df['FWHMy'].as_matrix()
-        ell = BF_df['e'].as_matrix()
+        #ell = BF_df['e'].as_matrix()
         flu = BF_df['fluence'].as_matrix()
         
         CCDs = ['CCD%i' % item for item in np.arange(CCDv.min(),CCDv.max()+1)]
@@ -604,7 +604,7 @@ class BF01(PTC0X):
                 
                 iflu = flu[ixsel]
                 ifwhmx = FWHMx[ixsel]
-                ifwhmy = FWHMx[ixsel]
+                ifwhmy = FWHMy[ixsel]
                 ixorder = iflu.argsort()
                 iflu = iflu[ixorder]
                 ifwhmx = ifwhmx[ixorder]
