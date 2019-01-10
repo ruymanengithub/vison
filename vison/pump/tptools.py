@@ -256,7 +256,7 @@ def find_dipoles_stpump(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, ex
     
     def get_metrics(dipoles_mask,qresmap):
         NaxisX = dipoles_mask.shape[0]
-        cols0 = np.where(dipoles_mask)
+        cols0 = np.where(dipoles_mask)[0]
         X = cols0 + prescan
         ixnonrolled = np.where(X<NaxisX-4)
         A = (np.abs(rollit(qresmap,-1))+np.abs(rollit(qresmap,-2)))[cols0]/2.
