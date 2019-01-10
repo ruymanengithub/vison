@@ -134,6 +134,7 @@ class Model2D():
         self.binnedimg = rebinned.copy()
         self.XXbin = sxx.copy()
         self.YYbin = syy.copy()
+        if np.all(self.binnedimg.mask): stop()
 
     def filter_img(self, filtsize=15, filtertype='median', Tests=False):
         """ """
@@ -245,6 +246,7 @@ class Model2D():
             zz = zz[selix]
 
         p = self.fit2Dpol_xyz(xx, yy, zz, degree=pdegree)
+
 
         xp, yp = np.mgrid[:NX, :NY]
         pilum = p(xp, yp)

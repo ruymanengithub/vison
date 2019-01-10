@@ -223,21 +223,37 @@ class BF01(PTC0X):
 
         if not self.drill:
             
+            #doTest=False
+            
+            
             vfullinpath_adder = utils.get_path_decorator(dpath)
+            
+            
+            #taskcounter = 0
  
             for jCCD, CCDk in enumerate(CCDs):
+                
 
                 for ku, ulabel in enumerate(ulabels):
+                    
 
                     six = np.where(labels == ulabel)
                     
                     ccdobjNamesList = vfullinpath_adder(self.dd.mx['ccdobj_name'][six[0],jCCD],'pick')
                     
-                    ccdobjList = [cPickleRead(item) for item in ccdobjNamesList]
+                    
+                    print '%s: column %i/%i; %i OBSIDs' % (CCDk,ku+1,len(ulabels),len(ccdobjNamesList))
+                    
+                    #if doTest and taskcounter<20:
+                    #    #stop()
+                    #    taskcounter +=1
+                    #    continue
+                    
+                    ccdobjList = [cPickleRead(item) for item in ccdobjNamesList]                    
                     
                     icovdict = covlib.get_cov_maps(
                         ccdobjList, Npix=Npix, vstart=vstart, vend=vend,
-			doTest=False, debug=False)                    
+			          doTest=False, debug=False)                    
                     
                     self.dd.products['COV'][CCDk][ulabel] = copy.deepcopy(
                             icovdict)
@@ -264,7 +280,7 @@ class BF01(PTC0X):
                                    np.arange(Npix-1)
                         profscov_1D.data['ver'][CCDk][Q]['y'][ulabel] = \
                                    icovdict['av_covmap'][Q][1:,0].copy()
-                        
+                    
         else:
             
             for jCCD, CCDk in enumerate(CCDs):
@@ -385,10 +401,10 @@ class BF01(PTC0X):
         BF_dd['CCD'] = np.zeros(NP,dtype='int32')
         BF_dd['Q'] = np.zeros(NP,dtype='int32')
         BF_dd['col'] = np.zeros(NP,dtype='S6')
-        BF_dd['FWHMx'] =  np.zeros(NP,dtype='float32')
-        BF_dd['FWHMy'] =  np.zeros(NP,dtype='float32')
-        BF_dd['e'] =  np.zeros(NP,dtype='float32')
-        BF_dd['fluence'] =  np.zeros(NP,dtype='float32')
+        BF_dd['FWHMx'] =  np.zeros(NP,dtype='float32')+np.nan
+        BF_dd['FWHMy'] =  np.zeros(NP,dtype='float32')+np.nan
+        BF_dd['e'] =  np.zeros(NP,dtype='float32')+np.nan
+        BF_dd['fluence'] =  np.zeros(NP,dtype='float32')+np.nan
         
         
         profsker_1D = self.CDP_lib['PROFSKER1D']
@@ -487,8 +503,19 @@ class BF01(PTC0X):
                                                   figname=dispfig)
                         
                         except:
+                            
                             self.dd.products['BF'][CCDk][Q][ulabel] = OrderedDict()
-
+                            
+                            profsker_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
+                                   np.arange(Npixplot)-Npixplot/2
+                            profsker_1D.data['hor'][CCDk][Q]['y'][ulabel] = \
+                                   np.zeros(Npixplot)
+                        
+                            profsker_1D.data['ver'][CCDk][Q]['x'][ulabel] = \
+                                   np.arange(Npixplot)-Npixplot/2
+                            
+                            profsker_1D.data['ver'][CCDk][Q]['y'][ulabel] = \
+                                   np.zeros(Npixplot) 
         else:
             
             for jCCD, CCDk in enumerate(CCDs):
@@ -517,6 +544,7 @@ class BF01(PTC0X):
         
             fdict_K = self.figdict['BF01_KER_%s' % tag][1]
             fdict_K['data'] = profsker_1D.data[tag].copy()
+            
             if self.report is not None:
                 self.addFigures_ST(figkeys=['BF01_KER_%s' % tag], 
                                    dobuilddata=False)

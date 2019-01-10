@@ -86,14 +86,15 @@ def f_get_covmap(sq1, sq2, N, submodel=False, debug=False):
 def get_cov_maps(ccdobjList, Npix=4, vstart=0,vend=2066, doTest=False, debug=False):
     """ """
 
+    maxbadfrac = 0.2
     Quads = ccdobjList[0].Quads
 
     Nframes = len(ccdobjList)
     Npairs = Nframes / 2
 
-    tcovmapv = np.zeros((Npix, Npix, Npairs), dtype='float32')
-    tmuv = np.zeros(Npairs, dtype='float32')
-    tvarv = np.zeros(Npairs, dtype='float32')
+    tcovmapv = np.zeros((Npix, Npix, Npairs), dtype='float32')+np.nan
+    tmuv = np.zeros(Npairs, dtype='float32')+np.nan
+    tvarv = np.zeros(Npairs, dtype='float32')+np.nan
 
     covmapv = dict()
     for Q in Quads:
@@ -122,22 +123,31 @@ def get_cov_maps(ccdobjList, Npix=4, vstart=0,vend=2066, doTest=False, debug=Fal
                 sq2 = ccd2.extract_region(
                     Q, area='img', canonical=True, vstart=vstart,
 		    vend=vend,extension=-1)
-
-                covmap, mu, var = f_get_covmap(sq1, sq2, Npix, submodel=True,
-                                               debug=debug)
-
-                covmapv[Q][:, :, iP] = covmap.copy()
-                muv[Q][iP] = mu
-                varv[Q][iP] = var
+                
+                badfrac1 = len(np.where(sq1.mask)[0])/float(sq1.size)
+                badfrac2 = len(np.where(sq2.mask)[0])/float(sq2.size)
+                
+                if (badfrac1>maxbadfrac) or (badfrac2>maxbadfrac):
+                    continue
+                else:
+                    try: 
+                        covmap, mu, var = f_get_covmap(sq1, sq2, Npix, submodel=True,
+                                                   debug=debug)
+    
+                        covmapv[Q][:, :, iP] = covmap.copy()
+                        muv[Q][iP] = mu
+                        varv[Q][iP] = var
+                    except:
+                        pass
 
     av_var = dict()
     av_mu = dict()
     av_covmap = dict()
 
     for Q in Quads:
-        av_covmap[Q] = covmapv[Q].mean(axis=2)
-        av_var[Q] = np.mean(varv[Q])
-        av_mu[Q] = np.mean(muv[Q])
+        av_covmap[Q] = np.nanmean(covmapv[Q],axis=2)
+        av_var[Q] = np.nanmean(varv[Q])
+        av_mu[Q] = np.nanmean(muv[Q])
 
     cov_dict = dict(varv=varv, covmapv=covmapv, muv=muv,
                     av_mu=av_mu, av_var=av_var,
