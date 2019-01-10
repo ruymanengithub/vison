@@ -16,6 +16,7 @@ import numpy as np
 import os
 from collections import OrderedDict
 
+from vison.datamodel import cdp
 from vison.plot import figclasses
 from vison.plot import trends
 
@@ -67,3 +68,15 @@ def get_TP02figs():
     TP02figs['TP02checks_injstd'] = [trends.Fig_Basic_Checkstat, check_injstd_dict]
     TP02figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return TP02figs
+
+
+def get_CDP_lib():
+    """ """
+    
+    mastercat = cdp.CDP()
+    mastercat.rootname = 'TP02_MasterCat'
+    
+    CDP_lib = OrderedDict()
+    CDP_lib['MASTERCAT'] = mastercat
+           
+    return CDP_lib

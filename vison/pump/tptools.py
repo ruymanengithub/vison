@@ -18,6 +18,7 @@ import copy
 from scipy import ndimage as nd
 import pandas as pd
 from collections import OrderedDict
+from pylab import plot,show
 
 from vison.datamodel import ccd as ccdmod
 from vison.image.ds9reg import save_spots_as_ds9regs
@@ -187,11 +188,11 @@ def find_dipoles_vtpump(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, ex
     
     def get_metrics(dipoles_mask,qresmap):
         NaxisY = dipoles_mask.shape[1]
-        rows0, cols0 = np.where(dipoles_mask)
-        X = rows0 + prescan
-        Y = cols0 + vstart + 1
+        cols0, rows0 = np.where(dipoles_mask)
+        X = cols0 + prescan
+        Y = rows0 + vstart + 1
         ixnonrolled = np.where(Y<NaxisY-4)
-        A = (np.abs(rollit(qresmap,-1))+np.abs(rollit(qresmap,-2)))[(rows0,cols0)]/2.
+        A = (np.abs(rollit(qresmap,-1))+np.abs(rollit(qresmap,-2)))[(cols0,rows0)]/2.
         X = X[ixnonrolled]
         Y = Y[ixnonrolled]
         A = A[ixnonrolled]
@@ -215,6 +216,70 @@ def find_dipoles_vtpump(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, ex
 
     outdict = OrderedDict(X=X, Y=Y, S=S, A=A)
     #df = pd.DataFrame(outdict, columns=['X', 'Y', 'S', 'A'])
+
+    return outdict
+
+
+def find_dipoles_stpump(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, extension=-1):
+    """Using Jesper Skottfelt's algorithm, as described in 
+    Trap_Pumping_Analysis_GCALCAMP_17OCT17_Azzollini.pdf
+    
+    'West' dipole: brighter pixel closer to serial register than dimmer pixel.
+    'East' dipole: brighter pixel farther to serial register than dimmer pixel.
+    
+    """
+
+    prescan = ccdobj.prescan
+    overscan = ccdobj.overscan
+
+    qrawmap = ccdobj.get_quad(Q, canonical=True, extension=extension)[
+        prescan:-overscan, vstart:vend].copy()
+    
+    qrawmap = qrawmap.mean(axis=1)
+    qmod = nd.filters.uniform_filter(qrawmap, size=21,mode='reflect')
+    qresmap = qrawmap - qmod
+    
+    #qresmap = qrawmap - np.nanmedian(qrawmap)
+    
+    above_thresh = qresmap > threshold
+    below_thresh = qresmap < -threshold
+    within_thresh = ~above_thresh & ~below_thresh
+    
+    def rollit(array,disp):
+        if disp == 0: return array
+        return np.roll(array,disp,axis=0)
+    
+    dipoles_W = rollit(within_thresh,0) & rollit(above_thresh,-1) & \
+                      rollit(below_thresh,-2) & rollit(within_thresh,-3)
+    dipoles_E = rollit(within_thresh,0) & rollit(below_thresh,-1) & \
+                      rollit(above_thresh,-2) & rollit(within_thresh,-3)
+    
+    def get_metrics(dipoles_mask,qresmap):
+        NaxisX = dipoles_mask.shape[0]
+        cols0 = np.where(dipoles_mask)
+        X = cols0 + prescan
+        ixnonrolled = np.where(X<NaxisX-4)
+        A = (np.abs(rollit(qresmap,-1))+np.abs(rollit(qresmap,-2)))[cols0]/2.
+        X = X[ixnonrolled]
+        A = A[ixnonrolled]
+        return X,A
+    
+    XW, AW = get_metrics(dipoles_W,qresmap)
+    XE, AE = get_metrics(dipoles_E,qresmap)
+    
+    Ndip = len(XW)+len(XE)
+    S = np.zeros((Ndip,))+np.nan
+                
+    S[0:len(XW)] = 1
+    S[len(XW):None] = 0
+    
+    X = np.concatenate((XW,XE))
+    A = np.concatenate((AW,AE))
+
+    if len(X) == 0:
+        return pd.DataFrame(dict(X=[], S=[], A=[]), columns=['X', 'S', 'A'])
+
+    outdict = OrderedDict(X=X, S=S, A=A)
 
     return outdict
 

@@ -19,8 +19,11 @@ from pdb import set_trace as stop
 import os
 import copy
 from collections import OrderedDict
+import pandas as pd
+import string as st
 
 from vison.pipe.task import HKKeys
+from vison.support import utils
 from vison.pipe import lib as pilib
 from vison.support import context
 from vison.point import lib as polib
@@ -100,6 +103,7 @@ class TP02(PumpTask):
         
         self.HKKeys = HKKeys
         self.figdict = TP02aux.get_TP02figs()
+        self.CDP_lib = TP02aux.get_CDP_lib()
         self.inputs['subpaths'] = dict(figs='figs', 
                    ccdpickles='ccdpickles',
                    products='products')
@@ -207,6 +211,11 @@ class TP02(PumpTask):
         
         """
         
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='extract', Title='TP02 Extraction', level=0)
+        
+        
         DDindices = copy.deepcopy(self.dd.indices)
         CCDs = DDindices.get_vals('CCD')
 
@@ -281,7 +290,10 @@ class TP02(PumpTask):
                                 '%s.fits' % ioutf),clobber=True)
 
                         self.dd.mx['dipoles_raw'][ix, jCCD] = ioutf
-
+        
+        if self.report is not None:
+            self.report.add_Text('All Done!')
+            
 
     def basic_analysis(self):
         """
@@ -305,8 +317,199 @@ class TP02(PumpTask):
                 Counts of dipoles (and E vs. W)
 
         """
-        return # TESTS
-        raise NotImplementedError
+        
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='basic', Title='TP02 Basic Analysis', level=0)
+        
+        threshold = 0.01
+        #CCDhalves = ['top','bottom']
+        _Quads_dict = dict(top = ['E','F'],
+                           bottom = ['G','H'])
+                
+        DDindices = copy.deepcopy(self.dd.indices)
+        CCDs = DDindices.get_vals('CCD')
+        allQuads = DDindices.get_vals('Quad')
+
+        productspath = self.inputs['subpaths']['products']
+        
+        id_dlys = np.unique(self.dd.mx['id_dly'][:, 0])
+        
+        mods = np.unique(self.dd.mx['s_tp_mod'][:,0])
+        modkeys = ['m%i' % item for item in mods]
+        
+        
+        dwells = np.unique(self.dd.mx['dwell_s'][:,0])
+        dwellkeys = ['u%04i' % item for item in dwells]
+        
+        # initialisation
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        
+        masterdict = OrderedDict()
+        
+        for CCDk in CCDs:
+            masterdict[CCDk] = OrderedDict()
+            for Q in allQuads:
+                masterdict[CCDk][Q] = OrderedDict()
+                for modkey in modkeys:
+                    masterdict[CCDk][Q][modkey] = OrderedDict()
+                    for dwellkey in dwellkeys:
+                        masterdict[CCDk][Q][modkey][dwellkey] = None
+        
+        
+        if not self.drill:
+
+            # Getting dipole catalogues
+            
+            ontests = False
+            print 'WARNING: TP02.basic_analysis incomplete, TESTS'
+            
+            if not ontests:
+
+                for id_dly in id_dlys:
+    
+                    for jCCD, CCDk in enumerate(CCDs):
+    
+                        ixsel = np.where((self.dd.mx['id_dly'][:] == id_dly) & (
+                            self.dd.mx['s_tpump'][:] != 0))
+    
+                        for ix in ixsel[0]:
+                            ObsID = self.dd.mx['ObsID'][ix]
+                            vstart = self.dd.mx['vstart'][ix, jCCD]
+                            vend = self.dd.mx['vend'][ix,jCCD]
+                            toi_ch = float(self.dd.mx['toi_ch'][ix,jCCD])
+                            s_tp_mod = self.dd.mx['s_tp_mod'][ix,jCCD]
+                            dwell = self.dd.mx['dwell_s'][ix,jCCD]
+                            
+                            modkey = 'm%i' % s_tp_mod
+                            dwellkey = 'u%04i' % dwell
+                            
+                            if np.isclose(id_dly/toi_ch,1.5):
+                                CCDhalf = 'bottom'
+                            elif np.isclose(id_dly/toi_ch,2.5):
+                                CCDhalf = 'top'
+                                
+                            Quads = _Quads_dict[CCDhalf]
+                            
+                            imapf = 'TP02_rawmap_%i_IDDLY_%i_ROE1_%s.fits' % (
+                                ObsID, id_dly, CCDk)
+                            
+                            imapccdobj = ccd.CCD(os.path.join(productspath,imapf))    
+                            
+                            for iQ, Q in enumerate(Quads):
+                               
+                                    
+                                idd = tptools.find_dipoles_stpump(imapccdobj,threshold,
+                                      Q,vstart=vstart,vend=vend,
+                                      extension=-1)
+                                 
+                                masterdict[CCDk][Q][modkey][dwellkey] = idd.copy()
+            
+            
+            
+            def _get_N(dipdict):
+                return np.nansum(dipdict['S'])
+            
+            def _get_Ratio(dipdict):
+                
+                NW = len(np.where(dipdict['S']==1)[0])
+                NE = len(np.where(dipdict['S']==0)[0])
+                if NE>0:
+                    Ratio = float(NW)/float(NE)
+                else:
+                    Ratio = np.nan
+                return Ratio
+            
+            def _get_A(dipdict):
+                return np.nanmedian(dipdict['A'])
+                
+
+            def _aggregate(masterdict):
+                """ """
+                
+                allfuncts = OrderedDict()
+                extracts = ['N','R','A']
+                allfuncts['N'] = _get_N
+                allfuncts['R'] = _get_Ratio
+                allfuncts['A'] = _get_A
+                
+                #funct = allfuncts[extract]
+                
+                outdict = copy.deepcopy(masterdict)
+                
+                for CCDk in CCDs:
+                    for Q in allQuads:
+                        for modkey in modkeys:
+                            for dwellkey in dwellkeys:
+                                values = []
+                                for extract in extracts:
+                                    values.append(allfuncts[extract](masterdict[CCDk][Q][modkey][dwellkey]))                                
+                                outdict[CCDk][Q][modkey][dwellkey] = values
+                
+               
+                reform = {(level1_key, level2_key, level3_key, level4_key): value
+                          for level1_key, level2_dict in outdict.items()
+                          for level2_key, level3_dict in level2_dict.items()
+                          for level3_key, level4_dict in level3_dict.items()
+                          for level4_key, value       in level4_dict.items()}
+                
+                
+                outdf = pd.DataFrame(reform).T
+                colnames = dict()
+                for i,c in enumerate(extracts):
+                    colnames[i] = c
+                outdf.rename(columns=colnames,inplace=True)
+                names=['CCD','Q','mod','dwell']
+                outdf.index.set_names(names,inplace=True)
+                
+                                
+                return outdf
+            
+            
+            def _get_tex(df):
+                
+                coretex =  df.to_latex(multicolumn=True,multirow=True,
+                               longtable=True,index=True,
+                               escape=True)
+                
+                #tex = ['\\tiny'] + st.split(coretex,'\\\\\n') +['\\normalsize']
+                
+                return coretex
+            
+            def _get_txt(df):
+                fok = st.split(df.to_string(),'\n')
+                txt = ['\\begin{verbatim}']+fok+['\\end{verbatim}']
+                return txt 
+            
+            df =_aggregate(masterdict)
+            #texreport = _get_tex(df)
+            txtreport = _get_txt(df)
+            #Ntex = _get_tex(dfN)
+            #dfRatio=_aggregate(masterdict,extract='Ratio')
+            #Ratiotex = _get_tex(dfRatio)
+            #dfA = _aggregate(masterdict,extract='A')
+            #Atex = _get_tex(dfA)
+            
+            
+            if self.report is not None:
+                self.report.add_Text('Dipole Statistics: Number, Ratio N/S, \<Amplitude\>')
+                self.report.add_Text(txtreport)
+            
+            
+            # Saving the MasterCat
+            
+            mastercat = self.CDP_lib['MASTERCAT']
+            mastercat.header = CDP_header.copy()
+            mastercat.meta = OrderedDict(THRESHOLD=threshold)
+            mastercat.path = productspath
+            mastercat.data = masterdict.copy()
+            
+            self.save_CDP(mastercat)
+            self.pack_CDP_to_dd(mastercat,'MASTERCAT')
+
 
     def meta_analysis(self):
         """
