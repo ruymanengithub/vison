@@ -433,8 +433,7 @@ class TP01(PumpTask):
             def _get_A(dipdict):
                 return np.nanmedian(dipdict['A'])
                 
-            
-            
+
             def _aggregate(masterdict):
                 """ """
                 
@@ -508,7 +507,7 @@ class TP01(PumpTask):
             
             
             if self.report is not None:
-                self.report.add_Text('Dipole Statistics: Number, Ratio N/S, <Amplitude>')
+                self.report.add_Text('Dipole Statistics: Number, Ratio N/S, \<Amplitude\>')
                 self.report.add_Text(txtreport)
             
             
