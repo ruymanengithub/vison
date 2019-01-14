@@ -72,15 +72,16 @@ def show_histo_adus(qdata, title=''):
 #    bits = np.array(list(bin(int(integer))[2:].rjust(16,'0'))).astype('int')[::-1]
 #    return bits
 
-def get_histo_bits(ccdobj,Q):
+def get_histo_bits(ccdobj,Q,vstart=0,vend=2086):
     """ """
     qdata = ccdobj.get_quad(Q, canonical=True)
+    qdata = qdata[:,vstart:vend].copy()
     vector = qdata.astype('int32').flatten()
     bits = (((vector[:, None] & (1 << np.arange(16)))) > 0).astype(int)
     bitsmean = bits.mean(axis=0)
     return bitsmean
 
-def show_histo_bits(ccdobj, suptitle='', figname=''):
+def show_histo_bits(ccdobj, vstart=0, vend=2086, suptitle='', figname=''):
 
     pQuads = ['E', 'F', 'H', 'G']
 
@@ -93,7 +94,7 @@ def show_histo_bits(ccdobj, suptitle='', figname=''):
 
         axs.append(fig.add_subplot(2, 2, iQ+1))
         
-        bitsmean = get_histo_bits(ccdobj,pQ)
+        bitsmean = get_histo_bits(ccdobj,pQ,vstart,vend)
 
         axs[-1].bar(bins, bitsmean, width=1,
                     edgecolor='blue', facecolor='white')

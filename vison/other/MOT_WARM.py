@@ -465,7 +465,8 @@ class MOT_WARM(DarkTask):
                 
                 fignamebitshisto = 'MOT_WARM_bits_histo_%s.png' % CCDk
                 fullfignamebitshisto = os.path.join(figspath,fignamebitshisto)
-                bits.show_histo_bits(ccdobjRAMP, 
+                bits.show_histo_bits(ccdobjRAMP,
+                                     vstart,vend,
                                      suptitle = 'MOT\_WARM: bits histo, %s' % CCDk,
                                      figname = fullfignamebitshisto)
                 
