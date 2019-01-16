@@ -327,8 +327,6 @@ class BeamPlot(BasicPlot):
             #plt.colorbar(cax=cbar_ax, mappable=self.mappables[0],orientation='vertical')
             self.fig.colorbar(self.mappables[0], ax=self.axsarr.flatten().tolist(), orientation='vertical', fraction=.1)
         
-
-
 class BeamPlotYvX(BeamPlot):
 
     def _ax_core_funct(self, ax, CQdict, key=''):
@@ -341,7 +339,10 @@ class BeamPlotYvX(BeamPlot):
             
             label = st.replace(key, '_', '\_')
             kwargs=dict(label=label,marker='.',linestyle='')
-            kwargs.update(ckwargs)
+            if key in ckwargs:
+                kwargs.update(ckwargs[key])
+            else:
+                kwargs.update(ckwargs)
             handle = ax.plot(xarr, yarr, **kwargs)
         else:
             xarr = CQdict['x']
