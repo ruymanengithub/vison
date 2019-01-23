@@ -334,6 +334,7 @@ class BeamPlotYvX(BeamPlot):
         ckwargs = self.corekwargs.copy()
 
         if key != '':
+            
             xarr = CQdict['x'][key]
             yarr = CQdict['y'][key]
             
