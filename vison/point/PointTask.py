@@ -364,6 +364,46 @@ class PointTask(Task):
         if self.report is not None:
             self.addComplianceMatrix2Report(
                 _compliance_flu, label='COMPLIANCE FLUENCE:')
+            
+            
+        # Peak Saturation Times
+        
+        fluences = np.mean(self.dd.mx['chk_fluence'][:].copy(),axis=-1)
+        exptime = self.dd.mx['exptime'][:].copy()
+            
+        ixnozero = np.where(exptime[:,0]>0)
+            
+        _f = np.squeeze(fluences[ixnozero,...])
+        _e = np.expand_dims(np.squeeze(exptime[ixnozero,...]),axis=-1)
+            
+        fluxes = np.nanmean(_f/_e,axis=0) # CRUDE!
+        
+        pkfluxes = fluxes / (2.*np.pi*(2./2.355)**2.) # assuming a fwhm of 2 pixels at best focus
+        pksat_times = 2.**16/pkfluxes
+        pksat_times = np.expand_dims(pksat_times,axis=0)      
+        
+        
+        exp_sat_time = self.ogse.profile['tFWC_point']['nm%i' % self.inputs['wavelength']]
+        sat_time_lims = dict()
+        for CCD in CCDs:
+            sat_time_lims[CCD] = (exp_sat_time * np.array([0.9,1.1])).tolist()
+            
+        _compliance_flux = self.check_stat_perCCDandQ(
+                pksat_times, sat_time_lims, CCDs)
+        
+        self.addComplianceMatrix2Self(_compliance_flux,'peakflux')        
+
+        if not self.IsComplianceMatrixOK(_compliance_flux):
+            self.dd.flags.add('POORQUALDATA')
+            self.dd.flags.add('FLUX_OOL')
+        if self.log is not None:
+            self.addComplianceMatrix2Log(
+                _compliance_flux, label='COMPLIANCE SATURATION TIME (PEAK FLUX)')
+        if self.report is not None:
+            self.addComplianceMatrix2Report(
+            _compliance_flux, label='COMPLIANCE SATURATION TIME (PEAK FLUX)',
+            caption='Saturation times in seconds. Assuming a FWHM of 2 pixels (best focus).')
+        
 
     def lock_on_stars(self, iObs=0, sexconfig=None):
         """ """

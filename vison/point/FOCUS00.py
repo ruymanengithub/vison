@@ -99,8 +99,13 @@ for Q in ['F', 'G', 'H']:
 for iCCD in [2, 3]:
     FWHM_lims['CCD%i' % iCCD] = copy.deepcopy(FWHM_lims['CCD1'])
 
+# assuming a best fwhm~2pix, and a gaussian profile
+# F = 2pi(fwhm/2.355)**2*I0
+
+I02F = 2*np.pi*(2./2.355)**2.
+
 Flu_lims = OrderedDict(CCD1=OrderedDict(E=OrderedDict(
-    ALPHA=[2.*40./100.*2.**16, 2.*75./100.*2.**16])))  # CCD-Q-Spot
+    ALPHA=I02F*2**16/100.*[40., 75.])))  # CCD-Q-Spot
 for Spotname in polib.Point_CooNom['names'][1:]:
     Flu_lims['CCD1']['E'][Spotname] = copy.deepcopy(
         Flu_lims['CCD1']['E']['ALPHA'])
