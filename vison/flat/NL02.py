@@ -319,10 +319,9 @@ class NL02(NL01.NL01):
                 # fitresults = OrderedDict(coeffs, NLdeg, maxNLpc,flu_maxNLpc, bgd)
                 if debug:
                     print('\n%s%s\n' % (CCDkey,Q))
-                _fitresults = nllib.wrap_fitNL_TwoFilters(raw_med, raw_var, exptimes, wave, 
+                _fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, exptimes, wave, 
                                             dtobjs, 
-                                            TrackFlux=True,
-                                            subBgd=True, 
+                                            TrackFlux=True, 
                                             debug=debug) 
                 
                 NLall_mx[CCDkey][Q].update(_fitresults)

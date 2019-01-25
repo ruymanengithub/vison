@@ -26,6 +26,19 @@ from scipy import interpolate
 FullDynRange = 2.**16
 NLdeg = 7
 
+def get_RANSAC_linear_model(X,Y):
+    ransac = linear_model.RANSACRegressor()
+    ransac.fit(np.expand_dims(X,1),np.expand_dims(Y,1))
+    predictor = ransac.predict
+    return predictor
+    
+
+def get_POLY_linear_model(X,Y):
+    mod1d_fit = np.polyfit(X, Y, 1)  # a linear approx. is fine        
+    predictor = np.poly1d(mod1d_fit)
+    
+    return predictor
+
 
 def get_exptime_atfracdynrange(flu1D, exp1D, frac=0.5, method='spline', 
                                maxrelflu=None,
@@ -51,13 +64,10 @@ def get_exptime_atfracdynrange(flu1D, exp1D, frac=0.5, method='spline',
         predictor = interpolate.interp1d(X,Y,kind='linear')
         tfrac = predictor(frac)
     elif method == 'poly':
-        mod1d_fit = np.polyfit(X, Y, 1)  # a linear approx. is fine        
-        predictor = np.poly1d(mod1d_fit)
+        predictor = get_POLY_linear_model(X,Y)
         tfrac = predictor(frac)
     elif method == 'ransac':
-        ransac = linear_model.RANSACRegressor()
-        ransac.fit(np.expand_dims(X,1),np.expand_dims(Y,1))
-        predictor = ransac.predict
+        predictor = get_RANSAC_linear_model(X,Y)
         tfrac = predictor(frac)[0,0]
     
     
@@ -133,7 +143,69 @@ def getXYW_NL(fluencesNL,exptimes,nomG,pivotfrac=0.5,maxrelflu=None,method='spli
     #if len(np.where(np.abs(Y)>5.)[0])>10: stop()# TESTS
     
     return X, Y, W
+
+
+
+
+def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,maxrelflu=None):
+    """ """
     
+    assert fluencesNL.shape[0] == exptimes.shape[0]
+    assert fluencesNL.ndim <= 2
+    assert exptimes.ndim == 1
+   
+    
+    YL = np.zeros_like(fluencesNL,dtype='float32')
+    expix, regix = np.meshgrid(np.arange(fluencesNL.shape[0]),np.arange(fluencesNL.shape[1]),indexing='ij')
+    
+    if fluencesNL.ndim == 2:
+        
+        Nsec = fluencesNL.shape[1]
+        #_exptimes = np.repeat(exptimes.reshape(Nexp,1),Nsec,axis=1)
+        
+        for isec in range(Nsec):            
+            #predictor = get_RANSAC_linear_model(exptimes[:],fluencesNL[:,isec])
+            #Ypred = np.squeeze(predictor(np.expand_dims(exptimes,1)))
+            predictor = get_POLY_linear_model(exptimes[:],fluencesNL[:,isec])
+            predictor.coef[1] = 0.
+            YpredL = predictor(exptimes)
+            YL[:,isec] = YpredL.copy()
+            
+            #plot(Ypred[3:],fluencesNL[3:,isec]/Ypred[3:]-1.,marker='.',ls='')
+            
+        #show()
+
+    else:
+        
+        predictor = get_RANSAC_linear_model(exptimes,fluencesNL)
+        YL[:] = np.squeeze(predictor(np.expand_dims(exptimes,1)))
+        
+
+    Z = 100.*(fluencesNL/YL-1.)
+    
+    
+    efNL = np.sqrt(fluencesNL*nomG)/nomG
+    
+    W = 100.*(efNL/YL)
+    
+    ixsel = np.where(exptimes>0.)
+    
+    
+    # X = fluencesNL[ixsel].flatten().copy()
+    X = YL[ixsel].mean(axis=1).flatten().copy()
+    Y = Z[ixsel].mean(axis=1).flatten().copy()
+    W = W[ixsel].mean(axis=1).flatten().copy()
+    expix = expix[ixsel].flatten().copy()
+    regix = regix[ixsel].flatten().copy()
+    
+    ixsort = np.argsort(X)
+    X = X[ixsort].copy()
+    Y = Y[ixsort].copy()
+    W = W[ixsort].copy()
+    expix = expix[ixsort].copy()
+    regix = regix[ixsort].copy()
+        
+    return X, Y, W, expix, regix
 
 
 #def fitNL(fluencesNL, exptimes, nomG, minfitFl, maxfitFl, display=False):
@@ -354,6 +426,89 @@ def wrap_fitNL_TwoFilters(fluences, variances, exptimes, wave, times=np.array([]
     
     return fitresults
 
+
+def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.array([]), 
+                            TrackFlux=True, debug=False):
+    """ """
+    
+    nomG = 3.5 # e/ADU, used for noise estimates
+    minfitFl = 250. # ADU
+    maxfitFl = FullDynRange-10000. # ADU
+    pivotfrac = 0.2
+    maxrelflu = 0.8
+
+    NObsIDs, Nsecs = fluences.shape
+    
+    if TrackFlux:
+        assert len(times) == len(exptimes)
+
+        dtimes = np.array(
+                [(times[i]-times[0]).seconds for i in range(NObsIDs)], dtype='float32')
+
+    #col_numbers = np.array([int(item[3:]) for item in col_labels])
+    
+    nonzeroexptimes = exptimes[exptimes>0.]
+    unonzeroexptimes = np.unique(nonzeroexptimes)
+    
+    # the stability exposure time repeats the most
+    _ixstab = np.array([(exptimes==iexptime).sum() for iexptime in unonzeroexptimes]).argmax()
+    exptimestab = unonzeroexptimes[_ixstab]
+    
+    # boolean indices of the different types of exposures
+    
+    uwaves=np.unique(wave)
+    
+    ixboo_bgd = exptimes == 0.
+    ixboo_stab = exptimes == exptimestab
+    ixboo_fluA = (exptimes != 0.) & (exptimes != exptimestab) & (wave == uwaves[0])
+    ixboo_fluB = (exptimes != 0.) & (exptimes != exptimestab) & (wave == uwaves[1]) 
+    
+    if TrackFlux and len(times) == NObsIDs:
+        st_dtimes = dtimes[ixboo_stab].copy()
+        st_fluences = np.nanmean(fluences[ixboo_stab, :], axis=1).copy()
+
+        track_fit = np.polyfit(st_dtimes, st_fluences, 2, full=False, cov=False)
+        
+        track_pol = np.poly1d(track_fit)
+
+        trackA = track_pol(dtimes[ixboo_fluA])
+        trackA /= np.median(trackA)
+        
+        trackB = track_pol(dtimes[ixboo_fluB])
+        trackB /= np.median(trackB)
+        
+        #track_bc = np.repeat(track.reshape(len(track), 1), Nsecs, axis=1)
+        fluences[ixboo_fluA, :] /= trackA.reshape(trackA.shape[0],-1)
+        fluences[ixboo_fluB, :] /= trackB.reshape(trackB.shape[0],-1)
+        trackstab = np.mean([trackA.std(), trackB.std()])*100.
+    else:
+        trackstab = 0.
+    
+    
+    X_A,Y_A,W_A,e_A,r_A = getXYW_NL02(fluences[ixboo_fluA | ixboo_bgd, :], 
+                                exptimes[ixboo_fluA | ixboo_bgd], nomG, 
+                            pivotfrac=pivotfrac,
+                            maxrelflu=maxrelflu)
+    
+    X_B,Y_B,W_B,e_B,r_B = getXYW_NL02(fluences[ixboo_fluB | ixboo_bgd, :], 
+                      exptimes[ixboo_fluB | ixboo_bgd], nomG, 
+                    pivotfrac=pivotfrac,
+                    maxrelflu=maxrelflu)
+    
+    
+    X = np.concatenate((X_A,X_B))
+    Y = np.concatenate((Y_A,Y_B))
+    W = np.concatenate((W_A,W_B))
+    exps = np.concatenate((e_A,e_B))
+    regs = np.concatenate((r_A,r_B))
+    
+    
+    fitresults = fitNL(X, Y, W, minfitFl, maxfitFl, display=debug)
+    #fitresults['bgd'] = bgd
+    fitresults['stability_pc'] = trackstab
+    
+    
+    return fitresults
 
 
 
