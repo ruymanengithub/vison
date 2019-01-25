@@ -122,7 +122,6 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['BIAS02']:
 
-
         Nbias02 = 10
         diffBIAS02 = dict(mirr_on=0, 
                           rdmode='rwd_bas_v',
