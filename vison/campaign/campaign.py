@@ -125,9 +125,9 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         Nbias02 = 10
         diffBIAS02 = dict(mirr_on=0, 
-                          rdmode='rwd_bas_vs',
-                          swellw=context.sumwell['rwd_bas_vs'][0],
-                          swelldly=context.sumwell['rwd_bas_vs'][1])
+                          rdmode='rwd_bas_v',
+                          swellw=context.sumwell['rwd_bas_v'][0],
+                          swelldly=context.sumwell['rwd_bas_v'][1])
         diffBIAS02.update(diffvalues)
 
         bias02 = BIAS0X.BIAS0X(inputs=dict(elvis=elvis,
