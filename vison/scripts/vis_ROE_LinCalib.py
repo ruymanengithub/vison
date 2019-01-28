@@ -201,7 +201,7 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
         
         # NON-LINEARITY OF ROE
 
-        ixgood = np.where((adu_levels < 2.**16-2.) & (mVfitlevels>10.))
+        ixgood = np.where((adu_levels < 0.9*2.**16) & (mVfitlevels>10.))
 
         #adu_levels -= adu_levels[0]  # BIAS subtraction
         
