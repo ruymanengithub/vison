@@ -46,10 +46,10 @@ isthere = os.path.exists
 #          'CCD2_OD_B', 'CCD3_OD_B', 'COMM_RD_B', 'CCD2_IG1_B', 'CCD3_IG1_B', 'CCD1_TEMP_B',
 #          'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
 
-IDL=11.
-IDH=18.
-IG1 = 5.
-IG2 = 6.5
+IDL = 11.
+IDH = 18.
+IG1 = 4.
+IG2 = 6.0
 
 TP02_commvalues = dict(program='CALCAMP', test='TP02',
                        IDL=IDL, IDH=IDH,

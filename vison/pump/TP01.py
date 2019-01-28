@@ -49,8 +49,8 @@ isthere = os.path.exists
 
 IDL=11.
 IDH=18.
-IG1 = 5.
-IG2 = 6.5
+IG1 = 4.
+IG2 = 6.0
 
 TP01_commvalues = dict(program='CALCAMP', test='TP01',
                        IDL=IDL, IDH=IDH,

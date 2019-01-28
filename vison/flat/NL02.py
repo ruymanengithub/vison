@@ -103,14 +103,17 @@ class NL02(NL01.NL01):
         waveA = 0
         tFWCwA = self.ogse.profile['tFWC_flat']['nm%i' % waveA]
         
-        ixLOWFLU = np.where(NL01.NL01_relfluences<self.FLUDIVIDE)
+        ixLOWFLUlast = np.where(NL01.NL01_relfluences>self.FLUDIVIDE)[0][0]
+        ixLOWFLU = (np.arange(ixLOWFLUlast),)
         exptsA = (NL01.NL01_relfluences[ixLOWFLU]/100. *
                  tFWCwA).tolist()  # ms
         framesA = (np.ones(len(exptsA), dtype='int32')*4).tolist()
         
         waveB = 880
         tFWCwB = self.ogse.profile['tFWC_flat']['nm%i' % waveB]
+        ixHIFLUfirst = np.where(NL01.NL01_relfluences<self.FLUDIVIDE)[0][-1]
         ixHIFLU = np.where(NL01.NL01_relfluences>=self.FLUDIVIDE)
+        ixHIFLU = (np.arange(ixHIFLUfirst,len(NL01.NL01_relfluences)),)
         exptsB = (NL01.NL01_relfluences[ixHIFLU]/100. *
                  tFWCwB).tolist()  # ms
         framesB = (np.ones(len(exptsB), dtype='int32')*4).tolist()

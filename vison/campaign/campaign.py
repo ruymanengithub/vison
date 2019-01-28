@@ -661,25 +661,24 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         
         FLUDIVIDE = 20.
         
-        relfluencesNL02 = np.array([0.5, 0.7, 1., 2., 3., 5., 10., 20., 30., 55., 70., 80., 85.,
+        relfluencesNL02 = np.array([0.5, 0.7, 1., 2., 3., 5., 10., 15., 20., 25., 55., 70., 80., 85.,
                                90., 95., 100.,110.])
         
+        ixFLUDIVIDE = np.where(relfluencesNL02 == FLUDIVIDE)[0][0]
+    
         waveNL02A = 0
         tFWCwA = ogse.profile['tFWC_flat']['nm%i' % waveNL02A]
         
-        ixLOWFLU = np.where(relfluencesNL02<FLUDIVIDE)
+        ixLOWFLU = (np.arange(ixFLUDIVIDE+1+1),)
         exptsNL02A = (relfluencesNL02[ixLOWFLU]/100. * tFWCwA).tolist()  # ms
         framesNL02A = (np.ones(len(exptsNL02A), dtype='int32')*4).tolist()
-        
         
         waveNL02B = 880
         tFWCwB = ogse.profile['tFWC_flat']['nm%i' % waveNL02B]
         
-        ixHIFLU = np.where(relfluencesNL02>=FLUDIVIDE)
+        ixHIFLU = (np.arange(ixFLUDIVIDE-1,len(relfluencesNL02)),)
         exptsNL02B = (relfluencesNL02[ixHIFLU]/100. * tFWCwB).tolist()  # ms
         framesNL02B = (np.ones(len(exptsNL02B), dtype='int32')*4).tolist()
-        
-        
 
         nl02 = NL02.NL02(inputs=dict(elvis=elvis,
                                      CHAMBER=CHAMBER,
