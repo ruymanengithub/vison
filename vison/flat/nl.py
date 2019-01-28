@@ -34,7 +34,8 @@ def get_RANSAC_linear_model(X,Y):
     
 
 def get_POLY_linear_model(X,Y):
-    mod1d_fit = np.polyfit(X, Y, 1)  # a linear approx. is fine        
+    ixnonan = np.where(~np.isnan(X) & ~np.isnan(Y))
+    mod1d_fit = np.polyfit(X[ixnonan], Y[ixnonan], 1)  # a linear approx. is fine
     predictor = np.poly1d(mod1d_fit)
     
     return predictor
@@ -163,7 +164,7 @@ def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,maxrelflu=None):
         Nsec = fluencesNL.shape[1]
         #_exptimes = np.repeat(exptimes.reshape(Nexp,1),Nsec,axis=1)
         
-        for isec in range(Nsec):            
+        for isec in range(Nsec):       
             #predictor = get_RANSAC_linear_model(exptimes[:],fluencesNL[:,isec])
             #Ypred = np.squeeze(predictor(np.expand_dims(exptimes,1)))
             predictor = get_POLY_linear_model(exptimes[:],fluencesNL[:,isec])
@@ -177,8 +178,13 @@ def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,maxrelflu=None):
 
     else:
         
-        predictor = get_RANSAC_linear_model(exptimes,fluencesNL)
-        YL[:] = np.squeeze(predictor(np.expand_dims(exptimes,1)))
+        #predictor = get_RANSAC_linear_model(exptimes,fluencesNL)
+        #YL[:] = np.squeeze(predictor(np.expand_dims(exptimes,1)))
+        predictor = get_POLY_linear_model(exptimes,fluencesNL)
+        predictor.coef[1] = 0.
+        YpredL = predictor(exptimes)
+        YL[:] = YpredL.copy()
+        
         
 
     Z = 100.*(fluencesNL/YL-1.)
@@ -192,11 +198,12 @@ def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,maxrelflu=None):
     
     
     # X = fluencesNL[ixsel].flatten().copy()
-    X = YL[ixsel].mean(axis=1).flatten().copy()
-    Y = Z[ixsel].mean(axis=1).flatten().copy()
-    W = W[ixsel].mean(axis=1).flatten().copy()
+    X = fluencesNL[ixsel].flatten().copy()
+    Y = Z[ixsel].flatten().copy()
+    W = W[ixsel].flatten().copy()
     expix = expix[ixsel].flatten().copy()
     regix = regix[ixsel].flatten().copy()
+    
     
     ixsort = np.argsort(X)
     X = X[ixsort].copy()
@@ -204,7 +211,8 @@ def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,maxrelflu=None):
     W = W[ixsort].copy()
     expix = expix[ixsort].copy()
     regix = regix[ixsort].copy()
-        
+    
+    
     return X, Y, W, expix, regix
 
 
@@ -503,10 +511,10 @@ def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.arra
     regs = np.concatenate((r_A,r_B))
     
     
+    
     fitresults = fitNL(X, Y, W, minfitFl, maxfitFl, display=debug)
     #fitresults['bgd'] = bgd
     fitresults['stability_pc'] = trackstab
-    
     
     return fitresults
 
