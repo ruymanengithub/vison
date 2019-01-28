@@ -76,7 +76,7 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
     run_ttag = (datetime.datetime.now()).strftime('%d%b%y_%H%M%S')
     degROE = 6
 
-    inputs = vjson.load_jsonfile(inputsfile)['inputs']
+    inputs = vjson.load_jsonfile(inputsfile,useyaml=True)['inputs']
     Date = inputs['AcqDate']
     ROE = inputs['ROE']
     Injector_CalFile = inputs['Injector_CalFile']
@@ -153,7 +153,7 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
     # Main Loop
     
     degRT = InjectorCal['meta']['degRT']
-    injCHANs = InjectorCal['meta']['CHANNELS']    
+    injCHANs = np.array(InjectorCal['meta']['CHANNELS'])
     
     for ix, CHAN in enumerate(CHANNELS):
         
