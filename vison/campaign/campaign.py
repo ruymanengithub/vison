@@ -169,10 +169,10 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         IDL = 11.
         IDH = 18.
-        IG2 = 6.5
-        IG1s = [2.5, 7.]
+        IG2 = 6.00
+        IG1s = [2.5, 6.75]
         toi_chinj01 = 500
-        id_delays = [toi_chinj01*2.5, toi_chinj01*1.5]
+        id_delays = [toi_chinj01*2.5, toi_chinj01*1.5] # top, bottom CCD half
 
         diffCHINJ01 = dict(mirr_on=0)
         diffCHINJ01.update(diffvalues)
@@ -194,13 +194,13 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
     if _toGen['CHINJ02']:
 
 
-        IDLs = [10., 13.]
+        IDLs = [12.5, 15.5]
         IDH = 18.
         dIDL = 0.25 # V
         IG1 = 6.
         IG2 = 4.
         toi_chinj02 = 500
-        id_delays = [toi_chinj02*2.5, toi_chinj02*1.5]
+        id_delays = [toi_chinj02*2.5, toi_chinj02*1.5] # top, bottom CCD half
         diffCHINJ02 = dict(mirr_on=0)
         diffCHINJ02.update(diffvalues)
 
@@ -227,7 +227,9 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         TOI_TPv = [200, 1000, 2000, 4000, 8000]
         vpumpmodes=[123,234,341,412]
         
-        id_delays_TP01 = (np.array([2.5, 1.5]) * toi_chinjTP01).tolist()
+        # top, bottom CCD half
+        id_delays_TP01 = (np.array([2.5, 1.5]) * toi_chinjTP01).tolist() 
+           
 
         diffTP01 = dict()
         diffTP01.update(diffvalues)
@@ -253,6 +255,7 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         Nshuffles_H = 5000
         dwell_sv = [0., 4.75, 14.3, 28.6]  # us
         toi_chinjTP02 = 250  # quick injection
+        # top, bottom CCD half
         id_delays_TP02 = (np.array([2.5, 1.5])*toi_chinjTP02).tolist()
         spumpmodes=[23,31]
 
