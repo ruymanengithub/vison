@@ -325,7 +325,7 @@ class BeamPlot(BasicPlot):
         if self.meta['doColorbar']:
             #cbar_ax = self.fig.add_axes([0.85, 0.15, 0.05, 0.7])
             #plt.colorbar(cax=cbar_ax, mappable=self.mappables[0],orientation='vertical')
-            self.fig.colorbar(self.mappables[0], ax=self.axsarr.flatten().tolist(), orientation='vertical', fraction=.1)
+            self.fig.colorbar(self.mappables[0], ax=self.axsarr.flatten().tolist(), orientation='horizontal', fraction=.1)
         
 class BeamPlotYvX(BeamPlot):
 
