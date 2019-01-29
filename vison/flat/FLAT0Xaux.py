@@ -106,6 +106,7 @@ def gt_meta_MFF2D_dict(test):
             figname='%s_MASTERFLATFIELD_2Dimgshow_PLACEHOLDER.png' % test,
             caption='%s: Master FlatField for the CCDs [PLACEHOLDER]. Smoothed with gaussian kernel to highlight details.' % ntest,
             meta=dict(doLegend=False,
+              doColorbar=True,
               suptitle='%s/Master:Quadrant Images [PLACEHOLDER].' % ntest,
               corekwargs=dict(cmap=cm.rainbow,aspect='auto',norm=None,
                                 origin='lower left'))
