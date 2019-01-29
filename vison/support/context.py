@@ -31,7 +31,7 @@ imgwidth = quad_width - prescan - overscan
 # Update to sumwell in 17 OCT 2018
 sumwell = dict(fwd_bas=[8.4, 5.625], 
             fwd_e2v=[7.15, 6.725],
-            rwd_bas_v=[6.5, 0.175], 
+            rwd_bas_v=[8.4, 5.625],
             rwd_bas_s=[6.5, 0.175],
             rwd_bas_vs=[6.5, 0.175])
 
