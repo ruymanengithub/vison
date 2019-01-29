@@ -3,3 +3,4 @@ astromatic_wrapper
 twilio==5.7.0
 pyds9==1.8.1
 emcee==2.2.1
+corner==2.0.1
