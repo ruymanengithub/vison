@@ -224,7 +224,7 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         
         toi_chinjTP01 = 250  # quick injection
         Nshuffles_V=5000
-        TOI_TPv = [200, 1000, 2000, 4000, 8000]
+        TOI_TPv = [50, 200, 1000, 2000, 4000, 8000]
         vpumpmodes=[123,234,341,412]
         
         # top, bottom CCD half
