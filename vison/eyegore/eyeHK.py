@@ -26,8 +26,9 @@ import string as st
 import datetime
 
 import Tkinter as tk
-import ttk
-import tkFont as tkFont
+#import ttk
+#import tkFont as tkFont
+import matplotlib
 
 from vison.support import context
 #from vison.pipe import lib as pilib
@@ -76,6 +77,7 @@ class SingleHKplot(tk.Toplevel):
             self.f.autofmt_xdate()
         except:
             pass
+        self.f.autofmt_xdate()
         plt.tight_layout(rect=[0, 0, 1, 1])
 
 
