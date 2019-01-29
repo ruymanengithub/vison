@@ -102,8 +102,10 @@ meta_MB2D_dict = dict(
     figname='BIAS0X_MASTERBIAS_2Dimgshow.png',
     caption='BIAS0X: Master Bias for the CCDs.',
     meta=dict(doLegend=False,
+              doColorbar=True,
               suptitle='BIAS0X/Master:Quadrant Images',
-              corekwargs=dict(cmap=cm.rainbow,aspect='auto',norm=None,origin='lower left',
+              corekwargs=dict(cmap=cm.rainbow,aspect='auto',norm=None,
+                              origin='lower left',
                     ))
 )
 
