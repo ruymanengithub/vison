@@ -2,3 +2,4 @@ astroalign==1.0.3
 astromatic_wrapper
 twilio==5.7.0
 pyds9==1.8.1
+emcee==2.2.1
