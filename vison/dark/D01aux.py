@@ -89,6 +89,7 @@ meta_MDK2D_dict = dict(
     figname='DARK01_MASTERDARK_2Dimgshow.png',
     caption='DARK01: Master Dark for the CCDs.',
     meta=dict(doLegend=False,
+              doColorbar=True,
               suptitle='DARK01/Master:Quadrant Images',
     corekwargs=dict(cmap=cm.rainbow,aspect='auto',norm=None,origin='lower left',
                     )))
