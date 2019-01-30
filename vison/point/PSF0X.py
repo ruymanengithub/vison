@@ -47,6 +47,7 @@ from vison.support import files
 from vison.point import PointTask as PT
 import PSF0Xaux
 from vison.support.files import cPickleRead
+from vison.datamodel import ccd
 # END IMPORT
 
 isthere = os.path.exists
@@ -167,7 +168,8 @@ class PSF0X(PT.PointTask):
                          ('prep', self.prep_data),
                          ('basic', self.basic_analysis), 
                          ('bayes', self.bayes_analysis),
-                         ('meta', self.meta_analysis)]
+                         ('meta', self.meta_analysis),
+                         ('xtalk', self.opt_xtalk)]
         super(PSF0X, self).__init__(inputs, log, drill, debug)
         self.name = 'PSF0X'
         self.type = 'Simple'
@@ -176,7 +178,8 @@ class PSF0X(PT.PointTask):
         self.CDP_lib = PSF0Xaux.get_CDP_lib(self.inputs['test'])
         self.figdict = PSF0Xaux.get_PSF0Xfigs(self.inputs['test'])
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
-                   products='products', spots='spots')
+                   products='products', spots='spots',
+                   xtalk='xtalk')
         
         
 
@@ -392,3 +395,30 @@ class PSF0X(PT.PointTask):
 
         """
         raise NotImplementedError
+        
+    def opt_xtalk(self):
+        """Does analysis of cross-talk using point sources as estimulators."""
+        
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='xtalk', Title='Cross-Talk Analysis', level=1)
+        
+        DDindices = copy.deepcopy(self.dd.indices)
+        nObs = DDindices.get_len('ix')
+        CCDs = DDindices.get_vals('CCD')
+        
+        if not self.drill:
+            
+            for iObs in range(nObs):
+                
+                for jCCD, CCDkey in enumerate(CCDs):
+                    
+                    dpath = self.dd.mx['datapath'][iObs, jCCD]
+                    
+                    infits = os.path.join(dpath, '%s.fits' %
+                                          self.dd.mx['File_name'][iObs, jCCD])
+                    
+                    ccdobj = ccd.CCD(infits)
+                    
+                    
+                    

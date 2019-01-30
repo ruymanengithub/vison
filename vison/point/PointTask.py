@@ -25,6 +25,7 @@ from vison.datamodel import core, ccd, inputs
 #from vison.pipe import lib as pilib
 from vison.support import context
 from vison.support import utils
+from vison.xtalk import xtalk, opt_xtalk
 # END IMPORT
 
 BGD_lims = OrderedDict(CCD1=OrderedDict(E=[-5., 10.]))
