@@ -194,11 +194,11 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
     if _toGen['CHINJ02']:
 
 
-        IDLs = [12.5, 15.5]
+        IDLs = [11.0, 15.]
         IDH = 18.
         dIDL = 0.25 # V
-        IG1 = 6.
-        IG2 = 4.
+        IG1 = 4.
+        IG2 = 6.
         toi_chinj02 = 500
         id_delays = [toi_chinj02*2.5, toi_chinj02*1.5] # top, bottom CCD half
         diffCHINJ02 = dict(mirr_on=0)
