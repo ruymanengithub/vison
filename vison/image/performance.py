@@ -24,10 +24,10 @@ from vison import blocks
 CCDs = ['CCD1', 'CCD2', 'CCD3']
 Quads = ['E', 'F', 'G', 'H']
 
-offsets_UNK = OrderedDict(CCD1=OrderedDict(E=2000.,
-                                           F=2000.,
-                                           G=2000.,
-                                           H=2000.))
+offsets_UNK = OrderedDict(CCD1=OrderedDict(E=2800.,
+                                           F=2800.,
+                                           G=2800.,
+                                           H=2800.))
 offsets_UNK['CCD2'] = offsets_UNK['CCD1'].copy()
 offsets_UNK['CCD3'] = offsets_UNK['CCD1'].copy()
 
@@ -66,13 +66,14 @@ offsets_gradients = dict(CCD1=dict(pre=[0, 0], img=[-10, 10], ove=[-10, 10]),
                          CCD2=dict(pre=[0, 0], img=[-10, 10], ove=[-10, 10]),
                          CCD3=dict(pre=[0, 0], img=[-10, 10], ove=[-10, 10]))  # ADU
 
-RONs = dict(CCD1=1.4, CCD2=1.4, CCD3=1.4)  # ADU, STD
-RONs_margins = [-0.2, 0.2]  # ADU, STD
+#RONs = dict(CCD1=1.4, CCD2=1.4, CCD3=1.4)  # ADU, STD
+#RONs_margins = [-0.2, 0.2]  # ADU, STD
+
 RONs_lims = dict()
 for CCD in CCDs:
-    RONs_lims[CCD] = [RONs[CCD] +
-                      RONs_margins[0], RONs[CCD]+RONs_margins[1]]
-
+    #RONs_lims[CCD] = [RONs[CCD] +
+    #                  RONs_margins[0], RONs[CCD]+RONs_margins[1]]
+    RONs_lims[CCD] = [0.7,1.4]
 
 gains = dict(CCD1=3.3, CCD2=3.3, CCD3=3.3)
 
@@ -82,8 +83,8 @@ def_perf_rdout = dict(
     offsets_margins=offsets_margins,
     #                  offsets_lims=offsets_lims,
     offsets_gradients=offsets_gradients,
-    RONs=RONs,
-    RONs_margins=RONs_margins,
+    #RONs=RONs,
+    #RONs_margins=RONs_margins,
     RONs_lims=RONs_lims)
 
 
