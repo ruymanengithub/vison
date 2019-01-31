@@ -148,6 +148,7 @@ class PointTask(Task):
                     nested=True)
 
             for iObs in range(nObs):
+                
                 for jCCD, CCDk in enumerate(CCDs):
 
                     dpath = self.dd.mx['datapath'][iObs, jCCD]
@@ -187,7 +188,8 @@ class PointTask(Task):
                         self.dd.mx['bgd_img'][iObs, jCCD, kQ] = imgstats[0]
 
                         alt_ccdobj = None
-
+                        
+                        
                         for xSpot, SpotName in enumerate(Spots):
 
                             #coo = polib.Point_CooNom[CCDk][Quad][SpotName]
@@ -206,6 +208,10 @@ class PointTask(Task):
                             for chkkey in chkkeycorr:
                                 self.dd.mx[chkkey][iObs, jCCD, kQ,
                                                    xSpot] = res_bas[chkkeycorr[chkkey]]
+                            
+                            #if (CCDk == 'CCD2') and (Quad=='H') and (SpotName=='ALPHA'):
+                            #    stop()
+                            
 
     def check_stat_perCCDQSpot(self, arr, lims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """

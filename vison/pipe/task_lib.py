@@ -205,17 +205,24 @@ def get_checkstats_T(self):
 
     if 'Quad' not in Xindices.names:
         Xindices.append(core.vIndex('Quad', vals=context.Quads))
-
+        
+    if 'Spot' in Xindices.names:
+        Xindices.pop(Xindices.names.index('Spot'))
+   
     valini = 0.
     
     newcolnames = ['chk_NPIXOFF', 'chk_NPIXSAT']
     for newcolname in newcolnames:
         self.dd.initColumn(newcolname, Xindices,
                            dtype='int32', valini=valini)
-        
-    nObs, _, _ = Xindices.shape
+    
+    
+    nObs = len(Xindices.get_vals('ix'))
     CCDs = Xindices.get_vals('CCD')
     Quads = Xindices.get_vals('Quad')
+    
+    
+    
 
     if not self.drill:
         
