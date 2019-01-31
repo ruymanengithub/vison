@@ -104,8 +104,9 @@ for iCCD in [2, 3]:
 
 I02F = 2*np.pi*(2./2.355)**2.
 
+
 Flu_lims = OrderedDict(CCD1=OrderedDict(E=OrderedDict(
-    ALPHA=I02F*2**16/100.*np.array([40., 75.]))))  # CCD-Q-Spot
+    ALPHA=(I02F*2**16/100.*np.array([40., 75.])).tolist()))) # CCD-Q-Spot
 for Spotname in polib.Point_CooNom['names'][1:]:
     Flu_lims['CCD1']['E'][Spotname] = copy.deepcopy(
         Flu_lims['CCD1']['E']['ALPHA'])
