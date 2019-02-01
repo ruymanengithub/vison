@@ -221,6 +221,8 @@ class FlatTask(Task):
             ixnozero = np.where(exptime[:,0]>0)
             
             _f = np.squeeze(fluences[ixnozero,...])
+            
+            _f[np.where(_f>= 0.8*2**16)] = np.nan # mask-out saturations
             _e = np.expand_dims(np.squeeze(exptime[ixnozero,...]),axis=-1)
             
             fluxes = np.nanmean(_f/_e,axis=0) # CRUDE!
