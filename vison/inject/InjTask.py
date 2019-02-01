@@ -517,8 +517,9 @@ class InjTask(Task):
                             
                             id_dly = self.dd.mx['id_dly'][iObs,jCCD]
                             
+                            
                             ext_res = ilib.extract_injection_lines(ccdobj, Q, pattern, VSTART=vstart,
-                                                                  VEND=vend, suboffmean=False)
+                                            VEND=vend, suboffmean=False)
                             
                             stats = ext_res['stats_injection']
                             
@@ -548,8 +549,8 @@ class InjTask(Task):
                             
                             
                             CH0X_dd['ObsID'][ix] = ObsID
-                            CH0X_dd['CCD'][ix] = jCCD+1
-                            CH0X_dd['Q'][ix] = kQ+1
+                            CH0X_dd['CCD'][ix] = jCCD
+                            CH0X_dd['Q'][ix] = kQ
                             if testname == 'CHINJ01':
                                 CH0X_dd['IG1'][ix] = IG1_val 
                             elif testname == 'CHINJ02':
@@ -558,6 +559,8 @@ class InjTask(Task):
                             CH0X_dd['MEAN_INJ'][ix] = self.dd.mx['chinj_mean'][iObs,jCCD,kQ]
                             CH0X_dd['MED_INJ'][ix] = self.dd.mx['chinj_p50'][iObs,jCCD,kQ]
                             CH0X_dd['NU_INJ'][ix] = self.dd.mx['chinj_nonuni'][iObs,jCCD,kQ]
+                            
+                            
                             
                             
         # plot average inj. profiles along/across lines 
@@ -604,8 +607,8 @@ class InjTask(Task):
         
         if self.report is not None:
             fi = lambda x: '%i' % x
-            fccd = lambda x: CCDs[x-1]
-            fq = lambda x: Quads[x-1]
+            fccd = lambda x: CCDs[x]
+            fq = lambda x: Quads[x]
             ff = lambda x: '%.2f' % x
             
             ext_formatters=[fi,fccd,fq,ff,ff,ff,ff,ff]

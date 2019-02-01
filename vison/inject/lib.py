@@ -28,7 +28,7 @@ def_bgd_drop = [0., 10.]
 lineoffsets = dict(E=0, F=0, G=0, H=0)
 
 def extract_injection_lines(ccdobj, Q, pattern, VSTART=0,
-                            VEND=2066, suboffmean=False):
+                            VEND=2066, suboffmean=False,debug=False):
     """     
     ccdobj: ccd.CCD object
     pattern: non,noff,nrep (lines on, off, repeatitions)
@@ -83,7 +83,6 @@ def extract_injection_lines(ccdobj, Q, pattern, VSTART=0,
 
         stack_2d[icycle, :, ix_in_cycle] = row.copy()
     
-    #if masked:
     
     stack_2d.mask[np.where(np.isnan(stack_2d.data))]=True
 
@@ -92,18 +91,18 @@ def extract_injection_lines(ccdobj, Q, pattern, VSTART=0,
             stack_2d[icycle, :, :] -= np.nanmean(stack_2d[icycle, :, non:])
     
     
-    stacked_2d = np.nanmean(stack_2d, axis=0)
+    stacked_2d = np.ma.mean(stack_2d, axis=0)
     
     #mask2d = np.sum(stack_2d.mask,axis=0) # TESTS    
     #fts.writeto('stacked_2d.fits',stacked_2d.data.transpose(),overwrite=True) # TESTS
     #fts.writeto('mask2d.fits',mask2d.transpose().astype('float32'),overwrite=True) # TESTS
 
-    avprof_alcol = np.nanmean(stacked_2d, axis=0)
-    avprof_alrow = np.nanmean(stacked_2d[:, 0:non], axis=1)
+    avprof_alcol = np.ma.mean(stacked_2d, axis=0).data.copy()
+    avprof_alrow = np.ma.mean(stacked_2d[:, 0:non], axis=1).data.copy()
     
-    ixnan = np.where(np.isnan(stacked_2d))
-    if len(ixnan[0])>0:
-        stacked_2d.mask[ixnan] = True
+    #ixnan = np.where(np.isnan(stacked_2d))
+    #if len(ixnan[0])>0:
+    #    stacked_2d.mask[ixnan] = True
     
     values = stacked_2d[:,0:non]
     gvalues = values.data[np.where(~values.mask)]
@@ -121,6 +120,9 @@ def extract_injection_lines(ccdobj, Q, pattern, VSTART=0,
     results = dict(avprof_alrow=avprof_alrow,
                    avprof_alcol=avprof_alcol, 
                    stats_injection=stats_injection)
+    
+    if debug:
+        stop()
     
     return results
 
