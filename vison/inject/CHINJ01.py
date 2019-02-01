@@ -266,7 +266,7 @@ class CHINJ01(InjTask):
         inj_curves_cdp.header = CDP_header.copy()
         inj_curves_cdp.path = prodspath
         inj_curves_cdp.data = OrderedDict()
-        inj_curves_cdp.data['labelkeys'] = ['input','bestfit']
+        inj_curves_cdp.data['labelkeys'] = ['data','bestfit']
         
         xdummy = np.arange(10,dtype='float32')
         ydummy = np.zeros(10,dtype='float32')
@@ -278,7 +278,7 @@ class CHINJ01(InjTask):
                 inj_curves_cdp.data[CCDk][Q] = OrderedDict(x=OrderedDict(),
                                                       y=OrderedDict())
                 
-                for tag in ['input','bestfit']:
+                for tag in ['data','bestfit']:
                     inj_curves_cdp.data[CCDk][Q]['x'][tag] = xdummy.copy()
                     inj_curves_cdp.data[CCDk][Q]['y'][tag] = ydummy.copy()
         
@@ -308,8 +308,8 @@ class CHINJ01(InjTask):
                 res = ilib.fit_Inj_vs_IG1(IG1,med_inj,doPlot=False)
                 didfit = res['didfit']
                 
-                inj_curves_cdp.data[CCDk][Q]['x']['input'] = IG1.copy()
-                inj_curves_cdp.data[CCDk][Q]['y']['input'] = med_inj.copy() / 2.**16
+                inj_curves_cdp.data[CCDk][Q]['x']['data'] = IG1.copy()
+                inj_curves_cdp.data[CCDk][Q]['y']['data'] = med_inj.copy() / 2.**16
                 
                 MCH01_dd['CCD'][ix] = jCCD+1
                 MCH01_dd['Q'][ix] = kQ+1

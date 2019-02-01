@@ -83,7 +83,9 @@ chinj01_meta_dict = dict(
     meta=dict(doLegend=True,
               ylabel='Injection/2**16',
               xlabel='IG1 [V]',
-              suptitle='CHINJ01: INJECTION PROFILE.')
+              suptitle='CHINJ01: INJECTION PROFILE.',
+              corekwargs=dict(data=dict(marker='.',linestyle=''),
+                              bestfit=dict(marker='',linestyle='--')))
     )
 
 def get_CH01figs():
