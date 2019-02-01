@@ -154,7 +154,7 @@ def redf_Inj_vs_IG1(IG1, xt, xN, a, N):
     bgd, drop = def_bgd_drop
     return f_Inj_vs_IG1(IG1, bgd, drop, xt, xN, a, N)
 
-def fit_Inj_vs_IG1(IG1,med_inj,doPlot=False):
+def fit_Inj_vs_IG1(IG1,med_inj,doPlot=False,debug=False):
     """ """
     
     Npoints = len(IG1)
@@ -164,10 +164,20 @@ def fit_Inj_vs_IG1(IG1,med_inj,doPlot=False):
         reduced = True
         fmodel = redf_Inj_vs_IG1
         p0 = [IG1half, IG1half+3., 1., 0.01]
+        
+        bounds = ([2.,2.,0.1,0.],
+                  [8.,10.,10.,0.2])
+        
     elif Npoints > 6:
         reduced = False
         fmodel = f_Inj_vs_IG1
         p0 = def_bgd_drop+[IG1half, IG1half +3., 1., 0.01]
+        
+        
+        maxnmbgd = 100./2.**16
+        bounds = ([-maxnmbgd,2.,2.,2.,0.1,0.],
+                  [maxnmbgd,20.,8.,10.,10.,0.2])
+        
     elif Npoints < 4:
         return dict(didfit=False)
     
@@ -175,9 +185,11 @@ def fit_Inj_vs_IG1(IG1,med_inj,doPlot=False):
     
     xIG1 = np.linspace(IG1.min(),IG1.max(),1000)
     
+        
     try: 
         popt, pcov = curve_fit(fmodel,IG1,nmed_inj,p0=p0,
-                               method='lm',
+                               method='trf',
+                               bounds=bounds,
                                absolute_sigma=False)
         
         
@@ -213,6 +225,9 @@ def fit_Inj_vs_IG1(IG1,med_inj,doPlot=False):
             
     solution['IG1_BF'] = xIG1.copy()
     solution['NORMINJ_BF'] = Inj_bf.copy()
+    
+    if debug:
+        stop()
     
     return solution
 

@@ -305,7 +305,14 @@ class CHINJ01(InjTask):
                 IG1 = self.dd.mx[IG1_key][selix,jCCD].flatten().copy()                
                 med_inj = self.dd.mx['chinj_p50'][selix,jCCD,kQ].flatten().copy()
                 
-                res = ilib.fit_Inj_vs_IG1(IG1,med_inj,doPlot=False)
+                doPlot=False
+                debug=False
+                #if (jCCD==1) and (Q=='G'):
+                #    doPlot=True
+                #    debug=True
+                
+                res = ilib.fit_Inj_vs_IG1(IG1,med_inj,doPlot=doPlot,
+                                          debug=debug)
                 didfit = res['didfit']
                 
                 inj_curves_cdp.data[CCDk][Q]['x']['data'] = IG1.copy()
@@ -363,13 +370,13 @@ class CHINJ01(InjTask):
             
             fccd = lambda x: CCDs[x-1]
             fq = lambda x: Quads[x-1]
-            ff = lambda x: '%.2f' % x
+            ff = lambda x: '%.3f' % x
             
             selcolumns = ['CCD','Q','BGD','IG1_THRESH','IG1_NOTCH','SLOPE','NOTCH']
             
             ext_formatters=[fccd,fq]+[ff,ff,ff,ff,ff]
             
-            caption = 'CHINJ01: META-ANALYSIS TABLE'
+            caption = 'CHINJ01: META-ANALYSIS TABLE. Needs elaboration and explanation.'
             
             Mtex = MCH01_cdp.get_textable(sheet='ANALYSIS', 
                                           columns=selcolumns,
