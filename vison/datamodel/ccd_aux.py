@@ -134,7 +134,7 @@ class Model2D():
         self.binnedimg = rebinned.copy()
         self.XXbin = sxx.copy()
         self.YYbin = syy.copy()
-        if np.all(self.binnedimg.mask): stop()
+        
 
     def filter_img(self, filtsize=15, filtertype='median', Tests=False):
         """ """
@@ -319,9 +319,11 @@ def get_1Dprofile(ccdobj, Q, orient='hor', area='img', stacker='mean', vstart=0,
                                           extension=extension)
 
     if isinstance(subregion, np.ma.masked_array):
-        stacker_dict = dict(mean=np.ma.mean, median=np.ma.median)
+        stacker_dict = dict(mean=np.ma.mean, median=np.ma.median,
+                            std=np.ma.std)
     else:
-        stacker_dict = dict(mean=np.mean, median=np.median)
+        stacker_dict = dict(mean=np.mean, median=np.median,
+                            std=np.std)
 
     if orient == 'hor':
         stackaxis = 1

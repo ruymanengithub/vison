@@ -65,7 +65,15 @@ basic_prof1Dver_dict = dict(
               suptitle='BIAS0X: Profiles across rows.')
 )
 
-
+basic_prof1Dstdver_dict = dict(
+    figname='BIAS0X_profs1Dstd_ver_allOBSIDs.png',
+    caption='BIAS0X: Average STDDEV profiles across rows.',
+    meta=dict(doLegend=False,
+              ylabel='ADU',
+              xlabel='Row [pix]',
+              ylim = [0.5, 2.5],
+              suptitle='BIAS0X: STDDEV Profiles across rows.')
+)
 
 basic_histosRON_dict = dict(
     figname='BIAS0X_RON_distro_allOBSIDs.png',
@@ -98,6 +106,16 @@ meta_prof1Dver_dict = dict(
               suptitle='BIAS0X/Master: Profiles across rows.')
 )
 
+meta_prof1Dstdver_dict = dict(
+    figname='BIAS0X_profs1Dstd_ver_MASTERBIAS.png',
+    caption='BIAS0X: Average profiles of STDDEV across rows of Master Bias.',
+    meta=dict(doLegend=False,
+              ylabel='ADU',
+              xlabel='Row [pix]',
+              ylim = [0.5, 2.5],
+              suptitle='BIAS0X/Master: STDDEV Profiles across rows.')
+)
+
 meta_MB2D_dict = dict(
     figname='BIAS0X_MASTERBIAS_2Dimgshow.png',
     caption='BIAS0X: Master Bias for the CCDs.',
@@ -119,12 +137,16 @@ def get_B0Xfigs():
         figclasses.Fig_Beam2DPlot, basic_prof1Dhor_dict]
     B0Xfigs['B0Xbasic_prof1D_ver'] = [
         figclasses.Fig_Beam2DPlot, basic_prof1Dver_dict]
+    B0Xfigs['B0Xbasic_prof1Dstd_ver'] = [
+        figclasses.Fig_Beam2DPlot, basic_prof1Dstdver_dict]
     B0Xfigs['B0Xbasic_histosRON'] = [
         figclasses.Fig_Beam1DHist, basic_histosRON_dict]
     B0Xfigs['B0Xmeta_prof1D_hor'] = [
         figclasses.Fig_Beam2DPlot, meta_prof1Dhor_dict]
     B0Xfigs['B0Xmeta_prof1D_ver'] = [
         figclasses.Fig_Beam2DPlot, meta_prof1Dver_dict]
+    B0Xfigs['B0Xmeta_prof1Dstd_ver'] = [
+        figclasses.Fig_Beam2DPlot, meta_prof1Dstdver_dict]
     B0Xfigs['B0Xmeta_MasterBias_2D'] = [
         figclasses.Fig_BeamImgShow, meta_MB2D_dict]
     B0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]

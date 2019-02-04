@@ -202,12 +202,13 @@ class BIAS0X(DarkTask):
         profs1D2plot = dict()
         profs1D2plot['hor'] = OrderedDict()
         profs1D2plot['ver'] = OrderedDict()
+        profs1D2plot['verstd'] = OrderedDict()
 
         for CCDk in CCDs:
-            for tag in ['hor', 'ver']:
+            for tag in ['hor', 'ver', 'verstd']:
                 profs1D2plot[tag][CCDk] = OrderedDict()
             for Q in Quads:
-                for tag in ['hor', 'ver']:
+                for tag in ['hor', 'ver', 'verstd']:
                     profs1D2plot[tag][CCDk][Q] = OrderedDict()
                     profs1D2plot[tag][CCDk][Q]['x'] = OrderedDict()
                     profs1D2plot[tag][CCDk][Q]['y'] = OrderedDict()
@@ -257,9 +258,12 @@ class BIAS0X(DarkTask):
                         # produce a 2D poly model of bias, [save coefficients?]
                         # measure and save RON after subtracting large scale structure
 
-                        imgmod2D = ccdobj.get_region2Dmodel(Q=Q, area='img', kind='poly2D',
+                        try: 
+                            imgmod2D = ccdobj.get_region2Dmodel(Q=Q, area='img', kind='poly2D',
                                         pdegree=5, doFilter=False, doBin=True, binsize=300,
                                         vstart=vstart, vend=vend, canonical=True, extension=-1)
+                        except:
+                            continue
                         
                         qimg = ccdobj.get_quad(Q, canonical=True)
                         
@@ -267,8 +271,6 @@ class BIAS0X(DarkTask):
                                          imgmod2D.imgmodel
                         
                         
-                        #onlyRONimg = ccdobj.get_quad(
-                        #    Q, canonical=False) - mod2D.imgmodel
                         _RON = onlyRONimg.std()
 
                         self.dd.mx['RON'][iObs, jCCD, kQ] = _RON
@@ -281,7 +283,6 @@ class BIAS0X(DarkTask):
 
                         # produce average profile along rows
                         
-                        
 
                         hor1Dprof = ccdobj.get_1Dprofile(Q=Q, orient='hor', area='all', stacker='mean',
                                                          vstart=vstart, vend=vend)
@@ -290,15 +291,22 @@ class BIAS0X(DarkTask):
 
                         ver1Dprof = ccdobj.get_1Dprofile(Q=Q, orient='ver', area='all', stacker='mean',
                                                          vstart=vstart, vend=vend)
+                        
+                         # produce average profile along cols of STD
+
+                        ver1Dstdprof = ccdobj.get_1Dprofile(Q=Q, orient='ver', area='all', stacker='std',
+                                                         vstart=vstart, vend=vend)
 
                         # save profiles in locally for plotting
 
                         iprofiles1D.data[Q]['hor'] = copy.deepcopy(hor1Dprof)
                         iprofiles1D.data[Q]['ver'] = copy.deepcopy(ver1Dprof)
+                        iprofiles1D.data[Q]['verstd'] = copy.deepcopy(ver1Dstdprof)
                         
-                        _profs = dict(hor=hor1Dprof,ver=ver1Dprof)
+                        _profs = dict(hor=hor1Dprof,ver=ver1Dprof,
+                                      verstd=ver1Dstdprof)
 
-                        for oritag in ['hor', 'ver']:
+                        for oritag in ['hor', 'ver', 'verstd']:
                             _profdata = _profs[oritag].data.copy()
                             xorder = np.argsort(_profdata['x'])
                             _y = _profdata['y'][xorder]
@@ -342,9 +350,10 @@ class BIAS0X(DarkTask):
             ylim_1D= [0, 2.**16]
 
         figkeys1 = ['B0Xbasic_prof1D_hor', 'B0Xbasic_prof1D_ver',
+                    'B0Xbasic_prof1Dstd_ver',
                     'B0Xbasic_histosRON']
         
-        for tag in ['hor','ver']:    
+        for tag in ['hor', 'ver', 'verstd']:    
             profs1D2plot[tag]['labelkeys'] = \
                         profs1D2plot[tag][CCDs[0]][Quads[0]]['x'].keys()
         
@@ -352,7 +361,10 @@ class BIAS0X(DarkTask):
         self.figdict['B0Xbasic_prof1D_hor'][1]['meta']['ylim'] = ylim_1D
         self.figdict['B0Xbasic_prof1D_ver'][1]['data'] = profs1D2plot['ver']
         self.figdict['B0Xbasic_prof1D_ver'][1]['meta']['ylim'] = ylim_1D
-        
+        self.figdict['B0Xbasic_prof1Dstd_ver'][1]['data'] = profs1D2plot['verstd']
+        #self.figdict['B0Xbasic_prof1Dstd_ver'][1]['meta']['ylim'] = ylim_1D
+                    
+                    
         def _load_histo(histos,data,label,ronrange):
            
            hist, bin_edges = np.histogram(data,bins=10,range=ronrange,
@@ -514,12 +526,13 @@ class BIAS0X(DarkTask):
         profs1D2plot = OrderedDict()
         profs1D2plot['hor'] = OrderedDict()
         profs1D2plot['ver'] = OrderedDict()
+        profs1D2plot['verstd'] = OrderedDict()
         
         for CCDk in CCDs:
-            for tag in ['hor', 'ver']:
+            for tag in ['hor', 'ver', 'verstd']:
                 profs1D2plot[tag][CCDk] = OrderedDict()
             for Q in Quads:
-                for tag in ['hor', 'ver']:
+                for tag in ['hor', 'ver', 'verstd']:
                     profs1D2plot[tag][CCDk][Q] = OrderedDict()
                     profs1D2plot[tag][CCDk][Q]['x'] = np.arange(100,dtype='float32')
                     profs1D2plot[tag][CCDk][Q]['y'] = np.zeros(100,dtype='float32')
@@ -614,6 +627,12 @@ class BIAS0X(DarkTask):
                     
                     profs1D2plot['ver'][CCDk][Q] = _pack_profs(profs1D2plot['ver'][CCDk][Q],ver1Dprof)
                     
+                    
+                    ver1Dstdprof = stackccdobj.get_1Dprofile(Q=Q, orient='ver',
+                                    area='all',stacker='std',
+                                    vstart=vstart,vend=vend,extension=0)
+                    
+                    profs1D2plot['verstd'][CCDk][Q] = _pack_profs(profs1D2plot['verstd'][CCDk][Q],ver1Dstdprof)
                 
                 # SAVING Master Bias to a CDP
                 
@@ -650,10 +669,12 @@ class BIAS0X(DarkTask):
         
         self.figdict['B0Xmeta_prof1D_hor'][1]['data'] = profs1D2plot['hor'].copy()
         self.figdict['B0Xmeta_prof1D_ver'][1]['data'] = profs1D2plot['ver'].copy()
+        self.figdict['B0Xmeta_prof1Dstd_ver'][1]['data'] = profs1D2plot['verstd'].copy()
         
         if self.report is not None:
             self.addFigures_ST(figkeys=['B0Xmeta_prof1D_hor',
-                                        'B0Xmeta_prof1D_ver'],
+                                        'B0Xmeta_prof1D_ver',
+                                        'B0Xmeta_prof1Dstd_ver'],
                                dobuilddata=False)
         
         # SAVING 1D PROFILES OF MASTER BIAS as a CDP
