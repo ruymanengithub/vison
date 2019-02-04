@@ -194,7 +194,7 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
     if _toGen['CHINJ02']:
 
 
-        IDLs = [10.5, 12.5]
+        IDLs = [9.5, 12.5]
         IDH = 18.
         dIDL = 0.25 # V
         IG1 = 4.
