@@ -661,7 +661,7 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         
         FLUDIVIDE = 20.
         
-        relfluencesNL02 = np.array([0.5, 0.7, 1., 2., 3., 5., 10., 15., 20., 25., 55., 70., 80., 85.,
+        relfluencesNL02 = np.array([0.5, 0.7, 1., 2., 3., 5., 10., 15., 20., 25., 50., 70., 80., 85.,
                                90., 95., 100.,110.])
         
         ixFLUDIVIDE = np.where(relfluencesNL02 == FLUDIVIDE)[0][0]
