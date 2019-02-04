@@ -110,9 +110,17 @@ def get_CDP_lib():
     extract_cdp = cdp.Tables_CDP()
     extract_cdp.rootname = 'CHINJ01_EXTRACTION_TABLE'
     
+    metafit_cdp = cdp.Tables_CDP()
+    metafit_cdp.rootname = 'CHINJ01_METAFITPARS_TABLE'
+    
     meta_cdp = cdp.Tables_CDP()
     meta_cdp.rootname = 'CHINJ01_META_TABLE'
     
+    
     CDP_lib = dict(EXTRACT=extract_cdp,
+                   METAFIT=metafit_cdp,
                    META=meta_cdp)
+    
+    
+    
     return CDP_lib

@@ -144,10 +144,20 @@ def msoftplus(IG1, a, xt):
     """ """
     return np.log10(1.+np.exp(-a*(IG1-xt)))
 
+
+
 def f_Inj_vs_IG1(IG1,b,k,xt,xN,a,N):
     """ """
     M = b + special.expit(k*(IG1-xt)) * (msoftplus(IG1,a,xN) + N)
     return M
+
+def invert_msoftplus(f,xt,a):
+    return xt - np.log(10.**f-1.)/a
+
+def der_msoftplus(IG1,xt,a):
+    """ """
+    der = -a/(np.log(10.))*(1./(1.+np.exp(a*(IG1-xt))))
+    return der
 
 
 def redf_Inj_vs_IG1(IG1, xt, xN, a, N):
@@ -218,7 +228,7 @@ def fit_Inj_vs_IG1(IG1,med_inj,doPlot=False,debug=False):
     else:
         arrsolution = copy.deepcopy(popt.tolist())
     
-    solution = dict(zip(['BGD','DROP','IG1_THRESH', 'IG1_NOTCH', 'SLOPE', 'NOTCH'],
+    solution = dict(zip(['BGD','K','XT', 'XN', 'A', 'N'],
                     arrsolution)
                     )
     solution['didfit'] = didfit

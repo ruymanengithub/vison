@@ -226,6 +226,11 @@ class CHINJ01(InjTask):
         if self.report is not None:
             self.report.add_Section(
                 keyword='meta', Title='CHINJ01 Analysis ("Meta")', level=0)
+            self.report.add_Text('Model:')
+            self.report.add_Text('\\begin{equation}')
+            self.report.add_Text('I=b+\\frac{1}{1+e^{K(IG1-XT)}}(log_{10}(1+e^{-A(IG1-XN)})+N)')
+            self.report.add_Text('\end{equation}')
+            
         
         DDindices = copy.deepcopy(self.dd.indices)
         
@@ -249,15 +254,25 @@ class CHINJ01(InjTask):
         
         NP = nCCD * nQuad
         
+        MFCH01_dd = OrderedDict()
+        MFCH01_dd['CCD'] = np.zeros(NP,dtype='int32')
+        MFCH01_dd['Q'] = np.zeros(NP,dtype='int32') 
+        MFCH01_dd['ID_DLY'] = np.zeros(NP,dtype='float32') + np.nan
+        
+        fitkeys = ['BGD','K','XT','XN','A','N']
+                
+        for fitkey in fitkeys:
+            MFCH01_dd[fitkey] = np.zeros(NP,dtype='float32') + np.nan
+        
         MCH01_dd = OrderedDict()
         MCH01_dd['CCD'] = np.zeros(NP,dtype='int32')
         MCH01_dd['Q'] = np.zeros(NP,dtype='int32') 
         MCH01_dd['ID_DLY'] = np.zeros(NP,dtype='float32') + np.nan
         
-        fitkeys = ['BGD','DROP','IG1_THRESH','IG1_NOTCH','SLOPE','NOTCH']
+        mkeys = ['BGD','IG1_THRESH','IG1_NOTCH','S','N']
                 
-        for fitkey in fitkeys:
-            MCH01_dd[fitkey] = np.zeros(NP,dtype='float32') + np.nan
+        for mkey in mkeys:
+            MCH01_dd[mkey] = np.zeros(NP,dtype='float32') + np.nan
         
         
         # INJECTION CURVES
@@ -318,18 +333,49 @@ class CHINJ01(InjTask):
                 inj_curves_cdp.data[CCDk][Q]['x']['data'] = IG1.copy()
                 inj_curves_cdp.data[CCDk][Q]['y']['data'] = med_inj.copy() / 2.**16
                 
+                MFCH01_dd['CCD'][ix] = jCCD+1
+                MFCH01_dd['Q'][ix] = kQ+1
+                         
                 MCH01_dd['CCD'][ix] = jCCD+1
                 MCH01_dd['Q'][ix] = kQ+1
                 
                 if didfit:
+                    
+                    # fit parameters
                 
+                    MFCH01_dd['ID_DLY'][ix] = id_dly_opt
                     MCH01_dd['ID_DLY'][ix] = id_dly_opt
                     
                     for fitkey in fitkeys:                    
-                        MCH01_dd[fitkey][ix] = res[fitkey]
+                        MFCH01_dd[fitkey][ix] = res[fitkey]
 
                     xbf = res['IG1_BF'].copy()
-                    ybf = res['NORMINJ_BF']                        
+                    ybf = res['NORMINJ_BF']
+                    
+                    # Derived parameters
+                    # mkeys = ['BGD','IG1_THRESH','IG1_NOTCH','S','N']
+                    
+                    bgd = res['BGD']
+                    k = res['K']
+                    a = res['A']
+                    xT = res['XT']
+                    xN = res['XN']
+                    N = res['N']
+                    
+                    MCH01_dd['BGD'][ix] = bgd*2**16 # ADU
+                    MCH01_dd['IG1_THRESH'][ix] = xT
+                    
+                    
+                    p = [bgd,k,xT,xN,a,N]
+                    IG1char = ilib.invert_msoftplus(ilib.f_Inj_vs_IG1(xT,*p),xT,a)
+                    slopeADU = ilib.der_msoftplus(IG1char,xT,a) * 2.**16
+                                                 
+                    MCH01_dd['IG1_NOTCH'][ix] = ilib.invert_msoftplus(0.005,xT,a)
+                    
+                    MCH01_dd['S'][ix] = slopeADU
+                            
+                    MCH01_dd['N'][ix] = (N-bgd)*2**16.
+                                                 
                     
                 else:
                     
@@ -350,11 +396,51 @@ class CHINJ01(InjTask):
             self.addFigures_ST(figkeys=['CH01_meta'], 
                                dobuilddata=False)
         
-        # REPORT RESULTS AS TABLE CDP
+        # REPORT FIT RESULTS AS TABLE CDP
+        
+        
+        MFCH01_dddf = OrderedDict(ANALYSIS=pd.DataFrame.from_dict(MFCH01_dd))
+        MFCH01_cdp = self.CDP_lib['METAFIT']
+        MFCH01_cdp.path = prodspath
+        MFCH01_cdp.ingest_inputs(
+                data=MFCH01_dddf.copy(),
+                meta=dict(),
+                header=CDP_header.copy()
+                )
+        
+        MFCH01_cdp.init_wb_and_fillAll(header_title='CHINJ01: META-ANALYSIS')
+        self.save_CDP(MFCH01_cdp)
+        self.pack_CDP_to_dd(MFCH01_cdp,'METAFIT_CDP')
+        
+        if self.report is not None:
+            
+            fccd = lambda x: CCDs[x-1]
+            fq = lambda x: Quads[x-1]
+            ff = lambda x: '%.3f' % x
+            
+            selcolumns = ['CCD','Q','BGD','K','XT','XN','A','N']
+            
+            ext_formatters=[fccd,fq]+[ff,ff,ff,ff,ff,ff]
+            
+            caption = 'CHINJ01: Model parameters. Notice that the model fits injection values divided by $2^{16}$.'+\
+                'BGD [adim.], K [adim.], XT [V], XN [V], A[1/V], N [adim.].'
+            
+            MFtex = MFCH01_cdp.get_textable(sheet='ANALYSIS', 
+                                          columns=selcolumns,
+                                          caption=caption,
+                                          fitwidth=True,
+                                          tiny=True,
+                                          formatters=ext_formatters,
+                                          index=False)
+            
+            self.report.add_Text(MFtex)  
+        
+        
+        # REPORT FIT RESULTS AS TABLE CDP
         
         
         MCH01_dddf = OrderedDict(ANALYSIS=pd.DataFrame.from_dict(MCH01_dd))
-        MCH01_cdp = self.CDP_lib['META']
+        MCH01_cdp = self.CDP_lib['METAFIT']
         MCH01_cdp.path = prodspath
         MCH01_cdp.ingest_inputs(
                 data=MCH01_dddf.copy(),
@@ -364,7 +450,7 @@ class CHINJ01(InjTask):
         
         MCH01_cdp.init_wb_and_fillAll(header_title='CHINJ01: META-ANALYSIS')
         self.save_CDP(MCH01_cdp)
-        self.pack_CDP_to_dd(MCH01_cdp,'META_CDP')
+        self.pack_CDP_to_dd(MCH01_cdp,'METAFIT_CDP')
         
         if self.report is not None:
             
@@ -372,11 +458,13 @@ class CHINJ01(InjTask):
             fq = lambda x: Quads[x-1]
             ff = lambda x: '%.3f' % x
             
-            selcolumns = ['CCD','Q','BGD','IG1_THRESH','IG1_NOTCH','SLOPE','NOTCH']
+            selcolumns = ['CCD','Q','BGD','IG1_THRESH','IG1_NOTCH','S','N']
             
-            ext_formatters=[fccd,fq]+[ff,ff,ff,ff,ff]
+            ext_formatters=[fccd,fq]+[ff,ff,ff,ff,ff,ff]
             
-            caption = 'CHINJ01: META-ANALYSIS TABLE. Needs elaboration and explanation.'
+            caption = 'CHINJ01: Model - derived values. '+\
+            'BGD: background level in ADUs; IG1\_THRESH: threshold voltage; IG1\_NOTCH: notch injection condition voltage; '+\
+            'S: slope in ADU/V; N: notch injection in ADU.'
             
             Mtex = MCH01_cdp.get_textable(sheet='ANALYSIS', 
                                           columns=selcolumns,
@@ -387,6 +475,4 @@ class CHINJ01(InjTask):
                                           index=False)
             
             self.report.add_Text(Mtex)  
-        
-        
 
