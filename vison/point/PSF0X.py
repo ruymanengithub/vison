@@ -38,6 +38,7 @@ import warnings
 import copy
 from collections import OrderedDict
 
+from vison.support import utils
 from vison.pipe.task import HKKeys
 from vison.support import context
 from vison.point import lib as polib
@@ -171,7 +172,9 @@ class PSF0X(PT.PointTask):
                          ('bayes', self.bayes_analysis),
                          ('meta', self.meta_analysis),
                          ('xtalk_sex', self.opt_xtalk_sextract),
-                         ('xtalk', self.opt_xtalk)]
+                         ('xtalk_build', self.opt_xtalk_build),
+                         ('xtalk_meta', self.opt_xtalk_meta)]
+        
         super(PSF0X, self).__init__(inputs, log, drill, debug)
         self.name = 'PSF0X'
         self.type = 'Simple'
@@ -403,7 +406,7 @@ class PSF0X(PT.PointTask):
         
         if self.report is not None:
             self.report.add_Section(
-                keyword='xtalk', Title='Cross-Talk Analysis', level=1)
+                keyword='xtalksex', Title='Cross-Talk SExtraction', level=1)
         
         DDindices = copy.deepcopy(self.dd.indices)
         nObs = DDindices.get_len('ix')
@@ -438,6 +441,46 @@ class PSF0X(PT.PointTask):
                     iobs_sexdata[CCDkey] = copy.deepcopy(iresSEx)
                     
                 cPickleDumpDictionary(iobs_sexdata,iobs_pick)
+                
+            if self.report is not None:
+                self.report.add_Text('%i ObsIDs SExtracted!' % nObs)
+
         
-    def opt_xtalk(self):
+    def opt_xtalk_build(self):
+        """ """
+        
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='xtalkbuild', Title='Cross-Talk Matrix Building', level=1)
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        
+        xtalkpath = self.inputs['subpaths']['xtalk']
+        
+        if not self.drill:
+        
+            rawcrosstalks = oxt.get_rawcrosstalk_mx(self.dd,xtalkpath)
+            
+            
+            rawct_cdp = self.CDP_lib['RAW_CTALK']
+            rawct_cdp.path = self.inputs['subpaths']['xtalk']
+            
+            rawct_cdp.header = CDP_header.copy()
+            rawct_cdp.meta = dict()
+            rawct_cdp.data = rawcrosstalks.copy()
+            
+            
+            self.save_CDP(rawct_cdp)
+            self.pack_CDP_to_dd(rawct_cdp, 'RAW_CTALK')
+            
+            
+            if self.report is not None:
+                    self.report.add_Text('Raw Crosstalk Ramps extracted.')
+            
+        
+    
+    def opt_xtalk_meta(self):
+        """ """
         raise NotImplementedError

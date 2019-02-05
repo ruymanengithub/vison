@@ -156,19 +156,23 @@ def update_victim_rawcrosstalks(rawcrosstalks,imgv,sexdict,CCDv,Qv):
 
 
 
-def get_rawcrosstalk_mx(fitsdict):
+def get_rawcrosstalk_mx(dd,respath):
     
-    obsids= fitsdict['obsids']
+    
+    DDindices = copy.deepcopy(dd.indices)
+    CCDs = DDindices.get_vals('CCD')
+    
+    obsids= dd.mx['ObsID'][:]
     
     rawcrosstalks = OrderedDict()
     
-    for CCDso in CCDs:
-        CCDsk = 'CCD%i' % CCDso
+    for CCDsk in CCDs:
+        
         rawcrosstalks[CCDsk] = OrderedDict()
         for Qs in Quads:
             rawcrosstalks[CCDsk][Qs] = OrderedDict()
-            for CCDv in CCDs:
-                CCDvk = 'CCD%i' % CCDv
+            for CCDvk in CCDs:
+                
                 rawcrosstalks[CCDsk][Qs][CCDvk] = OrderedDict()
                 for Qv in Quads:
                     rawcrosstalks[CCDsk][Qs][CCDvk][Qv] = OrderedDict()
@@ -180,29 +184,36 @@ def get_rawcrosstalk_mx(fitsdict):
         
         print('\nGetting cross-talks from obsid %i/%i\n' % (iobs+1,len(obsids)))
         
-        sexdict = cPickleRead(os.path.join(respath,'EUC_%i.pick' % obsid))
-                
-        for CCDv in CCDs:
+        datestamp = dd.mx['date'][iobs,0]
+        
+        sexpick = os.path.join(respath,'EUC_%i_%s_ROE1_sex.pick' % (obsid,datestamp))
+        
+        sexdict = cPickleRead(sexpick)
+        
+        
+        for jCCD,CCDk in enumerate(CCDs):
             
-            ifits = str(fitsdict['CCD%i' % CCDv][iobs])
+            datapath = dd.mx['datapath'][iobs,jCCD]
+                        
+            ifitsv = os.path.join(datapath,'%s.fits' % dd.mx['File_name'][iobs,jCCD])
             
-            iccdobj = ccd.CCD(ifits)
+            iccdobj = ccd.CCD(ifitsv)
+            
+            vstart = dd.mx['vstart'][iobs,jCCD]
+            vend = dd.mx['vend'][iobs,jCCD]
             
             for Qv in Quads:
                 
-                hdr = iccdobj.extensions[-1].header
-                vstart = int(hdr['VSTART'])
-                vend = int(hdr['VEND'])
                 
                 imgv = iccdobj.get_quad(Qv,canonical=True,extension=-1)
                 imgv = imgv[51:-20,vstart:vend]
                 
-                bgd = sexdict['CCD%i' % CCDv][Qv]['bgd']
+                bgd = sexdict[CCDk][Qv]['bgd']
                 
                 imgv -= bgd
                 
-                rawcrosstalks = update_victim_rawcrosstalks(rawcrosstalks,imgv,sexdict,CCDv,Qv)
-
+                rawcrosstalks = update_victim_rawcrosstalks(rawcrosstalks,imgv,sexdict,jCCD+1,Qv)
+            
     
     return rawcrosstalks
 

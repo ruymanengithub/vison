@@ -17,6 +17,7 @@ import os
 from collections import OrderedDict
 import string as st
 
+from vison.datamodel import cdp
 from vison.plot import figclasses
 from vison.plot import trends
 from vison.point import Paux
@@ -122,5 +123,9 @@ def get_PSF01_PANCHRO_figs():
 def get_CDP_lib(test):
     """ """
     CDP_lib = OrderedDict()
+    CDP_lib['RAW_CTALK'] = cdp.CDP()
+    CDP_lib['RAW_CTALK'].rootname = 'Raw_crosstalk'
+    
     CDP_lib.update(Paux.get_CDP_lib())
+    
     return CDP_lib
