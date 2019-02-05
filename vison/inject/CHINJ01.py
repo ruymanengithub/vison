@@ -226,10 +226,10 @@ class CHINJ01(InjTask):
         if self.report is not None:
             self.report.add_Section(
                 keyword='meta', Title='CHINJ01 Analysis ("Meta")', level=0)
-            self.report.add_Text('Model:')
-            self.report.add_Text('\\begin{equation}')
-            self.report.add_Text('I=b+\\frac{1}{1+e^{K(IG1-XT)}}(log_{10}(1+e^{-A(IG1-XN)})+N)')
-            self.report.add_Text('\end{equation}')
+            self.report.add_Text(['Model:',
+                                  '\\begin{equation}',
+                                'I=b+\\frac{1}{1+e^{K(IG1-XT)}}\cdot(log_{10}(1+e^{-A(IG1-XN)})+N)',
+                                '\end{equation}'])
             
         
         DDindices = copy.deepcopy(self.dd.indices)
@@ -422,7 +422,7 @@ class CHINJ01(InjTask):
             
             ext_formatters=[fccd,fq]+[ff,ff,ff,ff,ff,ff]
             
-            caption = 'CHINJ01: Model parameters. Notice that the model fits injection values divided by $2^{16}$.'+\
+            caption = 'CHINJ01: Model parameters. Notice that the model fits injection values divided by $2^{16}$. '+\
                 'BGD [adim.], K [adim.], XT [V], XN [V], A[1/V], N [adim.].'
             
             MFtex = MFCH01_cdp.get_textable(sheet='ANALYSIS', 
@@ -463,7 +463,8 @@ class CHINJ01(InjTask):
             ext_formatters=[fccd,fq]+[ff,ff,ff,ff,ff,ff]
             
             caption = 'CHINJ01: Model - derived values. '+\
-            'BGD: background level in ADUs; IG1\_THRESH: threshold voltage; IG1\_NOTCH: notch injection condition voltage; '+\
+            'BGD: background level in ADUs; IG1\_THRESH: injection threshold voltage; '+\
+            'IG1\_NOTCH: notch injection condition voltage; '+\
             'S: slope in ADU/V; N: notch injection in ADU.'
             
             Mtex = MCH01_cdp.get_textable(sheet='ANALYSIS', 
