@@ -13,8 +13,11 @@ Created on Tue Jan 29 17:33:23 2019
 from pdb import set_trace as stop
 from collections import OrderedDict
 import numpy as np
-from copy import copy
+import copy
+import os
+from astropy.io import fits as fts
 
+from vison.image import sextractor as sex
 from vison.support import context
 from vison.datamodel import ccd
 from vison.support.files import cPickleRead
@@ -22,6 +25,55 @@ from vison.support.files import cPickleRead
 
 CCDs = [1,2,3]
 Quads = context.Quads 
+
+def exe_SEx(ccdobj,tag):
+    """ """
+    
+    sexconfig = dict(MINAREA=2.,
+             DET_THRESH=14.,
+             MAG_ZERPOINT=20.,
+             SATUR_LEVEL=65535.,
+             SEEING_FWHM=1.,
+             PIXEL_SCALE=1.,
+             GAIN=1.
+             )
+    
+    res = OrderedDict()
+    
+    for Q in Quads:
+        
+        
+        res[Q]=OrderedDict()
+        
+        hdr = ccdobj.extensions[-1].header
+        vstart = int(hdr['VSTART'])
+        vend = int(hdr['VEND'])
+        
+        img = ccdobj.get_quad(Q,canonical=True,extension=-1)
+        
+        img = img[51:-20,vstart:vend]
+        bgd = np.nanmedian(img)
+        img -= bgd
+        
+        SExCatroot = '%s_%s' % (tag,Q)
+        SExCat = sex.easy_run_SEx(img, SExCatroot, 
+                     sexconfig=sexconfig,                                      
+                     cleanafter=False)
+        os.system('rm %s_BACK.fits' % SExCatroot)
+        
+        segm = fts.getdata('%s_SEGM.fits' % SExCatroot)
+        ixsources = np.where(segm>0)
+        ADUsources = img[ixsources]
+        
+        os.system('rm %s_SEGM.fits' % SExCatroot)
+        
+        res[Q]['ixsources'] = ixsources
+        res[Q]['ADU'] = ADUsources.copy()
+        res[Q]['SExCat'] = copy.deepcopy(SExCat)
+        res[Q]['bgd'] = bgd
+    
+    return res
+
 
 def get_rawct_plotdict(rawcrosstalks,CCDso,Qso):
     """ """

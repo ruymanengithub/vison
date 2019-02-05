@@ -46,8 +46,9 @@ from vison.datamodel import scriptic as sc
 from vison.support import files
 from vison.point import PointTask as PT
 import PSF0Xaux
-from vison.support.files import cPickleRead
+from vison.support.files import cPickleRead,cPickleDumpDictionary
 from vison.datamodel import ccd
+from vison.xtalk import opt_xtalk as oxt
 # END IMPORT
 
 isthere = os.path.exists
@@ -169,6 +170,7 @@ class PSF0X(PT.PointTask):
                          ('basic', self.basic_analysis), 
                          ('bayes', self.bayes_analysis),
                          ('meta', self.meta_analysis),
+                         ('xtalk_sex', self.opt_xtalk_sextract),
                          ('xtalk', self.opt_xtalk)]
         super(PSF0X, self).__init__(inputs, log, drill, debug)
         self.name = 'PSF0X'
@@ -396,8 +398,8 @@ class PSF0X(PT.PointTask):
         """
         raise NotImplementedError
         
-    def opt_xtalk(self):
-        """Does analysis of cross-talk using point sources as estimulators."""
+    def opt_xtalk_sextract(self):
+        """Runs sextractor on images for optical-crosstalk measurements."""
         
         if self.report is not None:
             self.report.add_Section(
@@ -411,6 +413,16 @@ class PSF0X(PT.PointTask):
             
             for iObs in range(nObs):
                 
+                print '\nopt_xtalk: sextracting ObsID %i/%i' % (iObs+1,nObs)
+                
+                ObsID = self.dd.mx['ObsID'][iObs]
+                timestamp = self.dd.mx['date'][iObs,0]
+                
+                iobs_pick = os.path.join(self.inputs['subpaths']['xtalk'],
+                            'EUC_%i_%s_ROE1_sex.pick' % (ObsID,timestamp))
+                
+                iobs_sexdata = OrderedDict()
+                
                 for jCCD, CCDkey in enumerate(CCDs):
                     
                     dpath = self.dd.mx['datapath'][iObs, jCCD]
@@ -420,5 +432,12 @@ class PSF0X(PT.PointTask):
                     
                     ccdobj = ccd.CCD(infits)
                     
+                    sextag = 'EUC_%i_%s_%s_sex' % (ObsID,timestamp,CCDkey)
+                    iresSEx = oxt.exe_SEx(ccdobj,tag=sextag)
                     
+                    iobs_sexdata[CCDkey] = copy.deepcopy(iresSEx)
                     
+                cPickleDumpDictionary(iobs_sexdata,iobs_pick)
+        
+    def opt_xtalk(self):
+        raise NotImplementedError
