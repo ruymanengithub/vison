@@ -397,6 +397,7 @@ def PlotSummaryFig(Xtalk, suptitle, figname='', scale='RATIO'):
                             iextalk = xtalk_dict['std_xtalk']
 
                         elif scale == 'ADU':
+                            
 
                             coefs = xtalk_dict['coefs']
                             xsource = np.linspace(0, 2.**16, 200)

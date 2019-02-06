@@ -50,6 +50,7 @@ import PSF0Xaux
 from vison.support.files import cPickleRead,cPickleDumpDictionary
 from vison.datamodel import ccd
 from vison.xtalk import opt_xtalk as oxt
+from vison.xtalk import xtalk as xt
 # END IMPORT
 
 isthere = os.path.exists
@@ -465,6 +466,10 @@ class PSF0X(PT.PointTask):
             
             
             rawct_cdp = self.CDP_lib['RAW_CTALK']
+            
+            rawct_cdp.rootname = '%s_%s_%s' % (rawct_cdp.rootname,
+                                            self.inputs['test'],
+                                            self.inputs['BLOCKID'])
             rawct_cdp.path = self.inputs['subpaths']['xtalk']
             
             rawct_cdp.header = CDP_header.copy()
@@ -483,4 +488,59 @@ class PSF0X(PT.PointTask):
     
     def opt_xtalk_meta(self):
         """ """
-        raise NotImplementedError
+        
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='xtalkmeta', Title='Cross-Talk Matrix Meta-Analysis', level=1)
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        
+        DDindices = copy.deepcopy(self.dd.indices)
+        CCDs = DDindices.get_vals('CCD')
+        Quads = self.ccdcalc.Quads
+        
+        figspath = self.inputs['subpaths']['figs']
+        
+        
+        if not self.drill:
+            
+            raw_ctalk_pick = self.dd.products['RAW_CTALK']
+            raw_ctalk = cPickleRead(raw_ctalk_pick)['data'].copy()
+            
+            crosstalks = oxt.get_crosstalk_mx(raw_ctalk,CCDs,Quads)
+            
+            ct_cdp = self.CDP_lib['CTALK']
+            
+            ct_cdp.rootname = '%s_%s_%s' % (ct_cdp.rootname,
+                                            self.inputs['test'],
+                                            self.inputs['BLOCKID'])
+            ct_cdp.path = self.inputs['subpaths']['xtalk']
+            
+            ct_cdp.header = CDP_header.copy()
+            ct_cdp.meta = dict()
+            ct_cdp.data = crosstalks.copy()
+            
+            
+            self.save_CDP(ct_cdp)
+            self.pack_CDP_to_dd(ct_cdp, 'CTALK')
+            
+            
+            fignameratio = self.figdict['PSF0X_crosstalk_RATIO'][1]['figname']
+            fullfignameratio = os.path.join(figspath,fignameratio)
+            
+            xt.PlotSummaryFig(crosstalks, suptitle='', figname=fullfignameratio, 
+                              scale='RATIO')
+            
+            
+            fignameadu = self.figdict['PSF0X_crosstalk_ADU'][1]['figname']
+            fullfignameadu = os.path.join(figspath,fignameadu)
+            
+            xt.PlotSummaryFig(crosstalks, suptitle='', figname=fullfignameadu, 
+                              scale='ADU')
+
+            if self.report is not None:
+                crosstalkfigs = ['PSF0X_crosstalk_RATIO',
+                                 'PSF0X_crosstalk_ADU']
+                self.addFigures_ST(figkeys=crosstalkfigs,dobuilddata=False)

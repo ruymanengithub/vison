@@ -97,6 +97,15 @@ def get_check_fwhmy_dict(test):
                           xlabel='seconds',
                           ylabel='FWHMy [pix]'))
 
+def get_crosstalk_dict(test,figtype):
+    crosstalk_dict = dict(
+    figname='%s_crosstalk_%s.png' % (test,figtype),
+    caption='%s: Cross-Talk [%s].' % (test,figtype),
+    meta=dict(),
+    data=None
+    )
+    return crosstalk_dict
+
 
 def get_PSF0Xfigs(test):
     PSF0Xfigs = dict()
@@ -112,6 +121,10 @@ def get_PSF0Xfigs(test):
         trends.Fig_Basic_Checkstat, get_check_fwhmx_dict(test)]
     PSF0Xfigs['PSF0Xchecks_fwhmy'] = [
         trends.Fig_Basic_Checkstat, get_check_fwhmy_dict(test)]
+    PSF0Xfigs['PSF0X_crosstalk_ADU'] = [
+            figclasses.Fig_Husk, get_crosstalk_dict(test,'ADU')]
+    PSF0Xfigs['PSF0X_crosstalk_RATIO'] = [
+            figclasses.Fig_Husk, get_crosstalk_dict(test,'RATIO')]
     PSF0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return PSF0Xfigs
 
@@ -126,6 +139,9 @@ def get_CDP_lib(test):
     CDP_lib['RAW_CTALK'] = cdp.CDP()
     CDP_lib['RAW_CTALK'].rootname = 'Raw_crosstalk'
     
+    CDP_lib['CTALK'] = cdp.CDP()
+    CDP_lib['CTALK'].rootname = 'crosstalk'
+           
     CDP_lib.update(Paux.get_CDP_lib())
     
     return CDP_lib

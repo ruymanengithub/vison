@@ -217,4 +217,79 @@ def get_rawcrosstalk_mx(dd,respath):
     
     return rawcrosstalks
 
+def opt_xtalk_fit(x,y):
+    """ """
+    from sklearn.linear_model import RANSACRegressor
+    #from sklearn.metrics import mean_squared_error
+    from sklearn.preprocessing import PolynomialFeatures
+    from sklearn.pipeline import make_pipeline
+    
+    
+    poldeg = 1
+    
+    #pipe = make_pipeline(PolynomialFeatures(poldeg,interaction_only=True), 
+    #           RANSACRegressor(min_samples=0.2))
+    #pipe.fit(np.expand_dims(x,1),np.expand_dims(y,1))
+    
+    pol = np.polyfit(x,y,poldeg)
+    
+    coefs = np.zeros(2,dtype='float32')
+    coefs[1] = pol[0]
+        
+    #coefs = np.zeros(2,dtype='float32')
+    #coefs[0] = pipe.steps[1][1].estimator_.intercept_[0]
+    #coefs[1] = pipe.steps[1][1].estimator_.coef_[0][1]
+    
+    #xtalk = (pipe.predict(2.**16)-pipe.predict(0.))[0][0]/2.**16
+    
+    xtalk = (np.polyval(pol,2.**16)-np.polyval(pol,0))/2.**16
+    
+    xtalk_atmaxinj = xtalk
+        
+    #ymodel = np.squeeze(pipe.predict(np.expand_dims(x,1)))
+    #std_xtalk = np.nanstd(y-ymodel)/2.**16
+    
+    std_xtalk = np.nanstd(y-np.polyval(pol,x))/2.**16
+                          
+    res = dict(x=x.copy(),y=y.copy(),coefs=coefs,
+               xtalk=xtalk,
+               std_xtalk=std_xtalk,
+               xtalk_atmaxinj=xtalk_atmaxinj)
+    
+    
+    return res
 
+def get_crosstalk_mx(rawcrosstalk,CCDs,Quads):
+    """ """
+
+    
+    crosstalks = OrderedDict()
+    
+    for CCDsk in CCDs:
+        
+        crosstalks[CCDsk] = OrderedDict()
+        for Qs in Quads:
+            crosstalks[CCDsk][Qs] = OrderedDict()
+            for CCDvk in CCDs:                
+                crosstalks[CCDsk][Qs][CCDvk] = OrderedDict()
+                for Qv in Quads:
+                    crosstalks[CCDsk][Qs][CCDvk][Qv] = OrderedDict()
+    
+    blank_res = dict()
+    
+    for CCDsk in CCDs:
+        for Qs in Quads:
+            for CCDvk in CCDs:
+                for Qv in Quads:
+                    x = np.array(rawcrosstalk[CCDsk][Qs][CCDvk][Qv]['x']).copy() 
+                    y = np.array(rawcrosstalk[CCDsk][Qs][CCDvk][Qv]['y']).copy()
+                    
+                    if (CCDsk == CCDvk) and (Qs==Qv):
+                        ires = blank_res.copy()
+                    else:
+                        ires = opt_xtalk_fit(x,y)
+                    
+                    crosstalks[CCDsk][Qs][CCDvk][Qv] = ires.copy()
+       
+    
+    return crosstalks
