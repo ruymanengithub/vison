@@ -15,15 +15,20 @@ Created on Tue Aug 29 17:39:00 2017
 
 # IMPORT STUFF
 from pdb import set_trace as stop
-from copy import deepcopy
 from collections import OrderedDict
+import os
+import numpy as np
+import copy
 
+from vison.datamodel import core
+from vison.datamodel import ccd
 from vison.pipe.task import HKKeys
 from vison.support import context
 from vison.ogse import ogse as ogsemod
 from vison.datamodel import scriptic as sc
 from vison.pipe.task import Task
 from vison.datamodel import inputs
+from vison.other import PERSIST01aux as P01aux
 # END IMPORT
 
 #HKKeys = []
@@ -67,7 +72,7 @@ class PERSIST01(Task):
         self.type = 'Simple'
         
         self.HKKeys = HKKeys
-        self.figdict = dict()
+        self.figdict = P01aux.get_P01figs()
         self.inputs['subpaths'] = dict(figs='figs')
         
 
@@ -113,7 +118,7 @@ class PERSIST01(Task):
         Ncols = len(PER01_sdict.keys())
         PER01_sdict['Ncols'] = Ncols
 
-        commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])
+        commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
         PER01_commvalues['mirror_pos'] = self.ogse.profile['mirror_nom']['F%i' % wave]
         commvalues.update(PER01_commvalues)
 
@@ -166,8 +171,11 @@ class PERSIST01(Task):
 
 
         """
-        raise NotImplementedError
-
+        
+        kwargs = dict(figkeys=['P01checks_offsets','P01checks_stds',
+                               'P01checks_avgflu'])        
+        Task.check_data(self,**kwargs)
+    
     def prep_data(self):
         """
 
@@ -183,6 +191,153 @@ class PERSIST01(Task):
         super(PERSIST01, self).prepare_images(
             doExtract=True, doBadPixels=False,
             doMask=True, doOffset=True)
+        
+    def get_checkstats_ST(self, **kwargs):
+        """ """
+        
+        
+        # Initialize new columns
+
+        Xindices = copy.deepcopy(self.dd.indices)
+
+        if 'Quad' not in Xindices.names:
+            Xindices.append(core.vIndex('Quad', vals=context.Quads))
+
+        valini = 0.
+
+        newcolnames_off = ['offset_pre', 'offset_ove']
+        for newcolname_off in newcolnames_off:
+            self.dd.initColumn(newcolname_off, Xindices,
+                               dtype='float32', valini=valini)
+
+        newcolnames_std = ['std_pre', 'std_ove']
+        for newcolname_std in newcolnames_std:
+            self.dd.initColumn(newcolname_std, Xindices,
+                               dtype='float32', valini=valini)
+
+        self.dd.initColumn('chk_avgflu_img', Xindices,
+                           dtype='float32', valini=valini)
+
+        nObs, _, _ = Xindices.shape
+        CCDs = Xindices.get_vals('CCD')
+        Quads = Xindices.get_vals('Quad')
+
+        # Get statistics in different regions
+
+        if not self.drill:
+
+            for iObs in range(nObs):
+                for jCCD, CCDk in enumerate(CCDs):
+                    dpath = self.dd.mx['datapath'][iObs, jCCD]
+                    ffits = os.path.join(dpath, '%s.fits' %
+                                         self.dd.mx['File_name'][iObs, jCCD])
+                    ccdobj = ccd.CCD(ffits)
+                    vstart = self.dd.mx['vstart'][iObs][jCCD]
+                    vend = self.dd.mx['vend'][iObs][jCCD]
+
+                    for kQ, Quad in enumerate(Quads):
+
+                        for reg in ['pre', 'ove', 'img']:
+                            stats = ccdobj.get_stats(Quad, sector=reg, statkeys=['median', 'std'], trimscan=[5, 5],
+                                                     ignore_pover=True, extension=-1, VSTART=vstart, VEND=vend)
+                            if reg in ['pre','ove']:
+                                self.dd.mx['offset_%s' %
+                                           reg][iObs, jCCD, kQ] = stats[0]
+                                self.dd.mx['std_%s' %
+                                           reg][iObs, jCCD, kQ] = stats[1]
+                            
+                            
+                            offset_cbe = np.mean([self.dd.mx['offset_pre'][iObs, jCCD, kQ],
+                                                  self.dd.mx['offset_ove'][iObs, jCCD, kQ]])
+                            
+                            if reg == 'img':
+                                self.dd.mx['chk_avgflu_%s' % reg][iObs,
+                                          jCCD, kQ] = stats[0] - offset_cbe
+
+    
+    def check_metrics_ST(self, **kwargs):
+        """ """
+
+        Xindices = self.dd.indices
+        CCDs = Xindices.get_vals('CCD')
+
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='check_ronoffset', Title='Offsets, RON and Background Levels', level=1)
+        
+        # absolute value of offsets
+
+        offsets_lims = self.perflimits['offsets_lims']
+        
+        ixreference = np.where(self.dd.mx['label'][:,0] == 'col001')
+
+        regs_off = ['pre', 'ove']
+
+        for reg in regs_off:
+            arr = self.dd.mx['offset_%s' % reg][ixreference[0],...].copy()
+
+            _compliance_offsets = self.check_stat_perCCDandQ(
+                arr, offsets_lims, CCDs)
+            
+            self.addComplianceMatrix2Self(_compliance_offsets,'offsets_%s' % reg)
+
+            # if not self.IsComplianceMatrixOK(_compliance_offsets):
+            if not _compliance_offsets.IsCompliant():
+                self.dd.flags.add('POORQUALDATA')
+            if self.log is not None:
+                self.addComplianceMatrix2Log(
+                    _compliance_offsets, label='COMPLIANCE OFFSETS [%s]:' % reg)
+            if self.report is not None:
+                self.addComplianceMatrix2Report(
+                    _compliance_offsets, label='COMPLIANCE OFFSETS [%s]:' % reg)
+
+        # cross-check of offsets: referred to pre-scan
+
+        offsets_gradients = self.perflimits['offsets_gradients']
+
+        regs_grad = ['ove']
+
+        for ireg, reg in enumerate(regs_grad):
+            _lims = dict()
+            for CCDk in CCDs:
+                _lims[CCDk] = offsets_gradients[CCDk][reg]
+            arr = self.dd.mx['offset_%s' % reg][ixreference[0],...]-self.dd.mx['offset_pre'][ixreference[0],...]
+            _xcheck_offsets = self.check_stat_perCCDandQ(arr, _lims, CCDs)
+            
+            self.addComplianceMatrix2Self(_xcheck_offsets,'offsets_grad_%s' % reg)
+
+            if not self.IsComplianceMatrixOK(_xcheck_offsets):
+                self.dd.flags.add('POORQUALDATA')
+            if self.log is not None:
+                self.addComplianceMatrix2Log(
+                    _xcheck_offsets, label='OFFSET GRAD [%s-PRE] COMPLIANCE:' % reg)
+            if self.report is not None:
+                self.addComplianceMatrix2Report(
+                    _xcheck_offsets, label='OFFSET GRAD [%s-PRE] COMPLIANCE:' % reg)
+
+        # absolute value of std
+
+        regs_std = ['pre', 'ove']
+
+        RONs_lims = self.perflimits['RONs_lims']
+        for reg in regs_std:
+            _compliance_std = self.check_stat_perCCDandQ(
+                self.dd.mx['std_%s' % reg][ixreference[0],...], RONs_lims, CCDs)
+            
+            self.addComplianceMatrix2Self(_compliance_std,'std_%s' % reg)
+
+
+            if not self.IsComplianceMatrixOK(_compliance_std):
+                self.dd.flags.add('POORQUALDATA')
+                self.dd.flags.add('RON_OOL')
+            if self.log is not None:
+                self.addComplianceMatrix2Log(
+                    _compliance_std, label='COMPLIANCE RON [%s]:' % reg)
+            if self.report is not None:
+                self.addComplianceMatrix2Report(
+                    _compliance_std, label='COMPLIANCE RON [%s]:' % reg)
+        
+        
 
     def basic_analysis(self):
         """
