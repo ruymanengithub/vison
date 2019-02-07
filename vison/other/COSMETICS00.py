@@ -21,7 +21,9 @@ import copy
 from collections import OrderedDict
 import unittest
 from matplotlib.colors import Normalize
-from scipy import interpolate
+from scipy import interpolate, ndimage
+import pandas as pd
+import string as st
 
 from vison.other import COSaux
 from vison.pipe.task import HKKeys
@@ -82,7 +84,8 @@ class COSMETICS00(DarkTask):
         """ """
         self.subtasks = [
                          ('check', self.check_data),
-                         ('masks', self.do_masks)]
+                         ('masks', self.do_masks),
+                         ('meta',self.meta)]
 
         super(COSMETICS00, self).__init__(inputs, log, drill, debug)
         self.name = 'COSMETICS00'
@@ -320,6 +323,9 @@ class COSMETICS00(DarkTask):
         
         dpath = self.dd.mx['datapath'][0,0]
         
+        for key in ['DARK','FLAT','MERGE']:
+            self.dd.products[key] = OrderedDict()
+        
         for jCCD, CCDk in enumerate(CCDs):
             
             
@@ -348,10 +354,159 @@ class COSMETICS00(DarkTask):
             inputs['inputs_flmask']['OBSID_list'] = OBSID_list_fl
             inputs['inputs_flmask']['thresholds'] = [0.5,1.5]
             
-            vcm.run_maskmaker(inputs)
+            outputs = vcm.run_maskmaker(inputs)
             
+            for key in outputs.keys():         
+                self.dd.products[key][CCDk] = outputs[key]
         
         
+        productsstr = self.dd.products.__str__()
+        productsstr = st.replace(productsstr,',','\n')
+        
+        msg = 'Updated products:'
+        
+        
+        if self.log is not None:
+            self.log.info(msg)
+            self.log.info(productsstr)
+        
+        if self.report is not None:
+            self.report.add_Text(msg)
+            self.report.add_Text(productsstr,verbatim=True)
+        
+        
+    def meta(self):
+        """
+            
+        """ 
+        
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='meta', Title='COSMETICS00: Masks Displays and Statistics', level=0)
+        
+        maskkeys = ['DARK','FLAT','MERGE']
+        NpixImgQuad = 2066. * 2048. # HARDWIRED
+        
+        indices = copy.deepcopy(self.dd.indices)
+        CCDs = indices.get_vals('CCD')
+        nC = len(CCDs) 
+        Quads = self.ccdcalc.Quads
+        nQ = len(Quads)
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+        
+        
+        NP = nC * nQ
+        
+        
+        # Display Masks
+        
+        MASKS_2PLOT = OrderedDict()
+        for maskkey in maskkeys:
+            MASKS_2PLOT[maskkey] = OrderedDict()
+            for CCDk in CCDs:
+                MASKS_2PLOT[maskkey][CCDk] = OrderedDict()
+                for Q in Quads:
+                    MASKS_2PLOT[maskkey][CCDk][Q] = OrderedDict()
+        
+        DEF_TB = OrderedDict()
+        
+        DEF_TB = OrderedDict()
+        DEF_TB['CCD'] = np.zeros(NP,dtype='int32')
+        DEF_TB['Q'] = np.zeros(NP,dtype='int32')
+        
+        for maskkey in maskkeys:        
+            DEF_TB['N_%s' % maskkey] = np.zeros(NP,dtype='int32')
+        
+        DEF_TB['PIXLOST'] = np.zeros(NP,dtype='float32')
+        
+        normfunction = Normalize(vmin=0.0,vmax=0.1,clip=False)
+        
+        if not self.drill:
+            
+            
+            for jCCD, CCDk in enumerate(CCDs):
+                for jQ, Q in enumerate(Quads):
+                    kk = jCCD * nQ + jQ
+                    DEF_TB['CCD'][kk] = jCCD+1
+                    DEF_TB['Q'][kk] = jQ+1
+        
+            for maskkey in maskkeys:
+            
+                for jCCD, CCDk in enumerate(CCDs):
+                    
+                    MSKfits = self.dd.products[maskkey][CCDk]
+                    
+                    MSKccdobj = ccd.CCD(MSKfits)
+                    iMext = MSKccdobj.extnames.index('MASK')
+                    
+                    for jQ, Q in enumerate(Quads):
+                        
+                        kk = jCCD * nQ + jQ
+                        
+                        kQ_Ndefects = MSKccdobj.get_stats(Q, sector='img', statkeys=['sum'],
+                                               ignore_pover=True,
+                                               extension=iMext)[0]
+                        
+                        DEF_TB['N_%s' % maskkey][kk] = kQ_Ndefects
+                        DEF_TB['PIXLOST'][kk] = kQ_Ndefects / NpixImgQuad * 100.
+                        
+                        qdata = MSKccdobj.get_quad(Q,canonical=False,extension=iMext).copy()
+                        sqdata = ndimage.filters.gaussian_filter(qdata,sigma=5.,
+                                                                 mode='constant',
+                                                                 cval=0.)
+                        
+                        MASKS_2PLOT[maskkey][CCDk][Q]['img'] = sqdata.T.copy()
+                        
+                
+                self.figdict['Masks_%s' % maskkey][1]['data'] = MASKS_2PLOT[maskkey].copy()
+                self.figdict['Masks_%s' % maskkey][1]['meta']['corekwargs']['norm'] = normfunction
+        
+        # REPORT THE DEFECTS STATS
+        
+        DEF_TB_dddf = OrderedDict()
+        DEF_TB_dddf['DEFECTS'] = pd.DataFrame.from_dict(DEF_TB)
+        
+        def_tb_cdp = self.CDP_lib['DEF_TB']        
+        def_tb_cdp.path = self.inputs['subpaths']['products']
+        def_tb_cdp.ingest_inputs(
+                data = DEF_TB_dddf.copy(),
+                meta=dict(),
+                header=CDP_header.copy()
+                )
 
-
+        def_tb_cdp.init_wb_and_fillAll(header_title='%s: DEFECTS COUNTS TABLE' % \
+                (self.inputs['test'],))
+        self.save_CDP(def_tb_cdp)
+        self.pack_CDP_to_dd(def_tb_cdp, 'DEF_TB_CDP')
+    
+        if self.report is not None:
+            
+            fccd = lambda x: CCDs[x-1]
+            fq = lambda x: Quads[x-1]
+            fi = lambda x: '%i' % x
+            fpc = lambda x: '%.2f %%' % x
+            
+            cov_formatters=[fccd,fq,fi,fi,fi,fpc]
+            
+            caption = '%s: DEFECTS TABLE.' % \
+                (self.inputs['test'],)
+            nicecaption = st.replace(caption,'_','\_')
+            Ptex = def_tb_cdp.get_textable(sheet='DEFECTS', 
+                                               caption=nicecaption,
+                                               fitwidth=True,
+                                               tiny=True,
+                                               formatters=cov_formatters)
+            self.report.add_Text(Ptex)
+        
+        # DO THE PLOTS
+        
+        if self.report is not None:
+            
+            MASKfigkeys = ['Masks_%s' % key for key in maskkeys]
+            self.addFigures_ST(figkeys=MASKfigkeys,
+                           dobuilddata=False)
 

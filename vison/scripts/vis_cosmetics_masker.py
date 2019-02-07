@@ -170,6 +170,9 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None):
     
     maskcdp.savehardcopy(outfilename)
     
+    os.system('rm %s' % tmp_pickf)
+    
+    
     return outfilename
 
 def do_DarkMask(inputs):
@@ -229,18 +232,25 @@ def run_maskmaker(inputs):
     outpath = inputs['outpath']
     if not isthere(outpath):
         os.system('mkdir -p %s' % outpath)
-     
+    
+    outputs = dict()
+    
     if inputs['doDarkMask']:
         print 'Generating Defects in Darkness Mask...'
         dkmask_f = do_DarkMask(inputs)
+        outputs['DARK'] = dkmask_f
     
     if inputs['doFlatMask']:
         print 'Generating Defects in PR Mask...'
         flmask_f = do_FlatMask(inputs)
+        outputs['FLAT'] = flmask_f
     
     if inputs['doMerge']:
         print 'Generating Cosmetics Mask (Dark | PR)...'
         mgmask_f = do_MergeMasks(inputs)
+        outputs['MERGE'] = mgmask_f
+    
+    return outputs
     
 
 if __name__ == '__main__':
@@ -257,5 +267,5 @@ if __name__ == '__main__':
 
     inputs = vjson.load_jsonfile(options.json, useyaml=True)
     
-    run_maskmaker(inputs)
+    _ = run_maskmaker(inputs)
 
