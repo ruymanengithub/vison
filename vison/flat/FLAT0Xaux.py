@@ -108,7 +108,7 @@ def gt_meta_MFF2D_dict(test):
             meta=dict(doLegend=False,
               doColorbar=True,
               suptitle='%s/Master:Quadrant Images [PLACEHOLDER].' % ntest,
-              corekwargs=dict(cmap=cm.rainbow,aspect='auto',norm=None,
+              corekwargs=dict(cmap=cm.gray,aspect='auto',norm=None,
                                 origin='lower left'))
                 )
 

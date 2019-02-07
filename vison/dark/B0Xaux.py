@@ -122,7 +122,7 @@ meta_MB2D_dict = dict(
     meta=dict(doLegend=False,
               doColorbar=True,
               suptitle='BIAS0X/Master:Quadrant Images',
-              corekwargs=dict(cmap=cm.rainbow,aspect='auto',norm=None,
+              corekwargs=dict(cmap=cm.gray,aspect='auto',norm=None,
                               origin='lower left',
                     ))
 )
