@@ -634,9 +634,11 @@ class CCD(object):
 
         if isinstance(Qdata, np.ma.masked_array):
             stat_dict = dict(
-                mean=np.ma.mean, median=np.ma.median, std=np.ma.std)
+                mean=np.ma.mean, median=np.ma.median, std=np.ma.std,
+                sum=np.ma.sum)
         else:
-            stat_dict = dict(mean=np.mean, median=np.median, std=np.std)
+            stat_dict = dict(mean=np.mean, median=np.median, std=np.std,
+                             sum=np.sum)
 
         if ignore_pover:
             vlims = [VSTART, min(self.NrowsCCD, VEND)]
@@ -651,9 +653,15 @@ class CCD(object):
             hlims = [self.prescan, self.NAXIS1/2-self.overscan]
         elif sector == 'all':
             hlims = [0, None]
+        
 
         hlims[0] += trimscan[0]
-        hlims[1] -= trimscan[1]
+        if hlims[1] is not None:
+            hlims[1] -= trimscan[1]
+        elif (hlims[1] is None) and (trimscan[1]>0):
+            hlims[1] = -trimscan[1]
+        else:
+            pass
 
         results = []
 
