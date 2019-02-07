@@ -167,7 +167,7 @@ class Tables_CDP(CDP):
     def get_textable(self, sheet, caption='', fitwidth=False, tiny=False, 
                      **kwargs):
         """ """
-        _kwargs = dict(multicolumn=True, multirow=True, longtable=True, index=True)
+        _kwargs = dict(multicolumn=True, multirow=True, longtable=True, index=False)
         _kwargs.update(kwargs)
         tex = self.data[sheet].to_latex(**_kwargs)
         tex = st.split(tex, '\n')
@@ -175,9 +175,9 @@ class Tables_CDP(CDP):
         
         if fitwidth:
             if 'columns' not in kwargs:
-                ncols = len(self.data[sheet].columns)+1
+                ncols = len(self.data[sheet].columns)
             else:
-                ncols = len(kwargs['columns'])+1
+                ncols = len(kwargs['columns'])
             beglongtabu = '\\begin{longtabu} to \\textwidth {|%s}' % (ncols*'X|',)
             endlongtabu = '\end{longtabu}'
             tex[0] = beglongtabu
