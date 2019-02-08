@@ -89,6 +89,7 @@ class TP02(PumpTask):
     """ """
 
     inputsclass = TP02_inputs
+    contrast_threshold = 0.01
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
@@ -322,7 +323,7 @@ class TP02(PumpTask):
             self.report.add_Section(
                 keyword='basic', Title='TP02 Basic Analysis', level=0)
         
-        threshold = 0.01
+        threshold = self.contrast_threshold
         #CCDhalves = ['top','bottom']
         _Quads_dict = dict(top = ['E','F'],
                            bottom = ['G','H'])

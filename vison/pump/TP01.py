@@ -91,6 +91,7 @@ class TP01(PumpTask):
     """ """
 
     inputsclass = TP01_inputs
+    contrast_threshold = 0.01
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
@@ -316,7 +317,7 @@ class TP01(PumpTask):
             self.report.add_Section(
                 keyword='basic', Title='TP01 Basic Analysis', level=0)
         
-        threshold = 0.01
+        threshold = self.contrast_threshold
         #CCDhalves = ['top','bottom']
         _Quads_dict = dict(top = ['E','F'],
                            bottom = ['G','H'])
@@ -473,11 +474,6 @@ class TP01(PumpTask):
                 outdf.index.set_names(names,inplace=True)
                 
                 
-                #index_list = [allQuads,modkeys,toikeys]
-                #index = pd.MultiIndex.from_product(index_list, names=['Quad','mod','toi'])
-                #outdf = pd.DataFrame(outdict,index=index)
-
-                
                 return outdf
             
             
@@ -497,13 +493,7 @@ class TP01(PumpTask):
                 return txt 
             
             df =_aggregate(masterdict)
-            #texreport = _get_tex(df)
             txtreport = _get_txt(df)
-            #Ntex = _get_tex(dfN)
-            #dfRatio=_aggregate(masterdict,extract='Ratio')
-            #Ratiotex = _get_tex(dfRatio)
-            #dfA = _aggregate(masterdict,extract='A')
-            #Atex = _get_tex(dfA)
             
             
             if self.report is not None:
@@ -538,8 +528,9 @@ class TP01(PumpTask):
         ::
 
             across TOI_TP, patterns:
-                build catalog of traps: x,y,I-phase, Amp
-                from Amp(TOI) -> tau, Pc
+                
+                build catalog of traps: x,y, tp-mode, tau, Pc
+                tau, Pc = f({A,TOI})
 
             Report on :
                 Histogram of Taus
@@ -548,7 +539,102 @@ class TP01(PumpTask):
                                   statistically) -> check
 
                 Total Count of Traps
+                
+                
 
         """
-        return # TESTS
-        raise NotImplementedError
+        
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='meta', Title='TP01 Meta Analysis', level=0)
+            
+        
+        DDindices = copy.deepcopy(self.dd.indices)
+        CCDs = DDindices.get_vals('CCD')
+        allQuads = DDindices.get_vals('Quad')
+
+        productspath = self.inputs['subpaths']['products']
+
+        
+        mastercatpick = self.dd.products['MASTERCAT']
+        
+        masterdata = cPickleRead(mastercatpick)['data'].copy()
+        
+        
+        # initialisation
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        
+        mods = np.unique(self.dd.mx['v_tp_mod'][:,0])
+        modkeys = ['m%i' % item for item in mods]
+        
+        tois = np.unique(self.dd.mx['toi_tp'][:,0])
+        toikeys = ['u%04i' % item for item in tois]
+        
+        if not self.drill:
+            
+            onTests = True
+                        
+            mergecat = OrderedDict()
+            
+            
+            print('\nMerging Dipole Catalogs...\n')
+            
+            for jCCD, CCDk in enumerate(CCDs):
+                
+                
+                mergecat[CCDk] = OrderedDict()
+                
+                for iQ, Q in enumerate(allQuads):
+                    
+                    mergecat[CCDk][Q] = OrderedDict()
+                    
+                    rawcatCQ = masterdata[CCDk][Q].copy()
+                    
+                    # Pandizing the toi catalogs
+                    
+                    for modkey in modkeys:
+                        
+                        for toikey in toikeys:
+                        
+                            rawcatCQ[modkey][toikey] =\
+                                    pd.DataFrame.from_dict(rawcatCQ[modkey][toikey])
+                    
+                    # Merging the toi catalogs
+                    
+                    for modkey in modkeys:
+                        
+                        print('%s%s, %s...' % (CCDk,Q,modkey))
+                        
+                        if onTests:
+                            
+                            mergecat[CCDk][Q][modkey] = cPickleRead('vtpcat_CCD1_E_m123.pick')
+                            
+                            
+                            Ampcols = ['A_%s' % toikey for toikey in toikeys]
+                            
+                            amplitudes = mergecat[CCDk][Q][modkey][Ampcols]
+                            
+                            Nshuffles = 5000 # TESTS
+                            Pc,Tau = tptools.batch_fit_PcTau_vtp(amplitudes,tois,Nshuffles)
+                            
+                        else:
+                            
+                            kqkmerged = tptools.merge_vtp_dipole_cats_bypos(
+                                    rawcatCQ[modkey].copy(),
+                                    toikeys[1:],toikeys[0])
+                            
+                            cols2drop = []
+                            for toikey in toikeys:
+                                cols2drop += ['X_%s' % toikey,'Y_%s' % toikey,'S_%s' % toikey]
+                            kqkmerged.drop(columns=cols2drop,axis=1)
+                            
+                            mergecat[CCDk][Q][modkey] = kqkmerged
+                        
+                        
+                        stop()
+            
+                    
+        

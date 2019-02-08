@@ -19,6 +19,7 @@ from scipy import ndimage as nd
 import pandas as pd
 from collections import OrderedDict
 from pylab import plot,show
+from scipy.optimize import curve_fit
 
 from vison.datamodel import ccd as ccdmod
 from vison.image.ds9reg import save_spots_as_ds9regs
@@ -115,42 +116,42 @@ def get_InjProfile(ccdobj, Q, Navgrows=-1, vstart=0, vend=ccdmod.NrowsCCD, exten
     return model
 
 
-def find_dipoles_vtpump_old(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, extension=-1):
-    """ """
-
-    prescan = ccdobj.prescan
-    overscan = ccdobj.overscan
-
-    qrawmap = ccdobj.get_quad(Q, canonical=True, extension=extension)[
-        prescan:-overscan, vstart:vend].copy()
-    
-    asymmetry = 0.2
-
-    qraw_p1 = qrawmap[:, 1:].copy()
-    qraw_m1 = qrawmap[:, 0:-1].copy()
-    deltamap = qraw_p1-qraw_m1
-
-    rows0, cols0 = np.where((np.abs(deltamap) > threshold*2.) &
-                            (np.abs(qraw_m1-1.) > threshold) &
-                            (np.abs(qraw_p1-1.) > threshold) &
-                            ((2.*np.abs(qraw_m1-1.)-np.abs(deltamap)) < asymmetry*threshold) &
-                            ((2.*np.abs(qraw_p1-1.)-np.abs(deltamap)) < asymmetry*threshold))
-
-    if len(rows0) == 0:
-        return pd.DataFrame(dict(X=[], Y=[], S=[], A=[]), columns=['X', 'Y', 'S', 'A'])
-
-    X = rows0 + prescan
-    Y = cols0 + vstart
-
-    S = np.zeros_like(X)
-    S[np.where(deltamap[rows0, cols0] > 0)] = 1
-    S[np.where(deltamap[rows0, cols0] < 0)] = 0
-    A = deltamap[rows0, cols0]/2.
-
-    indict = OrderedDict(X=X, Y=Y, S=S, A=A)
-    df = pd.DataFrame(indict, columns=['X', 'Y', 'S', 'A'])
-
-    return df
+#def find_dipoles_vtpump_old(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, extension=-1):
+#    """ """
+#
+#    prescan = ccdobj.prescan
+#    overscan = ccdobj.overscan
+#
+#    qrawmap = ccdobj.get_quad(Q, canonical=True, extension=extension)[
+#        prescan:-overscan, vstart:vend].copy()
+#    
+#    asymmetry = 0.2
+#
+#    qraw_p1 = qrawmap[:, 1:].copy()
+#    qraw_m1 = qrawmap[:, 0:-1].copy()
+#    deltamap = qraw_p1-qraw_m1
+#
+#    rows0, cols0 = np.where((np.abs(deltamap) > threshold*2.) &
+#                            (np.abs(qraw_m1-1.) > threshold) &
+#                            (np.abs(qraw_p1-1.) > threshold) &
+#                            ((2.*np.abs(qraw_m1-1.)-np.abs(deltamap)) < asymmetry*threshold) &
+#                            ((2.*np.abs(qraw_p1-1.)-np.abs(deltamap)) < asymmetry*threshold))
+#
+#    if len(rows0) == 0:
+#        return pd.DataFrame(dict(X=[], Y=[], S=[], A=[]), columns=['X', 'Y', 'S', 'A'])
+#
+#    X = rows0 + prescan
+#    Y = cols0 + vstart
+#
+#    S = np.zeros_like(X)
+#    S[np.where(deltamap[rows0, cols0] > 0)] = 1
+#    S[np.where(deltamap[rows0, cols0] < 0)] = 0
+#    A = deltamap[rows0, cols0]/2.
+#
+#    indict = OrderedDict(X=X, Y=Y, S=S, A=A)
+#    df = pd.DataFrame(indict, columns=['X', 'Y', 'S', 'A'])
+#
+#    return df
 
 def find_dipoles_vtpump(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, extension=-1):
     """Using Jesper Skottfelt's algorithm, as described in 
@@ -211,10 +212,15 @@ def find_dipoles_vtpump(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, ex
     Y = np.concatenate((YS,YN))
     A = np.concatenate((AS,AN))
 
-    if len(X) == 0:
-        return pd.DataFrame(dict(X=[], Y=[], S=[], A=[]), columns=['X', 'Y', 'S', 'A'])
+    #if len(X) == 0:
+    #    return pd.DataFrame(dict(X=[], Y=[], S=[], A=[]), columns=['X', 'Y', 'S', 'A'])
 
-    outdict = OrderedDict(X=X, Y=Y, S=S, A=A)
+    outdict = OrderedDict()
+    outdict['X'] = X.copy()
+    outdict['Y'] = Y.copy()
+    outdict['S'] = S.copy()
+    outdict['A'] = A.copy()
+
     #df = pd.DataFrame(outdict, columns=['X', 'Y', 'S', 'A'])
 
     return outdict
@@ -276,10 +282,14 @@ def find_dipoles_stpump(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, ex
     X = np.concatenate((XW,XE))
     A = np.concatenate((AW,AE))
 
-    if len(X) == 0:
-        return pd.DataFrame(dict(X=[], S=[], A=[]), columns=['X', 'S', 'A'])
+    #if len(X) == 0:
+    #    return pd.DataFrame(dict(X=[], S=[], A=[]), columns=['X', 'S', 'A'])
 
-    outdict = OrderedDict(X=X, S=S, A=A)
+    #outdict = OrderedDict(X=X, S=S, A=A)
+    outdict = OrderedDict()
+    outdict['X'] = X.copy()
+    outdict['S'] = S.copy()
+    outdict['A'] = A.copy()
 
     return outdict
 
@@ -378,3 +388,57 @@ def merge_vtp_dipole_cats_bypos(catsdict, catkeys, parentkey, dropna=False):
     columns = ['X', 'Y', 'S', 'A']
     opcolumns = ['X', 'Y', 'S']
     return merge_2dcats_generic(catsdict, catkeys, parentkey, columns, opcolumns, fcomp_distamp_dipoles, dropna=False)
+
+
+def get_f_A_vtp(N):
+    def f_A_vtp(tph, logPc, tau):
+        return N * 10.**logPc * (np.exp(-tph/tau)-np.exp(-2*tph/tau))
+    return f_A_vtp
+
+
+def fit_PcTau_vtp(A,tois,Nshuffles=5000):
+    """ """
+    
+    fitfunc = get_f_A_vtp(Nshuffles)
+    
+    p0 = [-6.,tois[0]]
+    pbounds = [[-7.,-2.],[tois[0]/10.,tois[-1]*10.]]
+    
+    ixsel = np.where(~np.isnan(A))
+    if len(ixsel[0])<3:
+        return np.nan, np.nan
+    else:
+    
+        try:
+            popt, pcov = curve_fit(fitfunc,tois[ixsel],A[ixsel],bounds=pbounds,p0=p0)
+    
+            Pc = 10.**popt[0]
+            tau = popt[1]
+        except:
+            Pc, tau = np.nan, np.nan
+    
+    
+    return Pc, tau
+
+def batch_fit_PcTau_vtp(Amplitudes,tois,Nshuffles=5000):
+    """ """
+    
+    Amp_mx = Amplitudes.as_matrix()
+    
+    Np = Amp_mx.shape[0]
+    
+    if Np ==0:
+        return np.array([],dtype='float32'), np.array([],dtype='float32')
+        
+    assert Amp_mx.shape[1] == len(tois)    
+    
+    
+    Pc = np.zeros(Np,dtype='float32')+np.nan
+    tau = np.zeros(Np,dtype='float32')+np.nan
+    
+    for i in range(Np):
+        Pc[i], tau[i] = fit_PcTau_vtp(Amp_mx[i,:],tois,Nshuffles)
+    
+    stop()
+    
+    return Pc, tau
