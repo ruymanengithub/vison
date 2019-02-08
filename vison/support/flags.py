@@ -43,7 +43,8 @@ flagsdict = OrderedDict(MISSDATA=[2**0L],
                         SUBTASKCRASH=[2**26L],
                         BADFIT=[2**27L],
                         SATURATION=[2**28L],
-                        LOSTPIXELS=[2**29L])
+                        LOSTPIXELS=[2**29L],
+                        NONSATURATION=[2**30L])
 
 
 class Flags(object):

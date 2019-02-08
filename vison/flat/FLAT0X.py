@@ -75,12 +75,12 @@ def get_Flu_lims(relfluences):
         _cenval = min(rflu / 100., 1.) * 2.**16
         _lims = _cenval * plusminus10pcent
         FLU_lims['CCD1']['col%03i' % (iflu+1,)] = _lims
-
+    
     for i in [2, 3]:
         FLU_lims['CCD%i' % i] = copy.deepcopy(FLU_lims['CCD1'])
     
     return FLU_lims
-
+    
 
 
 class FLATS0X_inputs(inputs.Inputs):

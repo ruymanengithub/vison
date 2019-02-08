@@ -48,6 +48,18 @@ PER01_commvalues = dict(program='CALCAMP', test='PERSIST01',
                         source='point',
                         comments='')
 
+BGD_lims = OrderedDict(CCD1=OrderedDict())
+BGD_lims['CCD1'] = [0.,200.] # ADU
+for i in [2, 3]:
+    BGD_lims['CCD%i' % i] = copy.deepcopy(BGD_lims['CCD1'])
+
+SATUR_lims = OrderedDict(CCD1=OrderedDict())
+SATUR_lims['CCD1']['E'] = [0.002,0.2]
+for Q in ['F','G','H']:
+    SATUR_lims['CCD1'][Q] = copy.deepcopy(SATUR_lims['CCD1']['E']) 
+for i in [2, 3]:
+    SATUR_lims['CCD%i' % i] = copy.deepcopy(SATUR_lims['CCD1'])
+
 
 class PERSIST01_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
@@ -83,6 +95,16 @@ class PERSIST01(Task):
             exptSATUR=100.*self.ogse.profile['tFWC_point']['nm%i' % wavelength],
             exptLATEN=565. # s
         )
+        
+    def set_perfdefaults(self, **kwargs):
+        super(PERSIST01, self).set_perfdefaults(**kwargs)
+        
+        
+        self.perfdefaults['BGD_lims'] = BGD_lims.copy()
+        self.perfdefaults['SATUR'] = SATUR_lims.copy()
+        
+
+    
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """ 
@@ -337,6 +359,66 @@ class PERSIST01(Task):
                 self.addComplianceMatrix2Report(
                     _compliance_std, label='COMPLIANCE RON [%s]:' % reg)
         
+        
+        # SATURATIONS
+        
+        ixsat = np.where(self.dd.mx['label'][:,0] == 'col003')
+        
+        satur_lims = self.perflimits['SATUR']    
+        
+        arrSAT = self.dd.mx['chk_NPIXSAT'][ixsat[0],...].copy()
+        
+        NQactive = self.ccdcalc.NAXIS1 * (self.dd.mx['vend'][ixsat[0],...]-self.dd.mx['vstart'][ixsat[0],...])
+        NQactive = np.repeat(NQactive[...,np.newaxis],4,axis=-1) # extend to Quads
+        
+                      
+        FracSat = arrSAT / NQactive
+        
+        _compliance_sat = self.check_stat_perCCDandQ(FracSat, satur_lims, CCDs)
+        
+        self.addComplianceMatrix2Self(_compliance_sat,'saturation')
+        
+        
+        if not self.IsComplianceMatrixOK(_compliance_sat):
+            self.dd.flags.add('POORQUALDATA')
+            self.dd.flags.add('NONSATURATION')
+        if self.log is not None:
+            self.addComplianceMatrix2Log(
+                _compliance_sat, label='COMPLIANCE SATURATION FRACTION')
+        if self.report is not None:
+            self.addComplianceMatrix2Report(
+                _compliance_sat, label='COMPLIANCE SATURATION FRACTION',
+                caption='Fraction (over 1) of CCD image saturated. In this test '+\
+                    'saturations have to be extended enough for the test to be useful.'
+                    )
+        
+        # Background levels
+        
+        BGD_lims = self.perflimits['BGD_lims'] # dict
+        
+        ixbgd = np.where((self.dd.mx['label'][:,0] == 'col002') |
+                        (self.dd.mx['label'][:,0] == 'col004'))
+        
+        arrbgd = self.dd.mx['chk_avgflu_img'][ixbgd[0],...].copy()
+
+        _compliance_bgd = self.check_stat_perCCDandQ(
+                arrbgd, BGD_lims, CCDs)
+        
+        self.addComplianceMatrix2Self(_compliance_bgd,'bgd')
+        
+        
+        if not self.IsComplianceMatrixOK(_compliance_bgd):
+            self.dd.flags.add('POORQUALDATA')
+            self.dd.flags.add('BGD_OOL')
+        if self.log is not None:
+            self.addComplianceMatrix2Log(
+                _compliance_bgd, label='COMPLIANCE BACKGROUND LEVELS')
+        if self.report is not None:
+            self.addComplianceMatrix2Report(
+                _compliance_bgd, label='COMPLIANCE BACKGROUND LEVELS',
+                caption='Background Levels in ADU (average image area fluences across '+\
+                        'control frames pre- \& post- saturation).'
+                    )
         
 
     def basic_analysis(self):

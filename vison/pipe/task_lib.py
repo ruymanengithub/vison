@@ -222,8 +222,6 @@ def get_checkstats_T(self):
     Quads = Xindices.get_vals('Quad')
     
     
-    
-
     if not self.drill:
         
         for iObs in range(nObs):
@@ -257,36 +255,38 @@ def check_metrics_T(self):
     
     # FRACTION OF SATURATED PIXELS
     
-    _satur_lims = self.perflimits['SATUR']    
-    Ncols = self.inputs['structure']['Ncols']
-    satur_lims = OrderedDict()
-    for CCD in CCDs:
-        satur_lims[CCD] = OrderedDict()
-        for icol in range(1,Ncols+1):
-            satur_lims[CCD]['col%03i' % icol] = _satur_lims[CCD]
-    arrSAT = self.dd.mx['chk_NPIXSAT'][:].copy()
+    if self.inputs['test'] != 'PERSIST01':
     
-    NQactive = self.ccdcalc.NAXIS1 * (self.dd.mx['vend'][:]-self.dd.mx['vstart'][:])
-    NQactive = np.repeat(NQactive[...,np.newaxis],4,axis=-1) # extend to Quads
-    
-    FracSat = arrSAT / NQactive
-    
-    _compliance_sat = self.check_stat_perCCDandCol(FracSat, satur_lims, CCDs)
-    
-    self.addComplianceMatrix2Self(_compliance_sat,'saturation')
-    
-    
-    if not self.IsComplianceMatrixOK(_compliance_sat):
-        self.dd.flags.add('POORQUALDATA')
-        self.dd.flags.add('SATURATION')
-    if self.log is not None:
-        self.addComplianceMatrix2Log(
-            _compliance_sat, label='COMPLIANCE SATURATION FRACTION')
-    if self.report is not None:
-        self.addComplianceMatrix2Report(
-            _compliance_sat, label='COMPLIANCE SATURATION FRACTION',
-            caption='Fraction (over 1) of CCD image saturated.'
-                )
+        _satur_lims = self.perflimits['SATUR']    
+        Ncols = self.inputs['structure']['Ncols']
+        satur_lims = OrderedDict()
+        for CCD in CCDs:
+            satur_lims[CCD] = OrderedDict()
+            for icol in range(1,Ncols+1):
+                satur_lims[CCD]['col%03i' % icol] = _satur_lims[CCD]
+        arrSAT = self.dd.mx['chk_NPIXSAT'][:].copy()
+        
+        NQactive = self.ccdcalc.NAXIS1 * (self.dd.mx['vend'][:]-self.dd.mx['vstart'][:])
+        NQactive = np.repeat(NQactive[...,np.newaxis],4,axis=-1) # extend to Quads
+        
+        FracSat = arrSAT / NQactive
+        
+        _compliance_sat = self.check_stat_perCCDandCol(FracSat, satur_lims, CCDs)
+        
+        self.addComplianceMatrix2Self(_compliance_sat,'saturation')
+        
+        
+        if not self.IsComplianceMatrixOK(_compliance_sat):
+            self.dd.flags.add('POORQUALDATA')
+            self.dd.flags.add('SATURATION')
+        if self.log is not None:
+            self.addComplianceMatrix2Log(
+                _compliance_sat, label='COMPLIANCE SATURATION FRACTION')
+        if self.report is not None:
+            self.addComplianceMatrix2Report(
+                _compliance_sat, label='COMPLIANCE SATURATION FRACTION',
+                caption='Fraction (over 1) of CCD image saturated.'
+                    )
     
     # MISSING PIXELS
     
