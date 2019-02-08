@@ -311,7 +311,9 @@ class PERSIST01(Task):
                     _compliance_offsets, label='COMPLIANCE OFFSETS [%s]:' % reg)
             if self.report is not None:
                 self.addComplianceMatrix2Report(
-                    _compliance_offsets, label='COMPLIANCE OFFSETS [%s]:' % reg)
+                    _compliance_offsets, label='COMPLIANCE OFFSETS [%s]:' % reg,
+                    caption='Only considering the bias frames at beginning of '+\
+                    'test in this compliance matrix.')
 
         # cross-check of offsets: referred to pre-scan
 
@@ -335,7 +337,9 @@ class PERSIST01(Task):
                     _xcheck_offsets, label='OFFSET GRAD [%s-PRE] COMPLIANCE:' % reg)
             if self.report is not None:
                 self.addComplianceMatrix2Report(
-                    _xcheck_offsets, label='OFFSET GRAD [%s-PRE] COMPLIANCE:' % reg)
+                    _xcheck_offsets, label='OFFSET GRAD [%s-PRE] COMPLIANCE:' % reg,
+                    caption='Only considering the bias frames at beginning of '+\
+                    'test in this compliance matrix.')
 
         # absolute value of std
 
@@ -357,7 +361,9 @@ class PERSIST01(Task):
                     _compliance_std, label='COMPLIANCE RON [%s]:' % reg)
             if self.report is not None:
                 self.addComplianceMatrix2Report(
-                    _compliance_std, label='COMPLIANCE RON [%s]:' % reg)
+                    _compliance_std, label='COMPLIANCE RON [%s]:' % reg,
+                    caption='Only considering the bias frames at beginning of '+\
+                    'test in this compliance matrix.')
         
         
         # SATURATIONS
@@ -389,7 +395,8 @@ class PERSIST01(Task):
             self.addComplianceMatrix2Report(
                 _compliance_sat, label='COMPLIANCE SATURATION FRACTION',
                 caption='Fraction (over 1) of CCD image saturated. In this test '+\
-                    'saturations have to be extended enough for the test to be useful.'
+                    'saturations have to be extended enough for the test to be useful. '+\
+                    'Results obtained on the saturation inducing frame only.'
                     )
         
         # Background levels
