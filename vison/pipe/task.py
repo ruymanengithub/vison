@@ -20,6 +20,8 @@ import copy
 from collections import OrderedDict
 import sys
 import traceback
+#from multiprocessing import Pool
+import multiprocessing as mp
 
 from vison.support.report import Report
 from vison.support import vistime
@@ -46,6 +48,74 @@ HKKeys = ['CCD3_OD_T','CCD2_OD_T','CCD1_OD_T','COMM_RD_T',
           'FPGA_PCB_TEMP_B','RPSU_TEMP1',
           'RPSU_28V_PRI_I','RPSU_TEMP_2']
 
+
+def prepare_one_image(q,dd,ogse,inputs,iObs, 
+            nObs, CCDs, picklespath, doBadPixels,
+            doMask,MaskData,
+            doOffset,offsetkwargs,
+            doBias,BiasData,
+            doFF, FFData):
+    
+    if doFF:
+        FW_ID = dd.mx['wave'][iObs,0]
+        wavelength = ogse['FW']['F%i' % FW_ID]
+
+    for jCCD, CCDkey in enumerate(CCDs):
+        
+        #vstart = self.dd.mx['vstart'][iObs, jCCD]
+        #vend = self.dd.mx['vend'][iObs, jCCD]
+
+        ccdobj_name = '%s_proc' % dd.mx['File_name'][iObs, jCCD]
+
+        dpath = dd.mx['datapath'][iObs, jCCD]
+        infits = os.path.join(dpath, '%s.fits' %
+                              dd.mx['File_name'][iObs, jCCD])
+
+        print 'Test %s, OBS %i/%i: preparing %s...' % (
+            inputs['test'], iObs+1, nObs, infits)
+
+        # converting the FITS file into a CCD Object
+        ccdobj = ccd.CCD(infits)
+
+        fullccdobj_name = os.path.join(
+            picklespath, '%s.pick' % ccdobj_name)
+        
+        
+        if doBadPixels:
+            imgdata = ccdobj.extensions[-1].data.copy()
+            BPmask = np.isclose(imgdata,2**16-1.) | np.isclose(imgdata, 0.0)
+            ccdobj.get_mask(BPmask)
+        
+        if doMask:
+            ccdobj.get_mask(MaskData[CCDkey].extensions[-1].data)
+        
+
+        if doOffset:
+            for Quad in ccdobj.Quads:
+                # ccdobj.sub_offset(Quad,method='median',scan='pre',trimscan=[5,5],
+                #                  ignore_pover=False)
+                ccdobj.sub_offset(Quad, **offsetkwargs)
+
+        if doBias:
+            ccdobj.sub_bias(BiasData[CCDkey].extensions[-1].data, 
+                            extension=-1)
+
+        if doFF:
+            FF = FFData['nm%i' % wavelength][CCDkey]
+            ccdobj.divide_by_flatfield(FF.extensions[-1].data, 
+                                       extension=-1)
+            
+        
+
+        # cPickleDumpDictionary(dict(ccdobj=ccdobj),fullccdobj_name)
+        cPickleDumpDictionary(ccdobj, fullccdobj_name)
+        # ccdobj.writeto(fullccdobj_name,clobber=True)
+        # self.dd.mx['ccdobj_name'][iObs, jCCD] = ccdobj_name
+        q.put([iObs,jCCD,ccdobj_name])
+
+
+def _prepare_one_image(args):
+    prepare_one_image(*args)
 
 class Task(object):
     """ """
@@ -421,6 +491,7 @@ class Task(object):
             self.addHK_2_dd()
         else:
             self.addmockHK_2_dd()
+        
 
     def ingest_data_MetaTest(self):
         raise NotImplementedError("Method implemented in child-class")
@@ -660,14 +731,21 @@ class Task(object):
                 self.catchtraceback()
                 nfigkey = 'BS_%s' % figkey
                 self.skipMissingPlot(nfigkey, ref=figkey)
+                
+                
+    
+    
 
     def prepare_images(self, doExtract=True, doBadPixels=False, doMask=False, doOffset=False, doBias=False,
                        doFF=False):
         """ """
+        
+        
 
         if self.report is not None:
             self.report.add_Section(
                 keyword='prep_data', Title='Images Pre-Processing', level=0)
+            
 
         if not doExtract:
             if self.report is not None:
@@ -711,6 +789,9 @@ class Task(object):
             self.log.info(NotFoundMsg)
             _reportNotFound(self.report, NotFoundMsg)
             doMask = False
+            MaskData = None
+        else:
+            MaskData = None
         
         if doOffset:
             self.proc_histo['SubOffset'] = True
@@ -720,7 +801,8 @@ class Task(object):
                 self.report.add_Text('Subtracting Offset.')
                 msg = 'offsetkwargs=%s' % offsetkwargs.__repr__()
                 self.report.add_Text(msg,verbatim=True)
-                
+        else:
+            offsetkwargs = {}
 
         if doBias and 'bias' in self.inputs['inCDPs']:
             BiasData = _loadCDP('Bias', 'Loading And Subtracting Bias Structure...')
@@ -730,6 +812,9 @@ class Task(object):
             self.log.info(NotFoundMsg)
             _reportNotFound(self.report, NotFoundMsg)
             doBias = False
+            BiasData = None
+        else:
+            BiasData = None
 
         if doFF and 'FF' in self.inputs['inCDPs']:
             FFData = _loadCDP('FF', 'Loading Flat-Field Maps...')
@@ -739,6 +824,9 @@ class Task(object):
             self.log.info(NotFoundMsg)
             _reportNotFound(self.report, NotFoundMsg)
             doFF = False
+            FFData = None
+        else:
+            FFData = None
 
         # Initialize new columns
 
@@ -760,65 +848,39 @@ class Task(object):
         if not self.drill:
 
             picklespath = self.inputs['subpaths']['ccdpickles']
-
-            for iObs in range(nObs): 
-            #for iObs in range(2): # TESTS
-                if doFF:
-                    FW_ID = self.dd.mx['wave'][iObs,0]
-                    wavelength = self.ogse['FW']['F%i' % FW_ID]
-
-                for jCCD, CCDkey in enumerate(CCDs):
-                    
-                    #vstart = self.dd.mx['vstart'][iObs, jCCD]
-                    #vend = self.dd.mx['vend'][iObs, jCCD]
-
-                    ccdobj_name = '%s_proc' % self.dd.mx['File_name'][iObs, jCCD]
-
-                    dpath = self.dd.mx['datapath'][iObs, jCCD]
-                    infits = os.path.join(dpath, '%s.fits' %
-                                          self.dd.mx['File_name'][iObs, jCCD])
-
-                    print 'Test %s, OBS %i/%i: preparing %s...' % (
-                        self.inputs['test'], iObs+1, nObs, infits)
-
-                    # converting the FITS file into a CCD Object
-                    ccdobj = ccd.CCD(infits)
-
-                    fullccdobj_name = os.path.join(
-                        picklespath, '%s.pick' % ccdobj_name)
-                    
-                    
-                    if doBadPixels:
-                        imgdata = ccdobj.extensions[-1].data.copy()
-                        BPmask = np.isclose(imgdata,2**16-1.) | np.isclose(imgdata, 0.0)
-                        ccdobj.get_mask(BPmask)
-                    
-                    if doMask:
-                        ccdobj.get_mask(MaskData[CCDkey].extensions[-1].data)
-                    
-
-                    if doOffset:
-                        for Quad in ccdobj.Quads:
-                            # ccdobj.sub_offset(Quad,method='median',scan='pre',trimscan=[5,5],
-                            #                  ignore_pover=False)
-                            ccdobj.sub_offset(Quad, **offsetkwargs)
-
-                    if doBias:
-                        ccdobj.sub_bias(BiasData[CCDkey].extensions[-1].data, 
-                                        extension=-1)
-
-                    if doFF:
-                        FF = FFData['nm%i' % wavelength][CCDkey]
-                        ccdobj.divide_by_flatfield(FF.extensions[-1].data, 
-                                                   extension=-1)
+            
                         
-                    
+            arglist = []
+            
+            mgr = mp.Manager()
+            queue = mgr.Queue()
+            
+            for iObs in range(nObs):
+                arglist.append([queue,self.dd,self.ogse,self.inputs,
+                                iObs,nObs, CCDs, picklespath, doBadPixels,
+                                doMask,MaskData,
+                                doOffset,offsetkwargs,
+                                doBias,BiasData,
+                                doFF, FFData])
+            
+            
+            pool = mp.Pool(processes=self.processes)
+            
+            for i in range(len(arglist)):
+                pool.apply_async(prepare_one_image, args=arglist[i])
+            pool.close()
+            pool.join()
+            
 
-                    # cPickleDumpDictionary(dict(ccdobj=ccdobj),fullccdobj_name)
-                    cPickleDumpDictionary(ccdobj, fullccdobj_name)
-                    # ccdobj.writeto(fullccdobj_name,clobber=True)
-                    self.dd.mx['ccdobj_name'][iObs, jCCD] = ccdobj_name
-
+            replies = []
+            while not queue.empty():
+                replies.append(queue.get())
+            
+            for reply in replies:
+                iObs, jCCD, ccdobj_name = reply
+                self.dd.mx['ccdobj_name'][iObs,jCCD] = ccdobj_name
+            
+        
         return None
 
     def add_inputs_to_report(self):

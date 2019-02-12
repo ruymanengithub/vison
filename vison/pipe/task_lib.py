@@ -201,6 +201,7 @@ def save_CDP(self, cdpobj):
 
 def get_checkstats_T(self):
     """" """
+    
     Xindices = copy.deepcopy(self.dd.indices)
 
     if 'Quad' not in Xindices.names:
