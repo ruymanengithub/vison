@@ -113,7 +113,7 @@ def produce_IndivFlats(infitsList, outfitsList, settings, runonTests, processes=
     pool = mp.Pool(processes=processes)
     #_produce_SingleFlatfield(arglist[0]) # TESTS
     pool.map(_produce_SingleFlatfield, arglist)
-    #pool.close()
+    pool.close()
     
 
 def produce_MasterFlat(infitsList, outfits, mask=None, settings={}):
