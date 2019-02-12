@@ -109,9 +109,11 @@ def produce_IndivFlats(infitsList, outfitsList, settings, runonTests, processes=
     
     #produce_SingleFlatfield(*arglist[0]) # TESTS
     
+    #for arg in arglist:
+    #    produce_SingleFlatfield(*arg)
+                            
     # generate flats using multiprocessing
     pool = mp.Pool(processes=processes)
-    #_produce_SingleFlatfield(arglist[0]) # TESTS
     pool.map(_produce_SingleFlatfield, arglist)
     pool.close()
     
