@@ -11,7 +11,7 @@ Created on Fri Apr 22 16:13:22 2016
 
 # IMPORT STUFF
 
-from multiprocessing import Pool
+import multiprocessing as mp
 from pdb import set_trace as stop
 import numpy as np
 import datetime
@@ -38,6 +38,7 @@ Quads = ['E', 'F', 'G', 'H']
 def produce_SingleFlatfield(infits, outfits, settings=None, runonTests=False):
     """ """
     #runonTests = False
+    
 
     insettings = dict(kind='spline', splinemethod='cubic',
                       doBin=True,binsize=50,filtertype='median')
@@ -48,7 +49,7 @@ def produce_SingleFlatfield(infits, outfits, settings=None, runonTests=False):
     
 
     ccdin = cPickleRead(infits)
-    inwithpover = ccdin.withpover
+    #inwithpover = ccdin.withpover
     NrowsCCD = ccdin.NrowsCCD
 
     ccdout = ccdmodule.CCD(withpover=True)
@@ -58,6 +59,7 @@ def produce_SingleFlatfield(infits, outfits, settings=None, runonTests=False):
     ccdout.add_extension(np.zeros(oshape, dtype='float32'), label='MODEL')
 
     for Q in Quads:
+        
         Qregmodel = ccdin.get_region2Dmodel(Q, area='img', vstart=0, vend=NrowsCCD,
                                             canonical=True, extension=-1,
                                             **insettings)
@@ -71,6 +73,7 @@ def produce_SingleFlatfield(infits, outfits, settings=None, runonTests=False):
 
         ccdout.set_quad(QFF, Q, canonical=True, extension=0)
         
+        
         # Set 2nd Extension: model
 
         QMod = np.ones(Qimg.shape, dtype='float32')
@@ -78,12 +81,14 @@ def produce_SingleFlatfield(infits, outfits, settings=None, runonTests=False):
              0:NrowsCCD] = Qregmodel.imgmodel.copy()
 
         ccdout.set_quad(QMod, Q, canonical=True, extension=1)
-
+        
+    
         # divide image by model
         
     ccdout.divide_by_flatfield(ccdout.extensions[1].data, extension=0)
-
+    
     ccdout.writeto(outfits, clobber=True)
+    
     
     return None
 
@@ -101,12 +106,15 @@ def produce_IndivFlats(infitsList, outfitsList, settings, runonTests, processes=
 
     for ix in range(len(infitsList)):
         arglist.append((infitsList[ix], outfitsList[ix], settings, runonTests))
-
+    
+    #produce_SingleFlatfield(*arglist[0]) # TESTS
+    
     # generate flats using multiprocessing
-    pool = Pool(processes=processes)
+    pool = mp.Pool(processes=processes)
     #_produce_SingleFlatfield(arglist[0]) # TESTS
     pool.map(_produce_SingleFlatfield, arglist)
-
+    #pool.close()
+    
 
 def produce_MasterFlat(infitsList, outfits, mask=None, settings={}):
     """Produces a Master Flat out of a number of flat-illumination exposures.
