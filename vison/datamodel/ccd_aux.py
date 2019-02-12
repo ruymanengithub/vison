@@ -273,10 +273,9 @@ def get_region2Dmodel(ccdobj, Q, area='img', kind='spline', splinemethod='cubic'
 
     regmodel = Model2D(subregion)
 
-    if doFilter:
-        if filtsize > 1:
-            regmodel.filter_img(filtsize=filtsize, filtertype=filtertype,
-                                Tests=False)
+    if doFilter and filtsize>1:
+        regmodel.filter_img(filtsize=filtsize, filtertype=filtertype,
+                            Tests=False)
 
     if doBin:
         regmodel.bin_img(boxsize=binsize, stat=filtertype)
