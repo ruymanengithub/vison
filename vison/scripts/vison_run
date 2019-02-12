@@ -93,8 +93,9 @@ if __name__ == '__main__':
                       help="Run in 'test' mode (just ingest inputs and initialize pipeline and output directories)")
     parser.add_option("-O", "--ObsID", dest="startobsid", default="0",
                       help="Only use data from given ObsID and onwards. Only used in 'wait' mode.")
-    parser.add_option("-m", "--multithread", dest="multithread", action="store_true", default=False,
-                      help="Use all CPUs available? Default=False [single thread]")
+    parser.add_option("-m", "--multithread", dest="multithread", default=1,
+                      help="Use multithreading? Number of threads / cores to use. Default=1 [single thread]. Number of threads must be "+\
+                      "< number of available cores. Only some tasks are parallelized.")
     parser.add_option("-t", "--tag", dest="tag", default="",
                       help="Tag to be added to log-file name for ease of identification. Optional.")
     parser.add_option("-i", "--interactive", dest="interactive", action="store_true",
@@ -117,7 +118,7 @@ if __name__ == '__main__':
     debug = options.debug
     dotest = options.test
     startobsid = int(options.startobsid)
-    multithread = options.multithread
+    multithread = int(options.multithread)
     tag = options.tag
     interactive = options.interactive
     
@@ -132,10 +133,10 @@ if __name__ == '__main__':
         inputdict = broadcast_todo_flags(inputdict, docheck=docheck, dotest=dotest)
     
     
-    if multithread:
+    if multithread > 1:
         cpu_count = multiprocessing.cpu_count()
-    else:
-        cpu_count = 1
+        assert multithread <= cpu_count, 'Number of threads (%i) exceeds number of cpus (%i).' %\
+                                                            (multithread,cpu_count)
     
     if interactive:
         import matplotlib.pyplot as plt
@@ -143,7 +144,7 @@ if __name__ == '__main__':
     
     pipe = Pipe(inputdict, dolog=dolog, drill=drill,
                 debug=debug, startobsid=startobsid,
-                processes=cpu_count,tag=tag)
+                processes=multithread,tag=tag)
     
     
     if wait:
