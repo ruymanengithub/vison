@@ -22,6 +22,7 @@ import copy
 from collections import OrderedDict
 import pandas as pd
 
+from vison.datamodel import cdp
 from vison.pipe.task import HKKeys
 from vison.support import context, utils
 from vison.datamodel import scriptic as sc
@@ -247,6 +248,27 @@ class CHINJ02(InjTask):
         _Quads_dict = dict(top = ['E','F'],
                            bottom = ['G','H'])
         
+        
+        # INJECTION CURVES
+        
+        inj_curves_cdp = cdp.CDP()
+        inj_curves_cdp.header = CDP_header.copy()
+        inj_curves_cdp.path = prodspath
+        inj_curves_cdp.data = OrderedDict()
+        
+        
+        xdummy = np.arange(10,dtype='float32')
+        ydummy = np.zeros(10,dtype='float32')
+        
+        for jCCD, CCDk in enumerate(CCDs):
+            
+            inj_curves_cdp.data[CCDk] = OrderedDict()
+            
+            for kQ, Q in enumerate(Quads):
+                inj_curves_cdp.data[CCDk][Q] = OrderedDict(x=xdummy.copy(),
+                                                      y=ydummy.copy())
+                        
+        
         for CCDhalf in CCDhalves:
             MCH02_dd[CCDhalf] = OrderedDict()
             MCH02_dd['meta'][CCDhalf] = OrderedDict()
@@ -285,7 +307,11 @@ class CHINJ02(InjTask):
                     MCH02_dd[CCDhalf]['IDL'] = IDL.copy()
                     MCH02_dd[CCDhalf]['INJ_%s%s' % (jCCD+1, Q)] = med_inj.copy()
                     
-                
+                    
+                    inj_curves_cdp.data[CCDk][Q]['x'] = IDL.copy()
+                    inj_curves_cdp.data[CCDk][Q]['y'] = med_inj.copy()
+                    
+                    
                 MCH02_dd['meta'][CCDhalf]['toi_ch'] = toi_ch
                 MCH02_dd['meta'][CCDhalf]['id_dly'] = id_dly_opt
                 MCH02_dd['meta'][CCDhalf]['IDH'] = self.dd.mx['IDH'][selix,jCCD].flatten()[0]
@@ -293,7 +319,17 @@ class CHINJ02(InjTask):
                 MCH02_dd['meta'][CCDhalf]['IG1'] = self.dd.mx[IG1key][selix,jCCD].flatten()[0]
                 IG2key = 'IG2_%s' % CCDhalf[0].upper()
                 MCH02_dd['meta'][CCDhalf]['IG2'] = self.dd.mx[IG2key][selix,jCCD].flatten()[0]
-                
+        
+        
+         # PLOT
+        
+        fdict_meta_plot = self.figdict['CH02_meta'][1]
+        fdict_meta_plot['data'] = inj_curves_cdp.data.copy()
+        
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['CH02_meta'], 
+                               dobuilddata=False)
+        
         
         # REPORT RESULTS AS TABLE CDPs 
         

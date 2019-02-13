@@ -79,6 +79,15 @@ extract_alrow_dict = dict(
               suptitle='CHINJ02: ALONG-ROWs.')
     )
 
+chinj02_meta_dict = dict(
+    figname='CHINJ02_Injection_profiles.png',
+    caption='CHINJ02: Injection profiles.',
+    meta=dict(doLegend=False,
+              ylabel='Injection [ADU]',
+              xlabel='IDL [V]',
+              suptitle='CHINJ02: INJECTION PROFILE.',
+              corekwargs=dict(marker='.',linestyle='--'))
+    )
 
 def get_CH02figs():
     CH02figs = dict()
@@ -92,6 +101,8 @@ def get_CH02figs():
             figclasses.Fig_Beam2DPlot, extract_alrow_dict]
     CH02figs['CH02_alcol'] = [
             figclasses.Fig_Beam2DPlot, extract_alcol_dict]
+    CH02figs['CH02_meta'] = [
+            figclasses.Fig_Beam2DPlot, chinj02_meta_dict]
     CH02figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return CH02figs
 
