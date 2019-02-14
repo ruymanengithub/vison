@@ -241,7 +241,8 @@ class FLAT0X(FlatTask):
             plot average profiles f. each CCD and Q (color coded by time)
 
         """
-
+        
+        
         if self.report is not None:
             self.report.add_Section(
                 keyword='indivFF', Title='Individual Flat-Fields', level=0)

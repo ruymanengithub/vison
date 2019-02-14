@@ -155,7 +155,8 @@ class Model2D():
 
         return None
 
-    def get_model_splines(self, sampling=1, splinemethod='cubic', useBin=False):
+    def get_model_splines(self, sampling=1, splinemethod='cubic', useBin=False,
+                          recoveredges=False,pdegree=5):
         """ """
 
         #corners = self.corners
@@ -196,7 +197,17 @@ class Model2D():
                                      (xx, yy), method=splinemethod, fill_value=np.nan)
 
         nans = np.isnan(pilum)
-        pilum[nans] = self.img[nans].copy()
+        
+        if nans.sum>0:
+            
+            if recoveredges:
+                
+                p = self.fit2Dpol_xyz(sxx.flatten(),syy.flatten(),zz,degree=pdegree)
+                
+                pilum[nans] = p(xx[nans],yy[nans])
+                
+            else:
+                pilum[nans] = self.img[nans].copy()
         
         self.imgmodel = pilum.copy()
 
@@ -260,6 +271,7 @@ class Model2D():
 
 def get_region2Dmodel(ccdobj, Q, area='img', kind='spline', splinemethod='cubic', pdegree=2,
                       doFilter=False, doBin=True, filtsize=1, binsize=1, filtertype='mean',
+                      recoveredges=False,
                       vstart=0, vend=2086, canonical=True, extension=-1):
     """ """
 
@@ -285,7 +297,10 @@ def get_region2Dmodel(ccdobj, Q, area='img', kind='spline', splinemethod='cubic'
             sampling=filtsize, pdegree=pdegree, useBin=doBin)
     elif kind == 'spline':
         regmodel.get_model_splines(sampling=filtsize,
-                                   splinemethod=splinemethod, useBin=doBin)
+                                   splinemethod=splinemethod, 
+                                   useBin=doBin,
+                                   recoveredges=recoveredges,
+                                   pdegree=pdegree)
 
     return regmodel
 

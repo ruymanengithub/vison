@@ -82,13 +82,10 @@ def produce_SingleFlatfield(infits, outfits, settings=None, runonTests=False):
 
         ccdout.set_quad(QMod, Q, canonical=True, extension=1)
         
-    
-        # divide image by model
-        
+            
     ccdout.divide_by_flatfield(ccdout.extensions[1].data, extension=0)
     
     ccdout.writeto(outfits, clobber=True)
-    
     
     return None
 
