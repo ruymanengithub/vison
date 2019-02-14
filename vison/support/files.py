@@ -28,11 +28,14 @@ def cPickleDumpDictionary(dictionary, output, protocol=2):
     out.close()
 
 
-def cPickleRead(file):
+def cPickleRead(ffile):
     """
     Loads data from a pickled file.
     """
-    return cPickle.load(open(file))
+    with open(ffile,'r') as f:
+        inpick = cPickle.load(f)
+    f.close()
+    return inpick
 
 
 def cPickleDump(data, output, protocol=2):
