@@ -503,14 +503,16 @@ class TP01(PumpTask):
             
             # Saving the MasterCat
             
-            mastercat = self.CDP_lib['MASTERCAT']
-            mastercat.header = CDP_header.copy()
-            mastercat.meta = OrderedDict(THRESHOLD=threshold)
-            mastercat.path = productspath
-            mastercat.data = masterdict.copy()
+            for CCDk in CCDs:
             
-            self.save_CDP(mastercat)
-            self.pack_CDP_to_dd(mastercat,'MASTERCAT')
+                kmastercat = self.CDP_lib['MASTERCAT_%s' % CCDk]
+                kmastercat.header = CDP_header.copy()
+                kmastercat.meta = OrderedDict(THRESHOLD=threshold)
+                kmastercat.path = productspath
+                kmastercat.data = masterdict[CCDk].copy()
+                
+                self.save_CDP(kmastercat)
+                self.pack_CDP_to_dd(kmastercat,'MASTERCAT_%s' % CCDk)
             
     
 
@@ -547,14 +549,14 @@ class TP01(PumpTask):
         if self.report is not None:
             self.report.add_Section(
                 keyword='meta', Title='TP01 Meta Analysis', level=0)
-            
+        
         
         DDindices = copy.deepcopy(self.dd.indices)
         CCDs = DDindices.get_vals('CCD')
         allQuads = DDindices.get_vals('Quad')
 
         productspath = self.inputs['subpaths']['products']
-
+        Nshuffles = self.inputs['Nshuffles_V']
         
         mastercatpick = self.dd.products['MASTERCAT']
         
@@ -572,69 +574,149 @@ class TP01(PumpTask):
         
         tois = np.unique(self.dd.mx['toi_tp'][:,0])
         toikeys = ['u%04i' % item for item in tois]
+        Ampcols = ['A_%s' % toikey for toikey in toikeys]
         
-        if not self.drill:
-            
-            onTests = True
+        
+        onTests = True
+        
+        
+        if not onTests:
+        
+            if not self.drill:
+                
+       
+                mergecat = OrderedDict()
+                
+                
+                def _thin_down(cat,N):
+                    
+                    ckeys = cat.keys()
+                    catlen = len(cat[ckeys[0]])
+                    if N>=catlen:
+                        return cat.copy()
+                    else:
+                        thcat = OrderedDict()
+                        ixsel = (np.random.choice(np.arange(catlen),N),)
                         
+                        for key in ckeys:
+                            thcat[key] = cat[key][ixsel].copy()
+                        return thcat
+                        
+                
+                print('\nMerging Dipole Catalogs...\n')
+                
+                for jCCD, CCDk in enumerate(CCDs):
+                    
+                    
+                    mergecat[CCDk] = OrderedDict()
+                    
+                    for iQ, Q in enumerate(allQuads):
+                        
+                        mergecat[CCDk][Q] = OrderedDict()
+                        
+                        rawcatCQ = masterdata[CCDk][Q].copy()
+                        
+                        # Pandizing the toi catalogs
+                        
+                        for modkey in modkeys:
+                            
+                            for toikey in toikeys:
+                                
+                                if onTests:
+                                    rawcatCQ[modkey][toikey] = _thin_down(rawcatCQ[modkey][toikey],100)
+                                    
+                                rawcatCQ[modkey][toikey] =\
+                                        pd.DataFrame.from_dict(rawcatCQ[modkey][toikey])
+                        
+                        # Merging the toi catalogs
+                        
+                        for modkey in modkeys:
+                            
+                            print('%s%s, %s...' % (CCDk,Q,modkey))
+                            
+                            if onTests:
+                                
+                                mergecat[CCDk][Q][modkey] = cPickleRead('vtpcat_CCD1_E_m123.pick')
+                                N = len(mergecat[CCDk][Q][modkey])
+                                ixsel = np.random.choice(np.arange(N),100)
+                                
+                                
+                                mergecat[CCDk][Q][modkey] = mergecat[CCDk][Q][modkey].iloc[ixsel]
+                                amplitudes = mergecat[CCDk][Q][modkey][Ampcols]
+                                
+                                Pc, tau = tptools.batch_fit_PcTau_vtp(amplitudes,tois,Nshuffles)
+                                
+                                mergecat[CCDk][Q][modkey]['Pc'] = pd.Series(Pc,
+                                        index=mergecat[CCDk][Q][modkey].index)
+                                
+                                mergecat[CCDk][Q][modkey]['tau'] = pd.Series(tau,
+                                        index=mergecat[CCDk][Q][modkey].index)
+                                
+                                
+                            else:
+                                
+                                kqkmerged = tptools.merge_vtp_dipole_cats_bypos(
+                                        rawcatCQ[modkey].copy(),
+                                        toikeys[1:],toikeys[0])
+                                
+                                cols2drop = []
+                                for toikey in toikeys:
+                                    cols2drop += ['X_%s' % toikey,'Y_%s' % toikey,'S_%s' % toikey]
+                                kqkmerged.drop(columns=cols2drop,axis=1)
+                                
+    
+                                amplitudes = kqkmerged[Ampcols]
+                                
+    
+                                Pc, tau = tptools.batch_fit_PcTau_vtp(amplitudes,tois,Nshuffles)
+                                
+                                kqkmerged['Pc'] = pd.Series(Pc,
+                                        index=kqkmerged.index)
+                                
+                                kqkmerged['tau'] = pd.Series(tau,
+                                        index=kqkmerged.index)
+                                
+                                
+                                mergecat[CCDk][Q][modkey] = kqkmerged
+            
+        # Store output catalog(s) as a CDP
+        
+        if not onTests:
+          
+            for CCDk in CCDs:
+                
+                kmergedata = mergecat[CCDk].copy()
+                colnames = kmergedata[allQuads[0]][modkeys[0]].keys().tolist()
+                
+                for Q in allQuads:
+                    for modkey in modkeys:
+                        kmergedata[Q][modkey] = kmergedata[Q][modkey].as_matrix()
+                
+                kmergecat = self.CDP_lib['MERGEDCAT_%s' % CCDk]
+                kmergecat.header = CDP_header.copy()
+                kmergecat.meta = OrderedDict(
+                        Quadrants=allQuads,
+                        modes=modkeys,
+                        colnames=colnames)
+                kmergecat.path = productspath
+                kmergecat.data = kmergedata.copy()
+                
+                self.save_CDP(kmergecat)
+                self.pack_CDP_to_dd(kmergecat,'MERGEDCAT_%s' % CCDk)
+            
+        else:
+            
             mergecat = OrderedDict()
             
-            
-            print('\nMerging Dipole Catalogs...\n')
-            
-            for jCCD, CCDk in enumerate(CCDs):
+            for CCDk in CCDs:
                 
+                kpick = os.path.join(productspath,'TP01_MergedCat_%s.pick' % CCDk)
+                kmergedcat = cPickleRead(kpick)
                 
-                mergecat[CCDk] = OrderedDict()
-                
-                for iQ, Q in enumerate(allQuads):
-                    
-                    mergecat[CCDk][Q] = OrderedDict()
-                    
-                    rawcatCQ = masterdata[CCDk][Q].copy()
-                    
-                    # Pandizing the toi catalogs
-                    
-                    for modkey in modkeys:
-                        
-                        for toikey in toikeys:
-                        
-                            rawcatCQ[modkey][toikey] =\
-                                    pd.DataFrame.from_dict(rawcatCQ[modkey][toikey])
-                    
-                    # Merging the toi catalogs
-                    
-                    for modkey in modkeys:
-                        
-                        print('%s%s, %s...' % (CCDk,Q,modkey))
-                        
-                        if onTests:
-                            
-                            mergecat[CCDk][Q][modkey] = cPickleRead('vtpcat_CCD1_E_m123.pick')
-                            
-                            
-                            Ampcols = ['A_%s' % toikey for toikey in toikeys]
-                            
-                            amplitudes = mergecat[CCDk][Q][modkey][Ampcols]
-                            
-                            Nshuffles = 5000 # TESTS
-                            Pc,Tau = tptools.batch_fit_PcTau_vtp(amplitudes,tois,Nshuffles)
-                            
-                        else:
-                            
-                            kqkmerged = tptools.merge_vtp_dipole_cats_bypos(
-                                    rawcatCQ[modkey].copy(),
-                                    toikeys[1:],toikeys[0])
-                            
-                            cols2drop = []
-                            for toikey in toikeys:
-                                cols2drop += ['X_%s' % toikey,'Y_%s' % toikey,'S_%s' % toikey]
-                            kqkmerged.drop(columns=cols2drop,axis=1)
-                            
-                            mergecat[CCDk][Q][modkey] = kqkmerged
-                        
-                        
-                        stop()
+                mergecat[CCDk] = pd.DataFrame(data=kmergedcat['data']['E']['m123'],index=np.arange(100),columns=kmergedcat['meta']['colnames'])
+        
+        # Produce Pc, tau heatmaps for each tp mode across CCD beam
             
+        stop()
                     
         

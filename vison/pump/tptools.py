@@ -319,6 +319,7 @@ def fcomp_distamp_dipoles(merged, mcat):
     _mix = np.zeros_like(_X, dtype='int32') - 1
 
     for ix in range(len(_X)):
+        
         disc = np.isclose(
             ((merged['uX']-_X[ix])**2.+(merged['uY']-_Y[ix])**2.)**0.5, 0.) & (_S[ix] == merged['uS'])
         try:
@@ -439,6 +440,5 @@ def batch_fit_PcTau_vtp(Amplitudes,tois,Nshuffles=5000):
     for i in range(Np):
         Pc[i], tau[i] = fit_PcTau_vtp(Amp_mx[i,:],tois,Nshuffles)
     
-    stop()
     
     return Pc, tau
