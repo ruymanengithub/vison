@@ -21,6 +21,7 @@ import copy
 from collections import OrderedDict
 import pandas as pd
 import string as st
+from matplotlib.colors import Normalize
 
 from vison.datamodel import cdp
 from vison.support import utils
@@ -712,11 +713,54 @@ class TP01(PumpTask):
                 
                 kpick = os.path.join(productspath,'TP01_MergedCat_%s.pick' % CCDk)
                 kmergedcat = cPickleRead(kpick)
+                colnames = kmergedcat['meta']['colnames']
                 
-                mergecat[CCDk] = pd.DataFrame(data=kmergedcat['data']['E']['m123'],index=np.arange(100),columns=kmergedcat['meta']['colnames'])
+                mergecat[CCDk] = OrderedDict()
+                
+                for Q in allQuads:
+                    mergecat[CCDk][Q] = OrderedDict()
+                    
+                    for modkey in modkeys:
+                        mergecat[CCDk][Q][modkey] = pd.DataFrame(data=kmergedcat['data'][Q][modkey],index=np.arange(100),columns=colnames)
         
         # Produce Pc, tau heatmaps for each tp mode across CCD beam
             
-        stop()
+        for modkey in modkeys:
+            
+            pltfig = self.figdict['TP01meta_%s' % modkey]
+            
+            pldata = OrderedDict()
+            
+            HeatmapPeaks = []
+            
+            
+            for CCDk in CCDs:
+                pldata[CCDk] = OrderedDict()
+                for Q in allQuads:
+                    pldata[CCDk][Q] = OrderedDict()
                     
-        
+                    logtau = np.log10(mergecat[CCDk][Q][modkey]['tau'].as_matrix().copy())
+                    logPc = np.log10(mergecat[CCDk][Q][modkey]['Pc'].as_matrix().copy())
+                    
+                    Heatmap, xedges, yedges = np.histogram2d(logtau, logPc, bins=(100,50), 
+                range=[[2,5],[-6,-3]]) 
+                    
+                    if CCDk == CCDs[0] and Q == allQuads[0]:
+                        extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
+                    
+                    HeatmapPeaks.append(np.nanmax(Heatmap))
+                    
+                    
+                    pldata[CCDk][Q]['img'] = Heatmap.copy()
+            
+            pltfig[1]['data'] = pldata.copy()
+            
+            normfunction = Normalize(vmin=1,vmax=max(HeatmapPeaks)/2.)
+                    
+            pltfig[1]['meta']['corekwargs']['norm'] = normfunction
+            pltfig[1]['meta']['corekwargs']['extent'] = extent
+                  
+        if self.report is not None:
+            Mfigkeys = ['TP01meta_%s' % mkey for mkey in modkeys]
+            self.addFigures_ST(figkeys=Mfigkeys,
+                           dobuilddata=False)

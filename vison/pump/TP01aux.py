@@ -15,6 +15,7 @@ from pdb import set_trace as stop
 import numpy as np
 import os
 from collections import OrderedDict
+from matplotlib import cm
 
 from vison.datamodel import cdp
 from vison.plot import figclasses
@@ -59,7 +60,20 @@ check_injstd_dict = dict(stats=['chk_std_inject'],
                                    suptitle='TP01-checks: Injection STD')
                          )
 
-
+def gt_meta_heatmaps(mkey):
+    return dict(
+            figname='TP01_PcTau_Heatmap_%s.png' % mkey,
+            caption='TP01: log10(tau)-log10(Pc) Heatmap for pumping mode %s.' % mkey,
+            meta=dict(doLegend=False,
+              doColorbar=True,
+              suptitle='TP01: %s' % mkey,
+              corekwargs=dict(cmap=cm.inferno_r,
+                               aspect='auto',
+                               norm=None,
+                               origin='lower left',
+                               extent=[]))
+                )
+    
 def get_TP01figs():
     TP01figs = dict()
     TP01figs['TP01checks_offsets'] = [
@@ -68,6 +82,14 @@ def get_TP01figs():
     TP01figs['TP01checks_injlevel'] = [
         trends.Fig_Basic_Checkstat, check_injlevel_dict]
     TP01figs['TP01checks_injstd'] = [trends.Fig_Basic_Checkstat, check_injstd_dict]
+    
+    
+    for mkey in ['m123','m234','m341','m412']:
+        
+        TP01figs['TP01meta_%s' % mkey] = [figclasses.Fig_BeamImgShow,
+                gt_meta_heatmaps(mkey)]
+    
+    
     TP01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return TP01figs
 
