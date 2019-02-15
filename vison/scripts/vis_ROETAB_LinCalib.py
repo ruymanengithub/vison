@@ -118,7 +118,7 @@ def find_discrete_voltages_inwaveform(rV, levels, filtered=None, debug=False):
         
     slope_nsamp = 100
     slope_tol = 0.01
-    Vmargin = 50. # mV
+    Vmargin = 0. # mV
 
     #Nsamp = len(iV)
     Nclust = len(levels)
@@ -151,7 +151,8 @@ def find_discrete_voltages_inwaveform(rV, levels, filtered=None, debug=False):
     lev_max = np.max(levels)
     
     sigthresh = (Vmax-Vmin)*lev_min_nozero/lev_max+Vmin-Vmargin
-    
+    #sigthresh = (Vmax-Vmin)*lev_min_nozero/lev_max+Vmin+Vmargin
+                 
     ixflatnsignal = np.where((np.abs(slopes) <= slope_tol) &\
                             (iV >= sigthresh))
     
