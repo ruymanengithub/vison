@@ -118,7 +118,7 @@ def find_discrete_voltages_inwaveform(rV, levels, filtered=None, debug=False):
         
     slope_nsamp = 100
     slope_tol = 0.01
-    Vmargin = 0. # mV
+    Vmargin = 25. # mV
 
     #Nsamp = len(iV)
     Nclust = len(levels)
