@@ -73,7 +73,7 @@ RONs_lims = dict()
 for CCD in CCDs:
     #RONs_lims[CCD] = [RONs[CCD] +
     #                  RONs_margins[0], RONs[CCD]+RONs_margins[1]]
-    RONs_lims[CCD] = [0.7,1.4]
+    RONs_lims[CCD] = [0.86,1.44]
 
 gains = dict(CCD1=3.3, CCD2=3.3, CCD3=3.3)
 
