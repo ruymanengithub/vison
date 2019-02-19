@@ -81,7 +81,8 @@ class CHINJ01(InjTask):
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
                          ('basic', self.basic_analysis),
-                         ('meta', self.meta_analysis)]
+                         ('meta', self.meta_analysis),
+                         ('debugtask', self.debugtask)]
         super(CHINJ01, self).__init__(inputs, log, drill, debug)
         self.name = 'CHINJ01'
         self.type = 'Simple'
@@ -206,6 +207,7 @@ class CHINJ01(InjTask):
                                                     wavedkeys=wavedkeys)
     
     def prepare_images(self):
+        
         super(CHINJ01, self).prepare_images(doExtract=True, 
              doBadPixels=True,
              doMask=True, # ON TESTS!
@@ -228,7 +230,7 @@ class CHINJ01(InjTask):
                 keyword='meta', Title='CHINJ01 Analysis ("Meta")', level=0)
             self.report.add_Text(['Model:',
                                   '\\begin{equation}',
-                                'I=b+\\frac{1}{1+e^{K(IG1-XT)}}\cdot(log_{10}(1+e^{-A(IG1-XN)})+N)',
+                                'I=b+\\frac{1}{1+e^{-K(IG1-XT)}}\cdot(log_{10}(1+e^{-A(IG1-XN)})+N)',
                                 '\end{equation}'])
             
         

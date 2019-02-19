@@ -315,10 +315,12 @@ class InjTask(Task):
                     _compliance_std, label='COMPLIANCE RON [%s]:' % reg)
 
         # IMG Signal Levels
+        
         Flu_lims = self.perflimits['Flu_lims']  # dict
 
         _compliance_flu = self.check_stat_perCCDQandCol(
             self.dd.mx['chk_med_inject'], Flu_lims, CCDs)
+        
         
         self.addComplianceMatrix2Self(_compliance_flu,'fluence')
 

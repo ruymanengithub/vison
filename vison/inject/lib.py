@@ -24,7 +24,7 @@ from scipy import special
 from matplotlib import pyplot as plt
 # END IMPORT
 
-def_bgd_drop = [0., 10.]
+def_bgd_drop = [0., 15.]
 lineoffsets = dict(E=0, F=0, G=0, H=0)
 
 def extract_injection_lines(ccdobj, Q, pattern, VSTART=0,
@@ -184,9 +184,9 @@ def fit_Inj_vs_IG1(IG1,med_inj,doPlot=False,debug=False):
         p0 = def_bgd_drop+[IG1half, IG1half +3., 1., 0.01]
         
         
-        maxnmbgd = 100./2.**16
+        maxnmbgd = 200./2.**16
         bounds = ([-maxnmbgd,2.,2.,2.,0.1,0.],
-                  [maxnmbgd,20.,8.,10.,10.,0.2])
+                  [maxnmbgd,50.,8.,10.,10.,0.2])
         
     elif Npoints < 4:
         return dict(didfit=False)
@@ -255,9 +255,9 @@ def predict_inj_level(ID, IGs, id_timing, toi_ch, sectag):
         return 0.
 
     discrim = id_dly / float(toi_ch)
-    if 1. < discrim < 2.:
+    if 2. < discrim < 3.:
         injsect = 'B'
-    elif 2. < discrim < 3:
+    elif 1. < discrim < 2.:
         injsect = 'T'
     else:
         injsect = 'None'
@@ -266,7 +266,7 @@ def predict_inj_level(ID, IGs, id_timing, toi_ch, sectag):
         return np.nan
 
     if (IDL < IG1+inj_threshold):
-        injlevel = 2000. + max(0, IG2-IG1)/0.5*2000.
+        injlevel = 600. + max(0, IG2-IG1)*6000.
     else:
         injlevel = np.nan
 
