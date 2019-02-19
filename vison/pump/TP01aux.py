@@ -63,7 +63,7 @@ check_injstd_dict = dict(stats=['chk_std_inject'],
 def gt_meta_heatmaps(mkey):
     return dict(
             figname='TP01_PcTau_Heatmap_%s.png' % mkey,
-            caption='TP01: log10(tau)-log10(Pc) Heatmap for pumping mode %s.' % mkey,
+            caption='TP01: log10(tau[us])-log10(Pc) Heatmap for pumping mode %s.' % mkey,
             meta=dict(doLegend=False,
               doColorbar=True,
               suptitle='TP01: %s' % mkey,

@@ -580,6 +580,7 @@ class TP01(PumpTask):
         
         onTests = True
         
+        stop()
         
         if not onTests:
         
