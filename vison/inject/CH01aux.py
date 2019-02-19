@@ -59,21 +59,21 @@ check_injstd_dict = dict(stats=['chk_std_inject'],
 
 extract_alcol_dict = dict(
     figname='CHINJ01_along_columns_profiles.png',
-    caption='CHINJ01: Average along-columns profiles.',
+    caption='CHINJ01: Average along-columns profiles. WARNING: Only showing profiles when id\_dly is optimal for each CCD half.',
     meta=dict(doLegend=True,
               ylabel='ADU',
               xlabel='ROW [REL.]',
-              ylim=[0,2**16],
+              ylim=[0,1.5e4],
               suptitle='CHINJ01: ALONG-COLUMNs.')
     )
 
 extract_alrow_dict = dict(
     figname='CHINJ01_along_rows_profiles.png',
-    caption='CHINJ01: Average along-rows profiles.',
+    caption='CHINJ01: Average along-rows profiles. WARNING: Only showing profiles when id\_dly is optimal for each CCD half.',
     meta=dict(doLegend=True,
               ylabel='ADU',
               xlabel='COL. [REL.]',
-              ylim=[0,2**16],
+              ylim=[0,1.5e4],
               suptitle='CHINJ01: ALONG-ROWs.')
     )
 

@@ -487,7 +487,13 @@ class InjTask(Task):
         
         # The hardwork
         
+        prof_max_vals = []
+        
         if not self.drill:
+            
+            _Quads_dict = dict(top = ['E','F'],
+                           bottom = ['G','H'])
+            
             
             for iObs in range(nObs):
                 
@@ -524,6 +530,13 @@ class InjTask(Task):
                                 sub_tag = 'IDL_%.2fV' % IDL_val
                             
                             id_dly = self.dd.mx['id_dly'][iObs,jCCD]
+                            toi_ch = self.dd.mx['toi_ch'][iObs,jCCD]
+                            
+                            if np.isclose(id_dly/toi_ch,1.5):
+                                CCDhalf = 'bottom'
+                            elif np.isclose(id_dly/toi_ch,2.5):
+                                CCDhalf = 'top'
+                            
                             
                             
                             ext_res = ilib.extract_injection_lines(ccdobj, Q, pattern, VSTART=vstart,
@@ -547,15 +560,20 @@ class InjTask(Task):
                                       
                             yalrows = ext_res['avprof_alrow'].copy()
                             yalcols = ext_res['avprof_alcol'].copy()
-                            prof_alrow_cdp.data[CCDk][Q]['y'][sub_tag] = yalrows.copy()
-                            prof_alrow_cdp.data[CCDk][Q]['x'][sub_tag] = \
-                                          np.arange(len(yalrows),dtype='float32')
                             
-                            prof_alcol_cdp.data[CCDk][Q]['y'][sub_tag] = yalcols.copy()
-                            prof_alcol_cdp.data[CCDk][Q]['x'][sub_tag] = \
-                                          np.arange(len(yalcols),dtype='float32')
+                            if Q in _Quads_dict[CCDhalf]:
                             
+                                prof_alrow_cdp.data[CCDk][Q]['y'][sub_tag] = yalrows.copy()
+                                prof_alrow_cdp.data[CCDk][Q]['x'][sub_tag] = \
+                                              np.arange(len(yalrows),dtype='float32')
+                                
+                                prof_alcol_cdp.data[CCDk][Q]['y'][sub_tag] = yalcols.copy()
+                                prof_alcol_cdp.data[CCDk][Q]['x'][sub_tag] = \
+                                              np.arange(len(yalcols),dtype='float32')
                             
+                                
+                                prof_max_vals.append(np.nanmax([yalrows.max(),yalcols.max()]))
+                                
                             CH0X_dd['ObsID'][ix] = ObsID
                             CH0X_dd['CCD'][ix] = jCCD
                             CH0X_dd['Q'][ix] = kQ
@@ -568,26 +586,28 @@ class InjTask(Task):
                             CH0X_dd['MED_INJ'][ix] = self.dd.mx['chinj_p50'][iObs,jCCD,kQ]
                             CH0X_dd['NU_INJ'][ix] = self.dd.mx['chinj_nonuni'][iObs,jCCD,kQ]
                             
-                            
+                            #if CCDk == 'CCD2' and Q == 'E':
+                            #    stop()
                             
                             
         # plot average inj. profiles along/across lines 
         # save as a rationalized set of curves
         
-        maxmedinjection = np.nanmax(self.dd.mx['chinj_p50'][:])
-        
+        #maxmedinjection = np.nanmax(self.dd.mx['chinj_p50'][:])
+        maxmedinjection = np.nanmax(prof_max_vals)
+                                
         prof_alrow_cdp.data['labelkeys'] = prof_alrow_cdp.data[CCDs[0]][Quads[0]]['x'].keys()
 
         fdict_alrow = self.figdict['%s_alrow' % testkey][1]
         fdict_alrow['data'] = prof_alrow_cdp.data.copy()
-        fdict_alrow['meta']['ylim'] = [0.,maxmedinjection*1.5]
+        fdict_alrow['meta']['ylim'] = [0.,maxmedinjection*1.1]
 
         
         prof_alcol_cdp.data['labelkeys'] = prof_alcol_cdp.data[CCDs[0]][Quads[0]]['x'].keys()
         
         fdict_alcol = self.figdict['%s_alcol' % testkey][1]
         fdict_alcol['data'] = prof_alcol_cdp.data.copy()
-        fdict_alcol['meta']['ylim'] = [0.,maxmedinjection*1.5]
+        fdict_alcol['meta']['ylim'] = [0.,maxmedinjection*1.1]
         
         self.pack_CDP_to_dd(prof_alrow_cdp,'PROFS_ALROW')
         self.pack_CDP_to_dd(prof_alcol_cdp,'PROFS_ALCOL')
