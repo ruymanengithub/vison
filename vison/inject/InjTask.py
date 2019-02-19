@@ -133,12 +133,12 @@ class InjTask(Task):
 
                     if np.isnan(_inj):
                         Flu_lims[CCDkey][Q][colkey] = [-10., 1.01*2.**16]
-                        FluGrad_lims[CCDkey][Q][colkey] = [10., 1.E4]
+                        FluGrad_lims[CCDkey][Q][colkey] = [0., 1.E4]
                     else:
                         Flu_lims[CCDkey][Q][colkey] = _inj * \
                             (1.+np.array([-0.5, 0.5]))
                         FluGrad_lims[CCDkey][Q][colkey] = _inj * \
-                            0.3 * (1.+np.array([-0.5, 0.5]))
+                            0.3 * (1.+np.array([-0.9, 0.5]))
 
         return Flu_lims, FluGrad_lims
 
@@ -332,7 +332,10 @@ class InjTask(Task):
                 _compliance_flu, label='COMPLIANCE FLUENCE:')
         if self.report is not None:
             self.addComplianceMatrix2Report(
-                _compliance_flu, label='COMPLIANCE FLUENCE:')
+                _compliance_flu, label='COMPLIANCE FLUENCE:',
+                caption='Beware the expected fluences are computed rather coarsely.'+\
+                ' Use with caution, and also check plots of injection vs. time/CCD voltage(s) '+\
+                'to judge quality of data.')
 
         # IMG std (injection-noise) levels
 
@@ -349,7 +352,10 @@ class InjTask(Task):
                 _compliance_flugrad, label='COMPLIANCE FLUENCE GRADIENT:')
         if self.report is not None:
             self.addComplianceMatrix2Report(
-                _compliance_flugrad, label='COMPLIANCE FLUENCE GRADIENT:')
+                _compliance_flugrad, label='COMPLIANCE FLUENCE GRADIENT:',
+                caption='Beware the expected fluence gradients are computed rather coarsely.'+\
+                ' Use with caution, and also check plots of injection STD vs. time/CCD voltage(s) '+\
+                'to judge quality of data.')
 
 
     def basic_analysis(self):
