@@ -18,8 +18,10 @@ import sys
 import collections
 import datetime
 import itertools
-import ccd_aux
-import ccdsim
+from scipy import stats
+
+from vison.datamodel import ccd_aux
+from vison.datamodel import ccdsim
 from vison import __version__
 # END IMPORT
 
@@ -627,7 +629,8 @@ class CCD(object):
         return (imgstart, imgend, ovstart, ovend)
 
     def get_stats(self, Quadrant, sector='img', statkeys=['mean'], trimscan=[0, 0],
-                  ignore_pover=True, extension=-1, VSTART=0, VEND=NrowsCCD+voverscan):
+                  ignore_pover=True, extension=-1, VSTART=0, VEND=NrowsCCD+voverscan,
+                  clip=None):
         """ """
 
         Qdata = self.get_quad(Quadrant, canonical=True, extension=extension)
@@ -664,10 +667,15 @@ class CCD(object):
             pass
 
         results = []
+        
+        vals = Qdata[hlims[0]:hlims[1], vlims[0]:vlims[1]]
+        
+        if clip is not None:            
+            vals = stats.sigmaclip(vals, clip[0], clip[1]).clipped
 
         for statkey in statkeys:
-            results.append(stat_dict[statkey](
-                Qdata[hlims[0]:hlims[1], vlims[0]:vlims[1]]))
+            
+            results.append(stat_dict[statkey](vals))
 
         return results
 
