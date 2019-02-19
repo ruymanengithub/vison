@@ -388,6 +388,9 @@ class ComplianceMX_CCDQCol(ComplianceMX):
                         np.any(testv, axis=(0, 1)).sum() | (ixsel[0].shape[0] == 0))
 
                     self[CCDkey][Q][colname] = [test, avvalue, tuple(_lims)]
+                    
+                    #if CCDkey == 'CCD1' and Q == 'G' and colname == 'col028':
+                    #    stop()
 
 
 class ComplianceMX_CCDQColSpot(ComplianceMX):
