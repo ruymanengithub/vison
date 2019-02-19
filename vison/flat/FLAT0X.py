@@ -526,17 +526,19 @@ class FLAT0X(FlatTask):
                     # MISSING: proper defects and useful area masking
                     #   (mask-out pre/over scans)
                     
-                    if OnTests:
-                        FFlist = FFlist[0:2]
+                    #if OnTests:
+                    #    FFlist = FFlist[0:2]
                     
                     jsettings = copy.deepcopy(settings)
                     
                     for kQ,Q in enumerate(Quads):
                         jsettings['AVFLU_%s' % Q] = \
                                  np.nanmedian(self.dd.mx['flu_med_img'][:,:,kQ][selix])
-
-                    FFing.produce_MasterFlat(
-                        FFlist, FFpath, mask=None, settings=jsettings)
+                    
+                    
+                    if not OnTests:
+                        FFing.produce_MasterFlat(
+                                FFlist, FFpath, mask=None, settings=jsettings)
 
                     self.dd.products['MasterFFs'][ulabel][CCDk] = FFpath
 
@@ -554,7 +556,8 @@ class FLAT0X(FlatTask):
                         
                         kQ_PRNU = FF.get_stats(Q, sector='img', statkeys=['std'],
                                                ignore_pover=True,
-                                               extension=iFext)[0]
+                                               extension=iFext,
+                                               clip=(3.,3.))[0]
                         
                         PRNU_TBs[ulabel]['CCD'][kk] = jCCD+1
                         PRNU_TBs[ulabel]['Q'][kk] = jQ+1
@@ -602,8 +605,9 @@ class FLAT0X(FlatTask):
                 
                 cov_formatters=[fccd,fq,fE,ff]
                 
-                caption = '%s (%inm): PRNU TABLE [%s]' % \
-                    (self.inputs['test'],self.inputs['wavelength'],ulabel)
+                caption = '%s (%inm): PRNU TABLE [%s] ' % (self.inputs['test'] +\
+                    ' (image area pixels, clipped to +- 3 sigma).',
+                     self.inputs['wavelength'],ulabel)
                 nicecaption = st.replace(caption,'_','\_')
                 Ptex = prnu_tb_cdp.get_textable(sheet='PRNU_%s' % ulabel, 
                                                    caption=nicecaption,

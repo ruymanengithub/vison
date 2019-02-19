@@ -245,7 +245,7 @@ class NL01(FlatTask):
                                          doBadPixels=True,
                                          doMask=True,
                                          doOffset=True, doBias=True, 
-                                         doFF=True)
+                                         doFF=False)
 
     def extract_stats(self):
         """
