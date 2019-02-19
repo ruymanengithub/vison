@@ -94,7 +94,9 @@ def gt_check_fwhmy_dict(wave):
 
 def gt_meta_deltafwhm_dict(wave):
     return dict(figname='FOCUS00_%i_deltafwhm_map.png' % wave,
-                caption='FOCUS00\_%i: Delta-FWHM [pixels] for best focus position.' % wave,
+                caption='FOCUS00\_%i: Delta-FWHM [pixels] for best focus position.' % wave +\
+                        ' x and y axis labels are meaningless. Colors indicate mean value of Delta-FWHM for the 5 spots in '+\
+                        'each Quadrant.',
                 meta=dict(
                         doLegend=False,
                         suptitle='FOCUS00\_%i-checks: Delta-FWHM [pix]' % wave,

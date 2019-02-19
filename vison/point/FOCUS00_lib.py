@@ -77,22 +77,27 @@ def fit_focus_single(x, y, yerror=None, degree=1, doplot=False):
 
 def build_fwhm_map_CQ(delta_fwhm, x, y, xlims, ylims):            
     
-    N = 10            
-    x0, x1 = xlims
-    y0, y1 = ylims    
+    N = 10
     
-    flin = interpolate.interp2d(x, y, delta_fwhm, kind='linear',
-                                bounds_error=False,
-                                fill_value=np.mean(delta_fwhm))
+    img = np.zeros((N,N),dtype='float32') + np.nanmean(delta_fwhm)
     
-    xQ = np.linspace(x0, x1, N)
-    yQ = np.linspace(y0, y1, N)
+    return img
+    
+    #x0, x1 = xlims
+    #y0, y1 = ylims
+    
+    #flin = interpolate.interp2d(x, y, delta_fwhm, kind='linear',
+    #                            bounds_error=False,
+    #                            fill_value=np.mean(delta_fwhm))
+    
+    #xQ = np.linspace(x0, x1, N)
+    #yQ = np.linspace(y0, y1, N)
     
     #xxQ, yyQ = np.meshgrid(xQ, yQ)
     
-    img = flin(xQ, yQ)
+    #img = flin(xQ, yQ)
     
     
-    return img
+    #return img
 
 

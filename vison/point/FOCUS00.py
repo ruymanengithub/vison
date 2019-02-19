@@ -375,8 +375,10 @@ class FOCUS00(PT.PointTask):
                          ccalc.prescan+ccalc.NcolsCCD-1.) 
         ylims = (0., ccalc.NrowsCCD-1.) 
         
-        DFWHM_p5s = []
-        DFWHM_p95s = []
+        #DFWHM_p5s = []
+        #DFWHM_p95s = []
+        
+        DFWHM_vals = []
         
         for iCCD, CCDk in enumerate(CCDs):
             
@@ -398,9 +400,10 @@ class FOCUS00(PT.PointTask):
                                                 xQ, yQ,
                                                 xlims, ylims))
                 
-                DFWHM_p5s.append(np.percentile(delta_fwhm_dict[CCDk][Q]['img'],5.))
-                DFWHM_p95s.append(np.percentile(delta_fwhm_dict[CCDk][Q]['img'],95.))
-        
+                DFWHM_vals.append(np.nanmedian(delta_fwhm_dict[CCDk][Q]['img']))
+                
+                #DFWHM_p5s.append(np.percentile(delta_fwhm_dict[CCDk][Q]['img'],5.))
+                #DFWHM_p95s.append(np.percentile(delta_fwhm_dict[CCDk][Q]['img'],95.))
         
         
         # Figure
@@ -408,7 +411,8 @@ class FOCUS00(PT.PointTask):
         fdict = self.figdict['F00meta_deltafwhm'][1]
         fdict['data'] = delta_fwhm_dict.copy()
         
-        normfunction = Normalize(vmin=np.median(DFWHM_p5s)*0.50,vmax=np.median(DFWHM_p95s)*2.,clip=False)
+#        normfunction = Normalize(vmin=np.median(DFWHM_p5s)*0.50,vmax=np.median(DFWHM_p95s)*2.,clip=False)
+        normfunction = Normalize(vmin=np.min(DFWHM_vals),vmax=np.max(DFWHM_vals),clip=False)
         
         self.figdict['F00meta_deltafwhm'][1]['meta']['corekwargs']['norm'] = normfunction
         
