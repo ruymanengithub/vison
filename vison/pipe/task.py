@@ -643,9 +643,10 @@ class Task(object):
         """ """
         Qs = ['E', 'F', 'G', 'H']
         colnames = lims[CCDs[0]][Qs[0]].keys()
-
+        
+        
         compliance = complimod.ComplianceMX_CCDQCol(colnames,
-                                                    indexer=self.dd.mx['label'][:],
+                                                    indexer=self.dd.mx['label'][:,0],
                                                     CCDs=CCDs,
                                                     Qs=Qs,
                                                     lims=lims.copy())
@@ -733,8 +734,25 @@ class Task(object):
                 self.skipMissingPlot(nfigkey, ref=figkey)
                 
                 
-    
-    
+    def debugtask(self):
+        
+        pass
+        
+#        if self.report is not None:
+#            self.report.add_Section(
+#                keyword='debug', Title='Debugging', level=0)
+#        
+#        CCDs = ['CCD1','CCD2','CCD3']
+#        Flu_lims = self.perflimits['Flu_lims']  # dict
+#        
+#        _compliance_flu = self.check_stat_perCCDQandCol(
+#            self.dd.mx['chk_med_inject'], Flu_lims, CCDs)
+#        
+#        if self.report is not None:
+#            self.addComplianceMatrix2Report(
+#                _compliance_flu, label='COMPLIANCE FLUENCE:')
+        
+        
 
     def prepare_images(self, doExtract=True, doBadPixels=False, doMask=False, doOffset=False, doBias=False,
                        doFF=False):
