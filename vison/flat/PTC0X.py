@@ -595,7 +595,7 @@ class PTC0X(FlatTask):
                 
                 _bloom = ptclib.foo_bloom(med, var)
 
-                bloom_mx[CCDk][Q]['bloom_ADU'] = _bloom['bloom']
+                bloom_mx[CCDk][Q]['bloom_ADU'] = _bloom['bloom_ADU']
                 
                 kk = iCCD * nQ + jQ
                 
@@ -647,8 +647,14 @@ class PTC0X(FlatTask):
             
             cov_formatters=[fccd,fq,ff,fE,fE,fi,fE]
             
-            caption = '%s (%inm): PTC TABLE' % \
-                (self.inputs['test'],self.inputs['wavelength'])
+            caption = '%s (%inm): PTC TABLE. ' % \
+                (self.inputs['test'],self.inputs['wavelength']) +\
+                'gain: end-to-end gain in e-/ADU; egain: statistical uncertainty, same units as "gain"; '+\
+                'alpha: quadratic term in PTC fit; fqual: fit-quality parameter; '+\
+                'bloom: blooming limit, in ADU, defined as fluence at which the scatter of variance values '+\
+                'exceeds 5\% of the mean variance. A negative value indicates that blooming was not '+\
+                'reached and thus a lower limit is provided.'
+                
             nicecaption = st.replace(caption,'_','\_')
             Gtex = gain_tb_cdp.get_textable(sheet='GAIN_TB', caption=nicecaption,
                                                fitwidth=True,

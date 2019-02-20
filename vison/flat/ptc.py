@@ -16,6 +16,7 @@ Created on Thu Sep 14 16:29:36 2017
 from pdb import set_trace as stop
 import numpy as np
 from collections import OrderedDict
+from pylab import plot,show
 
 from vison.support import flags as flmod
 # END IMPORT
@@ -169,9 +170,29 @@ def fitPTC(means, var, debug=False):
 
 
 def foo_bloom(means, var):
-    """DUMMY function (PLACE-HOLDER)
-    (Will) Finds blooming limit (where variance drops, if it does...).
+    """
+    Finds blooming limit (where variance drops, if it does...).
 
     """
-    res = dict(bloom=np.nan)
+    
+    bloom_ADU = np.nan
+    
+    mask = np.ones_like(means)
+    bins = np.linspace(2**16*0.3,2**16,60)
+    threshold = 0.05
+    
+    for i in range(len(bins)-1):        
+        sel=np.where((means>=bins[i]) & (means < bins[i+1]))
+        if len(sel[0])>0:
+            relrange = (var[sel].max()-var[sel].min())/var[sel].mean()
+            if relrange >threshold:
+                mask[sel] = 0
+    
+    if np.any(mask ==0.):
+        bloom_ADU = means[np.where(mask == 0)[0][0]]
+    else:
+        bloom_ADU = -means[-1]
+    
+    res = dict(bloom_ADU=bloom_ADU)
+    
     return res
