@@ -69,13 +69,14 @@ MW_commvalues = dict(program='CALCAMP', test='MOT_WARM',
 # The following OBSIDs are HARDWIRED
         
 ObsIDdict = OrderedDict(
-      BIAS=0,
-      RAMP=1,
-      CHINJ=2,
-      FLAT=3)
+      BIAS_RVS=0,
+      BIAS_RV=1,
+      RAMP=2,
+      CHINJ=3,
+      FLAT=4)
 wavesPNT = [590,730,880]
 for i, wavenm in enumerate(wavesPNT):
-    ObsIDdict['PNT_%inm' % wavenm] = i+4
+    ObsIDdict['PNT_%inm' % wavenm] = i+ObsIDdict['FLAT']+1
     
 
 class MOT_WARM_inputs(inputs.Inputs):
@@ -137,13 +138,22 @@ class MOT_WARM(DarkTask):
         
         MW_sdict = OrderedDict()
         
-        MW_sdict['col%03i' % (ObsIDdict['BIAS']+1,)] = dict(frames=1, exptime=0, rdmode='rwd_bas_vs',
+        MW_sdict['col%03i' % (ObsIDdict['BIAS_RVS']+1,)] = dict(frames=1, exptime=0, rdmode='rwd_bas_vs',
                                     swellw=context.sumwell['rwd_bas_vs'][0],
                                     swelldly=context.sumwell['rwd_bas_vs'][1],
                                     vstart=0,vend=2086,toi_ro=toi_ro,
                                     shuttr=0, mirr_on=0,motr_on=0,
                                     source='flat',
-                                    comments='BIAS')
+                                    comments='RWDVS')
+        
+        MW_sdict['col%03i' % (ObsIDdict['BIAS_RV']+1,)] = dict(frames=1, exptime=0, rdmode='rwd_bas_v',
+                                    swellw=context.sumwell['rwd_bas_v'][0],
+                                    swelldly=context.sumwell['rwd_bas_v'][1],
+                                    vstart=0,vend=2086,toi_ro=toi_ro,
+                                    shuttr=0, mirr_on=0,motr_on=0,
+                                    source='flat',
+                                    comments='RWDV')
+        
 
         MW_sdict['col%03i' % (ObsIDdict['RAMP']+1,)]=dict(frames=1, exptime=0, rdmode='fwd_bas',
                                     swellw=context.sumwell['fwd_bas'][0],
@@ -213,7 +223,7 @@ class MOT_WARM(DarkTask):
     def lock_on_stars(self):
         """ """
         print('MOT_WARM.lock_on_stars: using HARDWIRE value of Observation Index. PLEASE REWORK!')
-        iObs = 5 # HARDWIRED
+        iObs = ObsIDdict['PNT_%inm' % wavesPNT[0]]+1
         PointTask.lock_on_stars(self,iObs=iObs)
     
     
@@ -252,7 +262,7 @@ class MOT_WARM(DarkTask):
         # Get statistics in different regions
 
         if not self.drill:
-
+        
             for iObs in range(nObs):
                 for jCCD, CCDk in enumerate(CCDs):
                     dpath = self.dd.mx['datapath'][iObs, jCCD]
@@ -288,12 +298,12 @@ class MOT_WARM(DarkTask):
 
         offsets_lims = self.perflimits['offsets_lims']
         
-        BIAS_ix = ObsIDdict['BIAS']
+        BIAS_ix_RV = ObsIDdict['BIAS_RV']
 
         regs_off = ['pre', 'ove']
 
         for reg in regs_off:
-            arr = self.dd.mx['offset_%s' % reg][BIAS_ix+1:,...].copy()
+            arr = self.dd.mx['offset_%s' % reg][BIAS_ix_RV,...].copy()
             _compliance_offsets = self.check_stat_perCCDandQ(
                 arr, offsets_lims, CCDs)
             
@@ -319,7 +329,7 @@ class MOT_WARM(DarkTask):
             _lims = dict()
             for CCDk in CCDs:
                 _lims[CCDk] = offsets_gradients[CCDk][reg]
-            arr = self.dd.mx['offset_%s' % reg][BIAS_ix+1:,...]-self.dd.mx['offset_pre'][BIAS_ix+1:,...]
+            arr = self.dd.mx['offset_%s' % reg][BIAS_ix_RV,...]-self.dd.mx['offset_pre'][BIAS_ix_RV,...]
             _xcheck_offsets = self.check_stat_perCCDandQ(arr, _lims, CCDs)
             
             self.addComplianceMatrix2Self(_xcheck_offsets,'offsets_grad_%s' % reg)
@@ -334,13 +344,16 @@ class MOT_WARM(DarkTask):
                     _xcheck_offsets, label='OFFSET GRAD [%s-PRE] COMPLIANCE:' % reg)
 
         # absolute value of std
+        
 
-        regs_std = ['pre', 'ove']
+        regs_std = ['pre', 'img', 'ove']
+        
+        BIAS_ix_RVS = ObsIDdict['BIAS_RVS']
 
         RONs_lims = self.perflimits['RONs_lims']
         for reg in regs_std:
             _compliance_std = self.check_stat_perCCDandQ(
-                self.dd.mx['std_%s' % reg][BIAS_ix+1:,...], RONs_lims, CCDs)
+                self.dd.mx['std_%s' % reg][BIAS_ix_RVS,...], RONs_lims, CCDs)
             
             self.addComplianceMatrix2Self(_compliance_std,'std_%s' % reg)
 
@@ -429,7 +442,7 @@ class MOT_WARM(DarkTask):
             
             # BIAS: RON matrix (CCDs x Qs)
                 
-            _RON_matrix = self.dd.mx['std_img'][ObsIDdict['BIAS'],...].copy()
+            _RON_matrix = self.dd.mx['std_img'][ObsIDdict['BIAS_RVS'],...].copy()
             _RON_matrix = _RON_matrix[np.newaxis,...].copy()
             RON_lims = self.perflimits['RONs_lims']
             
