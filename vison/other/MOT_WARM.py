@@ -124,9 +124,9 @@ class MOT_WARM(DarkTask):
         
         toi_ro = 500
         
-        IDLinj=11.
+        IDLinj=10.5
         IDHinj=18.
-        IG1inj=3.5
+        IG1inj=4.5
         IG2inj=7.0
         toi_ch=250.
         
