@@ -26,6 +26,7 @@ from vison.datamodel import core, ccd, inputs
 from vison.support import context
 from vison.support import utils
 from vison.xtalk import xtalk, opt_xtalk
+from vison.support.files import cPickleRead
 # END IMPORT
 
 BGD_lims = OrderedDict(CCD1=OrderedDict(E=[-5., 10.]))
@@ -59,6 +60,9 @@ class PointTask(Task):
 
     def check_data(self, **kwargs):
         """ """
+        
+        
+        
         test = self.inputs['test']
         if 'PSF01' in test:
             _kwargs = dict(figkeys=['PSF0Xchecks_offsets', 'PSF0Xchecks_stds',
@@ -411,7 +415,72 @@ class PointTask(Task):
             _compliance_flux, label='COMPLIANCE SATURATION TIME (PEAK FLUX)',
             caption='Saturation times in seconds. Assuming a FWHM of 2 pixels (best focus).')
         
-
+    def relock(self,):
+        """ """
+        
+        if 'LOCK_TB_CDP' not in self.dd.products:
+            return
+        
+        ddindices = copy.deepcopy(self.dd.indices)
+        CCDs = ddindices.get_vals('CCD')
+        
+        lock_tb_cdp = cPickleRead(self.dd.products['LOCK_TB_CDP'])
+        lock_tb = lock_tb_cdp['data']['LOCK_TB']
+        
+        meta = lock_tb_cdp['meta']
+        scale_lims = meta['scale_lims']
+        rot_lims  = meta['rot_lims']
+        trans_lims = meta['trans_lims']
+        maxSTDpix = meta['maxSTDpix']
+        
+        for jCCD,CCDk in enumerate(CCDs):
+            
+            ixselCCD = np.where(lock_tb['CCD'][:]== jCCD+1)[0][0]
+            
+            ROTATION = lock_tb['ROTATION'][ixselCCD]
+            SCALE = lock_tb['SCALE'][ixselCCD]
+            TRANS_X = lock_tb['TRANS_X'][ixselCCD]
+            TRANS_Y = lock_tb['TRANS_Y'][ixselCCD]
+            
+            # CHECK COMPLIANCE of transformations against allowed changes in
+            #       scale, rotation and translation
+            
+            rotation_inlims = np.all((rot_lims[0] <= ROTATION) & \
+                                 (ROTATION<= rot_lims[1]))
+            
+            rotation_ok = rotation_inlims and \
+                np.std(ROTATION * 4096.) < maxSTDpix
+            
+            scale_inlims = np.all((scale_lims[0] <= SCALE) & \
+                                 (SCALE<= scale_lims[1]))
+            
+            scale_ok = scale_inlims and \
+                np.std(SCALE * 4096.) < maxSTDpix
+            
+            trans_mod = np.sqrt(TRANS_X**2.+TRANS_Y**2.)
+            
+            trans_inlims = np.all((trans_mod>=trans_lims[0]) & \
+                               (trans_mod<=trans_lims[1]))
+            
+            trans_ok = trans_inlims and \
+                np.std(trans_mod) < maxSTDpix
+            
+            all_ok = rotation_ok and scale_ok and trans_ok
+            
+            if all_ok:
+                
+                if self.log is not None:
+                    self.log.info('%s: Relocating Point Sources!' % CCDk)
+                
+                self.ogse.load_startrackers(withpover=True)
+                
+                TRANSLATION = (TRANS_X,TRANS_Y)
+                
+                simmx = self.ogse.startrackers[CCDk].get_similaritymx(SCALE, 
+                                     ROTATION, TRANSLATION)
+                    
+                self.ogse.startrackers[CCDk].apply_patt_transform(simmx)
+    
     def lock_on_stars(self, iObs=0, sexconfig=None):
         """ """
                 
@@ -581,7 +650,6 @@ class PointTask(Task):
             
             self.report.add_Text(Ltex)        
     
-        
         
         
         # CHECK COMPLIANCE of transformations against allowed changes in

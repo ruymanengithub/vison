@@ -134,6 +134,7 @@ class FOCUS00(PT.PointTask):
         """ """
         
         self.subtasks = [('lock', self.lock_on_stars),
+                         ('relock', self.relock),
                          ('check', self.check_data),
                          #('prep', self.prep_data),
                          ('basic', self.basic_analysis),

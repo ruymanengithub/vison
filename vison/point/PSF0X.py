@@ -121,7 +121,7 @@ def get_Flu_lims(relfluences):
         relflu = min( relfluences[i-1]/100.,1)
         
         Flu_lims['CCD1']['E']['ALPHA']['col%03i' % i] = \
-            I02F * relflu * plusminus10pc*satur_fluence
+            I02F * relflu * plusminus10pc * satur_fluence
 
     for Spot in ['BRAVO', 'CHARLIE', 'DELTA', 'ECHO']:
         Flu_lims['CCD1']['E'][Spot] = Flu_lims['CCD1']['E']['ALPHA']
@@ -129,7 +129,8 @@ def get_Flu_lims(relfluences):
         Flu_lims['CCD1'][Q] = copy.deepcopy(Flu_lims['CCD1']['E'])
     for CCD in [2, 3]:
         Flu_lims['CCD%i' % CCD] = copy.deepcopy(Flu_lims['CCD1'])
-
+    
+    
     return Flu_lims
 
 
@@ -167,6 +168,7 @@ class PSF0X(PT.PointTask):
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
         self.subtasks = [('lock', self.lock_on_stars),
+                         ('relock', self.relock),
                          ('check', self.check_data), 
                          ('prep', self.prep_data),
                          ('basic', self.basic_analysis), 
@@ -214,6 +216,8 @@ class PSF0X(PT.PointTask):
         self.perfdefaults['BGD_lims'] = BGD_lims  # ADUs
         self.perfdefaults['Flu_lims'] = get_Flu_lims(PSF0X_relfluences)  # ADUs
         self.perfdefaults['FWHM_lims'] = FWHM_lims  # Pixels
+        
+        
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """ 
