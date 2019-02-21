@@ -34,7 +34,7 @@ from vison.other import PERSIST01aux as P01aux
 #HKKeys = []
 
 PER01_commvalues = dict(program='CALCAMP', test='PERSIST01',
-                        flushes=7, siflsh=1, siflsh_p=500,
+                        flushes=3, siflsh=1, siflsh_p=500,
                         inisweep=1,
                         vstart=0, vend=2086,
                         toi_fl=143., toi_tp=1000., toi_ro=1000., toi_ch=1000.,
