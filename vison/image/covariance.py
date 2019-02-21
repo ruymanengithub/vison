@@ -68,9 +68,9 @@ def f_get_covmap(sq1, sq2, N, submodel=False, debug=False):
     for i in range(N):
         for j in range(N):
             
-            EXY = clip(difimg[x2d, y2d]*difimg[x2d+i, y2d+j]).mean()
-            EX = clip(difimg[x2d, y2d]).mean()
-            EY = clip(difimg[x2d+i, y2d+j]).mean()
+            EXY = np.median(clip(difimg[x2d, y2d]*difimg[x2d+i, y2d+j]))
+            EX = np.median(clip(difimg[x2d, y2d]))
+            EY = np.median(clip(difimg[x2d+i, y2d+j]))
             
             covmap[i, j] = (EXY-EX*EY) / var
             # covmap[i,j] = j # test
@@ -131,6 +131,7 @@ def get_cov_maps(ccdobjList, Npix=4, vstart=0,vend=2066, doTest=False, debug=Fal
                     continue
                 else:
                     try: 
+                        #if Q=='F': debug=True #TEST
                         covmap, mu, var = f_get_covmap(sq1, sq2, Npix, submodel=True,
                                                    debug=debug)
     
