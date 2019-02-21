@@ -433,6 +433,10 @@ class PointTask(Task):
         trans_lims = meta['trans_lims']
         maxSTDpix = meta['maxSTDpix']
         
+        # Reloading Patterns without displacement
+        
+        self.ogse.load_startrackers(withpover=True)
+        
         for jCCD,CCDk in enumerate(CCDs):
             
             ixselCCD = np.where(lock_tb['CCD'][:]== jCCD+1)[0][0]
@@ -471,8 +475,7 @@ class PointTask(Task):
                 
                 if self.log is not None:
                     self.log.info('%s: Relocating Point Sources!' % CCDk)
-                
-                self.ogse.load_startrackers(withpover=True)
+                                
                 
                 TRANSLATION = (TRANS_X,TRANS_Y)
                 

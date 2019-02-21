@@ -103,7 +103,7 @@ def get_testdefaults(ogseobj=None):
 
 def get_Flu_lims(relfluences):
 
-    plusminus10pc = 1.+np.array([-0.1, 0.1])
+    plusminus30pc = 1.+np.array([-0.3, 0.3])
     satur_fluence = 2.**16
     
     # assuming a best fwhm~2pix, and a gaussian profile
@@ -121,7 +121,7 @@ def get_Flu_lims(relfluences):
         relflu = min( relfluences[i-1]/100.,1)
         
         Flu_lims['CCD1']['E']['ALPHA']['col%03i' % i] = \
-            I02F * relflu * plusminus10pc * satur_fluence
+            I02F * relflu * plusminus30pc * satur_fluence
 
     for Spot in ['BRAVO', 'CHARLIE', 'DELTA', 'ECHO']:
         Flu_lims['CCD1']['E'][Spot] = Flu_lims['CCD1']['E']['ALPHA']
