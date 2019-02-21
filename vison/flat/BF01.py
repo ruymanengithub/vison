@@ -230,12 +230,15 @@ class BF01(PTC0X):
             
             
             #taskcounter = 0
+            
+            
  
             for jCCD, CCDk in enumerate(CCDs):
                 
 
                 for ku, ulabel in enumerate(ulabels):
                     
+                    #if not (ulabel == 'col001' and CCDk == 'CCD2'): continue # TEST
 
                     six = np.where(labels == ulabel)
                     
