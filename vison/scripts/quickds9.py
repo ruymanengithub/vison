@@ -69,7 +69,7 @@ if __name__ == '__main__':
             FITS = glob(tantFITS)[0]
             FITSlist.append(FITS)
         except IndexError, IOError:
-            sys.exit("Image %s not found!" % tantFITS)
+            print("Image %s not found!" % tantFITS)
 
     try:
         d = pyds9.DS9()
