@@ -641,9 +641,7 @@ class TP01(PumpTask):
         Ampcols = ['A_%s' % toikey for toikey in toikeys]
         
         
-        onTests = True
-        
-        stop()
+        onTests = False
         
         if not onTests:
         
