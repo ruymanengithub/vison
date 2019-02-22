@@ -756,7 +756,7 @@ class BF01(PTC0X):
             caption = 'BF01: FIT G15 results. FWHMx\_HWC: FWHM(x) at half ADC range (32768 ADU); '+\
                       'FWHMx\_slope: FWHM(x) vs. fluence slope in um / 10 kADU; '+\
                       'FWHMy\_HWC: FWHM(y) at half ADC range (32768 ADU); '+\
-                      'FWHMy_slope: FWHM(y) vs. fluence slope in um / 10 kADU; '
+                      'FWHMy\_slope: FWHM(y) vs. fluence slope in um / 10 kADU; '
                            
             BFfittex = bfFITtable_cdp.get_textable(sheet='BFFIT', 
                                                caption=caption,
