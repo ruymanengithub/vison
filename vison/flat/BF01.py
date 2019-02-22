@@ -753,9 +753,9 @@ class BF01(PTC0X):
             
             cov_formatters=[fccd,fq]+[ff]*4
             
-            caption = 'BF01: FIT G15 results. FWHMx\_HWC: FWHM(x) at half ADC range (32768 ADU); '+\
+            caption = 'BF01: FIT G15 results. FWHMx\_HWC: FWHM(x)[um] at half ADC range (32768 ADU); '+\
                       'FWHMx\_slope: FWHM(x) vs. fluence slope in um / 10 kADU; '+\
-                      'FWHMy\_HWC: FWHM(y) at half ADC range (32768 ADU); '+\
+                      'FWHMy\_HWC: FWHM(y)[um] at half ADC range (32768 ADU); '+\
                       'FWHMy\_slope: FWHM(y) vs. fluence slope in um / 10 kADU; '
                            
             BFfittex = bfFITtable_cdp.get_textable(sheet='BFFIT', 
