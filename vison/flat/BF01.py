@@ -39,6 +39,7 @@ from vison.datamodel import inputs
 import BF01aux
 from vison.analysis import Guyonnet15 as G15
 from vison.image import covariance as covlib
+from sklearn import linear_model
 
 from vison.support import utils
 from vison.support.files import cPickleRead, cPickleDumpDictionary
@@ -63,6 +64,30 @@ class BF01_inputs(inputs.Inputs):
         ('surrogate', ([str], 'Test to use as surrogate'))
     ])))
 
+
+def fit_BF(X,Y):
+    """ """
+    
+    xfit = np.linspace(0,2**16,2)
+    
+    ransac = linear_model.RANSACRegressor()
+    ransac.fit(np.expand_dims(X,1),np.expand_dims(Y,1))
+    #predictor = ransac.predict
+    
+    slope = ransac.estimator_.coef_[0][0]
+    intercept = ransac.estimator_.intercept_[0]
+    fwhm_hwc = ransac.predict(2.**16/2.)[0][0]
+    
+    
+    yfit = np.squeeze(ransac.predict(np.expand_dims(xfit,1)))
+    
+    res = dict(xfit=xfit.copy(),yfit=yfit.copy(),intercept=intercept,
+               slope=slope*1.e4,
+               fwhm_hwc = fwhm_hwc)
+    
+    return res
+    
+    
 
 class BF01(PTC0X):
     """ """
@@ -585,7 +610,10 @@ class BF01(PTC0X):
             
             
             self.report.add_Text(BFtex)
+    
+    
         
+    
 
     def meta_analysis(self):
         """
@@ -599,10 +627,12 @@ class BF01(PTC0X):
             self.report.add_Section(
                 keyword='meta', Title='Meta-Analysis', level=0)
         
+        # INPUTS
+        
         BFTABLE_CDP_pick = self.dd.products['BFTABLE_CDP']
         BFTABLE_CDP = cPickleRead(BFTABLE_CDP_pick)
         
-        BF_df =BFTABLE_CDP['data']['BF']
+        BF_df = BFTABLE_CDP['data']['BF']
         CCDv = BF_df['CCD'].as_matrix()
         Qv = BF_df['Q'].as_matrix()
         FWHMx = BF_df['FWHMx'].as_matrix()
@@ -610,14 +640,35 @@ class BF01(PTC0X):
         #ell = BF_df['e'].as_matrix()
         flu = BF_df['fluence'].as_matrix()
         
-        CCDs = ['CCD%i' % item for item in np.arange(CCDv.min(),CCDv.max()+1)]
-        Quads = ['E','F','G','H']
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+        
+        # INITIALISATIONS
+        
+        indices = copy.deepcopy(self.dd.indices)
+        nObs, nC, nQ = indices.shape
+        CCDs = np.array(indices.get_vals('CCD'))
+        Quads = np.array(indices.get_vals('Quad'))
+        
+        NP = nC * nQ
+        
+        
+        BFfit_dd = OrderedDict()
+        BFfit_dd['CCD'] = np.zeros(NP,dtype='int32')
+        BFfit_dd['Q'] = np.zeros(NP,dtype='int32')
+        BFfit_dd['FWHMx_HWC'] =  np.zeros(NP,dtype='float32')+np.nan
+        BFfit_dd['FWHMx_Slope'] =  np.zeros(NP,dtype='float32')+np.nan
+        BFfit_dd['FWHMy_HWC'] =  np.zeros(NP,dtype='float32')+np.nan
+        BFfit_dd['FWHMy_Slope'] =  np.zeros(NP,dtype='float32')+np.nan
         
         
         plot_FWHM_dict = OrderedDict()
         
         for tag in ['fwhmx','fwhmy']:
-            plot_FWHM_dict[tag] = OrderedDict(labelkeys=['data'])
+            plot_FWHM_dict[tag] = OrderedDict(labelkeys=['data','fit'])
             for CCDk in CCDs:
                 plot_FWHM_dict[tag][CCDk] = OrderedDict()            
                 for Q in Quads:
@@ -629,7 +680,9 @@ class BF01(PTC0X):
         for iCCD, CCDk in enumerate(CCDs):
             
             for kQ, Q in enumerate(Quads):
-                               
+                
+                jj = iCCD * nQ + kQ
+                
                 ixsel = np.where((iCCD+1 == CCDv) & (kQ+1 == Qv))
                 
                 iflu = flu[ixsel]
@@ -643,9 +696,29 @@ class BF01(PTC0X):
                 plot_FWHM_dict['fwhmx'][CCDk][Q]['x']['data'] = iflu.copy()
                 plot_FWHM_dict['fwhmx'][CCDk][Q]['y']['data'] = ifwhmx.copy()
                 
+                #res = dict(xfit=xfit.copy(),yfit=yfit.copy(),intercept=intercept,
+                # slope=slope*1.e4)
+                 
+                resX = fit_BF(iflu,ifwhmx)
+                
+                plot_FWHM_dict['fwhmx'][CCDk][Q]['x']['fit'] = resX['xfit'].copy()
+                plot_FWHM_dict['fwhmx'][CCDk][Q]['y']['fit'] = resX['yfit'].copy()
+                
                 plot_FWHM_dict['fwhmy'][CCDk][Q]['x']['data'] = iflu.copy()
                 plot_FWHM_dict['fwhmy'][CCDk][Q]['y']['data'] = ifwhmy.copy()
-        
+                
+                resY = fit_BF(iflu,ifwhmy)
+                
+                plot_FWHM_dict['fwhmy'][CCDk][Q]['x']['fit'] = resY['xfit'].copy()
+                plot_FWHM_dict['fwhmy'][CCDk][Q]['y']['fit'] = resY['yfit'].copy()
+                
+                BFfit_dd['CCD'][jj] = iCCD+1
+                BFfit_dd['Q'][jj] = kQ+1
+                BFfit_dd['FWHMx_HWC'][jj] = resX['fwhm_hwc']
+                BFfit_dd['FWHMx_Slope'][jj] =  resX['slope']
+                BFfit_dd['FWHMy_HWC'][jj] =  resY['fwhm_hwc']
+                BFfit_dd['FWHMy_Slope'][jj] = resY['slope']
+                
         
         for tag in ['fwhmx','fwhmy']:
         
@@ -656,3 +729,42 @@ class BF01(PTC0X):
                 self.addFigures_ST(figkeys=['BF01_%s_v_flu' % tag], 
                                    dobuilddata=False)
                 
+        # REPORTING
+        
+        BFfit_dddf = OrderedDict(BFFIT = pd.DataFrame.from_dict(BFfit_dd))
+        
+        bfFITtable_cdp = self.CDP_lib['BFfitTABLE']
+        bfFITtable_cdp.path = self.inputs['subpaths']['products']
+        bfFITtable_cdp.ingest_inputs(
+                data = BFfit_dddf.copy(),
+                meta=dict(),
+                header=CDP_header.copy()
+                )
+
+        bfFITtable_cdp.init_wb_and_fillAll(header_title='BF01: FIT G15 TABLE')
+        self.save_CDP(bfFITtable_cdp)
+        self.pack_CDP_to_dd(bfFITtable_cdp, 'BFfitTABLE_CDP')
+
+        if self.report is not None:
+            
+            fccd = lambda x: CCDs[x-1]
+            fq = lambda x: Quads[x-1]
+            ff = lambda x: '%.3f' % x
+            
+            cov_formatters=[fccd,fq]+[ff]*4
+            
+            caption = 'BF01: FIT G15 results. FWHMx\_HWC: FWHM(x) at half ADC range (32768 ADU); '+\
+                      'FWHMx\_slope: FWHM(x) vs. fluence slope in um / 10 kADU; '+\
+                      'FWHMy\_HWC: FWHM(y) at half ADC range (32768 ADU); '+\
+                      'FWHMy_slope: FWHM(y) vs. fluence slope in um / 10 kADU; '
+                           
+            BFfittex = bfFITtable_cdp.get_textable(sheet='BFFIT', 
+                                               caption=caption,
+                                               fitwidth=True,
+                                               tiny=True,
+                                               formatters=cov_formatters)
+            
+            
+            self.report.add_Text(BFfittex)
+        
+        

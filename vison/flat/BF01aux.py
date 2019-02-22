@@ -35,6 +35,9 @@ def get_CDP_lib():
     bftable_cdp = cdp.Tables_CDP()
     bftable_cdp.rootname = 'BF01_G15TABLE'
     
+    bfFITtable_cdp = cdp.Tables_CDP()
+    bfFITtable_cdp.rootname = 'BF01FIT_G15TABLE'
+    
     profscov_cdp = cdp.CDP()
     profscov_cdp.rootname  = 'profs_COV1D_BF01'
     
@@ -45,6 +48,7 @@ def get_CDP_lib():
     CDP_lib = dict(COVTABLE=covtable_cdp,
                    PROFSCOV1D=profscov_cdp,
                    BFTABLE=bftable_cdp,
+                   BFfitTABLE=bfFITtable_cdp,
                    PROFSKER1D=profsker_cdp)
     return CDP_lib
 
@@ -99,7 +103,9 @@ FWHMx_v_flu_dict = dict(
     meta=dict(doLegend=True,
               ylabel='FWHM(x), [pix]',
               xlabel='ADU',
-              corekwargs=dict(marker='.',linestyle='-'),
+              corekwargs=dict(
+                      data = dict(marker='o',linestyle=''),
+                      fit = dict(marker='',linestyle='--')),
               suptitle='BF01: FWHMx vs. Fluence')
 )
 
@@ -109,7 +115,9 @@ FWHMy_v_flu_dict = dict(
     meta=dict(doLegend=True,
               ylabel='FWHM(y), [pix]',
               xlabel='ADU',
-              corekwargs=dict(marker='.',linestyle='-'),
+              corekwargs=dict(
+                      data = dict(marker='o',linestyle=''),
+                      fit = dict(marker='',linestyle='--')),
               suptitle='BF01: FWHMy vs. Fluence')
 )
 
