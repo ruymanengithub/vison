@@ -70,8 +70,18 @@ def fit_BF(X,Y):
     
     xfit = np.linspace(0,2**16,2)
     
+    ixval = np.where(np.isfinite(X) & np.isfinite(Y))
+    
+    if len(ixval[0])<3:
+        res = dict(xfit=xfit.copy(),
+                   yfit=xfit*0.,
+                   intercept=0.,
+                   slope=0.,
+                   fwhm_hwc = -1.)
+        return res
+    
     ransac = linear_model.RANSACRegressor()
-    ransac.fit(np.expand_dims(X,1),np.expand_dims(Y,1))
+    ransac.fit(np.expand_dims(X[ixval],1),np.expand_dims(Y[ixval],1))
     #predictor = ransac.predict
     
     slope = ransac.estimator_.coef_[0][0]
