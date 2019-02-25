@@ -28,7 +28,7 @@ from vison.support.files import cPickleRead
 def run_merger(infile, programme='FM', block='BLOCK', reference='6_666'):
     """ """
     
-    indata = ascii.read(infile)
+    indata = ascii.read(infile,data_start=0)
     
     report = Report(TestName='All Calibration Tests',Model=programme,
                     Reference=reference)
