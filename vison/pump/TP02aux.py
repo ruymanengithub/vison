@@ -23,6 +23,8 @@ from vison.plot import trends
 # END IMPORT
 
 
+CCDs = ['CCD1','CCD2','CCD3']
+
 check_offsets_dict = dict(stats=['offset_pre', 'offset_ove'],
                           trendaxis='time',
                           figname='TP02_offset_vs_time.png',
@@ -77,6 +79,15 @@ def get_CDP_lib():
     mastercat.rootname = 'TP02_MasterCat'
     
     CDP_lib = OrderedDict()
-    CDP_lib['MASTERCAT'] = mastercat
+           
+    for CCD in CCDs:
+    
+        mastercat = cdp.CDP()
+        mastercat.rootname = 'TP01_MasterCat_%s' % CCD
+        CDP_lib['MASTERCAT_%s' % CCD] = mastercat
+               
+        mergedcat = cdp.CDP()
+        mergedcat.rootname = 'TP01_MergedCat_%s' % CCD
+        CDP_lib['MERGEDCAT_%s' % CCD] = mergedcat
            
     return CDP_lib
