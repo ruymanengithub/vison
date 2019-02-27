@@ -27,7 +27,7 @@ from vison.image.ds9reg import save_spots_as_ds9regs
 # END IMPORT
 
 def _get_N(dipdict):
-    return np.nansum(dipdict['S'])
+    return len(dipdict['S'])
 
 def _get_Ratio(dipdict):
     
@@ -81,7 +81,8 @@ def _aggregate(masterdict,CCDs,allQuads,modkeys,tkeys,tkeyname):
     names=['CCD','Q','mod',tkeyname]
     outdf.index.set_names(names,inplace=True)
     
-                    
+    
+    
     return outdf
 
 
