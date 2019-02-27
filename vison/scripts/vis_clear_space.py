@@ -47,7 +47,7 @@ def find_and_erase(path,keyword):
         totsize += selsize
     print '\nTOTAL: %s files, %.1e bytes\n' % (totNfiles, totsize)
     
-    execline2 = "find ./%s -type d -name '%s' -exec sh -c '%s' {} \;" % (path,keyword,'rm -r "$0"/*')
+    execline2 = "find %s -type d -name '%s' -exec sh -c '%s' {} \;" % (path,keyword,'rm -r "$0"/*')
     
     print('\nTo be executed: "%s"\n' % execline2)
     ans2 = raw_input('Still want to proceed? yes=y/Y ')
