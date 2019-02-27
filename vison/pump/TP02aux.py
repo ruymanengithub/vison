@@ -63,10 +63,13 @@ check_injstd_dict = dict(stats=['chk_std_inject'],
 def gt_meta_Pctau_dict(mkey):
     return dict(
             figname='TP02_PcTau_%s.png' % mkey,
-            caption='TP02: log10(tau[us])-log10(Pc) plot for pumping mode %s.' % mkey,
+            caption='TP02: log10(tph[us])-log10(Pc) plot for pumping mode %s. ' % mkey+\
+                'tph is the sum of the dwell time and the serial toi, 4.75 us.',
             meta=dict(doLegend=True,
               doNiceXDate=False,
               suptitle='TP02: %s' % mkey,
+              xlabel='log10(tph [us])',
+              ylabel='log10(Pc)',
               corekwargs=dict(North=dict(marker='.',linestyle='',color='b'),
                               South=dict(marker='.',linestyle='',color='r'))
                 ))
