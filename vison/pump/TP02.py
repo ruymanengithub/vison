@@ -325,8 +325,8 @@ class TP02(PumpTask):
         
         threshold = self.contrast_threshold
         #CCDhalves = ['top','bottom']
-        _Quads_dict = dict(top = ['E','F'],
-                           bottom = ['G','H'])
+        _Quads_dict = dict(bottom = ['E','F'],
+                           top = ['G','H'])
                 
         DDindices = copy.deepcopy(self.dd.indices)
         CCDs = DDindices.get_vals('CCD')
@@ -389,9 +389,9 @@ class TP02(PumpTask):
                             dwellkey = 'u%04i' % dwell
                             
                             if np.isclose(id_dly/toi_ch,1.5):
-                                CCDhalf = 'bottom'
-                            elif np.isclose(id_dly/toi_ch,2.5):
                                 CCDhalf = 'top'
+                            elif np.isclose(id_dly/toi_ch,2.5):
+                                CCDhalf = 'bottom'
                                 
                             Quads = _Quads_dict[CCDhalf]
                             

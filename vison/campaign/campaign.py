@@ -172,7 +172,7 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         IG2 = 6.00
         IG1s = [2.5, 6.75]
         toi_chinj01 = 500
-        id_delays = [toi_chinj01*2.5, toi_chinj01*1.5] # top, bottom CCD half
+        id_delays = [toi_chinj01*2.5, toi_chinj01*1.5] # bottom [EF], top [GH] CCD half
 
         diffCHINJ01 = dict(mirr_on=0)
         diffCHINJ01.update(diffvalues)
@@ -200,7 +200,7 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         IG1 = 4.
         IG2 = 6.
         toi_chinj02 = 500
-        id_delays = [toi_chinj02*2.5, toi_chinj02*1.5] # top, bottom CCD half
+        id_delays = [toi_chinj02*2.5, toi_chinj02*1.5] # bottom [EF], top [GH] CCD half
         diffCHINJ02 = dict(mirr_on=0)
         diffCHINJ02.update(diffvalues)
 

@@ -245,8 +245,8 @@ class CHINJ02(InjTask):
         MCH02_dd = OrderedDict()
         MCH02_dd['meta'] = OrderedDict()
         
-        _Quads_dict = dict(top = ['E','F'],
-                           bottom = ['G','H'])
+        _Quads_dict = dict(bottom = ['E','F'],
+                           top = ['G','H'])
         
         
         # INJECTION CURVES
@@ -286,9 +286,9 @@ class CHINJ02(InjTask):
             
             _Quads = _Quads_dict[CCDhalf]
             
-            if CCDhalf == 'top':
+            if CCDhalf == 'bottom':
                 id_dly_opt = toi_ch * 2.5                
-            elif CCDhalf == 'bottom':
+            elif CCDhalf == 'top':
                 id_dly_opt = toi_ch * 1.5
                 
             for jCCD, CCDk in enumerate(CCDs):

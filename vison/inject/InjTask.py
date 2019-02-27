@@ -491,8 +491,8 @@ class InjTask(Task):
         
         if not self.drill:
             
-            _Quads_dict = dict(top = ['E','F'],
-                           bottom = ['G','H'])
+            _Quads_dict = dict(bottom = ['E','F'],
+                           top = ['G','H'])
             
             
             for iObs in range(nObs):
@@ -533,9 +533,9 @@ class InjTask(Task):
                             toi_ch = self.dd.mx['toi_ch'][iObs,jCCD]
                             
                             if np.isclose(id_dly/toi_ch,1.5):
-                                CCDhalf = 'bottom'
-                            elif np.isclose(id_dly/toi_ch,2.5):
                                 CCDhalf = 'top'
+                            elif np.isclose(id_dly/toi_ch,2.5):
+                                CCDhalf = 'bottom'
                             
                             
                             
