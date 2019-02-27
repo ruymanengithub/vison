@@ -25,7 +25,7 @@ import string as st
 def find_and_erase(path,keyword):
     """ """
     
-    execline1 = "find ./%s -type d -name '%s'" % (path,keyword)
+    execline1 = "find %s -type d -name '%s'" % (path,keyword)
     print('\nDirectories that will be WIPED OUT clear:\n')
     os.system(execline1)
     print('\n')
