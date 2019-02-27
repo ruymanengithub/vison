@@ -384,7 +384,7 @@ def save_dipcat2D_as_ds9regs(df, regfilename, clobber=True):
                           clobber=True)
 
 
-def fcomp_distamp_dipoles(merged, mcat):
+def fcomp_distamp_dipoles_2D(merged, mcat):
     """ """
 
     _X = mcat['X'].as_matrix()
@@ -405,6 +405,29 @@ def fcomp_distamp_dipoles(merged, mcat):
     mcat['mix'] = pd.Series(_mix, index=mcat.index)
 
     return mcat
+
+
+def fcomp_distamp_dipoles_1D(merged, mcat):
+    """ """
+
+    _X = mcat['X'].as_matrix()
+    _S = mcat['S'].as_matrix()
+
+    _mix = np.zeros_like(_X, dtype='int32') - 1
+
+    for ix in range(len(_X)):
+        
+        disc = np.isclose(
+            np.abs(merged['uX']-_X[ix]), 0.) & (_S[ix] == merged['uS'])
+        try:
+            _mix[ix] = np.where(disc)[0][0]
+        except:
+            pass
+
+    mcat['mix'] = pd.Series(_mix, index=mcat.index)
+
+    return mcat
+
 
 
 def merge_2dcats_generic(catsdict, catkeys, parentkey, columns, opcolumns, fcomp, dropna=False):
@@ -463,8 +486,13 @@ def merge_vtp_dipole_cats_bypos(catsdict, catkeys, parentkey, dropna=False):
     """ """
     columns = ['X', 'Y', 'S', 'A']
     opcolumns = ['X', 'Y', 'S']
-    return merge_2dcats_generic(catsdict, catkeys, parentkey, columns, opcolumns, fcomp_distamp_dipoles, dropna=False)
+    return merge_2dcats_generic(catsdict, catkeys, parentkey, columns, opcolumns, fcomp_distamp_dipoles_2D, dropna=False)
 
+
+def merge_stp_dipole_cats_bypos(catsdict, catkeys, parentkey, dropna=False):
+    columns = ['X', 'S', 'A']
+    opcolumns = ['X', 'S']
+    return merge_2dcats_generic(catsdict, catkeys, parentkey, columns, opcolumns, fcomp_distamp_dipoles_1D, dropna=False)
 
 def get_f_A_vtp(N):
     def f_A_vtp(tph, logPc, tau):
@@ -514,6 +542,64 @@ def batch_fit_PcTau_vtp(Amplitudes,tois,Nshuffles=5000):
     
     for i in range(Np):
         Pc[i], tau[i] = fit_PcTau_vtp(Amp_mx[i,:],tois,Nshuffles)
+    
+    
+    return Pc, tau
+
+
+
+
+def get_f_A_stp(N):
+    def f_A_stp(tph, logPc, tau):
+        return N * 10.**logPc * (1.-np.exp(-tph/tau))
+    return f_A_stp
+
+
+def fit_PcTau_stp(A, dwells, stoi, Nshuffles=5000):
+    """ """
+    
+    fitfunc = get_f_A_stp(Nshuffles)
+    
+    p0 = [-6.,stoi]
+    pbounds = [[-7.,-1.],[stoi/10.,stoi*10.]]
+    
+    ixsel = np.where(~np.isnan(A))
+    if len(ixsel[0])<3:
+        return np.nan, np.nan
+    else:
+    
+        try:
+            popt, pcov = curve_fit(fitfunc,dwells[ixsel],A[ixsel],bounds=pbounds,p0=p0)
+    
+            Pc = 10.**popt[0]
+            tau = popt[1]
+        except:
+            Pc, tau = np.nan, np.nan
+    
+    
+    return Pc, tau
+
+def batch_fit_PcTau_stp(Amplitudes,dwells,Nshuffles=5000):
+    """ """
+    
+    stoi = 4.75 # us, serial TOI
+    
+    Amp_mx = Amplitudes.as_matrix()
+    
+    Np = Amp_mx.shape[0]
+    
+    if Np ==0:
+        return np.array([],dtype='float32'), np.array([],dtype='float32')
+        
+    assert Amp_mx.shape[1] == len(dwells)    
+    
+    
+    Pc = np.zeros(Np,dtype='float32')+np.nan
+    tau = np.zeros(Np,dtype='float32')+np.nan
+    
+    for i in range(Np):
+        Pc[i], tau[i] = fit_PcTau_stp(Amp_mx[i,:],dwells, stoi, Nshuffles)
+    
     
     
     return Pc, tau

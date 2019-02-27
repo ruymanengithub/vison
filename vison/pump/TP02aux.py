@@ -60,6 +60,17 @@ check_injstd_dict = dict(stats=['chk_std_inject'],
                                    suptitle='TP02-checks: Injection STD')
                          )
 
+def gt_meta_Pctau_dict(mkey):
+    return dict(
+            figname='TP02_PcTau_%s.png' % mkey,
+            caption='TP02: log10(tau[us])-log10(Pc) plot for pumping mode %s.' % mkey,
+            meta=dict(doLegend=True,
+              doNiceXDate=False,
+              suptitle='TP02: %s' % mkey,
+              corekwargs=dict(North=dict(marker='.',linestyle='',color='b'),
+                              South=dict(marker='.',linestyle='',color='r'))
+                ))
+
 def get_TP02figs():
     TP02figs = dict()
     TP02figs['TP02checks_offsets'] = [
@@ -68,8 +79,17 @@ def get_TP02figs():
     TP02figs['TP02checks_injlevel'] = [
         trends.Fig_Basic_Checkstat, check_injlevel_dict]
     TP02figs['TP02checks_injstd'] = [trends.Fig_Basic_Checkstat, check_injstd_dict]
+    
+    
+    for mkey in ['m23','m31']:
+        
+        TP02figs['TP02meta_%s' % mkey] = [figclasses.Fig_Beam2DPlot,
+                gt_meta_Pctau_dict(mkey)]
+    
     TP02figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return TP02figs
+
+
 
 
 def get_CDP_lib():
@@ -89,5 +109,5 @@ def get_CDP_lib():
         mergedcat = cdp.CDP()
         mergedcat.rootname = 'TP01_MergedCat_%s' % CCD
         CDP_lib['MERGEDCAT_%s' % CCD] = mergedcat
-           
+          
     return CDP_lib
