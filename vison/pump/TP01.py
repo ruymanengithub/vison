@@ -102,81 +102,6 @@ class TP01_inputs(inputs.Inputs):
     ])))
 
 
-def _get_N(dipdict):
-    return np.nansum(dipdict['S'])
-
-def _get_Ratio(dipdict):
-    
-    NN = len(np.where(dipdict['S']==1)[0])
-    NS = len(np.where(dipdict['S']==0)[0])
-    if NS>0:
-        Ratio = float(NN)/float(NS)
-    else:
-        Ratio = np.nan
-    return Ratio
-
-def _get_A(dipdict):
-    return np.nanmedian(dipdict['A'])
-    
-
-def _aggregate(masterdict,CCDs,allQuads,modkeys,toikeys):
-    """ """
-    
-    allfuncts = OrderedDict()
-    extracts = ['N','R','A']
-    allfuncts['N'] = _get_N
-    allfuncts['R'] = _get_Ratio
-    allfuncts['A'] = _get_A
-    
-    #funct = allfuncts[extract]
-    
-    outdict = copy.deepcopy(masterdict)
-    
-    for CCDk in CCDs:
-        for Q in allQuads:
-            for modkey in modkeys:
-                for toikey in toikeys:
-                    values = []
-                    for extract in extracts:
-                        values.append(allfuncts[extract](masterdict[CCDk][Q][modkey][toikey]))                                
-                    outdict[CCDk][Q][modkey][toikey] = values
-    
-   
-    reform = {(level1_key, level2_key, level3_key, level4_key): value
-              for level1_key, level2_dict in outdict.items()
-              for level2_key, level3_dict in level2_dict.items()
-              for level3_key, level4_dict in level3_dict.items()
-              for level4_key, value       in level4_dict.items()}
-    
-    
-    outdf = pd.DataFrame(reform).T
-    colnames = dict()
-    for i,c in enumerate(extracts):
-        colnames[i] = c
-    outdf.rename(columns=colnames,inplace=True)
-    names=['CCD','Q','mod','toi']
-    outdf.index.set_names(names,inplace=True)
-    
-    
-    return outdf
-
-
-def _get_tex(df):
-    
-    coretex =  df.to_latex(multicolumn=True,multirow=True,
-                   longtable=True,index=True,
-                   escape=True)
-    
-    #tex = ['\\tiny'] + st.split(coretex,'\\\\\n') +['\\normalsize']
-    
-    return coretex
-
-def _get_txt(df):
-    fok = st.split(df.to_string(),'\n')
-    txt = ['\\begin{verbatim}']+fok+['\\end{verbatim}']
-    return txt 
-
-
 
 
 class TP01(PumpTask):
@@ -471,8 +396,8 @@ class TP01(PumpTask):
                         
                         
                         for ix in ixsel[0]:
-                            ObsID = self.dd.mx['ObsID'][ix]
                             
+                            ObsID = self.dd.mx['ObsID'][ix]                            
                             vstart = self.dd.mx['vstart'][ix, jCCD]
                             vend = self.dd.mx['vend'][ix,jCCD]
                             toi_ch = float(self.dd.mx['toi_ch'][ix,jCCD])
@@ -509,13 +434,7 @@ class TP01(PumpTask):
                                 
                                     
             
-            df =_aggregate(masterdict,CCDs,allQuads,modkeys,toikeys)
-            #txtreport = _get_txt(df)
-            
-            
-            #if self.report is not None:
-            #    self.report.add_Text('Dipole Statistics: Number, Ratio N/S, \<Amplitude\>')
-            #    self.report.add_Text(txtreport)
+            df = tptools._aggregate(masterdict,CCDs,allQuads,modkeys,toikeys,'toi')
             
             
             summaryMean = df.groupby(level=['CCD','Q','mod']).mean()
@@ -526,11 +445,11 @@ class TP01(PumpTask):
             summary['A'] = summaryMean['A'].copy()
             summary.columns = ['N','<R>','<A>']
         
-            summtxtreport = _get_txt(summary)
+            summtxtreport = tptools._get_txt(summary)
             
         
             if self.report is not None:
-                self.report.add_Text('Aggregated Dipole Statistics: Number, Ratio N/S, \<Amplitude\>')
+                self.report.add_Text('Aggregated Dipole Statistics: Number, \<Ratio N/S\>, \<Amplitude\>')
                 self.report.add_Text(summtxtreport)
             
             

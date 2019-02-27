@@ -20,10 +20,84 @@ import pandas as pd
 from collections import OrderedDict
 from pylab import plot,show
 from scipy.optimize import curve_fit
+import string as st
 
 from vison.datamodel import ccd as ccdmod
 from vison.image.ds9reg import save_spots_as_ds9regs
 # END IMPORT
+
+def _get_N(dipdict):
+    return np.nansum(dipdict['S'])
+
+def _get_Ratio(dipdict):
+    
+    NN = len(np.where(dipdict['S']==1)[0])
+    NS = len(np.where(dipdict['S']==0)[0])
+    if NS>0:
+        Ratio = float(NN)/float(NS)
+    else:
+        Ratio = np.nan
+    return Ratio
+
+def _get_A(dipdict):
+    return np.nanmedian(dipdict['A'])
+    
+
+def _aggregate(masterdict,CCDs,allQuads,modkeys,tkeys,tkeyname):
+    """ """
+    
+    allfuncts = OrderedDict()
+    extracts = ['N','R','A']
+    allfuncts['N'] = _get_N
+    allfuncts['R'] = _get_Ratio
+    allfuncts['A'] = _get_A
+    
+    #funct = allfuncts[extract]
+    
+    outdict = copy.deepcopy(masterdict)
+    
+    for CCDk in CCDs:
+        for Q in allQuads:
+            for modkey in modkeys:
+                for tkey in tkeys:
+                    values = []
+                    for extract in extracts:
+                        values.append(allfuncts[extract](masterdict[CCDk][Q][modkey][tkey]))                                
+                    outdict[CCDk][Q][modkey][tkey] = values
+    
+   
+    reform = {(level1_key, level2_key, level3_key, level4_key): value
+              for level1_key, level2_dict in outdict.items()
+              for level2_key, level3_dict in level2_dict.items()
+              for level3_key, level4_dict in level3_dict.items()
+              for level4_key, value       in level4_dict.items()}
+    
+    
+    outdf = pd.DataFrame(reform).T
+    colnames = dict()
+    for i,c in enumerate(extracts):
+        colnames[i] = c
+    outdf.rename(columns=colnames,inplace=True)
+    names=['CCD','Q','mod',tkeyname]
+    outdf.index.set_names(names,inplace=True)
+    
+                    
+    return outdf
+
+
+def _get_tex(df):
+    
+    coretex =  df.to_latex(multicolumn=True,multirow=True,
+                   longtable=True,index=True,
+                   escape=True)
+    
+    return coretex
+
+def _get_txt(df):
+    fok = st.split(df.to_string(),'\n')
+    txt = ['\\begin{verbatim}']+fok+['\\end{verbatim}']
+    return txt 
+            
 
 
 def get_injprofile_tpnorm(ccdobj, vstart, vend):

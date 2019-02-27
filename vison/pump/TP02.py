@@ -71,6 +71,9 @@ TP02_commvalues = dict(program='CALCAMP', test='TP02',
                        source='flat',
                        comments='')
 
+
+
+
 class TP02_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
@@ -371,11 +374,15 @@ class TP02(PumpTask):
             if not ontests:
 
                 for id_dly in id_dlys:
+                    
+                    print('idl_dly = %s' % id_dly)
     
                     for jCCD, CCDk in enumerate(CCDs):
+                        
+                        print('CCD=%s' % CCDk)
     
-                        ixsel = np.where((self.dd.mx['id_dly'][:] == id_dly) & (
-                            self.dd.mx['s_tpump'][:] != 0))
+                        ixsel = np.where((self.dd.mx['id_dly'][:,0] == id_dly) & (
+                            self.dd.mx['s_tpump'][:,0] != 0))
     
                         for ix in ixsel[0]:
                             ObsID = self.dd.mx['ObsID'][ix]
@@ -400,117 +407,56 @@ class TP02(PumpTask):
                             
                             imapccdobj = ccd.CCD(os.path.join(productspath,imapf))    
                             
+                            print('OBSID=%s, %s' % (ObsID,imapf))
+                            
                             for iQ, Q in enumerate(Quads):
                                
                                     
                                 idd = tptools.find_dipoles_stpump(imapccdobj,threshold,
-                                      Q,vstart=vstart,vend=vend,
-                                      extension=-1)
+                                      Q,vstart=vstart,vend=vend,extension=-1)
                                  
                                 masterdict[CCDk][Q][modkey][dwellkey] = idd.copy()
             
-            
-            
-            def _get_N(dipdict):
-                return np.nansum(dipdict['S'])
-            
-            def _get_Ratio(dipdict):
-                
-                NW = len(np.where(dipdict['S']==1)[0])
-                NE = len(np.where(dipdict['S']==0)[0])
-                if NE>0:
-                    Ratio = float(NW)/float(NE)
-                else:
-                    Ratio = np.nan
-                return Ratio
-            
-            def _get_A(dipdict):
-                return np.nanmedian(dipdict['A'])
-                
 
-            def _aggregate(masterdict):
-                """ """
-                
-                allfuncts = OrderedDict()
-                extracts = ['N','R','A']
-                allfuncts['N'] = _get_N
-                allfuncts['R'] = _get_Ratio
-                allfuncts['A'] = _get_A
-                
-                #funct = allfuncts[extract]
-                
-                outdict = copy.deepcopy(masterdict)
-                
-                for CCDk in CCDs:
-                    for Q in allQuads:
-                        for modkey in modkeys:
-                            for dwellkey in dwellkeys:
-                                values = []
-                                for extract in extracts:
-                                    values.append(allfuncts[extract](masterdict[CCDk][Q][modkey][dwellkey]))                                
-                                outdict[CCDk][Q][modkey][dwellkey] = values
-                
-               
-                reform = {(level1_key, level2_key, level3_key, level4_key): value
-                          for level1_key, level2_dict in outdict.items()
-                          for level2_key, level3_dict in level2_dict.items()
-                          for level3_key, level4_dict in level3_dict.items()
-                          for level4_key, value       in level4_dict.items()}
-                
-                
-                outdf = pd.DataFrame(reform).T
-                colnames = dict()
-                for i,c in enumerate(extracts):
-                    colnames[i] = c
-                outdf.rename(columns=colnames,inplace=True)
-                names=['CCD','Q','mod','dwell']
-                outdf.index.set_names(names,inplace=True)
-                
-                                
-                return outdf
+            df = tptools._aggregate(masterdict,CCDs,allQuads,modkeys,dwellkeys,'dwell')
             
             
-            def _get_tex(df):
-                
-                coretex =  df.to_latex(multicolumn=True,multirow=True,
-                               longtable=True,index=True,
-                               escape=True)
-                
-                #tex = ['\\tiny'] + st.split(coretex,'\\\\\n') +['\\normalsize']
-                
-                return coretex
-            
-            def _get_txt(df):
-                fok = st.split(df.to_string(),'\n')
-                txt = ['\\begin{verbatim}']+fok+['\\end{verbatim}']
-                return txt 
-            
-            df =_aggregate(masterdict)
-            #texreport = _get_tex(df)
-            txtreport = _get_txt(df)
-            #Ntex = _get_tex(dfN)
-            #dfRatio=_aggregate(masterdict,extract='Ratio')
-            #Ratiotex = _get_tex(dfRatio)
-            #dfA = _aggregate(masterdict,extract='A')
-            #Atex = _get_tex(dfA)
+            summaryMean = df.groupby(level=['CCD','Q','mod']).mean()
+            summaryTot = df.groupby(level=['CCD','Q','mod']).sum()
+        
+            summary = summaryTot.copy()
+            summary['R'] = summaryMean['R'].copy()
+            summary['A'] = summaryMean['A'].copy()
+            summary.columns = ['N','<R>','<A>']
+        
+            summtxtreport = tptools._get_txt(summary)
             
             
             if self.report is not None:
-                self.report.add_Text('Dipole Statistics: Number, Ratio N/S, \<Amplitude\>')
-                self.report.add_Text(txtreport)
+                self.report.add_Text('Aggregated Dipole Statistics: Number, \<Ratio N/S\>, \<Amplitude\>')
+                self.report.add_Text(summtxtreport)
             
             
             # Saving the MasterCat
             
-            mastercat = self.CDP_lib['MASTERCAT']
-            mastercat.header = CDP_header.copy()
-            mastercat.meta = OrderedDict(THRESHOLD=threshold)
-            mastercat.path = productspath
-            mastercat.data = masterdict.copy()
+            MCmeta = OrderedDict()
+            MCmeta['THRESHOLD'] = threshold
+            MCmeta['Quads'] = allQuads
+            MCmeta['modkeys'] = modkeys
+            MCmeta['dwellkeys'] = dwellkeys
             
-            self.save_CDP(mastercat)
-            self.pack_CDP_to_dd(mastercat,'MASTERCAT')
-
+            
+            for CCDk in CCDs:
+            
+                kmastercat = self.CDP_lib['MASTERCAT_%s' % CCDk]
+                kmastercat.header = CDP_header.copy()
+                kmastercat.meta = MCmeta
+                kmastercat.path = productspath
+                kmastercat.data = masterdict[CCDk].copy()
+                
+                self.save_CDP(kmastercat)
+                self.pack_CDP_to_dd(kmastercat,'MASTERCAT_%s' % CCDk)
+                
 
     def meta_analysis(self):
         """
