@@ -56,9 +56,12 @@ def prepare_one_image(q,dd,ogse,inputs,iObs,
             doBias,BiasData,
             doFF, FFData):
     
+    
     if doFF:
         FW_ID = dd.mx['wave'][iObs,0]
         wavelength = ogse['FW']['F%i' % FW_ID]
+        
+    
 
     for jCCD, CCDkey in enumerate(CCDs):
         
@@ -114,8 +117,8 @@ def prepare_one_image(q,dd,ogse,inputs,iObs,
         q.put([iObs,jCCD,ccdobj_name])
 
 
-def _prepare_one_image(args):
-    prepare_one_image(*args)
+#def _prepare_one_image(args):
+#    prepare_one_image(*args)
 
 class Task(object):
     """ """
@@ -883,6 +886,8 @@ class Task(object):
             
             
             pool = mp.Pool(processes=self.processes)
+            
+            
             
             for i in range(len(arglist)):
                 pool.apply_async(prepare_one_image, args=arglist[i])
