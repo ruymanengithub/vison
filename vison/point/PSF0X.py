@@ -310,10 +310,25 @@ class PSF0X(PT.PointTask):
 
 
         """
+        
+        onTests = False
+        
+        if onTests:
+            
+            for colname in self.dd.colnames:
+                if colname != 'ObsID':
+                    self.dd.mx[colname].array = np.expand_dims(self.dd.mx[colname].array[37,...],0).copy()
+                else:
+                    self.dd.mx[colname] = self.dd.mx[colname].array[37].copy()
+            self.dd.indices[0].vals=[0]
+            self.dd.indices[0].len=1
+        
+        
         super(PSF0X, self).prepare_images(
             doExtract=True, doBadPixels=True,            
             doMask=True, doOffset=True, doBias=True, doFF=True)
-
+        
+        
         dIndices = copy.deepcopy(self.dd.indices)
 
         CCDs = dIndices[dIndices.names.index('CCD')].vals
@@ -337,6 +352,13 @@ class PSF0X(PT.PointTask):
             #rpath = self.inputs['resultspath']
             picklespath = self.inputs['subpaths']['ccdpickles']
             spotspath = self.inputs['subpaths']['spots']
+            strackers = self.ogse.startrackers
+            
+            psCCDcoodicts = OrderedDict(names=strackers['CCD1'].starnames)
+
+            for jCCD, CCDk in enumerate(CCDs):
+                psCCDcoodicts[CCDk] = strackers[CCDk].get_allCCDcoos(
+                    nested=True)
 
             for iObs in range(nObs):
             #for iObs in range(3): # TESTS
@@ -357,7 +379,8 @@ class PSF0X(PT.PointTask):
 
                         for lS, SpotName in enumerate(SpotNames):
 
-                            coo = polib.Point_CooNom[CCDk][Quad][SpotName]
+                            #coo = polib.Point_CooNom[CCDk][Quad][SpotName]                            
+                            coo = psCCDcoodicts[CCDk][Quad][SpotName]
                             lSpot = polib.extract_spot(
                                 ccdobj, coo, Quad, stampw=stampw)
 
@@ -374,6 +397,19 @@ class PSF0X(PT.PointTask):
                     spotsdict = dict(spots=spots_array)
 
                     files.cPickleDumpDictionary(spotsdict, fullspots_name)
+                    
+                    if onTests:
+                        
+                        from pylab import imshow,show
+                        
+                        for kQ, Quad in enumerate(Quads):
+
+                            for lS, SpotName in enumerate(SpotNames):
+                                
+                                img = spotsdict['spots'][kQ,lS].data
+                                imshow(img.T,origin='lower left')
+                                show()
+                        stop()
 
         if self.log is not None:
             self.log.info('Saved spot "bag" files to %s' % spotspath)
@@ -384,10 +420,13 @@ class PSF0X(PT.PointTask):
              - Gaussian fitting: peak intensity, position, width_x, width_y
 
         """
+        
+        
 
         raise NotImplementedError
+        
+    
 
-    # def bayes_analysis(dd,report,inputs,log=None):
 
     def bayes_analysis(self):
         """ 
@@ -395,7 +434,65 @@ class PSF0X(PT.PointTask):
             - optomechanic PSF and detector PSF.
         Also measures R2, fwhm and ellipticity of "extracted" detector PSF.
         """
-        raise NotImplementedError
+        
+        # TESTS
+        
+        from pylab import plot,show
+        from scipy.optimize import curve_fit
+        
+        dIndices = copy.deepcopy(self.dd.indices)
+
+        CCDs = dIndices[dIndices.names.index('CCD')].vals
+        #nCCD = len(CCDs)
+        Quads = dIndices[dIndices.names.index('Quad')].vals
+        nQuads = len(Quads)
+        nObs = dIndices[dIndices.names.index('ix')].len
+        SpotNames = dIndices[dIndices.names.index('Spot')].vals
+        nSpots = len(SpotNames)
+        
+        jCCD = 0
+        lS = 0
+        iQ = Quads.index('E')
+        
+        fwhmx = self.dd.mx['chk_fwhmx'][:,jCCD,iQ,lS].copy()
+        fwhmy = self.dd.mx['chk_fwhmy'][:,jCCD,iQ,lS].copy()
+        peak = self.dd.mx['chk_peak'][:,jCCD,iQ,lS].copy()
+        
+        def f_gauss_ccd_fit(peakflu,*p):
+            hwc = 2.**15.
+            return np.sqrt(p[0]**2.+(p[1]*peakflu/hwc)**2.)
+        
+        selx = np.where((peak<5.e4) & (fwhmx>1.5) & (fwhmx<2.5))        
+        fitcoefsx, pcov = curve_fit(f_gauss_ccd_fit, peak[selx], fwhmx[selx], p0=[2.0,0.1])
+        
+        sely = np.where((peak<5.e4) & (fwhmy>1.5) & (fwhmy<2.5))    
+        fitcoefsy, pcov = curve_fit(f_gauss_ccd_fit, peak[sely], fwhmy[sely], p0=[2.0,0.1])
+        
+        
+        
+        spotspath = self.inputs['subpaths']['spots']
+        
+        spotslist = []
+        
+        for iObs in range(nObs):
+            
+            spotspick = os.path.join(spotspath,'%s.pick' % self.dd.mx['spots_name'][iObs,jCCD])
+            spotsobj = cPickleRead(spotspick)
+            spotslist.append(spotsobj['spots'][iQ,lS].data.copy())
+        
+        stop()
+        
+        
+        for iObs in range(nObs):
+            
+            img = spotslist[iObs]
+            centroid = np.unravel_index(img.argmax(),img.shape)
+            plot(img[centroid[0],:]/img.max())
+        show()
+        
+        
+        stop()
+        
 
     # def meta_analysis(dd,report,inputs,log=None):
     def meta_analysis(self):

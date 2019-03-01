@@ -471,6 +471,7 @@ class PointTask(Task):
             
             all_ok = rotation_ok and scale_ok and trans_ok
             
+            
             if all_ok:
                 
                 if self.log is not None:
@@ -481,8 +482,10 @@ class PointTask(Task):
                 
                 simmx = self.ogse.startrackers[CCDk].get_similaritymx(SCALE, 
                                      ROTATION, TRANSLATION)
-                    
+                
+                
                 self.ogse.startrackers[CCDk].apply_patt_transform(simmx)
+                
     
     def lock_on_stars(self, iObs=0, sexconfig=None):
         """ """

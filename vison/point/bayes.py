@@ -7,9 +7,10 @@ Bayesian CCD Spot Measurements
 NEEDSREVISION AND UPGRADES
 
 TODO: 
-    - single fluence multi-spot fitting
+    - single fluence multi-spot fitting (possible?? all spots have different fluences... even for same exp-time)
     - single spot multi-fluence fitting
-    
+    - multi-spot, multi-fluence fitting (too many parameters?)
+
 
 Azzollini: (18th September 2017)
 
@@ -89,22 +90,53 @@ __author__ = 'R. Azzollini, Sami-Matias Niemi'
 
 
 model_pars = dict(singauss=['peak', 'center_x', 'center_y', 'sigmax', 'sigmay'],
-                  airyngauss=['peak', 'center_x',
-                              'center_y', 'radius', 'focus'],
-                  ccdgauss=['peak', 'center_x', 'center_y',
-                            'radius', 'focus', 'sigmax', 'sigmay'],
-                  ccdexp=['peak', 'center_x', 'center_y',
-                          'radius', 'focus', 'sigmax', 'sigmay'],
+                  airyngauss=['peak', 'center_x','center_y', 'radius', 'focus'],
+                  ccdgauss=['peak', 'center_x', 'center_y', 'radius', 'focus', 'sigmax', 'sigmay'],
+                  ccdexp=['peak', 'center_x', 'center_y', 'radius', 'focus', 'sigmax', 'sigmay'],
                   ccdtriangle=['peak', 'center_x', 'center_y', 'radius', 'focus', 'weightx', 'weighty'])
 
 model_priors = dict(singauss=[None, [7., 14.], [7., 14.], [0.1, 2.], [0.1, 2.]],
-                    airyngauss=[None, [7., 14.], [
-                        7., 14.], [0.2, 2.], [0.2, 2.]],
-                    ccdgauss=[None, [7., 14.], [7., 14.], [0.2, 2.],
-                              [0.2, 2.], [1.E-6, 0.6], [1.E-6, 0.6]],
-                    ccdexp=[None, [7., 14.], [7., 14.], [0.2, 2.],
-                            [0.2, 2.], [1.E-6, 0.6], [1.E-6, 0.6]],
+                    airyngauss=[None, [7., 14.], [7., 14.], [0.2, 2.], [0.2, 2.]],
+                    ccdgauss=[None, [7., 14.], [7., 14.], [0.2, 2.],[0.2, 2.], [1.E-6, 0.6], [1.E-6, 0.6]],
+                    ccdexp=[None, [7., 14.], [7., 14.], [0.2, 2.],[0.2, 2.], [1.E-6, 0.6], [1.E-6, 0.6]],
                     ccdtriangle=[None, [7., 14.], [7., 14.], [0.05, 2.], [0.05, 2.], [1.E-8, 1.E-2], [1.E-8, 1.E-2]])
+
+def save_stamps_fits(outfits,stampdict,gof,modeltype,gain,burn,run):
+    """ """
+    
+    hdu = fts.PrimaryHDU()
+    hdu.header.add_history('PSF02_bayes.py at %s' % \
+     (datetime.datetime.isoformat(datetime.datetime.now())))
+    
+    hdu.header.add_history('Extension 1: STAMP')
+    hdu.header.add_history('Extension 2: MODEL')
+    hdu.header.add_history('Extension 3: RESIDUAL')
+    hdu.header.add_history('Extension 4: RESIDUALSQ')
+    
+    hdulist = fts.HDUList([hdu])
+    
+    hdustamp = fts.ImageHDU(stampdict['stamp'].transpose())
+    hdustamp.header['EXTNAME'] = 'STAMP'
+    hdulist.append(hdustamp)
+    
+    #hdukernel = fts.ImageHDU(stampdict['kernel'].transpose())
+    #hdukernel.header['EXTNAME'] = 'KERNEL'
+    #hdulist.append(hdukernel)
+    
+    hdumodel = fts.ImageHDU(stampdict['model'].transpose())
+    hdumodel.header['EXTNAME'] = 'MODEL'
+    hdulist.append(hdumodel)
+    
+    hdures = fts.ImageHDU(stampdict['residual'].transpose())
+    hdures.header['EXTNAME'] = 'RESIDUAL'
+    hdulist.append(hdures)
+    
+    hduressq = fts.ImageHDU(stampdict['residualSQ'].transpose())
+    hduressq.header['EXTNAME'] = 'RESIDUALSQ'
+    hdulist.append(hduressq)
+    
+    hdulist.writeto(outfits,clobber=True)
+
 
 
 def log_posterior(theta, x, y, z, var, peakrange, spshape, modeltype):
@@ -136,8 +168,7 @@ def log_prior(theta, peakrange, priors):
 
     if disc:
         return 0.
-    else:
-        return -np.inf
+    return -np.inf
 
 
 def log_likelihood(theta, x, y, data, invar, spshape, modeltype):
@@ -145,7 +176,7 @@ def log_likelihood(theta, x, y, data, invar, spshape, modeltype):
     Logarithm of the likelihood function.
     """
 
-    model = generate_model(theta, x, y, spshape, modeltype).flatten()
+    model = generate_spot_model(theta, x, y, spshape, modeltype).flatten()
     # true for Gaussian errors
     #lnL = - 0.5 * np.sum((data - model)**2 / var)
     # Gary B. said that this should be from the model not data so recompute var (now contains rn**2)
@@ -294,19 +325,60 @@ def generate_ccdtriangle(theta, x, y, spshape, Full=False):
     else:
         return model, CCDdata, focusdata, adata
 
-
-model_generators = dict(singauss=generate_singauss, airyngauss=generate_airyngauss,
-                        ccdgauss=generate_ccdgauss, ccdexp=generate_ccdexp,
+model_generators = dict(singauss=generate_singauss,
+                        airyngauss=generate_airyngauss,
+                        ccdgauss=generate_ccdgauss,
+                        ccdexp=generate_ccdexp,
                         ccdtriangle=generate_ccdtriangle)
 
-
-def generate_model(theta, x, y, spshape, modeltype, Full=False):
+def generate_spot_model(theta, x, y, spshape, modeltype, Full=False):
     """ """
     generator = model_generators[modeltype]
     return generator(theta, x, y, spshape, Full)
 
+def prepare_stamp(img, gain=3.5, size=10, spotx=100., spoty=100.):
+    """ """
+    
+    oimg = img*gain
 
-def forwardModel(log, img, stampkey='Unknown', modeltype='gauss', gain=3.1, size=10, burn=500, spotx=2888, spoty=3514, run=700, cores=8):
+    # roughly the correct location - to avoid identifying e.g. cosmic rays
+    data = oimg[spoty-(size*3):spoty+(size*3)+1, spotx -
+                (size*3):spotx+(size*3)+1].copy()
+    
+    # maximum position within the cutout
+
+    y, x = m.maximum_position(data)
+
+    # spot and the peak pixel within the spot, this is also the CCD kernel position
+    spot = data[y-size:y+size+1, x-size:x+size+1].copy()
+    CCDy, CCDx = m.maximum_position(spot)
+    print 'CCD Kernel Position (within the postage stamp):', CCDx, CCDy
+
+    # bias estimate
+
+    # bias = np.median(eimg[spoty-size: spoty+size, spotx-220:spotx-20]) #works for read o
+    #rn = np.std(eimg[spoty-size: spoty+size, spotx-220:spotx-20])
+    #bias = np.median(stats.sigma_clip(eimg,6))
+    #rn = np.std(stats.sigma_clip(eimg,6))
+    #rn = 4.5
+    mask = np.zeros_like(oimg, dtype='bool')
+    mask[y-2*size:y+2*size, x-2*size:x+2*size] = True
+    bias = np.nanmedian(oimg[~mask])
+    rn = np.std(oimg[~mask])
+    
+
+    #print 'Readnoise (e):', rn
+    # if rn < 2. or rn > 6.:
+    #    print 'NOTE: suspicious readout noise estimate...'
+    print 'ADC offset (e):', bias
+
+    # remove bias
+    spot -= bias
+    
+    return spot, bias, rn
+
+
+def forwardModel(spot, rn, stampkey='Unknown', modeltype='gauss',  burn=500, run=700, cores=8, drill=False):
     """
     Forward models the spot data found from the input file. Can be used with simulated and real data.
 
@@ -325,41 +397,6 @@ def forwardModel(log, img, stampkey='Unknown', modeltype='gauss', gain=3.1, size
     outputs = []
     results = dict()
     stampdict = dict()
-
-    oimg = img*gain
-
-    # roughly the correct location - to avoid identifying e.g. cosmic rays
-    data = oimg[spoty-(size*3):spoty+(size*3)+1, spotx -
-                (size*3):spotx+(size*3)+1].copy()
-
-    # maximum position within the cutout
-
-    y, x = m.maximum_position(data)
-
-    # spot and the peak pixel within the spot, this is also the CCD kernel position
-    spot = data[y-size:y+size+1, x-size:x+size+1].copy()
-    CCDy, CCDx = m.maximum_position(spot)
-    print 'CCD Kernel Position (within the postage stamp):', CCDx, CCDy
-
-    # bias estimate
-
-    # bias = np.median(eimg[spoty-size: spoty+size, spotx-220:spotx-20]) #works for read o
-    #rn = np.std(eimg[spoty-size: spoty+size, spotx-220:spotx-20])
-    #bias = np.median(stats.sigma_clip(eimg,6))
-    #rn = np.std(stats.sigma_clip(eimg,6))
-    #rn = 4.5
-    mask = np.zeros_like(oimg, dtype='bool')
-    mask[spoty-size:spoty+size, spotx-size:spotx+size] = True
-    bias = np.nanmedian(oimg[~mask])
-    rn = np.std(oimg[~mask])
-
-    #print 'Readnoise (e):', rn
-    # if rn < 2. or rn > 6.:
-    #    print 'NOTE: suspicious readout noise estimate...'
-    print 'ADC offset (e):', bias
-
-    # remove bias
-    spot -= bias
 
     # save to file
     #fileIO.writeFITS(spot, stampkey+'_small.fits', int=False)
@@ -432,7 +469,7 @@ def forwardModel(log, img, stampkey='Unknown', modeltype='gauss', gain=3.1, size
     for ip in range(1, ndim):
         p0[:, ip] = np.random.uniform(priors[ip][0], priors[ip][1], nwalkers)
 
-    if not self.drill:
+    if not drill:
         # stop()
         # initiate sampler
 
@@ -468,7 +505,7 @@ def forwardModel(log, img, stampkey='Unknown', modeltype='gauss', gain=3.1, size
         params_fit = pos[maxprob_index]
         errors_fit = [sampler.flatchain[:, i].std() for i in xrange(ndim)]
     else:
-        params_fit = [maxs, CCDx, CCDy, 1.5, 0.6, 0.02, 0.03]
+        params_fit = [maxs, -1., -1., 1.5, 0.6, 0.02, 0.03]
         errors_fit = np.zeros_like(params_fit)
 
     _printResults(params_fit, errors_fit)
@@ -476,7 +513,7 @@ def forwardModel(log, img, stampkey='Unknown', modeltype='gauss', gain=3.1, size
     # Best fit model
     #peak, center_x, center_y, radius, focus, width_x, width_y = params_fit
 
-    model = generate_model(params_fit, xx, yy, spot.shape, modeltype)
+    model = generate_spot_model(params_fit, xx, yy, spot.shape, modeltype)
 
     #amplitude = _amplitudeFromPeak(peak, center_x, center_y, radius, x_0=int(spot.shape[0]/2.-0.5), y_0=int(spot.shape[1]/2.-0.5))
     amplitude = params_fit[0]  # TESTS
@@ -494,7 +531,7 @@ def forwardModel(log, img, stampkey='Unknown', modeltype='gauss', gain=3.1, size
     stampdict['residualSQ'] = ((model-spot)**2./var).copy()
 
     # a simple goodness of fit
-    gof = (1./(np.size(data) - ndim)) * \
+    gof = (1./(np.size(spot) - ndim)) * \
         np.sum((model.flatten() - fdata)**2 / var.flatten())
     maxreldiff = np.max(np.abs(model.flatten() - fdata)/np.sqrt(var.flatten()))
     print 'GoF:', gof, ' Maximum (abs(difference)/sigma) :', maxreldiff
@@ -512,7 +549,7 @@ def forwardModel(log, img, stampkey='Unknown', modeltype='gauss', gain=3.1, size
 
     results['GoF'] = gof
 
-    if not self.drill:
+    if not drill:
 
         # plot
         samples = sampler.chain.reshape((-1, ndim))
@@ -524,8 +561,7 @@ def forwardModel(log, img, stampkey='Unknown', modeltype='gauss', gain=3.1, size
         outputs.append(stampkey+'_Triangle.png')
 
     outfits = stampkey+'_bayes.fits'
-
-    save_stamps_fits(outfits, stampdict, gof, modeltype, gain, burn, run)
+    save_stamps_fits(outfits, stampdict, gof, modeltype, 1., burn, run)
 
     outputs.append(outfits)
 
