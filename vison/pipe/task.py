@@ -389,9 +389,9 @@ class Task(object):
         # Write automatic Report of Results
 
         if todo_flags['report']:
-            #outfiles = self.report.doreport(reportroot, cleanafter, silent=True) # commented on TESTS
-            outfiles = self.report.doreport(reportroot, cleanafter=False, silent=False) # TESTS
-            stop() # TESTS
+            outfiles = self.report.doreport(reportroot, cleanafter, silent=True) # commented on TESTS
+            #outfiles = self.report.doreport(reportroot, cleanafter=False, silent=False) # TESTS
+            #stop() # TESTS
 
             for outfile in outfiles:
                 os.system('mv %s %s/' % (outfile, resultspath))
