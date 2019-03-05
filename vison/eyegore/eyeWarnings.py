@@ -284,5 +284,5 @@ def test_assess_OOL():
 if __name__ == '__main__':
     test_URLs()
     test_get_URLs()
-    # test_assess_OOL() # does phone call
-    # test_do_phone_call('LoCCDTemp') # does phone call
+    test_assess_OOL() # does phone call
+    test_do_phone_call('LoCCDTemp') # does phone call
