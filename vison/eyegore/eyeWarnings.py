@@ -57,10 +57,11 @@ for key, value in subURLs.iteritems():
 
 
 try:
-    recipient = vjson.load_jsonfile(os.path.join(
-        utils.credentials_path, 'recipients_eyegore'))['main']
+    recipients_dict = vjson.load_jsonfile(os.path.join(
+        utils.credentials_path, 'recipients_eyegore'))
+    recipients = [recipients_dict['main'],recipients_dict['secondary']]
 except IOError:
-    recipient = None
+    recipients = [None]
 
 
 def matches_expression(pair): return re.match(pair[0], pair[1]) is not None
@@ -85,7 +86,7 @@ class EyeWarnings(object):
         if self.parent is not None:
             self.log = self.parent.log
 
-        self.recipient = recipient
+        self.recipients = recipients
 
         try:
             self.et = ET.ET()
@@ -126,18 +127,19 @@ class EyeWarnings(object):
                 os.system('mail -s "%s" %s < %s' %
                           (subject, recipient, f.name))
             except:
+                print('WARNING email not sent! [subject: %s]' % subject)
                 if self.log is not None:
                     self.log.info(
                         'WARNING email not sent! [subject: %s]' % subject)
         os.unlink(f.name)
-
+        
     def warn_via_email(self, HKkey, value, HKlim, timestamp, HKdata=None):
         """ """
 
-        if self.recipient is None:
+        if self.recipients[0] is None:
             if self.log is not None:
                 self.log.info(
-                    "warn_via_email: recipient must be valid (%s)" % self.recipient)
+                    "warn_via_email: recipient must be valid (%s)" % self.recipients.__str__())
 
         subject = 'Eyegore HK WARNING: %s (DT=%s)' % (HKkey, timestamp)
         bodyList = ['HK OOL WARNING: %s' % HKkey,
@@ -149,8 +151,9 @@ class EyeWarnings(object):
             df = pd.DataFrame.from_dict(_data)
             bodyList.append('LATEST VALUES after the jump\n\n')
             bodyList.append(df.to_string(index=False))
-
-        self.send_email(subject, bodyList, self.recipient)
+            
+        for recipient in self.recipients:
+            self.send_email(subject, bodyList, recipient)
 
     def do_phone_call(self, url):
         """Does phone call via self.et object"""
@@ -233,13 +236,14 @@ class EyeWarnings(object):
         """ """
 
         HKdata = self.get_parent_HK_data(HKkey)
+        
 
         if severity > 0:
             self.warn_via_email(HKkey, value, HKlim, timestamp, HKdata)
         if severity > 1:
-            print 'WARNINGS via phone-calls/sms DISABLED by now in eyeWarnings'
+            #print 'WARNINGS via phone-calls/sms DISABLED by now in eyeWarnings'
             # self.warn_via_phone(HKkey,violation_type) DISABLED BY NOW
-            # self.warn_via_sms(HKkey,value,HKlim,timestamp)
+            self.warn_via_sms(HKkey,value,HKlim,timestamp)
 
 
 def test_URLs():
@@ -273,16 +277,22 @@ def test_do_phone_call(urlkey):
     ew = EyeWarnings()
     ew.do_phone_call(URLs[urlkey])
 
+def test_do_send_sms(urlkey):
+    ew = EyeWarnings()
+    ew.send_sms(urlkey)
 
 def test_assess_OOL():
 
     ew = EyeWarnings()
     ew.assess_OOL_incident('CCD1_TEMP_T', -1, -160,
                            [-133, 35], '24042018_1828')
+    ew.assess_OOL_incident('VID_PCB_TEMP_T', -1, -15.,
+                           [-10, 40], '24042018_1828')
 
 
 if __name__ == '__main__':
     test_URLs()
     test_get_URLs()
-    test_assess_OOL() # does phone call
-    test_do_phone_call('LoCCDTemp') # does phone call
+    #test_assess_OOL() # does phone call
+    #test_do_phone_call('LoCCDTemp') # does phone call
+    #test_do_send_sms('LoCCDTemp')
