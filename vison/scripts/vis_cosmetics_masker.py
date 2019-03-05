@@ -63,8 +63,8 @@ def pre_process(FITS_list, subOffset=False, validrange=None):
         
         if subOffset:
             for Q in Quads:
-                ccdobj.sub_offset(Q, method='median', scan='ove',
-                                  trimscan=[5,5], ignore_pover=True,
+                ccdobj.sub_offset(Q, method='median', scan='pre',
+                                  trimscan=[25,5], ignore_pover=True,
                                 extension=-1)
         
         if validrange is not None:

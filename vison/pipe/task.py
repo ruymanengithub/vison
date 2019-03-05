@@ -173,7 +173,7 @@ class Task(object):
         
         _inputs['preprocessing'] = dict()
         _inputs['preprocessing']['offsetkwargs'] = dict(method='row',
-                                                            scan='pre', trimscan=[5, 5],
+                                                            scan='pre', trimscan=[25, 5],
                                                             ignore_pover=True,
                                                             extension=-1)
         

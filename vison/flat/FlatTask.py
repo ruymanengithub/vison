@@ -85,6 +85,10 @@ class FlatTask(Task):
         Quads = Xindices.get_vals('Quad')
 
         # Get statistics in different regions
+        
+        trimscans = dict(pre=[25,5],
+                         img=[5,5],
+                         ove=[5,5])
 
         if not self.drill:
             # if 3==2: # DEBUG!
@@ -104,14 +108,14 @@ class FlatTask(Task):
                     for kQ, Quad in enumerate(Quads):
 
                         for reg in ['pre', 'ove']:
-                            stats_bias = ccdobj.get_stats(Quad, sector=reg, statkeys=['median', 'std'], trimscan=[5, 5],
+                            stats_bias = ccdobj.get_stats(Quad, sector=reg, statkeys=['median', 'std'], trimscan=trimscans[reg],
                                                           ignore_pover=True, extension=-1, VSTART=vstart, VEND=vend)
                             self.dd.mx['offset_%s' %
                                        reg][iObs, jCCD, kQ] = stats_bias[0]
                             self.dd.mx['std_%s' %
                                        reg][iObs, jCCD, kQ] = stats_bias[1]
 
-                        stats_img = ccdobj.get_stats(Quad, sector='img', statkeys=['median', 'std'], trimscan=[5, 5],
+                        stats_img = ccdobj.get_stats(Quad, sector='img', statkeys=['median', 'std'], trimscan=trimscans['img'],
                                                      ignore_pover=True, extension=-1)
                         
                         self.dd.mx['flu_med_img'][iObs,

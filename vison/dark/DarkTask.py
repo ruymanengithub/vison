@@ -73,6 +73,10 @@ class DarkTask(Task):
         Quads = Xindices.get_vals('Quad')
 
         # Get statistics in different regions
+        
+        trimscans = dict(pre=[25,5],
+                         img=[5,5],
+                         ove=[5,5])
 
         if not self.drill:
 
@@ -88,7 +92,7 @@ class DarkTask(Task):
                     for kQ, Quad in enumerate(Quads):
 
                         for reg in ['pre', 'ove', 'img']:
-                            stats = ccdobj.get_stats(Quad, sector=reg, statkeys=['median', 'std'], trimscan=[5, 5],
+                            stats = ccdobj.get_stats(Quad, sector=reg, statkeys=['median', 'std'], trimscan=trimscans[reg],
                                                      ignore_pover=True, extension=-1, VSTART=vstart, VEND=vend)
                             self.dd.mx['offset_%s' %
                                        reg][iObs, jCCD, kQ] = stats[0]

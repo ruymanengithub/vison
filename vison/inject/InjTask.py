@@ -178,6 +178,10 @@ class InjTask(Task):
         Quads = Xindices.get_vals('Quad')
 
         # Get statistics in different regions
+        
+        trimscans = dict(pre=[25,5],
+                         img=[5,5],
+                         ove=[5,5])
 
         if not self.drill:
 
@@ -204,7 +208,7 @@ class InjTask(Task):
                     for kQ, Quad in enumerate(Quads):
 
                         for reg in ['pre', 'ove']:
-                            stats = ccdobj.get_stats(Quad, sector=reg, statkeys=['median', 'std'], trimscan=[5, 5],
+                            stats = ccdobj.get_stats(Quad, sector=reg, statkeys=['median', 'std'], trimscan=trimscans[reg],
                                                      ignore_pover=True, extension=-1, VSTART=vstart, VEND=vend)
 
                             self.dd.mx['offset_%s' %
@@ -214,7 +218,7 @@ class InjTask(Task):
 
                         if dochinj:
 
-                            ccdobj.sub_offset(Quad, method='row', scan='pre', trimscan=[5, 5],
+                            ccdobj.sub_offset(Quad, method='row', scan='pre', trimscan=trimscans['pre'],
                                               ignore_pover=True, extension=-1)
                             
                             extract_res = ilib.extract_injection_lines(ccdobj, 

@@ -140,6 +140,10 @@ class PointTask(Task):
         Spots = Sindices.get_vals('Spot')
 
         # Get statistics in different regions
+        
+        trimscans = dict(pre=[25,5],
+                         img=[5,5],
+                         ove=[5,5])
 
         if not self.drill:
 
@@ -166,7 +170,8 @@ class PointTask(Task):
                     for kQ, Quad in enumerate(Quads):
 
                         for reg in ['pre', 'ove']:
-                            stats_bias = ccdobj.get_stats(Quad, sector=reg, statkeys=['median', 'std'], trimscan=[5, 5],
+                            stats_bias = ccdobj.get_stats(Quad, sector=reg, statkeys=['median', 'std'], 
+                                                          trimscan=trimscans[reg],
                                                           ignore_pover=True, extension=-1, VSTART=vstart, VEND=vend)
                             self.dd.mx['offset_%s' %
                                        reg][iObs, jCCD, kQ] = stats_bias[0]
@@ -183,10 +188,11 @@ class PointTask(Task):
 
                         alt_ccdobj.get_mask(mask_sources)
 
-                        alt_ccdobj.sub_offset(Quad, method='row', scan='pre', trimscan=[5, 5],
+                        alt_ccdobj.sub_offset(Quad, method='row', scan='pre', trimscan=trimscans['pre'],
                                               ignore_pover=True, extension=-1)
 
-                        imgstats = alt_ccdobj.get_stats(Quad, sector='img', statkeys=['median'], trimscan=[5, 5],
+                        imgstats = alt_ccdobj.get_stats(Quad, sector='img', statkeys=['median'], 
+                                                        trimscan=trimscans['img'],
                                                         ignore_pover=True, extension=-1)
 
                         self.dd.mx['bgd_img'][iObs, jCCD, kQ] = imgstats[0]

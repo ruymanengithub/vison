@@ -245,6 +245,10 @@ class PERSIST01(Task):
         Quads = Xindices.get_vals('Quad')
 
         # Get statistics in different regions
+        
+        trimscans = dict(pre=[25,5],
+                         img=[5,5],
+                         ove=[5,5])
 
         if not self.drill:
 
@@ -260,7 +264,8 @@ class PERSIST01(Task):
                     for kQ, Quad in enumerate(Quads):
 
                         for reg in ['pre', 'ove', 'img']:
-                            stats = ccdobj.get_stats(Quad, sector=reg, statkeys=['median', 'std'], trimscan=[5, 5],
+                            stats = ccdobj.get_stats(Quad, sector=reg, statkeys=['median', 'std'], 
+                                                     trimscan=trimscans[reg],
                                                      ignore_pover=True, extension=-1, VSTART=vstart, VEND=vend)
                             if reg in ['pre','ove']:
                                 self.dd.mx['offset_%s' %
