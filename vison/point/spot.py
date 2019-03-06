@@ -148,7 +148,7 @@ class Spot(Shapemeter, Photometer, Gaussmeter):
 
         return res
 
-    def measure_basic(self, rap=10, rin=10, rout=-1, gain=gain, debug=False):
+    def measure_basic(self, rap=10, rin=15, rout=-1, gain=gain, debug=False):
         """ 
         # TODO:
         #   get basic statistics, measure and subtract background
