@@ -62,6 +62,7 @@ class Spot(Shapemeter, Photometer, Gaussmeter):
         Shapemeter.__init__(self, data, log, verbose, **kwargs)
         Photometer.__init__(self, data, log, verbose, **kwargs)
         Gaussmeter.__init__(self, data, log, verbose, **kwargs)
+        
 
         self.data = data.copy()
         self.log = log
@@ -178,7 +179,7 @@ class Spot(Shapemeter, Photometer, Gaussmeter):
         flu, eflu = self.doap_photom(centre, rap, rin, rout, gain=gain,
                                      doErrors=True,
                                      subbgd=True)
-
+        
         x, y = self.xcen, self.ycen
         x_ccd = x + self.x0
         y_ccd = y + self.y0
@@ -186,5 +187,6 @@ class Spot(Shapemeter, Photometer, Gaussmeter):
         res = dict(bgd=bgd, peak=peak, fluence=flu, efluence=eflu,
                    x=x, y=y, x_ccd=x_ccd, y_ccd=y_ccd, 
                    fwhmx=fwhmx, fwhmy=fwhmy)
+        
 
         return res

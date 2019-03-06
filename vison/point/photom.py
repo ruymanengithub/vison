@@ -18,6 +18,7 @@ Created on Thu Apr 20 14:37:46 2017
 
 # IMPORT STUFF
 from pdb import set_trace as stop
+from scipy import ndimage as nd
 
 import numpy as np
 from vison.analysis.ellipse import dist_superellipse
@@ -91,8 +92,10 @@ class Photometer(SpotBase):
         TODO:
             add aperture masking        
         """
-        xcen0 = self.data.shape[1]/2
-        ycen0 = self.data.shape[0]/2
+        #xcen0 = self.data.shape[1]/2
+        #ycen0 = self.data.shape[0]/2
+        medimg = nd.median_filter(self.data,[5,5])
+        ycen0, xcen0 = np.unravel_index(np.argmax(medimg),medimg.shape)
         xcen, ycen, xcen2, ycen2, xcen3, ycen3 = poalg.fwcentroid(self.data, checkbox=1, maxiterations=10,
                                                                   threshold=1e-3, halfwidth=6, verbose=False,
                                                                   full=full, CEN0=(xcen0, ycen0))
@@ -109,7 +112,8 @@ class Photometer(SpotBase):
     def doap_photom(self, centre, rap, rin=-1., rout=-1., gain=3.5, doErrors=True,
                     subbgd=False):
         """ """
-
+        
+        
         img = self.data.copy()
         x, y = centre
 
@@ -130,11 +134,22 @@ class Photometer(SpotBase):
 
         apflu = np.sum(self.data[apmask]) - bgd
         sapflu = np.std(self.data[apmask])
+        
+        #safebag = dict(img=img,
+        #               ampmask=apmask,
+        #               rin=rin,
+        #               rout=rout,
+        #               centre=centre,
+        #               bgd=bgd,
+        #               ring_mask=ring_mask,
+        #               apflu=apflu,
+        #               sapflu=sapflu)
 
         if doErrors:
             ebgd = (sbgd*gain)/np.sqrt(Nbgd)
             sapflu = np.sqrt(apflu*gain+(sbgd*gain)**2.*Nap+ebgd**2.)/gain
-            return apflu, sapflu
+            return apflu, sapflu #, safebag
+        
         return apflu
 
     def _get_circ_mask(self, x, y, radius):

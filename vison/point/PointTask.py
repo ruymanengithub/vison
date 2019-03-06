@@ -207,7 +207,7 @@ class PointTask(Task):
 
                             spot = polib.extract_spot(ccdobj, coo, Quad, log=self.log,
                                                       stampw=self.stampw)
-
+                            
                             try:
                                 res_bas = spot.measure_basic(
                                     rap=10, rin=15, rout=-1)

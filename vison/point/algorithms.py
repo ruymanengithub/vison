@@ -20,14 +20,14 @@ def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35
                verbose=False, full=False, CEN0=None):
     """ Implement the Floating-window first moment centroid algorithm
         chosen for JWST target acquisition.
-
+        
         See JWST-STScI-001117 and JWST-STScI-001134 for details.
-
+        
         This code makes no attempt to vectorize or optimize for speed;
         it's pretty much just a straight verbatim implementation of the
         IDL-like pseudocode provided in JWST-STScI-001117
-
-
+        
+        
         Parameters
         ----------
         image : array_like
@@ -179,6 +179,7 @@ def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35
 
     if not CONVERGENCEFLAG:
         print("Algorithm terminated at max iterations without convergence.")
+        stop()
 
     if full:
         return YCEN, XCEN, YMOM2, XMOM2, YMOM3, XMOM3
