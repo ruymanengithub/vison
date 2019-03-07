@@ -106,11 +106,11 @@ def get_CDP_lib():
     for CCD in CCDs:
     
         mastercat = cdp.CDP()
-        mastercat.rootname = 'TP01_MasterCat_%s' % CCD
+        mastercat.rootname = 'TP02_MasterCat_%s' % CCD
         CDP_lib['MASTERCAT_%s' % CCD] = mastercat
                
         mergedcat = cdp.CDP()
-        mergedcat.rootname = 'TP01_MergedCat_%s' % CCD
+        mergedcat.rootname = 'TP02_MergedCat_%s' % CCD
         CDP_lib['MERGEDCAT_%s' % CCD] = mergedcat
           
     return CDP_lib
