@@ -71,7 +71,7 @@ class Eyegore(tk.Tk):
     """ """
 
     def __init__(self, path, broadcast, intervals=None,
-                 elvis=context.elvis, dolite=False, altpath='',
+                 elvis=context.elvis, blind=False, dolite=False, altpath='',
                  doWarnings=False, dolog=False):
         """ """
         tk.Tk.__init__(self)
@@ -91,6 +91,7 @@ class Eyegore(tk.Tk):
         self.intervals = intervals
         self.broadcast = broadcast
         self.elvis = elvis
+        self.blind = blind
         self.dolite = dolite
         self.altpath = altpath
 
@@ -161,7 +162,7 @@ class Eyegore(tk.Tk):
                   hkflags=HKFlags, explog=ExpLogDisplay)
         #dkeys = ['image','hk','hkflags','explog']
 
-        if not self.dolite:
+        if not (self.dolite or self.blind):
             display1 = Ds['image'](self, self.path, elvis=self.elvis)
             ani1 = display1.start_updating(self.intervals['image'])
 
@@ -172,10 +173,12 @@ class Eyegore(tk.Tk):
 
         display2b = Ds['hkflags'](
             self, display2, self.intervals['HKflags'], elvis=self.elvis)
+        
+        if not self.dolite:
 
-        display4 = Ds['explog'](
-            self, self.path, self.intervals['EXP'], elvis=self.elvis)
-
+            display4 = Ds['explog'](
+                self, self.path, self.intervals['EXP'], elvis=self.elvis)
+    
         self.update()
 
         self.mainloop()
@@ -204,8 +207,10 @@ def Eexecuter():
                       help="Synchronize data to gateway folder at msslus")
     parser.add_option("-E", "--elvis", dest="elvis",
                       default=context.elvis, help="ELVIS version.")
+    parser.add_option("-b", "--blind", dest="blind", action="store_true", default=False,
+                      help="Run without image displays.")
     parser.add_option("-L", "--lite", dest="lite", action="store_true", default=False,
-                      help="Run a lighter version of the program (no autom. HK-plots or image displays).")
+                      help="Run a lighter version of the program (no image displays and no ExpLog).")
     parser.add_option("-r", "--rsync", dest="altpath", default='',
                       help="rsync to an alternative local path.")
     parser.add_option("-g", "--log", dest="dolog", action="store_true", default=False,
@@ -226,6 +231,7 @@ def Eexecuter():
     broadcast = options.broadcast
     elvis = options.elvis
     altpath = options.altpath
+    blind = bool(options.blind)
     dolite = bool(options.lite)
     dolog = bool(options.dolog)
     doWarnings = bool(options.doWarnings)
@@ -249,8 +255,9 @@ def Eexecuter():
 
     print header % path
 
-    app = Eyegore(path, broadcast=broadcast, elvis=elvis, dolite=dolite,
-                  altpath=altpath, doWarnings=doWarnings, dolog=dolog)
+    app = Eyegore(path, broadcast=broadcast, elvis=elvis, blind=blind,
+                  dolite=dolite,altpath=altpath, doWarnings=doWarnings, 
+                  dolog=dolog)
 
 
 if __name__ == '__main__':
