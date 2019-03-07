@@ -67,6 +67,8 @@ def gt_meta_heatmaps(mkey):
             meta=dict(doLegend=False,
               doColorbar=True,
               suptitle='TP01: %s' % mkey,
+              xlabel='log10(tau [us])',
+              ylabel='log10(Pc)',
               corekwargs=dict(cmap=cm.inferno_r,
                                aspect='auto',
                                norm=None,
