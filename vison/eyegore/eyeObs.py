@@ -243,7 +243,7 @@ class ExpLogDisplay(tk.Toplevel):
         """ """
         ELList = []
         for item in self.explogfs:
-            ELList.append(ELtools.loadExpLog(item, elvis=self.elvis))
+            ELList.append(ELtools.loadExpLog(item, elvis=self.elvis, safe=True))
         if len(ELList) < 2:
             return ELList[0]
         else:

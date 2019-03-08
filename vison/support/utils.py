@@ -17,7 +17,8 @@ import string as st
 import os
 from functools import reduce
 import operator
-
+import tempfile
+import shutil
 # END IMPORT
 
 credentials_path = os.path.join(os.environ['HOME'], 'CREDENTIALS_VISON')
@@ -77,3 +78,10 @@ def remove_iter_tag(taskname,Full=False):
 
 def vec_remove_iter_tag(taskslist,Full=False):
     return np.vectorize(remove_iter_tag)(taskslist,Full).tolist()
+
+def safe_open_file(path,prefix=''):
+    _, temp_path = tempfile.mkstemp(prefix=prefix)
+    shutil.copy2(path, temp_path)
+    f = open(temp_path)
+    os.system('rm %s' % temp_path)
+    return f

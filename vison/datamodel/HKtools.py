@@ -39,7 +39,7 @@ import pylab
 #import matplotlib.cm as cm
 #from mpl_toolkits.mplot3d import Axes3D
 
-from vison.support import context
+from vison.support import context, utils
 #from vison.pipe import lib as pilib
 
 
@@ -366,7 +366,7 @@ def loadHK_preQM(filename, elvis='5.7.07'):
     return data
 
 
-def loadHK_QFMsingle(filename, elvis=context.elvis, validate=False):
+def loadHK_QFMsingle(filename, elvis=context.elvis, validate=False, safe=False):
     """Loads a HK file
 
     Structure: tab separated columns, one per Keyword. First column is a 
@@ -379,7 +379,14 @@ def loadHK_QFMsingle(filename, elvis=context.elvis, validate=False):
 
     """
     
-    with open(filename) as f:
+    if safe:
+        def wrapped_safe_open(path):
+            return utils.safe_open_file(path,prefix='HK_')
+        opener = wrapped_safe_open
+    else:
+        opener = open
+    
+    with opener(filename) as f:
         lines = f.readlines()
         f.close()
         table = ascii.read(lines)

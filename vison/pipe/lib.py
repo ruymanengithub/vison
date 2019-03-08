@@ -73,13 +73,13 @@ def loadexplogs(explogfs, elvis=context.elvis, addpedigree=False, datapath=None)
     """loads in memory an explog (text-file) or list of explogs (text-files)."""
 
     if isinstance(explogfs, str):
-        explog = ELtools.loadExpLog(explogfs, elvis=elvis)
+        explog = ELtools.loadExpLog(explogfs, elvis=elvis, safe=True)
 
     elif isinstance(explogfs, list):
         expLogList = []
         for explogf in explogfs:
-            expLogList.append(ELtools.loadExpLog(explogf, elvis=elvis))
-        explog = ELtools.mergeExpLogs(expLogList, addpedigree)
+            expLogList.append(ELtools.loadExpLog(explogf, elvis=elvis, safe=True))
+        explog = ELtools.mergeExpLogs(expLogList, addpedigree, safe=True)
 
     # add datapath(s)
     # The datapath becomes another column in DataDict. This helps dealing
