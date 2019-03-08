@@ -83,5 +83,5 @@ def safe_open_file(path,prefix=''):
     _, temp_path = tempfile.mkstemp(prefix=prefix)
     shutil.copy2(path, temp_path)
     f = open(temp_path)
-    os.system('rm %s' % temp_path)
+    os.system('rm -f %s' % temp_path)
     return f

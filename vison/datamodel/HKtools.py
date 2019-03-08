@@ -418,7 +418,7 @@ def mergeHK(HKList):
     # return HK
 
 
-def loadHK_QFM(filename, elvis=context.elvis, validate=False):
+def loadHK_QFM(filename, elvis=context.elvis, validate=False, safe=False):
     """Loads a HK file, or list of HK files.
 
     Structure: astropy table. First column is a timestamp, and there may be 
@@ -432,9 +432,9 @@ def loadHK_QFM(filename, elvis=context.elvis, validate=False):
     """
 
     if isinstance(filename, str):
-        return loadHK_QFMsingle(filename, elvis=elvis, validate=validate)
+        return loadHK_QFMsingle(filename, elvis=elvis, validate=validate, safe=safe)
     elif isinstance(filename, list):
-        HKs = [loadHK_QFMsingle(item, elvis=elvis, validate=validate)
+        HKs = [loadHK_QFMsingle(item, elvis=elvis, validate=validate, safe=safe)
                for item in filename]
         return mergeHK(HKs)
 
