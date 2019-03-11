@@ -308,10 +308,10 @@ class MOT_WARM(DarkTask):
         regs_off = ['pre', 'ove']
 
         for reg in regs_off:
-            arr = self.dd.mx['offset_%s' % reg][BIAS_ix_RV,...].copy()
+            arr = self.dd.mx['offset_%s' % reg][[BIAS_ix_RV],...].copy()
             _compliance_offsets = self.check_stat_perCCDandQ(
                 arr, offsets_lims, CCDs)
-            
+
             self.addComplianceMatrix2Self(_compliance_offsets,'offsets_%s' % reg)
 
             # if not self.IsComplianceMatrixOK(_compliance_offsets):
@@ -334,7 +334,7 @@ class MOT_WARM(DarkTask):
             _lims = dict()
             for CCDk in CCDs:
                 _lims[CCDk] = offsets_gradients[CCDk][reg]
-            arr = self.dd.mx['offset_%s' % reg][BIAS_ix_RV,...]-self.dd.mx['offset_pre'][BIAS_ix_RV,...]
+            arr = self.dd.mx['offset_%s' % reg][[BIAS_ix_RV],...]-self.dd.mx['offset_pre'][[BIAS_ix_RV],...]
             _xcheck_offsets = self.check_stat_perCCDandQ(arr, _lims, CCDs)
             
             self.addComplianceMatrix2Self(_xcheck_offsets,'offsets_grad_%s' % reg)
@@ -358,7 +358,7 @@ class MOT_WARM(DarkTask):
         RONs_lims = self.perflimits['RONs_lims']
         for reg in regs_std:
             _compliance_std = self.check_stat_perCCDandQ(
-                self.dd.mx['std_%s' % reg][BIAS_ix_RVS,...], RONs_lims, CCDs)
+                self.dd.mx['std_%s' % reg][[BIAS_ix_RVS],...], RONs_lims, CCDs)
             
             self.addComplianceMatrix2Self(_compliance_std,'std_%s' % reg)
 
