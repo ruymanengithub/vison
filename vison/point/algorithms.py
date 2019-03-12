@@ -179,7 +179,6 @@ def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35
 
     if not CONVERGENCEFLAG:
         print("Algorithm terminated at max iterations without convergence.")
-        stop()
 
     if full:
         return YCEN, XCEN, YMOM2, XMOM2, YMOM3, XMOM3
