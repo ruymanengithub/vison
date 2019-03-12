@@ -79,7 +79,7 @@ def loadexplogs(explogfs, elvis=context.elvis, addpedigree=False, datapath=None)
         expLogList = []
         for explogf in explogfs:
             expLogList.append(ELtools.loadExpLog(explogf, elvis=elvis, safe=True))
-        explog = ELtools.mergeExpLogs(expLogList, addpedigree, safe=True)
+        explog = ELtools.mergeExpLogs(expLogList, addpedigree)
 
     # add datapath(s)
     # The datapath becomes another column in DataDict. This helps dealing
