@@ -488,7 +488,7 @@ class HKDisplay(tk.Toplevel):
         """ """
 
         self.select_HKkeys()
-        self.search_HKfiles()
+        #self.search_HKfiles()
 
         if self.HKfiles is None:
             #yield self.HK
@@ -571,6 +571,7 @@ class HKDisplay(tk.Toplevel):
     
     def update(self):
         
+        self.search_HKfiles()
         self.get_data()
         self.after(self.interval, self.update)
 
