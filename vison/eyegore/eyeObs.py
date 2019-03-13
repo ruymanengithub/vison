@@ -262,7 +262,7 @@ class ExpLogDisplay(tk.Toplevel):
 
         try: 
             EXPLOG = self.loadExplogs()
-        except IOError:
+        except:
             return False
             
         #EXPLOG = ELtools.loadExpLog(self.explogf,elvis=self.elvis)
