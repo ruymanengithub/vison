@@ -889,8 +889,6 @@ class Task(object):
             
             pool = mp.Pool(processes=self.processes)
             
-            
-            
             for i in range(len(arglist)):
                 pool.apply_async(prepare_one_image, args=arglist[i])
             pool.close()

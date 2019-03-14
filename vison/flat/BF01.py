@@ -21,6 +21,7 @@ import copy
 import string as st
 from collections import OrderedDict
 import pandas as pd
+import multiprocessing as mp
 
 from vison.pipe.task import HKKeys
 from vison.support import context
@@ -53,6 +54,34 @@ isthere = os.path.exists
 #          'CCD2_OD_B', 'CCD3_OD_B', 'COMM_RD_B', 'CCD2_IG1_B', 'CCD3_IG1_B', 'CCD1_TEMP_B',
 #          'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
 
+def process_one_fluence_covmaps(q, dd, dpath, CCDs, jCCD, ku, ulabels, Npix, 
+                                        vstart, vend):
+    """ """
+                
+    labels = dd.mx['label'][:, 0].copy()
+    
+    vfullinpath_adder = utils.get_path_decorator(dpath)
+                
+    #taskcounter = 0
+    
+    ulabel = labels[ku]
+ 
+    six = np.where(labels == ulabel)
+            
+    ccdobjNamesList = vfullinpath_adder(dd.mx['ccdobj_name'][six[0],jCCD],'pick')
+            
+            
+    print('%s: column %i/%i; %i OBSIDs' % (CCDs[jCCD],ku+1,len(ulabels),len(ccdobjNamesList)))
+            
+            
+    ccdobjList = [cPickleRead(item) for item in ccdobjNamesList]                    
+    
+    icovdict = covlib.get_cov_maps(
+                ccdobjList, Npix=Npix, vstart=vstart, vend=vend,
+			          doTest=False, debug=False)
+    
+    q.put([jCCD, ku, icovdict])
+    
 
 class BF01_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
@@ -72,17 +101,21 @@ def fit_BF(X,Y):
     
     ixval = np.where(np.isfinite(X) & np.isfinite(Y))
     
-    if len(ixval[0])<3:
-        res = dict(xfit=xfit.copy(),
+    def_res = dict(xfit=xfit.copy(),
                    yfit=xfit*0.,
                    intercept=0.,
                    slope=0.,
                    fwhm_hwc = -1.)
-        return res
+        
+    if len(ixval[0])<3:        
+        return def_res
     
-    ransac = linear_model.RANSACRegressor()
-    ransac.fit(np.expand_dims(X[ixval],1),np.expand_dims(Y[ixval],1))
+    try:
+        ransac = linear_model.RANSACRegressor()
+        ransac.fit(np.expand_dims(X[ixval],1),np.expand_dims(Y[ixval],1))
     #predictor = ransac.predict
+    except:
+        return def_res
     
     slope = ransac.estimator_.coef_[0][0]
     intercept = ransac.estimator_.intercept_[0]
@@ -260,64 +293,67 @@ class BF01(PTC0X):
             
             #doTest=False
             
+            arglist = []
             
-            vfullinpath_adder = utils.get_path_decorator(dpath)
+            mgr = mp.Manager()
+            queue = mgr.Queue()
             
-            
-            #taskcounter = 0
-            
-            
- 
+
             for jCCD, CCDk in enumerate(CCDs):
                 
-
                 for ku, ulabel in enumerate(ulabels):
                     
-                    #if not (ulabel == 'col001' and CCDk == 'CCD2'): continue # TEST
-
-                    six = np.where(labels == ulabel)
+                    arglist.append([queue, self.dd, dpath, CCDs, jCCD, ku, ulabels,
+                                    Npix, vstart, vend])
+            
+            
+            
+            pool = mp.Pool(processes = self.processes)
+            
+            for ii in range(len(arglist)):
+                pool.apply_async(process_one_fluence_covmaps, args=arglist[ii])
+            pool.close()
+            pool.join()
+            
+            replies = []
+            while not queue.empty():
+                replies.append(queue.get())
+            
+            
+            for reply in replies:
+                
+                jCCD, ku, icovdict = reply 
+                CCDk = CCDs[jCCD]
+                ulabel = ulabels[ku]
+        
                     
-                    ccdobjNamesList = vfullinpath_adder(self.dd.mx['ccdobj_name'][six[0],jCCD],'pick')
-                    
-                    
-                    print '%s: column %i/%i; %i OBSIDs' % (CCDk,ku+1,len(ulabels),len(ccdobjNamesList))
-                    
-                    #if doTest and taskcounter<20:
-                    #    #stop()
-                    #    taskcounter +=1
-                    #    continue
-                    
-                    ccdobjList = [cPickleRead(item) for item in ccdobjNamesList]                    
-                    
-                    icovdict = covlib.get_cov_maps(
-                        ccdobjList, Npix=Npix, vstart=vstart, vend=vend,
-			          doTest=False, debug=False)                    
-                    
-                    self.dd.products['COV'][CCDk][ulabel] = copy.deepcopy(
+                self.dd.products['COV'][CCDk][ulabel] = copy.deepcopy(
                             icovdict)
+                
+                
+                for lQ, Q in enumerate(Quads):
+                    jj = jCCD * (nQ*nL) + ku * nQ + lQ
+                        
+                    COV_dd['CCD'][jj] = jCCD+1
+                    COV_dd['Q'][jj] = lQ+1
+                    COV_dd['col'][jj] = int(st.replace(ulabel,'col',''))
+                    COV_dd['av_mu'][jj] = icovdict['av_mu'][Q]
+                    COV_dd['av_var'][jj] = icovdict['av_var'][Q]
+                    COV_dd['COV_00'][jj] = icovdict['av_covmap'][Q][0,0]
+                    COV_dd['COV_01'][jj] = icovdict['av_covmap'][Q][0,1]
+                    COV_dd['COV_10'][jj] = icovdict['av_covmap'][Q][1,0]
+                    COV_dd['COV_11'][jj] = icovdict['av_covmap'][Q][1,1]
                     
-                    for lQ, Q in enumerate(Quads):
-                        jj = jCCD * (nQ*nL) + ku * nQ + lQ
-                        
-                        COV_dd['CCD'][jj] = jCCD+1
-                        COV_dd['Q'][jj] = lQ+1
-                        COV_dd['col'][jj] = int(st.replace(ulabel,'col',''))
-                        COV_dd['av_mu'][jj] = icovdict['av_mu'][Q]
-                        COV_dd['av_var'][jj] = icovdict['av_var'][Q]
-                        COV_dd['COV_00'][jj] = icovdict['av_covmap'][Q][0,0]
-                        COV_dd['COV_01'][jj] = icovdict['av_covmap'][Q][0,1]
-                        COV_dd['COV_10'][jj] = icovdict['av_covmap'][Q][1,0]
-                        COV_dd['COV_11'][jj] = icovdict['av_covmap'][Q][1,1]
-                        
-                        profscov_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
-                                   np.arange(Npix-1)
-                        profscov_1D.data['hor'][CCDk][Q]['y'][ulabel] = \
-                                   icovdict['av_covmap'][Q][0,1:].copy()
-                        
-                        profscov_1D.data['ver'][CCDk][Q]['x'][ulabel] = \
-                                   np.arange(Npix-1)
-                        profscov_1D.data['ver'][CCDk][Q]['y'][ulabel] = \
-                                   icovdict['av_covmap'][Q][1:,0].copy()
+                    profscov_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
+                               np.arange(Npix-1)
+                    profscov_1D.data['hor'][CCDk][Q]['y'][ulabel] = \
+                               icovdict['av_covmap'][Q][0,1:].copy()
+                    
+                    profscov_1D.data['ver'][CCDk][Q]['x'][ulabel] = \
+                               np.arange(Npix-1)
+                    profscov_1D.data['ver'][CCDk][Q]['y'][ulabel] = \
+                               icovdict['av_covmap'][Q][1:,0].copy()
+                    
                     
         else:
             
@@ -336,16 +372,15 @@ class BF01(PTC0X):
                                                np.arange(Npix-1)
                         profscov_1D.data['ver'][CCDk][Q]['y'][ulabel] = \
                                                np.arange(Npix-1)
-            
-
+        
         # PLOTS
         
-        for tag in ['hor','ver']:    
+        for tag in ['hor','ver']:
             profscov_1D.data[tag]['labelkeys'] = \
                             profscov_1D.data[tag][CCDs[0]][Quads[0]]['x'].keys()
         
         for tag in ['ver','hor']:
-        
+            
             fdict_C = self.figdict['BF01_COV_%s' % tag][1]
             fdict_C['data'] = profscov_1D.data[tag].copy()
             if self.report is not None:
@@ -353,7 +388,6 @@ class BF01(PTC0X):
                                    dobuilddata=False)
         
         # Saving Profiles
-        
         
         profscov_1D.savetopickle()
         self.dd.products['profscov_1D_name'] = profscov_1D.rootname
@@ -369,11 +403,11 @@ class BF01(PTC0X):
                 meta=dict(),
                 header=CDP_header.copy()
                 )
-
+        
         covtable_cdp.init_wb_and_fillAll(header_title='BF01: COVTABLE')
         self.save_CDP(covtable_cdp)
         self.pack_CDP_to_dd(covtable_cdp, 'COVTABLE_CDP')
-
+        
         if self.report is not None:
             
             fccd = lambda x: CCDs[x-1]
@@ -387,12 +421,11 @@ class BF01(PTC0X):
                                                fitwidth=True,
                                                tiny=True,
                                                formatters=cov_formatters)
-            
-            
-            self.report.add_Text(COVtex)        
+                        
+            self.report.add_Text(COVtex)
         
         
-
+        
         return None
 
     def extract_BF(self):

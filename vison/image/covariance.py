@@ -38,6 +38,13 @@ def get_model2d(img, pdegree=5, doFilter=False, doBin=True,
 def f_get_covmap(sq1, sq2, N, submodel=False, debug=False):
     """ """
     #from time import time
+    
+    #BY-PASS on TESTS
+    #covmap = np.zeros((N,N),dtype='float32')+0.01 # TESTS
+    #covmap[0,0] = 1.-0.01
+    #mu = 1.
+    #var = 1.
+    #return covmap, mu, var
 
     difimg = sq1 - sq2
 
