@@ -477,7 +477,7 @@ class Report(Container):
             self.add_to_Contents(Text(text))
 
     def doreport(self, reportname, cleanafter=False, silent=True):
-
+        
         self.generate_Header()
         self.generate_Texbody()
         outfiles = self.writeto(reportname, cleanafter, silent=silent)
@@ -515,11 +515,15 @@ class Report(Container):
         EuclidViscls = 'EuclidVIS.cls'
         logo = 'logosmall.png'
         deluxetablesty = 'deluxetable.sty'
-
-        os.system('ln -s %s' %
-                  os.path.join(visondata.__path__[0], EuclidViscls))
-        os.system('ln -s %s' % os.path.join(visondata.__path__[0], logo))
-        os.system('ln -s %s' %
+        
+        if not os.path.exists(EuclidViscls):
+            os.system('ln -s %s' %
+                      os.path.join(visondata.__path__[0], EuclidViscls))
+        if not os.path.exists(logo):
+            os.system('ln -s %s' % os.path.join(visondata.__path__[0], logo))
+        
+        if not os.path.exists(deluxetablesty):
+            os.system('ln -s %s' %
                   os.path.join(visondata.__path__[0], deluxetablesty))
 
         execline1 = 'latex -interaction=nonstopmode %s.tex' % fileroot
