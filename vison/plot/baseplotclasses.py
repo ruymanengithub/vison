@@ -77,7 +77,7 @@ class BasicPlot(object):
             #import pickle as pl
             #pl.dump(self.fig, file('test.pickle','w'))        
             
-        plt.close()
+        plt.close('all')
         
 
 
