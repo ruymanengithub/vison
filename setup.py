@@ -70,6 +70,7 @@ def configuration():
                         'vison/scripts/vis_cosmetics_masker.py',
                         'vison/scripts/vis_clear_space.py',
                         'vison/scripts/vis_reports_merger.py',
+                        'vison/scripts/vis_mksession.py',
                         'vison/scripts/vison'])
 
     return config
