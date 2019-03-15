@@ -79,7 +79,7 @@ class BIAS0X(DarkTask):
         self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
-
+        
         super(BIAS0X, self).__init__(inputs, log, drill, debug)
         self.name = 'BIAS0X'
         self.type = 'Simple'
@@ -90,9 +90,17 @@ class BIAS0X(DarkTask):
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        profiles='profiles', products='products')
         
-
+        
     def set_inpdefaults(self, **kwargs):
-        self.inpdefaults = self.inputsclass(N=25)
+        self.inpdefaults = self.inputsclass(N=25,
+                                            preprocessing=dict(
+                                        offsetkwargs=dict(
+                                            ignore_pover= True, 
+                                            trimscan = [25, 5], 
+                                            method = 'median',
+                                            extension= -1, 
+                                            scan = 'pre' 
+                                                )))
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """Builds BIAS0X script structure dictionary.
@@ -294,9 +302,9 @@ class BIAS0X(DarkTask):
                         
                          # produce average profile along cols of STD
 
-                        ver1Dstdprof = ccdobj.get_1Dprofile(Q=Q, orient='ver', area='all', stacker='std',
+                        ver1Dstdprof = ccdobj.get_1Dprofile(Q=Q, orient='ver', area='img', stacker='std',
                                                          vstart=vstart, vend=vend)
-
+                        
                         # save profiles in locally for plotting
 
                         iprofiles1D.data[Q]['hor'] = copy.deepcopy(hor1Dprof)
@@ -315,8 +323,8 @@ class BIAS0X(DarkTask):
                                                                  OBSID] = _y.copy()
                             profs1D2plot[oritag][CCDk][Q]['x']['OBS%i' %
                                                                  OBSID] = _x.copy()
-                            
-                            prof_all += _y.tolist()
+                            if oritag in ['hor','ver']:
+                                prof_all += _y.tolist()
                             
                             
 
@@ -367,10 +375,9 @@ class BIAS0X(DarkTask):
                     
         def _load_histo(histos,data,label,ronrange):
            
-           hist, bin_edges = np.histogram(data,bins=10,range=ronrange,
-                                          normed=False)
+           bin_edges = np.linspace(ronrange[0],ronrange[1],20)
            histos['x'][label] = bin_edges.copy()
-           histos['y'][label] = hist.copy()
+           histos['y'][label] = data.flatten().copy()
            
            return histos
         
@@ -394,9 +401,9 @@ class BIAS0X(DarkTask):
                                     ronrange)
                 Rh_cq = _load_histo(Rh_cq,self.dd.mx['std_ove'][:,jCCD,kQ],'OVE', 
                                     ronrange)
+                
         
         RON_histos['labelkeys'] = ['IMG','PRE','OVE']
-        
         
         self.figdict['B0Xbasic_histosRON'][1]['data'] = RON_histos.copy()
         self.figdict['B0Xbasic_histosRON'][1]['meta']['xlim'] = ronrange
@@ -431,18 +438,22 @@ class BIAS0X(DarkTask):
             beRONtex = ron_cdp.get_textable(sheet='RON_IMG', 
                                             caption='%s: RON (quadrant-img, minus model)' % \
                                                              self.inputs['test'],
-                                            longtable=False, fitwidth=True)
+                                            longtable=False, 
+                                            fitwidth=True,
+                                            index=True)
             self.report.add_Text(beRONtex)
             
             bePRERONtex = ron_cdp.get_textable(sheet='RON_PRE', 
                                                caption='%s: RON (pre-scan)' %\
                                                     self.inputs['test'],
-                                               longtable=False,fitwidth=True)
+                                               longtable=False,fitwidth=True,
+                                            index=True)
             self.report.add_Text(bePRERONtex)
             
             beOVERONtex = ron_cdp.get_textable(sheet='RON_OVE', 
                             caption='%s: RON (over-scan)' % self.inputs['test'],
-                            longtable=False, fitwidth=True)
+                            longtable=False, fitwidth=True,
+                                            index=True)
             self.report.add_Text(beOVERONtex)
             
         # OFFSETS
@@ -468,17 +479,20 @@ class BIAS0X(DarkTask):
         if self.report is not None:
             PREOFFtex = off_cdp.get_textable(sheet='OFF_PRE', 
                                 caption='%s: Offsets, pre-scan.' % self.inputs['test'],
-                                            longtable=False, fitwidth=True)
+                                            longtable=False, fitwidth=True,
+                                            index=True)
             self.report.add_Text(PREOFFtex)
             
             IMGOFFtex = off_cdp.get_textable(sheet='OFF_IMG', 
                             caption='%s: Offsets, image area.' % self.inputs['test'],
-                                               longtable=False, fitwidth=True)
+                                               longtable=False, fitwidth=True,
+                                            index=True)
             self.report.add_Text(IMGOFFtex)
             
             OVEOFFtex = off_cdp.get_textable(sheet='OFF_OVE', 
                             caption='%s: Offsets, over-scan.' % self.inputs['test'],
-                                               longtable=False, fitwidth=True)
+                                               longtable=False, fitwidth=True,
+                                            index=True)
             self.report.add_Text(OVEOFFtex)
 
 
@@ -629,7 +643,7 @@ class BIAS0X(DarkTask):
                     
                     
                     ver1Dstdprof = stackccdobj.get_1Dprofile(Q=Q, orient='ver',
-                                    area='all',stacker='std',
+                                    area='img',stacker='std',
                                     vstart=vstart,vend=vend,extension=0)
                     
                     profs1D2plot['verstd'][CCDk][Q] = _pack_profs(profs1D2plot['verstd'][CCDk][Q],ver1Dstdprof)

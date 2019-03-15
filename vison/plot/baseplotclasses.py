@@ -376,7 +376,7 @@ class Beam1DHist(BeamPlot):
 
     def _ax_core_funct(self, ax, CQdict, key=''):
 
-        hist_kwargs = dict(range=None, weights=None,
+        hist_kwargs = dict(weights=None,
                            cumulative=False, histtype='step', align='mid',
                            orientation='vertical', log=False)
         
@@ -397,7 +397,8 @@ class Beam1DHist(BeamPlot):
             h = CQdict['y']
             label = None
         
-        _, _, patch = ax.hist(h, bins, **hist_kwargs)
+        _, _, patch = ax.hist(h, bins=bins, **hist_kwargs)
+        
         
         return patch, label
 

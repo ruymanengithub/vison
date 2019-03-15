@@ -47,7 +47,8 @@ check_std_dict = dict(stats=['std_pre', 'std_img', 'std_ove'],
 
 basic_prof1Dhor_dict = dict(
     figname='BIAS0X_profs1D_hor_allOBSIDs.png',
-    caption='BIAS0X: Average profiles across columns.',
+    caption='BIAS0X: Average profiles across columns. '+\
+            'From col. "1" to col. 51+2048+20="2119" and from vstart to vend rows.',
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Column [pix]',
@@ -57,7 +58,8 @@ basic_prof1Dhor_dict = dict(
 
 basic_prof1Dver_dict = dict(
     figname='BIAS0X_profs1D_ver_allOBSIDs.png',
-    caption='BIAS0X: Average profiles across rows.',
+    caption='BIAS0X: Average profiles across rows, avg. offset subtracted.'+\
+            ' From vstart to vend rows and from col. "1" to col. 51+2048+20="2119".',
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Row [pix]',
@@ -67,7 +69,8 @@ basic_prof1Dver_dict = dict(
 
 basic_prof1Dstdver_dict = dict(
     figname='BIAS0X_profs1Dstd_ver_allOBSIDs.png',
-    caption='BIAS0X: Average STDDEV profiles across rows.',
+    caption='BIAS0X: Average STDDEV profiles across rows.'+\
+            ' From vstart to vend rows, and from col. "52" to col. "2100".',
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Row [pix]',
@@ -75,20 +78,24 @@ basic_prof1Dstdver_dict = dict(
               suptitle='BIAS0X: STDDEV Profiles across rows.')
 )
 
+ronrange = [0.5,2]
+
 basic_histosRON_dict = dict(
     figname='BIAS0X_RON_distro_allOBSIDs.png',
     caption='BIAS0X: RON distribution',
     meta=dict(doLegend=True,
               ylabel='N',
               xlabel='RON [ADU]',
-              xlim=[0.,4.],
-              suptitle='BIAS0X: RON Distribution')
+              xlim=ronrange,
+              suptitle='BIAS0X: RON Distribution',
+              corekwargs=dict())
 )
 
 
 meta_prof1Dhor_dict = dict(
     figname='BIAS0X_profs1D_hor_MASTERBIAS.png',
-    caption='BIAS0X: Average profiles across columns of Master Bias.',
+    caption='BIAS0X: Average profiles across columns of Master Bias, avg. offset subtracted.'+\
+            ' From col. "1" to col. 51+2048+20="2119", and from vstart to vend rows.',
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Column [pix]',
@@ -98,7 +105,8 @@ meta_prof1Dhor_dict = dict(
 
 meta_prof1Dver_dict = dict(
     figname='BIAS0X_profs1D_ver_MASTERBIAS.png',
-    caption='BIAS0X: Average profiles across rows of Master Bias.',
+    caption='BIAS0X: Average profiles across rows of Master Bias, avg. offset subtracted.'+\
+            ' From vstart to vend rows and from col. "1" to col. 51+2048+20="2119".',
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Row [pix]',
@@ -108,7 +116,8 @@ meta_prof1Dver_dict = dict(
 
 meta_prof1Dstdver_dict = dict(
     figname='BIAS0X_profs1Dstd_ver_MASTERBIAS.png',
-    caption='BIAS0X: Average profiles of STDDEV across rows of Master Bias.',
+    caption='BIAS0X: Average profiles of STDDEV across rows of Master Bias.'+\
+            ' From vstart to vend rows, and from col. "52" to col. "2100".',
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Row [pix]',
@@ -176,7 +185,7 @@ class RON_CDP(cdp.Tables_CDP):
                 for kQ, Q in enumerate(Quads):
                     cbe_dict[CCDk][Q] = cbe[jCCD, kQ]
             df = pd.DataFrame.from_dict(cbe_dict)  # PENDING
-    
+            
             _data[key] = df
         
         
