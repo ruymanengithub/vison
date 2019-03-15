@@ -121,7 +121,7 @@ meta_prof1Dstdver_dict = dict(
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Row [pix]',
-              ylim = [0.5, 2.5],
+              ylim = [0.0, 2.5],
               suptitle='BIAS0X/Master: STDDEV Profiles across rows.')
 )
 
