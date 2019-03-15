@@ -250,10 +250,10 @@ def addHK(dd, HKKeys, elvis=context.elvis):
         if len(HKs) == 1:
             HKlist.append(HKs[0])
         elif len(HKs) > 1:
-            print 'More than one HK file for ObsID %i' % ObsID
-            print HKs
+            print('More than one HK file for ObsID %i' % ObsID)
+            print(HKs)
         elif len(HKs) == 0:
-            print 'HK file for ObsID %i not found' % ObsID
+            print('HK file for ObsID %i not found' % ObsID)
 
     obsids, dtobjs, tdeltasec, readHKKeys, HKdata = HKtools.parseHKfiles(
         HKlist, elvis=elvis)

@@ -168,14 +168,19 @@ class Task(object):
         self.debug = debug
         self.proc_histo = dict(Extract=False)
         
-        self.set_inpdefaults(**inputs)
-        _inputs = self.inpdefaults.copy()
         
-        _inputs['preprocessing'] = dict()
-        _inputs['preprocessing']['offsetkwargs'] = dict(method='row',
+        preprocessing = dict()
+        preprocessing['offsetkwargs'] = dict(method='row',
                                                             scan='pre', trimscan=[25, 5],
                                                             ignore_pover=True,
                                                             extension=-1)
+        
+        self.set_inpdefaults(**inputs)
+        _inputs = self.inpdefaults.copy()
+        
+        if 'preprocessing' not in _inputs:
+            _inputs['preprocessing'] = preprocessing.copy()
+        
         
         _inputs['todo_flags']= self.init_todo_flags()
 
