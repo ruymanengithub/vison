@@ -72,10 +72,11 @@ def changeNumeric(data):
 class ExpLogDisplay(tk.Toplevel):
     """ """
 
-    def __init__(self, parent, path, interval, elvis=context.elvis):
+    def __init__(self, parent, path, interval, elvis=context.elvis, ds9target='DS9:*'):
 
         self.path = path
         self.elvis = elvis
+        self.ds9target = ds9target
         self.date = '21-02-80'
         self.interval = interval
         self.explogfs = None
@@ -328,7 +329,7 @@ class ExpLogDisplay(tk.Toplevel):
         values = self.tree.item(item, "value")
         ObsID = int(values[0])
         try:
-            d = pyds9.DS9()
+            d = pyds9.DS9(target=self.ds9target)
         except NameError:
             print "pyds9 not installed, can't open DS9!"
             return

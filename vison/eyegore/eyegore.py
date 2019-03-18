@@ -72,7 +72,7 @@ class Eyegore(tk.Tk):
 
     def __init__(self, path, broadcast, intervals=None,
                  elvis=context.elvis, blind=False, dolite=False, altpath='',
-                 doWarnings=False, dolog=False):
+                 doWarnings=False, dolog=False, ds9target=None):
         """ """
         tk.Tk.__init__(self)
 
@@ -94,6 +94,7 @@ class Eyegore(tk.Tk):
         self.blind = blind
         self.dolite = dolite
         self.altpath = altpath
+        self.ds9target = ds9target
 
         if dolog:
             datestamp = vistime.get_time_tag()
@@ -177,7 +178,7 @@ class Eyegore(tk.Tk):
         if not self.dolite:
 
             display4 = Ds['explog'](
-                self, self.path, self.intervals['EXP'], elvis=self.elvis)
+                self, self.path, self.intervals['EXP'], elvis=self.elvis, ds9target=self.ds9target)
     
         self.update()
 
@@ -217,6 +218,8 @@ def Eexecuter():
                       help="keep a log")
     parser.add_option("-W", "--Warnings", dest="doWarnings", action="store_true", default=False,
                       help="Raise warnings (via email and/or phone) if critical HK is OOL.")
+    parser.add_option("-d", "--DS9", dest="ds9target", default=None,
+                      help="Specify DS9 target (pyds9)?")
 
     (options, args) = parser.parse_args()
 
@@ -235,6 +238,8 @@ def Eexecuter():
     dolite = bool(options.lite)
     dolog = bool(options.dolog)
     doWarnings = bool(options.doWarnings)
+    ds9target = options.ds9target
+    
 
     if broadcast != 'None':
         broadcast = os.path.join(_extpath, broadcast)
@@ -257,7 +262,7 @@ def Eexecuter():
 
     app = Eyegore(path, broadcast=broadcast, elvis=elvis, blind=blind,
                   dolite=dolite,altpath=altpath, doWarnings=doWarnings, 
-                  dolog=dolog)
+                  dolog=dolog, ds9target=ds9target)
 
 
 if __name__ == '__main__':
