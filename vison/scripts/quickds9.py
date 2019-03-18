@@ -39,6 +39,8 @@ if __name__ == '__main__':
     parser.add_option("-t", "--template", dest="temp",
                       default='EUC_%i_*D*T_ROE%i_CCD%i.fits',
                       help="Image Name Template")
+    parser.add_option("-d", "--DS9", dest="ds9target", default=None,
+                       help="Specify DS9 target (pyds9)?")
     #parser.add_option("-s","--start",dest="start",default=None,help="Start OBSID")
     #parser.add_option("-e","--end",dest="end",default=None,help="End OBSID")
     #parser.add_option("-e","--elvis",dest="elvis",default='5.7.02',help="ELVIS version")
@@ -58,6 +60,7 @@ if __name__ == '__main__':
     roe = int(options.roe)
     ccd = int(options.ccd)
     template = options.temp
+    ds9target = options.ds9target
     #elvis = options.elvis
 
     FITSlist = []
@@ -72,7 +75,7 @@ if __name__ == '__main__':
             print("Image %s not found!" % tantFITS)
 
     try:
-        d = pyds9.DS9()
+        d = pyds9.DS9(target=ds9target)
     except NameError:
         print "pyds9 not installed, can't open DS9!"
         sys.exit()
