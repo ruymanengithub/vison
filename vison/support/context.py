@@ -15,7 +15,9 @@ Created on Tue Jan 16 10:53:40 2018
 from vison.datamodel.ccd import CCD
 # END IMPORT
 
-elvis = '6.5.X'
+eff_satur = 5.5E4 # ADU
+
+elvis = '7.5.X'
 Quads = ['E', 'F', 'G', 'H']
 
 ccdobj = CCD()
