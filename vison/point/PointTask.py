@@ -395,46 +395,85 @@ class PointTask(Task):
             self.addComplianceMatrix2Report(
                 _compliance_fwhm, label='COMPLIANCE FWHM(x2+y2)**0.5:')
 
-        # Spot Fluence
-
-        Flu_lims = self.perflimits['Flu_lims']  # dict
-        _compliance_flu = self.check_stat_perCCDQSpot(
-            self.dd.mx['chk_fluence'], Flu_lims, CCDs)
+        # Spot Fluences
         
-        self.addComplianceMatrix2Self(_compliance_flu,'fluence')
-
-        if not self.IsComplianceMatrixOK(_compliance_flu):
-            self.dd.flags.add('POORQUALDATA')
-            self.dd.flags.add('FLUENCE_OOL')
-        if self.log is not None:
-            self.addComplianceMatrix2Log(
-                _compliance_flu, label='COMPLIANCE FLUENCE:')
-        if self.report is not None:
-            self.addComplianceMatrix2Report(
-                _compliance_flu, label='COMPLIANCE FLUENCE:')
+        if 'FOCUS00' in self.inputs['test']:
+        
+            Flu_lims = self.perflimits['Flu_lims']  # dict
+            _compliance_flu = self.check_stat_perCCDQSpot(
+                self.dd.mx['chk_fluence'], Flu_lims, CCDs)
             
+            self.addComplianceMatrix2Self(_compliance_flu,'fluence')
+    
+            if not self.IsComplianceMatrixOK(_compliance_flu):
+                self.dd.flags.add('POORQUALDATA')
+                self.dd.flags.add('FLUENCE_OOL')
+            if self.log is not None:
+                self.addComplianceMatrix2Log(
+                    _compliance_flu, label='COMPLIANCE FLUENCE:')
+            if self.report is not None:
+                self.addComplianceMatrix2Report(
+                    _compliance_flu, label='COMPLIANCE FLUENCE:',
+                    caption='Integrated fluence compliance matrix.')
+                
+        elif 'PSF' in self.inputs['test']:
+            
+            PeakFlu_lims = self.perflimits['PeakFlu_lims']  # dict
+            _compliance_peakflu = self.check_stat_perCCDQSpot(
+                self.dd.mx['chk_peak'], PeakFlu_lims, CCDs)
+            
+            self.addComplianceMatrix2Self(_compliance_peakflu,'peakfluence')
+    
+            if not self.IsComplianceMatrixOK(_compliance_peakflu):
+                self.dd.flags.add('POORQUALDATA')
+                self.dd.flags.add('FLUENCE_OOL')
+            if self.log is not None:
+                self.addComplianceMatrix2Log(
+                    _compliance_peakflu, label='COMPLIANCE PEAK-FLUENCE:')
+            if self.report is not None:
+                self.addComplianceMatrix2Report(
+                    _compliance_peakflu, label='COMPLIANCE PEAK-FLUENCE:',
+                    caption='Peak fluence compliance matrix.')
+        
             
         # Peak Saturation Times
         
-        fluences = np.mean(self.dd.mx['chk_fluence'][:].copy(),axis=-1)
+        avgfwhm = 2.5 # assuming a fwhm of 2.5 pixels at best focus
+        
+        #fluences = np.median(self.dd.mx['chk_fluence'][:].copy(),axis=-1)
+        fwhms = np.median((self.dd.mx['chk_fwhmx'][:]**2. +\
+                           self.dd.mx['chk_fwhmy'][:]**2.)**0.5,axis=-1)
+        
+        peaks = np.median(self.dd.mx['chk_peak'][:].copy(),axis=-1)
         exptime = self.dd.mx['exptime'][:].copy()
             
         ixnozero = np.where(exptime[:,0]>0)
             
-        _f = np.squeeze(fluences[ixnozero,...])
+        #_f = np.squeeze(fluences[ixnozero,...])
+        _p = np.squeeze(peaks[ixnozero,...])
+        _w = np.squeeze(fwhms[ixnozero,...])
         _e = np.expand_dims(np.squeeze(exptime[ixnozero,...]),axis=-1)
-            
-        fluxes = np.nanmean(_f/_e,axis=0) # CRUDE!
         
-        pkfluxes = fluxes / (2.*np.pi*(2./2.355)**2.) # assuming a fwhm of 2 pixels at best focus
-        pksat_times = 2.**16/pkfluxes
-        pksat_times = np.expand_dims(pksat_times,axis=0)      
         
+        peak_fluxes_raw = _p/_e
+        
+        peak_fluxes_raw *= _w**2./avgfwhm**2.
+        
+        #peak_fluxes_raw = _f/_e  / (2.*np.pi*(avgfwhm/2.355)**2.) 
+        ixsat = np.where(peaks > 0.95*context.eff_satur)
+        if len(ixsat[0])>0:
+            peak_fluxes_raw[ixsat] = np.nan
+                
+        pkfluxes = np.nanmean(peak_fluxes_raw,axis=0) # Not that crude...
+        
+        #pkfluxes = fluxes / (2.*np.pi*(avgfwhm/2.355)**2.) 
+        pksat_times = context.eff_satur/pkfluxes
+        pksat_times = np.expand_dims(pksat_times,axis=0)        
         
         exp_sat_time = self.ogse.profile['tFWC_point']['nm%i' % self.inputs['wavelength']]
         sat_time_lims = dict()
         for CCD in CCDs:
-            sat_time_lims[CCD] = (exp_sat_time * np.array([0.9,1.1])).tolist()
+            sat_time_lims[CCD] = (exp_sat_time * np.array([0.8,1.2])).tolist()
             
         _compliance_flux = self.check_stat_perCCDandQ(
                 pksat_times, sat_time_lims, CCDs)
@@ -450,7 +489,9 @@ class PointTask(Task):
         if self.report is not None:
             self.addComplianceMatrix2Report(
             _compliance_flux, label='COMPLIANCE SATURATION TIME (PEAK FLUX)',
-            caption='Saturation times in seconds. Assuming a FWHM of 2 pixels (best focus).')
+            caption='Peak saturation times in seconds. Correcting for a FWHM of %.1f pixels (best focus).' % avgfwhm)
+        
+        
         
     def relock(self,):
         """ """
@@ -643,10 +684,10 @@ class PointTask(Task):
                 
                 stracker = strackers[CCDk]
                 
-                transf, s_list, t_list = polib._get_transformation(
+                transf, s_list, t_list = polib._get_transformation(self,
                         ffits, stracker, dpath,
                         _sexconfig, tag=CCDk, devel=devel)
-                
+                                
                 transfs_dict[CCDk] = copy.deepcopy(transf)
                 
                 LOCK_TB['CCD'][jCCD] = jCCD + 1

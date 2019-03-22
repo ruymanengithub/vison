@@ -101,17 +101,17 @@ def get_testdefaults(ogseobj=None):
     return testdefaults
 
 
-def get_Flu_lims(relfluences):
+def get_PeakFlu_lims(relfluences):
 
     plusminus30pc = 1.+np.array([-0.3, 0.3])
-    satur_fluence = 2.**16
+    satur_fluence = context.eff_satur
     
-    # assuming a best fwhm~2pix, and a gaussian profile
+    # assuming a best fwhm~2.5pix (default), and a gaussian profile
     # F = 2pi(fwhm/2.355)**2*I0
     
-    I02F = 2*np.pi*(2./2.355)**2.
+    #I02F = 2*np.pi*(fwhm/2.355)**2.
 
-    Flu_lims = OrderedDict(
+    PeakFlu_lims = OrderedDict(
         CCD1=OrderedDict(
             E=OrderedDict(
                 ALPHA=OrderedDict())))  # +/-10%
@@ -120,23 +120,25 @@ def get_Flu_lims(relfluences):
     for i in range(1, Nfluences+1):
         relflu = min( relfluences[i-1]/100.,1)
         
-        Flu_lims['CCD1']['E']['ALPHA']['col%03i' % i] = \
-            I02F * relflu * plusminus30pc * satur_fluence
-
+        PeakFlu_lims['CCD1']['E']['ALPHA']['col%03i' % i] = \
+                relflu * plusminus30pc * satur_fluence
+#            I02F * relflu * plusminus30pc * satur_fluence
+            
+            
     for Spot in ['BRAVO', 'CHARLIE', 'DELTA', 'ECHO']:
-        Flu_lims['CCD1']['E'][Spot] = Flu_lims['CCD1']['E']['ALPHA']
+        PeakFlu_lims['CCD1']['E'][Spot] = PeakFlu_lims['CCD1']['E']['ALPHA']
     for Q in ['F', 'G', 'H']:
-        Flu_lims['CCD1'][Q] = copy.deepcopy(Flu_lims['CCD1']['E'])
+        PeakFlu_lims['CCD1'][Q] = copy.deepcopy(PeakFlu_lims['CCD1']['E'])
     for CCD in [2, 3]:
-        Flu_lims['CCD%i' % CCD] = copy.deepcopy(Flu_lims['CCD1'])
+        PeakFlu_lims['CCD%i' % CCD] = copy.deepcopy(PeakFlu_lims['CCD1'])
     
     
-    return Flu_lims
+    return PeakFlu_lims
 
 
 FWHM_lims = OrderedDict(CCD1=OrderedDict(
     E=OrderedDict(
-        ALPHA=[1.2, 2.5])))
+        ALPHA=[1.2, 3.])))
 for Spot in ['BRAVO', 'CHARLIE', 'DELTA', 'ECHO']:
     FWHM_lims['CCD1']['E'][Spot] = FWHM_lims['CCD1']['E']['ALPHA']
 for Q in ['F', 'G', 'H']:
@@ -214,7 +216,7 @@ class PSF0X(PT.PointTask):
         super(PSF0X, self).set_perfdefaults(**kwargs)
 
         self.perfdefaults['BGD_lims'] = BGD_lims  # ADUs
-        self.perfdefaults['Flu_lims'] = get_Flu_lims(PSF0X_relfluences)  # ADUs
+        self.perfdefaults['PeakFlu_lims'] = get_PeakFlu_lims(PSF0X_relfluences)  # ADUs
         self.perfdefaults['FWHM_lims'] = FWHM_lims  # Pixels
         
         
@@ -284,8 +286,7 @@ class PSF0X(PT.PointTask):
         tFWC_point = self.ogse.profile['tFWC_point']['nm%i' % wave]
         exptime = self.dd.mx['exptime'][:,0]
         
-        sexconfig=dict(
-                                           MINAREA=3.,
+        sexconfig=dict(MINAREA=3.,
                                            DET_THRESH=15.,
                                            MAG_ZEROPOINT=20.)
         
@@ -327,6 +328,8 @@ class PSF0X(PT.PointTask):
 
 
         """
+        
+        stop()
         
         onTests = False
         
