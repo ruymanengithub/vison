@@ -284,14 +284,31 @@ class PSF0X(PT.PointTask):
         tFWC_point = self.ogse.profile['tFWC_point']['nm%i' % wave]
         exptime = self.dd.mx['exptime'][:,0]
         
-        iObs = np.abs(exptime-tFWC_point/2.).argmin()
-        
-        
-        PT.PointTask.lock_on_stars(self,iObs=iObs,
-                                   sexconfig=dict(
+        sexconfig=dict(
                                            MINAREA=3.,
                                            DET_THRESH=15.,
-                                           MAG_ZEROPOINT=20.)) 
+                                           MAG_ZEROPOINT=20.)
+        
+        # single Obsid-locking                
+        #iObs = np.abs(exptime-tFWC_point/2.).argmin()        
+        #PT.PointTask.lock_on_stars(self,iObs=iObs,
+        #                           sexconfig=sexconfig)
+        
+        ulabels = np.unique(self.dd.mx['label'][:,0]).tolist()
+        
+        #ulabels = [ulabels[0]] # TEST
+        
+        ObsList = []
+        
+        for ulabel in ulabels:
+            
+            ixsel = np.where(self.dd.mx['label'][:,0] == ulabel)[0][0]
+            ObsList.append(ixsel)
+        
+        PT.PointTask.lock_on_stars(self,iObs=ObsList,
+                                   labels=ulabels,
+                                   sexconfig=sexconfig)
+        
 
     def prep_data(self):
         """
@@ -353,18 +370,22 @@ class PSF0X(PT.PointTask):
             picklespath = self.inputs['subpaths']['ccdpickles']
             spotspath = self.inputs['subpaths']['spots']
             strackers = self.ogse.startrackers
+            stlabels = self.ogse.labels
             
-            psCCDcoodicts = OrderedDict(names=strackers['CCD1'].starnames)
+            psCCDcoodicts = OrderedDict(names=strackers['CCD1']['col001'].starnames)
 
             for jCCD, CCDk in enumerate(CCDs):
-                psCCDcoodicts[CCDk] = strackers[CCDk].get_allCCDcoos(
-                    nested=True)
+                for ilabel, label in enumerate(stlabels):
+                    psCCDcoodicts[CCDk][label] = strackers[CCDk][label].get_allCCDcoos(
+                            nested=True)
 
             for iObs in range(nObs):
             #for iObs in range(3): # TESTS
+                            
 
                 for jCCD, CCDk in enumerate(CCDs):
                     
+                    ilabel = self.dd.mx['label'][iObs,jCCD]
 
                     fullccdobj_name = os.path.join(
                         picklespath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs, jCCD])
@@ -380,7 +401,7 @@ class PSF0X(PT.PointTask):
                         for lS, SpotName in enumerate(SpotNames):
 
                             #coo = polib.Point_CooNom[CCDk][Quad][SpotName]                            
-                            coo = psCCDcoodicts[CCDk][Quad][SpotName]
+                            coo = psCCDcoodicts[CCDk][ilabel][Quad][SpotName]
                             lSpot = polib.extract_spot(
                                 ccdobj, coo, Quad, stampw=stampw)
 

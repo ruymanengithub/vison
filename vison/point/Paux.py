@@ -24,7 +24,6 @@ from vison.plot import trends
 # END IMPORT
 
 
-
 def get_CDP_lib():
 
     lock_cdp = cdp.Tables_CDP()

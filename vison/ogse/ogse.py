@@ -139,9 +139,14 @@ def get_wavelength(FW_ID,FW=FW):
 
 class Ogse(object):
 
-    def __init__(self, CHAMBER=None, withpover=True):
+    def __init__(self, CHAMBER=None, withpover=True, labels=None):
 
         self.CCDs = [1, 2, 3]
+        if labels is None:
+            self.labels = []
+        else:
+            assert isinstance(labels,list)
+            self.labels = labels
         self.CHAMBER = CHAMBER
         self.profile = OrderedDict()
         self.load_ogse_profile(CHAMBER)
@@ -165,13 +170,6 @@ class Ogse(object):
 
         self.profile = profile.copy()
 
-#    def get_pspattern_paths(self, CHAMBER):
-#        pspattern_paths = OrderedDict()
-#        for CCD in self.CCDs:
-#            pspatternf = 'Pattern_CCD%i_CHAMBER_%s.txt' % (CCD, CHAMBER)
-#            fpath = os.path.join(ogsepath, pspatternf)
-#            pspattern_paths['CCD%i' % CCD] = fpath
-#        return pspattern_paths
 
     def get_pspattern_paths(self):
         pspattern_paths = OrderedDict()
@@ -181,18 +179,6 @@ class Ogse(object):
             pspattern_paths['CCD%i' % CCD] = fpath
         return pspattern_paths
 
-#    def load_startrackers_old(self, CHAMBER, withpover=True):
-#        """ """
-#
-#        if CHAMBER is None:
-#            return
-#
-#        pspattern_paths = self.get_pspattern_paths(CHAMBER)
-#
-#        for CCD in self.CCDs:
-#            istartracker = strmod.StarTracker(
-#                CCD, withpover, patt_files=pspattern_paths)
-#            self.startrackers['CCD%i' % CCD] = copy.deepcopy(istartracker)
             
     def load_startrackers(self, withpover=True):
         """ """
@@ -201,15 +187,23 @@ class Ogse(object):
         
         for CCD in self.CCDs:
             
-            istartracker = strmod.StarTracker(
-                CCD, withpover, patt_files=pspattern_paths)
-            self.startrackers['CCD%i' % CCD] = copy.deepcopy(istartracker)
+            if len(self.labels)>0:
+                
+                for label in self.labels:
+                    
+                    istartracker = strmod.StarTracker(
+                            CCD, withpover, patt_files=pspattern_paths)
+                    self.startrackers['CCD%i' % CCD][label] = copy.deepcopy(istartracker)
 
+            else:
+                
+                istartracker = strmod.StarTracker(
+                            CCD, withpover, patt_files=pspattern_paths)
+                self.startrackers['CCD%i' % CCD] = copy.deepcopy(istartracker)
+    
     def save_ogse_profile(self, jsonpath):
         """ """
         profile = self.profile
-        #profilef = '%s_profile.json' % CHAMBER
-        #fpath = os.path.join(ogsepath,profilef)
         vjson.save_jsonfile(profile, jsonpath)
 
     def get_FW_ID(self, wavelength):

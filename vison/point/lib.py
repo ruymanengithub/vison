@@ -21,6 +21,8 @@ from vison.support import context
 import copy
 import numpy as np
 from vison.point import spot as spotmod
+from vison.datamodel import ccd
+from vison.image import sextractor as sex
 # END IMPORT
 
 
@@ -106,7 +108,7 @@ def extract_spot(ccdobj, coo, Quad, log=None, stampw=25):
     return spot
 
 
-def gen_point_mask(CCD, Quad, width=stampw, sources='all', coodict=Point_CooNom):
+def gen_point_mask(Quad, width=stampw, sources='all', coodict=Point_CooNom):
     """ """
 
     fkccdobj = ccdmod.CCD()
@@ -118,11 +120,11 @@ def gen_point_mask(CCD, Quad, width=stampw, sources='all', coodict=Point_CooNom)
     if sources == 'all':
         sourcelist = coodict['names']
     else:
-        sourcelist = [sources]
+        sourcelist = copy.deepcopy(sources)
 
     for source in sourcelist:
 
-        coo = coodict[CCD][Quad][source]
+        coo = coodict[Quad][source]
 
         x0Q, y0Q = tuple([int(np.round(item)) for item in coo])
 
@@ -132,3 +134,72 @@ def gen_point_mask(CCD, Quad, width=stampw, sources='all', coodict=Point_CooNom)
         msk[corners[0]:corners[1], corners[2]:corners[3]] = 1
 
     return msk
+
+
+class _Transf(object):
+    rotation = 1.4*np.pi
+    scale = 2.0
+    translation = [2000.0,2000.0]
+
+
+def _get_transformation(self,ffits, stracker, 
+                dpath, _sexconfig, tag, devel=False):   
+        
+            
+    #vstart = self.dd.mx['vstart'][iObs][jCCD]
+    #vend = self.dd.mx['vend'][iObs][jCCD]
+    
+    SExCatroot = 'StarFinder_%s' % tag
+    
+    # DEFAULTS
+    transf = _Transf()
+    s_list = np.arange(5).tolist()
+    t_list = copy.deepcopy(s_list)
+    
+    if not devel:
+        
+        ccdobj = ccd.CCD(ffits)
+        
+        img = ccdobj.extensions[-1].data.T.copy()
+        
+        SExCat = sex.easy_run_SEx(img, SExCatroot, 
+                    sexconfig=_sexconfig,                                      
+                    cleanafter=True)
+        
+        sel = np.where((SExCat['ELONGATION']<2.) &
+                       (SExCat['A_IMAGE']<5.) &
+                       (SExCat['A_IMAGE']>0.2) &
+                       (SExCat['B_IMAGE']<5.) &
+                       (SExCat['B_IMAGE']>0.2) &
+                       (SExCat['FLUX_AUTO']>5000.) &
+                       (SExCat['ISOAREA_IMAGE']>3.) &
+                       (SExCat['ISOAREA_IMAGE']<100.)
+                       )
+        
+        if len(sel[0])> 0:
+            
+            X_IMAGE = SExCat['X_IMAGE'][sel].copy() - 1.
+            Y_IMAGE = SExCat['Y_IMAGE'][sel].copy() - 1.
+            
+            
+            X_PHYS, Y_PHYS = self.ccdcalc.cooconv_CCD_2_Phys(X_IMAGE,Y_IMAGE)                    
+            whatQ = self.ccdcalc.get_Q_of_CCDcoo(X_IMAGE,Y_IMAGE)[0]
+            
+            ixnonan = np.where(~(np.isnan(X_PHYS) | np.isnan(Y_PHYS)) &
+                    (whatQ != 'G'))
+            X_PHYS = X_PHYS[ixnonan]
+            Y_PHYS = Y_PHYS[ixnonan]
+            
+            
+            try:
+                transf, (s_list, t_list) = stracker.find_patt_transform(X_PHYS,Y_PHYS,
+                          Full=True, discardQ=['G'],debug=False)
+            except:
+            
+                if self.log is not None:
+                    self.log.info('Failed Locking Stars on %s' % tag)
+        else:
+            if self.log is not None:
+                    self.log.info('Did not Find enough Stars to Lock-on on %s' % tag)
+        
+        return transf, s_list, t_list

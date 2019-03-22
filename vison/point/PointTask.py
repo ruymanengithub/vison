@@ -16,7 +16,7 @@ from collections import OrderedDict
 import pandas as pd
 import string as st
 
-from vison.image import sextractor as sex
+
 from vison.datamodel import compliance as complimod
 from vison.pipe.task import Task
 from vison.point import lib as polib
@@ -50,7 +50,7 @@ class PointTask(Task):
     def __init__(self, *args, **kwargs):
         super(PointTask, self).__init__(*args, **kwargs)
         
-        CCDs = self.ogse.startrackers.keys()
+        CCDs = copy.deepcopy(self.ogse.CCDs)
         offsetxy = np.array(self.inputs['offsetxy'])
         if not np.isclose(np.abs(np.sqrt(np.dot(offsetxy,offsetxy))),0.):
             for jCCD, CCDk in enumerate(CCDs):
@@ -146,18 +146,41 @@ class PointTask(Task):
                          ove=[5,5])
 
         if not self.drill:
-
+            
+            
             strackers = self.ogse.startrackers
-
-            psCCDcoodicts = OrderedDict(names=strackers['CCD1'].starnames)
-
-            for jCCD, CCDk in enumerate(CCDs):
-                psCCDcoodicts[CCDk] = strackers[CCDk].get_allCCDcoos(
-                    nested=True)
-
-            for iObs in range(nObs):
+            _labels = self.ogse.labels
+            doMultiTrack = False
+            if len(_labels)>0:
+                doMultiTrack = True
+            
+            
+            
+            if doMultiTrack:
+                starnames = strackers['CCD1']['col001'].starnames
+                psCCDcoodicts = OrderedDict(names = starnames)
                 
                 for jCCD, CCDk in enumerate(CCDs):
+                    psCCDcoodicts[CCDk] = OrderedDict()
+                    for ilabel,_label in enumerate(_labels):
+                        psCCDcoodicts[CCDk][_label] = strackers[CCDk][_label].get_allCCDcoos(
+                                nested=True)
+            else:
+                
+                starnames = strackers['CCD1'].starnames
+                psCCDcoodicts = OrderedDict(names=starnames)
+
+                for jCCD, CCDk in enumerate(CCDs):
+                    psCCDcoodicts[CCDk] = strackers[CCDk].get_allCCDcoos(
+                            nested=True)
+                        
+            for iObs in range(nObs):
+                
+                
+                for jCCD, CCDk in enumerate(CCDs):
+                    
+                    
+                    ilabel = self.dd.mx['label'][iObs,jCCD]
 
                     dpath = self.dd.mx['datapath'][iObs, jCCD]
                     ffits = os.path.join(dpath, '%s.fits' %
@@ -181,10 +204,15 @@ class PointTask(Task):
                         # To measure the background we mask out the sources
 
                         alt_ccdobj = copy.deepcopy(ccdobj)
-
-                        mask_sources = polib.gen_point_mask(
-                            CCDk, Quad, width=self.stampw, sources='all',
-                            coodict=psCCDcoodicts.copy())
+                        
+                        if doMultiTrack:
+                            mask_sources = polib.gen_point_mask(
+                            Quad, width=self.stampw, sources=starnames,
+                            coodict=psCCDcoodicts[CCDk][ilabel].copy())
+                        else:
+                            mask_sources = polib.gen_point_mask(
+                            Quad, width=self.stampw, sources=starnames,
+                            coodict=psCCDcoodicts[CCDk].copy())
 
                         alt_ccdobj.get_mask(mask_sources)
 
@@ -203,7 +231,10 @@ class PointTask(Task):
                         for xSpot, SpotName in enumerate(Spots):
 
                             #coo = polib.Point_CooNom[CCDk][Quad][SpotName]
-                            coo = psCCDcoodicts[CCDk][Quad][SpotName]
+                            if doMultiTrack:
+                                coo = psCCDcoodicts[CCDk][ilabel][Quad][SpotName]
+                            else:
+                                coo = psCCDcoodicts[CCDk][Quad][SpotName]
 
                             spot = polib.extract_spot(ccdobj, coo, Quad, log=self.log,
                                                       stampw=self.stampw)
@@ -433,67 +464,111 @@ class PointTask(Task):
         lock_tb_cdp = cPickleRead(self.dd.products['LOCK_TB_CDP'])
         lock_tb = lock_tb_cdp['data']['LOCK_TB']
         
+        doMulti = False
+        if 'LABEL' in lock_tb.columns:
+            doMulti = True
+            ulabels = np.unique(self.dd.mx['label'][:,0]).tolist()
+        
         meta = lock_tb_cdp['meta']
         scale_lims = meta['scale_lims']
         rot_lims  = meta['rot_lims']
         trans_lims = meta['trans_lims']
         maxSTDpix = meta['maxSTDpix']
         
+        
         # Reloading Patterns without displacement
         
         self.ogse.load_startrackers(withpover=True)
         
-        for jCCD,CCDk in enumerate(CCDs):
+         # CHECK COMPLIANCE of transformations against allowed changes in
+        #       scale, rotation and translation
+        
+        rotation_inlims = np.all((rot_lims[0] <= lock_tb['ROTATION']) & \
+                             (lock_tb['ROTATION']<= rot_lims[1]))
+        
+        rotation_ok = rotation_inlims and \
+            np.std(lock_tb['ROTATION'] * 4096.) < maxSTDpix
+        
+        scale_inlims = np.all((scale_lims[0] <= lock_tb['SCALE']) & \
+                             (lock_tb['SCALE']<= scale_lims[1]))
+        
+        scale_ok = scale_inlims and \
+            np.std(lock_tb['SCALE'] * 4096.) < maxSTDpix
+        
+        trans_mod = np.sqrt(lock_tb['TRANS_X']**2.+lock_tb['TRANS_Y']**2.)
+        
+        trans_inlims = np.all((trans_mod>=trans_lims[0]) & \
+                           (trans_mod<=trans_lims[1]))
+        
+        trans_ok = trans_inlims and \
+            np.std(trans_mod) < maxSTDpix
+        
+        all_ok = rotation_ok and scale_ok and trans_ok
+        
+        
+        
+        # Applying Transformations to the Pattern
+        
+        if all_ok:
             
-            ixselCCD = np.where(lock_tb['CCD'][:]== jCCD+1)[0][0]
-            
-            ROTATION = lock_tb['ROTATION'][ixselCCD]
-            SCALE = lock_tb['SCALE'][ixselCCD]
-            TRANS_X = lock_tb['TRANS_X'][ixselCCD]
-            TRANS_Y = lock_tb['TRANS_Y'][ixselCCD]
-            
-            # CHECK COMPLIANCE of transformations against allowed changes in
-            #       scale, rotation and translation
-            
-            rotation_inlims = np.all((rot_lims[0] <= ROTATION) & \
-                                 (ROTATION<= rot_lims[1]))
-            
-            rotation_ok = rotation_inlims and \
-                np.std(ROTATION * 4096.) < maxSTDpix
-            
-            scale_inlims = np.all((scale_lims[0] <= SCALE) & \
-                                 (SCALE<= scale_lims[1]))
-            
-            scale_ok = scale_inlims and \
-                np.std(SCALE * 4096.) < maxSTDpix
-            
-            trans_mod = np.sqrt(TRANS_X**2.+TRANS_Y**2.)
-            
-            trans_inlims = np.all((trans_mod>=trans_lims[0]) & \
-                               (trans_mod<=trans_lims[1]))
-            
-            trans_ok = trans_inlims and \
-                np.std(trans_mod) < maxSTDpix
-            
-            all_ok = rotation_ok and scale_ok and trans_ok
+            strackers = self.ogse.startrackers
+        
+            if not doMulti:
             
             
-            if all_ok:
+                for jCCD, CCDk in enumerate(CCDs):
+                    
+                    ixselCCD = np.where(lock_tb['CCD'][:] == jCCD+1)[0][0]
+                    
+                    scale = lock_tb['SCALE'][ixselCCD]
+                    rotation = lock_tb['ROTATION'][ixselCCD]
+                    trans_x = lock_tb['TRANS_X'][ixselCCD]
+                    trans_y = lock_tb['TRANS_Y'][ixselCCD]
+                    translation = (trans_x,trans_y)
+                    
+                    simmx = strackers[CCDk].get_similaritymx(scale, 
+                                     rotation, translation)
+                    
+                    strackers[CCDk].apply_patt_transform(simmx)
+            
+            else:
                 
-                if self.log is not None:
-                    self.log.info('%s: Relocating Point Sources!' % CCDk)
+
+                newstrackers = OrderedDict()
+                self.ogse.labels = ulabels                
+                
+                for jCCD, CCDk in enumerate(CCDs):
+                    
+                    newstrackers[CCDk] = OrderedDict()
                                 
-                
-                TRANSLATION = (TRANS_X,TRANS_Y)
-                
-                simmx = self.ogse.startrackers[CCDk].get_similaritymx(SCALE, 
-                                     ROTATION, TRANSLATION)
-                
-                
-                self.ogse.startrackers[CCDk].apply_patt_transform(simmx)
-                
+                    for ilabel,label in enumerate(ulabels):
+                        
+                        ii = jCCD * len(ulabels) + ilabel
+                                       
+                        scale = lock_tb['SCALE'][ii]
+                        rotation = lock_tb['ROTATION'][ii]
+                        trans_x = lock_tb['TRANS_X'][ii]
+                        trans_y = lock_tb['TRANS_Y'][ii]
+                        translation = (trans_x,trans_y)
+                    
+                        
+                        newstrackers[CCDk][label] = copy.deepcopy(self.ogse.startrackers[CCDk])
+                        
+                        
+                        simmx = newstrackers[CCDk][label].get_similaritymx(scale, 
+                                     rotation, translation)
+                                                
+                        newstrackers[CCDk][label].apply_patt_transform(simmx)
+            
+                self.ogse.startrackers = copy.deepcopy(newstrackers)
+            
+            
+            if self.log is not None:
+                self.log.info('%s: Relocating Point Sources!' % CCDk)
+                                
+
     
-    def lock_on_stars(self, iObs=0, sexconfig=None):
+    def lock_on_stars(self, iObs=0, labels=None, sexconfig=None):
         """ """
                 
         devel = False # TESTS
@@ -501,6 +576,16 @@ class PointTask(Task):
         if self.report is not None:
             self.report.add_Section(
                 keyword='lock', Title='Stars Locking', level=0)
+        
+        
+        doMulti=False
+        if labels is not None:
+            doMulti = True
+            assert isinstance(labels,list)
+            assert isinstance(iObs,list)
+            assert len(iObs) == len(labels)
+        else:
+            labels = []
         
         _sexconfig = dict(MINAREA=2.,
              DET_THRESH=14.,
@@ -514,10 +599,6 @@ class PointTask(Task):
         if sexconfig is not None:
             _sexconfig.update(sexconfig)
         
-        class _Transf(object):
-            rotation = 1.4*np.pi
-            scale = 2.0
-            translation = [2000.0,2000.0]
         
         Qindices = copy.deepcopy(self.dd.indices)
         CCDs = Qindices.get_vals('CCD')
@@ -534,87 +615,81 @@ class PointTask(Task):
         CDP_header.update(dict(function=function, module=module))
         CDP_header['DATE'] = self.get_time_tag()
         
+        NCOLS=max(1,len(labels))
+        
         LOCK_TB = OrderedDict()
         NCCDs = len(CCDs)
-        LOCK_TB['CCD'] = np.zeros(NCCDs,dtype='int32')
-        LOCK_TB['NMATCH'] = np.zeros(NCCDs,dtype='int32')
-        LOCK_TB['SCALE'] = np.zeros(NCCDs,dtype='float32')
-        LOCK_TB['ROTATION'] = np.zeros(NCCDs,dtype='float32')
-        LOCK_TB['TRANS_X'] = np.zeros(NCCDs,dtype='float32')
-        LOCK_TB['TRANS_Y'] = np.zeros(NCCDs,dtype='float32')
-        
-        
-        strackers = self.ogse.startrackers
+        NROWS = NCCDs * NCOLS
+        LOCK_TB['CCD'] = np.zeros(NROWS,dtype='int32')
+        if doMulti: LOCK_TB['LABEL'] = np.zeros(NROWS,dtype='int32')
+        LOCK_TB['NMATCH'] = np.zeros(NROWS,dtype='int32')
+        LOCK_TB['SCALE'] = np.zeros(NROWS,dtype='float32')
+        LOCK_TB['ROTATION'] = np.zeros(NROWS,dtype='float32')
+        LOCK_TB['TRANS_X'] = np.zeros(NROWS,dtype='float32')
+        LOCK_TB['TRANS_Y'] = np.zeros(NROWS,dtype='float32')
         
         transfs_dict = OrderedDict()
         
-        for jCCD, CCDk in enumerate(CCDs):
+        strackers = self.ogse.startrackers
         
-            dpath = self.dd.mx['datapath'][iObs, jCCD]
-            ffits = os.path.join(dpath, '%s.fits' %
-                                         self.dd.mx['File_name'][iObs, jCCD])
-            #vstart = self.dd.mx['vstart'][iObs][jCCD]
-            #vend = self.dd.mx['vend'][iObs][jCCD]
+        if not doMulti:
             
-            # DEFAULTS
-            transf = _Transf()
-            s_list = np.arange(5).tolist()
-            t_list = copy.deepcopy(s_list)
+            for jCCD, CCDk in enumerate(CCDs):
             
-            if not devel:
+                dpath = self.dd.mx['datapath'][iObs, jCCD]
+                ffits = os.path.join(dpath, '%s.fits' %
+                                             self.dd.mx['File_name'][iObs, jCCD])
                 
-                ccdobj = ccd.CCD(ffits)
                 
-                img = ccdobj.extensions[-1].data.T.copy()
-                SExCatroot = 'StarFinder_%s' % CCDk
-                SExCat = sex.easy_run_SEx(img, SExCatroot, 
-                            sexconfig=_sexconfig,                                      
-                            cleanafter=True)
+                stracker = strackers[CCDk]
                 
-                sel = np.where((SExCat['ELONGATION']<2.) &
-                               (SExCat['A_IMAGE']<5.) &
-                               (SExCat['A_IMAGE']>0.2) &
-                               (SExCat['B_IMAGE']<5.) &
-                               (SExCat['B_IMAGE']>0.2) &
-                               (SExCat['FLUX_AUTO']>5000.) &
-                               (SExCat['ISOAREA_IMAGE']>3.) &
-                               (SExCat['ISOAREA_IMAGE']<100.)
-                               )
+                transf, s_list, t_list = polib._get_transformation(
+                        ffits, stracker, dpath,
+                        _sexconfig, tag=CCDk, devel=devel)
                 
-                if len(sel[0])> 0:
+                transfs_dict[CCDk] = copy.deepcopy(transf)
+                
+                LOCK_TB['CCD'][jCCD] = jCCD + 1
+                LOCK_TB['NMATCH'][jCCD] = len(s_list)
+                LOCK_TB['SCALE'][jCCD] = transf.scale
+                LOCK_TB['ROTATION'][jCCD] = transf.rotation
+                LOCK_TB['TRANS_X'][jCCD] = transf.translation[0]
+                LOCK_TB['TRANS_Y'][jCCD] = transf.translation[1]
+            
+        
+        else:
+            
+            for jCCD, CCDk in enumerate(CCDs):
+                
+                stracker = strackers[CCDk]
+                
+                transfs_dict[CCDk] = OrderedDict()
+                
+                for ilabel,label in enumerate(labels):
                     
-                    X_IMAGE = SExCat['X_IMAGE'][sel].copy() - 1.
-                    Y_IMAGE = SExCat['Y_IMAGE'][sel].copy() - 1.
+                    ii = jCCD * len(labels) + ilabel
+                    
+                    _iObs = iObs[ilabel]
                                     
+                    dpath = self.dd.mx['datapath'][_iObs, jCCD]
+                    ffits = os.path.join(dpath, '%s.fits' %
+                                                 self.dd.mx['File_name'][_iObs, jCCD])
+                                        
+                                        
+                    transf, s_list, t_list = polib._get_transformation(self,
+                            ffits, stracker, dpath,
+                            _sexconfig, tag='%s_%s' %  (CCDk,label), 
+                            devel=devel)
                     
-                    X_PHYS, Y_PHYS = self.ccdcalc.cooconv_CCD_2_Phys(X_IMAGE,Y_IMAGE)                    
-                    whatQ = self.ccdcalc.get_Q_of_CCDcoo(X_IMAGE,Y_IMAGE)[0]
+                    transfs_dict[CCDk][label] = copy.deepcopy(transf)
                     
-                    ixnonan = np.where(~(np.isnan(X_PHYS) | np.isnan(Y_PHYS)) &
-                            (whatQ != 'G'))
-                    X_PHYS = X_PHYS[ixnonan]
-                    Y_PHYS = Y_PHYS[ixnonan]
-                    
-                    
-                    try:
-                        transf, (s_list, t_list) = strackers[CCDk].find_patt_transform(X_PHYS,Y_PHYS,
-                                  Full=True, discardQ=['G'],debug=False)
-                    except:
-                    
-                        if self.log is not None:
-                            self.log.info('Failed Locking Stars on %s' % CCDk)
-                else:
-                    if self.log is not None:
-                            self.log.info('Did not Find enough Stars to Lock-on on %s' % CCDk)
-            
-            transfs_dict[CCDk] = copy.deepcopy(transf)
-            
-            LOCK_TB['CCD'][jCCD] = jCCD + 1
-            LOCK_TB['NMATCH'][jCCD] = len(s_list)
-            LOCK_TB['SCALE'][jCCD] = transf.scale
-            LOCK_TB['ROTATION'][jCCD] = transf.rotation
-            LOCK_TB['TRANS_X'][jCCD] = transf.translation[0]
-            LOCK_TB['TRANS_Y'][jCCD] = transf.translation[1]
+                    LOCK_TB['CCD'][ii] = jCCD + 1
+                    LOCK_TB['LABEL'][ii] = ilabel
+                    LOCK_TB['NMATCH'][ii] = len(s_list)
+                    LOCK_TB['SCALE'][ii] = transf.scale
+                    LOCK_TB['ROTATION'][ii] = transf.rotation
+                    LOCK_TB['TRANS_X'][ii] = transf.translation[0]
+                    LOCK_TB['TRANS_Y'][ii] = transf.translation[1]
             
         
         # REPORT LOCK_TB
@@ -646,11 +721,15 @@ class PointTask(Task):
         if self.report is not None:
             
             fccd = lambda x: CCDs[x-1]
+            flabel = lambda x: labels[x]
             fi = lambda x: '%i' % x
             ff = lambda x: '%.2f' % x
             fE = lambda x: '%.2E' % x
             
-            cov_formatters=[fccd,fi,ff,fE,ff,ff]
+            if doMulti:
+                cov_formatters=[fccd,flabel, fi,ff,fE,ff,ff]
+            else:
+                cov_formatters=[fccd,fi,ff,fE,ff,ff]
             
             caption = '%s: Star Lock Table' % self.inputs['test']
             nicecaption = st.replace(caption,'_','\_')
@@ -696,16 +775,42 @@ class PointTask(Task):
             if self.log is not None:
                 self.log.info('Updating Point Source Locations!')
             
-                            
-            for jCCD, CCDk in enumerate(CCDs):
             
-                tr = transfs_dict[CCDk]
+            if not doMulti:
+            
+            
+                for jCCD, CCDk in enumerate(CCDs):
                 
-                simmx = strackers[CCDk].get_similaritymx(tr.scale, 
-                                 tr.rotation, tr.translation)
+                    tr = transfs_dict[CCDk]
+                    
+                    simmx = strackers[CCDk].get_similaritymx(tr.scale, 
+                                     tr.rotation, tr.translation)
+                    
+                    strackers[CCDk].apply_patt_transform(simmx)
+            
+            else:
                 
-                strackers[CCDk].apply_patt_transform(simmx)
+
+                newstrackers = OrderedDict()
+                self.ogse.labels = labels
+                                
+                for jCCD, CCDk in enumerate(CCDs):
                 
+                    newstrackers[CCDk] = OrderedDict()
+                
+                
+                    for ilabel,label in enumerate(labels):
+                        
+                        newstrackers[CCDk][label] = copy.deepcopy(self.ogse.startrackers[CCDk])
+                        
+                        tr = copy.deepcopy(transfs_dict[CCDk][label])
+                        
+                        simmx = newstrackers[CCDk][label].get_similaritymx(tr.scale, 
+                                     tr.rotation, tr.translation)
+                                                
+                        newstrackers[CCDk][label].apply_patt_transform(simmx)
+            
+                self.ogse.startrackers = copy.deepcopy(newstrackers)
                 
         else:
             # raise FLAG
