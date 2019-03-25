@@ -39,7 +39,7 @@ if __name__ == '__main__':
     parser.add_option("-t", "--template", dest="temp",
                       default='EUC_%i_*D*T_ROE%i_CCD%i.fits',
                       help="Image Name Template")
-    parser.add_option("-d", "--DS9", dest="ds9target", default=None,
+    parser.add_option("-d", "--DS9", dest="ds9target", default="*",
                        help="Specify DS9 target (pyds9)?")
     #parser.add_option("-s","--start",dest="start",default=None,help="Start OBSID")
     #parser.add_option("-e","--end",dest="end",default=None,help="End OBSID")
