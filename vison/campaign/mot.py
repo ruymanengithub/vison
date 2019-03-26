@@ -18,7 +18,7 @@ from pdb import set_trace as stop
 import numpy as np
 import copy
 
-from vison.dark import BIAS01
+from vison.dark import BIAS0X
 from vison.flat import PTC0X, BF01
 from vison.inject import CHINJ01
 from vison.pump import TP01, TP02
@@ -57,7 +57,7 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
         diffBIAS01 = dict(mirr_on=0)
         diffBIAS01.update(diffvalues)
 
-        bias01 = BIAS01.BIAS01(inputs=dict(test='BIAS01',
+        bias01 = BIAS0X.BIAS0X(inputs=dict(test='BIAS01',
                                            N=Nbias01,
                                            diffvalues=diffBIAS01,
                                            elvis=elvis,
