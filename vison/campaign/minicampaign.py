@@ -20,7 +20,7 @@ import numpy as np
 import copy
 
 from vison.point import FOCUS00, PSF0X
-from vison.dark import BIAS01, DARK01
+from vison.dark import BIAS0X, DARK01
 from vison.flat import FLAT0X
 from vison.inject import CHINJ00
 from vison.pump import TP00
@@ -58,7 +58,9 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis,
                           sn_ccd2=sn_ccd2, sn_ccd3=sn_ccd3, sn_roe=sn_roe,
                           sn_rpsu=sn_rpsu, operator=operator)
 
-        bias01 = BIAS01.BIAS01(inputs=dict(N=Nbias01,
+        bias01 = BIAS0X.BIAS0X(inputs=dict(
+                                            test='BIAS01',
+                                            N=Nbias01,
                                            diffvalues=diffBIAS01,
                                            elvis=elvis,
                                            CHAMBER=CHAMBER))
