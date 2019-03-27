@@ -543,7 +543,7 @@ class TP02(PumpTask):
                         
                         rawcatCQ = masterdata[Q].copy()
                         
-                        # Pandizing the toi catalogs
+                        # "Pandizing" the toi catalogs
                         
                         for modkey in modkeys:
                             

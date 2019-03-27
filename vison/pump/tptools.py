@@ -458,14 +458,19 @@ def merge_2dcats_generic(catsdict, catkeys, parentkey, columns, opcolumns, fcomp
 
         ixnonmerged = np.where(merged['mix'] == -1)
         Nnonmerged = len(ixnonmerged[0])
-        maxmix = int(merged['mix'].max())
+        maxmix = merged['mix'].max()
+        if not np.isnan(maxmix): maxmix = int(maxmix)
 
         for ocol in opcolumns:
             merged.loc[ixnonmerged[0], 'u%s' %
                        ocol] = merged.loc[ixnonmerged[0], '%s_%s' % (ocol, mkey)]
+            
+        if (Nnonmerged>0) and ~np.isnan(maxmix):
 
-        merged.loc[ixnonmerged[0], 'mix'] = np.linspace(
-            maxmix+1, maxmix+Nnonmerged+1, Nnonmerged, dtype='int32')
+            merged.loc[ixnonmerged[0], 'mix'] = np.linspace(
+                maxmix+1, maxmix+Nnonmerged+1, Nnonmerged, dtype='int32')
+        
+        
 
     renamerdict = dict()
     for key in columns:
