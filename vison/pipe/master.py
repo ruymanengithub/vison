@@ -220,7 +220,7 @@ class Pipe(object):
         if self.log is not None:
             self.log.info(timemsg)
             self.log.info(errormsg)
-
+        
         self.completion[taskname] = copy.deepcopy(taskreport)
 
     def run(self, explogf=None, elvis=None):
@@ -270,32 +270,33 @@ class Pipe(object):
         summary = ['_', '_', '_', '_',
                    '######################################################################'] +\
             self._get_log_header()
-
+        
         for task in self.tasks:
             if task in self.completion:
                 _compl = self.completion[task]
                 summary += ['_', '%s' % task]
                 summary += ['Executed in %.1f minutes' % _compl['exectime']]
+                summary += ['OBSIDs range = [%i,%i]' % _compl['ObsID_range']]
                 summary += ['Raised Flags = %s' % _compl['flags']]
                 if _compl['Errors']:
                     summary += ['Executed with ERROR(s)']
-
+        
         summary += ['_', '_', '_', '_',
                    '######################################################################']
-
+        
         return summary
-
+    
     def wait_and_run(self, dayfolder, elvis=context.elvis):
         """ """
-
+        
         tasknames = self.tasks
         resultsroot = self.inputs['resultsroot']
         if not os.path.exists(resultsroot):
             os.system('mkdir %s' % resultsroot)
-
+        
         if self.log is not None:
             self.log.info('\n\nResults will be saved in: %s\n' % resultsroot)
-
+        
         # Learn how many ObsIDs will generate each task
 
         tasksequence = []
@@ -432,14 +433,17 @@ class Pipe(object):
             else:
                 print 'TASK "%s@%s" FAILED, QUITTING!' % (
                     taskname, self.Test_dict[taskname].__module__)
-
+        
         tend = datetime.datetime.now()
         dtm = ((tend-tini).seconds)/60.
-
+        
         execlog = OrderedDict()
         execlog['Task'] = taskname
         execlog['Errors'] = Errors
         execlog['exectime'] = dtm
+        execlog['ObsID_range'] = (test.dd.mx['ObsID'][:].min(),
+                                   test.dd.mx['ObsID'][:].max() )
+        
         try:
             flags = test.dd.flags.getFlagsOnList()
         except:
@@ -447,9 +451,9 @@ class Pipe(object):
         execlog['flags'] = flags.__repr__()
         
         test = None
-
+        
         return execlog
-
+    
     def catchtraceback(self):
         """ """
         msg_trbk = traceback.format_exc()
