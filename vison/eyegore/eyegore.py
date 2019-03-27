@@ -72,7 +72,7 @@ class Eyegore(tk.Tk):
 
     def __init__(self, path, broadcast, intervals=None,
                  elvis=context.elvis, blind=False, dolite=False, altpath='',
-                 doWarnings=False, dolog=False, ds9target=None):
+                 doWarnings=False, dolog=False, ds9target='*'):
         """ """
         tk.Tk.__init__(self)
 
@@ -218,7 +218,7 @@ def Eexecuter():
                       help="keep a log")
     parser.add_option("-W", "--Warnings", dest="doWarnings", action="store_true", default=False,
                       help="Raise warnings (via email and/or phone) if critical HK is OOL.")
-    parser.add_option("-d", "--DS9", dest="ds9target", default=None,
+    parser.add_option("-d", "--DS9", dest="ds9target", default='*',
                       help="Specify DS9 target (pyds9)?")
 
     (options, args) = parser.parse_args()
