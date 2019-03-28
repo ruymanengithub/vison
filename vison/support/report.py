@@ -164,6 +164,36 @@ class Chapter(Container):
         return txt
 
 
+
+class Part(Container):
+    """ """
+
+    def __init__(self, Title=''):
+
+        
+        self.Title = Title
+        self.Contents = []
+
+    def generate_Latex(self):
+        """ """
+        tex = ['\part{%s}' % self.Title, '\n']
+
+        for item in self.Contents:
+            tex += item.generate_Latex()
+        
+        tex+=['\clearpage']
+
+        return tex
+
+    def __str__(self):
+
+        txt = 'part'
+        for item in self.Contents:
+            txt += item.__str__()
+        return txt
+
+
+
 class Figure(Content):
     """ """
 
@@ -423,6 +453,8 @@ class Report(Container):
         """ """
         self.add_to_Contents(Chapter(Title))
     
+    def add_Part(self, Title=''):
+        self.add_to_Contents(Part(Title))
     
     def drop_Section(self, keyword):
 
