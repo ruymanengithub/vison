@@ -50,9 +50,10 @@ def generate_header(test, model, author, reference='7-XXX'):
     return headerList
 
 
-def generate_preamble(model, test, custodian='Ruyman Azzollini', reference='7-XXX'):
-
-    preambletexf = os.path.join(data.__path__[0], 'preamble_template.tex')
+def generate_preamble(model, test, custodian='Ruyman Azzollini', reference='7-XXX',
+                      preambletexf=None):
+    if preambletexf is None:
+        preambletexf = os.path.join(data.__path__[0], 'preamble_template.tex')
     preambleList = replace_in_template(
         preambletexf, (model, test, reference, custodian))
     return preambleList

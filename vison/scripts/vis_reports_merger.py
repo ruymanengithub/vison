@@ -29,8 +29,8 @@ def run_merger(infile, programme='FM', block='BLOCK', reference='6_666'):
     """ """
     
     indata = ascii.read(infile,data_start=0)
-    
-    report = Report(TestName='All Calibration Tests',Model=programme,
+    niceblock = st.replace(block,'_.','\_')
+    report = Report(TestName='Test Reports, %s' % niceblock,Model=programme,
                     Reference=reference)
     
     reportroot = 'EUCL_MSS_TR_%s_%s' % (reference,block)

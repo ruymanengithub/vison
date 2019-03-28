@@ -547,9 +547,9 @@ class Report(Container):
                         ['%s.pdf', '%s.dvi', '%s.aux', '%s.log', '%s.tex', '%s.out', '%s.soc',
                          '%s.toc']]
 
-        os.system('rm %s' % EuclidViscls)
-        os.system('rm %s' % logo)
-        os.system('rm %s' % deluxetablesty)
+        #os.system('rm %s' % EuclidViscls)
+        #os.system('rm %s' % logo)
+        #os.system('rm %s' % deluxetablesty)
 
         return outfiles
 
