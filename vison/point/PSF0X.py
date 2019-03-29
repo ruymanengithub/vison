@@ -656,7 +656,7 @@ class PSF0X(PT.PointTask):
             fullfignameratio = os.path.join(figspath,fignameratio)
             
             xt.PlotSummaryFig(crosstalks, suptitle='', figname=fullfignameratio, 
-                              scale='RATIO',showvalues=False)
+                              scale='RATIO',showvalues=True)
             
             
             fignameadu = self.figdict['PSF0X_crosstalk_ADU'][1]['figname']

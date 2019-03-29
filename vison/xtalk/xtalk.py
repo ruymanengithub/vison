@@ -435,7 +435,7 @@ def PlotSummaryFig(Xtalk, suptitle, figname='', scale='RATIO', showvalues=False)
 
                             ax.scatter(x, y, color=color, s=[ms], alpha=alpha)
                             
-                            if showvalues: ax.text(x,y,'%.1e' % ixtalk,fontsize=8,
+                            if showvalues: ax.text(x,y,'%.1e' % ixtalk,fontsize=7,
                                                    horizontalalignment='center',
                                                    verticalalignment='center')
 
