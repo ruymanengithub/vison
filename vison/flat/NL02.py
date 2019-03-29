@@ -51,6 +51,8 @@ from vison.support import utils
 from vison.flat import NL01
 from vison.flat import NL01aux
 import nl as nllib
+
+from pylab import plot,show
 # END IMPORT
 
 isthere = os.path.exists
@@ -317,7 +319,7 @@ class NL02(NL01.NL01):
                 exptimes = self.dd.mx['exptime'][:, iCCD].copy()
                 wave = self.dd.mx['wave'][:, iCCD].copy()
                 dtobjs = self.dd.mx['time'][:, iCCD].copy()
-                
+                ObsIDs = self.dd.mx['ObsID'][:].copy()
                 
                 # fitresults = OrderedDict(coeffs, NLdeg, maxNLpc,flu_maxNLpc, bgd)
                 if debug:
@@ -325,7 +327,8 @@ class NL02(NL01.NL01):
                 _fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, exptimes, wave, 
                                             dtobjs, 
                                             TrackFlux=True, 
-                                            debug=debug) 
+                                            debug=debug,
+                                            ObsIDs=ObsIDs) 
                 
                 NLall_mx[CCDkey][Q].update(_fitresults)
                 

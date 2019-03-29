@@ -24,7 +24,7 @@ from scipy import interpolate
 # END IMPORT
 
 FullDynRange = 2.**16
-NLdeg = 7
+NLdeg = 5
 
 def get_RANSAC_linear_model(X,Y):
     ransac = linear_model.RANSACRegressor()
@@ -154,10 +154,20 @@ def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,maxrelflu=None):
     assert fluencesNL.shape[0] == exptimes.shape[0]
     assert fluencesNL.ndim <= 2
     assert exptimes.ndim == 1
-   
+    
+    if maxrelflu is None: maxrelflu=1.
     
     YL = np.zeros_like(fluencesNL,dtype='float32')
     expix, regix = np.meshgrid(np.arange(fluencesNL.shape[0]),np.arange(fluencesNL.shape[1]),indexing='ij')
+    
+    uexptimes = np.unique(exptimes)
+    for iu,uexp in enumerate(uexptimes):
+        ix = np.where(exptimes==uexp)
+        avflu = fluencesNL[ix[0],...].mean(axis=1)
+        deviants = np.abs((avflu-avflu.mean())/avflu.std())>3.
+        if np.any(deviants):
+            ixNaN = (ix[0][deviants],)
+            fluencesNL[ixNaN,...] = np.nan
     
     if fluencesNL.ndim == 2:
         
@@ -167,13 +177,22 @@ def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,maxrelflu=None):
         for isec in range(Nsec):       
             #predictor = get_RANSAC_linear_model(exptimes[:],fluencesNL[:,isec])
             #Ypred = np.squeeze(predictor(np.expand_dims(exptimes,1)))
-            predictor = get_POLY_linear_model(exptimes[:],fluencesNL[:,isec])
+            
+            
+            ixsel=np.where(fluencesNL[:,isec]<=2.**16*maxrelflu)
+            xp = exptimes[ixsel]
+            yp = np.squeeze(fluencesNL[ixsel,isec])
+            predictor = get_POLY_linear_model(xp,yp)
             predictor.coef[1] = 0.
             YpredL = predictor(exptimes)
             YL[:,isec] = YpredL.copy()
             
-            #plot(Ypred[3:],fluencesNL[3:,isec]/Ypred[3:]-1.,marker='.',ls='')
+            #print('sec:%i' % isec)
+            #plot(exptimes[:],fluencesNL[:,isec]-YpredL,'k.')
+            ##plot(exptimes[:],fluencesNL[:,isec]-YpredL,'r-')
+            #show()
             
+            #plot(YpredL[3:],fluencesNL[3:,isec]/YpredL[3:]-1.,marker='.',ls='')            
         #show()
 
     else:
@@ -188,13 +207,12 @@ def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,maxrelflu=None):
         
 
     Z = 100.*(fluencesNL/YL-1.)
-    
-    
+        
     efNL = np.sqrt(fluencesNL*nomG)/nomG
     
     W = 100.*(efNL/YL)
     
-    ixsel = np.where(exptimes>0.)
+    ixsel = np.where((exptimes>0.))
     
     
     # X = fluencesNL[ixsel].flatten().copy()
@@ -273,7 +291,7 @@ def wrap_fitNL_SingleFilter(fluences, variances, exptimes, times=np.array([]),
     nomG = 3.5 # e/ADU, used for noise estimates
     minfitFl = 2000. # ADU
     maxfitFl = FullDynRange-10000. # ADU
-    maxrelflu = 0.8 # used in determination of t_pivot
+    maxrelflu = 0.7 # used in determination of t_pivot
 
     NObsIDs, Nsecs = fluences.shape
     
@@ -436,7 +454,7 @@ def wrap_fitNL_TwoFilters(fluences, variances, exptimes, wave, times=np.array([]
 
 
 def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.array([]), 
-                            TrackFlux=True, debug=False):
+                            TrackFlux=True, debug=False, ObsIDs=None):
     """ """
     
     nomG = 3.5 # e/ADU, used for noise estimates
@@ -458,7 +476,7 @@ def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.arra
     nonzeroexptimes = exptimes[exptimes>0.]
     unonzeroexptimes = np.unique(nonzeroexptimes)
     
-    # the stability exposure time repeats the most
+    # hacky way to identify stability exposures: the stability exposure time repeats the most
     _ixstab = np.array([(exptimes==iexptime).sum() for iexptime in unonzeroexptimes]).argmax()
     exptimestab = unonzeroexptimes[_ixstab]
     
@@ -492,14 +510,14 @@ def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.arra
     else:
         trackstab = 0.
     
-    
-    X_A,Y_A,W_A,e_A,r_A = getXYW_NL02(fluences[ixboo_fluA | ixboo_bgd, :], 
-                                exptimes[ixboo_fluA | ixboo_bgd], nomG, 
+    ixfitA = ixboo_fluA | ixboo_bgd | ixboo_stab
+    X_A,Y_A,W_A,e_A,r_A = getXYW_NL02(fluences[ixfitA, :], 
+                                exptimes[ixfitA], nomG, 
                             pivotfrac=pivotfrac,
                             maxrelflu=maxrelflu)
-    
-    X_B,Y_B,W_B,e_B,r_B = getXYW_NL02(fluences[ixboo_fluB | ixboo_bgd, :], 
-                      exptimes[ixboo_fluB | ixboo_bgd], nomG, 
+    ixfitB = ixboo_fluB | ixboo_bgd
+    X_B,Y_B,W_B,e_B,r_B = getXYW_NL02(fluences[ixfitB, :], 
+                      exptimes[ixfitB], nomG, 
                     pivotfrac=pivotfrac,
                     maxrelflu=maxrelflu)
     
@@ -510,11 +528,19 @@ def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.arra
     exps = np.concatenate((e_A,e_B))
     regs = np.concatenate((r_A,r_B))
     
-    
-    
     fitresults = fitNL(X, Y, W, minfitFl, maxfitFl, display=debug)
     #fitresults['bgd'] = bgd
     fitresults['stability_pc'] = trackstab
+    
+    # TESTS
+    #import matplotlib.cm as cm
+    #uexps = np.unique(exps)
+    #colors = cm.rainbow(np.linspace(0,1,len(uexps)))
+    #for iexp,uexp in enumerate(uexps):
+    #    ixsel = np.where(uexp == exps)
+    #    plot(X[ixsel],Y[ixsel],'.',c=colors[iexp])
+    #show()
+    #stop()
     
     return fitresults
 

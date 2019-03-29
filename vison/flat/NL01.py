@@ -46,6 +46,8 @@ from vison.datamodel import inputs, core
 from vison.support import utils
 import NL01aux
 import nl as nllib
+
+from pylab import plot,show
 # END IMPORT
 
 isthere = os.path.exists
@@ -281,21 +283,29 @@ class NL01(FlatTask):
         ObsIDs = self.dd.mx['ObsID'][:].copy()
 
         indices = copy.deepcopy(self.dd.indices)
+        
+        
+        ishape = indices.shape
 
-        nObs, nCCD, nQuad = indices.shape
+        nObs = ishape[0]
+        nCCD = ishape[1]
+        nQuad = ishape[2]
 
         Quads = indices.get_vals('Quad')
         CCDs = indices.get_vals('CCD')
         
         tile_coos = dict()
         for Q in Quads:
-            tile_coos[Q] = self.ccdcalc.get_tile_coos(Q, wpx, hpx)
+            tile_coos[Q] = self.ccdcalc.get_tile_coos(Q, wpx, hpx,noedges=True)
+        
+        
         Nsectors = tile_coos[Quads[0]]['Nsamps']
         sectornames = np.arange(Nsectors)
-
+        
         Sindices = copy.deepcopy(self.dd.indices)
         if 'Sector' not in Sindices.names:
             Sindices.append(core.vIndex('Sector', vals=sectornames))
+            
 
         # Initializing new columns
 
@@ -329,9 +339,19 @@ class NL01(FlatTask):
                             Q, _tile_coos, 'median', extension=-1)
                         _vars = ccdobj.get_tiles_stats(
                             Q, _tile_coos, 'std', extension=-1)**2.
+                                
 
                         self.dd.mx['sec_med'][iObs, jCCD, kQ, :] = _meds.copy()
                         self.dd.mx['sec_var'][iObs, jCCD, kQ, :] = _vars.copy()
+                        
+                        # tests
+                        #if self.dd.mx['exptime'][iObs,jCCD]>5.:
+                        #if _meds.mean()>5E4:
+                        #    print('%i %s %s' % (ObsID,CCDk,Q))
+                        #    plot(_meds.flatten(),_vars.flatten(),'k.')
+                        #    show()
+                        #    stop()
+                        
 
     def produce_NLCs(self):
         """ 
