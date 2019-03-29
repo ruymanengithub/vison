@@ -89,7 +89,7 @@ class Container(Content, object):
                     if isinstance(item, Section):
                         lastlevel = lastCont.level
                         itemlevel = item.level
-                        if itemlevel > lastlevel:
+                        if itemlevel >= lastlevel:
                             self.Contents[-1].add_to_Contents(item)
                         else:
                             self.Contents.append(item)

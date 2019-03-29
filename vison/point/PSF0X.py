@@ -532,7 +532,7 @@ class PSF0X(PT.PointTask):
         
         if self.report is not None:
             self.report.add_Section(
-                keyword='xtalksex', Title='Cross-Talk SExtraction', level=1)
+                keyword='xtalksex', Title='Cross-Talk SExtraction', level=0)
         
         DDindices = copy.deepcopy(self.dd.indices)
         nObs = DDindices.get_len('ix')
@@ -577,7 +577,7 @@ class PSF0X(PT.PointTask):
         
         if self.report is not None:
             self.report.add_Section(
-                keyword='xtalkbuild', Title='Cross-Talk Matrix Building', level=1)
+                keyword='xtalkbuild', Title='Cross-Talk Matrix Building', level=0)
         
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
@@ -616,7 +616,7 @@ class PSF0X(PT.PointTask):
         
         if self.report is not None:
             self.report.add_Section(
-                keyword='xtalkmeta', Title='Cross-Talk Matrix Meta-Analysis', level=1)
+                keyword='xtalkmeta', Title='Cross-Talk Matrix Meta-Analysis', level=0)
         
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
@@ -656,14 +656,14 @@ class PSF0X(PT.PointTask):
             fullfignameratio = os.path.join(figspath,fignameratio)
             
             xt.PlotSummaryFig(crosstalks, suptitle='', figname=fullfignameratio, 
-                              scale='RATIO')
+                              scale='RATIO',showvalues=False)
             
             
             fignameadu = self.figdict['PSF0X_crosstalk_ADU'][1]['figname']
             fullfignameadu = os.path.join(figspath,fignameadu)
             
             xt.PlotSummaryFig(crosstalks, suptitle='', figname=fullfignameadu, 
-                              scale='ADU')
+                              scale='ADU',showvalues=True)
 
             if self.report is not None:
                 crosstalkfigs = ['PSF0X_crosstalk_RATIO',

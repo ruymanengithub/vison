@@ -368,7 +368,7 @@ def processXtalk_single(CCDref, Qref, OBSID, thresholdinj=0., colstart=1, colend
     return Xtalk, fignames
 
 
-def PlotSummaryFig(Xtalk, suptitle, figname='', scale='RATIO'):
+def PlotSummaryFig(Xtalk, suptitle, figname='', scale='RATIO', showvalues=False):
     """ """
 
     CCDs = [1, 2, 3]
@@ -419,7 +419,7 @@ def PlotSummaryFig(Xtalk, suptitle, figname='', scale='RATIO'):
                     alpha = max(1.-eratio, 0.1)
 
                     if ixtalk > 0:
-                        color = 'b'
+                        color = 'g'
                     elif ixtalk < 0:
                         color = 'r'
 
@@ -434,6 +434,10 @@ def PlotSummaryFig(Xtalk, suptitle, figname='', scale='RATIO'):
                             ms = max(ms, 5)
 
                             ax.scatter(x, y, color=color, s=[ms], alpha=alpha)
+                            
+                            if showvalues: ax.text(x,y,'%.1e' % ixtalk,fontsize=8,
+                                                   horizontalalignment='center',
+                                                   verticalalignment='center')
 
                         elif (iCr == iC) and (iQ == iQr):
                             # self-cross-talk
@@ -453,6 +457,10 @@ def PlotSummaryFig(Xtalk, suptitle, figname='', scale='RATIO'):
                             ms = max(ms, 5)
 
                             ax.scatter(x, y, color=color, s=[ms], alpha=alpha)
+                            
+                            if showvalues: ax.text(x,y,'%.2f' % ixtalk,fontsize=8,
+                                                   horizontalalignment='center',
+                                                   verticalalignment='center')
 
                         elif (iC == iCr) and (iQ == iQr):
                             # self-cross-talk
@@ -491,7 +499,7 @@ def PlotSummaryFig(Xtalk, suptitle, figname='', scale='RATIO'):
                    label='1E-5', color='k')
         ax.scatter(200, 200, s=5.*(5.E-6 / req * 2.**16),
                    label='5E-6', color='k')
-        ax.scatter(200, 200, s=5, label='<=2.3e-6', color='k')
+        ax.scatter(200, 200, s=5, label='$<=$2.3e-6', color='k')
 
     elif scale == 'ADU':
 
@@ -501,7 +509,7 @@ def PlotSummaryFig(Xtalk, suptitle, figname='', scale='RATIO'):
         ax.scatter(200, 200, s=5.*(5./req), label='5 ADU', color='k')
         ax.scatter(200, 200, s=5.*(1./req), label='1 ADU', color='k')
         ax.scatter(200, 200, s=5.*(0.5/req), label='0.5 ADU', color='k')
-        ax.scatter(200, 200, s=5.*(0.15/req), label='<=0.15 ADU', color='k')
+        ax.scatter(200, 200, s=5.*(0.15/req), label='$<=$0.15 ADU', color='k')
 
     ax.set_xlim([-1, 12])
     ax.set_ylim([-1, 12])

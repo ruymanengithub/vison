@@ -98,9 +98,12 @@ def get_check_fwhmy_dict(test):
                           ylabel='FWHMy [pix]'))
 
 def get_crosstalk_dict(test,figtype):
+    tcaption = '%s: Cross-Talk [%s]. Green means positive cross-talk, red means negative cross-talk'+\
+    ' (does not mean compliance/non-compliance). Pale colours mean less accurate results.'
+    ntest = st.replace(test,'_','\_')
     crosstalk_dict = dict(
     figname='%s_crosstalk_%s.png' % (test,figtype),
-    caption='%s: Cross-Talk [%s].' % (test,figtype),
+    caption= tcaption % (ntest,figtype),
     meta=dict(),
     data=None
     )
