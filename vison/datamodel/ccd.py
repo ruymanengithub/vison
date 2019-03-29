@@ -440,7 +440,7 @@ class CCD(object):
 
         return Qdata
 
-    def get_tile_coos(self, Quadrant, wpx, hpx):
+    def get_tile_coos(self, Quadrant, wpx, hpx,noedges=False):
         """ 
         Returns a dictionary with a tiling [coordinates of corners of tiles]
         of quadrant Q, with tiles of size wpx[width] x hpx[height].
@@ -473,9 +473,12 @@ class CCD(object):
                    _imgstartv, _imgendv]
 
         # sampling points (lower-left)
-
-        xsamp = np.arange(imglims[0], imglims[1]-wpx-1, step=wpx)
-        ysamp = np.arange(imglims[2], imglims[3]-hpx-1, step=hpx)
+        if noedges:
+            xsamp = np.arange(imglims[0]+wpx, imglims[1]-wpx*2-1, step=wpx)
+            ysamp = np.arange(imglims[2]+hpx, imglims[3]-hpx*2-1, step=hpx)
+        else:
+            xsamp = np.arange(imglims[0], imglims[1]-wpx-1, step=wpx)
+            ysamp = np.arange(imglims[2], imglims[3]-hpx-1, step=hpx)
 
         # lower-left pixels of tiles
         llpix = list(itertools.product(xsamp, ysamp))
