@@ -226,9 +226,7 @@ class CHINJ01(InjTask):
         """
         
         submodel = 'ReLU'
-        
-        stop()
-        
+                
         if self.report is not None:
             self.report.add_Section(
                 keyword='meta', Title='CHINJ01 Analysis ("Meta")', level=0)
