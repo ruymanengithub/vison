@@ -226,7 +226,8 @@ class CHINJ01(InjTask):
         """
         
         submodel = 'ReLU'
-                
+        
+        
         if self.report is not None:
             self.report.add_Section(
                 keyword='meta', Title='CHINJ01 Analysis ("Meta")', level=0)
@@ -282,7 +283,7 @@ class CHINJ01(InjTask):
         MCH01_dd['Q'] = np.zeros(NP,dtype='int32') 
         MCH01_dd['ID_DLY'] = np.zeros(NP,dtype='float32') + np.nan
         
-        mkeys = ['BGD','IG1_THRESH','IG1_NOTCH','S','N']
+        mkeys = ['BGD_ADU','IG1_THRESH','IG1_NOTCH','S','N_ADU']
                 
         for mkey in mkeys:
             MCH01_dd[mkey] = np.zeros(NP,dtype='float32') + np.nan
@@ -365,7 +366,7 @@ class CHINJ01(InjTask):
                         MFCH01_dd[fitkey][ix] = res[fitkey]
 
                     xbf = res['IG1_BF'].copy()
-                    ybf = res['NORMINJ_BF']
+                    ybf = res['NORMINJ_BF']*2.**16
                     
                     # Derived parameters
                     # mkeys = ['BGD','IG1_THRESH','IG1_NOTCH','S','N']
@@ -377,7 +378,7 @@ class CHINJ01(InjTask):
                     xN = res['XN']
                     N = res['N']
                     
-                    MCH01_dd['BGD'][ix] = bgd*2**16 # ADU
+                    MCH01_dd['BGD_ADU'][ix] = bgd*2**16 # ADU
                     MCH01_dd['IG1_THRESH'][ix] = xT
                     
                     if submodel == 'Softmax':
@@ -390,13 +391,13 @@ class CHINJ01(InjTask):
                         
                         MCH01_dd['S'][ix] = slopeADU
                                 
-                        MCH01_dd['N'][ix] = (N-bgd)*2**16.
+                        MCH01_dd['N_ADU'][ix] = (N-bgd)*2**16.
 
                     elif submodel == 'ReLU':
                         
                         MCH01_dd['IG1_NOTCH'][ix] = xN
                         MCH01_dd['S'][ix] = a*2**16
-                        MCH01_dd['N'][ix] = (N-bgd)*2**16
+                        MCH01_dd['N_ADU'][ix] = (N-bgd)*2**16
                     
                 else:
                     

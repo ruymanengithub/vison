@@ -177,6 +177,17 @@ def redf_Inj_vs_IG1_ReLU(IG1, xt, xN, a, N):
     return f_Inj_vs_IG1_ReLU(IG1, bgd, drop, xt, xN, a, N)
 
 
+def f_Inj_vs_IDL(IDL,b,k,a,xt):
+    """ """
+    M = b + a * special.expit(-k*(IDL-xt))
+    return M
+
+def redf_Inj_vs_IDL(IDL,a,xt):
+    """ """
+    bgd, drop = def_bgd_drop
+    return f_Inj_vs_IDL(IDL,bgd,drop,a,xt)
+
+
 def fit_Inj_vs_IG1(IG1,med_inj,submodel='ReLU',doPlot=False,debug=False):
     """ """
     
@@ -195,7 +206,7 @@ def fit_Inj_vs_IG1(IG1,med_inj,submodel='ReLU',doPlot=False,debug=False):
         p0 = [IG1half, IG1half+3., 1., 0.01]
         
         bounds = ([2.,2.,0.01,0.],
-                  [8.,10.,10.,0.2])
+                  [8.,10.,1.,0.2])
         
     elif Npoints > 6:
         reduced = False
@@ -205,7 +216,7 @@ def fit_Inj_vs_IG1(IG1,med_inj,submodel='ReLU',doPlot=False,debug=False):
         
         maxnmbgd = 200./2.**16
         bounds = ([-maxnmbgd,2.,2.,2.,0.01,0.],
-                  [maxnmbgd,50.,8.,10.,10.,0.2])
+                  [maxnmbgd,50.,8.,10.,1.,0.2])
         
     elif Npoints < 4:
         return dict(didfit=False)
@@ -253,6 +264,85 @@ def fit_Inj_vs_IG1(IG1,med_inj,submodel='ReLU',doPlot=False,debug=False):
     solution['didfit'] = didfit
             
     solution['IG1_BF'] = xIG1.copy()
+    solution['NORMINJ_BF'] = Inj_bf.copy()
+    
+    if debug:
+        stop()
+    
+    return solution
+
+
+
+def fit_Inj_vs_IDL(IDL,med_inj,doPlot=False,debug=False):
+    """ """
+    
+    Npoints = len(IDL)
+    IDLhalf = np.median(IDL)
+    
+    
+    if 4 <= Npoints <= 6:
+        reduced = True
+        fmodel = redf_Inj_vs_IDL
+        p0 = [0.1, IDLhalf]
+        
+        bounds = ([0.005,2.],
+                  [1.,8.])
+        
+    elif Npoints > 6:
+        reduced = False
+        fmodel = f_Inj_vs_IDL
+        p0 = def_bgd_drop+[0.1,IDLhalf]
+        
+        
+        maxnmbgd = 200./2.**16
+        bounds = ([-maxnmbgd,2.,0.005,2.],
+                  [maxnmbgd,50.,1.,8.])
+        
+    elif Npoints < 4:
+        return dict(didfit=False)
+    
+    nmed_inj = med_inj / 2.**16  # Handy scaling
+    
+    xIDL = np.linspace(IDL.min(),IDL.max(),1000)
+    
+        
+    try:         
+        popt, pcov = curve_fit(fmodel,IDL,nmed_inj,p0=p0,
+                               method='trf',
+                               bounds=bounds,
+                               absolute_sigma=False)
+        
+        Inj_bf = fmodel(xIDL, *popt)
+        
+        didfit = True
+        
+    except RuntimeError:
+        
+        didfit = False
+        
+        popt = np.zeros(len(p0)) + np.nan
+        Inj_bf = np.zeros_like(xIDL)
+    
+    
+    if doPlot:
+        
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.plot(IDL,nmed_inj,'bo')
+        ax.plot(xIDL,Inj_bf,'r--')
+        plt.show()
+    
+    if reduced:
+        arrsolution = def_bgd_drop+popt.tolist()
+    else:
+        arrsolution = copy.deepcopy(popt.tolist())
+    
+    solution = dict(zip(['BGD','K','A','XT'],
+                    arrsolution)
+                    )
+    solution['didfit'] = didfit
+            
+    solution['IDL_BF'] = xIDL.copy()
     solution['NORMINJ_BF'] = Inj_bf.copy()
     
     if debug:

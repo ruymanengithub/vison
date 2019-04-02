@@ -30,6 +30,8 @@ from vison.datamodel import inputs
 from InjTask import InjTask
 from vison.image import performance
 import CH02aux
+from vison.inject import lib as ilib
+from InjTask import InjTask, _get_CCDhalf
 # END IMPORT
 
 isthere = os.path.exists
@@ -219,6 +221,11 @@ class CHINJ02(InjTask):
         if self.report is not None:
             self.report.add_Section(
                 keyword='meta', Title='CHINJ02 Analysis ("Meta")', level=0)
+            
+            self.report.add_Text(['Model:',
+                                      '\\begin{equation}',
+                                    'I=b+\\frac{A}{1+e^{K(IG1-XT)}}',
+                                    '\end{equation}'])
         
         DDindices = copy.deepcopy(self.dd.indices)
         
@@ -240,13 +247,18 @@ class CHINJ02(InjTask):
         
         CCDhalves = ['top','bottom']
         
-        NP = nObs
+        NPraw = nObs
         
-        MCH02_dd = OrderedDict()
-        MCH02_dd['meta'] = OrderedDict()
+        NPfit = nCCD * nQuad
+        
+        MCH02raw_dd = OrderedDict()
+        MCH02raw_dd['meta'] = OrderedDict()
         
         _Quads_dict = dict(bottom = ['E','F'],
                            top = ['G','H'])
+        
+        MCH02fit_dd = OrderedDict()
+        MCH02fit_dd['meta'] = OrderedDict()
         
         
         # INJECTION CURVES
@@ -255,6 +267,7 @@ class CHINJ02(InjTask):
         inj_curves_cdp.header = CDP_header.copy()
         inj_curves_cdp.path = prodspath
         inj_curves_cdp.data = OrderedDict()
+        inj_curves_cdp.data['labelkeys'] = ['data','bestfit']
         
         
         xdummy = np.arange(10,dtype='float32')
@@ -265,22 +278,48 @@ class CHINJ02(InjTask):
             inj_curves_cdp.data[CCDk] = OrderedDict()
             
             for kQ, Q in enumerate(Quads):
-                inj_curves_cdp.data[CCDk][Q] = OrderedDict(x=xdummy.copy(),
-                                                      y=ydummy.copy())
+                
+                inj_curves_cdp.data[CCDk][Q] = OrderedDict(x=OrderedDict(),
+                                                      y=OrderedDict())
+                
+                for tag in ['data','bestfit']:
+                    inj_curves_cdp.data[CCDk][Q]['x'][tag] = xdummy.copy()
+                    inj_curves_cdp.data[CCDk][Q]['y'][tag] = ydummy.copy()
+                
                         
         
         for CCDhalf in CCDhalves:
-            MCH02_dd[CCDhalf] = OrderedDict()
-            MCH02_dd['meta'][CCDhalf] = OrderedDict()
-            #MCH02_dd[CCDhalf]['CCD'] = np.zeros(NP,dtype='int32')
-            #MCH02_dd[CCDhalf]['Q'] = np.zeros(NP,dtype='int32')
+            MCH02raw_dd[CCDhalf] = OrderedDict()
+            MCH02raw_dd['meta'][CCDhalf] = OrderedDict()
             
-            MCH02_dd[CCDhalf]['IDL'] = np.zeros(NP,dtype='float32') + np.nan
+            MCH02raw_dd[CCDhalf]['IDL'] = np.zeros(NPraw,dtype='float32') + np.nan
             
             for jCCD,CCDk in enumerate(CCDs):
                 for Q in _Quads_dict[CCDhalf]:                    
-                    MCH02_dd[CCDhalf]['INJ_%s%s' % (jCCD+1,Q)] = np.zeros(NP,dtype='float32') + np.nan
-            
+                    MCH02raw_dd[CCDhalf]['INJ_%s%s' % (jCCD+1,Q)] = np.zeros(NPraw,dtype='float32') + np.nan
+        
+        MFCH02_dd = OrderedDict()
+        MFCH02_dd['CCD'] = np.zeros(NPfit,dtype='int32')
+        MFCH02_dd['Q'] = np.zeros(NPfit,dtype='int32') 
+        MFCH02_dd['ID_DLY'] = np.zeros(NPfit,dtype='float32') + np.nan
+        
+        fitkeys = ['BGD','A','K','XT']
+                
+        for fitkey in fitkeys:
+            MFCH02_dd[fitkey] = np.zeros(NPfit,dtype='float32') + np.nan
+        
+        
+        MCH02_dd = OrderedDict()
+        MCH02_dd['CCD'] = np.zeros(NPfit,dtype='int32')
+        MCH02_dd['Q'] = np.zeros(NPfit,dtype='int32') 
+        MCH02_dd['ID_DLY'] = np.zeros(NPfit,dtype='float32') + np.nan
+        
+        mkeys = ['BGD_ADU','A_ADU','K','IDL_THRESH']
+        
+        for mkeyy in mkeys:
+            MFCH02_dd[fitkey] = np.zeros(NPfit,dtype='float32') + np.nan
+        
+        # First we fill in the table of "raw" results (injections vs. IDL)
         
         for CCDhalf in CCDhalves:
             
@@ -304,21 +343,96 @@ class CHINJ02(InjTask):
                      
                     med_inj = self.dd.mx['chinj_p50'][selix,jCCD,kQ].flatten().copy()
              
-                    MCH02_dd[CCDhalf]['IDL'] = IDL.copy()
-                    MCH02_dd[CCDhalf]['INJ_%s%s' % (jCCD+1, Q)] = med_inj.copy()
+                    MCH02raw_dd[CCDhalf]['IDL'] = IDL.copy()
+                    MCH02raw_dd[CCDhalf]['INJ_%s%s' % (jCCD+1, Q)] = med_inj.copy()
                     
                     
-                    inj_curves_cdp.data[CCDk][Q]['x'] = IDL.copy()
-                    inj_curves_cdp.data[CCDk][Q]['y'] = med_inj.copy()
+                    inj_curves_cdp.data[CCDk][Q]['x']['data'] = IDL.copy()
+                    inj_curves_cdp.data[CCDk][Q]['y']['data'] = med_inj.copy()
                     
                     
-                MCH02_dd['meta'][CCDhalf]['toi_ch'] = toi_ch
-                MCH02_dd['meta'][CCDhalf]['id_dly'] = id_dly_opt
-                MCH02_dd['meta'][CCDhalf]['IDH'] = self.dd.mx['IDH'][selix,jCCD].flatten()[0]
+                MCH02raw_dd['meta'][CCDhalf]['toi_ch'] = toi_ch
+                MCH02raw_dd['meta'][CCDhalf]['id_dly'] = id_dly_opt
+                MCH02raw_dd['meta'][CCDhalf]['IDH'] = self.dd.mx['IDH'][selix,jCCD].flatten()[0]
                 IG1key = 'IG1_1_%s' % CCDhalf[0].upper()
-                MCH02_dd['meta'][CCDhalf]['IG1'] = self.dd.mx[IG1key][selix,jCCD].flatten()[0]
+                MCH02raw_dd['meta'][CCDhalf]['IG1'] = self.dd.mx[IG1key][selix,jCCD].flatten()[0]
                 IG2key = 'IG2_%s' % CCDhalf[0].upper()
-                MCH02_dd['meta'][CCDhalf]['IG2'] = self.dd.mx[IG2key][selix,jCCD].flatten()[0]
+                MCH02raw_dd['meta'][CCDhalf]['IG2'] = self.dd.mx[IG2key][selix,jCCD].flatten()[0]
+        
+        
+        # Now we fill in the results from the fits
+        
+        
+        for jCCD, CCDk in enumerate(CCDs):
+            
+            for kQ, Q in enumerate(Quads):
+                
+                ix = jCCD * nQuad + kQ
+                
+                if Q in ['E','F']:
+                    id_dly_opt = toi_ch * 2.5
+                elif Q in['G','H']:
+                    id_dly_opt = toi_ch * 1.5
+                                
+                selix = np.where((self.dd.mx['chinj'][:,jCCD]==1) &
+                        (np.isclose(self.dd.mx['id_dly'][:,jCCD],id_dly_opt)))
+                
+                                
+                IDL = self.dd.mx['IDL'][selix,jCCD].flatten().copy()                
+                med_inj = self.dd.mx['chinj_p50'][selix,jCCD,kQ].flatten().copy()
+                
+                doPlot = True
+                debug = True
+                #if (jCCD==1) and (Q=='G'):
+                #    doPlot=True
+                #    debug=True
+                
+                
+                res = ilib.fit_Inj_vs_IDL(IDL,med_inj,doPlot=doPlot,
+                                        debug=debug)
+                didfit = res['didfit']
+                
+                
+                MFCH02_dd['CCD'][ix] = jCCD+1
+                MFCH02_dd['Q'][ix] = kQ+1
+                
+                MCH02_dd['CCD'][ix] = jCCD+1
+                MCH02_dd['Q'][ix] = kQ+1
+                
+                if didfit:
+                    
+                    # fit parameters
+                
+                    MFCH02_dd['ID_DLY'][ix] = id_dly_opt
+                    MCH02_dd['ID_DLY'][ix] = id_dly_opt
+                    
+                    for fitkey in fitkeys:                    
+                        MFCH02_dd[fitkey][ix] = res[fitkey]
+
+                    xbf = res['IDL_BF'].copy()
+                    ybf = res['NORMINJ_BF'] * 2.**16
+                    
+                    # Derived parameters
+                    # mkeys = ['BGD','A_ADU']
+                    
+                    bgd = res['BGD']
+                    a = res['A']
+                    xT = res['XT']
+                    
+                    MCH02_dd['BGD'][ix] = bgd*2**16 # ADU
+                    MCH02_dd['A_ADU'][ix] = a*2**16 # ADU
+                    MCH02_dd['IDL_THRESH'][ix] = xT
+                    
+
+                    
+                else:
+                    
+                    xbf = IDL.copy()
+                    ybf = np.zeros_like(xbf)
+                
+                inj_curves_cdp.data[CCDk][Q]['x']['bestfit'] = xbf.copy()
+                inj_curves_cdp.data[CCDk][Q]['y']['bestfit'] = ybf.copy()
+                    
         
         
          # PLOT
@@ -331,23 +445,23 @@ class CHINJ02(InjTask):
                                dobuilddata=False)
         
         
-        # REPORT RESULTS AS TABLE CDPs 
+        # REPORT (RAW) RESULTS AS TABLE CDPs 
         
         for CCDhalf in CCDhalves:
             
-            MCH02half_dddf = OrderedDict(ANALYSIS=pd.DataFrame.from_dict(MCH02_dd[CCDhalf]))
-            MCH02half_cdp = self.CDP_lib['META']
-            MCH02half_cdp.path = prodspath
-            MCH02half_cdp.rootname += '_%s' % CCDhalf
-            MCH02half_cdp.ingest_inputs(
-                    data=MCH02half_dddf.copy(),
-                    meta=MCH02_dd['meta'][CCDhalf].copy(),
+            MCH02rawhalf_dddf = OrderedDict(ANALYSIS=pd.DataFrame.from_dict(MCH02raw_dd[CCDhalf]))
+            MCH02rawhalf_cdp = self.CDP_lib['META']
+            MCH02rawhalf_cdp.path = prodspath
+            MCH02rawhalf_cdp.rootname += '_%s' % CCDhalf
+            MCH02rawhalf_cdp.ingest_inputs(
+                    data=MCH02rawhalf_dddf.copy(),
+                    meta=MCH02raw_dd['meta'][CCDhalf].copy(),
                     header=CDP_header.copy()
                     )
             
-            MCH02half_cdp.init_wb_and_fillAll(header_title='CHINJ02: META-ANALYSIS [%s]' % CCDhalf)
-            self.save_CDP(MCH02half_cdp)
-            self.pack_CDP_to_dd(MCH02half_cdp,'META_CDP_%s' % CCDhalf)
+            MCH02rawhalf_cdp.init_wb_and_fillAll(header_title='CHINJ02: META-ANALYSIS RAW [%s]' % CCDhalf)
+            self.save_CDP(MCH02rawhalf_cdp)
+            self.pack_CDP_to_dd(MCH02rawhalf_cdp,'META_RAW_%s' % CCDhalf)
             
             
             if self.report is not None:
@@ -362,17 +476,17 @@ class CHINJ02(InjTask):
                 
                 ext_formatters=[ff]*len(selcolumns)
                 
-                caption = 'CHINJ02: META-ANALYSIS TABLE. CCD-half = %s. '+\
+                caption = 'CHINJ02: META-ANALYSIS (RAW) TABLE. CCD-half = %s. '+\
                  'IDH = %.2f V,  IG1 = %.2f V, IG2 = %.2f V, toi\_chj = % us, '+\
                  'id\_dly=%.1f us.'
                 caption = caption % (CCDhalf, 
-                                     MCH02half_cdp.meta['IDH'], 
-                                     MCH02half_cdp.meta['IG1'], 
-                                     MCH02half_cdp.meta['IG2'], 
-                                     MCH02half_cdp.meta['toi_ch'], 
-                                     MCH02half_cdp.meta['id_dly'])
+                                     MCH02rawhalf_cdp.meta['IDH'], 
+                                     MCH02rawhalf_cdp.meta['IG1'], 
+                                     MCH02rawhalf_cdp.meta['IG2'], 
+                                     MCH02rawhalf_cdp.meta['toi_ch'], 
+                                     MCH02rawhalf_cdp.meta['id_dly'])
                 
-                Mtex = MCH02half_cdp.get_textable(sheet='ANALYSIS', 
+                Mtex = MCH02rawhalf_cdp.get_textable(sheet='ANALYSIS', 
                                               columns=selcolumns,
                                               caption=caption,
                                               fitwidth=True,

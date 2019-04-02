@@ -86,7 +86,8 @@ chinj02_meta_dict = dict(
               ylabel='Injection [ADU]',
               xlabel='IDL [V]',
               suptitle='CHINJ02: INJECTION PROFILE.',
-              corekwargs=dict(marker='.',linestyle='--'))
+              corekwargs=dict(data=dict(marker='.',linestyle=''),
+                              bestfit=dict(marker='',linestyle='--')))
     )
 
 def get_CH02figs():

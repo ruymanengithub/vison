@@ -81,7 +81,7 @@ chinj01_meta_dict = dict(
     figname='CHINJ01_Injection_profiles.png',
     caption='CHINJ01: Injection profiles.',
     meta=dict(doLegend=True,
-              ylabel='Injection/2**16',
+              ylabel='Injection [ADU]',
               xlabel='IG1 [V]',
               suptitle='CHINJ01: INJECTION PROFILE.',
               corekwargs=dict(data=dict(marker='.',linestyle=''),
