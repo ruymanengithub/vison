@@ -233,6 +233,7 @@ class CHINJ01(InjTask):
                                 'I=b+\\frac{1}{1+e^{-K(IG1-XT)}}\cdot(log_{10}(1+e^{-A(IG1-XN)})+N)',
                                 '\end{equation}'])
             
+        submodel = 'ReLU'
         
         DDindices = copy.deepcopy(self.dd.indices)
         
@@ -322,14 +323,16 @@ class CHINJ01(InjTask):
                 IG1 = self.dd.mx[IG1_key][selix,jCCD].flatten().copy()                
                 med_inj = self.dd.mx['chinj_p50'][selix,jCCD,kQ].flatten().copy()
                 
-                doPlot=False
-                debug=False
+                doPlot = False
+                debug = False
                 #if (jCCD==1) and (Q=='G'):
                 #    doPlot=True
                 #    debug=True
                 
+                
+                
                 res = ilib.fit_Inj_vs_IG1(IG1,med_inj,doPlot=doPlot,
-                                          debug=debug)
+                                        debug=debug,submodel=submodel)
                 didfit = res['didfit']
                 
                 inj_curves_cdp.data[CCDk][Q]['x']['data'] = IG1.copy()
@@ -367,17 +370,23 @@ class CHINJ01(InjTask):
                     MCH01_dd['BGD'][ix] = bgd*2**16 # ADU
                     MCH01_dd['IG1_THRESH'][ix] = xT
                     
+                    if submodel == 'Softmax':
                     
-                    p = [bgd,k,xT,xN,a,N]
-                    IG1char = ilib.invert_msoftplus(ilib.f_Inj_vs_IG1(xT,*p),xT,a)
-                    slopeADU = ilib.der_msoftplus(IG1char,xT,a) * 2.**16
-                                                 
-                    MCH01_dd['IG1_NOTCH'][ix] = ilib.invert_msoftplus(0.005,xT,a)
-                    
-                    MCH01_dd['S'][ix] = slopeADU
-                            
-                    MCH01_dd['N'][ix] = (N-bgd)*2**16.
-                                                 
+                        p = [bgd,k,xT,xN,a,N]
+                        IG1char = ilib.invert_msoftplus(ilib.f_Inj_vs_IG1(xT,*p),xT,a)
+                        slopeADU = ilib.der_msoftplus(IG1char,xT,a) * 2.**16
+                                                     
+                        MCH01_dd['IG1_NOTCH'][ix] = ilib.invert_msoftplus(0.005,xT,a)
+                        
+                        MCH01_dd['S'][ix] = slopeADU
+                                
+                        MCH01_dd['N'][ix] = (N-bgd)*2**16.
+
+                    elif submodel == 'ReLU':
+                        
+                        MCH01_dd['IG1_NOTCH'][ix] = xN
+                        MCH01_dd['S'][ix] = a*2**16
+                        MCH01_dd['N'][ix] = (N-bgd)*2**16
                     
                 else:
                     

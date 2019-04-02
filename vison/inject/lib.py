@@ -144,13 +144,6 @@ def msoftplus(IG1, a, xt):
     """ """
     return np.log10(1.+np.exp(-a*(IG1-xt)))
 
-
-
-def f_Inj_vs_IG1(IG1,b,k,xt,xN,a,N):
-    """ """
-    M = b + special.expit(k*(IG1-xt)) * (msoftplus(IG1,a,xN) + N)
-    return M
-
 def invert_msoftplus(f,xt,a):
     return xt - np.log(10.**f-1.)/a
 
@@ -160,32 +153,58 @@ def der_msoftplus(IG1,xt,a):
     return der
 
 
+def relu(IG1, a, xt):
+    relu = np.zeros_like(IG1)
+    relu[IG1<xt] = -a * (IG1[IG1<xt]-xt)
+    return relu
+
+def f_Inj_vs_IG1(IG1,b,k,xt,xN,a,N):
+    """ """
+    M = b + special.expit(k*(IG1-xt)) * (msoftplus(IG1,a,xN) + N)
+    return M
+
+def f_Inj_vs_IG1_ReLU(IG1, b, k, xt, xN, a, N):
+    M = b + special.expit(k*(IG1-xt)) * (relu(IG1, a, xN) + N)
+    return M
+
+
 def redf_Inj_vs_IG1(IG1, xt, xN, a, N):
     bgd, drop = def_bgd_drop
     return f_Inj_vs_IG1(IG1, bgd, drop, xt, xN, a, N)
 
-def fit_Inj_vs_IG1(IG1,med_inj,doPlot=False,debug=False):
+def redf_Inj_vs_IG1_ReLU(IG1, xt, xN, a, N):
+    bgd, drop = def_bgd_drop
+    return f_Inj_vs_IG1_ReLU(IG1, bgd, drop, xt, xN, a, N)
+
+
+def fit_Inj_vs_IG1(IG1,med_inj,submodel='ReLU',doPlot=False,debug=False):
     """ """
     
     Npoints = len(IG1)
     IG1half = np.median(IG1)
     
+    models_dict = dict(ReLU=f_Inj_vs_IG1_ReLU,
+                       Softmax=f_Inj_vs_IG1,
+                       reduced=dict(
+                               ReLU=redf_Inj_vs_IG1_ReLU,
+                               Softmax=redf_Inj_vs_IG1))
+    
     if 4 <= Npoints <= 6:
         reduced = True
-        fmodel = redf_Inj_vs_IG1
+        fmodel = models_dict['reduced'][submodel]
         p0 = [IG1half, IG1half+3., 1., 0.01]
         
-        bounds = ([2.,2.,0.1,0.],
+        bounds = ([2.,2.,0.01,0.],
                   [8.,10.,10.,0.2])
         
     elif Npoints > 6:
         reduced = False
-        fmodel = f_Inj_vs_IG1
+        fmodel = models_dict[submodel]
         p0 = def_bgd_drop+[IG1half, IG1half +3., 1., 0.01]
         
         
         maxnmbgd = 200./2.**16
-        bounds = ([-maxnmbgd,2.,2.,2.,0.1,0.],
+        bounds = ([-maxnmbgd,2.,2.,2.,0.01,0.],
                   [maxnmbgd,50.,8.,10.,10.,0.2])
         
     elif Npoints < 4:
