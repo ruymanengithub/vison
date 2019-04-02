@@ -72,14 +72,14 @@ class Eyegore(tk.Tk):
 
     def __init__(self, path, broadcast, intervals=None,
                  elvis=context.elvis, blind=False, dolite=False, altpath='',
-                 doWarnings=False, dolog=False, ds9target='*'):
+                 doWarnings=False, dolog=False, ds9target='*', tag=''):
         """ """
         tk.Tk.__init__(self)
 
         if intervals is None:
             intervals = dict(EYE=20000, 
          image=20000,
-         HK=10000, 
+         HK=5000, 
          HKplots=500, 
          HKflags=500, 
          EXP=20000)
@@ -95,10 +95,16 @@ class Eyegore(tk.Tk):
         self.dolite = dolite
         self.altpath = altpath
         self.ds9target = ds9target
+        self.tag = tag
 
         if dolog:
             datestamp = vistime.get_time_tag()
-            self.logf = 'Eyegore_%s.log' % datestamp
+            
+            if self.tag != '':
+                ntag = '_%s%' % tag
+            else:
+                ntag = ''
+            self.logf = 'Eyegore_%s%s.log' % (datestamp,ntag)
 
             if os.path.exists(self.logf):
                 os.system('rm %s' % self.logf)
@@ -121,12 +127,17 @@ class Eyegore(tk.Tk):
 
     def setup_MasterWG(self):
         """ """
+        
+        title = 'EYEGORE'
+        if self.tag != '':
+            title = '%s: %s' % (title,self.tag)
 
-        self.wm_title('EYEGORE')
+        self.wm_title(title)
+        
 
         fr = tk.Frame(self)
         fr.pack(fill='both', expand=True)
-
+        
         eyegoregif = os.path.join(vdata.__path__[0], 'Eyegore.gif')
         im = Image.open(eyegoregif)
         self.tkimg = ImageTk.PhotoImage(im)
@@ -156,6 +167,7 @@ class Eyegore(tk.Tk):
 
         fr.grid_columnconfigure(0, weight=1)
         fr.grid_rowconfigure(0, weight=1)
+        
 
     def run(self):
 
@@ -164,22 +176,25 @@ class Eyegore(tk.Tk):
         #dkeys = ['image','hk','hkflags','explog']
 
         if not (self.dolite or self.blind):
-            display1 = Ds['image'](self, self.path, elvis=self.elvis)
+            display1 = Ds['image'](self, self.path, elvis=self.elvis, tag=self.tag)
             ani1 = display1.start_updating(self.intervals['image'])
 
         display2 = Ds['hk'](
-            self, self.path, self.intervals['HK'], elvis=self.elvis)
-
-        ani2 = display2.start_updating_display(self.intervals['HKplots'])
+            self, self.path, self.intervals['HK'], elvis=self.elvis, 
+                                dolite=self.dolite or self.blind,
+                                tag=self.tag)
+        
+        if not (self.dolite or self.blind):
+            ani2 = display2.start_updating_display(self.intervals['HKplots'])
 
         display2b = Ds['hkflags'](
-            self, display2, self.intervals['HKflags'], elvis=self.elvis)
+            self, display2, self.intervals['HKflags'], elvis=self.elvis,tag=self.tag)
         
         if not self.dolite:
 
             display4 = Ds['explog'](
-                self, self.path, self.intervals['EXP'], elvis=self.elvis, ds9target=self.ds9target)
-    
+                self, self.path, self.intervals['EXP'], elvis=self.elvis, ds9target=self.ds9target,
+                                               tag=self.tag)
         self.update()
 
         self.mainloop()
@@ -209,9 +224,9 @@ def Eexecuter():
     parser.add_option("-E", "--elvis", dest="elvis",
                       default=context.elvis, help="ELVIS version.")
     parser.add_option("-b", "--blind", dest="blind", action="store_true", default=False,
-                      help="Run without image displays.")
+                      help="Run without image or HK displays.")
     parser.add_option("-L", "--lite", dest="lite", action="store_true", default=False,
-                      help="Run a lighter version of the program (no image displays and no ExpLog).")
+                      help="Run a lighter version of the program (no image/HK displays and no ExpLog).")
     parser.add_option("-r", "--rsync", dest="altpath", default='',
                       help="rsync to an alternative local path.")
     parser.add_option("-g", "--log", dest="dolog", action="store_true", default=False,
@@ -220,7 +235,8 @@ def Eexecuter():
                       help="Raise warnings (via email and/or phone) if critical HK is OOL.")
     parser.add_option("-d", "--DS9", dest="ds9target", default='*',
                       help="Specify DS9 target (pyds9)?")
-
+    parser.add_option("-t","--tag", dest="tag", default="",
+                      help="add a tag to the name of windows")
     (options, args) = parser.parse_args()
 
     if options.path is None:
@@ -239,6 +255,7 @@ def Eexecuter():
     dolog = bool(options.dolog)
     doWarnings = bool(options.doWarnings)
     ds9target = options.ds9target
+    tag = options.tag
     
 
     if broadcast != 'None':
@@ -262,7 +279,7 @@ def Eexecuter():
 
     app = Eyegore(path, broadcast=broadcast, elvis=elvis, blind=blind,
                   dolite=dolite,altpath=altpath, doWarnings=doWarnings, 
-                  dolog=dolog, ds9target=ds9target)
+                  dolog=dolog, ds9target=ds9target, tag=tag)
 
 
 if __name__ == '__main__':

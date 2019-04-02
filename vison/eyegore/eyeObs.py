@@ -72,7 +72,8 @@ def changeNumeric(data):
 class ExpLogDisplay(tk.Toplevel):
     """ """
 
-    def __init__(self, parent, path, interval, elvis=context.elvis, ds9target='DS9:*'):
+    def __init__(self, parent, path, interval, elvis=context.elvis, ds9target='DS9:*',
+                 tag=''):
 
         self.path = path
         self.elvis = elvis
@@ -84,6 +85,7 @@ class ExpLogDisplay(tk.Toplevel):
         self.nEL = 0  # Nr. lines in EXPLOG
         self.sEL = 0  # size of EXPLOG, bytes
         self.log = parent.log
+        self.tag = tag
 
         self.labels = {}
         self.elementHeader = []
@@ -104,8 +106,12 @@ class ExpLogDisplay(tk.Toplevel):
         self.info = """\
         Click on header to sort by that column. To change width of column drag boundary.
         """
+        
+        title = 'EXP-LOG'
+        if self.tag != '':
+            title = '%s: %s' % (title,self.tag)
 
-        self.wm_title('EXP-LOG')
+        self.wm_title(title)
 
         self.fr0 = tk.Frame(self)
         self.fr0.pack(fill='both', expand=False)

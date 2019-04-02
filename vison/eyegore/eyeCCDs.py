@@ -48,13 +48,20 @@ small_font = ("Verdana", 8)
 class ImageDisplay(tk.Toplevel):
     """ """
 
-    def __init__(self, parent, path, elvis=context.elvis):
+    def __init__(self, parent, path, elvis=context.elvis, tag=''):
         """ """
 
         tk.Toplevel.__init__(self, parent)
         self.parent = parent
         self.path = path
-        self.wm_title('Image Display')
+        self.tag = tag
+        
+        title = 'Image Display'
+        if self.tag != '':
+            title = '%s: %s' % (title,self.tag)
+
+        self.wm_title(title)
+                
         self.log = parent.log
 
         self.minsize(width=850, height=400)

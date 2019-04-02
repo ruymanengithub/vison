@@ -165,7 +165,7 @@ flagshelpList = ['HK Flags:  HK parameters monitoring',
 class HKFlags(tk.Toplevel):
     """ """
 
-    def __init__(self, root, parent, interval=5000, elvis=context.elvis):
+    def __init__(self, root, parent, interval=5000, elvis=context.elvis, tag=''):
         """ """
 
         tk.Toplevel.__init__(self, root)
@@ -179,8 +179,13 @@ class HKFlags(tk.Toplevel):
         self.interval = interval
         self.HKkeys = self.parent.HKkeys[1:]
         self.HK = self.parent.HK
+        self.tag = tag
+        
+        title = 'HK Flags'
+        if self.tag != '':
+            title = '%s: %s' % (title,self.tag)
 
-        self.wm_title('HK Flags')
+        self.wm_title(title)
 
         self.minsize(width=400, height=400)
 
@@ -362,11 +367,12 @@ class HKFlags(tk.Toplevel):
 class HKDisplay(tk.Toplevel):
     """ """
 
-    def __init__(self, root, path, interval, elvis=context.elvis):
+    def __init__(self, root, path, interval, elvis=context.elvis, dolite=False, tag=''):
 
         self.path = path
         self.interval = interval
         self.elvis = elvis
+        self.dolite = dolite
         self.date = '21-02-80'
         self.HKfiles = None
         self.HK = dict()
@@ -377,18 +383,33 @@ class HKDisplay(tk.Toplevel):
 
         #self.nHKlines = 1
         self.root = root
+        
+        self.tag = tag
 
         self.HKkeys = HKtools.allHK_keys[elvis]
         self.HKlims = HKtools.HKlims[elvis]['S']
 
         if self.path is not None:
             self.search_HKfiles()
-
+        
         tk.Toplevel.__init__(self, self.root)
-
+        if not self.dolite:
+            self.initialize_display()
+        else:
+            self.wm_title('empty HK window, ignore me')
+            
+        self.update()
+    
+    def initialize_display(self):
+        
         self.minsize(width=700, height=925)
+        
+        title = 'HK Display'
+        if self.tag != '':
+            title = '%s: %s' % (title,self.tag)
 
-        self.wm_title('HK Display')
+        self.wm_title(title)
+
 
         frame = tk.Frame(self)
         l1 = tk.Label(frame, text="Page: ", font=LARGE_FONT)
@@ -409,10 +430,9 @@ class HKDisplay(tk.Toplevel):
 
         pentry.bind('<Return>', update_page)
 
-        self.setup_plotgrid()
-        
-        self.update()
-
+        self.setup_plotgrid()        
+    
+    
     def setup_plotgrid(self):
 
         f = plt.figure(figsize=(4, 8), dpi=100)
