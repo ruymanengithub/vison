@@ -225,15 +225,27 @@ class CHINJ01(InjTask):
                 
         """
         
+        submodel = 'ReLU'
+        
+        stop()
+        
         if self.report is not None:
             self.report.add_Section(
                 keyword='meta', Title='CHINJ01 Analysis ("Meta")', level=0)
-            self.report.add_Text(['Model:',
-                                  '\\begin{equation}',
-                                'I=b+\\frac{1}{1+e^{-K(IG1-XT)}}\cdot(log_{10}(1+e^{-A(IG1-XN)})+N)',
-                                '\end{equation}'])
             
-        submodel = 'ReLU'
+            if submodel == 'Softmax':
+            
+                self.report.add_Text(['Model:',
+                                      '\\begin{equation}',
+                                    'I=b+\\frac{1}{1+e^{-K(IG1-XT)}}\cdot(log_{10}(1+e^{-A(IG1-XN)})+N)',
+                                    '\end{equation}'])
+            elif submodel == 'ReLU':
+                
+                self.report.add_Text(['Model:',
+                                      '\\begin{equation}',
+                                    'I=b+\\frac{1}{1+e^{-K(IG1-XT)}}\cdot(-A(IG1-XN)[if\ IG1<XN]+N)',
+                                    '\end{equation}'])
+        
         
         DDindices = copy.deepcopy(self.dd.indices)
         
@@ -487,4 +499,5 @@ class CHINJ01(InjTask):
                                           index=False)
             
             self.report.add_Text(Mtex)  
-
+    
+    
