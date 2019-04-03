@@ -347,7 +347,7 @@ class CHINJ01(InjTask):
                 didfit = res['didfit']
                 
                 inj_curves_cdp.data[CCDk][Q]['x']['data'] = IG1.copy()
-                inj_curves_cdp.data[CCDk][Q]['y']['data'] = med_inj.copy() / 2.**16
+                inj_curves_cdp.data[CCDk][Q]['y']['data'] = med_inj.copy() 
                 
                 MFCH01_dd['CCD'][ix] = jCCD+1
                 MFCH01_dd['Q'][ix] = kQ+1
@@ -480,14 +480,14 @@ class CHINJ01(InjTask):
             fq = lambda x: Quads[x-1]
             ff = lambda x: '%.3f' % x
             
-            selcolumns = ['CCD','Q','BGD','IG1_THRESH','IG1_NOTCH','S','N']
+            selcolumns = ['CCD','Q','BGD_ADU','IG1_THRESH','IG1_NOTCH','S','N_ADU']
             
             ext_formatters=[fccd,fq]+[ff,ff,ff,ff,ff,ff]
             
             caption = 'CHINJ01: Model - derived values. '+\
-            'BGD: background level in ADUs; IG1\_THRESH: injection threshold voltage; '+\
+            'BGD\_ADU: background level in ADUs; IG1\_THRESH: injection threshold voltage; '+\
             'IG1\_NOTCH: notch injection condition voltage; '+\
-            'S: slope in ADU/V; N: notch injection in ADU.'
+            'S: slope in ADU/V; N\_ADU: notch injection in ADU.'
             
             Mtex = MCH01_cdp.get_textable(sheet='ANALYSIS', 
                                           columns=selcolumns,
