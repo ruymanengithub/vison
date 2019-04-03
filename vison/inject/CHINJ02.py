@@ -316,8 +316,8 @@ class CHINJ02(InjTask):
         
         mkeys = ['BGD_ADU','A_ADU','K','IDL_THRESH']
         
-        for mkeyy in mkeys:
-            MFCH02_dd[fitkey] = np.zeros(NPfit,dtype='float32') + np.nan
+        for mkey in mkeys:
+            MCH02_dd[mkey] = np.zeros(NPfit,dtype='float32') + np.nan
         
         # First we fill in the table of "raw" results (injections vs. IDL)
         
@@ -419,7 +419,7 @@ class CHINJ02(InjTask):
                     a = res['A']
                     xT = res['XT']
                     
-                    MCH02_dd['BGD'][ix] = bgd*2**16 # ADU
+                    MCH02_dd['BGD_ADU'][ix] = bgd*2**16 # ADU
                     MCH02_dd['A_ADU'][ix] = a*2**16 # ADU
                     MCH02_dd['IDL_THRESH'][ix] = xT
                     
@@ -435,7 +435,7 @@ class CHINJ02(InjTask):
                     
         
         
-         # PLOT
+         # PLOT        
         
         fdict_meta_plot = self.figdict['CH02_meta'][1]
         fdict_meta_plot['data'] = inj_curves_cdp.data.copy()
@@ -450,7 +450,7 @@ class CHINJ02(InjTask):
         for CCDhalf in CCDhalves:
             
             MCH02rawhalf_dddf = OrderedDict(ANALYSIS=pd.DataFrame.from_dict(MCH02raw_dd[CCDhalf]))
-            MCH02rawhalf_cdp = self.CDP_lib['META']
+            MCH02rawhalf_cdp = self.CDP_lib['METARAW']
             MCH02rawhalf_cdp.path = prodspath
             MCH02rawhalf_cdp.rootname += '_%s' % CCDhalf
             MCH02rawhalf_cdp.ingest_inputs(
@@ -495,4 +495,86 @@ class CHINJ02(InjTask):
                                               index=False)
                 
                 self.report.add_Text(Mtex)  
+        
+        # REPORT FIT RESULTS AS TABLE CDPs
+        
+        MFCH02_dddf = OrderedDict(ANALYSIS=pd.DataFrame.from_dict(MFCH02_dd))
+        MFCH02_cdp = self.CDP_lib['METAFIT']
+        MFCH02_cdp.path = prodspath
+        MFCH02_cdp.ingest_inputs(
+                data=MFCH02_dddf.copy(),
+                meta=dict(),
+                header=CDP_header.copy()
+                )
+        
+        MFCH02_cdp.init_wb_and_fillAll(header_title='CHINJ02: MODEL FIT')
+        self.save_CDP(MFCH02_cdp)
+        self.pack_CDP_to_dd(MFCH02_cdp,'METAFIT_CDP')
+        
+        if self.report is not None:
+            
+            fccd = lambda x: CCDs[x-1]
+            fq = lambda x: Quads[x-1]
+            ff = lambda x: '%.3f' % x
+            
+            selcolumns = ['CCD','Q','BGD','K','A','XT']
+            
+            ext_formatters=[fccd,fq]+[ff,ff,ff,ff]
+            
+            caption = 'CHINJ02: Model parameters. Notice that the model fits injection values divided by $2^{16}$. '+\
+                'BGD [adim.], A [adim.], K [adim.], XT [V]'
+            
+            MFtex = MFCH02_cdp.get_textable(sheet='ANALYSIS', 
+                                          columns=selcolumns,
+                                          caption=caption,
+                                          fitwidth=True,
+                                          tiny=True,
+                                          formatters=ext_formatters,
+                                          index=False)
+            
+            self.report.add_Text(MFtex)  
+        
+        
+        # REPORT DERIVED FIT RESULTS AS TABLE CDP
+        
+        
+        MCH02_dddf = OrderedDict(ANALYSIS=pd.DataFrame.from_dict(MCH02_dd))
+        MCH02_cdp = self.CDP_lib['META']
+        MCH02_cdp.path = prodspath
+        MCH02_cdp.ingest_inputs(
+                data=MCH02_dddf.copy(),
+                meta=dict(),
+                header=CDP_header.copy()
+                )
+        
+        MCH02_cdp.init_wb_and_fillAll(header_title='CHINJ02: META-ANALYSIS')
+        self.save_CDP(MCH02_cdp)
+        self.pack_CDP_to_dd(MCH02_cdp,'META_CDP')
+        
+        if self.report is not None:
+            
+            fccd = lambda x: CCDs[x-1]
+            fq = lambda x: Quads[x-1]
+            ff = lambda x: '%.3f' % x
+            
+            selcolumns = ['CCD','Q','BGD_ADU','A_ADU','IDL_THRESH']
+            
+            ext_formatters=[fccd,fq]+[ff,ff,ff]
+            
+            caption = 'CHINJ02: Model - derived values. '+\
+            'BGD\_ADU: background level in ADUs; '+\
+            'A\_ADU: injection level in ADUs; '+\
+            'IDL\_THRESH: threshold voltage.'
+           
+            Mtex = MCH02_cdp.get_textable(sheet='ANALYSIS', 
+                                          columns=selcolumns,
+                                          caption=caption,
+                                          fitwidth=True,
+                                          tiny=True,
+                                          formatters=ext_formatters,
+                                          index=False)
+            
+            self.report.add_Text(Mtex)  
+        
+        
         
