@@ -381,8 +381,8 @@ class CHINJ02(InjTask):
                 IDL = self.dd.mx['IDL'][selix,jCCD].flatten().copy()                
                 med_inj = self.dd.mx['chinj_p50'][selix,jCCD,kQ].flatten().copy()
                 
-                doPlot = True
-                debug = True
+                doPlot = False
+                debug = False
                 #if (jCCD==1) and (Q=='G'):
                 #    doPlot=True
                 #    debug=True

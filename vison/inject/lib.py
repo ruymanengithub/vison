@@ -285,8 +285,8 @@ def fit_Inj_vs_IDL(IDL,med_inj,doPlot=False,debug=False):
         fmodel = redf_Inj_vs_IDL
         p0 = [0.1, IDLhalf]
         
-        bounds = ([0.005,2.],
-                  [1.,8.])
+        bounds = ([0.005,np.min(IDL)+0.25],
+                  [1.,np.max(IDL)+0.25])
         
     elif Npoints > 6:
         reduced = False
@@ -295,8 +295,8 @@ def fit_Inj_vs_IDL(IDL,med_inj,doPlot=False,debug=False):
         
         
         maxnmbgd = 200./2.**16
-        bounds = ([-maxnmbgd,2.,0.005,2.],
-                  [maxnmbgd,50.,1.,8.])
+        bounds = ([-maxnmbgd,2.,0.005,np.min(IDL)+0.25],
+                  [maxnmbgd,50.,10.,np.max(IDL)-0.25])
         
     elif Npoints < 4:
         return dict(didfit=False)
@@ -306,7 +306,7 @@ def fit_Inj_vs_IDL(IDL,med_inj,doPlot=False,debug=False):
     xIDL = np.linspace(IDL.min(),IDL.max(),1000)
     
         
-    try:         
+    try:
         popt, pcov = curve_fit(fmodel,IDL,nmed_inj,p0=p0,
                                method='trf',
                                bounds=bounds,
