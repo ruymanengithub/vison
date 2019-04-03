@@ -17,6 +17,7 @@ import os
 from collections import OrderedDict
 import pandas as pd
 from matplotlib import cm
+import copy
 
 from vison.plot import figclasses
 from vison.plot import trends
@@ -63,3 +64,12 @@ def get_P01figs():
     B0Xfigs['P01checks_avgflu'] = [trends.Fig_Basic_Checkstat, check_avgflu_dict]
     B0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return B0Xfigs
+
+
+def get_CDP_lib():
+    
+    CDP_lib = OrderedDict()
+    
+        
+    return CDP_lib
+    

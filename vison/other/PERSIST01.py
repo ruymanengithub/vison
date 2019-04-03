@@ -19,9 +19,12 @@ from collections import OrderedDict
 import os
 import numpy as np
 import copy
+import pandas as pd
+import string as st
 
+from vison.support import utils
 from vison.datamodel import core
-from vison.datamodel import ccd
+from vison.datamodel import ccd, cdp
 from vison.pipe.task import HKKeys
 from vison.support import context
 from vison.ogse import ogse as ogsemod
@@ -29,6 +32,7 @@ from vison.datamodel import scriptic as sc
 from vison.pipe.task import Task
 from vison.datamodel import inputs
 from vison.other import PERSIST01aux as P01aux
+from vison.support.files import cPickleRead
 # END IMPORT
 
 #HKKeys = []
@@ -76,16 +80,23 @@ class PERSIST01(Task):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
+        self.subtasks = [('check', self.check_data), 
+                         ('prep', self.prep_data),
+                         ('satur_masks', self.get_satur_masks),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
+        
         super(PERSIST01, self).__init__(inputs, log, drill, debug)
         self.name = 'PERSIST01'
         self.type = 'Simple'
         
         self.HKKeys = HKKeys
         self.figdict = P01aux.get_P01figs()
-        self.inputs['subpaths'] = dict(figs='figs')
+        self.CDP_lib = P01aux.get_CDP_lib()
+        
+        self.inputs['subpaths'] = dict(figs='figs',
+                                       products='products',
+                                       ccdpickles='ccdpickles')
         
 
     def set_inpdefaults(self, **kwargs):
@@ -433,6 +444,170 @@ class PERSIST01(Task):
                     )
         
 
+    def get_satur_masks(self):
+        """
+
+        Basic analysis of data.
+
+        **METACODE**
+
+        ::
+
+            f.e.CCD:
+                use SATURATED frame to generate pixel saturation MASKs
+
+
+
+        """
+        
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='masks', Title='Saturation Masks', level=0)
+        
+        dIndices = copy.deepcopy(self.dd.indices)
+        
+        CCDs = dIndices.get_vals('CCD')
+        Quads = dIndices.get_vals('Quad')
+        
+        nC = len(CCDs)
+        nQ = len(Quads)        
+        NP = nC * nQ
+        
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+        
+        datapath = self.inputs['datapath']
+        prodspath = self.inputs['subpaths']['products']
+        ccdpickspath = self.inputs['subpaths']['ccdpickles']
+        
+        # INITIALISATIONS
+        
+        # SATURATION AREA COUNTER TABLE
+        
+        SAT_TB = OrderedDict()
+        SAT_TB['CCD'] = np.zeros(NP,dtype='int32')
+        SAT_TB['Q'] = np.zeros(NP,dtype='int32')
+        SAT_TB['SAT_AREA'] = np.zeros(NP,dtype='int32')
+        
+        MSK_2PLOT = OrderedDict()
+        for CCDk in CCDs:
+            MSK_2PLOT[CCDk] = OrderedDict()
+            for Q in Quads:
+                MSK_2PLOT[CCDk][Q] = OrderedDict()
+        
+        # Find index of the saturated image
+        
+        ixSATUR = np.where(self.dd.mx['exptime'][:,0]==self.inputs['exptSATUR'])[0][0]
+        
+        #vstart = self.dd.mx['vstart'][ixSATUR,0]
+        vend = self.dd.mx['vend'][ixSATUR,0]
+                
+        iswithpover = vend==(ccd.NrowsCCD+ccd.voverscan)
+        
+        if not self.drill:
+            
+            self.dd.products['SatMasks'] = OrderedDict()
+            
+            for jCCD, CCDk in enumerate(CCDs):
+                
+                ccdpickname = '%s.pick' % self.dd.mx['ccdobj_name'][ixSATUR,jCCD]
+                ccdpickf = os.path.join(ccdpickspath,ccdpickname)                
+                ccdobj = cPickleRead(ccdpickf)
+                cosmeticsmask = ccdobj.extensions[-1].data.mask.copy()
+                
+                
+                fitsname = '%s.fits' % self.dd.mx['File_name'][ixSATUR,jCCD]
+                fitspath = os.path.join(datapath,fitsname)
+                ccdobjori = ccd.CCD(infits=fitspath,getallextensions=True,
+                                    withpover=iswithpover)
+                ccddata = ccdobjori.extensions[-1].data.copy()
+                satmask = (ccddata == 2**16-1) & (~cosmeticsmask).astype('int32')
+                
+                satmask_data = OrderedDict()
+                satmask_data['MASK'] = satmask.copy()
+                
+                satmask_meta = OrderedDict()
+                satmask_meta['CCD_SN'] = self.inputs['diffvalues']['sn_%s' % CCDk.lower()]
+                
+                # storing the saturation mask
+                
+                satcdp = cdp.CCD_CDP(ID=self.ID,
+                                     BLOCKID=self.BLOCKID,
+                                     CHAMBER=self.CHAMBER)
+                
+                satcdp.ingest_inputs(data=satmask_data,meta=satmask_meta,
+                                     header=CDP_header)
+                satcdp.path = prodspath
+                satcdp.rootname = 'PERSIST01_SATMASK_%s_%s' % \
+                        (self.inputs['BLOCKID'],CCDk)
+                
+                
+                for kQ, Q in enumerate(Quads):
+                    
+                    kk = jCCD * nQ + kQ
+                    
+                    # measuring area of saturations in each quadrant
+                    
+                    qdata = satcdp.ccdobj.get_quad(Q,canonical=False, extension=-1).copy()
+                    
+                    MSK_2PLOT[CCDk][Q]['img'] = qdata.T.copy()
+                    
+                    SAT_TB['CCD'][kk] = jCCD+1
+                    SAT_TB['Q'][kk] = kQ+1
+                    SAT_TB['SAT_AREA'][kk] = qdata.sum()
+                    
+                
+                self.save_CDP(satcdp)
+                self.pack_CDP_to_dd(satcdp,'SATMASK_%s' % CCDk)
+        
+        
+        # Displaying saturation masks
+        
+        
+        
+        # Reporting on saturations areas
+        
+        
+        SAT_TB_dddf = OrderedDict()
+        SAT_TB_dddf['SATAREA'] = pd.DataFrame.from_dict(SAT_TB)
+        
+        sat_tb_cdp = self.CDP_lib['SATAREA_TB']        
+        sat_tb_cdp.path = self.inputs['subpaths']['products']
+        sat_tb_cdp.ingest_inputs(
+                data = SAT_TB_dddf.copy(),
+                meta=dict(),
+                header=CDP_header.copy()
+                )
+
+        sat_tb_cdp.init_wb_and_fillAll(header_title='PERSIST01: SATURATIONS TABLE')
+        self.save_CDP(sat_tb_cdp)
+        self.pack_CDP_to_dd(sat_tb_cdp, 'SATAREA_TB_CDP')
+    
+            
+        if self.report is not None:
+            
+            fccd = lambda x: CCDs[x-1]
+            fq = lambda x: Quads[x-1]
+            fe = lambda x: '%.1e' % x
+            
+            formatters=[fccd,fq,fe]
+            
+            caption = ''
+            nicecaption = st.replace(caption,'_','\_')
+            Stex = sat_tb_cdp.get_textable(sheet='SATAREA', 
+                                               caption=nicecaption,
+                                               fitwidth=True,
+                                               tiny=True,
+                                               formatters=formatters)
+            self.report.add_Text(Stex)
+        
+        
+        
+        
+
     def basic_analysis(self):
         """
 
@@ -444,7 +619,6 @@ class PERSIST01(Task):
 
             f.e.CCD:
                 f.e.Q:
-                    use SATURATED frame to generate pixel saturation MASK
                     measure stats in pix satur MASK across OBSIDs 
                      (pre-satur, satur, post-satur)
 
@@ -452,6 +626,7 @@ class PERSIST01(Task):
         """
 
         raise NotImplementedError
+
 
     def meta_analysis(self):
         """
