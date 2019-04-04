@@ -21,6 +21,7 @@ import numpy as np
 import copy
 import pandas as pd
 import string as st
+from matplotlib.colors import Normalize
 
 from vison.support import utils
 from vison.datamodel import core
@@ -528,6 +529,7 @@ class PERSIST01(Task):
                 
                 satmask_data = OrderedDict()
                 satmask_data['MASK'] = satmask.copy()
+                satmask_data['labels'] = ['MASK']
                 
                 satmask_meta = OrderedDict()
                 satmask_meta['CCD_SN'] = self.inputs['diffvalues']['sn_%s' % CCDk.lower()]
@@ -566,6 +568,17 @@ class PERSIST01(Task):
         
         # Displaying saturation masks
         
+        self.figdict['P01satmasks'][1]['data'] = MSK_2PLOT.copy()
+        
+        normfunction = Normalize(vmin=0.,vmax=1.,clip=False)
+        
+        self.figdict['P01satmasks'][1]['meta']['corekwargs']['norm'] = normfunction
+                    
+        
+        if self.report is not None:
+           MFFfigkeys = ['P01satmasks']
+           self.addFigures_ST(figkeys=MFFfigkeys,
+                          dobuilddata=False)
         
         
         # Reporting on saturations areas
@@ -595,7 +608,7 @@ class PERSIST01(Task):
             
             formatters=[fccd,fq,fe]
             
-            caption = ''
+            caption = 'Saturation Areas in pixels for each CCD-Quadrant.'
             nicecaption = st.replace(caption,'_','\_')
             Stex = sat_tb_cdp.get_textable(sheet='SATAREA', 
                                                caption=nicecaption,

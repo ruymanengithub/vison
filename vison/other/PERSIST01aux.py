@@ -55,21 +55,35 @@ check_avgflu_dict = dict(stats=['chk_avgflu_img'],
                                 )
                       )
 
+P01satmask_dict = dict(
+        figname='PERSIST01_SATMASK_2Dimgshow.png',
+            caption='PERSIST01: Saturation Masks for the CCDs.',
+            meta=dict(doLegend=False,
+              doColorbar=True,
+              suptitle='PERSIST01: Saturation Masks',
+              corekwargs=dict(cmap=cm.gray,aspect='auto',norm=None,
+                                origin='lower left'))
+        )
+
 
 def get_P01figs():
-    B0Xfigs = dict()
-    B0Xfigs['P01checks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]
-    #B01figs['B01checks_stds'] = [plB01check,dict(stat='std')]
-    B0Xfigs['P01checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
-    B0Xfigs['P01checks_avgflu'] = [trends.Fig_Basic_Checkstat, check_avgflu_dict]
-    B0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
-    return B0Xfigs
+    P01figs = dict()
+    P01figs['P01checks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]
+    #P01figs['B01checks_stds'] = [plB01check,dict(stat='std')]
+    P01figs['P01checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
+    P01figs['P01checks_avgflu'] = [trends.Fig_Basic_Checkstat, check_avgflu_dict]
+    P01figs['P01satmasks'] = [figclasses.Fig_BeamImgShow, P01satmask_dict]
+    P01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
+    return P01figs
 
 
 def get_CDP_lib():
     
-    CDP_lib = OrderedDict()
+    satarea_cdp = cdp.Tables_CDP()
+    satarea_cdp.rootname = 'PERSIST01_SATAREAS'
     
-        
+    CDP_lib = OrderedDict()    
+    CDP_lib['SATAREA_TB'] = satarea_cdp
+    
     return CDP_lib
     
