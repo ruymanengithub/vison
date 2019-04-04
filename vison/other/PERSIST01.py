@@ -34,6 +34,7 @@ from vison.pipe.task import Task
 from vison.datamodel import inputs
 from vison.other import PERSIST01aux as P01aux
 from vison.support.files import cPickleRead
+from vison.support import vistime
 # END IMPORT
 
 #HKKeys = []
@@ -501,16 +502,17 @@ class PERSIST01(Task):
         
         # Find index of the saturated image
         
-        ixSATUR = np.where(self.dd.mx['exptime'][:,0]==self.inputs['exptSATUR'])[0][0]
+        ixSATUR = np.where(self.dd.mx['exptime'][:,0]==self.inputs['exptSATUR'])[0][0]        
         
         #vstart = self.dd.mx['vstart'][ixSATUR,0]
         vend = self.dd.mx['vend'][ixSATUR,0]
                 
         iswithpover = vend==(ccd.NrowsCCD+ccd.voverscan)
         
+        
         if not self.drill:
             
-            self.dd.products['SatMasks'] = OrderedDict()
+            self.dd.products['SATMASKS'] = OrderedDict()
             
             for jCCD, CCDk in enumerate(CCDs):
                 
@@ -563,7 +565,9 @@ class PERSIST01(Task):
                     
                 
                 self.save_CDP(satcdp)
-                self.pack_CDP_to_dd(satcdp,'SATMASK_%s' % CCDk)
+                self.dd.products['SATMASKS'][CCDk] = os.path.join(prodspath,
+                                '%s.pick' % satcdp.rootname)
+                #self.pack_CDP_to_dd(satcdp,'SATMASK_%s' % CCDk)
         
         
         # Displaying saturation masks
@@ -638,8 +642,111 @@ class PERSIST01(Task):
 
         """
 
-        raise NotImplementedError
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='basic', Title='Persistence Extraction', level=0)
+        
+        dIndices = copy.deepcopy(self.dd.indices)
+        
+        CCDs = dIndices.get_vals('CCD')
+        Quads = dIndices.get_vals('Quad')
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+        
+        prodspath = self.inputs['subpaths']['products']
+        ccdpickspath = self.inputs['subpaths']['ccdpickles']
+        
+        # Find the index of the saturated image
+        
+        
+        
+        ixSATUR = np.where(self.dd.mx['exptime'][:,0]==self.inputs['exptSATUR'])[0][0]
+        labelSATUR = self.dd.mx['label'][ixSATUR,0]
+        colSATUR = int(labelSATUR[-3:])
+        
+        dtobjs = self.dd.mx['time']
+        
+        deltasec = np.array([item.seconds for item in np.abs(dtobjs[:,0]-dtobjs[ixSATUR,0])])
+        deltasec[:ixSATUR] = -1.*deltasec[:ixSATUR]
+                
+        
+        ixREF = np.where(self.dd.mx['label'][:,0] == 'col%03i' % (colSATUR-1,))
+        ixLAT = np.where(self.dd.mx['label'][:,0] == 'col%03i' % (colSATUR+1,))
+        
+        #NREF = np.size(ixREF[0])
+        #NLAT = np.size(ixLAT[0]) 
+        
+        
+        vfullinpath_adder = utils.get_path_decorator(ccdpickspath)
+        
+        # Initializations of output data-products
+                       
+        persist_TB = OrderedDict()
+        
+        for tag in ['REF','LAT']:
+            persist_TB[tag] = OrderedDict()
+            for CCDk in CCDs:
+                persist_TB[tag][CCDk] = OrderedDict()
+                for Q in Quads:
+                    persist_TB[tag][CCDk][Q] = OrderedDict()
+        
+        statkeys = ['mean','p5','p50','p95','std']
+        
+        if not self.drill:
+            
+            ObsID_REF = self.dd.mx['ObsID'][ixREF].copy()
+            ObsID_LAT = self.dd.mx['ObsID'][ixLAT].copy()
+            
+            for jCCD, CCDk in enumerate(CCDs):
+                
+                satmaskpick = self.dd.products['SATMASKS'][CCDk]
+                
+                satmaskobj = copy.deepcopy(cPickleRead(satmaskpick)['ccdobj'])
+                
+                
+                pick_REF_list = self.dd.mx['ccdobj_name'][ixREF,jCCD].copy()                
+                pick_REF_list = np.squeeze(vfullinpath_adder(pick_REF_list,'pick'))
+                
+                pick_LAT_list = self.dd.mx['ccdobj_name'][ixLAT,jCCD].copy()                
+                pick_LAT_list = np.squeeze(vfullinpath_adder(pick_LAT_list,'pick'))
+                
+                stats_REF = P01aux._get_stats(pick_REF_list,satmaskobj)
+                
+                stats_LAT = P01aux._get_stats(pick_LAT_list,satmaskobj)
+                
+                for Q in Quads:
+                
+                    persist_TB['REF'][CCDk][Q]['ObsID'] = ObsID_REF.copy()
+                    persist_TB['REF'][CCDk][Q]['deltasec'] = deltasec[ixREF].copy()
+                
+                    for statkey in statkeys:
+                        persist_TB['REF'][CCDk][Q][statkey] = stats_REF[Q][statkey].copy()
+                    
+                    persist_TB['LAT'][CCDk][Q]['ObsID'] = ObsID_LAT.copy()
+                    persist_TB['LAT'][CCDk][Q]['deltasec'] = deltasec[ixLAT].copy()
+                
+                    for statkey in statkeys:
+                        persist_TB['LAT'][CCDk][Q][statkey] = stats_LAT[Q][statkey].copy()
+                
 
+            persist_cdp = self.CDP_lib['PERSIST_STATS']
+            persist_cdp.path = prodspath
+            
+            persist_cdp.header = CDP_header.copy()
+            persist_cdp.meta = dict()
+            persist_cdp.data = persist_TB.copy()
+            
+            self.save_CDP(persist_cdp)
+            self.pack_CDP_to_dd(persist_cdp, 'PERSIST_STATS')
+                        
+            if self.report is not None:
+                    self.report.add_Text('Persistence statistics extracted.')
+            
+                
+        
 
     def meta_analysis(self):
         """
@@ -660,4 +767,28 @@ class PERSIST01(Task):
 
 
         """
-        raise NotImplementedError
+        
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='meta', Title='Persistence Meta-Analysis', level=0)
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        
+        persist_stats_pick = self.dd.products['PERSIST_STATS']
+        persist_stats = cPickleRead(persist_stats_pick)['data'].copy()
+        
+        figspath = self.inputs['subpaths']['figs']
+        
+        figname = self.figdict['P01whiskers'][1]['figname']
+        fullfigname = os.path.join(figspath,figname)
+        
+        P01aux.PlotWhiskersFig(persist_stats,
+                               suptitle='',
+                               figname=fullfigname)
+        
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['P01whiskers'],
+                               dobuilddata=False)
+        

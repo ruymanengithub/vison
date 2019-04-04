@@ -22,6 +22,7 @@ import copy
 from vison.plot import figclasses
 from vison.plot import trends
 from vison.datamodel import cdp
+from vison.support.files import cPickleRead
 
 
 # END IMPORT
@@ -66,6 +67,13 @@ P01satmask_dict = dict(
         )
 
 
+P01whiskers_dict = dict(
+        figname='PERSIST01_whiskersplot.png',
+        caption= '',
+        meta=dict(),
+        data=None
+        )
+
 def get_P01figs():
     P01figs = dict()
     P01figs['P01checks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]
@@ -73,6 +81,7 @@ def get_P01figs():
     P01figs['P01checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
     P01figs['P01checks_avgflu'] = [trends.Fig_Basic_Checkstat, check_avgflu_dict]
     P01figs['P01satmasks'] = [figclasses.Fig_BeamImgShow, P01satmask_dict]
+    P01figs['P01whiskers'] = [figclasses.Fig_Husk, P01whiskers_dict]
     P01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return P01figs
 
@@ -85,5 +94,67 @@ def get_CDP_lib():
     CDP_lib = OrderedDict()    
     CDP_lib['SATAREA_TB'] = satarea_cdp
     
+    CDP_lib['PERSIST_STATS'] = cdp.CDP()
+    CDP_lib['PERSIST_STATS'].rootname = 'PERSIST01_STATS'
+    
     return CDP_lib
+
+def _get_stats(pick_list,satmaskobj):
+    """ """
+        
+    
+    Quads = ['E','F','G','H']
+    stats = OrderedDict()
+    Nobs = len(pick_list)
+    
+    statkeys = ['mean','p5','p50','p95','std']
+    
+    qmasks = OrderedDict()
+    for Q in Quads:
+        stats[Q] = OrderedDict()
+        
+        qmasks[Q] = satmaskobj.get_quad(Q,canonical=False,extension=-1).copy()
+        
+        for statkey in statkeys:
+            stats[Q][statkey] = np.zeros(Nobs,dtype='float32') + np.nan
+            
+
+    for i in range(Nobs):
+            
+        ccdpick = pick_list[i]
+        ccdobj = cPickleRead(ccdpick)
+        
+        bgdobj = copy.deepcopy(ccdobj)
+        
+        bgdobj.get_mask(satmaskobj.extensions[-1].data)
+        
+        
+        for Q in Quads:
+            
+            qimg = ccdobj.get_quad(Q,canonical=False,extension=-1)
+            
+            bgd_stats = bgdobj.get_stats(Q,sector='img',statkeys=['median','mean'],
+                                   ignore_pover=True,extension=-1)
+            bgd=bgd_stats[1]
+                        
+            qimg -= bgd
+            
+            data = qimg.data[np.where(qmasks[Q]==1)].copy()
+            
+            stats[Q]['mean'][i] = np.mean(data)
+            stats[Q]['p5'][i] = np.percentile(data,0.05)
+            stats[Q]['p50'][i] = np.percentile(data,0.5)
+            stats[Q]['p95'][i] = np.percentile(data,0.95)
+            stats[Q]['std'][i] = np.std(data)
+        
+    return stats
+        
+        
+    
+def PlotWhiskersFig(persist_stats,suptitle='',figname=''):
+    """ """
+    
+    raise NotImplementedError
+    
+    
     
