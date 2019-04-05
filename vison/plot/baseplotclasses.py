@@ -176,7 +176,8 @@ class BeamPlot(BasicPlot):
                     ccdtitles=dict(CCD1='CCD1', CCD2='CCD2', CCD3='CCD3'),
                     doLegend=False,
                     doColorbar=False,
-                    doNiceXDate=False)
+                    doNiceXDate=False,
+                    doRotateXLabels=False)
         meta.update(kwargs)
         
         self.figsize = (15, 6)
@@ -296,6 +297,12 @@ class BeamPlot(BasicPlot):
                 for Q in ['F', 'G']:
                     plt.setp(self.axs['CCD%i' % CCD]
                              [Q].get_yticklabels(), visible=False)
+        if self.meta['doRotateXLabels']:
+            for CCD in self.CCDs:
+                for Q in self.Quads:
+                    for tick in self.axs['CCD%i' % CCD][Q].get_xticklabels():
+                        tick.set_rotation(45)
+            
 
         if self.meta['doLegend']:
             plt.figlegend(self.handles, self.labels, loc='center right')
@@ -306,9 +313,13 @@ class BeamPlot(BasicPlot):
             # plt.locator_params(nticks=4,axis='x',prune='both')
 
         plt.locator_params(axis='y', nbins=5, prune='both')
+        
         #plt.locator_params(axis='y',prune='both')
         if not self.meta['doNiceXDate']:
-            plt.locator_params(axis='x', nbins=3, prune='both')
+            try: plt.locator_params(axis='x', nbins=4, prune='both')
+            except: pass
+            
+        
 
         plt.subplots_adjust(hspace=0.0)
         plt.subplots_adjust(wspace=0.0)

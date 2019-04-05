@@ -19,9 +19,13 @@ from collections import OrderedDict
 import os
 import numpy as np
 import copy
+import pandas as pd
+import string as st
+from matplotlib.colors import Normalize
 
+from vison.support import utils
 from vison.datamodel import core
-from vison.datamodel import ccd
+from vison.datamodel import ccd, cdp
 from vison.pipe.task import HKKeys
 from vison.support import context
 from vison.ogse import ogse as ogsemod
@@ -29,6 +33,8 @@ from vison.datamodel import scriptic as sc
 from vison.pipe.task import Task
 from vison.datamodel import inputs
 from vison.other import PERSIST01aux as P01aux
+from vison.support.files import cPickleRead
+from vison.support import vistime
 # END IMPORT
 
 #HKKeys = []
@@ -76,16 +82,23 @@ class PERSIST01(Task):
 
     def __init__(self, inputs, log=None, drill=False, debug=False):
         """ """
-        self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
+        self.subtasks = [('check', self.check_data), 
+                         ('prep', self.prep_data),
+                         ('satur_masks', self.get_satur_masks),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
+        
         super(PERSIST01, self).__init__(inputs, log, drill, debug)
         self.name = 'PERSIST01'
         self.type = 'Simple'
         
         self.HKKeys = HKKeys
         self.figdict = P01aux.get_P01figs()
-        self.inputs['subpaths'] = dict(figs='figs')
+        self.CDP_lib = P01aux.get_CDP_lib()
+        
+        self.inputs['subpaths'] = dict(figs='figs',
+                                       products='products',
+                                       ccdpickles='ccdpickles')
         
 
     def set_inpdefaults(self, **kwargs):
@@ -433,6 +446,185 @@ class PERSIST01(Task):
                     )
         
 
+    def get_satur_masks(self):
+        """
+
+        Basic analysis of data.
+
+        **METACODE**
+
+        ::
+
+            f.e.CCD:
+                use SATURATED frame to generate pixel saturation MASKs
+
+
+
+        """
+        
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='masks', Title='Saturation Masks', level=0)
+        
+        dIndices = copy.deepcopy(self.dd.indices)
+        
+        CCDs = dIndices.get_vals('CCD')
+        Quads = dIndices.get_vals('Quad')
+        
+        nC = len(CCDs)
+        nQ = len(Quads)        
+        NP = nC * nQ
+        
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+        
+        datapath = self.inputs['datapath']
+        prodspath = self.inputs['subpaths']['products']
+        ccdpickspath = self.inputs['subpaths']['ccdpickles']
+        
+        # INITIALISATIONS
+        
+        # SATURATION AREA COUNTER TABLE
+        
+        SAT_TB = OrderedDict()
+        SAT_TB['CCD'] = np.zeros(NP,dtype='int32')
+        SAT_TB['Q'] = np.zeros(NP,dtype='int32')
+        SAT_TB['SAT_AREA'] = np.zeros(NP,dtype='int32')
+        
+        MSK_2PLOT = OrderedDict()
+        for CCDk in CCDs:
+            MSK_2PLOT[CCDk] = OrderedDict()
+            for Q in Quads:
+                MSK_2PLOT[CCDk][Q] = OrderedDict()
+        
+        # Find index of the saturated image
+        
+        ixSATUR = np.where(self.dd.mx['exptime'][:,0]==self.inputs['exptSATUR'])[0][0]        
+        
+        #vstart = self.dd.mx['vstart'][ixSATUR,0]
+        vend = self.dd.mx['vend'][ixSATUR,0]
+                
+        iswithpover = vend==(ccd.NrowsCCD+ccd.voverscan)
+        
+        
+        if not self.drill:
+            
+            self.dd.products['SATMASKS'] = OrderedDict()
+            
+            for jCCD, CCDk in enumerate(CCDs):
+                
+                ccdpickname = '%s.pick' % self.dd.mx['ccdobj_name'][ixSATUR,jCCD]
+                ccdpickf = os.path.join(ccdpickspath,ccdpickname)                
+                ccdobj = cPickleRead(ccdpickf)
+                cosmeticsmask = ccdobj.extensions[-1].data.mask.copy()
+                
+                
+                fitsname = '%s.fits' % self.dd.mx['File_name'][ixSATUR,jCCD]
+                fitspath = os.path.join(datapath,fitsname)
+                ccdobjori = ccd.CCD(infits=fitspath,getallextensions=True,
+                                    withpover=iswithpover)
+                ccddata = ccdobjori.extensions[-1].data.copy()
+                satmask = (ccddata == 2**16-1) & (~cosmeticsmask).astype('int32')
+                
+                satmask_data = OrderedDict()
+                satmask_data['MASK'] = satmask.copy()
+                satmask_data['labels'] = ['MASK']
+                
+                satmask_meta = OrderedDict()
+                satmask_meta['CCD_SN'] = self.inputs['diffvalues']['sn_%s' % CCDk.lower()]
+                
+                # storing the saturation mask
+                
+                satcdp = cdp.CCD_CDP(ID=self.ID,
+                                     BLOCKID=self.BLOCKID,
+                                     CHAMBER=self.CHAMBER)
+                
+                satcdp.ingest_inputs(data=satmask_data,meta=satmask_meta,
+                                     header=CDP_header)
+                satcdp.path = prodspath
+                satcdp.rootname = 'PERSIST01_SATMASK_%s_%s' % \
+                        (self.inputs['BLOCKID'],CCDk)
+                
+                
+                for kQ, Q in enumerate(Quads):
+                    
+                    kk = jCCD * nQ + kQ
+                    
+                    # measuring area of saturations in each quadrant
+                    
+                    qdata = satcdp.ccdobj.get_quad(Q,canonical=False, extension=-1).copy()
+                    
+                    MSK_2PLOT[CCDk][Q]['img'] = qdata.T.copy()
+                    
+                    SAT_TB['CCD'][kk] = jCCD+1
+                    SAT_TB['Q'][kk] = kQ+1
+                    SAT_TB['SAT_AREA'][kk] = qdata.sum()
+                    
+                
+                self.save_CDP(satcdp)
+                self.dd.products['SATMASKS'][CCDk] = os.path.join(prodspath,
+                                '%s.pick' % satcdp.rootname)
+                #self.pack_CDP_to_dd(satcdp,'SATMASK_%s' % CCDk)
+        
+        
+        # Displaying saturation masks
+        
+        self.figdict['P01satmasks'][1]['data'] = MSK_2PLOT.copy()
+        
+        normfunction = Normalize(vmin=0.,vmax=1.,clip=False)
+        
+        self.figdict['P01satmasks'][1]['meta']['corekwargs']['norm'] = normfunction
+                    
+        
+        if self.report is not None:
+           MFFfigkeys = ['P01satmasks']
+           self.addFigures_ST(figkeys=MFFfigkeys,
+                          dobuilddata=False)
+        
+        
+        # Reporting on saturations areas
+        
+        
+        SAT_TB_dddf = OrderedDict()
+        SAT_TB_dddf['SATAREA'] = pd.DataFrame.from_dict(SAT_TB)
+        
+        sat_tb_cdp = self.CDP_lib['SATAREA_TB']        
+        sat_tb_cdp.path = self.inputs['subpaths']['products']
+        sat_tb_cdp.ingest_inputs(
+                data = SAT_TB_dddf.copy(),
+                meta=dict(),
+                header=CDP_header.copy()
+                )
+
+        sat_tb_cdp.init_wb_and_fillAll(header_title='PERSIST01: SATURATIONS TABLE')
+        self.save_CDP(sat_tb_cdp)
+        self.pack_CDP_to_dd(sat_tb_cdp, 'SATAREA_TB_CDP')
+    
+            
+        if self.report is not None:
+            
+            fccd = lambda x: CCDs[x-1]
+            fq = lambda x: Quads[x-1]
+            fe = lambda x: '%.1e' % x
+            
+            formatters=[fccd,fq,fe]
+            
+            caption = 'Saturation Areas in pixels for each CCD-Quadrant.'
+            nicecaption = st.replace(caption,'_','\_')
+            Stex = sat_tb_cdp.get_textable(sheet='SATAREA', 
+                                               caption=nicecaption,
+                                               fitwidth=True,
+                                               tiny=True,
+                                               formatters=formatters)
+            self.report.add_Text(Stex)
+        
+        
+        
+        
+
     def basic_analysis(self):
         """
 
@@ -444,14 +636,118 @@ class PERSIST01(Task):
 
             f.e.CCD:
                 f.e.Q:
-                    use SATURATED frame to generate pixel saturation MASK
                     measure stats in pix satur MASK across OBSIDs 
                      (pre-satur, satur, post-satur)
 
 
         """
 
-        raise NotImplementedError
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='basic', Title='Persistence Extraction', level=0)
+        
+        dIndices = copy.deepcopy(self.dd.indices)
+        
+        CCDs = dIndices.get_vals('CCD')
+        Quads = dIndices.get_vals('Quad')
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+        
+        prodspath = self.inputs['subpaths']['products']
+        ccdpickspath = self.inputs['subpaths']['ccdpickles']
+        
+        # Find the index of the saturated image
+        
+        
+        ixSATUR = np.where(self.dd.mx['exptime'][:,0]==self.inputs['exptSATUR'])[0][0]
+        labelSATUR = self.dd.mx['label'][ixSATUR,0]
+        colSATUR = int(labelSATUR[-3:])
+        
+        # T-axis
+        
+        dtobjs = self.dd.mx['time']        
+        deltasec = np.array([item.seconds for item in np.abs(dtobjs[:,0]-dtobjs[ixSATUR,0])])
+        deltasec[:ixSATUR] = -1.*deltasec[:ixSATUR]
+        
+        # indices of reference and latent images
+        
+        ixREF = np.where(self.dd.mx['label'][:,0] == 'col%03i' % (colSATUR-1,))
+        ixLAT = np.where(self.dd.mx['label'][:,0] == 'col%03i' % (colSATUR+1,))
+        
+        #NREF = np.size(ixREF[0])
+        #NLAT = np.size(ixLAT[0]) 
+        
+        
+        vfullinpath_adder = utils.get_path_decorator(ccdpickspath)
+        
+        # Initializations of output data-products
+        
+        persist_TB = OrderedDict()
+                
+        for CCDk in CCDs:
+            persist_TB[CCDk] = OrderedDict()
+            for Q in Quads:
+                persist_TB[CCDk][Q] = OrderedDict()
+                for tag in ['REF','LAT']:
+                    persist_TB[CCDk][Q][tag] = OrderedDict()
+        
+        statkeys = ['mean','p25','p50','p75','std','N']
+        
+        if not self.drill:
+            
+            ObsID_REF = self.dd.mx['ObsID'][ixREF].copy()
+            ObsID_LAT = self.dd.mx['ObsID'][ixLAT].copy()
+            
+            for jCCD, CCDk in enumerate(CCDs):
+                
+                satmaskpick = self.dd.products['SATMASKS'][CCDk]
+                
+                satmaskobj = copy.deepcopy(cPickleRead(satmaskpick)['ccdobj'])
+                
+                
+                pick_REF_list = self.dd.mx['ccdobj_name'][ixREF,jCCD].copy()                
+                pick_REF_list = np.squeeze(vfullinpath_adder(pick_REF_list,'pick'))
+                
+                pick_LAT_list = self.dd.mx['ccdobj_name'][ixLAT,jCCD].copy()                
+                pick_LAT_list = np.squeeze(vfullinpath_adder(pick_LAT_list,'pick'))
+                
+                stats_REF = P01aux._get_stats(pick_REF_list,satmaskobj)
+                
+                stats_LAT = P01aux._get_stats(pick_LAT_list,satmaskobj)
+                
+                for Q in Quads:
+                
+                    persist_TB[CCDk][Q]['REF']['ObsID'] = ObsID_REF.copy()
+                    persist_TB[CCDk][Q]['REF']['deltasec'] = deltasec[ixREF].copy()
+                
+                    for statkey in statkeys:
+                        persist_TB[CCDk][Q]['REF'][statkey] = stats_REF[Q][statkey].copy()
+                    
+                    persist_TB[CCDk][Q]['LAT']['ObsID'] = ObsID_LAT.copy()
+                    persist_TB[CCDk][Q]['LAT']['deltasec'] = deltasec[ixLAT].copy()
+                
+                    for statkey in statkeys:
+                        persist_TB[CCDk][Q]['LAT'][statkey] = stats_LAT[Q][statkey].copy()
+                
+
+            persist_cdp = self.CDP_lib['PERSIST_STATS']
+            persist_cdp.path = prodspath
+            
+            persist_cdp.header = CDP_header.copy()
+            persist_cdp.meta = dict()
+            persist_cdp.data = persist_TB.copy()
+            
+            self.save_CDP(persist_cdp)
+            self.pack_CDP_to_dd(persist_cdp, 'PERSIST_STATS')
+                        
+            if self.report is not None:
+                    self.report.add_Text('Persistence statistics extracted.')
+            
+                
+        
 
     def meta_analysis(self):
         """
@@ -472,4 +768,84 @@ class PERSIST01(Task):
 
 
         """
-        raise NotImplementedError
+        
+        if self.report is not None:
+            self.report.add_Section(keyword='meta', 
+                Title='Persistence Meta-Analysis', level=0)
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        
+        dIndices = copy.deepcopy(self.dd.indices)        
+        CCDs = dIndices.get_vals('CCD')
+        Quads = dIndices.get_vals('Quad')
+        
+        persist_stats_pick = self.dd.products['PERSIST_STATS']
+        persist_stats = cPickleRead(persist_stats_pick)['data'].copy()
+        
+        fdict_P01 = self.figdict['P01whiskers'][1]
+        fdict_P01['data'] = persist_stats.copy()
+        
+        
+        # we compute persistence
+        
+        def _get_aver_worst_persist(ijstats):
+            """ """
+            std_REF = np.std(ijstats['REF']['mean'])
+            avp_REF = np.mean(ijstats['REF']['mean'])
+            
+            p_LAT = ijstats['LAT']['mean'][0]
+            e_LAT = ijstats['LAT']['std'][0]/np.sqrt(ijstats['LAT']['N'][0])
+            
+            p = p_LAT-avp_REF
+            e_p = np.sqrt(std_REF**2.+e_LAT**2.)
+            
+            return p,e_p
+        
+        if self.report is not None:
+        
+            persist_mx = OrderedDict()
+            
+            for iCCD,CCDk in enumerate(CCDs):
+                persist_mx[CCDk] = OrderedDict()
+                for jQ,Q in enumerate(Quads):
+                    ijstats = persist_stats[CCDk][Q]
+                    persist_mx[CCDk][Q] = _get_aver_worst_persist(ijstats)
+            
+            persist_df = pd.DataFrame.from_dict(persist_mx)
+            
+            def formatter(x):
+                return '%.2f\pm%.2f' % tuple(x)
+            
+            formatters = [formatter]*3
+            
+            persist_tex = persist_df.to_latex(multicolumn=False,multirow=False,
+                                              longtable=False,
+                                              formatters=formatters)
+            
+            persist_tex = st.replace(persist_tex,'\\textbackslashpm','$\pm$')
+            
+            captiontext = 'Best Estimate of the Persistence level in the first frame after the latent. '+\
+            'Differences between average pixel value in saturated region of first post-saturation frame '+\
+            'and average pixel value in the pre-saturation frames, in the same region, for each channel. '+\
+            'If the differences are smaller or comparable to the uncertainties, there is basically no '+\
+            'measurable detector persistence.'
+            persist_tex = st.split(str(persist_tex),'\n')
+            
+            
+            persist_tex =   ['\\begin{table}[!htb]','\center']+\
+                            ['\caption{Persistence - First Frame After Latent}']+\
+                            persist_tex+\
+                           ['\caption*{%s}' % captiontext,
+                            '\end{table}']
+                                    
+            self.report.add_Text(persist_tex)
+            
+        
+        # Plotting
+        
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['P01whiskers'],
+                               dobuilddata=False)
+       
