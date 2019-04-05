@@ -19,7 +19,7 @@ import pandas as pd
 from matplotlib import cm
 import copy
 
-from vison.plot import figclasses
+from vison.plot import figclasses, baseplotclasses
 from vison.plot import trends
 from vison.datamodel import cdp
 from vison.support.files import cPickleRead
@@ -69,10 +69,71 @@ P01satmask_dict = dict(
 
 P01whiskers_dict = dict(
         figname='PERSIST01_whiskersplot.png',
-        caption= '',
-        meta=dict(),
+        caption= 'Persistence "whisker-box" plot. Statistics of pixel values in saturated regions before and after the saturation. '+\
+                 'x-axis labeled in seconds before/after the hard-latent. All exposures shown are 565 seconds long. The box extends '+\
+                 'from the lower (25\%) to upper quartile (75\%) values of the data, with an orange line at the median. The whiskers '+\
+                 'extend from the mean value to +/- 1 standard deviation.',
+        meta=dict(
+                ylim=[-10.,10.],
+                doRotateXLabels=True),
         data=None
         )
+
+class P01WhiskersPlot(baseplotclasses.BeamPlotYvX):
+    """ """
+    def _ax_core_funct(self, ax, CQdict):
+        """ """
+        
+        stats_trans= dict(label='deltasec',
+                                mean='mean',
+                                med='p50',
+                                q1='p25',
+                                q3='p75')
+        
+        Nref = len(CQdict['REF']['ObsID'])
+        Nlat = len(CQdict['LAT']['ObsID'])
+        
+        
+        def feed_stats(CQdict,tag,i):
+            istats = dict()
+            for key in stats_trans.keys():
+                istats[key] = CQdict[tag][stats_trans[key]][i]
+            istats['label'] = '%i' % CQdict[tag]['deltasec'][i]
+            istats['whislo'] = CQdict[tag]['mean'][i]-\
+                               CQdict[tag]['std'][i]
+            istats['whishi'] = CQdict[tag]['mean'][i]+\
+                               CQdict[tag]['std'][i]
+            istats['fliers'] = []
+
+            
+            return istats
+
+        statsREF = []
+        
+        for i in range(Nref):
+            # REFERENCE
+            statsREF.append(feed_stats(CQdict,'REF',i))
+        #ax.bxp(statsREF)
+            
+        statsLAT = []
+        for j in range(Nlat):
+            statsLAT.append(feed_stats(CQdict,'LAT',j))
+        
+        stats = statsREF+statsLAT
+        
+        ax.bxp(stats)
+        
+        ax.axvline(x=Nref+0.5,linestyle='--',color='r')
+        
+        handle, label = None, None
+        return handle, label
+            
+
+        
+
+class Fig_BeamP01Whiskers(figclasses.Fig):
+    plotclass = P01WhiskersPlot
+
 
 def get_P01figs():
     P01figs = dict()
@@ -81,7 +142,7 @@ def get_P01figs():
     P01figs['P01checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
     P01figs['P01checks_avgflu'] = [trends.Fig_Basic_Checkstat, check_avgflu_dict]
     P01figs['P01satmasks'] = [figclasses.Fig_BeamImgShow, P01satmask_dict]
-    P01figs['P01whiskers'] = [figclasses.Fig_Husk, P01whiskers_dict]
+    P01figs['P01whiskers'] = [Fig_BeamP01Whiskers, P01whiskers_dict]
     P01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return P01figs
 
@@ -107,7 +168,7 @@ def _get_stats(pick_list,satmaskobj):
     stats = OrderedDict()
     Nobs = len(pick_list)
     
-    statkeys = ['mean','p5','p50','p95','std']
+    statkeys = ['mean','p25','p50','p75','std','N']
     
     qmasks = OrderedDict()
     for Q in Quads:
@@ -142,19 +203,17 @@ def _get_stats(pick_list,satmaskobj):
             data = qimg.data[np.where(qmasks[Q]==1)].copy()
             
             stats[Q]['mean'][i] = np.mean(data)
-            stats[Q]['p5'][i] = np.percentile(data,0.05)
-            stats[Q]['p50'][i] = np.percentile(data,0.5)
-            stats[Q]['p95'][i] = np.percentile(data,0.95)
+            stats[Q]['p25'][i] = np.percentile(data,25)
+            stats[Q]['p50'][i] = np.percentile(data,50)
+            stats[Q]['p75'][i] = np.percentile(data,75)
             stats[Q]['std'][i] = np.std(data)
-        
+            stats[Q]['N'][i] = np.size(data)
+            
     return stats
         
         
     
-def PlotWhiskersFig(persist_stats,suptitle='',figname=''):
-    """ """
-    
-    raise NotImplementedError
+
     
     
     

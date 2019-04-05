@@ -662,16 +662,17 @@ class PERSIST01(Task):
         # Find the index of the saturated image
         
         
-        
         ixSATUR = np.where(self.dd.mx['exptime'][:,0]==self.inputs['exptSATUR'])[0][0]
         labelSATUR = self.dd.mx['label'][ixSATUR,0]
         colSATUR = int(labelSATUR[-3:])
         
-        dtobjs = self.dd.mx['time']
+        # T-axis
         
+        dtobjs = self.dd.mx['time']        
         deltasec = np.array([item.seconds for item in np.abs(dtobjs[:,0]-dtobjs[ixSATUR,0])])
         deltasec[:ixSATUR] = -1.*deltasec[:ixSATUR]
-                
+        
+        # indices of reference and latent images
         
         ixREF = np.where(self.dd.mx['label'][:,0] == 'col%03i' % (colSATUR-1,))
         ixLAT = np.where(self.dd.mx['label'][:,0] == 'col%03i' % (colSATUR+1,))
@@ -683,17 +684,17 @@ class PERSIST01(Task):
         vfullinpath_adder = utils.get_path_decorator(ccdpickspath)
         
         # Initializations of output data-products
-                       
+        
         persist_TB = OrderedDict()
+                
+        for CCDk in CCDs:
+            persist_TB[CCDk] = OrderedDict()
+            for Q in Quads:
+                persist_TB[CCDk][Q] = OrderedDict()
+                for tag in ['REF','LAT']:
+                    persist_TB[CCDk][Q][tag] = OrderedDict()
         
-        for tag in ['REF','LAT']:
-            persist_TB[tag] = OrderedDict()
-            for CCDk in CCDs:
-                persist_TB[tag][CCDk] = OrderedDict()
-                for Q in Quads:
-                    persist_TB[tag][CCDk][Q] = OrderedDict()
-        
-        statkeys = ['mean','p5','p50','p95','std']
+        statkeys = ['mean','p25','p50','p75','std','N']
         
         if not self.drill:
             
@@ -719,17 +720,17 @@ class PERSIST01(Task):
                 
                 for Q in Quads:
                 
-                    persist_TB['REF'][CCDk][Q]['ObsID'] = ObsID_REF.copy()
-                    persist_TB['REF'][CCDk][Q]['deltasec'] = deltasec[ixREF].copy()
+                    persist_TB[CCDk][Q]['REF']['ObsID'] = ObsID_REF.copy()
+                    persist_TB[CCDk][Q]['REF']['deltasec'] = deltasec[ixREF].copy()
                 
                     for statkey in statkeys:
-                        persist_TB['REF'][CCDk][Q][statkey] = stats_REF[Q][statkey].copy()
+                        persist_TB[CCDk][Q]['REF'][statkey] = stats_REF[Q][statkey].copy()
                     
-                    persist_TB['LAT'][CCDk][Q]['ObsID'] = ObsID_LAT.copy()
-                    persist_TB['LAT'][CCDk][Q]['deltasec'] = deltasec[ixLAT].copy()
+                    persist_TB[CCDk][Q]['LAT']['ObsID'] = ObsID_LAT.copy()
+                    persist_TB[CCDk][Q]['LAT']['deltasec'] = deltasec[ixLAT].copy()
                 
                     for statkey in statkeys:
-                        persist_TB['LAT'][CCDk][Q][statkey] = stats_LAT[Q][statkey].copy()
+                        persist_TB[CCDk][Q]['LAT'][statkey] = stats_LAT[Q][statkey].copy()
                 
 
             persist_cdp = self.CDP_lib['PERSIST_STATS']
@@ -769,26 +770,82 @@ class PERSIST01(Task):
         """
         
         if self.report is not None:
-            self.report.add_Section(
-                keyword='meta', Title='Persistence Meta-Analysis', level=0)
+            self.report.add_Section(keyword='meta', 
+                Title='Persistence Meta-Analysis', level=0)
         
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
         
+        dIndices = copy.deepcopy(self.dd.indices)        
+        CCDs = dIndices.get_vals('CCD')
+        Quads = dIndices.get_vals('Quad')
+        
         persist_stats_pick = self.dd.products['PERSIST_STATS']
         persist_stats = cPickleRead(persist_stats_pick)['data'].copy()
         
-        figspath = self.inputs['subpaths']['figs']
+        fdict_P01 = self.figdict['P01whiskers'][1]
+        fdict_P01['data'] = persist_stats.copy()
         
-        figname = self.figdict['P01whiskers'][1]['figname']
-        fullfigname = os.path.join(figspath,figname)
         
-        P01aux.PlotWhiskersFig(persist_stats,
-                               suptitle='',
-                               figname=fullfigname)
+        # we compute persistence
+        
+        def _get_aver_worst_persist(ijstats):
+            """ """
+            std_REF = np.std(ijstats['REF']['mean'])
+            avp_REF = np.mean(ijstats['REF']['mean'])
+            
+            p_LAT = ijstats['LAT']['mean'][0]
+            e_LAT = ijstats['LAT']['std'][0]/np.sqrt(ijstats['LAT']['N'][0])
+            
+            p = p_LAT-avp_REF
+            e_p = np.sqrt(std_REF**2.+e_LAT**2.)
+            
+            return p,e_p
+        
+        if self.report is not None:
+        
+            persist_mx = OrderedDict()
+            
+            for iCCD,CCDk in enumerate(CCDs):
+                persist_mx[CCDk] = OrderedDict()
+                for jQ,Q in enumerate(Quads):
+                    ijstats = persist_stats[CCDk][Q]
+                    persist_mx[CCDk][Q] = _get_aver_worst_persist(ijstats)
+            
+            persist_df = pd.DataFrame.from_dict(persist_mx)
+            
+            def formatter(x):
+                return '%.2f\pm%.2f' % tuple(x)
+            
+            formatters = [formatter]*3
+            
+            persist_tex = persist_df.to_latex(multicolumn=False,multirow=False,
+                                              longtable=False,
+                                              formatters=formatters)
+            
+            persist_tex = st.replace(persist_tex,'\\textbackslashpm','$\pm$')
+            
+            captiontext = 'Best Estimate of the Persistence level in the first frame after the latent. '+\
+            'Differences between average pixel value in saturated region of first post-saturation frame '+\
+            'and average pixel value in the pre-saturation frames, in the same region, for each channel. '+\
+            'If the differences are smaller or comparable to the uncertainties, there is basically no '+\
+            'measurable detector persistence.'
+            persist_tex = st.split(str(persist_tex),'\n')
+            
+            
+            persist_tex =   ['\\begin{table}[!htb]','\center']+\
+                            ['\caption{Persistence - First Frame After Latent}']+\
+                            persist_tex+\
+                           ['\caption*{%s}' % captiontext,
+                            '\end{table}']
+                                    
+            self.report.add_Text(persist_tex)
+            
+        
+        # Plotting
         
         if self.report is not None:
             self.addFigures_ST(figkeys=['P01whiskers'],
                                dobuilddata=False)
-        
+       
