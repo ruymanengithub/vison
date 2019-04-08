@@ -135,7 +135,7 @@ class ImageDisplay(tk.Toplevel):
                 if img is None:
                     img = np.zeros((2119*2, 2086*2), dtype='int32')
                 eimg = exposure.equalize_hist(img,nbins=2**16)
-                self.axs[CCD-1].imshow(eimg, cmap=plt.cm.gray, origin='lower left')
+                self.axs[CCD-1].imshow(eimg.T, cmap=plt.cm.gray, origin='lower left')
                 self.axs[CCD-1].get_xaxis().set_visible(False)
                 self.axs[CCD-1].get_yaxis().set_visible(False)
                 self.axs[CCD-1].set_title('CCD%i' % CCD)
