@@ -347,9 +347,8 @@ class FOCUS00(PT.PointTask):
                     
 
         # Find centroid of focus values, as Best Focus
-        
-        cbe_focus = np.nanmean(stats.sigmaclip(Focus_dd['focus'],4,4).clipped)
-        
+                
+        cbe_focus = np.mean(stats.sigmaclip(Focus_dd['focus'][~np.isnan(Focus_dd['focus'])],4,4).clipped)
         # Obtaining delta-focus map
         
         beglobal_fwhm = np.zeros_like(Focus_dd['belocal_fwhm'],dtype='float32')
@@ -365,7 +364,7 @@ class FOCUS00(PT.PointTask):
                     pcoeffs = zres[CCDk][Q][SpotName]['coeffs']
                     beglobal_fwhm[ix] = np.polyval(pcoeffs,cbe_focus)
         
-        cbe_fwhm = np.nanmean(stats.sigmaclip(beglobal_fwhm,4,4).clipped)
+        cbe_fwhm = np.mean(stats.sigmaclip(beglobal_fwhm[~np.isnan(beglobal_fwhm)],4,4).clipped)
         delta_fwhm = beglobal_fwhm - Focus_dd['belocal_fwhm']
         x_ccd = Focus_dd['x_ccd'].copy()
         y_ccd = Focus_dd['y_ccd'].copy()
