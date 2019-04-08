@@ -101,7 +101,7 @@ class Eyegore(tk.Tk):
             datestamp = vistime.get_time_tag()
             
             if self.tag != '':
-                ntag = '_%s%' % tag
+                ntag = '_%s' % self.tag
             else:
                 ntag = ''
             self.logf = 'Eyegore_%s%s.log' % (datestamp,ntag)

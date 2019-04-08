@@ -27,6 +27,7 @@ import time
 import string as st
 import datetime
 import glob
+from skimage import exposure
 
 #from multiprocessing.dummy import Pool
 
@@ -108,7 +109,7 @@ class ImageDisplay(tk.Toplevel):
 
         for CCD in [1, 2, 3]:
             try:
-                CCDF = glob.glob(os.path.join(self.path, 'EUC_%i_*D_*T_ROE1_CCD%i.fits' %
+                CCDF = glob.glob(os.path.join(self.path, 'EUC_%i_*D*T_ROE1_CCD%i.fits' %
                                               (lastObs, CCD)))[0]
                 img = ccdmod.CCD(
                     CCDF, extensions=[-1]).extensions[0].data.copy()
@@ -130,10 +131,11 @@ class ImageDisplay(tk.Toplevel):
 
             for CCD in [1, 2, 3]:
                 self.axs[CCD-1].clear()
-                img = IMGs['CCD%i' % CCD]
+                img = IMGs['CCD%i' % CCD]                
                 if img is None:
                     img = np.zeros((2119*2, 2086*2), dtype='int32')
-                self.axs[CCD-1].imshow(img, origin='lower left')
+                eimg = exposure.equalize_hist(img,nbins=2**16)
+                self.axs[CCD-1].imshow(eimg, cmap=plt.cm.gray, origin='lower left')
                 self.axs[CCD-1].get_xaxis().set_visible(False)
                 self.axs[CCD-1].get_yaxis().set_visible(False)
                 self.axs[CCD-1].set_title('CCD%i' % CCD)
