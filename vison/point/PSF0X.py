@@ -286,9 +286,8 @@ class PSF0X(PT.PointTask):
         tFWC_point = self.ogse.profile['tFWC_point']['nm%i' % wave]
         exptime = self.dd.mx['exptime'][:,0]
         
-        sexconfig=dict(MINAREA=3.,
-                                           DET_THRESH=15.,
-                                           MAG_ZEROPOINT=20.)
+        sexconfig=dict(MINAREA=2.,DET_THRESH=15.,
+                       MAG_ZEROPOINT=20.)
         
         # single Obsid-locking                
         #iObs = np.abs(exptime-tFWC_point/2.).argmin()        
@@ -305,6 +304,7 @@ class PSF0X(PT.PointTask):
             
             ixsel = np.where(self.dd.mx['label'][:,0] == ulabel)[0][0]
             ObsList.append(ixsel)
+        
         
         PT.PointTask.lock_on_stars(self,iObs=ObsList,
                                    labels=ulabels,

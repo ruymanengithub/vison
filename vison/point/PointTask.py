@@ -43,6 +43,34 @@ class Point_inputs(inputs.Inputs):
     ])))
 
 
+def check_transformation_compliance(rotation,scale,trans_x,trans_y, 
+            rot_lims, scale_lims, maxSTDpix,trans_lims):
+        
+    # CHECK COMPLIANCE of transformations against allowed changes in
+    #       scale, rotation and translation
+    
+    rotation_inlims = (rot_lims[0] <= rotation) & \
+                         (rotation<= rot_lims[1])
+    
+    rotation_ok = rotation_inlims and \
+            (rotation * 4096.) < maxSTDpix
+    
+    scale_inlims = (scale_lims[0] <= scale) & \
+                         (scale<= scale_lims[1])
+    
+    scale_ok = scale_inlims and \
+        ((scale-1.) * 4096.) < maxSTDpix
+    
+    trans_mod = np.sqrt(trans_x**2.+trans_y**2.)
+    
+    trans_ok = (trans_mod>=trans_lims[0]) & \
+                       (trans_mod<=trans_lims[1])
+    
+    #trans_ok = trans_inlims and \
+    #    trans_mod < maxSTDpix
+    
+    return rotation_ok and scale_ok and trans_ok
+    
 class PointTask(Task):
 
     stampw = polib.stampw
@@ -153,9 +181,7 @@ class PointTask(Task):
             doMultiTrack = False
             if len(_labels)>0:
                 doMultiTrack = True
-            
-            
-            
+
             if doMultiTrack:
                 starnames = strackers['CCD1']['col001'].starnames
                 psCCDcoodicts = OrderedDict(names = starnames)
@@ -173,12 +199,11 @@ class PointTask(Task):
                 for jCCD, CCDk in enumerate(CCDs):
                     psCCDcoodicts[CCDk] = strackers[CCDk].get_allCCDcoos(
                             nested=True)
-                        
+                    
             for iObs in range(nObs):
                 
                 
-                for jCCD, CCDk in enumerate(CCDs):
-                    
+                for jCCD, CCDk in enumerate(CCDs):                    
                     
                     ilabel = self.dd.mx['label'][iObs,jCCD]
 
@@ -673,6 +698,7 @@ class PointTask(Task):
         
         strackers = self.ogse.startrackers
         
+        
         if not doMulti:
             
             for jCCD, CCDk in enumerate(CCDs):
@@ -783,42 +809,27 @@ class PointTask(Task):
             self.report.add_Text(Ltex)        
     
         
-        
-        # CHECK COMPLIANCE of transformations against allowed changes in
-        #       scale, rotation and translation
-        
-        rotation_inlims = np.all((rot_lims[0] <= LOCK_TB['ROTATION']) & \
-                             (LOCK_TB['ROTATION']<= rot_lims[1]))
-        
-        rotation_ok = rotation_inlims and \
-            np.std(LOCK_TB['ROTATION'] * 4096.) < maxSTDpix
-        
-        scale_inlims = np.all((scale_lims[0] <= LOCK_TB['SCALE']) & \
-                             (LOCK_TB['SCALE']<= scale_lims[1]))
-        
-        scale_ok = scale_inlims and \
-            np.std(LOCK_TB['SCALE'] * 4096.) < maxSTDpix
-        
-        trans_mod = np.sqrt(LOCK_TB['TRANS_X']**2.+LOCK_TB['TRANS_Y']**2.)
-        
-        trans_inlims = np.all((trans_mod>=trans_lims[0]) & \
-                           (trans_mod<=trans_lims[1]))
-        
-        trans_ok = trans_inlims and \
-            np.std(trans_mod) < maxSTDpix
-        
-        all_ok = rotation_ok and scale_ok and trans_ok
-        
-        if all_ok:
+        if not doMulti:
             
-            if self.report is not None:
-                self.report.add_Text('Updating Point Source Locations!')
-            if self.log is not None:
-                self.log.info('Updating Point Source Locations!')
+            vall_ok = np.zeros(len(CCDs),dtype='bool')
             
+            for jCCD, CCDk in enumerate(CCDs):
+                
+                vall_ok[jCCD] = check_transformation_compliance(
+                                        LOCK_TB['ROTATION'][jCCD],
+                                        LOCK_TB['SCALE'][jCCD],
+                                        LOCK_TB['TRANS_X'][jCCD],
+                                        LOCK_TB['TRANS_y'][jCCD],
+                        rot_lims, scale_lims, maxSTDpix,trans_lims)
+                
+            all_ok = np.all(vall_ok)
             
-            if not doMulti:
+            if all_ok:
             
+                if self.report is not None:
+                    self.report.add_Text('Updating Point Source Locations!')
+                if self.log is not None:
+                    self.log.info('Updating Point Source Locations!')           
             
                 for jCCD, CCDk in enumerate(CCDs):
                 
@@ -828,36 +839,84 @@ class PointTask(Task):
                                      tr.rotation, tr.translation)
                     
                     strackers[CCDk].apply_patt_transform(simmx)
-            
             else:
+
+                if self.report is not None:
+                    self.report.add_Text('Updating Point Source Locations NOT POSSIBLE')
+                if self.log is not None:
+                    self.log.info('Updating Point Source Locations NOT POSSIBLE')
+                
+                self.dd.flags.add('STARS_MISSING')
+            
+        else:
+            
+            ok_mx = np.zeros((len(CCDs),len(labels)),dtype='bool')
+            
+            for jCCD, CCDk in enumerate(CCDs):
+                
+                for ilabel,label in enumerate(labels):
+                    
+                    ii = jCCD * len(labels) + ilabel
+                                   
+                    ok_mx[jCCD,ilabel] = check_transformation_compliance(
+                                        LOCK_TB['ROTATION'][ii],
+                                        LOCK_TB['SCALE'][ii],
+                                        LOCK_TB['TRANS_X'][ii],
+                                        LOCK_TB['TRANS_Y'][ii],
+                        rot_lims, scale_lims, maxSTDpix,trans_lims)
+            
+            
+            if np.all(np.max(ok_mx,axis=0)):
+                
+                if self.report is not None:
+                    self.report.add_Text('Updating Point Source Locations!')
+                if self.log is not None:
+                    self.log.info('Updating Point Source Locations!')    
                 
 
                 newstrackers = OrderedDict()
                 self.ogse.labels = labels
-                                
+                
+                
+                
                 for jCCD, CCDk in enumerate(CCDs):
                 
                     newstrackers[CCDk] = OrderedDict()
-                
-                
+                                        
                     for ilabel,label in enumerate(labels):
                         
                         newstrackers[CCDk][label] = copy.deepcopy(self.ogse.startrackers[CCDk])
                         
-                        tr = copy.deepcopy(transfs_dict[CCDk][label])
+                        
+                        isok = ok_mx[jCCD,ilabel]
+                        
+                        if isok:
+                            tr = copy.deepcopy(transfs_dict[CCDk][label])
+                        else:                            
+                            
+                            oklabel = labels[np.argmin(np.abs(np.where(ok_mx[jCCD,:]==True)[0]-ilabel))]
+
+                            tr = copy.deepcopy(transfs_dict[CCDk][oklabel])
                         
                         simmx = newstrackers[CCDk][label].get_similaritymx(tr.scale, 
                                      tr.rotation, tr.translation)
                                                 
                         newstrackers[CCDk][label].apply_patt_transform(simmx)
             
-                self.ogse.startrackers = copy.deepcopy(newstrackers)
+            self.ogse.startrackers = copy.deepcopy(newstrackers)
+                    
+            #else:
+            #    # raise FLAG
+            #    self.dd.flags.add('STARS_MISSING')
+            
+        
+        
+            else:
                 
-        else:
-            # raise FLAG
-            self.dd.flags.add('STARS_MISSING')
-        
-        
-        
-        
+                if self.report is not None:
+                    self.report.add_Text('Updating Point Source Locations NOT POSSIBLE')
+                if self.log is not None:
+                    self.log.info('Updating Point Source Locations NOT POSSIBLE')
+                
+                self.dd.flags.add('STARS_MISSING')
         
