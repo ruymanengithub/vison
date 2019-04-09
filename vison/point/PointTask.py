@@ -819,7 +819,7 @@ class PointTask(Task):
                                         LOCK_TB['ROTATION'][jCCD],
                                         LOCK_TB['SCALE'][jCCD],
                                         LOCK_TB['TRANS_X'][jCCD],
-                                        LOCK_TB['TRANS_y'][jCCD],
+                                        LOCK_TB['TRANS_Y'][jCCD],
                         rot_lims, scale_lims, maxSTDpix,trans_lims)
                 
             all_ok = np.all(vall_ok)
