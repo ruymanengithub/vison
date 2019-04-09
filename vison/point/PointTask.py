@@ -866,7 +866,7 @@ class PointTask(Task):
                         rot_lims, scale_lims, maxSTDpix,trans_lims)
             
             
-            if np.all(np.max(ok_mx,axis=0)):
+            if np.all(np.max(ok_mx,axis=1)): # at least there's one column 'right' for each CCD
                 
                 if self.report is not None:
                     self.report.add_Text('Updating Point Source Locations!')
@@ -892,10 +892,9 @@ class PointTask(Task):
                         
                         if isok:
                             tr = copy.deepcopy(transfs_dict[CCDk][label])
-                        else:                            
-                            
-                            oklabel = labels[np.argmin(np.abs(np.where(ok_mx[jCCD,:]==True)[0]-ilabel))]
-
+                        else:
+                            ixtrue = np.where(ok_mx[jCCD,:]==True)[0]
+                            oklabel = labels[ixtrue[np.argmin(np.abs(ixtrue-ilabel))]]
                             tr = copy.deepcopy(transfs_dict[CCDk][oklabel])
                         
                         simmx = newstrackers[CCDk][label].get_similaritymx(tr.scale, 
@@ -903,14 +902,8 @@ class PointTask(Task):
                                                 
                         newstrackers[CCDk][label].apply_patt_transform(simmx)
             
-            self.ogse.startrackers = copy.deepcopy(newstrackers)
+                self.ogse.startrackers = copy.deepcopy(newstrackers)
                     
-            #else:
-            #    # raise FLAG
-            #    self.dd.flags.add('STARS_MISSING')
-            
-        
-        
             else:
                 
                 if self.report is not None:
@@ -918,5 +911,5 @@ class PointTask(Task):
                 if self.log is not None:
                     self.log.info('Updating Point Source Locations NOT POSSIBLE')
                 
+                # raise FLAG
                 self.dd.flags.add('STARS_MISSING')
-        
