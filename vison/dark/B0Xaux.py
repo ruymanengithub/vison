@@ -177,8 +177,8 @@ class RON_CDP(cdp.Tables_CDP):
             msk = np.zeros_like(mx, dtype='int32')
             msk[np.where((np.isclose(mx, 0.)) | (np.isnan(mx)))] = 1
             cbe = np.ma.median(np.ma.masked_array(
-                mx, mask=msk), axis=1).data.copy()  # best estimate of RON
-    
+                mx, mask=msk), axis=0).data.copy()  # best estimate of RON
+            
             cbe_dict = OrderedDict()
             for jCCD, CCDk in enumerate(CCDs):
                 cbe_dict[CCDk] = OrderedDict()

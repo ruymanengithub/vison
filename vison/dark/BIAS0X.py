@@ -180,7 +180,8 @@ class BIAS0X(DarkTask):
             plot average profiles f. each CCD and Q (color coded by time)
 
         """
-
+        
+        
         if self.report is not None:
             self.report.add_Section(
                 keyword='extract', 
