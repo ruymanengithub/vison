@@ -53,7 +53,7 @@ def check_transformation_compliance(rotation,scale,trans_x,trans_y,
                          (rotation<= rot_lims[1])
     
     rotation_ok = rotation_inlims and \
-            (rotation * 4096.) < maxSTDpix
+            (rotation * 4096.) < 2*maxSTDpix
     
     scale_inlims = (scale_lims[0] <= scale) & \
                          (scale<= scale_lims[1])
@@ -670,7 +670,7 @@ class PointTask(Task):
         CCDs = Qindices.get_vals('CCD')
         
         scale_lims = [0.95,1.05] # adim.
-        rot_lims = np.array([-1.,1.])*1./180.*np.pi # radians
+        rot_lims = np.array([-2.,2.])*1./180.*np.pi # radians
         trans_lims = [-1.,1000.] # pixels
         maxSTDpix = 50. # pixel-rms variations in rot/scale/trans across CCDs
         
@@ -864,7 +864,6 @@ class PointTask(Task):
                                         LOCK_TB['TRANS_X'][ii],
                                         LOCK_TB['TRANS_Y'][ii],
                         rot_lims, scale_lims, maxSTDpix,trans_lims)
-            
             
             if np.all(np.max(ok_mx,axis=1)): # at least there's one column 'right' for each CCD
                 
