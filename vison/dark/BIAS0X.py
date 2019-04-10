@@ -613,20 +613,28 @@ class BIAS0X(DarkTask):
                     stackimg = np.zeros((4238,4172),dtype='float32')
                     stackstd = np.ones((4238,4172),dtype='float32')
                 
-                if isinstance(stackimg,np.ma.MaskedArray):
+                mask = np.zeros(shape=stackimg.shape,dtype='bool')
+                
+                _ismasked = isinstance(stackimg,np.ma.MaskedArray)
+                
+                
+                if _ismasked:
                     mask = stackimg.mask.copy()
                     stackimg = stackimg.data.copy()
                     stackstd = stackstd.data.copy()
-                else:
-                    mask = np.zeros_like(stackimg)
                     
                 
-                #stackccdobj = ccd.CCD(withpover=ccdpile.withpover)
-                stackccdobj = ccd.CCD(withpover=True) # TESTS
+                if len(mask.shape)==0:
+                    mask = np.zeros(shape=stackimg.shape,dtype='bool')
+                
+                stackccdobj = ccd.CCD(withpover=ccdpile.withpover)
+                #stackccdobj = ccd.CCD(withpover=True) # TESTS
                 
                 stackccdobj.add_extension(stackimg, label='STACK')
                 stackccdobj.add_extension(stackstd, label='STD')
+                
                 stackccdobj.get_mask(mask)
+
                 
                 for kQ, Q in enumerate(Quads):
                     
