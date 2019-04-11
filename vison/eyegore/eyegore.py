@@ -77,12 +77,12 @@ class Eyegore(tk.Tk):
         tk.Tk.__init__(self)
 
         if intervals is None:
-            intervals = dict(EYE=20000, 
-         image=20000,
-         HK=5000, 
-         HKplots=500, 
-         HKflags=500, 
-         EXP=20000)
+            intervals = dict(EYE=50000, 
+                             image=50000,
+                             HK=30000, 
+                             HKplots=500, 
+                             HKflags=500, 
+                             EXP=20000)
 
         if path is not None:
             if path[-1] == os.path.sep:

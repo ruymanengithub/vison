@@ -506,15 +506,19 @@ class HKDisplay(tk.Toplevel):
 
     def get_data(self):
         """ """
+        
+        print('entering HKDisplay.get_data...')
 
         self.select_HKkeys()
         #self.search_HKfiles()
+        
 
         if self.HKfiles is None:
             #yield self.HK
             return
 
         sizeHK = get_bitsize(self.HKfiles)
+        print('sizeHK=%i' % sizeHK)
 
         if sizeHK <= self.sizeHK:
             #yield self.HK
@@ -522,7 +526,7 @@ class HKDisplay(tk.Toplevel):
         
         self.sizeHK = sizeHK
 
-        print 'loading HK...'
+        print('loading HK...')
 
         try: HK = HKtools.loadHK_QFM(self.HKfiles, elvis=self.elvis, safe=True)
         except:
@@ -590,7 +594,7 @@ class HKDisplay(tk.Toplevel):
         return render
     
     def update(self):
-        
+        print('entering HKDisplay.update. Interval=%i' % self.interval)
         self.search_HKfiles()
         self.get_data()
         self.after(self.interval, self.update)

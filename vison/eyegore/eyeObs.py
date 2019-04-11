@@ -168,6 +168,7 @@ class ExpLogDisplay(tk.Toplevel):
 
     def update(self,startup=False):
         
+        print('entering ExpLogDisplay.update. Interval=%i' % self.interval)
 
         if self.updating.get():
             
