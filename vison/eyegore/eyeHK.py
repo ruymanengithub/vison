@@ -522,6 +522,7 @@ class HKDisplay(tk.Toplevel):
 
         if sizeHK <= self.sizeHK:
             #yield self.HK
+            self.sizeHK = sizeHK
             return
         
         self.sizeHK = sizeHK
@@ -530,10 +531,10 @@ class HKDisplay(tk.Toplevel):
 
         try: HK = HKtools.loadHK_QFM(self.HKfiles, elvis=self.elvis, safe=True)
         except:
-            #yield self.HK
+            print('Failed loading: %s' % self.HKfiles.__repr__)
             return
 
-        print 'done loading HK!'
+        print('done loading HK!')
 
         dtobjarr = np.array([datetime.datetime.strptime(item, '%d-%m-%y_%H:%M:%S')
                              for item in HK['TimeStamp']])
