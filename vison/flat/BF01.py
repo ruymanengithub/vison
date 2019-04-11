@@ -57,29 +57,27 @@ isthere = os.path.exists
 def process_one_fluence_covmaps(q, dd, dpath, CCDs, jCCD, ku, ulabels, Npix, 
                                         vstart, vend):
     """ """
-                
+    
     labels = dd.mx['label'][:, 0].copy()
     
     vfullinpath_adder = utils.get_path_decorator(dpath)
                 
     #taskcounter = 0
     
-    ulabel = labels[ku]
+    ulabel = ulabels[ku]
  
     six = np.where(labels == ulabel)
             
     ccdobjNamesList = vfullinpath_adder(dd.mx['ccdobj_name'][six[0],jCCD],'pick')
             
-            
     print('%s: column %i/%i; %i OBSIDs' % (CCDs[jCCD],ku+1,len(ulabels),len(ccdobjNamesList)))
             
             
-    ccdobjList = [cPickleRead(item) for item in ccdobjNamesList]                    
+    ccdobjList = [cPickleRead(item) for item in ccdobjNamesList]
     
     icovdict = covlib.get_cov_maps(
                 ccdobjList, Npix=Npix, vstart=vstart, vend=vend,
 			          doTest=False, debug=False)
-    
     q.put([jCCD, ku, icovdict])
     
 
@@ -235,7 +233,7 @@ class BF01(PTC0X):
         ulabels = np.unique(labels)
         nL = len(ulabels)
 	
-    	# vstart and vend should be the same for all OBSIDs in test
+    	   # vstart and vend should be the same for all OBSIDs in test
         vstart = self.dd.mx['vstart'][0,0]
         vend = min(self.dd.mx['vend'][0,0],self.ccdcalc.NrowsCCD)
 
