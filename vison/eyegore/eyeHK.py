@@ -396,7 +396,7 @@ class HKDisplay(tk.Toplevel):
         if not self.dolite:
             self.initialize_display()
         else:
-            self.wm_title('CLOSE ME')
+            self.wm_title('DO NOT CLOSE ME')
             
         self.update()
     
