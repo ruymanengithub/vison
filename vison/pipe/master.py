@@ -276,7 +276,7 @@ class Pipe(object):
                 _compl = self.completion[task]
                 summary += ['_', '%s' % task]
                 summary += ['Executed in %.1f minutes' % _compl['exectime']]
-                summary += ['OBSIDs range = [%i,%i]' % _compl['ObsID_range']]
+                summary += ['OBSIDs range = [%i, %i]' % _compl['ObsID_range']]
                 summary += ['Raised Flags = %s' % _compl['flags']]
                 if _compl['Errors']:
                     summary += ['Executed with ERROR(s)']

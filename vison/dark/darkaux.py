@@ -95,7 +95,7 @@ def produce_MasterDark(outfits, infitsList=[], ccdpickList=[],  mask=None, setti
                     ID=metabag['ID'], BLOCKID=metabag['BLOCKID'],
                     CHAMBER=metabag['CHAMBER'])
 
-    if mask is not None:
+    if mask is not None and len(mask.shape)>0:
         mdk.get_mask(mask)
     
     mdk.writeto(outfits, clobber=True, unsigned16bit=False)
