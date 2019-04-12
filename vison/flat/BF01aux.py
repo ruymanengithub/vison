@@ -101,24 +101,24 @@ FWHMx_v_flu_dict = dict(
     figname='BF01_FWHMx_v_flu.png',
     caption='BF01: FWHM(x) vs. Fluence.',
     meta=dict(doLegend=True,
-              ylabel='FWHM(x), [pix]',
+              ylabel='FWHM(x), [um]',
               xlabel='ADU',
               corekwargs=dict(
                       data = dict(marker='o',linestyle=''),
                       fit = dict(marker='',linestyle='--')),
-              suptitle='BF01: FWHMx vs. Fluence')
+              suptitle='BF01: FWHMx in microns vs. Fluence')
 )
 
 FWHMy_v_flu_dict = dict(
     figname='BF01_FWHMy_v_flu.png',
     caption='BF01: FWHM(y) vs. Fluence.',
     meta=dict(doLegend=True,
-              ylabel='FWHM(y), [pix]',
+              ylabel='FWHM(y), [um]',
               xlabel='ADU',
               corekwargs=dict(
                       data = dict(marker='o',linestyle=''),
                       fit = dict(marker='',linestyle='--')),
-              suptitle='BF01: FWHMy vs. Fluence')
+              suptitle='BF01: FWHMy in microns vs. Fluence')
 )
 
 
