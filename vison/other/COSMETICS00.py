@@ -423,7 +423,7 @@ class COSMETICS00(DarkTask):
         
         DEF_TB['PIXLOST'] = np.zeros(NP,dtype='float32')
         
-        normfunction = Normalize(vmin=0.0,vmax=0.1,clip=False)
+        normfunction = Normalize(vmin=1.-0.00001,vmax=1.,clip=True)
         
         if not self.drill:
             
@@ -455,10 +455,11 @@ class COSMETICS00(DarkTask):
                         DEF_TB['PIXLOST'][kk] = kQ_Ndefects / NpixImgQuad * 100.
                         
                         qdata = MSKccdobj.get_quad(Q,canonical=False,extension=iMext).copy()
-                        sqdata = ndimage.filters.gaussian_filter(qdata,sigma=5.,
+                        qdata = 1.-qdata # inversion
+                        sqdata = ndimage.filters.gaussian_filter(qdata,sigma=10.,
                                                                  mode='constant',
                                                                  cval=0.)
-                        
+                        #if maskkey == 'MERGE':stop()
                         MASKS_2PLOT[maskkey][CCDk][Q]['img'] = sqdata.T.copy()
                         
                 
