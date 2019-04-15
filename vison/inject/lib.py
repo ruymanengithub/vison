@@ -203,20 +203,20 @@ def fit_Inj_vs_IG1(IG1,med_inj,submodel='ReLU',doPlot=False,debug=False):
     if 4 <= Npoints <= 6:
         reduced = True
         fmodel = models_dict['reduced'][submodel]
-        p0 = [IG1half, IG1half+3., 1., 0.01]
+        p0 = [IG1half-1.5, IG1half+1.5, 0.02, 0.01]
         
-        bounds = ([2.,2.,0.01,0.],
+        bounds = ([2.,2.,0.001,0.],
                   [8.,10.,1.,0.2])
         
     elif Npoints > 6:
         reduced = False
         fmodel = models_dict[submodel]
-        p0 = def_bgd_drop+[IG1half, IG1half +3., 1., 0.01]
+        p0 = def_bgd_drop+[IG1half-1.5, IG1half +1.5, 0.02, 0.01]
         
         
         maxnmbgd = 200./2.**16
-        bounds = ([-maxnmbgd,2.,2.,2.,0.01,0.],
-                  [maxnmbgd,50.,8.,10.,1.,0.2])
+        bounds = ([-maxnmbgd,2.,2.,2.,0.001,0.],
+                  [maxnmbgd,100.,8.,10.,1.,0.2])
         
     elif Npoints < 4:
         return dict(didfit=False)
@@ -230,7 +230,8 @@ def fit_Inj_vs_IG1(IG1,med_inj,submodel='ReLU',doPlot=False,debug=False):
         popt, pcov = curve_fit(fmodel,IG1,nmed_inj,p0=p0,
                                method='trf',
                                bounds=bounds,
-                               absolute_sigma=False)
+                               absolute_sigma=False,
+                               maxfev=5000)
         
         
         Inj_bf = fmodel(xIG1, *popt)
@@ -250,7 +251,8 @@ def fit_Inj_vs_IG1(IG1,med_inj,submodel='ReLU',doPlot=False,debug=False):
         fig = plt.figure()
         ax = fig.add_subplot(111)
         ax.plot(IG1,nmed_inj,'bo')
-        ax.plot(xIG1,Inj_bf,'r--')
+        ax.plot(xIG1,Inj_bf,'b-')
+        ax.plot(xIG1,fmodel(xIG1,*p0),'r--')
         plt.show()
     
     if reduced:

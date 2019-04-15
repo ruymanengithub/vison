@@ -336,11 +336,11 @@ class CHINJ01(InjTask):
                 
                 doPlot = False
                 debug = False
-                #if (jCCD==1) and (Q=='G'):
+                #if (jCCD==2) and (Q=='G'):
                 #    doPlot=True
                 #    debug=True
-                
-                
+                #doPlot=True
+                #debug=True                
                 
                 res = ilib.fit_Inj_vs_IG1(IG1,med_inj,doPlot=doPlot,
                                         debug=debug,submodel=submodel)
