@@ -511,4 +511,5 @@ class COSMETICS00(DarkTask):
             MASKfigkeys = ['Masks_%s' % key for key in maskkeys]
             self.addFigures_ST(figkeys=MASKfigkeys,
                            dobuilddata=False)
-
+        
+        self.canbecleaned = True

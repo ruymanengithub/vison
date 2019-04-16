@@ -675,6 +675,7 @@ class PTC0X(FlatTask):
             self.addFigures_ST(figkeys=['PTC0X_PTC_curves'], 
                                dobuilddata=False)
         
+        self.canbecleaned = True
 
     def extract_HER(self):
         """Hard Edge Response Analysis"""

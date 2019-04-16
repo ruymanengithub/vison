@@ -676,3 +676,4 @@ class TP02(PumpTask):
             self.addFigures_ST(figkeys=Mfigkeys,
                            dobuilddata=False)
         
+        self.canbecleaned = True

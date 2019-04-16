@@ -755,3 +755,5 @@ class TP01(PumpTask):
             Mfigkeys = ['TP01meta_%s' % mkey for mkey in modkeys]
             self.addFigures_ST(figkeys=Mfigkeys,
                            dobuilddata=False)
+        
+        self.canbecleaned = True

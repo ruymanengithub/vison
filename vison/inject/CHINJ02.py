@@ -577,5 +577,5 @@ class CHINJ02(InjTask):
             
             self.report.add_Text(Mtex)  
         
-        
+        self.canbecleaned = True
         

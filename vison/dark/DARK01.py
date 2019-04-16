@@ -408,4 +408,5 @@ class DARK01(DarkTask):
                                                tiny=True,
                                                formatters=cov_formatters)
             self.report.add_Text(DKtex)
-
+        
+        self.canbecleaned = True

@@ -602,6 +602,6 @@ class MOT_WARM(DarkTask):
         # PENDING
         
         
-
+        self.canbecleaned = True
 
 

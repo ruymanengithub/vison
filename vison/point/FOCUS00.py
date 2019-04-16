@@ -458,3 +458,4 @@ class FOCUS00(PT.PointTask):
                 formatters=cov_formatters)
             self.report.add_Text(F00tex)
 
+        self.canbecleaned = True

@@ -850,3 +850,4 @@ class PERSIST01(Task):
             self.addFigures_ST(figkeys=['P01whiskers'],
                                dobuilddata=False)
        
+        self.canbecleaned = True

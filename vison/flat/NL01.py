@@ -510,7 +510,7 @@ class NL01(FlatTask):
             self.addFigures_ST(figkeys=['NL01_fit_curves'], 
                                dobuilddata=False)
         
-        
+        self.canbecleaned = True
 
     def do_satCTE(self):
         """

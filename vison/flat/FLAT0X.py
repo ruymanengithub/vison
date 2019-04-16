@@ -651,7 +651,8 @@ class FLAT0X(FlatTask):
             MFFfigkeys = ['FL0Xmeta_MFF_2D_%s' % ulabel for ulabel in ulabels]
             self.addFigures_ST(figkeys=MFFfigkeys,
                            dobuilddata=False)
-
+        
+        self.canbecleaned = True
             
 
     def do_prdef_mask(self):

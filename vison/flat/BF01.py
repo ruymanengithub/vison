@@ -809,4 +809,4 @@ class BF01(PTC0X):
             
             self.report.add_Text(BFfittex)
         
-        
+        self.canbecleaned = True

@@ -65,8 +65,8 @@ class MOT_FF(BF01):
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
                          ('extract_COV', self.extract_COV),
-                         ('extract_BF', self.extract_BF)]
-        self.subtasks += [('extract_ADC', self.extract_ADC),
+                         ('extract_BF', self.extract_BF),
+                         ('extract_ADC', self.extract_ADC),
                          ('extract_HER', self.extract_HER)]
         
         
@@ -200,3 +200,4 @@ class MOT_FF(BF01):
         self.dd.products['profiles_ser_name'] = profiles_ser.rootname
 
         
+        self.canbecleaned = True

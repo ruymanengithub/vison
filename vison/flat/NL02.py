@@ -389,7 +389,7 @@ class NL02(NL01.NL01):
             self.addFigures_ST(figkeys=['NL01_fit_curves'], 
                                dobuilddata=False)
         
-        
+        self.canbecleaned = True
 
     def do_satCTE(self):
         """
