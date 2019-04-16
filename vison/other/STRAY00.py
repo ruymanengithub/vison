@@ -77,10 +77,11 @@ class STRAY00(DarkTask):
 
     inputsclass = STRAY00_inputs
 
-    def __init__(self, inputs, log=None, drill=False, debug=False):
+    def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         self.subtasks = [('check', self.check_data)]
-        super(STRAY00, self).__init__(inputs, log, drill, debug)
+        super(STRAY00, self).__init__(inputs=inputs, log=log, drill=drill, 
+                    debug=debug, cleanafter=cleanafter)
         self.name = 'STRAY00'
         self.type = 'Simple'
         

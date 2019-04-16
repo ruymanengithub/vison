@@ -84,11 +84,12 @@ class DARK01(DarkTask):
 
     inputsclass = DARK01_inputs
 
-    def __init__(self, inputs, log=None, drill=False, debug=False):
+    def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
                          ('meta', self.stack_analysis)]
-        super(DARK01, self).__init__(inputs, log, drill, debug)
+        super(DARK01, self).__init__(inputs=inputs, log=log, drill=drill, 
+                        debug=debug, cleanafter=cleanafter)
         self.name = 'DARK01'
         self.type = 'Simple'
         

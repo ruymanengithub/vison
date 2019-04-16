@@ -135,7 +135,7 @@ class BF01(PTC0X):
 
     inputsclass = BF01_inputs
 
-    def __init__(self, inputs, log=None, drill=False, debug=False):
+    def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         #super(BF01, self).__init__(inputs, log, drill, debug) 
         self.subtasks = [('check', self.check_data),
@@ -143,7 +143,8 @@ class BF01(PTC0X):
                          ('extract_COV', self.extract_COV),
                          ('extract_BF', self.extract_BF),
                          ('meta', self.meta_analysis)]
-        FlatTask.__init__(self,inputs,log,drill,debug)
+        FlatTask.__init__(self,inputs=inputs,log=log,drill=drill,debug=debug,
+                cleanafter=cleanafter)
         #self.inputs['todo_flags'] = self.init_todo_flags()
         #if 'todo_flags' in inputs:
         #    self.inputs['todo_flags'].update(inputs['todo_flags'])

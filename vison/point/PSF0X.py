@@ -167,7 +167,7 @@ class PSF0X(PT.PointTask):
 
     inputsclass = PSF0X_inputs
 
-    def __init__(self, inputs, log=None, drill=False, debug=False):
+    def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         self.subtasks = [('lock', self.lock_on_stars),
                          ('relock', self.relock),
@@ -180,7 +180,8 @@ class PSF0X(PT.PointTask):
                          ('xtalk_build', self.opt_xtalk_build),
                          ('xtalk_meta', self.opt_xtalk_meta)]
         
-        super(PSF0X, self).__init__(inputs, log, drill, debug)
+        super(PSF0X, self).__init__(inputs=inputs, log=log, drill=drill, 
+                        debug=debug, cleafter=cleanafter)
         self.name = 'PSF0X'
         self.type = 'Simple'
         

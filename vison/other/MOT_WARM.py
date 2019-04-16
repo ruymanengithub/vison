@@ -91,14 +91,15 @@ class MOT_WARM(DarkTask):
 
     inputsclass = MOT_WARM_inputs
 
-    def __init__(self, inputs, log=None, drill=False, debug=False):
+    def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         self.subtasks = [
 #                         ('lock', self.lock_on_stars),
                          ('check', self.check_data),
                          ('basic', self.basic_analysis)]
 
-        super(MOT_WARM, self).__init__(inputs, log, drill, debug)
+        super(MOT_WARM, self).__init__(inputs=inputs, log=log, drill=drill, debug=debug, 
+                                cleanafter=cleanafter)
         self.name = 'MOT_WARM'
         self.type = 'Simple'
         

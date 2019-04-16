@@ -80,7 +80,7 @@ class PERSIST01(Task):
 
     inputsclass = PERSIST01_inputs
 
-    def __init__(self, inputs, log=None, drill=False, debug=False):
+    def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         self.subtasks = [('check', self.check_data), 
                          ('prep', self.prep_data),
@@ -88,7 +88,8 @@ class PERSIST01(Task):
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
         
-        super(PERSIST01, self).__init__(inputs, log, drill, debug)
+        super(PERSIST01, self).__init__(inputs=inputs, log=log, drill=drill, 
+                            debug=debug, cleanafter=cleanafter)
         self.name = 'PERSIST01'
         self.type = 'Simple'
         

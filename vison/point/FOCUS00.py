@@ -131,7 +131,7 @@ class FOCUS00(PT.PointTask):
 
     inputsclass = FOCUS00_inputs
 
-    def __init__(self, inputs, log=None, drill=False, debug=False):
+    def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         
         self.subtasks = [('lock', self.lock_on_stars),
@@ -140,7 +140,7 @@ class FOCUS00(PT.PointTask):
                          #('prep', self.prep_data),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
-        super(FOCUS00, self).__init__(inputs, log, drill, debug)
+        super(FOCUS00, self).__init__(inputs=inputs, log=log, drill=drill, debug=debug,cleanafter=cleanafter)
         self.name = 'FOCUS00'
         self.type = 'Simple'        
         self.HKKeys = HKKeys

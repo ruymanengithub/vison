@@ -73,10 +73,11 @@ class TP00(PumpTask):
 
     inputsclass = TP00_inputs
 
-    def __init__(self, inputs, log=None, drill=False, debug=False):
+    def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         self.subtasks = [('check', self.check_data)]
-        super(TP00, self).__init__(inputs, log, drill, debug)
+        super(TP00, self).__init__(inputs=inputs, log=log, drill=drill, debug=debug, 
+                cleanafter=cleanafter)
         self.name = 'TP00'
         self.type = 'Simple'
         

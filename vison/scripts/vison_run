@@ -100,6 +100,8 @@ if __name__ == '__main__':
                       help="Tag to be added to log-file name for ease of identification. Optional.")
     parser.add_option("-i", "--interactive", dest="interactive", action="store_true",
                       default=False, help="Switch matplotlib to TkAgg backend for interactive plotting (e.g. debugging)")
+    parser.add_option("-C", "--Clean", dest="cleanafter", action="store_true", default=False,
+                      help="Clean After? Aux. files are erased as soon as they are no longer needed, for each Task.")
     (options, args) = parser.parse_args()
 
     pyconfig = options.pyconfig
@@ -121,6 +123,7 @@ if __name__ == '__main__':
     multithread = int(options.multithread)
     tag = options.tag
     interactive = options.interactive
+    cleanafter = options.cleanafter
     
     if len(pyconfig)>0:
         inputdict = openpyconfigf(pyconfig,run,wait)
@@ -144,7 +147,7 @@ if __name__ == '__main__':
     
     pipe = Pipe(inputdict, dolog=dolog, drill=drill,
                 debug=debug, startobsid=startobsid,
-                processes=multithread,tag=tag)
+                processes=multithread,tag=tag, cleanafter = cleanafter)
     
     
     if wait:

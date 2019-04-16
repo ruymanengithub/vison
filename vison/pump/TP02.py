@@ -94,14 +94,15 @@ class TP02(PumpTask):
     inputsclass = TP02_inputs
     contrast_threshold = 0.01
 
-    def __init__(self, inputs, log=None, drill=False, debug=False):
+    def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
                          ('extract', self.extract),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
-        super(TP02, self).__init__(inputs, log, drill, debug)
+        super(TP02, self).__init__(inputs=inputs, log=log, drill=drill, debug=debug, 
+                    cleanafter=cleanafter)
         self.name = 'TP02'
         self.type = 'Simple'
         

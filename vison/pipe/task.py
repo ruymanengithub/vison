@@ -126,7 +126,7 @@ class Task(object):
     from task_lib import check_HK, filterexposures, addHKPlotsMatrix, add_labels_to_explog
     from task_lib import save_CDP, create_mockexplog, get_checkstats_T, check_metrics_T
 
-    def __init__(self, inputs, log=None, drill=False, debug=False):
+    def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         
         self.ID = None
@@ -167,13 +167,15 @@ class Task(object):
         self.drill = drill
         self.debug = debug
         self.proc_histo = dict(Extract=False)
-        
+        self.cleanafter = cleanafter
+        self.canbecleaned = False
+        self.subpaths2clean = ['ccdpickles','ccdflats']
         
         preprocessing = dict()
         preprocessing['offsetkwargs'] = dict(method='row',
-                                                            scan='pre', trimscan=[25, 5],
-                                                            ignore_pover=True,
-                                                            extension=-1)
+                    scan='pre', trimscan=[25, 5],
+                    ignore_pover=True,
+                    extension=-1)
         
         self.set_inpdefaults(**inputs)
         _inputs = self.inpdefaults.copy()
@@ -290,9 +292,9 @@ class Task(object):
         except KeyError:
             reportroot = '%s_report' % testkey
         try:
-            cleanafter = self.inputs['cleanafter']
+            cleantexafter = self.inputs['cleantexafter']
         except KeyError:
-            cleanafter = False
+            cleantexafter = False
 
         DataDictFile = os.path.join(resultspath, '%s_DataDict.pick' % testkey)
         reportobjFile = os.path.join(resultspath, '%s_Report.pick' % testkey)
@@ -387,6 +389,11 @@ class Task(object):
                         break
                     else:
                         sys.exit()
+                
+                
+                if self.cleanafter and self.canbecleaned:                    
+                    self.cleanaux()
+                    self.canbecleaned = False
 
             else:
                 self.recover_progress(DataDictFile, reportobjFile)
@@ -394,7 +401,7 @@ class Task(object):
         # Write automatic Report of Results
 
         if todo_flags['report']:
-            outfiles = self.report.doreport(reportroot, cleanafter, silent=True) # commented on TESTS
+            outfiles = self.report.doreport(reportroot, cleanafter=cleantexafter, silent=True) # commented on TESTS
             #outfiles = self.report.doreport(reportroot, cleanafter=False, silent=False) # TESTS
             #stop() # TESTS
 
@@ -515,6 +522,23 @@ class Task(object):
         """ """
         self.dd = files.cPickleRead(DataDictFile)
         self.report = files.cPickleRead(reportobjFile)
+        
+    def cleanaux(self):
+        """ """
+        
+        if not self.canbecleaned:
+            return
+        
+        for subpathkey in self.subpaths2clean:
+            if subpathkey in self.inputs['subpaths']:
+                subpath = self.inputs['subpaths'][subpathkey]                        
+                execline1 = "find %s/ -type f -name '*.fits' -exec sh -c '%s' {} \;" % (subpath,'rm "$0"')
+                os.system(execline1)
+                execline2 = "find %s/ -type f -name '*.pick' -exec sh -c '%s' {} \;" % (subpath,'rm "$0"')
+                os.system(execline2)
+                if self.log is not None:
+                    self.log.info('\nCleared contents [.fits/.pick] of %s!' % subpath)
+
 
     def addFigure2Report(self, figkey):
         """ """

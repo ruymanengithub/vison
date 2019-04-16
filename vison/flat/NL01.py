@@ -113,7 +113,7 @@ class NL01(FlatTask):
 
     inputsclass = NL01_inputs
 
-    def __init__(self, inputs, log=None, drill=False, debug=False):
+    def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         self.Nbgd = 3
         self.Nstab0 = 1
@@ -121,7 +121,8 @@ class NL01(FlatTask):
                          ('extract', self.extract_stats),
                          ('NL', self.produce_NLCs),
                          ('satCTE', self.do_satCTE)]
-        super(NL01, self).__init__(inputs, log, drill, debug)
+        super(NL01, self).__init__(inputs=inputs, log=log, drill=drill, debug=debug,
+                        cleanafter=cleanafter)
         self.name = 'NL01'
         self.type = 'Simple'
         

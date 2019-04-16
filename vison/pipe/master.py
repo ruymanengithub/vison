@@ -127,7 +127,7 @@ class Pipe(object):
         Test_dict['FLATFLUX00_%i' % wave] = PTC0X
 
     def __init__(self, inputdict, dolog=True, drill=False, debug=False, startobsid=0,
-                 processes=1,tag=''):
+                 processes=1,tag='',cleanafter=False):
         """ """
         
         self.inputs = defaults.copy()
@@ -140,6 +140,7 @@ class Pipe(object):
         self.debug = debug
         self.startobsid = startobsid
         self.processes = processes
+        self.cleanafter = cleanafter
         self.tag = tag
         self.completion = OrderedDict()
 
@@ -171,12 +172,13 @@ class Pipe(object):
             'Tasks: %s\n' % self.tasks.__repr__()]
         return log_header
 
-    def get_test(self, taskname, inputs=dict(), log=None, drill=False, debug=False):
+    def get_test(self, taskname, inputs=dict(), log=None, drill=False, debug=False, cleanafter=False):
         """ """
         testclass = self.Test_dict[taskname]
         #pathtotest = os.path.split(inspect.getfile(testclass))[0]
         #os.system('rm %s/*.pyc' % pathtotest) # avoids problems with .pyc files from previous tasks in the run... DIRTY HACK
-        test = testclass(inputs, log, drill, debug)
+        test = testclass(inputs=inputs, log=log, drill=drill, debug=debug,
+                         cleanafter=cleanafter)
         return test
 
     def launchtask(self, taskname):
@@ -208,7 +210,8 @@ class Pipe(object):
         
         
         taskreport = self.dotask(taskname, taskinputs,
-                                 drill=self.drill, debug=self.debug)
+                                 drill=self.drill, debug=self.debug,
+                                 cleanafter=self.cleanafter)
         
         timemsg = '%.1f minutes in running Task: %s' %\
                           (taskreport['exectime'], taskname)
@@ -412,7 +415,7 @@ class Pipe(object):
 
         return None
 
-    def dotask(self, taskname, inputs, drill=False, debug=False):
+    def dotask(self, taskname, inputs, drill=False, debug=False, cleanafter=False):
         """Generic test master function."""
         
         strip_taskname = utils.remove_iter_tag(taskname,Full=False)
@@ -420,9 +423,10 @@ class Pipe(object):
         tini = datetime.datetime.now()
 
         Errors = False
-
+        
         try:
-            test = self.get_test(strip_taskname, inputs, self.log, drill, debug)
+            test = self.get_test(strip_taskname, inputs=inputs, log=self.log, 
+                                 drill=drill, debug=debug, cleanafter=cleanafter)
             Errors = test()  # test execution
         except:
             self.catchtraceback()

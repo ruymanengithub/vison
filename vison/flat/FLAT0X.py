@@ -97,14 +97,15 @@ class FLAT0X(FlatTask):
 
     inputsclass = FLATS0X_inputs
 
-    def __init__(self, inputs, log=None, drill=False, debug=False):
+    def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
                          ('indivflats', self.do_indiv_flats),
                          ('masterflat', self.do_master_flat),
                          ('prmask', self.do_prdef_mask)]
-        super(FLAT0X, self).__init__(inputs, log, drill, debug)
+        super(FLAT0X, self).__init__(inputs=inputs, log=log, drill=drill, 
+                    debug=debug, cleanafter=cleanafter)
         self.name = 'FLAT0X'
         self.type = 'Simple'
         self.CDP_lib = FL0Xaux.get_CDP_lib()

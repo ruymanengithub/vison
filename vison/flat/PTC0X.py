@@ -190,14 +190,15 @@ class PTC0X(FlatTask):
 
     inputsclass = PTC0X_inputs
 
-    def __init__(self, inputs, log=None, drill=False, debug=False):
+    def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
                          ('extract_PTC', self.extract_PTC),
                          ('meta', self.meta_analysis),
                          ('extract_HER', self.extract_HER)]
-        FlatTask.__init__(self,inputs, log, drill, debug)
+        FlatTask.__init__(self,inputs=inputs, log=log, drill=drill, 
+                    debug=debug, cleanafter=cleanafter)
         self.name = 'PTC0X'
         self.type = 'Simple'
         self.HKKeys = HKKeys

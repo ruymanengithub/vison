@@ -94,9 +94,9 @@ class NL02(NL01.NL01):
     inputsclass = NL02_inputs
     FLUDIVIDE = 20. # pc
 
-    def __init__(self, inputs, log=None, drill=False, debug=False):
+    def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
-        super(NL02, self).__init__(inputs, log, drill, debug)
+        super(NL02, self).__init__(inputs=inputs, log=log, drill=drill, debug=debug, cleanafter=cleanafter)
         self.name = 'NL02'
 
     def set_inpdefaults(self, **kwargs):

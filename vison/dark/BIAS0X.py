@@ -74,16 +74,17 @@ class BIAS0X(DarkTask):
 
     inputsclass = BIAS0X_inputs
 
-    def __init__(self, inputs, log=None, drill=False, debug=False):
+    def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
         
-        super(BIAS0X, self).__init__(inputs, log, drill, debug)
+        super(BIAS0X, self).__init__(inputs=inputs, log=log, drill=drill, debug=debug,
+                        cleanafter=cleanafter)
         self.name = 'BIAS0X'
         self.type = 'Simple'
-                
+        
         self.HKKeys = HKKeys        
         self.figdict = B0Xaux.get_B0Xfigs()
         self.CDP_lib = B0Xaux.get_CDP_lib()
@@ -727,7 +728,9 @@ class BIAS0X(DarkTask):
         if self.report is not None:
             self.addFigures_ST(figkeys=['B0Xmeta_MasterBias_2D'],
                                dobuilddata=False)
-
+        
+        self.canbecleaned = True
+        
 
 class Test(unittest.TestCase):
     """

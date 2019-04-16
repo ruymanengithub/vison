@@ -77,13 +77,14 @@ class CHINJ02(InjTask):
 
     inputsclass = CHINJ02_inputs
 
-    def __init__(self, inputs, log=None, drill=False, debug=False):
+    def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
-        super(CHINJ02, self).__init__(inputs, log, drill, debug)
+        super(CHINJ02, self).__init__(inputs=inputs, log=log, drill=drill, 
+                            debug=debug, cleanafter=cleanafter)
         self.name = 'CHINJ02'
         self.type = 'Simple'
         

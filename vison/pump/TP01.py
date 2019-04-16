@@ -110,7 +110,7 @@ class TP01(PumpTask):
     inputsclass = TP01_inputs
     contrast_threshold = 0.01
 
-    def __init__(self, inputs, log=None, drill=False, debug=False):
+    def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
@@ -118,7 +118,8 @@ class TP01(PumpTask):
                          ('basic', self.basic_analysis),
                          ('debugtask',self.debugtask),
                          ('meta', self.meta_analysis)]
-        super(TP01, self).__init__(inputs, log, drill, debug)
+        super(TP01, self).__init__(inputs=inputs, log=log, 
+            drill=drill, debug=debug, cleanafter=cleanafter)
         self.name = 'TP01'
         self.type = 'Simple'
         

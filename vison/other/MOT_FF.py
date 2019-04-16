@@ -59,9 +59,9 @@ class MOT_FF(BF01):
 
     inputsclass = MOT_FF_inputs
 
-    def __init__(self, inputs, log=None, drill=False, debug=False):
+    def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
-        super(MOT_FF, self).__init__(inputs, log, drill, debug)
+        super(MOT_FF, self).__init__(inputs=inputs, log=log, drill=drill, debug=debug, cleanafter=cleanafter)
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
                          ('extract_COV', self.extract_COV),
