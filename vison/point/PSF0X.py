@@ -181,7 +181,7 @@ class PSF0X(PT.PointTask):
                          ('xtalk_meta', self.opt_xtalk_meta)]
         
         super(PSF0X, self).__init__(inputs=inputs, log=log, drill=drill, 
-                        debug=debug, cleanfter=cleanafter)
+                        debug=debug, cleanafter=cleanafter)
         self.name = 'PSF0X'
         self.type = 'Simple'
         
