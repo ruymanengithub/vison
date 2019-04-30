@@ -42,11 +42,11 @@ def replace_in_template(texf, values):
     return texList
 
 
-def generate_header(test, model, author, reference='7-XXX'):
+def generate_header(test, model, author, reference='7-XXX', issue=0.0):
     """ """
     headertexf = os.path.join(data.__path__[0], 'header_template.tex')
     headerList = replace_in_template(
-        headertexf, (author, model, test, reference))
+        headertexf, (author, model, test, reference, issue))
     return headerList
 
 

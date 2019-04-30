@@ -391,7 +391,7 @@ class Text(Content):
 class Report(Container):
 
     def __init__(self, TestName='Test', Model='XM', Contents=None, Texheader=None,
-                 Texbody=None, Reference='7-XXX'):
+                 Texbody=None, Reference='7-XXX', Issue=0.0):
         """ """
 
         self.TestName = st.replace(TestName, '_', '\_')
@@ -410,11 +410,12 @@ class Report(Container):
         self.Contents = Contents
 
         self.Reference = Reference
+        self.Issue = Issue
 
     def generate_Header(self, author='Ruyman Azzollini'):
         """ """
         headerList = lx.generate_header(
-            self.TestName, self.Model, author, self.Reference)
+            self.TestName, self.Model, author, self.Reference, self.Issue)
         self.Texheader = headerList
 
     def generate_Texbody(self, custodian='Ruyman Azzollini'):
