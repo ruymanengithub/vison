@@ -19,6 +19,9 @@ import datetime
 from collections import OrderedDict
 from pylab import plot,show # TESTS
 from sklearn import linear_model
+from astropy.io import ascii
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.pipeline import make_pipeline
 
 from scipy import interpolate
 # END IMPORT
@@ -234,21 +237,48 @@ def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,maxrelflu=None):
     return X, Y, W, expix, regix
 
 
-#def fitNL(fluencesNL, exptimes, nomG, minfitFl, maxfitFl, display=False):
-#    """ """
 def fitNL(X, Y, W, minfitFl, maxfitFl, display=False):
     """ """    
         
-    #X,Y,W = getXYW_NL(fluencesNL, exptimes, nomG, minfitFl, maxfitFl)
     selix = np.where((X>minfitFl) & (X<maxfitFl))
     
-    NLfit = np.polyfit(X[selix], Y[selix], w=W[selix], deg=NLdeg, full=False)
+    # TESTS
+    
+    Nbins = 30
+    Xnanmin = np.nanmin(X[selix])
+    Xnanmax = np.nanmax(X[selix])
+    xbins = np.linspace(Xnanmin,Xnanmax,Nbins)
+    ixbins = np.digitize(X[selix],xbins)
+    ybins = np.array([np.median(Y[selix][np.where(ixbins==ix)]) for ix in range(Nbins)])
+    ixnonans = np.where(~np.isnan(ybins))
+    xbins = xbins[ixnonans].copy()
+    ybins = ybins[ixnonans].copy()
+    
+    model = make_pipeline(PolynomialFeatures(NLdeg),
+                          linear_model.Ridge(alpha=0.1, 
+                          solver='auto',max_iter=1000))
+    model.fit(xbins[:,np.newaxis],ybins[:,np.newaxis])
+    #model.fit(X[selix],Y[selix])
+    
+    #x_plot = np.linspace(nanmin,nanmax,1000)[:,np.newaxis]
+    #y_plot = model.predict(x_plot)
+    NLfit = model._final_estimator.coef_[0][::-1]
+    NLfit[-1] = model._final_estimator.intercept_[0]
+    
+    #plot(X[selix],Y[selix],'k.')
+    #plot(xbins,ybins,'go')
+    #plot(x_plot,y_plot,'r--')
+    #show()
+
+    
+    #NLfit = np.polyfit(X[selix], Y[selix], w=W[selix], deg=NLdeg, full=False)
     
     NLpol = np.poly1d(NLfit)
 
     fkfluencesNL = np.arange(minfitFl, maxfitFl, dtype='float32')
     # array with NL fluences (1 to 2**16, in steps of ADU)
     Y_bestfit = NLpol(fkfluencesNL)
+    
     
     ixmax = np.abs(Y_bestfit).argmax()
     maxNLpc = Y_bestfit[ixmax]
@@ -658,6 +688,22 @@ def test_wrap_fitNL():
 
     fitresults = wrap_fitNL(raw_data, exptimes, col_labels,
                             times=dtobjs, TrackFlux=True, subBgd=True)
+
+
+def recalibrate_exptimes(exptimes,calibrationfile):
+    """ """
+    
+    data = ascii.read(calibrationfile)
+    commexptime = data['COMMEXPTIME'].data.copy()
+    actexptime = data['ACTEXPTIME'].data.copy()
+        
+    predictor = interpolate.interp1d(commexptime,actexptime,kind='cubic')
+        
+    newexptimes = np.zeros_like(exptimes)
+    ixnozero = np.where(exptimes != 0.)
+    newexptimes[ixnozero] = predictor(exptimes[ixnozero])
+        
+    return newexptimes
 
 
 if __name__ == '__main__':

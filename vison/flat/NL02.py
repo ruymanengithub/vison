@@ -244,12 +244,24 @@ class NL02(NL01.NL01):
             report max. values of NL (table)
 
         """
-
+        
+        doExptimeCalib = True
+        debug = False # TESTS
+        
         if self.report is not None:
             self.report.add_Section(
                 keyword='NL', Title='Non-Linearity Analysis', level=0)
+            
         
-        debug=False # TESTS
+        if doExptimeCalib:
+            if self.report is not None:
+                self.report.add_Text('Exposure times will be corrected using: %s' %
+                                 self.ogse.profile['SHUTTER_CALIB'])
+            if self.log is not None:                
+                self.log.info('Exposure times will be corrected using: %s' %
+                                 self.ogse.profile['SHUTTER_CALIB'])
+        
+                 
 
         dIndices = copy.deepcopy(self.dd.indices)
         
@@ -320,6 +332,9 @@ class NL02(NL01.NL01):
                 wave = self.dd.mx['wave'][:, iCCD].copy()
                 dtobjs = self.dd.mx['time'][:, iCCD].copy()
                 ObsIDs = self.dd.mx['ObsID'][:].copy()
+
+                if doExptimeCalib:                
+                    exptimes = self.recalibrate_exptimes(exptimes)
                 
                 # fitresults = OrderedDict(coeffs, NLdeg, maxNLpc,flu_maxNLpc, bgd)
                 if debug:

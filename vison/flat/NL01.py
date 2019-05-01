@@ -35,6 +35,7 @@ import copy
 from collections import OrderedDict
 import pandas as pd
 
+
 from vison.pipe.task import HKKeys
 from vison.support import context
 from vison.datamodel import cdp
@@ -46,6 +47,7 @@ from vison.datamodel import inputs, core
 from vison.support import utils
 import NL01aux
 import nl as nllib
+from vison import ogse_profiles
 
 from pylab import plot,show
 # END IMPORT
@@ -249,6 +251,24 @@ class NL01(FlatTask):
                                          doMask=True,
                                          doOffset=True, doBias=True, 
                                          doFF=False)
+        
+    def recalibrate_exptimes(self, exptimes):
+        """Corrects exposure times given independent calibration of the shutter."""
+        
+        _path = os.path.abspath(ogse_profiles.__file__)
+        ogsepath = os.path.dirname(_path)
+        fpath = os.path.join(ogsepath, self.ogse.profile['SHUTTER_CALIB'])
+        
+        if not os.path.exists(fpath):
+            
+            if self.log is not None:
+                self.log.info('Exposure time calibration file not found! [%s]' % fpath)
+            
+            raise RuntimeError
+        
+        newexptimes = nllib.recalibrate_exptimes(exptimes,calibrationfile=fpath)
+        
+        return newexptimes
 
     def extract_stats(self):
         """
