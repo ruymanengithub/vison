@@ -378,11 +378,11 @@ class Text(Content):
 
     def generate_Latex(self):
         """ """
-        if isinstance(self.text, str):
+        if isinstance(self.text, (str,unicode)):
             tex = [self.text]
         elif isinstance(self.text, list):
             tex = self.text
-
+        
         tex += ['\n']  # just improves legigibility of .tex
 
         return tex
