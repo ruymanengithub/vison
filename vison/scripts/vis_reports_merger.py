@@ -38,7 +38,6 @@ def run_merger(infile):
     except KeyError: 
         Issue = 0.0
     
-    
     #indata = ascii.read(infile,data_start=0)
     niceblock = st.replace(block,'_.','\_')
     report = Report(TestName='Test Reports, %s' % niceblock,Model=programme,
@@ -76,12 +75,16 @@ def run_merger_plus(infile):
     programme = indata['metadata']['programme']
     block = indata['metadata']['block']
     reference = indata['metadata']['reference']
+    try: 
+        Issue = indata['metadata']['issue']
+    except KeyError: 
+        Issue = 0.0
     
-    
+
     #indata = ascii.read(infile,data_start=0)
     niceblock = st.replace(block,'_.','\_')
     report = Report(TestName='Test Reports, %s' % niceblock,Model=programme,
-                    Reference=reference)
+                    Reference=reference, Issue=Issue)
     
     reportroot = 'EUCL_MSS_TR_%s_%s' % (reference,block)
     

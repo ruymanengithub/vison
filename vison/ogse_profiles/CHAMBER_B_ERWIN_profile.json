@@ -43,5 +43,6 @@
         "CCD1": "Pattern_CCD1_CHAMBER_B_JAN19.txt",
         "CCD2": "Pattern_CCD2_CHAMBER_B_JAN19.txt",
         "CCD3": "Pattern_CCD3_CHAMBER_B_JAN19.txt"
-    }
+    },
+    "SHUTTER_CALIB":"shutter_B_calibration.txt"
 }
