@@ -24,6 +24,7 @@ import string as st
 import pandas as pd
 from matplotlib.colors import Normalize
 from scipy import ndimage
+from skimage import exposure
 
 from vison.pipe.task import HKKeys
 from vison.pipe.task import Task
@@ -495,8 +496,8 @@ class FLAT0X(FlatTask):
                 MFF_2PLOT[ulabel][CCDk] = OrderedDict()
                 for Q in Quads:
                     MFF_2PLOT[ulabel][CCDk][Q] = OrderedDict()
-        MFF_p5s = []
-        MFF_p95s = []
+        #MFF_p5s = []
+        #MFF_p95s = []
 
         if not self.drill:
 
@@ -569,9 +570,11 @@ class FLAT0X(FlatTask):
                         sqdata = ndimage.filters.gaussian_filter(qdata,sigma=5.,
                                                                  mode='constant',
                                                                  cval=1.)
+                        esqdata = exposure.equalize_hist(sqdata,nbins=256)
                         #MFF_p5s.append(np.percentile(sqdata,5))
                         #MFF_p95s.append(np.percentile(sqdata,95))
-                        MFF_2PLOT[ulabel][CCDk][Q]['img'] = sqdata.transpose()
+                        
+                        MFF_2PLOT[ulabel][CCDk][Q]['img'] = esqdata.transpose()
 
         # REPORT PRNU results
         
@@ -640,12 +643,12 @@ class FLAT0X(FlatTask):
             # UPDATING scaling based on data
             
             
-            if len(MFF_p5s)>0:
-                normfunction = Normalize(vmin=np.nanmin(MFF_p5s),vmax=np.nanmax(MFF_p95s),clip=True)
-            else:
-                normfunction = Normalize(vmin=0.99,vmax=1.01,clip=False)
+            #if len(MFF_p5s)>0:
+            #    normfunction = Normalize(vmin=np.nanmin(MFF_p5s),vmax=np.nanmax(MFF_p95s),clip=True)
+            #else:
+            #    normfunction = Normalize(vmin=0.99,vmax=1.01,clip=False)
             
-            self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['meta']['corekwargs']['norm'] = normfunction
+            #self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['meta']['corekwargs']['norm'] = normfunction
             
         if self.report is not None:
             MFFfigkeys = ['FL0Xmeta_MFF_2D_%s' % ulabel for ulabel in ulabels]
