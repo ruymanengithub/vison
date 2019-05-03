@@ -222,8 +222,10 @@ class TP01(PumpTask):
     def prepare_images(self):
         super(TP01, self).prepare_images(doExtract=True, 
              doBadPixels=True,
-             doMask=False, # ON TESTS!
-             doOffset=True, doBias=False, doFF=False)
+             doMask=True, # False ON TESTS!
+             doOffset=True, 
+             doBias=False, 
+             doFF=False)
 
     def extract(self):
         """ 
@@ -486,9 +488,8 @@ class TP01(PumpTask):
         
         masterdict = OrderedDict()
         for CCDk in CCDs:
-                
-                kmastercatpick = self.dd.products['MASTERCAT_%s' % CCDk]
-                masterdict[CCDk] = cPickleRead(kmastercatpick)['data'].copy()
+            kmastercatpick = self.dd.products['MASTERCAT_%s' % CCDk]
+            masterdict[CCDk] = cPickleRead(kmastercatpick)['data'].copy()
                 
         allQuads = ['E','F','G','H']
         modkeys = ['m123', 'm234', 'm341', 'm412']
@@ -730,7 +731,7 @@ class TP01(PumpTask):
                     logPc = np.log10(mergecat[CCDk][Q][modkey][:,ixPc].copy())
                     
                     Heatmap, xedges, yedges = np.histogram2d(logtau, logPc, bins=(100,50), 
-                range=[[2,5],[-6,-3]]) 
+                range=[[1.5,5.5],[-6,-3]]) 
                     
                     if CCDk == CCDs[0] and Q == allQuads[0]:
                         extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]

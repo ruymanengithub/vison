@@ -190,6 +190,16 @@ def get_InjProfile(ccdobj, Q, Navgrows=-1, vstart=0, vend=ccdmod.NrowsCCD, exten
                                         mode='reflect')
     return model
 
+def wrap_gen_InjProfiles(ccdobj, Navgrows=-1, vstart=0, vend=ccdmod.NrowsCCD, extension=-1):
+    """ """
+    
+    Quads = ccdobj.Quads
+    InjProfiles = OrderedDict()
+    
+    for Q in Quads:
+        InjProfiles[Q] = get_InjProfile(ccdobj, Q, Navgrows, vstart, vend, extension)
+    
+    return InjProfiles
 
 #def find_dipoles_vtpump_old(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, extension=-1):
 #    """ """
