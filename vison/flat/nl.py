@@ -22,6 +22,7 @@ from sklearn import linear_model
 from astropy.io import ascii
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.pipeline import make_pipeline
+from astropy.stats import sigma_clip
 
 from scipy import interpolate
 # END IMPORT
@@ -151,25 +152,36 @@ def getXYW_NL(fluencesNL,exptimes,nomG,pivotfrac=0.5,maxrelflu=None,method='spli
 
 
 
-def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,maxrelflu=None):
+def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,minrelflu=None,
+                maxrelflu=None):
     """ """
     
     assert fluencesNL.shape[0] == exptimes.shape[0]
     assert fluencesNL.ndim <= 2
     assert exptimes.ndim == 1
     
-    if maxrelflu is None: maxrelflu=1.
+    if maxrelflu is None: maxrelflu=0.7
+    if minrelflu is None: minrelflu=0.02
     
     YL = np.zeros_like(fluencesNL,dtype='float32')
-    expix, regix = np.meshgrid(np.arange(fluencesNL.shape[0]),np.arange(fluencesNL.shape[1]),indexing='ij')
+    if fluencesNL.ndim == 2:
+        expix, regix = np.meshgrid(np.arange(fluencesNL.shape[0]),np.arange(fluencesNL.shape[1]),indexing='ij')
+    else:
+        expix = np.arange(fluencesNL.shape[0])
+        regix = np.ones(fluencesNL.shape[0])
     
     uexptimes = np.unique(exptimes)
+        
     for iu,uexp in enumerate(uexptimes):
         ix = np.where(exptimes==uexp)
-        avflu = fluencesNL[ix[0],...].mean(axis=1)
-        deviants = np.abs((avflu-avflu.mean())/avflu.std())>3.
-        if np.any(deviants):
-            ixNaN = (ix[0][deviants],)
+        
+        if fluencesNL.ndim ==2:           
+            iflu = fluencesNL[ix[0],...].mean(axis=1)
+        else:
+            iflu = fluencesNL[ix[0]].copy()
+        ixdeviants = np.where(sigma_clip(iflu,sigma=3).mask)
+        if len(ixdeviants[0])>0:
+            ixNaN = (ix[0][ixdeviants],)
             fluencesNL[ixNaN,...] = np.nan
     
     if fluencesNL.ndim == 2:
@@ -181,8 +193,14 @@ def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,maxrelflu=None):
             #predictor = get_RANSAC_linear_model(exptimes[:],fluencesNL[:,isec])
             #Ypred = np.squeeze(predictor(np.expand_dims(exptimes,1)))
             
+            ixnonan = np.where(~np.isnan(fluencesNL[:,0]))
             
-            ixsel=np.where(fluencesNL[:,isec]<=2.**16*maxrelflu)
+            _ixsel=np.where((fluencesNL[ixnonan,isec]>=2.**16*minrelflu) & 
+                    (fluencesNL[ixnonan,isec]<=2.**16*maxrelflu))
+            
+            ixsel = (ixnonan[0][_ixsel],)
+            
+            
             xp = exptimes[ixsel]
             yp = np.squeeze(fluencesNL[ixsel,isec])
             predictor = get_POLY_linear_model(xp,yp)
@@ -198,15 +216,28 @@ def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,maxrelflu=None):
             #plot(YpredL[3:],fluencesNL[3:,isec]/YpredL[3:]-1.,marker='.',ls='')            
         #show()
 
-    else:
+    elif fluencesNL.ndim == 1:
         
         #predictor = get_RANSAC_linear_model(exptimes,fluencesNL)
         #YL[:] = np.squeeze(predictor(np.expand_dims(exptimes,1)))
-        predictor = get_POLY_linear_model(exptimes,fluencesNL)
+        
+        ixnonan = np.where(~np.isnan(fluencesNL))
+            
+        _ixsel=np.where((fluencesNL[ixnonan]>=2.**16*minrelflu) & 
+                    (fluencesNL[ixnonan]<=2.**16*maxrelflu))
+            
+        ixsel = (ixnonan[0][_ixsel],)
+        
+        #ixsel=np.where((fluencesNL>=2.**16*minrelflu) & (fluencesNL<=2.**16*maxrelflu))
+        xp = exptimes[ixsel].copy()
+        yp = np.squeeze(fluencesNL[ixsel]).copy()
+        predictor = get_POLY_linear_model(xp,yp)
         predictor.coef[1] = 0.
         YpredL = predictor(exptimes)
         YL[:] = YpredL.copy()
         
+        #plot(yp,yp/predictor(exptimes[ixsel])-1.,'k.')
+        #show()
         
 
     Z = 100.*(fluencesNL/YL-1.)
@@ -237,27 +268,38 @@ def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,maxrelflu=None):
     return X, Y, W, expix, regix
 
 
-def fitNL(X, Y, W, minfitFl, maxfitFl, display=False):
+def fitNL(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False):
     """ """    
-        
-    selix = np.where((X>minfitFl) & (X<maxfitFl))
+    
+    ixnonan = np.where(~np.isnan(X))
+    _selix = np.where((X[ixnonan]>minfitFl) & (X[ixnonan]<maxfitFl))    
+    selix = (ixnonan[0][_selix],)
     
     # TESTS
+    doBin = False    
     
-    Nbins = 30
-    Xnanmin = np.nanmin(X[selix])
-    Xnanmax = np.nanmax(X[selix])
-    xbins = np.linspace(Xnanmin,Xnanmax,Nbins)
-    ixbins = np.digitize(X[selix],xbins)
-    ybins = np.array([np.median(Y[selix][np.where(ixbins==ix)]) for ix in range(Nbins)])
-    ixnonans = np.where(~np.isnan(ybins))
-    xbins = xbins[ixnonans].copy()
-    ybins = ybins[ixnonans].copy()
+    if doBin:
+    
+        Nbins = 30
+        Xnanmin = np.nanmin(X[selix])
+        Xnanmax = np.nanmax(X[selix])
+        xfit = np.linspace(Xnanmin,Xnanmax,Nbins)
+        ixbins = np.digitize(X[selix],xfit)
+        yfit = np.array([np.median(Y[selix][np.where(ixbins==ix)]) for ix in range(Nbins)])
+        ixnonans = np.where(~np.isnan(yfit))
+        xfit = xfit[ixnonans].copy()
+        yfit = yfit[ixnonans].copy()
+    else:
+        ixnonans = np.where(~(np.isnan(X) | np.isnan(Y)))
+        xfit = X[ixnonans].copy()
+        yfit = Y[ixnonans].copy()
     
     model = make_pipeline(PolynomialFeatures(NLdeg),
                           linear_model.Ridge(alpha=0.1, 
                           solver='auto',max_iter=1000))
-    model.fit(xbins[:,np.newaxis],ybins[:,np.newaxis])
+    
+    model.fit(xfit[:,np.newaxis],yfit[:,np.newaxis])
+    
     #model.fit(X[selix],Y[selix])
     
     #x_plot = np.linspace(nanmin,nanmax,1000)[:,np.newaxis]
@@ -283,13 +325,23 @@ def fitNL(X, Y, W, minfitFl, maxfitFl, display=False):
     ixmax = np.abs(Y_bestfit).argmax()
     maxNLpc = Y_bestfit[ixmax]
     flu_maxNLpc = fkfluencesNL[ixmax]
-    
+        
     if display:
         from matplotlib import pyplot as plt
+        import matplotlib.cm as cm
+        
+        uexptimes, ixuexptimes = np.unique(Exptimes,return_index=True)
+        
+        ecolors = cm.rainbow(np.linspace(0,1,len(uexptimes)))
+        
         fig = plt.figure()
         ax = fig.add_subplot(111)
         ax.plot(X,Y,'k.')
-        ax.plot(X[selix],Y[selix],'b.')
+        
+        for i in selix[0]:
+            ixcolor = np.where(np.isclose(uexptimes,Exptimes[i]))[0][0]
+            ax.plot(X[i],Y[i],'.',color=ecolors[ixcolor,:])
+        
         ax.plot(fkfluencesNL,Y_bestfit,'r--')
         ax.set_xlabel('NL Fluence')
         ax.set_ylabel('NLpc')
@@ -491,11 +543,14 @@ def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.arra
     minfitFl = 250. # ADU
     maxfitFl = FullDynRange-10000. # ADU
     pivotfrac = 0.2
-    maxrelflu = 0.8
+    minrelflu = 0.02
+    maxrelflu = 0.7
 
     NObsIDs, Nsecs = fluences.shape
     
+    
     if TrackFlux:
+        
         assert len(times) == len(exptimes)
 
         dtimes = np.array(
@@ -506,7 +561,7 @@ def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.arra
     nonzeroexptimes = exptimes[exptimes>0.]
     unonzeroexptimes = np.unique(nonzeroexptimes)
     
-    # hacky way to identify stability exposures: the stability exposure time repeats the most
+    # hacky but effective way to identify stability exposures: the stability exposure time repeats the most
     _ixstab = np.array([(exptimes==iexptime).sum() for iexptime in unonzeroexptimes]).argmax()
     exptimestab = unonzeroexptimes[_ixstab]
     
@@ -520,10 +575,23 @@ def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.arra
     ixboo_fluB = (exptimes != 0.) & (exptimes != exptimestab) & (wave == uwaves[1]) 
     
     if TrackFlux and len(times) == NObsIDs:
+        
         st_dtimes = dtimes[ixboo_stab].copy()
         st_fluences = np.nanmean(fluences[ixboo_stab, :], axis=1).copy()
+        
+        ans = sigma_clip(st_fluences,sigma=3)
+        ixgood = np.where(~ans.mask)
+        
+        #tmodel = make_pipeline(PolynomialFeatures(2),
+        #                  linear_model.Ridge(alpha=0.1, 
+        #                  solver='auto',max_iter=1000))
+    
+        #tmodel.fit(st_dtimes[ixgood,np.newaxis],st_fluences[ixgood,np.newaxis])
+        
+        #track_fit = tmodel._final_estimator.coef_[0][::-1]
+        #track_fit[-1] = tmodel._final_estimator.intercept_[0]
 
-        track_fit = np.polyfit(st_dtimes, st_fluences, 2, full=False, cov=False)
+        track_fit = np.polyfit(st_dtimes[ixgood], st_fluences[ixgood], 2, full=False, cov=False)
         
         track_pol = np.poly1d(track_fit)
 
@@ -540,15 +608,18 @@ def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.arra
     else:
         trackstab = 0.
     
+    
     ixfitA = ixboo_fluA | ixboo_bgd | ixboo_stab
-    X_A,Y_A,W_A,e_A,r_A = getXYW_NL02(fluences[ixfitA, :], 
+    X_A,Y_A,W_A,e_A,r_A = getXYW_NL02(np.nanmedian(fluences[ixfitA, :],axis=1), 
                                 exptimes[ixfitA], nomG, 
                             pivotfrac=pivotfrac,
+                            minrelflu=minrelflu,
                             maxrelflu=maxrelflu)
     ixfitB = ixboo_fluB | ixboo_bgd
-    X_B,Y_B,W_B,e_B,r_B = getXYW_NL02(fluences[ixfitB, :], 
+    X_B,Y_B,W_B,e_B,r_B = getXYW_NL02(np.nanmedian(fluences[ixfitB, :],axis=1), 
                       exptimes[ixfitB], nomG, 
                     pivotfrac=pivotfrac,
+                    minrelflu=minrelflu,
                     maxrelflu=maxrelflu)
     
     
@@ -558,7 +629,9 @@ def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.arra
     exps = np.concatenate((e_A,e_B))
     regs = np.concatenate((r_A,r_B))
     
-    fitresults = fitNL(X, Y, W, minfitFl, maxfitFl, display=debug)
+    Exptimes = np.concatenate((exptimes[ixfitA][e_A],exptimes[ixfitB][e_B]))
+    
+    fitresults = fitNL(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug)
     #fitresults['bgd'] = bgd
     fitresults['stability_pc'] = trackstab
     
@@ -702,7 +775,7 @@ def recalibrate_exptimes(exptimes,calibrationfile):
     newexptimes = np.zeros_like(exptimes)
     ixnozero = np.where(exptimes != 0.)
     newexptimes[ixnozero] = predictor(exptimes[ixnozero])
-        
+    
     return newexptimes
 
 

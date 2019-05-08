@@ -254,12 +254,14 @@ class NL02(NL01.NL01):
             
         
         if doExptimeCalib:
+            niceshutterprofname = st.replace(self.ogse.profile['SHUTTER_CALIB'],'_','\_')
+            
             if self.report is not None:
                 self.report.add_Text('Exposure times will be corrected using: %s' %
-                                 self.ogse.profile['SHUTTER_CALIB'])
+                                 niceshutterprofname)
             if self.log is not None:                
                 self.log.info('Exposure times will be corrected using: %s' %
-                                 self.ogse.profile['SHUTTER_CALIB'])
+                                 niceshutterprofname)
         
                  
 
@@ -333,17 +335,24 @@ class NL02(NL01.NL01):
                 dtobjs = self.dd.mx['time'][:, iCCD].copy()
                 ObsIDs = self.dd.mx['ObsID'][:].copy()
 
-                if doExptimeCalib:                
-                    exptimes = self.recalibrate_exptimes(exptimes)
+                if doExptimeCalib:
+                    nexptimes = self.recalibrate_exptimes(exptimes)
                 
                 # fitresults = OrderedDict(coeffs, NLdeg, maxNLpc,flu_maxNLpc, bgd)
                 if debug:
                     print('\n%s%s\n' % (CCDkey,Q))
-                _fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, exptimes, wave, 
+                #print('WITH shutter nl correction...')
+                _fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, nexptimes, wave, 
                                             dtobjs, 
                                             TrackFlux=True, 
                                             debug=debug,
-                                            ObsIDs=ObsIDs) 
+                                            ObsIDs=ObsIDs)
+#                print('WITHOUT shutter nl correction...')
+#                __fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, exptimes, wave, 
+#                                            dtobjs, 
+#                                            TrackFlux=True, 
+#                                            debug=debug,
+#                                            ObsIDs=ObsIDs)
                 
                 NLall_mx[CCDkey][Q].update(_fitresults)
                 
