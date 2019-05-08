@@ -30,7 +30,7 @@ fitPTC_flags['BADERRORS'] = [2**2L]
 
 def _prune_smear(means,var):
     """ """
-    mask = np.ones_like(means)
+    mask = np.ones_like(means,dtype='bool')
     bins = np.linspace(2**16*0.5,2**16,50)
     threshold = 0.1
     
@@ -38,8 +38,8 @@ def _prune_smear(means,var):
         sel=np.where((means>=bins[i]) & (means < bins[i+1]))
         if len(sel[0])>0:
             relrange = (var[sel].max()-var[sel].min())/var[sel].mean()
-            if relrange >threshold:
-                mask[sel] = 0
+            if relrange > threshold:
+                mask[sel] = False
     return mask
    
     
@@ -55,6 +55,7 @@ def fitPTC(means, var, debug=False):
         from pylab import plot,show
     
     sigmathresh=5. # sigma clipping
+    flulims = [1.E3,2**16-1.E3] # FLUENCE LIMITS
     poldeg = 2
     flags = flmod.Flags(fitPTC_flags)
 
@@ -63,9 +64,10 @@ def fitPTC(means, var, debug=False):
     var = np.array(var)[order]
     
     smearmask = _prune_smear(means,var)
+    presel = smearmask & (means >= flulims[0]) & (means<=flulims[1])
     
-    means = means[np.where(smearmask)]
-    var = var[np.where(smearmask)]
+    means = means[np.where(presel)]
+    var = var[np.where(presel)]
     
     #ixmaxvar = np.argmax(var)
     #maxvar = var[ixmaxvar]
