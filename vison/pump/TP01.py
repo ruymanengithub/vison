@@ -241,7 +241,7 @@ class TP01(PumpTask):
         Quads = DDindices.get_vals('Quad')
 
         ccdpicklespath = self.inputs['subpaths']['ccdpickles']
-        #productspath = self.inputs['subpaths']['products']
+        productspath = self.inputs['subpaths']['products']
         
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
@@ -271,6 +271,18 @@ class TP01(PumpTask):
                     
                     for Q in Quads:                    
                         chinjnoise_dd[CCDk][Q] = np.nanmedian(char_res_dict[CCDk][Q]['injnoise'])                    
+        
+        # Saving the charge injection characterisation results
+        
+        chchar_cdp = self.CDP_lib['CHINJCHARACT']
+        
+        chchar_cdp.header = CDP_header.copy()
+        chchar_cdp.meta = dict()
+        chchar_cdp.path = productspath
+        chchar_cdp.data = char_res_dict.copy()
+        
+        self.save_CDP(chchar_cdp)
+        self.pack_CDP_to_dd(chchar_cdp,'CHINJCHARACT')
         
         # REPORTS
         

@@ -112,7 +112,12 @@ def get_CDP_lib():
         mergedcat = cdp.CDP()
         mergedcat.rootname = 'TP01_MergedCat_%s' % CCD
         CDP_lib['MERGEDCAT_%s' % CCD] = mergedcat
+        
                
+        chinjcharact_cdp = cdp.CDP()
+        chinjcharact_cdp.rootname = 'TP01_CHINJCHARACT'
+        CDP_lib['CHINJCHARACT'] = chinjcharact_cdp
+        
         chinjnoise_cdp = cdp.Tables_CDP()
         chinjnoise_cdp.rootname = 'TP01_CHINJNOISE'
         
