@@ -257,10 +257,10 @@ class NL02(NL01.NL01):
             niceshutterprofname = st.replace(self.ogse.profile['SHUTTER_CALIB'],'_','\_')
             
             if self.report is not None:
-                self.report.add_Text('Exposure times will be corrected using: %s' %
+                self.report.add_Text('Exposure times corrected using: %s' %
                                  niceshutterprofname)
             if self.log is not None:                
-                self.log.info('Exposure times will be corrected using: %s' %
+                self.log.info('Exposure times corrected using: %s' %
                                  niceshutterprofname)
         
                  
@@ -393,7 +393,8 @@ class NL02(NL01.NL01):
             formatters=[fccd,fq,ff,ff]
             
             caption = 'NL02 results TABLE' 
-            Ntex = nl_tb_cdp.get_textable(sheet='NL_TB', caption=caption,
+            Ntex = nl_tb_cdp.get_textable(sheet='NL_TB', 
+                                          caption=caption,
                                                fitwidth=True,
                                                tiny=True,
                                                formatters=formatters)

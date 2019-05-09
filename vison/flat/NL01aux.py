@@ -72,13 +72,16 @@ check_img_std_dict = dict(stats=['flu_std_img'],
 
 NL_curves_dict = dict(
     figname='NL01_curves.png',
-    caption='NL01: Relative non-linearity vs. fluence and best fits.',
+    caption='NL01: Relative non-linearity vs. fluence and best [\\textbf{\\textcolor{red}{POOR}}] fit curves.',
     meta=dict(doLegend=True,
               ylabel='Z [percentage]',
               xlabel=r'$Y_{NL} [ADU]$',
               suptitle='NL01: Non-Linearity Curves.',
-              ylim=[-10.,10.])
+              ylim=[-10.,10.],
+                   corekwargs=dict(data=dict(marker='.',linestyle='',color='b'),
+                                   fit=dict(marker='',linestyle='--',color='r')))
     )
+
 
 def get_NL01figs():
     NL01figs = dict()

@@ -294,8 +294,9 @@ def fitNL(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False):
         xfit = X[ixnonans].copy()
         yfit = Y[ixnonans].copy()
     
+    
     model = make_pipeline(PolynomialFeatures(NLdeg),
-                          linear_model.Ridge(alpha=0.1, 
+                          linear_model.Ridge(alpha=0.5, 
                           solver='auto',max_iter=1000))
     
     model.fit(xfit[:,np.newaxis],yfit[:,np.newaxis])
@@ -316,16 +317,23 @@ def fitNL(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False):
     #NLfit = np.polyfit(X[selix], Y[selix], w=W[selix], deg=NLdeg, full=False)
     
     NLpol = np.poly1d(NLfit)
-
-    fkfluencesNL = np.arange(minfitFl, maxfitFl, dtype='float32')
-    # array with NL fluences (1 to 2**16, in steps of ADU)
+    
+    
+    # array with NL fluences (1 to 2**16, in steps of 20 ADU)
+    fkfluencesNL = np.linspace(minfitFl,maxfitFl,200)*1.    
     Y_bestfit = NLpol(fkfluencesNL)
     
+    # Based on fit
+    #ixmax = np.abs(Y_bestfit).argmax()
+    #maxNLpc = Y_bestfit[ixmax]
+    #flu_maxNLpc = fkfluencesNL[ixmax]
     
-    ixmax = np.abs(Y_bestfit).argmax()
-    maxNLpc = Y_bestfit[ixmax]
-    flu_maxNLpc = fkfluencesNL[ixmax]
-        
+    # Direct measure
+    
+    ixmax = np.abs(yfit).argmax()
+    maxNLpc = yfit[ixmax]
+    flu_maxNLpc = xfit[ixmax]
+    
     if display:
         from matplotlib import pyplot as plt
         import matplotlib.cm as cm
