@@ -201,6 +201,61 @@ def wrap_gen_InjProfiles(ccdobj, Navgrows=-1, vstart=0, vend=ccdmod.NrowsCCD, ex
     
     return InjProfiles
 
+def _fit_one_line(X,Y,pdeg=2):
+    """ """
+    
+    pfit = np.polyfit(X,Y,pdeg)   
+    fpol = np.poly1d(pfit)    
+    Yfit = fpol(X)
+    
+    std = np.std(Y-Yfit)
+    
+    res = dict(coeffs = pfit, std=std)
+    
+    return res
+        
+
+def charact_injection(ccdobj):
+    """ """
+    
+    Quads = ccdobj.Quads
+    
+    res = OrderedDict()
+    for Q in Quads:
+        res[Q] = OrderedDict()
+    
+    prescan = ccdobj.prescan
+    overscan = ccdobj.overscan
+    NrowsCCD = ccdobj.NrowsCCD
+    
+    Ncols = ccdobj.NcolsCCD
+    
+    X = np.arange(NrowsCCD)
+    pdeg = 2
+    
+    res['pdeg'] = pdeg
+    
+    for Q in Quads:
+        
+        quad = ccdobj.get_quad(Q,canonical=True,extension=-1)
+        quadimg = quad[prescan:-overscan,0:NrowsCCD].copy()
+        
+        quadpoly = np.zeros((Ncols,pdeg+1),dtype='float32')
+        quadinjnoise = np.zeros((Ncols,),dtype='float32')
+        
+        for i in range(Ncols):
+            ires = _fit_one_line(X,quadimg[i,:],pdeg=pdeg)
+            quadpoly[i,:] = ires['coeffs']
+            quadinjnoise[i] = ires['std']
+        
+        res[Q]['polycoeffs'] = quadpoly.copy()
+        res[Q]['injnoise'] = quadinjnoise.copy()
+        
+    return res
+    
+    
+
+
 #def find_dipoles_vtpump_old(ccdobj, threshold, Q, vstart=0, vend=ccdmod.NrowsCCD, extension=-1):
 #    """ """
 #

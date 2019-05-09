@@ -114,6 +114,7 @@ class TP01(PumpTask):
         """ """
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
+                         ('injection', self.charact_injection),
                          ('extract', self.extract),
                          ('basic', self.basic_analysis),
                          ('debugtask',self.debugtask),
@@ -226,6 +227,47 @@ class TP01(PumpTask):
              doOffset=True, 
              doBias=False, 
              doFF=False)
+    
+    def charact_injection(self):
+        """Characterises Charge Injection."""
+        
+        
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='charact', Title='TP01: Charge Injection Characterisation', level=0)
+        
+        DDindices = copy.deepcopy(self.dd.indices)
+        CCDs = DDindices.get_vals('CCD')
+        Quads = DDindices.get_vals('Quad')
+
+        ccdpicklespath = self.inputs['subpaths']['ccdpickles']
+        #productspath = self.inputs['subpaths']['products']
+        
+        id_dlys = np.unique(self.dd.mx['id_dly'][:, 0])
+        
+        if not self.drill:
+            
+            for id_dly in id_dlys:
+            
+                for jCCD, CCDk in enumerate(CCDs):
+                    
+                    ixsel = np.where((self.dd.mx['id_dly'][:] == id_dly) & 
+                        (self.dd.mx['v_tpump'][:] == 0) & 
+                        (self.dd.mx['CCD'][:] == CCDk))
+                    
+                    iccdobj_f = '%s.pick' % self.dd.mx['ccdobj_name'][ixsel][0]
+                    iccdobj = cPickleRead(os.path.join(ccdpicklespath,iccdobj_f))
+                    
+                    res = tptools.charact_injection(iccdobj)
+                    
+                    stop()
+        
+        # REPORTS
+        
+        # Table with injection noise per CCD/Quadrant
+        
+        
+        
 
     def extract(self):
         """ 
@@ -275,7 +317,7 @@ class TP01(PumpTask):
             # Computing maps of relative amplitude of dipoles
 
             for id_dly in id_dlys:
-
+                
                 for jCCD, CCDk in enumerate(CCDs):
 
                     ixsel = np.where((self.dd.mx['id_dly'][:] == id_dly) & (
