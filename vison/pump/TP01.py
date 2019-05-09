@@ -243,13 +243,22 @@ class TP01(PumpTask):
         ccdpicklespath = self.inputs['subpaths']['ccdpickles']
         #productspath = self.inputs['subpaths']['products']
         
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        
         id_dlys = np.unique(self.dd.mx['id_dly'][:, 0])
+        
+        char_res_dict = OrderedDict()
+        chinjnoise_dd = OrderedDict()
         
         if not self.drill:
             
             for id_dly in id_dlys:
             
                 for jCCD, CCDk in enumerate(CCDs):
+                    
+                    chinjnoise_dd[CCDk] = OrderedDict()
                     
                     ixsel = np.where((self.dd.mx['id_dly'][:] == id_dly) & 
                         (self.dd.mx['v_tpump'][:] == 0) & 
@@ -258,15 +267,42 @@ class TP01(PumpTask):
                     iccdobj_f = '%s.pick' % self.dd.mx['ccdobj_name'][ixsel][0]
                     iccdobj = cPickleRead(os.path.join(ccdpicklespath,iccdobj_f))
                     
-                    res = tptools.charact_injection(iccdobj)
+                    char_res_dict[CCDk] = tptools.charact_injection(iccdobj)
                     
-                    stop()
+                    for Q in Quads:                    
+                        chinjnoise_dd[CCDk][Q] = np.nanmedian(char_res_dict[CCDk][Q]['injnoise'])                    
         
         # REPORTS
         
         # Table with injection noise per CCD/Quadrant
+                
+        chinjnoise_cdp = self.CDP_lib['CHINJNOISE']
+        chinjnoise_cdp.path = self.inputs['subpaths']['products']
+        chinjnoise_dddf = OrderedDict(CHINJNOISE=pd.DataFrame.from_dict(chinjnoise_dd))
+        chinjnoise_cdp.ingest_inputs(data=chinjnoise_dddf.copy(),                             
+                              meta=dict(),
+                              header=CDP_header.copy())
         
-        
+        chinjnoise_cdp.init_wb_and_fillAll(header_title='%s: CHARGE INJECTION NOISE' % self.inputs['test'])
+        self.save_CDP(chinjnoise_cdp)
+        self.pack_CDP_to_dd(chinjnoise_cdp, 'CHINJNOISE_CDP')
+
+        if self.report is not None:
+            
+            ff = lambda x: '%.2f' % x
+            
+            formatters = [ff,ff,ff]
+            
+            CHINJNOISEtex = chinjnoise_cdp.get_textable(sheet='CHINJNOISE', 
+                                            caption='%s: Charge Injection Noise (ADU, rms).' % \
+                                                             self.inputs['test'],
+                                            longtable=False, 
+                                            fitwidth=True,
+                                            index=True,
+                                            formatters=formatters)
+            self.report.add_Text(CHINJNOISEtex)
+            
+
         
 
     def extract(self):

@@ -16,6 +16,7 @@ import numpy as np
 import os
 from collections import OrderedDict
 from matplotlib import cm
+import pandas as pd
 
 from vison.datamodel import cdp
 from vison.plot import figclasses
@@ -96,6 +97,7 @@ def get_TP01figs():
     return TP01figs
 
 
+
 def get_CDP_lib():
     """ """
     
@@ -110,6 +112,11 @@ def get_CDP_lib():
         mergedcat = cdp.CDP()
         mergedcat.rootname = 'TP01_MergedCat_%s' % CCD
         CDP_lib['MERGEDCAT_%s' % CCD] = mergedcat
+               
+        chinjnoise_cdp = cdp.Tables_CDP()
+        chinjnoise_cdp.rootname = 'TP01_CHINJNOISE'
+        
+        CDP_lib['CHINJNOISE'] = chinjnoise_cdp
     
     return CDP_lib
     
