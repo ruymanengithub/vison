@@ -23,12 +23,13 @@ from astropy.io import ascii
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.pipeline import make_pipeline
 from astropy.stats import sigma_clip
+from scipy.optimize import curve_fit
 
 from scipy import interpolate
 # END IMPORT
 
 FullDynRange = 2.**16
-NLdeg = 5
+NLdeg = 4
 
 def get_RANSAC_linear_model(X,Y):
     ransac = linear_model.RANSACRegressor()
@@ -268,7 +269,7 @@ def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,minrelflu=None,
     return X, Y, W, expix, regix
 
 
-def fitNL(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False):
+def fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False):
     """ """    
     
     ixnonan = np.where(~np.isnan(X))
@@ -370,6 +371,104 @@ def fitNL(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False):
                              
     return fitresults
 
+def fNL(x,*p):
+    """ """
+    return p[0]*np.exp(-(x-p[1])/p[2]) +np.poly1d(p[3:])(x)
+
+
+def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False):
+    """ """    
+    
+    ixnonan = np.where(~np.isnan(X))
+    _selix = np.where((X[ixnonan]>minfitFl) & (X[ixnonan]<maxfitFl))    
+    selix = (ixnonan[0][_selix],)
+    
+    # TESTS
+    doBin = False    
+    
+    if doBin:
+    
+        Nbins = 30
+        Xnanmin = np.nanmin(X[selix])
+        Xnanmax = np.nanmax(X[selix])
+        xfit = np.linspace(Xnanmin,Xnanmax,Nbins)
+        ixbins = np.digitize(X[selix],xfit)
+        yfit = np.array([np.median(Y[selix][np.where(ixbins==ix)]) for ix in range(Nbins)])
+        ixnonans = np.where(~np.isnan(yfit))
+        xfit = xfit[ixnonans].copy() / 2**16
+        yfit = yfit[ixnonans].copy()
+    else:
+        #ixnonans = np.where(~(np.isnan(X) | np.isnan(Y)))
+        xfit = X[selix].copy() / 2**16
+        yfit = Y[selix].copy()
+    
+    ixsort = np.argsort(xfit)
+    xfit = xfit[ixsort]
+    yfit = yfit[ixsort]
+    
+    #p0 = np.concatenate((np.array([10.,0.15,1.]),np.zeros(NLdeg+1)))
+    p0 = np.concatenate((np.array([1.,0.01,0.05]),np.zeros(NLdeg+1)))
+    bounds =[]
+    bounds.append([0.,10./2**16,1.e-3]+[-100.]*(NLdeg)+[-10.])
+    bounds.append([10.,10000./2**16,2.E-1]+[100.]*(NLdeg)+[10.])
+    #bounds = [[0.,  10., -1.E-3,-1.E-2, -10.],
+    #          [1.E3,1.E3, 1.E-3, 1.E-2,  10.]]
+    
+    popt, pcov = curve_fit(fNL, xfit, yfit, 
+                           p0=p0,
+                           method='trf',
+                           bounds=bounds,
+                           absolute_sigma=False,
+                           maxfev=10000)
+
+    # array with NL fluences (1 to 2**16, in steps of 20 ADU)
+    fkfluencesNL = np.linspace(minfitFl,maxfitFl,200)*1.    
+    Y_bestfit = fNL(fkfluencesNL/2**16,*popt)
+    
+    
+    # Direct measure
+    
+    ixmax = np.abs(yfit).argmax()
+    maxNLpc = yfit[ixmax]
+    flu_maxNLpc = xfit[ixmax]*2.**16
+    
+    if display:
+        
+        from matplotlib import pyplot as plt
+        import matplotlib.cm as cm
+        
+        uexptimes, ixuexptimes = np.unique(Exptimes,return_index=True)
+        
+        ecolors = cm.rainbow(np.linspace(0,1,len(uexptimes)))
+        
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.plot(X,Y,'k.')
+        
+        for i in selix[0]:
+            ixcolor = np.where(np.isclose(uexptimes,Exptimes[i]))[0][0]
+            ax.plot(X[i],Y[i],'.',color=ecolors[ixcolor,:])
+        
+        ax.plot(fkfluencesNL,Y_bestfit,'r--')
+        ax.set_xlabel('NL Fluence')
+        ax.set_ylabel('NLpc')
+        #ax.set_ylim([-10.,10.])
+        plt.show()
+        
+    
+    fitresults = OrderedDict(
+                             coeffs=popt, 
+                             maxNLpc=maxNLpc,
+                             flu_maxNLpc=flu_maxNLpc,
+                             inputcurve = OrderedDict(
+                                     X=X.copy(),
+                                     Y=Y.copy()),
+                             outputcurve = OrderedDict(
+                                     X=fkfluencesNL.copy(),
+                                     Y=Y_bestfit.copy()))
+                             
+    return fitresults
+
 
 def wrap_fitNL_SingleFilter(fluences, variances, exptimes, times=np.array([]), 
                             TrackFlux=True, subBgd=True):
@@ -440,7 +539,7 @@ def wrap_fitNL_SingleFilter(fluences, variances, exptimes, times=np.array([]),
                               maxrelflu=maxrelflu,
                               method='ransac')
     
-    fitresults = fitNL(X, Y, W, minfitFl, maxfitFl, display=False)
+    fitresults = fitNL_pol(X, Y, W, minfitFl, maxfitFl, display=False)
     fitresults['bgd'] = bgd
     fitresults['stability_pc'] = np.std(track)*100.
               
@@ -535,7 +634,7 @@ def wrap_fitNL_TwoFilters(fluences, variances, exptimes, wave, times=np.array([]
     Y = np.concatenate((Y_A,Y_B))
     W = np.concatenate((W_A,W_B))
     
-    fitresults = fitNL(X, Y, W, minfitFl, maxfitFl, display=debug)
+    fitresults = fitNL_pol(X, Y, W, minfitFl, maxfitFl, display=debug)
     fitresults['bgd'] = bgd
     fitresults['stability_pc'] = trackstab
     
@@ -544,7 +643,7 @@ def wrap_fitNL_TwoFilters(fluences, variances, exptimes, wave, times=np.array([]
 
 
 def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.array([]), 
-                            TrackFlux=True, debug=False, ObsIDs=None):
+                            TrackFlux=True, debug=False, ObsIDs=None, NLdeg=NLdeg):
     """ """
     
     nomG = 3.5 # e/ADU, used for noise estimates
@@ -639,7 +738,7 @@ def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.arra
     
     Exptimes = np.concatenate((exptimes[ixfitA][e_A],exptimes[ixfitB][e_B]))
     
-    fitresults = fitNL(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug)
+    fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug)
     #fitresults['bgd'] = bgd
     fitresults['stability_pc'] = trackstab
     

@@ -72,7 +72,7 @@ check_img_std_dict = dict(stats=['flu_std_img'],
 
 NL_curves_dict = dict(
     figname='NL01_curves.png',
-    caption='NL01: Relative non-linearity vs. fluence and best [\\textbf{\\textcolor{red}{POOR}}] fit curves.',
+    caption='NL01: Relative non-linearity vs. fluence and best fit curves.',
     meta=dict(doLegend=True,
               ylabel='Z [percentage]',
               xlabel=r'$Y_{NL} [ADU]$',

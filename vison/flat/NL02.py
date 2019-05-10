@@ -246,6 +246,7 @@ class NL02(NL01.NL01):
         """
         
         doExptimeCalib = True
+        NLdeg = 4
         debug = False # TESTS
         
         if self.report is not None:
@@ -263,7 +264,11 @@ class NL02(NL01.NL01):
                 self.log.info('Exposure times corrected using: %s' %
                                  niceshutterprofname)
         
-                 
+        if self.report is not None:
+                 self.report.add_Text(['\nModel:',
+                                      '\\begin{equation}',
+                                    'NL=A \cdot e^{-(x-x_0)/s}} + P_%s(x)' % NLdeg,
+                                    '\end{equation}'])
 
         dIndices = copy.deepcopy(self.dd.indices)
         
@@ -346,7 +351,8 @@ class NL02(NL01.NL01):
                                             dtobjs, 
                                             TrackFlux=True, 
                                             debug=debug,
-                                            ObsIDs=ObsIDs)
+                                            ObsIDs=ObsIDs,
+                                            NLdeg=NLdeg)
 #                print('WITHOUT shutter nl correction...')
 #                __fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, exptimes, wave, 
 #                                            dtobjs, 
