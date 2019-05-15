@@ -413,6 +413,9 @@ class PTC0X(FlatTask):
             #    estimators = dict(median=np.median,std=np.std)
 
             dpath = self.inputs['subpaths']['ccdpickles']
+            
+            
+            misspairs = []
 
             for iObs in range(nObs):
 
@@ -420,6 +423,22 @@ class PTC0X(FlatTask):
                 if np.isnan(_ObsID_pair):
                     continue
                 iObs_pair = np.where(ObsIDs == _ObsID_pair)[0][0]
+                
+                flu_i = self.dd.mx['flu_med_img'][iObs,...].mean()
+                flu_p = self.dd.mx['flu_med_img'][iObs_pair,...].mean()
+                
+                flus = np.array([flu_i,flu_p])
+                
+                if flus.std()/flus.mean()>0.05:
+                    
+                    self.dd.mx['sec_med'][iObs, ...] = np.nan
+                    self.dd.mx['sec_var'][iObs, ...] = np.nan          
+                    
+                    misspairs.append((self.dd.mx['ObsID'][iObs],self.dd.mx['ObsID'][iObs_pair]))
+                              
+                    continue
+                
+                
 
                 for jCCD, CCDk in enumerate(CCDs):
 
@@ -460,6 +479,11 @@ class PTC0X(FlatTask):
         # MISSING: any figure?
         # MISSING: any Table?
         
+        if len(misspairs)>0:            
+            if self.report is not None:
+                self.report.add_Text('Pairs with unequal fluence skipped: %s' % misspairs.__repr__())
+            if self.log is not None:
+                self.log.info('Pairs with unequal fluence skipped: %s' % misspairs.__repr__())
 
         return 
 
