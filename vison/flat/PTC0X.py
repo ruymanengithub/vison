@@ -429,7 +429,7 @@ class PTC0X(FlatTask):
                 
                 flus = np.array([flu_i,flu_p])
                 
-                if flus.std()/flus.mean()>0.05:
+                if flus.std()/flus.mean()>0.1:
                     
                     self.dd.mx['sec_med'][iObs, ...] = np.nan
                     self.dd.mx['sec_var'][iObs, ...] = np.nan          
