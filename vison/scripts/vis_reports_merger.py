@@ -67,7 +67,7 @@ def run_merger(infile):
     _ = report.doreport(reportroot, cleanafter=False, silent=True)
     
 
-def run_merger_plus(infile):
+def run_merger_plus(infile, Issue=0.0):
     """ """
     
     indata = vjson.load_jsonfile(infile, useyaml=True)
@@ -75,10 +75,6 @@ def run_merger_plus(infile):
     programme = indata['metadata']['programme']
     block = indata['metadata']['block']
     reference = indata['metadata']['reference']
-    try: 
-        Issue = indata['metadata']['issue']
-    except KeyError: 
-        Issue = 0.0
     
 
     #indata = ascii.read(infile,data_start=0)
@@ -126,6 +122,8 @@ if __name__ == '__main__':
     
     parser.add_option("-i", "--infile", dest="infile",
                       default='', help="Inputs file with list of reports to be merged.")
+    parser.add_option("-v", "--version", dest="version",
+                      default=0.0, help="Document version number.")
     #parser.add_option("-p", "--programme", dest="programme", 
     #                  default="FM", help="Calibration programme (QM/FQM/FM).")
     #parser.add_option("-b", "--block", dest="block",
@@ -136,6 +134,7 @@ if __name__ == '__main__':
     (options, args) = parser.parse_args()
 
     infile = options.infile
+    version = options.version
     #programme = options.programme
     #block = options.block
     #reference = options.reference
@@ -156,5 +155,5 @@ if __name__ == '__main__':
     print header
 
     #run_merger(infile, programme, block, reference)
-    run_merger_plus(infile)
+    run_merger_plus(infile, Issue=version)
     
