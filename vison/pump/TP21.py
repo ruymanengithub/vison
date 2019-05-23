@@ -45,6 +45,7 @@ class TP21(TP02.TP02):
                          ('extract', self.extract),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
+        self.commvalues = TP21_commvalues.copy()
         super(TP21, self).__init__(inputs=inputs, log=log, drill=drill, debug=debug, 
                     cleanafter=cleanafter)
         self.name = 'TP21'
@@ -57,5 +58,5 @@ class TP21(TP02.TP02):
                    ccdpickles='ccdpickles',
                    products='products')
         
-        self.commvalues = TP21_commvalues.copy()
+        
 

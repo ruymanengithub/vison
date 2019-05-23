@@ -42,6 +42,7 @@ class TP11(TP01.TP01):
                          ('basic', self.basic_analysis),
                          ('debugtask',self.debugtask),
                          ('meta', self.meta_analysis)]
+        self.commvalues = TP11_commvalues.copy()
         super(TP11, self).__init__(inputs=inputs, log=log, 
             drill=drill, debug=debug, cleanafter=cleanafter)
         self.name = 'TP11'
@@ -52,6 +53,6 @@ class TP11(TP01.TP01):
         self.CDP_lib = TP01aux.get_CDP_lib()
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        products='products')
-        self.commvalues = TP11_commvalues.copy()
+        
         
         

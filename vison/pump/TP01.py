@@ -119,6 +119,7 @@ class TP01(PumpTask):
                          ('basic', self.basic_analysis),
                          ('debugtask',self.debugtask),
                          ('meta', self.meta_analysis)]
+        self.commvalues = TP01_commvalues.copy()
         super(TP01, self).__init__(inputs=inputs, log=log, 
             drill=drill, debug=debug, cleanafter=cleanafter)
         self.name = 'TP01'
@@ -130,7 +131,7 @@ class TP01(PumpTask):
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        products='products')
         
-        self.commvalues = TP01_commvalues.copy()
+        
 
     def set_inpdefaults(self, **kwargs):
         """ """

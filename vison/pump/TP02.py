@@ -101,6 +101,7 @@ class TP02(PumpTask):
                          ('extract', self.extract),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
+        self.commvalues = TP02_commvalues.copy()
         super(TP02, self).__init__(inputs=inputs, log=log, drill=drill, debug=debug, 
                     cleanafter=cleanafter)
         self.name = 'TP02'
@@ -113,7 +114,7 @@ class TP02(PumpTask):
                    ccdpickles='ccdpickles',
                    products='products')
         
-        self.commvalues = TP02_commvalues.copy()
+        
 
     def set_inpdefaults(self, **kwargs):
         """ """
