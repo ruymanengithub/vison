@@ -34,9 +34,11 @@ class DarkTask(Task):
         """ """
         test = self.inputs['test']
         if test in ['BIAS01','BIAS02']:
-            kwargs = dict(figkeys=['B0Xchecks_offsets', 'B0Xchecks_stds'])
+            kwargs = dict(figkeys=['B0Xchecks_offsets', 'B0Xchecks_deltaoff', 
+                                       'B0Xchecks_stds'])
         elif test == 'DARK01':
-            kwargs = dict(figkeys=['D01checks_offsets', 'D01checks_stds',
+            kwargs = dict(figkeys=['D01checks_offsets', 'D01checks_deltaoff',
+                                   'D01checks_stds',
                                    'D01checks_flu'])
         Task.check_data(self, **kwargs)
 
@@ -57,6 +59,11 @@ class DarkTask(Task):
         newcolnames_off = ['offset_pre', 'offset_img', 'offset_ove']
         for newcolname_off in newcolnames_off:
             self.dd.initColumn(newcolname_off, Xindices,
+                               dtype='float32', valini=valini)
+        
+        newcolnames_deltaoff = ['deltaoff_pre', 'deltaoff_img', 'deltaoff_ove']
+        for newcolname_deltaoff in newcolnames_deltaoff:
+            self.dd.initColumn(newcolname_deltaoff, Xindices,
                                dtype='float32', valini=valini)
 
         newcolnames_std = ['std_pre', 'std_img', 'std_ove']
@@ -104,6 +111,22 @@ class DarkTask(Task):
                                                       self.dd.mx['offset_ove'][iObs, jCCD, kQ]])
                                 self.dd.mx['chk_flu_%s' % reg][iObs,
                                                                jCCD, kQ] = stats[0] - offset_cbe
+            
+            
+            for jCCD, CCDk in enumerate(CCDs):
+
+                for kQ, Quad in enumerate(Quads):
+
+                    for reg in ['pre', 'img', 'ove']:
+                            
+                        _meanoff = np.nanmean(self.dd.mx['offset_%s' % reg][:, jCCD, kQ])
+                            
+                        for iObs in range(nObs):
+                            
+                            self.dd.mx['deltaoff_%s' % reg][iObs, jCCD, kQ] = \
+                                self.dd.mx['offset_%s' % reg][iObs, jCCD, kQ] - _meanoff
+            
+            
 
     def check_metrics_ST(self, **kwargs):
         """ 

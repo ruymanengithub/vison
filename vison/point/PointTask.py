@@ -93,7 +93,8 @@ class PointTask(Task):
         
         test = self.inputs['test']
         if 'PSF01' in test:
-            _kwargs = dict(figkeys=['PSF0Xchecks_offsets', 'PSF0Xchecks_stds',
+            _kwargs = dict(figkeys=['PSF0Xchecks_offsets', 'PSF0Xchecks_deltaoff', 
+                                    'PSF0Xchecks_stds',
                                     'PSF0Xchecks_bgd', 'PSF0Xchecks_fluence',
                                     'PSF0Xchecks_fwhmx', 'PSF0Xchecks_fwhmy'])
         elif 'PSF02' in test:
@@ -101,11 +102,13 @@ class PointTask(Task):
                                     'PSF0Xchecks_bgd', 'PSF0Xchecks_fluence',
                                     'PSF0Xchecks_fwhmx', 'PSF0Xchecks_fwhmy'])
         elif 'FOCUS00' in test:
-            _kwargs = dict(figkeys=['F00checks_offsets', 'F00checks_stds',
+            _kwargs = dict(figkeys=['F00checks_offsets', 'F00checks_deltaoff',
+                                    'F00checks_stds',
                                     'F00checks_bgd', 'F00checks_fluence',
                                     'F00checks_fwhmx', 'F00checks_fwhmy'])
         elif 'PSFLUX00' in test:
-            _kwargs = dict(figkeys=['PSF0Xchecks_offsets', 'PSF0Xchecks_stds',
+            _kwargs = dict(figkeys=['PSF0Xchecks_offsets', 'PSF0Xchecks_deltaoff', 
+                                    'PSF0Xchecks_stds',
                                     'PSF0Xchecks_bgd', 'PSF0Xchecks_fluence',
                                     'PSF0Xchecks_fwhmx', 'PSF0Xchecks_fwhmy'])
         kwargs.update(_kwargs)
@@ -131,6 +134,11 @@ class PointTask(Task):
         
         for newcolname_off in newcolnames_off:
             self.dd.initColumn(newcolname_off, Qindices,
+                               dtype='float32', valini=valini)
+        
+        newcolnames_deltaoff = ['deltaoff_pre', 'deltaoff_ove']
+        for newcolname_deltaoff in newcolnames_deltaoff:
+            self.dd.initColumn(newcolname_deltaoff, Qindices,
                                dtype='float32', valini=valini)
 
         self.dd.initColumn('bgd_img', Qindices, dtype='float32', valini=valini)
@@ -277,6 +285,20 @@ class PointTask(Task):
                             
                             #if (CCDk == 'CCD2') and (Quad=='H') and (SpotName=='ALPHA'):
                             #    stop()
+
+            for jCCD, CCDk in enumerate(CCDs):
+
+                for kQ, Quad in enumerate(Quads):
+
+                    for reg in ['pre', 'ove']:
+                            
+                        _meanoff = np.nanmean(self.dd.mx['offset_%s' % reg][:, jCCD, kQ])
+                            
+                        for iObs in range(nObs):
+                            
+                            self.dd.mx['deltaoff_%s' % reg][iObs, jCCD, kQ] = \
+                                self.dd.mx['offset_%s' % reg][iObs, jCCD, kQ] - _meanoff
+
                             
 
     def check_stat_perCCDQSpot(self, arr, lims, CCDs=['CCD1', 'CCD2', 'CCD3']):

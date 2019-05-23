@@ -35,6 +35,15 @@ check_offsets_dict = dict(stats=['offset_pre', 'offset_ove'],
                                     doNiceXDate=True,
                                     suptitle='PERSIST01-checks: offsets',
                                     ylim=trends.offset_lims))
+check_deltaoff_dict = dict(stats=['deltaoff_pre', 'deltaoff_ove'],
+                          trendaxis='time',
+                          figname='PERSIST01_deltaoff_vs_time.png',
+                          caption='PERSIST01: offset-\<offset\> vs. time.',
+                          meta=dict(doLegend=True,
+                                    doNiceXDate=True,
+                                    suptitle='PERSIST01-checks: delta-offsets',
+                                    ylim=[-10.,10.]))
+
 
 check_std_dict = dict(stats=['std_pre', 'std_ove'],
                       trendaxis='time',
@@ -138,6 +147,7 @@ class Fig_BeamP01Whiskers(figclasses.Fig):
 def get_P01figs():
     P01figs = dict()
     P01figs['P01checks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]
+    P01figs['P01checks_deltaoff'] = [trends.Fig_Basic_Checkstat, check_deltaoff_dict]
     #P01figs['B01checks_stds'] = [plB01check,dict(stat='std')]
     P01figs['P01checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
     P01figs['P01checks_avgflu'] = [trends.Fig_Basic_Checkstat, check_avgflu_dict]

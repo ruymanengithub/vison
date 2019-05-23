@@ -250,6 +250,11 @@ class MOT_WARM(DarkTask):
         for newcolname_off in newcolnames_off:
             self.dd.initColumn(newcolname_off, Xindices,
                                dtype='float32', valini=valini)
+        
+        newcolnames_deltaoff = ['deltaoff_pre', 'deltaoff_img', 'deltaoff_ove']
+        for newcolname_deltaoff in newcolnames_deltaoff:
+            self.dd.initColumn(newcolname_deltaoff, Xindices,
+                               dtype='float32', valini=valini)
 
         newcolnames_std = ['std_pre', 'std_img', 'std_ove']
         for newcolname_std in newcolnames_std:
@@ -287,6 +292,21 @@ class MOT_WARM(DarkTask):
                                        reg][iObs, jCCD, kQ] = stats[0]
                             self.dd.mx['std_%s' %
                                        reg][iObs, jCCD, kQ] = stats[1]
+            
+            for jCCD, CCDk in enumerate(CCDs):
+
+                for kQ, Quad in enumerate(Quads):
+
+                    for reg in ['pre', 'img', 'ove']:
+                            
+                        _meanoff = np.nanmean(self.dd.mx['offset_%s' % reg][:, jCCD, kQ])
+                            
+                        for iObs in range(nObs):
+                            
+                            self.dd.mx['deltaoff_%s' % reg][iObs, jCCD, kQ] = \
+                                self.dd.mx['offset_%s' % reg][iObs, jCCD, kQ] - _meanoff
+
+
 
     def check_metrics_ST(self, **kwargs):
         """ 

@@ -34,11 +34,13 @@ class PumpTask(InjTask):
         test = self.inputs['test']
         if test in ['TP01','TP11']:
             kwargs = dict(pattern=(2066, 0, 1),
-                          figkeys=['TP01checks_offsets', 'TP01checks_stds',
+                          figkeys=['TP01checks_offsets', 'TP01checks_deltaoff',
+                                   'TP01checks_stds',
                                    'TP01checks_injlevel', 'TP01checks_injstd'])
         elif test in ['TP02','TP21']:
             kwargs = dict(pattern=(2066, 0, 1),
-                          figkeys=['TP02checks_offsets', 'TP02checks_stds',
+                          figkeys=['TP02checks_offsets', 'TP02checks_deltaoff',
+                                   'TP02checks_stds',
                                    'TP02checks_injlevel', 'TP02checks_injstd'])
 
         InjTask.check_data(self, **kwargs)

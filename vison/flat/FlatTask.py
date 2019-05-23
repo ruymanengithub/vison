@@ -30,24 +30,30 @@ class FlatTask(Task):
         """ """
         test = self.inputs['test']
         if 'FLAT01'in test:  # AD-HOC modification of test label
-            kwargs = dict(figkeys=['FL0Xchecks_offsets', 'FL0Xchecks_stds',
+            kwargs = dict(figkeys=['FL0Xchecks_offsets','FL0Xchecks_deltaoff', 
+                                   'FL0Xchecks_stds',
                                    'FL0Xchecks_flu',
                                    'FL0Xchecks_imgstd'])
         elif 'FLAT02' in test:
-            kwargs = dict(figkeys=['FL0Xchecks_offsets', 'FL0Xchecks_stds',
+            kwargs = dict(figkeys=['FL0Xchecks_offsets', 'FL0Xchecks_deltaoff',
+                                   'FL0Xchecks_stds',
                                    'FL0Xchecks_flu',
                                    'FL0Xchecks_imgstd'])
         elif test == 'PTC01':
-            kwargs = dict(figkeys=['PTC0Xchecks_offsets', 'PTC0Xchecks_stds',
+            kwargs = dict(figkeys=['PTC0Xchecks_offsets','PTC0Xchecks_deltaoff', 
+                                   'PTC0Xchecks_stds',
                                    'PTC0Xchecks_flu', 'PTC0Xchecks_imgstd'])
         elif 'FLATFLUX00' in test:
-            kwargs = dict(figkeys=['PTC0Xchecks_offsets', 'PTC0Xchecks_stds',
+            kwargs = dict(figkeys=['PTC0Xchecks_offsets', 'PTC0Xchecks_deltaoff',
+                                   'PTC0Xchecks_stds',
                                    'PTC0Xchecks_flu', 'PTC0Xchecks_imgstd'])
         elif 'PTC02' in test:
-            kwargs = dict(figkeys=['PTC0Xchecks_offsets', 'PTC0Xchecks_stds',
+            kwargs = dict(figkeys=['PTC0Xchecks_offsets', 'PTC0Xchecks_deltaoff',
+                                   'PTC0Xchecks_stds',
                                    'PTC0Xchecks_flu', 'PTC0Xchecks_imgstd'])
         elif test in ['NL01','NL02'] or 'NL02' in test:
-            kwargs = dict(figkeys=['NL01checks_offsets', 'NL01checks_stds',
+            kwargs = dict(figkeys=['NL01checks_offsets','NL01checks_deltaoff', 
+                                   'NL01checks_stds',
                                    'NL01checks_flu',
                                    'NL01checks_imgstd'])
         
@@ -69,7 +75,13 @@ class FlatTask(Task):
         for newcolname_off in newcolnames_off:
             self.dd.initColumn(newcolname_off, Xindices,
                                dtype='float32', valini=valini)
-
+        
+        newcolnames_deltaoff = ['deltaoff_pre', 'deltaoff_ove']
+        for newcolname_deltaoff in newcolnames_deltaoff:
+            self.dd.initColumn(newcolname_deltaoff, Xindices,
+                               dtype='float32', valini=valini)
+        
+        
         self.dd.initColumn('flu_med_img', Xindices,
                            dtype='float32', valini=valini)
         self.dd.initColumn('flu_std_img', Xindices,
@@ -122,6 +134,22 @@ class FlatTask(Task):
                                                   jCCD, kQ] = stats_img[0]-stats_bias[0]
                         self.dd.mx['flu_std_img'][iObs,
                                                   jCCD, kQ] = stats_img[1]
+            
+            
+            for jCCD, CCDk in enumerate(CCDs):
+
+                for kQ, Quad in enumerate(Quads):
+
+                    for reg in ['pre', 'ove']:
+                            
+                        _meanoff = np.nanmean(self.dd.mx['offset_%s' % reg][:, jCCD, kQ])
+                            
+                        for iObs in range(nObs):
+                            
+                            self.dd.mx['deltaoff_%s' % reg][iObs, jCCD, kQ] = \
+                                      self.dd.mx['offset_%s' % reg][iObs, jCCD, kQ] - _meanoff
+
+
 
     def check_metrics_ST(self, **kwargs):
         """ 

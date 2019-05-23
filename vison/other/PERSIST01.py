@@ -208,7 +208,8 @@ class PERSIST01(Task):
 
         """
         
-        kwargs = dict(figkeys=['P01checks_offsets','P01checks_stds',
+        kwargs = dict(figkeys=['P01checks_offsets','P01checks_deltaoff',
+                               'P01checks_stds',
                                'P01checks_avgflu'])        
         Task.check_data(self,**kwargs)
     
@@ -245,6 +246,13 @@ class PERSIST01(Task):
         for newcolname_off in newcolnames_off:
             self.dd.initColumn(newcolname_off, Xindices,
                                dtype='float32', valini=valini)
+            
+        
+        newcolnames_deltaoff = ['deltaoff_pre', 'deltaoff_ove']
+        for newcolname_deltaoff in newcolnames_deltaoff:
+            self.dd.initColumn(newcolname_deltaoff, Xindices,
+                               dtype='float32', valini=valini)
+        
 
         newcolnames_std = ['std_pre', 'std_ove']
         for newcolname_std in newcolnames_std:
@@ -294,6 +302,20 @@ class PERSIST01(Task):
                             if reg == 'img':
                                 self.dd.mx['chk_avgflu_%s' % reg][iObs,
                                           jCCD, kQ] = stats[0] - offset_cbe
+
+            for jCCD, CCDk in enumerate(CCDs):
+
+                for kQ, Quad in enumerate(Quads):
+
+                    for reg in ['pre', 'ove']:
+                            
+                        _meanoff = np.nanmean(self.dd.mx['offset_%s' % reg][:, jCCD, kQ])
+                            
+                        for iObs in range(nObs):
+                            
+                            self.dd.mx['deltaoff_%s' % reg][iObs, jCCD, kQ] = \
+                                self.dd.mx['offset_%s' % reg][iObs, jCCD, kQ] - _meanoff
+
 
     
     def check_metrics_ST(self, **kwargs):

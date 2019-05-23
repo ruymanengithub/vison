@@ -44,6 +44,17 @@ def gt_check_offsets_dict(test):
                           suptitle='%s-checks: offsets' % ntest),
                           ylim=trends.offset_lims)
 
+def gt_check_deltaoff_dict(test):
+    ntest = st.replace(test, '_', '\_')
+    return dict(stats=['deltaoff_pre', 'deltaoff_ove'],
+                trendaxis='time',
+                figname='%s_deltaoff_vs_time.png' % (test,),
+                caption='%s: offset-\<offset\> vs. time.' % (ntest,),
+                meta=dict(doLegend=True,
+                          doNiceXDate=True,
+                          suptitle='%s-checks: delta-offsets' % ntest),
+                          ylim=[-10.,10.])
+
 
 def gt_check_std_dict(test):
     ntest = st.replace(test, '_', '\_')
@@ -117,6 +128,8 @@ def gt_FL0Xfigs(test):
     FL0Xfigs = dict()
     FL0Xfigs['FL0Xchecks_offsets'] = [
         trends.Fig_Basic_Checkstat, gt_check_offsets_dict(test)]
+    FL0Xfigs['FL0Xchecks_deltaoff'] = [
+        trends.Fig_Basic_Checkstat, gt_check_deltaoff_dict(test)]
     FL0Xfigs['FL0Xchecks_stds'] = [
         trends.Fig_Basic_Checkstat, gt_check_std_dict(test)]
     FL0Xfigs['FL0Xchecks_flu'] = [

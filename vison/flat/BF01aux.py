@@ -128,6 +128,8 @@ def gt_BF01figs(test):
     BF01figs = dict()
     BF01figs['BF01checks_offsets'] = [
         trends.Fig_Basic_Checkstat, PTC0Xaux.gt_check_offsets_dict(test)]
+    BF01figs['BF01checks_deltaoff'] = [
+        trends.Fig_Basic_Checkstat, PTC0Xaux.gt_check_deltaoff_dict(test)]
     BF01figs['BF01checks_stds'] = [
         trends.Fig_Basic_Checkstat, PTC0Xaux.gt_check_std_dict(test)]
     BF01figs['BF01checks_flu'] = [

@@ -87,6 +87,8 @@ class PSF01_PANCHRO(Task):
 
     def check_data(self):
         """ """
+        pass
 
     def meta(self):
         """ """
+        pass

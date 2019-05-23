@@ -35,6 +35,16 @@ check_offsets_dict = dict(stats=['offset_pre', 'offset_img', 'offset_ove'],
                                     suptitle='BIAS0X-checks: offsets',
                                     ylim=trends.offset_lims))
 
+check_deltaoff_dict = dict(stats=['deltaoff_pre', 'deltaoff_img', 'deltaoff_ove'],
+                          trendaxis='time',
+                          figname='BIAS0X_deltaoff_vs_time.png',
+                          caption='BIAS0X: offset-\<offset\> vs. time.',
+                          meta=dict(doLegend=True,
+                                    doNiceXDate=True,
+                                    suptitle='BIAS0X-checks: delta-offsets',
+                                    ylim=[-10.,10.]))
+
+
 check_std_dict = dict(stats=['std_pre', 'std_img', 'std_ove'],
                       trendaxis='time',
                       figname='BIAS0X_std_vs_time.png',
@@ -140,7 +150,7 @@ meta_MB2D_dict = dict(
 def get_B0Xfigs():
     B0Xfigs = dict()
     B0Xfigs['B0Xchecks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]
-    #B01figs['B01checks_stds'] = [plB01check,dict(stat='std')]
+    B0Xfigs['B0Xchecks_deltaoff'] = [trends.Fig_Basic_Checkstat, check_deltaoff_dict]
     B0Xfigs['B0Xchecks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
     B0Xfigs['B0Xbasic_prof1D_hor'] = [
         figclasses.Fig_Beam2DPlot, basic_prof1Dhor_dict]

@@ -40,6 +40,15 @@ check_offsets_dict = dict(stats=['offset_pre', 'offset_ove'],
                                     suptitle='NL01-checks: offsets',
                                     ylim=trends.offset_lims))
 
+check_deltaoff_dict = dict(stats=['deltaoff_pre', 'deltaoff_ove'],
+                          trendaxis='time',
+                          figname='NL01_deltaoff_vs_time.png',
+                          caption='NL01: offset-\<offset\> vs. time.',
+                          meta=dict(doLegend=True,
+                                    doNiceXDate=True,
+                                    suptitle='NL01-checks: delta-offsets',
+                                    ylim=[-10.,10.]))
+
 check_std_dict = dict(stats=['std_pre', 'std_ove'],
                       trendaxis='time',
                       figname='NL01_std_vs_time.png',
@@ -87,6 +96,8 @@ def get_NL01figs():
     NL01figs = dict()
     NL01figs['NL01checks_offsets'] = [
         trends.Fig_Basic_Checkstat, check_offsets_dict.copy()]
+    NL01figs['NL01checks_deltaoff'] = [
+        trends.Fig_Basic_Checkstat, check_deltaoff_dict.copy()]
     NL01figs['NL01checks_stds'] = [
         trends.Fig_Basic_Checkstat, check_std_dict.copy()]
     NL01figs['NL01checks_flu'] = [

@@ -34,6 +34,15 @@ check_offsets_dict = dict(stats=['offset_pre', 'offset_ove'],
                                     suptitle='TP02-checks: offsets',
                                     ylim=trends.offset_lims))
 
+check_deltaoff_dict = dict(stats=['deltaoff_pre', 'deltaoff_ove'],
+                          trendaxis='time',
+                          figname='TP02_deltaoff_vs_time.png',
+                          caption='TP02: offset-\<offset\> vs. time.',
+                          meta=dict(doLegend=True,
+                                    doNiceXDate=True,
+                                    suptitle='TP02-checks: delta-offsets',
+                                    ylim=[-10.,10.]))
+
 check_std_dict = dict(stats=['std_pre', 'std_ove'],
                       trendaxis='time',
                       figname='TP02_std_vs_time.png',
@@ -78,6 +87,8 @@ def get_TP02figs():
     TP02figs = dict()
     TP02figs['TP02checks_offsets'] = [
         trends.Fig_Basic_Checkstat, check_offsets_dict]
+    TP02figs['TP02checks_deltaoff'] = [
+        trends.Fig_Basic_Checkstat, check_deltaoff_dict]
     TP02figs['TP02checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
     TP02figs['TP02checks_injlevel'] = [
         trends.Fig_Basic_Checkstat, check_injlevel_dict]

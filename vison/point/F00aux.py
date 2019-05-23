@@ -32,6 +32,15 @@ def gt_check_offsets_dict(wave):
                           suptitle='FOCUS01\_%i-checks: offsets' % wave,
                           ylim=trends.offset_lims))
 
+def gt_check_deltaoff_dict(wave):
+    return dict(stats=['deltaoff_pre', 'deltaoff_ove'],
+                trendaxis='time',
+                figname='FOCUS00_%i_deltaoff_vs_time.png' % wave,
+                caption='FOCUS00\_%i: offset-\<offset\> vs. time.' % wave,
+                meta=dict(doLegend=True,
+                          doNiceXDate=True,
+                          suptitle='FOCUS01\_%i-checks: delta-offsets' % wave,
+                          ylim=[-10.,10.]))
 
 def gt_check_std_dict(wave):
     return dict(stats=['std_pre', 'std_ove'],
@@ -115,6 +124,8 @@ def gt_F00figs(wave):
     
     F00figs['F00checks_offsets'] = [
         trends.Fig_Basic_Checkstat, gt_check_offsets_dict(wave)]
+    F00figs['F00checks_deltaoff'] = [
+        trends.Fig_Basic_Checkstat, gt_check_deltaoff_dict(wave)]
     F00figs['F00checks_stds'] = [
         trends.Fig_Basic_Checkstat, gt_check_std_dict(wave)]
     F00figs['F00checks_bgd'] = [

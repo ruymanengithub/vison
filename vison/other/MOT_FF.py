@@ -82,7 +82,8 @@ class MOT_FF(BF01):
 
     def check_data(self):
         
-        kwargs = dict(figkeys=['MOT_FFchecks_offsets', 'MOT_FFchecks_stds',
+        kwargs = dict(figkeys=['MOT_FFchecks_offsets','MOT_FFchecks_deltaoff', 
+                               'MOT_FFchecks_stds',
                                    'MOT_FFchecks_flu', 'MOT_FFchecks_imgstd'])
         
         Task.check_data(self, **kwargs)

@@ -205,7 +205,8 @@ class BF01(PTC0X):
     
     def check_data(self):
         
-        kwargs = dict(figkeys=['BF01checks_offsets', 'BF01checks_stds',
+        kwargs = dict(figkeys=['BF01checks_offsets','BF01checks_deltaoff', 
+                                   'BF01checks_stds',
                                    'BF01checks_flu', 'BF01checks_imgstd'])
         
         Task.check_data(self, **kwargs)

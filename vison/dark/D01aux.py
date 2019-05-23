@@ -45,6 +45,16 @@ check_offsets_dict = dict(stats=['offset_pre', 'offset_ove'],
                                     suptitle='DARK01-checks: offsets',
                                     ylim=trends.offset_lims))
 
+check_deltaoff_dict = dict(stats=['deltaoff_pre', 'deltaoff_ove'],
+                          trendaxis='time',
+                          figname='DARK01_deltaoff_vs_time.png',
+                          caption='DARK01: offset-<offset> vs. time.',
+                          meta=dict(doLegend=True,
+                                    doNiceXDate=True,
+                                    suptitle='DARK01-checks: delta-offsets',
+                                    ylim=[-10.,10.]))
+
+
 check_std_dict = dict(stats=['std_pre', 'std_ove'],
                       trendaxis='time',
                       figname='DARK01_std_vs_time.png',
@@ -98,6 +108,7 @@ meta_MDK2D_dict = dict(
 def get_D01figs():
     D01figs = dict()
     D01figs['D01checks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]
+    D01figs['D01checks_deltaoff'] = [trends.Fig_Basic_Checkstat, check_deltaoff_dict]
     D01figs['D01checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
     D01figs['D01checks_flu'] = [trends.Fig_Basic_Checkstat, check_flu_dict]
     D01figs['D01meta_prof1D_hor'] = [
