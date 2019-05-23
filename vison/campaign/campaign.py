@@ -21,7 +21,7 @@ from vison.point import FOCUS00, PSF0X
 from vison.dark import BIAS0X, DARK01
 from vison.flat import NL01, NL02, PTC0X, FLAT0X, BF01
 from vison.inject import CHINJ01, CHINJ02
-from vison.pump import TP01, TP02
+from vison.pump import TP01, TP11, TP02, TP21
 from vison.other import PERSIST01 as PER01
 from vison.other import MOT_WARM, COSMETICS00
 from vison.point import lib as polib
@@ -76,7 +76,9 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                   CHINJ01=False,
                   CHINJ02=False,
                   TP01=False,
+                  TP11=False,
                   TP02=False,
+                  TP21=False,
                   FLATFLUX00=False,
                   FLAT01=False,
                   FLAT02=False,
@@ -246,6 +248,35 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         #structTP01 = tp01.build_scriptdict(elvis=elvis)
 
         test_sequence['TP01'] = copy.deepcopy(tp01)
+    
+    # TP11
+    
+    if _toGen['TP11']:
+
+        
+        toi_chinjTP11 = 250  # quick injection
+        Nshuffles_V=5000
+        TOI_TPv = [50, 200, 1000, 2000, 4000, 8000]
+        vpumpmodes=[123,234,341,412]
+        
+        # top, bottom CCD half
+        id_delays_TP11 = (np.array([2.5, 1.5]) * toi_chinjTP11).tolist() 
+           
+
+        diffTP11 = dict()
+        diffTP11.update(diffvalues)
+
+        tp11 = TP11.TP11(inputs=dict(elvis=elvis,
+                                     CHAMBER=CHAMBER,
+                                     test='TP11',
+                                     toi_chinj=toi_chinjTP11,
+                                     Nshuffles_V=Nshuffles_V,
+                                     id_delays=id_delays_TP11,
+                                     toi_tpv=TOI_TPv,
+                                     vpumpmodes=vpumpmodes,
+                                     diffvalues=diffTP11))
+        
+        test_sequence['TP11'] = copy.deepcopy(tp11)
 
     # TP02
 
@@ -275,6 +306,37 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         #structTP02 = tp02.build_scriptdict(elvis=elvis)
 
         test_sequence['TP02'] = copy.deepcopy(tp02)
+
+    # TP21
+
+    if _toGen['TP21']:
+
+
+        Nshuffles_H = 5000
+        dwell_sv = [0., 4.75, 14.3, 28.6]  # us
+        toi_chinjTP21 = 250  # quick injection
+        # top, bottom CCD half
+        id_delays_TP21 = (np.array([2.5, 1.5])*toi_chinjTP21).tolist()
+        spumpmodes=[23,31]
+
+        diffTP21 = dict(mirr_on=0)
+        diffTP21.update(diffvalues)
+
+        tp21 = TP21.TP21(inputs=dict(elvis=elvis,
+                                     CHAMBER=CHAMBER,
+                                     test='TP21',
+                                     toi_chinj=toi_chinjTP21,
+                                     Nshuffles_H=Nshuffles_H,
+                                     dwell_sv=dwell_sv,
+                                     id_delays=id_delays_TP21,
+                                     spumpmodes=spumpmodes,
+                                     diffvalues=diffTP21))
+
+        #structTP02 = tp02.build_scriptdict(elvis=elvis)
+
+        test_sequence['TP21'] = copy.deepcopy(tp21)
+
+
 
     # FLATS
 

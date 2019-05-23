@@ -34,7 +34,7 @@ from vison.datamodel import scriptic as sc
 from vison.pipe.task import Task
 from PumpTask import PumpTask
 from vison.image import performance
-from vison.datamodel import inputs
+from vison.datamodel import inputs as inputsmod
 from vison.support.files import cPickleRead
 import TP01aux
 import tptools
@@ -88,8 +88,8 @@ def _thin_down(cat,N):
             thcat[key] = cat[key][ixsel].copy()
         return thcat
 
-class TP01_inputs(inputs.Inputs):
-    manifesto = inputs.CommonTaskInputs.copy()
+class TP01_inputs(inputsmod.Inputs):
+    manifesto = inputsmod.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
         ('toi_chinj', ([int], 'TOI Charge Injection.')),
         ('Nshuffles_V',
@@ -130,6 +130,7 @@ class TP01(PumpTask):
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        products='products')
         
+        self.commvalues = TP01_commvalues.copy()
 
     def set_inpdefaults(self, **kwargs):
         """ """
@@ -148,7 +149,8 @@ class TP01(PumpTask):
 
         self.perfdefaults['Flu_lims'] = Flu_lims.copy()
         self.perfdefaults['FluGrad_lims'] = FluGrad_lims.copy()
-
+    
+    
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """ """
 
@@ -162,7 +164,7 @@ class TP01(PumpTask):
 
         TP01_sdict = dict()
 
-        TP01_commvalues['v_tp_cnt'] = Nshuffles_V
+        self.commvalues['v_tp_cnt'] = Nshuffles_V
 
         # First Injection Drain Delay
 
@@ -201,7 +203,7 @@ class TP01(PumpTask):
         TP01_sdict['Ncols'] = Ncols
 
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
-        commvalues.update(TP01_commvalues)
+        commvalues.update(self.commvalues)
 
         if len(diffvalues) == 0:
             try:
@@ -212,6 +214,8 @@ class TP01(PumpTask):
         TP01_sdict = sc.update_structdict(TP01_sdict, commvalues, diffvalues)
 
         return TP01_sdict
+
+
 
     def filterexposures(self, structure, explog, OBSID_lims):
         """ """

@@ -81,7 +81,9 @@ class Pipe(object):
     from vison.point.PSF01_PANCHRO import PSF01_PANCHRO
     from vison.pump.TP00 import TP00
     from vison.pump.TP01 import TP01
+    from vison.pump.TP11 import TP11
     from vison.pump.TP02 import TP02
+    from vison.pump.TP21 import TP21
     from vison.other.STRAY00 import STRAY00
     from vison.other.MOT_FF import MOT_FF
     from vison.other.MOT_WARM import MOT_WARM
@@ -96,7 +98,8 @@ class Pipe(object):
                      PTC01=PTC0X,BF01=BF01,
                      CHINJ00=CHINJ00, CHINJ01=CHINJ01, CHINJ02=CHINJ02,
                      TP00=TP00,
-                     TP01=TP01, TP02=TP02,
+                     TP01=TP01, TP11=TP11,
+                     TP02=TP02, TP21=TP21,
                      PERSIST01=PERSIST01,
                      PSF01_PANCHRO=PSF01_PANCHRO,
                      STRAY00=STRAY00,

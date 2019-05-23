@@ -32,7 +32,7 @@ from vison.datamodel import scriptic as sc
 #from vison.pipe.task import Task
 from PumpTask import PumpTask
 from vison.image import performance
-from vison.datamodel import inputs
+from vison.datamodel import inputs as inputsmod
 from vison.support.files import cPickleRead
 import TP02aux
 import tptools
@@ -74,8 +74,8 @@ TP02_commvalues = dict(program='CALCAMP', test='TP02',
 
 
 
-class TP02_inputs(inputs.Inputs):
-    manifesto = inputs.CommonTaskInputs.copy()
+class TP02_inputs(inputsmod.Inputs):
+    manifesto = inputsmod.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
         ('toi_chinj', ([int], 'TOI Charge Injection.')),
         ('Nshuffles_H',
@@ -112,6 +112,8 @@ class TP02(PumpTask):
         self.inputs['subpaths'] = dict(figs='figs', 
                    ccdpickles='ccdpickles',
                    products='products')
+        
+        self.commvalues = TP02_commvalues.copy()
 
     def set_inpdefaults(self, **kwargs):
         """ """
@@ -143,7 +145,7 @@ class TP02(PumpTask):
 
         TP02_sdict = dict()
 
-        TP02_commvalues['s_tp_cnt'] = Nshuffles_H
+        self.commvalues['s_tp_cnt'] = Nshuffles_H
 
         # First Injection Drain Delay
 
@@ -186,7 +188,7 @@ class TP02(PumpTask):
         TP02_sdict['Ncols'] = Ncols
 
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
-        commvalues.update(TP02_commvalues)
+        commvalues.update(self.commvalues)
 
         if len(diffvalues) == 0:
             try:
