@@ -41,7 +41,7 @@ def produce_SingleFlatfield(infits, outfits, settings=None, runonTests=False):
     
 
     insettings = dict(kind='spline', splinemethod='cubic',
-                      doBin=True,binsize=50,filtertype='median',
+                      doBin=True,binsize=25,filtertype='median',
                       recoveredges=True,pdegree=5)
                       #doFilter=True, filtsize=50, filtertype='mean')
     

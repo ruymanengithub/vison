@@ -191,27 +191,67 @@ class Model2D():
             zz = zz[selix]
             
         xx, yy = np.mgrid[0:NX:NX*1j, 0:NY:NY*1j]
-
-
-        pilum = interpolate.griddata((sxx.flatten(), syy.flatten()), zz.flatten(),
-                                     (xx, yy), method=splinemethod, fill_value=np.nan)
-
-        nans = np.isnan(pilum)
         
-        if nans.sum>0:
+        
+        requiresextrapol = ((xx.min()<sxx.min()) or (xx.max()>sxx.max()) or\
+                            (yy.min()<syy.min()) or (yy.max()>syy.max()))
+
+        
+        if requiresextrapol:
             
             if recoveredges:
                 
-                p = self.fit2Dpol_xyz(sxx.flatten(),syy.flatten(),zz,degree=pdegree)
+                sxx_e, syy_e = np.mgrid[-50:NX+50:50j, -50:NY+50:50j]
+                zz_e = interpolate.griddata((sxx.flatten(), syy.flatten()), zz.flatten(),
+                                     (sxx_e, syy_e), method='nearest')
                 
-                pilum[nans] = p(xx[nans],yy[nans])
+                ixsel = np.where((sxx_e<sxx.min()) | (sxx_e>sxx.max()) |\
+                                 (syy_e<syy.min()) & (syy_e>syy.max()))
                 
+                sxx = np.concatenate((sxx.flatten(),sxx_e[ixsel]))
+                syy = np.concatenate((syy.flatten(),syy_e[ixsel]))
+                zz = np.concatenate((zz.flatten(),zz_e[ixsel]))
+                
+                pilum = interpolate.griddata((sxx.flatten(), syy.flatten()), zz.flatten(),
+                                     (xx, yy), method=splinemethod, fill_value=np.nan)
+            
             else:
+                
+                pilum = interpolate.griddata((sxx.flatten(), syy.flatten()), zz.flatten(),
+                                     (xx, yy), method=splinemethod, fill_value=np.nan)
+                
+                nans = np.isnan(pilum)
+                
                 pilum[nans] = self.img[nans].copy()
+                
+        else:
+                
+            pilum = interpolate.griddata((sxx.flatten(), syy.flatten()), zz.flatten(),
+                                 (xx, yy), method=splinemethod, fill_value=np.nan)
         
         self.imgmodel = pilum.copy()
-
+        
         return None
+
+#        pilum = interpolate.griddata((sxx.flatten(), syy.flatten()), zz.flatten(),
+#                                     (xx, yy), method=splinemethod, fill_value=np.nan)
+#
+#        nans = np.isnan(pilum)
+#        
+#        if nans.sum>0:
+#            
+#            if recoveredges:
+#                
+#                p = self.fit2Dpol_xyz(sxx.flatten(),syy.flatten(),zz,degree=pdegree)
+#                
+#                pilum[nans] = p(xx[nans],yy[nans])
+#                
+#            else:
+#                pilum[nans] = self.img[nans].copy()
+#        
+#        self.imgmodel = pilum.copy()
+#
+#        return None
 
     def fit2Dpol_xyz(self, xx, yy, zz, degree=1):
         """ """
