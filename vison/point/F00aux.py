@@ -36,7 +36,7 @@ def gt_check_deltaoff_dict(wave):
     return dict(stats=['deltaoff_pre', 'deltaoff_ove'],
                 trendaxis='time',
                 figname='FOCUS00_%i_deltaoff_vs_time.png' % wave,
-                caption='FOCUS00\_%i: offset-\<offset\> vs. time.' % wave,
+                caption='FOCUS00\_%i: $\delta$offset vs. time. Offset value in each frame minus the average value.' % wave,
                 meta=dict(doLegend=True,
                           doNiceXDate=True,
                           suptitle='FOCUS01\_%i-checks: delta-offsets' % wave,

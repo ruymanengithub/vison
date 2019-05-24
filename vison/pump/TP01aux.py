@@ -38,10 +38,10 @@ check_offsets_dict = dict(stats=['offset_pre', 'offset_ove'],
 check_deltaoff_dict = dict(stats=['deltaoff_pre', 'deltaoff_ove'],
                           trendaxis='time',
                           figname='TP01_deltaoff_vs_time.png',
-                          caption='TP01: offset-\<offset\> vs. time.',
+                          caption='TP01: $\delta$offset vs. time. Offset value in each frame minus the average value.',
                           meta=dict(doLegend=True,
                                     doNiceXDate=True,
-                                    suptitle='TP01-checks: delta-offsets',
+                                    suptitle='TP01-checks: delta-offset',
                                     ylim=[-10.,10.]))
 
 check_std_dict = dict(stats=['std_pre', 'std_ove'],

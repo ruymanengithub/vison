@@ -49,7 +49,7 @@ def gt_check_deltaoff_dict(test):
     return dict(stats=['deltaoff_pre', 'deltaoff_ove'],
                 trendaxis='time',
                 figname='%s_deltaoff_vs_time.png' % (test,),
-                caption='%s: offset-\<offset\> vs. time.' % (ntest,),
+                caption='%s: $\delta$offset vs. time. Offset value in each frame minus the average value.' % (ntest,),
                 meta=dict(doLegend=True,
                           doNiceXDate=True,
                           suptitle='%s-checks: delta-offsets' % ntest),
