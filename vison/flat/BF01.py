@@ -706,7 +706,7 @@ class BF01(PTC0X):
         BFfit_dd['FWHMx_Slope'] =  np.zeros(NP,dtype='float32')+np.nan
         BFfit_dd['FWHMy_HWC'] =  np.zeros(NP,dtype='float32')+np.nan
         BFfit_dd['FWHMy_Slope'] =  np.zeros(NP,dtype='float32')+np.nan
-        
+        BFfit_dd['ELL_HWC'] =  np.zeros(NP,dtype='float32')+np.nan
         
         plot_FWHM_dict = OrderedDict()
         
@@ -761,6 +761,10 @@ class BF01(PTC0X):
                 BFfit_dd['FWHMx_Slope'][jj] =  resX['slope']
                 BFfit_dd['FWHMy_HWC'][jj] =  resY['fwhm_hwc']
                 BFfit_dd['FWHMy_Slope'][jj] = resY['slope']
+                sigmax = resX['fwhm_hwc']/2.355
+                sigmay = resY['fwhm_hwc']/2.355
+                ell = np.abs((sigmax**2.-sigmay**2.)/(sigmax**2.+sigmay**2.))
+                BFfit_dd['ELL_HWC'][jj] = ell
                 
         
         for tag in ['fwhmx','fwhmy']:
@@ -794,13 +798,14 @@ class BF01(PTC0X):
             fq = lambda x: Quads[x-1]
             ff = lambda x: '%.3f' % x
             
-            cov_formatters=[fccd,fq]+[ff]*4
+            cov_formatters=[fccd,fq]+[ff]*5
             
             caption = 'BF01: FIT G15 results. FWHMx\_HWC: FWHM(x)[um] at half ADC range (32768 ADU); '+\
                       'FWHMx\_slope: FWHM(x) vs. fluence slope in um / 10 kADU; '+\
                       'FWHMy\_HWC: FWHM(y)[um] at half ADC range (32768 ADU); '+\
-                      'FWHMy\_slope: FWHM(y) vs. fluence slope in um / 10 kADU; '
-                           
+                      'FWHMy\_slope: FWHM(y) vs. fluence slope in um / 10 kADU; '+\
+                      'ELL_HWC: ellipticity at half ADC range (32768 ADU).'
+                      
             BFfittex = bfFITtable_cdp.get_textable(sheet='BFFIT', 
                                                caption=caption,
                                                fitwidth=True,
