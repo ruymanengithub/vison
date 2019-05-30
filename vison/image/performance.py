@@ -31,7 +31,7 @@ offsets_UNK = OrderedDict(CCD1=OrderedDict(E=2800.,
 offsets_UNK['CCD2'] = offsets_UNK['CCD1'].copy()
 offsets_UNK['CCD3'] = offsets_UNK['CCD1'].copy()
 
-offsets_margins = [-200, 200]  # ADU
+offsets_margins = [-50, 50]  # ADU
 
 blockspath = blocks.__path__[0]
 
@@ -43,10 +43,8 @@ def get_offsets(BLOCKID=None):
 
     offsets_json = '%s_offsets.json' % BLOCKID
     fpath = os.path.join(blockspath, offsets_json)
-    try:
-        offsets = vjson.load_jsonfile(fpath)
-    except:
-        stop()
+    offsets = vjson.load_jsonfile(fpath)
+    
     return offsets  # ADU
 
 
