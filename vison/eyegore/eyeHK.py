@@ -325,6 +325,7 @@ class HKFlags(tk.Toplevel):
             if self.log is not None:
                 self.log.info('RAISED %s: %s, lims=%s (timestamp=%s)' %
                               (HKkeys[ix], lastval.__str__(), HKlim.__str__(), time_stamp))
+            
             if self.Warnings is not None and self.HKflags[ix].status is not None:
                 self.Warnings.process_event(
                     HKkeys[ix], violation_type, lastval, HKlim, time_stamp)

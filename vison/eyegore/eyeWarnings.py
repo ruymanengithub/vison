@@ -107,8 +107,10 @@ class EyeWarnings(object):
     def assess_OOL_incident(self, HKkey, violation_type, value, HKlim, timestamp):
         """ """
         if self.iscritical(HKkey):
+            
             violation_key = st.replace('T%i' % violation_type, '-', 'm')
             Kseveritydict = self.severitydict[HKkey]
+            
             try:
                 severity = Kseveritydict[violation_key]
             except KeyError:
@@ -146,12 +148,13 @@ class EyeWarnings(object):
                     'value = %s, limits = %s' % (value, HKlim),
                     'at %s\n\n' % timestamp]
         if HKdata is not None:
-            _data = OrderedDict(time=HKdata[HKkey])
+            _data = OrderedDict(time=HKdata['time'])
             _data[HKkey] = HKdata[HKkey]
             df = pd.DataFrame.from_dict(_data)
             bodyList.append('LATEST VALUES after the jump\n\n')
             bodyList.append(df.to_string(index=False))
-            
+        
+        
         for recipient in self.recipients:
             self.send_email(subject, bodyList, recipient)
 
@@ -225,8 +228,8 @@ class EyeWarnings(object):
 
         if self.parent is not None:
             HKdata = self.parent.HK  # alias
-            data = dict(time=HKdata['time'][-100:],
-                        HKkey=HKdata[HKkey][-100:])
+            data = {'time':HKdata['time'][-100:],
+                        HKkey:HKdata[HKkey][-100:]}
         else:
             data = None
 
