@@ -23,6 +23,7 @@ from pdb import set_trace as stop
 from optparse import OptionParser
 import sys
 import os
+import getpass
 
 from vison import data as vdata
 #import loadHK_QFM,allHK_keys
@@ -53,8 +54,9 @@ _extpath = os.path.join(os.sep, 'data2', 'gaia',
 def rsync_to_remote(path, broadcast):
     """ """
     #extpath = os.path.join(_extpath,path)
-    command = "rsync -e 'ssh' -L -avzq %s raf@msslus:%s%s" % (
-        path, broadcast, os.sep)
+    username = getpass.getuser()
+    command = "rsync -e 'ssh' -L -avzq %s %s@msslus:%s%s" % (
+        path, username, broadcast, os.sep)
     print 'syncing to MSSLUS: %s' % command
     os.system(command)
 
