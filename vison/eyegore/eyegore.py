@@ -54,7 +54,8 @@ _extpath = os.path.join(os.sep, 'data2', 'gaia',
 def rsync_to_remote(path, broadcast):
     """ """
     #extpath = os.path.join(_extpath,path)
-    username = getpass.getuser()
+    #username = getpass.getuser()
+    username = 'raf'
     command = "rsync -e 'ssh' -L -avzq %s %s@msslus:%s%s" % (
         path, username, broadcast, os.sep)
     print 'syncing to MSSLUS: %s' % command
