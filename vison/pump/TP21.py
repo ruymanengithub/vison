@@ -19,7 +19,7 @@ import os
 
 from vison.pipe.task import HKKeys
 #from vison.pipe.task import Task
-from vison.pump import TP02
+from vison.pump import TP02, PumpTask
 import TP02aux
 # END IMPORT
 
@@ -46,8 +46,8 @@ class TP21(TP02.TP02):
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
         self.commvalues = TP21_commvalues.copy()
-        super(TP21, self).__init__(inputs=inputs, log=log, drill=drill, debug=debug, 
-                    cleanafter=cleanafter)
+        PumpTask.PumpTask.__init__(self,inputs=inputs, log=log, 
+            drill=drill, debug=debug, cleanafter=cleanafter)
         self.name = 'TP21'
         self.type = 'Simple'
         

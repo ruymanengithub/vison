@@ -18,7 +18,7 @@ from pdb import set_trace as stop
 import os
 
 from vison.pipe.task import HKKeys
-from vison.pump import TP01
+from vison.pump import TP01, PumpTask
 import TP01aux
 # END IMPORT
 
@@ -41,10 +41,11 @@ class TP11(TP01.TP01):
                          ('extract', self.extract),
                          ('basic', self.basic_analysis),
                          ('debugtask',self.debugtask),
-                         ('meta', self.meta_analysis)]
+                         ('meta', self.meta_analysis)]        
         self.commvalues = TP11_commvalues.copy()
-        super(TP11, self).__init__(inputs=inputs, log=log, 
+        PumpTask.PumpTask.__init__(self,inputs=inputs, log=log, 
             drill=drill, debug=debug, cleanafter=cleanafter)
+        
         self.name = 'TP11'
         self.type = 'Simple'
         
