@@ -53,6 +53,7 @@ from vison.support import vistime
 from vison.pipe import lib as pilib
 from vison.support import context
 from vison.support import utils
+from vison.support import flags as flagsmodule
 # END IMPORT
 
 isthere = os.path.exists
@@ -220,8 +221,8 @@ class Pipe(object):
                           (taskreport['exectime'], taskname)
         errormsg = 'Task %s exited with Errors: %s' %\
                           (taskname, taskreport['Errors'])
-        print timemsg
-        print errormsg
+        print(timemsg)
+        print(errormsg)
         
         if self.log is not None:
             self.log.info(timemsg)
@@ -448,13 +449,16 @@ class Pipe(object):
         execlog['Task'] = taskname
         execlog['Errors'] = Errors
         execlog['exectime'] = dtm
-        execlog['ObsID_range'] = (test.dd.mx['ObsID'][:].min(),
+        try:
+            execlog['ObsID_range'] = (test.dd.mx['ObsID'][:].min(),
                                    test.dd.mx['ObsID'][:].max() )
+        except:
+            execlog['ObsID_range'] = (-1,-1)
         
         try:
             flags = test.dd.flags.getFlagsOnList()
         except:
-            flags = []
+            flags = ['UNKNOWN']
         execlog['flags'] = flags.__repr__()
         
         test = None
