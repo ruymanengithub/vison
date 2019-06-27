@@ -267,14 +267,14 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         diffTP11.update(diffvalues)
 
         tp11 = TP11.TP11(inputs=dict(elvis=elvis,
-                                     CHAMBER=CHAMBER,
-                                     test='TP11',
-                                     toi_chinj=toi_chinjTP11,
-                                     Nshuffles_V=Nshuffles_V,
-                                     id_delays=id_delays_TP11,
-                                     toi_tpv=TOI_TPv,
-                                     vpumpmodes=vpumpmodes,
-                                     diffvalues=diffTP11))
+                CHAMBER=CHAMBER,
+                test='TP11',
+                toi_chinj=toi_chinjTP11,
+                Nshuffles_V=Nshuffles_V,
+                id_delays=id_delays_TP11,
+                toi_tpv=TOI_TPv,
+                vpumpmodes=vpumpmodes,
+                diffvalues=diffTP11))
         
         test_sequence['TP11'] = copy.deepcopy(tp11)
 
