@@ -548,6 +548,7 @@ class Report(Container):
         EuclidViscls = 'EuclidVIS.cls'
         logo = 'logosmall.png'
         deluxetablesty = 'deluxetable.sty'
+        signature='signature_ec.eps'
         
         if not os.path.exists(EuclidViscls):
             os.system('ln -s %s' %
@@ -558,6 +559,9 @@ class Report(Container):
         if not os.path.exists(deluxetablesty):
             os.system('ln -s %s' %
                   os.path.join(visondata.__path__[0], deluxetablesty))
+        if not os.path.exists(signature):
+            os.system('ln -s %s' %
+                  os.path.join(visondata.__path__[0], signature))
 
         execline1 = 'latex -interaction=nonstopmode %s.tex' % fileroot
         if silent:
