@@ -82,6 +82,7 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                   FLATFLUX00=False,
                   FLAT01=False,
                   FLAT02=False,
+                  FLAT_STB=False,
                   PTC01=False,
                   PTC02WAVE=False,
                   PTC02TEMP=False,
@@ -441,6 +442,37 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             #istructFLAT02 = flat02.build_scriptdict(diffvalues=diffFLAT02,elvis=elvis)
 
             test_sequence[itestkey] = copy.deepcopy(flat02)
+            
+    # FLAT-STABILITY
+
+    if _toGen['FLAT_STB']:
+
+        waveFLATSTB = 800
+        t_dummy_FSTB = np.array([30.])/100.
+        framesFST = [5]
+
+        diffFLATSTB = dict(mirr_on=0)
+        diffFLATSTB.update(diffvalues)
+
+        testkey = 'FLAT_STB'
+
+        exptimesFSTB = (
+            exptimes_FLAT0X['nm%i' % waveFLATSTB] * t_dummy_FSTB).tolist()
+
+        inpFSTB = dict(elvis=elvis,
+                      CHAMBER=CHAMBER,
+                      exptimes=exptimesFSTB,
+                      frames=framesFST,
+                      wavelength=waveFLATSTB,
+                      test=testkey,
+                      diffvalues=diffFLATSTB)
+
+        flatstb = FLAT0X.FLAT0X(inputs=inpFSTB)
+
+        #istructFLAT02 = flat02.build_scriptdict(diffvalues=diffFLAT02,elvis=elvis)
+
+        test_sequence[testkey] = copy.deepcopy(flatstb)
+    
 
     # PTC
 
