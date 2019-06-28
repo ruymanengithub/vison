@@ -289,7 +289,7 @@ class NL02(NL01.NL01):
         # INITIALISATIONS
         
         
-        # NON-LINEARITY TABLE
+        # NON-LINEARITY (SUMMARY) TABLE
         
         NL_TB = OrderedDict()
         
@@ -298,6 +298,14 @@ class NL02(NL01.NL01):
         NL_TB['MAXNLPC'] = np.zeros(NP,dtype='float32')
         NL_TB['FLU_MAXNLPC'] = np.zeros(NP,dtype='float32')
         
+        # NON-LINEARITY (FULL) TABLE
+        NL_FULL_TB = OrderedDict()
+        
+        NL_FULL_TB['FLUENCE'] = np.zeros(1000,dtype='float32') + np.nan        
+        for CCDk in CCDs:
+            for Q in Quads:
+                NL_FULL_TB['NLPC_%s%s' % (CCDk,Q)] = np.zeros(1000,dtype='float32') + np.nan
+                
         
         # NON LINEARITY RESULTS
 
@@ -362,10 +370,16 @@ class NL02(NL01.NL01):
                 
                 NLall_mx[CCDkey][Q].update(_fitresults)
                 
+                
+                
                 NL_TB['CCD'][kk] = iCCD+1
                 NL_TB['Q'][kk] = jQ+1
                 NL_TB['MAXNLPC'][kk] = _fitresults['maxNLpc']
                 NL_TB['FLU_MAXNLPC'][kk] = _fitresults['flu_maxNLpc']
+                
+                if kk==0:
+                    NL_FULL_TB['FLUENCE'] = _fitresults['outputcurve']['X'].copy()
+                NL_FULL_TB['NLPC_%s%s' % (CCDkey,Q)] = _fitresults['outputcurve']['Y'].copy() 
                 
                 curves_cdp.data[CCDkey][Q]['x']['data'] = _fitresults['inputcurve']['X'].copy()
                 curves_cdp.data[CCDkey][Q]['y']['data'] = _fitresults['inputcurve']['Y'].copy()
@@ -374,9 +388,11 @@ class NL02(NL01.NL01):
         
         self.dd.products['NL'] = copy.deepcopy(NLall_mx)
 
+        
         # Build Tables
         
-        NL_TB_dddf = OrderedDict(NL_TB = pd.DataFrame.from_dict(NL_TB))
+        NL_TB_dddf = OrderedDict(NL_TB = pd.DataFrame.from_dict(NL_TB),
+                                 NL_FULL_FIT=pd.DataFrame.from_dict(NL_FULL_TB))
         
         nl_tb_cdp = self.CDP_lib['NL_TB']
         nl_tb_cdp.path = prodspath
