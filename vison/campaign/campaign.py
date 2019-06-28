@@ -449,7 +449,7 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         waveFLATSTB = 800
         t_dummy_FSTB = np.array([30.])/100.
-        framesFST = [5]
+        framesFST = [15]
 
         diffFLATSTB = dict(mirr_on=0)
         diffFLATSTB.update(diffvalues)

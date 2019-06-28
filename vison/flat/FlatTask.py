@@ -34,6 +34,11 @@ class FlatTask(Task):
                                    'FL0Xchecks_stds',
                                    'FL0Xchecks_flu',
                                    'FL0Xchecks_imgstd'])
+        elif 'FLAT_STB' in test:
+            kwargs = dict(figkeys=['FL0Xchecks_offsets','FL0Xchecks_deltaoff', 
+                                   'FL0Xchecks_stds',
+                                   'FL0Xchecks_flu',
+                                   'FL0Xchecks_imgstd'])
         elif 'FLAT02' in test:
             kwargs = dict(figkeys=['FL0Xchecks_offsets', 'FL0Xchecks_deltaoff',
                                    'FL0Xchecks_stds',

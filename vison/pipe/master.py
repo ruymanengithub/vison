@@ -95,7 +95,7 @@ class Pipe(object):
                      COSMETICS00=COSMETICS00,
                      DARK01=DARK01,
                      NL01=NL01, NL02=NL02, 
-                     FLAT01=FLAT0X,
+                     FLAT01=FLAT0X,FLAT_STB=FLAT0X,
                      PTC01=PTC0X,BF01=BF01,
                      CHINJ00=CHINJ00, CHINJ01=CHINJ01, CHINJ02=CHINJ02,
                      TP00=TP00,
