@@ -226,6 +226,9 @@ def mergeExpLogs(explogList, addpedigree=False, verbose=False):
 
             if iexplog[colname].dtype.kind == 'S' and not explog[colname].dtype.kind == 'S':
                 explog[colname] = explog[colname].astype(str)
+            if explog[colname].dtype.kind == 'S' and not iexplog[colname].dtype.kind == 'S':
+                iexplog[colname] = iexplog[colname].astype(str)
+            
             if iexplog[colname].dtype.kind == 'S':
                 Smax = max([int(str(iexplog[colname].dtype)[2:]),
                             int(str(explog[colname].dtype)[2:])])
@@ -236,6 +239,7 @@ def mergeExpLogs(explogList, addpedigree=False, verbose=False):
                 len(iexplog), dtype='int32') * iexp
                     
         explog = vstack([explog,iexplog])
+
 
         # Row-by-Row appending of the "iexp" added catalog
         #for iL in range(len(iexplog)):
