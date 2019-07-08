@@ -267,7 +267,7 @@ def check_metrics_T(self):
                 satur_lims[CCD]['col%03i' % icol] = _satur_lims[CCD]
         arrSAT = self.dd.mx['chk_NPIXSAT'][:].copy()
         
-        NQactive = self.ccdcalc.NAXIS1 * (self.dd.mx['vend'][:]-self.dd.mx['vstart'][:])
+        NQactive = self.ccdcalc.NAXIS1/2. * (self.dd.mx['vend'][:]-self.dd.mx['vstart'][:])
         NQactive = np.repeat(NQactive[...,np.newaxis],4,axis=-1) # extend to Quads
         
         FracSat = arrSAT / NQactive
