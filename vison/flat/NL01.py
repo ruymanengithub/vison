@@ -246,10 +246,12 @@ class NL01(FlatTask):
                     opt: [mask-out defects]
 
         """
-        super(NL01, self).prepare_images(doExtract=True, 
+        
+        super(NL01, self).prepare_images(doExtract=True,
                                          doBadPixels=True,
                                          doMask=True,
-                                         doOffset=True, doBias=True, 
+                                         doOffset=True,
+                                         doBias=True,
                                          doFF=False)
         
     def recalibrate_exptimes(self, exptimes):

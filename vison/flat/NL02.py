@@ -221,7 +221,31 @@ class NL02(NL01.NL01):
 
         return NL02_sdict
 
+    def prep_data(self):
+        """
 
+        Takes Raw Data and prepares it for further analysis. 
+
+        **METACODE**
+
+        ::
+
+            f.e. ObsID:
+                f.e.CCD:
+                    f.e.Q:
+                        subtract offset
+                    opt: [sub bias frame]
+                    opt: [divide by FF]
+                    opt: [mask-out defects]
+
+        """
+        
+        super(NL02, self).prepare_images(doExtract=True,
+                                         doBadPixels=True,
+                                         doMask=True,
+                                         doOffset=False,
+                                         doBias=False,
+                                         doFF=False)
 
     def produce_NLCs(self):
         """ 
@@ -347,6 +371,8 @@ class NL02(NL01.NL01):
                 wave = self.dd.mx['wave'][:, iCCD].copy()
                 dtobjs = self.dd.mx['time'][:, iCCD].copy()
                 ObsIDs = self.dd.mx['ObsID'][:].copy()
+                
+                ijoffset = np.median(self.dd.mx['offset_pre'][:,iCCD,jQ])
 
                 if doExptimeCalib:
                     nexptimes = self.recalibrate_exptimes(exptimes)
@@ -355,12 +381,14 @@ class NL02(NL01.NL01):
                 if debug:
                     print('\n%s%s\n' % (CCDkey,Q))
                 #print('WITH shutter nl correction...')
+                
                 _fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, nexptimes, wave, 
                                             dtobjs, 
                                             TrackFlux=True, 
                                             debug=debug,
                                             ObsIDs=ObsIDs,
-                                            NLdeg=NLdeg)
+                                            NLdeg=NLdeg,
+                                            offset=ijoffset)
 #                print('WITHOUT shutter nl correction...')
 #                __fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, exptimes, wave, 
 #                                            dtobjs, 

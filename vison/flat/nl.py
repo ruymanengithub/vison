@@ -205,7 +205,8 @@ def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,minrelflu=None,
             xp = exptimes[ixsel]
             yp = np.squeeze(fluencesNL[ixsel,isec])
             predictor = get_POLY_linear_model(xp,yp)
-            predictor.coef[1] = 0.
+            #predictor.coef[1] = 0.
+            intersect = predictor.coef[1]
             YpredL = predictor(exptimes)
             YL[:,isec] = YpredL.copy()
             
@@ -233,7 +234,10 @@ def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,minrelflu=None,
         xp = exptimes[ixsel].copy()
         yp = np.squeeze(fluencesNL[ixsel]).copy()
         predictor = get_POLY_linear_model(xp,yp)
-        predictor.coef[1] = 0.
+        
+        
+        #predictor.coef[1] = 0.
+        intersect = predictor.coef[1]
         YpredL = predictor(exptimes)
         YL[:] = YpredL.copy()
         
@@ -241,9 +245,10 @@ def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,minrelflu=None,
         #show()
         
 
-    Z = 100.*(fluencesNL/YL-1.)
-        
-    efNL = np.sqrt(fluencesNL*nomG)/nomG
+    Z = 100.*(fluencesNL-YL)/(YL-intersect)
+    
+    
+    efNL = np.sqrt((fluencesNL-intersect)*nomG)/nomG
     
     W = 100.*(efNL/YL)
     
@@ -371,12 +376,16 @@ def fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False):
                              
     return fitresults
 
-def fNL(x,*p):
+def fNL_wExp(x,*p):
     """ """
     return p[0]*np.exp(-(x-p[1])/p[2]) +np.poly1d(p[3:])(x)
 
+def fNL(x,*p):
+    """ """
+    return np.poly1d(p)(x)
 
-def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False):
+def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False,
+                   addExp=False):
     """ """    
     
     ixnonan = np.where(~np.isnan(X))
@@ -406,15 +415,29 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False):
     xfit = xfit[ixsort]
     yfit = yfit[ixsort]
     
-    #p0 = np.concatenate((np.array([10.,0.15,1.]),np.zeros(NLdeg+1)))
-    p0 = np.concatenate((np.array([1.,0.01,0.05]),np.zeros(NLdeg+1)))
-    bounds =[]
-    bounds.append([0.,10./2**16,1.e-3]+[-100.]*(NLdeg)+[-10.])
-    bounds.append([10.,10000./2**16,2.E-1]+[100.]*(NLdeg)+[10.])
-    #bounds = [[0.,  10., -1.E-3,-1.E-2, -10.],
-    #          [1.E3,1.E3, 1.E-3, 1.E-2,  10.]]
+    if addExp:
+        #p0 = np.concatenate((np.array([10.,0.15,1.]),np.zeros(NLdeg+1)))
+        p0 = np.concatenate((np.array([1.,0.01,0.05]),np.zeros(NLdeg+1)))
+        bounds =[]
+        bounds.append([0.,10./2**16,1.e-3]+[-100.]*(NLdeg)+[-10.])
+        bounds.append([10.,10000./2**16,2.E-1]+[100.]*(NLdeg)+[10.])
+        #bounds = [[0.,  10., -1.E-3,-1.E-2, -10.],
+        #          [1.E3,1.E3, 1.E-3, 1.E-2,  10.]]
+    else:
+        #p0 = np.concatenate((np.array([10.,0.15,1.]),np.zeros(NLdeg+1)))
+        p0 = np.zeros(NLdeg+1)
+        bounds =[]
+        bounds.append([-100.]*(NLdeg)+[-10.])
+        bounds.append([100.]*(NLdeg)+[10.])
+        #bounds = [[0.,  10., -1.E-3,-1.E-2, -10.],
+        #          [1.E3,1.E3, 1.E-3, 1.E-2,  10.]]
     
-    popt, pcov = curve_fit(fNL, xfit, yfit, 
+    if addExp:
+        ff = fNL_wExp
+    else:
+        ff = fNL
+    
+    popt, pcov = curve_fit(ff, xfit, yfit, 
                            p0=p0,
                            method='trf',
                            bounds=bounds,
@@ -423,7 +446,7 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False):
 
     # array with NL fluences (1 to 2**16, in steps of 20 ADU)
     fkfluencesNL = np.linspace(minfitFl,maxfitFl,200)*1.    
-    Y_bestfit = fNL(fkfluencesNL/2**16,*popt)
+    Y_bestfit = ff(fkfluencesNL/2**16,*popt)
     
     
     # Direct measure
@@ -643,7 +666,8 @@ def wrap_fitNL_TwoFilters(fluences, variances, exptimes, wave, times=np.array([]
 
 
 def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.array([]), 
-                            TrackFlux=True, debug=False, ObsIDs=None, NLdeg=NLdeg):
+                            TrackFlux=True, debug=False, ObsIDs=None, NLdeg=NLdeg,
+                            offset=0.):
     """ """
     
     nomG = 3.5 # e/ADU, used for noise estimates
@@ -728,17 +752,21 @@ def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.arra
                     pivotfrac=pivotfrac,
                     minrelflu=minrelflu,
                     maxrelflu=maxrelflu)
+
+
+    #bgdnoff = np.median(fluences[ixboo_bgd,:])
     
-    
-    X = np.concatenate((X_A,X_B))
+    X = np.concatenate((X_A,X_B)) - offset # notice the small back-ground is left in!
     Y = np.concatenate((Y_A,Y_B))
     W = np.concatenate((W_A,W_B))
-    exps = np.concatenate((e_A,e_B))
-    regs = np.concatenate((r_A,r_B))
+    #exps = np.concatenate((e_A,e_B))
+    #regs = np.concatenate((r_A,r_B))
     
     Exptimes = np.concatenate((exptimes[ixfitA][e_A],exptimes[ixfitB][e_B]))
     
-    fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug)
+    
+    fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug,
+                                addExp=True)
     #fitresults['bgd'] = bgd
     fitresults['stability_pc'] = trackstab
     
