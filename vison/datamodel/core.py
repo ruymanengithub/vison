@@ -244,13 +244,16 @@ class DataDict(object):
         
         self.addColumn(array, name, indices)
 
-    def addColumn(self, array, name, indices):
+    def addColumn(self, array, name, indices, ix=-1):
         """ """
 
         column = vColumn(array, name, indices)
 
         self.mx[column.name] = column
-        self.colnames.append(column.name)
+        if ix==-1:
+            self.colnames.append(column.name)
+        else:
+            self.colnames.insert(ix,column.name)
         colindices = column.indices
 
         selfindnames = self.indices.names
