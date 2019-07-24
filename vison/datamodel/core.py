@@ -326,7 +326,7 @@ class DataDict(object):
 
                     t[key] = ast.table.Column(carray)
 
-        t.write(outfile, format=format)
+        t.write(outfile, format=format, overwrite=True)
 
     def __cmp__(self, other):
         return self.__dict__ == other.__dict__

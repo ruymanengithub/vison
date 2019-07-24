@@ -522,6 +522,8 @@ class Task(object):
         """ """
         files.cPickleDumpDictionary(self.dd, DataDictFile)
         files.cPickleDump(self.report, reportobjFile)
+        csvFile = st.replace(DataDictFile,'.pick','.csv')
+        self.dd.saveToFile(csvFile)
 
     def recover_progress(self, DataDictFile, reportobjFile):
         """ """
