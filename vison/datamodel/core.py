@@ -297,9 +297,9 @@ class DataDict(object):
 
         self.mx.pop(colname)
         self.colnames.pop(self.colnames.index(colname))
-        
-
-    def saveToFile(self, outfile, format='ascii.commented_header'):
+    
+    
+    def flattentoTable(self):
         """ """
 
         t = ast.table.Table()
@@ -328,7 +328,14 @@ class DataDict(object):
                     carray = np.array([self.mx[col][_jxx] for _jxx in jxx])
 
                     t[key] = ast.table.Column(carray)
+        
+        return t
+        
 
+    def saveToFile(self, outfile, format='ascii.commented_header'):
+        """ """
+        
+        t = self.flattentoTable()
         t.write(outfile, format=format, overwrite=True)
 
     def __cmp__(self, other):
