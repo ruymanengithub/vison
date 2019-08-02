@@ -30,6 +30,8 @@ def configuration():
     config.add_subpackage('vison/datamodel')
     config.add_subpackage('vison/eyegore')
     config.add_subpackage('vison/flat')
+    config.add_subpackage('vison/fpa')
+    config.add_subpackage('vison/fpatests')
     config.add_subpackage('vison/image')
     config.add_subpackage('vison/inject')
     config.add_subpackage('vison/obsolete')
