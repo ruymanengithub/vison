@@ -55,7 +55,8 @@ def fitPTC(means, var, debug=False):
         from pylab import plot,show
     
     sigmathresh=5. # sigma clipping
-    flulims = [1.E3,2**16-1.E3] # FLUENCE LIMITS
+    #flulims = [1.E3,2**16-1.E3] # FLUENCE LIMITS
+    flulims = [1.e3, 4.E4] # FLUENCE LIMITS
     poldeg = 2
     flags = flmod.Flags(fitPTC_flags)
 
