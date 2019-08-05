@@ -22,6 +22,7 @@ from collections import OrderedDict
 import pandas as pd
 import string as st
 from matplotlib.colors import Normalize
+from skimage import exposure
 
 from vison.datamodel import cdp
 from vison.support import utils
@@ -108,7 +109,8 @@ class TP01(PumpTask):
     """ """
 
     inputsclass = TP01_inputs
-    contrast_threshold = 0.01
+    #contrast_threshold = 0.01
+    contrast_thresholdfactor = 5.
 
     def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
@@ -255,15 +257,17 @@ class TP01(PumpTask):
         id_dlys = np.unique(self.dd.mx['id_dly'][:, 0])
         
         char_res_dict = OrderedDict()
+        chinj_dd = OrderedDict()
         chinjnoise_dd = OrderedDict()
         
         if not self.drill:
             
-            for id_dly in id_dlys:
+            for i, id_dly in enumerate(id_dlys):
             
                 for jCCD, CCDk in enumerate(CCDs):
                     
                     chinjnoise_dd[CCDk] = OrderedDict()
+                    chinj_dd[CCDk] = OrderedDict()
                     
                     ixsel = np.where((self.dd.mx['id_dly'][:] == id_dly) & 
                         (self.dd.mx['v_tpump'][:] == 0) & 
@@ -274,15 +278,31 @@ class TP01(PumpTask):
                     
                     char_res_dict[CCDk] = tptools.charact_injection(iccdobj)
                     
+                    if (i==0) and jCCD==0:
+                        pdeg = char_res_dict[CCDk]['pdeg']
+                    char_res_dict[CCDk].pop('pdeg')
+                    
                     for Q in Quads:                    
-                        chinjnoise_dd[CCDk][Q] = np.nanmedian(char_res_dict[CCDk][Q]['injnoise'])                    
+                        chinjnoise_dd[CCDk][Q] = np.nanmedian(char_res_dict[CCDk][Q]['injnoise'])
+                        
+                        pco = char_res_dict[CCDk][Q]['polycoeffs']
+                        X = np.arange(self.ccdcalc.NrowsCCD)
+                        
+                        injmap = np.outer(pco[:,0],X**2.)+np.outer(pco[:,1],X)+\
+                                         np.outer(pco[:,2],np.ones((self.ccdcalc.NrowsCCD)))
+                        
+                        chinj_dd[CCDk][Q] = np.nanmedian(injmap)
         
         # Saving the charge injection characterisation results
+        
+        self.dd.products['chinj_mx'] = copy.deepcopy(chinj_dd)
+        self.dd.products['chinjnoise_mx'] = copy.deepcopy(chinjnoise_dd)
+        
         
         chchar_cdp = self.CDP_lib['CHINJCHARACT']
         
         chchar_cdp.header = CDP_header.copy()
-        chchar_cdp.meta = dict()
+        chchar_cdp.meta = dict(pdeg=pdeg)
         chchar_cdp.path = productspath
         chchar_cdp.data = char_res_dict.copy()
         
@@ -290,19 +310,38 @@ class TP01(PumpTask):
         self.pack_CDP_to_dd(chchar_cdp,'CHINJCHARACT')
         
         # REPORTS
-        
+                
         # Table with injection noise per CCD/Quadrant
                 
-        chinjnoise_cdp = self.CDP_lib['CHINJNOISE']
-        chinjnoise_cdp.path = self.inputs['subpaths']['products']
-        chinjnoise_dddf = OrderedDict(CHINJNOISE=pd.DataFrame.from_dict(chinjnoise_dd))
-        chinjnoise_cdp.ingest_inputs(data=chinjnoise_dddf.copy(),                             
+        chinj_cdp = self.CDP_lib['CHINJ']
+        chinj_cdp.path = self.inputs['subpaths']['products']
+        chinj_dddf = OrderedDict(
+                CHINJ=pd.DataFrame.from_dict(chinj_dd),
+                CHINJNOISE=pd.DataFrame.from_dict(chinjnoise_dd))
+        chinj_cdp.ingest_inputs(data=chinj_dddf.copy(),                             
                               meta=dict(),
                               header=CDP_header.copy())
         
-        chinjnoise_cdp.init_wb_and_fillAll(header_title='%s: CHARGE INJECTION NOISE' % self.inputs['test'])
-        self.save_CDP(chinjnoise_cdp)
-        self.pack_CDP_to_dd(chinjnoise_cdp, 'CHINJNOISE_CDP')
+        chinj_cdp.init_wb_and_fillAll(header_title='%s: CHARGE INJECTION' % self.inputs['test'])
+        self.save_CDP(chinj_cdp)
+        self.pack_CDP_to_dd(chinj_cdp, 'CHINJ_CDP')
+        
+        # Table with injection levels per CCD/Quadrant
+        
+        if self.report is not None:
+            
+            ff = lambda x: '%.1f' % x
+            
+            formatters = [ff,ff,ff]
+            
+            CHINJtex = chinj_cdp.get_textable(sheet='CHINJ', 
+                                            caption='%s: Charge Injection Levels (ADU).' % \
+                                                             self.inputs['test'],
+                                            longtable=False, 
+                                            fitwidth=True,
+                                            index=True,
+                                            formatters=formatters)
+            self.report.add_Text(CHINJtex)
 
         if self.report is not None:
             
@@ -310,7 +349,7 @@ class TP01(PumpTask):
             
             formatters = [ff,ff,ff]
             
-            CHINJNOISEtex = chinjnoise_cdp.get_textable(sheet='CHINJNOISE', 
+            CHINJNOISEtex = chinj_cdp.get_textable(sheet='CHINJNOISE', 
                                             caption='%s: Charge Injection Noise (ADU, rms).' % \
                                                              self.inputs['test'],
                                             longtable=False, 
@@ -434,7 +473,11 @@ class TP01(PumpTask):
             self.report.add_Section(
                 keyword='basic', Title='TP01 Basic Analysis', level=0)
         
-        threshold = self.contrast_threshold
+        #threshold = self.contrast_threshold
+        threshfactor = self.contrast_thresholdfactor
+        
+       
+        
         #CCDhalves = ['top','bottom']
         _Quads_dict = dict(bottom = ['E','F'],
                            top = ['G','H'])
@@ -461,9 +504,11 @@ class TP01(PumpTask):
         CDP_header.update(dict(function=function, module=module))
         
         masterdict = OrderedDict()
+        threshold_dict = OrderedDict()
         
         for CCDk in CCDs:
             masterdict[CCDk] = OrderedDict()
+            threshold_dict[CCDk] = OrderedDict()
             for Q in allQuads:
                 masterdict[CCDk][Q] = OrderedDict()
                 for modkey in modkeys:
@@ -522,7 +567,14 @@ class TP01(PumpTask):
     
                             
                             for iQ, Q in enumerate(Quads):
-                               
+                                
+                                _med = self.dd.products['chinj_mx'][CCDk][Q]
+                                _sig = self.dd.products['chinjnoise_mx'][CCDk][Q]
+
+                                
+                                threshold = threshfactor * _sig/_med
+                                
+                                threshold_dict[CCDk][Q] = threshold
                                     
                                 idd = tptools.find_dipoles_vtpump(imapccdobj,threshold,
                                       Q,vstart=vstart,vend=vend,
@@ -554,7 +606,7 @@ class TP01(PumpTask):
             # Saving the MasterCat
             
             MCmeta = OrderedDict()
-            MCmeta['THRESHOLD'] = threshold
+            MCmeta['THRESHOLDs'] = threshold_dict
             MCmeta['Quads'] = allQuads
             MCmeta['modkeys'] = modkeys
             MCmeta['toikeys'] = toikeys
@@ -669,53 +721,54 @@ class TP01(PumpTask):
         Ampcols = ['A_%s' % toikey for toikey in toikeys]
         
         
-        onTests = False
+        onTests = True
         
-        if not onTests:
+#        if not onTests:
         
-            if not self.drill:
+        if not self.drill:
+            
+   
+            mergecat = OrderedDict()
+            
+            
+            print('\nMerging Dipole Catalogs...\n')
+            
+            for jCCD, CCDk in enumerate(CCDs):
+#            for jCCD, CCDk in enumerate(['CCD1']):
                 
-       
-                mergecat = OrderedDict()
+                mastercatpick = self.dd.products['MASTERCAT_%s' % CCDk]
+    
+                masterdata = cPickleRead(mastercatpick)['data'].copy()
                 
+                mergecat[CCDk] = OrderedDict()
                 
-                print('\nMerging Dipole Catalogs...\n')
-                
-                for jCCD, CCDk in enumerate(CCDs):
+                for iQ, Q in enumerate(allQuads):
+#                for iQ, Q in enumerate(['E']):
                     
+                    mergecat[CCDk][Q] = OrderedDict()
                     
-                    mastercatpick = self.dd.products['MASTERCAT_%s' % CCDk]
-        
-                    masterdata = cPickleRead(mastercatpick)['data'].copy()
+                    rawcatCQ = masterdata[Q].copy()
                     
-                    mergecat[CCDk] = OrderedDict()
+                    # Pandizing the toi catalogs
                     
-                    for iQ, Q in enumerate(allQuads):
+                    for modkey in modkeys:
                         
-                        mergecat[CCDk][Q] = OrderedDict()
-                        
-                        rawcatCQ = masterdata[Q].copy()
-                        
-                        # Pandizing the toi catalogs
-                        
-                        for modkey in modkeys:
+                        for toikey in toikeys:
                             
-                            for toikey in toikeys:
+                            if onTests:
+                                rawcatCQ[modkey][toikey] = _thin_down(rawcatCQ[modkey][toikey],1000)
                                 
-                                if onTests:
-                                    rawcatCQ[modkey][toikey] = _thin_down(rawcatCQ[modkey][toikey],1000)
-                                    
-                                rawcatCQ[modkey][toikey] =\
-                                        pd.DataFrame.from_dict(rawcatCQ[modkey][toikey])
+                            rawcatCQ[modkey][toikey] =\
+                                    pd.DataFrame.from_dict(rawcatCQ[modkey][toikey])
+                    
+                    # Merging the toi catalogs
+                    
+                    for modkey in modkeys:
                         
-                        # Merging the toi catalogs
+                        print('%s%s, %s...' % (CCDk,Q,modkey))
                         
-                        for modkey in modkeys:
-                            
-                            print('%s%s, %s...' % (CCDk,Q,modkey))
-                            
 #                            if onTests:
-                                
+                            
 #                                mergecat[CCDk][Q][modkey] = cPickleRead('vtpcat_CCD1_E_m123.pick')
 #                                N = len(mergecat[CCDk][Q][modkey])
 #                                ixsel = np.random.choice(np.arange(N),100)
@@ -731,60 +784,61 @@ class TP01(PumpTask):
 #                                
 #                                mergecat[CCDk][Q][modkey]['tau'] = pd.Series(tau,
 #                                        index=mergecat[CCDk][Q][modkey].index)
-                                
-                                
-                            if not onTests:
-                                
-                                kqkmerged = tptools.merge_vtp_dipole_cats_bypos(
-                                        rawcatCQ[modkey].copy(),
-                                        toikeys[1:],toikeys[0])
-                                
-                                cols2drop = []
-                                for toikey in toikeys:
-                                    cols2drop += ['X_%s' % toikey,'Y_%s' % toikey,'S_%s' % toikey]
-                                kqkmerged.drop(cols2drop,axis=1)
-                                
-    
-                                amplitudes = kqkmerged[Ampcols]
-                                
-    
-                                Pc, tau = tptools.batch_fit_PcTau_vtp(amplitudes,tois,Nshuffles)
-                                
-                                kqkmerged['Pc'] = pd.Series(Pc,
-                                        index=kqkmerged.index)
-                                
-                                kqkmerged['tau'] = pd.Series(tau,
-                                        index=kqkmerged.index)
-                                
-                                
-                                mergecat[CCDk][Q][modkey] = kqkmerged
+                            
+                            
+#                            if not onTests:
+                            
+                        kqkmerged = tptools.merge_vtp_dipole_cats_bypos(
+                                rawcatCQ[modkey].copy(),
+                                toikeys[1:],toikeys[0])
+                        
+                        cols2drop = []
+                        for toikey in toikeys:
+                            cols2drop += ['X_%s' % toikey,'Y_%s' % toikey,'S_%s' % toikey]
+                        kqkmerged.drop(cols2drop,axis=1)
+                        
+
+                        amplitudes = kqkmerged[Ampcols]
+                        
+
+                        scaled_Pc, tau = tptools.batch_fit_PcTau_vtp(amplitudes,tois,Nshuffles)
+                        
+                        Pc = scaled_Pc * self.dd.products['chinj_mx'][CCDk][Q]
+                        
+                        kqkmerged['Pc'] = pd.Series(Pc,index=kqkmerged.index)
+                        
+                        kqkmerged['tau'] = pd.Series(tau,index=kqkmerged.index)
+                        
+                        
+                        mergecat[CCDk][Q][modkey] = kqkmerged
                                         
-                                
             
         # Store output catalog(s) as a CDP
         
-        if not onTests:
+#        if not onTests:
           
-            for CCDk in CCDs:
-                
-                kmergedata = mergecat[CCDk].copy()
-                colnames = kmergedata[allQuads[0]][modkeys[0]].keys().tolist()
-                
-                for Q in allQuads:
-                    for modkey in modkeys:
-                        kmergedata[Q][modkey] = kmergedata[Q][modkey].as_matrix()
-                
-                kmergecat = self.CDP_lib['MERGEDCAT_%s' % CCDk]
-                kmergecat.header = CDP_header.copy()
-                kmergecat.meta = OrderedDict(
-                        Quadrants=allQuads,
-                        modes=modkeys,
-                        colnames=colnames)
-                kmergecat.path = productspath
-                kmergecat.data = kmergedata.copy()
-                
-                self.save_CDP(kmergecat)
-                self.pack_CDP_to_dd(kmergecat,'MERGEDCAT_%s' % CCDk)
+        for CCDk in CCDs:
+#        for CCDk in ['CCD1']:
+            
+            kmergedata = mergecat[CCDk].copy()
+            colnames = kmergedata[allQuads[0]][modkeys[0]].keys().tolist()
+            
+            for Q in allQuads:
+#            for Q in ['E']:
+                for modkey in modkeys:
+                    kmergedata[Q][modkey] = kmergedata[Q][modkey].as_matrix()
+            
+            kmergecat = self.CDP_lib['MERGEDCAT_%s' % CCDk]
+            kmergecat.header = CDP_header.copy()
+            kmergecat.meta = OrderedDict(
+                    Quadrants=allQuads,
+                    modes=modkeys,
+                    colnames=colnames)
+            kmergecat.path = productspath
+            kmergecat.data = kmergedata.copy()
+            
+            self.save_CDP(kmergecat)
+            self.pack_CDP_to_dd(kmergecat,'MERGEDCAT_%s' % CCDk)
             
 #        else:
 #            
@@ -812,7 +866,7 @@ class TP01(PumpTask):
             
             pldata = OrderedDict()
             
-            HeatmapPeaks = []
+            #HeatmapPeaks = []
             
             ixtau = colnames.index('tau')
             ixPc = colnames.index('Pc')
@@ -820,31 +874,42 @@ class TP01(PumpTask):
             for CCDk in CCDs:
                 pldata[CCDk] = OrderedDict()
                 for Q in allQuads:
+                    
                     pldata[CCDk][Q] = OrderedDict()
+                    
+                    #if CCDk!= 'CCD1' or Q != 'E':
+                    #    pldata[CCDk][Q]['img'] = np.zeros((15,15))
+                    #    continue
+                    
                     
                     logtau = np.log10(mergecat[CCDk][Q][modkey][:,ixtau].copy())                    
                     logPc = np.log10(mergecat[CCDk][Q][modkey][:,ixPc].copy())
                     
-                    Heatmap, xedges, yedges = np.histogram2d(logtau, logPc, bins=(100,50), 
-                range=[[1.5,5.5],[-6,-3]]) 
+                    
+                    Heatmap, xedges, yedges = np.histogram2d(logtau, logPc, bins=(15,15), 
+                range=[[1.5,5],[-3.,0.5]])
+                    
+                    Heatmap /= np.nanmax(Heatmap)
+                    
                     
                     if CCDk == CCDs[0] and Q == allQuads[0]:
                         extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
                     
-                    HeatmapPeaks.append(np.nanmax(Heatmap))
+                    #HeatmapPeaks.append(np.nanmax(Heatmap))
                     
+                    heqHeatmap = exposure.equalize_hist(Heatmap,nbins=256)
                     
-                    pldata[CCDk][Q]['img'] = Heatmap.copy()
+                    pldata[CCDk][Q]['img'] = heqHeatmap.copy()
             
-            if onTests:
-                for CCDk in ['CCD2','CCD3']:
-                    pldata[CCDk] = pldata['CCD1'].copy()
+            #if onTests:
+            #    for CCDk in ['CCD2','CCD3']:
+            #        pldata[CCDk] = pldata['CCD1'].copy()
             
             pltfig[1]['data'] = pldata.copy()
             
-            normfunction = Normalize(vmin=1,vmax=max(HeatmapPeaks)/2.)
+            #normfunction = Normalize(vmin=1,vmax=np.mean(HeatmapPeaks))
                     
-            pltfig[1]['meta']['corekwargs']['norm'] = normfunction
+            #pltfig[1]['meta']['corekwargs']['norm'] = normfunction
             pltfig[1]['meta']['corekwargs']['extent'] = extent
                   
         if self.report is not None:

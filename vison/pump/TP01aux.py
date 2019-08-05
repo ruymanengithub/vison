@@ -75,7 +75,7 @@ def gt_meta_heatmaps(mkey):
             figname='TP01_PcTau_Heatmap_%s.png' % mkey,
             caption='TP01: log10(tau[us])-log10(Pc) Heatmap for pumping mode %s.' % mkey,
             meta=dict(doLegend=False,
-              doColorbar=True,
+              doColorbar=False,
               suptitle='TP01: %s' % mkey,
               xlabel='log10(tau [us])',
               ylabel='log10(Pc)',
@@ -126,13 +126,13 @@ def get_CDP_lib():
         
                
         chinjcharact_cdp = cdp.CDP()
-        chinjcharact_cdp.rootname = 'TP01_CHINJCHARACT'
+        chinjcharact_cdp.rootname = 'TP01_CHINJCHAR'
         CDP_lib['CHINJCHARACT'] = chinjcharact_cdp
         
-        chinjnoise_cdp = cdp.Tables_CDP()
-        chinjnoise_cdp.rootname = 'TP01_CHINJNOISE'
+        chinj_cdp = cdp.Tables_CDP()
+        chinj_cdp.rootname = 'TP01_CHINJ'
         
-        CDP_lib['CHINJNOISE'] = chinjnoise_cdp
+        CDP_lib['CHINJ'] = chinj_cdp
     
     return CDP_lib
     
