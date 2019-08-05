@@ -621,6 +621,7 @@ class PTC0X(FlatTask):
                 _bloom = ptclib.foo_bloom(med, var)
 
                 bloom_mx[CCDk][Q]['bloom_ADU'] = _bloom['bloom_ADU']
+                bloom_mx[CCDk][Q]['bloom_e'] = gain_mx[CCDk][Q]['gain'] * bloom_mx[CCDk][Q]['bloom_ADU']
                 
                 kk = iCCD * nQ + jQ
                 
