@@ -125,14 +125,14 @@ def get_CDP_lib():
         CDP_lib['MERGEDCAT_%s' % CCD] = mergedcat
         
                
-        chinjcharact_cdp = cdp.CDP()
-        chinjcharact_cdp.rootname = 'TP01_CHINJCHAR'
-        CDP_lib['CHINJCHARACT'] = chinjcharact_cdp
+    chinjcharact_cdp = cdp.CDP()
+    chinjcharact_cdp.rootname = 'TP01_CHINJCHAR'
+    CDP_lib['CHINJCHARACT'] = chinjcharact_cdp
         
-        chinj_cdp = cdp.Tables_CDP()
-        chinj_cdp.rootname = 'TP01_CHINJ'
+    chinj_cdp = cdp.Tables_CDP()
+    chinj_cdp.rootname = 'TP01_CHINJ'
         
-        CDP_lib['CHINJ'] = chinj_cdp
+    CDP_lib['CHINJ'] = chinj_cdp
     
     return CDP_lib
     

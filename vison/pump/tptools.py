@@ -26,6 +26,20 @@ from vison.datamodel import ccd as ccdmod
 from vison.image.ds9reg import save_spots_as_ds9regs
 # END IMPORT
 
+def _thin_down_cat(cat,N):
+    """ """
+    ckeys = cat.keys()
+    catlen = len(cat[ckeys[0]])
+    if N>=catlen:
+        return cat.copy()
+    else:
+        thcat = OrderedDict()
+        ixsel = (np.random.choice(np.arange(catlen),N),)
+        
+        for key in ckeys:
+            thcat[key] = cat[key][ixsel].copy()
+        return thcat
+
 def _get_N(dipdict):
     return len(dipdict['S'])
 
@@ -225,11 +239,14 @@ def charact_injection(ccdobj):
     
     prescan = ccdobj.prescan
     overscan = ccdobj.overscan
-    NrowsCCD = ccdobj.NrowsCCD
+    
+    vstart = int(ccdobj.extensions[-1].header['vstart'])
+    vend = int(ccdobj.extensions[-1].header['vend'])
+    Nrows = vend-vstart
     
     Ncols = ccdobj.NcolsCCD
     
-    X = np.arange(NrowsCCD)
+    X = np.arange(Nrows)
     pdeg = 2
     
     res['pdeg'] = pdeg
@@ -237,7 +254,7 @@ def charact_injection(ccdobj):
     for Q in Quads:
         
         quad = ccdobj.get_quad(Q,canonical=True,extension=-1)
-        quadimg = quad[prescan:-overscan,0:NrowsCCD].copy()
+        quadimg = quad[prescan:-overscan,vstart:vend].copy()
         
         quadpoly = np.zeros((Ncols,pdeg+1),dtype='float32')
         quadinjnoise = np.zeros((Ncols,),dtype='float32')
@@ -666,9 +683,10 @@ def batch_fit_PcTau_stp(Amplitudes,dwells,Nshuffles=5000):
     Pc = np.zeros(Np,dtype='float32')+np.nan
     tau = np.zeros(Np,dtype='float32')+np.nan
     
+         
     for i in range(Np):
-        Pc[i], tau[i] = fit_PcTau_stp(Amp_mx[i,:],dwells, stoi, Nshuffles)
-    
+        Pc[i], tau[i] = fit_PcTau_stp(Amp_mx[i,:],dwells+stoi, stoi, Nshuffles)
+        #print(tau[i])
     
     
     return Pc, tau

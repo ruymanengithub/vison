@@ -38,7 +38,7 @@ from vison.image import performance
 from vison.datamodel import inputs as inputsmod
 from vison.support.files import cPickleRead
 import TP01aux
-import tptools
+from vison.pump import tptools
 # END IMPORT
 
 isthere = os.path.exists
@@ -75,19 +75,6 @@ TP01_commvalues = dict(program='CALCAMP', test='TP01',
                        comments='')
 
 
-def _thin_down(cat,N):
-    """ """
-    ckeys = cat.keys()
-    catlen = len(cat[ckeys[0]])
-    if N>=catlen:
-        return cat.copy()
-    else:
-        thcat = OrderedDict()
-        ixsel = (np.random.choice(np.arange(catlen),N),)
-        
-        for key in ckeys:
-            thcat[key] = cat[key][ixsel].copy()
-        return thcat
 
 class TP01_inputs(inputsmod.Inputs):
     manifesto = inputsmod.CommonTaskInputs.copy()
@@ -233,131 +220,7 @@ class TP01(PumpTask):
              doMask=True, # False ON TESTS!
              doOffset=True, 
              doBias=False, 
-             doFF=False)
-    
-    def charact_injection(self):
-        """Characterises Charge Injection."""
-        
-        
-        if self.report is not None:
-            self.report.add_Section(
-                keyword='charact', Title='TP01: Charge Injection Characterisation', level=0)
-        
-        DDindices = copy.deepcopy(self.dd.indices)
-        CCDs = DDindices.get_vals('CCD')
-        Quads = DDindices.get_vals('Quad')
-
-        ccdpicklespath = self.inputs['subpaths']['ccdpickles']
-        productspath = self.inputs['subpaths']['products']
-        
-        function, module = utils.get_function_module()
-        CDP_header = self.CDP_header.copy()
-        CDP_header.update(dict(function=function, module=module))
-        
-        id_dlys = np.unique(self.dd.mx['id_dly'][:, 0])
-        
-        char_res_dict = OrderedDict()
-        chinj_dd = OrderedDict()
-        chinjnoise_dd = OrderedDict()
-        
-        if not self.drill:
-            
-            for i, id_dly in enumerate(id_dlys):
-            
-                for jCCD, CCDk in enumerate(CCDs):
-                    
-                    chinjnoise_dd[CCDk] = OrderedDict()
-                    chinj_dd[CCDk] = OrderedDict()
-                    
-                    ixsel = np.where((self.dd.mx['id_dly'][:] == id_dly) & 
-                        (self.dd.mx['v_tpump'][:] == 0) & 
-                        (self.dd.mx['CCD'][:] == CCDk))
-                    
-                    iccdobj_f = '%s.pick' % self.dd.mx['ccdobj_name'][ixsel][0]
-                    iccdobj = cPickleRead(os.path.join(ccdpicklespath,iccdobj_f))
-                    
-                    char_res_dict[CCDk] = tptools.charact_injection(iccdobj)
-                    
-                    if (i==0) and jCCD==0:
-                        pdeg = char_res_dict[CCDk]['pdeg']
-                    char_res_dict[CCDk].pop('pdeg')
-                    
-                    for Q in Quads:                    
-                        chinjnoise_dd[CCDk][Q] = np.nanmedian(char_res_dict[CCDk][Q]['injnoise'])
-                        
-                        pco = char_res_dict[CCDk][Q]['polycoeffs']
-                        X = np.arange(self.ccdcalc.NrowsCCD)
-                        
-                        injmap = np.outer(pco[:,0],X**2.)+np.outer(pco[:,1],X)+\
-                                         np.outer(pco[:,2],np.ones((self.ccdcalc.NrowsCCD)))
-                        
-                        chinj_dd[CCDk][Q] = np.nanmedian(injmap)
-        
-        # Saving the charge injection characterisation results
-        
-        self.dd.products['chinj_mx'] = copy.deepcopy(chinj_dd)
-        self.dd.products['chinjnoise_mx'] = copy.deepcopy(chinjnoise_dd)
-        
-        
-        chchar_cdp = self.CDP_lib['CHINJCHARACT']
-        
-        chchar_cdp.header = CDP_header.copy()
-        chchar_cdp.meta = dict(pdeg=pdeg)
-        chchar_cdp.path = productspath
-        chchar_cdp.data = char_res_dict.copy()
-        
-        self.save_CDP(chchar_cdp)
-        self.pack_CDP_to_dd(chchar_cdp,'CHINJCHARACT')
-        
-        # REPORTS
-                
-        # Table with injection noise per CCD/Quadrant
-                
-        chinj_cdp = self.CDP_lib['CHINJ']
-        chinj_cdp.path = self.inputs['subpaths']['products']
-        chinj_dddf = OrderedDict(
-                CHINJ=pd.DataFrame.from_dict(chinj_dd),
-                CHINJNOISE=pd.DataFrame.from_dict(chinjnoise_dd))
-        chinj_cdp.ingest_inputs(data=chinj_dddf.copy(),                             
-                              meta=dict(),
-                              header=CDP_header.copy())
-        
-        chinj_cdp.init_wb_and_fillAll(header_title='%s: CHARGE INJECTION' % self.inputs['test'])
-        self.save_CDP(chinj_cdp)
-        self.pack_CDP_to_dd(chinj_cdp, 'CHINJ_CDP')
-        
-        # Table with injection levels per CCD/Quadrant
-        
-        if self.report is not None:
-            
-            ff = lambda x: '%.1f' % x
-            
-            formatters = [ff,ff,ff]
-            
-            CHINJtex = chinj_cdp.get_textable(sheet='CHINJ', 
-                                            caption='%s: Charge Injection Levels (ADU).' % \
-                                                             self.inputs['test'],
-                                            longtable=False, 
-                                            fitwidth=True,
-                                            index=True,
-                                            formatters=formatters)
-            self.report.add_Text(CHINJtex)
-
-        if self.report is not None:
-            
-            ff = lambda x: '%.2f' % x
-            
-            formatters = [ff,ff,ff]
-            
-            CHINJNOISEtex = chinj_cdp.get_textable(sheet='CHINJNOISE', 
-                                            caption='%s: Charge Injection Noise (ADU, rms).' % \
-                                                             self.inputs['test'],
-                                            longtable=False, 
-                                            fitwidth=True,
-                                            index=True,
-                                            formatters=formatters)
-            self.report.add_Text(CHINJNOISEtex)
-            
+             doFF=False)            
 
         
 
@@ -387,9 +250,11 @@ class TP01(PumpTask):
 
         """
         
+        testname = self.inputs['test']
+        
         if self.report is not None:
             self.report.add_Section(
-                keyword='extract', Title='TP01 Extraction', level=0)
+                keyword='extract', Title='%s Extraction' % testname, level=0)
         
         DDindices = copy.deepcopy(self.dd.indices)
         CCDs = DDindices.get_vals('CCD')
@@ -468,10 +333,11 @@ class TP01(PumpTask):
 
         """
         
+        testname = self.inputs['test']        
         
         if self.report is not None:
             self.report.add_Section(
-                keyword='basic', Title='TP01 Basic Analysis', level=0)
+                keyword='basic', Title='%s Basic Analysis' % testname, level=0)
         
         #threshold = self.contrast_threshold
         threshfactor = self.contrast_thresholdfactor
@@ -586,7 +452,7 @@ class TP01(PumpTask):
             
             df = tptools._aggregate_CQMT(masterdict,CCDs,allQuads,modkeys,toikeys,'toi')
             
-            self.products['master_df'] = df.copy()
+            self.dd.products['master_df'] = df.copy()
             
             #summaryMean = df.groupby(level=['CCD','Q','mod']).mean()
             #summaryTot = df.groupby(level=['CCD','Q','mod']).sum()
@@ -623,8 +489,6 @@ class TP01(PumpTask):
                 self.save_CDP(kmastercat)
                 self.pack_CDP_to_dd(kmastercat,'MASTERCAT_%s' % CCDk)
                 
-                
-    
         
 
     def meta_analysis(self):
@@ -656,10 +520,12 @@ class TP01(PumpTask):
                 
 
         """
+        
+        testname = self.inputs['test']
                 
         if self.report is not None:
             self.report.add_Section(
-                keyword='meta', Title='TP01 Meta Analysis', level=0)
+                keyword='meta', Title='%s Meta Analysis' % testname, level=0)
         
         
         DDindices = copy.deepcopy(self.dd.indices)
@@ -719,7 +585,7 @@ class TP01(PumpTask):
                         for toikey in toikeys:
                             
                             if onTests:
-                                rawcatCQ[modkey][toikey] = _thin_down(rawcatCQ[modkey][toikey],1000)
+                                rawcatCQ[modkey][toikey] = tptools._thin_down(rawcatCQ[modkey][toikey],1000)
                                 
                             rawcatCQ[modkey][toikey] =\
                                     pd.DataFrame.from_dict(rawcatCQ[modkey][toikey])
@@ -847,8 +713,10 @@ class TP01(PumpTask):
             
             pldata = OrderedDict()
             
-            #HeatmapPeaks = []
-                        
+            ixcoltau = colnames.index('tau')
+            ixcolPc = colnames.index('Pc')
+            ixcolS = colnames.index('uS')
+            
             
             for CCDk in CCDs:
                 pldata[CCDk] = OrderedDict()

@@ -92,12 +92,14 @@ class TP02(PumpTask):
     """ """
 
     inputsclass = TP02_inputs
-    contrast_threshold = 0.01
+    #contrast_threshold = 0.01
+    contrast_thresholdfactor = 5.
 
     def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
+                         ('injection', self.charact_injection),
                          ('extract', self.extract),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
@@ -210,8 +212,12 @@ class TP02(PumpTask):
     def prepare_images(self):
         super(TP02, self).prepare_images(doExtract=True, 
              doBadPixels=True,
-             doMask=False, # ON TESTS!
-             doOffset=True, doBias=False, doFF=False)
+             doMask=False, # False on TESTS!
+             doOffset=True, 
+             doBias=False, 
+             doFF=False)
+    
+    
     
     def extract(self):
         """ 
@@ -219,9 +225,11 @@ class TP02(PumpTask):
         
         """
         
+        testname = self.inputs['test']
+        
         if self.report is not None:
             self.report.add_Section(
-                keyword='extract', Title='TP02 Extraction', level=0)
+                keyword='extract', Title='%s Extraction' % testname, level=0)
         
         
         DDindices = copy.deepcopy(self.dd.indices)
@@ -269,7 +277,7 @@ class TP02(PumpTask):
                         ObsID = self.dd.mx['ObsID'][ix]
                         vstart = self.dd.mx['vstart'][ix, jCCD]
                         vend = self.dd.mx['vend'][ix,jCCD]
-                        s_tp_mod = self.dd.mx['s_tp_mod'][ix,jCCD]
+                        #s_tp_mod = self.dd.mx['s_tp_mod'][ix,jCCD]
                         
                         
                         ioutf = 'TP02_rawmap_%i_IDDLY_%i_ROE1_%s' % (
@@ -326,11 +334,16 @@ class TP02(PumpTask):
 
         """
         
+        testname = self.inputs['test']
+        
+        
         if self.report is not None:
             self.report.add_Section(
-                keyword='basic', Title='TP02 Basic Analysis', level=0)
+                keyword='basic', Title='%s Basic Analysis' % testname, level=0)
         
-        threshold = self.contrast_threshold
+        #threshold = self.contrast_threshold
+        threshfactor = self.contrast_thresholdfactor
+        
         #CCDhalves = ['top','bottom']
         _Quads_dict = dict(bottom = ['E','F'],
                            top = ['G','H'])
@@ -357,9 +370,11 @@ class TP02(PumpTask):
         CDP_header.update(dict(function=function, module=module))
         
         masterdict = OrderedDict()
+        threshold_dict = OrderedDict()
         
         for CCDk in CCDs:
             masterdict[CCDk] = OrderedDict()
+            threshold_dict[CCDk] = OrderedDict()
             for Q in allQuads:
                 masterdict[CCDk][Q] = OrderedDict()
                 for modkey in modkeys:
@@ -373,7 +388,7 @@ class TP02(PumpTask):
             # Getting dipole catalogues
             
             ontests = False
-            print 'WARNING: TP02.basic_analysis incomplete, TESTS'
+            print('WARNING: TP02.basic_analysis incomplete, TESTS')
             
             if not ontests:
                 
@@ -414,7 +429,16 @@ class TP02(PumpTask):
                             print('OBSID=%s, %s' % (ObsID,imapf))
                             
                             for iQ, Q in enumerate(Quads):
-                                   
+                                
+                                
+                                _med = self.dd.products['chinj_mx'][CCDk][Q]
+                                _sig = self.dd.products['chinjnoise_mx'][CCDk][Q]
+                                
+                                threshold = threshfactor * _sig/_med
+                                
+                                threshold_dict[CCDk][Q] = threshold
+                                              
+                                
                                 idd = tptools.find_dipoles_stpump(imapccdobj,threshold,
                                       Q,vstart=vstart,vend=vend,extension=-1)
                                  
@@ -423,20 +447,21 @@ class TP02(PumpTask):
 
             df = tptools._aggregate_CQMT(masterdict,CCDs,allQuads,modkeys,dwellkeys,'dwell')
             
+            self.dd.products['master_df'] = df.copy()
             
-            summaryMean = df.groupby(level=['CCD','Q','mod']).mean()
-            summaryTot = df.groupby(level=['CCD','Q','mod']).sum()
+            #summaryMean = df.groupby(level=['CCD','Q','mod']).mean()
+            #summaryTot = df.groupby(level=['CCD','Q','mod']).sum()
         
-            summary = summaryTot.copy()
-            summary['R'] = summaryMean['R'].copy()
-            summary['A'] = summaryMean['A'].copy()
-            summary.columns = ['N','<R>','<A>']
-        
-            summtxtreport = tptools._get_txt(summary)
+            summary = df.groupby(level=['CCD','Q','mod']).mean().copy()
+            #summary['R'] = summaryMean['R'].copy()
+            #summary['A'] = summaryMean['A'].copy()
+            summary.columns = ['<N>','<R>','<A>']
             
             
             if self.report is not None:
-                self.report.add_Text('Aggregated Dipole Statistics: Number, \<Ratio N/S\>, \<Amplitude\>')
+                summtxtreport = tptools._get_txt(summary)
+                self.report.add_Text(["Aggregated Dipole Statistics: $<$Number$>$, $<$Ratio N/S$>$, $<$Amplitude$>$",
+                                      "\nAverages accross dwells"])
                 self.report.add_Text(summtxtreport)
             
             
@@ -489,10 +514,12 @@ class TP02(PumpTask):
 
         """
         
+        testname = self.inputs['test']
+        
         if self.report is not None:
             self.report.add_Section(
-                keyword='meta', Title='TP02 Meta Analysis', level=0)
-            
+                keyword='meta', Title='%s Meta Analysis' % testname, level=0)
+        
         DDindices = copy.deepcopy(self.dd.indices)
         CCDs = DDindices.get_vals('CCD')
         allQuads = DDindices.get_vals('Quad')
@@ -522,119 +549,160 @@ class TP02(PumpTask):
         onTests = False
         
 
-        if not onTests:
+#        if not onTests:
         
-            if not self.drill:
+        if not self.drill:
+            
+   
+            mergecat = OrderedDict()
+                        
+            print('\nMerging Dipole Catalogs...\n')
+            
+            for jCCD, CCDk in enumerate(CCDs):
                 
-       
-                mergecat = OrderedDict()
                 
-                
-                print('\nMerging Dipole Catalogs...\n')
-                
-                for jCCD, CCDk in enumerate(CCDs):
-                    
-                    
-                    mastercatpick = self.dd.products['MASTERCAT_%s' % CCDk]
-        
-                    masterdata = cPickleRead(mastercatpick)['data'].copy()
-                    
-                    mergecat[CCDk] = OrderedDict()
-                    
-                    for iQ, Q in enumerate(allQuads):
-                        
-                        mergecat[CCDk][Q] = OrderedDict()
-                        
-                        rawcatCQ = masterdata[Q].copy()
-                        
-                        # "Pandizing" the toi catalogs
-                        
-                        for modkey in modkeys:
-                            
-                            for dwellkey in dwellkeys:
-                                                                    
-                                rawcatCQ[modkey][dwellkey] =\
-                                        pd.DataFrame.from_dict(rawcatCQ[modkey][dwellkey])
-                        
-                        # Merging the toi catalogs
-                        
-                        for modkey in modkeys:
-                            
-                            print('%s%s, %s...' % (CCDk,Q,modkey))
-                            
-#                            if onTests:
-                                
-#                                mergecat[CCDk][Q][modkey] = cPickleRead('vtpcat_CCD1_E_m123.pick')
-#                                N = len(mergecat[CCDk][Q][modkey])
-#                                ixsel = np.random.choice(np.arange(N),100)
-#                                
-#                                
-#                                mergecat[CCDk][Q][modkey] = mergecat[CCDk][Q][modkey].iloc[ixsel]
-#                                amplitudes = mergecat[CCDk][Q][modkey][Ampcols]
-#                                
-#                                Pc, tau = tptools.batch_fit_PcTau_vtp(amplitudes,tois,Nshuffles)
-#                                
-#                                mergecat[CCDk][Q][modkey]['Pc'] = pd.Series(Pc,
-#                                        index=mergecat[CCDk][Q][modkey].index)
-#                                
-#                                mergecat[CCDk][Q][modkey]['tau'] = pd.Series(tau,
-#                                        index=mergecat[CCDk][Q][modkey].index)
-                                
-                                
-                            if not onTests:
-                                
-                                kqkmerged = tptools.merge_stp_dipole_cats_bypos(
-                                        rawcatCQ[modkey].copy(),
-                                        dwellkeys[1:],dwellkeys[0])
-                                
-                                cols2drop = []
-                                for dwellkey in dwellkeys:
-                                    cols2drop += ['X_%s' % dwellkey,'S_%s' % dwellkey]
-                                kqkmerged.drop(cols2drop,axis=1)
-                                
+                mastercatpick = self.dd.products['MASTERCAT_%s' % CCDk]
     
-                                amplitudes = kqkmerged[Ampcols]
-                                
-    
-                                Pc, tau = tptools.batch_fit_PcTau_stp(amplitudes,dwells,Nshuffles)
-                                
-                                
-                                kqkmerged['Pc'] = pd.Series(Pc,index=kqkmerged.index)
-                                
-                                kqkmerged['tau'] = pd.Series(tau,index=kqkmerged.index)
-                                
-                                
-                                mergecat[CCDk][Q][modkey] = kqkmerged
+                masterdata = cPickleRead(mastercatpick)['data'].copy()
+                
+                mergecat[CCDk] = OrderedDict()
+                
+                for iQ, Q in enumerate(allQuads):
+                    
+                    mergecat[CCDk][Q] = OrderedDict()
+                    
+                    rawcatCQ = masterdata[Q].copy()
+                    
+                    # "Pandizing" the toi catalogs
+                    
+                    for modkey in modkeys:
+                        
+                        for dwellkey in dwellkeys:
+                            
+                            if onTests:
+                                rawcatCQ[modkey][dwellkey] = tptools._thin_down(rawcatCQ[modkey][dwellkey],1000)
+                            
+                            rawcatCQ[modkey][dwellkey] =\
+                                    pd.DataFrame.from_dict(rawcatCQ[modkey][dwellkey])
+                    
+                    # Merging the toi catalogs
+                    
+                    for modkey in modkeys:
+                        
+                        print('%s%s, %s...' % (CCDk,Q,modkey))                        
+                            
+                                                        
+                        kqkmerged = tptools.merge_stp_dipole_cats_bypos(
+                                rawcatCQ[modkey].copy(),
+                                dwellkeys[1:],dwellkeys[0])
+                        
+                        cols2drop = []
+                        for dwellkey in dwellkeys:
+                            cols2drop += ['X_%s' % dwellkey,'S_%s' % dwellkey]
+                        kqkmerged.drop(cols2drop,axis=1)
+                        
+
+                        amplitudes = kqkmerged[Ampcols]                        
+
+                        scaled_Pc, tau = tptools.batch_fit_PcTau_stp(amplitudes,dwells,Nshuffles)
+                        
+                        
+                        Pc = scaled_Pc * self.dd.products['chinj_mx'][CCDk][Q]
+                        
+                        kqkmerged['Pc'] = pd.Series(Pc,index=kqkmerged.index)
+                        
+                        kqkmerged['tau'] = pd.Series(tau,index=kqkmerged.index)
+                        
+                        
+                        mergecat[CCDk][Q][modkey] = kqkmerged
                                         
                                 
             
         # Store output catalog(s) as a CDP
         
-        if not onTests:
           
-            for CCDk in CCDs:
-                
-                kmergedata = mergecat[CCDk].copy()
-                colnames = kmergedata[allQuads[0]][modkeys[0]].keys().tolist()
-                
-                for Q in allQuads:
-                    for modkey in modkeys:
-                        kmergedata[Q][modkey] = kmergedata[Q][modkey].as_matrix()
-                
-                kmergecat = self.CDP_lib['MERGEDCAT_%s' % CCDk]
-                kmergecat.header = CDP_header.copy()
-                kmergecat.meta = OrderedDict(
-                        Quadrants=allQuads,
-                        modes=modkeys,
-                        colnames=colnames)
-                kmergecat.path = productspath
-                kmergecat.data = kmergedata.copy()
-                
-                self.save_CDP(kmergecat)
-                self.pack_CDP_to_dd(kmergecat,'MERGEDCAT_%s' % CCDk)
+        for CCDk in CCDs:
+            
+            kmergedata = mergecat[CCDk].copy()
+            colnames = kmergedata[allQuads[0]][modkeys[0]].keys().tolist()
+            
+            for Q in allQuads:
+                for modkey in modkeys:
+                    kmergedata[Q][modkey] = kmergedata[Q][modkey].as_matrix()
+            
+            kmergecat = self.CDP_lib['MERGEDCAT_%s' % CCDk]
+            kmergecat.header = CDP_header.copy()
+            kmergecat.meta = OrderedDict(
+                    Quadrants=allQuads,
+                    modes=modkeys,
+                    colnames=colnames)
+            kmergecat.path = productspath
+            kmergecat.data = kmergedata.copy()
+            
+            self.save_CDP(kmergecat)
+            self.pack_CDP_to_dd(kmergecat,'MERGEDCAT_%s' % CCDk)
             
         
-        # Produce Pc, tau heatmaps for each tp mode across CCD beam
+        # SUMMARY MX/TABLE
+        
+        ixtau = colnames.index('tau')
+        ixPc = colnames.index('Pc')
+        
+        sumtable = OrderedDict()
+        
+        for CCDk in CCDs:
+            sumtable[CCDk] = OrderedDict()
+            for Q in allQuads:                
+                sumtable[CCDk][Q] = OrderedDict()
+                for modkey in modkeys:
+                    
+                    tau = mergecat[CCDk][Q][modkey][:,ixtau].copy()
+                    Pc = mergecat[CCDk][Q][modkey][:,ixPc].copy()                    
+                    ixnonan = np.where(~np.isnan(tau) & ~np.isnan(Pc))
+                    try: avtau = np.average(tau[ixnonan],weights=Pc[ixnonan])
+                    except ZeroDivisionError:
+                        avtau = np.nan
+                    sumtable[CCDk][Q][modkey] = [len(Pc[ixnonan]),avtau]
+        
+        reform = {(level1_key, level2_key, level3_key): value
+              for level1_key, level2_dict in sumtable.items()
+              for level2_key, level3_dict in level2_dict.items()
+              for level3_key, value in level3_dict.items()}
+        
+        mergeL1df = pd.DataFrame(reform).T
+        ncolnames = dict()
+        for i,c in enumerate(['N','<tau>']):
+            ncolnames[i] = c
+        mergeL1df.rename(columns=ncolnames,inplace=True)
+        names=['CCD','Q','mod']
+        mergeL1df.index.set_names(names,inplace=True)
+        
+        mergeL2df = mergeL1df.groupby(level=['CCD','Q']).sum().copy()
+        tausL2df = mergeL1df.groupby(level=['CCD','Q']).mean().copy()
+        mergeL2df['<tau>'] = tausL2df['<tau>'].copy()
+
+        self.dd.products['mergedL1_df'] = mergeL1df.copy()
+        self.dd.products['mergedL2_df'] = mergeL2df.copy()
+        
+        if self.report is not None:
+            
+            txtreportML1 = tptools._get_txt(mergeL1df)            
+            self.report.add_Text(["Dipole Tau Statistics: Number, $<$tau [us]$>$",
+                                  "\nModel-fit dipoles only."])
+            self.report.add_Text(txtreportML1)
+        
+            txtreportML2 = tptools._get_txt(mergeL2df)            
+            self.report.add_Text(["Dipole Tau Statistics (mode aggregated): Number, $<$tau [us]$>$",
+                                   "\nModel-fit dipoles only, aggregated across pumping modes."])
+            self.report.add_Text(txtreportML2)
+        
+        
+        
+        # Produce Pc-tau plots for each tp mode across CCD beam
+        
+        ixcoltau = colnames.index('tau')
+        ixcolPc = colnames.index('Pc')
+        ixcolS = colnames.index('uS')
         
         for modkey in modkeys:
             
@@ -642,9 +710,7 @@ class TP02(PumpTask):
             
             pldata = OrderedDict(labelkeys=polarities.keys())
             
-            ixcoltau = colnames.index('tau')
-            ixcolPc = colnames.index('Pc')
-            ixcolS = colnames.index('uS')
+            
             
             for CCDk in CCDs:
                 pldata[CCDk] = OrderedDict()

@@ -42,6 +42,7 @@ class TP21(TP02.TP02):
         """ """
         self.subtasks = [('check', self.check_data),
                          ('prep', self.prepare_images),
+                         ('injection', self.charact_injection),
                          ('extract', self.extract),
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]

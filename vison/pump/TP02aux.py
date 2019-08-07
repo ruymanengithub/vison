@@ -78,7 +78,9 @@ def gt_meta_Pctau_dict(mkey):
               doNiceXDate=False,
               suptitle='TP02: %s' % mkey,
               xlabel='log10(tph [us])',
+              xlim = [-2.,2],
               ylabel='log10(Pc)',
+              ylim = [-3.,0.],
               corekwargs=dict(North=dict(marker='.',linestyle='',color='b'),
                               South=dict(marker='.',linestyle='',color='r'))
                 ))
@@ -123,5 +125,15 @@ def get_CDP_lib():
         mergedcat = cdp.CDP()
         mergedcat.rootname = 'TP02_MergedCat_%s' % CCD
         CDP_lib['MERGEDCAT_%s' % CCD] = mergedcat
+
+    chinjcharact_cdp = cdp.CDP()
+    chinjcharact_cdp.rootname = 'TP02_CHINJCHAR'
+    CDP_lib['CHINJCHARACT'] = chinjcharact_cdp
+        
+    chinj_cdp = cdp.Tables_CDP()
+    chinj_cdp.rootname = 'TP02_CHINJ'
+        
+    CDP_lib['CHINJ'] = chinj_cdp
+
           
     return CDP_lib
