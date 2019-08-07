@@ -584,22 +584,23 @@ class TP01(PumpTask):
                                 
                                     
             
-            df = tptools._aggregate(masterdict,CCDs,allQuads,modkeys,toikeys,'toi')
+            df = tptools._aggregate_CQMT(masterdict,CCDs,allQuads,modkeys,toikeys,'toi')
             
+            self.products['master_df'] = df.copy()
             
-            summaryMean = df.groupby(level=['CCD','Q','mod']).mean()
-            summaryTot = df.groupby(level=['CCD','Q','mod']).sum()
+            #summaryMean = df.groupby(level=['CCD','Q','mod']).mean()
+            #summaryTot = df.groupby(level=['CCD','Q','mod']).sum()
         
-            summary = summaryTot.copy()
-            summary['R'] = summaryMean['R'].copy()
-            summary['A'] = summaryMean['A'].copy()
-            summary.columns = ['N','<R>','<A>']
-        
-            summtxtreport = tptools._get_txt(summary)
+            summary = df.groupby(level=['CCD','Q','mod']).mean().copy()
+            #summary['R'] = summaryMean['R'].copy()
+            #summary['A'] = summaryMean['A'].copy()
+            summary.columns = ['<N>','<R>','<A>']
             
         
             if self.report is not None:
-                self.report.add_Text('Aggregated Dipole Statistics: Number, \<Ratio N/S\>, \<Amplitude\>')
+                summtxtreport = tptools._get_txt(summary)
+                self.report.add_Text(["Aggregated Dipole Statistics: $<$Number$>$, $<$Ratio N/S$>$, $<$Amplitude$>$",
+                                      "\nAverages accross toi's"])
                 self.report.add_Text(summtxtreport)
             
             
@@ -610,8 +611,7 @@ class TP01(PumpTask):
             MCmeta['Quads'] = allQuads
             MCmeta['modkeys'] = modkeys
             MCmeta['toikeys'] = toikeys
-            
-            
+                        
             for CCDk in CCDs:
             
                 kmastercat = self.CDP_lib['MASTERCAT_%s' % CCDk]
@@ -625,41 +625,6 @@ class TP01(PumpTask):
                 
                 
     
-    def debugtask(self):
-        
-        if self.report is not None:
-            self.report.add_Section(
-                keyword='debug', Title='TP01 DEBUG', level=0)
-        
-        CCDs = ['CCD1','CCD2','CCD3']
-        
-        masterdict = OrderedDict()
-        for CCDk in CCDs:
-            kmastercatpick = self.dd.products['MASTERCAT_%s' % CCDk]
-            masterdict[CCDk] = cPickleRead(kmastercatpick)['data'].copy()
-                
-        allQuads = ['E','F','G','H']
-        modkeys = ['m123', 'm234', 'm341', 'm412']
-        toikeys = ['u0200', 'u1000', 'u2000', 'u4000', 'u8000']
-              
-        df =_aggregate(masterdict,CCDs,allQuads,modkeys,toikeys)
-        
-        
-        
-        summaryMean = df.groupby(level=['CCD','Q','mod']).mean()
-        summaryTot = df.groupby(level=['CCD','Q','mod']).sum()
-        
-        summary = summaryTot.copy()
-        summary['R'] = summaryMean['R'].copy()
-        summary['A'] = summaryMean['A'].copy()
-        summary.columns = ['N','<R>','<A>']
-        
-        txtreport = _get_txt(summary)
-            
-        
-        if self.report is not None:
-            self.report.add_Text('Aggregated Dipole Statistics: Number, Ratio N/S, \<Amplitude\>')
-            self.report.add_Text(txtreport)
         
 
     def meta_analysis(self):
@@ -691,9 +656,7 @@ class TP01(PumpTask):
                 
 
         """
-        
-        
-        
+                
         if self.report is not None:
             self.report.add_Section(
                 keyword='meta', Title='TP01 Meta Analysis', level=0)
@@ -767,26 +730,6 @@ class TP01(PumpTask):
                         
                         print('%s%s, %s...' % (CCDk,Q,modkey))
                         
-#                            if onTests:
-                            
-#                                mergecat[CCDk][Q][modkey] = cPickleRead('vtpcat_CCD1_E_m123.pick')
-#                                N = len(mergecat[CCDk][Q][modkey])
-#                                ixsel = np.random.choice(np.arange(N),100)
-#                                
-#                                
-#                                mergecat[CCDk][Q][modkey] = mergecat[CCDk][Q][modkey].iloc[ixsel]
-#                                amplitudes = mergecat[CCDk][Q][modkey][Ampcols]
-#                                
-#                                Pc, tau = tptools.batch_fit_PcTau_vtp(amplitudes,tois,Nshuffles)
-#                                
-#                                mergecat[CCDk][Q][modkey]['Pc'] = pd.Series(Pc,
-#                                        index=mergecat[CCDk][Q][modkey].index)
-#                                
-#                                mergecat[CCDk][Q][modkey]['tau'] = pd.Series(tau,
-#                                        index=mergecat[CCDk][Q][modkey].index)
-                            
-                            
-#                            if not onTests:
                             
                         kqkmerged = tptools.merge_vtp_dipole_cats_bypos(
                                 rawcatCQ[modkey].copy(),
@@ -812,7 +755,7 @@ class TP01(PumpTask):
                         
                         mergecat[CCDk][Q][modkey] = kqkmerged
                                         
-            
+        
         # Store output catalog(s) as a CDP
         
 #        if not onTests:
@@ -840,26 +783,64 @@ class TP01(PumpTask):
             self.save_CDP(kmergecat)
             self.pack_CDP_to_dd(kmergecat,'MERGEDCAT_%s' % CCDk)
             
-#        else:
-#            
-#            mergecat = OrderedDict()
-#            
-#            for CCDk in CCDs:
-#                
-#                kpick = os.path.join(productspath,'TP01_MergedCat_%s.pick' % CCDk)
-#                kmergedcat = cPickleRead(kpick)
-#                colnames = kmergedcat['meta']['colnames']
-#                
-#                mergecat[CCDk] = OrderedDict()
-#                
-#                for Q in allQuads:
-#                    mergecat[CCDk][Q] = OrderedDict()
-#                    
-#                    for modkey in modkeys:
-#                        mergecat[CCDk][Q][modkey] = pd.DataFrame(data=kmergedcat['data'][Q][modkey],index=np.arange(100),columns=colnames)
         
-        # Produce Pc, tau heatmaps for each tp mode across CCD beam
+        # SUMMARY MX/TABLE
+        
+        ixtau = colnames.index('tau')
+        ixPc = colnames.index('Pc')
+        
+        sumtable = OrderedDict()
+        
+        for CCDk in CCDs:
+            sumtable[CCDk] = OrderedDict()
+            for Q in allQuads:                
+                sumtable[CCDk][Q] = OrderedDict()
+                for modkey in modkeys:
+                    
+                    tau = mergecat[CCDk][Q][modkey][:,ixtau].copy()
+                    Pc = mergecat[CCDk][Q][modkey][:,ixPc].copy()                    
+                    ixnonan = np.where(~np.isnan(tau) & ~np.isnan(Pc))
+                    avtau = np.average(tau[ixnonan],weights=Pc[ixnonan])
+                    
+                    sumtable[CCDk][Q][modkey] = [len(Pc[ixnonan]),avtau]
+        
+        reform = {(level1_key, level2_key, level3_key): value
+              for level1_key, level2_dict in sumtable.items()
+              for level2_key, level3_dict in level2_dict.items()
+              for level3_key, value in level3_dict.items()}
+        
+        mergeL1df = pd.DataFrame(reform).T
+        colnames = dict()
+        for i,c in enumerate(['N','<tau>']):
+            colnames[i] = c
+        mergeL1df.rename(columns=colnames,inplace=True)
+        names=['CCD','Q','mod']
+        mergeL1df.index.set_names(names,inplace=True)
+        
+        mergeL2df = mergeL1df.groupby(level=['CCD','Q']).sum().copy()
+        tausL2df = mergeL1df.groupby(level=['CCD','Q']).mean().copy()
+        mergeL2df['<tau>'] = tausL2df['<tau>'].copy()
+
+        self.dd.products['mergedL1_df'] = mergeL1df.copy()
+        self.dd.products['mergedL2_df'] = mergeL2df.copy()
+        
+        if self.report is not None:
             
+            txtreportML1 = tptools._get_txt(mergeL1df)            
+            self.report.add_Text(["Dipole Tau Statistics: Number, $<$tau [us]$>$",
+                                  "\nModel-fit dipoles only."])
+            self.report.add_Text(txtreportML1)
+        
+            txtreportML2 = tptools._get_txt(mergeL2df)            
+            self.report.add_Text(["Dipole Tau Statistics (mode aggregated): Number, $<$tau [us]$>$",
+                                   "\nModel-fit dipoles only, aggregated across pumping modes."])
+            self.report.add_Text(txtreportML2)
+        
+                
+        # Produce Pc, tau heatmaps for each tp mode across CCD beam
+        
+        
+        
         for modkey in modkeys:
             
             pltfig = self.figdict['TP01meta_%s' % modkey]
@@ -867,9 +848,7 @@ class TP01(PumpTask):
             pldata = OrderedDict()
             
             #HeatmapPeaks = []
-            
-            ixtau = colnames.index('tau')
-            ixPc = colnames.index('Pc')
+                        
             
             for CCDk in CCDs:
                 pldata[CCDk] = OrderedDict()
@@ -887,7 +866,7 @@ class TP01(PumpTask):
                     
                     
                     Heatmap, xedges, yedges = np.histogram2d(logtau, logPc, bins=(15,15), 
-                range=[[1.5,5],[-3.,0.5]])
+                                                             range=[[1.5,5],[-3.,0.5]])
                     
                     Heatmap /= np.nanmax(Heatmap)
                     
@@ -917,4 +896,100 @@ class TP01(PumpTask):
             self.addFigures_ST(figkeys=Mfigkeys,
                            dobuilddata=False)
         
+        
+        
+        
         self.canbecleaned = True
+
+    def debugtask(self):
+                
+         
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='debug', Title='TP01 DEBUG', level=0)
+        
+        CCDs = ['CCD1','CCD2','CCD3']
+        
+        masterdict = OrderedDict()
+        for CCDk in CCDs:
+            kmastercatpick = self.dd.products['MASTERCAT_%s' % CCDk]
+            masterdict[CCDk] = cPickleRead(kmastercatpick)['data'].copy()
+        
+        allQuads = ['E','F','G','H']
+        modkeys = ['m123', 'm234', 'm341', 'm412']
+        toikeys = ['u0050','u0200', 'u1000', 'u2000', 'u4000', 'u8000']
+        
+        dfL1 = tptools._aggregate_CQMT(masterdict,CCDs,allQuads,modkeys,toikeys,'toi')
+        
+        summaryCat = dfL1.groupby(level=['CCD','Q','mod']).mean().copy()
+        summaryCat.columns = ['<N>','<R>','<A>']        
+                
+        if self.report is not None:
+            
+            txtreport = tptools._get_txt(summaryCat)            
+            self.report.add_Text(["Aggregated Dipole Statistics: $<$Number$>$, $<$Ratio N/S$>$, $<$Amplitude$>$",
+                                  "\nAverages accross toi's"])
+            self.report.add_Text(txtreport)
+        
+        
+        # MERGED
+        
+        rawmergedict = OrderedDict()
+        for ik,CCDk in enumerate(CCDs):
+            kmergedpick = self.dd.products['MERGEDCAT_%s' % CCDk]
+            kmerged = cPickleRead(kmergedpick)
+            if ik ==0:
+                mcolnames = kmerged['meta']['colnames']
+            rawmergedict[CCDk] = kmerged['data'].copy()
+        
+        def get_vals(arrayCQM,colnames):
+            """ """
+            Pc = arrayCQM[:,colnames.index('Pc')]
+            tau = arrayCQM[:,colnames.index('tau')]
+            ixnonan = np.where(~np.isnan(Pc) & ~np.isnan(tau))
+            Pc = Pc[ixnonan]
+            tau = tau[ixnonan]            
+            values = [len(Pc),np.average(tau,weights=Pc)]
+
+            return values
+        
+        
+        mergedict = OrderedDict()
+        for CCDk in CCDs:
+            mergedict[CCDk] = OrderedDict()
+            for Q in allQuads:
+                mergedict[CCDk][Q] = OrderedDict()
+                for mk in modkeys:
+                    mergedict[CCDk][Q][mk] = get_vals(rawmergedict[CCDk][Q][mk],mcolnames)
+        
+        
+        reform = {(level1_key, level2_key, level3_key): value
+              for level1_key, level2_dict in mergedict.items()
+              for level2_key, level3_dict in level2_dict.items()
+              for level3_key, value in level3_dict.items()}
+        
+        mergeL1df = pd.DataFrame(reform).T
+        colnames = dict()
+        for i,c in enumerate(['N','<tau>']):
+            colnames[i] = c
+        mergeL1df.rename(columns=colnames,inplace=True)
+        names=['CCD','Q','mod']
+        mergeL1df.index.set_names(names,inplace=True)
+                
+        mergeL2df = mergeL1df.groupby(level=['CCD','Q']).sum().copy()
+        tausL2df = mergeL1df.groupby(level=['CCD','Q']).mean().copy()
+        mergeL2df['<tau>'] = tausL2df['<tau>'].copy()
+        
+        
+        if self.report is not None:
+            
+            txtreportML1 = tptools._get_txt(mergeL1df)            
+            self.report.add_Text(["Dipole Tau Statistics: Number, $<$tau [us]$>$",
+                                  "\nModel-fit dipoles only."])
+            self.report.add_Text(txtreportML1)
+        
+            txtreportML2 = tptools._get_txt(mergeL2df) 
+            self.report.add_Text(["Dipole Tau Statistics (mode aggregated): Number, $<$tau [us]$>$",
+                                   "\nModel-fit dipoles only, aggregated across pumping modes."])
+            self.report.add_Text(txtreportML2)
+        

@@ -43,7 +43,7 @@ def _get_A(dipdict):
     return np.nanmedian(dipdict['A'])
     
 
-def _aggregate(masterdict,CCDs,allQuads,modkeys,tkeys,tkeyname):
+def _aggregate_CQMT(masterdict,CCDs,allQuads,modkeys,tkeys,tkeyname):
     """ """
     
     allfuncts = OrderedDict()
@@ -62,16 +62,16 @@ def _aggregate(masterdict,CCDs,allQuads,modkeys,tkeys,tkeyname):
                 for tkey in tkeys:
                     values = []
                     for extract in extracts:
-                        values.append(allfuncts[extract](masterdict[CCDk][Q][modkey][tkey]))                                
+                        values.append(allfuncts[extract](masterdict[CCDk][Q][modkey][tkey]))  
+                        #values[extract] =  allfuncts[extract](masterdict[CCDk][Q][modkey][tkey])
                     outdict[CCDk][Q][modkey][tkey] = values
     
-   
+
     reform = {(level1_key, level2_key, level3_key, level4_key): value
               for level1_key, level2_dict in outdict.items()
               for level2_key, level3_dict in level2_dict.items()
               for level3_key, level4_dict in level3_dict.items()
               for level4_key, value       in level4_dict.items()}
-    
     
     outdf = pd.DataFrame(reform).T
     colnames = dict()
@@ -80,7 +80,6 @@ def _aggregate(masterdict,CCDs,allQuads,modkeys,tkeys,tkeyname):
     outdf.rename(columns=colnames,inplace=True)
     names=['CCD','Q','mod',tkeyname]
     outdf.index.set_names(names,inplace=True)
-    
     
     
     return outdf

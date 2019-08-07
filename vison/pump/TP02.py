@@ -421,7 +421,7 @@ class TP02(PumpTask):
                                 masterdict[CCDk][Q][modkey][dwellkey] = idd.copy()
             
 
-            df = tptools._aggregate(masterdict,CCDs,allQuads,modkeys,dwellkeys,'dwell')
+            df = tptools._aggregate_CQMT(masterdict,CCDs,allQuads,modkeys,dwellkeys,'dwell')
             
             
             summaryMean = df.groupby(level=['CCD','Q','mod']).mean()
