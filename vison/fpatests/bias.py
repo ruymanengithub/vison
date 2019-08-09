@@ -12,7 +12,9 @@ import copy
 import numpy as np
 from collections import OrderedDict
 import string as st
+import os
 
+from vison.support import files
 from vison.fpa import fpa as fpamod
 
 from vison.fpatests.metacal import MetaCal
@@ -36,17 +38,17 @@ cols2keep = ['test', 'sn_ccd1', 'sn_ccd2', 'sn_ccd3', 'sn_roe', 'sn_rpsu', 'expt
          'HK_CCD3_TEMP_T', 'HK_CCD1_TEMP_B', 'HK_CCD2_TEMP_B', 'HK_CCD3_TEMP_B', 'HK_CCD1_OD_T', 'HK_CCD2_OD_T', 'HK_CCD3_OD_T', 'HK_CCD1_OD_B', 'HK_CCD2_OD_B', 'HK_CCD3_OD_B', 'HK_COMM_RD_T', 
          'HK_COMM_RD_B', 'HK_CCD1_IG1_T', 'HK_CCD2_IG1_T', 'HK_CCD3_IG1_T', 'HK_CCD1_IG1_B', 'HK_CCD2_IG1_B', 'HK_CCD3_IG1_B', 'HK_COMM_IG2_T', 'HK_COMM_IG2_B', 'HK_FPGA_BIAS_ID2', 
          'HK_VID_PCB_TEMP_T', 'HK_VID_PCB_TEMP_B', 'HK_RPSU_TEMP1', 'HK_FPGA_PCB_TEMP_T', 'HK_FPGA_PCB_TEMP_B', 'HK_RPSU_TEMP_2', 'HK_RPSU_28V_PRI_I', 'chk_NPIXOFF', 'chk_NPIXSAT', 
-         'offset_pre', 'offset_ove', 'deltaoff_pre', 'deltaoff_ove', 'flu_med_img', 'flu_std_img', 'std_pre', 'std_ove']
+         'offset_pre', 'offset_img', 'offset_ove', 'deltaoff_pre', 'deltaoff_img', 'deltaoff_ove', 'std_pre', 'std_img', 'std_ove', 'RON']
 
-class MetaPTC(MetaCal):
+class MetaBias(MetaCal):
     """ """
     
     def __init__(self, *args, **kwargs):
         """ """
         
-        super(MetaPTC,self).__init__(*args,**kwargs)
+        super(MetaBias,self).__init__(*args,**kwargs)
         
-        self.testnames = ['PTC01','PTC02_590','PTC02_730','PTC02_880']
+        self.testnames = ['BIAS01','BIAS02']
         self.incols = cols2keep
         self.ParsedTable = OrderedDict()
     
@@ -66,29 +68,21 @@ class MetaPTC(MetaCal):
                                      vcore.vIndex('CCD',vals=self.CCDs),
                                      vcore.vIndex('Quad',vals=self.Quads)])
         
+    
         #idd = copy.deepcopy(inventoryitem['dd'])
         sidd = self.parse_single_test_gen(jrep, block, testname, inventoryitem)
         
+        
         # TEST SCPECIFIC
         # TO BE ADDED:            
-        #   BLOCK, TEST, REPEAT
-        #   wavenm, calibrated HK (voltages),
-        #   GAIN, EGAIN, ALPHA, BLOOM_ADU, BLOOM_E
-        #   REFERENCES TO CURVES
-
-        CHAMBER = sidd.meta['inputs']['CHAMBER']
+        #   OFFSETS: pre, img, ove
+        #   RON: pre, img, ove
+        #   REFERENCES TO PROFILES
         
-        ogseobj = ogse.Ogse(CHAMBER=CHAMBER)
-        
-        wave = sidd.mx['wave'][0,0]
-        
-        wave_v = np.array([ogseobj.get_wavelength(wave)])
-        sidd.addColumn(wave_v, 'WAVENM', IndexS, ix=0)
         
         block_v = np.array([block])            
         sidd.addColumn(block_v, 'BLOCK', IndexS, ix=0)
-        
-        
+                
         test_v = np.array([jrep+1])            
         sidd.addColumn(test_v, 'REP', IndexS, ix=0)
         
@@ -98,73 +92,52 @@ class MetaPTC(MetaCal):
         test_v = np.array([testname])            
         sidd.addColumn(test_v, 'TEST', IndexS, ix=0)
  
-        gain_mx = sidd.products['gain_mx']
-        bloom_mx = sidd.products['bloom_mx']
         
         tmp_v_CQ = np.zeros((1,NCCDs,NQuads))
         
-        gain_v = tmp_v_CQ.copy()
-        egain_v = tmp_v_CQ.copy()
-        alpha_v = tmp_v_CQ.copy()
-        bloom_ADU_v = tmp_v_CQ.copy()
-        bloom_e_v = tmp_v_CQ.copy()
+        off_pre_v = tmp_v_CQ.copy()
+        off_img_v = tmp_v_CQ.copy()
+        off_ove_v = tmp_v_CQ.copy()
+        
+        ron_pre_v = tmp_v_CQ.copy()
+        ron_img_v = tmp_v_CQ.copy()
+        ron_ove_v = tmp_v_CQ.copy()
+        
+        productspath = os.path.join(inventoryitem['resroot'],'products')
+        
+        roncdp_pick = os.path.join(productspath,os.path.split(sidd.products['RON_CDP'])[-1])
+        roncdp = files.cPickleRead(roncdp_pick)
+        
+        offcdp_pick = os.path.join(productspath,os.path.split(sidd.products['OFF_CDP'])[-1])
+        offcdp = files.cPickleRead(offcdp_pick)
+        
         
         for iCCD, CCDk in enumerate(CCDkeys):
             for kQ, Q in enumerate(self.Quads):
                 
-                gain_v[0,iCCD,kQ] = gain_mx[CCDk][Q]['gain']
-                egain_v[0,iCCD,kQ] = gain_mx[CCDk][Q]['egain']
-                alpha_v[0,iCCD,kQ] = gain_mx[CCDk][Q]['alpha']
+                off_pre_v[0,iCCD,kQ] = offcdp['data']['OFF_PRE'][CCDk][Q]
+                off_img_v[0,iCCD,kQ] = offcdp['data']['OFF_IMG'][CCDk][Q]
+                off_ove_v[0,iCCD,kQ] = offcdp['data']['OFF_OVE'][CCDk][Q]
                 
-                bloom_ADU_v[0,iCCD,kQ] = bloom_mx[CCDk][Q]['bloom_ADU']
-                bloom_e_v[0,iCCD,kQ] = bloom_mx[CCDk][Q]['bloom_e']
+                ron_pre_v[0,iCCD,kQ] = roncdp['data']['RON_PRE'][CCDk][Q]
+                ron_img_v[0,iCCD,kQ] = roncdp['data']['RON_IMG'][CCDk][Q]
+                ron_ove_v[0,iCCD,kQ] = roncdp['data']['RON_OVE'][CCDk][Q]
                 
-        sidd.addColumn(gain_v, 'GAIN', IndexCQ)
-        sidd.addColumn(egain_v, 'EGAIN', IndexCQ)
-        sidd.addColumn(alpha_v, 'ALPHA', IndexCQ)
-        sidd.addColumn(bloom_ADU_v, 'BLOOM_ADU', IndexCQ)
-        sidd.addColumn(bloom_e_v, 'BLOOM_E', IndexCQ)
+                
+        sidd.addColumn(off_pre_v, 'OFF_PRE', IndexCQ)
+        sidd.addColumn(off_img_v, 'OFF_IMG', IndexCQ)
+        sidd.addColumn(off_ove_v, 'OFF_OVE', IndexCQ)
         
+        sidd.addColumn(ron_pre_v, 'RON_PRE', IndexCQ)
+        sidd.addColumn(ron_img_v, 'RON_IMG', IndexCQ)
+        sidd.addColumn(ron_ove_v, 'RON_OVE', IndexCQ)
 
         # flatten sidd to table
         
         sit = sidd.flattentoTable()
         
         return sit
-        
-    
-    
-   
-    def _extract_GAIN_fromPT(self,PT,block,CCDk,Q):
-        """ """
-        ixblock = np.where(PT['BLOCK'].data == block)        
-        column = 'GAIN_%s_Quad%s' % (CCDk,Q)        
-        G = PT[column][ixblock][0]        
-        return G
 
-        
-    def _extract_BADU_fromPT(self,PT,block,CCDk,Q):
-        """ """
-        ixblock = np.where(PT['BLOCK'].data == block)
-        
-        column = 'BLOOM_ADU_%s_Quad%s' % (CCDk,Q)
-        badu = PT[column][ixblock][0]
-        if badu>0:
-            return badu
-        else:
-            return np.nan
-
-
-    def _extract_BE_fromPT(self,PT,block,CCDk,Q):
-        """ """
-        ixblock = np.where(PT['BLOCK'].data == block)
-        
-        column = 'BLOOM_E_%s_Quad%s' % (CCDk,Q)
-        be = PT[column][ixblock][0]
-        if be>0:
-            return be
-        else:
-            return np.nan
 
 
     def dump_aggregated_results(self):
@@ -172,47 +145,32 @@ class MetaPTC(MetaCal):
         
         outpathroot = self.outpath
         
-        # GAIN maps (all tests/waves)
+        # RON maps (all tests/waves)
+        
+        stop()
         
         for testname in self.testnames:
             
-            GMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_GAIN_fromPT)
+            RONMAP = self.get_RONMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_RON_fromPT)
         
             stestname = st.replace(testname,'_','\_')
-                        
-            self.plot_SimpleMAP(GMAP,kwargs=dict(
-                    suptitle='%s: GAIN e-/ADU' % stestname))
+            self.plot_SimpleMAP(RONMAP,kwargs=dict(
+                    suptitle='%s: RON' % stestname))
         
         
-        # GAIN matrix (all blocks and test/waves)
-        
-        
-        
-        # BLOOM maps (ADU and e-, from PTC01)
+        # OFFSET maps
         
         for testname in self.testnames:
             
-            BADU_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_BADU_fromPT)
+            OFFMAP = self.get_OFFSETMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_OFFSET_fromPT)
         
             stestname = st.replace(testname,'_','\_')
-            self.plot_SimpleMAP(BADU_MAP,kwargs=dict(
-                    suptitle='%s: BLOOM-ADU [DN]' % stestname))
+            self.plot_SimpleMAP(OFFMAP,kwargs=dict(
+                    suptitle='%s: OFFSET' % stestname))
         
-        for testname in self.testnames:
-            
-            BE_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_BE_fromPT)
         
-            stestname = st.replace(testname,'_','\_')
-            self.plot_SimpleMAP(BE_MAP,kwargs=dict(
-                    suptitle='%s: BLOOM-ELECTRONS' % stestname))
         
-        # GAIN vs. detector temperature (PTC01)
-        
-        # GAIN vs. OD-CAL (PTC01)
-        
-        # GAIN vs. RD-CAL (PTC01)
-        
-        # Save the ParsedTable(s)
+
         
         
         

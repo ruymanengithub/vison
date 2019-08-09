@@ -21,6 +21,11 @@ from vison.support import vjson
 from vison.datamodel import core as vcore
 from vison.support import vcal
 from vison.fpa import fpa as fpamod
+from vison.plot import plots_fpa as plfpa
+
+from matplotlib import pyplot as plt
+plt.switch_backend('TkAgg')
+from matplotlib.colors import Normalize
 
 # END IMPORT
 
@@ -121,8 +126,6 @@ class MetaCal(object):
     
         return None
     
-    def parse_block_results(self,*args,**kwargs):
-        raise NotImplementedError("Subclass must implement abstract method")
     
     def dump_aggregated_results(self):
         raise NotImplementedError("Subclass must implement abstract method")
@@ -134,6 +137,11 @@ class MetaCal(object):
         #indices = copy.deepcopy(dd.indices)
         
         stkdd = vcore.DataDict()
+        
+        stkdd.compliances = dd.compliances.copy()
+        stkdd.flags = copy.deepcopy(dd.flags)
+        stkdd.meta = dd.meta.copy()
+        stkdd.products = dd.products.copy()
         
         
         stacker_functions = dict(median=np.median,
@@ -207,7 +215,7 @@ class MetaCal(object):
                         niindices.append(copy.deepcopy(ix))
             
             stkdd.addColumn(imx,name=icol,indices=niindices)
-
+        
             
         return stkdd
     
@@ -215,7 +223,115 @@ class MetaCal(object):
         """ """        
         return table.vstack([t1,t2])
 
+
+    def parse_single_test_gen(self, jrep, block, testname, inventoryitem):
+        """ """
         
+        
+        IndexS = vcore.vMultiIndex([vcore.vIndex('ix',vals=[0])])
+        
+        
+        idd = copy.deepcopy(inventoryitem['dd'])
+        
+        
+        sidd = self.stack_dd(idd,self.incols,
+                             indices2keep=['ix','CCD','Quad'],
+                             index2stack = 'ix',
+                             stacker='median')
+        
+        sidd.dropColumn('test')
+        
+        
+        # rename the CCD index values in sidd, for convenience
+        
+        sidd.indices[sidd.indices.names.index('CCD')].vals = self.CCDs
+                    
+        for col in sidd.colnames:
+            if 'CCD' in sidd.mx[col].indices.get_names():
+                _i = sidd.mx[col].indices.names.index('CCD')
+                sidd.mx[col].indices[_i].vals = self.CCDs
+                
+        # CALIBRATED HK
+        
+        try:
+            roeVCal = self.roeVCals[block]
+        except KeyError:
+            print('Voltage calibrations for block %s not found!' % block)
+            roeVCal = None
+   
+        
+        if roeVCal is not None:
+                        
+            for cal_key in ['OD','RD','IG1','IG2']:
+                
+                for CCD in self.CCDs:
+                    for Q in self.Quads:
+                                                
+                        rHKkey= roeVCal.get_HKkey(cal_key, CCD, Q)
+                        HKkey = 'HK_%s' % rHKkey.upper()
+                        cHKkey = '%s_CAL' % HKkey
+                        
+                        HKV = sidd.mx[HKkey][0]
+                        
+                        HKVcal = roeVCal.fcal_HK(HKV, cal_key, CCD, Q)
+                        
+                        sidd.addColumn(np.zeros(1,dtype=float)+HKVcal, 
+                                       cHKkey, IndexS)
+            
+        else:
+            
+            
+            dummy_roeVCal = vcal.RoeVCal()
+        
+            cHKkeys = []
+        
+            for cal_key in ['OD','RD','IG1','IG2']:
+            
+                for CCD in self.CCDs:
+                    for Q in self.Quads:
+                                            
+                        rHKkey= dummy_roeVCal.get_HKkey(cal_key, CCD, Q)
+                        HKkey = 'HK_%s' % rHKkey.upper()
+                        cHKkey = '%s_CAL' % HKkey
+                    
+                        cHKkeys.append(cHKkey)
+            
+            for cHKkey in cHKkeys:
+                sidd.addColumn(np.zeros(1,dtype=float)+np.nan, 
+                                       cHKkey, IndexS)
+        
+        return sidd
+    
+    def parse_test_results(self,testname):
+        """ """
+        
+    
+        for iblock, block in enumerate(self.blocks):
+            
+            try:
+                Nreps = len(self.inventory[block][testname])
+            except KeyError:
+                print('block %s not found!' % block)
+                continue
+
+
+            for jrep in range(Nreps):
+                
+                inventoryitem = self.inventory[block][testname][jrep]
+                
+                sit = self.parse_single_test(jrep, block, testname, inventoryitem)
+            
+                
+                # MERGING WITH PREVIOUS DDs
+                
+                if (iblock == 0) and (jrep == 0):
+                    pt = copy.deepcopy(sit)
+                else:
+                    pt = self.stackTables(pt,sit)
+        
+        self.ParsedTable[testname] = pt
+    
+    
     def get_FPAMAP_from_PT(self,PT,extractor):
         """ """
         
@@ -239,5 +355,25 @@ class MetaCal(object):
         
         return M
         
+    
+    def plot_SimpleMAP(self, MAPdict, kwargs):
+        """ """
         
+        VALs = []
+        for ckey in MAPdict.keys():
+            for Q in self.Quads:
+                VALs.append(MAPdict[ckey][Q])
+        
+        
+        normfunction = Normalize(vmin=np.min(VALs),vmax=np.max(VALs),clip=False)
+   
+        _kwargs = dict(doColorbar=True,              
+              corekwargs=dict(
+                      norm = normfunction                      
+                      ))
+        
+        _kwargs.update(kwargs)
+    
+        heatmap = plfpa.FpaHeatMap(MAPdict, **_kwargs)
+        heatmap.render()
         
