@@ -637,7 +637,9 @@ class InjTask(Task):
         fdict_alcol['data'] = prof_alcol_cdp.data.copy()
         fdict_alcol['meta']['ylim'] = [0.,maxmedinjection*1.1]
         
+        self.save_CDP(prof_alrow_cdp)
         self.pack_CDP_to_dd(prof_alrow_cdp,'PROFS_ALROW')
+        self.save_CDP(prof_alcol_cdp)
         self.pack_CDP_to_dd(prof_alcol_cdp,'PROFS_ALCOL')
         
         if self.report is not None:
