@@ -48,6 +48,7 @@ class MetaCal(object):
         self.ParsedTable = None
         self.roeVCals = dict()        
         self.init_roeVCals()
+        self.cdps = OrderedDict()
         
     def init_roeVCals(self):
         

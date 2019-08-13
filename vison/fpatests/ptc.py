@@ -12,6 +12,7 @@ import copy
 import numpy as np
 from collections import OrderedDict
 import string as st
+import os
 
 from vison.fpa import fpa as fpamod
 
@@ -21,7 +22,7 @@ from vison.plot import plots_fpa as plfpa
 from vison.support import vcal
 from vison.datamodel import core as vcore
 from vison.ogse import ogse
-
+from vison.support import files
 
 
 from matplotlib import pyplot as plt
@@ -101,6 +102,8 @@ class MetaPTC(MetaCal):
         gain_mx = sidd.products['gain_mx']
         bloom_mx = sidd.products['bloom_mx']
         
+        HER_dict = sidd.compliances['HER']
+        
         tmp_v_CQ = np.zeros((1,NCCDs,NQuads))
         
         gain_v = tmp_v_CQ.copy()
@@ -108,6 +111,7 @@ class MetaPTC(MetaCal):
         alpha_v = tmp_v_CQ.copy()
         bloom_ADU_v = tmp_v_CQ.copy()
         bloom_e_v = tmp_v_CQ.copy()
+        HER_v = tmp_v_CQ.copy()
         
         for iCCD, CCDk in enumerate(CCDkeys):
             for kQ, Q in enumerate(self.Quads):
@@ -119,12 +123,14 @@ class MetaPTC(MetaCal):
                 bloom_ADU_v[0,iCCD,kQ] = bloom_mx[CCDk][Q]['bloom_ADU']
                 bloom_e_v[0,iCCD,kQ] = bloom_mx[CCDk][Q]['bloom_e']
                 
+                HER_v[0,iCCD,kQ] = HER_dict[CCDk][Q][1]
+                
         sidd.addColumn(gain_v, 'GAIN', IndexCQ)
         sidd.addColumn(egain_v, 'EGAIN', IndexCQ)
         sidd.addColumn(alpha_v, 'ALPHA', IndexCQ)
         sidd.addColumn(bloom_ADU_v, 'BLOOM_ADU', IndexCQ)
         sidd.addColumn(bloom_e_v, 'BLOOM_E', IndexCQ)
-        
+        sidd.addColumn(HER_v, 'HER', IndexCQ)
 
         # flatten sidd to table
         
@@ -132,8 +138,6 @@ class MetaPTC(MetaCal):
         
         return sit
         
-    
-    
    
     def _extract_GAIN_fromPT(self,PT,block,CCDk,Q):
         """ """
@@ -141,7 +145,13 @@ class MetaPTC(MetaCal):
         column = 'GAIN_%s_Quad%s' % (CCDk,Q)        
         G = PT[column][ixblock][0]        
         return G
-
+    
+    def _extract_HER_fromPT(self,PT,block,CCDk,Q):
+        """ """
+        ixblock = np.where(PT['BLOCK'].data == block)        
+        column = 'HER_%s_Quad%s' % (CCDk,Q)        
+        HER = PT[column][ixblock][0]        
+        return HER
         
     def _extract_BADU_fromPT(self,PT,block,CCDk,Q):
         """ """
@@ -165,12 +175,47 @@ class MetaPTC(MetaCal):
             return be
         else:
             return np.nan
-
+    
+    def gen_GAIN_MXdict(self):
+        """ """
+        
+        G_MX = OrderedDict()
+        
+        for block in self.blocks:
+            
+            G_MX[block] = OrderedDict()
+            for testname in self.testnames:
+                    
+                PT = self.ParsedTable[testname]
+                
+                ixblock = np.where(PT['BLOCK'].data == block)
+                
+                G_MX[block][testname] = OrderedDict()
+                
+                for iCCD in self.CCDs:
+                    CCDk = 'CCD%i' % iCCD
+                    G_MX[block][testname][CCDk] = OrderedDict()
+                    for Q in self.Quads:
+                        G = PT['GAIN_%s_Quad%s' % (CCDk,Q)].data[ixblock][0]
+                        EG = PT['EGAIN_%s_Quad%s' % (CCDk,Q)].data[ixblock][0]
+                        gpair = (G,EG)
+                        G_MX[block][testname][CCDk][Q] = gpair
+                            
+        return G_MX
 
     def dump_aggregated_results(self):
         """ """
         
         outpathroot = self.outpath
+        
+        # GAIN matrix (all blocks and test/waves) to dict() saved as pickle
+        
+        GAIN_MXdict = self.gen_GAIN_MXdict()
+        
+        GAIN_MXpick = os.path.join(outpathroot,'GAIN_MX_PTC0X.pick')
+        
+        files.cPickleDump(GAIN_MXdict,GAIN_MXpick)
+        
         
         # GAIN maps (all tests/waves)
         
@@ -183,8 +228,6 @@ class MetaPTC(MetaCal):
             self.plot_SimpleMAP(GMAP,kwargs=dict(
                     suptitle='%s: GAIN e-/ADU' % stestname))
         
-        
-        # GAIN matrix (all blocks and test/waves)
         
         
         
@@ -206,11 +249,16 @@ class MetaPTC(MetaCal):
             self.plot_SimpleMAP(BE_MAP,kwargs=dict(
                     suptitle='%s: BLOOM-ELECTRONS' % stestname))
         
+        # HER map
+        
+        
+        
         # GAIN vs. detector temperature (PTC01)
         
         # GAIN vs. OD-CAL (PTC01)
         
         # GAIN vs. RD-CAL (PTC01)
+        
         
         # Save the ParsedTable(s)
         

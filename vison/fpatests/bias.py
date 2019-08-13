@@ -50,7 +50,8 @@ class MetaBias(MetaCal):
         
         self.testnames = ['BIAS01','BIAS02']
         self.incols = cols2keep
-        self.ParsedTable = OrderedDict()
+        self.ParsedTable = OrderedDict()        
+        self.cdps['GAIN'] = None
     
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
@@ -138,7 +139,19 @@ class MetaBias(MetaCal):
         
         return sit
 
-
+    def _extract_RON_fromPT(self,PT, block, CCDk, Q):
+        """ """
+        ixblock = np.where(PT['BLOCK'].data == block)
+        column = 'RON_OVE_%s_Quad%s' % (CCDk,Q)            
+        RON = np.nanmedian(PT[column][ixblock])
+        return RON
+    
+    def _extract_OFFSET_fromPT(self,PT, block, CCDk, Q):
+        """ """
+        ixblock = np.where(PT['BLOCK'].data == block)
+        column = 'OFF_OVE_%s_Quad%s' % (CCDk,Q)            
+        RON = np.nanmedian(PT[column][ixblock])
+        return RON
 
     def dump_aggregated_results(self):
         """ """
@@ -147,11 +160,11 @@ class MetaBias(MetaCal):
         
         # RON maps (all tests/waves)
         
-        stop()
         
+#        for testname in ['BIAS02']:
         for testname in self.testnames:
             
-            RONMAP = self.get_RONMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_RON_fromPT)
+            RONMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_RON_fromPT)
         
             stestname = st.replace(testname,'_','\_')
             self.plot_SimpleMAP(RONMAP,kwargs=dict(
@@ -162,7 +175,7 @@ class MetaBias(MetaCal):
         
         for testname in self.testnames:
             
-            OFFMAP = self.get_OFFSETMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_OFFSET_fromPT)
+            OFFMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_OFFSET_fromPT)
         
             stestname = st.replace(testname,'_','\_')
             self.plot_SimpleMAP(OFFMAP,kwargs=dict(
