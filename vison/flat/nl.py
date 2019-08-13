@@ -445,15 +445,22 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False,
                            maxfev=10000)
 
     # array with NL fluences (1 to 2**16, in steps of 20 ADU)
-    fkfluencesNL = np.linspace(minfitFl,maxfitFl,200)*1.    
+    fkfluencesNL = np.linspace(minfitFl,maxfitFl,400)*1.    
     Y_bestfit = ff(fkfluencesNL/2**16,*popt)
     
     
     # Direct measure
     
-    ixmax = np.abs(yfit).argmax()
-    maxNLpc = yfit[ixmax]
-    flu_maxNLpc = xfit[ixmax]*2.**16
+    #ixmax = np.abs(yfit).argmax()
+    #maxNLpc = yfit[ixmax]
+    #flu_maxNLpc = xfit[ixmax]*2.**16
+                      
+    # From the best fit curve
+    
+    ixmax = np.abs(Y_bestfit).argmax()
+    maxNLpc = Y_bestfit[ixmax]
+    flu_maxNLpc = fkfluencesNL[ixmax]
+                      
     
     if display:
         
