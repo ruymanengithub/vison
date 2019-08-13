@@ -463,7 +463,7 @@ class CHINJ01(InjTask):
         
         
         MCH01_dddf = OrderedDict(ANALYSIS=pd.DataFrame.from_dict(MCH01_dd))
-        MCH01_cdp = self.CDP_lib['METAFIT']
+        MCH01_cdp = self.CDP_lib['META']
         MCH01_cdp.path = prodspath
         MCH01_cdp.ingest_inputs(
                 data=MCH01_dddf.copy(),
@@ -473,7 +473,7 @@ class CHINJ01(InjTask):
         
         MCH01_cdp.init_wb_and_fillAll(header_title='CHINJ01: META-ANALYSIS')
         self.save_CDP(MCH01_cdp)
-        self.pack_CDP_to_dd(MCH01_cdp,'METAFIT_CDP')
+        self.pack_CDP_to_dd(MCH01_cdp,'META_CDP')
         
         if self.report is not None:
             
