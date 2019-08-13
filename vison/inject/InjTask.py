@@ -475,11 +475,13 @@ class InjTask(Task):
         # Initializing injection profiles
         
         prof_alrow_cdp = cdp.CDP()
+        prof_alrow_cdp.rootname = 'PROFS_ALROW_%s' % testname
         prof_alrow_cdp.header = CDP_header.copy()
         prof_alrow_cdp.path = prodspath
         prof_alrow_cdp.data = OrderedDict()
         
         prof_alcol_cdp = cdp.CDP()
+        prof_alcol_cdp.rootname = 'PROFS_ALCOL_%s' % testname
         prof_alcol_cdp.header = CDP_header.copy()
         prof_alcol_cdp.path = prodspath
         prof_alcol_cdp.data = OrderedDict()
