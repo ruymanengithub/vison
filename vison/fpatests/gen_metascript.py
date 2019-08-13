@@ -19,7 +19,7 @@ from vison.fpatests.bias import MetaBias
 
 
 
-def run(jsonf, respathroot, MetaClass, testkey, SkipLoad=False, SkipParse=False):
+def run(MetaClass, testkey, testinputs, SkipLoad=False, SkipParse=False):
     """ """
     
     outpathroot = '%s_FPA' % testkey.upper()
@@ -27,13 +27,16 @@ def run(jsonf, respathroot, MetaClass, testkey, SkipLoad=False, SkipParse=False)
     if not os.path.exists(outpathroot):
         os.system('mkdir %s' % outpathroot)
     
-    metaobj = MetaClass(respathroot,outpathroot=outpathroot)
+    testinputs['outpathroot'] = outpathroot
+    
+    metaobj = MetaClass(**testinputs)
+    
     
     dictiopick = os.path.join(outpathroot,'%s_dictionary.pick' % testkey.lower())
     if SkipLoad:
         metaobj.inventory = cPickleRead(dictiopick)
     else:
-        metaobj.load_block_results(jsonf)
+        metaobj.load_block_results()
         cPickleDumpDictionary(metaobj.inventory,dictiopick)
         
     metapick = os.path.join(outpathroot,'%s_meta.pick' % testkey.lower())

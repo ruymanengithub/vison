@@ -34,17 +34,19 @@ vcalfile = os.path.join(vcalpath,'CCD_CAL_CONVERSIONS_ALL_BLOCKS.xlsx')
 
 class MetaCal(object):
     
-    def __init__(self, respathroot, outpathroot):
+    def __init__(self, **kwargs):
         """ """
         
         self.blocks = fpamod.all_blocks
         self.flight_blocks = fpamod.flight_blocks
         self.CCDs = [1,2,3]
         self.Quads = ['E','F','G','H']
-        self.respathroot = respathroot
-        self.outpath = outpathroot
+        self.respathroot = kwargs['respathroot']
+        self.outpath = kwargs['outpathroot']
+        self.jsonf = kwargs['jsonf']
         self.inventory = OrderedDict()
         self.results = OrderedDict()
+        self.products = OrderedDict()
         self.ParsedTable = None
         self.roeVCals = dict()        
         self.init_roeVCals()
@@ -113,8 +115,10 @@ class MetaCal(object):
         return None
     
     
-    def load_block_results(self,inventoryfile):
+    def load_block_results(self,inventoryfile=None):
         
+        if inventoryfile is None:
+            inventoryfile = self.jsonf
         inventraw = vjson.load_jsonfile(inventoryfile, useyaml=True)    
         
         
@@ -262,19 +266,33 @@ class MetaCal(object):
    
         
         if roeVCal is not None:
+            
+            for commcal_key in ['IDL','IDH']:
+                
+                for iCCD, CCD in enumerate(self.CCDs):
+                    for Q in self.Quads:
                         
-            for cal_key in ['OD','RD','IG1','IG2']:
+                        cEkey = '%s_CCD%s_Quad%s_CAL' % (commcal_key, CCD, Q)
+                        
+                        EV = sidd.mx[commcal_key][0][iCCD]               
+                        EVcal =  roeVCal.fcal_ELVIS_script(EV, commcal_key, CCD, Q)
+                        
+                        
+                        sidd.addColumn(np.zeros(1,dtype=float)+EVcal, 
+                                       cEkey, IndexS)
+            
+            for hkcal_key in ['OD','RD','IG1','IG2']:
                 
                 for CCD in self.CCDs:
                     for Q in self.Quads:
                                                 
-                        rHKkey= roeVCal.get_HKkey(cal_key, CCD, Q)
+                        rHKkey= roeVCal.get_HKkey(hkcal_key, CCD, Q)
                         HKkey = 'HK_%s' % rHKkey.upper()
                         cHKkey = '%s_CAL' % HKkey
                         
                         HKV = sidd.mx[HKkey][0]
                         
-                        HKVcal = roeVCal.fcal_HK(HKV, cal_key, CCD, Q)
+                        HKVcal = roeVCal.fcal_HK(HKV, hkcal_key, CCD, Q)
                         
                         sidd.addColumn(np.zeros(1,dtype=float)+HKVcal, 
                                        cHKkey, IndexS)

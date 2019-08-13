@@ -38,17 +38,17 @@ cols2keep = ['test', 'sn_ccd1', 'sn_ccd2', 'sn_ccd3', 'sn_roe', 'sn_rpsu', 'expt
          'HK_CCD3_TEMP_T', 'HK_CCD1_TEMP_B', 'HK_CCD2_TEMP_B', 'HK_CCD3_TEMP_B', 'HK_CCD1_OD_T', 'HK_CCD2_OD_T', 'HK_CCD3_OD_T', 'HK_CCD1_OD_B', 'HK_CCD2_OD_B', 'HK_CCD3_OD_B', 'HK_COMM_RD_T', 
          'HK_COMM_RD_B', 'HK_CCD1_IG1_T', 'HK_CCD2_IG1_T', 'HK_CCD3_IG1_T', 'HK_CCD1_IG1_B', 'HK_CCD2_IG1_B', 'HK_CCD3_IG1_B', 'HK_COMM_IG2_T', 'HK_COMM_IG2_B', 'HK_FPGA_BIAS_ID2', 
          'HK_VID_PCB_TEMP_T', 'HK_VID_PCB_TEMP_B', 'HK_RPSU_TEMP1', 'HK_FPGA_PCB_TEMP_T', 'HK_FPGA_PCB_TEMP_B', 'HK_RPSU_TEMP_2', 'HK_RPSU_28V_PRI_I', 'chk_NPIXOFF', 'chk_NPIXSAT', 
-         'offset_pre', 'offset_img', 'offset_ove', 'deltaoff_pre', 'deltaoff_img', 'deltaoff_ove', 'std_pre', 'std_img', 'std_ove', 'RON']
-
-class MetaBias(MetaCal):
+         'offset_pre', 'offset_ove', 'std_pre', 'std_ove']
+         
+class MetaChinj01(MetaCal):
     """ """
     
     def __init__(self, **kwargs):
         """ """
         
-        super(MetaBias,self).__init__(**kwargs)
+        super(MetaChinj01,self).__init__(**kwargs)
         
-        self.testnames = ['BIAS01','BIAS02']
+        self.testnames = ['CHINJ01']
         self.incols = cols2keep
         self.ParsedTable = OrderedDict()
         
@@ -58,10 +58,12 @@ class MetaBias(MetaCal):
         for block in self.blocks:
             self.cdps['GAIN'][block] = allgains[block]['PTC01'].copy() 
         
+        self.products['METAFIT'] = OrderedDict()
+        
     
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
-                
+        
         
         NCCDs = len(self.CCDs)
         NQuads = len(self.Quads)
@@ -98,76 +100,72 @@ class MetaBias(MetaCal):
         
         test_v = np.array([testname])            
         sidd.addColumn(test_v, 'TEST', IndexS, ix=0)
- 
-        
-        tmp_v_CQ = np.zeros((1,NCCDs,NQuads))
-        
-        off_pre_v = tmp_v_CQ.copy()
-        off_img_v = tmp_v_CQ.copy()
-        off_ove_v = tmp_v_CQ.copy()
-        
-        ron_pre_v = tmp_v_CQ.copy()
-        ron_img_v = tmp_v_CQ.copy()
-        ron_ove_v = tmp_v_CQ.copy()
         
         productspath = os.path.join(inventoryitem['resroot'],'products')
         
-        roncdp_pick = os.path.join(productspath,os.path.split(sidd.products['RON_CDP'])[-1])
-        roncdp = files.cPickleRead(roncdp_pick)
         
-        offcdp_pick = os.path.join(productspath,os.path.split(sidd.products['OFF_CDP'])[-1])
-        offcdp = files.cPickleRead(offcdp_pick)
+        metafitcdp_pick = os.path.join(productspath,os.path.split(sidd.products['METAFIT_CDP'])[-1])
+        metafitcdp = files.cPickleRead(metafitcdp_pick)
+        metafit = copy.deepcopy(metafitcdp['data']['ANALYSIS'])
+        
+        metafitkey = '%s_%s_%s_%i' % (testname,block, session,jrep+1)
+        self.products['METAFIT'][metafitkey] = copy.deepcopy(metafit)
+        metafitkey_v = np.array([metafitkey])
+        sidd.addColumn(metafitkey_v, 'METAFIT', IndexS, ix=0)
+        
+        metacdp_pick = os.path.join(productspath,os.path.split(sidd.products['META_CDP'])[-1]) # change to META_CDP
+        metacdp = files.cPickleRead(metacdp_pick)
+        meta = metacdp['data']['ANALYSIS'] # this is a pandas DataFrame
+        
+        tmp_v_CQ = np.zeros((1,NCCDs,NQuads))
+                
+        bgd_adu_v = tmp_v_CQ.copy()
+        ig1_thresh_v = tmp_v_CQ.copy()
+        ig1_notch_v = tmp_v_CQ.copy()
+        slope_v = tmp_v_CQ.copy()
+        n_adu_v = tmp_v_CQ.copy()        
         
         
         for iCCD, CCDk in enumerate(CCDkeys):
             for kQ, Q in enumerate(self.Quads):
                 
-                off_pre_v[0,iCCD,kQ] = offcdp['data']['OFF_PRE'][CCDk][Q]
-                off_img_v[0,iCCD,kQ] = offcdp['data']['OFF_IMG'][CCDk][Q]
-                off_ove_v[0,iCCD,kQ] = offcdp['data']['OFF_OVE'][CCDk][Q]
+                ixloc = np.where((meta['CCD'] == iCCD+1) & (meta['Q'] == kQ+1))
                 
-                ron_pre_v[0,iCCD,kQ] = roncdp['data']['RON_PRE'][CCDk][Q]
-                ron_img_v[0,iCCD,kQ] = roncdp['data']['RON_IMG'][CCDk][Q]
-                ron_ove_v[0,iCCD,kQ] = roncdp['data']['RON_OVE'][CCDk][Q]
-                
-                
-        sidd.addColumn(off_pre_v, 'OFF_PRE', IndexCQ)
-        sidd.addColumn(off_img_v, 'OFF_IMG', IndexCQ)
-        sidd.addColumn(off_ove_v, 'OFF_OVE', IndexCQ)
+                bgd_adu_v[0,iCCD,kQ] = meta['BGD_ADU'][ixloc[0][0]]
+                ig1_thresh_v[0,iCCD,kQ] = meta['IG1_THRESH'][ixloc[0][0]]
+                ig1_notch_v[0,iCCD,kQ] = meta['IG1_NOTCH'][ixloc[0][0]]
+                slope_v[0,iCCD,kQ] = meta['S'][ixloc[0][0]]
+                n_adu_v[0,iCCD,kQ] = meta['N_ADU'][ixloc[0][0]]
+                       
         
-        sidd.addColumn(ron_pre_v, 'RON_PRE', IndexCQ)
-        sidd.addColumn(ron_img_v, 'RON_IMG', IndexCQ)
-        sidd.addColumn(ron_ove_v, 'RON_OVE', IndexCQ)
-
+        sidd.addColumn(bgd_adu_v, 'FIT_BGD_ADU', IndexCQ)
+        sidd.addColumn(ig1_thresh_v, 'FIT_IG1_THRESH', IndexCQ)
+        sidd.addColumn(ig1_notch_v, 'FIT_IG1_NOTCH', IndexCQ)        
+        sidd.addColumn(slope_v, 'FIT_SLOPE', IndexCQ)
+        sidd.addColumn(n_adu_v, 'FIT_N_ADU', IndexCQ)
         # flatten sidd to table
         
         sit = sidd.flattentoTable()
         
         return sit
 
-    def _get_extractor_RON_fromPT(self,units):
+    def _get_extractor_NOTCH_fromPT(self,units):
         """ """
         
         def _extract_RON_fromPT(PT, block, CCDk, Q):
+            
             ixblock = np.where(PT['BLOCK'].data == block)
-            column = 'RON_OVE_%s_Quad%s' % (CCDk,Q)
+            column = 'FIT_N_ADU_%s_Quad%s' % (CCDk,Q)
             
             if units =='ADU':
                 unitsConvFactor=1
             elif units == 'E':
                 unitsConvFactor = self.cdps['GAIN'][block][CCDk][Q][0]
             
-            RON = np.nanmedian(PT[column][ixblock]) * unitsConvFactor
-            return RON
+            Notch = np.nanmedian(PT[column][ixblock]) * unitsConvFactor
+            return Notch
         
         return _extract_RON_fromPT
-    
-    def _extract_OFFSET_fromPT(self,PT, block, CCDk, Q):
-        """ """
-        ixblock = np.where(PT['BLOCK'].data == block)
-        column = 'OFF_OVE_%s_Quad%s' % (CCDk,Q)            
-        RON = np.nanmedian(PT[column][ixblock])
-        return RON
 
 
     def dump_aggregated_results(self):
@@ -175,40 +173,45 @@ class MetaBias(MetaCal):
         
         
         outpathroot = self.outpath
+        stop()
         
-        # RON maps (all tests/waves)
+        # Histogram of Slopes [ADU/electrons]
+        
+        # Histogram of Notch [ADU/electrons]
+
+        # Histogram of IG1_THRESH
+        
+        # Injection level vs. Calibrated IG1, all channels
         
         
-        # RON maps, ADUs
+        
+        # Notch level vs. calibrated IG2
+        
+        # Notch level vs. calibrated IDL
+        
+        # Notch level vs. calibrated OD
+        
+        
+        
+        # Notch injection map, ADUs
         for testname in self.testnames:
             
-            RONADUMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
-                                                extractor=self._get_extractor_RON_fromPT(units='ADU'))
+            NOTCHADUMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
+                                                extractor=self._get_extractor_NOTCH_fromPT(units='ADU'))
         
             stestname = st.replace(testname,'_','\_')
-            self.plot_SimpleMAP(RONADUMAP,kwargs=dict(
-                    suptitle='%s: RON [ADU]' % stestname))
+            self.plot_SimpleMAP(NOTCHADUMAP,kwargs=dict(
+                    suptitle='%s: NOTCH INJECTION [ADU]' % stestname))
         
-        # RON maps, ELECTRONs
+        # Notch injection map, ELECTRONs
         for testname in self.testnames:
             
-            RONEMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
-                                              extractor=self._get_extractor_RON_fromPT(units='E'))
+            NOTCHEMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
+                                                extractor=self._get_extractor_NOTCH_fromPT(units='E'))
         
             stestname = st.replace(testname,'_','\_')
-            self.plot_SimpleMAP(RONEMAP,kwargs=dict(
-                    suptitle='%s: RON [ELECTRONS]' % stestname))
-        
-        # OFFSET maps
-        
-        for testname in self.testnames:
-            
-            OFFMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_OFFSET_fromPT)
-        
-            stestname = st.replace(testname,'_','\_')
-            self.plot_SimpleMAP(OFFMAP,kwargs=dict(
-                    suptitle='%s: OFFSET' % stestname))
-        
+            self.plot_SimpleMAP(NOTCHEMAP,kwargs=dict(
+                    suptitle='%s: NOTCH INJECTION [ELECTRONS]' % stestname))
         
         
 
