@@ -108,7 +108,7 @@ class MetaChinj01(MetaCal):
         metafitcdp = files.cPickleRead(metafitcdp_pick)
         metafit = copy.deepcopy(metafitcdp['data']['ANALYSIS'])
         
-        metafitkey = '%s_%s_%s_%i' % (testname,block, session,jrep+1)
+        metafitkey = '%s_%s_%s_%i' % (testname, block, session,jrep+1)
         self.products['METAFIT'][metafitkey] = copy.deepcopy(metafit)
         metafitkey_v = np.array([metafitkey])
         sidd.addColumn(metafitkey_v, 'METAFIT', IndexS, ix=0)

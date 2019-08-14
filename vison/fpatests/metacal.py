@@ -29,8 +29,6 @@ from matplotlib.colors import Normalize
 
 # END IMPORT
 
-vcalpath = 'FPA_CAL'
-vcalfile = os.path.join(vcalpath,'CCD_CAL_CONVERSIONS_ALL_BLOCKS.xlsx')
 
 class MetaCal(object):
     
@@ -41,6 +39,7 @@ class MetaCal(object):
         self.flight_blocks = fpamod.flight_blocks
         self.CCDs = [1,2,3]
         self.Quads = ['E','F','G','H']
+        self.vcalfile = kwargs['vcalfile']
         self.respathroot = kwargs['respathroot']
         self.outpath = kwargs['outpathroot']
         self.jsonf = kwargs['jsonf']
@@ -58,10 +57,11 @@ class MetaCal(object):
             
             ROE_SN = fpamod.ROE_SNs[block]
             
-            roevcal = vcal.RoeVCal(vcalfile)
+            roevcal = vcal.RoeVCal(self.vcalfile)
             try: roevcal.load_VCal(ROE_SN)
             except IOError:
                 continue
+                
                 
             self.roeVCals[block] = copy.deepcopy(roevcal)
             
@@ -395,4 +395,12 @@ class MetaCal(object):
     
         heatmap = plfpa.FpaHeatMap(MAPdict, **_kwargs)
         heatmap.render()
+    
+    def plot_XY(self,XYdict, kwargs):
+        """ """
         
+        _kwargs = dict()
+        _kwargs.update(kwargs)
+        
+        xyplot = plfpa.XYPlot(XYdict, **_kwargs)
+        xyplot.render()
