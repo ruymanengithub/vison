@@ -79,7 +79,118 @@ class BasicPlot(object):
             
         plt.close('all')
         
+class XYPlot(BasicPlot):
 
+    def __init__(self, data, **kwargs):
+
+        super(XYPlot, self).__init__(**kwargs)
+
+        defaults = dict(suptitle='',
+                        doLegend=False,
+                        doNiceXDate=False)
+
+        if 'meta' in kwargs:
+            meta = kwargs['meta']
+        else:
+            meta = dict()
+
+        self.figsize = (8, 8)        
+        self.data = copy.deepcopy(data)
+        self.meta = dict()
+        self.meta.update(defaults)
+        self.meta.update(meta)
+
+        self.handles = []
+        self.labels = []
+        
+        self.corekwargs = dict()
+        if 'corekwargs' in kwargs:
+            self.corekwargs.update(kwargs['corekwargs']) 
+    
+    def _ax_core_funct(self,key=''):
+        """ """
+        
+        ckwargs = self.corekwargs.copy()
+        
+        if key != '':
+            xarr = self.data['x'][key]
+            yarr = self.data['y'][key]
+            
+            label = st.replace(key,'_','\_')
+            kwargs = dict(label=label, marker='.',linestyle='')
+            if key in ckwargs:
+                kwargs.update(ckwargs[key])
+            else:
+                kwargs.update(ckwargs)
+            handle = self.ax.plot(xarr,yarr,**kwargs)
+        else:
+            xarr = self.data['x']
+            yarr = self.data['y']
+            kwargs=dict(marker='.',linestyle='')
+            kwargs.update(ckwargs)
+            self.ax.plot(xarr, yarr, **kwargs)
+            handle, label = None, None
+        
+        return handle, label
+        
+       
+        
+
+    def populate_axes(self):
+
+
+        self.ax = self.fig.add_subplot(111)
+        
+        try:
+            labelkeys = self.data['labelkeys']
+        except KeyError:
+            labelkeys = []
+        
+        if len(labelkeys) > 0:
+            for labelkey in labelkeys:
+                handle, label = self._ax_core_funct(labelkey)
+                self.handles += handle
+                self.labels.append(label)
+        else:
+            
+            _, _ = self._ax_core_funct()
+            
+
+        if self.meta['doNiceXDate']:
+            _xticks = self.ax.get_xticks()
+            if len(_xticks) > 6:
+                self.ax.set_xticks(_xticks[::2])
+                
+        if 'xlabel' in self.meta:
+            self.ax.set_xlabel(self.meta['xlabel'])
+        if 'ylabel' in self.meta:
+            self.ax.set_ylabel(self.meta['ylabel'])
+                
+        if 'ylim' in self.meta:
+            self.ax.set_ylim(self.meta['ylim'])
+        if 'xlim' in self.meta:
+            self.ax.set_xlim(self.meta['xlim'])
+
+
+    def plt_trimmer(self):
+
+        if self.meta['doLegend']:
+            plt.figlegend(self.handles, self.labels, loc='center right')
+
+        if self.meta['doNiceXDate']:
+
+            plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))
+            self.fig.autofmt_xdate()
+
+        plt.subplots_adjust(top=0.95)
+        plt.suptitle(self.meta['suptitle'])
+
+        plt.tight_layout()
+
+        if self.meta['doLegend']:
+            plt.subplots_adjust(right=0.85)
+    
+    
 
 class CCD2DPlot(BasicPlot):
 
