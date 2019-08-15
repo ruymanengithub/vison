@@ -39,6 +39,9 @@ class MetaCal(object):
         self.flight_blocks = fpamod.flight_blocks
         self.CCDs = [1,2,3]
         self.Quads = ['E','F','G','H']
+        self.NSLICES_FPA = fpamod.NSLICES
+        self.NCOLS_FPA = fpamod.NCOLS
+        self.FPA_MAP = fpamod.FPA_MAP
         self.vcalfile = kwargs['vcalfile']
         self.respathroot = kwargs['respathroot']
         self.outpath = kwargs['outpathroot']
@@ -106,7 +109,12 @@ class MetaCal(object):
         ii = self.inventory[block][test][-1]
         
         ii['DD'] = DDfile
-        dd = cPickleRead(DDfile)
+        try:
+            dd = cPickleRead(DDfile)
+        except:
+            print('Could not load %s' % DDfile)
+            raise RuntimeError
+        
         ii['dd'] = copy.deepcopy(dd)
         ii['resroot'] = respath
         ii['session'] = session
@@ -336,6 +344,8 @@ class MetaCal(object):
 
             for jrep in range(Nreps):
                 
+                print('Parsing %s:%s' % (block,jrep+1))
+                
                 inventoryitem = self.inventory[block][testname][jrep]
                 
                 sit = self.parse_single_test(jrep, block, testname, inventoryitem)
@@ -356,15 +366,13 @@ class MetaCal(object):
         
         M = OrderedDict()
         
-        NSLICES = fpamod.NSLICES
-        NCOLS = fpamod.NCOLS
         
-        for jY in range(NSLICES):
-            for iX in range(NCOLS):
+        for jY in range(self.NSLICES_FPA):
+            for iX in range(self.NCOLS_FPA):
                 Ckey  = 'C_%i%i' % (jY+1,iX+1)
                 M[Ckey] = OrderedDict()
                 
-                locator = fpamod.FPA_MAP[Ckey]
+                locator = self.FPA_MAP[Ckey]
                 block = locator[0]
                 CCDk = locator[1]
                 
@@ -404,3 +412,12 @@ class MetaCal(object):
         
         xyplot = plfpa.XYPlot(XYdict, **_kwargs)
         xyplot.render()
+        
+    def plot_XYMAP(self, XYMAP, kwargs):
+        
+        _kwargs = dict()
+        _kwargs.update(kwargs)
+        
+        xyfpaplot = plfpa.FpaPlotYvsX(XYMAP, **_kwargs)
+        xyfpaplot.render()
+        
