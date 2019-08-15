@@ -41,7 +41,7 @@ CommonTaskInputs = OrderedDict(sorted([
     ('structure', ([dict], 'Test Structure.')),
     ('test', ([str], 'Test/Task Name')),
     ('todo_flags', ([dict], 'Sub-Tasks to-do indicator.')),
-    ('preprocessing', ([dict], 'Pre-processing kwargs dictionary.')),
+    ('preprocessing', ([dict, type(None)], 'Pre-processing kwargs dictionary.')),
     #('tag', ([str,type(None)], 'Used to distinguish tests'))
 ]))
 
