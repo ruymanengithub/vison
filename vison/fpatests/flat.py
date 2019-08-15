@@ -188,24 +188,33 @@ class MetaFlat(MetaCal):
         
         return _extract_PRNU_fromPT
 
-    def _get_XYdict_PRNUFLU(self,PT,colkey):
+    def _get_XYdict_PRNUFLU(self,PT,Ncols):
         """ """
                 
-        x = []
-        y = []
+        x = dict()
+        y = dict()
         
-        for iCCD,CCD in enumerate(self.CCDs):
-            for iQ, Q in enumerate(self.Quads):
-                Xcolumn = 'PRNU_FLUELE_%s_CCD%i_Quad%s' % (colkey.upper(),CCD,Q)
-                Ycolumn = 'PRNU_PC_%s_CCD%i_Quad%s' % (colkey.upper(),CCD,Q)
-                
-                x += PT[Xcolumn].tolist()
-                y += PT[Ycolumn].tolist()
-                
-        x = np.array(x)
-        y = np.array(y)
+        labelkeys = []
         
-        XYdict = dict(x=x,y=y)
+        for icol in range(1,Ncols+1):
+            colkey = 'col%03i' % icol
+            labelkeys.append(colkey)
+            
+            x[colkey] = []
+            y[colkey] = []
+            
+            for iCCD,CCD in enumerate(self.CCDs):
+                for iQ, Q in enumerate(self.Quads):
+                    Xcolumn = 'PRNU_FLUELE_%s_CCD%i_Quad%s' % (colkey.upper(),CCD,Q)
+                    Ycolumn = 'PRNU_PC_%s_CCD%i_Quad%s' % (colkey.upper(),CCD,Q)
+                    
+                    x[colkey] += (PT[Xcolumn]/1.E3).tolist()
+                    y[colkey] += PT[Ycolumn].tolist()
+
+            x[colkey] = np.array(x[colkey])
+            y[colkey] = np.array(y[colkey])
+        
+        XYdict = dict(x=x,y=y,labelkeys=labelkeys)
         
         return XYdict
 
@@ -224,17 +233,14 @@ class MetaFlat(MetaCal):
             Ncols = self.Ncols[testname]
             stestname = st.replace(testname,'_', '\_')
             
-            for icol in range(1,Ncols+1):
-                
-                colkey = 'col%03i' % icol
-                
-                XYdict = self._get_XYdict_PRNUFLU(self.ParsedTable[testname],colkey)      
-                
-                self.plot_XY(XYdict,kwargs=dict(
-                        suptitle='%s [%s]: PRNU' % (stestname,colkey),
-                        xlabel='Fluence [electrons',
-                        ylabel='PRNU'))
-
+            
+            XYdict = self._get_XYdict_PRNUFLU(self.ParsedTable[testname],Ncols)      
+            
+            self.plot_XY(XYdict,kwargs=dict(
+                    title='%s: PRNU' % (stestname,),
+                    doLegend=True,
+                    xlabel='Fluence [ke-]',
+                    ylabel='PRNU'))
 
 
         # PRNU maps

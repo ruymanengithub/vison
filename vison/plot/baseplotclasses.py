@@ -85,19 +85,15 @@ class XYPlot(BasicPlot):
 
         super(XYPlot, self).__init__(**kwargs)
 
-        defaults = dict(suptitle='',
+        meta = dict(suptitle='',
                         doLegend=False,
                         doNiceXDate=False)
 
-        if 'meta' in kwargs:
-            meta = kwargs['meta']
-        else:
-            meta = dict()
+        meta.update(kwargs)
 
-        self.figsize = (8, 8)        
+        self.figsize = (6,6)        
         self.data = copy.deepcopy(data)
         self.meta = dict()
-        self.meta.update(defaults)
         self.meta.update(meta)
 
         self.handles = []
@@ -160,12 +156,15 @@ class XYPlot(BasicPlot):
             _xticks = self.ax.get_xticks()
             if len(_xticks) > 6:
                 self.ax.set_xticks(_xticks[::2])
-                
+        
+        if 'title' in self.meta:
+            self.ax.set_title(self.meta['title'])
+        
         if 'xlabel' in self.meta:
             self.ax.set_xlabel(self.meta['xlabel'])
         if 'ylabel' in self.meta:
             self.ax.set_ylabel(self.meta['ylabel'])
-                
+        
         if 'ylim' in self.meta:
             self.ax.set_ylim(self.meta['ylim'])
         if 'xlim' in self.meta:
@@ -181,16 +180,18 @@ class XYPlot(BasicPlot):
 
             plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))
             self.fig.autofmt_xdate()
-
-        plt.subplots_adjust(top=0.95)
-        plt.suptitle(self.meta['suptitle'])
+        
+        if self.meta['suptitle'] != '':        
+            plt.subplots_adjust(top=0.95)
+            plt.suptitle(self.meta['suptitle'])
 
         plt.tight_layout()
-
+        
         if self.meta['doLegend']:
             plt.subplots_adjust(right=0.85)
     
-    
+        
+
 
 class CCD2DPlot(BasicPlot):
 
