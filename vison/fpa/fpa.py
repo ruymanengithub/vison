@@ -140,7 +140,23 @@ class FPA(object):
         self.all_blocks = all_blocks        
         self.placeholderdata = None
         self.FPA_MAP = FPA_MAP
+    
+    def flip_img(self,img,flip):
+        return flip_img(img,flip)
+    
+    def get_Ckey_from_BlockCCD(self, block, CCD):
+        """ """
+        CCDk = 'CCD%i' % CCD
         
+        for jY in range(1,self.NSLICES+1):
+            for iX in range(1,self.NCOLS+1):
+                Ckey = 'C_%i%i' % (jY,iX)
+                locator = self.FPA_MAP[Ckey]
+                if (block == locator[0]) and (CCDk == locator[1]):
+                    return Ckey
+        return None
+    
+    
     def assign_ccd_data(self,blocksdata,Ckey):
         """ """        
         block, CCDk, _ = self.FPA_MAP[Ckey]
@@ -154,7 +170,7 @@ class FPA(object):
         """ """        
         block, CCDk, flip = self.FPA_MAP[Ckey]
         try:
-            return flip_img(blocksdata[block][CCDk],flip)
+            return self.flip_img(blocksdata[block][CCDk],flip)
         except KeyError:
             return self.placeholderdata
     

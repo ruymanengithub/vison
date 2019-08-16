@@ -55,7 +55,7 @@ class MetaCosmetics(MetaCal):
         self.products['MASKSCOOS'] = OrderedDict()
         self.maskkeys = ['DARK','FLAT','MERGE']
     
-    def _extract_badpix_coordinates(self,all_mask_fits):
+    def _extract_badpix_coordinates(self,all_mask_fits, block):
         """ """
         
         coordinates = OrderedDict()
@@ -65,16 +65,20 @@ class MetaCosmetics(MetaCal):
             
             ccdobj = ccdmod.CCD(all_mask_fits[CCDkey])
             
+            Ckey = self.fpa.get_Ckey_from_BlockCCD(block,CCD)
+            flip = self.fpa.FPA_MAP[Ckey][-1]
+            
             coordinates[CCDkey] = OrderedDict()
             
-            for Q in self.Quads:
-                                
-                quaddata = ccdobj.get_quad(Q,canonical=False,extension=-1)
-                
-                x,y = np.where(quaddata>0)
-                
-                coordinates[CCDkey][Q] = OrderedDict(x=x,
+            img = ccdobj.extensions[-1].data.copy()
+            
+            flipimg = self.fpa.flip_img(img,flip)
+            
+            x,y = np.where(flipimg > 0)
+            
+            coordinates[CCDkey] = OrderedDict(x=x,
                                              y=y)
+                        
         
         return coordinates
     
@@ -166,7 +170,7 @@ class MetaCosmetics(MetaCal):
                 
             _mskkey = '%s_%s_%s_R%i' % (maskkey, block, session, jrep+1) 
                 
-            self.products['MASKSCOOS'][_mskkey] = self._extract_badpix_coordinates(all_mask_fits)
+            self.products['MASKSCOOS'][_mskkey] = self._extract_badpix_coordinates(all_mask_fits, block)
                 
             mskkey_v[0] = _mskkey
         
@@ -197,37 +201,38 @@ class MetaCosmetics(MetaCal):
         column = 'MASKCOOS_%s' % maskkey
         
         
-        def _arrange_Qcoos(_coodict,iX):
-            
-            Qcoos = dict()
-            
-            NpixQx = 2119
-            NpixQy = 2086            
-            
-            if iX <=2:
-                Qcoos['x'] = np.concatenate(
-                        [_coodict['E']['x'],_coodict['H']['x'],
-                         _coodict['G']['x']+NpixQx,_coodict['F']['x']+NpixQx]
-                        )
-                Qcoos['y'] = np.concatenate(
-                        [_coodict['E']['y'],_coodict['H']['y']+NpixQy,
-                         _coodict['G']['y']+NpixQy,_coodict['F']['y']]
-                        )
-            else:
-                Qcoos['x'] = np.concatenate(
-                        [_coodict['G']['x'],_coodict['F']['x'],
-                         _coodict['E']['x']+NpixQx,_coodict['H']['x']+NpixQx]
-                        )
-                Qcoos['y'] = np.concatenate(
-                        [_coodict['G']['y'],_coodict['F']['y']+NpixQy,
-                         _coodict['E']['y']+NpixQy,_coodict['H']['y']]
-                        )
-            
-            return Qcoos
+#        def _arrange_Qcoos(_coodict,iX):
+#            
+#            Qcoos = dict()
+#            
+#            NpixQx = 2119
+#            NpixQy = 2086            
+#            
+#            if iX <=2:
+#                Qcoos['x'] = np.concatenate(
+#                        [_coodict['E']['x'],_coodict['H']['x'],
+#                         _coodict['G']['x']+NpixQx,_coodict['F']['x']+NpixQx]
+#                        )
+#                Qcoos['y'] = np.concatenate(
+#                        [_coodict['E']['y'],_coodict['H']['y']+NpixQy,
+#                         _coodict['G']['y']+NpixQy,_coodict['F']['y']]
+#                        )
+#            else:
+#                Qcoos['x'] = np.concatenate(
+#                        [_coodict['G']['x'],_coodict['F']['x'],
+#                         _coodict['E']['x']+NpixQx,_coodict['H']['x']+NpixQx]
+#                        )
+#                Qcoos['y'] = np.concatenate(
+#                        [_coodict['G']['y'],_coodict['F']['y']+NpixQy,
+#                         _coodict['E']['y']+NpixQy,_coodict['H']['y']]
+#                        )
+#            
+#            return Qcoos
         
         
         for jY in range(self.NSLICES_FPA):
             for iX in range(self.NCOLS_FPA):
+                
                 Ckey  = 'C_%i%i' % (jY+1,iX+1)
                 DEFMAP[Ckey] = OrderedDict()
                 
@@ -242,7 +247,7 @@ class MetaCosmetics(MetaCal):
                 _coodict = self.products['MASKSCOOS'][_maskkey]
                 
                 
-                DEFMAP[Ckey] = _arrange_Qcoos(_coodict[CCDk], iX)
+                DEFMAP[Ckey] = _coodict[CCDk]
                 
         
         return DEFMAP

@@ -39,9 +39,10 @@ class MetaCal(object):
         self.flight_blocks = fpamod.flight_blocks
         self.CCDs = [1,2,3]
         self.Quads = ['E','F','G','H']
-        self.NSLICES_FPA = fpamod.NSLICES
-        self.NCOLS_FPA = fpamod.NCOLS
-        self.FPA_MAP = fpamod.FPA_MAP
+        self.fpa = fpamod.FPA()
+        self.NSLICES_FPA = self.fpa.NSLICES
+        self.NCOLS_FPA = self.fpa.NCOLS
+        
         self.vcalfile = kwargs['vcalfile']
         self.respathroot = kwargs['respathroot']
         self.outpath = kwargs['outpathroot']
@@ -372,7 +373,7 @@ class MetaCal(object):
                 Ckey  = 'C_%i%i' % (jY+1,iX+1)
                 M[Ckey] = OrderedDict()
                 
-                locator = self.FPA_MAP[Ckey]
+                locator = self.fpa.FPA_MAP[Ckey]
                 block = locator[0]
                 CCDk = locator[1]
                 
