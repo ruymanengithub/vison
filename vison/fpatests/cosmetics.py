@@ -66,7 +66,12 @@ class MetaCosmetics(MetaCal):
             ccdobj = ccdmod.CCD(all_mask_fits[CCDkey])
             
             Ckey = self.fpa.get_Ckey_from_BlockCCD(block,CCD)
-            flip = self.fpa.FPA_MAP[Ckey][-1]
+            
+            if Ckey is None:
+                flip = (1,0) # block outside FPA (reserves)
+            else:
+                flip = flip = self.fpa.FPA_MAP[Ckey][-1]
+            
             
             coordinates[CCDkey] = OrderedDict()
             

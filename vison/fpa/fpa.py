@@ -7,7 +7,7 @@ Created on Fri Jul 19 11:28:28 2019
 """
 
 # IMPORT STUFF
-
+from pdb import set_trace as stop
 
 # END IMPORT
 
@@ -154,6 +154,7 @@ class FPA(object):
                 locator = self.FPA_MAP[Ckey]
                 if (block == locator[0]) and (CCDk == locator[1]):
                     return Ckey
+
         return None
     
     
