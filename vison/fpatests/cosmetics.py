@@ -205,43 +205,13 @@ class MetaCosmetics(MetaCal):
         PT = self.ParsedTable['COSMETICS00']
         column = 'MASKCOOS_%s' % maskkey
         
-        
-#        def _arrange_Qcoos(_coodict,iX):
-#            
-#            Qcoos = dict()
-#            
-#            NpixQx = 2119
-#            NpixQy = 2086            
-#            
-#            if iX <=2:
-#                Qcoos['x'] = np.concatenate(
-#                        [_coodict['E']['x'],_coodict['H']['x'],
-#                         _coodict['G']['x']+NpixQx,_coodict['F']['x']+NpixQx]
-#                        )
-#                Qcoos['y'] = np.concatenate(
-#                        [_coodict['E']['y'],_coodict['H']['y']+NpixQy,
-#                         _coodict['G']['y']+NpixQy,_coodict['F']['y']]
-#                        )
-#            else:
-#                Qcoos['x'] = np.concatenate(
-#                        [_coodict['G']['x'],_coodict['F']['x'],
-#                         _coodict['E']['x']+NpixQx,_coodict['H']['x']+NpixQx]
-#                        )
-#                Qcoos['y'] = np.concatenate(
-#                        [_coodict['G']['y'],_coodict['F']['y']+NpixQy,
-#                         _coodict['E']['y']+NpixQy,_coodict['H']['y']]
-#                        )
-#            
-#            return Qcoos
-        
-        
         for jY in range(self.NSLICES_FPA):
             for iX in range(self.NCOLS_FPA):
                 
                 Ckey  = 'C_%i%i' % (jY+1,iX+1)
                 DEFMAP[Ckey] = OrderedDict()
                 
-                locator = self.FPA_MAP[Ckey]
+                locator = self.fpa.FPA_MAP[Ckey]
                 block = locator[0]
                 CCDk = locator[1]
                 

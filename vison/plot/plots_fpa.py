@@ -471,4 +471,207 @@ class FpaFindingChart(FpaHeatMap):
         # plt.tight_layout()
         plt.subplots_adjust(top=0.85)
         
+
+class XtalkPlot(BasicPlot):
     
+    
+    def __init__(self, data, **kwargs):
+        
+        
+        super(XtalkPlot, self).__init__(**kwargs)
+        
+        self.CCDs = [1,2,3]
+        self.Quads = ['E','F','G','H']
+        self.req = 0.15
+
+        meta = dict(suptitle='')
+
+        meta.update(kwargs)
+
+        self.figsize = (8,7)
+        self.data = copy.deepcopy(data)
+        self.meta = dict()
+        self.meta.update(meta)
+
+        self.handles = []
+        self.labels = []
+        
+        self.corekwargs = dict()
+        if 'corekwargs' in kwargs:
+            self.corekwargs.update(kwargs['corekwargs']) 
+    
+       
+    def populate_axes(self):
+        """ """
+        from vison.xtalk import xtalk as xtalkmod
+        
+
+        self.ax = self.fig.add_subplot(111)
+        
+        blocks = self.data['blocks']
+        
+        scale = self.meta['scale']
+        showvalues = self.meta['showvalues']
+        
+        for block in blocks:
+            
+                        
+            for iCr, CCDref in enumerate(self.CCDs):
+                for iQr, Qref in enumerate(self.Quads):
+        
+                    for iC, CCD in enumerate(self.CCDs):
+                        for iQ, Q in enumerate(self.Quads):
+                            CCDreftag = 'CCD%i' % CCDref
+                            CCDtag = 'CCD%i' % CCD
+        
+                            try:
+                                xtalk_dict = self.data[block][CCDreftag][Qref][CCDtag][Q]
+        
+                                if scale == 'RATIO':
+        
+                                    ixtalk = xtalk_dict['xtalk']  # [0][0]
+                                    iextalk = xtalk_dict['std_xtalk']
+        
+                                elif scale == 'ADU':
+                                            
+                                    coefs = xtalk_dict['coefs']
+                                    xsource = np.linspace(0, 2.**16, 200)
+                                    yvictim = xtalkmod.f_fitXT(xsource, *coefs)
+        
+                                    ixmax = np.argmax(np.abs(yvictim))
+                                    ixtalk = yvictim[ixmax]
+                                    iextalk = xtalk_dict['std_xtalk'] * 2.**16
+        
+                            except:
+        
+                                ixtalk = 1.E3
+                                iextalk = 0.
+        
+                            y = iCr * 4 + iQr  # source
+                            x = iC * 4 + iQ  # victim
+        
+                            eratio = np.abs(iextalk/ixtalk)
+                            alpha = max(1.-eratio, 0.1)
+        
+                            if ixtalk > 0:
+                                color = 'g'
+                            elif ixtalk < 0:
+                                color = 'r'
+        
+                            # if (CCDref == 2) and (Qref == 'E') and (CCD==2) and (Q=='E') : stop()# TEST
+        
+                            if scale == 'RATIO':
+        
+                                if np.abs(ixtalk) < 0.9:
+        
+                                    ms = (np.abs(ixtalk) / self.req * 2.**16)*5.
+                                    #if ms <=0: color='g'
+                                    ms = max(ms, 5)
+        
+                                    self.ax.scatter(x, y,facecolor='none', edgecolors=color, s=[ms], alpha=alpha)
+                                    
+                                    if showvalues: self.ax.text(x,y,'%.1e' % ixtalk,fontsize=7,
+                                                           horizontalalignment='center',
+                                                           verticalalignment='center')
+        
+                                elif (iCr == iC) and (iQ == iQr):
+                                    # self-cross-talk
+                                    self.ax.scatter(x, y, marker='x', color='k')
+                                elif np.isclose(ixtalk, 1.E3):  # empty value
+                                    self.ax.scatter(x, y, marker='s',
+                                               facecolor='none', color='k')
+                                else:
+                                    stop()
+        
+                            elif scale == 'ADU':
+        
+                                if np.abs(ixtalk) < 500.:
+        
+                                    ms = (np.abs(ixtalk) / self.req)*5.
+                                    #if ms <=0: color='g'
+                                    ms = max(ms, 5)
+        
+                                    self.ax.scatter(x, y, facecolor='none', edgecolors=color, s=[ms], alpha=alpha)
+                                    
+                                    if showvalues: self.ax.text(x,y,'%.2f' % ixtalk,fontsize=8,
+                                                           horizontalalignment='center',
+                                                           verticalalignment='center')
+        
+                                elif (iC == iCr) and (iQ == iQr):
+                                    # self-cross-talk
+                                    self.ax.scatter(x, y, marker='x', color='k')
+                                elif np.isclose(ixtalk, 1.E3):  # empty value
+                                    self.ax.scatter(x, y, marker='s',
+                                               facecolor='none', color='k')
+                                else:
+                                    stop()
+        
+    
+        xaxisnames = ['1E', '1F', '1G', '1H', '2E',
+                      '2F', '2G', '2H', '3E', '3F', '3G', '3H']
+    
+        if scale == 'RATIO':
+    
+            self.ax.scatter(200, 200, s=5.*(3E-4 / self.req * 2.**16),
+                       label='3E-4', facecolor='none', edgecolors='k')
+            self.ax.scatter(200, 200, s=5.*(2E-4 / self.req * 2.**16),
+                       label='2E-4', facecolor='none', edgecolors='k')
+            self.ax.scatter(200, 200, s=5.*(1E-4 / self.req * 2.**16),
+                       label='1E-4', facecolor='none', edgecolors='k')
+            self.ax.scatter(200, 200, s=5.*(5E-5 / self.req * 2.**16),
+                       label='5E-5', facecolor='none', edgecolors='k')
+            self.ax.scatter(200, 200, s=5.*(1E-5 / self.req * 2.**16),
+                       label='1E-5', facecolor='none', edgecolors='k')
+            self.ax.scatter(200, 200, s=5.*(5.E-6 / self.req * 2.**16),
+                       label='5E-6', facecolor='none', edgecolors='k')
+            self.ax.scatter(200, 200, s=5, 
+                       label='$<=$2.3e-6', facecolor='none', edgecolors='k')
+    
+        elif scale == 'ADU':
+    
+            self.ax.scatter(200, 200, s=5.*(30./self.req), label='30 ADU', 
+                            facecolor='none', edgecolors='k')
+            self.ax.scatter(200, 200, s=5.*(20./self.req), label='20 ADU', 
+                            facecolor='none', edgecolors='k')
+            self.ax.scatter(200, 200, s=5.*(10./self.req), label='10 ADU', 
+                            facecolor='none', edgecolors='k')
+            self.ax.scatter(200, 200, s=5.*(5./self.req), label='5 ADU', 
+                            facecolor='none', edgecolors='k')
+            self.ax.scatter(200, 200, s=5.*(1./self.req), label='1 ADU', 
+                            facecolor='none', edgecolors='k')
+            self.ax.scatter(200, 200, s=5.*(0.5/self.req), label='0.5 ADU', 
+                            facecolor='none', edgecolors='k')
+            self.ax.scatter(200, 200, s=5.*(0.15/self.req), label='$<=$0.15 ADU', 
+                            facecolor='none', edgecolors='k')
+    
+        self.ax.set_xlim([-1, 12])
+        self.ax.set_ylim([-1, 12])
+    
+        plt.xticks(range(len(xaxisnames)), xaxisnames, size='small')
+        plt.yticks(range(len(xaxisnames)), xaxisnames, size='small')
+            
+    
+        self.ax.set_ylabel('Source Channel')
+        self.ax.set_xlabel('Victim Channel')
+        if 'title' in self.meta:
+            self.ax.set_title(self.meta['title'])
+        else:
+            self.ax.set_title('Cross-talk - %s' % scale)
+    
+
+
+    def plt_trimmer(self):
+        
+        box = self.ax.get_position()
+        self.ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+        handles, labels = self.ax.get_legend_handles_labels()
+    
+        # Put a legend to the right of the current axis
+        self.ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        
+        if self.meta['suptitle'] != '':        
+            plt.subplots_adjust(top=0.95)
+            plt.suptitle(self.meta['suptitle'])
+
+        plt.subplots_adjust(right=0.75)
+     
