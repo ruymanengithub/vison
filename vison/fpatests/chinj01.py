@@ -158,7 +158,7 @@ class MetaChinj01(MetaCal):
     def _get_extractor_NOTCH_fromPT(self,units):
         """ """
         
-        def _extract_RON_fromPT(PT, block, CCDk, Q):
+        def _extract_NOTCH_fromPT(PT, block, CCDk, Q):
             
             ixblock = np.where(PT['BLOCK'].data == block)
             column = 'FIT_N_ADU_%s_Quad%s' % (CCDk,Q)
@@ -171,7 +171,7 @@ class MetaChinj01(MetaCal):
             Notch = np.nanmedian(PT[column][ixblock]) * unitsConvFactor
             return Notch
         
-        return _extract_RON_fromPT
+        return _extract_NOTCH_fromPT
 
 
     def dump_aggregated_results(self):
@@ -179,7 +179,7 @@ class MetaChinj01(MetaCal):
         
         
         outpathroot = self.outpath
-        stop()
+        
         
         # Histogram of Slopes [ADU/electrons]
         

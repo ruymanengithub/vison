@@ -118,7 +118,7 @@ class MetaNL(MetaCal):
         fluELE_maxNLpc_v = tmp_v_CQ.copy()        
         stabilitypc_v = tmp_v_CQ.copy()
         
-        nlcdpkeys_v = np.zeros((1,NCCDs),dtype='S50')
+        nlcdpkeys_v = np.zeros((1),dtype='S50')
         
         for iCCD, CCDk in enumerate(CCDkeys):
             
@@ -137,7 +137,7 @@ class MetaNL(MetaCal):
                 
             self.products['NL'][nlcdpkey] = NL_dict.copy()
             
-            nlcdpkeys_v[0,iCCD] = nlcdpkey
+            nlcdpkeys_v[0] = nlcdpkey
             
                 
         sidd.addColumn(maxNLpc_v, 'MAXNL', IndexCQ)
@@ -146,18 +146,131 @@ class MetaNL(MetaCal):
         sidd.addColumn(stabilitypc_v, 'STABILITYPC', IndexCQ)
         
         
-        sidd.addColumn(nlcdpkeys_v, 'NLCDP_KEY', IndexC)
+        sidd.addColumn(nlcdpkeys_v, 'NLCDP_KEY', IndexS)
 
         # flatten sidd to table
         
         sit = sidd.flattentoTable()
         
         return sit
+    
+    def _get_NLMAP_from_PT(self):
+        """ """
+                
+        NLMAP = OrderedDict()
+        NLMAP['labelkeys'] = self.Quads
+        
+        PT = self.ParsedTable['NL02']
+        column = 'NLCDP_KEY'
+        
+        for jY in range(self.NSLICES_FPA):
+            for iX in range(self.NCOLS_FPA):
+                
+                Ckey  = 'C_%i%i' % (jY+1,iX+1)
+                NLMAP[Ckey] = OrderedDict()
+                
+                locator = self.fpa.FPA_MAP[Ckey]
+                block = locator[0]
+                CCDk = locator[1]
+                
+                ixblock = np.where(PT['BLOCK'] == block)
+                
+                
+                if len(ixblock[0])==0:
+                    NLMAP[Ckey] = OrderedDict(x=OrderedDict(),
+                                          y=OrderedDict())
+                    for Q in self.Quads:
+                        NLMAP[Ckey]['x'][Q] = []
+                        NLMAP[Ckey]['y'][Q] = []
+                    continue
+                
+                _nlkey = PT[column][ixblock][0]
+
+                
+                _nldict = self.products['NL'][_nlkey]
+                
+                _ccd_nldict = OrderedDict(x=OrderedDict(),
+                                          y=OrderedDict())
+                
+                for Q in self.Quads:
+                    
+                    gain = self.cdps['GAIN'][block][CCDk][Q][0]
+                    
+                    _y = _nldict[CCDk][Q]['outputcurve']['Y'].copy()
+                    _x = _nldict[CCDk][Q]['outputcurve']['X'] * gain / 1.E3
+                    
+                    _ccd_nldict['x'][Q] = _x.copy()
+                    _ccd_nldict['y'][Q] = _y.copy()
+                                                
+                NLMAP[Ckey] = _ccd_nldict.copy()
+                
+        
+        return NLMAP
+    
+    def _get_XYdict_NL(self):
+        
+        x = dict()
+        y = dict()
+        
+        PT = self.ParsedTable['NL02']
+        
+        labelkeys = []
+        
+        for block in self.flight_blocks:
+            ixsel = np.where(PT['BLOCK'] == block)
+            nlcdp_key = PT['NLCDP_KEY'][ixsel][0]
+            i_NL = self.products['NL'][nlcdp_key].copy()
+        
+            for iCCD, CCD in enumerate(self.CCDs):
+                CCDk = 'CCD%i' %  CCD
+                
+                for kQ, Q in enumerate(self.Quads):
+                    
+                    pkey = '%s_%s_%s' % (block, CCDk, Q)
+                    
+                    gain = self.cdps['GAIN'][block][CCDk][Q][0]
+                    
+                    xfluadu = i_NL[CCDk][Q]['outputcurve']['X'].copy()
+                    xfluKele = xfluadu * gain / 1.E3
+                    
+                    x[pkey] = xfluKele.copy()
+                    y[pkey] = i_NL[CCDk][Q]['outputcurve']['Y'].copy()
+                    labelkeys.append(pkey)
+        
+        
+        NLdict = dict(x=x,y=y,labelkeys=labelkeys)
+                
+        return NLdict
 
     def dump_aggregated_results(self):
         """ """
         
         outpathroot = self.outpath
         
-        stop()
+        # HeatMap of maximum non-linearities
+        
+        # PLOT All NL curves in Map-of-Quads
+        
+        NLMAP = self._get_NLMAP_from_PT()
+        
+        self.plot_XYMAP(NLMAP,kwargs=dict(
+                        suptitle='Non-Linearity Curves',
+                        doLegend=True,
+                        ylim = [-3.,7.],
+                        corekwargs = dict(E=dict(linestyle='-',marker='',color='r'),
+                                          F=dict(linestyle='-',marker='',color='g'),
+                                          G=dict(linestyle='-',marker='',color='b'),
+                                          H=dict(linestyle='-',marker='',color='m'))
+                        ))
+        
+        # PLOT All NL curves in single Plot
+        
+        NLSingledict = self._get_XYdict_NL()
+        
+        self.plot_XY(NLSingledict,kwargs=dict(
+                    title='Non-Linearity Curves',
+                    doLegend=False,
+                    xlabel='Fluence [ke-]',
+                    ylabel='Non-Linearity [pc]',
+                    ylim=[-3.,7.]))
         
