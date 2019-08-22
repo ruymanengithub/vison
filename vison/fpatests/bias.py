@@ -86,6 +86,11 @@ class MetaBias(MetaCal):
         #   RON: pre, img, ove
         #   REFERENCES TO PROFILES
         
+        CHAMBER = sidd.meta['inputs']['CHAMBER']        
+        CHAMBER_key = CHAMBER[0]        
+        chamber_v = np.array([CHAMBER_key])
+        sidd.addColumn(chamber_v, 'CHAMBERKEY', IndexS, ix=0)        
+        
         
         block_v = np.array([block])            
         sidd.addColumn(block_v, 'BLOCK', IndexS, ix=0)

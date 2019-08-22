@@ -91,7 +91,18 @@ class MetaFlat(MetaCal):
             self.Ncols[testname] = Ncols
         
         # TEST SCPECIFIC
-       
+        
+        CHAMBER = sidd.meta['inputs']['CHAMBER']        
+        CHAMBER_key = CHAMBER[0]        
+        chamber_v = np.array([CHAMBER_key])
+        sidd.addColumn(chamber_v, 'CHAMBERKEY', IndexS, ix=0)
+        
+        ogseobj = ogse.Ogse(CHAMBER=CHAMBER)
+        
+        wave = sidd.mx['wave'][0,0]
+        
+        wave_v = np.array([ogseobj.get_wavelength(wave)])
+        sidd.addColumn(wave_v, 'WAVENM', IndexS, ix=0)
         
         block_v = np.array([block])            
         sidd.addColumn(block_v, 'BLOCK', IndexS, ix=0)
