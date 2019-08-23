@@ -392,6 +392,7 @@ def IMG_chinj_gen(ccdobj, ELdict, ogse=None):
     IG1 = ELdict['IG1_%i_T' % iCCD]  # don't care if IG1_B is different
     IG2 = ELdict['IG2_T']
     IDL = ELdict['IDL']
+    
 
     doInject = (chinj == 1) and (IDL < IG1+inj_threshold)
 
@@ -401,7 +402,7 @@ def IMG_chinj_gen(ccdobj, ELdict, ogse=None):
 
         injlevels = dict(E=injlevel, F=injlevel, G=injlevel, H=injlevel)
 
-        ccdobj.simadd_flatilum(levels=injlevels)
+        #ccdobj.simadd_flatilum(levels=injlevels)
 
         ccdobj.simadd_injection(levels=injlevels, on=non, off=noff)
 

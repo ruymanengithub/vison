@@ -50,14 +50,15 @@ class FPA_LE1(object):
     
     Quads = ['E','F','G','H']
     
-    def __init__(self,infits):
+    def __init__(self,infits=None):
         """ """
         
         self.NEXTENSIONS = 145
         self.ext_ids = copy.deepcopy(ext_ids)
         self.extensions = []
         self.extnames = []
-        self.loadfromFITS(infits)
+        if infits is not None:
+            self.loadfromFITS(infits)
         self.fpamodel = fpamod.FPA()
         
         
