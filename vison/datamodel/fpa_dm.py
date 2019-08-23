@@ -22,8 +22,8 @@ from vison.datamodel import ccd as ccdmod
 
 
 Quads = ['E','F','G','H']
-NSLICES = 6 
-NCOLS = 6
+NSLICES = fpamod.NSLICES 
+NCOLS = fpamod.NCOLS
 
 ext_ids = [None]
 for j in range(1,NSLICES+1):    
@@ -54,14 +54,43 @@ class FPA_LE1(object):
         """ """
         
         self.NEXTENSIONS = 145
+        self.QNAXIS1 = 2128
+        self.QNAXIS2 = 2086
+        self.Qshape = (self.QNAXIS1,self.QNAXIS2)
         self.ext_ids = copy.deepcopy(ext_ids)
         self.extensions = []
         self.extnames = []
         if infits is not None:
             self.loadfromFITS(infits)
         self.fpamodel = fpamod.FPA()
+    
+    def add_extension(self,data, header, label=None,headerdict=None):
+        """ """
+        if data is not None:
+            assert data.shape == self.Qshape
+
+        self.extensions.append(ccdmod.Extension(data, header, label, headerdict))
+    
+    def del_extension(self,ixextension):
+        """ """
+        self.extensions.pop(ixextension)
+    
+    def initialise_as_zeroes(self):
+        """ """
+        headerdict0=dict()
         
+        self.add_extension(data=None, header=None, label=None,headerdict=headerdict0)
         
+        for iext in range(1,self.NEXTENSIONS):
+            data = np.zeros((self.QNAXIS1,self.QNAXIS2),dtype='float32')
+            header = None
+            headerdict = dict()
+            
+            self.add_extension(data, header, label=None,headerdict=headerdict)
+            
+            self.extnames.append(None)
+        
+    
     def loadfromFITS(self,infits):
         """ """
         """Loads contents of self from a FITS file."""
@@ -97,7 +126,7 @@ class FPA_LE1(object):
     def savetoFITS(self,outfits, clobber=True, unsigned16bit=False):
         """ """
         
-        prihdr = self.extensionsp[0].header
+        prihdr = self.extensions[0].header
 
         prihdu = fts.PrimaryHDU(data=None, 
                                 header=prihdr)
@@ -105,27 +134,26 @@ class FPA_LE1(object):
         hdulist = fts.HDUList([prihdu])
         
         
-        for iext in range(1, self.nextensions):
+        for iext in range(1, self.NEXTENSIONS):
 
+            idata = self.extensions[iext].data.T.copy()
 
-                idata = self.extensions[iext].data.T.copy()
+            iheader = self.extensions[iext].header
+            iname = self.extensions[iext].label
 
-                iheader = self.extensions[iext].header
-                iname = self.extensions[iext].label
+            ihdu = fts.ImageHDU(data=idata, header=iheader, name=iname)
 
-                ihdu = fts.ImageHDU(data=idata, header=iheader, name=iname)
+            if unsigned16bit:
+                ihdu.scale('int16', '', bzero=32768)
+                ihdu.header.add_history(
+                    'Scaled to unsigned 16bit integer!')
 
-                if unsigned16bit:
-                    ihdu.scale('int16', '', bzero=32768)
-                    ihdu.header.add_history(
-                        'Scaled to unsigned 16bit integer!')
-
-                hdulist.append(ihdu)
+            hdulist.append(ihdu)
 
         hdulist.writeto(outfits, overwrite=clobber)
-        
-            
-    def get_CCDID(self, BLOCK, CCD):
+    
+    
+    def get_CCDID_from_BLCCD(self, BLOCK, CCD):
         """
         BLOCK: block nickname (e.g. 'CURIE')
         CCDk: 'CCD1', 'CCD2' or 'CCD3'
@@ -175,8 +203,51 @@ class FPA_LE1(object):
         
                 
         return ccdobj
+    
+    def _padd_extra_soverscan(self,Qdata):
+        """ """
+        pQdata = np.zeros((self.QNAXIS1,self.QNAXIS2),dtype=Qdata.dtype)
+        pQdata[0:Qdata.shape[0],0:Qdata.shape[1]] = Qdata.copy()
+        return  pQdata
+    
+    def set_ccdobj(self,ccdobj,CCDID,inextension=-1):
+        """ """
         
+        for Q in self.Quads:
+            
+            extid = self.get_extid(CCDID, Q)
+            extix = extid[0]
+            os_coo = extid[4]
+            flip = os_coo
+            
+            Qdata = ccdobj.get_quad(Q,canonical=True,extension=inextension)
+            pQdata = self._padd_extra_soverscan(Qdata)
+            
+            pQdata = self.fpamodel.flip_img(pQdata,flip)
+            
+            self.extensions[extix].data = pQdata.copy()
+    
+    def _core_funct_simul(self, ccdobj, CCDID=None, simputs=None):
+        """ """
+        raise NotImplementedError("child class implements abstract method")
 
+    def simul(self, simputs=None, zerofirst=False):
+        """ """
+        
+        for jY in range(1,self.fpamodel.NSLICES+1):
+            for iX in range(1,self.fpamodel.NSLICES+1):
+                CCDID = 'C_%i%i' % (jY,iX)
+                print('Simulating CCD: %s' % CCDID)
+                kccdobj = self.get_ccdobj(CCDID)
+                
+                if zerofirst:
+                    kccdobj.extensions[-1].data *= 0
+                
+                kccdobj = self._core_funct_simul(kccdobj, CCDID, simputs)
+                
+                self.set_ccdobj(kccdobj, CCDID, inextesion=-1)
+                
+        
 
 def test1():
     """ """

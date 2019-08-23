@@ -20,6 +20,7 @@ import astropy as astpy
 from time import time
 import numpy as np
 
+from vison.inject import lib as injlib
 from vison.ogse import ogse as ogsemod
 from vison.datamodel import EXPLOGtools as ELtools
 from vison.datamodel import HKtools
@@ -420,6 +421,65 @@ def IMG_chinj_gen(ccdobj, ELdict, ogse=None):
 
     return ccdobj
 
+def IMG_chinj_gen_v2(ccdobj, ELdict, ogse=None):
+    """ """
+
+    vstart = ELdict['vstart']
+    vend = ELdict['vend']
+
+    chinj = ELdict['chinj']
+
+    stCCD = ELdict['CCD']
+    iCCD = int(stCCD[-1])
+
+    noff = ELdict['chinj_of']
+    non = ELdict['chinj_on']
+
+    IG1 = ELdict['IG1_%i_T' % iCCD]  # don't care if IG1_B is different
+    IG2 = ELdict['IG2_T']
+    IDL = ELdict['IDL']
+    IDH = ELdict['IDH']
+    id_wid = ELdict['ID_WID']
+    id_dly = ELdict['ID_DLY']
+    toi_ch = ELdict['TOI_CH']
+    
+
+    doInject = (chinj == 1) 
+
+    if doInject:
+        
+        injlevels = dict()
+        
+        for Q in Quads:
+            
+            if Q in ['E','F']:
+                sectag = 'B'
+            else:
+                sectag = 'T'
+            
+            injlevel = injlib.predict_inj_level((IDL,IDH), (IG1, IG2),
+                                            (id_wid,id_dly), toi_ch,
+                                            sectag)
+            if injlevel is np.nan:
+                injlevel = 0.
+            injlevels[Q] = injlevel
+
+
+        ccdobj.simadd_injection(levels=injlevels, on=non, off=noff)
+
+    ccdobj.simadd_bias(levels=gen_bias_levels)  # add bias
+
+    ccdobj.simadd_ron()
+    ccdobj.extensions[-1].data = np.round(
+        ccdobj.extensions[-1].data).astype('int32')
+
+    if vstart != 1 or vend != ccd.NAXIS2/2:
+        ccdobj.sim_window(vstart, vend)
+
+    ccdobj.extensions[-1].data = np.round(
+        ccdobj.extensions[-1].data).astype('int32')
+
+    return ccdobj
 
 def IMG_point_gen(ccdobj, ELdict, ogse=None):
     """ """

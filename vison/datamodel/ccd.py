@@ -393,10 +393,10 @@ class CCD(object):
         self.extensions.append(Extension(data, header, label, headerdict))
         self.nextensions += 1
 
-    def del_extension(self, extension):
+    def del_extension(self, ixextension):
         """Deletes an extension from self, by index."""
 
-        self.extensions.pop(extension)
+        self.extensions.pop(ixextension)
         self.nextensions -= 1
 
     def set_extension(self, data, header=None, label=None, headerdict=None, extension=-1):
