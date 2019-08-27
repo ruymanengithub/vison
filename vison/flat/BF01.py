@@ -804,7 +804,7 @@ class BF01(PTC0X):
                       'FWHMx\_slope: FWHM(x) vs. fluence slope in um / 10 kADU; '+\
                       'FWHMy\_HWC: FWHM(y)[um] at half ADC range (32768 ADU); '+\
                       'FWHMy\_slope: FWHM(y) vs. fluence slope in um / 10 kADU; '+\
-                      'ELL_HWC: ellipticity at half ADC range (32768 ADU).'
+                      'ELL\_HWC: ellipticity at half ADC range (32768 ADU).'
                       
             BFfittex = bfFITtable_cdp.get_textable(sheet='BFFIT', 
                                                caption=caption,
