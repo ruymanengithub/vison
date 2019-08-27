@@ -765,8 +765,6 @@ class TP01(PumpTask):
                            dobuilddata=False)
         
         
-        
-        
         self.canbecleaned = True
 
     def debugtask(self):
