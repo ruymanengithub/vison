@@ -35,10 +35,10 @@ class MetaCal(object):
     def __init__(self, **kwargs):
         """ """
         
-        #self.blocks = fpamod.all_blocks
-        #self.flight_blocks = fpamod.flight_blocks
-        self.blocks = ['BORN','CURIE','DIRAC','FOWLER','GUYE','KRAMERS'] # TESTS
-        self.flight_blocks = ['BORN','CURIE','DIRAC','FOWLER','GUYE','KRAMERS'] # TESTS
+        self.blocks = fpamod.all_blocks
+        self.flight_blocks = fpamod.flight_blocks
+        #self.blocks = ['BORN','CURIE','DIRAC','FOWLER','GUYE','KRAMERS'] # TESTS
+        #self.flight_blocks = ['BORN','CURIE','DIRAC','FOWLER','GUYE','KRAMERS'] # TESTS
         self.CCDs = [1,2,3]
         self.Quads = ['E','F','G','H']
         self.fpa = fpamod.FPA()
@@ -81,9 +81,11 @@ class MetaCal(object):
         sesspath = os.path.join(self.respathroot,block,'ANALYSIS','results_atCALDATA',
                                session)
         
-        alltestpaths = glob.glob(os.path.join(sesspath,'%s*' % test))
+        #alltestpaths = glob.glob(os.path.join(sesspath,'%s*' % test))
+        tester = glob.glob(os.path.join(sesspath,'%s.[0-9]' % test))
         
-        if len(alltestpaths)>1:
+        
+        if len(tester)>0:
             testpath = '%s.%i' % (test,repeat)
         else:
             testpath = test
@@ -301,12 +303,14 @@ class MetaCal(object):
                         HKkey = 'HK_%s' % rHKkey.upper()
                         cHKkey = '%s_CAL' % HKkey
                         
-                        HKV = sidd.mx[HKkey][0]
+                        if HKkey in sidd.mx:
                         
-                        HKVcal = roeVCal.fcal_HK(HKV, hkcal_key, CCD, Q)
-                        
-                        sidd.addColumn(np.zeros(1,dtype=float)+HKVcal, 
-                                       cHKkey, IndexS)
+                            HKV = sidd.mx[HKkey][0]
+                            
+                            HKVcal = roeVCal.fcal_HK(HKV, hkcal_key, CCD, Q)
+                            
+                            sidd.addColumn(np.zeros(1,dtype=float)+HKVcal, 
+                                           cHKkey, IndexS)
             
         else:
             
