@@ -152,7 +152,7 @@ class BF01(PTC0X):
         self.name = 'BF01'
         #self.type = 'Simple'
         
-        #self.HKKeys = HKKeys
+        self.HKKeys = HKKeys
         self.CDP_lib = BF01aux.get_CDP_lib()
         self.figdict = BF01aux.gt_BF01figs(self.inputs['surrogate'])
         self.inputs['subpaths'] = dict(figs='figs', 
