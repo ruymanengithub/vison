@@ -138,6 +138,7 @@ class MetaBF(MetaCal):
                 fwhmy_slope_v[0,iCCD,kQ] = BFfit_df['FWHMy_Slope'].as_matrix()[ixsel][0]
                 
                 ell_v[0,iCCD,kQ] = BFfit_df['ELL_HWC'].as_matrix()[ixsel][0]
+
         
         sidd.addColumn(fwhmx_hwc_v, 'FWHMX_HWC', IndexCQ)
         sidd.addColumn(fwhmy_hwc_v, 'FWHMY_HWC', IndexCQ)
