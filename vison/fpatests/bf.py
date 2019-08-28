@@ -152,12 +152,48 @@ class MetaBF(MetaCal):
         
         return sit
         
-   
+    def _get_GEN_extractor_fromPT(self,colkey):
+        """ """
+        
+        
+        def _extract_fromPT(PT, block, CCDk, Q):
+            ixblock = np.where(PT['BLOCK'].data == block)
+            column = '%s_%s_Quad%s' % (colkey,CCDk,Q)
+            
+            
+            VAL = np.nanmedian(PT[column][ixblock])
+            return VAL
+        
+        return _extract_fromPT   
 
     def dump_aggregated_results(self):
         """ """
         
         outpathroot = self.outpath
         
-        stop()
         
+        # RON maps, ADUs
+        for testname in self.testnames:
+            
+            FWHMX_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
+                                                extractor=self._get_GEN_extractor_fromPT('FWHMX_HWC'))
+        
+            stestname = st.replace(testname,'_','\_')
+            self.plot_SimpleMAP(FWHMX_MAP,kwargs=dict(
+                    suptitle='%s: FWHM-X at HWC' % stestname))
+        
+        
+            FWHMY_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
+                                                extractor=self._get_GEN_extractor_fromPT('FWHMY_HWC'))
+        
+            stestname = st.replace(testname,'_','\_')
+            self.plot_SimpleMAP(FWHMY_MAP,kwargs=dict(
+                    suptitle='%s: FWHM-Y at HWC' % stestname))
+            
+            
+            ELL_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
+                                                extractor=self._get_GEN_extractor_fromPT('ELL_HWC'))
+        
+            stestname = st.replace(testname,'_','\_')
+            self.plot_SimpleMAP(ELL_MAP,kwargs=dict(
+                    suptitle='%s: ellipticity at HWC' % stestname))
