@@ -109,7 +109,7 @@ class PumpTask(InjTask):
                     char_res_dict[CCDk] = tptools.charact_injection(iccdobj)
                     
                     vstart = int(iccdobj.extensions[-1].header['vstart'])
-                    vend = int(iccdobj.extensions[-1].header['vend'])
+                    vend = min(int(iccdobj.extensions[-1].header['vend']),iccdobj.NrowsCCD)
                     Nrows = vend-vstart
                     
                     
@@ -127,7 +127,7 @@ class PumpTask(InjTask):
                                          np.outer(pco[:,2],np.ones((Nrows)))
                         
                         chinj_dd[CCDk][Q] = np.nanmedian(injmap)
-        
+                    
         # Saving the charge injection characterisation results
         
         self.dd.products['chinj_mx'] = copy.deepcopy(chinj_dd)

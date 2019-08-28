@@ -521,6 +521,7 @@ class TP01(PumpTask):
 
         """
         
+        
         testname = self.inputs['test']
                 
         if self.report is not None:
@@ -666,7 +667,10 @@ class TP01(PumpTask):
                     tau = mergecat[CCDk][Q][modkey][:,ixtau].copy()
                     Pc = mergecat[CCDk][Q][modkey][:,ixPc].copy()                    
                     ixnonan = np.where(~np.isnan(tau) & ~np.isnan(Pc))
-                    avtau = np.average(tau[ixnonan],weights=Pc[ixnonan])
+                    if len(ixnonan[0])>0:
+                        avtau = np.average(tau[ixnonan],weights=Pc[ixnonan])
+                    else:
+                        avtau = np.nan
                     
                     sumtable[CCDk][Q][modkey] = [len(Pc[ixnonan]),avtau]
         
@@ -713,9 +717,9 @@ class TP01(PumpTask):
             
             pldata = OrderedDict()
             
-            ixcoltau = colnames.index('tau')
-            ixcolPc = colnames.index('Pc')
-            ixcolS = colnames.index('uS')
+            #ixcoltau = colnames.index('tau')
+            #ixcolPc = colnames.index('Pc')
+            #ixcolS = colnames.index('uS')
             
             
             for CCDk in CCDs:
@@ -814,8 +818,11 @@ class TP01(PumpTask):
             tau = arrayCQM[:,colnames.index('tau')]
             ixnonan = np.where(~np.isnan(Pc) & ~np.isnan(tau))
             Pc = Pc[ixnonan]
-            tau = tau[ixnonan]            
-            values = [len(Pc),np.average(tau,weights=Pc)]
+            tau = tau[ixnonan]
+            if len(ixnonan[0])>0:                
+                values = [len(Pc),np.average(tau,weights=Pc)]
+            else:
+                values [ 0, np.nan]
 
             return values
         

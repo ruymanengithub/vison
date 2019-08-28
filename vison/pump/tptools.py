@@ -241,7 +241,7 @@ def charact_injection(ccdobj):
     overscan = ccdobj.overscan
     
     vstart = int(ccdobj.extensions[-1].header['vstart'])
-    vend = int(ccdobj.extensions[-1].header['vend'])
+    vend = min(int(ccdobj.extensions[-1].header['vend']),ccdobj.NrowsCCD)
     Nrows = vend-vstart
     
     Ncols = ccdobj.NcolsCCD
@@ -262,7 +262,7 @@ def charact_injection(ccdobj):
         for i in range(Ncols):
             ires = _fit_one_line(X,quadimg[i,:],pdeg=pdeg)
             quadpoly[i,:] = ires['coeffs']
-            quadinjnoise[i] = ires['std']
+            quadinjnoise[i] = ires['std']            
         
         res[Q]['polycoeffs'] = quadpoly.copy()
         res[Q]['injnoise'] = quadinjnoise.copy()
