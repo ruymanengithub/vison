@@ -27,12 +27,12 @@ from vison import __version__
 
 isthere = os.path.exists
 
-NAXIS1 = 4238
 NrowsCCD = 2066
 NcolsCCD = 2048
 NAXIS2 = (NrowsCCD+20)*2  # 4132
 prescan = 51
 overscan = 20
+NAXIS1 = (prescan + NcolsCCD + overscan) * 2
 voverscan = 20
 #imgarea = [2048,2066]
 RON = 1.4
@@ -153,7 +153,8 @@ class CCD(object):
 
     #rebin = ccd_aux.rebin
 
-    def __init__(self, infits=None, extensions=None, getallextensions=False, withpover=True):
+    def __init__(self, infits=None, extensions=None, getallextensions=False, withpover=True, 
+                 overscan=overscan):
         """ """
         
         if extensions is None:
@@ -177,7 +178,7 @@ class CCD(object):
 
         self.nextensions = len(self.extensions)
 
-        self.NAXIS1 = NAXIS1
+        self.NAXIS1 = (prescan + NcolsCCD + overscan) * 2
         if withpover:
             self.NAXIS2 = NAXIS2
         else:
