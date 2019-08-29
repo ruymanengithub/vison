@@ -143,7 +143,7 @@ class CCD(object):
     get_region2Dmodel = ccd_aux.get_region2Dmodel
     extract_region = ccd_aux.extract_region
 
-    simadd_flatilim = ccdsim.simadd_flatilum
+    simadd_flatilum = ccdsim.simadd_flatilum
     simadd_points = ccdsim.simadd_points
     simadd_bias = ccdsim.simadd_bias
     simadd_ron = ccdsim.simadd_ron

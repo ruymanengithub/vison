@@ -15,6 +15,7 @@ from astropy.io import fits as fts
 import os
 import copy
 import numpy as np
+from collections import OrderedDict
 
 from vison.fpa import fpa as fpamod
 from vison.datamodel import ccd as ccdmod
@@ -45,6 +46,27 @@ for j in range(1,NSLICES+1):
         ext_ids.append((ix+3, j, i, 'E', (1,1)))
 
 
+PRIhdr_dict = OrderedDict()
+PRIhdr_dict['BUNIT']='ADU'
+PRIhdr_dict['RA'] = None
+PRIhdr_dict['DEC'] = None
+PRIhdr_dict['DATE-OBS'] = None
+PRIhdr_dict['SEQID'] = None
+           
+EXThdr_dict = OrderedDict()
+EXThdr_dict['PCOUNT'] = 0
+EXThdr_dict['PCOUNT'] = 1
+EXThdr_dict['BZERO'] = 32768
+EXThdr_dict['EXPTIME'] = 0
+EXThdr_dict['CCDID'] = '0-0'
+EXThdr_dict['QUADID'] = 'A'
+EXThdr_dict['PRESCANX'] = 51
+EXThdr_dict['OVRSCANX'] = 29
+EXThdr_dict['GAIN'] = 3.5
+EXThdr_dict['WCSAXES'] = 2
+EXThdr_dict['INSTRUME'] = 'EUCLID-VIS'
+
+           
 class FPA_LE1(object):
     """ """
     
@@ -77,14 +99,20 @@ class FPA_LE1(object):
     
     def initialise_as_zeroes(self):
         """ """
-        headerdict0=dict()
+        headerdict0=PRIhdr_dict.copy()
         
         self.add_extension(data=None, header=None, label=None,headerdict=headerdict0)
         
         for iext in range(1,self.NEXTENSIONS):
             data = np.zeros((self.QNAXIS1,self.QNAXIS2),dtype='float32')
             header = None
-            headerdict = dict()
+            headerdict = EXThdr_dict.copy()
+            
+            _extid = self.ext_ids[iext]
+            
+            headerdict['CCDID'] = '%i-%i' % (_extid[1],_extid[2])
+            headerdict['QUADID'] = _extid[3]
+            
             
             self.add_extension(data, header, label=None,headerdict=headerdict)
             
@@ -140,7 +168,7 @@ class FPA_LE1(object):
 
             iheader = self.extensions[iext].header
             iname = self.extensions[iext].label
-
+            
             ihdu = fts.ImageHDU(data=idata, header=iheader, name=iname)
 
             if unsigned16bit:
@@ -184,7 +212,9 @@ class FPA_LE1(object):
         """Returns a CCD Object given a CCDID."""
         
                 
-        ccdobj = ccdmod.CCD(withpover=True)    
+        ccdobj = ccdmod.CCD(withpover=True,overscan = 29)
+        
+        
         blnk = np.zeros((ccdobj.NAXIS1,ccdobj.NAXIS2),dtype='float32')        
         ccdobj.add_extension(blnk, header=None, label=None,headerdict=None)
         
@@ -198,10 +228,10 @@ class FPA_LE1(object):
             Qdata = self.fpamodel.flip_img(Qdata, flip)
             
             padQdata = np.zeros((ccdobj.NAXIS1/2,ccdobj.NAXIS2/2),dtype='float32')
-            padQdata[:,0:ccdobj.NrowsCCD] = Qdata.copy()
+            padQdata[:,:] = Qdata.copy()
             ccdobj.set_quad(padQdata, Q, canonical=True, extension=-1)
         
-                
+        
         return ccdobj
     
     def _padd_extra_soverscan(self,Qdata):
@@ -245,7 +275,7 @@ class FPA_LE1(object):
                 
                 kccdobj = self._core_funct_simul(kccdobj, CCDID, simputs)
                 
-                self.set_ccdobj(kccdobj, CCDID, inextesion=-1)
+                self.set_ccdobj(kccdobj, CCDID, inextension=-1)
                 
         
 
