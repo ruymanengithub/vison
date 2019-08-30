@@ -149,7 +149,6 @@ if __name__ == '__main__':
                 debug=debug, startobsid=startobsid,
                 processes=multithread,tag=tag, cleanafter = cleanafter)
     
-    
     if wait:
         pipe.wait_and_run(dayfolder, elvis=elvis)
     else:

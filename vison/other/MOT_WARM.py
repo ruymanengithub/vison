@@ -466,13 +466,19 @@ class MOT_WARM(DarkTask):
         
         if not self.drill:
             
+            # RWD-VS
             # BIAS: RON matrix (CCDs x Qs)
-                
+            #       OFFSET matrix (CCDs x Qs)
             _RON_matrix = self.dd.mx['std_img'][ObsIDdict['BIAS_RVS'],...].copy()
-            _RON_matrix = _RON_matrix[np.newaxis,...].copy()
+            _OFF_matrix = self.dd.mx['offset_img'][ObsIDdict['BIAS_RVS'],...].copy()
+            
+            self.dd.products['rwdvs_ron_mx'] = _RON_matrix.copy()
+            self.dd.products['rwdvs_off_mx'] = _OFF_matrix.copy()
+            
+            _RON_matrix_reshaped = _RON_matrix[np.newaxis,...].copy()
             RON_lims = self.perflimits['RONs_lims']
             
-            _compliance_RON = Task.check_stat_perCCDandQ(self,_RON_matrix,
+            _compliance_RON = Task.check_stat_perCCDandQ(self,_RON_matrix_reshaped,
                                                          RON_lims, CCDs)
             self.addComplianceMatrix2Self(_compliance_RON,'RON')
             if self.report is not None:
@@ -559,8 +565,7 @@ class MOT_WARM(DarkTask):
                     xRAMP = np.arange(len(yRAMP))
                     profs1D2plot['RAMP'][CCDk][Q]['x'] = xRAMP.copy()
 
-                
-                
+
         else:
             
             vstart = 0
