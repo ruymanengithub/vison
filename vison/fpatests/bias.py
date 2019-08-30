@@ -58,6 +58,7 @@ class MetaBias(MetaCal):
         for block in self.blocks:
             self.cdps['GAIN'][block] = allgains[block]['PTC01'].copy() 
         
+        self.init_fignames()
     
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
@@ -174,12 +175,23 @@ class MetaBias(MetaCal):
         RON = np.nanmedian(PT[column][ixblock])
         return RON
 
+    def init_fignames(self):
+        """ """
+        
+        if not os.path.exists(self.figspath):
+            os.system('mkdir %s' % self.figspath)
+        
+        for testname in self.testnames:
+            self.figs['RON_ADU_%s' % testname] = os.path.join(self.figspath,
+                         'FPAMAP_RON_ADU_%s.png' % testname)
+            self.figs['RON_ELE_%s' % testname] = os.path.join(self.figspath,
+                         'FPAMAP_RON_ELE_%s.png' % testname)
+            self.figs['OFFSETS_%s' % testname] = os.path.join(self.figspath,
+                         'FPAMAP_OFFSET_%s.png' % testname)
 
     def dump_aggregated_results(self):
         """ """
         
-        
-        outpathroot = self.outpath
         
         # RON maps (all tests/waves)
         
@@ -192,7 +204,8 @@ class MetaBias(MetaCal):
         
             stestname = st.replace(testname,'_','\_')
             self.plot_SimpleMAP(RONADUMAP,kwargs=dict(
-                    suptitle='%s: RON [ADU]' % stestname))
+                    suptitle='%s: RON [ADU]' % stestname,
+                    figname=self.figs['RON_ADU_%s' % testname]))
         
         # RON maps, ELECTRONs
         for testname in self.testnames:
@@ -202,7 +215,8 @@ class MetaBias(MetaCal):
         
             stestname = st.replace(testname,'_','\_')
             self.plot_SimpleMAP(RONEMAP,kwargs=dict(
-                    suptitle='%s: RON [ELECTRONS]' % stestname))
+                    suptitle='%s: RON [ELECTRONS]' % stestname,
+                    figname=self.figs['RON_ELE_%s' % testname]))
         
         # OFFSET maps
         
@@ -212,12 +226,7 @@ class MetaBias(MetaCal):
         
             stestname = st.replace(testname,'_','\_')
             self.plot_SimpleMAP(OFFMAP,kwargs=dict(
-                    suptitle='%s: OFFSET' % stestname))
-        
-        
-        
-
-        
-        
+                    suptitle='%s: OFFSET' % stestname,
+                    figname=self.figs['OFFSETS_%s' % testname]))
         
         

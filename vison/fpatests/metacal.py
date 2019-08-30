@@ -16,7 +16,7 @@ import os
 from astropy import table
 import glob
 
-from vison.support.files import cPickleRead, cPickleDumpDictionary
+from vison.support import files
 from vison.support import vjson
 from vison.datamodel import core as vcore
 from vison.support import vcal
@@ -46,9 +46,15 @@ class MetaCal(object):
         self.NCOLS_FPA = self.fpa.NCOLS
         
         self.vcalfile = kwargs['vcalfile']
-        self.respathroot = kwargs['respathroot']
-        self.outpath = kwargs['outpathroot']
+        self.respathroot = kwargs['respathroot']        
         self.jsonf = kwargs['jsonf']
+        
+        self.testkey = kwargs['testkey']
+        self.outpathroot = '%s_FPA' % self.testkey.upper()
+        
+        if not os.path.exists(self.outpathroot):
+            os.system('mkdir %s' % self.outpathroot)
+        
         self.inventory = OrderedDict()
         self.results = OrderedDict()
         self.products = OrderedDict()
@@ -56,7 +62,46 @@ class MetaCal(object):
         self.roeVCals = dict()        
         self.init_roeVCals()
         self.cdps = OrderedDict()
+        self.figs = dict()
+        self.figspath = os.path.join(self.outpathroot,'figs')
         
+        
+    
+    def init_fignames(self):
+        pass
+    
+    def run(self, doLoad=True, doParse=True, doDump=True, doReport=True):
+        """ """
+        
+        dictiopick = os.path.join(self.outpathroot,
+                                  '%s_dictionary.pick' % self.testkey.lower())
+        
+        if doLoad:
+            print('Loading block(s) results...')
+            self.load_block_results()
+            files.cPickleDumpDictionary(self.inventory,dictiopick)
+        else:
+            print('Re-loading block(s) results')
+            self.inventory = files.cPickleRead(dictiopick)
+        
+        parsedpick = os.path.join(self.outpathroot,
+                                  '%s_meta.pick' % self.testkey.lower())
+        
+        if doParse:
+            print('Parsing results')
+            for testname in self.testnames:
+                self.parse_test_results(testname)
+            files.cPickleDumpDictionary(self.ParsedTable, parsedpick)
+        else:
+            print('Re-loading parsed results')
+            self.ParsedTable = files.cPickleRead(parsedpick)
+            
+        if doDump:
+            self.dump_aggregated_results()
+        
+        if doReport:
+            self.report()
+    
     def init_roeVCals(self):
         
         for block in self.blocks:
@@ -115,7 +160,7 @@ class MetaCal(object):
         
         ii['DD'] = DDfile
         try:
-            dd = cPickleRead(DDfile)
+            dd = files.cPickleRead(DDfile)
         except:
             print('Could not load %s' % DDfile)
             raise RuntimeError
@@ -409,7 +454,11 @@ class MetaCal(object):
         _kwargs.update(kwargs)
     
         heatmap = plfpa.FpaHeatMap(MAPdict, **_kwargs)
-        heatmap.render()
+        if 'figname' in _kwargs:
+            figname = _kwargs['figname']
+        else:
+            figname = ''
+        heatmap.render(figname=figname)
     
     def plot_XY(self,XYdict, kwargs):
         """ """
@@ -418,7 +467,12 @@ class MetaCal(object):
         _kwargs.update(kwargs)
         
         xyplot = plfpa.XYPlot(XYdict, **_kwargs)
-        xyplot.render()
+        
+        if 'figname' in _kwargs:
+            figname = _kwargs['figname']
+        else:
+            figname = ''
+        xyplot.render(figname=figname)
         
     def plot_XYMAP(self, XYMAP, kwargs):
         
@@ -426,5 +480,10 @@ class MetaCal(object):
         _kwargs.update(kwargs)
         
         xyfpaplot = plfpa.FpaPlotYvsX(XYMAP, **_kwargs)
-        xyfpaplot.render()
+        
+        if 'figname' in _kwargs:
+            figname = _kwargs['figname']
+        else:
+            figname = ''
+        xyfpaplot.render(figname=figname)
         

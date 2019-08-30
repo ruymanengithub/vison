@@ -156,7 +156,11 @@ class MetaPsf(MetaCal):
         """ """
         
         xtalkmap = plfpa.XtalkPlot(XTALKs,**kwargs)
-        xtalkmap.render()
+        if 'figname' in kwargs:
+            figname = kwargs['figname']
+        else:
+            figname = ''
+        xtalkmap.render(figname=figname)
         
         
    

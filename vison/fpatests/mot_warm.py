@@ -108,44 +108,25 @@ class MetaMOT(MetaCal):
         
         tmp_v_CQ = np.zeros((1,NCCDs,NQuads))
         
-        rwdvs_off_pre_v = tmp_v_CQ.copy()
-        rwdvs_off_img_v = tmp_v_CQ.copy()
-        rwdvs_off_ove_v = tmp_v_CQ.copy()
         
-        rwdvs_ron_pre_v = tmp_v_CQ.copy()
-        rwdvs_ron_img_v = tmp_v_CQ.copy()
-        rwdvs_ron_ove_v = tmp_v_CQ.copy()
-        
-        stop()
+        rwdvs_off_v = tmp_v_CQ.copy()
+        rwdvs_ron_v = tmp_v_CQ.copy()
         
         for iCCD, CCDk in enumerate(CCDkeys):
             for kQ, Q in enumerate(self.Quads):
                 
-                rwdvs_off_pre_v[0,iCCD,kQ] = sidd.mx['offset_pre'][0,iCCD,kQ]
-                rwdvs_off_img_v[0,iCCD,kQ] = sidd.mx['offset_img'][0,iCCD,kQ]
-                rwdvs_off_ove_v[0,iCCD,kQ] = sidd.mx['offset_ove'][0,iCCD,kQ]
-                
-                rwdvs_ron_pre_v[0,iCCD,kQ] = sidd.mx['std_pre'][0,iCCD,kQ]
-                rwdvs_ron_img_v[0,iCCD,kQ] = sidd.mx['std_img'][0,iCCD,kQ]
-                rwdvs_ron_ove_v[0,iCCD,kQ] = sidd.mx['std_ove'][0,iCCD,kQ]
+                rwdvs_off_v[0,iCCD,kQ] = sidd.products['rwdvs_off_mx'][iCCD,kQ]
+                rwdvs_ron_v[0,iCCD,kQ] = sidd.products['rwdvs_ron_mx'][iCCD,kQ]
                 
                 
-        sidd.addColumn(rwdvs_off_pre_v, 'RWDVS_OFF_PRE', IndexCQ)
-        sidd.addColumn(rwdvs_off_img_v, 'RWDVS_OFF_IMG', IndexCQ)
-        sidd.addColumn(rwdvs_off_ove_v, 'RWDVS_OFF_OVE', IndexCQ)
-        
-        sidd.addColumn(rwdvs_ron_pre_v, 'RWDVS_RON_PRE', IndexCQ)
-        sidd.addColumn(rwdvs_ron_img_v, 'RWDVS_RON_IMG', IndexCQ)
-        sidd.addColumn(rwdvs_ron_ove_v, 'RWDVS_RON_OVE', IndexCQ)
+        sidd.addColumn(rwdvs_off_v, 'RWDVS_OFF', IndexCQ)        
+        sidd.addColumn(rwdvs_ron_v, 'RWDVS_RON', IndexCQ)
 
         # flatten sidd to table
         
         sit = sidd.flattentoTable()
         
         return sit
-
-
-    
 
     def dump_aggregated_results(self):
         """ """
@@ -154,38 +135,12 @@ class MetaMOT(MetaCal):
         
         outpathroot = self.outpath
         
-        # RON maps (all tests/waves)
+        # RON map, ADUs
         
+        # RON map, ELECTRONs
         
-        # RON maps, ADUs
-        for testname in self.testnames:
-            
-            RONADUMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
-                                                extractor=self._get_extractor_RON_fromPT(units='ADU'))
+        # OFFSET map
         
-            stestname = st.replace(testname,'_','\_')
-            self.plot_SimpleMAP(RONADUMAP,kwargs=dict(
-                    suptitle='%s: RON [ADU]' % stestname))
-        
-        # RON maps, ELECTRONs
-        for testname in self.testnames:
-            
-            RONEMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
-                                              extractor=self._get_extractor_RON_fromPT(units='E'))
-        
-            stestname = st.replace(testname,'_','\_')
-            self.plot_SimpleMAP(RONEMAP,kwargs=dict(
-                    suptitle='%s: RON [ELECTRONS]' % stestname))
-        
-        # OFFSET maps
-        
-        for testname in self.testnames:
-            
-            OFFMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_OFFSET_fromPT)
-        
-            stestname = st.replace(testname,'_','\_')
-            self.plot_SimpleMAP(OFFMAP,kwargs=dict(
-                    suptitle='%s: OFFSET' % stestname))
         
         
         
