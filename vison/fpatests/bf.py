@@ -53,6 +53,8 @@ class MetaBF(MetaCal):
         self.cdps['GAIN'] = OrderedDict()
         for block in self.blocks:
             self.cdps['GAIN'][block] = allgains[block]['PTC01'].copy() 
+        
+        self.init_fignames()
     
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
@@ -165,12 +167,24 @@ class MetaBF(MetaCal):
             return VAL
         
         return _extract_fromPT   
+    
+    def init_fignames(self):
+        """ """
+        
+        if not os.path.exists(self.figspath):
+            os.system('mkdir %s' % self.figspath)
+        
+        for testname in self.testnames:
+            self.figs['FWHMX_MAP_%s' % testname] = os.path.join(self.figspath,
+                         'FWHMX_MAP_%s.png' % testname)
+            self.figs['FWHMY_MAP_%s' % testname] = os.path.join(self.figspath,
+                         'FWHMY_MAP_%s.png' % testname)
+            self.figs['ELL_MAP_%s' % testname] = os.path.join(self.figspath,
+                         'ELL_MAP_%s.png' % testname)
 
     def dump_aggregated_results(self):
         """ """
-        
-        outpathroot = self.outpath
-        
+                
         
         # RON maps, ADUs
         for testname in self.testnames:
@@ -180,7 +194,8 @@ class MetaBF(MetaCal):
         
             stestname = st.replace(testname,'_','\_')
             self.plot_SimpleMAP(FWHMX_MAP,kwargs=dict(
-                    suptitle='%s: FWHM-X at HWC' % stestname))
+                    suptitle='%s: FWHM-X at HWC' % stestname,
+                    figname=self.figs['FWHMX_MAP_%s' % testname]))
         
         
             FWHMY_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
@@ -188,7 +203,8 @@ class MetaBF(MetaCal):
         
             stestname = st.replace(testname,'_','\_')
             self.plot_SimpleMAP(FWHMY_MAP,kwargs=dict(
-                    suptitle='%s: FWHM-Y at HWC' % stestname))
+                    suptitle='%s: FWHM-Y at HWC' % stestname,
+                    figname=self.figs['FWHMY_MAP_%s' % testname]))
             
             
             ELL_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
@@ -196,4 +212,7 @@ class MetaBF(MetaCal):
         
             stestname = st.replace(testname,'_','\_')
             self.plot_SimpleMAP(ELL_MAP,kwargs=dict(
-                    suptitle='%s: ellipticity at HWC' % stestname))
+                    suptitle='%s: ellipticity at HWC' % stestname,
+                    figname=self.figs['ELL_MAP_%s' % testname]))
+            
+            
