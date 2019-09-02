@@ -60,6 +60,7 @@ class MetaChinj01(MetaCal):
         
         self.products['METAFIT'] = OrderedDict()
         
+        self.init_fignames()
     
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
@@ -172,13 +173,28 @@ class MetaChinj01(MetaCal):
             return Notch
         
         return _extract_NOTCH_fromPT
-
+    
+    def init_fignames(self):
+        """ """
+        
+        if not os.path.exists(self.figspath):
+            os.system('mkdir %s' % self.figspath)
+        
+        for testname in self.testnames:
+            
+            self.figs['NOTCH_ADU_MAP_%s' % testname] = os.path.join(self.figspath,
+                         'NOTCH_ADU_MAP_%s.png' % testname)
+            
+            self.figs['NOTCH_ELE_MAP_%s' % testname] = os.path.join(self.figspath,
+                         'NOTCH_ELE_MAP_%s.png' % testname)
+            
+        
 
     def dump_aggregated_results(self):
         """ """
         
         
-        outpathroot = self.outpath
+        #outpathroot = self.outpath
         
         
         # Histogram of Slopes [ADU/electrons]
@@ -207,7 +223,8 @@ class MetaChinj01(MetaCal):
         
             stestname = st.replace(testname,'_','\_')
             self.plot_SimpleMAP(NOTCHADUMAP,kwargs=dict(
-                    suptitle='%s: NOTCH INJECTION [ADU]' % stestname))
+                    suptitle='%s: NOTCH INJECTION [ADU]' % stestname,
+                    figname=self.figs['NOTCH_ADU_MAP_%s' % testname]))
         
         # Notch injection map, ELECTRONs
         for testname in self.testnames:
@@ -217,7 +234,8 @@ class MetaChinj01(MetaCal):
         
             stestname = st.replace(testname,'_','\_')
             self.plot_SimpleMAP(NOTCHEMAP,kwargs=dict(
-                    suptitle='%s: NOTCH INJECTION [ELECTRONS]' % stestname))
+                    suptitle='%s: NOTCH INJECTION [ELECTRONS]' % stestname,
+                    figname=self.figs['NOTCH_ELE_MAP_%s' % testname]))
         
         
 
