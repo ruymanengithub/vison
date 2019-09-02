@@ -182,13 +182,14 @@ class MetaBias(MetaCal):
             os.system('mkdir %s' % self.figspath)
         
         for testname in self.testnames:
-            self.figs['RON_ADU_%s' % testname] = os.path.join(self.figspath,
-                         'FPAMAP_RON_ADU_%s.png' % testname)
-            self.figs['RON_ELE_%s' % testname] = os.path.join(self.figspath,
-                         'FPAMAP_RON_ELE_%s.png' % testname)
-            self.figs['OFFSETS_%s' % testname] = os.path.join(self.figspath,
-                         'FPAMAP_OFFSET_%s.png' % testname)
-
+            self.figs['GAIN_MAP_%s' % testname] = os.path.join(self.figspath,
+                         'GAIN_MAP_%s.png' % testname)
+            self.figs['BLOOM_ADU_MAP_%s' % testname] = os.path.join(self.figspath,
+                         'BLOOM_ADU_MAP_%s.png' % testname)
+            self.figs['BLOOM_ELE_MAP_%s' % testname] = os.path.join(self.figspath,
+                         'BLOOM_ELECTRONS_MAP_%s.png' % testname)
+            
+            
     def dump_aggregated_results(self):
         """ """
         
