@@ -63,6 +63,8 @@ class MetaFlat(MetaCal):
         
         self.Ncols = dict()
         
+        self.init_fignames()
+        
     
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
@@ -229,13 +231,25 @@ class MetaFlat(MetaCal):
         
         return XYdict
 
+    def init_fignames(self):
+        """ """
+        
+        if not os.path.exists(self.figspath):
+            os.system('mkdir %s' % self.figspath)
+        
+        for testname in self.testnames:
+            self.figs['PRNU_vs_FLU_%s' % testname] = os.path.join(self.figspath,
+                         'PRNU_vs_FLU_%s.png' % testname)
+        
+        for testname in self.testnames:
+            self.figs['PRNU_MAP_%s' % testname] = os.path.join(self.figspath,
+                         'PRNU_MAP_%s.png' % testname)
+            
+    
     def dump_aggregated_results(self):
         """ """
         
         
-        outpathroot = self.outpath
-                
-
         # PRNU vs. FLUENCE
         
         
@@ -251,7 +265,8 @@ class MetaFlat(MetaCal):
                     title='%s: PRNU' % (stestname,),
                     doLegend=True,
                     xlabel='Fluence [ke-]',
-                    ylabel='PRNU'))
+                    ylabel='PRNU',
+                    figname=self.figs['PRNU_vs_FLU_%s' % testname]))
 
 
         # PRNU maps
@@ -271,6 +286,7 @@ class MetaFlat(MetaCal):
                 
                 self.plot_SimpleMAP(PRNUMAP,kwargs=dict(
                         suptitle='%s [%s]: PRNU' % (stestname,colkey),
+                        figname = self.figs['PRNU_MAP_%s' % testname]
                         ))
         
 
