@@ -59,6 +59,8 @@ class MetaNL(MetaCal):
             self.cdps['GAIN'][block] = allgains[block]['PTC01'].copy() 
         
         self.products['NL'] = OrderedDict()
+        
+        self.init_fignames()
     
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
@@ -71,8 +73,8 @@ class MetaNL(MetaCal):
         
         IndexS = vcore.vMultiIndex([vcore.vIndex('ix',vals=[0])])
         
-        IndexC = vcore.vMultiIndex([vcore.vIndex('ix',vals=[0]),
-                                     vcore.vIndex('CCD',vals=self.CCDs)])
+        #IndexC = vcore.vMultiIndex([vcore.vIndex('ix',vals=[0]),
+        #                             vcore.vIndex('CCD',vals=self.CCDs)])
         
         IndexCQ = vcore.vMultiIndex([vcore.vIndex('ix',vals=[0]),
                                      vcore.vIndex('CCD',vals=self.CCDs),
@@ -241,11 +243,22 @@ class MetaNL(MetaCal):
         NLdict = dict(x=x,y=y,labelkeys=labelkeys)
                 
         return NLdict
+    
+    def init_fignames(self):
+        """ """
+        
+        if not os.path.exists(self.figspath):
+            os.system('mkdir %s' % self.figspath)
+        
+        
+        self.figs['NL_curves_MAP'] = os.path.join(self.figspath,
+                         'NL_curves_FPAMAP.png')
+        
+        self.figs['NL_curves'] = os.path.join(self.figspath,
+                         'NL_curves.png')
 
     def dump_aggregated_results(self):
         """ """
-        
-        outpathroot = self.outpath
         
         # HeatMap of maximum non-linearities
         
@@ -260,7 +273,8 @@ class MetaNL(MetaCal):
                         corekwargs = dict(E=dict(linestyle='-',marker='',color='r'),
                                           F=dict(linestyle='-',marker='',color='g'),
                                           G=dict(linestyle='-',marker='',color='b'),
-                                          H=dict(linestyle='-',marker='',color='m'))
+                                          H=dict(linestyle='-',marker='',color='m')),
+                        figname = self.figs['NL_curves_MAP']
                         ))
         
         # PLOT All NL curves in single Plot
@@ -272,5 +286,6 @@ class MetaNL(MetaCal):
                     doLegend=False,
                     xlabel='Fluence [ke-]',
                     ylabel='Non-Linearity [pc]',
-                    ylim=[-3.,7.]))
+                    ylim=[-3.,7.],
+                    figname=self.figs['NL_curves']))
         
