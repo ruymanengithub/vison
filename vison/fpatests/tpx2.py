@@ -56,12 +56,14 @@ class MetaTPX2(MetaCal):
         
         self.cdps['GAIN'] = OrderedDict()
         for block in self.blocks:
-            self.cdps['GAIN'][block] = allgains[block]['PTC01'].copy() 
+            self.cdps['GAIN'][block] = allgains[block]['PTC01'].copy()
         
         self.products['CHINJ'] = OrderedDict()
         self.products['CHINJNOISE'] = OrderedDict()
         self.products['MERGEDL1'] = OrderedDict()
         self.products['MERGEDL2'] = OrderedDict()
+        
+        self.init_fignames()
         
     def load_block_results(self,inventoryfile=None):
         """ """
@@ -153,6 +155,8 @@ class MetaTPX2(MetaCal):
         return sit
 
 
+    def init_fignames(self):
+        """ """
 
     def dump_aggregated_results(self):
         """ """

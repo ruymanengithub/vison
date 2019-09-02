@@ -92,10 +92,12 @@ class MetaCal(object):
             for testname in self.testnames:
                 self.parse_test_results(testname)
             files.cPickleDumpDictionary(self.ParsedTable, parsedpick)
+            #files.cPickleDump(self,parsedpick)
         else:
             print('Re-loading parsed results')
             self.ParsedTable = files.cPickleRead(parsedpick)
-            
+            #self = files.cPickleRead(parsedpick)
+        
         if doDump:
             self.dump_aggregated_results()
         
@@ -186,7 +188,7 @@ class MetaCal(object):
                 
                 for testline in rawcargo:                
                     self._update_inventory(block, testline)
-    
+        
         return None
     
     
@@ -409,6 +411,7 @@ class MetaCal(object):
                     pt = copy.deepcopy(sit)
                 else:
                     pt = self.stackTables(pt,sit)
+
         
         self.ParsedTable[testname] = pt
     

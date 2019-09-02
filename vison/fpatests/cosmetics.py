@@ -54,6 +54,8 @@ class MetaCosmetics(MetaCal):
         
         self.products['MASKSCOOS'] = OrderedDict()
         self.maskkeys = ['DARK','FLAT','MERGE']
+        
+        self.init_fignames()
     
     def _extract_badpix_coordinates(self,all_mask_fits, block):
         """ """
@@ -191,6 +193,7 @@ class MetaCosmetics(MetaCal):
         
         sit = sidd.flattentoTable()
         
+        
         return sit
         
     def _get_extractor_LOGNDEF_fromPT(self,maskkey):
@@ -232,14 +235,22 @@ class MetaCosmetics(MetaCal):
                 
         
         return DEFMAP
+    
+    def init_fignames(self):
+        """ """
         
+        if not os.path.exists(self.figspath):
+            os.system('mkdir %s' % self.figspath)
+        
+        self.figs['DEFECTS_MAP'] = os.path.join(self.figspath,
+                         'DEFECTS_MAP.png')
+        
+        self.figs['DEFECTS_COUNTS_MAP'] = os.path.join(self.figspath,
+                         'DEFECTS_COUNTS_MAP.png')
         
     def dump_aggregated_results(self):
         """ """
         
-        outpathroot = self.outpath
-        
-                
         # Maps of Defects
         
         for maskkey in self.maskkeys:
@@ -248,6 +259,7 @@ class MetaCosmetics(MetaCal):
             
             self.plot_XYMAP(DEFMAP,kwargs=dict(
                         suptitle='DEFECTS: %s' % maskkey,
+                        figname=self.figs['DEFECTS_MAP']
                         ))
         
 
@@ -260,10 +272,9 @@ class MetaCosmetics(MetaCal):
             
             self.plot_SimpleMAP(NDEFMAP, kwargs=dict(
                         suptitle='NR. DEFECTS: %s' % maskkey,
+                        figname=self.figs['DEFECTS_COUNTS_MAP']
                         ))
 
-        
-        stop()
         
         
         

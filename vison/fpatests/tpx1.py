@@ -24,8 +24,6 @@ from vison.support import vcal
 from vison.datamodel import core as vcore
 from vison.ogse import ogse
 
-
-
 from matplotlib import pyplot as plt
 plt.switch_backend('TkAgg')
 from matplotlib.colors import Normalize
@@ -48,7 +46,7 @@ class MetaTPX1(MetaCal):
         
         super(MetaTPX1,self).__init__(**kwargs)
         
-        self.testnames = ['TP01','TP11']
+        self.testnames = ['TPX1']
         self.incols = cols2keep
         self.ParsedTable = OrderedDict()
         
@@ -59,10 +57,28 @@ class MetaTPX1(MetaCal):
             self.cdps['GAIN'][block] = allgains[block]['PTC01'].copy() 
         
         #self.products['METAFIT'] = OrderedDict()
+        self.init_fignames()
+    
+    
+    def load_block_results(self, inventoryfile=None):
         
+        self.testnames = ['TP01','TP11']
+        
+        super(MetaTPX1,self).load_block_results(inventoryfile)
+        
+        for block in self.blocks:
+            oldtestname = self.inventory[block].keys()[0]
+            self.inventory[block]['TPX1'] = self.inventory[block][oldtestname]
+            self.inventory[block].pop(oldtestname)
+
+        self.testnames = ['TPX1']
+        
+        
+        return None
     
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
+        
         
         NCCDs = len(self.CCDs)
         NQuads = len(self.Quads)
@@ -103,70 +119,149 @@ class MetaTPX1(MetaCal):
         test_v = np.array([session])            
         sidd.addColumn(test_v, 'SESSION', IndexS, ix=0)
         
-        if testname in ['TP01','TP11']:
-            nickname = 'TPX1'
         
-        test_v = np.array([nickname])            
+        test_v = np.array([testname])            
         sidd.addColumn(test_v, 'TEST', IndexS, ix=0)
         
-        productspath = os.path.join(inventoryitem['resroot'],'products')
+        tmp_v_CQ = np.zeros((1,NCCDs,NQuads))
         
-        print('RE-WRITTEN UP TO HERE!')
-        stop()
         
-#        metafitcdp_pick = os.path.join(productspath,os.path.split(sidd.products['METAFIT_CDP'])[-1])
-#        metafitcdp = files.cPickleRead(metafitcdp_pick)
-#        metafit = copy.deepcopy(metafitcdp['data']['ANALYSIS'])
-#        
-#        metafitkey = '%s_%s_%s_%i' % (testname, block, session,jrep+1)
-#        self.products['METAFIT'][metafitkey] = copy.deepcopy(metafit)
-#        metafitkey_v = np.array([metafitkey])
-#        sidd.addColumn(metafitkey_v, 'METAFIT', IndexS, ix=0)
-#        
-#        metacdp_pick = os.path.join(productspath,os.path.split(sidd.products['META_CDP'])[-1]) # change to META_CDP
-#        metacdp = files.cPickleRead(metacdp_pick)
-#        meta = metacdp['data']['ANALYSIS'] # this is a pandas DataFrame
-#        
-#        tmp_v_CQ = np.zeros((1,NCCDs,NQuads))
-#                
-#        bgd_adu_v = tmp_v_CQ.copy()
-#        ig1_thresh_v = tmp_v_CQ.copy()
-#        ig1_notch_v = tmp_v_CQ.copy()
-#        slope_v = tmp_v_CQ.copy()
-#        n_adu_v = tmp_v_CQ.copy()        
-#        
-#        
-#        for iCCD, CCDk in enumerate(CCDkeys):
-#            for kQ, Q in enumerate(self.Quads):
-#                
-#                ixloc = np.where((meta['CCD'] == iCCD+1) & (meta['Q'] == kQ+1))
-#                
-#                bgd_adu_v[0,iCCD,kQ] = meta['BGD_ADU'][ixloc[0][0]]
-#                ig1_thresh_v[0,iCCD,kQ] = meta['IG1_THRESH'][ixloc[0][0]]
-#                ig1_notch_v[0,iCCD,kQ] = meta['IG1_NOTCH'][ixloc[0][0]]
-#                slope_v[0,iCCD,kQ] = meta['S'][ixloc[0][0]]
-#                n_adu_v[0,iCCD,kQ] = meta['N_ADU'][ixloc[0][0]]
-#                       
-#        
-#        sidd.addColumn(bgd_adu_v, 'FIT_BGD_ADU', IndexCQ)
-#        sidd.addColumn(ig1_thresh_v, 'FIT_IG1_THRESH', IndexCQ)
-#        sidd.addColumn(ig1_notch_v, 'FIT_IG1_NOTCH', IndexCQ)        
-#        sidd.addColumn(slope_v, 'FIT_SLOPE', IndexCQ)
-#        sidd.addColumn(n_adu_v, 'FIT_N_ADU', IndexCQ)
-#        # flatten sidd to table
-#        
-#        sit = sidd.flattentoTable()
-#        
-#        return sit
+        inject_top_v = tmp_v_CQ.copy()
+        inject_top_std_v = tmp_v_CQ.copy()
+        
+        inject_bot_v = tmp_v_CQ.copy()
+        inject_bot_std_v = tmp_v_CQ.copy()
+        
+        
+        id_dly = inventoryitem['dd'].mx['id_dly'][:].copy()
+        v_tpump = inventoryitem['dd'].mx['v_tpump'][:].copy()
+        
+        
+        for iCCD, CCDk in enumerate(CCDkeys):
+            for kQ, Q in enumerate(self.Quads):
+                
+                if Q in ['G','H']:
+                    
+                    ixsel = np.where((id_dly[:,iCCD]==id_dly.min()) &\
+                                     (v_tpump[:,iCCD] == 1))
 
+                    
+                    inject_top_v[0,iCCD,kQ] = np.nanmedian(
+                            inventoryitem['dd'].mx['chk_med_inject'][ixsel,iCCD,kQ])
+                    inject_top_std_v[0,iCCD,kQ] = np.nanmedian(
+                            inventoryitem['dd'].mx['chk_std_inject'][ixsel,iCCD,kQ])
+                
+                elif Q in ['E','F']:
+                
+                    ixsel = np.where((id_dly[:,iCCD]==id_dly.max()) &\
+                                     (v_tpump[:,iCCD] == 1))
 
+                    
+                    inject_bot_v[0,iCCD,kQ] = np.nanmedian(
+                            inventoryitem['dd'].mx['chk_med_inject'][ixsel,iCCD,kQ])
+                    inject_bot_std_v[0,iCCD,kQ] = np.nanmedian(
+                            inventoryitem['dd'].mx['chk_std_inject'][ixsel,iCCD,kQ])
+        
+        sidd.addColumn(inject_top_v, 'INJ_TOP', IndexCQ)
+        sidd.addColumn(inject_top_std_v, 'INJ_STD_TOP', IndexCQ)
+        
+        sidd.addColumn(inject_bot_v, 'INJ_BOT', IndexCQ)
+        sidd.addColumn(inject_bot_std_v, 'INJ_STD_BOT', IndexCQ)
+                
+        
+        #productspath = os.path.join(inventoryitem['resroot'],'products')
+        
+        dip_count_v = tmp_v_CQ.copy()
+        dip_tau_v = tmp_v_CQ.copy()
+        
+        for iCCD, CCDk in enumerate(CCDkeys):
+            for kQ, Q in enumerate(self.Quads):
+                
+                dip_count_v[0,iCCD,kQ] = sidd.products['mergedL2_df'].loc[CCDk,Q]['N']
+                dip_tau_v[0,iCCD,kQ] = sidd.products['mergedL2_df'].loc[CCDk,Q]['<tau>']
+        
+        sidd.addColumn(dip_count_v, 'DIP_COUNT', IndexCQ)
+        sidd.addColumn(dip_tau_v, 'DIP_TAU', IndexCQ)
+        
+
+        # flatten sidd to table
+        
+        sit = sidd.flattentoTable()
+        
+        
+        return sit
+    
+    def _extract_NDIP_fromPT(self,PT, block, CCDk, Q):
+        """ """
+        ixblock = np.where(PT['BLOCK'].data == block)
+        column = 'DIP_COUNT_%s_Quad%s' % (CCDk,Q)            
+        NDIP = np.nanmedian(PT[column][ixblock])
+        return NDIP
+    
+    def _extract_TAU_fromPT(self,PT, block, CCDk, Q):
+        """ """
+        ixblock = np.where(PT['BLOCK'].data == block)
+        column = 'DIP_TAU_%s_Quad%s' % (CCDk,Q)            
+        AVTAU = np.nanmedian(PT[column][ixblock])
+        return AVTAU
+    
+    def _extract_INJ_fromPT(self,PT, block, CCDk, Q):
+        """ """
+        
+        ixblock = np.where(PT['BLOCK'].data == block)
+        if Q in ['E','F']:
+            column = 'INJ_BOT_%s_Quad%s' % (CCDk, Q)
+        elif Q in ['G','H']:
+            column = 'INJ_TOP_%s_Quad%s' % (CCDk, Q)
+          
+        INJ = np.nanmedian(PT[column][ixblock])
+        return INJ
+
+    def init_fignames(self):
+        """ """
+        
+        if not os.path.exists(self.figspath):
+            os.system('mkdir %s' % self.figspath)
+        
+        self.figs['NDIP_MAP'] = os.path.join(self.figspath,
+                'NDIP_MAP_TPX1.png')
+        
+        self.figs['TAU_MAP'] = os.path.join(self.figspath,
+                'TAU_MAP_TPX1.png')
+        
+        self.figs['INJ_MAP'] = os.path.join(self.figspath,
+                'INJ_MAP_TPX1.png')
 
     def dump_aggregated_results(self):
         """ """
         
         
-        outpathroot = self.outpath
+        # MAP with total numbers of dipoles measured
         
+        NDIPMAP = self.get_FPAMAP_from_PT(self.ParsedTable['TPX1'], 
+                                extractor=self._extract_NDIP_fromPT)
+                
+        self.plot_SimpleMAP(NDIPMAP,kwargs=dict(
+                suptitle='TPX1: Nr. OF DIPOLES',
+                figname=self.figs['NDIP_MAP']))
+        
+        # MAP with tau's
+        
+        TAUMAP = self.get_FPAMAP_from_PT(self.ParsedTable['TPX1'], 
+                                extractor=self._extract_TAU_fromPT)
+                
+        self.plot_SimpleMAP(TAUMAP,kwargs=dict(
+                suptitle=r'$TPX1:\ <TAU>\ [us]$',
+                figname=self.figs['TAU_MAP']))
+        
+        # INJECTION level
+        
+        INJMAP = self.get_FPAMAP_from_PT(self.ParsedTable['TPX1'], 
+                                extractor=self._extract_INJ_fromPT)
+                
+        self.plot_SimpleMAP(INJMAP,kwargs=dict(
+                suptitle=r'$TPX1: CHARGE INJECTION [ADU]]$',
+                figname=self.figs['INJ_MAP']))
         
         
         

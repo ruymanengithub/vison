@@ -58,6 +58,7 @@ class MetaChinj02(MetaCal):
         
         self.products['METAFIT'] = OrderedDict()
         
+        self.init_fignames()
     
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
@@ -163,11 +164,19 @@ class MetaChinj02(MetaCal):
             idl_thresh = np.nanmedian(PT[column])-1. # ON TESTS
         return idl_thresh
 
+    def init_fignames(self):
+        """ """
+        
+        if not os.path.exists(self.figspath):
+            os.system('mkdir %s' % self.figspath)
+        
+        self.figs['IDL_THRESH_MAP'] = os.path.join(self.figspath,
+                         'IDL_THRESH_MA.png')
+            
+
     def dump_aggregated_results(self):
         """ """
         
-        
-        outpathroot = self.outpath
         
 
         # Histogram of IDL_THRESH
@@ -185,7 +194,8 @@ class MetaChinj02(MetaCal):
         
 
         self.plot_SimpleMAP(IDLTHRESHMAP,kwargs=dict(
-                suptitle='CHINJ02: IDL THESHOLD'))
+                suptitle='CHINJ02: IDL THESHOLD',
+                figname=self.figs['IDL_THRESH_MAP']))
         
 
         
