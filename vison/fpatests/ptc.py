@@ -50,6 +50,8 @@ class MetaPTC(MetaCal):
         self.testnames = ['PTC01','PTC02_590','PTC02_730','PTC02_880']
         self.incols = cols2keep
         self.ParsedTable = OrderedDict()
+        
+        self.init_fignames()
     
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
@@ -167,7 +169,7 @@ class MetaPTC(MetaCal):
         if badu>0:
             return badu
         else:
-            return np.nan
+            return 1000.
 
 
     def _extract_BE_fromPT(self,PT,block,CCDk,Q):
@@ -179,7 +181,7 @@ class MetaPTC(MetaCal):
         if be>0:
             return be
         else:
-            return np.nan
+            return 1000.
     
     def gen_GAIN_MXdict(self):
         """ """
@@ -208,10 +210,28 @@ class MetaPTC(MetaCal):
                             
         return G_MX
 
+    def init_fignames(self):
+        
+        if not os.path.exists(self.figspath):
+            os.system('mkdir %s' % self.figspath)
+        
+        for testname in self.testnames:
+            self.figs['GAIN_MAP_%s' % testname] = os.path.join(self.figspath,
+                         'GAIN_MAP_%s.png' % testname)
+            
+            self.figs['BLOOM_ADU_MAP_%s' % testname] = os.path.join(self.figspath,
+                         'BLOOM_ADU_MAP_%s.png' % testname)
+            
+            self.figs['BLOOM_ELE_MAP_%s' % testname] = os.path.join(self.figspath,
+                         'BLOOM_ELE_MAP_%s.png' % testname)
+            
+            self.figs['HER_MAP_%s' % testname] = os.path.join(self.figspath,
+                         'HER_MAP_%s.png' % testname)
+
     def dump_aggregated_results(self):
         """ """
         
-        outpathroot = self.outpath
+        outpathroot = self.outpathroot
         
         # GAIN matrix (all blocks and test/waves) to dict() saved as pickle
         
@@ -231,11 +251,10 @@ class MetaPTC(MetaCal):
             stestname = st.replace(testname,'_','\_')
                         
             self.plot_SimpleMAP(GMAP,kwargs=dict(
-                    suptitle='%s: GAIN e-/ADU' % stestname))
+                    suptitle='%s: GAIN e-/ADU' % stestname,
+                    figname=self.figs['GAIN_MAP_%s' % testname]))
         
-        
-        
-        
+
         # BLOOM maps (ADU and e-, from PTC01)
         
         for testname in self.testnames:
@@ -244,7 +263,8 @@ class MetaPTC(MetaCal):
         
             stestname = st.replace(testname,'_','\_')
             self.plot_SimpleMAP(BADU_MAP,kwargs=dict(
-                    suptitle='%s: BLOOM-ADU [DN]' % stestname))
+                    suptitle='%s: BLOOM-ADU [DN]' % stestname,
+                    figname=self.figs['BLOOM_ADU_MAP_%s' % testname]))
         
         for testname in self.testnames:
             
@@ -252,11 +272,20 @@ class MetaPTC(MetaCal):
         
             stestname = st.replace(testname,'_','\_')
             self.plot_SimpleMAP(BE_MAP,kwargs=dict(
-                    suptitle='%s: BLOOM-ELECTRONS' % stestname))
+                    suptitle='%s: BLOOM-ELECTRONS' % stestname,
+                    figname=self.figs['BLOOM_ELE_MAP_%s' % testname]))
         
         # HER map
         
-        
+        for testname in self.testnames:
+            
+            HERMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_HER_fromPT)
+            
+            stestname = st.replace(testname,'_','\_')
+                        
+            self.plot_SimpleMAP(HERMAP,kwargs=dict(
+                    suptitle='%s: Hard Edge Response Factor' % stestname,
+                    figname=self.figs['HER_MAP_%s' % testname]))
         
         # GAIN vs. detector temperature (PTC01)
         
