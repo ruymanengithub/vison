@@ -60,6 +60,8 @@ class MetaPsf(MetaCal):
             self.cdps['GAIN'][block] = allgains[block]['PTC01'].copy() 
         
         self.products['XTALK'] = OrderedDict()
+        
+        self.init_fignames()
     
     
     def parse_single_test(self, jrep, block, testname, inventoryitem):
@@ -162,12 +164,19 @@ class MetaPsf(MetaCal):
             figname = ''
         xtalkmap.render(figname=figname)
         
+    
+    def init_fignames(self):
+        """ """
         
+        if not os.path.exists(self.figspath):
+            os.system('mkdir %s' % self.figspath)
+        
+        for testname in self.testnames:
+            self.figs['XTALK_MAP_%s' % testname] = os.path.join(self.figspath,
+                         'XTALK_MAP_%s.png' % testname)
    
     def dump_aggregated_results(self):
         """ """
-        
-        outpathroot = self.outpath
         
         for testname in self.testnames:
             
@@ -177,5 +186,6 @@ class MetaPsf(MetaCal):
             self.plot_XtalkMAP(XTALKs,kwargs=dict(
                     scale='ADU',
                     showvalues=False,
-                    title='%s: XTALK [ADU]' % stestname))
+                    title='%s: XTALK [ADU]' % stestname,
+                    figname=self.figs['XTALK_MAP_%s' % testname]))
         
