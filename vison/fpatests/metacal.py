@@ -85,18 +85,21 @@ class MetaCal(object):
             self.inventory = files.cPickleRead(dictiopick)
         
         parsedpick = os.path.join(self.outpathroot,
-                                  '%s_meta.pick' % self.testkey.lower())
+                                  '%s_parsed.pick' % self.testkey.lower())
         
         if doParse:
             print('Parsing results')
             for testname in self.testnames:
                 self.parse_test_results(testname)
-            files.cPickleDumpDictionary(self.ParsedTable, parsedpick)
-            #files.cPickleDump(self,parsedpick)
+            parsedbundle = dict(PT=self.ParsedTable,
+                                products=self.products)
+            files.cPickleDumpDictionary(parsedbundle, parsedpick)
+            
         else:
             print('Re-loading parsed results')
-            self.ParsedTable = files.cPickleRead(parsedpick)
-            #self = files.cPickleRead(parsedpick)
+            parsedbundle = files.cPickleRead(parsedpick)
+            self.ParsedTable = parsedbundle['PT'].copy()
+            self.products = parsedbundle['products'].copy()            
         
         if doDump:
             self.dump_aggregated_results()
