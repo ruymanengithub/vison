@@ -23,7 +23,7 @@ from vison.plot import plots_fpa as plfpa
 from vison.support import vcal
 from vison.datamodel import core as vcore
 from vison.ogse import ogse
-
+from vison.inject import lib as ilib
 
 
 from matplotlib import pyplot as plt
@@ -174,27 +174,174 @@ class MetaChinj01(MetaCal):
         
         return _extract_NOTCH_fromPT
     
+    def _get_injcurve(self, _chfitdf, ixCCD, ixQ, IG1raw, gain):
+        """ """
+        ixsel = np.where((_chfitdf['CCD'] == 1) & (_chfitdf['Q'] == 1))
+        
+        pars = ['BGD','K','XT','XN','A','N']
+        trans = dict(BGD='b',K='k',XT='xt', XN='xN', A='a', N='N')
+        
+        parsdict = dict()
+        for par in pars:
+            parsdict[trans[par]] = _chfitdf[par].as_matrix()[ixsel][0]
+        
+        parsdict['IG1'] = IG1raw.copy()
+        
+        inj = ilib.f_Inj_vs_IG1_ReLU(**parsdict) * 2.**16 # ADU
+        
+        inj_kel = inj * gain / 1.E3
+        
+        return inj_kel
+
+    def _get_CHIG1_MAP_from_PT(self,kind='CAL'):
+        """ """
+        
+        CHIG1MAP = OrderedDict()
+        CHIG1MAP['labelkeys'] = self.Quads
+        
+        PT = self.ParsedTable['CHINJ01']
+        column = 'METAFIT'
+        
+        IG1s = [2.5, 6.75]
+        dIG1 = 0.05
+        
+        NIG1 = (IG1s[1]-IG1s[0])/dIG1+1
+        IG1raw = np.arange(NIG1)*dIG1+IG1s[0]
+        
+        
+        
+        for jY in range(self.NSLICES_FPA):
+            for iX in range(self.NCOLS_FPA):
+                
+                Ckey  = 'C_%i%i' % (jY+1,iX+1)
+                CHIG1MAP[Ckey] = OrderedDict()
+                
+                locator = self.fpa.FPA_MAP[Ckey]
+                block = locator[0]
+                CCDk = locator[1]
+                
+                jCCD = int(CCDk[-1])
+                
+                ixblock = np.where(PT['BLOCK'] == block)
+                
+                
+                if len(ixblock[0])==0:
+                    CHIG1MAP[Ckey] = OrderedDict(x=OrderedDict(),
+                                          y=OrderedDict())
+                    for Q in self.Quads:
+                        CHIG1MAP[Ckey]['x'][Q] = []
+                        CHIG1MAP[Ckey]['y'][Q] = []
+                    continue
+                
+                _chkey = PT[column][ixblock][0]
+                
+                _chfitdf = self.products['METAFIT'][_chkey]
+                
+                _ccd_chfitdict = OrderedDict(x=OrderedDict(),
+                                          y=OrderedDict())
+                
+                for kQ, Q in enumerate(self.Quads):
+                    
+                    roeVCal = self.roeVCals[block]
+                
+                    IG1cal = roeVCal.fcal_HK(IG1raw, 'IG1', jCCD, Q)
+                                        
+                    gain = self.cdps['GAIN'][block][CCDk][Q][0]
+                    
+                    inj_kel = self._get_injcurve(_chfitdf, jCCD, kQ+1, IG1raw, gain)
+                    
+                    if kind == 'CAL':
+                        _IG1 = IG1cal.copy()
+                    elif kind == 'RAW':
+                        _IG1 = IG1raw.copy()
+                    
+                    _ccd_chfitdict['x'][Q] = _IG1.copy()
+                    _ccd_chfitdict['y'][Q] = inj_kel.copy()
+                
+                CHIG1MAP[Ckey] = _ccd_chfitdict.copy()
+        
+        return CHIG1MAP
+
+    def _get_XYdict_INJ(self, kind='CAL'):
+        
+        x = dict()
+        y = dict()
+        
+        PT = self.ParsedTable['CHINJ01']
+        column = 'METAFIT'
+        
+        IG1s = [2.5, 6.75]
+        dIG1 = 0.05
+        
+        NIG1 = (IG1s[1]-IG1s[0])/dIG1+1
+        IG1raw = np.arange(NIG1)*dIG1+IG1s[0]
+        
+        labelkeys = []
+        
+        for block in self.flight_blocks:
+            ixblock = np.where(PT['BLOCK'] == block)
+            ch_key = PT[column][ixblock][0]
+            chfitdf = self.products['METAFIT'][ch_key]
+            
+        
+            for iCCD, CCD in enumerate(self.CCDs):
+                
+                CCDk = 'CCD%i' %  CCD
+                
+                for kQ, Q in enumerate(self.Quads):
+                    
+                    roeVCal = self.roeVCals[block]
+                
+                    IG1cal = roeVCal.fcal_HK(IG1raw, 'IG1', iCCD+1, Q)
+                    
+                    gain = self.cdps['GAIN'][block][CCDk][Q][0]
+                    
+                    if kind == 'CAL':
+                        _IG1 = IG1cal.copy()
+                    elif kind == 'RAW':
+                        _IG1 = IG1raw.copy()
+                    
+                    pkey = '%s_%s_%s' % (block, CCDk, Q)
+                    
+                    inj_kel = self._get_injcurve(chfitdf, iCCD+1, kQ+1, IG1raw, gain)
+                    
+                    x[pkey] = _IG1.copy()
+                    y[pkey] = inj_kel.copy()
+                    labelkeys.append(pkey)
+        
+        
+        CHdict = dict(x=x,y=y,labelkeys=labelkeys)
+                
+        return CHdict
+    
+
+
     def init_fignames(self):
         """ """
         
         if not os.path.exists(self.figspath):
             os.system('mkdir %s' % self.figspath)
         
-        for testname in self.testnames:
             
-            self.figs['NOTCH_ADU_MAP_%s' % testname] = os.path.join(self.figspath,
-                         'NOTCH_ADU_MAP_%s.png' % testname)
-            
-            self.figs['NOTCH_ELE_MAP_%s' % testname] = os.path.join(self.figspath,
-                         'NOTCH_ELE_MAP_%s.png' % testname)
-            
+        self.figs['NOTCH_ADU_MAP'] = os.path.join(self.figspath,
+                     'NOTCH_ADU_MAP.png')
+        
+        self.figs['NOTCH_ELE_MAP'] = os.path.join(self.figspath,
+                     'NOTCH_ELE_MAP.png')
+        
+        self.figs['CHINJ01_curves_IG1_RAW'] = os.path.join(self.figspath,
+                     'CHINJ01_CURVES_IG1_RAW.png')
+        
+        self.figs['CHINJ01_curves_IG1_CAL'] = os.path.join(self.figspath,
+                     'CHINJ01_CURVES_IG1_CAL.png')
+        
+        
+        self.figs['CHINJ01_curves_MAP_IG1_CAL'] = os.path.join(self.figspath,
+                     'CHINJ01_CURVES_MAP_IG1_CAL.png')
         
 
     def dump_aggregated_results(self):
         """ """
-        
-        
-        #outpathroot = self.outpath
         
         
         # Histogram of Slopes [ADU/electrons]
@@ -205,7 +352,45 @@ class MetaChinj01(MetaCal):
         
         # Injection level vs. Calibrated IG1, all channels
         
+        CURVES_IG1CAL_MAP = self._get_CHIG1_MAP_from_PT(kind='CAL')
         
+        self.plot_XYMAP(CURVES_IG1CAL_MAP,kwargs=dict(
+                        suptitle='Charge Injection Curves - Calibrated IG1',
+                        doLegend=True,
+                        ylabel='Inj [kel]',
+                        xlabel = 'IG1 [V]',
+                        corekwargs = dict(E=dict(linestyle='-',marker='',color='r'),
+                                          F=dict(linestyle='-',marker='',color='g'),
+                                          G=dict(linestyle='-',marker='',color='b'),
+                                          H=dict(linestyle='-',marker='',color='m')),
+                        figname = self.figs['CHINJ01_curves_MAP_IG1_CAL']
+                        ))
+        
+        IG1CAL_Singledict = self._get_XYdict_INJ(kind='CAL')
+        
+        IG1CAL_kwargs = dict(
+                    title='Charge Injection Curves - Calibrated IG1',
+                    doLegend=False,
+                    xlabel='IG1 (Calibrated) [V]',
+                    ylabel='Injection [kel]',
+                    figname=self.figs['CHINJ01_curves_IG1_CAL'])
+        
+        IG1CAL_kwargs['corekwargs'] = dict(linestyle='-',marker='')
+        
+        self.plot_XY(IG1CAL_Singledict,kwargs=IG1CAL_kwargs)
+
+        IG1RAW_Singledict = self._get_XYdict_INJ(kind='RAW')
+        
+        IG1RAW_kwargs = dict(
+                    title='Charge Injection Curves - RAW IG1',
+                    doLegend=False,
+                    xlabel='IG1 (RAW) [V]',
+                    ylabel='Injection [kel]',
+                    figname=self.figs['CHINJ01_curves_IG1_RAW'])
+        
+        IG1RAW_kwargs['corekwargs'] = dict(linestyle='-',marker='')
+        
+        self.plot_XY(IG1RAW_Singledict,kwargs=IG1RAW_kwargs)
         
         # Notch level vs. calibrated IG2
         
@@ -216,29 +401,26 @@ class MetaChinj01(MetaCal):
         
         
         # Notch injection map, ADUs
-        for testname in self.testnames:
             
-            NOTCHADUMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
-                                                extractor=self._get_extractor_NOTCH_fromPT(units='ADU'))
+        NOTCHADUMAP = self.get_FPAMAP_from_PT(self.ParsedTable['CHINJ01'], 
+                                            extractor=self._get_extractor_NOTCH_fromPT(units='ADU'))
         
-            stestname = st.replace(testname,'_','\_')
-            self.plot_SimpleMAP(NOTCHADUMAP,kwargs=dict(
-                    suptitle='%s: NOTCH INJECTION [ADU]' % stestname,
-                    figname=self.figs['NOTCH_ADU_MAP_%s' % testname]))
+        
+        self.plot_SimpleMAP(NOTCHADUMAP,kwargs=dict(
+                suptitle='CHINJ01: NOTCH INJECTION [ADU]',
+                figname=self.figs['NOTCH_ADU_MAP']))
         
         # Notch injection map, ELECTRONs
-        for testname in self.testnames:
-            
-            NOTCHEMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
-                                                extractor=self._get_extractor_NOTCH_fromPT(units='E'))
         
-            stestname = st.replace(testname,'_','\_')
-            self.plot_SimpleMAP(NOTCHEMAP,kwargs=dict(
-                    suptitle='%s: NOTCH INJECTION [ELECTRONS]' % stestname,
-                    figname=self.figs['NOTCH_ELE_MAP_%s' % testname]))
+        NOTCHEMAP = self.get_FPAMAP_from_PT(self.ParsedTable['CHINJ01'], 
+                                            extractor=self._get_extractor_NOTCH_fromPT(units='E'))
+        
+        self.plot_SimpleMAP(NOTCHEMAP,kwargs=dict(
+                suptitle='CHINJ01: NOTCH INJECTION [ELECTRONS]',
+                figname=self.figs['NOTCH_ELE_MAP']))
         
         
-
+        
         
         
         
