@@ -68,7 +68,7 @@ class MetaTPX1(MetaCal):
         
         for block in self.blocks:
             oldtestname = self.inventory[block].keys()[0]
-            self.inventory[block]['TPX1'] = self.inventory[block][oldtestname]
+            self.inventory[block]['TPX1'] = copy.deepcopy(self.inventory[block][oldtestname])
             self.inventory[block].pop(oldtestname)
 
         self.testnames = ['TPX1']
@@ -262,11 +262,4 @@ class MetaTPX1(MetaCal):
         self.plot_SimpleMAP(INJMAP,kwargs=dict(
                 suptitle=r'$TPX1: CHARGE INJECTION [ADU]]$',
                 figname=self.figs['INJ_MAP']))
-        
-        
-        
-
-        
-        
-        
         
