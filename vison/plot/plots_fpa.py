@@ -249,8 +249,8 @@ class FpaImgShow(FpaPlot):
         self.mappables.append(ax.imshow(BCdict['img'], **internals))
         handle, label = None, None
         return handle, label
-
-
+    
+    
 
 class FpaHeatMap(BasicPlot):
     """ """
