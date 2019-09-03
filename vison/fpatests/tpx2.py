@@ -67,6 +67,9 @@ class MetaTPX2(MetaCal):
         
     def load_block_results(self,inventoryfile=None):
         """ """
+        
+        self.testnames = ['TP02','TP21']
+        
         super(MetaTPX2,self).load_block_results(inventoryfile)
         
         # Renaming tests for convenience in the inventory
@@ -77,16 +80,18 @@ class MetaTPX2(MetaCal):
             self.inventory[block]['TPX2'] = copy.deepcopy(self.inventory[block][oldtestkey])
             self.inventory[block].pop(oldtestkey)
         
-    
+        self.testnames = ['TPX2']
+        
+        
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
         
         
-        #NCCDs = len(self.CCDs)
-        #NQuads = len(self.Quads)
+        NCCDs = len(self.CCDs)
+        NQuads = len(self.Quads)
         session = inventoryitem['session']
         
-        #CCDkeys = ['CCD%i' % CCD for CCD in self.CCDs]
+        CCDkeys = ['CCD%i' % CCD for CCD in self.CCDs]
         
         IndexS = vcore.vMultiIndex([vcore.vIndex('ix',vals=[0])])
         
@@ -125,6 +130,52 @@ class MetaTPX2(MetaCal):
         test_v = np.array([testname])            
         sidd.addColumn(test_v, 'TEST', IndexS, ix=0)
         
+        
+        tmp_v_CQ = np.zeros((1,NCCDs,NQuads))
+        
+        
+        inject_top_v = tmp_v_CQ.copy()
+        inject_top_std_v = tmp_v_CQ.copy()
+        
+        inject_bot_v = tmp_v_CQ.copy()
+        inject_bot_std_v = tmp_v_CQ.copy()
+        
+        
+        id_dly = inventoryitem['dd'].mx['id_dly'][:].copy()
+        s_tpump = inventoryitem['dd'].mx['s_tpump'][:].copy()
+        
+        for iCCD, CCDk in enumerate(CCDkeys):
+            for kQ, Q in enumerate(self.Quads):
+                
+                if Q in ['G','H']:
+                    
+                    ixsel = np.where((id_dly[:,iCCD]==id_dly.min()) &\
+                                     (s_tpump[:,iCCD] == 1))
+
+                    
+                    inject_top_v[0,iCCD,kQ] = np.nanmedian(
+                            inventoryitem['dd'].mx['chk_med_inject'][ixsel,iCCD,kQ])
+                    inject_top_std_v[0,iCCD,kQ] = np.nanmedian(
+                            inventoryitem['dd'].mx['chk_std_inject'][ixsel,iCCD,kQ])
+                
+                elif Q in ['E','F']:
+                
+                    ixsel = np.where((id_dly[:,iCCD]==id_dly.max()) &\
+                                     (s_tpump[:,iCCD] == 1))
+
+                    
+                    inject_bot_v[0,iCCD,kQ] = np.nanmedian(
+                            inventoryitem['dd'].mx['chk_med_inject'][ixsel,iCCD,kQ])
+                    inject_bot_std_v[0,iCCD,kQ] = np.nanmedian(
+                            inventoryitem['dd'].mx['chk_std_inject'][ixsel,iCCD,kQ])
+        
+        sidd.addColumn(inject_top_v, 'INJ_TOP', IndexCQ)
+        sidd.addColumn(inject_top_std_v, 'INJ_STD_TOP', IndexCQ)
+        
+        sidd.addColumn(inject_bot_v, 'INJ_BOT', IndexCQ)
+        sidd.addColumn(inject_bot_std_v, 'INJ_STD_BOT', IndexCQ)
+        
+        
         #productspath = os.path.join(inventoryitem['resroot'],'products')
         
         chinjkey = '%s_%s_%s_%i' % (testname, block, session, jrep+1)        
@@ -148,23 +199,103 @@ class MetaTPX2(MetaCal):
         sidd.addColumn(np.array([mergedL2key]),'MERGEDL2',IndexS)
         #print('added MERGEDL2')
         
+        dip_count_v = tmp_v_CQ.copy()
+        dip_tau_v = tmp_v_CQ.copy()
+        
+        for iCCD, CCDk in enumerate(CCDkeys):
+            for kQ, Q in enumerate(self.Quads):
+                
+                dip_count_v[0,iCCD,kQ] = sidd.products['mergedL2_df'].loc[CCDk,Q]['N']
+                dip_tau_v[0,iCCD,kQ] = sidd.products['mergedL2_df'].loc[CCDk,Q]['<tau>']
+        
+        sidd.addColumn(dip_count_v, 'DIP_COUNT', IndexCQ)
+        sidd.addColumn(dip_tau_v, 'DIP_TAU', IndexCQ)
+        
+        
         # flatten sidd to table
         
         sit = sidd.flattentoTable()
         
         return sit
 
+    def _extract_NDIP_fromPT(self,PT, block, CCDk, Q):
+        """ """
+        ixblock = np.where(PT['BLOCK'].data == block)
+        column = 'DIP_COUNT_%s_Quad%s' % (CCDk,Q)            
+        NDIP = np.nanmedian(PT[column][ixblock])
+        
+        return NDIP
+    
+    def _extract_TAU_fromPT(self,PT, block, CCDk, Q):
+        """ """
+        ixblock = np.where(PT['BLOCK'].data == block)
+        column = 'DIP_TAU_%s_Quad%s' % (CCDk,Q)            
+        AVTAU = np.nanmedian(PT[column][ixblock])
+        if np.isnan(AVTAU):
+            AVTAU = 0.
+        return AVTAU
+    
+    def _extract_INJ_fromPT(self,PT, block, CCDk, Q):
+        """ """
+        
+        ixblock = np.where(PT['BLOCK'].data == block)
+        if Q in ['E','F']:
+            column = 'INJ_BOT_%s_Quad%s' % (CCDk, Q)
+        elif Q in ['G','H']:
+            column = 'INJ_TOP_%s_Quad%s' % (CCDk, Q)
+          
+        INJ = np.nanmedian(PT[column][ixblock])
+        return INJ
+
 
     def init_fignames(self):
         """ """
+        
+        if not os.path.exists(self.figspath):
+            os.system('mkdir %s' % self.figspath)
+        
+        self.figs['NDIP_MAP'] = os.path.join(self.figspath,
+                'NDIP_MAP_TPX2.png')
+        
+        self.figs['TAU_MAP'] = os.path.join(self.figspath,
+                'TAU_MAP_TPX2.png')
+        
+        self.figs['INJ_MAP'] = os.path.join(self.figspath,
+                'INJ_MAP_TPX2.png')
+        
 
     def dump_aggregated_results(self):
         """ """
         
         
-        outpathroot = self.outpath
+        # MAP with total numbers of dipoles measured
         
-        stop()
+        NDIPMAP = self.get_FPAMAP_from_PT(self.ParsedTable['TPX2'], 
+                                extractor=self._extract_NDIP_fromPT)
+                
+        self.plot_SimpleMAP(NDIPMAP,kwargs=dict(
+                suptitle='TPX2: Nr. OF DIPOLES',
+                figname=self.figs['NDIP_MAP']))
+        
+        # MAP with tau's
+        
+        TAUMAP = self.get_FPAMAP_from_PT(self.ParsedTable['TPX2'], 
+                                extractor=self._extract_TAU_fromPT)
+                
+        self.plot_SimpleMAP(TAUMAP,kwargs=dict(
+                suptitle=r'$TPX2:\ <TAU>\ [us]$',
+                figname=self.figs['TAU_MAP']))
+        
+        # INJECTION level
+        
+        INJMAP = self.get_FPAMAP_from_PT(self.ParsedTable['TPX2'], 
+                                extractor=self._extract_INJ_fromPT)
+                
+        self.plot_SimpleMAP(INJMAP,kwargs=dict(
+                suptitle=r'$TPX2: CHARGE INJECTION [ADU]]$',
+                figname=self.figs['INJ_MAP']))
+        
+
         
         
 
