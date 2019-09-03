@@ -547,23 +547,33 @@ class MOT_WARM(DarkTask):
                                 
                 # vertical profile of FLAT exposure with RAMP subtracted
                 
-                ccdobjFLAT = _load_fits(self.dd, ObsIDdict['FLAT'], jCCD)
-                
-                for kQ,Q in enumerate(Quads):
-                    _, yFLAT = _get_1Dvprofile(ccdobjFLAT,profs1D2plot, CCDk, Q, subtag='RAMP')
-                    xFLAT = np.arange(len(yFLAT))
-                    profs1D2plot['FLAT'][CCDk][Q]['x'] = xFLAT.copy()
-                    profs1D2plot['FLAT'][CCDk][Q]['y'] = yFLAT.copy()
-                
-                self.figdict['MOTWbasic_prof1D_ver_FLAT'][1]['xlim']=[vstart,vend]
-                
-                # rewriting xRAMP to be from vstar to vend, for plotting.
-                
-                
+                try:
+                    ccdobjFLAT = _load_fits(self.dd, ObsIDdict['FLAT'], jCCD)
+
+                    for kQ,Q in enumerate(Quads):
+                        _, yFLAT = _get_1Dvprofile(ccdobjFLAT,profs1D2plot, CCDk, Q, subtag='RAMP')
+                        xFLAT = np.arange(len(yFLAT))
+                        profs1D2plot['FLAT'][CCDk][Q]['x'] = xFLAT.copy()
+                        profs1D2plot['FLAT'][CCDk][Q]['y'] = yFLAT.copy()
+
+                    self.figdict['MOTWbasic_prof1D_ver_FLAT'][1]['xlim']=[vstart,vend]
+
+                except IndexError:
+                    
+                    self.figdict['MOTWbasic_prof1D_ver_FLAT'][1]['xlim']=[vstart,vend]
+                    
+                    for kQ,Q in enumerate(Quads):
+                        profs1D2plot['FLAT'][CCDk][Q]['x'] = np.linspace(1,2086,2086,dtype='int32')
+                        profs1D2plot['FLAT'][CCDk][Q]['x'] = np.zeros(2086,dtype='float32')
+
+                # rewriting xRAMP to be from vstart to vend, for plotting.
+
+
                 for kQ,Q in enumerate(Quads):
                     yRAMP = profs1D2plot['RAMP'][CCDk][Q]['y'].copy()
                     xRAMP = np.arange(len(yRAMP))
                     profs1D2plot['RAMP'][CCDk][Q]['x'] = xRAMP.copy()
+
 
 
         else:
