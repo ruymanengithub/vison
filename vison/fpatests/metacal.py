@@ -492,4 +492,17 @@ class MetaCal(object):
         else:
             figname = ''
         xyfpaplot.render(figname=figname)
+    
+    def plot_ImgFPA(self, BCdict, kwargs):
+        
+        _kwargs = dict()
+        _kwargs.update(kwargs)
+        
+        imgfpaplot = plfpa.FpaImgShow(BCdict, **_kwargs)
+        
+        if 'figname' in _kwargs:
+            figname = _kwargs['figname']
+        else:
+            figname = ''
+        imgfpaplot.render(figname=figname)
         

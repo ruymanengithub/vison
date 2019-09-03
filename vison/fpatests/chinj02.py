@@ -177,7 +177,6 @@ class MetaChinj02(MetaCal):
     def dump_aggregated_results(self):
         """ """
         
-        
 
         # Histogram of IDL_THRESH
                 

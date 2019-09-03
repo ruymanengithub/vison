@@ -50,6 +50,14 @@ class MetaFlat(MetaCal):
         super(MetaFlat,self).__init__(**kwargs)
         
         self.testnames = ['FLAT01','FLAT02_590', 'FLAT02_730','FLAT02_880']
+        
+        self.colkeys = dict()
+        for test in self.testnames:
+            if test == 'FLAT01':
+                self.colkeys[test] = ['col001','col002','col003']
+            else:
+                self.colkeys[test] = ['col001','col002']
+        
         self.incols = cols2keep
         self.ParsedTable = OrderedDict()
         
@@ -250,6 +258,21 @@ class MetaFlat(MetaCal):
         """ """
         
         
+        # MASTER FLATS DISPLAY
+        
+        for testname in self.testnames:
+            
+            stestname = st.replace(testname,'_', '\_')
+            
+            for colkey in self.colkeys[testname]:
+                
+                MFdict = self._get_MFdict(testname, colkey)             
+                MFkwargs = dict(suptitle='%s-%s: Master Flat-Field' % (stestname, colkey),
+                                figname = self.figs['MF_%s_%s' % (testname, colkey)])
+                
+                self.plot_ImgFPA(MFdict, kwargs=MFkwargs)
+        
+        
         # PRNU vs. FLUENCE
         
         
@@ -257,8 +280,7 @@ class MetaFlat(MetaCal):
             
             Ncols = self.Ncols[testname]
             stestname = st.replace(testname,'_', '\_')
-            
-            
+                        
             XYdict = self._get_XYdict_PRNUFLU(self.ParsedTable[testname],Ncols)      
             
             self.plot_XY(XYdict,kwargs=dict(
