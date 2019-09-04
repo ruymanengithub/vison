@@ -13,6 +13,8 @@ import numpy as np
 from collections import OrderedDict
 import string as st
 import os
+from skimage import exposure
+from scipy import ndimage
 
 from vison.datamodel import ccd as ccdmod
 from vison.support import files
@@ -269,10 +271,16 @@ class MetaFlat(MetaCal):
                 
                 masterfits = os.path.join(productspath,self.products['MASTERFLATS'][cdpkey])
                 
-                ccdobj = ccdmod.CCD(masterfits)
+                ccdobj = ccdmod.CCD(infits=masterfits,getallextensions=True,withpover=True,
+                                    overscan=20)
                 
-                img = ccdobj.extensions[-1].data.copy()
-                MFdict[Ckey] = dict(img = self.fpa.flip_img(img,flip))
+                img = ccdobj.extensions[1].data.transpose().copy()
+                simg = ndimage.filters.gaussian_filter(img,sigma=5.,
+                                                                 mode='constant',
+                                                                 cval=1.)
+                esimg = exposure.equalize_hist(img,nbins=256)
+                
+                MFdict[Ckey] = dict(img = self.fpa.flip_img(esimg,flip))
                 
                 
         return MFdict
@@ -294,7 +302,8 @@ class MetaFlat(MetaCal):
         
         for testname in self.testnames:
             for colkey in self.colkeys[testname]:
-                self.figs['MF_%s_%s' % (testname,colkey)] = 'MF_%s_%s.png' % (testname, colkey)
+                self.figs['MF_%s_%s' % (testname,colkey)] = os.path.join(self.figspath,
+                'MF_%s_%s.png' % (testname, colkey))
     
     def dump_aggregated_results(self):
         """ """
@@ -309,10 +318,11 @@ class MetaFlat(MetaCal):
             for colkey in self.colkeys[testname]:
                 
                 MFdict = self._get_MFdict(testname, colkey)           
-                MFkwargs = dict(suptitle='%s-%s: Master Flat-Field' % (stestname, colkey),
+                MFkwargs = dict(suptitle='%s / %s: Master Flat Field' % (stestname, colkey),
                                 figname = self.figs['MF_%s_%s' % (testname, colkey)])
                 
                 self.plot_ImgFPA(MFdict, kwargs=MFkwargs)
+                
         
         
         # PRNU vs. FLUENCE
