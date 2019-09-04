@@ -14,6 +14,7 @@ from collections import OrderedDict
 import string as st
 import os
 
+from vison.datamodel import ccd as ccdmod
 from vison.support import files
 from vison.fpa import fpa as fpamod
 
@@ -238,6 +239,44 @@ class MetaFlat(MetaCal):
         XYdict = dict(x=x,y=y,labelkeys=labelkeys)
         
         return XYdict
+    
+    def _get_MFdict(self,testname, colkey):
+        """ """
+        PT = self.ParsedTable[testname]
+        
+        
+        
+        MFdict = dict()
+        
+        for jY in range(self.NCOLS_FPA):
+            for iX in range(self.NSLICES_FPA):
+                Ckey = 'C_%i%i' % (jY+1,iX+1)
+                
+                
+                locator = self.fpa.FPA_MAP[Ckey]
+                
+                block = locator[0]
+                CCDk = locator[1]
+                flip = locator[2]
+                
+                inventoryitem = self.inventory[block][testname][0]
+                
+                productspath = os.path.join(inventoryitem['resroot'],'products')
+                
+                ixblock = np.where(PT['BLOCK'] == block)
+                
+                cdpkey = PT['MASTERFLATS_%s_%s' % (colkey.upper(),CCDk)][ixblock][0]
+                
+                masterfits = os.path.join(productspath,self.products['MASTERFLATS'][cdpkey])
+                
+                ccdobj = ccdmod.CCD(masterfits)
+                
+                img = ccdobj.extensions[-1].data.copy()
+                MFdict[Ckey] = dict(img = self.fpa.flip_img(img,flip))
+                
+                
+        return MFdict
+        
 
     def init_fignames(self):
         """ """
@@ -252,7 +291,10 @@ class MetaFlat(MetaCal):
         for testname in self.testnames:
             self.figs['PRNU_MAP_%s' % testname] = os.path.join(self.figspath,
                          'PRNU_MAP_%s.png' % testname)
-            
+        
+        for testname in self.testnames:
+            for colkey in self.colkeys[testname]:
+                self.figs['MF_%s_%s' % (testname,colkey)] = 'MF_%s_%s.png' % (testname, colkey)
     
     def dump_aggregated_results(self):
         """ """
@@ -266,7 +308,7 @@ class MetaFlat(MetaCal):
             
             for colkey in self.colkeys[testname]:
                 
-                MFdict = self._get_MFdict(testname, colkey)             
+                MFdict = self._get_MFdict(testname, colkey)           
                 MFkwargs = dict(suptitle='%s-%s: Master Flat-Field' % (stestname, colkey),
                                 figname = self.figs['MF_%s_%s' % (testname, colkey)])
                 
