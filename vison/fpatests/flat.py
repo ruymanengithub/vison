@@ -294,10 +294,8 @@ class MetaFlat(MetaCal):
         
         return MFdict
     
-    def _get_XYdict_PRNULAM(self,Fluence=2):
+    def _get_XYdict_PRNULAM(self):
         """ """
-        
-        
         
         x = dict()
         y = dict()
@@ -305,7 +303,6 @@ class MetaFlat(MetaCal):
         
         labelkeys = ['low PRNU','Hi PRNU']
         
-        colkey = 'col%03i' % Fluence
         
         for labelkey in labelkeys:
             x[labelkey] = []
@@ -313,6 +310,13 @@ class MetaFlat(MetaCal):
             ey[labelkey] = []
         
         for testname in self.testnames:
+            
+            if testname == 'FLAT01':
+                Fluence = 2
+            else:
+                Fluence = 1
+            
+            colkey = 'col%03i' % Fluence
             
             PT = self.ParsedTable[testname]
             
@@ -344,6 +348,7 @@ class MetaFlat(MetaCal):
                         _PRNU = PT[PRNUcol][ixblock][0]
                         
                         if CCDbatch in self.batches_highPRNU:
+                            
                             _y_hi.append(_PRNU)
                         else:
                             _y_lo.append(_PRNU)
@@ -394,12 +399,12 @@ class MetaFlat(MetaCal):
         # PRNU vs. WAVELENGTH
         
         doPRNUvsWAVE = True
-        doMFs = True
+        doMFs = False
         doPRNUvsFLU = True
         
         if doPRNUvsWAVE:
         
-            XYPLam = self._get_XYdict_PRNULAM(Fluence=2)
+            XYPLam = self._get_XYdict_PRNULAM()
             
             self.plot_XY(XYPLam,kwargs=dict(
                         title='PRNU vs. Wavelength',
