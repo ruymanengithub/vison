@@ -239,7 +239,10 @@ class FpaPlotYvsX(FpaPlot):
 
 class FpaImgShow(FpaPlot):
     
-    mappables = []
+    def __init__(self, data, **kwargs):
+        super(FpaImgShow,self).__init__(data,**kwargs)
+        self.mappables = []
+
     
     def _ax_core_funct(self, ax, BCdict):
         
