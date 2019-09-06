@@ -18,6 +18,7 @@ import copy
 import itertools
 import os
 import string as st
+import gc
 
 import matplotlib
 #matplotlib.use('Agg')
@@ -49,6 +50,12 @@ class BasicPlot(object):
         if 'fig' in kwargs:
             self.fig = kwargs['fig']
         self.axs = []
+        
+    def __enter__(self):
+        return self
+    def __exit__(self, type, value, traceback):
+        gc.collect()
+        return isinstance(value,TypeError)
 
     def populate_axes(self):
         raise NotImplementedError("Subclass must implement abstract method")
@@ -76,8 +83,11 @@ class BasicPlot(object):
             plt.savefig(figname)
             #import pickle as pl
             #pl.dump(self.fig, file('test.pickle','w'))        
-            
+        
+        plt.close(self.fig)
         plt.close('all')
+        plt.clf()
+        gc.collect()
         
 class XYPlot(BasicPlot):
 
@@ -87,11 +97,12 @@ class XYPlot(BasicPlot):
 
         meta = dict(suptitle='',
                         doLegend=False,
-                        doNiceXDate=False)
+                        doNiceXDate=False,
+                        doYErrbars=False)
 
         meta.update(kwargs)
 
-        self.figsize = (8,7)        
+        self.figsize = (8,7)
         self.data = copy.deepcopy(data)
         self.meta = dict()
         self.meta.update(meta)
