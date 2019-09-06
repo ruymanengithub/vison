@@ -91,7 +91,7 @@ class XYPlot(BasicPlot):
 
         meta.update(kwargs)
 
-        self.figsize = (6,6)        
+        self.figsize = (8,7)        
         self.data = copy.deepcopy(data)
         self.meta = dict()
         self.meta.update(meta)
@@ -119,6 +119,9 @@ class XYPlot(BasicPlot):
             else:
                 kwargs.update(ckwargs)
             handle = self.ax.plot(xarr,yarr,**kwargs)
+            if self.meta['doYErrbars']:
+                eyarr = self.data['ey'][key]
+                self.ax.errorbar(xarr,yarr,yerr=eyarr,color='k',fmt='',linestyle='')
         else:
             xarr = self.data['x']
             yarr = self.data['y']
@@ -126,6 +129,9 @@ class XYPlot(BasicPlot):
             kwargs.update(ckwargs)
             self.ax.plot(xarr, yarr, **kwargs)
             handle, label = None, None
+            if self.meta['doYErrbars']:
+                eyarr = self.data['ey']
+                self.ax.errorbar(xarr,yarr,yerr=eyarr,color='k',fmt='',linestyle='')
         
         return handle, label
         

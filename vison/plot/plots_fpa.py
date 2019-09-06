@@ -422,27 +422,51 @@ class FpaFindingChart(FpaHeatMap):
                                      horizontalalignment='center',
                                      verticalalignment='center')    
 
-
+        # LABELLING CCD SERIALS
+        
+        if self.meta['LabelCCDserials']:
+        
+            for jY in range(NY):
+                
+                for iX in range(NX):
+                    
+                    ix = iX * NQ /2 + 0.5
+                    jy = jY * NQ /2 + 0.5
+                    
+                    Ckey = 'C_%i%i' % (jY+1,iX+1)
+                    #print(Ckey)
+                    ccdSN = fpamod.FPA_MAP[Ckey][3]
+                    
+                    
+                    self.ax.text(ix,jy,ccdSN,
+                                         fontsize=7,
+                                         alpha=0.5,
+                                         horizontalalignment='center',
+                                         verticalalignment='center')    
+        
+        
         # LABELLING BLOCKS
         
-        for jY in range(NY):
-            
-            for iX in [1,4]:
+        if self.meta['LabelBlockNames']:
+        
+            for jY in range(NY):
                 
-                ix = iX * NQ/2 + 0.5
-                jy = jY * NQ/2 + 0.5
-                
-                Ckey = 'C_%i%i' % (jY+1,iX+1)
-                #print(Ckey)
-                blockname = fpamod.FPA_MAP[Ckey][0]
-                
-                blockID = '%s/FM%i' % (blockname,fpamod.BLOCK_SNs[blockname])
-                
-                self.ax.text(ix,jy,blockID,
-                                     fontsize=24,
-                                     alpha=0.2,
-                                     horizontalalignment='center',
-                                     verticalalignment='center')    
+                for iX in [1,4]:
+                    
+                    ix = iX * NQ/2 + 0.5
+                    jy = jY * NQ/2 + 0.5
+                    
+                    Ckey = 'C_%i%i' % (jY+1,iX+1)
+                    #print(Ckey)
+                    blockname = fpamod.FPA_MAP[Ckey][0]
+                    
+                    blockID = '%s/FM%i' % (blockname,fpamod.BLOCK_SNs[blockname])
+                    
+                    self.ax.text(ix,jy,blockID,
+                                         fontsize=24,
+                                         alpha=0.2,
+                                         horizontalalignment='center',
+                                         verticalalignment='center')    
 
     def plt_trimmer(self):
         
