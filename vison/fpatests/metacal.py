@@ -15,6 +15,7 @@ import numpy as np
 import os
 from astropy import table
 import glob
+import gc
 
 from vison.support import files
 from vison.support import vjson
@@ -459,53 +460,63 @@ class MetaCal(object):
         
         _kwargs.update(kwargs)
     
-        heatmap = plfpa.FpaHeatMap(MAPdict, **_kwargs)
         if 'figname' in _kwargs:
             figname = _kwargs['figname']
         else:
             figname = ''
-        heatmap.render(figname=figname)
-        heatmap = None
+        
+        with plfpa.FpaHeatMap(MAPdict, **_kwargs) as heatmap:        
+            heatmap.render(figname=figname)
+        #heatmap = None
+        
+        gc.collect()
     
     def plot_XY(self,XYdict, kwargs):
         """ """
         
         _kwargs = dict()
         _kwargs.update(kwargs)
-        
-        xyplot = plfpa.XYPlot(XYdict, **_kwargs)
-        
+                
         if 'figname' in _kwargs:
             figname = _kwargs['figname']
         else:
             figname = ''
-        xyplot.render(figname=figname)
-        xyplot = None
+            
+        with plfpa.XYPlot(XYdict, **_kwargs) as xyplot:
+            xyplot.render(figname=figname)
+        #xyplot = None
+        
+        gc.collect()
         
     def plot_XYMAP(self, XYMAP, kwargs):
         
         _kwargs = dict()
         _kwargs.update(kwargs)
         
-        xyfpaplot = plfpa.FpaPlotYvsX(XYMAP, **_kwargs)
         
         if 'figname' in _kwargs:
             figname = _kwargs['figname']
         else:
             figname = ''
-        xyfpaplot.render(figname=figname)
-        xyfpaplot = None
+        
+        with plfpa.FpaPlotYvsX(XYMAP, **_kwargs) as xyfpaplot:
+            xyfpaplot.render(figname=figname)
+        #xyfpaplot = None
+        
+        gc.collect()
     
     def plot_ImgFPA(self, BCdict, kwargs):
         
         _kwargs = dict()
         _kwargs.update(kwargs)
         
-        imgfpaplot = plfpa.FpaImgShow(BCdict, **_kwargs)
-        
         if 'figname' in _kwargs:
             figname = _kwargs['figname']
         else:
             figname = ''
-        imgfpaplot.render(figname=figname)
-        imgfpaplot = None
+        
+        with plfpa.FpaImgShow(BCdict, **_kwargs) as imgfpaplot:
+            imgfpaplot.render(figname=figname)
+        gc.collect()
+        
+        

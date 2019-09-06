@@ -15,6 +15,7 @@ import string as st
 import os
 from skimage import exposure
 from scipy import ndimage
+import gc
 
 from vison.datamodel import ccd as ccdmod
 from vison.support import files
@@ -274,8 +275,10 @@ class MetaFlat(MetaCal):
                                     overscan=20)
                 
                 img = ccdobj.extensions[1].data.transpose().copy()
-                MFdict[Ckey] = dict(img=img.copy()) # TESTS
-                continue # TESTS
+                
+                #MFdict[Ckey] = dict(img = np.zeros((4172,4238),dtype='float32').copy()) # TESTS
+                #MFdict[Ckey] = dict(img=img.copy()) # TESTS
+                #continue # TESTS
                 
                 simg = ndimage.filters.gaussian_filter(img,sigma=5.,
                                                                  mode='constant',
@@ -283,8 +286,12 @@ class MetaFlat(MetaCal):
                 esimg = exposure.equalize_hist(simg,nbins=256)
                 
                 MFdict[Ckey] = dict(img = self.fpa.flip_img(esimg,flip))
-        
                 
+                #ccdobj = None
+                #img = None
+                #simg = None
+                #esimg = None
+        
         return MFdict
     
     def _get_XYdict_PRNULAM(self,Fluence=2):
@@ -387,6 +394,8 @@ class MetaFlat(MetaCal):
         # PRNU vs. WAVELENGTH
         
         doPRNUvsWAVE = True
+        doMFs = True
+        doPRNUvsFLU = True
         
         if doPRNUvsWAVE:
         
@@ -400,47 +409,58 @@ class MetaFlat(MetaCal):
                         ylabel='PRNU',
                         figname=self.figs['PRNU_vs_WAVE'],
                         corekwargs=dict(linestyle='-',marker='o')))
-        
+            gc.collect()
 
         # MASTER FLATS DISPLAY
         
-        for testname in self.testnames:
-            
-            stestname = st.replace(testname,'_', '\_')
-            
-            for colkey in self.colkeys[testname]:
-            #for colkey in [self.colkeys[testname][2]]:
+        
+        
+        if doMFs:
+        
+            for testname in self.testnames:
                 
-                colnum = int(colkey[-1])
+                stestname = st.replace(testname,'_', '\_')
                 
-                print('MF: %s %s' % (testname, colkey))
-                suptitle = '%s, Fluence %i' % (stestname, colnum)
-                print(suptitle)
-                
-                MFdict = self._get_MFdict(testname, colkey)           
-                MFkwargs = dict(#suptitle='%s, %s: Master Flat Field' % (stestname, colkey),
-                                suptitle=suptitle,
-                                figname = self.figs['MF_%s_%s' % (testname, colkey)])
-                
-                self.plot_ImgFPA(MFdict, kwargs=MFkwargs)
+                for colkey in self.colkeys[testname]:
+                #for colkey in [self.colkeys[testname][2]]:
+                    
+                    colnum = int(colkey[-1])
+                    
+                    print('MF: %s %s' % (testname, colkey))
+                    
+                    if testname == 'FLAT01':
+                        suptitle = 'FLAT01 800 nm, Fluence %s' % colnum
+                    else:
+                        _test, _wave = st.split(testname,'_')
+                        suptitle = '%s %s nm, Fluence %i' % (_test,_wave, colnum)
+                    print(suptitle)
+                    
+                    MFdict = self._get_MFdict(testname, colkey)           
+                    MFkwargs = dict(#suptitle='%s, %s: Master Flat Field' % (stestname, colkey),
+                                    suptitle=suptitle,
+                                    figname = self.figs['MF_%s_%s' % (testname, colkey)])
+                    
+                    self.plot_ImgFPA(MFdict, kwargs=MFkwargs)
+                    MFdict = None
         
         
         # PRNU vs. FLUENCE
         
+        if doPRNUvsFLU:
         
-        for testname in self.testnames:
-            
-            NFluCols = len(self.colkeys[testname])
-            stestname = st.replace(testname,'_', '\_')
-                        
-            XYdict = self._get_XYdict_PRNUFLU(self.ParsedTable[testname],NFluCols)      
-            
-            self.plot_XY(XYdict,kwargs=dict(
-                    title='%s: PRNU' % (stestname,),
-                    doLegend=True,
-                    xlabel='Fluence [ke-]',
-                    ylabel='PRNU',
-                    figname=self.figs['PRNU_vs_FLU_%s' % testname]))
+            for testname in self.testnames:
+                
+                NFluCols = len(self.colkeys[testname])
+                stestname = st.replace(testname,'_', '\_')
+                            
+                XYdict = self._get_XYdict_PRNUFLU(self.ParsedTable[testname],NFluCols)      
+                
+                self.plot_XY(XYdict,kwargs=dict(
+                        title='%s: PRNU' % (stestname,),
+                        doLegend=True,
+                        xlabel='Fluence [ke-]',
+                        ylabel='PRNU',
+                        figname=self.figs['PRNU_vs_FLU_%s' % testname]))
         
         
         
