@@ -72,7 +72,8 @@ class MetaFlat(MetaCal):
         
         self.products['MASTERFLATS'] = OrderedDict()
         
-        self.Ncols = dict()
+        self.batches_highPRNU = ['14313','14471']
+        
         
         self.init_fignames()
         
@@ -84,6 +85,7 @@ class MetaFlat(MetaCal):
         NCCDs = len(self.CCDs)
         NQuads = len(self.Quads)
         session = inventoryitem['session']
+        Ncols = len(self.colkeys[testname])
         
         CCDkeys = ['CCD%i' % CCD for CCD in self.CCDs]
         
@@ -99,9 +101,6 @@ class MetaFlat(MetaCal):
         #idd = copy.deepcopy(inventoryitem['dd'])
         sidd = self.parse_single_test_gen(jrep, block, testname, inventoryitem)
         
-        Ncols = sidd.meta['structure']['Ncols']
-        if testname not in self.Ncols:
-            self.Ncols[testname] = Ncols
         
         # TEST SCPECIFIC
         
@@ -275,15 +274,89 @@ class MetaFlat(MetaCal):
                                     overscan=20)
                 
                 img = ccdobj.extensions[1].data.transpose().copy()
+                MFdict[Ckey] = dict(img=img.copy()) # TESTS
+                continue # TESTS
+                
                 simg = ndimage.filters.gaussian_filter(img,sigma=5.,
                                                                  mode='constant',
                                                                  cval=1.)
-                esimg = exposure.equalize_hist(img,nbins=256)
+                esimg = exposure.equalize_hist(simg,nbins=256)
                 
                 MFdict[Ckey] = dict(img = self.fpa.flip_img(esimg,flip))
-                
+        
                 
         return MFdict
+    
+    def _get_XYdict_PRNULAM(self,Fluence=2):
+        """ """
+        
+        
+        
+        x = dict()
+        y = dict()
+        ey = dict()
+        
+        labelkeys = ['low PRNU','Hi PRNU']
+        
+        colkey = 'col%03i' % Fluence
+        
+        for labelkey in labelkeys:
+            x[labelkey] = []
+            y[labelkey] = []
+            ey[labelkey] = []
+        
+        for testname in self.testnames:
+            
+            PT = self.ParsedTable[testname]
+            
+            wave = PT['WAVENM'][0]
+            
+            x['low PRNU'].append(wave)
+            x['Hi PRNU'].append(wave)
+            
+            _y_lo = []
+            _y_hi = []
+            
+            for block in self.flight_blocks:
+                
+                ixblock = np.where(PT['BLOCK'] == block)
+                
+                for CCD in self.CCDs:
+                    
+                    Ckey = self.fpa.get_Ckey_from_BlockCCD(block,CCD)
+                    
+                    locator = self.fpa.FPA_MAP[Ckey]
+                    CCDsn = locator[3]
+                    CCDbatch = CCDsn[0:5]
+                    
+                    
+                    for Q in self.Quads:
+                    
+                        PRNUcol = 'PRNU_PC_%s_CCD%i_Quad%s' % (colkey.upper(),CCD,Q)
+                        
+                        _PRNU = PT[PRNUcol][ixblock][0]
+                        
+                        if CCDbatch in self.batches_highPRNU:
+                            _y_hi.append(_PRNU)
+                        else:
+                            _y_lo.append(_PRNU)
+            
+            y['low PRNU'].append(np.nanmean(_y_lo))
+            ey['low PRNU'].append(np.nanstd(_y_lo))
+            y['Hi PRNU'].append(np.nanmean(_y_hi))
+            ey['Hi PRNU'].append(np.nanstd(_y_hi))
+        
+        for labelkey in labelkeys:
+            ixorder = np.argsort(x[labelkey])
+            x[labelkey] = np.array(x[labelkey])[ixorder]
+            y[labelkey] = np.array(y[labelkey])[ixorder]
+            ey[labelkey] = np.array(ey[labelkey])[ixorder]
+        
+        
+        XYdict = dict(x=x,y=y,ey=ey,labelkeys=labelkeys)
+
+        
+        return XYdict
         
 
     def init_fignames(self):
@@ -291,6 +364,9 @@ class MetaFlat(MetaCal):
         
         if not os.path.exists(self.figspath):
             os.system('mkdir %s' % self.figspath)
+        
+        self.figs['PRNU_vs_WAVE'] = os.path.join(self.figspath,
+                         'PRNU_vs_WAVLENGTH.png')
         
         for testname in self.testnames:
             self.figs['PRNU_vs_FLU_%s' % testname] = os.path.join(self.figspath,
@@ -308,7 +384,24 @@ class MetaFlat(MetaCal):
     def dump_aggregated_results(self):
         """ """
         
+        # PRNU vs. WAVELENGTH
         
+        doPRNUvsWAVE = True
+        
+        if doPRNUvsWAVE:
+        
+            XYPLam = self._get_XYdict_PRNULAM(Fluence=2)
+            
+            self.plot_XY(XYPLam,kwargs=dict(
+                        title='PRNU vs. Wavelength',
+                        doLegend=True,
+                        doYErrbars=True,
+                        xlabel='Wavelength [nm]',
+                        ylabel='PRNU',
+                        figname=self.figs['PRNU_vs_WAVE'],
+                        corekwargs=dict(linestyle='-',marker='o')))
+        
+
         # MASTER FLATS DISPLAY
         
         for testname in self.testnames:
@@ -316,13 +409,20 @@ class MetaFlat(MetaCal):
             stestname = st.replace(testname,'_', '\_')
             
             for colkey in self.colkeys[testname]:
+            #for colkey in [self.colkeys[testname][2]]:
+                
+                colnum = int(colkey[-1])
+                
+                print('MF: %s %s' % (testname, colkey))
+                suptitle = '%s, Fluence %i' % (stestname, colnum)
+                print(suptitle)
                 
                 MFdict = self._get_MFdict(testname, colkey)           
-                MFkwargs = dict(suptitle='%s / %s: Master Flat Field' % (stestname, colkey),
+                MFkwargs = dict(#suptitle='%s, %s: Master Flat Field' % (stestname, colkey),
+                                suptitle=suptitle,
                                 figname = self.figs['MF_%s_%s' % (testname, colkey)])
                 
                 self.plot_ImgFPA(MFdict, kwargs=MFkwargs)
-                
         
         
         # PRNU vs. FLUENCE
@@ -330,10 +430,10 @@ class MetaFlat(MetaCal):
         
         for testname in self.testnames:
             
-            Ncols = self.Ncols[testname]
+            NFluCols = len(self.colkeys[testname])
             stestname = st.replace(testname,'_', '\_')
                         
-            XYdict = self._get_XYdict_PRNUFLU(self.ParsedTable[testname],Ncols)      
+            XYdict = self._get_XYdict_PRNUFLU(self.ParsedTable[testname],NFluCols)      
             
             self.plot_XY(XYdict,kwargs=dict(
                     title='%s: PRNU' % (stestname,),
@@ -341,18 +441,18 @@ class MetaFlat(MetaCal):
                     xlabel='Fluence [ke-]',
                     ylabel='PRNU',
                     figname=self.figs['PRNU_vs_FLU_%s' % testname]))
-
+        
+        
+        
 
         # PRNU maps
         
         for testname in self.testnames:
             
-            Ncols = self.Ncols[testname]
             stestname = st.replace(testname,'_','\_')
             
-            for icol in range(1,Ncols+1):
+            for icol,colkey in enumerate(self.colkeys[testname]):
                 
-                colkey = 'col%03i' % icol
                 
                 PRNUMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
                                 extractor=self._get_extractor_PRNU_fromPT(colkey))
@@ -362,6 +462,11 @@ class MetaFlat(MetaCal):
                         suptitle='%s [%s]: PRNU' % (stestname,colkey),
                         figname = self.figs['PRNU_MAP_%s' % testname]
                         ))
+        
+        
+                
+        
+        
         
 
         

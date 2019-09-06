@@ -465,6 +465,7 @@ class MetaCal(object):
         else:
             figname = ''
         heatmap.render(figname=figname)
+        heatmap = None
     
     def plot_XY(self,XYdict, kwargs):
         """ """
@@ -479,6 +480,7 @@ class MetaCal(object):
         else:
             figname = ''
         xyplot.render(figname=figname)
+        xyplot = None
         
     def plot_XYMAP(self, XYMAP, kwargs):
         
@@ -492,6 +494,7 @@ class MetaCal(object):
         else:
             figname = ''
         xyfpaplot.render(figname=figname)
+        xyfpaplot = None
     
     def plot_ImgFPA(self, BCdict, kwargs):
         
@@ -505,4 +508,4 @@ class MetaCal(object):
         else:
             figname = ''
         imgfpaplot.render(figname=figname)
-        
+        imgfpaplot = None
