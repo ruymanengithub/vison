@@ -377,9 +377,10 @@ class FpaFindingChart(FpaHeatMap):
 
         meta = dict()
         meta.update(kwargs)
-                
+        
         self.meta.update(meta)        
         
+        self.fpa = fpamod.FPA()
 
     def init_fig(self):
         self._init_fig_and_axes()
@@ -438,7 +439,7 @@ class FpaFindingChart(FpaHeatMap):
                     
                     Ckey = 'C_%i%i' % (jY+1,iX+1)
                     #print(Ckey)
-                    ccdSN = fpamod.FPA_MAP[Ckey][3]
+                    ccdSN = self.fpa.FPA_MAP[Ckey][3]
                     
                     
                     self.ax.text(ix,jy,ccdSN,
@@ -461,7 +462,7 @@ class FpaFindingChart(FpaHeatMap):
                     
                     Ckey = 'C_%i%i' % (jY+1,iX+1)
                     #print(Ckey)
-                    blockname = fpamod.FPA_MAP[Ckey][0]
+                    blockname = self.fpa.FPA_MAP[Ckey][0]
                     
                     blockID = '%s/FM%i' % (blockname,fpamod.BLOCK_SNs[blockname])
                     
