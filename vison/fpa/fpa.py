@@ -18,11 +18,32 @@ spare_blocks = ['OWEN','EINSTEIN']
 
 all_blocks = flight_blocks + spare_blocks
 
+def get_block_lists(design='initial'):
+    
+    block_lists = dict()
+    
+    if design == 'initial':
+        
+        block_lists['flight_blocks'] = ['BORN','CURIE','DIRAC','ERWIN','FOWLER','GUYE','SKLODOWSKA',
+          'JULES2','KRAMERS','LORENTZ','MAX','NIELS']
+        block_lists['spare_blocks'] = ['OWEN', 'EINSTEIN']
+        
+        block_lists['all_blocks'] = block_lists['flight_blocks'] + block_lists['spare_blocks']
+
+    elif design == 'final':
+        
+        block_lists['flight_blocks'] = ['BORN','CURIE','DIRAC','ERWIN','FOWLER','GUYE',
+          'JULES2','KRAMERS','LORENTZ','NIELS', 'OWEN', 'EINSTEIN']
+        block_lists['spare_blocks'] = []
+        
+        block_lists['all_blocks'] = block_lists['flight_blocks'] + block_lists['spare_blocks']
+        
+    return block_lists
 
 NSLICES = 6
 NCOLS = 6
 
-FPA_MAP = dict(
+FPA_MAP_initial = dict(
 # SLICE_1
         C_11 = ('BORN','CCD1',(1,0),'15081-08-02'),
         C_12 = ('BORN','CCD2',(1,0),'15081-16-02'),
@@ -66,6 +87,59 @@ FPA_MAP = dict(
         C_65 = ('CURIE','CCD2',(0,1),'15081-21-02'),
         C_66 = ('CURIE','CCD1',(0,1),'14301-24-01'),
     )
+
+
+FPA_MAP_final = dict(
+# SLICE_1
+        C_11 = ('BORN','CCD1',(1,0),'15081-08-02'),
+        C_12 = ('BORN','CCD2',(1,0),'15081-16-02'),
+        C_13 = ('BORN','CCD3',(1,0),'15081-22-02'),
+        C_14 = ('DIRAC','CCD3',(0,1),'14313-02-01'),
+        C_15 = ('DIRAC','CCD2',(0,1),'14471-01-02'),
+        C_16 = ('DIRAC','CCD1',(0,1),'15081-07-02'),
+# SLICE_2
+        C_21 = ('GUYE','CCD1',(1,0),'14462-13-02'),
+        C_22 = ('GUYE','CCD2',(1,0),'14313-17-01'),
+        C_23 = ('GUYE','CCD3',(1,0),'14313-23-01'),
+        C_24 = ('FOWLER','CCD3',(0,1),'14313-13-01'),
+        C_25 = ('FOWLER','CCD2',(0,1),'14311-05-02'),
+        C_26 = ('FOWLER','CCD1',(0,1),'14311-20-02'),
+# SLICE_3 
+        C_31 = ('ERWIN','CCD1',(1,0),'15053-01-02'),
+        C_32 = ('ERWIN','CCD2',(1,0),'14352-04-02'),
+        C_33 = ('ERWIN','CCD3',(1,0),'14471-16-01'),
+        C_34 = ('KRAMERS','CCD3',(0,1),'14471-15-01'),
+        C_35 = ('KRAMERS','CCD2',(0,1),'14462-16-01'),
+        C_36 = ('KRAMERS','CCD1',(0,1),'14362-20-02'),
+# SLICE_4 
+        C_41 = ('JULES2','CCD1',(1,0),'14462-02-01'),
+        C_42 = ('JULES2','CCD2',(1,0),'14462-10-01'),
+        C_43 = ('JULES2','CCD3',(1,0),'14313-06-01'),
+        C_44 = ('OWEN','CCD3',(0,1),'14362-12-01'),
+        C_45 = ('OWEN','CCD2',(0,1),'14311-16-02'),
+        C_46 = ('OWEN','CCD1',(0,1),'14462-02-02'),
+# SLICE_5 
+        C_51 = ('LORENTZ','CCD1',(1,0),'15053-02-02'),
+        C_52 = ('LORENTZ','CCD2',(1,0),'15053-20-02'),
+        C_53 = ('LORENTZ','CCD3',(1,0),'15081-22-01'),
+        C_54 = ('EINSTEIN','CCD3',(0,1),'14471-10-02'),
+        C_55 = ('EINSTEIN','CCD2',(0,1),'15081-15-02'),
+        C_56 = ('EINSTEIN','CCD1',(0,1),'14471-19-01'),
+# SLICE_6
+        C_61 = ('NIELS','CCD1',(1,1),'14471-01-01'),
+        C_62 = ('NIELS','CCD2',(1,1),'15081-20-02'),
+        C_63 = ('NIELS','CCD3',(1,1),'15053-01-01'),
+        C_64 = ('CURIE','CCD3',(0,1),'14462-08-01'),
+        C_65 = ('CURIE','CCD2',(0,1),'15081-21-02'),
+        C_66 = ('CURIE','CCD1',(0,1),'14301-24-01'),
+    )
+
+def get_FPA_MAP(design='initial'):
+    
+    if design == 'initial':
+        return FPA_MAP_initial.copy()
+    elif design == 'final':
+        return FPA_MAP_final.copy()
 
 BLOCK_SNs = dict(BORN=1,
             CURIE=4,
@@ -131,15 +205,18 @@ def flip_img(img,flip):
 class FPA(object):
     """ """
         
-    def __init__(self):
+    def __init__(self,design='initial'):
         """ """
         self.NSLICES=6
         self.NCOLS=6
-        self.flight_blocks = flight_blocks
-        self.spare_blocks = spare_blocks
-        self.all_blocks = all_blocks        
+        
+        block_lists = get_block_lists(design)
+        
+        self.flight_blocks = block_lists['flight_blocks']
+        self.spare_blocks = block_lists['spare_blocks']
+        self.all_blocks = block_lists['all_blocks']
         self.placeholderdata = None
-        self.FPA_MAP = FPA_MAP
+        self.FPA_MAP = get_FPA_MAP(design)
     
     def flip_img(self,img,flip):
         return flip_img(img,flip)

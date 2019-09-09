@@ -36,13 +36,14 @@ class MetaCal(object):
     def __init__(self, **kwargs):
         """ """
         
-        self.blocks = fpamod.all_blocks
-        self.flight_blocks = fpamod.flight_blocks
+        self.fpa = fpamod.FPA(kwargs['design'])
+        self.blocks = copy.deepcopy(self.fpa.all_blocks)
+        self.flight_blocks = copy.deepcopy(self.fpa.flight_blocks)
         #self.blocks = ['BORN','CURIE','DIRAC','FOWLER','GUYE','KRAMERS'] # TESTS
         #self.flight_blocks = ['BORN','CURIE','DIRAC','FOWLER','GUYE','KRAMERS'] # TESTS
         self.CCDs = [1,2,3]
         self.Quads = ['E','F','G','H']
-        self.fpa = fpamod.FPA()
+        
         self.NSLICES_FPA = self.fpa.NSLICES
         self.NCOLS_FPA = self.fpa.NCOLS
         

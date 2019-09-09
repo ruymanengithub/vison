@@ -260,6 +260,6 @@ class MetaTPX1(MetaCal):
                                 extractor=self._extract_INJ_fromPT)
                 
         self.plot_SimpleMAP(INJMAP,kwargs=dict(
-                suptitle=r'$TPX1: CHARGE INJECTION [ADU]]$',
+                suptitle=r'$TPX1:\ CHARGE\ INJECTION\ [ADU]]$',
                 figname=self.figs['INJ_MAP']))
         

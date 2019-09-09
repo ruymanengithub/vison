@@ -112,6 +112,7 @@ class MetaMOT(MetaCal):
         rwdvs_off_v = tmp_v_CQ.copy()
         rwdvs_ron_v = tmp_v_CQ.copy()
         
+                
         for iCCD, CCDk in enumerate(CCDkeys):
             for kQ, Q in enumerate(self.Quads):
                 
@@ -131,9 +132,10 @@ class MetaMOT(MetaCal):
     def dump_aggregated_results(self):
         """ """
         
-        stop()
+        return
         
-        outpathroot = self.outpath
+        outpathroot = self.outpathroot
+        
         
         # RON map, ADUs
         
