@@ -60,6 +60,11 @@ class MetaNL(MetaCal):
         
         self.products['NL'] = OrderedDict()
         
+        self.censored = ['NIELS_CCD2_G', 'BORN_CCD2_E', 
+                         'OWEN_CCD1_E', 'OWEN_CCD1_F','OWEN_CCD1_G','OWEN_CCD1_H',
+                         'OWEN_CCD2_E', 'OWEN_CCD2_F','OWEN_CCD2_G','OWEN_CCD2_H',
+                         'OWEN_CCD3_E', 'OWEN_CCD3_F','OWEN_CCD3_G','OWEN_CCD3_H']
+        
         self.init_fignames()
     
     def parse_single_test(self, jrep, block, testname, inventoryitem):
@@ -235,9 +240,11 @@ class MetaNL(MetaCal):
                     xfluadu = i_NL[CCDk][Q]['outputcurve']['X'].copy()
                     xfluKele = xfluadu * gain / 1.E3
                     
-                    x[pkey] = xfluKele.copy()
-                    y[pkey] = i_NL[CCDk][Q]['outputcurve']['Y'].copy()
-                    labelkeys.append(pkey)
+                    if pkey not in self.censored:
+                        
+                        x[pkey] = xfluKele.copy()
+                        y[pkey] = i_NL[CCDk][Q]['outputcurve']['Y'].copy()
+                        labelkeys.append(pkey)
         
         
         NLdict = dict(x=x,y=y,labelkeys=labelkeys)
@@ -282,7 +289,7 @@ class MetaNL(MetaCal):
         NLSingledict = self._get_XYdict_NL()
         
         self.plot_XY(NLSingledict,kwargs=dict(
-                    title='Non-Linearity Curves',
+                    title='NON-LINEARITY CURVES',
                     doLegend=False,
                     xlabel='Fluence [ke-]',
                     ylabel='Non-Linearity [pc]',
