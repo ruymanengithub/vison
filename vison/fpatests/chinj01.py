@@ -176,7 +176,7 @@ class MetaChinj01(MetaCal):
     
     def _get_injcurve(self, _chfitdf, ixCCD, ixQ, IG1raw, gain):
         """ """
-        ixsel = np.where((_chfitdf['CCD'] == 1) & (_chfitdf['Q'] == 1))
+        ixsel = np.where((_chfitdf['CCD'] == ixCCD) & (_chfitdf['Q'] == ixQ))
         
         pars = ['BGD','K','XT','XN','A','N']
         trans = dict(BGD='b',K='k',XT='xt', XN='xN', A='a', N='N')
