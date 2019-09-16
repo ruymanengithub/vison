@@ -482,7 +482,7 @@ class MetaCal(object):
             figname = _kwargs['figname']
         else:
             figname = ''
-            
+        
         with plfpa.XYPlot(XYdict, **_kwargs) as xyplot:
             xyplot.render(figname=figname)
         #xyplot = None
