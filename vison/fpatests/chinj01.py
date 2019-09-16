@@ -370,9 +370,13 @@ class MetaChinj01(MetaCal):
         
         IG1CAL_kwargs = dict(
                     title='Charge Injection Curves - Calibrated IG1',
-                    doLegend=False,
+                    doLegend=True,
                     xlabel='IG1 (Calibrated) [V]',
                     ylabel='Injection [kel]',
+                    corekwargs = dict(E=dict(linestyle='-',marker='',color='r'),
+                                          F=dict(linestyle='-',marker='',color='g'),
+                                          G=dict(linestyle='-',marker='',color='b'),
+                                          H=dict(linestyle='-',marker='',color='m')),
                     figname=self.figs['CHINJ01_curves_IG1_CAL'])
         
         IG1CAL_kwargs['corekwargs'] = dict(linestyle='-',marker='')
@@ -383,9 +387,13 @@ class MetaChinj01(MetaCal):
         
         IG1RAW_kwargs = dict(
                     title='Charge Injection Curves - RAW IG1',
-                    doLegend=False,
+                    doLegend=True,
                     xlabel='IG1 (RAW) [V]',
                     ylabel='Injection [kel]',
+                    corekwargs = dict(E=dict(linestyle='-',marker='',color='r'),
+                                          F=dict(linestyle='-',marker='',color='g'),
+                                          G=dict(linestyle='-',marker='',color='b'),
+                                          H=dict(linestyle='-',marker='',color='m')),
                     figname=self.figs['CHINJ01_curves_IG1_RAW'])
         
         IG1RAW_kwargs['corekwargs'] = dict(linestyle='-',marker='')
