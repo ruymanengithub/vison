@@ -370,16 +370,25 @@ class MetaChinj01(MetaCal):
         
         IG1CAL_kwargs = dict(
                     title='Charge Injection Curves - Calibrated IG1',
-                    doLegend=True,
+                    doLegend=False,
                     xlabel='IG1 (Calibrated) [V]',
-                    ylabel='Injection [kel]',
-                    corekwargs = dict(E=dict(linestyle='-',marker='',color='r'),
-                                          F=dict(linestyle='-',marker='',color='g'),
-                                          G=dict(linestyle='-',marker='',color='b'),
-                                          H=dict(linestyle='-',marker='',color='m')),
+                    ylabel='Injection [kel]',                    
                     figname=self.figs['CHINJ01_curves_IG1_CAL'])
         
-        IG1CAL_kwargs['corekwargs'] = dict(linestyle='-',marker='')
+        corekwargs = dict()
+        for block in self.flight_blocks:
+            for iCCD in self.CCDs:
+                corekwargs['%s_CCD%i_E' % (block,iCCD)] = dict(linestyle='-',
+                           marker='',color='#FF4600') # red
+                corekwargs['%s_CCD%i_F' % (block,iCCD)] = dict(linestyle='-',
+                           marker='',color='#61FF00') # green
+                corekwargs['%s_CCD%i_G' % (block,iCCD)] = dict(linestyle='-',
+                           marker='',color='#00FFE0') # cyan
+                corekwargs['%s_CCD%i_H' % (block,iCCD)] = dict(linestyle='-',
+                           marker='',color='#1700FF') # blue
+            
+        
+        IG1CAL_kwargs['corekwargs'] = corekwargs.copy()
         
         self.plot_XY(IG1CAL_Singledict,kwargs=IG1CAL_kwargs)
 
@@ -387,16 +396,25 @@ class MetaChinj01(MetaCal):
         
         IG1RAW_kwargs = dict(
                     title='Charge Injection Curves - RAW IG1',
-                    doLegend=True,
+                    doLegend=False,
                     xlabel='IG1 (RAW) [V]',
-                    ylabel='Injection [kel]',
-                    corekwargs = dict(E=dict(linestyle='-',marker='',color='r'),
-                                          F=dict(linestyle='-',marker='',color='g'),
-                                          G=dict(linestyle='-',marker='',color='b'),
-                                          H=dict(linestyle='-',marker='',color='m')),
+                    ylabel='Injection [kel]',                    
                     figname=self.figs['CHINJ01_curves_IG1_RAW'])
         
-        IG1RAW_kwargs['corekwargs'] = dict(linestyle='-',marker='')
+        corekwargs = dict()
+        for block in self.flight_blocks:
+            for iCCD in self.CCDs:
+                corekwargs['%s_CCD%i_E' % (block,iCCD)] = dict(linestyle='-',
+                           marker='',color='#FF4600') # red
+                corekwargs['%s_CCD%i_F' % (block,iCCD)] = dict(linestyle='-',
+                           marker='',color='#61FF00') # green
+                corekwargs['%s_CCD%i_G' % (block,iCCD)] = dict(linestyle='-',
+                           marker='',color='#00FFE0') # cyan
+                corekwargs['%s_CCD%i_H' % (block,iCCD)] = dict(linestyle='-',
+                           marker='',color='#1700FF') # blue
+        
+        
+        IG1RAW_kwargs['corekwargs'] = corekwargs.copy()
         
         self.plot_XY(IG1RAW_Singledict,kwargs=IG1RAW_kwargs)
         
