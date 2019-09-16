@@ -399,7 +399,7 @@ class MetaFlat(MetaCal):
         # PRNU vs. WAVELENGTH
         
         doPRNUvsWAVE = True
-        doMFs = False
+        doMFs = True
         doPRNUvsFLU = True
         
         if doPRNUvsWAVE:
