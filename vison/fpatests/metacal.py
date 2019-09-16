@@ -52,10 +52,10 @@ class MetaCal(object):
         self.jsonf = kwargs['jsonf']
         
         self.testkey = kwargs['testkey']
-        self.outpathroot = '%s_FPA' % self.testkey.upper()
+        self.outpathroot = os.path.join(kwargs['outparent'],'%s_FPA' % self.testkey.upper())
         
         if not os.path.exists(self.outpathroot):
-            os.system('mkdir %s' % self.outpathroot)
+            os.system('mkdir -p %s' % self.outpathroot)
         
         self.inventory = OrderedDict()
         self.results = OrderedDict()
