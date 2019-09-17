@@ -421,6 +421,21 @@ class MetaCal(object):
         self.ParsedTable[testname] = pt
     
     
+    def get_stat_from_FPAMAP(self,M,numpystat):
+        """ """
+        
+        vals = []
+        
+        for jY in range(self.NSLICES_FPA):
+            for iX in range(self.NCOLS_FPA):
+                Ckey  = 'C_%i%i' % (jY+1,iX+1)
+                for Q in self.Quads:
+                    
+                    vals.append(M[Ckey][Q])
+
+        return numpystat(vals)
+    
+    
     def get_FPAMAP_from_PT(self,PT,extractor):
         """ """
         
