@@ -247,9 +247,12 @@ class MetaPTC(MetaCal):
         for testname in self.testnames:
             
             GMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_GAIN_fromPT)
-        
+            
+            avgG = self.get_stat_from_FPAMAP(GMAP,np.nanmean)
+            print('Average G [%s]: %.2f' % (testname,avgG))
+            
             stestname = st.replace(testname,'_','\_')
-                        
+            
             self.plot_SimpleMAP(GMAP,kwargs=dict(
                     suptitle='%s: GAIN e-/ADU' % stestname,
                     figname=self.figs['GAIN_MAP_%s' % testname]))
@@ -264,7 +267,8 @@ class MetaPTC(MetaCal):
             stestname = st.replace(testname,'_','\_')
             self.plot_SimpleMAP(BADU_MAP,kwargs=dict(
                     suptitle='%s: BLOOM-ADU [DN]' % stestname,
-                    figname=self.figs['BLOOM_ADU_MAP_%s' % testname]))
+                    figname=self.figs['BLOOM_ADU_MAP_%s' % testname],
+                    corekwargs=dict(norm = Normalize(vmin=3e4,vmax=2**16, clip=False))))
         
         for testname in self.testnames:
             
@@ -273,7 +277,8 @@ class MetaPTC(MetaCal):
             stestname = st.replace(testname,'_','\_')
             self.plot_SimpleMAP(BE_MAP,kwargs=dict(
                     suptitle='%s: BLOOM-ELECTRONS' % stestname,
-                    figname=self.figs['BLOOM_ELE_MAP_%s' % testname]))
+                    figname=self.figs['BLOOM_ELE_MAP_%s' % testname],
+                    corekwargs=dict(norm = Normalize(vmin=1e5,vmax=2.2E5, clip=False))))
         
         # HER map
         
