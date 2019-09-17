@@ -294,5 +294,6 @@ class MetaNL(MetaCal):
                     xlabel='Fluence [ke-]',
                     ylabel='Non-Linearity [pc]',
                     ylim=[-3.,7.],
+                    corekwargs=dict(linestyle='-',marker=''),
                     figname=self.figs['NL_curves']))
         
