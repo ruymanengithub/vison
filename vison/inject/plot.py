@@ -243,12 +243,12 @@ if __name__ == '__main__':
 
     # TEST
 
-    IG1 = [4.,4.]  # [1.5,6.]
+    IG1 = [4.5,4.5]  # [1.5,6.]
     IG2 = 6.  # 5.5
     IDL = 11.
     IDH = 18.
     TOI = 500.
-    delay = TOI*2.5
+    delay = TOI*1.5
     figname0_TEST = ''
     chpar = 10.
     rchpar = chpar - 0.2
