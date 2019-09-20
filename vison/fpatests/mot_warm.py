@@ -205,7 +205,7 @@ class MetaMOT(MetaCal):
                          'RON_MAP.png')
         
         self.figs['RON_MAP_json'] = os.path.join(self.figspath,
-                         'RON_MAP_json.png')
+                         'RON_MAP.json')
         
         self.figs['OFF_RWDVS_MAP'] = os.path.join(self.figspath,
                          'OFF_RWDVS_MAP.png')
