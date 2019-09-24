@@ -23,7 +23,7 @@ from vison.plot import plots_fpa as plfpa
 from vison.support import vcal
 from vison.datamodel import core as vcore
 from vison.ogse import ogse
-
+from vison.support import vjson
 
 
 from matplotlib import pyplot as plt
@@ -184,10 +184,14 @@ class MetaBias(MetaCal):
         for testname in self.testnames:
             self.figs['RON_ADU_%s' % testname] = os.path.join(self.figspath,
                          'RON_ADU_MAP_%s.png' % testname)
+            self.figs['RONADU_MAP_%s_json' % testname] = os.path.join(self.figspath,
+                         'RON_ADU_MAP_%s.json' % testname)            
             self.figs['RON_ELE_%s' % testname] = os.path.join(self.figspath,
                          'RON_ELE_MAP_%s.png' % testname)
             self.figs['OFFSETS_%s' % testname] = os.path.join(self.figspath,
                          'OFFSETS_MAP_%s.png' % testname)
+            self.figs['OFFSETS_%s_json' % testname] = os.path.join(self.figspath,
+                         'OFFSETS_MAP_%s.json' % testname)
             
             
     def dump_aggregated_results(self):
@@ -202,7 +206,9 @@ class MetaBias(MetaCal):
             
             RONADUMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
                                                 extractor=self._get_extractor_RON_fromPT(units='ADU'))
-        
+            
+            vjson.save_jsonfile(RONADUMAP,self.figs['RONADU_MAP_%s_json' % testname])
+            
             stestname = st.replace(testname,'_','\_')
             self.plot_SimpleMAP(RONADUMAP,kwargs=dict(
                     suptitle='%s: RON [ADU]' % stestname,
@@ -224,7 +230,9 @@ class MetaBias(MetaCal):
         for testname in self.testnames:
             
             OFFMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_OFFSET_fromPT)
-        
+            
+            vjson.save_jsonfile(OFFMAP,self.figs['OFFSETS_%s_json' % testname])
+            
             stestname = st.replace(testname,'_','\_')
             self.plot_SimpleMAP(OFFMAP,kwargs=dict(
                     suptitle='%s: OFFSET' % stestname,
