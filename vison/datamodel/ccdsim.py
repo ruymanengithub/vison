@@ -85,11 +85,16 @@ def simadd_bias(ccdobj, levels=None, extension=-1):
 
 def simadd_ron(ccdobj, extension=-1):
     """ """
+    
+    for Q in ccdobj.Quads:
+        
+        B = ccdobj.QuadBound[Q]
 
-    noise = np.random.normal(
-        loc=0.0, scale=ccdobj.rn['E'], size=ccdobj.extensions[extension].data.shape)
-    ccdobj.extensions[extension].data += noise
-
+        Qnoise = np.random.normal(
+                loc=0.0, scale=ccdobj.rn[Q], size=(ccdobj.wQ, ccdobj.hQ))
+        ccdobj.extensions[extension].data[B[0]:B[1], B[2]:B[3]] += Qnoise
+    
+    
 
 def simadd_poisson(ccdobj, extension=-1):
     """ """
