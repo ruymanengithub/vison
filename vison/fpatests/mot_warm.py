@@ -60,6 +60,8 @@ class MetaMOT(MetaCal):
         for block in self.blocks:
             self.cdps['GAIN'][block] = allgains[block]['PTC01'].copy() 
         
+        self.products['RAMPS'] = OrderedDict()
+        
         self.init_fignames()
         
     def parse_single_test(self, jrep, block, testname, inventoryitem):
@@ -74,6 +76,8 @@ class MetaMOT(MetaCal):
         
         IndexS = vcore.vMultiIndex([vcore.vIndex('ix',vals=[0])])
         
+        IndexC = vcore.vMultiIndex([vcore.vIndex('ix',vals=[0]),
+                                     vcore.vIndex('CCD',vals=self.CCDs)])
         
         IndexCQ = vcore.vMultiIndex([vcore.vIndex('ix',vals=[0]),
                                      vcore.vIndex('CCD',vals=self.CCDs),
@@ -154,6 +158,34 @@ class MetaMOT(MetaCal):
         
         sidd.addColumn(injection_v, 'INJECTION', IndexCQ)   
         
+        rampkeys_v = np.zeros((1,NCCDs),dtype='S50')
+        
+        for iCCD, CCDk in enumerate(CCDkeys):
+            
+            rampccdkey = '%s_%s_%s_%i_%s' % (testname, block, session,jrep+1,CCDk)
+            
+            RAMP_dict = dict()
+            
+            for kQ, Q in enumerate(self.Quads):
+                
+                RAMP_dict[Q] = OrderedDict()
+                
+                rampprof = profiles['data']['RAMP'][CCDk][Q].copy()
+                
+                offset = sidd.mx['offset_pre'][0,iCCD,kQ]
+                
+                rampslope = np.median(rampprof['y'][1:100]-rampprof['y'][0:99])
+                rampoff = rampprof['y'][0] - offset
+                
+                RAMP_dict[Q]['slope'] = rampslope
+                RAMP_dict[Q]['offset'] = rampoff
+                
+            self.products['RAMPS'][rampccdkey] = RAMP_dict.copy()
+            
+            rampkeys_v[0, iCCD] = rampccdkey
+        
+        sidd.addColumn(rampkeys_v, 'RAMPKEYS', IndexC)   
+        
         # flatten sidd to table
         
         sit = sidd.flattentoTable()
@@ -188,12 +220,26 @@ class MetaMOT(MetaCal):
         off = int(PT[column][ixblock][0])
         return off
     
+    def _extract_RAMP_fromPT(self, PT, block, CCDk, Q):
+        ixblock = np.where(PT['BLOCK'].data == block)
+        column = 'RAMPKEYS_%s' % (CCDk,)
+        rampkey = PT[column][ixblock][0]
+        
+        rampdict = self.products['RAMPS'][rampkey][Q].copy()
+        for key in rampdict:
+            rampdict[key] = float(rampdict[key])
+
+        return rampdict
+    
     
     def init_fignames(self):
         """ """
         
         if not os.path.exists(self.figspath):
             os.system('mkdir %s' % self.figspath)
+        
+        self.figs['RAMP_MAP_json'] = os.path.join(self.figspath,
+                         'RAMP_MAP.json')
         
         self.figs['INJ_MAP'] = os.path.join(self.figspath,
                          'INJECTION_MAP.png')
@@ -222,7 +268,15 @@ class MetaMOT(MetaCal):
     def dump_aggregated_results(self):
         """ """
         
-        # Injection map., ADUs
+        
+        # SAVING FWD RAMPs' slope & intercept
+        
+        RAMPMAP = self.get_FPAMAP_from_PT(self.ParsedTable['MOT_WARM'],
+                    extractor=self._extract_RAMP_fromPT)
+        
+        vjson.save_jsonfile(RAMPMAP,self.figs['RAMP_MAP_json'])
+        
+        # Injection map., ADUs        
         
         
         INJMAP = self.get_FPAMAP_from_PT(self.ParsedTable['MOT_WARM'],
