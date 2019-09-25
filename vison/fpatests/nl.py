@@ -114,8 +114,7 @@ class MetaNL(MetaCal):
         test_v = np.array([testname])            
         sidd.addColumn(test_v, 'TEST', IndexS, ix=0)
         
-        
-        
+                
         NL_dict = sidd.products['NL'].copy()
  
         tmp_v_CQ = np.zeros((1,NCCDs,NQuads))
