@@ -499,12 +499,11 @@ class Task(object):
 
         explog['time'] = np.array(
             map(vistime.get_dtobj, explog['date'])).copy()
-
+        
         # Building DataDict
         
-
         self.dd = pilib.DataDict_builder(explog, self.inputs, structure)
-
+        
         if not checkreport['checksout']:
             self.dd.flags.add('MISSDATA')
 
