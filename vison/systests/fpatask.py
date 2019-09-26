@@ -22,6 +22,7 @@ import traceback
 from vison import __version__
 from vison.support import files
 from vison.support.report import Report
+from vison.datamodel import fpa_dm
 # END IMPORT
 
 class FpaTask(object):
@@ -286,3 +287,11 @@ class FpaTask(object):
                 os.system(execline2)
                 if self.log is not None:
                     self.log.info('\nCleared contents [.fits/.pick] of %s!' % subpath)
+    
+    def load_LE1(self,LE1fits):
+        """ """
+        return fpa_dm.FPA_LE1(LE1fits)
+    
+    def check_data(self):
+        """ """
+        

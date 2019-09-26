@@ -1,34 +1,9 @@
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
+Created on Wed Sep 25 17:07:21 2019
 
-This is the main script that will orchestrate the analysis of
-Euclid-VIS FM Ground Calibration Campaign.
-
-The functions of this module are:
-    
-    - Take inputs as to what data is to be analyzed, and what analysis scripts
-      are to be run on it.
-    - Set the variables necessary to process this batch of FM calib. data.
-    - Start a log of actions to keep track of what is being done.
-    - Provide inputs to scripts, execute the analysis scripts and report location of analysis 
-      results.
-    
-Some Guidelines for Development:
-
-    - Input data is "sacred": read-only.
-    - Each execution of Master must have associated a unique ANALYSIS-ID.
-    - All the Analysis must be divided in TASKS. TASKS can have SUB-TASKS.
-    - All data for each TASK must be under a single day-folder.
-    - All results from the execution of FMmaster must be under a single directory 
-      with subdirectories for each TASK run.
-    - A subfolder of this root directory will contain the logging information:
-         inputs, outputs, analysis results locations.
-    
-
-Created on Wed Jul 27 12:16:40 2016
-
-:author: Ruyman Azzollini
-
+@author: raf
 """
 
 # IMPORT STUFF
@@ -53,82 +28,15 @@ from vison.support import vistime
 from vison.pipe import lib as pilib
 from vison.support import context
 from vison.support import utils
-from vison.support import flags as flagsmodule
 # END IMPORT
 
-isthere = os.path.exists
+defaults = dict(BLOCKID='FM', 
+                CHAMBER='Unk')
 
-defaults = dict(BLOCKID='R00P00CC000000', 
-                CHAMBER='A_JUN18')
-
-waittime = 120  # seconds
-waitTO = 3600.*4. # seconds
-
-class Pipe(object):
-    """Master Class of FM-analysis at block-level of assembly."""
-    from vison.dark.BIAS0X import BIAS0X
-    from vison.dark.DARK01 import DARK01
-    from vison.flat.NL01 import NL01
-    from vison.flat.NL02 import NL02
-    from vison.flat.FLAT0X import FLAT0X
-    from vison.flat.PTC0X import PTC0X
-    from vison.flat.BF01 import BF01
-    from vison.inject.CHINJ00 import CHINJ00
-    from vison.inject.CHINJ01 import CHINJ01
-    from vison.inject.CHINJ02 import CHINJ02
-    from vison.other.PERSIST01 import PERSIST01
-    from vison.point.PSF0X import PSF0X
-    from vison.point.FOCUS00 import FOCUS00
-    from vison.point.PSF01_PANCHRO import PSF01_PANCHRO
-    from vison.pump.TP00 import TP00
-    from vison.pump.TP01 import TP01
-    from vison.pump.TP11 import TP11
-    from vison.pump.TP02 import TP02
-    from vison.pump.TP21 import TP21
-    from vison.other.STRAY00 import STRAY00
-    from vison.other.MOT_FF import MOT_FF
-    from vison.other.MOT_WARM import MOT_WARM
-    from vison.other.COSMETICS00 import COSMETICS00
-
-    Test_dict = dict(BIAS01=BIAS0X, 
-                     BIAS02=BIAS0X,
-                     COSMETICS00=COSMETICS00,
-                     DARK01=DARK01,
-                     NL01=NL01, NL02=NL02, 
-                     FLAT01=FLAT0X,FLAT_STB=FLAT0X,
-                     PTC01=PTC0X,BF01=BF01,
-                     CHINJ00=CHINJ00, CHINJ01=CHINJ01, CHINJ02=CHINJ02,
-                     TP00=TP00,
-                     TP01=TP01, TP11=TP11,
-                     TP02=TP02, TP21=TP21,
-                     PERSIST01=PERSIST01,
-                     PSF01_PANCHRO=PSF01_PANCHRO,
-                     STRAY00=STRAY00,
-                     MOT_FF=MOT_FF,
-                     MOT_WARM=MOT_WARM)
-    
-    for RD in [15.5, 16.0, 16.5]:
-        Test_dict['NL02_%iR' % (RD*10,)] = NL02
-    for wave in [0, 590, 640, 730, 880]:
-        Test_dict['FLAT02_%i' % wave] = FLAT0X
-    for wave in [590, 640, 730, 800, 880, 0]:
-        Test_dict['PTC02_%i' % wave] = PTC0X
-    for wave in [590, 640, 730, 800, 880, 0]:
-        Test_dict['BF01_%i' % wave] = BF01
-    for temp in [148, 158]:
-        Test_dict['PTC02_%iK' % temp] = PTC0X
-    for RD in [15.5, 16.0, 16.5]:
-        Test_dict['PTC02_%iR' % (RD*10,)] = PTC0X
-    for wave in [590, 640, 730, 800, 880]:
-        Test_dict['FOCUS00_%i' % wave] = FOCUS00
-    for wave in [590, 640, 730, 800, 880]:
-        Test_dict['PSF01_%i' % wave] = PSF0X
-    for temp in [148, 158]:
-        Test_dict['PSF02_%iK' % temp] = PSF0X
-    for wave in [590, 640, 2000, 730, 800, 880, 0]:
-        Test_dict['PSFLUX00_%i' % wave] = PSF0X
-    for wave in [590, 640, 2000, 730, 800, 880, 0]:
-        Test_dict['FLATFLUX00_%i' % wave] = PTC0X
+class GenPipe(object):
+    """Abstract Master Class of FM-analysis, any level of assembly."""
+   
+    Test_dict = dict()    
 
     def __init__(self, inputdict, dolog=True, drill=False, debug=False, startobsid=0,
                  processes=1,tag='',cleanafter=False):
@@ -136,13 +44,11 @@ class Pipe(object):
         
         self.inputs = defaults.copy()
         self.inputs.update(inputdict)
-        self.tasks = self.inputs['tasks']
-        # BLOCK (ROE+RPSU+CCDs) under test
+        self.tasks = self.inputs['tasks']       
         self.BLOCKID = self.inputs['BLOCKID']
         self.CHAMBER = self.inputs['CHAMBER']
         self.drill = drill
         self.debug = debug
-        self.startobsid = startobsid
         self.processes = processes
         self.cleanafter = cleanafter
         self.tag = tag
