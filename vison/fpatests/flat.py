@@ -17,6 +17,7 @@ from skimage import exposure
 from scipy import ndimage
 import gc
 
+from vison.support import vjson
 from vison.datamodel import ccd as ccdmod
 from vison.support import files
 from vison.fpa import fpa as fpamod
@@ -385,8 +386,13 @@ class MetaFlat(MetaCal):
                          'PRNU_vs_FLU_%s.png' % testname)
         
         for testname in self.testnames:
-            self.figs['PRNU_MAP_%s' % testname] = os.path.join(self.figspath,
-                         'PRNU_MAP_%s.png' % testname)
+            
+            for icol,colkey in enumerate(self.colkeys[testname]):
+                
+                self.figs['PRNU_MAP_%s_%s' % (testname,colkey)] = os.path.join(self.figspath,
+                             'PRNU_MAP_%s_%s.png' % (testname,colkey))
+                self.figs['PRNU_MAP_%s_%s_json' % (testname,colkey)] = os.path.join(self.figspath,
+                             'PRNU_MAP_%s_%s.json' % (testname,colkey))
         
         for testname in self.testnames:
             for colkey in self.colkeys[testname]:
@@ -481,11 +487,13 @@ class MetaFlat(MetaCal):
                 
                 PRNUMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
                                 extractor=self._get_extractor_PRNU_fromPT(colkey))
-            
+
+                vjson.save_jsonfile(PRNUMAP,self.figs['PRNU_MAP_%s_%s_json' % (testname, colkey)])
+                
                 
                 self.plot_SimpleMAP(PRNUMAP,kwargs=dict(
                         suptitle='%s [%s]: PRNU' % (stestname,colkey),
-                        figname = self.figs['PRNU_MAP_%s' % testname]
+                        figname = self.figs['PRNU_MAP_%s_%s' % (testname,colkey)]
                         ))
         
         
