@@ -66,8 +66,6 @@ def prepare_one_image(q,dd,ogse,inputs,iObs,
         FW_ID = dd.mx['wave'][iObs,0]
         wavelength = ogse['FW']['F%i' % FW_ID]
         
-    
-
     for jCCD, CCDkey in enumerate(CCDs):
         
         #vstart = self.dd.mx['vstart'][iObs, jCCD]

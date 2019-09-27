@@ -17,6 +17,7 @@ import datetime
 import sys
 import string as st
 import traceback
+import multiprocessing as mp
 
 
 from vison import __version__
@@ -294,4 +295,35 @@ class FpaTask(object):
     
     def check_data(self):
         """ """
+        pass
+    
+    
+    def iterate_over_CCDs_parallel(self, LE1, method_on_ccdobj, method_on_self):
+        """ """
+        
+        arglist = []
+        
+        mgr = mp.Manager()
+        queue = mgr.Queue()
+        
+        for jY in range(1,LE1.fpamodel.NSLICES+1):
+            for iX in range(1,LE1.fpamodel.NSLICES+1):
+                
+                CCDID = 'C_%i%i' % (jY,iX)                
+                arglist.append([self, queue, LE1, CCDID])
+        
+        pool = mp.Pool(processes = self.processes)      
+         
+        for i in range(len(arglist)):
+            pool.apply_async(method_on_ccdobj, args=arglist[i])
+        pool.close()
+        pool.join()
+        
+        replies = []
+        while not queue.empty():
+            replies.append(queue.get())
+        
+        for reply in replies:
+            method_on_self(self,reply)
+        
         
