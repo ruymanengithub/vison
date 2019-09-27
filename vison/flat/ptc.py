@@ -179,23 +179,77 @@ def foo_bloom(means, var):
     """
     
     bloom_ADU = np.nan
+        
+    Nbins = 40
+    bins = np.linspace(2**16*0.3,2**16,Nbins)
+    threshold = 0.10
     
-    mask = np.ones_like(means)
-    bins = np.linspace(2**16*0.3,2**16,60)
-    threshold = 0.05
+    avgpopbin = len(means[means>=bins[0]])/float(Nbins)
+    
+    mask = np.ones(Nbins)
+    relranges = np.zeros(Nbins)
+    binmeans = np.zeros(Nbins)
     
     for i in range(len(bins)-1):        
         sel=np.where((means>=bins[i]) & (means < bins[i+1]))
-        if len(sel[0])>0:
-            relrange = (var[sel].max()-var[sel].min())/var[sel].mean()
-            if relrange >threshold:
-                mask[sel] = 0
+        if len(sel[0])>avgpopbin/2.:
+            relrange = var[sel].std()/var[sel].mean()
+            if relrange > threshold:
+                mask[i] = 0
+                binmeans[i] = means[sel].mean()
+                relranges[i] = relrange
     
     if np.any(mask ==0.):
-        bloom_ADU = means[np.where(mask == 0)[0][0]]
+        bloom_ADU = binmeans[np.where(mask == 0)[0][0]]
     else:
         bloom_ADU = -means[-1]
     
     res = dict(bloom_ADU=bloom_ADU)
+    
+    
+    
+    return res
+
+def foo_bloom_advanced(means, var, _fit):
+    """
+    Finds blooming limit (where variance drops, if it does...).
+
+    """    
+    
+    bloom_ADU = np.nan
+    
+    var_bf = np.polyval(_fit['fit'],means)
+    
+    var_res = var-var_bf    
+    
+    withinconfidence = np.where((means>2.E3) & (means<3.E4))
+    var_mad = np.median(np.abs(var_res[withinconfidence])) # median absolute deviation
+        
+    Nbins = 40
+    bins = np.linspace(2**16*0.3,2**16,Nbins)
+    thresholdfactor = 5.
+    
+    avgpopbin = len(means[means>=bins[0]])/float(Nbins)
+    
+    mask = np.ones(Nbins)
+    binmeans = np.zeros(Nbins)
+    
+    for i in range(len(bins)-1):        
+        sel=np.where((means>=bins[i]) & (means < bins[i+1]))
+        if len(sel[0])>avgpopbin/2.:
+            local_std = var[sel].std()
+            if local_std > thresholdfactor*var_mad:
+                mask[i] = 0
+                binmeans[i] = means[sel].mean()
+
+    
+    if np.any(mask ==0.):
+        bloom_ADU = binmeans[np.where(mask == 0)[0][0]]
+    else:
+        bloom_ADU = -means[-1]
+    
+    res = dict(bloom_ADU=bloom_ADU)
+    
+    
     
     return res
