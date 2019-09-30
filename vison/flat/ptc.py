@@ -227,29 +227,37 @@ def foo_bloom_advanced(means, var, _fit):
         
     Nbins = 40
     bins = np.linspace(2**16*0.3,2**16,Nbins)
-    thresholdfactor = 5.
+    thresholdfactor = 20.
     
     avgpopbin = len(means[means>=bins[0]])/float(Nbins)
     
     mask = np.ones(Nbins)
     binmeans = np.zeros(Nbins)
+    binstds = np.zeros(Nbins)
     
     for i in range(len(bins)-1):        
         sel=np.where((means>=bins[i]) & (means < bins[i+1]))
         if len(sel[0])>avgpopbin/2.:
             local_std = var[sel].std()
+            binstds[i] = local_std
+            binmeans[i] = means[sel].mean()
             if local_std > thresholdfactor*var_mad:
                 mask[i] = 0
-                binmeans[i] = means[sel].mean()
 
     
     if np.any(mask ==0.):
-        bloom_ADU = binmeans[np.where(mask == 0)[0][0]]
+        try: bloom_ADU = binmeans[np.where(mask == 0)[0][0]]
+        except:
+            bloom_ADU = -means[-1]
     else:
         bloom_ADU = -means[-1]
     
     res = dict(bloom_ADU=bloom_ADU)
-    
-    
+    #from pylab import plot,show,axvline,axhline
+    #plot(binmeans,binstds,'k.')
+    #axhline(y=thresholdfactor*var_mad,ls='--',color='r')
+    #axvline(x=bloom_ADU,ls='-',color='g')
+    #show()    
+    #stop()
     
     return res

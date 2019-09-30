@@ -169,7 +169,7 @@ class MetaPTC(MetaCal):
         if badu>0:
             return badu
         else:
-            return 1000.
+            return np.nan
 
 
     def _extract_BE_fromPT(self,PT,block,CCDk,Q):
@@ -181,7 +181,7 @@ class MetaPTC(MetaCal):
         if be>0:
             return be
         else:
-            return 1000.
+            return np.nan
     
     def gen_GAIN_MXdict(self):
         """ """
@@ -267,8 +267,8 @@ class MetaPTC(MetaCal):
             stestname = st.replace(testname,'_','\_')
             self.plot_SimpleMAP(BADU_MAP,kwargs=dict(
                     suptitle='%s: BLOOM-ADU [DN]' % stestname,
-                    figname=self.figs['BLOOM_ADU_MAP_%s' % testname],
-                    corekwargs=dict(norm = Normalize(vmin=3e4,vmax=2**16, clip=False))))
+                    figname=self.figs['BLOOM_ADU_MAP_%s' % testname]))#,
+                    #corekwargs=dict(norm = Normalize(vmin=3e4,vmax=2**16, clip=False))))
         
         for testname in self.testnames:
             
@@ -277,8 +277,8 @@ class MetaPTC(MetaCal):
             stestname = st.replace(testname,'_','\_')
             self.plot_SimpleMAP(BE_MAP,kwargs=dict(
                     suptitle='%s: BLOOM-ELECTRONS' % stestname,
-                    figname=self.figs['BLOOM_ELE_MAP_%s' % testname],
-                    corekwargs=dict(norm = Normalize(vmin=1e5,vmax=2.2E5, clip=False))))
+                    figname=self.figs['BLOOM_ELE_MAP_%s' % testname]))#,
+                    #corekwargs=dict(norm = Normalize(vmin=1e5,vmax=2.2E5, clip=False))))
         
         # HER map
         

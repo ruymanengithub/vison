@@ -590,6 +590,7 @@ class PTC0X(FlatTask):
 
             for jQ, Q in enumerate(Quads):
                 
+                #print('%s%s' % (CCDk,Q)) # TESTS
                 
                 ixsel = np.where(~np.isnan(self.dd.mx['ObsID_pair'][:]))
 

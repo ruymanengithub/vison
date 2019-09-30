@@ -467,7 +467,7 @@ class MetaCal(object):
                 VALs.append(MAPdict[ckey][Q])
         
         
-        normfunction = Normalize(vmin=np.min(VALs),vmax=np.max(VALs),clip=False)
+        normfunction = Normalize(vmin=np.nanmin(VALs),vmax=np.nanmax(VALs),clip=False)
    
         _kwargs = dict(doColorbar=True,              
               corekwargs=dict(
