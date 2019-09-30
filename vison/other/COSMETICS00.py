@@ -375,6 +375,15 @@ class COSMETICS00(DarkTask):
             self.report.add_Text(msg)
             self.report.add_Text(productsstr,verbatim=True)
         
+    
+    def _get_NBadCols(self,maskccdobj, Q, iext=-1):
+        """ """
+        quaddata = maskccdobj.get_quad(Q,canonical=True,extension=iext)        
+        bX,bY = np.where(quaddata)
+        uCol,uColcounts = np.unique(bX,return_counts=True)    
+        Ncols = int(np.sum(uColcounts>200)) # caveat: this also includes non-adjacent pixels
+        
+        return Ncols
         
     def meta(self):
         """
@@ -386,7 +395,7 @@ class COSMETICS00(DarkTask):
                 keyword='meta', Title='COSMETICS00: Masks Displays and Statistics', level=0)
         
         maskkeys = ['DARK','FLAT','MERGE']
-        NpixImgQuad = 2066. * 2048. # HARDWIRED
+        NpixImgQuad = self.ccdcalc.NrowsCCD * self.ccdcalc.NcolsCCD
         
         indices = copy.deepcopy(self.dd.indices)
         CCDs = indices.get_vals('CCD')
@@ -419,8 +428,9 @@ class COSMETICS00(DarkTask):
         DEF_TB['CCD'] = np.zeros(NP,dtype='int32')
         DEF_TB['Q'] = np.zeros(NP,dtype='int32')
         
-        for maskkey in maskkeys:        
+        for maskkey in maskkeys:
             DEF_TB['N_%s' % maskkey] = np.zeros(NP,dtype='int32')
+            DEF_TB['NCOLS_%s' % maskkey] = np.zeros(NP,dtype='int32')
         
         DEF_TB['PIXLOST'] = np.zeros(NP,dtype='float32')
         
@@ -452,9 +462,11 @@ class COSMETICS00(DarkTask):
                                                ignore_pover=True,
                                                extension=iMext)[0]
                         
+                        
                         DEF_TB['N_%s' % maskkey][kk] = kQ_Ndefects
                         DEF_TB['PIXLOST'][kk] = kQ_Ndefects / NpixImgQuad * 100.
-                        
+                        DEF_TB['NCOLS_%s' % maskkey][kk] = self._get_NBadCols(MSKccdobj,Q,iext=iMext)
+                              
                         qdata = MSKccdobj.get_quad(Q,canonical=False,extension=iMext).copy()
                         qdata = 1.-qdata # inversion
                         sqdata = ndimage.filters.gaussian_filter(qdata,sigma=10.,
@@ -492,7 +504,8 @@ class COSMETICS00(DarkTask):
             fi = lambda x: '%i' % x
             fpc = lambda x: '%.2f %%' % x
             
-            cov_formatters=[fccd,fq,fi,fi,fi,fpc]
+            cov_formatters=[fccd,fq,fi,fi,fi,fi,fpc]
+            columns = ['CCD','Q','N_DARK','N_FLAT','N_MERGE','NCOLS_MERGE','PIXLOST']
             
             caption = '%s: DEFECTS TABLE.' % \
                 (self.inputs['test'],)
@@ -501,7 +514,8 @@ class COSMETICS00(DarkTask):
                                                caption=nicecaption,
                                                fitwidth=True,
                                                tiny=True,
-                                               formatters=cov_formatters)
+                                               formatters=cov_formatters,
+                                               columns=columns)
             self.report.add_Text(Ptex)
         
         # DO THE PLOTS
