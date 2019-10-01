@@ -16,7 +16,7 @@ Created on Thu Sep 14 16:29:36 2017
 from pdb import set_trace as stop
 import numpy as np
 from collections import OrderedDict
-from pylab import plot,show
+#from pylab import plot,show
 
 from vison.support import flags as flmod
 # END IMPORT
@@ -52,7 +52,7 @@ def fitPTC(means, var, debug=False):
     from sklearn.pipeline import make_pipeline
     
     if debug:
-        from pylab import plot,show
+        from matplotlib import pyplot as plt
     
     sigmathresh=5. # sigma clipping
     #flulims = [1.E3,2**16-1.E3] # FLUENCE LIMITS
@@ -111,104 +111,18 @@ def fitPTC(means, var, debug=False):
                       quality=quality)
     
     if debug:
-        plot(means,var,'r.')
-        plot(means[ixsel],var[ixsel],'b.')
-        plot(means,np.polyval(p,means),'k-')
-        show()
+        fig = plt.figure(figsize=(8,4))
+        ax1 = fig.add_subplot(121)
+        ax1.plot(means,var,'r.')
+        ax1.plot(means[ixsel],var[ixsel],'b.')
+        ax1.plot(means,np.polyval(p,means),'k-')
+        ax2 = fig.add_subplot(122)
+        ax2.plot(means,var-np.polyval(p,means),'k.')
+        plt.show()
         stop()
     
     return fitresults
 
-#def fitPTC_old(means, var, debug=False):
-#    """Fits Photon Transfer Curve to obtain gain."""
-#    if debug:
-#        from pylab import plot,show
-#    
-#    poldeg = 2
-#    flags = flmod.Flags(fitPTC_flags)
-#
-#    order = np.argsort(means)
-#    means = np.array(means)[order]
-#    var = np.array(var)[order]
-#
-#    ixmaxvar = np.argmax(var)
-#    maxvar = var[ixmaxvar]
-#    ixsel = np.where((means < means[ixmaxvar]) & (var < maxvar*0.95))
-#    
-#    try:
-#        
-#        res = np.polyfit(means[ixsel], var[ixsel], poldeg, full=False, cov=True)
-#        p = res[0]
-#        V = res[1]
-#    
-#    except:
-#        p = np.zeros(poldeg+1)
-#        p[0] = 0.01
-#        V = np.zeros((poldeg+1,poldeg+1),dtype='float32')
-#        
-#        flags.add('EXCEPTION')
-#    
-#    ep = np.sqrt(np.diag(V))
-#    
-#    if np.any((ep == 0.) | np.isinf(ep) | np.isnan(ep)):
-#        flags.add('BADERRORS')
-#    
-#    gain = 1./p[1]
-#    
-#    if ep[1]/gain>1.e-3:
-#        flags.add('POORFIT')
-#    
-#    quality = flags.value
-#    fitresults = dict(fit=p, efit=ep, gain=gain,
-#                      quadterm=p[0], rn=p[2], 
-#                      quality=quality)
-#    
-#    if debug:
-#        plot(means,var,'r.')
-#        plot(means[ixsel],var[ixsel],'b.')
-#        show()
-#        stop()
-#    
-#    return fitresults
-
-
-def foo_bloom(means, var):
-    """
-    Finds blooming limit (where variance drops, if it does...).
-
-    """
-    
-    bloom_ADU = np.nan
-        
-    Nbins = 40
-    bins = np.linspace(2**16*0.3,2**16,Nbins)
-    threshold = 0.10
-    
-    avgpopbin = len(means[means>=bins[0]])/float(Nbins)
-    
-    mask = np.ones(Nbins)
-    relranges = np.zeros(Nbins)
-    binmeans = np.zeros(Nbins)
-    
-    for i in range(len(bins)-1):        
-        sel=np.where((means>=bins[i]) & (means < bins[i+1]))
-        if len(sel[0])>avgpopbin/2.:
-            relrange = var[sel].std()/var[sel].mean()
-            if relrange > threshold:
-                mask[i] = 0
-                binmeans[i] = means[sel].mean()
-                relranges[i] = relrange
-    
-    if np.any(mask ==0.):
-        bloom_ADU = binmeans[np.where(mask == 0)[0][0]]
-    else:
-        bloom_ADU = -means[-1]
-    
-    res = dict(bloom_ADU=bloom_ADU)
-    
-    
-    
-    return res
 
 def foo_bloom_advanced(means, var, _fit):
     """
@@ -226,38 +140,53 @@ def foo_bloom_advanced(means, var, _fit):
     var_mad = np.median(np.abs(var_res[withinconfidence])) # median absolute deviation
         
     Nbins = 40
-    bins = np.linspace(2**16*0.3,2**16,Nbins)
-    thresholdfactor = 20.
+    bins = np.linspace(2**16*0.1,2**16,Nbins)
+    thresholdfactor = 5.
     
-    avgpopbin = len(means[means>=bins[0]])/float(Nbins)
+    #avgpopbin = len(means[means>=bins[0]])/float(Nbins)
     
     mask = np.ones(Nbins)
     binmeans = np.zeros(Nbins)
     binstds = np.zeros(Nbins)
     
-    for i in range(len(bins)-1):        
+    for i in range(Nbins-1):        
         sel=np.where((means>=bins[i]) & (means < bins[i+1]))
-        if len(sel[0])>avgpopbin/2.:
-            local_std = var[sel].std()
-            binstds[i] = local_std
-            binmeans[i] = means[sel].mean()
-            if local_std > thresholdfactor*var_mad:
+        binmeans[i] = means[sel].mean()
+        
+        if len(sel[0])>9:
+            local_mad = np.median(np.abs(var[sel]-np.median(var[sel])))
+            binstds[i] = local_mad            
+            if local_mad > thresholdfactor*var_mad:
                 mask[i] = 0
-
     
-    if np.any(mask ==0.):
-        try: bloom_ADU = binmeans[np.where(mask == 0)[0][0]]
+    if np.any(mask ==0.):        
+        selector = mask[1:]+mask[0:-1]
+        
+        try: 
+            bloom_ADU = binmeans[np.where(selector == 0)[0][0]]
         except:
             bloom_ADU = -means[-1]
     else:
         bloom_ADU = -means[-1]
     
     res = dict(bloom_ADU=bloom_ADU)
-    #from pylab import plot,show,axvline,axhline
-    #plot(binmeans,binstds,'k.')
-    #axhline(y=thresholdfactor*var_mad,ls='--',color='r')
-    #axvline(x=bloom_ADU,ls='-',color='g')
-    #show()    
-    #stop()
+    
+    debug = False
+    if debug:
+    
+        from matplotlib import pyplot as plt
+        fig = plt.figure(figsize=(12,4))
+        ax1 = fig.add_subplot(131)
+        ax1.plot(binmeans,binstds,'k.')
+        ax1.axhline(y=thresholdfactor*var_mad,ls='--',color='r')
+        ax1.axvline(x=bloom_ADU,ls='-',color='g')
+        ax2 = fig.add_subplot(132)
+        ax2.plot(means,var,'b.')
+        ax2.axvline(x=bloom_ADU,ls='-',color='g')
+        ax3 = fig.add_subplot(133)
+        ax3.plot(means,var_res,'b.')
+        ax3.axvline(x=bloom_ADU,ls='-',color='g')
+        plt.show()    
+        stop()
     
     return res
