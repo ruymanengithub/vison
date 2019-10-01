@@ -147,6 +147,7 @@ class MetaCosmetics(MetaCal):
         Ndark_v = tmp_v_CQ.copy()
         Nflat_v = tmp_v_CQ.copy()
         Nmerge_v = tmp_v_CQ.copy()
+        Ncols_v = tmp_v_CQ.copy()
         
         productspath = os.path.join(inventoryitem['resroot'],'products')       
         
@@ -162,10 +163,12 @@ class MetaCosmetics(MetaCal):
                 Ndark_v[0,iCCD,kQ] = NPIX_dict['N_DARK'].as_matrix()[ixsel][0]
                 Nflat_v[0,iCCD,kQ] = NPIX_dict['N_FLAT'].as_matrix()[ixsel][0] 
                 Nmerge_v[0,iCCD,kQ] = NPIX_dict['N_MERGE'].as_matrix()[ixsel][0] 
+                Ncols_v[0,iCCD,kQ] = NPIX_dict['NCOLS_MERGE'].as_matrix()[ixsel][0] 
                 
         sidd.addColumn(Ndark_v, 'NDARK', IndexCQ)
         sidd.addColumn(Nflat_v, 'NFLAT', IndexCQ)
         sidd.addColumn(Nmerge_v, 'NMERGE', IndexCQ)
+        sidd.addColumn(Ncols_v, 'NCOLS', IndexCQ)
         
         # Maps of bad pixels
         
@@ -205,6 +208,11 @@ class MetaCosmetics(MetaCal):
             return LOGNDEF
         
         return _extract_LOGNDEF_fromPT
+    
+    def _get_NBADCOLS_fromPT(self, PT, block, CCDk, Q):
+        ixblock = np.where(PT['BLOCK'].data == block)
+        column = 'NCOLS_%s_Quad%s' % (CCDk,Q)
+        return PT[column][ixblock][0]
     
     def _get_DEFECTSMAP_from_PT(self,maskkey):
         """ """
@@ -247,6 +255,9 @@ class MetaCosmetics(MetaCal):
         
         self.figs['DEFECTS_COUNTS_MAP'] = os.path.join(self.figspath,
                          'DEFECTS_COUNTS_MAP.png')
+        self.figs['BADCOLS_COUNTS_MAP'] = os.path.join(self.figspath,
+                         'BADCOLS_COUNTS_MAP.png')
+        
         
     def dump_aggregated_results(self):
         """ """
@@ -275,6 +286,14 @@ class MetaCosmetics(MetaCal):
                         figname=self.figs['DEFECTS_COUNTS_MAP']
                         ))
 
+        # Bad Column Counts
         
         
+        NBADCOLSMAP = self.get_FPAMAP_from_PT(self.ParsedTable['COSMETICS00'],
+                                              extractor=self._get_NBADCOLS_fromPT)
+            
+        self.plot_SimpleMAP(NBADCOLSMAP, kwargs=dict(
+            suptitle='NR. of BAD COLUMNS [MERGED MASK]',
+            figname=self.figs['BADCOLS_COUNTS_MAP']
+            ))
         
