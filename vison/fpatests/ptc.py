@@ -51,6 +51,8 @@ class MetaPTC(MetaCal):
         self.incols = cols2keep
         self.ParsedTable = OrderedDict()
         
+        self.batches_highPRNU = ['14313','14471']
+        
         self.init_fignames()
     
     def parse_single_test(self, jrep, block, testname, inventoryitem):
@@ -215,6 +217,18 @@ class MetaPTC(MetaCal):
         if not os.path.exists(self.figspath):
             os.system('mkdir %s' % self.figspath)
         
+        self.figs['GvsT'] = os.path.join(self.figspath,
+                         'GAIN_vs_Det_Temp.png')
+        
+        self.figs['GvsWave'] = os.path.join(self.figspath,
+                         'GAIN_vs_Wavelength.png')
+        
+        self.figs['GvsOD'] = os.path.join(self.figspath,
+                         'GAIN_vs_OD_CAL.png')
+        
+        self.figs['GvsRD'] = os.path.join(self.figspath,
+                         'GAIN_vs_RD_CAL.png')
+        
         for testname in self.testnames:
             self.figs['GAIN_MAP_%s' % testname] = os.path.join(self.figspath,
                          'GAIN_MAP_%s.png' % testname)
@@ -227,11 +241,177 @@ class MetaPTC(MetaCal):
             
             self.figs['HER_MAP_%s' % testname] = os.path.join(self.figspath,
                          'HER_MAP_%s.png' % testname)
+            
+    
+    def _get_XYdict_GvsLAM(self):
+        """ """
+        
+        x = []
+        y = []
+        ey = []
+        
+        for testname in self.testnames:
+            
+            PT = self.ParsedTable[testname]
+            
+            x.append(PT['WAVENM'][0])
+            
+            _y = []
+            
+            for block in self.flight_blocks:
+                
+                ixblock = np.where(PT['BLOCK'] == block)
+                
+                for CCD in self.CCDs:
+                                        
+                    for Q in self.Quads:
+                    
+                        Gcol = 'GAIN_CCD%i_Quad%s' % (CCD,Q)
+                        
+                        _y.append(PT[Gcol][ixblock][0])
+                        
+            y.append(np.nanmean(_y))
+            ey.append(np.nanstd(_y))
+        
+        sort =np.argsort(x)
+        x = np.array(x)[sort]
+        y = np.array(y)[sort]
+        ey = np.array(ey)[sort]
+                
+        XYdict = dict(x=x,y=y,ey=ey)
+        
+        return XYdict
+    
+    def _get_XYdict_GvsT(self):
+        """ """
+        
+        x = dict()
+        y = dict()
+        
+        labelkeys = []
+        
+        for testname in self.testnames:
+            labelkeys.append(testname)
+            
+            PT = self.ParsedTable[testname]
+            
+            x[testname] = []
+            y[testname] = []
+            
+            for iCCD,CCD in enumerate(self.CCDs):
+                TCCD = (PT['HK_CCD%s_TEMP_T' % CCD]+PT['HK_CCD%s_TEMP_B' % CCD])/2.
+                for iQ, Q in enumerate(self.Quads):
+                    
+                    Ycolumn = 'GAIN_CCD%s_Quad%s' % (CCD,Q)
+                    
+                    _Ydata = PT[Ycolumn].copy()
+                    
+                    x[testname] += TCCD.tolist()
+                    y[testname] += _Ydata.tolist()
+                    
+                    
+            x[testname] = np.array(x[testname])
+            y[testname] = np.array(y[testname])
+        
+        XYdict = dict(x=x,y=y,labelkeys=labelkeys)
+        
+        return XYdict
 
+    def _get_XYdict_GvsOD(self):
+        """ """
+        
+        x = dict()
+        y = dict()
+        
+        labelkeys = []
+        
+        for testname in self.testnames:
+            labelkeys.append(testname)
+            
+            PT = self.ParsedTable[testname]
+            
+            x[testname] = []
+            y[testname] = []
+            
+            for iCCD,CCD in enumerate(self.CCDs):
+                
+                for iQ, Q in enumerate(self.Quads):
+                    
+                    if Q in ['E','F']:
+                        Xcolumn = 'HK_CCD%i_OD_T_CAL' % (CCD,)
+                    else:
+                        Xcolumn = 'HK_CCD%i_OD_B_CAL' % (CCD,) 
+                    
+                    _Xdata = PT[Xcolumn].copy()
+                    
+                    Ycolumn = 'GAIN_CCD%s_Quad%s' % (CCD,Q)                    
+                    _Ydata = PT[Ycolumn].copy()
+                    
+                    x[testname] += _Xdata.tolist()
+                    y[testname] += _Ydata.tolist()
+                    
+                    
+            x[testname] = np.array(x[testname])
+            y[testname] = np.array(y[testname])
+        
+        XYdict = dict(x=x,y=y,labelkeys=labelkeys)
+        
+        return XYdict
+
+    def _get_XYdict_GvsRD(self):
+        """ """
+        
+        x = dict()
+        y = dict()
+        
+        labelkeys = []
+        
+        for testname in self.testnames:
+            labelkeys.append(testname)
+            
+            PT = self.ParsedTable[testname]
+            
+            x[testname] = []
+            y[testname] = []
+            
+            for iCCD,CCD in enumerate(self.CCDs):
+                
+                for iQ, Q in enumerate(self.Quads):
+                                        
+                    if Q in ['E','F']:
+                        Xcolumn = 'HK_COMM_RD_T_CAL' 
+                    else:
+                        Xcolumn = 'HK_COMM_RD_B_CAL' 
+                    
+                    _Xdata = PT[Xcolumn].copy()
+                    
+                    Ycolumn = 'GAIN_CCD%s_Quad%s' % (CCD,Q)                    
+                    _Ydata = PT[Ycolumn].copy()
+                    
+                    x[testname] += _Xdata.tolist()
+                    y[testname] += _Ydata.tolist()
+                    
+                    
+            x[testname] = np.array(x[testname])
+            y[testname] = np.array(y[testname])
+        
+        XYdict = dict(x=x,y=y,labelkeys=labelkeys)
+        
+        return XYdict
+
+    
     def dump_aggregated_results(self):
         """ """
         
         outpathroot = self.outpathroot
+        
+        doGainMaps=False
+        doBloomMaps=False
+        doHERMaps=False
+        doGvsWave=False
+        doGvsT=False
+        doGvsOD=False
+        doGvsRD=True
         
         # GAIN matrix (all blocks and test/waves) to dict() saved as pickle
         
@@ -244,60 +424,122 @@ class MetaPTC(MetaCal):
         
         # GAIN maps (all tests/waves)
         
-        for testname in self.testnames:
+        if doGainMaps:
             
-            GMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_GAIN_fromPT)
-            
-            avgG = self.get_stat_from_FPAMAP(GMAP,np.nanmean)
-            print('Average G [%s]: %.2f' % (testname,avgG))
-            
-            stestname = st.replace(testname,'_','\_')
-            
-            self.plot_SimpleMAP(GMAP,kwargs=dict(
-                    suptitle='%s: GAIN e-/ADU' % stestname,
-                    figname=self.figs['GAIN_MAP_%s' % testname]))
+            for testname in self.testnames:
+                
+                GMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_GAIN_fromPT)
+                
+                avgG = self.get_stat_from_FPAMAP(GMAP,np.nanmean)
+                print('Average G [%s]: %.2f' % (testname,avgG))
+                
+                stestname = st.replace(testname,'_','\_')
+                
+                self.plot_SimpleMAP(GMAP,kwargs=dict(
+                        suptitle='%s: GAIN e-/ADU' % stestname,
+                        figname=self.figs['GAIN_MAP_%s' % testname]))
         
+        if doBloomMaps:
 
-        # BLOOM maps (ADU and e-, from PTC01)
-        
-        for testname in self.testnames:
+            # BLOOM maps (ADU and e-, from PTC01)
             
-            BADU_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_BADU_fromPT)
-        
-            stestname = st.replace(testname,'_','\_')
-            self.plot_SimpleMAP(BADU_MAP,kwargs=dict(
-                    suptitle='%s: BLOOM-ADU [DN]' % stestname,
-                    figname=self.figs['BLOOM_ADU_MAP_%s' % testname]))#,
-                    #corekwargs=dict(norm = Normalize(vmin=3e4,vmax=2**16, clip=False))))
-        
-        for testname in self.testnames:
+            for testname in self.testnames:
+                
+                BADU_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_BADU_fromPT)
             
-            BE_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_BE_fromPT)
-        
-            stestname = st.replace(testname,'_','\_')
-            self.plot_SimpleMAP(BE_MAP,kwargs=dict(
-                    suptitle='%s: BLOOM-ELECTRONS' % stestname,
-                    figname=self.figs['BLOOM_ELE_MAP_%s' % testname]))#,
-                    #corekwargs=dict(norm = Normalize(vmin=1e5,vmax=2.2E5, clip=False))))
+                stestname = st.replace(testname,'_','\_')
+                self.plot_SimpleMAP(BADU_MAP,kwargs=dict(
+                        suptitle='%s: BLOOM-ADU [DN]' % stestname,
+                        figname=self.figs['BLOOM_ADU_MAP_%s' % testname]))#,
+                        #corekwargs=dict(norm = Normalize(vmin=3e4,vmax=2**16, clip=False))))
+            
+            for testname in self.testnames:
+                
+                BE_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_BE_fromPT)
+            
+                stestname = st.replace(testname,'_','\_')
+                self.plot_SimpleMAP(BE_MAP,kwargs=dict(
+                        suptitle='%s: BLOOM-ELECTRONS' % stestname,
+                        figname=self.figs['BLOOM_ELE_MAP_%s' % testname]))#,
+                        #corekwargs=dict(norm = Normalize(vmin=1e5,vmax=2.2E5, clip=False))))
         
         # HER map
         
-        for testname in self.testnames:
+        if doHERMaps:
+        
+            for testname in self.testnames:
+                
+                HERMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_HER_fromPT)
+                
+                stestname = st.replace(testname,'_','\_')
+                            
+                self.plot_SimpleMAP(HERMAP,kwargs=dict(
+                        suptitle='%s: Hard Edge Response Factor' % stestname,
+                        figname=self.figs['HER_MAP_%s' % testname]))
+        
+        
+        
+        # GAIN vs. Wavelength
+        
+        if doGvsWave:
+        
+            GvsWavedict = self._get_XYdict_GvsLAM()
             
-            HERMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_HER_fromPT)
-            
-            stestname = st.replace(testname,'_','\_')
-                        
-            self.plot_SimpleMAP(HERMAP,kwargs=dict(
-                    suptitle='%s: Hard Edge Response Factor' % stestname,
-                    figname=self.figs['HER_MAP_%s' % testname]))
+            self.plot_XY(GvsWavedict,kwargs=dict(
+                        title='Gain vs. Wavelength',
+                        doLegend=False,
+                        doYErrbars=True,
+                        xlabel='Wavelength',
+                        ylabel='Gain [e-/ADU]',
+                        ylim=[3.3,3.7],
+                        corekwargs=dict(linestyle='',marker='.'),
+                        #figname = ''))
+                        figname=self.figs['GvsWave']))
+        
         
         # GAIN vs. detector temperature (PTC01)
         
+        if doGvsT:
+        
+            GvsTdict = self._get_XYdict_GvsT()
+            
+            self.plot_XY(GvsTdict,kwargs=dict(
+                        title='Gain vs. Detector Temperature',
+                        doLegend=True,
+                        xlabel='Detector Temperature',
+                        ylabel='Gain [e-/ADU]',                    
+                        corekwargs=dict(linestyle='',marker='.'),                        
+                        figname=self.figs['GvsT']))
+        
         # GAIN vs. OD-CAL (PTC01)
         
-        # GAIN vs. RD-CAL (PTC01)
+        if doGvsOD:
         
+            GvsODdict = self._get_XYdict_GvsOD()
+            
+            self.plot_XY(GvsODdict,kwargs=dict(
+                        title='Gain vs. Output Drain',
+                        doLegend=True,
+                        xlabel='Output Drain (Calibrated) [V]',
+                        ylabel='Gain [e-/ADU]',   
+                        corekwargs=dict(linestyle='',marker='.'),
+                        #figname=''))
+                        figname=self.figs['GvsOD']))
+        
+#        # GAIN vs. RD-CAL (PTC01)
+        
+        if doGvsRD:        
+
+            GvsRDdict = self._get_XYdict_GvsRD()
+            
+            self.plot_XY(GvsRDdict,kwargs=dict(
+                        title='Gain vs. Reset Drain',
+                        doLegend=True,
+                        xlabel='Reset Drain (Calibrated) [V]',
+                        ylabel='Gain [e-/ADU]',
+                        corekwargs=dict(linestyle='',marker='.'),
+                        #figname=''))
+                        figname=self.figs['GvsRD']))
         
         # Save the ParsedTable(s)
         

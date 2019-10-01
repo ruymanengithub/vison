@@ -340,8 +340,7 @@ class MetaFlat(MetaCal):
                     locator = self.fpa.FPA_MAP[Ckey]
                     CCDsn = locator[3]
                     CCDbatch = CCDsn[0:5]
-                    
-                    
+                                        
                     for Q in self.Quads:
                     
                         PRNUcol = 'PRNU_PC_%s_CCD%i_Quad%s' % (colkey.upper(),CCD,Q)
@@ -423,8 +422,6 @@ class MetaFlat(MetaCal):
             gc.collect()
 
         # MASTER FLATS DISPLAY
-        
-        
         
         if doMFs:
         
