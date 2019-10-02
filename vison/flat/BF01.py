@@ -545,7 +545,11 @@ class BF01(PTC0X):
                         
                             self.dd.products['BF'][CCDk][Q][ulabel] = OrderedDict(Asol=Asol_Q.copy(),
                                                                               psmooth=copy.deepcopy(psmooth_Q),
-                                                                              kernel=kernel_Q.copy())
+                                                                              kernel=kernel_Q.copy(),
+                                                                              fluence=BF_dd['fluence'][jj],
+                                                                              fwhmx=kerQshape['fwhmx'],
+                                                                              fwhmy=kerQshape['fwhmy'],
+                                                                              ell = kerQshape['e'])
                             
                             BF_dd['FWHMx'][jj] = kerQshape['fwhmx']
                             BF_dd['FWHMy'][jj] = kerQshape['fwhmy']
@@ -629,7 +633,9 @@ class BF01(PTC0X):
         bftable_cdp.path = self.inputs['subpaths']['products']
         bftable_cdp.ingest_inputs(
                 data = BF_dddf.copy(),
-                meta=dict(),
+                meta=dict(ulabels = ulabels.copy(),
+                        CCDs = CCDs.copy(),
+                        Quads = Quads.copy()),
                 header=CDP_header.copy()
                 )
 
