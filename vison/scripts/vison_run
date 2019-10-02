@@ -35,6 +35,7 @@ import multiprocessing
 #import importlib
 
 from vison import Pipe
+from vison.systests import fpamaster
 from vison.pipe.lib import broadcast_todo_flags
 from vison.support import vjson
 # END IMPORT
@@ -73,8 +74,8 @@ if __name__ == '__main__':
                       help="Python configuration file to run the pipeline.")
     parser.add_option("-R", "--run", dest="run", default='',
                       help="Run to process - TESTS.")
-    parser.add_option("-j", "--json", dest="json", default='',
-                      help="Json configuration file to run the pipeline.")
+    #parser.add_option("-j", "--json", dest="json", default='',
+    #                  help="Json configuration file to run the pipeline.")
     parser.add_option("-d", "--day", dest="dayfolder", default='',
                       help="Day-folder. Only needed in 'wait' mode.")
     parser.add_option("-v", "--elvis", dest="elvis", default='6.3.0',
@@ -102,13 +103,17 @@ if __name__ == '__main__':
                       default=False, help="Switch matplotlib to TkAgg backend for interactive plotting (e.g. debugging)")
     parser.add_option("-C", "--Clean", dest="cleanafter", action="store_true", default=False,
                       help="Clean After? Aux. files are erased as soon as they are no longer needed, for each Task.")
+    parser.add_option("-F", "--FPA", dest="fpa", action="store_true", default=False,
+                      help="Run FPA Mode?")
     (options, args) = parser.parse_args()
 
     pyconfig = options.pyconfig
-    json = options.json
+    #json = options.json
     
-    assert ((len(pyconfig)>0) or (len(json)>0)), "\npyconfig OR json has to be provided as input, QUITTING!\n"
-    assert (len(pyconfig) >0 ) != (len(json)>0), "\npyconfig XOR json should be provided as input, not both, QUITTING!\n"
+    assert len(pyconfig)>0, "\npyconfig has to be provided as input, QUITTING!\n"
+    
+    #assert ((len(pyconfig)>0) or (len(json)>0)), "\npyconfig OR json has to be provided as input, QUITTING!\n"
+    #assert (len(pyconfig) >0 ) != (len(json)>0), "\npyconfig XOR json should be provided as input, not both, QUITTING!\n"
     
     run = options.run
     dayfolder = options.dayfolder
@@ -124,12 +129,17 @@ if __name__ == '__main__':
     tag = options.tag
     interactive = options.interactive
     cleanafter = options.cleanafter
+    doFPA = options.fpa
+    
+    if wait and doFPA:
+        print('\nFPA mode cannot be run in wait mode, QUITTING!')
+        sys.exit()
     
     if len(pyconfig)>0:
         inputdict = openpyconfigf(pyconfig,run,wait)
         #inputdictgetter = loadpyconfig(pyconfig)
-    elif len(json)>=0:
-        inputdict = parse_jsonconfig(json)
+    #elif len(json)>=0:
+    #    inputdict = parse_jsonconfig(json)
     
     
     if docheck or dotest:
@@ -145,7 +155,13 @@ if __name__ == '__main__':
         import matplotlib.pyplot as plt
         plt.switch_backend('TkAgg')
     
-    pipe = Pipe(inputdict, dolog=dolog, drill=drill,
+    if doFPA:
+        pipe = fpamaster.FpaPipe(inputdict, dolog=dolog, drill=drill,
+                debug=debug, startobsid=startobsid,
+                processes=multithread, tag=tag, 
+                cleanafter = cleanafter)
+    else:
+        pipe = Pipe(inputdict, dolog=dolog, drill=drill,
                 debug=debug, startobsid=startobsid,
                 processes=multithread, tag=tag, 
                 cleanafter = cleanafter)
