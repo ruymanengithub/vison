@@ -50,6 +50,10 @@ class MetaBF(MetaCal):
         
         allgains = files.cPickleRead(kwargs['cdps']['gain'])
         
+        self.products['BF'] = OrderedDict()
+        self.products['BFFIT'] = OrderedDict()
+        
+        
         self.cdps['GAIN'] = OrderedDict()
         for block in self.blocks:
             self.cdps['GAIN'][block] = allgains[block]['PTC01'].copy() 
@@ -112,7 +116,28 @@ class MetaBF(MetaCal):
         productspath = os.path.join(inventoryitem['resroot'],'products')
         BFfitCDP_pick = os.path.join(productspath,os.path.split(sidd.products['BFfitTABLE_CDP'])[-1])
         
+        BFCDP_pick = os.path.join(productspath,os.path.split(sidd.products['BFTABLE_CDP'])[-1])
+                
+        
         BFfitCDP = files.cPickleRead(BFfitCDP_pick)
+        
+        BFCDP = files.cPickleRead(BFCDP_pick)
+        
+        bfcdpkeys_v = np.zeros((1),dtype='S50')
+        bffitcdpkeys_v = np.zeros((1),dtype='S50')
+        
+        
+        bfcdpkey = '%s_%s_%s_%s' % (testname, block, session,jrep+1)
+        bffitcdpkey = '%s_%s_%s_%s' % (testname, block, session,jrep+1)
+        
+        self.products['BF'][bfcdpkey] = copy.deepcopy(BFCDP)
+        self.products['BFFIT'][bffitcdpkey] = copy.deepcopy(BFfitCDP)
+        
+        bfcdpkeys_v[0] = bfcdpkey
+        bffitcdpkeys_v[0] = bffitcdpkey
+        
+        sidd.addColumn(bfcdpkeys_v, 'BFCDP_KEY', IndexS)
+        sidd.addColumn(bffitcdpkeys_v, 'BFFITCDP_KEY', IndexS)
         
         BFfit_df = BFfitCDP['data']['BFFIT']
         
@@ -157,26 +182,139 @@ class MetaBF(MetaCal):
     def _get_GEN_extractor_fromPT(self,colkey):
         """ """
         
-        
         def _extract_fromPT(PT, block, CCDk, Q):
             ixblock = np.where(PT['BLOCK'].data == block)
             column = '%s_%s_Quad%s' % (colkey,CCDk,Q)
-            
-            
+                        
             VAL = np.nanmedian(PT[column][ixblock])
             return VAL
         
         return _extract_fromPT   
+    
+    def _get_BFvalues(self,_BF, CCD, iQ, orientation):
+        """ """
+        
+        data = _BF['data']['BF']
+        
+        ixsel = np.where((data['CCD']==CCD) & (data['Q']==iQ))
+        
+        x = []
+        y = []
+        
+        for ix in ixsel[0]:
+            x.append(data['fluence'][ix])
+            y.append(data['FWHM%s' % orientation.lower()][ix])
+        
+        x = np.array(x)
+        y = np.array(y)
+        
+        order = np.argsort(x)
+        x = x[order].copy()
+        y = y[order].copy()
+        
+        return x,y
+        
+    def _get_BFFITvalues(self, _BFfit, CCD, iQ, orientation):
+        """ """
+        
+        
+        data = _BFfit['data']['BFFIT']
+        
+        ixsel = np.where((data['CCD']==CCD) & (data['Q']==iQ))
+        
+        x = np.array([0.,2.**16])
+        
+        slope = data['FWHM%s_Slope' % \
+                     orientation.lower()][ixsel[0]].as_matrix()[0]
+        y_hwc = data['FWHM%s_HWC' % \
+                     orientation.lower()][ixsel[0]].as_matrix()[0]
+        
+            
+        y = (x-2.**16/2.) * slope*1.E-4 + y_hwc
+        
+        
+        return x,y
+    
+    def _get_FWHMzfitsMAP_from_PT(self, testname, orientation='x'):
+        """ """
+        
+        FWHMzMAP = OrderedDict()
+        FWHMzMAP['labelkeys'] = ['E','Efit','F','Ffit',
+                                'G','Gfit','H','Hfit']
+        
+        PT = self.ParsedTable[testname]
+        
+        for jY in range(self.NSLICES_FPA):
+            for iX in range(self.NCOLS_FPA):
+                
+                Ckey  = 'C_%i%i' % (jY+1,iX+1)
+                FWHMzMAP[Ckey] = OrderedDict()
+                
+                locator = self.fpa.FPA_MAP[Ckey]
+                block = locator[0]
+                CCDk = locator[1]                
+                CCD = int(CCDk[-1])
+                
+                ixblock = np.where(PT['BLOCK'] == block)
+                
+                _bfkey = PT['BFCDP_KEY'][ixblock][0]
+                _bffitkey = PT['BFFITCDP_KEY'][ixblock][0]
+                
+                _BF = self.products['BF'][_bfkey]
+                _BFfit = self.products['BFFIT'][_bffitkey]
+                
+                _ccd_bfdict = OrderedDict(x=OrderedDict(),
+                                          y=OrderedDict())
+                
+                for iQ,Q in enumerate(self.Quads):
+                    
+                    _xRAW, _yRAW = self._get_BFvalues(_BF,CCD, iQ+1, orientation)
+                    
+                    _ccd_bfdict['x'][Q] = _xRAW.copy()/1.e3
+                    _ccd_bfdict['y'][Q] = _yRAW.copy()
+                    
+                    _xFIT, _yFIT = self._get_BFFITvalues(_BFfit,CCD, iQ+1, orientation)
+                    
+                    _ccd_bfdict['x']['%sfit' % Q] = _xFIT.copy()/1.e3
+                    _ccd_bfdict['y']['%sfit' % Q] = _yFIT.copy()
+                    
+                    
+                FWHMzMAP[Ckey] = _ccd_bfdict.copy()
+        
+        return FWHMzMAP
     
     def init_fignames(self):
         """ """
         
         if not os.path.exists(self.figspath):
             os.system('mkdir %s' % self.figspath)
+            
+        self.figs['FWHMX_vs_WAVE'] = os.path.join(self.figspath,
+                         'FWHMX_vs_WAVELENGTH.png')
+        self.figs['FWHMY_vs_WAVE'] = os.path.join(self.figspath,
+                         'FWHMY_vs_WAVELENGTH.png')
         
+        self.figs['SLOPEXY_vs_WAVE'] = os.path.join(self.figspath,
+                         'SLOPEXY_vs_WAVELENGTH.png')
+                
         for testname in self.testnames:
+                        
+            
+            self.figs['FWHMX_curves_MAP_%s' % testname] = os.path.join(self.figspath,
+                         'FWHMX_Curves_MAP_%s.png' % testname)
+            
+            self.figs['SLOPEX_MAP_%s' % testname] = os.path.join(self.figspath,
+                         'SLOPEX_MAP_%s.png' % testname)
+            
             self.figs['FWHMX_MAP_%s' % testname] = os.path.join(self.figspath,
                          'FWHMX_MAP_%s.png' % testname)
+            
+            self.figs['FWHMY_curves_MAP_%s' % testname] = os.path.join(self.figspath,
+                         'FWHMY_curves_MAP_%s.png' % testname)
+            
+            self.figs['SLOPEY_MAP_%s' % testname] = os.path.join(self.figspath,
+                         'SLOPEY_MAP_%s.png' % testname)
+            
             self.figs['FWHMY_MAP_%s' % testname] = os.path.join(self.figspath,
                          'FWHMY_MAP_%s.png' % testname)
             self.figs['ELL_MAP_%s' % testname] = os.path.join(self.figspath,
@@ -184,10 +322,72 @@ class MetaBF(MetaCal):
 
     def dump_aggregated_results(self):
         """ """
-                
         
-        # RON maps, ADUs
+        
+        # FWHMX vs. WAVE
+        
+        # FWHMY vs. WAVE
+        
+        # SLOPEXY_vs_WAVE
+        
+        
+        
         for testname in self.testnames:
+            
+            stestname = st.replace(testname,'_','\_')
+            
+            # FWHMX CURVES MAP
+            
+            
+            corekwargs_fwhmzmap = dict(E=dict(linestyle='',marker='.',color='r'),
+                                          Efit=dict(linestyle='--',marker='',color='r'),
+                                          F=dict(linestyle='',marker='.',color='g'),
+                                          Ffit=dict(linestyle='--',marker='',color='g'),
+                                          G=dict(linestyle='',marker='.',color='b'),
+                                          Gfit=dict(linestyle='--',marker='',color='b'),
+                                          H=dict(linestyle='',marker='.',color='m'),
+                                          Hfit=dict(linestyle='--',marker='',color='m'))
+            
+            FWHMX_fits_MAP = self._get_FWHMzfitsMAP_from_PT(testname,orientation='x')
+            
+            self.plot_XYMAP(FWHMX_fits_MAP,kwargs=dict(
+                        suptitle='%s: FWHMx Fits' % stestname,
+                        doLegend=True,
+                        xlabel='kADU',
+                        ylim=[6.,10.],
+                        ylabel='FWHMx [um]',
+                        corekwargs = corekwargs_fwhmzmap,
+                        figname = self.figs['FWHMX_curves_MAP_%s' % testname]
+                        #figname = ''
+                        ))
+            
+            # FWHMY CURVES MAP
+            
+            
+            FWHMY_fits_MAP = self._get_FWHMzfitsMAP_from_PT(testname,orientation='y')
+            
+            self.plot_XYMAP(FWHMY_fits_MAP,kwargs=dict(
+                        suptitle='%s: FWHMy Fits' % stestname,
+                        doLegend=True,
+                        xlabel='kADU',
+                        ylim=[6.,10.],
+                        ylabel='FWHMy [um]',
+                        corekwargs = corekwargs_fwhmzmap,
+                        figname = self.figs['FWHMY_curves_MAP_%s' % testname]
+                        #figname = ''
+                        ))
+            
+            # SLOPEX MAP
+            
+            SLOPEX_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
+                                                extractor=self._get_GEN_extractor_fromPT('FWHMX_SLOPE'))
+        
+            
+            self.plot_SimpleMAP(SLOPEX_MAP,kwargs=dict(
+                    suptitle='%s: Slope-x, um/10kADU' % stestname,
+                    figname=self.figs['SLOPEX_MAP_%s' % testname]))
+            
+            # FWHMX MAP
             
             FWHMX_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
                                                 extractor=self._get_GEN_extractor_fromPT('FWHMX_HWC'))
@@ -196,7 +396,21 @@ class MetaBF(MetaCal):
             self.plot_SimpleMAP(FWHMX_MAP,kwargs=dict(
                     suptitle='%s: FWHM-X at HWC' % stestname,
                     figname=self.figs['FWHMX_MAP_%s' % testname]))
+            
+            
+            
+            # SLOPEY MAP
+            
+            SLOPEY_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
+                                                extractor=self._get_GEN_extractor_fromPT('FWHMY_SLOPE'))
         
+            stestname = st.replace(testname,'_','\_')
+            self.plot_SimpleMAP(SLOPEY_MAP,kwargs=dict(
+                    suptitle='%s: Slope-y, um/10kADU' % stestname,
+                    figname=self.figs['SLOPEY_MAP_%s' % testname]))
+            
+            # FWHMY MAP
+            
         
             FWHMY_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
                                                 extractor=self._get_GEN_extractor_fromPT('FWHMY_HWC'))
@@ -206,6 +420,8 @@ class MetaBF(MetaCal):
                     suptitle='%s: FWHM-Y at HWC' % stestname,
                     figname=self.figs['FWHMY_MAP_%s' % testname]))
             
+            
+            # ELL MAP
             
             ELL_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], 
                                                 extractor=self._get_GEN_extractor_fromPT('ELL_HWC'))

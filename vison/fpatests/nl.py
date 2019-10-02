@@ -268,7 +268,7 @@ class MetaNL(MetaCal):
         
         # HeatMap of maximum non-linearities
         
-        # PLOT All NL curves in Map-of-Quads
+        # PLOT All NL curves in Map-of-CCDs
         
         NLMAP = self._get_NLMAP_from_PT()
         

@@ -405,12 +405,12 @@ class MetaPTC(MetaCal):
         
         outpathroot = self.outpathroot
         
-        doGainMaps=False
-        doBloomMaps=False
-        doHERMaps=False
-        doGvsWave=False
-        doGvsT=False
-        doGvsOD=False
+        doGainMaps=True
+        doBloomMaps=True
+        doHERMaps=True
+        doGvsWave=True
+        doGvsT=True
+        doGvsOD=True
         doGvsRD=True
         
         # GAIN matrix (all blocks and test/waves) to dict() saved as pickle
