@@ -14,20 +14,50 @@ Created on Thu Sep 26 16:11:14 2019
 from pdb import set_trace as stop
 import os
 import numpy as np
+import sys
 
 from vison.image import bits
 from vison.other import MOT_FFaux
 from vison.systests import fpatask
+from vison.datamodel import inputs
 
 # END IMPORT
 
+class FWD_WARM_inputs(inputs.Inputs):
+    manifesto = inputs.CommonFpaTaskInputs.copy()
+
 class FWD_WARM(fpatask.FpaTask):
     
-    def __init__(self,inputs, log=None, drill=False, debug=False, cleanafter=False):
+    inputsclass = FWD_WARM_inputs
+    
+    def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
+        
+        self.subtasks = [('check', self.check_data), 
+                         ('basic', self.basic_analysis),
+                         ('meta', self.meta_analysis)]
+        
+        super(FWD_WARM, self).__init__(inputs=inputs, log=log, drill=drill, debug=debug,
+                        cleanafter=cleanafter)
+        
+        self.name = 'FWD_WARM'
+        self.type = 'Simple'
+        
+        self.inputs['subpaths'] = dict(figs='figs',
+                                       products='products')
     
+
+    def set_inpdefaults(self, **kwargs):
+        self.inpdefaults = self.inputsclass(preprocessing=dict(
+                                            offsetkwargs=dict(
+                                            ignore_pover= True, 
+                                            trimscan = [25, 5], 
+                                            method = 'median',
+                                            extension= -1, 
+                                            scan = 'pre' 
+                                                )))    
     
-    def basic(self):
+    def basic_analysis(self):
         """        
         To-Do:
             Extract average profiles along columns (image area)
@@ -36,10 +66,9 @@ class FWD_WARM(fpatask.FpaTask):
         """
         
         if self.report is not None:
-            self.report.add_Section(
-                keyword='extract', 
-                Title='Extraction', 
-                level=0)
+            self.report.add_Section(keyword='extract', Title='Extraction', level=0)
+        
+        return # TESTS
         
         iObs = 0
         
@@ -86,7 +115,11 @@ class FWD_WARM(fpatask.FpaTask):
                     
                     
         
-    def meta(self):
+    def meta_analysis(self):
         """ """
-        pass
+        
+        if self.report is not None:
+            self.report.add_Section(keyword='meta', Title='Meta-Analysis', level=0)
+        
+        return # TESTS
     

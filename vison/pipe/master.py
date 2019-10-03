@@ -109,6 +109,14 @@ class GenPipe(object):
             'Tasks: %s\n' % self.tasks.__repr__()]
         return log_header
 
+    def get_test(self, taskname, inputs=dict(), log=None, drill=False, debug=False, cleanafter=False):
+        """ """
+        testclass = self.Test_dict[taskname]
+        #pathtotest = os.path.split(inspect.getfile(testclass))[0]
+        #os.system('rm %s/*.pyc' % pathtotest) # avoids problems with .pyc files from previous tasks in the run... DIRTY HACK
+        test = testclass(inputs=inputs, log=log, drill=drill, debug=debug,
+                         cleanafter=cleanafter)
+        return test
 
     def launchtask(self, taskname):
         """ """
@@ -261,6 +269,13 @@ class GenPipe(object):
         
         return execlog
 
+    def catchtraceback(self):
+        """ """
+        msg_trbk = traceback.format_exc()
+        if self.log is not None:
+            self.log.info(msg_trbk)
+        else:
+            print msg_trbk
 
 
 class Pipe(GenPipe):
@@ -380,14 +395,6 @@ class Pipe(GenPipe):
             'Tasks: %s\n' % self.tasks.__repr__()]
         return log_header
 
-    def get_test(self, taskname, inputs=dict(), log=None, drill=False, debug=False, cleanafter=False):
-        """ """
-        testclass = self.Test_dict[taskname]
-        #pathtotest = os.path.split(inspect.getfile(testclass))[0]
-        #os.system('rm %s/*.pyc' % pathtotest) # avoids problems with .pyc files from previous tasks in the run... DIRTY HACK
-        test = testclass(inputs=inputs, log=log, drill=drill, debug=debug,
-                         cleanafter=cleanafter)
-        return test
 
     
     def wait_and_run(self, dayfolder, elvis=context.elvis):
@@ -563,10 +570,3 @@ class Pipe(GenPipe):
         
         return execlog
     
-    def catchtraceback(self):
-        """ """
-        msg_trbk = traceback.format_exc()
-        if self.log is not None:
-            self.log.info(msg_trbk)
-        else:
-            print msg_trbk

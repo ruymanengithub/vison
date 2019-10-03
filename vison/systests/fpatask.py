@@ -18,16 +18,23 @@ import sys
 import string as st
 import traceback
 import multiprocessing as mp
+import numpy as np
 
-
+from vison.support import vistime
 from vison import __version__
 from vison.support import files
 from vison.support.report import Report
 from vison.datamodel import fpa_dm
+from vison.datamodel import inputs
+from vison.pipe import task
+from vison.pipe import lib as pilib
+from vison.systests import fpatask_lib as fpatasklib
 # END IMPORT
 
-class FpaTask(object):
+class FpaTask(task.Task):
     """ """
+    
+    inputsclass = inputs.Inputs 
     
     def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
@@ -38,6 +45,10 @@ class FpaTask(object):
         self.processes = 1
         if 'processes' in inputs:
             self.processes = inputs['processes']
+        if 'elvis' in inputs:
+            self.elvis = inputs['elvis']
+        else:
+            self.elvis = 'FPA'
         
         self.Model = 'FPA'
         self.internals = dict()
@@ -104,10 +115,20 @@ class FpaTask(object):
 #        self.ccdcalc = copy.deepcopy(emptyccd)
 
         self.CDP_header = OrderedDict()
-        
+    
+    def set_inpdefaults(self,**kwargs):
+        pass
+    
+    def init_todo_flags(self):        
+        init_todo_flags=dict(init=True,check=False,report=False)
+        if len(self.subtasks[0])>0:
+            for v in self.subtasks: init_todo_flags[v[0]] = False
+        return init_todo_flags
     
     def __call__(self):
         """Generic test master function."""
+        
+        Errors = False
         
         self.CDP_header = OrderedDict(ID=self.ID,
                               vison=__version__)
@@ -170,6 +191,7 @@ class FpaTask(object):
             
 
             if todo_flags['report']:
+                
                 self.report = Report(TestName=testkey, Model=self.Model,
                                      Reference=self.TestReference)
                 self.report.add_Section(
@@ -259,44 +281,76 @@ class FpaTask(object):
     
     def ingest_data(self):
         """ """
-        raise NotImplementedError
+        testkey = self.inputs['test']
+        datapath = self.inputs['datapath']
+        OBSID_lims = self.inputs['OBSID_lims']
+        #structure = self.inputs['structure']
+        explogf = self.inputs['explogf']
         
-    def save_progress(self, DataDictFile, reportobjFile):
-        """ """
-        files.cPickleDumpDictionary(self.dd, DataDictFile)
-        files.cPickleDump(self.report, reportobjFile)
-        #csvFile = st.replace(DataDictFile,'.pick','.csv')
-        #self.dd.saveToFile(csvFile)
+        explog = pilib.loadexplogs(explogf, elvis=self.elvis, addpedigree=True,
+                               datapath=datapath)
+        
+        explog, checkreport = self.filterexposures(explog, OBSID_lims)
+        
+        if self.log is not None:
+            self.log.info('%s acquisition consistent with expectations: %s' % (
+                testkey, checkreport['checksout']))
+            if len(checkreport['failedcols']) > 0:
+                self.log.info('%s failed columns: %s' %
+                              (testkey, checkreport['failedcols']))
+            if len(checkreport['failedkeys']) > 0:
+                self.log.info('%s failed keys: %s' %
+                              (testkey, checkreport['failedkeys']))
+            if len(checkreport['msgs']) > 0:
+                self.log.info(['_']+checkreport['msgs'])
+                
+        if self.report is not None:
+            ntestkey = st.replace(testkey, '_', '\_')
+            nchecksout = ['\\bf{%s}' % checkreport['checksout']]
+            nchecksout = [st.replace(
+                item, 'False', '$\\textcolor{red}{\\bf{False}}$') for item in nchecksout][0]
+            self.report.add_Text(
+                '%s acquisition consistent with expectations: %s\\newline' % (ntestkey, nchecksout))
 
-    def recover_progress(self, DataDictFile, reportobjFile):
-        """ """
-        self.dd = files.cPickleRead(DataDictFile)
-        self.report = files.cPickleRead(reportobjFile)
+            if (checkreport['failedcols']) > 0:
+                nfailedcols = st.replace(
+                    checkreport['failedcols'].__repr__(), '_', '\_')
+                self.report.add_Text('%s failed columns: %s' %
+                                     (ntestkey, nfailedcols))
+            if len(checkreport['failedkeys']) > 0:
+                nfailedkeys = st.replace(
+                    checkreport['failedkeys'].__repr__(), '_', '\_')
+                self.report.add_Text('%s failed keys: %s' %
+                                     (ntestkey, nfailedkeys))
+            if len(checkreport['msgs']) > 0:
+                for msg in checkreport['msgs']:
+                    nmsg = st.replace(msg, '_', '\_')
+                    self.report.add_Text(nmsg)
 
-    def cleanaux(self):
-        """ """
+        # Adding Time Axis
+
+        explog['time'] = np.array(
+            map(vistime.get_dtobj, explog['date'])).copy()
         
-        if not self.canbecleaned:
-            return
+        # Building DataDict
         
-        for subpathkey in self.subpaths2clean:
-            if subpathkey in self.inputs['subpaths']:
-                subpath = self.inputs['subpaths'][subpathkey]                        
-                execline1 = "find %s/ -type f -name '*.fits' -exec sh -c '%s' {} \;" % (subpath,'rm "$0"')
-                os.system(execline1)
-                execline2 = "find %s/ -type f -name '*.pick' -exec sh -c '%s' {} \;" % (subpath,'rm "$0"')
-                os.system(execline2)
-                if self.log is not None:
-                    self.log.info('\nCleared contents [.fits/.pick] of %s!' % subpath)
-    
+        self.dd = fpatasklib.DataDict_builder(explog, self.inputs)
+        
+        if not checkreport['checksout']:
+            self.dd.flags.add('MISSDATA')
+
+        
+        
     def load_LE1(self,LE1fits):
         """ """
         return fpa_dm.FPA_LE1(LE1fits)
     
     def check_data(self):
         """ """
-        pass
-    
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='check_data', Title='Data Validation', level=0)
+        
     
     def iterate_over_CCDs_parallel(self, LE1, method_on_ccdobj, method_on_self):
         """ """
@@ -326,4 +380,33 @@ class FpaTask(object):
         for reply in replies:
             method_on_self(self,reply)
         
+    def filterexposures(self, explog, OBSID_lims):
+        """Loads a list of Exposure Logs and selects exposures from test 'test'.
         
+        The datapath becomes another column in DataDict. This helps dealing
+        with tests that run overnight and for which the input data is in several
+        date-folders.
+    
+    
+        """
+        
+        if len(OBSID_lims) == 0:
+            OBSID_lims = [explog['ObsID'][0], explog['ObsID'][-1]]
+        
+        testkey = self.inputs['test']
+        
+        selbool = (explog['test'] == testkey) & \
+            (explog['ObsID'] >= OBSID_lims[0]) & \
+            (explog['ObsID'] <= OBSID_lims[1])
+            
+        explog = explog[np.where(selbool)]
+    
+        # Assess structure - BYPASSED
+        
+        checkreport = dict(checksout=True,
+                      failedkeys=[], 
+                      failedcols=[],
+                      msgs=[])        
+    
+        return explog, checkreport
+            

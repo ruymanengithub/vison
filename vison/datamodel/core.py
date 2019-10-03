@@ -342,6 +342,32 @@ class DataDict(object):
         return self.__dict__ == other.__dict__
 
 
+class FpaDataDict(DataDict):
+    
+    
+    def loadExpLog(self, explog):
+        """ """
+        
+        ObsID = explog['ObsID'].data
+        uObsID = np.unique(ObsID)
+        Nobs = len(uObsID)
+        
+        ObsIndex = vIndex('ix', N=Nobs)
+
+        self.addColumn(uObsID, 'ObsID', [ObsIndex])
+
+        for key in explog.colnames:
+
+            if key == 'ObsID':
+                continue
+            
+            self.addColumn(explog[key].data, key, [ObsIndex])
+
+        return None
+
+
+
+
 def useCases():
     """ 
 

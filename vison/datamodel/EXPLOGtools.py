@@ -89,6 +89,8 @@ columnlist['7.2.X'] = copy.deepcopy(columnlist['6.5.X'])
 
 columnlist['7.5.X'] = copy.deepcopy(columnlist['7.2.X'])
 
+columnlist['FPA'] = ['ObsID', 'File_name', 'date', 'program', 'test']
+
 dtypes_dict = {'ObsID': 'i', 'File_name': 'S40', 'CCD': 'S4', 'ROE': 'S5', 'DATE': 'S20',
                'PROGRAM': 'S12', 'TEST': 'S12', 'CCD1_SN': 'S20', 'CCD2_SN': 'S20',
                'CCD3_SN': 'S20', 'BUNIT': 'S3', 'Operator': 'S3', 'Lab_ver': 'S8',
@@ -194,7 +196,7 @@ def loadExpLog(expfile, elvis=context.elvis, safe=False):
     with opener(expfile) as f:
         lines = f.readlines()
         f.close()
-        #t1 = datetime.datetime.now()
+        #t1 = datetime.datetime.now()        
         explog = ascii.read(lines, data_start=1, delimiter='\t', guess=False,
                         names=columnlist[elvis], format='no_header')
     
