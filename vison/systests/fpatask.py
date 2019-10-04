@@ -352,33 +352,51 @@ class FpaTask(task.Task):
                 keyword='check_data', Title='Data Validation', level=0)
         
     
-    def iterate_over_CCDs_parallel(self, LE1, method_on_ccdobj, method_on_self):
-        """ """
+    def iterate_over_CCDs(self, LE1, method, **kwargs):
+        """ """        
+        
+        for jY in range(1,LE1.fpamodel.NSLICES+1):
+            for iX in range(1,LE1.fpamodel.NSLICES+1):
+                
+                CCDID = 'C_%i%i' % (jY,iX)                
+                _kwargs = dict(LE1=LE1,CCDID=CCDID)
+                _kwargs.update(kwargs)
+                
+                method(self,**_kwargs)
+                
+    
+    def iterate_over_CCDs_parallel(self, LE1, method, **kwargs):
+        """DOES NOT WORK!!"""
         
         arglist = []
         
         mgr = mp.Manager()
         queue = mgr.Queue()
         
+        
         for jY in range(1,LE1.fpamodel.NSLICES+1):
             for iX in range(1,LE1.fpamodel.NSLICES+1):
                 
                 CCDID = 'C_%i%i' % (jY,iX)                
-                arglist.append([self, queue, LE1, CCDID])
+                _kwargs = dict(queue=queue,LE1=LE1,CCDID=CCDID)
+                _kwargs.update(kwargs)
+                arglist.append(['retrieve',_kwargs,{}])
         
         pool = mp.Pool(processes = self.processes)      
-         
+        
         for i in range(len(arglist)):
-            pool.apply_async(method_on_ccdobj, args=arglist[i])
+            pool.apply_async(method, args=arglist[i])
         pool.close()
         pool.join()
         
+        
         replies = []
-        while not queue.empty():
+        while not queue.empty():            
             replies.append(queue.get())
         
         for reply in replies:
-            method_on_self(self,reply)
+            method('apply',{},reply)
+        
         
     def filterexposures(self, explog, OBSID_lims):
         """Loads a list of Exposure Logs and selects exposures from test 'test'.
