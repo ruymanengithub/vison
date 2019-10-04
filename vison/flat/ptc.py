@@ -124,7 +124,7 @@ def fitPTC(means, var, debug=False):
     return fitresults
 
 
-def foo_bloom_advanced(means, var, _fit):
+def foo_bloom_advanced(means, var, _fit, debug=False):
     """
     Finds blooming limit (where variance drops, if it does...).
 
@@ -141,7 +141,7 @@ def foo_bloom_advanced(means, var, _fit):
         
     Nbins = 40
     bins = np.linspace(2**16*0.1,2**16,Nbins)
-    thresholdfactor = 5.
+    thresholdfactor = 7.
     
     #avgpopbin = len(means[means>=bins[0]])/float(Nbins)
     
@@ -171,7 +171,6 @@ def foo_bloom_advanced(means, var, _fit):
     
     res = dict(bloom_ADU=bloom_ADU)
     
-    debug = False
     if debug:
     
         from matplotlib import pyplot as plt

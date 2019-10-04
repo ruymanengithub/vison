@@ -619,7 +619,11 @@ class PTC0X(FlatTask):
                 gain_mx[CCDk][Q]['rn'] = _fitresults['rn']
                 gain_mx[CCDk][Q]['quality'] = _fitresults['quality']
                 
-                _bloom = ptclib.foo_bloom_advanced(med, var, _fitresults)
+                debugbloom=False
+                #if CCDk=='CCD3' and Q=='G':
+                #    debugbloom=True
+                
+                _bloom = ptclib.foo_bloom_advanced(med, var, _fitresults, debug=debugbloom)
                 
                 bloom_mx[CCDk][Q]['bloom_ADU'] = _bloom['bloom_ADU']
                 bloom_mx[CCDk][Q]['bloom_e'] = gain_mx[CCDk][Q]['gain'] * bloom_mx[CCDk][Q]['bloom_ADU']
