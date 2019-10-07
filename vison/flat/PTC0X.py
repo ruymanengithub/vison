@@ -544,7 +544,7 @@ class PTC0X(FlatTask):
         GAIN_TB['fqual'] = np.zeros(NP,dtype='int32')
         GAIN_TB['bloom'] = np.zeros(NP,dtype='float32')
         
-        curves_cdp = cdp.CDP()
+        curves_cdp = self.CDP_lib['CURVES_PTC']
         curves_cdp.header = CDP_header.copy()
         curves_cdp.path = prodspath
         curves_cdp.data = OrderedDict()
@@ -557,7 +557,7 @@ class PTC0X(FlatTask):
                 curves_cdp.data[CCDk][Q]['x'] = OrderedDict()
                 curves_cdp.data[CCDk][Q]['y'] = OrderedDict()
         
-        curves_cdp.data['labelkeys'] = ['data','fit']
+        curves_cdp.data['labelkeys'] = ['data','fit','bloom']
         
         gain_mx = OrderedDict()
 
@@ -620,7 +620,7 @@ class PTC0X(FlatTask):
                 gain_mx[CCDk][Q]['quality'] = _fitresults['quality']
                 
                 debugbloom=False
-                #if CCDk=='CCD3' and Q=='G':
+                #if CCDk=='CCD2' and Q=='E':
                 #    debugbloom=True
                 
                 _bloom = ptclib.foo_bloom_advanced(med, var, _fitresults, debug=debugbloom)
@@ -646,6 +646,9 @@ class PTC0X(FlatTask):
                 
                 curves_cdp.data[CCDk][Q]['x']['fit'] = fkmed.copy()
                 curves_cdp.data[CCDk][Q]['y']['fit'] = bfvar.copy()
+                
+                curves_cdp.data[CCDk][Q]['x']['bloom'] = np.array([1,1])*_bloom['bloom_ADU']
+                curves_cdp.data[CCDk][Q]['y']['bloom'] = np.array([-100,3.E4])
 
         self.dd.products['gain_mx'] = copy.deepcopy(gain_mx)
         self.dd.products['bloom_mx'] = copy.deepcopy(bloom_mx)
@@ -704,6 +707,8 @@ class PTC0X(FlatTask):
         if self.report is not None:
             self.addFigures_ST(figkeys=['PTC0X_PTC_curves'], 
                                dobuilddata=False)
+        self.save_CDP(curves_cdp)
+        self.pack_CDP_to_dd(curves_cdp, 'CURVES_CDP')
         
         self.canbecleaned = True
 

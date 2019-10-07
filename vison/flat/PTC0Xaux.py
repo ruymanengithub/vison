@@ -63,7 +63,11 @@ def get_CDP_lib(test):
     HER_profiles_cdp.rootname = 'HER_profiles_%s' % test
     
     
+    ptccurves_cdp = cdp.CDP()
+    ptccurves_cdp.rootname = 'PTC_curves_%s' % test
+    
     CDP_lib = dict(GAIN_TB=gain_tb_cdp,
+                   CURVES_PTC=ptccurves_cdp,
                    HER=HER_cdp,
                    HER_PROFILES=HER_profiles_cdp)
     return CDP_lib
@@ -80,7 +84,10 @@ def gt_PTC_curves_dict(test):
               xlabel='MED',
               xlim=[0.,2**16],
               ylim=[0.,2.**16/3.],
-              suptitle='%s: PTC Curves.' % nicetest)
+              suptitle='%s: PTC Curves.' % nicetest,
+              corekwargs=dict(data=dict(marker='.',linestyle='',color='b'),
+                             fit=dict(marker='',linestyle='-',color='r'),
+                             bloom=dict(marker='',linestyle='--',color='k')))
     )
 
 

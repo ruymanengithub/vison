@@ -124,7 +124,7 @@ def fitPTC(means, var, debug=False):
     return fitresults
 
 
-def foo_bloom_advanced(means, var, _fit, debug=False):
+def foo_bloom_advanced_demoted(means, var, _fit, debug=False):
     """
     Finds blooming limit (where variance drops, if it does...).
 
@@ -141,7 +141,7 @@ def foo_bloom_advanced(means, var, _fit, debug=False):
         
     Nbins = 40
     bins = np.linspace(2**16*0.1,2**16,Nbins)
-    thresholdfactor = 7.
+    thresholdfactor = 15.
     
     #avgpopbin = len(means[means>=bins[0]])/float(Nbins)
     
@@ -154,9 +154,10 @@ def foo_bloom_advanced(means, var, _fit, debug=False):
         binmeans[i] = means[sel].mean()
         
         if len(sel[0])>9:
-            local_mad = np.median(np.abs(var[sel]-np.median(var[sel])))
-            binstds[i] = local_mad            
-            if local_mad > thresholdfactor*var_mad:
+            #local_mad = np.median(np.abs(var[sel]-np.median(var[sel])))
+            local_resstd = np.median(var[sel]-var_bf[sel])
+            binstds[i] = local_resstd
+            if local_resstd < -thresholdfactor*var_mad:
                 mask[i] = 0
     
     if np.any(mask ==0.):        
@@ -177,14 +178,62 @@ def foo_bloom_advanced(means, var, _fit, debug=False):
         fig = plt.figure(figsize=(12,4))
         ax1 = fig.add_subplot(131)
         ax1.plot(binmeans,binstds,'k.')
-        ax1.axhline(y=thresholdfactor*var_mad,ls='--',color='r')
+        ax1.axhline(y=-thresholdfactor*var_mad,ls='--',color='r')
         ax1.axvline(x=bloom_ADU,ls='-',color='g')
         ax2 = fig.add_subplot(132)
         ax2.plot(means,var,'b.')
         ax2.axvline(x=bloom_ADU,ls='-',color='g')
+        ax2.set_ylim([0,1.2E4])
         ax3 = fig.add_subplot(133)
         ax3.plot(means,var_res,'b.')
         ax3.axvline(x=bloom_ADU,ls='-',color='g')
+        plt.show()    
+        stop()
+    
+    return res
+
+def foo_bloom_advanced(means, var, _fit, debug=False):
+    """
+    Finds blooming limit (where variance drops, if it does...).
+
+    """    
+    
+    bloom_ADU = np.nan
+    
+    var_bf = np.polyval(_fit['fit'],means)
+    
+    var_res = var-var_bf
+    
+    withinconfidence = np.where((means>2.E3) & (means<3.E4))
+    var_mad = np.median(np.abs(var_res[withinconfidence])) # median absolute deviation,
+                                                           # a robust estimate of std
+    thresholdfactor = 10.
+    thresholdval = 3.E4
+    
+    mask = var_res < -thresholdfactor*var_mad
+    
+    bloom_ADU = -means[-1]
+    for i in range(len(means)-5):
+        #print('%i %s %s' % (means[i],mask[i:i+3].__repr__(),np.all(mask[i:i+4])))
+        if means[i]> thresholdval and np.all(mask[i:i+5]):
+            bloom_ADU = means[i]
+            break
+
+    res = dict(bloom_ADU=bloom_ADU)
+    
+    if debug:
+    
+        from matplotlib import pyplot as plt
+        fig = plt.figure(figsize=(12,4))
+        ax1 = fig.add_subplot(121)
+        ax1.plot(means,var,'b.')
+        ax1.axvline(x=bloom_ADU,ls='-',color='g')
+        ax1.set_ylim([0,1.3E4])
+        ax2 = fig.add_subplot(122)
+        ax2.plot(means,var_res,'b.')
+        ax2.axhline(y=-thresholdfactor*var_mad,ls='--',color='r')
+        ax2.axhline(y=thresholdfactor*var_mad,ls='--',color='b')
+        ax2.axvline(x=bloom_ADU,ls='-',color='g')
         plt.show()    
         stop()
     
