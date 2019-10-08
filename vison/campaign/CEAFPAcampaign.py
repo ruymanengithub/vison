@@ -21,7 +21,7 @@ import copy
 #from vison.support import context
 from vison.support import utils
 
-from vison.systests import FWD_WARM
+from vison.fpatests import FWD_WARM
 
 # END IMPORT
 

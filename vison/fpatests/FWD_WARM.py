@@ -18,7 +18,7 @@ import sys
 
 from vison.image import bits
 from vison.other import MOT_FFaux
-from vison.systests import fpatask
+from vison.fpatests import fpatask
 from vison.datamodel import inputs
 
 # END IMPORT

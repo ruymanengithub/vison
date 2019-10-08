@@ -28,7 +28,7 @@ from vison.datamodel import fpa_dm
 from vison.datamodel import inputs
 from vison.pipe import task
 from vison.pipe import lib as pilib
-from vison.systests import fpatask_lib as fpatasklib
+from vison.fpatests import fpatask_lib as fpatasklib
 # END IMPORT
 
 class FpaTask(task.Task):
