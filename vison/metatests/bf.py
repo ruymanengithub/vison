@@ -16,7 +16,7 @@ import os
 
 from vison.fpa import fpa as fpamod
 
-from vison.fpatests.metacal import MetaCal
+from vison.metatests.metacal import MetaCal
 from vison.plot import plots_fpa as plfpa
 
 from vison.support import vcal
@@ -52,7 +52,7 @@ class MetaBF(MetaCal):
         
         self.products['BF'] = OrderedDict()
         self.products['BFFIT'] = OrderedDict()
-        
+        self.products['BFCOV'] = OrderedDict()
         
         self.cdps['GAIN'] = OrderedDict()
         for block in self.blocks:
@@ -125,19 +125,25 @@ class MetaBF(MetaCal):
         
         bfcdpkeys_v = np.zeros((1),dtype='S50')
         bffitcdpkeys_v = np.zeros((1),dtype='S50')
+        bfcovkeys_v = np.zeros((1),dtype='S50')
         
+        BFCOV = sidd.products['COV'].copy()
         
         bfcdpkey = '%s_%s_%s_%s' % (testname, block, session,jrep+1)
         bffitcdpkey = '%s_%s_%s_%s' % (testname, block, session,jrep+1)
+        bfcovkey = '%s_%s_%s_%s' % (testname, block, session,jrep+1)
         
         self.products['BF'][bfcdpkey] = copy.deepcopy(BFCDP)
         self.products['BFFIT'][bffitcdpkey] = copy.deepcopy(BFfitCDP)
+        self.products['BFCOV'][bfcovkey] = copy.deepcopy(BFCOV)
         
         bfcdpkeys_v[0] = bfcdpkey
         bffitcdpkeys_v[0] = bffitcdpkey
+        bfcovkeys_v[0] = bfcovkey
         
         sidd.addColumn(bfcdpkeys_v, 'BFCDP_KEY', IndexS)
         sidd.addColumn(bffitcdpkeys_v, 'BFFITCDP_KEY', IndexS)
+        sidd.addColumn(bfcovkeys_v, 'BFCOV_KEY', IndexS)
         
         BFfit_df = BFfitCDP['data']['BFFIT']
         

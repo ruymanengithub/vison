@@ -14,7 +14,7 @@ from pdb import set_trace as stop
 import os
 
 from vison.support.files import cPickleDumpDictionary, cPickleDump, cPickleRead
-from vison.fpatests.bias import MetaBias
+from vison.metatests.bias import MetaBias
 # END IMPORT 
 
 

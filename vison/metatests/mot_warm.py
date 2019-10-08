@@ -18,7 +18,7 @@ from vison.support import vjson
 from vison.support import files
 from vison.fpa import fpa as fpamod
 
-from vison.fpatests.metacal import MetaCal
+from vison.metatests.metacal import MetaCal
 from vison.plot import plots_fpa as plfpa
 
 from vison.support import vcal
