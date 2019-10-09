@@ -53,6 +53,10 @@ class MetaPTC(MetaCal):
         
         self.batches_highPRNU = ['14313','14471']
         
+        self.products['HER_CURVES'] = OrderedDict()
+        
+        self.censored = []
+        
         self.init_fignames()
     
     def parse_single_test(self, jrep, block, testname, inventoryitem):
@@ -73,6 +77,8 @@ class MetaPTC(MetaCal):
         
         #idd = copy.deepcopy(inventoryitem['dd'])
         sidd = self.parse_single_test_gen(jrep, block, testname, inventoryitem)
+        
+        
         
         # TEST SCPECIFIC
         # TO BE ADDED:            
@@ -140,6 +146,23 @@ class MetaPTC(MetaCal):
         sidd.addColumn(bloom_ADU_v, 'BLOOM_ADU', IndexCQ)
         sidd.addColumn(bloom_e_v, 'BLOOM_E', IndexCQ)
         sidd.addColumn(HER_v, 'HER', IndexCQ)
+        
+        productspath = os.path.join(inventoryitem['resroot'],'products')
+        her_pick = os.path.join(productspath,os.path.split(sidd.products['HER_PROFILES'])[-1])
+        her_profs = files.cPickleRead(her_pick)['data'].copy()
+        
+        
+        herprofkeys_v = np.zeros((1),dtype='S50')
+        
+        for iCCD, CCDk in enumerate(CCDkeys):
+            
+            herkey = '%s_%s_%s_%i_%s' % (testname, block, session,jrep+1,CCDk)
+                
+            self.products['HER_CURVES'][herkey] = her_profs.copy()
+            
+            herprofkeys_v[0] = herkey
+        
+        sidd.addColumn(herprofkeys_v, 'HERPROF_KEY', IndexS)
 
         # flatten sidd to table
         
@@ -242,6 +265,9 @@ class MetaPTC(MetaCal):
             self.figs['HER_MAP_%s' % testname] = os.path.join(self.figspath,
                          'HER_MAP_%s.png' % testname)
             
+            self.figs['HER_curves_%s' % testname] = os.path.join(self.figspath,
+                         'HER_curves_%s.png' % testname)
+
     
     def _get_XYdict_GvsLAM(self):
         """ """
@@ -399,6 +425,44 @@ class MetaPTC(MetaCal):
         
         return XYdict
 
+    def _get_XYdict_HER(self, testname):
+        """ """
+        
+        x = dict()
+        y = dict()
+        
+        PT = self.ParsedTable[testname]
+        
+        labelkeys = []
+        
+        for block in self.flight_blocks:
+            ixsel = np.where(PT['BLOCK'] == block)
+            herprof_key = PT['HERPROF_KEY'][ixsel][0]
+            i_her = self.products['HER_CURVES'][herprof_key].copy()
+        
+            for iCCD, CCD in enumerate(self.CCDs):
+                CCDk = 'CCD%i' %  CCD
+                
+                for kQ, Q in enumerate(self.Quads):
+                    
+                    pkey = '%s_%s_%s' % (block, CCDk, Q)
+                    
+                    _x = i_her[CCDk][Q]['x'].copy()
+                    _x -= _x.min()
+                    _y = i_her[CCDk][Q]['y'].copy()
+                    
+                    
+                    if pkey not in self.censored:
+                        
+                        x[pkey] = _x.copy()
+                        y[pkey] = _y.copy()
+                        labelkeys.append(pkey)
+        
+        
+        HERdict = dict(x=x,y=y,labelkeys=labelkeys)
+                
+        return HERdict
+    
     
     def dump_aggregated_results(self):
         """ """
@@ -408,6 +472,7 @@ class MetaPTC(MetaCal):
         doGainMaps=True
         doBloomMaps=True
         doHERMaps=True
+        doHERcurves=True
         doGvsWave=True
         doGvsT=True
         doGvsOD=True
@@ -477,8 +542,27 @@ class MetaPTC(MetaCal):
                         suptitle='%s: Hard Edge Response Factor' % stestname,
                         figname=self.figs['HER_MAP_%s' % testname]))
         
+        # HER Curves
         
-        
+        if doHERcurves:
+            
+            for testname in self.testnames:
+                
+                HERSingledict = self._get_XYdict_HER(testname)
+                
+                stestname = st.replace(testname,'_','\_')
+                                        
+                self.plot_XY(HERSingledict,kwargs=dict(
+                    title='%s: H.E.R. CURVES' % stestname,
+                    doLegend=False,
+                    xlabel='Pixel',
+                    ylabel='HER [frac]',
+                    ylim=[-2.E-4,5.e-4],
+                    xlim=[9,15],
+                    corekwargs=dict(linestyle='-',marker=''),
+                    figname=self.figs['HER_curves_%s' % testname]))
+                
+                
         # GAIN vs. Wavelength
         
         if doGvsWave:
