@@ -410,9 +410,9 @@ class NL02(NL01.NL01):
                     NL_FULL_TB['FLUENCE'] = _fitresults['outputcurve']['X'].copy()
                 NL_FULL_TB['NLPC_%s%s' % (CCDkey,Q)] = _fitresults['outputcurve']['Y'].copy() 
                 
-                curves_cdp.data[CCDkey][Q]['x']['data'] = _fitresults['inputcurve']['X'].copy()
+                curves_cdp.data[CCDkey][Q]['x']['data'] = _fitresults['inputcurve']['X'].copy()/1.E3
                 curves_cdp.data[CCDkey][Q]['y']['data'] = _fitresults['inputcurve']['Y'].copy()
-                curves_cdp.data[CCDkey][Q]['x']['fit'] = _fitresults['outputcurve']['X'].copy()
+                curves_cdp.data[CCDkey][Q]['x']['fit'] = _fitresults['outputcurve']['X'].copy()/1.E3
                 curves_cdp.data[CCDkey][Q]['y']['fit'] = _fitresults['outputcurve']['Y'].copy()
         
         self.dd.products['NL'] = copy.deepcopy(NLall_mx)
