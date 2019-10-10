@@ -97,10 +97,12 @@ class FWD_WARM(fpatask.FpaTask):
             # vertical profile: RAMP
             
             vQ = kccdobj.get_1Dprofile(Q=Q, orient='ver', area='img', stacker='median',
-                                                 vstart=vstart, 
-                                                 vend=vend)
+                                     vstart=vstart, vend=vend)
+            
             
             # save vQ: PENDING
+            
+            # extract and save slope of profile for comparison: PENDING
             
             # HER
             
