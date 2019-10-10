@@ -53,7 +53,16 @@ def get_basic_prof1Dver_dict(tag):
     )
     return basic_prof1Dver_dict
 
-
+NL_dict = dict(
+    figname='MOTWARM_NL.png',
+    caption='MOT\_WARM: (Estimated) Non-Linearity Curve from Dark-Current Ramp.',
+    meta=dict(doLegend=False,
+              ylabel='NL [pc]',
+              xlabel='Fluence [kADU]',
+              suptitle='MOT\_WARM: Non-Linearity',
+              xlim=[0,2**16/1.E3],
+              corekwargs=dict(marker='.',linestyle='-'))
+    )
 
 RAMP_bits_histo_dict = dict(
     figname='',
@@ -70,6 +79,8 @@ def get_MW_figs():
     for tag in ['RAMP','CHINJ','FLAT']:
         MW_figs['MOTWbasic_prof1D_ver_%s' % tag] = [figclasses.Fig_Beam2DPlot,get_basic_prof1Dver_dict(tag)]
     
+    MW_figs['MOTWbasic_NL'] = [figclasses.Fig_Beam2DPlot, NL_dict]
+    
     for jCCD in [1,2,3]:
         MW_figs['RAMP_bits_histo_CCD%i' % jCCD] = [figclasses.Fig_Husk, RAMP_bits_histo_dict.copy()]
     
@@ -83,6 +94,10 @@ def get_CDP_lib():
     MW_profiles_cdp = cdp.CDP()
     MW_profiles_cdp.rootname = 'Profiles1D_MOT_WARM'
     
-    CDP_lib = dict(MW_profiles=MW_profiles_cdp)
+    MW_NL_cdp = cdp.CDP()
+    MW_NL_cdp.rootname = 'NLcurves_MOT_WARM'
+    
+    CDP_lib = dict(MW_profiles=MW_profiles_cdp,
+                   MW_NL=MW_NL_cdp)
     
     return CDP_lib

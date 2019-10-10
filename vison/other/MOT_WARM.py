@@ -78,6 +78,57 @@ wavesPNT = [590,730,880]
 for i, wavenm in enumerate(wavesPNT):
     ObsIDdict['PNT_%inm' % wavenm] = i+ObsIDdict['FLAT']+1
     
+def get_POLY_linear_model(X,Y):
+    ixnonan = np.where(~np.isnan(X) & ~np.isnan(Y))
+    mod1d_fit = np.polyfit(X[ixnonan], Y[ixnonan], 1)  # a linear approx. is fine
+    predictor = np.poly1d(mod1d_fit)
+    
+    return predictor
+
+
+def _get_NL(RAMPdict, offset=0.):
+    """ """
+    from pylab import plot,show
+    
+    fluencesNL = RAMPdict['y'][3:].copy() 
+    minrelflu = 0.1
+    maxrelflu = 0.3
+    
+                         
+    exptimes = np.arange(len(fluencesNL))
+    
+    YL = np.zeros_like(fluencesNL,dtype='float32')
+    
+    ixsel=np.where((fluencesNL>=2.**16*minrelflu) & 
+                    (fluencesNL<=2.**16*maxrelflu))
+                       
+    xp = exptimes[ixsel].copy()
+    yp = np.squeeze(fluencesNL[ixsel]).copy()
+    
+    
+    predictor = get_POLY_linear_model(xp,yp)
+    
+    intersect = predictor.coef[1]
+    
+    YpredL = predictor(exptimes)
+    YL[:] = YpredL.copy()
+    
+    Y = 100.*(fluencesNL-YL)/(YL-intersect)
+    X = fluencesNL-offset
+    
+    ixsel = np.where((exptimes>0) & (fluencesNL<2.**16-1000.))
+    X = X[ixsel]
+    Y = Y[ixsel]
+      
+    #plot(X,Y,'b.')
+    #show()
+    #stop()
+    
+    NLdict = dict(x=X,y=Y/1.E3)
+    
+    return NLdict
+    
+    
 
 class MOT_WARM_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
@@ -418,6 +469,7 @@ class MOT_WARM(DarkTask):
         CDP_header.update(dict(function=function, module=module))
         
         profilespath = self.inputs['subpaths']['profiles']
+        productspath = self.inputs['subpaths']['products']
         figspath = self.inputs['subpaths']['figs']
         
         def _load_fits(dd,iObs,jCCD):
@@ -451,6 +503,11 @@ class MOT_WARM(DarkTask):
         profiles1D_cdp.header = CDP_header.copy()
         profiles1D_cdp.path = profilespath
         
+        NLwarm_cdp = self.CDP_lib['MW_NL']
+        NLwarm_cdp.header = CDP_header.copy()
+        NLwarm_cdp.path = productspath
+        
+        
         profs1D2plot = OrderedDict()
         for tag in ['RAMP', 'HER', 'CHINJ',  'FLAT']:
             profs1D2plot[tag] = OrderedDict()
@@ -460,6 +517,15 @@ class MOT_WARM(DarkTask):
                     profs1D2plot[tag][CCDk][Q] = OrderedDict()
                     profs1D2plot[tag][CCDk][Q]['x'] = np.arange(10)
                     profs1D2plot[tag][CCDk][Q]['y'] = np.zeros(10)
+        
+        NLdict = OrderedDict()
+        
+        for CCDk in CCDs:
+            NLdict[CCDk] = OrderedDict()
+            for Q in Quads:
+                NLdict[CCDk][Q] = OrderedDict()
+                NLdict[CCDk][Q]['x'] = np.arange(10)
+                NLdict[CCDk][Q]['y'] = np.zeros(10)
         
         # HER
         HERdata = np.zeros((1,len(CCDs),len(Quads)), dtype='float32') + np.nan
@@ -505,6 +571,16 @@ class MOT_WARM(DarkTask):
                     profs1D2plot['RAMP'][CCDk][Q]['y'] = yRAMP.copy()
                     
                 self.figdict['MOTWbasic_prof1D_ver_RAMP'][1]['xlim']=[vstart,vend]
+                
+                
+                # RAMP: NL-Warm
+                
+                for kQ, Q in enumerate(Quads):
+                    #print('%s-%s' % (CCDk,Q))
+                    qoff = self.dd.mx['offset_pre'][ObsIDdict['BIAS_RV'],jCCD,kQ]
+                    NLdict[CCDk][Q] = _get_NL(profs1D2plot['RAMP'][CCDk][Q],
+                          offset=qoff)
+                    
                 
                 # RAMP; bit-correlations analysis
                 
@@ -574,8 +650,6 @@ class MOT_WARM(DarkTask):
                     xRAMP = np.arange(len(yRAMP))
                     profs1D2plot['RAMP'][CCDk][Q]['x'] = xRAMP.copy()
 
-
-
         else:
             
             vstart = 0
@@ -590,9 +664,16 @@ class MOT_WARM(DarkTask):
             self.figdict[tkey][1]['data'] = profs1D2plot[tag]
             self.figdict[tkey][1]['xlim'] = [vstart,vend]
             proffigkeys.append(tkey)
-            
+        
+        
         if self.report is not None:
             self.addFigures_ST(figkeys=proffigkeys, dobuilddata=False)
+        
+        
+        self.figdict['MOTWbasic_NL'][1]['data'] = NLdict.copy()
+        
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['MOTWbasic_NL'], dobuilddata=False)
         
         # Display of HER-serial profile
         
@@ -606,6 +687,15 @@ class MOT_WARM(DarkTask):
         
         self.save_CDP(profiles1D_cdp)
         self.pack_CDP_to_dd(profiles1D_cdp, 'MW_PROFILES')
+        
+        
+        # Saving NL-warm (rough estimate)
+        
+        NLwarm_cdp.data = NLdict.copy()
+        
+        self.save_CDP(NLwarm_cdp)
+        self.pack_CDP_to_dd(NLwarm_cdp, 'MW_NL')
+        
         
         # Matrix with HER results
         
