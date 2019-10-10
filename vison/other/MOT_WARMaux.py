@@ -55,12 +55,13 @@ def get_basic_prof1Dver_dict(tag):
 
 NL_dict = dict(
     figname='MOTWARM_NL.png',
-    caption='MOT\_WARM: (Estimated) Non-Linearity Curve from Dark-Current Ramp.',
+    caption='MOT\_WARM: (PSEUDO) Non-Linearity Curve from Dark-Current Ramp.',
     meta=dict(doLegend=False,
-              ylabel='NL [pc]',
+              ylabel='pNL [pc]',
               xlabel='Fluence [kADU]',
-              suptitle='MOT\_WARM: Non-Linearity',
+              suptitle='MOT\_WARM: Pseudo Non-Linearity',
               xlim=[0,2**16/1.E3],
+              ylim=[-5,10],
               corekwargs=dict(marker='.',linestyle='-'))
     )
 

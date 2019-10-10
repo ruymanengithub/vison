@@ -90,7 +90,9 @@ def _get_NL(RAMPdict, offset=0.):
     """ """
     from pylab import plot,show
     
-    fluencesNL = RAMPdict['y'][3:].copy() 
+    ixsatur = np.where(RAMPdict['y']==2.**16-1)[0][0]
+    
+    fluencesNL = RAMPdict['y'][3:ixsatur].copy() 
     minrelflu = 0.1
     maxrelflu = 0.3
     
@@ -124,7 +126,7 @@ def _get_NL(RAMPdict, offset=0.):
     #show()
     #stop()
     
-    NLdict = dict(x=X,y=Y/1.E3)
+    NLdict = dict(x=X/1.e3,y=Y)
     
     return NLdict
     
