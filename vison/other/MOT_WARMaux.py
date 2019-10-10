@@ -55,7 +55,8 @@ def get_basic_prof1Dver_dict(tag):
 
 NL_dict = dict(
     figname='MOTWARM_NL.png',
-    caption='MOT\_WARM: (PSEUDO) Non-Linearity Curve from Dark-Current Ramp.',
+    caption='MOT\_WARM: (PSEUDO) Non-Linearity Curve from Dark-Current Ramp. '+\
+            'Does not take into account spatially-structured stray-light, hence FAILS.',
     meta=dict(doLegend=False,
               ylabel='pNL [pc]',
               xlabel='Fluence [kADU]',
