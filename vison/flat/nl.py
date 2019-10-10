@@ -153,8 +153,7 @@ def getXYW_NL(fluencesNL,exptimes,nomG,pivotfrac=0.5,maxrelflu=None,method='spli
 
 
 
-def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,minrelflu=None,
-                maxrelflu=None):
+def getXYW_NL02(fluencesNL,exptimes,nomG,minrelflu=None,maxrelflu=None):
     """ """
     
     assert fluencesNL.shape[0] == exptimes.shape[0]
@@ -199,7 +198,8 @@ def getXYW_NL02(fluencesNL,exptimes,nomG,pivotfrac=0.5,minrelflu=None,
             _ixsel=np.where((fluencesNL[ixnonan,isec]>=2.**16*minrelflu) & 
                     (fluencesNL[ixnonan,isec]<=2.**16*maxrelflu))
             
-            ixsel = (ixnonan[0][_ixsel],)
+             
+            ixsel = (ixnonan[0][_ixsel[1]],)
             
             
             xp = exptimes[ixsel]
@@ -680,9 +680,9 @@ def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.arra
     nomG = 3.5 # e/ADU, used for noise estimates
     minfitFl = 250. # ADU
     maxfitFl = FullDynRange-10000. # ADU
-    pivotfrac = 0.2
-    minrelflu = 0.02
-    maxrelflu = 0.7
+    #pivotfrac = 0.2
+    minrelflu = 0.10
+    maxrelflu = 0.30
 
     NObsIDs, Nsecs = fluences.shape
     
@@ -747,19 +747,17 @@ def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.arra
         trackstab = 0.
     
     
+    
     ixfitA = ixboo_fluA | ixboo_bgd | ixboo_stab
-    X_A,Y_A,W_A,e_A,r_A = getXYW_NL02(np.nanmedian(fluences[ixfitA, :],axis=1), 
+    X_A,Y_A,W_A,e_A,r_A = getXYW_NL02(fluences[ixfitA, :], 
                                 exptimes[ixfitA], nomG, 
-                            pivotfrac=pivotfrac,
                             minrelflu=minrelflu,
                             maxrelflu=maxrelflu)
     ixfitB = ixboo_fluB | ixboo_bgd
-    X_B,Y_B,W_B,e_B,r_B = getXYW_NL02(np.nanmedian(fluences[ixfitB, :],axis=1), 
+    X_B,Y_B,W_B,e_B,r_B = getXYW_NL02(fluences[ixfitB, :], 
                       exptimes[ixfitB], nomG, 
-                    pivotfrac=pivotfrac,
                     minrelflu=minrelflu,
                     maxrelflu=maxrelflu)
-
 
     #bgdnoff = np.median(fluences[ixboo_bgd,:])
     
@@ -771,6 +769,7 @@ def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.arra
     
     Exptimes = np.concatenate((exptimes[ixfitA][e_A],exptimes[ixfitB][e_B]))
     
+    #stop()
     
     fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug,
                                 addExp=True)

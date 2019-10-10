@@ -388,6 +388,7 @@ class NL02(NL01.NL01):
                                             debug=debug,
                                             ObsIDs=ObsIDs,
                                             NLdeg=NLdeg,
+                                            #offset=0.) 
                                             offset=ijoffset)
 #                print('WITHOUT shutter nl correction...')
 #                __fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, exptimes, wave, 
