@@ -513,6 +513,21 @@ class InjTask(Task):
                     prof_alcol_cdp.data[CCDk][Q]['x'][sub_tag] = xdummy.copy()
                     prof_alcol_cdp.data[CCDk][Q]['y'][sub_tag] = ydummy.copy()
         
+        # Images with average profiles of injection stacked
+        
+        
+        Profile_Images = OrderedDict()
+        
+        
+        Qshape = self.ccdcalc.wQ,self.ccdcalc.hQ
+        
+        for jCCD, CCDk in enumerate(CCDs):
+            Profile_Images[CCDk] = OrderedDict()
+            for kQ, Q in enumerate(Quads):
+                Profile_Images[CCDk][Q] = np.zeros(Qshape,dtype='float32')
+        
+            
+        
         # The hardwork
         
         prof_max_vals = []
@@ -524,6 +539,7 @@ class InjTask(Task):
             
             
             for iObs in range(nObs):
+#            for iObs in range(5): # TESTS
                 
                 ObsID = self.dd.mx['ObsID'][iObs]
                 print 'Processing Obsid %i/%i' % (iObs+1,nObs)
@@ -599,6 +615,8 @@ class InjTask(Task):
                                 prof_alcol_cdp.data[CCDk][Q]['x'][sub_tag] = \
                                               np.arange(len(yalcols),dtype='float32')
                             
+                                Profile_Images[CCDk][Q][self.ccdcalc.prescan:
+                                    -self.ccdcalc.overscan,iObs] = yalrows.copy()
                                 
                                 prof_max_vals.append(np.nanmax([yalrows.max(),yalcols.max()]))
                                 
@@ -617,7 +635,35 @@ class InjTask(Task):
                             #if CCDk == 'CCD2' and Q == 'E':
                             #    stop()
                             
-                            
+        
+        for jCCD, CCDk in enumerate(CCDs):
+            
+            tmpccdobj = ccd.CCD(withpover=True)
+            tmpccdobj.add_extension(data=np.zeros(tmpccdobj.shape,dtype='float32'))
+            
+            for Q in Quads:                
+                tmpccdobj.set_quad(Profile_Images[CCDk][Q].copy(),Q,
+                                   canonical=True,extension=-1)
+            
+            profimg = tmpccdobj.extensions[-1].data.copy()
+            
+            jprofimgcdp = cdp.CCD_CDP(ID=self.ID,
+                                      BLOCKID=self.BLOCKID,
+                                      CHAMBER=self.CHAMBER)
+            
+            profimgdata = dict(PROFILES=profimg.copy(),
+                               labels=['PROFILES'])
+            
+            jprofimgcdp.ingest_inputs(data=profimgdata, 
+                                      meta=None, 
+                                      header=CDP_header)
+            
+            jprofimgcdp.path = prodspath
+            jprofimgcdp.rootname = 'EUC_INJPROFIMG_%s_%s' % \
+                                           (CCDk, self.inputs['BLOCKID'])
+            self.save_CDP(jprofimgcdp)
+            self.pack_CDP_to_dd(jprofimgcdp,'INJPROFIMG_%s' % CCDk)
+        
         # plot average inj. profiles along/across lines 
         # save as a rationalized set of curves
         
