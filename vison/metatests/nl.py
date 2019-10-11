@@ -14,6 +14,7 @@ import numpy as np
 from collections import OrderedDict
 import string as st
 import os
+import matplotlib.cm as cm
 
 from vison.fpa import fpa as fpamod
 
@@ -160,7 +161,7 @@ class MetaNL(MetaCal):
         
         return sit
     
-    def _get_NLMAP_from_PT(self):
+    def _get_NLMAP_from_PT(self,mode='fit'):
         """ """
                 
         NLMAP = OrderedDict()
@@ -202,8 +203,12 @@ class MetaNL(MetaCal):
                     
                     gain = self.cdps['GAIN'][block][CCDk][Q][0]
                     
-                    _y = _nldict[CCDk][Q]['outputcurve']['Y'].copy()
-                    _x = _nldict[CCDk][Q]['outputcurve']['X'] * gain / 1.E3
+                    if mode == 'fit':
+                        _y = _nldict[CCDk][Q]['outputcurve']['Y'].copy()
+                        _x = _nldict[CCDk][Q]['outputcurve']['X'] * gain / 1.E3
+                    elif mode == 'data':
+                        _y = _nldict[CCDk][Q]['inputcurve']['Y'].copy()
+                        _x = _nldict[CCDk][Q]['inputcurve']['X'] * gain / 1.E3
                     
                     _ccd_nldict['x'][Q] = _x.copy()
                     _ccd_nldict['y'][Q] = _y.copy()
@@ -213,7 +218,7 @@ class MetaNL(MetaCal):
         
         return NLMAP
     
-    def _get_XYdict_NL(self):
+    def _get_XYdict_NL(self, mode='fit', scale='rel'):
         
         x = dict()
         y = dict()
@@ -221,6 +226,12 @@ class MetaNL(MetaCal):
         PT = self.ParsedTable['NL02']
         
         labelkeys = []
+        
+        
+        if mode == 'data':
+            curvekey = 'inputcurve'
+        elif mode == 'fit':
+            curvekey = 'outputcurve'
         
         for block in self.flight_blocks:
             ixsel = np.where(PT['BLOCK'] == block)
@@ -236,13 +247,19 @@ class MetaNL(MetaCal):
                     
                     gain = self.cdps['GAIN'][block][CCDk][Q][0]
                     
-                    xfluadu = i_NL[CCDk][Q]['outputcurve']['X'].copy()
+                    xfluadu = i_NL[CCDk][Q][curvekey]['X'].copy()                                                
                     xfluKele = xfluadu * gain / 1.E3
                     
                     if pkey not in self.censored:
                         
                         x[pkey] = xfluKele.copy()
-                        y[pkey] = i_NL[CCDk][Q]['outputcurve']['Y'].copy()
+                        
+                        if scale == 'rel':                       
+                            y[pkey] = i_NL[CCDk][Q][curvekey]['Y'].copy()
+                        elif scale == 'abs':                            
+                            yrel = i_NL[CCDk][Q][curvekey]['Y'].copy()
+                            y[pkey] = yrel / 100. * xfluKele*1.E3
+                            
                         labelkeys.append(pkey)
         
         
@@ -261,7 +278,13 @@ class MetaNL(MetaCal):
                          'NL_curves_FPAMAP.png')
         
         self.figs['NL_curves'] = os.path.join(self.figspath,
-                         'NL_curves.png')
+                         'NL_curves_rel_fit.png')
+        
+        self.figs['NL_curves_data'] = os.path.join(self.figspath,
+                         'NL_curves_rel_data.png')
+        
+        self.figs['NL_curves_abs'] = os.path.join(self.figspath,
+                         'NL_curves_abs_fit.png')
 
     def dump_aggregated_results(self):
         """ """
@@ -270,7 +293,7 @@ class MetaNL(MetaCal):
         
         # PLOT All NL curves in Map-of-CCDs
         
-        NLMAP = self._get_NLMAP_from_PT()
+        NLMAP = self._get_NLMAP_from_PT(mode='fit')
         
         self.plot_XYMAP(NLMAP,kwargs=dict(
                         suptitle='Non-Linearity Curves',
@@ -283,16 +306,66 @@ class MetaNL(MetaCal):
                         figname = self.figs['NL_curves_MAP']
                         ))
         
-        # PLOT All NL curves in single Plot
+        # PLOT All NL curves in single Plot - Relative, best fit curve
         
-        NLSingledict = self._get_XYdict_NL()
+        NLSingledict = self._get_XYdict_NL(mode='fit',scale='rel')
         
-        self.plot_XY(NLSingledict,kwargs=dict(
+        NLkwargs = dict(
                     title='NON-LINEARITY CURVES',
                     doLegend=False,
                     xlabel='Fluence [ke-]',
                     ylabel='Non-Linearity [pc]',
-                    ylim=[-3.,7.],
-                    corekwargs=dict(linestyle='-',marker=''),
-                    figname=self.figs['NL_curves']))
+                    ylim=[-3.,7.],                    
+                    figname=self.figs['NL_curves'])
         
+        BLOCKcolors = cm.rainbow(np.linspace(0,1,len(self.flight_blocks)))
+        
+        linecorekwargs = dict()
+        pointcorekwargs = dict()
+        for jblock, block in enumerate(self.flight_blocks):
+            jcolor = BLOCKcolors[jblock]
+            for iCCD in self.CCDs:
+                for kQ in self.Quads:
+                    linecorekwargs['%s_CCD%i_%s' % (block,iCCD, kQ)] = dict(linestyle='-',
+                               marker='',color=jcolor) 
+                    pointcorekwargs['%s_CCD%i_%s' % (block,iCCD, kQ)] = dict(linestyle='',
+                               marker=',',color=jcolor)
+        
+        NLkwargs['corekwargs'] = linecorekwargs
+        
+        self.plot_XY(NLSingledict,kwargs=NLkwargs)
+        
+        
+        # PLOT All NL curves in single Plot - Relative, data points
+        
+        NLSingleDatadict = self._get_XYdict_NL(mode='data',scale='rel')
+        
+        NLDatakwargs = dict(
+                    title='NON-LINEARITY DATA POINTS',
+                    doLegend=False,
+                    xlabel='Fluence [ke-]',
+                    ylabel='Non-Linearity [pc]',
+                    ylim=[-3.,7.],             
+                    figname=self.figs['NL_curves_data'])
+        
+        
+        NLDatakwargs['corekwargs'] = pointcorekwargs
+        
+        self.plot_XY(NLSingleDatadict,kwargs=NLDatakwargs)
+        
+        
+        # PLOT All NL (best fit) curves in single Plot - Abs
+        
+        NLSingledict_abs = self._get_XYdict_NL(mode='fit',scale='abs')
+        
+        NLabskwargs = dict(
+                    title='NON-LINEARITY CURVES - ABS. DEVIATION',
+                    doLegend=False,
+                    xlabel='Fluence [ke-]',
+                    ylabel='Non-Linearity [$\Delta$ electrons]',
+                    #ylim=[-3.,7.],                    
+                    figname=self.figs['NL_curves_abs'])
+        
+        NLabskwargs['corekwargs'] = linecorekwargs
+        
+        self.plot_XY(NLSingledict_abs,kwargs=NLabskwargs)
