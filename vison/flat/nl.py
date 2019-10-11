@@ -674,7 +674,7 @@ def wrap_fitNL_TwoFilters(fluences, variances, exptimes, wave, times=np.array([]
 
 def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.array([]), 
                             TrackFlux=True, debug=False, ObsIDs=None, NLdeg=NLdeg,
-                            offset=0.):
+                            offset=0.,XX=None, YY=None):
     """ """
     
     nomG = 3.5 # e/ADU, used for noise estimates
@@ -767,12 +767,18 @@ def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.arra
     #exps = np.concatenate((e_A,e_B))
     #regs = np.concatenate((r_A,r_B))
     
+    
     Exptimes = np.concatenate((exptimes[ixfitA][e_A],exptimes[ixfitB][e_B]))
     
-    #stop()
+    Xcoo = np.concatenate((XX[e_A,r_A],XX[e_B,r_B]))
+    Ycoo = np.concatenate((YY[e_A,r_A],YY[e_B,r_B]))
+    
     
     fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug,
                                 addExp=True)
+    fitresults['Xcoo'] = Xcoo.copy()
+    fitresults['Ycoo'] = Ycoo.copy()
+    
     #fitresults['bgd'] = bgd
     fitresults['stability_pc'] = trackstab
     

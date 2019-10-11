@@ -336,6 +336,8 @@ class NL01(FlatTask):
 
         self.dd.initColumn('sec_med', Sindices, dtype='float32', valini=valini)
         self.dd.initColumn('sec_var', Sindices, dtype='float32', valini=valini)
+        self.dd.initColumn('sec_X', Sindices, dtype='float32', valini=valini)
+        self.dd.initColumn('sec_Y', Sindices, dtype='float32', valini=valini)
 
         if not self.drill:
 
@@ -357,7 +359,7 @@ class NL01(FlatTask):
                         Q = Quads[kQ]
 
                         _tile_coos = tile_coos[Q]
-
+                        
                         _meds = ccdobj.get_tiles_stats(
                             Q, _tile_coos, 'median', extension=-1)
                         _vars = ccdobj.get_tiles_stats(
@@ -366,6 +368,21 @@ class NL01(FlatTask):
 
                         self.dd.mx['sec_med'][iObs, jCCD, kQ, :] = _meds.copy()
                         self.dd.mx['sec_var'][iObs, jCCD, kQ, :] = _vars.copy()
+                        
+                        
+                        Xtiles = np.array([item[0] for item in _tile_coos['ccpix']])
+                        Ytiles = np.array([item[1] for item in _tile_coos['ccpix']])
+                        
+                        # tiles coordinates are NOT in canonical reference system,
+                        # with Output Node in lower-left corner, so we address that
+                        
+                        if Q in ['F','G']:
+                            Xtiles = 2048. - Xtiles
+                        if Q in ['E','F']:
+                            Ytiles = 2066. - Ytiles
+                        
+                        self.dd.mx['sec_X'][iObs, jCCD, kQ, :] = Xtiles.copy()
+                        self.dd.mx['sec_Y'][iObs, jCCD, kQ, :] = Ytiles.copy()
                         
                         # tests
                         #if self.dd.mx['exptime'][iObs,jCCD]>5.:

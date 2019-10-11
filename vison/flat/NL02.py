@@ -342,7 +342,7 @@ class NL02(NL01.NL01):
                 
         # NL CURVES
         
-        curves_cdp = cdp.CDP()
+        curves_cdp = self.CDP_lib['NL_CURVES']
         curves_cdp.header = CDP_header.copy()
         curves_cdp.path = prodspath
         curves_cdp.data = OrderedDict()
@@ -363,9 +363,11 @@ class NL02(NL01.NL01):
             for jQ, Q in enumerate(Quads):
                 
                 kk = iCCD * nQ + jQ
-
+                
                 raw_med = self.dd.mx['sec_med'][:, iCCD, jQ, :].copy()
                 raw_var = self.dd.mx['sec_var'][:,iCCD,jQ, :].copy()
+                raw_X = self.dd.mx['sec_X'][:,iCCD,jQ, :].copy() 
+                raw_Y = self.dd.mx['sec_Y'][:,iCCD,jQ, :].copy()
                 #col_labels = self.dd.mx['label'][:, iCCD].copy()
                 exptimes = self.dd.mx['exptime'][:, iCCD].copy()
                 wave = self.dd.mx['wave'][:, iCCD].copy()
@@ -389,7 +391,8 @@ class NL02(NL01.NL01):
                                             ObsIDs=ObsIDs,
                                             NLdeg=NLdeg,
                                             #offset=0.) 
-                                            offset=ijoffset)
+                                            offset=ijoffset,
+                                            XX=raw_X, YY=raw_Y)
 #                print('WITHOUT shutter nl correction...')
 #                __fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, exptimes, wave, 
 #                                            dtobjs, 
@@ -398,8 +401,6 @@ class NL02(NL01.NL01):
 #                                            ObsIDs=ObsIDs)
                 
                 NLall_mx[CCDkey][Q].update(_fitresults)
-                
-                
                 
                 NL_TB['CCD'][kk] = iCCD+1
                 NL_TB['Q'][kk] = jQ+1
@@ -435,6 +436,7 @@ class NL02(NL01.NL01):
         self.save_CDP(nl_tb_cdp)
         self.pack_CDP_to_dd(nl_tb_cdp, 'NL_TB_CDP')
         
+        
         if self.report is not None:
             
             fccd = lambda x: CCDs[x-1]
@@ -454,6 +456,10 @@ class NL02(NL01.NL01):
             self.report.add_Text(Ntex)        
 
         # Do plots
+        
+        
+        self.save_CDP(curves_cdp)
+        self.pack_CDP_to_dd(curves_cdp, 'NL_CURVES_CDP')
 
         fdict_NL = self.figdict['NL01_fit_curves'][1]
         fdict_NL['data'] = curves_cdp.data.copy()

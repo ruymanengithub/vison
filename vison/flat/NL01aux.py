@@ -27,7 +27,11 @@ def get_CDP_lib():
     nl_tb_cdp = cdp.Tables_CDP()
     nl_tb_cdp.rootname = 'NL01_RESULTS_TABLE'
     
-    CDP_lib = dict(NL_TB=nl_tb_cdp)
+    curves_cdp = cdp.CDP()
+    curves_cdp.rootname = 'NL01_CURVES'
+    
+    CDP_lib = dict(NL_TB=nl_tb_cdp,
+                   NL_CURVES=curves_cdp)
     return CDP_lib
 
 
