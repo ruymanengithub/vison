@@ -27,17 +27,21 @@ def get_block_lists(design='initial'):
         block_lists['flight_blocks'] = ['BORN','CURIE','DIRAC','ERWIN','FOWLER','GUYE','SKLODOWSKA',
           'JULES2','KRAMERS','LORENTZ','MAX','NIELS']
         block_lists['spare_blocks'] = ['OWEN', 'EINSTEIN']
+        block_lists['discarded_blocks'] = ['HEISENBERG','JULES']
         
-        block_lists['all_blocks'] = block_lists['flight_blocks'] + block_lists['spare_blocks']
 
     elif design == 'final':
         
         block_lists['flight_blocks'] = ['BORN','CURIE','DIRAC','ERWIN','FOWLER','GUYE',
           'JULES2','KRAMERS','LORENTZ','NIELS', 'OWEN', 'EINSTEIN']
-        block_lists['spare_blocks'] = []
+        block_lists['spare_blocks'] = ['SKLODOWSKA','MAX']
+        block_lists['discarded_blocks'] = ['HEISENBERG','JULES']
         
-        block_lists['all_blocks'] = block_lists['flight_blocks'] + block_lists['spare_blocks']
-        
+    block_lists['all_blocks'] = block_lists['flight_blocks'] + block_lists['spare_blocks'] +\
+               block_lists['discarded_blocks']
+    
+    
+    
     return block_lists
 
 NSLICES = 6
