@@ -68,7 +68,7 @@ class BasicPlot(object):
         self.fig = plt.figure(figsize=self.figsize)
 
     def render(self, figname=''):
-
+        
         self.init_fig()
 
         self.populate_axes()
@@ -88,6 +88,7 @@ class BasicPlot(object):
         plt.close('all')
         plt.clf()
         gc.collect()
+        
         
 class XYPlot(BasicPlot):
 
@@ -218,7 +219,7 @@ class CCD2DPlot(BasicPlot):
 
         meta = dict(suptitle='',
                         doLegend=False,
-                        doColorBar=False,
+                        doColorbar=False,
                         doNiceXDate=False,
                         doRotateXLabels=False)
         
@@ -233,7 +234,7 @@ class CCD2DPlot(BasicPlot):
         self.handles = []
         self.labels = []
         self.fig = None
-        self.axes = dict()
+        self.axs = dict()
         self.axarr = []
         
         self.corekwargs = dict()
