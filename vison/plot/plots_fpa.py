@@ -35,7 +35,7 @@ matplotlib.rcParams['image.interpolation'] = 'none'
 import matplotlib.cm as cm
 from mpl_toolkits.mplot3d import Axes3D
 
-from vison.plot.baseplotclasses import BasicPlot, XYPlot
+from vison.plot.baseplotclasses import BasicPlot, XYPlot, CCD2DPlotYvsX
 # END IMPORT
 
 

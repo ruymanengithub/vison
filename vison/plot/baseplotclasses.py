@@ -216,82 +216,179 @@ class CCD2DPlot(BasicPlot):
 
         super(CCD2DPlot, self).__init__(**kwargs)
 
-        defaults = dict(suptitle='', qtitles=dict(E='E', F='F', G='G', H='H'),
+        meta = dict(suptitle='',
                         doLegend=False,
-                        doNiceXDate=False)
-
-        if 'meta' in kwargs:
-            meta = kwargs['meta']
-        else:
-            meta = dict()
+                        doColorBar=False,
+                        doNiceXDate=False,
+                        doRotateXLabels=False)
+        
+        meta.update(kwargs)
+        
 
         self.figsize = (8, 8)
         self.Quads = ['E', 'F', 'H', 'G']
         self.data = copy.deepcopy(data)
         self.meta = dict()
-        self.meta.update(defaults)
         self.meta.update(meta)
-
         self.handles = []
         self.labels = []
+        self.fig = None
+        self.axes = dict()
+        self.axarr = []
+        
+        self.corekwargs = dict()
+        if 'corekwargs' in kwargs:
+            self.corekwargs.update(kwargs['corekwargs']) 
+            
+    def init_fig(self):
+        self._init_fig_and_axes()
+    
+    def _init_fig_and_axes(self):
+        """ """
+        plt.close('all')
+        fig, axsarr = plt.subplots(
+            2, 2, sharex=True, sharey=True, figsize=self.figsize)
+        self.fig = fig
+        
+        self.axsarr = axsarr
+
+        # initialisation of self.axs
+        
+        for Q in self.Quads:
+            self.axs[Q] = None
+
+        self.axs['E'] = self.axsarr[0, 0]
+
+        plotlist = ['E', 'F','H','G'] 
+        
+        for k in range(len(plotlist)):
+            Q = plotlist[k]
+            self.axs[Q] = self.axsarr.flatten()[k]
+            
+    def _ax_core_funct(self, ax, Qdict, key=''):
+        raise NotImplementedError("Subclass must implement abstract method")
+    
 
     def populate_axes(self):
 
-        qtitles = self.meta['qtitles']
+        
+        try:
+            labelkeys = self.data['labelkeys']
+        except KeyError:
+            labelkeys = []
+        
 
-        self.axs = []
         for iQ, Q in enumerate(self.Quads):
+            
+            ax = self.axs[Q]
+            Qdict = self.data[Q]
 
-            self.axs.append(self.fig.add_subplot(2, 2, iQ+1))
-
-            try:
-                xkeys = self.data[Q]['x'].keys()
-            except AttributeError:
-                xkeys = None
-
-            if xkeys is not None:
-                ykeys = self.data[Q]['y'].keys()
-                isconsistent = np.all([xkeys[i] == ykeys[i]
-                                       for i in range(len(xkeys))])
-                assert (len(xkeys) == len(ykeys)) and isconsistent
-
-                for key in xkeys:
-                    xarr = self.data[Q]['x'][key]
-                    yarr = np.ones_like(self.data[Q]['y'][key])
-
-                    handle = self.axs[-1].plot(xarr, yarr, label=key)
-                    if iQ == 0:
+            if len(labelkeys) > 0:
+                for labelkey in labelkeys:
+                    handle, label = self._ax_core_funct(ax, Qdict, labelkey)
+                    if Q == 'E':
                         self.handles += handle
-                        self.labels.append(key)
+                        self.labels.append(label)
             else:
-                xarr = self.data[Q]['x']
-                yarr = self.data[Q]['y']
-                self.axs[-1].plot(xarr, yarr)
+                _, _ = self._ax_core_funct(ax, Qdict)
 
-            self.axs[-1].set_title(qtitles[Q])
+            if Q in ['E', 'H']:
+                ax.text(0.05, 0.9, Q, horizontalalignment='left',
+                        transform=self.axs[Q].transAxes)
+            elif Q in ['F', 'G']:
+                ax.text(0.9, 0.9, Q, horizontalalignment='right',
+                        transform=self.axs[Q].transAxes)
 
             if self.meta['doNiceXDate']:
-                _xticks = self.axs[-1].get_xticks()
+                _xticks = ax.get_xticks()
                 if len(_xticks) > 6:
-                    self.axs[-1].set_xticks(_xticks[::2])
+                    ax.set_xticks(_xticks[::2])
+
+            if 'xlabel' in self.meta and Q in ['H', 'G']:
+                ax.set_xlabel(self.meta['xlabel'])
+            if 'ylabel' in self.meta and Q in ['E', 'H']:
+                ax.set_ylabel(self.meta['ylabel'])
+            
+            if 'ylim' in self.meta:
+                ax.set_ylim(self.meta['ylim'])
+            if 'xlim' in self.meta:
+                ax.set_xlim(self.meta['xlim'])
+            
+
 
     def plt_trimmer(self):
 
+        for Q in ['E', 'F']:
+            plt.setp(self.axs[Q].get_xticklabels(), visible=False)
+                        
+        for Q in ['F', 'G']:
+            plt.setp(self.axs[Q].get_yticklabels(), visible=False)
+
+        if self.meta['doRotateXLabels']:
+            for Q in self.Quads:
+                for tick in self.axs[Q].get_xticklabels():
+                    tick.set_rotation(45)
+            
         if self.meta['doLegend']:
             plt.figlegend(self.handles, self.labels, loc='center right')
-
+            
         if self.meta['doNiceXDate']:
-
             plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))
             self.fig.autofmt_xdate()
+            # plt.locator_params(nticks=4,axis='x',prune='both')
 
-        plt.subplots_adjust(top=0.80)
+        plt.locator_params(axis='y', nbins=5, prune='both')
+        
+        #plt.locator_params(axis='y',prune='both')
+        if not self.meta['doNiceXDate']:
+            try: plt.locator_params(axis='x', nbins=4, prune='both')
+            except: pass
+                    
+        plt.subplots_adjust(hspace=0.0)
+        plt.subplots_adjust(wspace=0.0)
+
+        plt.margins(0.05)
+
+
         plt.suptitle(self.meta['suptitle'])
-
-        plt.tight_layout()
-
+        # plt.tight_layout()
+        plt.subplots_adjust(top=0.85)
         if self.meta['doLegend']:
             plt.subplots_adjust(right=0.85)
+
+        if self.meta['doColorbar']:
+            #cbar_ax = self.fig.add_axes([0.85, 0.15, 0.05, 0.7])
+            #plt.colorbar(cax=cbar_ax, mappable=self.mappables[0],orientation='vertical')
+            self.fig.colorbar(self.mappables[0], ax=self.axsarr.flatten().tolist(), 
+                              orientation='vertical', fraction=.1)
+
+class CCD2DPlotYvsX(CCD2DPlot):
+    
+    def _ax_core_funct(self, ax, Qdict, key=''):
+        
+        ckwargs = self.corekwargs.copy()
+
+        if key != '':
+            
+            xarr = Qdict['x'][key]
+            yarr = Qdict['y'][key]
+            
+            label = st.replace(key, '_', '\_')
+            kwargs=dict(label=label,marker='.',linestyle='')
+            if key in ckwargs:
+                kwargs.update(ckwargs[key])
+            else:
+                kwargs.update(ckwargs)
+            handle = ax.plot(xarr, yarr, **kwargs)
+        else:
+            xarr = Qdict['x']
+            yarr = Qdict['y']
+            kwargs=dict(marker='.',linestyle='')
+            kwargs.update(ckwargs)
+            ax.plot(xarr, yarr, **kwargs)
+            handle, label = None, None
+
+        return handle, label
 
 
 class BeamPlot(BasicPlot):
@@ -447,9 +544,7 @@ class BeamPlot(BasicPlot):
         if not self.meta['doNiceXDate']:
             try: plt.locator_params(axis='x', nbins=4, prune='both')
             except: pass
-            
-        
-
+                    
         plt.subplots_adjust(hspace=0.0)
         plt.subplots_adjust(wspace=0.0)
 
