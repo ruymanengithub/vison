@@ -521,6 +521,25 @@ class MetaCal(object):
         
         gc.collect()
     
+    def plot_XYCCD(self, XYCCD, kwargs):
+        
+        _kwargs = dict()
+        _kwargs.update(kwargs)
+        
+        if 'figname' in _kwargs:
+            figname = _kwargs['figname']
+        else:
+            figname = ''
+        
+        with plfpa.CCD2DPlotYvsX(XYCCD, **_kwargs) as xyccdplot:
+            xyccdplot.render(figname=figname)
+         
+        #xyccdplot = plfpa.CCD2DPlotYvsX(XYCCD, **_kwargs)
+        #xyccdplot.render(figname=figname)
+        
+        gc.collect()
+    
+    
     def plot_ImgFPA(self, BCdict, kwargs):
         
         _kwargs = dict()

@@ -267,6 +267,70 @@ class MetaNL(MetaCal):
                 
         return NLdict
     
+    def _get_compare_NLs_CCD(self, BLOCK1, BLOCK2, CCD):
+        """ """
+        
+        Qdict = dict()
+        
+        PT = self.ParsedTable['NL02']
+                
+        
+        #if mode == 'data':
+        #    curvekey = 'inputcurve'
+        #elif mode == 'fit':
+        #    curvekey = 'outputcurve'
+        
+        
+        for Q in self.Quads:
+            Qdict[Q] = dict(x=dict(),y=dict())
+        
+        
+        CCDk = 'CCD%i' % CCD
+        
+        labelkeys = []
+        
+        for block in [BLOCK1, BLOCK2]:
+            
+            ixblock = np.where(PT['BLOCK'] == block)
+            
+            timetag = '%s/%s/%s' % PT['time_CCD1'][ixblock][0].isocalendar()
+            
+            root_labelkey = '%s, %s' % (block[0:6], timetag)
+            
+            
+            nlcdp_key = PT['NLCDP_KEY'][ixblock][0]
+            i_NL = self.products['NL'][nlcdp_key].copy()
+        
+            for Q in self.Quads:
+                
+                gain = self.cdps['GAIN'][block][CCDk][Q][0]
+                
+                xfluadu_inp = i_NL[CCDk][Q]['inputcurve']['X'].copy()                                                
+                xfluKele_inp = xfluadu_inp * gain / 1.E3
+                y_inp = i_NL[CCDk][Q]['inputcurve']['Y'].copy()
+                
+                xfluadu_out = i_NL[CCDk][Q]['outputcurve']['X'].copy()                                                
+                xfluKele_out = xfluadu_out * gain / 1.E3
+                y_out = i_NL[CCDk][Q]['outputcurve']['Y'].copy()
+                
+                labelkeyin = '%s (data)' % root_labelkey
+                
+                Qdict[Q]['x'][labelkeyin] = xfluKele_inp.copy()
+                Qdict[Q]['y'][labelkeyin] = y_inp.copy()
+                
+                labelkeyout = '%s (fit)' % root_labelkey
+                
+                Qdict[Q]['x'][labelkeyout] = xfluKele_out.copy()
+                Qdict[Q]['y'][labelkeyout] = y_out.copy()
+                
+                if Q == self.Quads[0]:
+                    labelkeys += [labelkeyin, labelkeyout]
+                                    
+        Qdict['labelkeys'] = labelkeys  
+        
+        return Qdict
+    
+    
     def init_fignames(self):
         """ """
         
@@ -285,6 +349,14 @@ class MetaNL(MetaCal):
         
         self.figs['NL_curves_abs'] = os.path.join(self.figspath,
                          'NL_curves_abs_fit.png')
+        
+        for CCD in [1, 2]:
+            self.figs['HvsK_CCD%s' % CCD] = os.path.join(self.figspath,
+                         'NL_HEISEN_SKLODO_CCD%s.png' % CCD)
+            
+        for CCD in [1,3]:
+            self.figs['JvsJ2_CCD%s' % CCD] = os.path.join(self.figspath,
+                         'NL_JULES_JULES2_CCD%s.png' % CCD)
 
     def dump_aggregated_results(self):
         """ """
@@ -369,3 +441,84 @@ class MetaNL(MetaCal):
         NLabskwargs['corekwargs'] = linecorekwargs
         
         self.plot_XY(NLSingledict_abs,kwargs=NLabskwargs)
+        
+        
+        # Compare NL curves of same CCD in different Epochs (re-calibrations)
+                
+        # HEISENBERG CCD1, CCD2 vs. SKLODOWSKA CCD1, CCD2
+        # JULES CCD1, CCD3 vs. JULES2 CCD1, CCD3
+        
+        
+        for CCD in [1, 2]:
+            
+            XYCCD_HvsSK_CCDX = self._get_compare_NLs_CCD('HEISENBERG','SKLODOWSKA',CCD)
+        
+            HvsSK_kwargs = dict(
+                        title='HEISENBERG/SKLODOWSKA, %s' % CCD,
+                        doLegend=True,
+                        xlabel='Fluence [ke-]',
+                        ylabel='Non-Linearity [pc]',
+                        ylim=[-2.,7.],                    
+                        figname=self.figs['HvsK_CCD%s' % CCD])
+            
+            
+            _labelkeys = XYCCD_HvsSK_CCDX['labelkeys']
+            
+            
+            HvsSK_corekwargs = dict()
+            for _labelkey in _labelkeys:
+                if 'data' in _labelkey:
+                    linestyle=''
+                    marker='.'
+                elif 'fit' in _labelkey:
+                    linestyle='-'
+                    marker=''
+                if 'HEISEN' in _labelkey:
+                    color = 'r'
+                elif 'SLKODO' in _labelkey:
+                    color='b'
+                HvsSK_corekwargs[_labelkey] = \
+                                dict(linestyle=linestyle,
+                                     marker=marker,color=color)
+                
+            
+            HvsSK_kwargs['corekwargs'] = HvsSK_corekwargs
+            
+            self.plot_XYCCD(XYCCD_HvsSK_CCDX, kwargs=HvsSK_kwargs)
+        
+        
+        for CCD in [1, 3]:
+            
+            XYCCD_JvsJ2_CCDX = self._get_compare_NLs_CCD('JULES','JULES2',CCD)
+            
+            JvsJ2_kwargs = dict(
+                        title='JULES/JULES2, CCD%s' % CCD,
+                        doLegend=True,
+                        xlabel='Fluence [ke-]',
+                        ylabel='Non-Linearity [pc]',  
+                        ylim=[-2.,7.],     
+                        figname=self.figs['JvsJ2_CCD%s' % CCD])
+            
+            
+            _labelkeys = XYCCD_JvsJ2_CCDX['labelkeys']
+            
+            JvsJ2_corekwargs = dict()
+            for _labelkey in _labelkeys:
+                if 'data' in _labelkey:
+                    linestyle=''
+                    marker='.'
+                elif 'fit' in _labelkey:
+                    linestyle='-'
+                    marker=''
+                if 'JULES,' in _labelkey:
+                    color = 'r'
+                elif 'JULES2,' in _labelkey:
+                    color='b'
+                JvsJ2_corekwargs[_labelkey] = \
+                                dict(linestyle=linestyle,
+                                     marker=marker,color=color)
+            JvsJ2_kwargs['corekwargs'] = JvsJ2_corekwargs
+            
+            self.plot_XYCCD(XYCCD_JvsJ2_CCDX, kwargs=JvsJ2_kwargs)
+        
+        
