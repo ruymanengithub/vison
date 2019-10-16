@@ -161,6 +161,21 @@ class MetaNL(MetaCal):
         
         return sit
     
+    
+    def _extract_SOURCESTAB_fromPT(self,PT,block,CCDk,Q):
+        """ """
+        ixblock = np.where(PT['BLOCK'].data == block)
+        
+        column = 'STABILITYPC_%s_Quad%s' % (CCDk,Q)
+        stab = PT[column][ixblock][0]
+        
+        if stab>1.:
+            stab = np.nan
+        
+        return stab
+        
+    
+    
     def _get_NLMAP_from_PT(self,mode='fit'):
         """ """
                 
@@ -267,6 +282,34 @@ class MetaNL(MetaCal):
                 
         return NLdict
     
+    def _compare_stabilities(self,BLOCK1,BLOCK2,CCD):
+        """ """
+        
+        PT = self.ParsedTable['NL02']
+        
+        stab1 = []
+        stab2 = []
+        
+        ixblock1 = np.where(PT['BLOCK'] == BLOCK1)
+        ixblock2 = np.where(PT['BLOCK'] == BLOCK2)
+        
+        print('SOURCE STABILITIES: %s/%s, CCD%i' % (BLOCK1,BLOCK2,CCD))
+        
+        for Q in self.Quads:
+            
+            qstab1 = PT['STABILITYPC_CCD%s_Quad%s' % (CCD,Q)][ixblock1][0]
+            qstab2 = PT['STABILITYPC_CCD%s_Quad%s' % (CCD,Q)][ixblock2][0]
+            
+            print('%s/%s, CCD%i-%s: %.3f/%.3f' % (BLOCK1,BLOCK2,CCD,Q,qstab1,qstab2))
+            
+            stab1.append(qstab1)
+            stab2.append(qstab2)
+            
+        print('AV. %s/%s, CCD%i: %.3f/%.3f' % (BLOCK1,BLOCK2,CCD,
+                                               np.mean(stab1),
+                                               np.mean(stab2)))
+        
+    
     def _get_compare_NLs_CCD(self, BLOCK1, BLOCK2, CCD):
         """ """
         
@@ -293,7 +336,7 @@ class MetaNL(MetaCal):
             
             ixblock = np.where(PT['BLOCK'] == block)
             
-            timetag = '%s/%s/%s' % PT['time_CCD1'][ixblock][0].isocalendar()
+            timetag = PT['time_CCD1'][ixblock][0].strftime('%Y/%m/%d')
             
             root_labelkey = '%s, %s' % (block[0:6], timetag)
             
@@ -338,6 +381,9 @@ class MetaNL(MetaCal):
             os.system('mkdir %s' % self.figspath)
         
         
+        self.figs['STABILITY_MAP'] = os.path.join(self.figspath,
+                         'SOURCE_STABILITY_MAP.png')
+        
         self.figs['NL_curves_MAP'] = os.path.join(self.figspath,
                          'NL_curves_FPAMAP.png')
         
@@ -363,7 +409,21 @@ class MetaNL(MetaCal):
         
         # HeatMap of maximum non-linearities
         
-        # PLOT All NL curves in Map-of-CCDs
+        # PENDING
+        
+        # HEATMAP of Source Stabilities
+        
+        STABILITY_MAP = self.get_FPAMAP_from_PT(self.ParsedTable['NL02'], extractor=self._extract_SOURCESTAB_fromPT)
+            
+        
+        self.plot_SimpleMAP(STABILITY_MAP,kwargs=dict(
+                suptitle='NL02: Source Stability [pc]',
+                figname=self.figs['STABILITY_MAP'],
+                corekwargs=dict(norm = Normalize(vmin=0.,vmax=0.05, clip=False))))
+        
+        
+        
+        # Map of NonLin curves over FPA
         
         NLMAP = self._get_NLMAP_from_PT(mode='fit')
         
@@ -377,6 +437,8 @@ class MetaNL(MetaCal):
                                           H=dict(linestyle='-',marker='',color='m')),
                         figname = self.figs['NL_curves_MAP']
                         ))
+        
+        
         
         # PLOT All NL curves in single Plot - Relative, best fit curve
         
@@ -449,12 +511,19 @@ class MetaNL(MetaCal):
         # JULES CCD1, CCD3 vs. JULES2 CCD1, CCD3
         
         
+        # COMPARE STABILITIES of HEISENBERG/SKLODOWSKA
+        
+        
+        for CCD in [1,2]:
+            self._compare_stabilities('HEISENBERG','SKLODOWSKA',CCD)
+            
+        
         for CCD in [1, 2]:
             
             XYCCD_HvsSK_CCDX = self._get_compare_NLs_CCD('HEISENBERG','SKLODOWSKA',CCD)
         
             HvsSK_kwargs = dict(
-                        title='HEISENBERG/SKLODOWSKA, %s' % CCD,
+                        suptitle='HEISENBERG/SKLODOWSKA, %s' % CCD,
                         doLegend=True,
                         xlabel='Fluence [ke-]',
                         ylabel='Non-Linearity [pc]',
@@ -475,7 +544,7 @@ class MetaNL(MetaCal):
                     marker=''
                 if 'HEISEN' in _labelkey:
                     color = 'r'
-                elif 'SLKODO' in _labelkey:
+                elif 'SKLODO' in _labelkey:
                     color='b'
                 HvsSK_corekwargs[_labelkey] = \
                                 dict(linestyle=linestyle,
@@ -487,12 +556,16 @@ class MetaNL(MetaCal):
             self.plot_XYCCD(XYCCD_HvsSK_CCDX, kwargs=HvsSK_kwargs)
         
         
+        for CCD in [1,3]:
+            self._compare_stabilities('JULES','JULES2',CCD)
+        
+        
         for CCD in [1, 3]:
             
             XYCCD_JvsJ2_CCDX = self._get_compare_NLs_CCD('JULES','JULES2',CCD)
             
             JvsJ2_kwargs = dict(
-                        title='JULES/JULES2, CCD%s' % CCD,
+                        suptitle='JULES/JULES2, CCD%s' % CCD,
                         doLegend=True,
                         xlabel='Fluence [ke-]',
                         ylabel='Non-Linearity [pc]',  
