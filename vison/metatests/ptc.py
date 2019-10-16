@@ -208,6 +208,8 @@ class MetaPTC(MetaCal):
         else:
             return np.nan
     
+    
+    
     def gen_GAIN_MXdict(self):
         """ """
         
@@ -261,6 +263,7 @@ class MetaPTC(MetaCal):
             
             self.figs['BLOOM_ELE_MAP_%s' % testname] = os.path.join(self.figspath,
                          'BLOOM_ELE_MAP_%s.png' % testname)
+            
             
             self.figs['HER_MAP_%s' % testname] = os.path.join(self.figspath,
                          'HER_MAP_%s.png' % testname)
@@ -527,6 +530,7 @@ class MetaPTC(MetaCal):
                         suptitle='%s: BLOOM-ELECTRONS' % stestname,
                         figname=self.figs['BLOOM_ELE_MAP_%s' % testname]))#,
                         #corekwargs=dict(norm = Normalize(vmin=1e5,vmax=2.2E5, clip=False))))
+        
         
         # HER map
         
