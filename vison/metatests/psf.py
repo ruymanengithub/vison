@@ -13,6 +13,7 @@ import numpy as np
 from collections import OrderedDict
 import string as st
 import os
+import matplotlib.cm as cm
 
 from vison.fpa import fpa as fpamod
 
@@ -23,7 +24,7 @@ from vison.support import vcal
 from vison.datamodel import core as vcore
 from vison.ogse import ogse
 from vison.support import files
-
+from vison.xtalk import xtalk as xtalkmod
 
 from matplotlib import pyplot as plt
 plt.switch_backend('TkAgg')
@@ -60,6 +61,7 @@ class MetaPsf(MetaCal):
             self.cdps['GAIN'][block] = allgains[block]['PTC01'].copy() 
         
         self.products['XTALK'] = OrderedDict()
+        self.products['XTALK_RT'] = files.cPickleRead(kwargs['cdps']['xtalk_roetab'])
         
         self.init_fignames()
     
@@ -154,6 +156,59 @@ class MetaPsf(MetaCal):
         
         return XTALKdict
     
+    def _get_XYdict_XT(self,mode='sign'):
+        """ """
+        
+        x = dict()
+        y = dict()
+        
+        PT = self.ParsedTable['PSF01_800']
+        
+        def _get_xtalk(xtalk_dict,mode='sign'):
+            
+            coefs = xtalk_dict['coefs']
+            xsource = np.linspace(0, 2.**16, 200)
+            yvictim = xtalkmod.f_fitXT(xsource, *coefs)
+
+            ixmax = np.argmax(np.abs(yvictim))
+            ixtalk = yvictim[ixmax]
+            if mode == 'sign':
+                return ixtalk
+            elif mode == 'abs':
+                return np.abs(ixtalk)
+            
+        
+        for block in self.flight_blocks:
+            
+            _x = []
+            _y = []
+            
+            ixblock = np.where(PT['BLOCK'] == block)[0][0]
+            ctalkkey = PT['XTALK'][ixblock]
+            optctalk = self.products['XTALK'][ctalkkey].copy()
+            rtctalk = self.products['XTALK_RT'][block].copy()
+            
+            for iCr, CCDref in enumerate(self.CCDs):
+                for iQr, Qref in enumerate(self.Quads):
+            
+                    for iC, CCD in enumerate(self.CCDs):
+                        for iQ, Q in enumerate(self.Quads):
+                            CCDreftag = 'CCD%i' % CCDref
+                            CCDtag = 'CCD%i' % CCD
+                            
+                            try:
+                                _x.append(_get_xtalk(optctalk[CCDreftag][Qref][CCDtag][Q],mode))
+                                _y.append(_get_xtalk(rtctalk[CCDreftag][Qref][CCDtag][Q],mode))
+                            except KeyError:
+                                pass
+            x[block] = np.array(_x)
+            y[block] = np.array(_y)
+        
+        XTdict = dict(x=x,y=y,labelkeys=self.flight_blocks)
+            
+        return XTdict
+            
+    
     def plot_XtalkMAP(self,XTALKs, kwargs):
         """ """
         
@@ -171,12 +226,34 @@ class MetaPsf(MetaCal):
         if not os.path.exists(self.figspath):
             os.system('mkdir %s' % self.figspath)
         
+        self.figs['XTALK_MAP_RT'] = os.path.join(self.figspath,
+                         'XTALK_MAP_RT.png')
+        
+        self.figs['XTALK_OPTvsRT'] = os.path.join(self.figspath,
+                         'XTALK_OPT_vs_RT.png')
+        
+        self.figs['XTALK_OPTvsRT_ABS'] = os.path.join(self.figspath,
+                         'XTALK_OPT_vs_RT_abs.png')
+        
         for testname in self.testnames:
             self.figs['XTALK_MAP_%s' % testname] = os.path.join(self.figspath,
                          'XTALK_MAP_%s.png' % testname)
    
     def dump_aggregated_results(self):
         """ """
+        
+        # XTALK MAP (ROE-TAB)
+        
+        XTALKs_RT = self.products['XTALK_RT'].copy()        
+            
+        self.plot_XtalkMAP(XTALKs_RT,kwargs=dict(
+                scale='ADU',
+                showvalues=False,
+                title='XTALK [ADU] - ROE-TAB',
+                figname=self.figs['XTALK_MAP_RT']))
+        
+        
+        # XTALK MAPS (OPTICAL)
         
         for testname in self.testnames:
             
@@ -188,4 +265,45 @@ class MetaPsf(MetaCal):
                     showvalues=False,
                     title='%s: XTALK [ADU]' % stestname,
                     figname=self.figs['XTALK_MAP_%s' % testname]))
+        
+        
+        # XTALK: 800-optical vs. RT
+        
+        XT_OPTvsRT = self._get_XYdict_XT(mode='sign')
+        
+        XTkwargs = dict(
+                    title='Cross-Talk Comparison',
+                    doLegend=False,
+                    xlabel='Xtalk - Opt. 800 nm',
+                    ylabel='Xtalk - ROE-TAB',
+                    figname=self.figs['XTALK_OPTvsRT'])
+        
+        BLOCKcolors = cm.rainbow(np.linspace(0,1,len(self.flight_blocks)))
+        
+        pointcorekwargs = dict()
+        for jblock, block in enumerate(self.flight_blocks):
+            jcolor = BLOCKcolors[jblock]
+            pointcorekwargs['%s' % (block,)] = dict(linestyle='',
+                       marker='.',color=jcolor)
+        
+        XTkwargs['corekwargs'] = pointcorekwargs
+        
+        self.plot_XY(XT_OPTvsRT,kwargs=XTkwargs)
+        
+        
+        # XTALK: 800-optical vs. RT (ABS-VALUE)
+        
+        XT_OPTvsRT_abs = self._get_XYdict_XT(mode='abs')
+        
+        XTABSkwargs = dict(
+                    title='Cross-Talk Comparison - ABS. Value',
+                    doLegend=False,
+                    xlabel='Abs(Xtalk - Opt. 800 nm)',
+                    ylabel='Abs(Xtalk - ROE-TAB)',
+                    figname=self.figs['XTALK_OPTvsRT_ABS'])
+        
+        
+        XTABSkwargs['corekwargs'] = pointcorekwargs
+        
+        self.plot_XY(XT_OPTvsRT_abs,kwargs=XTABSkwargs)
         
