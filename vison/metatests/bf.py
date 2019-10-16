@@ -13,6 +13,7 @@ import numpy as np
 from collections import OrderedDict
 import string as st
 import os
+import matplotlib.cm as cm
 
 from vison.fpa import fpa as fpamod
 
@@ -289,6 +290,62 @@ class MetaBF(MetaCal):
         
         return FWHMzMAP
     
+    def _get_FWHMZ_vs_WAVE(self,orientation='X'):
+        """ """
+        
+        x = dict()
+        y = dict()
+        
+        labelkeys = []
+        
+        tests = []
+        wavenms = []
+        for test in self.testnames:
+            tests.append(test)
+            wavenms.append(self.ParsedTable[test]['WAVENM'][0])
+        
+        tests = np.array(tests)
+        wavenms = np.array(wavenms)
+        ixord = np.argsort(wavenms)
+        tests = tests[ixord]
+        wavenms = wavenms[ixord]
+        
+        for block in self.flight_blocks:
+            
+            for iCCD, CCD in enumerate(self.CCDs):
+                CCDk = 'CCD%i' % CCD
+                for kQ, Q in enumerate(self.Quads):
+                    pkey = '%s_%s_%s' % (block,CCDk,Q)
+                    
+                    x[pkey] = wavenms.copy()
+                    y[pkey] = []
+                    
+                    for test in tests:
+                        PT = self.ParsedTable[test]                
+                        ixsel = np.where(PT['BLOCK'] == block)
+                        colkey = 'FWHM%s_HWC_%s_Quad%s' % (orientation,
+                                    CCDk,Q)
+                        y[pkey].append(PT[colkey][ixsel][0])
+                    
+                    y[pkey] = np.array(y[pkey])
+                    
+                    labelkeys.append(pkey)
+        
+        # Niemi et al. 2015 - for comparison
+        
+        x['Niemi'] = wavenms.copy()
+        if orientation == 'X':            
+            y['Niemi'] = 41. * wavenms**(-0.24)
+        elif orientation == 'Y':            
+            y['Niemi'] = 105.9 * wavenms**(-0.38)
+        
+        labelkeys.append('Niemi')
+        
+        FWHMZdict = dict(x=x,y=y,labelkeys=labelkeys)  
+        
+        return FWHMZdict
+    
+    
     def init_fignames(self):
         """ """
         
@@ -332,7 +389,51 @@ class MetaBF(MetaCal):
         
         # FWHMX vs. WAVE
         
+        BLOCKcolors = cm.rainbow(np.linspace(0,1,len(self.flight_blocks)))
+        
+        
+        FWHMXdict = self._get_FWHMZ_vs_WAVE(orientation='X')
+        
+        FWHMxkwargs = dict(
+                    title='FWHM-X vs. Wavelength',
+                    doLegend=False,
+                    xlabel='Fluence [ke-]',
+                    ylabel='FWHMx [um]',
+                    ylim=[7.5,9.5],
+                    figname=self.figs['FWHMX_vs_WAVE'])
+        
+
+        corekwargs = dict()
+        for jblock, block in enumerate(self.flight_blocks):
+            jcolor = BLOCKcolors[jblock]
+            for iCCD in self.CCDs:
+                for kQ in self.Quads:
+                    corekwargs['%s_CCD%i_%s' % (block,iCCD, kQ)] = dict(linestyle='-',
+                               marker='.',color=jcolor) 
+        corekwargs['Niemi'] = dict(linestyle='-',marker='o',color='k')
+        
+        
+        FWHMxkwargs['corekwargs'] = corekwargs
+        
+        self.plot_XY(FWHMXdict,kwargs=FWHMxkwargs)
+        
         # FWHMY vs. WAVE
+        
+        FWHMYdict = self._get_FWHMZ_vs_WAVE(orientation='Y')
+        
+        FWHMykwargs = dict(
+                    title='FWHM-Y vs. Wavelength',
+                    doLegend=False,
+                    xlabel='Fluence [ke-]',
+                    ylabel='FWHMy [um]',
+                    ylim=[7.5,9.5],
+                    figname=self.figs['FWHMY_vs_WAVE'])
+        
+        
+        FWHMykwargs['corekwargs'] = corekwargs
+        
+        self.plot_XY(FWHMYdict,kwargs=FWHMykwargs)
+        
         
         # SLOPEXY_vs_WAVE
         
