@@ -135,6 +135,12 @@ class MetaPsf(MetaCal):
         ctalkkey_v = np.array([ctalkkey])
         sidd.addColumn(ctalkkey_v, 'XTALK', IndexS, ix=0)
         
+        # XTALK-from ROE-TALK
+        
+        
+        
+        
+        
         # flatten sidd to table
         
         sit = sidd.flattentoTable()
@@ -156,15 +162,8 @@ class MetaPsf(MetaCal):
         
         return XTALKdict
     
-    def _get_XYdict_XT(self,mode='sign'):
-        """ """
-        
-        x = dict()
-        y = dict()
-        
-        PT = self.ParsedTable['PSF01_800']
-        
-        def _get_xtalk(xtalk_dict,mode='sign'):
+    
+    def _get_xtalk(self,xtalk_dict,mode='sign'):
             
             coefs = xtalk_dict['coefs']
             xsource = np.linspace(0, 2.**16, 200)
@@ -176,17 +175,36 @@ class MetaPsf(MetaCal):
                 return ixtalk
             elif mode == 'abs':
                 return np.abs(ixtalk)
-            
+    
+    
+    def _get_XYdict_XT(self,TEST1, TEST2, mode='sign'):
+        """ """
+        
+        x = dict()
+        y = dict()
+        
+                
+        PT1 = self.ParsedTable[TEST1]
+        
+        if TEST2 != 'RT':
+            PT2 = self.ParsedTable[TEST2]
+        
         
         for block in self.flight_blocks:
             
             _x = []
             _y = []
             
-            ixblock = np.where(PT['BLOCK'] == block)[0][0]
-            ctalkkey = PT['XTALK'][ixblock]
-            optctalk = self.products['XTALK'][ctalkkey].copy()
-            rtctalk = self.products['XTALK_RT'][block].copy()
+            ixblock1 = np.where(PT1['BLOCK'] == block)[0][0]
+            ctalkkey1 = PT1['XTALK'][ixblock1]
+            ctalk1 = self.products['XTALK'][ctalkkey1].copy()
+            
+            if TEST2 == 'RT':            
+                ctalk2 = self.products['XTALK_RT'][block].copy()
+            else:
+                ixblock2 = np.where(PT2['BLOCK'] == block)[0][0]
+                ctalkkey2 = PT2['XTALK'][ixblock2]
+                ctalk2 = self.products['XTALK'][ctalkkey2].copy()
             
             for iCr, CCDref in enumerate(self.CCDs):
                 for iQr, Qref in enumerate(self.Quads):
@@ -194,17 +212,21 @@ class MetaPsf(MetaCal):
                     for iC, CCD in enumerate(self.CCDs):
                         for iQ, Q in enumerate(self.Quads):
                             CCDreftag = 'CCD%i' % CCDref
-                            CCDtag = 'CCD%i' % CCD
-                            
+                            CCDtag = 'CCD%i' % CCD                            
                             try:
-                                _x.append(_get_xtalk(optctalk[CCDreftag][Qref][CCDtag][Q],mode))
-                                _y.append(_get_xtalk(rtctalk[CCDreftag][Qref][CCDtag][Q],mode))
+                                _x.append(self._get_xtalk(ctalk1[CCDreftag][Qref][CCDtag][Q],mode))
+                                _y.append(self._get_xtalk(ctalk2[CCDreftag][Qref][CCDtag][Q],mode))
                             except KeyError:
                                 pass
             x[block] = np.array(_x)
             y[block] = np.array(_y)
         
-        XTdict = dict(x=x,y=y,labelkeys=self.flight_blocks)
+        x['oneone'] = [-100,100]
+        y['oneone'] = [-100,100]
+        
+        labelkeys = self.flight_blocks + ['oneone']
+        
+        XTdict = dict(x=x,y=y,labelkeys=labelkeys)
             
         return XTdict
             
@@ -229,11 +251,16 @@ class MetaPsf(MetaCal):
         self.figs['XTALK_MAP_RT'] = os.path.join(self.figspath,
                          'XTALK_MAP_RT.png')
         
-        self.figs['XTALK_OPTvsRT'] = os.path.join(self.figspath,
-                         'XTALK_OPT_vs_RT.png')
+        self.figs['XTALK_RTvs800'] = os.path.join(self.figspath,
+                         'XTALK_RT_vs_800nm.png')
         
-        self.figs['XTALK_OPTvsRT_ABS'] = os.path.join(self.figspath,
-                         'XTALK_OPT_vs_RT_abs.png')
+        self.figs['XTALK_RTvs800_ABS'] = os.path.join(self.figspath,
+                         'XTALK_RT_vs_800nm_abs.png')
+        
+        for wave in [590,730,880]:
+        
+            self.figs['XTALK_%ivs800' % wave] = os.path.join(self.figspath,
+                 'XTALK_%inm_vs_800nm.png' % wave)
         
         for testname in self.testnames:
             self.figs['XTALK_MAP_%s' % testname] = os.path.join(self.figspath,
@@ -267,43 +294,71 @@ class MetaPsf(MetaCal):
                     figname=self.figs['XTALK_MAP_%s' % testname]))
         
         
-        # XTALK: 800-optical vs. RT
+        # XTALK: 800-optical vs. RT  (with SIGN)
         
-        XT_OPTvsRT = self._get_XYdict_XT(mode='sign')
+        XT_RTvs800 = self._get_XYdict_XT('PSF01_800','RT',mode='sign')
         
         XTkwargs = dict(
                     title='Cross-Talk Comparison',
                     doLegend=False,
-                    xlabel='Xtalk - Opt. 800 nm',
-                    ylabel='Xtalk - ROE-TAB',
-                    figname=self.figs['XTALK_OPTvsRT'])
+                    xlabel='Xtalk - Opt. 800nm',
+                    ylabel='Xtalk - ROE-TAB',           
+                    xlim=[-20,50],
+                    ylim=[-20,50],                    
+                    figname=self.figs['XTALK_RTvs800'])
         
         BLOCKcolors = cm.rainbow(np.linspace(0,1,len(self.flight_blocks)))
         
-        pointcorekwargs = dict()
+        xtcorekwargs = dict()
         for jblock, block in enumerate(self.flight_blocks):
             jcolor = BLOCKcolors[jblock]
-            pointcorekwargs['%s' % (block,)] = dict(linestyle='',
+            xtcorekwargs['%s' % (block,)] = dict(linestyle='',
                        marker='.',color=jcolor)
         
-        XTkwargs['corekwargs'] = pointcorekwargs
+        xtcorekwargs['oneone'] = dict(linestyle='--',marker='',color='k')
         
-        self.plot_XY(XT_OPTvsRT,kwargs=XTkwargs)
+        XTkwargs['corekwargs'] = xtcorekwargs
+        
+        self.plot_XY(XT_RTvs800,kwargs=XTkwargs)
         
         
         # XTALK: 800-optical vs. RT (ABS-VALUE)
         
-        XT_OPTvsRT_abs = self._get_XYdict_XT(mode='abs')
+        XT_RTvs800_abs = self._get_XYdict_XT('PSF01_800','RT',mode='abs')
         
         XTABSkwargs = dict(
                     title='Cross-Talk Comparison - ABS. Value',
                     doLegend=False,
                     xlabel='Abs(Xtalk - Opt. 800 nm)',
-                    ylabel='Abs(Xtalk - ROE-TAB)',
-                    figname=self.figs['XTALK_OPTvsRT_ABS'])
+                    ylabel='Abs(Xtalk - ROE-TAB)', 
+                    xlim=[-20,50],
+                    ylim=[-20,50],                               
+                    figname=self.figs['XTALK_RTvs800_ABS'])
         
         
-        XTABSkwargs['corekwargs'] = pointcorekwargs
+        XTABSkwargs['corekwargs'] = xtcorekwargs
         
-        self.plot_XY(XT_OPTvsRT_abs,kwargs=XTABSkwargs)
+        self.plot_XY(XT_RTvs800_abs,kwargs=XTABSkwargs)
+        
+        
+        # XTALK: 800-optical vs. OTHER-opt (with SIGN)
+        
+        for wave in [590,730,880]:
+        
+            XT_NMvs800 = self._get_XYdict_XT('PSF01_800','PSF01_%i' % wave,mode='sign')
+        
+            XTNMvs800kwargs = dict(
+                        title='Cross-Talk Comparison - With Sign',
+                        doLegend=False,
+                        xlabel='Xtalk - Opt. 800 nm',
+                        ylabel='Xtalk - Opt. %i nm' % wave,
+                        xlim=[-20,50],
+                        ylim=[-20,50],
+                        figname=self.figs['XTALK_%ivs800' % wave])
+        
+        
+            XTNMvs800kwargs['corekwargs'] = xtcorekwargs
+                            
+            self.plot_XY(XT_NMvs800,kwargs=XTNMvs800kwargs)
+        
         
