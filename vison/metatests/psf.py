@@ -265,34 +265,32 @@ class MetaPsf(MetaCal):
         for testname in self.testnames:
             self.figs['XTALK_MAP_%s' % testname] = os.path.join(self.figspath,
                          'XTALK_MAP_%s.png' % testname)
-   
+    
     def dump_aggregated_results(self):
         """ """
         
         # XTALK MAP (ROE-TAB)
         
-        XTALKs_RT = self.products['XTALK_RT'].copy()        
-            
+        XTALKs_RT = self.products['XTALK_RT'].copy()
+        
         self.plot_XtalkMAP(XTALKs_RT,kwargs=dict(
                 scale='ADU',
                 showvalues=False,
                 title='XTALK [ADU] - ROE-TAB',
                 figname=self.figs['XTALK_MAP_RT']))
         
-        
         # XTALK MAPS (OPTICAL)
         
         for testname in self.testnames:
             
-            XTALKs = self.get_XTALKDICT_from_PT(testname)            
-        
+            XTALKs = self.get_XTALKDICT_from_PT(testname)
+            
             stestname = st.replace(testname,'_','\_')
             self.plot_XtalkMAP(XTALKs,kwargs=dict(
                     scale='ADU',
                     showvalues=False,
                     title='%s: XTALK [ADU]' % stestname,
                     figname=self.figs['XTALK_MAP_%s' % testname]))
-        
         
         # XTALK: 800-optical vs. RT  (with SIGN)
         
@@ -302,7 +300,7 @@ class MetaPsf(MetaCal):
                     title='Cross-Talk Comparison',
                     doLegend=False,
                     xlabel='Xtalk - Opt. 800nm',
-                    ylabel='Xtalk - ROE-TAB',           
+                    ylabel='Xtalk - ROE-TAB',
                     xlim=[-20,50],
                     ylim=[-20,50],                    
                     figname=self.figs['XTALK_RTvs800'])
