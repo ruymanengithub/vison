@@ -346,6 +346,60 @@ class MetaBF(MetaCal):
         return FWHMZdict
     
     
+    def _get_FWHMZ_vs_FLU(self, test, orientation='X'):
+        """ """
+        
+        x = dict()
+        y = dict()
+        
+        labelkeys = []
+        
+        PT = self.ParsedTable[test]
+        
+        for jY in range(self.NSLICES_FPA):
+            for iX in range(self.NCOLS_FPA):
+                
+                Ckey  = 'C_%i%i' % (jY+1,iX+1)
+                locator = self.fpa.FPA_MAP[Ckey]
+                block = locator[0]
+                CCDk = locator[1]
+                CCD = int(CCDk[-1])
+                
+                ixblock = np.where(PT['BLOCK'] == block)
+                
+                _bfkey = PT['BFCDP_KEY'][ixblock][0]
+                _BF = self.products['BF'][_bfkey]
+                
+                
+                for iQ, Q in enumerate(self.Quads):
+                    
+                    _xRAW, _yRAW = self._get_BFvalues(_BF,CCD, iQ+1, orientation)
+                    
+                    labelkey = '%s_CCD%i_%s' % (block,CCD, Q)
+                    
+                    gain = self.cdps['GAIN'][block][CCDk][Q][0]
+                    
+                    x[labelkey] = (_xRAW*gain/1.e3).copy()
+                    y[labelkey] = _yRAW.copy()
+                    
+                    labelkeys.append(labelkey)
+        
+        x['Niemi'] = np.linspace(1.5e1, 2.e2, 10) # kilo-electrons
+        if orientation=='X':            
+            y['Niemi'] = 6.66 + 1.14E-2 * x['Niemi']
+        elif orientation=='Y':
+            y['Niemi'] = 6.72 + 1.12E-2 * x['Niemi']
+        
+        labelkeys.append('Niemi')
+        
+        
+        BFdict = dict(x=x,y=y,labelkeys=labelkeys)
+        
+        return BFdict
+                
+        
+    
+    
     def init_fignames(self):
         """ """
         
@@ -357,8 +411,14 @@ class MetaBF(MetaCal):
         self.figs['FWHMY_vs_WAVE'] = os.path.join(self.figspath,
                          'FWHMY_vs_WAVELENGTH.png')
         
-        self.figs['SLOPEXY_vs_WAVE'] = os.path.join(self.figspath,
-                         'SLOPEXY_vs_WAVELENGTH.png')
+        
+        self.figs['FWHMX_vs_FLU'] = os.path.join(self.figspath,
+                         'FWHMX_vs_FLUENCE.png')
+        self.figs['FWHMY_vs_FLU'] = os.path.join(self.figspath,
+                         'FWHMY_vs_FLUENCE.png')
+        
+        #self.figs['SLOPEXY_vs_WAVE'] = os.path.join(self.figspath,
+        #                 'SLOPEXY_vs_WAVELENGTH.png')
                 
         for testname in self.testnames:
                         
@@ -392,12 +452,12 @@ class MetaBF(MetaCal):
         BLOCKcolors = cm.rainbow(np.linspace(0,1,len(self.flight_blocks)))
         
         
-        FWHMXdict = self._get_FWHMZ_vs_WAVE(orientation='X')
+        FWHMxWAVEdict = self._get_FWHMZ_vs_WAVE(orientation='X')
         
-        FWHMxkwargs = dict(
+        FWHMxWAVEkwargs = dict(
                     title='FWHM-X vs. Wavelength',
                     doLegend=False,
-                    xlabel='Fluence [ke-]',
+                    xlabel='Wavelength [nm]',
                     ylabel='FWHMx [um]',
                     ylim=[7.5,9.5],
                     figname=self.figs['FWHMX_vs_WAVE'])
@@ -410,34 +470,67 @@ class MetaBF(MetaCal):
                 for kQ in self.Quads:
                     corekwargs['%s_CCD%i_%s' % (block,iCCD, kQ)] = dict(linestyle='-',
                                marker='.',color=jcolor) 
-        corekwargs['Niemi'] = dict(linestyle='-',marker='o',color='k')
+        corekwargs['Niemi'] = dict(linestyle='--',marker='o',color='k')
         
         
-        FWHMxkwargs['corekwargs'] = corekwargs
+        FWHMxWAVEkwargs['corekwargs'] = corekwargs
         
-        self.plot_XY(FWHMXdict,kwargs=FWHMxkwargs)
+        self.plot_XY(FWHMxWAVEdict,kwargs=FWHMxWAVEkwargs)
         
         # FWHMY vs. WAVE
         
-        FWHMYdict = self._get_FWHMZ_vs_WAVE(orientation='Y')
+        FWHMyWAVEdict = self._get_FWHMZ_vs_WAVE(orientation='Y')
         
-        FWHMykwargs = dict(
+        FWHMyWAVEkwargs = dict(
                     title='FWHM-Y vs. Wavelength',
                     doLegend=False,
-                    xlabel='Fluence [ke-]',
+                    xlabel='Wavelength [nm]',
                     ylabel='FWHMy [um]',
                     ylim=[7.5,9.5],
                     figname=self.figs['FWHMY_vs_WAVE'])
         
         
-        FWHMykwargs['corekwargs'] = corekwargs
+        FWHMyWAVEkwargs['corekwargs'] = corekwargs
         
-        self.plot_XY(FWHMYdict,kwargs=FWHMykwargs)
-        
-        
-        # SLOPEXY_vs_WAVE
+        self.plot_XY(FWHMyWAVEdict,kwargs=FWHMyWAVEkwargs)
         
         
+        # FWHMX vs. FLUENCE
+        
+        FWHMxFLUdict = self._get_FWHMZ_vs_FLU('BF01',orientation='X')
+        
+        FWHMxFLUkwargs = dict(
+                    title='FWHM-X (800nm) vs. Fluence',
+                    doLegend=False,
+                    xlabel='Fluence [ke-]',
+                    ylabel='FWHMx [um]',
+                    ylim=[6.,10.],
+                    figname=self.figs['FWHMX_vs_FLU'])
+        
+        
+        FWHMxFLUkwargs['corekwargs'] = corekwargs
+        
+        self.plot_XY(FWHMxFLUdict,kwargs=FWHMxFLUkwargs)
+        
+        # FWHMY vs. FLUENCE
+        
+        FWHMyFLUdict = self._get_FWHMZ_vs_FLU('BF01',orientation='Y')
+        
+        FWHMyFLUkwargs = dict(
+                    title='FWHM-Y (800nm) vs. Fluence',
+                    doLegend=False,
+                    xlabel='Fluence [ke-]',
+                    ylabel='FWHMy [um]',
+                    ylim=[6.,10.],
+                    figname=self.figs['FWHMY_vs_FLU'])
+        
+        
+        FWHMyFLUkwargs['corekwargs'] = corekwargs
+        
+        self.plot_XY(FWHMyFLUdict,kwargs=FWHMyFLUkwargs)
+        
+        
+        # MAPS
         
         for testname in self.testnames:
             
