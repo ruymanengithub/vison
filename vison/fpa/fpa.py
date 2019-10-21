@@ -12,11 +12,11 @@ from pdb import set_trace as stop
 # END IMPORT
 
 
-flight_blocks = ['BORN','CURIE','DIRAC','ERWIN','FOWLER','GUYE','SKLODOWSKA',
-          'JULES2','KRAMERS','LORENTZ','MAX','NIELS']
-spare_blocks = ['OWEN','EINSTEIN']
+#flight_blocks = ['BORN','CURIE','DIRAC','ERWIN','FOWLER','GUYE','SKLODOWSKA',
+#          'JULES2','KRAMERS','LORENTZ','MAX','NIELS']
+#spare_blocks = ['OWEN','EINSTEIN']
 
-all_blocks = flight_blocks + spare_blocks
+#all_blocks = flight_blocks + spare_blocks
 
 def get_block_lists(design='initial'):
     
