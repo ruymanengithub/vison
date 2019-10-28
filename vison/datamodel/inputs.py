@@ -48,6 +48,7 @@ CommonTaskInputs = OrderedDict(sorted([
 CommonFpaTaskInputs = CommonTaskInputs.copy()
 for key in ['BLOCKID','CHAMBER','diffvalues','structure']:
     CommonFpaTaskInputs.pop(key)
+CommonFpaTaskInputs['FPAdesign'] = ([str,type(None)], 'FPA design (initial/final)')
 
 class Inputs(dict):
     """Class to hold, transfer and 'document' Task Inputs."""

@@ -29,12 +29,17 @@ from vison.datamodel import inputs
 from vison.pipe import task
 from vison.pipe import lib as pilib
 from vison.fpatests import fpatask_lib as fpatasklib
+from vison.fpa import fpa as fpamod
+from vison.metatests.metacal import MetaCal
+
+#from vison.metatests
 # END IMPORT
 
 class FpaTask(task.Task):
     """ """
     
-    inputsclass = inputs.Inputs 
+    inputsclass = inputs.Inputs
+    
     
     def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
@@ -49,6 +54,7 @@ class FpaTask(task.Task):
             self.elvis = inputs['elvis']
         else:
             self.elvis = 'FPA'
+        
         
         self.Model = 'FPA'
         self.internals = dict()
@@ -92,6 +98,18 @@ class FpaTask(task.Task):
         
         self.inputs.update(_inputs)
         
+        self.fpa = fpamod.FPA(self.inputs['FPAdesign'])
+        self.NSLICES_FPA = self.fpa.NSLICES
+        self.NCOLS_FPA = self.fpa.NCOLS        
+        self.CCDs = [1,2,3]
+        self.Quads = ['E','F','G','H']
+        
+        self.metacal = MetaCal(**dict(design=self.inputs['FPAdesign'],
+                                      vcalfile='',
+                                      respathroot='',
+                                      jsonf='',
+                                      testkey='',
+                                      outparent=''))
 
 #        self.set_perfdefaults(**inputs)
 #        _perfdefaults = self.perfdefaults.copy()
@@ -355,10 +373,10 @@ class FpaTask(task.Task):
     def iterate_over_CCDs(self, LE1, method, **kwargs):
         """ """        
         
-        for jY in range(1,LE1.fpamodel.NSLICES+1):
-            for iX in range(1,LE1.fpamodel.NSLICES+1):
+        for jY in range(self.NSLICES_FPA):
+            for iX in range(self.NCOLS_FPA):
                 
-                CCDID = 'C_%i%i' % (jY,iX)                
+                CCDID = 'C_%i%i' % (jY+1,iX+1)                
                 _kwargs = dict(LE1=LE1,CCDID=CCDID)
                 _kwargs.update(kwargs)
                 
@@ -374,10 +392,10 @@ class FpaTask(task.Task):
         queue = mgr.Queue()
         
         
-        for jY in range(1,LE1.fpamodel.NSLICES+1):
-            for iX in range(1,LE1.fpamodel.NSLICES+1):
+        for jY in range(self.NSLICES_FPA):
+            for iX in range(self.NCOLS_FPA):
                 
-                CCDID = 'C_%i%i' % (jY,iX)                
+                CCDID = 'C_%i%i' % (jY+1,iX+1)                
                 _kwargs = dict(queue=queue,LE1=LE1,CCDID=CCDID)
                 _kwargs.update(kwargs)
                 arglist.append(['retrieve',_kwargs,{}])
@@ -427,4 +445,36 @@ class FpaTask(task.Task):
                       msgs=[])        
     
         return explog, checkreport
+    
+    def get_FPAMAP(self,inData,extractor):
+    
+        M = OrderedDict()
+        
+        for jY in range(self.NSLICES_FPA):
+            for iX in range(self.NCOLS_FPA):
+                Ckey  = 'C_%i%i' % (jY+1,iX+1)
+                M[Ckey] = OrderedDict()
+                
+                for Q in self.Quads:                    
+                    M[Ckey][Q] = extractor(inData,Ckey,Q)
+        
+        return M
             
+    def plot_SimpleMAP(self, MAPdict, kwargs): 
+        self.metacal.plot_SimpleMAP(MAPdict, kwargs)
+    
+    #plot_SimpleMAP = classmethod(MetaCal.plot_SimpleMAP.__func__)
+    
+    def plot_XY(self, XYdict, kwargs):
+        MetaCal.plot_XY(self,XYdict, kwargs)
+    
+    def plot_XYCCD(self, XYCCD, kwargs):
+        MetaCal.plot_XYCCD(self, XYCCD, kwargs)
+    
+    def plot_XYMAP(self, XYMAP, kwargs):
+        MetaCal.plot_XYMAP(self, XYMAP, kwargs)
+    
+    def plot_ImgFPA(self, BCdict, kwargs):
+        MetaCal.plot_ImgFPA(self, BCdict, kwargs)
+    
+        

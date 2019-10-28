@@ -15,6 +15,7 @@ from pdb import set_trace as stop
 import os
 import numpy as np
 import sys
+from collections import OrderedDict
 
 from vison.image import bits
 from vison.other import MOT_FFaux
@@ -120,25 +121,25 @@ class FWD_WARM(fpatask.FpaTask):
                                      vstart=vstart, vend=vend)
             
             
-            self.products['profiles1D'][CCDID][Q] = vQ.data.copy()
+            self.dd.products['profiles1D'][CCDID][Q] = vQ.data.copy()
             
             # extract and save slope+intercept of profile for comparison
             
             rampslopeQ, rampinterQ = self._get_RAMPslope(vQ)
             
-            self.products['RAMPfits'][CCDID][Q] = (rampslopeQ,rampinterQ)
+            self.dd.products['RAMPfits'][CCDID][Q] = (rampslopeQ,rampinterQ)
             
             # HERprofile
             
             # save HERprof
             
-            self.products['HER'][CCDID][Q] = HERprofs[Q].copy()
+            self.dd.products['HER'][CCDID][Q] = HERprofs[Q].copy()
             
             
             # save HER value: PENDING
             
             ixjump = HERprofs['ixjump']            
-            self.products['HERval'][CCDID][Q] = HERprofs[Q]['y'][ixjump]
+            self.dd.products['HERval'][CCDID][Q] = HERprofs[Q]['y'][ixjump]
             
             
             # RAMP; bit-histograms extraction
@@ -148,7 +149,7 @@ class FWD_WARM(fpatask.FpaTask):
             
             # save bit histograms
             
-            self.products['BITS'][CCDID][Q] = dict(bins=bitsbin, H=bitsmean)
+            self.dd.products['BITS'][CCDID][Q] = dict(bins=bitsbin, H=bitsmean)
             
         
     
@@ -180,12 +181,12 @@ class FWD_WARM(fpatask.FpaTask):
         
         for prodkey in prodkeys:
         
-            self.products[prodkey] = dict()
+            self.dd.products[prodkey] = dict()
             
             for jY in range(1,LE1.fpamodel.NSLICES+1):
                 for iX in range(1,LE1.fpamodel.NSLICES+1):                
                     CCDID = 'C_%i%i' % (jY,iX)
-                    self.products[prodkey][CCDID] = dict()
+                    self.dd.products[prodkey][CCDID] = dict()
         
         
         kwargs = dict(vstart=vstart,
@@ -194,14 +195,49 @@ class FWD_WARM(fpatask.FpaTask):
         
         self.iterate_over_CCDs(LE1, FWD_WARM._basic_onLE1, **kwargs)
         
-        stop()
-                    
+        if self.report is not None:
+        
+            for prodkey in prodkeys:
+                self.report.add_Text('product: %s, all extracted!' % prodkey)
+        
+            
+    def _get_Rslopes_MAP(self, inData, Ckey, Q):
+        return inData[Ckey][Q][0]
+        
         
     def meta_analysis(self):
         """ """
         
+        
         if self.report is not None:
             self.report.add_Section(keyword='meta', Title='Meta-Analysis', level=0)
         
-        return # TESTS
+        
+        # Display FPA-Map of ramp profiles
+        
+        
+        
+        # Display FPA-Map of ramp slopes
+        
+        RslopesMap = self.get_FPAMAP(self.dd.products['RAMPfits'],
+                                     extractor=self._get_Rslopes_MAP)
+        
+        self.plot_SimpleMAP(RslopesMap, kwargs=dict(
+                        suptitle='FPA\_WARM: RAMP SLOPES [ADU/ROW]',
+                        figname = None
+                        ))
+        
+        # Display FPA-Map of CALCAMP ramp slopes
+        
+        # Dispay HER profiles
+        
+        # Display FPA-Map of HER-values
+        
+        # Display FPA-Map of CALCAMP HER-values
+        
+        # Display all bit-histogram maps together
+        
+        
+        
+        
     

@@ -27,7 +27,7 @@ from vison.fpatests import FWD_WARM
 
 
 
-def generate_test_sequence(toGen,elvis='FPA'):
+def generate_test_sequence(toGen,elvis='FPA',FPAdesign='final'):
     """Now supporting test repetitions."""
     taskslist = toGen.keys()
     test_sequence = OrderedDict()
@@ -38,7 +38,7 @@ def generate_test_sequence(toGen,elvis='FPA'):
         strip_taskname, iteration = utils.remove_iter_tag(taskname,Full=True)
         _toGen = OrderedDict()
         _toGen[strip_taskname] = True
-        ans =  _generate_test_sequence(_toGen,elvis=elvis)
+        ans =  _generate_test_sequence(_toGen,elvis=elvis,FPAdesign=FPAdesign)
         
         if iteration is not None:
             for key in ans.keys():
@@ -50,7 +50,7 @@ def generate_test_sequence(toGen,elvis='FPA'):
     return test_sequence
     
 
-def _generate_test_sequence(toGen,elvis='FPA'):
+def _generate_test_sequence(toGen,elvis='FPA',FPAdesign='final'):
     """ """
 
     
@@ -62,14 +62,18 @@ def _generate_test_sequence(toGen,elvis='FPA'):
     
     _toGen.update(toGen)
     
+    commoninputs = dict(elvis=elvis,
+                        FPAdesign=FPAdesign)
 
     # BIAS
 
     if _toGen['FWD_WARM']:
-
-        fwd_warm = FWD_WARM.FWD_WARM(inputs=dict(
-                    test='FWD_WARM',
-                    elvis=elvis))
+        
+        fwd_warm_inp = dict(
+                    test='FWD_WARM')
+        fwd_warm_inp.update(commoninputs)
+                
+        fwd_warm = FWD_WARM.FWD_WARM(inputs=fwd_warm_inp.copy())
         
         #structBIAS01 = bias01.build_scriptdict(elvis=elvis)
         test_sequence['FWD_WARM'] = copy.deepcopy(fwd_warm)
