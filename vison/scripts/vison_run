@@ -35,7 +35,7 @@ import multiprocessing
 #import importlib
 
 from vison import Pipe
-from vison.systests import fpamaster
+from vison.fpatests import fpamaster
 from vison.pipe.lib import broadcast_todo_flags
 from vison.support import vjson
 # END IMPORT
