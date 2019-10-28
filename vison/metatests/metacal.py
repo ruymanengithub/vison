@@ -54,8 +54,6 @@ class MetaCal(object):
         self.testkey = kwargs['testkey']
         self.outpathroot = os.path.join(kwargs['outparent'],'%s_FPA' % self.testkey.upper())
         
-        if not os.path.exists(self.outpathroot):
-            os.system('mkdir -p %s' % self.outpathroot)
         
         self.inventory = OrderedDict()
         self.results = OrderedDict()
@@ -74,6 +72,9 @@ class MetaCal(object):
     
     def run(self, doLoad=True, doParse=True, doDump=True, doReport=True):
         """ """
+        
+        if not os.path.exists(self.outpathroot):
+            os.system('mkdir -p %s' % self.outpathroot)
         
         dictiopick = os.path.join(self.outpathroot,
                                   '%s_dictionary.pick' % self.testkey.lower())
