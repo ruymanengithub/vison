@@ -83,15 +83,35 @@ class FWD_WARM(fpatask.FpaTask):
                                             scan = 'pre' 
                                                 )))    
     
-    def _basic_onLE1(self,**kwargs):
+    def _get_RAMPslope(self,vQ):
+        """ """
         
+        rawy = vQ.data['y'].copy()
+        rownum = np.arange(len(rawy))
+        rowsat = np.where(rawy==2.**16-1)[0][0]
+        ixsel = np.where((rawy<5.E4) & (rownum<rowsat))
+        
+        pol = np.polyfit(rownum[ixsel],rawy[ixsel],1)
+        
+        slope, intercept = pol[0], pol[1]
+        
+        return slope,intercept
+        
+    
+    def _basic_onLE1(self,**kwargs):
+        """ """
         
         CCDID = kwargs['CCDID']
         LE1 = kwargs['LE1']
         vstart = kwargs['vstart']
         vend = kwargs['vend']
         kccdobj = LE1.get_ccdobj(CCDID)
-                
+        
+        
+        HERprofs= MOT_FFaux.extract_overscan_profiles(kccdobj, 
+                                            [1.E3, 4.E4], 
+                                            direction='serial')
+        
         for Q in LE1.Quads:
             
             # vertical profile: RAMP
@@ -100,28 +120,37 @@ class FWD_WARM(fpatask.FpaTask):
                                      vstart=vstart, vend=vend)
             
             
-            # save vQ: PENDING
+            self.products['profiles1D'][CCDID][Q] = vQ.data.copy()
             
-            # extract and save slope of profile for comparison: PENDING
+            # extract and save slope+intercept of profile for comparison
             
-            # HER
+            rampslopeQ, rampinterQ = self._get_RAMPslope(vQ)
             
-            HERprofQ = MOT_FFaux.extract_overscan_profiles(kccdobj, 
-                                            [1.E3, 4.E4], 
-                                            direction='serial')
+            self.products['RAMPfits'][CCDID][Q] = (rampslopeQ,rampinterQ)
             
-            # save HERprof: PENDING
+            # HERprofile
+            
+            # save HERprof
+            
+            self.products['HER'][CCDID][Q] = HERprofs[Q].copy()
+            
+            
             # save HER value: PENDING
+            
+            ixjump = HERprofs['ixjump']            
+            self.products['HERval'][CCDID][Q] = HERprofs[Q]['y'][ixjump]
+            
             
             # RAMP; bit-histograms extraction
             
             bitsmean = bits.get_histo_bits(kccdobj, Q, vstart=vstart, vend=vend)
             bitsbin = np.arange(0,16)+0.5
-            bitshistoQ = dict(bins=bitsbin, H=bitsmean)
             
-            # save bit histograms: PENDING
+            # save bit histograms
             
-            stop()
+            self.products['BITS'][CCDID][Q] = dict(bins=bitsbin, H=bitsmean)
+            
+        
     
     
     def basic_analysis(self):
@@ -140,10 +169,23 @@ class FWD_WARM(fpatask.FpaTask):
         vend = 2086
         
         LE1fits = self.dd.mx['File_name'][iObs]
+        
 
         fullLE1fits = os.path.join(self.inputs['datapath'], LE1fits)
         
         LE1 = self.load_LE1(fullLE1fits)
+        
+        prodkeys = ['profiles1D','RAMPfits',
+                    'HER','HERval','BITS']
+        
+        for prodkey in prodkeys:
+        
+            self.products[prodkey] = dict()
+            
+            for jY in range(1,LE1.fpamodel.NSLICES+1):
+                for iX in range(1,LE1.fpamodel.NSLICES+1):                
+                    CCDID = 'C_%i%i' % (jY,iX)
+                    self.products[prodkey][CCDID] = dict()
         
         
         kwargs = dict(vstart=vstart,
@@ -152,7 +194,7 @@ class FWD_WARM(fpatask.FpaTask):
         
         self.iterate_over_CCDs(LE1, FWD_WARM._basic_onLE1, **kwargs)
         
-        
+        stop()
                     
         
     def meta_analysis(self):
