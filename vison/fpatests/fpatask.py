@@ -19,6 +19,8 @@ import string as st
 import traceback
 import multiprocessing as mp
 import numpy as np
+import copy
+from skimage import exposure
 
 from vison.support import vistime
 from vison import __version__
@@ -104,12 +106,7 @@ class FpaTask(task.Task):
         self.CCDs = [1,2,3]
         self.Quads = ['E','F','G','H']
         
-        self.metacal = MetaCal(**dict(design=self.inputs['FPAdesign'],
-                                      vcalfile='',
-                                      respathroot='',
-                                      jsonf='',
-                                      testkey='',
-                                      outparent=''))
+        self.metacal = MetaCal()
 
 #        self.set_perfdefaults(**inputs)
 #        _perfdefaults = self.perfdefaults.copy()
@@ -459,22 +456,69 @@ class FpaTask(task.Task):
                     M[Ckey][Q] = extractor(inData,Ckey,Q)
         
         return M
-            
+    
+    
+    
+    
+    def doPlot(self, figkey, **kwargs):
+        """ """
+         
+        try:
+            figobj = copy.deepcopy(self.figdict[figkey][0]())
+        except:
+            print 'DEBUGGING IN FpaTask.doPlot...'
+            msg_trbk = traceback.format_exc()
+            self.log.info(msg_trbk)
+            self.log.info('%s, %s' %
+                          (figkey, type(self.figdict[figkey][0])))
+            raise RuntimeError
+
+        figobj.configure(**kwargs)
+        
+        self.figdict[figkey][0] = copy.deepcopy(figobj)
+    
     def plot_SimpleMAP(self, MAPdict, kwargs): 
         self.metacal.plot_SimpleMAP(MAPdict, kwargs)
     
     #plot_SimpleMAP = classmethod(MetaCal.plot_SimpleMAP.__func__)
     
     def plot_XY(self, XYdict, kwargs):
-        MetaCal.plot_XY(self,XYdict, kwargs)
+        self.metacal.plot_XY(XYdict, kwargs)
     
     def plot_XYCCD(self, XYCCD, kwargs):
-        MetaCal.plot_XYCCD(self, XYCCD, kwargs)
+        self.metacal.plot_XYCCD(XYCCD, kwargs)
     
     def plot_XYMAP(self, XYMAP, kwargs):
-        MetaCal.plot_XYMAP(self, XYMAP, kwargs)
+        self.metacal.plot_XYMAP(XYMAP, kwargs)
     
     def plot_ImgFPA(self, BCdict, kwargs):
-        MetaCal.plot_ImgFPA(self, BCdict, kwargs)
+        self.metacal.plot_ImgFPA(BCdict, kwargs)
     
+    
+    def get_ImgDictfromLE1(self, LE1, doequalise=False):
+        """ """
         
+        
+        ImgDict = dict()
+        
+        for jY in range(self.NCOLS_FPA):
+            for iX in range(self.NSLICES_FPA):
+                Ckey = 'C_%i%i' % (jY+1,iX+1)
+                
+                locator = self.fpa.FPA_MAP[Ckey]
+                
+                #block = locator[0]
+                #CCDk = locator[1]
+                flip = locator[2]
+                
+                
+                kccdobj = LE1.get_ccdobj(Ckey)
+                img = kccdobj.extensions[-1].data.transpose().copy()
+                
+                if doequalise:
+                    img = exposure.equalize_hist(img,nbins=256)
+                
+                ImgDict[Ckey] = dict(img = self.fpa.flip_img(img,flip))
+        
+        return ImgDict
+    
