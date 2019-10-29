@@ -247,8 +247,6 @@ class MetaFlat(MetaCal):
         """ """
         PT = self.ParsedTable[testname]
         
-        
-        
         MFdict = dict()
         
         for jY in range(self.NCOLS_FPA):

@@ -585,6 +585,29 @@ class Task(object):
         figobj.plot(**meta)
         
         self.figdict[figkey][0] = copy.deepcopy(figobj)
+
+    def addFigures_ST(self, dobuilddata=True, **kwargs):
+        """ """
+        try:
+            figkeys = kwargs['figkeys']
+        except:
+            figkeys = []
+
+        figspath = self.inputs['subpaths']['figs']
+
+        for figkey in figkeys:
+            
+            try:
+                pmeta = self.figdict[figkey][1]
+                pmeta['path'] = figspath
+                pmeta['dobuilddata'] = dobuilddata
+                self.doPlot(figkey, **pmeta)
+                self.addFigure2Report(figkey)
+            except:
+                self.catchtraceback()
+                nfigkey = 'BS_%s' % figkey
+                self.skipMissingPlot(nfigkey, ref=figkey)
+
     
     def addComplianceMatrix2Self(self,complidict,label):
         self.dd.compliances[label] = OrderedDict(complidict).copy()
@@ -748,28 +771,6 @@ class Task(object):
             
 
     
-
-    def addFigures_ST(self, dobuilddata=True, **kwargs):
-        """ """
-        try:
-            figkeys = kwargs['figkeys']
-        except:
-            figkeys = []
-
-        figspath = self.inputs['subpaths']['figs']
-
-        for figkey in figkeys:
-            
-            try:
-                pmeta = self.figdict[figkey][1]
-                pmeta['path'] = figspath
-                pmeta['dobuilddata'] = dobuilddata
-                self.doPlot(figkey, **pmeta)
-                self.addFigure2Report(figkey)
-            except:
-                self.catchtraceback()
-                nfigkey = 'BS_%s' % figkey
-                self.skipMissingPlot(nfigkey, ref=figkey)
                 
                 
     def debugtask(self):

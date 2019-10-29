@@ -36,7 +36,11 @@ class MetaCal(object):
     def __init__(self, **kwargs):
         """ """
         
-        self.fpa = fpamod.FPA(kwargs['design'])
+        if 'design' in kwargs:
+            design = kwargs['design']
+        else:
+            design = 'final'
+        self.fpa = fpamod.FPA(design)
         self.blocks = copy.deepcopy(self.fpa.all_blocks)
         self.flight_blocks = copy.deepcopy(self.fpa.flight_blocks)
         #self.blocks = ['BORN','CURIE','DIRAC','FOWLER','GUYE','KRAMERS'] # TESTS
@@ -47,12 +51,29 @@ class MetaCal(object):
         self.NSLICES_FPA = self.fpa.NSLICES
         self.NCOLS_FPA = self.fpa.NCOLS
         
-        self.vcalfile = kwargs['vcalfile']
-        self.respathroot = kwargs['respathroot']        
-        self.jsonf = kwargs['jsonf']
+        if 'vcalfile' in kwargs:
+            self.vcalfile = kwargs['vcalfile']
+        else:
+            self.vcalfile = ''
+        if 'respathroot' in kwargs:
+            self.respathroot = kwargs['respathroot']        
+        else:
+            self.respathroot = ''
+        if 'jsonf' in kwargs:
+            self.jsonf = kwargs['jsonf']
+        else:
+            self.jsonf = ''
         
-        self.testkey = kwargs['testkey']
-        self.outpathroot = os.path.join(kwargs['outparent'],'%s_FPA' % self.testkey.upper())
+        if 'testkey' in kwargs:
+            self.testkey = kwargs['testkey']
+        else:
+            self.testkey = ''
+        
+        if 'outparent' in kwargs:
+            outparent = kwargs['outparent']
+        else:
+            outparent = ''
+        self.outpathroot = os.path.join(outparent,'%s_FPA' % self.testkey.upper())
         
         
         self.inventory = OrderedDict()
