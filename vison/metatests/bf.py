@@ -475,7 +475,7 @@ class MetaBF(MetaCal):
         
         FWHMxWAVEkwargs['corekwargs'] = corekwargs
         
-        self.plot_XY(FWHMxWAVEdict,kwargs=FWHMxWAVEkwargs)
+        self.plot_XY(FWHMxWAVEdict,**FWHMxWAVEkwargs)
         
         # FWHMY vs. WAVE
         
@@ -492,7 +492,7 @@ class MetaBF(MetaCal):
         
         FWHMyWAVEkwargs['corekwargs'] = corekwargs
         
-        self.plot_XY(FWHMyWAVEdict,kwargs=FWHMyWAVEkwargs)
+        self.plot_XY(FWHMyWAVEdict,**FWHMyWAVEkwargs)
         
         
         # FWHMX vs. FLUENCE
@@ -510,7 +510,7 @@ class MetaBF(MetaCal):
         
         FWHMxFLUkwargs['corekwargs'] = corekwargs
         
-        self.plot_XY(FWHMxFLUdict,kwargs=FWHMxFLUkwargs)
+        self.plot_XY(FWHMxFLUdict,**FWHMxFLUkwargs)
         
         # FWHMY vs. FLUENCE
         
@@ -527,7 +527,7 @@ class MetaBF(MetaCal):
         
         FWHMyFLUkwargs['corekwargs'] = corekwargs
         
-        self.plot_XY(FWHMyFLUdict,kwargs=FWHMyFLUkwargs)
+        self.plot_XY(FWHMyFLUdict,**FWHMyFLUkwargs)
         
         
         # MAPS
@@ -550,7 +550,7 @@ class MetaBF(MetaCal):
             
             FWHMX_fits_MAP = self._get_FWHMzfitsMAP_from_PT(testname,orientation='x')
             
-            self.plot_XYMAP(FWHMX_fits_MAP,kwargs=dict(
+            self.plot_XYMAP(FWHMX_fits_MAP,**dict(
                         suptitle='%s: FWHMx Fits' % stestname,
                         doLegend=True,
                         xlabel='kADU',
@@ -566,7 +566,7 @@ class MetaBF(MetaCal):
             
             FWHMY_fits_MAP = self._get_FWHMzfitsMAP_from_PT(testname,orientation='y')
             
-            self.plot_XYMAP(FWHMY_fits_MAP,kwargs=dict(
+            self.plot_XYMAP(FWHMY_fits_MAP,**dict(
                         suptitle='%s: FWHMy Fits' % stestname,
                         doLegend=True,
                         xlabel='kADU',
@@ -583,7 +583,7 @@ class MetaBF(MetaCal):
                                                 extractor=self._get_GEN_extractor_fromPT('FWHMX_SLOPE'))
         
             
-            self.plot_SimpleMAP(SLOPEX_MAP,kwargs=dict(
+            self.plot_SimpleMAP(SLOPEX_MAP,**dict(
                     suptitle='%s: Slope-x, um/10kADU' % stestname,
                     figname=self.figs['SLOPEX_MAP_%s' % testname]))
             
@@ -593,7 +593,7 @@ class MetaBF(MetaCal):
                                                 extractor=self._get_GEN_extractor_fromPT('FWHMX_HWC'))
         
             stestname = st.replace(testname,'_','\_')
-            self.plot_SimpleMAP(FWHMX_MAP,kwargs=dict(
+            self.plot_SimpleMAP(FWHMX_MAP,**dict(
                     suptitle='%s: FWHM-X at HWC' % stestname,
                     figname=self.figs['FWHMX_MAP_%s' % testname]))
             
@@ -605,7 +605,7 @@ class MetaBF(MetaCal):
                                                 extractor=self._get_GEN_extractor_fromPT('FWHMY_SLOPE'))
         
             stestname = st.replace(testname,'_','\_')
-            self.plot_SimpleMAP(SLOPEY_MAP,kwargs=dict(
+            self.plot_SimpleMAP(SLOPEY_MAP,**dict(
                     suptitle='%s: Slope-y, um/10kADU' % stestname,
                     figname=self.figs['SLOPEY_MAP_%s' % testname]))
             
@@ -616,7 +616,7 @@ class MetaBF(MetaCal):
                                                 extractor=self._get_GEN_extractor_fromPT('FWHMY_HWC'))
         
             stestname = st.replace(testname,'_','\_')
-            self.plot_SimpleMAP(FWHMY_MAP,kwargs=dict(
+            self.plot_SimpleMAP(FWHMY_MAP,**dict(
                     suptitle='%s: FWHM-Y at HWC' % stestname,
                     figname=self.figs['FWHMY_MAP_%s' % testname]))
             
@@ -627,7 +627,7 @@ class MetaBF(MetaCal):
                                                 extractor=self._get_GEN_extractor_fromPT('ELL_HWC'))
         
             stestname = st.replace(testname,'_','\_')
-            self.plot_SimpleMAP(ELL_MAP,kwargs=dict(
+            self.plot_SimpleMAP(ELL_MAP,**dict(
                     suptitle='%s: ellipticity at HWC' % stestname,
                     figname=self.figs['ELL_MAP_%s' % testname]))
             

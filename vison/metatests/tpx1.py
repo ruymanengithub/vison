@@ -241,7 +241,7 @@ class MetaTPX1(MetaCal):
         NDIPMAP = self.get_FPAMAP_from_PT(self.ParsedTable['TPX1'], 
                                 extractor=self._extract_NDIP_fromPT)
                 
-        self.plot_SimpleMAP(NDIPMAP,kwargs=dict(
+        self.plot_SimpleMAP(NDIPMAP,**dict(
                 suptitle='TPX1: Nr. OF DIPOLES',
                 figname=self.figs['NDIP_MAP']))
         
@@ -250,7 +250,7 @@ class MetaTPX1(MetaCal):
         TAUMAP = self.get_FPAMAP_from_PT(self.ParsedTable['TPX1'], 
                                 extractor=self._extract_TAU_fromPT)
                 
-        self.plot_SimpleMAP(TAUMAP,kwargs=dict(
+        self.plot_SimpleMAP(TAUMAP,**dict(
                 suptitle=r'$TPX1:\ <TAU>\ [us]$',
                 figname=self.figs['TAU_MAP']))
         
@@ -259,7 +259,7 @@ class MetaTPX1(MetaCal):
         INJMAP = self.get_FPAMAP_from_PT(self.ParsedTable['TPX1'], 
                                 extractor=self._extract_INJ_fromPT)
                 
-        self.plot_SimpleMAP(INJMAP,kwargs=dict(
+        self.plot_SimpleMAP(INJMAP,**dict(
                 suptitle=r'$TPX1:\ CHARGE\ INJECTION\ [ADU]]$',
                 figname=self.figs['INJ_MAP']))
         

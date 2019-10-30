@@ -480,7 +480,7 @@ class MetaCal(object):
         return M
         
     
-    def plot_SimpleMAP(self, MAPdict, kwargs):
+    def plot_SimpleMAP(self, MAPdict, **kwargs):
         """ """
         
         VALs = []
@@ -509,7 +509,7 @@ class MetaCal(object):
         
         gc.collect()
     
-    def plot_XY(self,XYdict, kwargs):
+    def plot_XY(self,XYdict, **kwargs):
         """ """
         
         _kwargs = dict()
@@ -526,7 +526,7 @@ class MetaCal(object):
         
         gc.collect()
         
-    def plot_XYMAP(self, XYMAP, kwargs):
+    def plot_XYMAP(self, XYMAP, **kwargs):
         
         _kwargs = dict()
         _kwargs.update(kwargs)
@@ -543,7 +543,7 @@ class MetaCal(object):
         
         gc.collect()
     
-    def plot_XYCCD(self, XYCCD, kwargs):
+    def plot_XYCCD(self, XYCCD, **kwargs):
         
         _kwargs = dict()
         _kwargs.update(kwargs)
@@ -562,7 +562,7 @@ class MetaCal(object):
         gc.collect()
     
     
-    def plot_ImgFPA(self, BCdict, kwargs):
+    def plot_ImgFPA(self, BCdict, **kwargs):
         
         _kwargs = dict()
         _kwargs.update(kwargs)

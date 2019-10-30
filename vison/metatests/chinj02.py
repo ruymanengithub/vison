@@ -192,7 +192,7 @@ class MetaChinj02(MetaCal):
                                             extractor=self._extract_IDLTHRESH_fromPT)
         
 
-        self.plot_SimpleMAP(IDLTHRESHMAP,kwargs=dict(
+        self.plot_SimpleMAP(IDLTHRESHMAP,**dict(
                 suptitle='CHINJ02: IDL THESHOLD',
                 figname=self.figs['IDL_THRESH_MAP']))
         

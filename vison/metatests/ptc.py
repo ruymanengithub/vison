@@ -503,7 +503,7 @@ class MetaPTC(MetaCal):
                 
                 stestname = st.replace(testname,'_','\_')
                 
-                self.plot_SimpleMAP(GMAP,kwargs=dict(
+                self.plot_SimpleMAP(GMAP,**dict(
                         suptitle='%s: GAIN e-/ADU' % stestname,
                         figname=self.figs['GAIN_MAP_%s' % testname]))
         
@@ -516,7 +516,7 @@ class MetaPTC(MetaCal):
                 BADU_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_BADU_fromPT)
             
                 stestname = st.replace(testname,'_','\_')
-                self.plot_SimpleMAP(BADU_MAP,kwargs=dict(
+                self.plot_SimpleMAP(BADU_MAP,**dict(
                         suptitle='%s: BLOOM-ADU [DN]' % stestname,
                         figname=self.figs['BLOOM_ADU_MAP_%s' % testname]))#,
                         #corekwargs=dict(norm = Normalize(vmin=3e4,vmax=2**16, clip=False))))
@@ -526,7 +526,7 @@ class MetaPTC(MetaCal):
                 BE_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname], extractor=self._extract_BE_fromPT)
             
                 stestname = st.replace(testname,'_','\_')
-                self.plot_SimpleMAP(BE_MAP,kwargs=dict(
+                self.plot_SimpleMAP(BE_MAP,**dict(
                         suptitle='%s: BLOOM-ELECTRONS' % stestname,
                         figname=self.figs['BLOOM_ELE_MAP_%s' % testname]))#,
                         #corekwargs=dict(norm = Normalize(vmin=1e5,vmax=2.2E5, clip=False))))
@@ -542,7 +542,7 @@ class MetaPTC(MetaCal):
                 
                 stestname = st.replace(testname,'_','\_')
                             
-                self.plot_SimpleMAP(HERMAP,kwargs=dict(
+                self.plot_SimpleMAP(HERMAP,**dict(
                         suptitle='%s: Hard Edge Response Factor' % stestname,
                         figname=self.figs['HER_MAP_%s' % testname]))
         
@@ -556,7 +556,7 @@ class MetaPTC(MetaCal):
                 
                 stestname = st.replace(testname,'_','\_')
                                         
-                self.plot_XY(HERSingledict,kwargs=dict(
+                self.plot_XY(HERSingledict,**dict(
                     title='%s: H.E.R. CURVES' % stestname,
                     doLegend=False,
                     xlabel='Pixel',
@@ -573,7 +573,7 @@ class MetaPTC(MetaCal):
         
             GvsWavedict = self._get_XYdict_GvsLAM()
             
-            self.plot_XY(GvsWavedict,kwargs=dict(
+            self.plot_XY(GvsWavedict,**dict(
                         title='Gain vs. Wavelength',
                         doLegend=False,
                         doYErrbars=True,
@@ -591,7 +591,7 @@ class MetaPTC(MetaCal):
         
             GvsTdict = self._get_XYdict_GvsT()
             
-            self.plot_XY(GvsTdict,kwargs=dict(
+            self.plot_XY(GvsTdict,**dict(
                         title='Gain vs. Detector Temperature',
                         doLegend=True,
                         xlabel='Detector Temperature',
@@ -605,7 +605,7 @@ class MetaPTC(MetaCal):
         
             GvsODdict = self._get_XYdict_GvsOD()
             
-            self.plot_XY(GvsODdict,kwargs=dict(
+            self.plot_XY(GvsODdict,**dict(
                         title='Gain vs. Output Drain',
                         doLegend=True,
                         xlabel='Output Drain (Calibrated) [V]',
@@ -620,7 +620,7 @@ class MetaPTC(MetaCal):
 
             GvsRDdict = self._get_XYdict_GvsRD()
             
-            self.plot_XY(GvsRDdict,kwargs=dict(
+            self.plot_XY(GvsRDdict,**dict(
                         title='Gain vs. Reset Drain',
                         doLegend=True,
                         xlabel='Reset Drain (Calibrated) [V]',

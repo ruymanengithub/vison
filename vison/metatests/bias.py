@@ -210,7 +210,7 @@ class MetaBias(MetaCal):
             vjson.save_jsonfile(RONADUMAP,self.figs['RONADU_MAP_%s_json' % testname])
             
             stestname = st.replace(testname,'_','\_')
-            self.plot_SimpleMAP(RONADUMAP,kwargs=dict(
+            self.plot_SimpleMAP(RONADUMAP,**dict(
                     suptitle='%s: RON [ADU]' % stestname,
                     figname=self.figs['RON_ADU_%s' % testname]))
         
@@ -221,7 +221,7 @@ class MetaBias(MetaCal):
                                               extractor=self._get_extractor_RON_fromPT(units='E'))
         
             stestname = st.replace(testname,'_','\_')
-            self.plot_SimpleMAP(RONEMAP,kwargs=dict(
+            self.plot_SimpleMAP(RONEMAP,**dict(
                     suptitle='%s: RON [ELECTRONS]' % stestname,
                     figname=self.figs['RON_ELE_%s' % testname]))
         
@@ -234,7 +234,7 @@ class MetaBias(MetaCal):
             vjson.save_jsonfile(OFFMAP,self.figs['OFFSETS_%s_json' % testname])
             
             stestname = st.replace(testname,'_','\_')
-            self.plot_SimpleMAP(OFFMAP,kwargs=dict(
+            self.plot_SimpleMAP(OFFMAP,**dict(
                     suptitle='%s: OFFSET' % stestname,
                     figname=self.figs['OFFSETS_%s' % testname]))
         

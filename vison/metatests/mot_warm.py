@@ -285,7 +285,7 @@ class MetaMOT(MetaCal):
         vjson.save_jsonfile(INJMAP,self.figs['INJ_MAP_json'])
         
         
-        self.plot_SimpleMAP(INJMAP,kwargs=dict(
+        self.plot_SimpleMAP(INJMAP,**dict(
                         suptitle='MOT\_WARM: INJECTION LEVEL [ADU]',
                         figname = self.figs['INJ_MAP']
                         ))
@@ -297,7 +297,7 @@ class MetaMOT(MetaCal):
         
         vjson.save_jsonfile(RONMAP,self.figs['RON_MAP_json'])
         
-        self.plot_SimpleMAP(RONMAP,kwargs=dict(
+        self.plot_SimpleMAP(RONMAP,**dict(
                         suptitle='MOT\_WARM: RON [ADU]',
                         figname = self.figs['RON_MAP']
                         ))
@@ -311,7 +311,7 @@ class MetaMOT(MetaCal):
         
         vjson.save_jsonfile(OFF_RWDVS_MAP,self.figs['OFF_RWDVS_MAP_json'])
         
-        self.plot_SimpleMAP(OFF_RWDVS_MAP,kwargs=dict(
+        self.plot_SimpleMAP(OFF_RWDVS_MAP,**dict(
                         suptitle='MOT\_WARM: OFFSET, RWDVS [ADU]',
                         figname = self.figs['OFF_RWDVS_MAP']
                         ))
@@ -323,7 +323,7 @@ class MetaMOT(MetaCal):
         
         vjson.save_jsonfile(OFF_PREFWD_MAP,self.figs['OFF_PREFWD_MAP_json'])
         
-        self.plot_SimpleMAP(OFF_PREFWD_MAP,kwargs=dict(
+        self.plot_SimpleMAP(OFF_PREFWD_MAP,**dict(
                         suptitle='MOT\_WARM: OFFSET, PRESCAN FWD [ADU]',
                         figname = self.figs['OFF_PREFWD_MAP']
                         ))

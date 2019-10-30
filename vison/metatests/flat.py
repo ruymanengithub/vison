@@ -409,7 +409,7 @@ class MetaFlat(MetaCal):
         
             XYPLam = self._get_XYdict_PRNULAM()
             
-            self.plot_XY(XYPLam,kwargs=dict(
+            self.plot_XY(XYPLam,**dict(
                         title='PRNU vs. Wavelength',
                         doLegend=True,
                         doYErrbars=True,
@@ -446,7 +446,7 @@ class MetaFlat(MetaCal):
                                     suptitle=suptitle,
                                     figname = self.figs['MF_%s_%s' % (testname, colkey)])
                     
-                    self.plot_ImgFPA(MFdict, kwargs=MFkwargs)
+                    self.plot_ImgFPA(MFdict, **MFkwargs)
                     MFdict = None
         
         
@@ -461,7 +461,7 @@ class MetaFlat(MetaCal):
                             
                 XYdict = self._get_XYdict_PRNUFLU(self.ParsedTable[testname],NFluCols)      
                 
-                self.plot_XY(XYdict,kwargs=dict(
+                self.plot_XY(XYdict,**dict(
                         title='%s: PRNU' % (stestname,),
                         doLegend=True,
                         xlabel='Fluence [ke-]',
@@ -486,7 +486,7 @@ class MetaFlat(MetaCal):
                 vjson.save_jsonfile(PRNUMAP,self.figs['PRNU_MAP_%s_%s_json' % (testname, colkey)])
                 
                 
-                self.plot_SimpleMAP(PRNUMAP,kwargs=dict(
+                self.plot_SimpleMAP(PRNUMAP,**dict(
                         suptitle='%s [%s]: PRNU' % (stestname,colkey),
                         figname = self.figs['PRNU_MAP_%s_%s' % (testname,colkey)]
                         ))

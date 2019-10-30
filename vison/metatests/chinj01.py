@@ -354,7 +354,7 @@ class MetaChinj01(MetaCal):
         
         CURVES_IG1CAL_MAP = self._get_CHIG1_MAP_from_PT(kind='CAL')
         
-        self.plot_XYMAP(CURVES_IG1CAL_MAP,kwargs=dict(
+        self.plot_XYMAP(CURVES_IG1CAL_MAP,**dict(
                         suptitle='Charge Injection Curves - Calibrated IG1',
                         doLegend=True,
                         ylabel='Inj [kel]',
@@ -390,7 +390,7 @@ class MetaChinj01(MetaCal):
         
         IG1CAL_kwargs['corekwargs'] = corekwargs.copy()
         
-        self.plot_XY(IG1CAL_Singledict,kwargs=IG1CAL_kwargs)
+        self.plot_XY(IG1CAL_Singledict,**IG1CAL_kwargs)
 
         IG1RAW_Singledict = self._get_XYdict_INJ(kind='RAW')
         
@@ -416,7 +416,7 @@ class MetaChinj01(MetaCal):
         
         IG1RAW_kwargs['corekwargs'] = corekwargs.copy()
         
-        self.plot_XY(IG1RAW_Singledict,kwargs=IG1RAW_kwargs)
+        self.plot_XY(IG1RAW_Singledict,**IG1RAW_kwargs)
         
         # Notch level vs. calibrated IG2
         
@@ -432,7 +432,7 @@ class MetaChinj01(MetaCal):
                                             extractor=self._get_extractor_NOTCH_fromPT(units='ADU'))
         
         
-        self.plot_SimpleMAP(NOTCHADUMAP,kwargs=dict(
+        self.plot_SimpleMAP(NOTCHADUMAP,**dict(
                 suptitle='CHINJ01: NOTCH INJECTION [ADU]',
                 figname=self.figs['NOTCH_ADU_MAP']))
         
@@ -441,7 +441,7 @@ class MetaChinj01(MetaCal):
         NOTCHEMAP = self.get_FPAMAP_from_PT(self.ParsedTable['CHINJ01'], 
                                             extractor=self._get_extractor_NOTCH_fromPT(units='E'))
         
-        self.plot_SimpleMAP(NOTCHEMAP,kwargs=dict(
+        self.plot_SimpleMAP(NOTCHEMAP,**dict(
                 suptitle='CHINJ01: NOTCH INJECTION [ELECTRONS]',
                 figname=self.figs['NOTCH_ELE_MAP']))
         

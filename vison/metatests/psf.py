@@ -231,7 +231,7 @@ class MetaPsf(MetaCal):
         return XTdict
             
     
-    def plot_XtalkMAP(self,XTALKs, kwargs):
+    def plot_XtalkMAP(self, XTALKs, **kwargs):
         """ """
         
         xtalkmap = plfpa.XtalkPlot(XTALKs,**kwargs)
@@ -273,7 +273,7 @@ class MetaPsf(MetaCal):
         
         XTALKs_RT = self.products['XTALK_RT'].copy()
         
-        self.plot_XtalkMAP(XTALKs_RT,kwargs=dict(
+        self.plot_XtalkMAP(XTALKs_RT,**dict(
                 scale='ADU',
                 showvalues=False,
                 title='XTALK [ADU] - ROE-TAB',
@@ -286,7 +286,7 @@ class MetaPsf(MetaCal):
             XTALKs = self.get_XTALKDICT_from_PT(testname)
             
             stestname = st.replace(testname,'_','\_')
-            self.plot_XtalkMAP(XTALKs,kwargs=dict(
+            self.plot_XtalkMAP(XTALKs,**dict(
                     scale='ADU',
                     showvalues=False,
                     title='%s: XTALK [ADU]' % stestname,
@@ -317,7 +317,7 @@ class MetaPsf(MetaCal):
         
         XTkwargs['corekwargs'] = xtcorekwargs
         
-        self.plot_XY(XT_RTvs800,kwargs=XTkwargs)
+        self.plot_XY(XT_RTvs800,**XTkwargs)
         
         
         # XTALK: 800-optical vs. RT (ABS-VALUE)
@@ -336,7 +336,7 @@ class MetaPsf(MetaCal):
         
         XTABSkwargs['corekwargs'] = xtcorekwargs
         
-        self.plot_XY(XT_RTvs800_abs,kwargs=XTABSkwargs)
+        self.plot_XY(XT_RTvs800_abs,**XTABSkwargs)
         
         
         # XTALK: 800-optical vs. OTHER-opt (with SIGN)
@@ -357,6 +357,6 @@ class MetaPsf(MetaCal):
         
             XTNMvs800kwargs['corekwargs'] = xtcorekwargs
                             
-            self.plot_XY(XT_NMvs800,kwargs=XTNMvs800kwargs)
+            self.plot_XY(XT_NMvs800,**XTNMvs800kwargs)
         
         
