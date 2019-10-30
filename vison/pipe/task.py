@@ -558,8 +558,9 @@ class Task(object):
 
     def doPlot(self, figkey, **kwargs):
         """ """
-         
+        
         try:
+            
             figobj = copy.deepcopy(self.figdict[figkey][0]())
         except:
             print 'DEBUGGING IN Task.doPlot...'
@@ -568,7 +569,7 @@ class Task(object):
             self.log.info('%s, %s' %
                           (figkey, type(self.figdict[figkey][0])))
             raise RuntimeError
-
+        
         figobj.configure(**kwargs)
 
         if kwargs['dobuilddata']:
@@ -581,6 +582,7 @@ class Task(object):
             meta = kwargs['meta']
         else:
             meta = {}
+        
         
         figobj.plot(**meta)
         
@@ -596,12 +598,11 @@ class Task(object):
         figspath = self.inputs['subpaths']['figs']
 
         for figkey in figkeys:
-            
-            try:
+            try:      
                 pmeta = self.figdict[figkey][1]
                 pmeta['path'] = figspath
-                pmeta['dobuilddata'] = dobuilddata
-                self.doPlot(figkey, **pmeta)
+                pmeta['dobuilddata'] = dobuilddata            
+                self.doPlot(figkey, **pmeta)       
                 self.addFigure2Report(figkey)
             except:
                 self.catchtraceback()

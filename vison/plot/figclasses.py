@@ -70,7 +70,14 @@ class Fig_Husk(Fig):
         pass
     def build_data(self, *args, **kwargs):
         pass
+
+class Fig_Dynamic(Fig):
+    """ """ 
+    plotclass = baseplotclasses.ShellPlot
+        
     
+    def build_data(self, *args, **kwargs):
+        pass
 
 class Fig_Beam2DPlot(Fig):
     plotclass = baseplotclasses.BeamPlotYvX

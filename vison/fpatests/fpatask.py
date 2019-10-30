@@ -21,6 +21,7 @@ import multiprocessing as mp
 import numpy as np
 import copy
 from skimage import exposure
+import pandas as pd
 
 from vison.support import vistime
 from vison import __version__
@@ -33,6 +34,7 @@ from vison.pipe import lib as pilib
 from vison.fpatests import fpatask_lib as fpatasklib
 from vison.fpa import fpa as fpamod
 from vison.metatests.metacal import MetaCal
+from vison.datamodel import cdp as cdpmod
 
 #from vison.metatests
 # END IMPORT
@@ -458,24 +460,22 @@ class FpaTask(task.Task):
         return M
     
     
-    
-    
-    def doPlot(self, figkey, **kwargs):
-        """ """
-         
-        try:
-            figobj = copy.deepcopy(self.figdict[figkey][0]())
-        except:
-            print 'DEBUGGING IN FpaTask.doPlot...'
-            msg_trbk = traceback.format_exc()
-            self.log.info(msg_trbk)
-            self.log.info('%s, %s' %
-                          (figkey, type(self.figdict[figkey][0])))
-            raise RuntimeError
-
-        figobj.configure(**kwargs)
-        
-        self.figdict[figkey][0] = copy.deepcopy(figobj)
+#    def doPlot(self, figkey, **kwargs):
+#        """ """
+#        
+#        try:
+#            figobj = copy.deepcopy(self.figdict[figkey][0]())
+#        except:
+#            print 'DEBUGGING IN FpaTask.doPlot...'
+#            msg_trbk = traceback.format_exc()
+#            self.log.info(msg_trbk)
+#            self.log.info('%s, %s' %
+#                          (figkey, type(self.figdict[figkey][0])))
+#            raise RuntimeError
+#
+#        figobj.configure(**kwargs)
+#        
+#        self.figdict[figkey][0] = copy.deepcopy(figobj)
     
     def plot_SimpleMAP(self, MAPdict, kwargs): 
         self.metacal.plot_SimpleMAP(MAPdict, kwargs)
@@ -495,30 +495,156 @@ class FpaTask(task.Task):
         self.metacal.plot_ImgFPA(BCdict, kwargs)
     
     
-    def get_ImgDictfromLE1(self, LE1, doequalise=False):
+    def iter_overCCDs(self, data, assigner):
         """ """
         
-        
-        ImgDict = dict()
+        RetDict = dict()
         
         for jY in range(self.NCOLS_FPA):
             for iX in range(self.NSLICES_FPA):
                 Ckey = 'C_%i%i' % (jY+1,iX+1)
                 
-                locator = self.fpa.FPA_MAP[Ckey]
-                
-                #block = locator[0]
-                #CCDk = locator[1]
-                flip = locator[2]
-                
-                
-                kccdobj = LE1.get_ccdobj(Ckey)
-                img = kccdobj.extensions[-1].data.transpose().copy()
-                
-                if doequalise:
-                    img = exposure.equalize_hist(img,nbins=256)
-                
-                ImgDict[Ckey] = dict(img = self.fpa.flip_img(img,flip))
+                RetDict[Ckey] = assigner(data, Ckey)    
+
+        return RetDict
+    
+    def get_ImgDictfromLE1(self, LE1, doequalise=False):
+        """ """
         
-        return ImgDict
+        def assigner(LE1, Ckey):
+            """ """
+            locator = self.fpa.FPA_MAP[Ckey]
+            flip = locator[2]
+            
+            kccdobj = LE1.get_ccdobj(Ckey)
+            img = kccdobj.extensions[-1].data.transpose().copy()
+                
+            if doequalise:
+                img = exposure.equalize_hist(img,nbins=256)
+              
+            res =  dict(img = self.fpa.flip_img(img,flip))
+            
+            return res
+            
+        
+        self.iter_overCCDs(LE1, assigner)
+        
+#        ImgDict = dict()
+#        
+#        for jY in range(self.NCOLS_FPA):
+#            for iX in range(self.NSLICES_FPA):
+#                Ckey = 'C_%i%i' % (jY+1,iX+1)
+#                
+#                locator = self.fpa.FPA_MAP[Ckey]
+#                
+#                #block = locator[0]
+#                #CCDk = locator[1]
+#                flip = locator[2]
+#                
+#                
+#                kccdobj = LE1.get_ccdobj(Ckey)
+#                img = kccdobj.extensions[-1].data.transpose().copy()
+#                
+#                if doequalise:
+#                    img = exposure.equalize_hist(img,nbins=256)
+#                
+#                ImgDict[Ckey] = dict(img = self.fpa.flip_img(img,flip))
+#        
+#        return ImgDict
+    
+    def add_StandardQuadsTable(self, extractor, cdp=None, cdpdict=None):
+        """ """
+        
+        if cdpdict is not None:
+            
+            assert isinstance(cdpdict,dict)
+            
+            TBkey = cdpdict['TBkey']
+            meta = cdpdict['meta'].copy()
+            CDP_header = cdpdict['CDP_header'].copy()
+            header_title = cdpdict['header_title']
+            CDP_KEY = cdpdict['CDP_KEY']
+            valformat = cdpdict['valformat']
+            caption = cdpdict['caption']
+        else:
+            TBkey = 'TB'
+            meta = dict()
+            CDP_header = dict()
+            header_title='generic title'
+            CDP_KEY='UNK'
+            caption = 'CAPTION PENDING'
+            valformat = '%.2e'
+        
+        NCCDs = len(self.CCDs)
+        NBlocks = len(self.fpa.flight_blocks)
+        NP = NBlocks * NCCDs
+        
+        TB = OrderedDict()
+        TB['CCDID'] = np.zeros(NP,dtype='S4')
+        TB['BLOCK'] = np.zeros(NP,dtype='S4')
+        TB['CCD'] = np.zeros(NP,dtype='S4')
+        for Q in self.Quads:
+            TB[Q] = np.zeros(NP,dtype='float32')
+                
+        for jY in range(self.NSLICES_FPA):
+            for iX in range(self.NCOLS_FPA):
+                
+                Ckey  = 'C_%i%i' % (jY+1,iX+1)
+                
+                locator = self.fpa.FPA_MAP[Ckey]
+                block = locator[0]
+                CCDk = locator[1]
+                
+                indx = jY * self.NCOLS_FPA + iX
+                
+                TB['CCDID'][indx] = Ckey
+                TB['BLOCK'][indx] = block[0:4]
+                TB['CCD'][indx] = CCDk
+                
+                for iQ,Q in enumerate(self.Quads):
+                    TB[Q][indx] = extractor(self,Ckey,Q)
+        
+        TB_ddf = OrderedDict()
+        TB_ddf[TBkey] = pd.DataFrame.from_dict(TB)
+        
+        
+        if cdp is not None:
+            cdp.path = self.inputs['subpaths']['products']
+            cdp.ingest_inputs(
+                    data = TB_ddf.copy(),
+                    meta=meta.copy(),
+                    header=CDP_header.copy()
+                    )
+            
+            cdp.init_wb_and_fillAll(header_title=header_title)
+            self.save_CDP(cdp)
+            self.pack_CDP_to_dd(cdp, CDP_KEY)
+        else:
+            cdp = cdpmod.Tables_CDP()
+            cdp.ingest_inputs(
+                    data = TB_ddf.copy(),
+                    meta=meta.copy(),
+                    header=CDP_header.copy()
+                    )
+        
+        
+        if self.report is not None:
+            
+            fstr = lambda x: '%s' % x            
+            ff = lambda x: valformat % x
+            
+            her_formatters=[fstr,fstr,fstr]
+            for iQ,Q in enumerate(self.Quads):
+                her_formatters.append(ff)
+                        
+            nicecaption = st.replace(caption,'_','\_')
+            Ttex = cdp.get_textable(sheet=TBkey, caption=nicecaption,
+                                               fitwidth=True,
+                                               tiny=True,
+                                               formatters=her_formatters)
+            
+            
+            self.report.add_Text(Ttex)        
+        
+        return TB, cdp
     

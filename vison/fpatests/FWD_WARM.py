@@ -66,7 +66,8 @@ class FWD_WARM(fpatask.FpaTask):
         
         self.subtasks = [('check', self.check_data), 
                          ('basic', self.basic_analysis),
-                         ('meta', self.meta_analysis)]
+                         ('meta', self.meta_analysis),
+                         ('appendix', self.appendix)]
         
         super(FWD_WARM, self).__init__(inputs=inputs, log=log, drill=drill, debug=debug,
                         cleanafter=cleanafter)
@@ -114,6 +115,7 @@ class FWD_WARM(fpatask.FpaTask):
         vstart = kwargs['vstart']
         vend = kwargs['vend']
         kccdobj = LE1.get_ccdobj(CCDID)
+        debug = kwargs['debug']
         
         
         HERprofs= MOT_FFaux.extract_overscan_profiles(kccdobj, 
@@ -122,20 +124,6 @@ class FWD_WARM(fpatask.FpaTask):
         
         for Q in self.Quads:
             
-            # vertical profile: RAMP
-            
-            #vQ = kccdobj.get_1Dprofile(Q=Q, orient='ver', area='img', stacker='median',
-            #                         vstart=vstart, vend=vend)
-            
-            
-            #self.dd.products['profiles1D'][CCDID][Q] = vQ.data.copy()
-            
-            # extract and save slope+intercept of profile for comparison
-            
-            #rampslopeQ, rampinterQ = self._get_RAMPslope(vQ)
-            
-            #self.dd.products['RAMPfits'][CCDID][Q] = (rampslopeQ,rampinterQ)
-            
             # HERprofile
             
             # save HERprof
@@ -143,20 +131,41 @@ class FWD_WARM(fpatask.FpaTask):
             self.dd.products['HER'][CCDID][Q] = HERprofs[Q].copy()
             
             
-            # save HER value: PENDING
+            # save HER value
             
             ixjump = HERprofs['ixjump']            
-            self.dd.products['HERval'][CCDID][Q] = HERprofs[Q]['y'][ixjump]
+            self.dd.products['HERval'][CCDID][Q] = HERprofs[Q]['y'][ixjump]            
             
             
-            # RAMP; bit-histograms extraction
+            if not debug:
+                
+                # Stats on pre and over scan
+                
+                # PENDING
+                
+                
+                # vertical profile: RAMP
+                
+                vQ = kccdobj.get_1Dprofile(Q=Q, orient='ver', area='img', stacker='median',
+                                           vstart=vstart, vend=vend)
+                        
+                self.dd.products['profiles1D'][CCDID][Q] = vQ.data.copy()
             
-            #bitsmean = bits.get_histo_bits(kccdobj, Q, vstart=vstart, vend=vend)
-            #bitsbin = np.arange(0,16)+0.5
+                # extract and save slope+intercept of profile for comparison
             
-            # save bit histograms
+                rampslopeQ, rampinterQ = self._get_RAMPslope(vQ)
             
-            #self.dd.products['BITS'][CCDID][Q] = dict(bins=bitsbin, H=bitsmean)
+                self.dd.products['RAMPfits'][CCDID][Q] = (rampslopeQ,rampinterQ)
+            
+            
+                # RAMP; bit-histograms extraction
+                        
+                bitsmean = bits.get_histo_bits(kccdobj, Q, vstart=vstart, vend=vend)
+                bitsbin = np.arange(0,16)+0.5
+            
+                # save bit histograms
+            
+                self.dd.products['BITS'][CCDID][Q] = dict(bins=bitsbin, H=bitsmean)
             
     
     def basic_analysis(self):
@@ -173,9 +182,7 @@ class FWD_WARM(fpatask.FpaTask):
         iObs = 0
         vstart = 0
         vend = 2086
-        
-        figspath = self.inputs['subpaths']['figs']
-        
+                
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
@@ -192,14 +199,12 @@ class FWD_WARM(fpatask.FpaTask):
         # DISPLAY IMAGE
         
         FWImgDict = self.get_ImgDictfromLE1(LE1,doequalise=True)
-        FWImg_figname = os.path.join(figspath,self.figdict['FW_img'][1]['figname'])
-        imgkwargs = dict(figname=FWImg_figname)
-        self.plot_ImgFPA(FWImgDict, imgkwargs)
         
-        
+        self.figdict['FW_img'][1]['data'] = FWImgDict
+        self.figdict['FW_img'][1]['plotter'] = self.metacal.plot_ImgFPA
+                
         if self.report is not None:            
             self.addFigures_ST(figkeys=['FW_img'],dobuilddata=False)
-        
         
         prodkeys = ['profiles1D','RAMPfits',
                     'HER','HERval','BITS']
@@ -214,8 +219,11 @@ class FWD_WARM(fpatask.FpaTask):
                     self.dd.products[prodkey][CCDID] = dict()
         
         
+                
         Bkwargs = dict(vstart=vstart,
-                      vend=vend)
+                      vend=vend,
+                      debug=False)
+                
         
         self.iterate_over_CCDs(LE1, FWD_WARM._basic_onLE1, **Bkwargs)
         
@@ -227,70 +235,48 @@ class FWD_WARM(fpatask.FpaTask):
             
         # Matrices: HERvalues, RAMPslopes
         
-        NQuads = len(self.Quads)
-        NCCDs = len(self.CCDs)
-        NBlocks = len(self.fpa.flight_blocks)
-        NP = NBlocks * NCCDs * NQuads
+        # HERvalues matrix
         
-        HER_TB = OrderedDict()
-        HER_TB['CCDID'] = np.zeros(NP,dtype='S4')
-        HER_TB['BLOCK'] = np.zeros(NP,dtype='S4')
-        HER_TB['CCD'] = np.zeros(NP,dtype='S4')
-        HER_TB['Q'] = np.zeros(NP,dtype='S1')
-        for Q in self.Quads:
-            HER_TB[Q] = np.zeros(NP,dtype='float32')
-        
-        
-        for jY in range(self.NSLICES_FPA):
-            for iX in range(self.NCOLS_FPA):
-                
-                Ckey  = 'C_%i%i' % (jY+1,iX+1)
-                
-                locator = self.fpa.FPA_MAP[Ckey]
-                block = locator[0]
-                CCDk = locator[1]
-                
-                for iQ,Q in enumerate(self.Quads):
-                    indx = (jY * self.NCOLS_FPA + iX)*NQuads + iQ
-                
-                    HER_TB['CCDID'][indx] = Ckey
-                    HER_TB['BLOCK'][indx] = block[0:4]
-                    HER_TB['CCD'][indx] = CCDk
-                    HER_TB['Q'][indx] = Q
-                    HER_TB[Q][indx] = self.dd.products['HERval'][CCDID][Q]
-        
-        HER_TB_dddf = OrderedDict(HER_TB = pd.DataFrame.from_dict(HER_TB))
         
         her_tb_cdp = self.CDP_lib['HER_TB']
-        her_tb_cdp.path = self.inputs['subpaths']['products']
-        her_tb_cdp.ingest_inputs(
-                data = HER_TB_dddf.copy(),
+        hercdpdict = dict(
+                TBkey = 'HER_TB',
                 meta=dict(),
-                header=CDP_header.copy()
+                CDP_header=CDP_header,
+                header_title='FWD WARM: HER TABLE',
+                CDP_KEY='HER_TB_CDP',
+                caption='HER value at first pixel.',
+                valformat='%.2e'
                 )
-
-        her_tb_cdp.init_wb_and_fillAll(header_title='FWD WARM: HER TABLE')
-        self.save_CDP(her_tb_cdp)
-        self.pack_CDP_to_dd(her_tb_cdp, 'HER_TB_CDP')
-
-        if self.report is not None:
-            
-            fstr = lambda x: '%s' % x            
-            fE = lambda x: '%.2E' % x
-            
-            her_formatters=[fstr,fstr,fstr,fstr]
-            for iQ,Q in enumerate(self.Quads):
-                her_formatters.append(fE)
-            
-            caption = 'Hard Edge Response, first pixel relative drift.'
-            nicecaption = st.replace(caption,'_','\_')
-            Htex = her_tb_cdp.get_textable(sheet='HER_TB', caption=nicecaption,
-                                               fitwidth=True,
-                                               tiny=True,
-                                               formatters=her_formatters)
-            
-            
-            self.report.add_Text(Htex)        
+        
+        def _getHERval(self,Ckey,Q):
+            return self.dd.products['HERval'][Ckey][Q]
+        
+        self.add_StandardQuadsTable(extractor=_getHERval, 
+                                    cdp=her_tb_cdp, 
+                                    cdpdict=hercdpdict)
+        
+        # RAMP Slopes
+        
+        
+        rslope_tb_cdp = self.CDP_lib['RSLOPE_TB']
+        rslopecdpdict = dict(
+                TBkey = 'RSLOPE_TB',
+                meta=dict(),
+                CDP_header=CDP_header,
+                header_title='FWD WARM: RAMP SLOPES TABLE',
+                CDP_KEY='RSLOPE_TB_CDP',
+                caption='RAMP Slope in ADU/pixel row',
+                valformat='%.1f'
+                )
+        
+        
+        def _getRSlope(self,Ckey,Q):
+            return self.dd.products['RAMPfits'][CCDID][Q][0]
+        
+        self.add_StandardQuadsTable(extractor=_getRSlope, 
+                                    cdp=rslope_tb_cdp, 
+                                    cdpdict=rslopecdpdict)
         
         
         
@@ -308,29 +294,63 @@ class FWD_WARM(fpatask.FpaTask):
         
         # Display FPA-Map of ramp profiles
         
+        def _assignProf1D(profdict, Ckey):
+            """ """
+            Cprofs = profdict[Ckey]
+            
+            res = dict(x=dict(),y=dict())
+            
+            for Q in self.Quads:
+                res['x'][Q] = Cprofs[Q]['x']
+                res['y'][Q] = Cprofs[Q]['y']
+                
+            return res
+        
+        
+        FWRampsDict = self.iter_overCCDs(self.dd.products['profiles1D'], _assignProf1D)
+        FWRampsDict['labelkeys'] = self.Quads
+        
+        
+        self.figdict['FW_RAMPS'][1]['data'] = FWRampsDict
+        self.figdict['FW_RAMPS'][1]['meta']['plotter'] = self.metacal.plot_XYMAP
+        
+        if self.report is not None:            
+            self.addFigures_ST(figkeys=['FW_RAMPS'],dobuilddata=False)
         
         
         # Display FPA-Map of ramp slopes
         
-        RslopesMap = self.get_FPAMAP(self.dd.products['RAMPfits'],
-                                     extractor=self._get_Rslopes_MAP)
+        #RslopesMap = self.get_FPAMAP(self.dd.products['RAMPfits'],
+        #                             extractor=self._get_Rslopes_MAP)
         
-        self.plot_SimpleMAP(RslopesMap, kwargs=dict(
-                        suptitle='FPA\_WARM: RAMP SLOPES [ADU/ROW]',
-                        figname = ''
-                        ))
+        #self.plot_SimpleMAP(RslopesMap, kwargs=dict(
+        #                suptitle='FPA\_WARM: RAMP SLOPES [ADU/ROW]',
+        #                figname = ''
+        #                ))
         
-        # Display FPA-Map of CALCAMP ramp slopes
+        # Display FPA-Map of ramp-slope differences with CALCAMP
         
         # Dispay HER profiles
         
         # Display FPA-Map of HER-values
         
-        # Display FPA-Map of CALCAMP HER-values
+        # Display FPA-Map of differences with CALCAMP HER-values
         
         # Display all bit-histogram maps together
         
         
+    def appendix(self):
+        """Adds Appendices to Report."""
+        
+        if self.report is not None:
+            self.report.add_Section(keyword='appendix', Title='Appendix', level=0)
+   
+        # TABLE: reference values of OFFSETS
+        
+        # TABLE: reference values of SLOPES
+        
+        # TABLE: reference values of HER
         
         
-    
+                
+        

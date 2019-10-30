@@ -89,7 +89,26 @@ class BasicPlot(object):
         plt.clf()
         gc.collect()
         
+
+class ShellPlot(BasicPlot):
+    """ """
+    
+    def __init__(self, data, **kwargs):
         
+        self.data = data
+        self.plotter = kwargs['plotter']
+        kwargs.pop('plotter')        
+        self.meta = dict()
+        self.meta.update(kwargs)
+        
+    def render(self, figname=''):
+        kwargs = self.meta.copy()
+        kwargs['figname'] = figname
+        self.plotter(self.data,**kwargs)
+
+        
+
+
 class XYPlot(BasicPlot):
 
     def __init__(self, data, **kwargs):
