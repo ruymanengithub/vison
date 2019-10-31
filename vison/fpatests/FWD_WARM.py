@@ -28,31 +28,6 @@ from vison.fpatests import FW_aux
 
 # END IMPORT
 
-#def _basic_onLE1(mode,kwargs_retrieve,kwargs_apply):
-#    print(mode)
-#    if mode == 'retrieve':
-#        
-#        queue = kwargs_retrieve['queue']
-#        CCDID = kwargs_retrieve['CCDID']
-#        LE1 = kwargs_retrieve['LE1']
-#        print('processing %s' % CCDID)
-#        kccdobj = LE1.get_ccdobj(CCDID)
-#        
-#        reply = dict(CCDID=CCDID,
-#                     Quads=kccdobj.Quads)
-#        for Q in kccdobj.Quads:
-#            reply[Q] = kccdobj.get_stats(Q,sector='img',statkeys=['mean'])
-#        
-#        queue.put(reply)
-#
-#    elif mode == 'apply':
-#        
-#        Quads = kwargs_apply['Quads']
-#        CCDID = kwargs_apply['CCDID']
-#        holder = kwargs_apply['holder']
-#        print('applying %s' % CCDID)
-#        for Q in Quads:
-#            holder[CCDID][Q] = reply[Q]
 
 class FWD_WARM_inputs(inputs.Inputs):
     manifesto = inputs.CommonFpaTaskInputs.copy()
@@ -201,10 +176,11 @@ class FWD_WARM(fpatask.FpaTask):
         FWImgDict = self.get_ImgDictfromLE1(LE1,doequalise=True)
         
         self.figdict['FW_img'][1]['data'] = FWImgDict
-        self.figdict['FW_img'][1]['plotter'] = self.metacal.plot_ImgFPA
+        self.figdict['FW_img'][1]['meta']['plotter'] = self.metacal.plot_ImgFPA
                 
         if self.report is not None:            
             self.addFigures_ST(figkeys=['FW_img'],dobuilddata=False)
+        
         
         prodkeys = ['profiles1D','RAMPfits',
                     'HER','HERval','BITS']
@@ -279,9 +255,65 @@ class FWD_WARM(fpatask.FpaTask):
                                     cdpdict=rslopecdpdict)
         
         
+    
+    def _get_XYdict_HER(self):
+        """ """
+                
+        data = self.dd.products['HER']
         
-    def _get_Rslopes_MAP(self, inData, Ckey, Q):
-        return inData[Ckey][Q][0]
+        def assigner(HERDict, data, Ckey):
+            
+            for Q in self.Quads:
+                labelkey = '%s_%s' % (Ckey,Q)
+                _x = data[Ckey][Q]['x'].copy()
+                _x -= _x.min()
+                _y = data[Ckey][Q]['y'].copy()
+                
+                HERDict['x'][labelkey] = _x.copy()
+                HERDict['y'][labelkey] = _y.copy()
+                HERDict['labelkeys'].append(labelkey)
+
+            return HERDict
+            
+        
+        XYdict_HER = dict(x=dict(),
+                          y=dict(),
+                          labelkeys=[])
+        
+        XYdict_HER = self.iter_overCCDs(data,assigner,RetDict=XYdict_HER)
+        
+        return XYdict_HER
+    
+    
+    def _get_XYdict_BITS(self):
+        
+        data = self.dd.products['BITS']
+        
+        def assigner(BITDict, data, Ckey):
+            
+            for Q in self.Quads:
+                
+                labelkey = '%s_%s' % (Ckey,Q)
+                
+                BITDict['x'][labelkey] = data[Ckey][Q]['bins'].copy()
+                BITDict['y'][labelkey] = data[Ckey][Q]['H'].copy()
+                BITDict['labelkeys'].append(labelkey)
+                
+
+            return BITDict
+            
+        
+        XYdict_BIT = dict(x=dict(),
+                          y=dict(),
+                          labelkeys=[])
+        
+        XYdict_BIT = self.iter_overCCDs(data,assigner,RetDict=XYdict_BIT)
+        
+        
+        return XYdict_BIT
+    
+    
+        
         
         
     def meta_analysis(self):
@@ -294,7 +326,7 @@ class FWD_WARM(fpatask.FpaTask):
         
         # Display FPA-Map of ramp profiles
         
-        def _assignProf1D(profdict, Ckey):
+        def _assignProf1D(FWRampsDict, profdict, Ckey):
             """ """
             Cprofs = profdict[Ckey]
             
@@ -303,8 +335,10 @@ class FWD_WARM(fpatask.FpaTask):
             for Q in self.Quads:
                 res['x'][Q] = Cprofs[Q]['x']
                 res['y'][Q] = Cprofs[Q]['y']
-                
-            return res
+            
+            FWRampsDict[Ckey] = res
+            
+            return FWRampsDict
         
         
         FWRampsDict = self.iter_overCCDs(self.dd.products['profiles1D'], _assignProf1D)
@@ -314,29 +348,60 @@ class FWD_WARM(fpatask.FpaTask):
         self.figdict['FW_RAMPS'][1]['data'] = FWRampsDict
         self.figdict['FW_RAMPS'][1]['meta']['plotter'] = self.metacal.plot_XYMAP
         
-        if self.report is not None:            
-            self.addFigures_ST(figkeys=['FW_RAMPS'],dobuilddata=False)
         
         
         # Display FPA-Map of ramp slopes
         
-        #RslopesMap = self.get_FPAMAP(self.dd.products['RAMPfits'],
-        #                             extractor=self._get_Rslopes_MAP)
+        def _get_Rslopes_MAP(inData, Ckey, Q):
+            return inData[Ckey][Q][0]
         
-        #self.plot_SimpleMAP(RslopesMap, kwargs=dict(
-        #                suptitle='FPA\_WARM: RAMP SLOPES [ADU/ROW]',
-        #                figname = ''
-        #                ))
+        
+        RslopesMap = self.get_FPAMAP(self.dd.products['RAMPfits'],
+                                     extractor=_get_Rslopes_MAP)
+        
+        self.figdict['SLOPESMAP'][1]['data'] = RslopesMap
+        self.figdict['SLOPESMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
         
         # Display FPA-Map of ramp-slope differences with CALCAMP
         
-        # Dispay HER profiles
+        
+        
+        
+        # Dispay HER profiles (single plot)
+        
+        XYdict_HER = self._get_XYdict_HER()
+        
+        self.figdict['HERPROFS'][1]['data'] = XYdict_HER
+        self.figdict['HERPROFS'][1]['meta']['plotter'] = self.metacal.plot_XY
+        
         
         # Display FPA-Map of HER-values
+        
+        def _get_HERvals_MAP(inData, Ckey, Q):
+            return inData[Ckey][Q]
+        
+        
+        HERvalsMap = self.get_FPAMAP(self.dd.products['HERval'],
+                                     extractor=_get_HERvals_MAP)
+        
+        self.figdict['HERVALSMAP'][1]['data'] = HERvalsMap
+        self.figdict['HERVALSMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
+        
         
         # Display FPA-Map of differences with CALCAMP HER-values
         
         # Display all bit-histogram maps together
+        
+        XYdict_BITS = self._get_XYdict_BITS()
+        
+        self.figdict['BITHISTOS'][1]['data'] = XYdict_BITS
+        self.figdict['BITHISTOS'][1]['meta']['plotter'] = self.metacal.plot_XY
+        
+        
+        if self.report is not None:            
+            self.addFigures_ST(figkeys=['FW_RAMPS','SLOPESMAP','HERPROFS',
+                                        'HERVALSMAP', 'BITHISTOS'],
+                               dobuilddata=False)
         
         
     def appendix(self):

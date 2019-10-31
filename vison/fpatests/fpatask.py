@@ -495,23 +495,22 @@ class FpaTask(task.Task):
         self.metacal.plot_ImgFPA(BCdict, kwargs)
     
     
-    def iter_overCCDs(self, data, assigner):
+    def iter_overCCDs(self, data, assigner, RetDict=None):
         """ """
-        
-        RetDict = dict()
+        if RetDict is None:
+            RetDict = dict()
         
         for jY in range(self.NCOLS_FPA):
             for iX in range(self.NSLICES_FPA):
                 Ckey = 'C_%i%i' % (jY+1,iX+1)
-                
-                RetDict[Ckey] = assigner(data, Ckey)    
+                RetDict = assigner(RetDict, data, Ckey)    
 
         return RetDict
     
     def get_ImgDictfromLE1(self, LE1, doequalise=False):
         """ """
         
-        def assigner(LE1, Ckey):
+        def assigner(ImgDict, LE1, Ckey):
             """ """
             locator = self.fpa.FPA_MAP[Ckey]
             flip = locator[2]
@@ -524,33 +523,14 @@ class FpaTask(task.Task):
               
             res =  dict(img = self.fpa.flip_img(img,flip))
             
-            return res
+            ImgDict[Ckey] = res.copy()
             
+            return ImgDict
+            
+        ImgDict = dict()
+        ImgDict = self.iter_overCCDs(ImgDict, LE1, assigner)
         
-        self.iter_overCCDs(LE1, assigner)
-        
-#        ImgDict = dict()
-#        
-#        for jY in range(self.NCOLS_FPA):
-#            for iX in range(self.NSLICES_FPA):
-#                Ckey = 'C_%i%i' % (jY+1,iX+1)
-#                
-#                locator = self.fpa.FPA_MAP[Ckey]
-#                
-#                #block = locator[0]
-#                #CCDk = locator[1]
-#                flip = locator[2]
-#                
-#                
-#                kccdobj = LE1.get_ccdobj(Ckey)
-#                img = kccdobj.extensions[-1].data.transpose().copy()
-#                
-#                if doequalise:
-#                    img = exposure.equalize_hist(img,nbins=256)
-#                
-#                ImgDict[Ckey] = dict(img = self.fpa.flip_img(img,flip))
-#        
-#        return ImgDict
+        return ImgDict
     
     def add_StandardQuadsTable(self, extractor, cdp=None, cdpdict=None):
         """ """
