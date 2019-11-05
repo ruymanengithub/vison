@@ -89,7 +89,9 @@ class FWD_WARM(fpatask.FpaTask):
         LE1 = kwargs['LE1']
         vstart = kwargs['vstart']
         vend = kwargs['vend']
+        
         kccdobj = LE1.get_ccdobj(CCDID)
+        #print(CCDID)
         debug = kwargs['debug']
         
         
@@ -100,6 +102,9 @@ class FWD_WARM(fpatask.FpaTask):
         for Q in self.Quads:
             
             # HERprofile
+            
+            #avgQ = kccdobj.get_stats(Q,sector='img',statkeys=['mean'])[0]
+            #print('%s%s %.2f' % (CCDID,Q,avgQ))
             
             # save HERprof
             
@@ -248,7 +253,7 @@ class FWD_WARM(fpatask.FpaTask):
         
         
         def _getRSlope(self,Ckey,Q):
-            return self.dd.products['RAMPfits'][CCDID][Q][0]
+            return self.dd.products['RAMPfits'][Ckey][Q][0]
         
         self.add_StandardQuadsTable(extractor=_getRSlope, 
                                     cdp=rslope_tb_cdp, 

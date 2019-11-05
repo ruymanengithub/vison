@@ -516,19 +516,18 @@ class FpaTask(task.Task):
             flip = locator[2]
             
             kccdobj = LE1.get_ccdobj(Ckey)
-            img = kccdobj.extensions[-1].data.transpose().copy()
-                
+            img = kccdobj.extensions[-1].data.transpose().copy().astype('float32')
+            
             if doequalise:
-                img = exposure.equalize_hist(img,nbins=256)
+                img = exposure.equalize_hist(img,nbins=256).astype('float32')
               
             res =  dict(img = self.fpa.flip_img(img,flip))
             
             ImgDict[Ckey] = res.copy()
             
             return ImgDict
-            
-        ImgDict = dict()
-        ImgDict = self.iter_overCCDs(ImgDict, LE1, assigner)
+        
+        ImgDict = self.iter_overCCDs(LE1, assigner)
         
         return ImgDict
     
