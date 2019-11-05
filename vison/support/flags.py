@@ -63,14 +63,14 @@ class Flags(object):
         self.value |= self.dict[flag][0]
 
     def getFlagsOnList(self):
-        return [key for key in self.dict.keys() if self.isflagon(key)]
+        return [key for key in list(self.dict.keys()) if self.isflagon(key)]
 
 
 if __name__ == '__main__':
 
     flags = Flags()
 
-    keys = flags.dict.keys()
+    keys = list(flags.dict.keys())
     flagvals = [flags.dict[key][0] for key in keys]
     maxflag = np.max(flagvals)
 
@@ -92,4 +92,4 @@ if __name__ == '__main__':
 
     assert areOn
 
-    print 'flags.py: Tests Ran Succesfully'
+    print('flags.py: Tests Ran Succesfully')

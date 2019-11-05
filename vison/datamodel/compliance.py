@@ -30,14 +30,14 @@ def convert_compl_to_nesteditemlist(complidict):
     """ """
 
     def traverse_tree(dictionary, nesteditemlist):
-        Nkeys = len(dictionary.keys())
+        Nkeys = len(list(dictionary.keys()))
         if Nkeys > 5:
             nesteditemlist += [
                 '\item %s' % dictionary.__repr__()
             ]
             return nesteditemlist
 
-        for key, value in dictionary.items():
+        for key, value in list(dictionary.items()):
             if isinstance(value, (dict, OrderedDict)):
                 nesteditemlist += [
                     '\item %s:' % key,
@@ -63,7 +63,7 @@ def removescalars_from_dict(indict):
     """ """
 
     def traverse_tree(indict):
-        for key, value in indict.iteritems():
+        for key, value in indict.items():
             if isinstance(value, (dict, OrderedDict)):
                 indict[key] = traverse_tree(value)
             elif not isinstance(value, collections.Sequence):
@@ -84,7 +84,7 @@ def texarize_complidict(indict):
             return '%.2e'
 
     def traverse_tree(indict):
-        for key, value in indict.iteritems():
+        for key, value in indict.items():
             if isinstance(value, (dict, OrderedDict)):
                 indict[key] = traverse_tree(value)
             else:
@@ -151,7 +151,7 @@ def gen_compliance_tex(indict, escape=True, caption=''):
     elif level == 3:
         keys = []
         frames = []
-        for key, d in tcomplidict.iteritems():
+        for key, d in tcomplidict.items():
             keys.append(key)
             frames.append(pd.DataFrame.from_dict(d))
         series = pd.concat(frames, keys=keys)
@@ -197,7 +197,7 @@ class ComplianceMX(OrderedDict):
 
         def traverse_tree(dictionary, isOK):
 
-            for key, value in dictionary.items():
+            for key, value in list(dictionary.items()):
                 #print 'Upper: %s' % key
                 if isinstance(value, (dict, OrderedDict)):
                     #print key,value

@@ -185,7 +185,7 @@ class MetaCal(object):
         try:
             dd = files.cPickleRead(DDfile)
         except BaseException:
-            print('Could not load %s' % DDfile)
+            print(('Could not load %s' % DDfile))
             raise RuntimeError
 
         ii['dd'] = copy.deepcopy(dd)
@@ -202,7 +202,7 @@ class MetaCal(object):
         inventraw = vjson.load_jsonfile(inventoryfile, useyaml=True)
 
         for block in self.blocks:
-            if block in inventraw['inventory'].keys():
+            if block in list(inventraw['inventory'].keys()):
                 rawcargo = inventraw['inventory'][block]
 
                 for testline in rawcargo:
@@ -328,7 +328,7 @@ class MetaCal(object):
         try:
             roeVCal = self.roeVCals[block]
         except KeyError:
-            print('Voltage calibrations for block %s not found!' % block)
+            print(('Voltage calibrations for block %s not found!' % block))
             roeVCal = None
 
         if roeVCal is not None:
@@ -395,12 +395,12 @@ class MetaCal(object):
             try:
                 Nreps = len(self.inventory[block][testname])
             except KeyError:
-                print('block %s not found!' % block)
+                print(('block %s not found!' % block))
                 continue
 
             for jrep in range(Nreps):
 
-                print('Parsing %s:%s' % (block, jrep + 1))
+                print(('Parsing %s:%s' % (block, jrep + 1)))
 
                 inventoryitem = self.inventory[block][testname][jrep]
 
@@ -453,7 +453,7 @@ class MetaCal(object):
         """ """
 
         VALs = []
-        for ckey in MAPdict.keys():
+        for ckey in list(MAPdict.keys()):
             for Q in self.Quads:
                 VALs.append(MAPdict[ckey][Q])
 

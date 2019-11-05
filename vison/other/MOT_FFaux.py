@@ -101,7 +101,7 @@ def gt_MOT_FF_figs(test):
 
     MOT_FF_figs = OrderedDict()
 
-    for key in BF01_figs.keys():
+    for key in list(BF01_figs.keys()):
         #        if 'BF01' in key:
         #            nkey = st.replace(key,'BF01','MOT_FF')
         #        else:

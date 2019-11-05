@@ -519,7 +519,7 @@ class MetaFlat(MetaCal):
 
                     colnum = int(colkey[-1])
 
-                    print('MF: %s %s' % (testname, colkey))
+                    print(('MF: %s %s' % (testname, colkey)))
 
                     if testname == 'FLAT01':
                         suptitle = 'FLAT01 800 nm, Fluence %s' % colnum

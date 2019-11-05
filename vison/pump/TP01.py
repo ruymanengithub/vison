@@ -33,11 +33,11 @@ from vison.point import lib as polib
 from vison.datamodel import ccd
 from vison.datamodel import scriptic as sc
 from vison.pipe.task import Task
-from PumpTask import PumpTask
+from .PumpTask import PumpTask
 from vison.image import performance
 from vison.datamodel import inputs as inputsmod
 from vison.support.files import cPickleRead
-import TP01aux
+from . import TP01aux
 from vison.pump import tptools
 # END IMPORT
 
@@ -183,7 +183,7 @@ class TP01(PumpTask):
 
                 colcounter += 1
 
-        Ncols = len(TP01_sdict.keys())
+        Ncols = len(list(TP01_sdict.keys()))
         TP01_sdict['Ncols'] = Ncols
 
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
@@ -378,11 +378,11 @@ class TP01(PumpTask):
 
                 for id_dly in id_dlys:
 
-                    print('idl_dly = %s' % id_dly)
+                    print(('idl_dly = %s' % id_dly))
 
                     for jCCD, CCDk in enumerate(CCDs):
 
-                        print('CCD=%s' % CCDk)
+                        print(('CCD=%s' % CCDk))
 
                         ixsel = np.where((self.dd.mx['id_dly'][:, 0] == id_dly) & (
                             self.dd.mx['v_tpump'][:, 0] != 0))
@@ -411,7 +411,7 @@ class TP01(PumpTask):
 
                             imapccdobj = ccd.CCD(os.path.join(productspath, imapf))
 
-                            print('OBSID=%s, %s' % (ObsID, imapf))
+                            print(('OBSID=%s, %s' % (ObsID, imapf)))
 
                             for iQ, Q in enumerate(Quads):
 
@@ -564,7 +564,7 @@ class TP01(PumpTask):
 
                     for modkey in modkeys:
 
-                        print('%s%s, %s...' % (CCDk, Q, modkey))
+                        print(('%s%s, %s...' % (CCDk, Q, modkey)))
 
                         kqkmerged = tptools.merge_vtp_dipole_cats_bypos(
                             rawcatCQ[modkey].copy(),
@@ -595,7 +595,7 @@ class TP01(PumpTask):
             #        for CCDk in ['CCD1']:
 
             kmergedata = mergecat[CCDk].copy()
-            colnames = kmergedata[allQuads[0]][modkeys[0]].keys().tolist()
+            colnames = list(kmergedata[allQuads[0]][modkeys[0]].keys()).tolist()
 
             for Q in allQuads:
                 #            for Q in ['E']:
@@ -638,9 +638,9 @@ class TP01(PumpTask):
                     sumtable[CCDk][Q][modkey] = [len(Pc[ixnonan]), avtau]
 
         reform = {(level1_key, level2_key, level3_key): value
-                  for level1_key, level2_dict in sumtable.items()
-                  for level2_key, level3_dict in level2_dict.items()
-                  for level3_key, value in level3_dict.items()}
+                  for level1_key, level2_dict in list(sumtable.items())
+                  for level2_key, level3_dict in list(level2_dict.items())
+                  for level3_key, value in list(level3_dict.items())}
 
         mergeL1df = pd.DataFrame(reform).T
         colnames = dict()
@@ -788,9 +788,9 @@ class TP01(PumpTask):
                     mergedict[CCDk][Q][mk] = get_vals(rawmergedict[CCDk][Q][mk], mcolnames)
 
         reform = {(level1_key, level2_key, level3_key): value
-                  for level1_key, level2_dict in mergedict.items()
-                  for level2_key, level3_dict in level2_dict.items()
-                  for level3_key, value in level3_dict.items()}
+                  for level1_key, level2_dict in list(mergedict.items())
+                  for level2_key, level3_dict in list(level2_dict.items())
+                  for level3_key, value in list(level3_dict.items())}
 
         mergeL1df = pd.DataFrame(reform).T
         colnames = dict()

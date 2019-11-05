@@ -112,7 +112,7 @@ class P01WhiskersPlot(baseplotclasses.BeamPlotYvX):
 
         def feed_stats(CQdict, tag, i):
             istats = dict()
-            for key in stats_trans.keys():
+            for key in list(stats_trans.keys()):
                 istats[key] = CQdict[tag][stats_trans[key]][i]
             istats['label'] = '%i' % CQdict[tag]['deltasec'][i]
             istats['whislo'] = CQdict[tag]['mean'][i] -\

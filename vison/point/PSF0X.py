@@ -46,7 +46,7 @@ from vison.ogse import ogse as ogsemod
 from vison.datamodel import scriptic as sc
 from vison.support import files
 from vison.point import PointTask as PT
-import PSF0Xaux
+from . import PSF0Xaux
 from vison.support.files import cPickleRead, cPickleDumpDictionary
 from vison.datamodel import ccd
 from vison.xtalk import opt_xtalk as oxt
@@ -250,7 +250,7 @@ class PSF0X(PT.PointTask):
             PSF0X_sdict[colid] = dict(frames=frames[ic], exptime=exptimes[ic],
                                       test=test)
 
-        Ncols = len(PSF0X_sdict.keys())
+        Ncols = len(list(PSF0X_sdict.keys()))
         PSF0X_sdict['Ncols'] = Ncols
 
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
@@ -523,7 +523,7 @@ class PSF0X(PT.PointTask):
 
             for iObs in range(nObs):
 
-                print '\nopt_xtalk: sextracting ObsID %i/%i' % (iObs + 1, nObs)
+                print('\nopt_xtalk: sextracting ObsID %i/%i' % (iObs + 1, nObs))
 
                 ObsID = self.dd.mx['ObsID'][iObs]
                 timestamp = self.dd.mx['date'][iObs, 0]

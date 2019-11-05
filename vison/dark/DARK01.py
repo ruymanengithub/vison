@@ -38,7 +38,7 @@ from vison.datamodel import cdp
 #from vison.datamodel import ccd
 #from vison.datamodel import generator
 #from vison.pipe.task import Task
-from DarkTask import DarkTask
+from .DarkTask import DarkTask
 from vison.dark import D01aux, darkaux
 from vison.image import performance
 from vison.datamodel import inputs
@@ -118,7 +118,7 @@ class DARK01(DarkTask):
         exptime = self.inputs['exptime']
         DARK01_sdict = dict(col001=dict(frames=N, exptime=exptime))
 
-        Ncols = len(DARK01_sdict.keys())
+        Ncols = len(list(DARK01_sdict.keys()))
         DARK01_sdict['Ncols'] = Ncols
 
         commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])

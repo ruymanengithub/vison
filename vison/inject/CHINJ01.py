@@ -27,8 +27,8 @@ from vison.support import context
 from vison.datamodel import scriptic as sc
 from vison.support import utils
 from vison.datamodel import inputs
-from InjTask import InjTask, _get_CCDhalf
-import CH01aux
+from .InjTask import InjTask, _get_CCDhalf
+from . import CH01aux
 from vison.support import files
 from vison.inject import lib as ilib
 from vison.datamodel import cdp
@@ -181,7 +181,7 @@ class CHINJ01(InjTask):
 
             colcounter += 1
 
-        Ncols = len(CHINJ01_sdict.keys())
+        Ncols = len(list(CHINJ01_sdict.keys()))
         CHINJ01_sdict['Ncols'] = Ncols
 
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])

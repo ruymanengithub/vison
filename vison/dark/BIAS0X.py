@@ -26,8 +26,8 @@ from vison.pipe.task import HKKeys
 from vison.support import context
 from vison.datamodel import scriptic as sc
 from vison.datamodel import ccd
-import B0Xaux
-from DarkTask import DarkTask
+from . import B0Xaux
+from .DarkTask import DarkTask
 from vison.datamodel import inputs, cdp
 from vison.support import utils
 from vison.support.files import cPickleRead
@@ -114,7 +114,7 @@ class BIAS0X(DarkTask):
         N = self.inputs['N']
         BIAS0X_sdict = dict(col001=dict(frames=N, exptime=0))
 
-        Ncols = len(BIAS0X_sdict.keys())
+        Ncols = len(list(BIAS0X_sdict.keys()))
         BIAS0X_sdict['Ncols'] = Ncols
 
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
@@ -368,7 +368,7 @@ class BIAS0X(DarkTask):
 
         for tag in ['hor', 'ver', 'verstd']:
             profs1D2plot[tag]['labelkeys'] = \
-                profs1D2plot[tag][CCDs[0]][Quads[0]]['x'].keys()
+                list(profs1D2plot[tag][CCDs[0]][Quads[0]]['x'].keys())
 
         self.figdict['B0Xbasic_prof1D_hor'][1]['data'] = profs1D2plot['hor']
         self.figdict['B0Xbasic_prof1D_hor'][1]['meta']['ylim'] = ylim_1D

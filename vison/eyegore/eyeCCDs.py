@@ -31,9 +31,9 @@ from skimage import exposure
 
 #from multiprocessing.dummy import Pool
 
-import Tkinter as tk
-import ttk
-import tkFont as tkFont
+import tkinter as tk
+import tkinter.ttk
+import tkinter.font as tkFont
 #from PIL import Image, ImageTk
 
 from vison.datamodel import ccd as ccdmod

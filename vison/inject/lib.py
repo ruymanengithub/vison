@@ -261,8 +261,8 @@ def fit_Inj_vs_IG1(IG1, med_inj, submodel='ReLU', doPlot=False, debug=False):
     else:
         arrsolution = copy.deepcopy(popt.tolist())
 
-    solution = dict(zip(['BGD', 'K', 'XT', 'XN', 'A', 'N'],
-                        arrsolution)
+    solution = dict(list(zip(['BGD', 'K', 'XT', 'XN', 'A', 'N'],
+                        arrsolution))
                     )
     solution['didfit'] = didfit
 
@@ -335,8 +335,8 @@ def fit_Inj_vs_IDL(IDL, med_inj, doPlot=False, debug=False):
     else:
         arrsolution = copy.deepcopy(popt.tolist())
 
-    solution = dict(zip(['BGD', 'K', 'A', 'XT'],
-                        arrsolution)
+    solution = dict(list(zip(['BGD', 'K', 'A', 'XT'],
+                        arrsolution))
                     )
     solution['didfit'] = didfit
 

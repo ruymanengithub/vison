@@ -524,7 +524,7 @@ class CCD(object):
 
         tiles = self.get_tiles(Quad, tile_coos, extension=extension)
 
-        vals = np.array(map(estimator, tiles))
+        vals = np.array(list(map(estimator, tiles)))
 
         return vals
 
@@ -743,7 +743,7 @@ class CCD(object):
 
     def divide_by_flatfield(self, FF, extension=-1):
         """Divides by a Flat-field"""
-        print 'TODO: ccd.CCD.divide_by_flatfield needs improvements: handling of masked values, overscans (V & H)'
+        print('TODO: ccd.CCD.divide_by_flatfield needs improvements: handling of masked values, overscans (V & H)')
 
         assert self.shape == FF.shape
         self.extensions[extension].data /= FF
@@ -774,7 +774,7 @@ class CCD(object):
 
         VscanMask = np.ones((self.NAXIS1, self.NAXIS2), dtype='bool')
 
-        for Quad in self.QuadBound.keys():
+        for Quad in list(self.QuadBound.keys()):
 
             B = self.QuadBound[Quad]
 
@@ -1000,7 +1000,7 @@ def test_create_from_scratch():
 
     ccdin = CCD(fitsname, getallextensions=True)
 
-    print 'Number of extensions = %i' % ccdin.nextensions
+    print('Number of extensions = %i' % ccdin.nextensions)
     stop()
 
 

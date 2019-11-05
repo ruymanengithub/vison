@@ -175,7 +175,7 @@ class MetaTPX2(MetaCal):
 
         for block in self.blocks:
 
-            oldtestkey = self.inventory[block].keys()[0]
+            oldtestkey = list(self.inventory[block].keys())[0]
             self.inventory[block]['TPX2'] = copy.deepcopy(self.inventory[block][oldtestkey])
             self.inventory[block].pop(oldtestkey)
 

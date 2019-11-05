@@ -21,7 +21,7 @@ def f_text_wrapper(msg):
     textwrap.break_on_hypens = True
     width = 80
     #wmsg = []
-    if type(msg) in [str, unicode]:
+    if type(msg) in [str, str]:
         wmsg = textwrap.wrap(msg, width=width)
         #wmsg = ['%s\\' % item for item in wmsg]
     elif isinstance(msg, list):
@@ -103,6 +103,6 @@ class SimpleLogger(object):
         """
         Writes text either to file or screen.
         """
-        print >> self.file, text
+        print(text, file=self.file)
         if self.verbose:
-            print text
+            print(text)

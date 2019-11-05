@@ -123,15 +123,15 @@ class InjTask(Task):
         Flu_lims = OrderedDict()
         FluGrad_lims = OrderedDict()
 
-        for CCDkey in inj_exp.keys():
+        for CCDkey in list(inj_exp.keys()):
             Flu_lims[CCDkey] = OrderedDict()
             FluGrad_lims[CCDkey] = OrderedDict()
 
-            for Q in inj_exp[CCDkey].keys():
+            for Q in list(inj_exp[CCDkey].keys()):
                 Flu_lims[CCDkey][Q] = OrderedDict()
                 FluGrad_lims[CCDkey][Q] = OrderedDict()
 
-                for colkey in inj_exp[CCDkey][Q].keys():
+                for colkey in list(inj_exp[CCDkey][Q].keys()):
                     _inj = inj_exp[CCDkey][Q][colkey]
 
                     if np.isnan(_inj):
@@ -195,7 +195,7 @@ class InjTask(Task):
             for iObs in range(nObs):
 
                 if self.debug:
-                    print 'InjTask.get_checkstats_ST: processing ObsID %i/%i' % (iObs + 1, nObs)
+                    print('InjTask.get_checkstats_ST: processing ObsID %i/%i' % (iObs + 1, nObs))
 
                 for jCCD, CCDk in enumerate(CCDs):
                     dpath = self.dd.mx['datapath'][iObs, jCCD]
@@ -545,7 +545,7 @@ class InjTask(Task):
                 #            for iObs in range(5): # TESTS
 
                 ObsID = self.dd.mx['ObsID'][iObs]
-                print 'Processing Obsid %i/%i' % (iObs + 1, nObs)
+                print('Processing Obsid %i/%i' % (iObs + 1, nObs))
 
                 for jCCD, CCDk in enumerate(CCDs):
 
@@ -668,13 +668,13 @@ class InjTask(Task):
         #maxmedinjection = np.nanmax(self.dd.mx['chinj_p50'][:])
         maxmedinjection = np.nanmax(prof_max_vals)
 
-        prof_alrow_cdp.data['labelkeys'] = prof_alrow_cdp.data[CCDs[0]][Quads[0]]['x'].keys()
+        prof_alrow_cdp.data['labelkeys'] = list(prof_alrow_cdp.data[CCDs[0]][Quads[0]]['x'].keys())
 
         fdict_alrow = self.figdict['%s_alrow' % testkey][1]
         fdict_alrow['data'] = prof_alrow_cdp.data.copy()
         fdict_alrow['meta']['ylim'] = [0., maxmedinjection * 1.1]
 
-        prof_alcol_cdp.data['labelkeys'] = prof_alcol_cdp.data[CCDs[0]][Quads[0]]['x'].keys()
+        prof_alcol_cdp.data['labelkeys'] = list(prof_alcol_cdp.data[CCDs[0]][Quads[0]]['x'].keys())
 
         fdict_alcol = self.figdict['%s_alcol' % testkey][1]
         fdict_alcol['data'] = prof_alcol_cdp.data.copy()

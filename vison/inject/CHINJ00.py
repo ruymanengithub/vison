@@ -31,7 +31,7 @@ from vison.datamodel import scriptic as sc
 #from vison.datamodel import ccd
 #from vison.datamodel import generator
 #import datetime
-from InjTask import InjTask
+from .InjTask import InjTask
 from vison.image import performance
 from vison.datamodel import inputs
 # END IMPORT
@@ -151,7 +151,7 @@ class CHINJ00(InjTask):
 
                 colcounter += 1
 
-        Ncols = len(CHINJ00_sdict.keys())
+        Ncols = len(list(CHINJ00_sdict.keys()))
         CHINJ00_sdict['Ncols'] = Ncols
 
         commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])

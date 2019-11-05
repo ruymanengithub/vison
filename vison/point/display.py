@@ -46,7 +46,7 @@ def get_spots_images_allCCDs(spots_bag):
                     ['NONE', 'CHARLIE', 'NONE'],
                     ['DELTA', 'NONE', 'ECHO']]
 
-    nx, ny = spots_bag[spots_bag.keys()[0]][Quads[0]]['ALPHA']['stamp'].shape
+    nx, ny = spots_bag[list(spots_bag.keys())[0]][Quads[0]]['ALPHA']['stamp'].shape
 
     NX = nx * 3 * 2
     NY = ny * 3 * 2

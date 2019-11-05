@@ -150,7 +150,7 @@ if __name__ == '__main__':
              '#                                                       #\n' +\
              '#########################################################\n'
 
-    print header
+    print(header)
 
     #run_merger(infile, programme, block, reference)
     run_merger_plus(infile, Issue=version)

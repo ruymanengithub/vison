@@ -285,8 +285,8 @@ class PointTask(Task):
                                 res_bas = spot.measure_basic(
                                     rap=10, rin=15, rout=-1)
                             except BaseException:
-                                res_bas = dict(zip(chkkeycorr.values(), np.zeros(
-                                    len(chkkeycorr), dtype='float32')))
+                                res_bas = dict(list(zip(list(chkkeycorr.values()), np.zeros(
+                                    len(chkkeycorr), dtype='float32'))))
 
                             for chkkey in chkkeycorr:
                                 self.dd.mx[chkkey][iObs, jCCD, kQ,
@@ -314,7 +314,7 @@ class PointTask(Task):
         Qs = ccd.Quads
 
         if isinstance(lims[CCDs[0]][Qs[0]][spotnames[0]], (dict, OrderedDict)):
-            colnames = lims[CCDs[0]][Qs[0]][spotnames[0]].keys()
+            colnames = list(lims[CCDs[0]][Qs[0]][spotnames[0]].keys())
             indexer = self.dd.mx['label'][:].copy()
         elif isinstance(lims[CCDs[0]][Qs[0]][spotnames[0]], (list, tuple)):
             colnames = None

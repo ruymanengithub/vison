@@ -28,7 +28,7 @@ from vison.fpatests import FWD_WARM
 
 def generate_test_sequence(toGen, elvis='FPA', FPAdesign='final'):
     """Now supporting test repetitions."""
-    taskslist = toGen.keys()
+    taskslist = list(toGen.keys())
     test_sequence = OrderedDict()
     for taskname in taskslist:
         if not toGen[taskname]:
@@ -40,10 +40,10 @@ def generate_test_sequence(toGen, elvis='FPA', FPAdesign='final'):
         ans = _generate_test_sequence(_toGen, elvis=elvis, FPAdesign=FPAdesign)
 
         if iteration is not None:
-            for key in ans.keys():
+            for key in list(ans.keys()):
                 test_sequence['%s.%i' % (key, iteration)] = copy.deepcopy(ans[key])
         else:
-            for key in ans.keys():
+            for key in list(ans.keys()):
                 test_sequence[key] = copy.deepcopy(ans[key])
 
     return test_sequence

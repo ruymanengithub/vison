@@ -8,7 +8,7 @@ IO related functions.
 
 """
 import datetime
-import cPickle
+import pickle
 import os
 import numpy as np
 from pdb import set_trace as stop
@@ -24,7 +24,7 @@ def cPickleDumpDictionary(dictionary, output, protocol=2):
     :return: None
     """
     out = open(output, 'wb')
-    cPickle.dump(dictionary, out, protocol=protocol)
+    pickle.dump(dictionary, out, protocol=protocol)
     out.close()
 
 
@@ -33,7 +33,7 @@ def cPickleRead(ffile):
     Loads data from a pickled file.
     """
     with open(ffile, 'r') as f:
-        inpick = cPickle.load(f)
+        inpick = pickle.load(f)
     f.close()
     return inpick
 
@@ -48,7 +48,7 @@ def cPickleDump(data, output, protocol=2):
     :return: None
     """
     out = open(output, 'wb')
-    cPickle.dump(data, out, protocol=protocol)
+    pickle.dump(data, out, protocol=protocol)
     out.close()
 
 

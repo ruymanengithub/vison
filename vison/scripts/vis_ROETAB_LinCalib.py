@@ -270,7 +270,7 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
 
     for ix, CHAN in enumerate(CHANNELS):
 
-        print 'Processing Channel %s...' % CHAN
+        print('Processing Channel %s...' % CHAN)
 
         WFf = os.path.join(datapath, WFList[ix])
 
@@ -295,7 +295,7 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
 
             mVrange = [min(mv_levels), max(mv_levels)]
 
-            print 'Doing Bayesian Analysis...'
+            print('Doing Bayesian Analysis...')
 
             bayresults = WaveBay.forwardModel(
                 fmV, mVrange, pixTx0, Nlevels, burn=10, run=30, cores=1, doPlot=True, figkey='%s_%s_%s' %
@@ -373,11 +373,11 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
         data['RT_NONLIN']['MaxNL_pc'][ix] = MaxNL
         data['RT_NONLIN']['MaxNL_DN'][ix] = MaxNL_DN
 
-    figs['keys'] = figs.keys()
+    figs['keys'] = list(figs.keys())
     figs['jump'] = 26
 
     dddf = OrderedDict()
-    for key in data.keys():
+    for key in list(data.keys()):
         dddf[key] = pd.DataFrame.from_dict(data[key])
 
     cdpRTNL = cdp.Tables_CDP()
@@ -437,7 +437,7 @@ if __name__ == '__main__':
              '#                                                       #\n' +\
              '#########################################################\n'
 
-    print banner
+    print(banner)
 
     run_ROETAB_LinCalib(inputsfile, incat, datapath=datapath, respath=respath,
                         doBayes=doBayes, debug=debug)

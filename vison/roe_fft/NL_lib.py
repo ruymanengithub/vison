@@ -39,7 +39,7 @@ def myplot_NL(datasets, xlabel='', ylabel='', ylim=[], title='', figname=''):
     fig = plt.figure()
     ax = fig.add_subplot(111)
 
-    for dkey in datasets.keys():
+    for dkey in list(datasets.keys()):
         dataset = datasets[dkey]
         x = dataset['x']
         y = dataset['y']

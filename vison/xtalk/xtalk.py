@@ -232,7 +232,7 @@ def processXtalk_single(CCDref, Qref, OBSID, thresholdinj=0., colstart=1, colend
     Quads = ['E', 'F', 'G', 'H']
 
     msg = 'Reference = CCD%i-Q:%s' % (CCDref, Qref)
-    print msg
+    print(msg)
 
     if log is not None:
         log.info(msg)
@@ -297,7 +297,7 @@ def processXtalk_single(CCDref, Qref, OBSID, thresholdinj=0., colstart=1, colend
 
     for CCD in CCDs:
 
-        print CCD
+        print(CCD)
 
         tCCDfile = os.path.join(
             datapath, 'EUC_%i_*_CCD%i.fits' % (OBSID, CCD,))
@@ -515,8 +515,8 @@ def PlotSummaryFig(Xtalk, suptitle, figname='', scale='RATIO', showvalues=False)
     ax.set_xlim([-1, 12])
     ax.set_ylim([-1, 12])
 
-    plt.xticks(range(len(xaxisnames)), xaxisnames, size='small')
-    plt.yticks(range(len(xaxisnames)), xaxisnames, size='small')
+    plt.xticks(list(range(len(xaxisnames))), xaxisnames, size='small')
+    plt.yticks(list(range(len(xaxisnames))), xaxisnames, size='small')
 
     box = ax.get_position()
     ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])

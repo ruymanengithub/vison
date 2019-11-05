@@ -22,6 +22,6 @@ def load_FITS_CDPs(FDict, dataclass, **kwargs):
     data = dict()
     for CCDindex in range(1, 4):
         CCDkey = 'CCD%i' % CCDindex
-        if CCDkey in FDict.keys():
+        if CCDkey in list(FDict.keys()):
             data[CCDkey] = dataclass(FDict[CCDkey], **kwargs)
     return data

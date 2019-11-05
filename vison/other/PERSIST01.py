@@ -146,7 +146,7 @@ class PERSIST01(Task):
                                        source='flat',
                                        comments='LATENT'))
 
-        Ncols = len(PER01_sdict.keys())
+        Ncols = len(list(PER01_sdict.keys()))
         PER01_sdict['Ncols'] = Ncols
 
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])

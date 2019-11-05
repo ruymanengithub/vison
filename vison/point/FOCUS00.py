@@ -55,11 +55,11 @@ from vison.point import display as pdspl
 from vison.support import vistime
 from vison.support import utils
 #from vison.pipe.task import Task
-import PointTask as PT
+from . import PointTask as PT
 #from PointTask import PointTask, BGD_lims
-import FOCUS00_lib as F00lib
+from . import FOCUS00_lib as F00lib
 from vison.image import performance
-import F00aux
+from . import F00aux
 # END IMPORT
 
 isthere = os.path.exists
@@ -204,7 +204,7 @@ class FOCUS00(PT.PointTask):
                                                        wave=FW_IDX,
                                                        comments='F%.1f' % float(j))
 
-        Ncols = len(FOCUS00_sdict.keys())
+        Ncols = len(list(FOCUS00_sdict.keys()))
         FOCUS00_sdict['Ncols'] = Ncols
 
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])

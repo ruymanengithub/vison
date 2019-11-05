@@ -78,7 +78,7 @@ class Inputs(dict):
         super(Inputs, self).__init__(*args, **kwargs)
 
     def _fill_with_Nones(self):
-        for key in self.manifesto.keys():
+        for key in list(self.manifesto.keys()):
             self[key] = None
 
     def assertinputs(self, key, value):

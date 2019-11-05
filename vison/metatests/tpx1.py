@@ -166,7 +166,7 @@ class MetaTPX1(MetaCal):
         super(MetaTPX1, self).load_block_results(inventoryfile)
 
         for block in self.blocks:
-            oldtestname = self.inventory[block].keys()[0]
+            oldtestname = list(self.inventory[block].keys())[0]
             self.inventory[block]['TPX1'] = copy.deepcopy(self.inventory[block][oldtestname])
             self.inventory[block].pop(oldtestname)
 

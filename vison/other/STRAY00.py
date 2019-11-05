@@ -207,7 +207,7 @@ class STRAY00(DarkTask):
                                        mirr_on=1, mirr_pos=50.,
                                        comments='PSF-L')
 
-        Ncols = len(STRAY00_sdict.keys())
+        Ncols = len(list(STRAY00_sdict.keys()))
         STRAY00_sdict['Ncols'] = Ncols
 
         commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])

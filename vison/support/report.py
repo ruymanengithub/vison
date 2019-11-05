@@ -18,7 +18,7 @@ import os
 import datetime
 #from vison.support import vistime
 #from latex import generate_header, generate_preamble
-import latex as lx
+from . import latex as lx
 from astropy import table as astable
 from astropy.io import ascii
 import tempfile
@@ -349,11 +349,11 @@ class Table(Content):
         if 'X' in col_align:
             def foo_replacer1(line): return st.replace(
                 line, 'begin{tabular}', 'begin{tabularx}{1\\textwidth}')
-            tex = map(foo_replacer1, tex)
+            tex = list(map(foo_replacer1, tex))
 
             def foo_replacer2(line): return st.replace(
                 line, 'end{tabular}', 'end{tabularx}')
-            tex = map(foo_replacer2, tex)
+            tex = list(map(foo_replacer2, tex))
 
         if self.longtable:
             for i in range(len(tex)):
@@ -374,7 +374,7 @@ class Text(Content):
 
     def generate_Latex(self):
         """ """
-        if isinstance(self.text, (str, unicode)):
+        if isinstance(self.text, str):
             tex = [self.text]
         elif isinstance(self.text, list):
             tex = self.text
@@ -464,7 +464,7 @@ class Report(Container):
                 if item.keyword == keyword:
                     ix2remove.append(ix)
 
-                    children = range(ix, Ncont - 1)
+                    children = list(range(ix, Ncont - 1))
 
                     if len(children) == 0:
                         break
@@ -538,11 +538,11 @@ class Report(Container):
 
         f = open(filename, 'a')
         for line in self.Texheader:
-            print >> f, line
+            print(line, file=f)
         for line in self.Texbody:
-            print >> f, line
+            print(line, file=f)
         for line in self.Texfooter:
-            print >> f, line
+            print(line, file=f)
         f.close()
 
     def compileLaTex2pdf(self, fileroot, cleanafter=False, silent=True):

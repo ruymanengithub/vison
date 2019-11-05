@@ -14,7 +14,7 @@ import datetime
 import unittest
 import numpy as np
 from astropy.io import fits as fts
-from basis import SpotBase
+from .basis import SpotBase
 
 from pdb import set_trace as stop
 #from astropy.io import fits as fts

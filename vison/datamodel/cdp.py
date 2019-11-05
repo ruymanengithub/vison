@@ -48,7 +48,7 @@ class CDP(object):
         defaults.update(args)
         defaults.update(kwargs)
 
-        for key in defaults.keys():
+        for key in list(defaults.keys()):
             self.__setattr__(key, defaults[key])
 
     def savetopickle(self, pickf=''):
@@ -114,7 +114,7 @@ class Tables_CDP(CDP):
 
         sheetcounter = 2
 
-        for i, k in enumerate(self.data.iterkeys()):
+        for i, k in enumerate(self.data.keys()):
             sheetcounter += i
             self.report.wb.create_sheet(k, sheetcounter)
 
@@ -138,7 +138,7 @@ class Tables_CDP(CDP):
 
     def fill_allDataSheets(self):
         """ """
-        for sheet in self.data.keys():
+        for sheet in list(self.data.keys()):
             self.fill_Sheet(sheet)
 
     def fill_Figures(self):

@@ -33,7 +33,7 @@ def setInDict(dataDict, mapList, value):
 
 
 def countdictlayers(d):
-    return max(countdictlayers(v) if isinstance(v, dict) else 0 for v in d.values()) + 1
+    return max(countdictlayers(v) if isinstance(v, dict) else 0 for v in list(d.values())) + 1
 
 
 def get_function_module(level=1, reference='vison'):

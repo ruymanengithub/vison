@@ -139,7 +139,7 @@ def gt_BF01figs(test):
     # renaming to BF01... HACK
 
     keys_to_rename = ['caption', 'suptitle', 'figname']
-    for figkey in BF01figs.keys():
+    for figkey in list(BF01figs.keys()):
         _dict = BF01figs[figkey][1]
         try:
             _mdict = BF01figs[figkey][1]['meta']

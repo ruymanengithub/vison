@@ -31,13 +31,13 @@ from vison.datamodel import scriptic as sc
 from vison.datamodel import HKtools
 from vison.datamodel import core, ccd, cdp
 from vison.image import calibration
-import ptc as ptclib
+from . import ptc as ptclib
 from vison.image import performance
-from FlatTask import FlatTask
-from PTC0X import PTC0X
+from .FlatTask import FlatTask
+from .PTC0X import PTC0X
 from vison.pipe.task import Task
 from vison.datamodel import inputs
-import BF01aux
+from . import BF01aux
 from vison.analysis import Guyonnet15 as G15
 from vison.image import covariance as covlib
 from sklearn import linear_model
@@ -71,7 +71,7 @@ def process_one_fluence_covmaps(q, dd, dpath, CCDs, jCCD, ku, ulabels, Npix,
 
     ccdobjNamesList = vfullinpath_adder(dd.mx['ccdobj_name'][six[0], jCCD], 'pick')
 
-    print('%s: column %i/%i; %i OBSIDs' % (CCDs[jCCD], ku + 1, len(ulabels), len(ccdobjNamesList)))
+    print(('%s: column %i/%i; %i OBSIDs' % (CCDs[jCCD], ku + 1, len(ulabels), len(ccdobjNamesList))))
 
     ccdobjList = [cPickleRead(item) for item in ccdobjNamesList]
 
@@ -365,7 +365,7 @@ class BF01(PTC0X):
 
         for tag in ['hor', 'ver']:
             profscov_1D.data[tag]['labelkeys'] = \
-                profscov_1D.data[tag][CCDs[0]][Quads[0]]['x'].keys()
+                list(profscov_1D.data[tag][CCDs[0]][Quads[0]]['x'].keys())
 
         for tag in ['ver', 'hor']:
 
@@ -599,7 +599,7 @@ class BF01(PTC0X):
 
         for tag in ['hor', 'ver']:
             profsker_1D.data[tag]['labelkeys'] = \
-                profsker_1D.data[tag][CCDs[0]][Quads[0]]['x'].keys()
+                list(profsker_1D.data[tag][CCDs[0]][Quads[0]]['x'].keys())
 
         for tag in ['ver', 'hor']:
 

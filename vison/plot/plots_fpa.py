@@ -651,8 +651,8 @@ class XtalkPlot(BasicPlot):
         self.ax.set_xlim([-1, 12])
         self.ax.set_ylim([-1, 12])
 
-        plt.xticks(range(len(xaxisnames)), xaxisnames, size='small')
-        plt.yticks(range(len(xaxisnames)), xaxisnames, size='small')
+        plt.xticks(list(range(len(xaxisnames))), xaxisnames, size='small')
+        plt.yticks(list(range(len(xaxisnames))), xaxisnames, size='small')
 
         self.ax.set_ylabel('Source Channel')
         self.ax.set_xlabel('Victim Channel')

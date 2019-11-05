@@ -42,4 +42,4 @@ def save_jsonfile(pydict, jsonfile):
     """ """
     json = dumps_to_json(pydict)
     with open(jsonfile, 'wa') as f:
-        print >> f, json
+        print(json, file=f)

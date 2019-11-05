@@ -29,7 +29,7 @@ class HER_CDP(cdp.Tables_CDP):
 
     def ingest_inputs(self, mx_dct, CCDs, Quads, meta=None, header=None, figs=None):
 
-        keys = mx_dct.keys()
+        keys = list(mx_dct.keys())
 
         _data = dict()
 

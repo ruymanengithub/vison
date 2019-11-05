@@ -52,7 +52,7 @@ subURLs = dict(
     LoFPGATemp="low_FPGA_PCB_TEMP.xml",
     HiFPGATemp="hi_FPGA_PCB_TEMP.xml")
 URLs = dict()
-for key, value in subURLs.iteritems():
+for key, value in subURLs.items():
     URLs[key] = '%s/%s' % (rootURL, value)
 
 
@@ -68,7 +68,7 @@ def matches_expression(pair): return re.match(pair[0], pair[1]) is not None
 
 
 def _get_matching_HKurl(HKkey, patterns):
-    for key, value in patterns.iteritems():
+    for key, value in patterns.items():
         if matches_expression((value, HKkey)):
             return key
     return None
@@ -91,7 +91,7 @@ class EyeWarnings(object):
         try:
             self.et = ET.ET()
         except IOError:
-            print 'vison.support.ET: Phone Calling is limited to personel with access details.'
+            print('vison.support.ET: Phone Calling is limited to personel with access details.')
             self.et = None
 
     def process_event(self, HKkey, violation_type, value, HKlim, timestamp):
@@ -123,13 +123,13 @@ class EyeWarnings(object):
 
         with tempfile.NamedTemporaryFile(mode='w+a', delete=False) as f:
             for line in bodyList:
-                print >> f, line
+                print(line, file=f)
             f.close()
             try:
                 os.system('mail -s "%s" %s < %s' %
                           (subject, recipient, f.name))
             except BaseException:
-                print('WARNING email not sent! [subject: %s]' % subject)
+                print(('WARNING email not sent! [subject: %s]' % subject))
                 if self.log is not None:
                     self.log.info(
                         'WARNING email not sent! [subject: %s]' % subject)
@@ -249,16 +249,16 @@ class EyeWarnings(object):
 
 def test_URLs():
     """ """
-    import urllib2
+    import urllib.request, urllib.error, urllib.parse
 
-    for key, value in URLs.iteritems():
+    for key, value in URLs.items():
         try:
-            urllib2.urlopen(value)
-            print 'Found %s' % key, value
-        except urllib2.HTTPError as e:
-            print key, value, e.code
-        except urllib2.URLError as e:
-            print key, value, e.args
+            urllib.request.urlopen(value)
+            print('Found %s' % key, value)
+        except urllib.error.HTTPError as e:
+            print(key, value, e.code)
+        except urllib.error.URLError as e:
+            print(key, value, e.args)
 
 
 def test_get_URLs():
@@ -271,7 +271,7 @@ def test_get_URLs():
     assert ew.get_phone_url('FPGA_PCB_TEMP_T', -1) == URLs['LoFPGATemp']
     assert ew.get_phone_url('FPGA_PCB_TEMP_T', 1) == URLs['HiFPGATemp']
 
-    print 'test_get_URLs passed!'
+    print('test_get_URLs passed!')
 
 
 def test_do_phone_call(urlkey):

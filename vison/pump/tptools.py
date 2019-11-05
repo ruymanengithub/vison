@@ -29,7 +29,7 @@ from vison.image.ds9reg import save_spots_as_ds9regs
 
 def _thin_down_cat(cat, N):
     """ """
-    ckeys = cat.keys()
+    ckeys = list(cat.keys())
     catlen = len(cat[ckeys[0]])
     if N >= catlen:
         return cat.copy()
@@ -85,10 +85,10 @@ def _aggregate_CQMT(masterdict, CCDs, allQuads, modkeys, tkeys, tkeyname):
                     outdict[CCDk][Q][modkey][tkey] = values
 
     reform = {(level1_key, level2_key, level3_key, level4_key): value
-              for level1_key, level2_dict in outdict.items()
-              for level2_key, level3_dict in level2_dict.items()
-              for level3_key, level4_dict in level3_dict.items()
-              for level4_key, value in level4_dict.items()}
+              for level1_key, level2_dict in list(outdict.items())
+              for level2_key, level3_dict in list(level2_dict.items())
+              for level3_key, level4_dict in list(level3_dict.items())
+              for level4_key, value in list(level4_dict.items())}
 
     outdf = pd.DataFrame(reform).T
     colnames = dict()
@@ -562,7 +562,7 @@ def merge_2dcats_generic(catsdict, catkeys, parentkey, columns, opcolumns, fcomp
     merged = merged.rename(index=str, columns=renamerdict)
     merged = merged.drop(['mix'], axis=1)
 
-    merged.drop([u'u%s' % key for key in opcolumns], axis=1)
+    merged.drop(['u%s' % key for key in opcolumns], axis=1)
 
     if dropna:
         merged = merged.dropna()

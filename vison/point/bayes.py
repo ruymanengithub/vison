@@ -355,7 +355,7 @@ def prepare_stamp(img, gain=3.5, size=10, spotx=100., spoty=100.):
     # spot and the peak pixel within the spot, this is also the CCD kernel position
     spot = data[y - size:y + size + 1, x - size:x + size + 1].copy()
     CCDy, CCDx = m.maximum_position(spot)
-    print 'CCD Kernel Position (within the postage stamp):', CCDx, CCDy
+    print('CCD Kernel Position (within the postage stamp):', CCDx, CCDy)
 
     # bias estimate
 
@@ -372,7 +372,7 @@ def prepare_stamp(img, gain=3.5, size=10, spotx=100., spoty=100.):
     #print 'Readnoise (e):', rn
     # if rn < 2. or rn > 6.:
     #    print 'NOTE: suspicious readout noise estimate...'
-    print 'ADC offset (e):', bias
+    print('ADC offset (e):', bias)
 
     # remove bias
     spot -= bias
@@ -396,9 +396,9 @@ def forwardModel(
     - emcee is run three times as it is important to have a good starting point for the final run.
 
     """
-    print '\n\n\n'
-    print '_' * 120
-    print 'Processing: %s' % stampkey
+    print('\n\n\n')
+    print('_' * 120)
+    print('Processing: %s' % stampkey)
     # get data and convert to electrons
 
     parnames = model_pars[modeltype]
@@ -447,12 +447,12 @@ def forwardModel(
     peakrange = (0.1 * maxs, 2. * maxs)
     sums = np.sum(spot)
 
-    print 'Maximum Value:', maxs
-    print 'Sum of the values:', sums
-    print 'Peak Range:', peakrange
+    print('Maximum Value:', maxs)
+    print('Sum of the values:', sums)
+    print('Peak Range:', peakrange)
 
     # MCMC based fitting
-    print 'Bayesian Model Fitting...'
+    print('Bayesian Model Fitting...')
     nwalkers = 1000
 
     # Initialize the sampler with the chosen specs.
@@ -466,7 +466,7 @@ def forwardModel(
     xx = xx.flatten()
     yy = yy.flatten()
 
-    print "Let's go Bayes..."
+    print("Let's go Bayes...")
 
     ndim = len(parnames)
 
@@ -498,24 +498,24 @@ def forwardModel(
                     xx, yy, fdata, rn**2., peakrange, spot.shape, modeltype])
 
         # Run a burn-in and set new starting position
-        print "Burning-in..."
+        print("Burning-in...")
         pos, prob, state = sampler.run_mcmc(p0, burn)
         maxprob_index = np.argmax(prob)
         params_fit = pos[maxprob_index]
-        print "Mean acceptance fraction:", np.mean(sampler.acceptance_fraction)
-        print 'Estimate:', params_fit
+        print("Mean acceptance fraction:", np.mean(sampler.acceptance_fraction))
+        print('Estimate:', params_fit)
         sampler.reset()
 
-        print "Running MCMC..."
+        print("Running MCMC...")
         pos, prob, state = sampler.run_mcmc(pos, run, rstate0=state)
-        print "Mean acceptance fraction:", np.mean(sampler.acceptance_fraction)
+        print("Mean acceptance fraction:", np.mean(sampler.acceptance_fraction))
 
         # Get the index with the highest probability
         maxprob_index = np.argmax(prob)
 
         # Get the best parameters and their respective errors and print best fits
         params_fit = pos[maxprob_index]
-        errors_fit = [sampler.flatchain[:, i].std() for i in xrange(ndim)]
+        errors_fit = [sampler.flatchain[:, i].std() for i in range(ndim)]
     else:
         params_fit = [maxs, -1., -1., 1.5, 0.6, 0.02, 0.03]
         errors_fit = np.zeros_like(params_fit)
@@ -546,10 +546,10 @@ def forwardModel(
     gof = (1. / (np.size(spot) - ndim)) * \
         np.sum((model.flatten() - fdata)**2 / var.flatten())
     maxreldiff = np.max(np.abs(model.flatten() - fdata) / np.sqrt(var.flatten()))
-    print 'GoF:', gof, ' Maximum (abs(difference)/sigma) :', maxreldiff
+    print('GoF:', gof, ' Maximum (abs(difference)/sigma) :', maxreldiff)
     if maxreldiff > 10 or gof > 4.:
-        print '\nFIT UNLIKELY TO BE GOOD...\n'
-    print 'Amplitude estimate:', amplitude
+        print('\nFIT UNLIKELY TO BE GOOD...\n')
+    print('Amplitude estimate:', amplitude)
 
     # packing results
 
@@ -624,29 +624,29 @@ def _printResults(best_params, errors):
     """
     Print basic results.
     """
-    print("=" * 60)
+    print(("=" * 60))
     print('Fitting with MCMC:')
     pars = ['peak', 'center_x', 'center_y',
             'radius', 'focus', 'width_x', 'width_y']
-    print('*' * 20 + ' Fitted parameters ' + '*' * 20)
+    print(('*' * 20 + ' Fitted parameters ' + '*' * 20))
     for name, value, sig in zip(pars, best_params, errors):
-        print("{:s} = {:e} +- {:e}" .format(name, value, sig))
-    print("=" * 60)
+        print(("{:s} = {:e} +- {:e}" .format(name, value, sig)))
+    print(("=" * 60))
 
 
 def _printFWHM(sigma_x, sigma_y, sigma_xerr, sigma_yerr, req=10.8):
     """
     Print results and compare to the requirement at 800nm.
     """
-    print("=" * 60)
-    print 'FWHM (requirement %.1f microns):' % req
-    print round(np.sqrt(_FWHMGauss(sigma_x) * _FWHMGauss(sigma_y)), 2), ' +/- ', \
-        round(np.sqrt(_FWHMGauss(sigma_xerr) * _FWHMGauss(sigma_yerr)), 3), ' microns'
-    print 'x:', round(_FWHMGauss(sigma_x),
-                      2), ' +/- ', round(_FWHMGauss(sigma_xerr), 3), ' microns'
-    print 'y:', round(_FWHMGauss(sigma_y),
-                      2), ' +/- ', round(_FWHMGauss(sigma_yerr), 3), ' microns'
-    print("=" * 60)
+    print(("=" * 60))
+    print('FWHM (requirement %.1f microns):' % req)
+    print(round(np.sqrt(_FWHMGauss(sigma_x) * _FWHMGauss(sigma_y)), 2), ' +/- ', \
+        round(np.sqrt(_FWHMGauss(sigma_xerr) * _FWHMGauss(sigma_yerr)), 3), ' microns')
+    print('x:', round(_FWHMGauss(sigma_x),
+                      2), ' +/- ', round(_FWHMGauss(sigma_xerr), 3), ' microns')
+    print('y:', round(_FWHMGauss(sigma_y),
+                      2), ' +/- ', round(_FWHMGauss(sigma_yerr), 3), ' microns')
+    print(("=" * 60))
 
 
 def _FWHMGauss(sigma, pixel=12):

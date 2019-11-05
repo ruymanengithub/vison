@@ -155,7 +155,7 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
 
     for ix, CHAN in enumerate(CHANNELS):
 
-        print 'Processing Channel %s...' % CHAN
+        print('Processing Channel %s...' % CHAN)
 
         adus_pickf = os.path.join(respath, '%s_%s_%s_NL_ADUs.pick' % (ROE, Date, CHAN))
 
@@ -262,14 +262,14 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
                          title='ROE NonLin. CHAN=%s' % CHAN,
                          figname=figname2)
 
-    figs['keys'] = figs.keys()
+    figs['keys'] = list(figs.keys())
     figs['jump'] = 26
 
     if debug:
         stop('Press c to finish... and potentially overwrite results')
 
     dddf = OrderedDict()
-    for key in data.keys():
+    for key in list(data.keys()):
         dddf[key] = pd.DataFrame.from_dict(data[key])
 
     cdpRNL = cdp.Tables_CDP()
@@ -333,7 +333,7 @@ if __name__ == '__main__':
              '#                                                       #\n' +\
              '#########################################################\n'
 
-    print header
+    print(header)
 
     run_ROE_LinCalib(inputsfile, incat, datapath=datapath, respath=respath,
                      doExtractFits=doExtractFits,

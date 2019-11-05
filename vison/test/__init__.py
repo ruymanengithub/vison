@@ -1,3 +1,3 @@
 
-from test_ccd import TestCCDClass
+from .test_ccd import TestCCDClass
 __all__ = ['TestCCDClass']

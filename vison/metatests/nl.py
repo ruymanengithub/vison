@@ -381,21 +381,21 @@ class MetaNL(MetaCal):
         ixblock1 = np.where(PT['BLOCK'] == BLOCK1)
         ixblock2 = np.where(PT['BLOCK'] == BLOCK2)
 
-        print('SOURCE STABILITIES: %s/%s, CCD%i' % (BLOCK1, BLOCK2, CCD))
+        print(('SOURCE STABILITIES: %s/%s, CCD%i' % (BLOCK1, BLOCK2, CCD)))
 
         for Q in self.Quads:
 
             qstab1 = PT['STABILITYPC_CCD%s_Quad%s' % (CCD, Q)][ixblock1][0]
             qstab2 = PT['STABILITYPC_CCD%s_Quad%s' % (CCD, Q)][ixblock2][0]
 
-            print('%s/%s, CCD%i-%s: %.3f/%.3f' % (BLOCK1, BLOCK2, CCD, Q, qstab1, qstab2))
+            print(('%s/%s, CCD%i-%s: %.3f/%.3f' % (BLOCK1, BLOCK2, CCD, Q, qstab1, qstab2)))
 
             stab1.append(qstab1)
             stab2.append(qstab2)
 
-        print('AV. %s/%s, CCD%i: %.3f/%.3f' % (BLOCK1, BLOCK2, CCD,
+        print(('AV. %s/%s, CCD%i: %.3f/%.3f' % (BLOCK1, BLOCK2, CCD,
                                                np.mean(stab1),
-                                               np.mean(stab2)))
+                                               np.mean(stab2))))
 
     def _get_compare_NLs_CCD(self, BLOCK1, BLOCK2, CCD):
         """ """

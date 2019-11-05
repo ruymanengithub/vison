@@ -27,11 +27,11 @@ from vison.pipe.task import HKKeys
 from vison.support import context, utils
 from vison.datamodel import scriptic as sc
 from vison.datamodel import inputs
-from InjTask import InjTask
+from .InjTask import InjTask
 from vison.image import performance
-import CH02aux
+from . import CH02aux
 from vison.inject import lib as ilib
-from InjTask import InjTask, _get_CCDhalf
+from .InjTask import InjTask, _get_CCDhalf
 # END IMPORT
 
 isthere = os.path.exists
@@ -169,7 +169,7 @@ class CHINJ02(InjTask):
                                          IG2_T=IG2, IG2_B=IG2,
                                          id_dly=id_delays[1], toi_ch=toi_chinj)
 
-        Ncols = len(CHINJ02_sdict.keys())
+        Ncols = len(list(CHINJ02_sdict.keys()))
         CHINJ02_sdict['Ncols'] = Ncols
 
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])

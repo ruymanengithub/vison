@@ -26,7 +26,7 @@ import multiprocessing as mp
 from vison.support.report import Report
 from vison.support import vistime
 from vison.support import files
-import lib as pilib
+from . import lib as pilib
 from vison.support import context
 #import task_lib as tlib
 from vison.image import performance
@@ -76,8 +76,8 @@ def prepare_one_image(q, dd, ogse, inputs, iObs,
         infits = os.path.join(dpath, '%s.fits' %
                               dd.mx['File_name'][iObs, jCCD])
 
-        print 'Test %s, OBS %i/%i: preparing %s...' % (
-            inputs['test'], iObs + 1, nObs, infits)
+        print('Test %s, OBS %i/%i: preparing %s...' % (
+            inputs['test'], iObs + 1, nObs, infits))
 
         # converting the FITS file into a CCD Object
         ccdobj = ccd.CCD(infits)
@@ -121,8 +121,8 @@ def prepare_one_image(q, dd, ogse, inputs, iObs,
 class Task(object):
     """ """
 
-    from task_lib import check_HK, filterexposures, addHKPlotsMatrix, add_labels_to_explog
-    from task_lib import save_CDP, create_mockexplog, get_checkstats_T, check_metrics_T
+    from .task_lib import check_HK, filterexposures, addHKPlotsMatrix, add_labels_to_explog
+    from .task_lib import save_CDP, create_mockexplog, get_checkstats_T, check_metrics_T
 
     def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
@@ -319,7 +319,7 @@ class Task(object):
                     'find %s -maxdepth 1 -type f -exec rm -f {} \;' % resultspath)
 
             # Creating/clearing sub-resultspath
-            for _, subpath in self.inputs['subpaths'].iteritems():
+            for _, subpath in self.inputs['subpaths'].items():
                 if not isthere(subpath):
                     os.system('mkdir %s' % subpath)
                 else:
@@ -416,7 +416,7 @@ class Task(object):
         if self.log is not None and not self.debug:
             self.log.info(msg_trbk)
         else:
-            print msg_trbk
+            print(msg_trbk)
 
     def addHK_2_dd(self):
         """ """
@@ -487,7 +487,7 @@ class Task(object):
         # Adding Time Axis
 
         explog['time'] = np.array(
-            map(vistime.get_dtobj, explog['date'])).copy()
+            list(map(vistime.get_dtobj, explog['date']))).copy()
 
         # Building DataDict
 
@@ -554,7 +554,7 @@ class Task(object):
 
             figobj = copy.deepcopy(self.figdict[figkey][0]())
         except BaseException:
-            print 'DEBUGGING IN Task.doPlot...'
+            print('DEBUGGING IN Task.doPlot...')
             msg_trbk = traceback.format_exc()
             self.log.info(msg_trbk)
             self.log.info('%s, %s' %
@@ -627,7 +627,7 @@ class Task(object):
 
         def traverse_tree(dictionary, isOK):
 
-            for key, value in dictionary.items():
+            for key, value in list(dictionary.items()):
                 #print 'Upper: %s' % key
                 if isinstance(value, (dict, OrderedDict)):
                     #print key,value
@@ -683,7 +683,7 @@ class Task(object):
 
     def check_stat_perCCDandCol(self, arr, lims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
-        colnames = lims[CCDs[0]].keys()
+        colnames = list(lims[CCDs[0]].keys())
         compliance = complimod.ComplianceMX_CCDCol(colnames,
                                                    indexer=self.dd.mx['label'][:, 0],
                                                    CCDs=CCDs, lims=lims.copy())
@@ -693,7 +693,7 @@ class Task(object):
     def check_stat_perCCDQandCol(self, arr, lims, CCDs=['CCD1', 'CCD2', 'CCD3']):
         """ """
         Qs = ['E', 'F', 'G', 'H']
-        colnames = lims[CCDs[0]][Qs[0]].keys()
+        colnames = list(lims[CCDs[0]][Qs[0]].keys())
 
         compliance = complimod.ComplianceMX_CCDQCol(colnames,
                                                     indexer=self.dd.mx['label'][:, 0],
@@ -747,13 +747,13 @@ class Task(object):
                                        doReport=self.report is not None,
                                        doLog=self.log is not None)
         HK_perf_ok = np.all(
-            [value for key, value in report_HK_perf.iteritems()])
+            [value for key, value in report_HK_perf.items()])
 
         report_HK_safe = self.check_HK(HKKeys, reference='abs', limits='S', tag='Safe',
                                        doReport=self.report is not None,
                                        doLog=self.log is not None)
         HK_safe_ok = np.all(
-            [value for ke, value in report_HK_safe.iteritems()])
+            [value for ke, value in report_HK_safe.items()])
 
         if (not HK_perf_ok) or (not HK_safe_ok):
             self.dd.flags.add('HK_OOL')
@@ -933,7 +933,7 @@ class Task(object):
 
         names = ['Parameter', 'Value']
 
-        keys = self.inputs.manifesto.keys()
+        keys = list(self.inputs.manifesto.keys())
         values = []
 
         for key in keys:
@@ -975,7 +975,7 @@ class Task(object):
             self.name, self.inputs['test'], self.inputs['datapath'])
         #ncaption = st.replace(caption,'_','\\_')
 
-        names = tDict.keys()
+        names = list(tDict.keys())
 
         self.report.add_Table(tDict, names=names,
                               caption=caption, longtable=True)

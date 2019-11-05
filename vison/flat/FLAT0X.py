@@ -32,7 +32,7 @@ from vison.support import context
 from vison.pipe import lib as pilib
 from vison.point import lib as polib
 from vison.datamodel import scriptic as sc
-import FlatFielding as FFing
+from . import FlatFielding as FFing
 #from vison.support.report import Report
 #from vison.support import files
 from vison.datamodel import ccd
@@ -44,7 +44,7 @@ from vison.datamodel import generator
 from vison.flat.FlatTask import FlatTask
 from vison.image import performance
 from vison.datamodel import inputs
-import FLAT0Xaux as FL0Xaux
+from . import FLAT0Xaux as FL0Xaux
 from vison.support import utils
 # END IMPORT
 
@@ -176,7 +176,7 @@ class FLAT0X(FlatTask):
                          (i + 1,)] = dict(frames=frames[i], exptime=exptimes[i], comments='EXP%.1e' %
                                           exptime)  # ,comments=flags[i])
 
-        Ncols = len(FLAT0X_sdict.keys())
+        Ncols = len(list(FLAT0X_sdict.keys()))
         FLAT0X_sdict['Ncols'] = Ncols
 
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
@@ -401,7 +401,7 @@ class FLAT0X(FlatTask):
                     self.figdict[figkey][1]['meta']['suptitle'], 'PLACEHOLDER', ulabel)
 
                 self.figdict[figkey][1]['data'] = profs_1D[dire][ulabel].copy()
-                labelkeys = profs_1D[dire][ulabel]['CCD1'][Q]['x'].keys()
+                labelkeys = list(profs_1D[dire][ulabel]['CCD1'][Q]['x'].keys())
                 self.figdict[figkey][1]['data']['labelkeys'] = labelkeys
 
         figkeys = []

@@ -298,7 +298,7 @@ class Model2D():
         pilum = p(xp, yp)
 
         self.imgmodel = pilum.copy()
-        self.polycoeffs = dict(zip(p.param_names, p.parameters))
+        self.polycoeffs = dict(list(zip(p.param_names, p.parameters)))
         self.polyfunc = p
 
         return None

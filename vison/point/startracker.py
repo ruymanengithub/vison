@@ -193,8 +193,8 @@ class StarTracker(object):
             Xs = Xs[sel].copy()
             Ys = Ys[sel].copy()
 
-        source = zip(Xs, Ys)
-        target = zip(Xt, Yt)
+        source = list(zip(Xs, Ys))
+        target = list(zip(Xt, Yt))
 
         source = sort_coordinate_pairs(source)
         target = sort_coordinate_pairs(target)
@@ -229,7 +229,7 @@ class StarTracker(object):
     def _apply_transform(self, X, Y, similaritymx):
 
         def f(coo): return np.dot(similaritymx, coo)
-        Xp, Yp, shouldbe1s = zip(*map(f, zip(X, Y, np.ones_like(X))))
+        Xp, Yp, shouldbe1s = list(zip(*list(map(f, list(zip(X, Y, np.ones_like(X)))))))
         Xp = np.array(Xp)
         Yp = np.array(Yp)
 

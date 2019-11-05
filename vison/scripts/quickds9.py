@@ -19,7 +19,7 @@ from glob import glob
 try:
     import pyds9
 except ImportError:
-    print 'pyds9 not installed in the system. Will not be possible to liaise with SAO-ds9.'
+    print('pyds9 not installed in the system. Will not be possible to liaise with SAO-ds9.')
 
 
 isthere = os.path.exists
@@ -72,12 +72,12 @@ if __name__ == '__main__':
             FITS = glob(tantFITS)[0]
             FITSlist.append(FITS)
         except IndexError as IOError:
-            print("Image %s not found!" % tantFITS)
+            print(("Image %s not found!" % tantFITS))
 
     try:
         d = pyds9.DS9(target=ds9target)
     except NameError:
-        print "pyds9 not installed, can't open DS9!"
+        print("pyds9 not installed, can't open DS9!")
         sys.exit()
 
     nFITS = len(FITSlist)

@@ -254,14 +254,14 @@ def update_structdict(sdict, commvalues, diffvalues):
 
     Ncols = sdict['Ncols']
 
-    Ndiff = len(diffvalues.keys())
+    Ndiff = len(list(diffvalues.keys()))
 
     for ic in range(1, Ncols + 1):
         ickey = 'col%03i' % ic
 
-        for comkey in commvalues.keys():
+        for comkey in list(commvalues.keys()):
 
-            if comkey not in sdict[ickey].keys():
+            if comkey not in list(sdict[ickey].keys()):
                 sdict[ickey][comkey] = commvalues[comkey]
 
         if Ndiff > 0:
@@ -377,7 +377,7 @@ class Script(object):
         structure['Ncols'] = Ncols
 
         for i in range(1, Ncols + 1):
-            structure['col%03i' % i] = dict(zip(keys, self.cargo[i]))
+            structure['col%03i' % i] = dict(list(zip(keys, self.cargo[i])))
 
         return structure
 
@@ -417,7 +417,7 @@ class Script(object):
                 rawvals = [ixc] + df[ixc].tolist()
                 vals = []
                 for item in rawvals:
-                    if isinstance(item, unicode):
+                    if isinstance(item, str):
                         vals.append(string.strip(str(item)))
                     else:
                         vals.append(item)

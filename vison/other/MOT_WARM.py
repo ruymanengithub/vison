@@ -269,7 +269,7 @@ class MOT_WARM(DarkTask):
                                             source='point',
                                             comments='PNT')
 
-        Ncols = len(MW_sdict.keys())
+        Ncols = len(list(MW_sdict.keys()))
         MW_sdict['Ncols'] = Ncols
 
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])

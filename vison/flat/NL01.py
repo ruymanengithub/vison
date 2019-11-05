@@ -42,11 +42,11 @@ from vison.datamodel import cdp
 from vison.datamodel import scriptic as sc
 from vison.support import files
 #from vison.pipe.task import Task
-from FlatTask import FlatTask
+from .FlatTask import FlatTask
 from vison.datamodel import inputs, core
 from vison.support import utils
-import NL01aux
-import nl as nllib
+from . import NL01aux
+from . import nl as nllib
 from vison import ogse_profiles
 
 from pylab import plot, show
@@ -196,7 +196,7 @@ class NL01(FlatTask):
             NL01_sdict[colkeySta] = dict(
                 frames=1, exptime=exptinter, comments='STAB')
 
-        Ncols = len(NL01_sdict.keys())
+        Ncols = len(list(NL01_sdict.keys()))
         NL01_sdict['Ncols'] = Ncols
 
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
@@ -340,7 +340,7 @@ class NL01(FlatTask):
 
             for iObs, ObsID in enumerate(ObsIDs):
 
-                print 'Extracting from OBSID %i/%i' % (iObs + 1, nObs)
+                print('Extracting from OBSID %i/%i' % (iObs + 1, nObs))
 
                 for jCCD, CCDk in enumerate(CCDs):
 

@@ -13,7 +13,7 @@ Created on Thu Apr 19 15:55:48 2018
 # IMPORT STUFF
 from pdb import set_trace as stop
 import os
-import Tkinter as tk
+import tkinter as tk
 import pprint
 import string as st
 # END IMPORT

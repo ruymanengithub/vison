@@ -129,7 +129,7 @@ class DarkCDP(ccdmod.CCD, CDPClass):
         if meta is None:
             meta = dict()
 
-        print 'TODO: darkaux.DarkCDP needs improvemenents: masking'
+        print('TODO: darkaux.DarkCDP needs improvemenents: masking')
 
         if fitsfile != '':
             super(DarkCDP, self).__init__(infits=fitsfile,
@@ -139,11 +139,11 @@ class DarkCDP(ccdmod.CCD, CDPClass):
             super(DarkCDP, self).__init__(infits=None, withpover=withpover)
 
             assert isinstance(data, dict)
-            assert 'Dark' in data.keys()
-            assert 'eDark' in data.keys()
+            assert 'Dark' in list(data.keys())
+            assert 'eDark' in list(data.keys())
 
             assert isinstance(meta, dict)
-            assert 'NCOMB' in meta.keys()
+            assert 'NCOMB' in list(meta.keys())
             self.ncomb = meta['NCOMB']
 
             self.add_extension(data=None, header=None,
@@ -151,7 +151,7 @@ class DarkCDP(ccdmod.CCD, CDPClass):
             self.add_extension(data=data['Dark'].copy(), label='DARK')
             self.add_extension(data=data['eDark'].copy(), label='EDARK')
 
-            if 'Mask' in data.keys():
+            if 'Mask' in list(data.keys()):
                 self.add_extension(data=data['Mask'].copy(), label='MASK')
 
     def parse_fits(self,):

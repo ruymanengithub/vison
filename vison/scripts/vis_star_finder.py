@@ -45,9 +45,9 @@ def write_ID_chart(filename, Quads, Starnames):
     hdr = '# ID NUMBER'
 
     with open(filename, 'wa') as f:
-        print >> f, hdr
+        print(hdr, file=f)
         for item in IDs:
-            print >> f, item
+            print(item, file=f)
     f.close()
 
 
@@ -187,10 +187,10 @@ def run_starfinder(FITS, tag=''):
         proc1 = subprocess.Popen(["nedit", IDfile])
         proc2 = subprocess.Popen(["nedit", SExCat_dat_name])
 
-        print 'Fill in the identification chart: %s\n' % IDfile
-        print 'Use the SExCat %s and the image & segmentation map on DS9\n' % SExCat_dat_name
+        print('Fill in the identification chart: %s\n' % IDfile)
+        print('Use the SExCat %s and the image & segmentation map on DS9\n' % SExCat_dat_name)
 
-        holdon = raw_input('Press any key when finished!\n ')
+        holdon = input('Press any key when finished!\n ')
 
         IDs_dict = load_ID_chart(IDfile)
 
@@ -220,7 +220,7 @@ def run_starfinder(FITS, tag=''):
 
         os.system('rm %s' % idds9regsf.name)
 
-        whileender = raw_input('Are you satisfied with identifications? Y/n ')
+        whileender = input('Are you satisfied with identifications? Y/n ')
         if whileender.upper() == 'Y':
             fahrtig = True
 
@@ -243,7 +243,7 @@ def run_starfinder(FITS, tag=''):
     stracker.load_Patt_fromdict(pattern_phys_table)
 
     if os.path.exists(Pattfile):
-        hold = raw_input(
+        hold = input(
             'Beware, you are about to overwrite "%s"... any key to proceed. ' % Pattfile)
 
     stracker.save_Patt_tofile(Pattfile, overwrite=True)

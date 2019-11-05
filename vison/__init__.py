@@ -4,14 +4,14 @@ from pdb import set_trace as stop
 import matplotlib
 matplotlib.use("Agg")
 
-from _version import get_versions
+from ._version import get_versions
 __version__ = get_versions()['version']
 del get_versions
 
 
-from flat import FlatFielding
-from pipe.master import Pipe
-from support.report import Report
+from .flat import FlatFielding
+from .pipe.master import Pipe
+from .support.report import Report
 #from eyegore.eyegore import Eyegore
 
 

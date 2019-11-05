@@ -119,7 +119,7 @@ def get_cov_maps(ccdobjList, Npix=4, vstart=0, vend=2066, doTest=False, debug=Fa
 
         for iP in range(Npairs):
 
-            print 'Processing pair %i/%i' % (iP + 1, Npairs)
+            print('Processing pair %i/%i' % (iP + 1, Npairs))
 
             ccd1 = ccdobjList[iP * 2]
             ccd2 = ccdobjList[iP * 2 + 1]

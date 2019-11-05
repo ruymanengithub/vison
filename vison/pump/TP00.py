@@ -26,7 +26,7 @@ from vison.point import lib as polib
 from vison.datamodel import ccd
 from vison.datamodel import scriptic as sc
 from vison.pipe.task import Task
-from PumpTask import PumpTask
+from .PumpTask import PumpTask
 from vison.image import performance
 from vison.datamodel import inputs
 # END IMPORT
@@ -156,7 +156,7 @@ class TP00(PumpTask):
 
                     colcounter += 1
 
-        Ncols = len(TP00_sdict.keys())
+        Ncols = len(list(TP00_sdict.keys()))
         TP00_sdict['Ncols'] = Ncols
 
         commvalues = deepcopy(sc.script_dictionary[elvis]['defaults'])

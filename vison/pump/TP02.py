@@ -30,12 +30,12 @@ from vison.point import lib as polib
 from vison.datamodel import ccd
 from vison.datamodel import scriptic as sc
 #from vison.pipe.task import Task
-from PumpTask import PumpTask
+from .PumpTask import PumpTask
 from vison.image import performance
 from vison.datamodel import inputs as inputsmod
 from vison.support.files import cPickleRead
-import TP02aux
-import tptools
+from . import TP02aux
+from . import tptools
 # END IMPORT
 
 isthere = os.path.exists
@@ -183,7 +183,7 @@ class TP02(PumpTask):
 
                 colcounter += 1
 
-        Ncols = len(TP02_sdict.keys())
+        Ncols = len(list(TP02_sdict.keys()))
         TP02_sdict['Ncols'] = Ncols
 
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
@@ -381,11 +381,11 @@ class TP02(PumpTask):
 
                 for id_dly in id_dlys:
 
-                    print('idl_dly = %s' % id_dly)
+                    print(('idl_dly = %s' % id_dly))
 
                     for jCCD, CCDk in enumerate(CCDs):
 
-                        print('CCD=%s' % CCDk)
+                        print(('CCD=%s' % CCDk))
 
                         ixsel = np.where((self.dd.mx['id_dly'][:, 0] == id_dly) & (
                             self.dd.mx['s_tpump'][:, 0] != 0))
@@ -413,7 +413,7 @@ class TP02(PumpTask):
 
                             imapccdobj = ccd.CCD(os.path.join(productspath, imapf))
 
-                            print('OBSID=%s, %s' % (ObsID, imapf))
+                            print(('OBSID=%s, %s' % (ObsID, imapf)))
 
                             for iQ, Q in enumerate(Quads):
 
@@ -567,7 +567,7 @@ class TP02(PumpTask):
 
                     for modkey in modkeys:
 
-                        print('%s%s, %s...' % (CCDk, Q, modkey))
+                        print(('%s%s, %s...' % (CCDk, Q, modkey)))
 
                         kqkmerged = tptools.merge_stp_dipole_cats_bypos(
                             rawcatCQ[modkey].copy(),
@@ -595,7 +595,7 @@ class TP02(PumpTask):
         for CCDk in CCDs:
 
             kmergedata = mergecat[CCDk].copy()
-            colnames = kmergedata[allQuads[0]][modkeys[0]].keys().tolist()
+            colnames = list(kmergedata[allQuads[0]][modkeys[0]].keys()).tolist()
 
             for Q in allQuads:
                 for modkey in modkeys:
@@ -636,9 +636,9 @@ class TP02(PumpTask):
                     sumtable[CCDk][Q][modkey] = [len(Pc[ixnonan]), avtau]
 
         reform = {(level1_key, level2_key, level3_key): value
-                  for level1_key, level2_dict in sumtable.items()
-                  for level2_key, level3_dict in level2_dict.items()
-                  for level3_key, value in level3_dict.items()}
+                  for level1_key, level2_dict in list(sumtable.items())
+                  for level2_key, level3_dict in list(level2_dict.items())
+                  for level3_key, value in list(level3_dict.items())}
 
         mergeL1df = pd.DataFrame(reform).T
         ncolnames = dict()
@@ -677,7 +677,7 @@ class TP02(PumpTask):
 
             pltfig = self.figdict['TP02meta_%s' % modkey]
 
-            pldata = OrderedDict(labelkeys=polarities.keys())
+            pldata = OrderedDict(labelkeys=list(polarities.keys()))
 
             for CCDk in CCDs:
                 pldata[CCDk] = OrderedDict()
@@ -690,7 +690,7 @@ class TP02(PumpTask):
 
                     S = mergecat[CCDk][Q][modkey][:, ixcolS].copy()
 
-                    for pkey in polarities.keys():
+                    for pkey in list(polarities.keys()):
                         ixselS = np.where(S == polarities[pkey])
 
                         if len(ixselS[0]) > 0:

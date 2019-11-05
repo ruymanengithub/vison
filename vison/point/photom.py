@@ -61,7 +61,7 @@ class Photometer(SpotBase):
 
         self._gen_rad_mask()
 
-        for key, value in self.phsettings.iteritems():
+        for key, value in self.phsettings.items():
             if self.log is not None:
                 self.log.info('%s = %s' % (key, value))
 

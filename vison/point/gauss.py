@@ -60,7 +60,7 @@ class Gaussmeter(SpotBase):
 
         self.gasettings.update(kwargs)
 
-        for key, value in self.gasettings.iteritems():
+        for key, value in self.gasettings.items():
             if self.log is not None:
                 self.log.info('%s = %s' % (key, value))
 
@@ -87,7 +87,7 @@ class Gaussmeter(SpotBase):
             if self.log is not None:
                 self.log.info(Emsg)
             else:
-                print Emsg
+                print(Emsg)
             eparams = np.zeros_like(params) + np.nan
 
         return params, eparams

@@ -45,7 +45,7 @@ def simadd_points(ccdobj, flux, fwhm, CCDID='CCD1', dx=0, dy=0, extension=-1):
         quaddata = ccdobj.get_quad(
             Q, canonical=False, extension=extension).copy()
 
-        point_keys = Point_CooNom[CCDID][Q].keys()
+        point_keys = list(Point_CooNom[CCDID][Q].keys())
 
         B = ccdobj.QuadBound[Q]
 

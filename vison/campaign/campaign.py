@@ -35,7 +35,7 @@ from vison.support import utils
 def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                            CHAMBER=None, purpose='scripts'):
     """Now supporting test repetitions."""
-    taskslist = toGen.keys()
+    taskslist = list(toGen.keys())
     test_sequence = OrderedDict()
     for taskname in taskslist:
         if not toGen[taskname]:
@@ -48,10 +48,10 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                                       elvis, CHAMBER, purpose)
 
         if iteration is not None:
-            for key in ans.keys():
+            for key in list(ans.keys()):
                 test_sequence['%s.%i' % (key, iteration)] = copy.deepcopy(ans[key])
         else:
-            for key in ans.keys():
+            for key in list(ans.keys()):
                 test_sequence[key] = copy.deepcopy(ans[key])
 
     return test_sequence

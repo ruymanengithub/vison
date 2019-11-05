@@ -116,7 +116,7 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
 
     Ncols = structure['Ncols']
 
-    elogkeys = explog.keys()
+    elogkeys = list(explog.keys())
 
     dummyrowdict = dict([(key, None) for key in elogkeys])
 
@@ -248,10 +248,10 @@ def addHK(dd, HKKeys, elvis=context.elvis):
         if len(HKs) == 1:
             HKlist.append(HKs[0])
         elif len(HKs) > 1:
-            print('More than one HK file for ObsID %i' % ObsID)
+            print(('More than one HK file for ObsID %i' % ObsID))
             print(HKs)
         elif len(HKs) == 0:
-            print('HK file for ObsID %i not found' % ObsID)
+            print(('HK file for ObsID %i not found' % ObsID))
 
     obsids, dtobjs, tdeltasec, readHKKeys, HKdata = HKtools.parseHKfiles(
         HKlist, elvis=elvis)
@@ -344,7 +344,7 @@ def broadcast_todo_flags(inputdict, docheck=False, dotest=False, doreport=False)
 
     for task in inputdict['tasks']:
         tinputs = inputdict[task]
-        if 'lock' in tinputs['todo_flags'].keys() and docheck:
+        if 'lock' in list(tinputs['todo_flags'].keys()) and docheck:
             tinputs['todo_flags']['lock'] = True
 
     return inputdict

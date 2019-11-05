@@ -33,7 +33,7 @@ matplotlib.rcParams['ytick.major.size'] = 5
 matplotlib.rcParams['image.interpolation'] = 'none'
 import matplotlib.pyplot as plt
 
-import Wave_bayes as Wbayes
+from . import Wave_bayes as Wbayes
 
 # END IMPORT
 

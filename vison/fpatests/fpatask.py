@@ -197,7 +197,7 @@ class FpaTask(task.Task):
                     'find %s -maxdepth 1 -type f -exec rm -f {} \;' % resultspath)
 
             # Creating/clearing sub-resultspath
-            for _, subpath in self.inputs['subpaths'].iteritems():
+            for _, subpath in self.inputs['subpaths'].items():
                 if not os.path.exists(subpath):
                     os.system('mkdir %s' % subpath)
                 else:
@@ -292,7 +292,7 @@ class FpaTask(task.Task):
         if self.log is not None and not self.debug:
             self.log.info(msg_trbk)
         else:
-            print msg_trbk
+            print(msg_trbk)
 
     def ingest_data(self):
         """ """
@@ -345,7 +345,7 @@ class FpaTask(task.Task):
         # Adding Time Axis
 
         explog['time'] = np.array(
-            map(vistime.get_dtobj, explog['date'])).copy()
+            list(map(vistime.get_dtobj, explog['date']))).copy()
 
         # Building DataDict
 

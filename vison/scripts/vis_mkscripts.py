@@ -57,15 +57,15 @@ def write_summary_astextfile(summarylines, inventoryfile, meta):
 
     with open(inventoryfile, 'w') as f1:
 
-        print >> f1, 'Scripts written on %s' % fulldatetag
-        print >> f1, 'checksumf: %s' % checksumf
-        print >> f1, 'vison version: %s\n' % versiontag
+        print('Scripts written on %s' % fulldatetag, file=f1)
+        print('checksumf: %s' % checksumf, file=f1)
+        print('vison version: %s\n' % versiontag, file=f1)
 
         for item in summarylines:
-            print >> f1, item
+            print(item, file=f1)
 
-        print >> f1, '\n %i Frames Total' % Nframes
-        print >> f1, '\n %.2f Minutes Total' % duration
+        print('\n %i Frames Total' % Nframes, file=f1)
+        print('\n %.2f Minutes Total' % duration, file=f1)
 
 
 def write_summary_asexcel(summarydict, excelf, meta):
@@ -105,7 +105,7 @@ def scwriter(toWrite, test_generator, outpath, equipment, elvis=context.elvis, C
     Nframes = 0
     duration = 0
 
-    print '\nWRITING SCRIPTS...'
+    print('\nWRITING SCRIPTS...')
 
     summarylines = []
     summarydict = OrderedDict()
@@ -114,8 +114,8 @@ def scwriter(toWrite, test_generator, outpath, equipment, elvis=context.elvis, C
     summarydict['Nframes'] = []
     summarydict['Duration_min'] = []
 
-    for test in test_sequence.keys():
-        print '%s...' % test
+    for test in list(test_sequence.keys()):
+        print('%s...' % test)
         testobj = copy.deepcopy(test_sequence[test])
         try:
             structtest = testobj.build_scriptdict(elvis=elvis)
@@ -172,7 +172,7 @@ def scwriter(toWrite, test_generator, outpath, equipment, elvis=context.elvis, C
 
     with open(os.path.join(outpath, checksumf), 'w') as f2:
         for item in checksums:
-            print >> f2, '%-60s\t%s' % item
+            print('%-60s\t%s' % item, file=f2)
 
 
 if __name__ == '__main__':

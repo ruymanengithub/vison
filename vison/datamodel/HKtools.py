@@ -432,7 +432,7 @@ HKlims['6.3.0'] = dict(P={'CCD1_OD_T': ['R', -0.2, +0.2], 'CCD2_OD_T': ['R', -0.
 
 HKlims['6.5.X'] = dict()
 HKlims['6.5.X']['P'] = HKlims['6.3.0']['P']
-ignore = map(HKlims['6.5.X']['P'].pop,
+ignore = list(map(HKlims['6.5.X']['P'].pop,
              ['stTMRErrFlg',
               'hkTMRErrFlg',
               'spwTmTOFlg',
@@ -446,7 +446,7 @@ ignore = map(HKlims['6.5.X']['P'].pop,
               'stRamErr',
               'hkRamErr',
               'ADC_BSY_ERR_CNT',
-              'SPW_STATUS_REG'])
+              'SPW_STATUS_REG']))
 
 HKlims['6.5.X']['P'].update(
     {
@@ -471,7 +471,7 @@ HKlims['6.5.X']['P'].update(
                                                                                 'I', 0]})
 
 HKlims['6.5.X']['S'] = HKlims['6.3.0']['S']
-ignore = map(HKlims['6.5.X']['S'].pop,
+ignore = list(map(HKlims['6.5.X']['S'].pop,
              ['stTMRErrFlg',
               'hkTMRErrFlg',
               'spwTmTOFlg',
@@ -485,7 +485,7 @@ ignore = map(HKlims['6.5.X']['S'].pop,
               'stRamErr',
               'hkRamErr',
               'ADC_BSY_ERR_CNT',
-              'SPW_STATUS_REG'])
+              'SPW_STATUS_REG']))
 
 HKlims['6.5.X']['S'].update(
     {
@@ -511,12 +511,12 @@ HKlims['6.5.X']['S'].update(
 
 HKlims['7.2.X'] = dict()
 HKlims['7.2.X']['P'] = HKlims['6.5.X']['P'].copy()
-ignore = map(HKlims['7.2.X']['P'].pop, ['fpgaSpwErr'])
+ignore = list(map(HKlims['7.2.X']['P'].pop, ['fpgaSpwErr']))
 HKlims['7.2.X']['P'].update({'dacExeErr': ['I', 0], 'spwTmRspErrFlg': ['I', 0], 'spwTcPktErrFlg': [
                             'I', 0], 'adcBsyErrFlg': ['I', 0], 'CDPUClkLost': ['I', 0]})
 
 HKlims['7.2.X']['S'] = HKlims['6.5.X']['S'].copy()
-ignore = map(HKlims['7.2.X']['S'].pop, ['fpgaSpwErr'])
+ignore = list(map(HKlims['7.2.X']['S'].pop, ['fpgaSpwErr']))
 HKlims['7.2.X']['S'].update({'dacExeErr': ['I', 0], 'spwTmRspErrFlg': ['I', 0], 'spwTcPktErrFlg': [
                             'I', 0], 'adcBsyErrFlg': ['I', 0], 'CDPUClkLost': ['I', 0]})
 
@@ -524,7 +524,7 @@ HKlims['7.5.X'] = dict()
 
 for q in ['P', 'S']:
     HKlims['7.5.X'][q] = HKlims['7.2.X'][q].copy()
-    ignore = map(HKlims['7.2.X'][q].pop, ['CDPUClkLost', 'CDPUClkSt'])
+    ignore = list(map(HKlims['7.2.X'][q].pop, ['CDPUClkLost', 'CDPUClkSt']))
     HKlims['7.5.X'][q].update(
         dict(
             CDPUClkSw=[
@@ -616,7 +616,7 @@ HKcorr['6.3.0'] = {
 HKcorr['6.5.X'] = HKcorr['6.3.0'].copy()
 
 HKcorr['7.2.X'] = HKcorr['6.5.X'].copy()
-ignore = map(HKcorr['7.2.X'].pop, ['fpgaSpwErr'])
+ignore = list(map(HKcorr['7.2.X'].pop, ['fpgaSpwErr']))
 HKcorr['7.2.X'].update({'dacExeErr': None,
                         'spwTmRspErrFlg': None,
                         'spwTcPktErrFlg': None,
@@ -624,7 +624,7 @@ HKcorr['7.2.X'].update({'dacExeErr': None,
                         'CDPUClkLost': None})
 
 HKcorr['7.5.X'] = HKcorr['7.2.X'].copy()
-ignore = map(HKcorr['7.2.X'].pop, ['CDPUClkLost', 'CDPUClkSt'])
+ignore = list(map(HKcorr['7.2.X'].pop, ['CDPUClkLost', 'CDPUClkSt']))
 HKcorr['7.5.X'].update(dict(CDPUClkSw=None, pixelToErr=None, spwStatus=None, spwTmPtypeFlag=None,
                             TwoCmdsErr=None))
 
@@ -688,7 +688,7 @@ def loadHK_QFMsingle(filename, elvis=context.elvis, validate=False, safe=False):
 
     if validate:
         expectedkeys = allHK_keys[elvis]
-        assert table.keys() == expectedkeys, \
+        assert list(table.keys()) == expectedkeys, \
             'HK keys in %s not mathing expectation for ELVIS=%s' % \
                          (filename, elvis)
 
@@ -787,7 +787,7 @@ def synthHK(HK):
 
     synthHKdict = {}
 
-    for key in HK.keys():
+    for key in list(HK.keys()):
         values = HK[key].data.copy()
         try:
             mean = values.mean()

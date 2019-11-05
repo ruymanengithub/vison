@@ -46,10 +46,10 @@ from vison.datamodel import core
 #from vison.pipe import lib as pilib
 from vison.ogse import ogse as ogsemod
 from vison.datamodel import scriptic as sc
-import ptc as ptclib
-from FlatTask import FlatTask
+from . import ptc as ptclib
+from .FlatTask import FlatTask
 from vison.datamodel import inputs
-import PTC0Xaux
+from . import PTC0Xaux
 from vison.support import utils
 from vison.datamodel import cdp
 from vison.support.files import cPickleRead
@@ -298,7 +298,7 @@ class PTC0X(FlatTask):
 
             PTC0X_sdict[colkey] = dict(frames=ifra, exptime=iexp)
 
-        Ncols = len(PTC0X_sdict.keys())
+        Ncols = len(list(PTC0X_sdict.keys()))
         PTC0X_sdict['Ncols'] = Ncols
 
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])

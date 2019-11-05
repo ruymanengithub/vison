@@ -165,7 +165,7 @@ class FlatField(ccdmodule.CCD, CDPClass):
         self.vison = __version__
 
         # super(FlatField,self).__init__(infits=None)
-        print 'TODO: FlatFielding.FlatField needs improvemenents: masking'
+        print('TODO: FlatFielding.FlatField needs improvemenents: masking')
 
         if fitsfile != '':
             super(FlatField, self).__init__(infits=fitsfile,
@@ -175,13 +175,13 @@ class FlatField(ccdmodule.CCD, CDPClass):
             super(FlatField, self).__init__(infits=None, withpover=withpover)
 
             assert isinstance(data, dict)
-            assert 'Flat' in data.keys()
-            assert 'eFlat' in data.keys()
+            assert 'Flat' in list(data.keys())
+            assert 'eFlat' in list(data.keys())
 
             assert isinstance(meta, dict)
-            assert 'NCOMB' in meta.keys()
+            assert 'NCOMB' in list(meta.keys())
             self.ncomb = meta['NCOMB']
-            assert 'WAVEL' in meta.keys()
+            assert 'WAVEL' in list(meta.keys())
             self.wavelength = meta['WAVEL']
 
             self.add_extension(data=None, header=None,
@@ -189,7 +189,7 @@ class FlatField(ccdmodule.CCD, CDPClass):
             self.add_extension(data=data['Flat'].copy(), label='FLAT')
             self.add_extension(data=data['eFlat'].copy(), label='EFLAT')
 
-            if 'Mask' in data.keys():
+            if 'Mask' in list(data.keys()):
                 self.add_extension(data=data['Mask'].copy(), label='MASK')
 
     def parse_fits(self,):

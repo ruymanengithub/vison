@@ -27,7 +27,7 @@ color_codes = dict(gray='B2A8A6',
                    green='08F510')
 
 color_fills = dict()
-for colkey in color_codes.keys():
+for colkey in list(color_codes.keys()):
     _color = oxl.styles.colors.Color(rgb=color_codes[colkey])
     color_fills[colkey] = oxl.styles.fills.PatternFill(
         patternType='solid', fgColor=_color)
@@ -72,7 +72,7 @@ class ReportXL(object):
         """ """
 
         if keys is None:
-            keys = indict.keys()
+            keys = list(indict.keys())
 
         printdict = OrderedDict()
         for key in keys:
@@ -125,7 +125,7 @@ def test0():
 
     ws2.add_image(img, 'A1')
 
-    print (wb.sheetnames)
+    print((wb.sheetnames))
 
     wb.save('Test0.xlsx')
 

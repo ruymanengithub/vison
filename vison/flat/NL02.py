@@ -45,12 +45,12 @@ from vison.datamodel import cdp
 from vison.datamodel import scriptic as sc
 from vison.support import files
 #from vison.pipe.task import Task
-from FlatTask import FlatTask
+from .FlatTask import FlatTask
 from vison.datamodel import inputs, core
 from vison.support import utils
 from vison.flat import NL01
 from vison.flat import NL01aux
-import nl as nllib
+from . import nl as nllib
 
 from pylab import plot, show
 # END IMPORT
@@ -210,7 +210,7 @@ class NL02(NL01.NL01):
                 wave=FW_IDXB,
                 comments='STAB')
 
-        Ncols = len(NL02_sdict.keys())
+        Ncols = len(list(NL02_sdict.keys()))
         NL02_sdict['Ncols'] = Ncols
 
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
@@ -383,7 +383,7 @@ class NL02(NL01.NL01):
 
                 # fitresults = OrderedDict(coeffs, NLdeg, maxNLpc,flu_maxNLpc, bgd)
                 if debug:
-                    print('\n%s%s\n' % (CCDkey, Q))
+                    print(('\n%s%s\n' % (CCDkey, Q)))
                 #print('WITH shutter nl correction...')
 
                 _fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, nexptimes, wave,

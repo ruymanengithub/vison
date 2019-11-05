@@ -583,7 +583,7 @@ class MetaPTC(MetaCal):
                     extractor=self._extract_GAIN_fromPT)
 
                 avgG = self.get_stat_from_FPAMAP(GMAP, np.nanmean)
-                print('Average G [%s]: %.2f' % (testname, avgG))
+                print(('Average G [%s]: %.2f' % (testname, avgG)))
 
                 stestname = st.replace(testname, '_', '\_')
 

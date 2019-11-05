@@ -15,9 +15,9 @@ Created on Thu Apr 20 15:35:08 2017
 from pdb import set_trace as stop
 import numpy as np
 
-from shape import Shapemeter
-from photom import Photometer
-from gauss import Gaussmeter
+from .shape import Shapemeter
+from .photom import Photometer
+from .gauss import Gaussmeter
 from vison.datamodel.ccd import gain
 # END IMPORT
 

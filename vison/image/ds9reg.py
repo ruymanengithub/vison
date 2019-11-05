@@ -82,9 +82,9 @@ def save_spots_as_ds9regs(data, regfilename=None, regfile=None, regtype='circle'
 
     def myprinter(f, hdr, body):
         for line in hdr:
-            print >> f, line
+            print(line, file=f)
         for line in body:
-            print >>f, line
+            print(line, file=f)
 
     if regfilename is not None:
 

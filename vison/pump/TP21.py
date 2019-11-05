@@ -20,7 +20,7 @@ import os
 from vison.pipe.task import HKKeys
 #from vison.pipe.task import Task
 from vison.pump import TP02, PumpTask
-import TP02aux
+from . import TP02aux
 # END IMPORT
 
 isthere = os.path.exists

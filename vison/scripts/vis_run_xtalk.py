@@ -193,6 +193,6 @@ if __name__ == '__main__':
              '#                                                       #\n' +\
              '#########################################################\n'
 
-    print header
+    print(header)
 
     run_xtalk(incat, path, respath, metafile=metafile, doCompute=doCompute)

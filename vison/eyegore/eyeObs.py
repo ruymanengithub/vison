@@ -26,14 +26,14 @@ from vison.datamodel import EXPLOGtools as ELtools
 from vison.support import context
 from vison.eyegore.eyelib import get_bitsize
 
-import Tkinter as tk
-import ttk
-import tkFont as tkFont
+import tkinter as tk
+import tkinter.ttk
+import tkinter.font as tkFont
 
 try:
     import pyds9
 except ImportError:
-    print 'pyds9 not installed in the system. Will not be possible to liaise with SAO-ds9.'
+    print('pyds9 not installed in the system. Will not be possible to liaise with SAO-ds9.')
 
 
 # END IMPORT
@@ -163,11 +163,11 @@ class ExpLogDisplay(tk.Toplevel):
         # self.update()
 
     def print_paused(self):
-        print 'self.updating is %s' % self.updating.get()
+        print('self.updating is %s' % self.updating.get())
 
     def update(self, startup=False):
 
-        print('entering ExpLogDisplay.update. Interval=%i' % self.interval)
+        print(('entering ExpLogDisplay.update. Interval=%i' % self.interval))
 
         if self.updating.get():
 
@@ -188,12 +188,12 @@ class ExpLogDisplay(tk.Toplevel):
         self.fr2 = tk.Frame(self)
         #self.subframe.pack(fill='both', expand=True)
         self.fr2.grid(row=1, column=0, in_=self.fr0)
-        self.tree = ttk.Treeview(
+        self.tree = tkinter.ttk.Treeview(
             self, columns=self.elementHeader, show="headings")
         for col in self.elementHeader:
             self.tree.column(col, minwidth=100, width=100, stretch=True)
-        vsb = ttk.Scrollbar(self, orient="vertical", command=self.tree.yview)
-        hsb = ttk.Scrollbar(self, orient="horizontal", command=self.tree.xview)
+        vsb = tkinter.ttk.Scrollbar(self, orient="vertical", command=self.tree.yview)
+        hsb = tkinter.ttk.Scrollbar(self, orient="horizontal", command=self.tree.xview)
         self.tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
 
         self.tree.grid(column=0, row=0, sticky='nsew', in_=self.fr2)
@@ -242,7 +242,7 @@ class ExpLogDisplay(tk.Toplevel):
         if arethere:
             self.explogfs = explogfs
         else:
-            print 'EXPLOGs %s not found' % tmp_EL
+            print('EXPLOGs %s not found' % tmp_EL)
             self.explogfs = None
 
     def loadExplogs(self):
@@ -336,7 +336,7 @@ class ExpLogDisplay(tk.Toplevel):
         try:
             d = pyds9.DS9(target=self.ds9target)
         except NameError:
-            print "pyds9 not installed, can't open DS9!"
+            print("pyds9 not installed, can't open DS9!")
             return
 
         for CCD in [1, 2, 3]:

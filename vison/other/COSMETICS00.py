@@ -126,7 +126,7 @@ class COSMETICS00(DarkTask):
                                    source='flat',
                                    comments='FLAT')
 
-        Ncols = len(COS_sdict.keys())
+        Ncols = len(list(COS_sdict.keys()))
         COS_sdict['Ncols'] = Ncols
 
         commvalues = copy.deepcopy(sc.script_dictionary[elvis]['defaults'])
@@ -346,7 +346,7 @@ class COSMETICS00(DarkTask):
 
             outputs = vcm.run_maskmaker(inputs)
 
-            for key in outputs.keys():
+            for key in list(outputs.keys()):
                 self.dd.products[key][CCDk] = outputs[key]
 
         productsstr = self.dd.products.__str__()
