@@ -267,7 +267,7 @@ class FPA_LE1(object):
         for jY in range(1,self.fpamodel.NSLICES+1):
             for iX in range(1,self.fpamodel.NSLICES+1):
                 CCDID = 'C_%i%i' % (jY,iX)
-                print('Simulating CCD: %s' % CCDID)
+                #print('Simulating CCD: %s' % CCDID)
                 kccdobj = self.get_ccdobj(CCDID)
                 
                 if zerofirst:
