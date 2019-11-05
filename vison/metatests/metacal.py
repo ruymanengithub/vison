@@ -414,7 +414,10 @@ class MetaCal(object):
                     pt = self.stackTables(pt, sit)
 
         self.ParsedTable[testname] = pt
-
+    
+    def get_ixblock(self, PT, block):
+        return np.where(PT['BLOCK'].data==block)
+    
     def get_stat_from_FPAMAP(self, M, numpystat):
         """ """
 

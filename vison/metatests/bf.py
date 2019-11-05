@@ -258,7 +258,7 @@ class MetaBF(MetaCal):
         """ """
 
         def _extract_fromPT(PT, block, CCDk, Q):
-            ixblock = np.where(PT['BLOCK'].data == block)
+            ixblock = self.get_ixblock(self, PT, block)
             column = '%s_%s_Quad%s' % (colkey, CCDk, Q)
 
             VAL = np.nanmedian(PT[column][ixblock])

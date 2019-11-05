@@ -279,35 +279,35 @@ class MetaMOT(MetaCal):
         return sit
 
     def _extract_INJ_fromPT(self, PT, block, CCDk, Q):
-        ixblock = np.where(PT['BLOCK'].data == block)
+        ixblock = self.get_ixblock(self, PT, block)
         column = 'INJECTION_%s_Quad%s' % (CCDk, Q)
 
         injection = PT[column][ixblock][0]
         return injection
 
     def _extract_RON_fromPT(self, PT, block, CCDk, Q):
-        ixblock = np.where(PT['BLOCK'].data == block)
+        ixblock = self.get_ixblock(self, PT, block)
         column = 'RWDVS_RON_%s_Quad%s' % (CCDk, Q)
 
         ron = PT[column][ixblock][0]
         return ron
 
     def _extract_OFF_RWDVS_fromPT(self, PT, block, CCDk, Q):
-        ixblock = np.where(PT['BLOCK'].data == block)
+        ixblock = self.get_ixblock(self, PT, block)
         column = 'RWDVS_OFF_%s_Quad%s' % (CCDk, Q)
 
         off = int(PT[column][ixblock][0])
         return off
 
     def _extract_OFF_PREFWD_fromPT(self, PT, block, CCDk, Q):
-        ixblock = np.where(PT['BLOCK'].data == block)
+        ixblock = self.get_ixblock(self, PT, block)
         column = 'offset_pre_%s_Quad%s' % (CCDk, Q)
 
         off = int(PT[column][ixblock][0])
         return off
 
     def _extract_RAMP_fromPT(self, PT, block, CCDk, Q):
-        ixblock = np.where(PT['BLOCK'].data == block)
+        ixblock = self.get_ixblock(self, PT, block)
         column = 'RAMPKEYS_%s' % (CCDk,)
         rampkey = PT[column][ixblock][0]
 

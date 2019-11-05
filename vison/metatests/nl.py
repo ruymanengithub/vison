@@ -259,7 +259,7 @@ class MetaNL(MetaCal):
 
     def _extract_SOURCESTAB_fromPT(self, PT, block, CCDk, Q):
         """ """
-        ixblock = np.where(PT['BLOCK'].data == block)
+        ixblock = self.get_ixblock(self, PT, block)
 
         column = 'STABILITYPC_%s_Quad%s' % (CCDk, Q)
         stab = PT[column][ixblock][0]

@@ -248,7 +248,7 @@ class MetaBias(MetaCal):
         """ """
 
         def _extract_RON_fromPT(PT, block, CCDk, Q):
-            ixblock = np.where(PT['BLOCK'].data == block)
+            ixblock = self.get_ixblock(self, PT, block)
             column = 'RON_OVE_%s_Quad%s' % (CCDk, Q)
 
             if units == 'ADU':
@@ -263,7 +263,7 @@ class MetaBias(MetaCal):
 
     def _extract_OFFSET_fromPT(self, PT, block, CCDk, Q):
         """ """
-        ixblock = np.where(PT['BLOCK'].data == block)
+        ixblock = self.get_ixblock(self, PT, block)
         column = 'OFF_OVE_%s_Quad%s' % (CCDk, Q)
         RON = np.nanmedian(PT[column][ixblock])
         return RON
