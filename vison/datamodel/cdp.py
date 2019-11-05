@@ -22,6 +22,7 @@ from vison import __version__
 from vison.support.files import cPickleDumpDictionary, cPickleRead
 from vison.datamodel import ccd as ccdmod
 from vison.support.excel import ReportXL
+from vison.support import vjson
 # END IMPORT
 
 
@@ -83,7 +84,7 @@ class CDP(object):
 
 
 class Tables_CDP(CDP):
-    """ """
+    """Table CDP. Can export to excel."""
 
     def __init__(self, *args, **kwargs):
         """ """
@@ -216,6 +217,7 @@ class Tables_CDP(CDP):
 
 
 class CCD_CDP(CDP):
+    """CCD Calibration Data Product"""
 
     def __init__(self, *args, **kwargs):
         """ """
@@ -265,3 +267,41 @@ class CCD_CDP(CDP):
         if os.path.exists(filef):
             os.system('rm %s' % filef)
         self.ccdobj.writeto(filef)
+
+
+
+class Json_CDP(CDP):
+    """Generic Json Object CDP."""
+    
+    def __init__(self,*args,**kwargs):
+        """ """
+        super(Json_CDP, self).__init__(*args, **kwargs)
+        
+        self.data = OrderedDict()
+
+    def ingest_inputs(self, data, meta=None, header=None):
+        """ """
+        if meta is None:
+            meta = OrderedDict()
+        if header is None:
+            header = OrderedDict()
+
+        self.header.update(header)
+        self.meta.update(meta)
+        self.data.update(data)
+        
+        
+    def savehardcopy(self, filef=''):
+        """ """
+        if filef == '':
+            filef = os.path.join(self.path, '%s.fits' % self.rootname)
+        if os.path.exists(filef):
+            os.system('rm %s' % filef)
+        
+        outdict = OrderedDict()
+        outdict['header'] = self.header.copy()
+        outdict['meta'] = self.meta.copy()
+        outdict['data'] = self.data.copy()
+        
+        vjson.save_jsonfile(outdict, filef)
+        
