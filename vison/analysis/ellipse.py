@@ -1,6 +1,6 @@
 
 
-""" 
+"""
 
 Auxiliary module with functions to generate generalized ellipse masks.
 
@@ -14,13 +14,14 @@ import collections
 import numpy as np
 from scipy.special import gamma
 import unittest
+from functools import reduce
 # END IMPORT
 
 
 def dist_superellipse(n, center, q=1., pos_ang=0., c=0.):
-    """Form an array in which the value of each element is equal to the 
+    """Form an array in which the value of each element is equal to the
     semi-major axis of the superellipse of specified center, axial ratio,
-    position  angle, and c parameter which passes through that element.  
+    position  angle, and c parameter which passes through that element.
     Useful for super-elliptical aperture photometry.
 
     Inspired on dist_ellipse.pro from AstroLib (IDL).
@@ -28,7 +29,7 @@ def dist_superellipse(n, center, q=1., pos_ang=0., c=0.):
     Note: this program doesn't take into account the change in the order of axes
     from IDL to Python. That means, that in 'n' and in 'center', the order of the
     coordinates must be reversed with respect to the case for dist_ellipse.pro, in
-    order to get expected results. Nonetheless, the polar angle means the 
+    order to get expected results. Nonetheless, the polar angle means the
     counter-clock wise angle with respect to the 'y' axis.
 
     :param n: shape of array (N1,N2), it can be an integer (squared shape NxN)
@@ -118,8 +119,8 @@ def dist_superellipse(n, center, q=1., pos_ang=0., c=0.):
     for i in range(ny):
         xtemp = xcosang + y[i] * sinang
         ytemp = -xsinang + y[i] * cosang
-        im[i, :] = ((np.abs(xtemp/q))**(c+2.) +
-                    (np.abs(ytemp))**(c+2.))**(1./(c+2.))
+        im[i, :] = ((np.abs(xtemp / q))**(c + 2.) +
+                    (np.abs(ytemp))**(c + 2.))**(1. / (c + 2.))
 
     return im
 
@@ -127,9 +128,9 @@ def dist_superellipse(n, center, q=1., pos_ang=0., c=0.):
 def area_superellip(r, q, c=0):
     """Returns area of superellipse, given the semi-major axis length"""
 
-    a_dummie = 4.**(1. - (c+2)**(-1.))
+    a_dummie = 4.**(1. - (c + 2)**(-1.))
     b_dummie = r**2. * q * ((np.pi)**(0.5))
-    c_dummie = gamma(1. + (c+2.)**(-1.)) / gamma(0.5 + (c+2.)**(-1.))
+    c_dummie = gamma(1. + (c + 2.)**(-1.)) / gamma(0.5 + (c + 2.)**(-1.))
     area = a_dummie * b_dummie * c_dummie
     return area
 
@@ -137,11 +138,11 @@ def area_superellip(r, q, c=0):
 def effective_radius(area, q=1., c=0.):
     """Returns semi-major axis length of superellipse, given the area"""
 
-    a_dummie = 4.**(1. - (c+2.)**(-1.))
-    c_dummie = gamma(1. + (c+2.)**(-1.)) / gamma(0.5 + (c+2.)**(-1.))
+    a_dummie = 4.**(1. - (c + 2.)**(-1.))
+    c_dummie = gamma(1. + (c + 2.)**(-1.)) / gamma(0.5 + (c + 2.)**(-1.))
 
     b_dummie = area / (a_dummie * c_dummie)
-    r = (b_dummie/(q * (np.pi ** 0.5)))**(0.5)
+    r = (b_dummie / (q * (np.pi ** 0.5)))**(0.5)
 
     return r
 
@@ -159,20 +160,39 @@ class TestEllipse(unittest.TestCase):
         self.q = 1.
         self.pos_ang = 0.
         self.c = 0.
-        self.actual_ellipse = np.array([[2.82842708,  2.23606801,  2.,  2.23606801,  2.82842708],
-                                        [2.23606801,  1.41421354,  1.,
-                                            1.41421354,  2.23606801],
-                                        [2.,  1.,  0.,  1.,  2.],
-                                        [2.23606801,  1.41421354,  1.,
-                                            1.41421354,  2.23606801],
-                                        [2.82842708,  2.23606801,  2.,  2.23606801,  2.82842708]], dtype='float32')
+        self.actual_ellipse = np.array([[2.82842708,
+                                         2.23606801,
+                                         2.,
+                                         2.23606801,
+                                         2.82842708],
+                                        [2.23606801,
+                                         1.41421354,
+                                         1.,
+                                         1.41421354,
+                                         2.23606801],
+                                        [2.,
+                                         1.,
+                                         0.,
+                                         1.,
+                                         2.],
+                                        [2.23606801,
+                                         1.41421354,
+                                         1.,
+                                         1.41421354,
+                                         2.23606801],
+                                        [2.82842708,
+                                         2.23606801,
+                                         2.,
+                                         2.23606801,
+                                         2.82842708]],
+                                       dtype='float32')
 
     def test_dse_squared(self):
 
         n = self.n
         ret = dist_superellipse((n, n), self.center,
                                 self.q, self.pos_ang, self.c)
-        ans = ((ret-self.actual_ellipse)**2.).sum()
+        ans = ((ret - self.actual_ellipse)**2.).sum()
         self.assertAlmostEqual(0., ans, msg='expected=%f, got=%f' % (0., ans),
                                delta=self.tolerance)
 

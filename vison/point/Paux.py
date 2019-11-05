@@ -30,5 +30,5 @@ def get_CDP_lib():
     lock_cdp.rootname = 'LOCK_TB_%s'
 
     CDP_lib = dict(LOCK_TB=lock_cdp)
-    
+
     return CDP_lib

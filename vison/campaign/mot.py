@@ -28,7 +28,7 @@ from vison.support import context
 # END IMPORT
 
 
-def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis, 
+def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
                           CHAMBER=None, purpose='scripts'):
     """ """
 
@@ -37,14 +37,14 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
     test_sequence = OrderedDict()
 
     _toGen = dict(
-            BIAS01 = False,
-            CHINJ01 = False,
-            TP01 = False,
-            TP02 = False,
-            PTC01 = False,
-            MOT_FF = False
-            ) 
-    
+        BIAS01=False,
+        CHINJ01=False,
+        TP01=False,
+        TP02=False,
+        PTC01=False,
+        MOT_FF=False
+    )
+
     _toGen.update(toGen)
 
     # BIAS
@@ -65,7 +65,6 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
 
         test_sequence['BIAS01'] = copy.deepcopy(bias01)
 
-
     # CHARGE INJECTION
 
     # CHINJ01
@@ -82,7 +81,7 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
         IG1s = [3., 8.]
         dIG1 = 0.75
         toi_chinj01 = 500
-        id_delays = [toi_chinj01*2.5, toi_chinj01*1.5]
+        id_delays = [toi_chinj01 * 2.5, toi_chinj01 * 1.5]
 
         diffCHINJ01 = dict(mirr_on=0)
         diffCHINJ01.update(diffvalues)
@@ -90,8 +89,8 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
         chinj01 = CHINJ01.CHINJ01(inputs=dict(elvis=elvis,
                                               CHAMBER=CHAMBER,
                                               test='CHINJ01',
-                                              IDL=IDL, IDH=IDH, 
-                                              IG2=IG2,IG1s=IG1s,
+                                              IDL=IDL, IDH=IDH,
+                                              IG2=IG2, IG1s=IG1s,
                                               dIG1=dIG1,
                                               toi_chinj=toi_chinj01,
                                               id_delays=id_delays,
@@ -100,10 +99,8 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
 
         test_sequence['CHINJ01'] = copy.deepcopy(chinj01)
 
-
     # TRAP-PUMPING
-    
-    
+
     # TP01
 
     if _toGen['TP01']:
@@ -114,7 +111,7 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
         Nshuffles_V = 5000
         toi_chinjTP01 = 250  # quick injection
         id_delays_TP01 = (np.array([2.5, 1.5]) * toi_chinjTP01).tolist()
-        vpumpmodes = [123,234,341,412]
+        vpumpmodes = [123, 234, 341, 412]
 
         diffTP01 = dict()
         diffTP01.update(diffvalues)
@@ -122,7 +119,7 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
         tp01 = TP01.TP01(inputs=dict(elvis=elvis,
                                      CHAMBER=CHAMBER,
                                      test='TP01',
-                                     toi_tpv=TOI_TPv, 
+                                     toi_tpv=TOI_TPv,
                                      toi_chinj=toi_chinjTP01,
                                      Nshuffles_V=Nshuffles_V,
                                      id_delays=id_delays_TP01,
@@ -132,8 +129,7 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
 
         test_sequence['TP01'] = copy.deepcopy(tp01)
 
-    # TP02   
-    
+    # TP02
 
     if _toGen['TP02']:
 
@@ -142,7 +138,7 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
         Nshuffles_H = 5000
         dwell_sv = [0., 4.75, 14.3, 28.6]  # us
         toi_chinjTP02 = 250  # quick injection
-        id_delays_TP02 = (np.array([2.5, 1.5])*toi_chinjTP02).tolist()
+        id_delays_TP02 = (np.array([2.5, 1.5]) * toi_chinjTP02).tolist()
 
         diffTP02 = dict(mirr_on=0)
         diffTP02.update(diffvalues)
@@ -159,9 +155,8 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
 
         test_sequence['TP02'] = copy.deepcopy(tp02)
 
-    
      # PTC
-    
+
     if _toGen['PTC01']:
 
         print 'PTC01...'
@@ -173,7 +168,7 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
         diffPTC01.update(diffvalues)
         tFWC_flat800 = ogse.profile['tFWC_flat']['nm800']
         # 5%, 10%, 20%, 30%, 50%, 70%, 80%, 90%, 100%, 110%, 120%
-        exptsPTC01 = (np.array([10., 30.,50., 70., 90.])/100.*tFWC_flat800).tolist()  # ms
+        exptsPTC01 = (np.array([10., 30., 50., 70., 90.]) / 100. * tFWC_flat800).tolist()  # ms
         frsPTC01 = [2, 2, 2, 2, 2]
 
         ptc01 = PTC0X.PTC0X(inputs=dict(elvis=elvis,
@@ -185,33 +180,31 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
 
         test_sequence['PTC01'] = copy.deepcopy(ptc01)
 
-    
     if _toGen['MOT_FF']:
-        
+
         print 'MOT_FF...'
 
         diffMOT_FF = dict(mirr_on=0,
-                         vstart=0,
-                         vend=2086)
+                          vstart=0,
+                          vend=2086)
 
         diffMOT_FF.update(diffvalues)
         tFWC_flat800 = ogse.profile['tFWC_flat']['nm800']
         # 5%, 10%, 20%, 30%, 50%, 70%, 80%, 90%, 100%, 110%, 120%
-        exptsMOT_FF = (np.array([10., 30.,50., 70., 90.])/100.*tFWC_flat800).tolist()  # ms
+        exptsMOT_FF = (np.array([10., 30., 50., 70., 90.]) / 100. * tFWC_flat800).tolist()  # ms
         frsMOT_FF = [2, 2, 2, 2, 2]
 
         mot_ff = MOT_FF.MOT_FF(inputs=dict(elvis=elvis,
-                                        CHAMBER=CHAMBER,
-                                        test='MOT_FF', 
-                                        surrogate='PTC01',
-                                        exptimes=exptsMOT_FF,
-                                        frames=frsMOT_FF, 
-                                        wavelength=800,
-                                        Npix=5,
-                                        diffvalues=diffMOT_FF))
+                                           CHAMBER=CHAMBER,
+                                           test='MOT_FF',
+                                           surrogate='PTC01',
+                                           exptimes=exptsMOT_FF,
+                                           frames=frsMOT_FF,
+                                           wavelength=800,
+                                           Npix=5,
+                                           diffvalues=diffMOT_FF))
         #structPTC01 = ptc01.build_scriptdict(diffvalues=diffPTC01,elvis=elvis)
 
         test_sequence['MOT_FF'] = copy.deepcopy(mot_ff)
 
-    
     return test_sequence

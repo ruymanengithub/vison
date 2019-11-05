@@ -3,7 +3,7 @@
 """
 
 Master Script to measure and report cross-talk levels among 12 ROE channels.
-Takes as input a data-set composed of 3x12 CCD images, corresponding to 
+Takes as input a data-set composed of 3x12 CCD images, corresponding to
 injecting a "ladder" of signal on each of the 12 channels, using the ROE-TAB.
 
 
@@ -66,7 +66,7 @@ def run_xtalk(incat, inpath='', respath='', metafile='', doCompute=False):
 
     logfile = os.path.join(
         respath, 'analysis_Xtalk_%s%s.log' % (datetag, _label))
-    outrootname = 'Xtalks_%s%s' % (datetag,_label)
+    outrootname = 'Xtalks_%s%s' % (datetag, _label)
     outpickfile = os.path.join(respath, '%s.pick' % outrootname)
     outexcelfile = os.path.join(respath, '%s.xlsx' % outrootname)
 
@@ -76,8 +76,7 @@ def run_xtalk(incat, inpath='', respath='', metafile='', doCompute=False):
 
     CCDs = [1, 2, 3]
     Quads = ['E', 'F', 'G', 'H']
-    
-    
+
     if doCompute:
 
         if os.path.exists(logfile):
@@ -103,13 +102,12 @@ def run_xtalk(incat, inpath='', respath='', metafile='', doCompute=False):
                 OBSID = OBSIDs[np.where(CHANNELS == source)]
 
                 Xtalks['CCD%i' % CCDref][Qref], fignames = xtalk.processXtalk_single(CCDref, Qref, OBSID,
-                    thresholdinj, rowstart=rowstart, rowend=rowend, colstart=colstart, colend=colend,
-                    savefigs=True, log=log, datapath=inpath, respath=respath)
-                
+                                                                                     thresholdinj, rowstart=rowstart, rowend=rowend, colstart=colstart, colend=colend,
+                                                                                     savefigs=True, log=log, datapath=inpath, respath=respath)
+
                 for CCD in CCDs:
-                    Xtalks['figs']['CCD%i_R%i%s' % (CCD,CCDref,Qref)] = fignames['CCD%i' % CCD]
-                    Xtalks['figs']['keys'].append('CCD%i_R%i%s' % (CCD,CCDref,Qref))
-                
+                    Xtalks['figs']['CCD%i_R%i%s' % (CCD, CCDref, Qref)] = fignames['CCD%i' % CCD]
+                    Xtalks['figs']['keys'].append('CCD%i_R%i%s' % (CCD, CCDref, Qref))
 
         cPickleDumpDictionary(Xtalks, outpickfile)
 
@@ -130,13 +128,12 @@ def run_xtalk(incat, inpath='', respath='', metafile='', doCompute=False):
     suptitle = 'XTALK %s %s' % (label, datetag)
     xtalk.PlotSummaryFig(Xtalks, suptitle, figname_R, scale='RATIO')
     xtalk.PlotSummaryFig(Xtalks, suptitle, figname_A, scale='ADU')
-    
 
     Xtalks['figs'].update(dict(
-    RATIO=figname_R, ADU=figname_A))
-    Xtalks['figs']['jump']=40
-    Xtalks['figs']['keys'] = ['RATIO','ADU'] + Xtalks['figs']['keys']
-    
+        RATIO=figname_R, ADU=figname_A))
+    Xtalks['figs']['jump'] = 40
+    Xtalks['figs']['keys'] = ['RATIO', 'ADU'] + Xtalks['figs']['keys']
+
     Xtalks['meta']['Analysis_Date'] = run_ttag
 
     report = xtalk.ReportXL_Xtalk(Xtalks)
@@ -148,7 +145,6 @@ def run_xtalk(incat, inpath='', respath='', metafile='', doCompute=False):
     report.fill_Figures()
 
     report.save(outexcelfile)
-    
 
 
 if __name__ == '__main__':
@@ -164,8 +160,13 @@ if __name__ == '__main__':
                       default='', help="File with Meta-Information.")
     #parser.add_option("-l","--label",dest="label",default='',help="label [figures, file-names].")
     #parser.add_option("-t","--ttag",dest="ttag",default='',help="Time-Tag [figures, file-names].")
-    parser.add_option("-C", "--compute", dest="doCompute", action='store_true',
-                      default=False, help="Compute cross-talk matrix OR [default] only report results.")
+    parser.add_option(
+        "-C",
+        "--compute",
+        dest="doCompute",
+        action='store_true',
+        default=False,
+        help="Compute cross-talk matrix OR [default] only report results.")
 
     (options, args) = parser.parse_args()
 

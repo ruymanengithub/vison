@@ -40,26 +40,26 @@ from vison.dark.DarkTask import DarkTask
 
 isthere = os.path.exists
 
-#HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
+# HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
 #          'CCD2_IG1_T', 'CCD3_IG1_T', 'CCD1_TEMP_T', 'CCD2_TEMP_T', 'CCD3_TEMP_T',
 #          'CCD1_IG1_T', 'COMM_IG2_T', 'FPGA_PCB_TEMP_T', 'CCD1_OD_B',
 #          'CCD2_OD_B', 'CCD3_OD_B', 'COMM_RD_B', 'CCD2_IG1_B', 'CCD3_IG1_B', 'CCD1_TEMP_B',
 #          'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
 
 STRAY00_commvalues = dict(program='CALCAMP', test='STRAY00',
-                         flushes=7, siflsh=1, siflsh_p=500,
-                         inisweep=1,
-                         vstart=0, vend=2086,
-                         toi_fl=143., toi_tp=1000., toi_ro=1000., toi_ch=1000.,
-                         chinj=0,
-                         s_tpump=0,
-                         v_tpump=0,
-                         exptime=0., shuttr=0, e_shuttr=0,
-                         mirr_on=0,
-                         wave=4,
-                         motr_on=0,
-                         source='flat',
-                         comments='')
+                          flushes=7, siflsh=1, siflsh_p=500,
+                          inisweep=1,
+                          vstart=0, vend=2086,
+                          toi_fl=143., toi_tp=1000., toi_ro=1000., toi_ch=1000.,
+                          chinj=0,
+                          s_tpump=0,
+                          v_tpump=0,
+                          exptime=0., shuttr=0, e_shuttr=0,
+                          mirr_on=0,
+                          wave=4,
+                          motr_on=0,
+                          source='flat',
+                          comments='')
 
 
 class STRAY00_inputs(inputs.Inputs):
@@ -80,15 +80,14 @@ class STRAY00(DarkTask):
     def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         self.subtasks = [('check', self.check_data)]
-        super(STRAY00, self).__init__(inputs=inputs, log=log, drill=drill, 
-                    debug=debug, cleanafter=cleanafter)
+        super(STRAY00, self).__init__(inputs=inputs, log=log, drill=drill,
+                                      debug=debug, cleanafter=cleanafter)
         self.name = 'STRAY00'
         self.type = 'Simple'
-        
+
         self.HKKeys = HKKeys
         self.figdict = dict()
         self.inputs['subpaths'] = dict(figs='figs')
-        
 
     def set_inpdefaults(self, **kwargs):
         """ """
@@ -96,7 +95,7 @@ class STRAY00(DarkTask):
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """
-        Builds STRAY00 script structure dictionary.        
+        Builds STRAY00 script structure dictionary.
         :param diffvalues: dict, opt, differential values.
 
         """
@@ -105,108 +104,108 @@ class STRAY00(DarkTask):
 
         # start with all lights on in LAB
         STRAY00_sdict['col001'] = dict(frames=1, exptime=0, shuttr=0, wave=1,
-                                     source='flat',
-                                     comments='LABLIT')
+                                       source='flat',
+                                       comments='LABLIT')
         STRAY00_sdict['col002'] = dict(frames=1, exptime=100, shuttr=0, wave=1,
-                                     source='flat',
-                                     comments='LABLIT')
+                                       source='flat',
+                                       comments='LABLIT')
         # switch off all lights in LAB
         STRAY00_sdict['col003'] = dict(frames=1, exptime=0, shuttr=0, wave=1,
-                                     source='flat',
-                                     comments='LABOUTW1')
+                                       source='flat',
+                                       comments='LABOUTW1')
         STRAY00_sdict['col004'] = dict(frames=1, exptime=100, shuttr=0, wave=1,
-                                     source='flat',
-                                     comments='LABOUTW1')
+                                       source='flat',
+                                       comments='LABOUTW1')
         # change light source wavelength
         STRAY00_sdict['col005'] = dict(frames=1, exptime=0, shuttr=0, wave=4,
-                                     source='flat',
-                                     comments='LABOUTW4')
+                                       source='flat',
+                                       comments='LABOUTW4')
         STRAY00_sdict['col006'] = dict(frames=1, exptime=100, shuttr=0, wave=4,
-                                     source='flat',
-                                     comments='LABOUTW4')
+                                       source='flat',
+                                       comments='LABOUTW4')
         # switch off Light Source
         STRAY00_sdict['col007'] = dict(frames=1, exptime=0, shuttr=0, wave=1,
-                                     comments='TUNGSOFF')
+                                       comments='TUNGSOFF')
         STRAY00_sdict['col008'] = dict(frames=1, exptime=100, shuttr=0, wave=1,
-                                     source='flat',
-                                     comments='TUNGSOFF')
+                                       source='flat',
+                                       comments='TUNGSOFF')
         # switch off Pressure Gauge - Light Source still Off
         STRAY00_sdict['col009'] = dict(frames=1, exptime=0, shuttr=0, wave=1,
-                                     comments='GAUGEOFF')
+                                       comments='GAUGEOFF')
         STRAY00_sdict['col010'] = dict(frames=1, exptime=100, shuttr=0, wave=1,
-                                      source='flat',
-                                      comments='GAUGEOFF')
+                                       source='flat',
+                                       comments='GAUGEOFF')
         # Switch on Pressure Gauge and Light Source
         STRAY00_sdict['col011'] = dict(frames=1, exptime=0, shuttr=0, wave=1,
-                                      source='flat',
-                                      comments='TUNGGAUON')
+                                       source='flat',
+                                       comments='TUNGGAUON')
         STRAY00_sdict['col012'] = dict(frames=1, exptime=100, shuttr=0, wave=1,
-                                      source='flat',
-                                      comments='TUNGGAUON')
+                                       source='flat',
+                                       comments='TUNGGAUON')
 
         # NON-supervised, Lights Off, Gauge On, Tungsten On
 
         # DARK FF-source wave = 1, 4
 
         STRAY00_sdict['col013'] = dict(frames=1, exptime=300, shuttr=0, wave=1,
-                                      source='flat',
-                                      comments='DARK-FF')
+                                       source='flat',
+                                       comments='DARK-FF')
 
         STRAY00_sdict['col014'] = dict(frames=1, exptime=300, shuttr=0, wave=4,
-                                      source='flat',
-                                      comments='DARK-FF')
+                                       source='flat',
+                                       comments='DARK-FF')
 
         # DARK PSF-source wave = 1, mirror at near end
 
         STRAY00_sdict['col015'] = dict(frames=1, exptime=300, shuttr=0, wave=1,
-                                      source='point',
-                                      mirr_on=1, mirr_pos=1.,
-                                      comments='DARK-PSF')
+                                       source='point',
+                                       mirr_on=1, mirr_pos=1.,
+                                       comments='DARK-PSF')
 
         # DARK PSF-source wave = 1, mirror at far end
 
         STRAY00_sdict['col016'] = dict(frames=1, exptime=300, shuttr=0, wave=1,
-                                      source='point',
-                                      mirr_on=1, mirr_pos=99.,
-                                      comments='DARK-PSF')
+                                       source='point',
+                                       mirr_on=1, mirr_pos=99.,
+                                       comments='DARK-PSF')
 
         # DARK PSF-source wave = 4, mirror at near end
 
         STRAY00_sdict['col017'] = dict(frames=1, exptime=300, shuttr=0, wave=4,
-                                      source='point',
-                                      mirr_on=1, mirr_pos=1.,
-                                      comments='DARK-PSF')
+                                       source='point',
+                                       mirr_on=1, mirr_pos=1.,
+                                       comments='DARK-PSF')
 
         # DARK PSF-source wave = 4, mirror at far end
 
         STRAY00_sdict['col018'] = dict(frames=1, exptime=300, shuttr=0, wave=4,
-                                      source='point',
-                                      mirr_on=1, mirr_pos=99.,
-                                      comments='DARK-PSF')
+                                       source='point',
+                                       mirr_on=1, mirr_pos=99.,
+                                       comments='DARK-PSF')
 
         # PSF - Short, wave = 1
 
         STRAY00_sdict['col019'] = dict(frames=1, exptime=5., shuttr=1, wave=1,
-                                      source='point',
-                                      mirr_on=1, mirr_pos=50.,
-                                      comments='PSF-S')
+                                       source='point',
+                                       mirr_on=1, mirr_pos=50.,
+                                       comments='PSF-S')
 
         STRAY00_sdict['col020'] = dict(frames=1, exptime=50., shuttr=1, wave=1,
-                                      source='point',
-                                      mirr_on=1, mirr_pos=50.,
-                                      comments='PSF-L')
+                                       source='point',
+                                       mirr_on=1, mirr_pos=50.,
+                                       comments='PSF-L')
 
         # PSF - Long, wave = 4
 
         STRAY00_sdict['col021'] = dict(frames=1, exptime=5., shuttr=1, wave=4,
-                                      source='point',
-                                      mirr_on=1, mirr_pos=50.,
-                                      comments='PSF-S')
+                                       source='point',
+                                       mirr_on=1, mirr_pos=50.,
+                                       comments='PSF-S')
 
         STRAY00_sdict['col022'] = dict(frames=1, exptime=50., shuttr=1, wave=4,
-                                      source='point',
-                                      mirr_on=1, mirr_pos=50.,
-                                      comments='PSF-L')
+                                       source='point',
+                                       mirr_on=1, mirr_pos=50.,
+                                       comments='PSF-L')
 
         Ncols = len(STRAY00_sdict.keys())
         STRAY00_sdict['Ncols'] = Ncols
@@ -217,7 +216,7 @@ class STRAY00(DarkTask):
         if len(diffvalues) == 0:
             try:
                 diffvalues = self.inputs['diffvalues']
-            except:
+            except BaseException:
                 diffvalues = diffvalues = dict()
 
         STRAY00_sdict = sc.update_structdict(

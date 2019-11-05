@@ -38,16 +38,14 @@ Quads = ['E', 'F', 'G', 'H']
 def produce_SingleFlatfield(infits, outfits, settings=None, runonTests=False):
     """ """
     #runonTests = False
-    
 
     insettings = dict(kind='spline', splinemethod='cubic',
-                      doBin=True,binsize=25,filtertype='median',
-                      recoveredges=True,pdegree=5)
-                      #doFilter=True, filtsize=50, filtertype='mean')
-    
+                      doBin=True, binsize=25, filtertype='median',
+                      recoveredges=True, pdegree=5)
+    # doFilter=True, filtsize=50, filtertype='mean')
+
     if settings is not None:
         insettings.update(settings)
-    
 
     ccdin = cPickleRead(infits)
     #inwithpover = ccdin.withpover
@@ -60,11 +58,11 @@ def produce_SingleFlatfield(infits, outfits, settings=None, runonTests=False):
     ccdout.add_extension(np.zeros(oshape, dtype='float32'), label='MODEL')
 
     for Q in Quads:
-        
+
         Qregmodel = ccdin.get_region2Dmodel(Q, area='img', vstart=0, vend=NrowsCCD,
                                             canonical=True, extension=-1,
                                             **insettings)
-        
+
         # Set 1st Extension: image
 
         Qimg = ccdin.get_quad(Q, canonical=True, extension=-1).copy()
@@ -73,8 +71,7 @@ def produce_SingleFlatfield(infits, outfits, settings=None, runonTests=False):
             0:NrowsCCD] = Qimg[ccdin.prescan:-ccdin.overscan, 0:NrowsCCD].copy()
 
         ccdout.set_quad(QFF, Q, canonical=True, extension=0)
-        
-        
+
         # Set 2nd Extension: model
 
         QMod = np.ones(Qimg.shape, dtype='float32')
@@ -82,12 +79,11 @@ def produce_SingleFlatfield(infits, outfits, settings=None, runonTests=False):
              0:NrowsCCD] = Qregmodel.imgmodel.copy()
 
         ccdout.set_quad(QMod, Q, canonical=True, extension=1)
-        
-            
+
     ccdout.divide_by_flatfield(ccdout.extensions[1].data, extension=0)
-    
+
     ccdout.writeto(outfits, clobber=True)
-    
+
     return None
 
 
@@ -104,17 +100,17 @@ def produce_IndivFlats(infitsList, outfitsList, settings, runonTests, processes=
 
     for ix in range(len(infitsList)):
         arglist.append((infitsList[ix], outfitsList[ix], settings, runonTests))
-    
-    #produce_SingleFlatfield(*arglist[0]) # TESTS
-    
-    #for arg in arglist:
+
+    # produce_SingleFlatfield(*arglist[0]) # TESTS
+
+    # for arg in arglist:
     #    produce_SingleFlatfield(*arg)
-                            
+
     # generate flats using multiprocessing
     pool = mp.Pool(processes=processes)
     pool.map(_produce_SingleFlatfield, arglist)
     pool.close()
-    
+
 
 def produce_MasterFlat(infitsList, outfits, mask=None, settings={}):
     """Produces a Master Flat out of a number of flat-illumination exposures.
@@ -140,7 +136,6 @@ def produce_MasterFlat(infitsList, outfits, mask=None, settings={}):
 
     if mask is not None:
         mff.get_mask(mask)
-    
 
     mff.writeto(outfits, clobber=True, unsigned16bit=False)
 
@@ -148,14 +143,21 @@ def produce_MasterFlat(infitsList, outfits, mask=None, settings={}):
 class FlatField(ccdmodule.CCD, CDPClass):
     """ """
 
-    def __init__(self, fitsfile='', data=None, meta=None, withpover=True, ID=None, BLOCKID=None, CHAMBER=None):
+    def __init__(
+            self,
+            fitsfile='',
+            data=None,
+            meta=None,
+            withpover=True,
+            ID=None,
+            BLOCKID=None,
+            CHAMBER=None):
         """ """
-        
+
         if data is None:
             data = dict()
         if meta is None:
             meta = dict()
-            
 
         self.BLOCKID = BLOCKID
         self.ID = ID
@@ -186,7 +188,6 @@ class FlatField(ccdmodule.CCD, CDPClass):
                                label=None, headerdict=meta)
             self.add_extension(data=data['Flat'].copy(), label='FLAT')
             self.add_extension(data=data['eFlat'].copy(), label='EFLAT')
-            
 
             if 'Mask' in data.keys():
                 self.add_extension(data=data['Mask'].copy(), label='MASK')
@@ -198,10 +199,10 @@ class FlatField(ccdmodule.CCD, CDPClass):
 
         self.ncomb = self.extensions[0].header['NCOMB']
         self.wavelength = self.extensions[0].header['WAVEL']
-        
+
         assert self.extensions[1].label.upper() == 'FLAT'
         self.Flat = self.extensions[1].data
-        
+
         assert self.extensions[2].label.upper() == 'EFLAT'
         self.eFlat = self.extensions[2].data
 

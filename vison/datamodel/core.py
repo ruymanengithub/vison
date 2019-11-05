@@ -37,7 +37,7 @@ class vIndex(object):
         self.name = name
         if vals is None:
             vals = []
-        
+
         if len(vals) != 0:
             self.vals = vals
             self.len = len(self.vals)
@@ -63,7 +63,7 @@ class vIndex(object):
 class vMultiIndex(list, object):
 
     def __init__(self, IndexList=None):
-        
+
         if IndexList is None:
             IndexList = []
 
@@ -184,7 +184,7 @@ class DataDict(object):
 
     def __init__(self, meta=None):
         """ """
-        
+
         if meta is None:
             meta = OrderedDict()
 
@@ -240,8 +240,7 @@ class DataDict(object):
 
         if name in self.colnames:
             self.dropColumn(name)
-            
-        
+
         self.addColumn(array, name, indices)
 
     def addColumn(self, array, name, indices, ix=-1):
@@ -250,10 +249,10 @@ class DataDict(object):
         column = vColumn(array, name, indices)
 
         self.mx[column.name] = column
-        if ix==-1:
+        if ix == -1:
             self.colnames.append(column.name)
         else:
-            self.colnames.insert(ix,column.name)
+            self.colnames.insert(ix, column.name)
         colindices = column.indices
 
         selfindnames = self.indices.names
@@ -297,8 +296,7 @@ class DataDict(object):
 
         self.mx.pop(colname)
         self.colnames.pop(self.colnames.index(colname))
-    
-    
+
     def flattentoTable(self):
         """ """
 
@@ -315,7 +313,7 @@ class DataDict(object):
                 _ixix = [range(item.len) for item in cindex[1:]]
                 prod_vals = list(itertools.product(*_vals))
                 prod_ixix = list(itertools.product(*_ixix))
-                tmp_suf = st.join([('_%s' % item)+'%s' for item in _names], '')
+                tmp_suf = st.join([('_%s' % item) + '%s' for item in _names], '')
 
                 nix0 = cindex[0].len
 
@@ -328,13 +326,12 @@ class DataDict(object):
                     carray = np.array([self.mx[col][_jxx] for _jxx in jxx])
 
                     t[key] = ast.table.Column(carray)
-        
+
         return t
-        
 
     def saveToFile(self, outfile, format='ascii.commented_header'):
         """ """
-        
+
         t = self.flattentoTable()
         t.write(outfile, format=format, overwrite=True)
 
@@ -343,15 +340,14 @@ class DataDict(object):
 
 
 class FpaDataDict(DataDict):
-    
-    
+
     def loadExpLog(self, explog):
         """ """
-        
+
         ObsID = explog['ObsID'].data
         uObsID = np.unique(ObsID)
         Nobs = len(uObsID)
-        
+
         ObsIndex = vIndex('ix', N=Nobs)
 
         self.addColumn(uObsID, 'ObsID', [ObsIndex])
@@ -360,16 +356,14 @@ class FpaDataDict(DataDict):
 
             if key == 'ObsID':
                 continue
-            
+
             self.addColumn(explog[key].data, key, [ObsIndex])
 
         return None
 
 
-
-
 def useCases():
-    """ 
+    """
 
     #TODO:
 
@@ -451,7 +445,7 @@ def useCases():
             for kQ in range(nQuad):
 
                 dd.mx['spot_fwhm'][iObs, jCCD, kQ] = (dd.mx['ObsID'][iObs] +
-                                                      dd.mx['gain'][iObs, jCCD]*1.e4) * (-1.)**kQ
+                                                      dd.mx['gain'][iObs, jCCD] * 1.e4) * (-1.)**kQ
 
     # SAVING
     cwd = os.path.abspath(os.path.curdir)
@@ -485,7 +479,7 @@ def useCases():
             dd.saveToFile(outf, format='ascii')
             print 'saved catalog to temp file: %s' % f2.name
             print 'erased %s...' % f2.name
-        except:
+        except BaseException:
             print 'failed to save catalog to temp file'
 
 

@@ -35,17 +35,17 @@ def fit_focus_single(x, y, yerror=None, degree=1, doplot=False):
 
     if yerror is not None:
         assert len(y) == len(yerror)
-        weights = 1./yerror        
-    else:        
+        weights = 1. / yerror
+    else:
         weights = np.ones_like(y)
-    
-    warnings.simplefilter('ignore',np.RankWarning)
+
+    warnings.simplefilter('ignore', np.RankWarning)
     coeffs, Vcoeffs = np.polyfit(x, y, degree, w=weights, full=False, cov=True)
-    #try:
+    # try:
     #    coeffs, Vcoeffs = np.polyfit(x, y, degree, w=weights, full=False, cov=True)
-    #except ValueError:
-    #    res = dict(coeffs=np.zeros(degree+1)+np.nan, 
-    #               ecoeffs=np.zeros(degree+1)+np.nan, 
+    # except ValueError:
+    #    res = dict(coeffs=np.zeros(degree+1)+np.nan,
+    #               ecoeffs=np.zeros(degree+1)+np.nan,
     #               focus=np.nan)
     #    return res
 
@@ -53,14 +53,14 @@ def fit_focus_single(x, y, yerror=None, degree=1, doplot=False):
 
     pol = np.poly1d(coeffs)
 
-    xfocus = -coeffs[1]/(2.*coeffs[0])
+    xfocus = -coeffs[1] / (2. * coeffs[0])
     # exfocus = np.abs(xfocus)*np.sqrt((ecoeffs[1]/coeffs[1])**2.+
     #     1/2.*(ecoeffs[0]/coeffs[0])**2.) # WRONG?
 
     if doplot:
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        if yerror == None:
+        if yerror is None:
             ax.plot(x, y, 'bo')
         else:
             ax.errorbar(x, y, yerr=yerror, fmt='o', color='b')
@@ -75,29 +75,27 @@ def fit_focus_single(x, y, yerror=None, degree=1, doplot=False):
 
     return res
 
-def build_fwhm_map_CQ(delta_fwhm, x, y, xlims, ylims):            
-    
+
+def build_fwhm_map_CQ(delta_fwhm, x, y, xlims, ylims):
+
     N = 10
-    
-    img = np.zeros((N,N),dtype='float32') + np.nanmean(delta_fwhm)
-    
+
+    img = np.zeros((N, N), dtype='float32') + np.nanmean(delta_fwhm)
+
     return img
-    
+
     #x0, x1 = xlims
     #y0, y1 = ylims
-    
-    #flin = interpolate.interp2d(x, y, delta_fwhm, kind='linear',
+
+    # flin = interpolate.interp2d(x, y, delta_fwhm, kind='linear',
     #                            bounds_error=False,
     #                            fill_value=np.mean(delta_fwhm))
-    
+
     #xQ = np.linspace(x0, x1, N)
     #yQ = np.linspace(y0, y1, N)
-    
+
     #xxQ, yyQ = np.meshgrid(xQ, yQ)
-    
+
     #img = flin(xQ, yQ)
-    
-    
-    #return img
 
-
+    # return img

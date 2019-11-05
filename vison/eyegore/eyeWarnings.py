@@ -59,7 +59,7 @@ for key, value in subURLs.iteritems():
 try:
     recipients_dict = vjson.load_jsonfile(os.path.join(
         utils.credentials_path, 'recipients_eyegore'))
-    recipients = [recipients_dict['main'],recipients_dict['secondary']]
+    recipients = [recipients_dict['main'], recipients_dict['secondary']]
 except IOError:
     recipients = [None]
 
@@ -107,10 +107,10 @@ class EyeWarnings(object):
     def assess_OOL_incident(self, HKkey, violation_type, value, HKlim, timestamp):
         """ """
         if self.iscritical(HKkey):
-            
+
             violation_key = st.replace('T%i' % violation_type, '-', 'm')
             Kseveritydict = self.severitydict[HKkey]
-            
+
             try:
                 severity = Kseveritydict[violation_key]
             except KeyError:
@@ -128,13 +128,13 @@ class EyeWarnings(object):
             try:
                 os.system('mail -s "%s" %s < %s' %
                           (subject, recipient, f.name))
-            except:
+            except BaseException:
                 print('WARNING email not sent! [subject: %s]' % subject)
                 if self.log is not None:
                     self.log.info(
                         'WARNING email not sent! [subject: %s]' % subject)
         os.unlink(f.name)
-        
+
     def warn_via_email(self, HKkey, value, HKlim, timestamp, HKdata=None):
         """ """
 
@@ -153,8 +153,7 @@ class EyeWarnings(object):
             df = pd.DataFrame.from_dict(_data)
             bodyList.append('LATEST VALUES after the jump\n\n')
             bodyList.append(df.to_string(index=False))
-        
-        
+
         for recipient in self.recipients:
             self.send_email(subject, bodyList, recipient)
 
@@ -199,7 +198,7 @@ class EyeWarnings(object):
 
         try:
             self.do_phone_call(url)
-        except:
+        except BaseException:
             if self.log is not None:
                 self.log.info('VOICE WARNING not sent! [%s]' % HKkey)
 
@@ -216,7 +215,7 @@ class EyeWarnings(object):
 
         try:
             self.send_sms(body)
-        except:
+        except BaseException:
             if self.log is not None:
                 self.log.info('SMS WARNING not sent! ET not available.')
 
@@ -228,8 +227,8 @@ class EyeWarnings(object):
 
         if self.parent is not None:
             HKdata = self.parent.HK  # alias
-            data = {'time':HKdata['time'][-100:],
-                        HKkey:HKdata[HKkey][-100:]}
+            data = {'time': HKdata['time'][-100:],
+                    HKkey: HKdata[HKkey][-100:]}
         else:
             data = None
 
@@ -239,14 +238,13 @@ class EyeWarnings(object):
         """ """
 
         HKdata = self.get_parent_HK_data(HKkey)
-        
 
         if severity > 0:
             self.warn_via_email(HKkey, value, HKlim, timestamp, HKdata)
         if severity > 1:
             #print 'WARNINGS via phone-calls/sms DISABLED by now in eyeWarnings'
             # self.warn_via_phone(HKkey,violation_type) DISABLED BY NOW
-            self.warn_via_sms(HKkey,value,HKlim,timestamp)
+            self.warn_via_sms(HKkey, value, HKlim, timestamp)
 
 
 def test_URLs():
@@ -257,9 +255,9 @@ def test_URLs():
         try:
             urllib2.urlopen(value)
             print 'Found %s' % key, value
-        except urllib2.HTTPError, e:
+        except urllib2.HTTPError as e:
             print key, value, e.code
-        except urllib2.URLError, e:
+        except urllib2.URLError as e:
             print key, value, e.args
 
 
@@ -280,9 +278,11 @@ def test_do_phone_call(urlkey):
     ew = EyeWarnings()
     ew.do_phone_call(URLs[urlkey])
 
+
 def test_do_send_sms(urlkey):
     ew = EyeWarnings()
     ew.send_sms(urlkey)
+
 
 def test_assess_OOL():
 
@@ -296,6 +296,6 @@ def test_assess_OOL():
 if __name__ == '__main__':
     test_URLs()
     test_get_URLs()
-    #test_assess_OOL() # does phone call
-    #test_do_phone_call('LoCCDTemp') # does phone call
-    #test_do_send_sms('LoCCDTemp')
+    # test_assess_OOL() # does phone call
+    # test_do_phone_call('LoCCDTemp') # does phone call
+    # test_do_send_sms('LoCCDTemp')

@@ -26,80 +26,81 @@ from vison.plot import trends
 # END IMPORT
 
 
-
 prof_HER_ser_dict = dict(
     figname='MOTWARM_profs_HER_ser.png',
     caption='MOT\_WARM: HER profiles, serial direction.',
     meta=dict(doLegend=True,
               ylabel=r'$\delta ADU/Cliff Value$',
               xlabel='Row [pix]',
-              ylim=[-0.002,0.005],
+              ylim=[-0.002, 0.005],
               suptitle='MOT\_WARM: Serial HER.',
-              corekwargs=dict(marker='.',linestyle='-'))
+              corekwargs=dict(marker='.', linestyle='-'))
 )
-
 
 
 def get_basic_prof1Dver_dict(tag):
     basic_prof1Dver_dict = dict(
-    figname='MOTWARM_%s_profs1D_ver_allOBSIDs.png' % tag,
-    caption='MOT\_WARM-%s: Average profiles across rows.' % tag,
-    meta=dict(doLegend=False,
-              ylabel='ADU',
-              xlabel='Row [pix]',
-              suptitle='MOT\_WARM-%s: Profiles across rows.' % tag,
-              xlim=[0,2086],
-              corekwargs=dict(marker='.',linestyle='-'))
+        figname='MOTWARM_%s_profs1D_ver_allOBSIDs.png' % tag,
+        caption='MOT\_WARM-%s: Average profiles across rows.' % tag,
+        meta=dict(doLegend=False,
+                  ylabel='ADU',
+                  xlabel='Row [pix]',
+                  suptitle='MOT\_WARM-%s: Profiles across rows.' % tag,
+                  xlim=[0, 2086],
+                  corekwargs=dict(marker='.', linestyle='-'))
     )
     return basic_prof1Dver_dict
 
+
 NL_dict = dict(
     figname='MOTWARM_NL.png',
-    caption='MOT\_WARM: (PSEUDO) Non-Linearity Curve from Dark-Current Ramp. '+\
+    caption='MOT\_WARM: (PSEUDO) Non-Linearity Curve from Dark-Current Ramp. ' +
             'Does not take into account spatially-structured stray-light, hence FAILS.',
     meta=dict(doLegend=False,
               ylabel='pNL [pc]',
               xlabel='Fluence [kADU]',
               suptitle='MOT\_WARM: Pseudo Non-Linearity',
-              xlim=[0,2**16/1.E3],
-              ylim=[-5,10],
-              corekwargs=dict(marker='.',linestyle='-'))
-    )
+              xlim=[0, 2**16 / 1.E3],
+              ylim=[-5, 10],
+              corekwargs=dict(marker='.', linestyle='-'))
+)
 
 RAMP_bits_histo_dict = dict(
     figname='',
     caption='MOT\_WARM-%s: Bits Histogram on RAMP image.',
     meta=dict(),
     data=None
-    )
+)
+
 
 def get_MW_figs():
     MW_figs = OrderedDict()
-    
+
     MW_figs['MOTWbasic_HER_serial'] = [figclasses.Fig_Beam2DPlot, prof_HER_ser_dict]
-    
-    for tag in ['RAMP','CHINJ','FLAT']:
-        MW_figs['MOTWbasic_prof1D_ver_%s' % tag] = [figclasses.Fig_Beam2DPlot,get_basic_prof1Dver_dict(tag)]
-    
+
+    for tag in ['RAMP', 'CHINJ', 'FLAT']:
+        MW_figs['MOTWbasic_prof1D_ver_%s' % tag] = [
+            figclasses.Fig_Beam2DPlot, get_basic_prof1Dver_dict(tag)]
+
     MW_figs['MOTWbasic_NL'] = [figclasses.Fig_Beam2DPlot, NL_dict]
-    
-    for jCCD in [1,2,3]:
+
+    for jCCD in [1, 2, 3]:
         MW_figs['RAMP_bits_histo_CCD%i' % jCCD] = [figclasses.Fig_Husk, RAMP_bits_histo_dict.copy()]
-    
+
     MW_figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
-    
+
     return MW_figs
 
 
 def get_CDP_lib():
-    
+
     MW_profiles_cdp = cdp.CDP()
     MW_profiles_cdp.rootname = 'Profiles1D_MOT_WARM'
-    
+
     MW_NL_cdp = cdp.CDP()
     MW_NL_cdp.rootname = 'NLcurves_MOT_WARM'
-    
+
     CDP_lib = dict(MW_profiles=MW_profiles_cdp,
                    MW_NL=MW_NL_cdp)
-    
+
     return CDP_lib

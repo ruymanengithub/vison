@@ -32,15 +32,17 @@ def gt_check_offsets_dict(wave):
                           suptitle='FOCUS01\_%i-checks: offsets' % wave,
                           ylim=trends.offset_lims))
 
+
 def gt_check_deltaoff_dict(wave):
-    return dict(stats=['deltaoff_pre', 'deltaoff_ove'],
-                trendaxis='time',
-                figname='FOCUS00_%i_deltaoff_vs_time.png' % wave,
-                caption='FOCUS00\_%i: $\delta$offset vs. time. Offset value in each frame minus the average value.' % wave,
-                meta=dict(doLegend=True,
-                          doNiceXDate=True,
-                          suptitle='FOCUS01\_%i-checks: delta-offsets' % wave,
-                          ylim=[-10.,10.]))
+    return dict(
+        stats=[
+            'deltaoff_pre', 'deltaoff_ove'], trendaxis='time', figname='FOCUS00_%i_deltaoff_vs_time.png' %
+        wave, caption='FOCUS00\_%i: $\delta$offset vs. time. Offset value in each frame minus the average value.' %
+        wave, meta=dict(
+            doLegend=True, doNiceXDate=True, suptitle='FOCUS01\_%i-checks: delta-offsets' %
+            wave, ylim=[
+                -10., 10.]))
+
 
 def gt_check_std_dict(wave):
     return dict(stats=['std_pre', 'std_ove'],
@@ -73,7 +75,7 @@ def gt_check_flu_dict(wave):
                           suptitle='FOCUS00\_%i-checks: Fluence' % wave,
                           xlabel='Mirr [mm]',
                           ylabel='Flu.[ADU]',
-                        corekwargs=dict(marker='.',linestyle='-')))
+                          corekwargs=dict(marker='.', linestyle='-')))
 
 
 def gt_check_fwhmx_dict(wave):
@@ -86,7 +88,7 @@ def gt_check_fwhmx_dict(wave):
                           suptitle='FOCUS00\_%i-checks: FWHM(x)' % wave,
                           xlabel='Mirr [mm]',
                           ylabel='FWHMx [pix]',
-                        corekwargs=dict(marker='.',linestyle='-')))
+                          corekwargs=dict(marker='.', linestyle='-')))
 
 
 def gt_check_fwhmy_dict(wave):
@@ -99,29 +101,34 @@ def gt_check_fwhmy_dict(wave):
                           suptitle='FOCUS00\_%i-checks: FWHM(y)' % wave,
                           xlabel='Mirr [mm]',
                           ylabel='FWHMy [pix]',
-                        corekwargs=dict(marker='.',linestyle='-')))
+                          corekwargs=dict(marker='.', linestyle='-')))
+
 
 def gt_meta_deltafwhm_dict(wave):
-    return dict(figname='FOCUS00_%i_deltafwhm_map.png' % wave,
-                caption='FOCUS00\_%i: Delta-FWHM [pixels] for best focus position.' % wave +\
-                        ' x and y axis labels are meaningless. Colors indicate mean value of Delta-FWHM for the 5 spots in '+\
-                        'each Quadrant.',
-                meta=dict(
-                        doLegend=False,
-                        suptitle='FOCUS00\_%i-checks: Delta-FWHM [pix]' % wave,
-                        doColorbar=True,
-                        corekwargs=dict(
-                                cmap=cm.rainbow,
-                                aspect='auto',
-                                norm=None,
-                                origin='lower left'                                
-                                )))
+    return dict(
+        figname='FOCUS00_%i_deltafwhm_map.png' %
+        wave,
+        caption='FOCUS00\_%i: Delta-FWHM [pixels] for best focus position.' %
+        wave +
+        ' x and y axis labels are meaningless. Colors indicate mean value of Delta-FWHM for the 5 spots in ' +
+        'each Quadrant.',
+        meta=dict(
+            doLegend=False,
+            suptitle='FOCUS00\_%i-checks: Delta-FWHM [pix]' %
+            wave,
+            doColorbar=True,
+            corekwargs=dict(
+                cmap=cm.rainbow,
+                aspect='auto',
+                norm=None,
+                origin='lower left')))
+
 
 def gt_F00figs(wave):
     F00figs = dict()
-    
+
     # CHECKS
-    
+
     F00figs['F00checks_offsets'] = [
         trends.Fig_Basic_Checkstat, gt_check_offsets_dict(wave)]
     F00figs['F00checks_deltaoff'] = [
@@ -136,12 +143,12 @@ def gt_F00figs(wave):
         trends.Fig_Basic_Checkstat, gt_check_fwhmx_dict(wave)]
     F00figs['F00checks_fwhmy'] = [
         trends.Fig_Basic_Checkstat, gt_check_fwhmy_dict(wave)]
-    
+
     # META
-    
+
     F00figs['F00meta_deltafwhm'] = [
         figclasses.Fig_BeamImgShow, gt_meta_deltafwhm_dict(wave)]
-    
+
     F00figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return F00figs
 

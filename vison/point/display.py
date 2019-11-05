@@ -48,8 +48,8 @@ def get_spots_images_allCCDs(spots_bag):
 
     nx, ny = spots_bag[spots_bag.keys()[0]][Quads[0]]['ALPHA']['stamp'].shape
 
-    NX = nx*3*2
-    NY = ny*3*2
+    NX = nx * 3 * 2
+    NY = ny * 3 * 2
 
     imgs = []
 
@@ -59,17 +59,17 @@ def get_spots_images_allCCDs(spots_bag):
 
         for i in range(2):
             for j in range(2):
-                Q = Quads[i*2+j]
+                Q = Quads[i * 2 + j]
                 for k in range(3):
                     for l in range(3):
                         spotname = fkpointnames[k][l]
                         if spotname != 'NONE':
                             stamp = spots_bag['CCD%i' %
                                               CCDix][Q][spotname]['stamp'].copy()
-                            x0 = nx*(i*3+k)
-                            x1 = x0+nx
-                            y0 = ny*(j*3+l)
-                            y1 = y0+ny
+                            x0 = nx * (i * 3 + k)
+                            x1 = x0 + nx
+                            y0 = ny * (j * 3 + l)
+                            y1 = y0 + ny
                             iimg[x0:x1, y0:y1] = stamp.copy()
         imgs.append(iimg)
 
@@ -84,7 +84,7 @@ def doplot_spots_allCCDs(imgs, title='', filename=''):
     for CCDix in range(1, 4):
 
         axs.append(fig.add_subplot(1, 3, CCDix))
-        axs[-1].imshow(imgs[CCDix-1])
+        axs[-1].imshow(imgs[CCDix - 1])
         axs[-1].set_title('CCD%i' % CCDix)
 
     plt.tight_layout()

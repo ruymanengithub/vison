@@ -36,11 +36,11 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
     """ """
 
     ogse = ogsemod.Ogse(CHAMBER)
-    
+
     print 'GENERATING TEST SEQUENCE...'
 
     test_sequence = OrderedDict()
-    
+
     _toGen = dict(BIAS01=False,
                   DARK01=False,
                   CHINJ01=False,
@@ -65,9 +65,8 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                   BF01WAVE=False,
                   MOT_FF=False,
                   HENK01=False)
-    
-    _toGen.update(toGen)
 
+    _toGen.update(toGen)
 
     # BIAS
 
@@ -124,7 +123,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         IG2 = 7.5
         IG1s = [2., 8.]
         toi_chinj01 = 500
-        id_delays = [toi_chinj01*2.5, toi_chinj01*1.5]
+        id_delays = [toi_chinj01 * 2.5, toi_chinj01 * 1.5]
 
         diffCHINJ01 = dict(mirr_on=0)
         diffCHINJ01.update(diffvalues)
@@ -132,7 +131,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         chinj01 = CHINJ01.CHINJ01(inputs=dict(elvis=elvis,
                                               CHAMBER=CHAMBER,
                                               test='CHINJ01',
-                                              IDL=IDL, IDH=IDH, 
+                                              IDL=IDL, IDH=IDH,
                                               IG2=IG2, IG1s=IG1s,
                                               toi_chinj=toi_chinj01,
                                               id_delays=id_delays,
@@ -149,21 +148,21 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         IDLs = [10., 13.]
         IDH = 18.
-        dIDL = 0.25 # V
+        dIDL = 0.25  # V
         IG1 = 6.
         IG2 = 4.
         toi_chinj02 = 500
-        id_delays = [toi_chinj02*2.5, toi_chinj02*1.5]
+        id_delays = [toi_chinj02 * 2.5, toi_chinj02 * 1.5]
         diffCHINJ02 = dict(mirr_on=0)
         diffCHINJ02.update(diffvalues)
 
         chinj02 = CHINJ02.CHINJ02(inputs=dict(elvis=elvis,
                                               CHAMBER=CHAMBER,
                                               test='CHINJ02',
-                                              IDLs=IDLs, dIDL=dIDL, 
-                                              IDH=IDH, IG1=IG1, IG2=IG2, 
+                                              IDLs=IDLs, dIDL=dIDL,
+                                              IDH=IDH, IG1=IG1, IG2=IG2,
                                               toi_chinj=toi_chinj02,
-                                              id_delays=id_delays, 
+                                              id_delays=id_delays,
                                               diffvalues=diffCHINJ02))
         #structCHINJ02 = chinj02.build_scriptdict(elvis=elvis)
         test_sequence['CHINJ02'] = copy.deepcopy(chinj02)
@@ -175,12 +174,12 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
     if _toGen['TP01']:
 
         print 'TP01...'
-        
+
         toi_chinjTP01 = 250  # quick injection
-        Nshuffles_V=5000
+        Nshuffles_V = 5000
         TOI_TPv = [200, 1000, 2000, 4000, 8000]
-        vpumpmodes=[123,234,341,412]
-        
+        vpumpmodes = [123, 234, 341, 412]
+
         id_delays_TP01 = (np.array([2.5, 1.5]) * toi_chinjTP01).tolist()
 
         diffTP01 = dict()
@@ -208,8 +207,8 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         Nshuffles_H = 5000
         dwell_sv = [0., 4.75, 14.3, 28.6]  # us
         toi_chinjTP02 = 250  # quick injection
-        id_delays_TP02 = (np.array([2.5, 1.5])*toi_chinjTP02).tolist()
-        spumpmodes=[23,31]
+        id_delays_TP02 = (np.array([2.5, 1.5]) * toi_chinjTP02).tolist()
+        spumpmodes = [23, 31]
 
         diffTP02 = dict(mirr_on=0)
         diffTP02.update(diffvalues)
@@ -237,13 +236,11 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                            nm880=ogse.profile['tFWC_flat']['nm880'],
                            nm0=ogse.profile['tFWC_flat']['nm0'])
 
-
     if _toGen['FLATFLUX00']:
 
         print 'FLATFLUX00...'
 
         wavesFLATFLUX00 = [590, 2000, 730, 800, 880, 0]
-        
 
         diffFLATFLUX00w = dict()
         diffFLATFLUX00w.update(diffvalues)
@@ -251,14 +248,12 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         for iw, wave in enumerate(wavesFLATFLUX00):
 
             tFWC_flatw = exptimes_FLAT0X['nm%i' % wave]
-            
-            
+
             diffFLATFLUX00w = dict(mirr_on=0)
             diffFLATFLUX00w.update(diffvalues)
 
-
             exptsFLATFLUX00w = (np.array(
-                [5., 20., 50., 80.])/100.*tFWC_flatw).tolist()
+                [5., 20., 50., 80.]) / 100. * tFWC_flatw).tolist()
             frsFLATFLUX00w = [1, 1, 1, 1]
 
             itestkey = 'FLATFLUX00_%i' % wave
@@ -267,15 +262,14 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             print '%s...' % itestkey
 
             flatflux00w = PTC0X.PTC0X(inputs=dict(elvis=elvis,
-                                             CHAMBER=CHAMBER,
-                                             test=itestkey,
-                                             exptimes=exptsFLATFLUX00w,
-                                             frames=frsFLATFLUX00w,
-                                             wavelength=wave,
-                                             diffvalues=diffFLATFLUX00w))
-            
+                                                  CHAMBER=CHAMBER,
+                                                  test=itestkey,
+                                                  exptimes=exptsFLATFLUX00w,
+                                                  frames=frsFLATFLUX00w,
+                                                  wavelength=wave,
+                                                  diffvalues=diffFLATFLUX00w))
+
             test_sequence[itestkey] = copy.deepcopy(flatflux00w)
-                
 
     # FLAT-01
 
@@ -283,7 +277,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         print 'FLAT01...'
 
-        t_dummy_F01 = np.array([25., 50., 75])/100.
+        t_dummy_F01 = np.array([25., 50., 75]) / 100.
         exptimesF01 = (exptimes_FLAT0X['nm800'] * t_dummy_F01).tolist()  # s
         framesF01 = [80, 60, 30]
 
@@ -308,7 +302,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
     if _toGen['FLAT02']:
 
         wavesFLAT02 = [590, 730, 880]
-        t_dummy_F02 = np.array([25., 75])/100.
+        t_dummy_F02 = np.array([25., 75]) / 100.
         framesF02 = [80, 30]
 
         diffFLAT02 = dict(mirr_on=0)
@@ -352,20 +346,19 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         tFWC_flat800 = ogse.profile['tFWC_flat']['nm800']
         # 5%, 10%, 20%, 30%, 50%, 70%, 80%, 90%, 100%, 110%, 120%
         exptsPTC01 = (np.array([5., 10., 20., 30., 50., 70., 80., 90.,
-                                100., 110., 120.])/100.*tFWC_flat800).tolist()  # ms
+                                100., 110., 120.]) / 100. * tFWC_flat800).tolist()  # ms
         frsPTC01 = [10, 10, 10, 10, 10, 10, 10, 10, 4, 4, 4]
 
         ptc01 = PTC0X.PTC0X(inputs=dict(elvis=elvis,
                                         CHAMBER=CHAMBER,
-                                        test='PTC01', 
+                                        test='PTC01',
                                         exptimes=exptsPTC01,
-                                        frames=frsPTC01, 
+                                        frames=frsPTC01,
                                         wavelength=800,
                                         diffvalues=diffPTC01))
         #structPTC01 = ptc01.build_scriptdict(diffvalues=diffPTC01,elvis=elvis)
 
         test_sequence['PTC01'] = copy.deepcopy(ptc01)
-
 
     # PTC-02 - wavelength
 
@@ -385,7 +378,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             tFWC_flatw = ogse.profile['tFWC_flat']['nm%i' % wave]
 
             exptsPTC02w = (np.array(
-                [10., 30., 50., 70., 80., 90.])/100.*tFWC_flatw).tolist()
+                [10., 30., 50., 70., 80., 90.]) / 100. * tFWC_flatw).tolist()
             frsPTC02w = [4, 4, 4, 4, 4, 4]
 
             itestkey = 'PTC02_%i' % wave
@@ -404,37 +397,34 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             #istructPTC02w = ptc02w.build_scriptdict(diffvalues=diffPTC02w,elvis=elvis)
             test_sequence[itestkey] = copy.deepcopy(ptc02w)
 
-
     if _toGen['BF01']:
-        
+
         diffBF01 = dict(mirr_on=0,
-                         vstart=0,
-                         vend=2086)
+                        vstart=0,
+                        vend=2086)
 
         diffBF01.update(diffvalues)
         tFWC_flat800 = ogse.profile['tFWC_flat']['nm800']
         # 5%, 10%, 20%, 30%, 50%, 70%, 80%, 90%, 100%, 110%, 120%
         exptsBF01 = (np.array([5., 10., 20., 30., 50., 70., 80., 90.,
-                                100., 110., 120.])/100.*tFWC_flat800).tolist()  # ms
+                               100., 110., 120.]) / 100. * tFWC_flat800).tolist()  # ms
         frsBF01 = [10, 10, 10, 10, 10, 10, 10, 10, 4, 4, 4]
-        
-        
+
         bf01 = BF01.BF01(inputs=dict(
-                elvis=elvis,
-                CHAMBER=CHAMBER,
-                test='BF01',
-                exptimes=exptsBF01,
-                frames=frsBF01,
-                wavelength=800,
-                Npix=5,
-                surrogate='PTC01'
-                ))
-        
+            elvis=elvis,
+            CHAMBER=CHAMBER,
+            test='BF01',
+            exptimes=exptsBF01,
+            frames=frsBF01,
+            wavelength=800,
+            Npix=5,
+            surrogate='PTC01'
+        ))
+
         test_sequence['BF01'] = copy.deepcopy(bf01)
-        
-    
+
     if _toGen['BF01WAVE']:
-        
+
         print 'BF01WAVE...'
 
         wavesBF01w = [590, 730, 880]
@@ -449,7 +439,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             tFWC_flatw = ogse.profile['tFWC_flat']['nm%i' % wave]
 
             exptsBF01w = (np.array(
-                [10., 30., 50., 70., 80., 90.])/100.*tFWC_flatw).tolist()
+                [10., 30., 50., 70., 80., 90.]) / 100. * tFWC_flatw).tolist()
             frsBF01w = [4, 4, 4, 4, 4, 4]
 
             itestkey = 'BF01_%i' % wave
@@ -459,18 +449,15 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             print '%s...' % itestkey
 
             bf01w = BF01.BF01(inputs=dict(elvis=elvis,
-                                             CHAMBER=CHAMBER,
-                                             test=itestkey,
-                                             exptimes=exptsBF01w,
-                                             frames=frsBF01w,
-                                             wavelength=wave,
-                                             surrogate=isurrogate,
-                                             diffvalues=diffBF01w))
+                                          CHAMBER=CHAMBER,
+                                          test=itestkey,
+                                          exptimes=exptsBF01w,
+                                          frames=frsBF01w,
+                                          wavelength=wave,
+                                          surrogate=isurrogate,
+                                          diffvalues=diffBF01w))
 
             test_sequence[itestkey] = copy.deepcopy(bf01w)
-
-        
-
 
     if toGen['FLATFLUX00']:
 
@@ -493,16 +480,14 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             print '%s...' % itestkey
 
             flatflux00w = PTC0X.PTC0X(inputs=dict(elvis=elvis,
-                                                CHAMBER=CHAMBER,
-                                                wavelength=wave,
-                                                exptimes=exptsFLATFLUX00w,
-                                                frames=frsFLATFLUX00,
-                                                test=itestkey,
-                                                diffvalues=diffFLATFLUX00w))
+                                                  CHAMBER=CHAMBER,
+                                                  wavelength=wave,
+                                                  exptimes=exptsFLATFLUX00w,
+                                                  frames=frsFLATFLUX00,
+                                                  test=itestkey,
+                                                  diffvalues=diffFLATFLUX00w))
 
             test_sequence[itestkey] = copy.deepcopy(flatflux00w)
-
-
 
    # PTC-02 - Temp.
 
@@ -519,7 +504,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         # 10%, 30%, 50%, 70%, 80%, 90% x FWC. 4 frames per fluence.
         tFWC_flatw = ogse.profile['tFWC_flat']['nm%i' % wavePTC02T]
         exptsPTC02T = (np.array([10., 30., 50., 70., 80., 90.]) /
-                       100.*tFWC_flatw).tolist()
+                       100. * tFWC_flatw).tolist()
         frsPTC02T = [4, 4, 4, 4, 4, 4]
 
         for it, T in enumerate(TempsPTC02T):
@@ -555,53 +540,52 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
         # 5 frames per fluence: 1%, 2%, 3%, 5%, 10%, 20%,30%, 50%,70%,80%,85%,90%,95%
         tFWC_flatNL01 = ogse.profile['tFWC_flat']['nm%i' % waveNL01]
         exptsNL01 = (np.array([0.5, 0.7, 1., 2., 3., 5., 10., 20., 30., 55., 70., 80., 85.,
-                               90., 95., 100.,110.])/100. * tFWC_flatNL01).tolist()  # ms
+                               90., 95., 100., 110.]) / 100. * tFWC_flatNL01).tolist()  # ms
         exptinterNL01 = 0.5 * tFWC_flatNL01
-        frsNL01 = (np.ones(len(exptsNL01), dtype='int32')*4).tolist()
+        frsNL01 = (np.ones(len(exptsNL01), dtype='int32') * 4).tolist()
 
         nl01 = NL01.NL01(inputs=dict(elvis=elvis,
                                      CHAMBER=CHAMBER,
                                      test='NL01',
-                                     exptimes=exptsNL01, 
+                                     exptimes=exptsNL01,
                                      exptinter=exptinterNL01,
-                                     frames=frsNL01, 
+                                     frames=frsNL01,
                                      wavelength=waveNL01,
                                      diffvalues=diffNL01))
 
         #structNL01 = nl01.build_scriptdict(diffvalues=diffNL01,elvis=elvis)
         test_sequence['NL01'] = copy.deepcopy(nl01)
 
-
     # NL-02
 
 #    if _toGen['NL02']:
 #
 #        print 'NL02...'
-#        
+#
 #        diffNL02 = dict(mirr_on=0)
 #        diffNL02.update(diffvalues)
-#        
+#
 #        FLUDIVIDE = 20.
-#        
+#
 #        relfluencesNL02 = np.array([0.5, 0.7, 1., 2., 3., 5., 10., 20., 30., 55., 70., 80., 85.,
 #                               90., 95., 100.,110.])
-#        
+#
 #        waveNL02A = 0
 #        tFWCwA = ogse.profile['tFWC_flat']['nm%i' % waveNL02A]
-#        
+#
 #        ixLOWFLU = np.where(relfluencesNL02<FLUDIVIDE)
 #        exptsNL02A = (relfluencesNL02[ixLOWFLU]/100. * tFWCwA).tolist()  # ms
 #        framesNL02A = (np.ones(len(exptsNL02A), dtype='int32')*4).tolist()
-#        
-#        
+#
+#
 #        waveNL02B = 880
 #        tFWCwB = ogse.profile['tFWC_flat']['nm%i' % waveNL02B]
-#        
+#
 #        ixHIFLU = np.where(relfluencesNL02>=FLUDIVIDE)
 #        exptsNL02B = (relfluencesNL02[ixHIFLU]/100. * tFWCwB).tolist()  # ms
 #        framesNL02B = (np.ones(len(exptsNL02B), dtype='int32')*4).tolist()
-#        
-#        
+#
+#
 #
 #        nl02 = NL02.NL02(inputs=dict(elvis=elvis,
 #                                     CHAMBER=CHAMBER,
@@ -621,34 +605,30 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
     if _toGen['HENK01']:
 
         print 'NL02... HACKED FOR HENK'
-        
+
         diffNL02 = dict(mirr_on=0)
         diffNL02.update(diffvalues)
-        
+
         FLUDIVIDE = 20.
-        
-        #relfluencesNL02 = np.array([0.5, 0.7, 1., 2., 3., 5., 10., 20., 30., 55., 70., 80., 85.,
+
+        # relfluencesNL02 = np.array([0.5, 0.7, 1., 2., 3., 5., 10., 20., 30., 55., 70., 80., 85.,
         #                       90., 95., 100.,110.])
-        
-        
-        relfluencesNL02A = np.array([0.1,0.15,0.2,0.25,0.3,0.4,0.5,0.75,1.,1.5,
-                                     2.,3.,5.])
-    
+
+        relfluencesNL02A = np.array([0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.75, 1., 1.5,
+                                     2., 3., 5.])
+
         waveNL02A = 0
         tFWCwA = ogse.profile['tFWC_flat']['nm%i' % waveNL02A]
-        
-        exptsNL02A = (relfluencesNL02A/100. * tFWCwA).tolist()  # ms
-        framesNL02A = (np.ones(len(exptsNL02A), dtype='int32')*10).tolist()
-        
-        
+
+        exptsNL02A = (relfluencesNL02A / 100. * tFWCwA).tolist()  # ms
+        framesNL02A = (np.ones(len(exptsNL02A), dtype='int32') * 10).tolist()
+
         waveNL02B = 880
         tFWCwB = ogse.profile['tFWC_flat']['nm%i' % waveNL02B]
-        relfluencesNL02B = np.array([10.,15.,20.,30.,40.,50.,60.,70.,80.,90.])
-        
+        relfluencesNL02B = np.array([10., 15., 20., 30., 40., 50., 60., 70., 80., 90.])
 
-        exptsNL02B = (relfluencesNL02B/100. * tFWCwB).tolist()  # ms
-        framesNL02B = (np.ones(len(exptsNL02B), dtype='int32')*4).tolist()
-
+        exptsNL02B = (relfluencesNL02B / 100. * tFWCwB).tolist()  # ms
+        framesNL02B = (np.ones(len(exptsNL02B), dtype='int32') * 4).tolist()
 
         nl02 = NL02.NL02(inputs=dict(elvis=elvis,
                                      CHAMBER=CHAMBER,
@@ -659,7 +639,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                                      wavelengthB=waveNL02B,
                                      exptimesB=exptsNL02B,
                                      framesB=framesNL02B,
-                                     exptinter=0.5*tFWCwB,
+                                     exptinter=0.5 * tFWCwB,
                                      diffvalues=diffNL02))
 
         test_sequence['HENK01'] = copy.deepcopy(nl02)
@@ -680,9 +660,9 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
             tFWC_pointw = ogse.profile['tFWC_point']['nm%i' % wave]
 
-            iexptimeF00 = 60./100. * tFWC_pointw
-            
-            deltafocusF00 = 0.2 # mm
+            iexptimeF00 = 60. / 100. * tFWC_pointw
+
+            deltafocusF00 = 0.2  # mm
 
             itestkey = 'FOCUS00_%i' % wave
 
@@ -739,16 +719,16 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             test_sequence[itestkey] = copy.deepcopy(psf01w)
 
     if _toGen['PSFLUX00']:
-        
+
         print 'PSFLUX00...'
-        
+
         wavesPSFLUX00 = [590, 730, 800, 880, 0]
-        
+
         diffPSFLUX00w = dict()
         diffPSFLUX00w.update(diffvalues)
-        
+
         for iw, wave in enumerate(wavesPSFLUX00):
-            
+
             tFWC_pointw = ogse.profile['tFWC_point']['nm%i' % wave]
             exptsPSFLUX00w = (
                 np.array([0.1, 0.3, 0.6, 0.8]) * tFWC_pointw).tolist()
@@ -815,12 +795,12 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
     if _toGen['PERSIST01']:
 
         print 'PERSIST01...'
-        
+
         #wavePERS = 2000
         #tFWC_point_PERS = ogse.profile['tFWC_point']['nm%i' % wavePERS]
 
-        #exptPER01_SATUR = tFWC_point_PERS*2500.   # s
-        exptPER01_SATUR = 600. # s., HARDWIRED
+        # exptPER01_SATUR = tFWC_point_PERS*2500.   # s
+        exptPER01_SATUR = 600.  # s., HARDWIRED
         exptPER01_LATEN = 565.  # s
 
         diffPER01 = dict()
@@ -837,22 +817,18 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
         test_sequence['PERSIST01'] = copy.deepcopy(persist01)
 
-    
     if _toGen['MOT_WARM']:
 
         print 'MOT_WARM...'
-        
-        
+
         diffMOT_WM = dict()
         diffMOT_WM.update(diffvalues)
 
         mot_wm = MOT_WARM.MOT_WARM(inputs=dict(elvis=elvis,
-                                                CHAMBER=CHAMBER,
-                                                test='MOT_WARM',
-                                                diffvalues=diffMOT_WM))
+                                               CHAMBER=CHAMBER,
+                                               test='MOT_WARM',
+                                               diffvalues=diffMOT_WM))
 
         test_sequence['MOT_WARM'] = copy.deepcopy(mot_wm)
-
-
 
     return test_sequence

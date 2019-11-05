@@ -76,7 +76,7 @@ class Config():
             IDL=11.,
             IDH=18.,
             IG1s=[2., 6.],
-            id_delays=[toi_chinj01*3, toi_chinj01*2],
+            id_delays=[toi_chinj01 * 3, toi_chinj01 * 2],
             toi_chinj=toi_chinj01)
         return inputs
 

@@ -13,6 +13,7 @@ from vison.datamodel import core
 from vison import __version__
 # END IMPORT
 
+
 def DataDict_builder(explog, inputs):
     """ """
 

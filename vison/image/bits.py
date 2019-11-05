@@ -42,7 +42,7 @@ Quads = ccdmod.Quads
 
 def show_histo_adus(qdata, title=''):
 
-    bins = np.arange(0, 2**16-1)
+    bins = np.arange(0, 2**16 - 1)
     histo = np.histogram(qdata, bins=bins, density=True)
 
     fig = plt.figure()
@@ -51,7 +51,7 @@ def show_histo_adus(qdata, title=''):
     PDF = histo[0]
     bins = histo[1]
 
-    bincenters = (bins[0:-1]+bins[1:])/2.
+    bincenters = (bins[0:-1] + bins[1:]) / 2.
     #binwidth = bins[1]-bins[0]
 
     ax.semilogx(bincenters, PDF, color='blue')
@@ -72,29 +72,30 @@ def show_histo_adus(qdata, title=''):
 #    bits = np.array(list(bin(int(integer))[2:].rjust(16,'0'))).astype('int')[::-1]
 #    return bits
 
-def get_histo_bits(ccdobj,Q,vstart=0,vend=2086):
+def get_histo_bits(ccdobj, Q, vstart=0, vend=2086):
     """ """
     qdata = ccdobj.get_quad(Q, canonical=True)
-    qdata = qdata[:,vstart:vend].copy()
+    qdata = qdata[:, vstart:vend].copy()
     vector = qdata.astype('int32').flatten()
     bits = (((vector[:, None] & (1 << np.arange(16)))) > 0).astype(int)
     bitsmean = bits.mean(axis=0)
     return bitsmean
 
+
 def show_histo_bits(ccdobj, vstart=0, vend=2086, suptitle='', figname=''):
 
     pQuads = ['E', 'F', 'H', 'G']
 
-    bins = np.arange(0, 16)+0.5
+    bins = np.arange(0, 16) + 0.5
 
     axs = []
     fig = plt.figure()
 
     for iQ, pQ in enumerate(pQuads):
 
-        axs.append(fig.add_subplot(2, 2, iQ+1))
-        
-        bitsmean = get_histo_bits(ccdobj,pQ,vstart,vend)
+        axs.append(fig.add_subplot(2, 2, iQ + 1))
+
+        bitsmean = get_histo_bits(ccdobj, pQ, vstart, vend)
 
         axs[-1].bar(bins, bitsmean, width=1,
                     edgecolor='blue', facecolor='white')
@@ -133,10 +134,10 @@ def _get_corrmap(bits):
     for i in range(Nbits):
         for j in range(i, Nbits):
 
-            EXY = (mbits[:, i]*mbits[:, j]).mean()
+            EXY = (mbits[:, i] * mbits[:, j]).mean()
             sx = sbits[i]
             sy = sbits[j]
-            corrmx[i, j] = EXY/(sx*sy)
+            corrmx[i, j] = EXY / (sx * sy)
 
     corrmx[np.isnan(corrmx)] = 0.
     corrmx = corrmx + corrmx.T - np.diag(np.diag(corrmx))
@@ -148,14 +149,14 @@ def show_correlation_bits(ccdobj, suptitle='', figname=''):
 
     pQuads = ['E', 'F', 'H', 'G']
 
-    bins = np.arange(0, 16, 2)+0.5
+    bins = np.arange(0, 16, 2) + 0.5
 
     axs = []
     fig = plt.figure()
 
     for iQ, pQ in enumerate(pQuads):
 
-        axs.append(fig.add_subplot(2, 2, iQ+1))
+        axs.append(fig.add_subplot(2, 2, iQ + 1))
         qdata = ccdobj.get_quad(pQ, canonical=True)
 
         vector = qdata.astype('int32').flatten()
@@ -195,7 +196,9 @@ def test():
 
     # data = dict(fits='XTALK_July2017/18July2017/Closed_ROE_BOX/With_Lid/MODs/Inductor_shields/L523_AND_L516_AND_L517_shielded/Channel_3/H/EUC_6_180717d170933T_ROE1_CCD2.fits',
     #            Q='F')
-    data = dict(fits='PIXBOUNCE_images_atDisk3/17_7_17/FPGA_568C/FWD/Baseline/Channel_1/17_07/EUC_2_170717D093830T_ROE1_CCD1.fits', Q='F')
+    data = dict(
+        fits='PIXBOUNCE_images_atDisk3/17_7_17/FPGA_568C/FWD/Baseline/Channel_1/17_07/EUC_2_170717D093830T_ROE1_CCD1.fits',
+        Q='F')
 
     # data = dict(fits = 'PIXBOUNCE_images_atDisk3/17_7_17/FPGA_568C/RWD/Channel1/17_07/EUC_1_170717D162109T_ROE1_CCD1.fits',
     #            Q='E') # positive

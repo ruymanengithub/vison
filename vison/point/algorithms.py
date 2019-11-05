@@ -20,14 +20,14 @@ def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35
                verbose=False, full=False, CEN0=None):
     """ Implement the Floating-window first moment centroid algorithm
         chosen for JWST target acquisition.
-        
+
         See JWST-STScI-001117 and JWST-STScI-001134 for details.
-        
+
         This code makes no attempt to vectorize or optimize for speed;
         it's pretty much just a straight verbatim implementation of the
         IDL-like pseudocode provided in JWST-STScI-001117
-        
-        
+
+
         Parameters
         ----------
         image : array_like
@@ -84,8 +84,8 @@ def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35
     YSUM3 = 0.0
     CONVERGENCEFLAG = False
 
-    for i in np.arange(2*XHW+1) + XPEAK-XHW:
-        for j in np.arange(2*YHW+1) + YPEAK-YHW:
+    for i in np.arange(2 * XHW + 1) + XPEAK - XHW:
+        for j in np.arange(2 * YHW + 1) + YPEAK - YHW:
             XLOC = i
             YLOC = j
             SUM += image[j, i]
@@ -119,8 +119,8 @@ def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35
         YSUM = 0.0
         YSUM2 = 0.0
         YSUM3 = 0.0
-        for i in np.arange(2*(XHW+1)+1) + int(oldXCEN)-(XHW+1):
-            for j in np.arange(2*(YHW+1)+1) + int(oldYCEN)-(YHW+1):
+        for i in np.arange(2 * (XHW + 1) + 1) + int(oldXCEN) - (XHW + 1):
+            for j in np.arange(2 * (YHW + 1) + 1) + int(oldYCEN) - (YHW + 1):
                 # stop()
                 # -- Calculate weights
                 # Initialize weights to zero:
@@ -132,13 +132,13 @@ def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35
                 # If within original centroid box, set the weight to one:
                 if (XOFF <= XHW):
                     XWEIGHT = 1
-                elif (XOFF > XHW) and (XOFF < XHW+1):
+                elif (XOFF > XHW) and (XOFF < XHW + 1):
                     # Else if on the border, then weight needs to be scaled:
                     XWEIGHT = XHW + 1 - XOFF
                 # If within original centroid box, set the weight to one:
                 if (YOFF <= YHW):
                     YWEIGHT = 1
-                elif (YOFF > YHW) and (YOFF < YHW+1):
+                elif (YOFF > YHW) and (YOFF < YHW + 1):
                     # Else if on the border, then weight needs to be scaled:
                     YWEIGHT = YHW + 1 - YOFF
                 WEIGHT = XWEIGHT * YWEIGHT

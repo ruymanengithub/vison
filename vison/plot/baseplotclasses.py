@@ -21,7 +21,7 @@ import string as st
 import gc
 
 import matplotlib
-#matplotlib.use('Agg')
+# matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 matplotlib.rcParams['font.size'] = 17
 matplotlib.rc('xtick', labelsize=14)
@@ -36,9 +36,9 @@ from mpl_toolkits.mplot3d import Axes3D
 # END IMPORT
 
 
-def _squiggle_xy(a, b, c, d, i=np.arange(0.0, 2*np.pi, 0.05)):
+def _squiggle_xy(a, b, c, d, i=np.arange(0.0, 2 * np.pi, 0.05)):
     """Dummy function used for Tests only."""
-    return np.sin(i*a)*np.cos(i*b), np.sin(i*c)*np.cos(i*d)
+    return np.sin(i * a) * np.cos(i * b), np.sin(i * c) * np.cos(i * d)
 
 
 class BasicPlot(object):
@@ -50,12 +50,13 @@ class BasicPlot(object):
         if 'fig' in kwargs:
             self.fig = kwargs['fig']
         self.axs = []
-        
+
     def __enter__(self):
         return self
+
     def __exit__(self, type, value, traceback):
         gc.collect()
-        return isinstance(value,TypeError)
+        return isinstance(value, TypeError)
 
     def populate_axes(self):
         raise NotImplementedError("Subclass must implement abstract method")
@@ -68,45 +69,43 @@ class BasicPlot(object):
         self.fig = plt.figure(figsize=self.figsize)
 
     def render(self, figname=''):
-        
+
         self.init_fig()
 
         self.populate_axes()
 
         self.plt_trimmer()
-        
-        #figname = '' # TESTS
+
+        # figname = '' # TESTS
 
         if figname == '':
             plt.show()
         else:
             plt.savefig(figname)
             #import pickle as pl
-            #pl.dump(self.fig, file('test.pickle','w'))        
-        
+            #pl.dump(self.fig, file('test.pickle','w'))
+
         plt.close(self.fig)
         plt.close('all')
         plt.clf()
         gc.collect()
-        
+
 
 class ShellPlot(BasicPlot):
     """ """
-    
+
     def __init__(self, data, **kwargs):
-        
+
         self.data = data
         self.plotter = kwargs['plotter']
-        kwargs.pop('plotter')        
+        kwargs.pop('plotter')
         self.meta = dict()
         self.meta.update(kwargs)
-        
+
     def render(self, figname=''):
         kwargs = self.meta.copy()
         kwargs['figname'] = figname
-        self.plotter(self.data,**kwargs)
-
-        
+        self.plotter(self.data, **kwargs)
 
 
 class XYPlot(BasicPlot):
@@ -116,97 +115,91 @@ class XYPlot(BasicPlot):
         super(XYPlot, self).__init__(**kwargs)
 
         meta = dict(suptitle='',
-                        doLegend=False,
-                        doNiceXDate=False,
-                        doYErrbars=False)
+                    doLegend=False,
+                    doNiceXDate=False,
+                    doYErrbars=False)
 
         meta.update(kwargs)
 
-        self.figsize = (8,7)
+        self.figsize = (8, 7)
         self.data = copy.deepcopy(data)
         self.meta = dict()
         self.meta.update(meta)
 
         self.handles = []
         self.labels = []
-        
+
         self.corekwargs = dict()
         if 'corekwargs' in kwargs:
-            self.corekwargs.update(kwargs['corekwargs']) 
-    
-    def _ax_core_funct(self,key=''):
+            self.corekwargs.update(kwargs['corekwargs'])
+
+    def _ax_core_funct(self, key=''):
         """ """
-        
+
         ckwargs = self.corekwargs.copy()
-        
+
         if key != '':
             xarr = self.data['x'][key]
             yarr = self.data['y'][key]
-            
-            label = st.replace(key,'_','\_')
-            kwargs = dict(label=label, marker='.',linestyle='')
+
+            label = st.replace(key, '_', '\_')
+            kwargs = dict(label=label, marker='.', linestyle='')
             if key in ckwargs:
                 kwargs.update(ckwargs[key])
             else:
                 kwargs.update(ckwargs)
-            handle = self.ax.plot(xarr,yarr,**kwargs)
+            handle = self.ax.plot(xarr, yarr, **kwargs)
             if self.meta['doYErrbars']:
                 eyarr = self.data['ey'][key]
-                self.ax.errorbar(xarr,yarr,yerr=eyarr,color='k',fmt='',linestyle='')
+                self.ax.errorbar(xarr, yarr, yerr=eyarr, color='k', fmt='', linestyle='')
         else:
             xarr = self.data['x']
             yarr = self.data['y']
-            kwargs=dict(marker='.',linestyle='')
+            kwargs = dict(marker='.', linestyle='')
             kwargs.update(ckwargs)
             self.ax.plot(xarr, yarr, **kwargs)
             handle, label = None, None
             if self.meta['doYErrbars']:
                 eyarr = self.data['ey']
-                self.ax.errorbar(xarr,yarr,yerr=eyarr,color='k',fmt='',linestyle='')
-        
+                self.ax.errorbar(xarr, yarr, yerr=eyarr, color='k', fmt='', linestyle='')
+
         return handle, label
-        
-       
-        
 
     def populate_axes(self):
 
-
         self.ax = self.fig.add_subplot(111)
-        
+
         try:
             labelkeys = self.data['labelkeys']
         except KeyError:
             labelkeys = []
-        
+
         if len(labelkeys) > 0:
             for labelkey in labelkeys:
                 handle, label = self._ax_core_funct(labelkey)
                 self.handles += handle
                 self.labels.append(label)
         else:
-            
+
             _, _ = self._ax_core_funct()
-            
 
         if self.meta['doNiceXDate']:
             _xticks = self.ax.get_xticks()
             if len(_xticks) > 6:
                 self.ax.set_xticks(_xticks[::2])
-        
+
         if 'title' in self.meta:
             self.ax.set_title(self.meta['title'])
-        
+
         if 'xlabel' in self.meta:
             self.ax.set_xlabel(self.meta['xlabel'])
         if 'ylabel' in self.meta:
             self.ax.set_ylabel(self.meta['ylabel'])
-        
+
         if 'ylim' in self.meta:
             self.ax.set_ylim(self.meta['ylim'])
         if 'xlim' in self.meta:
             self.ax.set_xlim(self.meta['xlim'])
-
 
     def plt_trimmer(self):
 
@@ -217,17 +210,15 @@ class XYPlot(BasicPlot):
 
             plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))
             self.fig.autofmt_xdate()
-        
-        if self.meta['suptitle'] != '':        
+
+        if self.meta['suptitle'] != '':
             plt.subplots_adjust(top=0.95)
             plt.suptitle(self.meta['suptitle'])
 
         plt.tight_layout()
-        
+
         if self.meta['doLegend']:
             plt.subplots_adjust(right=0.85)
-    
-        
 
 
 class CCD2DPlot(BasicPlot):
@@ -237,13 +228,12 @@ class CCD2DPlot(BasicPlot):
         super(CCD2DPlot, self).__init__(**kwargs)
 
         meta = dict(suptitle='',
-                        doLegend=False,
-                        doColorbar=False,
-                        doNiceXDate=False,
-                        doRotateXLabels=False)
-        
+                    doLegend=False,
+                    doColorbar=False,
+                    doNiceXDate=False,
+                    doRotateXLabels=False)
+
         meta.update(kwargs)
-        
 
         self.figsize = (8, 8)
         self.Quads = ['E', 'F', 'H', 'G']
@@ -255,51 +245,48 @@ class CCD2DPlot(BasicPlot):
         self.fig = None
         self.axs = dict()
         self.axarr = []
-        
+
         self.corekwargs = dict()
         if 'corekwargs' in kwargs:
-            self.corekwargs.update(kwargs['corekwargs']) 
-            
+            self.corekwargs.update(kwargs['corekwargs'])
+
     def init_fig(self):
         self._init_fig_and_axes()
-    
+
     def _init_fig_and_axes(self):
         """ """
         plt.close('all')
         fig, axsarr = plt.subplots(
             2, 2, sharex=True, sharey=True, figsize=self.figsize)
         self.fig = fig
-        
+
         self.axsarr = axsarr
 
         # initialisation of self.axs
-        
+
         for Q in self.Quads:
             self.axs[Q] = None
 
         self.axs['E'] = self.axsarr[0, 0]
 
-        plotlist = ['E', 'F','H','G'] 
-        
+        plotlist = ['E', 'F', 'H', 'G']
+
         for k in range(len(plotlist)):
             Q = plotlist[k]
             self.axs[Q] = self.axsarr.flatten()[k]
-            
+
     def _ax_core_funct(self, ax, Qdict, key=''):
         raise NotImplementedError("Subclass must implement abstract method")
-    
 
     def populate_axes(self):
 
-        
         try:
             labelkeys = self.data['labelkeys']
         except KeyError:
             labelkeys = []
-        
 
         for iQ, Q in enumerate(self.Quads):
-            
+
             ax = self.axs[Q]
             Qdict = self.data[Q]
 
@@ -328,19 +315,17 @@ class CCD2DPlot(BasicPlot):
                 ax.set_xlabel(self.meta['xlabel'])
             if 'ylabel' in self.meta and Q in ['E', 'H']:
                 ax.set_ylabel(self.meta['ylabel'])
-            
+
             if 'ylim' in self.meta:
                 ax.set_ylim(self.meta['ylim'])
             if 'xlim' in self.meta:
                 ax.set_xlim(self.meta['xlim'])
-            
-
 
     def plt_trimmer(self):
 
         for Q in ['E', 'F']:
             plt.setp(self.axs[Q].get_xticklabels(), visible=False)
-                        
+
         for Q in ['F', 'G']:
             plt.setp(self.axs[Q].get_yticklabels(), visible=False)
 
@@ -348,27 +333,28 @@ class CCD2DPlot(BasicPlot):
             for Q in self.Quads:
                 for tick in self.axs[Q].get_xticklabels():
                     tick.set_rotation(45)
-            
+
         if self.meta['doLegend']:
             plt.figlegend(self.handles, self.labels, loc='center right')
-            
+
         if self.meta['doNiceXDate']:
             plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))
             self.fig.autofmt_xdate()
             # plt.locator_params(nticks=4,axis='x',prune='both')
 
         plt.locator_params(axis='y', nbins=5, prune='both')
-        
-        #plt.locator_params(axis='y',prune='both')
+
+        # plt.locator_params(axis='y',prune='both')
         if not self.meta['doNiceXDate']:
-            try: plt.locator_params(axis='x', nbins=4, prune='both')
-            except: pass
-                    
+            try:
+                plt.locator_params(axis='x', nbins=4, prune='both')
+            except BaseException:
+                pass
+
         plt.subplots_adjust(hspace=0.0)
         plt.subplots_adjust(wspace=0.0)
 
         plt.margins(0.05)
-
 
         plt.suptitle(self.meta['suptitle'])
         # plt.tight_layout()
@@ -379,22 +365,23 @@ class CCD2DPlot(BasicPlot):
         if self.meta['doColorbar']:
             #cbar_ax = self.fig.add_axes([0.85, 0.15, 0.05, 0.7])
             #plt.colorbar(cax=cbar_ax, mappable=self.mappables[0],orientation='vertical')
-            self.fig.colorbar(self.mappables[0], ax=self.axsarr.flatten().tolist(), 
+            self.fig.colorbar(self.mappables[0], ax=self.axsarr.flatten().tolist(),
                               orientation='vertical', fraction=.1)
 
+
 class CCD2DPlotYvsX(CCD2DPlot):
-    
+
     def _ax_core_funct(self, ax, Qdict, key=''):
-        
+
         ckwargs = self.corekwargs.copy()
 
         if key != '':
-            
+
             xarr = Qdict['x'][key]
             yarr = Qdict['y'][key]
-            
+
             label = st.replace(key, '_', '\_')
-            kwargs=dict(label=label,marker='.',linestyle='')
+            kwargs = dict(label=label, marker='.', linestyle='')
             if key in ckwargs:
                 kwargs.update(ckwargs[key])
             else:
@@ -403,7 +390,7 @@ class CCD2DPlotYvsX(CCD2DPlot):
         else:
             xarr = Qdict['x']
             yarr = Qdict['y']
-            kwargs=dict(marker='.',linestyle='')
+            kwargs = dict(marker='.', linestyle='')
             kwargs.update(ckwargs)
             ax.plot(xarr, yarr, **kwargs)
             handle, label = None, None
@@ -418,14 +405,14 @@ class BeamPlot(BasicPlot):
 
         super(BeamPlot, self).__init__(**kwargs)
 
-        meta = dict(suptitle='', 
+        meta = dict(suptitle='',
                     ccdtitles=dict(CCD1='CCD1', CCD2='CCD2', CCD3='CCD3'),
                     doLegend=False,
                     doColorbar=False,
                     doNiceXDate=False,
                     doRotateXLabels=False)
         meta.update(kwargs)
-        
+
         self.figsize = (15, 6)
         self.Quads = ['E', 'F', 'H', 'G']
         self.CCDs = [1, 2, 3]
@@ -437,11 +424,10 @@ class BeamPlot(BasicPlot):
         self.fig = None
         self.axs = dict()
         self.axsarr = []
-        
+
         self.corekwargs = dict()
         if 'corekwargs' in kwargs:
-            self.corekwargs.update(kwargs['corekwargs']) 
-        
+            self.corekwargs.update(kwargs['corekwargs'])
 
     def init_fig(self):
         self._init_fig_and_axes()
@@ -452,7 +438,7 @@ class BeamPlot(BasicPlot):
         fig, axsarr = plt.subplots(
             2, 6, sharex=True, sharey=True, figsize=self.figsize)
         self.fig = fig
-        
+
         self.axsarr = axsarr
 
         # initialisation of self.axs
@@ -468,18 +454,18 @@ class BeamPlot(BasicPlot):
         plotlist = [item for item in itertools.product(self.CCDs, ['E', 'F'])] +\
                    [item for item in itertools.product(self.CCDs, ['H', 'G'])]
 
-        for k in range(1, len(plotlist)+1):
-            CCDkey = 'CCD%i' % plotlist[k-1][0]
-            Q = plotlist[k-1][1]
-            self.axs[CCDkey][Q] = self.axsarr.flatten()[k-1]
-            
+        for k in range(1, len(plotlist) + 1):
+            CCDkey = 'CCD%i' % plotlist[k - 1][0]
+            Q = plotlist[k - 1][1]
+            self.axs[CCDkey][Q] = self.axsarr.flatten()[k - 1]
+
     def _ax_core_funct(self, ax, CQdict, key=''):
         """ """
         raise NotImplementedError("Subclass must implement abstract method")
 
     def populate_axes(self):
         """ """
-        
+
         try:
             labelkeys = self.data['labelkeys']
         except KeyError:
@@ -520,13 +506,12 @@ class BeamPlot(BasicPlot):
                     ax.set_xlabel(self.meta['xlabel'])
                 if 'ylabel' in self.meta and Q in ['E', 'H'] and CCD == 1:
                     ax.set_ylabel(self.meta['ylabel'])
-                
+
                 if 'ylim' in self.meta:
                     ax.set_ylim(self.meta['ylim'])
                 if 'xlim' in self.meta:
                     ax.set_xlim(self.meta['xlim'])
 
-        
         # self.axs[CCDkey][Q].locator_params(nticks=4,axis='x')
 
     def plt_trimmer(self):
@@ -548,28 +533,28 @@ class BeamPlot(BasicPlot):
                 for Q in self.Quads:
                     for tick in self.axs['CCD%i' % CCD][Q].get_xticklabels():
                         tick.set_rotation(45)
-            
 
         if self.meta['doLegend']:
             plt.figlegend(self.handles, self.labels, loc='center right')
-            
+
         if self.meta['doNiceXDate']:
             plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))
             self.fig.autofmt_xdate()
             # plt.locator_params(nticks=4,axis='x',prune='both')
 
         plt.locator_params(axis='y', nbins=5, prune='both')
-        
-        #plt.locator_params(axis='y',prune='both')
+
+        # plt.locator_params(axis='y',prune='both')
         if not self.meta['doNiceXDate']:
-            try: plt.locator_params(axis='x', nbins=4, prune='both')
-            except: pass
-                    
+            try:
+                plt.locator_params(axis='x', nbins=4, prune='both')
+            except BaseException:
+                pass
+
         plt.subplots_adjust(hspace=0.0)
         plt.subplots_adjust(wspace=0.0)
 
         plt.margins(0.05)
-
 
         plt.suptitle(self.meta['suptitle'])
         # plt.tight_layout()
@@ -580,22 +565,23 @@ class BeamPlot(BasicPlot):
         if self.meta['doColorbar']:
             #cbar_ax = self.fig.add_axes([0.85, 0.15, 0.05, 0.7])
             #plt.colorbar(cax=cbar_ax, mappable=self.mappables[0],orientation='vertical')
-            self.fig.colorbar(self.mappables[0], ax=self.axsarr.flatten().tolist(), 
+            self.fig.colorbar(self.mappables[0], ax=self.axsarr.flatten().tolist(),
                               orientation='vertical', fraction=.1)
-        
+
+
 class BeamPlotYvX(BeamPlot):
 
     def _ax_core_funct(self, ax, CQdict, key=''):
-        
+
         ckwargs = self.corekwargs.copy()
 
         if key != '':
-            
+
             xarr = CQdict['x'][key]
             yarr = CQdict['y'][key]
-            
+
             label = st.replace(key, '_', '\_')
-            kwargs=dict(label=label,marker='.',linestyle='')
+            kwargs = dict(label=label, marker='.', linestyle='')
             if key in ckwargs:
                 kwargs.update(ckwargs[key])
             else:
@@ -604,26 +590,26 @@ class BeamPlotYvX(BeamPlot):
         else:
             xarr = CQdict['x']
             yarr = CQdict['y']
-            kwargs=dict(marker='.',linestyle='')
+            kwargs = dict(marker='.', linestyle='')
             kwargs.update(ckwargs)
             ax.plot(xarr, yarr, **kwargs)
             handle, label = None, None
 
         return handle, label
 
+
 class BeamImgShow(BeamPlot):
-    
+
     mappables = []
-    
+
     def _ax_core_funct(self, ax, CQdict):
-        
+
         internals = dict(origin='lower left')
         ckwargs = self.corekwargs.copy()
         internals.update(ckwargs)
         self.mappables.append(ax.imshow(CQdict['img'], **internals))
         handle, label = None, None
         return handle, label
-        
 
 
 class Beam1DHist(BeamPlot):
@@ -634,13 +620,13 @@ class Beam1DHist(BeamPlot):
         hist_kwargs = dict(weights=None,
                            cumulative=False, histtype='step', align='mid',
                            orientation='vertical', log=False)
-        
+
         hist_kwargs.update(self.corekwargs)
-        
-        #for mkey in hist_kwargs.keys():
+
+        # for mkey in hist_kwargs.keys():
         #    if mkey in self.meta:
         #        hist_kwargs[mkey] = self.meta[mkey]
-        
+
         if key != '':
             label = st.replace(key, '_', '\_')
             bins = CQdict['x'][key]
@@ -651,10 +637,9 @@ class Beam1DHist(BeamPlot):
             bins = CQdict['x']
             h = CQdict['y']
             label = None
-        
+
         _, _, patch = ax.hist(h, bins=bins, **hist_kwargs)
-        
-        
+
         return patch, label
 
 
@@ -687,9 +672,9 @@ def testBeam2DPlot():
 
     ccddict = dict()
     for iQ, Q in enumerate(['E', 'F', 'G', 'H']):
-        _x, _y = _squiggle_xy(iQ+1, iQ+1, iQ+2, iQ+2)
-        xdict = OrderedDict(foo=_x, bar=_x*2.)
-        ydict = OrderedDict(foo=_y, bar=_y*2.)
+        _x, _y = _squiggle_xy(iQ + 1, iQ + 1, iQ + 2, iQ + 2)
+        xdict = OrderedDict(foo=_x, bar=_x * 2.)
+        ydict = OrderedDict(foo=_y, bar=_y * 2.)
         ccddict[Q] = dict(x=copy.deepcopy(xdict), y=copy.deepcopy(ydict))
 
     data = dict(CCD1=copy.deepcopy(ccddict),
@@ -704,16 +689,16 @@ def testBeam2DPlot():
 
 def testBeam2ImgShow():
     """ """
-    
+
     ccddict = dict()
     for iQ, Q in enumerate(['E', 'F', 'G', 'H']):
         #_x, _y = _squiggle_xy(iQ+1, iQ+1, iQ+2, iQ+2)
         #xdict = OrderedDict(foo=_x, bar=_x*2.)
         #ydict = OrderedDict(foo=_y, bar=_y*2.)
-        x = np.linspace(0.,1.,10)
-        y = np.linspace(0.,1.,10)
-        xx, yy = np.meshgrid(x,y)
-        img = np.sqrt(xx**2.+yy**2.)
+        x = np.linspace(0., 1., 10)
+        y = np.linspace(0., 1., 10)
+        xx, yy = np.meshgrid(x, y)
+        img = np.sqrt(xx**2. + yy**2.)
         ccddict[Q] = dict(img=img)
 
     data = dict(CCD1=copy.deepcopy(ccddict),
@@ -726,8 +711,7 @@ def testBeam2ImgShow():
     beamimgshow.render(figname='')
 
 
-
 if __name__ == '__main__':
 
-    #testBeam2DPlot()
+    # testBeam2DPlot()
     testBeam2ImgShow()

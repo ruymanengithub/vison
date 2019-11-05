@@ -40,20 +40,17 @@ class TP11(TP01.TP01):
                          ('injection', self.charact_injection),
                          ('extract', self.extract),
                          ('basic', self.basic_analysis),
-                         ('debugtask',self.debugtask),
-                         ('meta', self.meta_analysis)]        
+                         ('debugtask', self.debugtask),
+                         ('meta', self.meta_analysis)]
         self.commvalues = TP11_commvalues.copy()
-        PumpTask.PumpTask.__init__(self,inputs=inputs, log=log, 
-            drill=drill, debug=debug, cleanafter=cleanafter)
-        
+        PumpTask.PumpTask.__init__(self, inputs=inputs, log=log,
+                                   drill=drill, debug=debug, cleanafter=cleanafter)
+
         self.name = 'TP11'
         self.type = 'Simple'
-        
+
         self.HKKeys = HKKeys
         self.figdict = TP01aux.get_TP01figs()
         self.CDP_lib = TP01aux.get_CDP_lib()
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        products='products')
-        
-        
-        

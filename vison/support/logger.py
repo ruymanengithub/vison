@@ -24,7 +24,7 @@ def f_text_wrapper(msg):
     if type(msg) in [str, unicode]:
         wmsg = textwrap.wrap(msg, width=width)
         #wmsg = ['%s\\' % item for item in wmsg]
-    elif type(msg) == list:
+    elif isinstance(msg, list):
         wmsg = []
         for item in msg:
             wmsg += f_text_wrapper(item)
@@ -37,9 +37,9 @@ def _info(f):
 
         msg = f_text_wrapper(msg)
 
-        if type(msg) == str:
+        if isinstance(msg, str):
             _msg = msg
-        if type(msg) == list:
+        if isinstance(msg, list):
             _msg = ''
             for item in msg:
                 _msg += '%s\n' % item

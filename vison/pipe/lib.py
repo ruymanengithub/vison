@@ -98,13 +98,13 @@ def loadexplogs(explogfs, elvis=context.elvis, addpedigree=False, datapath=None)
             for idata in range(len(datapath)):
                 explog['datapath'][explognumber == idata] = datapath[idata]
         else:
-            explog['datapath'] = np.array([datapath]*len(explog))
+            explog['datapath'] = np.array([datapath] * len(explog))
 
     return explog
 
 
 def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedkeys=[]):
-    """Checks whether a selected number of exposures is consistent with the 
+    """Checks whether a selected number of exposures is consistent with the
     expected acquisition test structure.
 
 
@@ -124,11 +124,11 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
 
         isconsistent = False
         failedkeys = ['all']
-        failedcols = np.arange(1, Ncols+1).tolist()
+        failedcols = np.arange(1, Ncols + 1).tolist()
         msgs = []
 
         report = dict(checksout=isconsistent,
-                      failedkeys=failedkeys, 
+                      failedkeys=failedkeys,
                       failedcols=failedcols,
                       msgs=msgs)
 
@@ -141,37 +141,37 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
     for iCCD in CCDs:
 
         cselbool = selbool & (explog['CCD'] == 'CCD%i' % iCCD)
-        
-        Ncsel = len(np.where(cselbool==True)[0])
-        
+
+        Ncsel = len(np.where(cselbool)[0])
+
         Ncframes = 0
         ix0 = 0
-        
-        for iC in range(1, Ncols+1):
+
+        for iC in range(1, Ncols + 1):
 
             colname = 'col%03i' % iC
 
             expectation = structure[colname]
 
             frames = expectation['frames']
-            
+
             Ncframes += frames
-            
-            ix1 = ix0+frames
-            
+
+            ix1 = ix0 + frames
+
             #print ix0, ix1
 
-            #if frames > 0:
+            # if frames > 0:
             #    ix1 = ix0+frames
-            #else:
+            # else:
             #    ix1 = None
-            
-            #if (ix1 is not None) and (ix1-ix0 != frames):
+
+            # if (ix1 is not None) and (ix1-ix0 != frames):
             #    failedcols.append(iC)
             #    continue
-            
+
             ixsubsel = np.where(cselbool)[0][ix0:ix1]
-            if len(ixsubsel) ==0:
+            if len(ixsubsel) == 0:
                 failedcols.append(iC)
                 ix0 += frames
                 continue
@@ -195,15 +195,14 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
                         key, val.__repr__(), explog[key][ixsubsel].tolist().__repr__()))
 
             ix0 += frames
-            
-        
+
         isconsistent &= Ncsel == Ncframes
-        
+
         if Ncsel > Ncframes:
             msgs.append('Number of Exposures exceeds Number of Expected Frames!')
         elif Ncsel < Ncframes:
             msgs.append('Test ended Too Early: missing Frames!')
-    
+
     failedkeys = np.unique(failedkeys).tolist()
     failedcols = np.unique(failedcols).tolist()
     msgs = np.unique(msgs).tolist()
@@ -211,9 +210,8 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
     report = dict(checksout=isconsistent,
                   failedkeys=failedkeys, failedcols=failedcols,
                   msgs=msgs)
-    
-    return report
 
+    return report
 
 
 def DataDict_builder(explog, inputs, structure):
@@ -259,7 +257,6 @@ def addHK(dd, HKKeys, elvis=context.elvis):
         HKlist, elvis=elvis)
 
     HKindices = copy.deepcopy(dd.mx['ObsID'].indices)
-    
 
     for HKKey in HKKeys:
 
@@ -272,34 +269,34 @@ def addHK(dd, HKKeys, elvis=context.elvis):
 
     return dd
 
+
 def addmockHK(dd, HKKeys, elvis=context.elvis):
     """Adds MOCK HK information to a DataDict object."""
-    
-    
+
     HKindices = copy.deepcopy(dd.mx['ObsID'].indices)
-    
+
     for HKKey in HKKeys:
-        
+
         pre_HKKey = 'HK_%s' % HKKey
 
         dd.initColumn(pre_HKKey, HKindices, dtype='float32', valini=np.nan)
 
         _lims = HKtools.HKlims[elvis]['P'][HKKey]
         limtype = _lims[0]
-        if limtype in ['R','A']:
+        if limtype in ['R', 'A']:
             val = np.mean(_lims[1:])
         else:
             val = _lims[1]
-        
+
         dd.mx[pre_HKKey][:] = val
-        
-    
+
     return dd
+
 
 def coarsefindTestinExpLog(explog, testkey, Nframes):
     """Checks whether the 'Nframes' of test with key 'testkey' are in 'explog'.
     :param explog: astropy table, exposure log object.
-    :param testkey: char, 
+    :param testkey: char,
     :param Nframes: number of frames expected from test.
     :return: bool, test was acquired or not.
 
@@ -312,7 +309,7 @@ def coarsefindTestinExpLog(explog, testkey, Nframes):
     ccds = explog['CCD'][indices]
     uccd = np.unique(ccds)
     nccds = len(uccd)
-    Nobsids = len(indices[0])/nccds
+    Nobsids = len(indices[0]) / nccds
 
     wasacquired = Nobsids == Nframes
     return wasacquired
@@ -342,13 +339,12 @@ def broadcast_todo_flags(inputdict, docheck=False, dotest=False, doreport=False)
         _todocheck.update(dict(init=True, check=True, report=True))
     elif dotest:
         _todocheck.update(dict(init=True))
-    
 
     inputdict = broadcast_todo_flags_func(inputdict, _todocheck)
-    
+
     for task in inputdict['tasks']:
         tinputs = inputdict[task]
         if 'lock' in tinputs['todo_flags'].keys() and docheck:
             tinputs['todo_flags']['lock'] = True
-    
+
     return inputdict

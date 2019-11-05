@@ -76,9 +76,9 @@ def removescalars_from_dict(indict):
 
 
 def texarize_complidict(indict):
-    
+
     def ff(value):
-        if (np.abs(value) < 100) and (np.abs(value)> 1.e-2):
+        if (np.abs(value) < 100) and (np.abs(value) > 1.e-2):
             return '%.2f'
         else:
             return '%.2e'
@@ -90,7 +90,7 @@ def texarize_complidict(indict):
             else:
                 compmsg = indict[key]
                 llim, ulim = tuple(compmsg[2])
-                textmp = '%s_{%s}^{%s}' % (ff(compmsg[1]),ff(llim),ff(ulim))
+                textmp = '%s_{%s}^{%s}' % (ff(compmsg[1]), ff(llim), ff(ulim))
                 tex = textmp % (compmsg[1], llim, ulim)
                 if not compmsg[0]:
                     tex = '\\textcolor{red}{%s}' % tex
@@ -105,33 +105,32 @@ def texarize_complidict(indict):
 
 def gen_compliance_tex(indict, escape=True, caption=''):
     """ """
-    
-    pd.options.display.max_colwidth=200
-    
+
+    pd.options.display.max_colwidth = 200
+
     complidict = copy.deepcopy(indict)
     tcomplidict = texarize_complidict(complidict)
     level = countdictlayers(tcomplidict)
-
 
     if level < 3:
         if level == 1:
             tcomplidict = removescalars_from_dict(tcomplidict)
         df = pd.DataFrame.from_dict(tcomplidict)
-        
+
         tex = df.to_latex(multicolumn=True, multirow=True,
                           longtable=True, index=level > 1,
                           escape=escape)
         tex = st.split(tex, '\n')
-    
+
 #    if level == 1:
 #        tcomplidict = removescalars_from_dict(tcomplidict)
 #        df = pd.DataFrame.from_dict(tcomplidict)
-#        
+#
 #        tex = df.to_latex(multicolumn=True, multirow=True,
 #                          longtable=True, index=level > 1,
 #                          escape=escape)
 #        tex = st.split(tex, '\n')
-    
+
 #    elif level in [2,3]:
 #        keys = []
 #        frames = []
@@ -145,10 +144,10 @@ def gen_compliance_tex(indict, escape=True, caption=''):
 #                              longtable=True, index=True,
 #                              escape=escape)
 #        tex = st.split(tex, '\n')
-#        
+#
 #        if level == 3:
 #            tex = ['\\tiny'] +tex + ['\\normalsize']
-    
+
     elif level == 3:
         keys = []
         frames = []
@@ -164,13 +163,13 @@ def gen_compliance_tex(indict, escape=True, caption=''):
     else:
         texList = convert_compl_to_nesteditemlist(tcomplidict)
         tex = ['\\tiny'] + texList + ['\\normalsize']
-    
+
     if caption != '':
         captiontex = r'\caption{%s}' % caption
-        tex.insert(-2,captiontex)
-    
+        tex.insert(-2, captiontex)
+
     pd.reset_option('display.max_colwidth')
-    
+
     return tex
 
 
@@ -183,13 +182,13 @@ class ComplianceMX(OrderedDict):
     def check_stat(self, inparr):
         raise NotImplementedError("Subclass must implement abstract method")
 
-    def get_compliance_tex(self,caption=''):
+    def get_compliance_tex(self, caption=''):
         return gen_compliance_tex(OrderedDict(self), escape=False, caption=caption)
 
     def get_compliance_txt(self):
-        #return vjson.dumps_to_json(self)
-         return self.__str__()
-        
+        # return vjson.dumps_to_json(self)
+        return self.__str__()
+
     def get_compliance_txt_asjson(self):
         return vjson.dumps_to_json(self)
         # return self.__str__()
@@ -230,7 +229,7 @@ class ComplianceMX_CCD(ComplianceMX):
 
     def check_stat(self, inparr):
         """ """
-        
+
         for iCCD, CCDkey in enumerate(self.CCDs):
 
             _lims = self.CCDQlims[CCDkey]
@@ -240,7 +239,7 @@ class ComplianceMX_CCD(ComplianceMX):
 
             try:
                 avvalue = float(np.nanmean(inparr[:, iCCD, ...]))
-            except:
+            except BaseException:
                 avvalue = np.nan
 
             self[CCDkey] = [not np.any(test).sum(), avvalue, tuple(_lims)]
@@ -272,20 +271,20 @@ class ComplianceMX_CCDQ(ComplianceMX):
 
     def check_stat(self, inparr):
         """ """
-        
+
         for iCCD, CCDkey in enumerate(self.CCDs):
             for jQ, Q in enumerate(self.Qs):
                 if isinstance(self.CCDQlims[CCDkey], dict):
                     _lims = self.CCDQlims[CCDkey][Q]
-                elif isinstance(self.CCDQlims[CCDkey], (list,np.ndarray)):
+                elif isinstance(self.CCDQlims[CCDkey], (list, np.ndarray)):
                     _lims = self.CCDQlims[CCDkey]
-                
-                test = (np.isnan(inparr[:, iCCD, jQ, ...]) |
-                    (inparr[:, iCCD, jQ, ...] <= _lims[0]) | (inparr[:, iCCD, jQ, ...] > _lims[1]))
-                
+
+                test = (np.isnan(inparr[:, iCCD, jQ, ...]) | (
+                    inparr[:, iCCD, jQ, ...] <= _lims[0]) | (inparr[:, iCCD, jQ, ...] > _lims[1]))
+
                 try:
                     avvalue = float(np.nanmean(inparr[:, iCCD, jQ, ...]))
-                except:
+                except BaseException:
                     avvalue = np.nan
                 self[CCDkey][Q] = [not np.any(
                     test).sum(), avvalue, tuple(_lims)]
@@ -315,24 +314,22 @@ class ComplianceMX_CCDCol(ComplianceMX):
 
     def check_stat(self, inparr):
         """ """
-        
+
         for iCCD, CCDkey in enumerate(self.CCDs):
             for jcol, colname in enumerate(self.colnames):
                 _lims = self.lims[CCDkey][colname]
                 ixsel = np.where(self.indexer == colname)
 
-                testv = (np.isnan(inparr[ixsel, iCCD, ...]) |
-                         (inparr[ixsel, iCCD, ...] < _lims[0]) | (inparr[ixsel, iCCD, ...] > _lims[1]))
-                
+                testv = (np.isnan(inparr[ixsel, iCCD, ...]) | (
+                    inparr[ixsel, iCCD, ...] < _lims[0]) | (inparr[ixsel, iCCD, ...] > _lims[1]))
 
                 try:
                     avvalue = float(np.nanmean(inparr[ixsel, iCCD, ...]))
-                except:
+                except BaseException:
                     avvalue = np.nan
-                
+
                 test = not (
                     np.any(testv, axis=(0, 1)).sum() | (ixsel[0].shape[0] == 0))
-                
 
                 self[CCDkey][colname] = [test, avvalue, tuple(_lims)]
 
@@ -381,15 +378,15 @@ class ComplianceMX_CCDQCol(ComplianceMX):
                     try:
                         avvalue = float(np.nanmean(
                             inparr[ixsel, iCCD, jQ, ...]))
-                    except:
+                    except BaseException:
                         avvalue = np.nan
 
                     test = not (
                         np.any(testv, axis=(0, 1)).sum() | (ixsel[0].shape[0] == 0))
 
                     self[CCDkey][Q][colname] = [test, avvalue, tuple(_lims)]
-                    
-                    #if CCDkey == 'CCD1' and Q == 'G' and colname == 'col028':
+
+                    # if CCDkey == 'CCD1' and Q == 'G' and colname == 'col028':
                     #    stop()
 
 
@@ -446,7 +443,7 @@ class ComplianceMX_CCDQColSpot(ComplianceMX):
                             try:
                                 avvalue = float(np.nanmean(
                                     inparr[ixsel, iCCD, jQ, kspot, ...]))
-                            except:
+                            except BaseException:
                                 avvalue = np.nan
 
                             self[CCDkey][Q][spot][colname] = [
@@ -461,7 +458,7 @@ class ComplianceMX_CCDQColSpot(ComplianceMX):
                         try:
                             avvalue = float(np.nanmean(
                                 inparr[:, iCCD, jQ, kspot, ...]))
-                        except:
+                        except BaseException:
                             avvalue = np.nan
                         self[CCDkey][Q][spot] = [test, avvalue, tuple(_lims)]
 

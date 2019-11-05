@@ -66,7 +66,7 @@ class ReportXL(object):
 
         for i, column_width in enumerate(column_widths):
             self.wb[sheetname].column_dimensions[oxl.utils.get_column_letter(
-                i+1)].width = max([column_width, minwidth])
+                i + 1)].width = max([column_width, minwidth])
 
     def dict_to_sheet(self, indict, sheetname, keys=None, title=''):
         """ """
@@ -82,8 +82,8 @@ class ReportXL(object):
 
         ix0 = 5
         for ik, key in enumerate(keys):
-            self.wb[sheetname]['A%i' % (ix0+ik)] = key
-            self.wb[sheetname]['B%i' % (ix0+ik)] = printdict[key]
+            self.wb[sheetname]['A%i' % (ix0 + ik)] = key
+            self.wb[sheetname]['B%i' % (ix0 + ik)] = printdict[key]
 
         self.adjust_columns_width(sheetname=sheetname)
 

@@ -31,12 +31,8 @@ TP21_commvalues['test'] = 'TP21'
 TP21_commvalues['IDL'] = 10.5
 
 
-
-
-
 class TP21(TP02.TP02):
     """ """
-
 
     def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
@@ -47,17 +43,14 @@ class TP21(TP02.TP02):
                          ('basic', self.basic_analysis),
                          ('meta', self.meta_analysis)]
         self.commvalues = TP21_commvalues.copy()
-        PumpTask.PumpTask.__init__(self,inputs=inputs, log=log, 
-            drill=drill, debug=debug, cleanafter=cleanafter)
+        PumpTask.PumpTask.__init__(self, inputs=inputs, log=log,
+                                   drill=drill, debug=debug, cleanafter=cleanafter)
         self.name = 'TP21'
         self.type = 'Simple'
-        
+
         self.HKKeys = HKKeys
         self.figdict = TP02aux.get_TP02figs()
         self.CDP_lib = TP02aux.get_CDP_lib()
-        self.inputs['subpaths'] = dict(figs='figs', 
-                   ccdpickles='ccdpickles',
-                   products='products')
-        
-        
-
+        self.inputs['subpaths'] = dict(figs='figs',
+                                       ccdpickles='ccdpickles',
+                                       products='products')

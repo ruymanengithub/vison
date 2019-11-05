@@ -28,8 +28,6 @@ default_params = ['NUMBER', 'EXT_NUMBER', 'X_IMAGE', 'Y_IMAGE',
 config_default_file = 'sexconfig.default'
 
 
-
-
 class VSExtractor(object):
 
     def __init__(self, img=None):
@@ -161,27 +159,27 @@ def easy_run_SEx(img, catroot, sexconfig=None, cleanafter=False):
 
     vSEx = VSExtractor(img=img.copy())
     vSEx.internals['params'] = ['NUMBER', 'EXT_NUMBER', 'X_IMAGE', 'Y_IMAGE',
-                  'A_IMAGE', 'B_IMAGE', 'THETA_IMAGE', 'ELONGATION', 'FWHM_IMAGE',
-                  'FLUX_AUTO', 'MAG_AUTO', 'ISOAREA_IMAGE']
-    
+                                'A_IMAGE', 'B_IMAGE', 'THETA_IMAGE', 'ELONGATION', 'FWHM_IMAGE',
+                                'FLUX_AUTO', 'MAG_AUTO', 'ISOAREA_IMAGE']
+
     MAG_ZERO = 20.
     DET_THRESH = -2.5 * np.log10(100.) + MAG_ZERO
-    
+
     configupdate = dict(MINAREA=3,
-             DET_THRESH=DET_THRESH,
-             MAG_ZERPOINT=MAG_ZERO,
-             SATUR_LEVEL=2.**16,
-             SEEING_FWHM=1.2,
-             PIXEL_SCALE=1.,
-             GAIN=1.,
-             BACKPHOTO_TYPE='LOCAL',
-             BACK_SIZE=100,
-             BACK_FILTERSIZE=3
-             )
-    
+                        DET_THRESH=DET_THRESH,
+                        MAG_ZERPOINT=MAG_ZERO,
+                        SATUR_LEVEL=2.**16,
+                        SEEING_FWHM=1.2,
+                        PIXEL_SCALE=1.,
+                        GAIN=1.,
+                        BACKPHOTO_TYPE='LOCAL',
+                        BACK_SIZE=100,
+                        BACK_FILTERSIZE=3
+                        )
+
     if sexconfig is not None:
         configupdate.update(sexconfig)
-    
+
     vSEx.internals.update(
         configupdate
     )

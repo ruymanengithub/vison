@@ -31,20 +31,19 @@ def get_CDP_lib():
 
     covtable_cdp = cdp.Tables_CDP()
     covtable_cdp.rootname = 'BF01_COVTABLE'
-    
+
     bftable_cdp = cdp.Tables_CDP()
     bftable_cdp.rootname = 'BF01_G15TABLE'
-    
+
     bfFITtable_cdp = cdp.Tables_CDP()
     bfFITtable_cdp.rootname = 'BF01FIT_G15TABLE'
-    
+
     profscov_cdp = cdp.CDP()
-    profscov_cdp.rootname  = 'profs_COV1D_BF01'
-    
+    profscov_cdp.rootname = 'profs_COV1D_BF01'
+
     profsker_cdp = cdp.CDP()
-    profsker_cdp.rootname  = 'profs_KER1D_BF01'
-    
-    
+    profsker_cdp.rootname = 'profs_KER1D_BF01'
+
     CDP_lib = dict(COVTABLE=covtable_cdp,
                    PROFSCOV1D=profscov_cdp,
                    BFTABLE=bftable_cdp,
@@ -59,8 +58,8 @@ prof_COV_ver_dict = dict(
     meta=dict(doLegend=True,
               ylabel='COV/VAR, ADIM.',
               xlabel='Y',
-              #ylim=[-0.005,0.07],
-              corekwargs=dict(marker='.',linestyle='-'),
+              # ylim=[-0.005,0.07],
+              corekwargs=dict(marker='.', linestyle='-'),
               suptitle='BF01: COV 1D Profile, Vertical/Parallel.')
 )
 
@@ -70,8 +69,8 @@ prof_COV_ser_dict = dict(
     meta=dict(doLegend=True,
               ylabel='COV/VAR, ADIM.',
               xlabel='X',
-              #ylim=[-0.005,0.07],
-              corekwargs=dict(marker='.',linestyle='-'),
+              # ylim=[-0.005,0.07],
+              corekwargs=dict(marker='.', linestyle='-'),
               suptitle='BF01: COV 1D Profile, Serial.')
 )
 
@@ -81,8 +80,8 @@ prof_KER_ver_dict = dict(
     meta=dict(doLegend=True,
               ylabel='ADIM.',
               xlabel='Y [pix]',
-              ylim=[-0.03,0.1],
-              corekwargs=dict(marker='.',linestyle='-'),
+              ylim=[-0.03, 0.1],
+              corekwargs=dict(marker='.', linestyle='-'),
               suptitle='BF01: Kernels 1D Profile, Vertical/Parallel.')
 )
 
@@ -92,8 +91,8 @@ prof_KER_ser_dict = dict(
     meta=dict(doLegend=True,
               ylabel='ADIM.',
               xlabel='X [pix]',
-              ylim=[-0.03,0.1],
-              corekwargs=dict(marker='.',linestyle='-'),
+              ylim=[-0.03, 0.1],
+              corekwargs=dict(marker='.', linestyle='-'),
               suptitle='BF01: Kernels 1D Profile, Serial.')
 )
 
@@ -104,8 +103,8 @@ FWHMx_v_flu_dict = dict(
               ylabel='FWHM(x), [um]',
               xlabel='ADU',
               corekwargs=dict(
-                      data = dict(marker='o',linestyle=''),
-                      fit = dict(marker='',linestyle='--')),
+                  data=dict(marker='o', linestyle=''),
+                  fit=dict(marker='', linestyle='--')),
               suptitle='BF01: FWHMx in microns vs. Fluence')
 )
 
@@ -116,15 +115,14 @@ FWHMy_v_flu_dict = dict(
               ylabel='FWHM(y), [um]',
               xlabel='ADU',
               corekwargs=dict(
-                      data = dict(marker='o',linestyle=''),
-                      fit = dict(marker='',linestyle='--')),
+                  data=dict(marker='o', linestyle=''),
+                  fit=dict(marker='', linestyle='--')),
               suptitle='BF01: FWHMy in microns vs. Fluence')
 )
 
 
-
 def gt_BF01figs(test):
-    
+
     BF01figs = dict()
     BF01figs['BF01checks_offsets'] = [
         trends.Fig_Basic_Checkstat, PTC0Xaux.gt_check_offsets_dict(test)]
@@ -133,46 +131,44 @@ def gt_BF01figs(test):
     BF01figs['BF01checks_stds'] = [
         trends.Fig_Basic_Checkstat, PTC0Xaux.gt_check_std_dict(test)]
     BF01figs['BF01checks_flu'] = [
-        trends.Fig_Basic_Checkstat,  PTC0Xaux.gt_check_img_flu_dict(test)]
+        trends.Fig_Basic_Checkstat, PTC0Xaux.gt_check_img_flu_dict(test)]
     BF01figs['BF01checks_imgstd'] = [
-        trends.Fig_Basic_Checkstat,  PTC0Xaux.gt_check_img_std_dict(test)]
+        trends.Fig_Basic_Checkstat, PTC0Xaux.gt_check_img_std_dict(test)]
     BF01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
-    
+
     # renaming to BF01... HACK
-    
+
     keys_to_rename = ['caption', 'suptitle', 'figname']
     for figkey in BF01figs.keys():
         _dict = BF01figs[figkey][1]
         try:
             _mdict = BF01figs[figkey][1]['meta']
-            hasmeta=True
+            hasmeta = True
         except KeyError:
-            hasmeta=False
+            hasmeta = False
         for key in keys_to_rename:
             if key in _dict:
-                _dict[key] = st.replace(_dict[key],test,'BF01')
+                _dict[key] = st.replace(_dict[key], test, 'BF01')
             if hasmeta:
                 if key in _mdict:
-                    _mdict[key] = st.replace(_mdict[key],test,'BF01')
-    
-    
+                    _mdict[key] = st.replace(_mdict[key], test, 'BF01')
+
     BF01figs['BF01_COV_ver'] = [
-    figclasses.Fig_Beam2DPlot, prof_COV_ver_dict]
-    
+        figclasses.Fig_Beam2DPlot, prof_COV_ver_dict]
+
     BF01figs['BF01_COV_hor'] = [
-    figclasses.Fig_Beam2DPlot, prof_COV_ser_dict]
-    
+        figclasses.Fig_Beam2DPlot, prof_COV_ser_dict]
+
     BF01figs['BF01_KER_ver'] = [
-    figclasses.Fig_Beam2DPlot, prof_KER_ver_dict]
-    
+        figclasses.Fig_Beam2DPlot, prof_KER_ver_dict]
+
     BF01figs['BF01_KER_hor'] = [
-    figclasses.Fig_Beam2DPlot, prof_KER_ser_dict]
-    
+        figclasses.Fig_Beam2DPlot, prof_KER_ser_dict]
+
     BF01figs['BF01_fwhmx_v_flu'] = [
-    figclasses.Fig_Beam2DPlot, FWHMx_v_flu_dict]
-    
+        figclasses.Fig_Beam2DPlot, FWHMx_v_flu_dict]
+
     BF01figs['BF01_fwhmy_v_flu'] = [
-    figclasses.Fig_Beam2DPlot, FWHMy_v_flu_dict]
-    
-    
+        figclasses.Fig_Beam2DPlot, FWHMy_v_flu_dict]
+
     return BF01figs

@@ -38,7 +38,7 @@ from vison.datamodel import inputs
 
 isthere = os.path.exists
 
-#HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
+# HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
 #          'CCD2_IG1_T', 'CCD3_IG1_T', 'CCD1_TEMP_T', 'CCD2_TEMP_T', 'CCD3_TEMP_T',
 #          'CCD1_IG1_T', 'COMM_IG2_T', 'FPGA_PCB_TEMP_T', 'CCD1_OD_B',
 #          'CCD2_OD_B', 'CCD3_OD_B', 'COMM_RD_B', 'CCD2_IG1_B', 'CCD3_IG1_B', 'CCD1_TEMP_B',
@@ -46,7 +46,7 @@ isthere = os.path.exists
 
 CHINJ00_commvalues = dict(program='CALCAMP', test='CHINJ00',
                           IG2_T=5.5, IG2_B=5.5,
-                          flushes=7, siflsh=1,siflsh_p=500,
+                          flushes=7, siflsh=1, siflsh_p=500,
                           inisweep=1,
                           vstart=0, vend=2086,
                           chinj=1, chinj_on=30, chinj_of=100,
@@ -77,15 +77,15 @@ class CHINJ00(InjTask):
     def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         self.subtasks = [('check', self.check_data)]
-        super(CHINJ00, self).__init__(inputs=inputs, log=log, drill=drill, 
-                    debug=debug, cleanafter=cleanafter)
+        super(CHINJ00, self).__init__(inputs=inputs, log=log, drill=drill,
+                                      debug=debug, cleanafter=cleanafter)
         self.name = 'CHINJ00'
         self.type = 'Simple'
-        
+
         self.HKKeys = HKKeys
         self.figdict = dict()
         self.inputs['subpaths'] = dict(figs='figs')
- 
+
     def set_inpdefaults(self, **kwargs):
         """ """
         toi_chinj = 500
@@ -160,7 +160,7 @@ class CHINJ00(InjTask):
         if len(diffvalues) == 0:
             try:
                 diffvalues = self.inputs['diffvalues']
-            except:
+            except BaseException:
                 diffvalues = diffvalues = dict()
 
         CHINJ00_sdict = sc.update_structdict(

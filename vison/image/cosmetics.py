@@ -17,7 +17,8 @@ from vison.datamodel import ccd as ccdmod
 from vison.datamodel import cdp
 # END IMPORT
 
-def get_bgd_model(ccdobj, extension=-1, margins = None):
+
+def get_bgd_model(ccdobj, extension=-1, margins=None):
 
     prescan = ccdobj.prescan
 
@@ -28,19 +29,19 @@ def get_bgd_model(ccdobj, extension=-1, margins = None):
     for Quad in ccdobj.Quads:
 
         Qimgmodel = ccdobj.get_region2Dmodel(Quad, area='img', kind='poly2D',
-                                             pdegree=5, doFilter=False, 
+                                             pdegree=5, doFilter=False,
                                              doBin=False, filtsize=30,
-                                             vstart=0, vend=2066, canonical=True, 
+                                             vstart=0, vend=2066, canonical=True,
                                              extension=extension).imgmodel.copy()
 
         # pre/overscans will not be modified unles margins is not None
-        
+
         Qmodel = ccdobj.get_quad(
             Quad, canonical=True, extension=extension).copy()
         if margins is not None:
             Qmodel[:] = margins
 
-        Qmodel[prescan:prescan+Qimgmodel.shape[0],
+        Qmodel[prescan:prescan + Qimgmodel.shape[0],
                0:Qimgmodel.shape[1]] = Qimgmodel.copy()
 
         bgd.set_quad(Qmodel, Quad, canonical=True, extension=-1)
@@ -53,4 +54,3 @@ def get_Thresholding_DefectsMask(maskdata, thresholds):
     #maskdata = ccdobj.extensions[extension].data
     mask = ((maskdata < thresholds[0]) | (maskdata > thresholds[1])).astype('int32')
     return mask
-

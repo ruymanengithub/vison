@@ -17,7 +17,7 @@ from vison.plot import baseplotclasses
 from vison.support import utils
 
 #import matplotlib
-#matplotlib.use('Agg')
+# matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 # END IMPORT
 
@@ -53,7 +53,6 @@ class Fig(object):
         self.figname = os.path.join(path, self.figname)
         if 'suptitle' in defaults:
             self.suptitle = defaults['suptitle']
-        
 
     def plot(self, **kwargs):
         """ """
@@ -65,19 +64,22 @@ class Fig(object):
 
 
 class Fig_Husk(Fig):
-    """ """    
+    """ """
+
     def plot(self, **kwargs):
         pass
+
     def build_data(self, *args, **kwargs):
         pass
 
+
 class Fig_Dynamic(Fig):
-    """ """ 
+    """ """
     plotclass = baseplotclasses.ShellPlot
-        
-    
+
     def build_data(self, *args, **kwargs):
         pass
+
 
 class Fig_Beam2DPlot(Fig):
     plotclass = baseplotclasses.BeamPlotYvX
@@ -85,6 +87,7 @@ class Fig_Beam2DPlot(Fig):
 
 class Fig_Beam1DHist(Fig):
     plotclass = baseplotclasses.Beam1DHist
+
 
 class Fig_BeamImgShow(Fig):
     plotclass = baseplotclasses.BeamImgShow
@@ -98,12 +101,10 @@ class Fig_XY_fromDD(Fig):
         assert isinstance(stats, list)
         assert isinstance(trendaxis, str)
 
-
         iterable_data_keys = []
         for indname in indices2param:
             iterable_data_keys.append(
                 subdd[stats[0]].indices.get_vals(indname))
-
 
         data_keys_tuples = [item for item in product(*iterable_data_keys)]
 
@@ -155,13 +156,13 @@ class Fig_XY_fromDD(Fig):
             ix_tuple = ix_tuples[i]
 
             for stat in stats:
-                _keysx = tuple(list(keys_tuple)+['x']+[stat])
+                _keysx = tuple(list(keys_tuple) + ['x'] + [stat])
 
                 valuex = sup_trendmx[ix_tuple].copy()
 
                 utils.setInDict(data, _keysx, valuex)
 
-                _keysy = tuple(list(keys_tuple)+['y']+[stat])
+                _keysy = tuple(list(keys_tuple) + ['y'] + [stat])
 
                 valuey = subdd[stat][ix_tuple].copy()
                 utils.setInDict(data, _keysy, valuey)
@@ -178,11 +179,10 @@ class Fig_XY_fromDD(Fig):
                 if isinstance(value, defaultdict):
                     utils.setInDict(data, keys_tuple[:-j], dict(value))
         data = dict(data)
-        
+
         data['labelkeys'] = stats
 
         return data
-
 
 
 class BlueScreen(Fig):

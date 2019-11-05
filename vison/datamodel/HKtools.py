@@ -46,45 +46,171 @@ from vison.support import context, utils
 # END IMPORT
 
 
-allHK_keys = {'5.7.02': ['HK_OD_Top_CCD1', 'HK_OD_Bottom_CCD1', 'HK_OD_Top_CCD2',
-                         'HK_OD_Bottom_CCD2', 'HK_OD_Top_CCD3', 'HK_OD_Bottom_CCD3', 'HK_RD_Top_CCD1',
-                         'HK_RD_Bottom_CCD1', 'HK_RD_Top_CCD2', 'HK_RD_Bottom_CCD2', 'HK_RD_Top_CCD3',
-                         'HK_RD_Bottom_CCD3', 'HK_temp_top_CCD1', 'HK_temp_bottom_CCD1', 'HK_temp_top_CCD2',
-                         'HK_temp_bottom_CCD2', 'HK_temp_top_CCD3', 'HK_temp_bottom_CCD3', 'HK_IG1_top',
-                         'HK_IG1_bot', 'HK_IG2_top', 'HK_IG2_bot', 'HK_IDH', 'HK_IDL', 'HK_DD_bias',
-                         'HK_OG_bias', 'HK_1.5V_ROE', 'HK_VCCD_ROE', 'HK_5VA_pos_ROE', 'HK_5V_ref_ROE',
-                         'HK_10VA_ROE', 'HK_5.2V_neg_ROE', 'HK_3V_neg_ROE', 'HK_VRclk_ROE',
-                         'HK_VRClk_Lo_ROE', 'HK_3.3V_DIG_RPSU', 'HK_I3.3V_DIG_RPSU', 'HK_1.5V_DIG_RPSU',
-                         'HK_I1.5V_DIG_RPSU', 'HK_28V_Pri_RPSU', 'HK_I28V_RPSU', 'HK_VAN_pos_RPSU',
-                         'HK_I+VAN_RPSU', 'HK_VAN_neg_RPSU', 'HK_I-VAN_RPSU', 'HK_VCLK_RPSU',
-                         'HK_IVCLK_RPSU', 'HK_VCCD_RPSU', 'HK_IVCCD_RPSU', 'HK_Temp1_RPSU',
-                         'HK_3.3V_ROE', 'HK_Temp2_RPSU', 'HK_VClk_ROE'],
-              '5.7.04': ['HK_OD_Top_CCD1', 'HK_OD_Bottom_CCD1', 'HK_OD_Top_CCD2',
-                         'HK_OD_Bottom_CCD2', 'HK_OD_Top_CCD3', 'HK_OD_Bottom_CCD3', 'HK_RD_Top_CCD1',
-                         'HK_RD_Bottom_CCD1', 'HK_RD_Top_CCD2', 'HK_RD_Bottom_CCD2', 'HK_RD_Top_CCD3',
-                         'HK_RD_Bottom_CCD3', 'HK_temp_top_CCD1', 'HK_temp_bottom_CCD1', 'HK_temp_top_CCD2',
-                         'HK_temp_bottom_CCD2', 'HK_temp_top_CCD3', 'HK_temp_bottom_CCD3', 'HK_IG1_top',
-                         'HK_IG1_bot', 'HK_IG2_top', 'HK_IG2_bot', 'HK_IDH', 'HK_IDL', 'HK_DD_bias',
-                         'HK_OG_bias', 'HK_1.5V_ROE', 'HK_VCCD_ROE', 'HK_5VA_pos_ROE', 'HK_5V_ref_ROE',
-                         'HK_10VA_ROE', 'HK_5.2V_neg_ROE', 'HK_3V_neg_ROE', 'HK_VRclk_ROE',
-                         'HK_VRClk_Lo_ROE', 'HK_3.3V_DIG_RPSU', 'HK_I3.3V_DIG_RPSU', 'HK_1.5V_DIG_RPSU',
-                         'HK_I1.5V_DIG_RPSU', 'HK_28V_Pri_RPSU', 'HK_I28V_RPSU', 'HK_VAN_pos_RPSU',
-                         'HK_I+VAN_RPSU', 'HK_VAN_neg_RPSU', 'HK_I-VAN_RPSU', 'HK_VCLK_RPSU',
-                         'HK_IVCLK_RPSU', 'HK_VCCD_RPSU', 'HK_IVCCD_RPSU', 'HK_Temp1_RPSU',
-                         'HK_3.3V_ROE', 'HK_Temp2_RPSU', 'HK_VClk_ROE'],
-              '5.7.07': ['HK_OD_Top_CCD1', 'HK_OD_Bottom_CCD1', 'HK_OD_Top_CCD2',
-                         'HK_OD_Bottom_CCD2', 'HK_OD_Top_CCD3', 'HK_OD_Bottom_CCD3', 'HK_RD_Top_CCD1',
-                         'HK_RD_Bottom_CCD1', 'HK_RD_Top_CCD2', 'HK_RD_Bottom_CCD2', 'HK_RD_Top_CCD3',
-                         'HK_RD_Bottom_CCD3', 'HK_temp_top_CCD1', 'HK_temp_bottom_CCD1', 'HK_temp_top_CCD2',
-                         'HK_temp_bottom_CCD2', 'HK_temp_top_CCD3', 'HK_temp_bottom_CCD3', 'HK_IG1_top',
-                         'HK_IG1_bot', 'HK_IG2_top', 'HK_IG2_bot', 'HK_IDH', 'HK_IDL', 'HK_DD_bias',
-                         'HK_OG_bias', 'HK_1.5V_ROE', 'HK_VCCD_ROE', 'HK_5VA_pos_ROE', 'HK_5V_ref_ROE',
-                         'HK_10VA_ROE', 'HK_5.2V_neg_ROE', 'HK_3V_neg_ROE', 'HK_VRclk_ROE', 'HK_VRClk_Lo_ROE',
-                         'HK_3.3V_DIG_RPSU', 'HK_I3.3V_DIG_RPSU', 'HK_1.5V_DIG_RPSU', 'HK_I1.5V_DIG_RPSU',
-                         'HK_28V_Pri_RPSU', 'HK_I28V_RPSU', 'HK_VAN_pos_RPSU', 'HK_I+VAN_RPSU',
-                         'HK_VAN_neg_RPSU', 'HK_I-VAN_RPSU', 'HK_VCLK_RPSU', 'HK_IVCLK_RPSU', 'HK_VCCD_RPSU',
-                         'HK_IVCCD_RPSU', 'HK_Temp1_RPSU', 'HK_3.3V_ROE', 'HK_Temp2_RPSU', 'HK_VClk_ROE',
-                         'Video_TOP', 'Video_BOT']}
+allHK_keys = {
+    '5.7.02': [
+        'HK_OD_Top_CCD1',
+        'HK_OD_Bottom_CCD1',
+        'HK_OD_Top_CCD2',
+        'HK_OD_Bottom_CCD2',
+        'HK_OD_Top_CCD3',
+        'HK_OD_Bottom_CCD3',
+        'HK_RD_Top_CCD1',
+        'HK_RD_Bottom_CCD1',
+        'HK_RD_Top_CCD2',
+        'HK_RD_Bottom_CCD2',
+        'HK_RD_Top_CCD3',
+        'HK_RD_Bottom_CCD3',
+        'HK_temp_top_CCD1',
+        'HK_temp_bottom_CCD1',
+        'HK_temp_top_CCD2',
+        'HK_temp_bottom_CCD2',
+        'HK_temp_top_CCD3',
+        'HK_temp_bottom_CCD3',
+        'HK_IG1_top',
+        'HK_IG1_bot',
+        'HK_IG2_top',
+        'HK_IG2_bot',
+        'HK_IDH',
+        'HK_IDL',
+        'HK_DD_bias',
+        'HK_OG_bias',
+        'HK_1.5V_ROE',
+        'HK_VCCD_ROE',
+        'HK_5VA_pos_ROE',
+        'HK_5V_ref_ROE',
+        'HK_10VA_ROE',
+        'HK_5.2V_neg_ROE',
+        'HK_3V_neg_ROE',
+        'HK_VRclk_ROE',
+        'HK_VRClk_Lo_ROE',
+        'HK_3.3V_DIG_RPSU',
+        'HK_I3.3V_DIG_RPSU',
+        'HK_1.5V_DIG_RPSU',
+        'HK_I1.5V_DIG_RPSU',
+        'HK_28V_Pri_RPSU',
+        'HK_I28V_RPSU',
+        'HK_VAN_pos_RPSU',
+        'HK_I+VAN_RPSU',
+        'HK_VAN_neg_RPSU',
+        'HK_I-VAN_RPSU',
+        'HK_VCLK_RPSU',
+        'HK_IVCLK_RPSU',
+        'HK_VCCD_RPSU',
+        'HK_IVCCD_RPSU',
+        'HK_Temp1_RPSU',
+        'HK_3.3V_ROE',
+        'HK_Temp2_RPSU',
+        'HK_VClk_ROE'],
+    '5.7.04': [
+        'HK_OD_Top_CCD1',
+        'HK_OD_Bottom_CCD1',
+        'HK_OD_Top_CCD2',
+        'HK_OD_Bottom_CCD2',
+        'HK_OD_Top_CCD3',
+        'HK_OD_Bottom_CCD3',
+        'HK_RD_Top_CCD1',
+        'HK_RD_Bottom_CCD1',
+        'HK_RD_Top_CCD2',
+        'HK_RD_Bottom_CCD2',
+        'HK_RD_Top_CCD3',
+        'HK_RD_Bottom_CCD3',
+        'HK_temp_top_CCD1',
+        'HK_temp_bottom_CCD1',
+        'HK_temp_top_CCD2',
+        'HK_temp_bottom_CCD2',
+        'HK_temp_top_CCD3',
+        'HK_temp_bottom_CCD3',
+        'HK_IG1_top',
+        'HK_IG1_bot',
+        'HK_IG2_top',
+        'HK_IG2_bot',
+        'HK_IDH',
+        'HK_IDL',
+        'HK_DD_bias',
+        'HK_OG_bias',
+        'HK_1.5V_ROE',
+        'HK_VCCD_ROE',
+        'HK_5VA_pos_ROE',
+        'HK_5V_ref_ROE',
+        'HK_10VA_ROE',
+        'HK_5.2V_neg_ROE',
+        'HK_3V_neg_ROE',
+        'HK_VRclk_ROE',
+        'HK_VRClk_Lo_ROE',
+        'HK_3.3V_DIG_RPSU',
+        'HK_I3.3V_DIG_RPSU',
+        'HK_1.5V_DIG_RPSU',
+        'HK_I1.5V_DIG_RPSU',
+        'HK_28V_Pri_RPSU',
+        'HK_I28V_RPSU',
+        'HK_VAN_pos_RPSU',
+        'HK_I+VAN_RPSU',
+        'HK_VAN_neg_RPSU',
+        'HK_I-VAN_RPSU',
+        'HK_VCLK_RPSU',
+        'HK_IVCLK_RPSU',
+        'HK_VCCD_RPSU',
+        'HK_IVCCD_RPSU',
+        'HK_Temp1_RPSU',
+        'HK_3.3V_ROE',
+        'HK_Temp2_RPSU',
+        'HK_VClk_ROE'],
+    '5.7.07': [
+        'HK_OD_Top_CCD1',
+        'HK_OD_Bottom_CCD1',
+        'HK_OD_Top_CCD2',
+        'HK_OD_Bottom_CCD2',
+        'HK_OD_Top_CCD3',
+        'HK_OD_Bottom_CCD3',
+        'HK_RD_Top_CCD1',
+        'HK_RD_Bottom_CCD1',
+        'HK_RD_Top_CCD2',
+        'HK_RD_Bottom_CCD2',
+        'HK_RD_Top_CCD3',
+        'HK_RD_Bottom_CCD3',
+        'HK_temp_top_CCD1',
+        'HK_temp_bottom_CCD1',
+        'HK_temp_top_CCD2',
+        'HK_temp_bottom_CCD2',
+        'HK_temp_top_CCD3',
+        'HK_temp_bottom_CCD3',
+        'HK_IG1_top',
+        'HK_IG1_bot',
+        'HK_IG2_top',
+        'HK_IG2_bot',
+        'HK_IDH',
+        'HK_IDL',
+        'HK_DD_bias',
+        'HK_OG_bias',
+        'HK_1.5V_ROE',
+        'HK_VCCD_ROE',
+        'HK_5VA_pos_ROE',
+        'HK_5V_ref_ROE',
+        'HK_10VA_ROE',
+        'HK_5.2V_neg_ROE',
+        'HK_3V_neg_ROE',
+        'HK_VRclk_ROE',
+        'HK_VRClk_Lo_ROE',
+        'HK_3.3V_DIG_RPSU',
+        'HK_I3.3V_DIG_RPSU',
+        'HK_1.5V_DIG_RPSU',
+        'HK_I1.5V_DIG_RPSU',
+        'HK_28V_Pri_RPSU',
+        'HK_I28V_RPSU',
+        'HK_VAN_pos_RPSU',
+        'HK_I+VAN_RPSU',
+        'HK_VAN_neg_RPSU',
+        'HK_I-VAN_RPSU',
+        'HK_VCLK_RPSU',
+        'HK_IVCLK_RPSU',
+        'HK_VCCD_RPSU',
+        'HK_IVCCD_RPSU',
+        'HK_Temp1_RPSU',
+        'HK_3.3V_ROE',
+        'HK_Temp2_RPSU',
+        'HK_VClk_ROE',
+        'Video_TOP',
+        'Video_BOT']}
 
 allHK_keys['5.7.06'] = allHK_keys['5.7.04']
 allHK_keys['5.7.08'] = allHK_keys['5.7.07']
@@ -110,22 +236,79 @@ allHK_keys['6.0.0'] = ['TimeStamp', 'HK_OD_Top_CCD1', 'HK_OD_Bottom_CCD1',
 
 allHK_keys['6.1.0'] = allHK_keys['6.0.0']
 
-allHK_keys['6.3.0'] = ['TimeStamp',
-                       'CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
-                       'CCD2_IG1_T', 'CCD3_IG1_T', 'CCD1_TEMP_T', 'CCD2_TEMP_T', 'CCD3_TEMP_T',
-                       'CCD1_IG1_T', 'COMM_IG2_T', 'VID_PCB_TEMP_T', 'FPGA_PCB_TEMP_T', 'CCD1_OD_B',
-                       'CCD2_OD_B', 'CCD3_OD_B', 'COMM_RD_B', 'CCD2_IG1_B', 'CCD3_IG1_B', 'CCD1_TEMP_B',
-                       'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B', 'VID_PCB_TEMP_B',
-                       'FPGA_PCB_TEMP_B', 'FPGA_BIAS_DD', 'FPGA_BIAS_OG', 'FPGA_BIAS_ID1', 'FPGA_BIAS_ID2',
-                       'FPGA_BIAS_ID_T', 'FPGA_BIAS_ID_B', 'FPGA_VRCLK_V', 'FPGA_10VA_P_V',
-                       'FPGA_VICLK_V', 'FPGA_5VA_P_V', 'FPGA_5VREF_V', 'FPGA_VCCD_V', 'FPGA_1V5VD_P_V',
-                       'FPGA_3V2_N_V', 'FPGA_5VA_N_V', 'RPSU_VCCD_V', 'RPSU_VCLK_V', 'RPSU_VAN_P_V',
-                       'RPSU_VAN_N_V', 'RPSU_3V3VD_V', 'RPSU_1V5VD_V', 'RPSU_28V_PRI_V', 'RPSU_TEMP1',
-                       'RPSU_VCCD_I', 'RPSU_VCLK_I', 'RPSU_VAN_P_I', 'RPSU_VAN_N_I', 'RPSU_3V3VD_I',
-                       'RPSU_1V5VD_I', 'RPSU_28V_PRI_I', 'RPSU_TEMP_2', 'stTMRErrFlg', 'hkTMRErrFlg',
-                       'spwTmTOFlg', 'CDPUClkSt', 'fpgaSpwErr', 'V3v3ProtCnt', 'V5ProtCnt',
-                       'VccdErrFlg', 'VclkErrFlg', 'VanErrFlg', 'stRamErr', 'hkRamErr', 'ADC_BSY_ERR_CNT',
-                       'SPW_STATUS_REG']
+allHK_keys['6.3.0'] = [
+    'TimeStamp',
+    'CCD1_OD_T',
+    'CCD2_OD_T',
+    'CCD3_OD_T',
+    'COMM_RD_T',
+    'CCD2_IG1_T',
+    'CCD3_IG1_T',
+    'CCD1_TEMP_T',
+    'CCD2_TEMP_T',
+    'CCD3_TEMP_T',
+    'CCD1_IG1_T',
+    'COMM_IG2_T',
+    'VID_PCB_TEMP_T',
+    'FPGA_PCB_TEMP_T',
+    'CCD1_OD_B',
+    'CCD2_OD_B',
+    'CCD3_OD_B',
+    'COMM_RD_B',
+    'CCD2_IG1_B',
+    'CCD3_IG1_B',
+    'CCD1_TEMP_B',
+    'CCD2_TEMP_B',
+    'CCD3_TEMP_B',
+    'CCD1_IG1_B',
+    'COMM_IG2_B',
+    'VID_PCB_TEMP_B',
+    'FPGA_PCB_TEMP_B',
+    'FPGA_BIAS_DD',
+    'FPGA_BIAS_OG',
+    'FPGA_BIAS_ID1',
+    'FPGA_BIAS_ID2',
+    'FPGA_BIAS_ID_T',
+    'FPGA_BIAS_ID_B',
+    'FPGA_VRCLK_V',
+    'FPGA_10VA_P_V',
+    'FPGA_VICLK_V',
+    'FPGA_5VA_P_V',
+    'FPGA_5VREF_V',
+    'FPGA_VCCD_V',
+    'FPGA_1V5VD_P_V',
+    'FPGA_3V2_N_V',
+    'FPGA_5VA_N_V',
+    'RPSU_VCCD_V',
+    'RPSU_VCLK_V',
+    'RPSU_VAN_P_V',
+    'RPSU_VAN_N_V',
+    'RPSU_3V3VD_V',
+    'RPSU_1V5VD_V',
+    'RPSU_28V_PRI_V',
+    'RPSU_TEMP1',
+    'RPSU_VCCD_I',
+    'RPSU_VCLK_I',
+    'RPSU_VAN_P_I',
+    'RPSU_VAN_N_I',
+    'RPSU_3V3VD_I',
+    'RPSU_1V5VD_I',
+    'RPSU_28V_PRI_I',
+    'RPSU_TEMP_2',
+    'stTMRErrFlg',
+    'hkTMRErrFlg',
+    'spwTmTOFlg',
+    'CDPUClkSt',
+    'fpgaSpwErr',
+    'V3v3ProtCnt',
+    'V5ProtCnt',
+    'VccdErrFlg',
+    'VclkErrFlg',
+    'VanErrFlg',
+    'stRamErr',
+    'hkRamErr',
+    'ADC_BSY_ERR_CNT',
+    'SPW_STATUS_REG']
 
 
 allHK_keys['6.5.X'] = ['TimeStamp', 'CCD3_OD_T', 'CCD2_OD_T', 'CCD1_OD_T',
@@ -165,27 +348,27 @@ allHK_keys['7.2.X'] = ['TimeStamp', 'CCD3_OD_T', 'CCD2_OD_T', 'CCD1_OD_T', 'COMM
                        'RPSU_28V_PRI_I', 'RPSU_TEMP_2', 'ProtOvRideFlg', 'hkInvalidFlg', 'SPI_Inh_n',
                        '3v3ProtErr', '5vProtErr', 'V3v3ProtCnt', 'V5ProtCnt', 'VccdErrFlg', 'VclkErrFlg',
                        'VanErrFlg', 'dacExeErr', 'hkTmErr', 'spwTmTOFlg', 'spwTmRspErrFlg', 'spwTcPktErrFlg',
-                       'adcBsyErrFlg', 
+                       'adcBsyErrFlg',
                        'CDPUClkSt', 'CDPUClkLost', 'hkRamErr', 'ADC_BSY_ERR_CNT', 'SPW_STATUS_REG',
                        'Out_of_range']
 
-allHK_keys['7.5.X'] = ['TimeStamp','CCD3_OD_T','CCD2_OD_T','CCD1_OD_T','COMM_RD_T',
-                      'CCD2_IG1_T','CCD1_IG1_T','CCD3_TEMP_T','CCD2_TEMP_T','CCD1_TEMP_T','CCD3_IG1_T',
-                      'COMM_IG2_T','VID_PCB_TEMP_T','FPGA_PCB_TEMP_T','CCD1_OD_B','CCD2_OD_B',
-                      'CCD3_OD_B','COMM_RD_B','CCD2_IG1_B','CCD3_IG1_B','CCD1_TEMP_B',
-                      'CCD2_TEMP_B','CCD3_TEMP_B','CCD1_IG1_B','COMM_IG2_B','VID_PCB_TEMP_B',
-                      'FPGA_PCB_TEMP_B','FPGA_BIAS_DD','FPGA_BIAS_OG','FPGA_BIAS_ID1','FPGA_BIAS_ID2',
-                      'FPGA_BIAS_ID_T','FPGA_BIAS_ID_B','FPGA_VRCLK_V','FPGA_10VA_P_V','FPGA_VICLK_V',
-                      'FPGA_5VA_P_V','FPGA_5VREF_V','FPGA_VCCD_V','FPGA_1V5VD_P_V','FPGA_3V2_N_V',
-                      'FPGA_5VA_N_V','RPSU_VCCD_V','RPSU_VCLK_V','RPSU_VAN_P_V','RPSU_VAN_N_V',
-                      'RPSU_3V3VD_V','RPSU_1V5VD_V','RPSU_28V_PRI_V','RPSU_TEMP1','RPSU_VCCD_I',
-                      'RPSU_VCLK_I','RPSU_VAN_P_I','RPSU_VAN_N_I','RPSU_3V3VD_I','RPSU_1V5VD_I',
-                      'RPSU_28V_PRI_I','RPSU_TEMP_2','ProtOvRideFlg','hkInvalidFlg','SPI_Inh_n',
-                      '3v3ProtErr','5vProtErr','V3v3ProtCnt','V5ProtCnt','VccdErrFlg','VclkErrFlg',
-                      'VanErrFlg','dacExeErr','hkTmErr','spwTmTOFlg','spwTmRspErrFlg','spwTcPktErrFlg',
-                      'adcBsyErrFlg',
-                      'CDPUClkSw','hkRamErr','ADC_BSY_ERR_CNT','pixelToErr','spwStatus',
-                      'spwTmPtypeFlag','TwoCmdsErr','SPW_STATUS_REG','Out_of_range']
+allHK_keys['7.5.X'] = ['TimeStamp', 'CCD3_OD_T', 'CCD2_OD_T', 'CCD1_OD_T', 'COMM_RD_T',
+                       'CCD2_IG1_T', 'CCD1_IG1_T', 'CCD3_TEMP_T', 'CCD2_TEMP_T', 'CCD1_TEMP_T', 'CCD3_IG1_T',
+                       'COMM_IG2_T', 'VID_PCB_TEMP_T', 'FPGA_PCB_TEMP_T', 'CCD1_OD_B', 'CCD2_OD_B',
+                       'CCD3_OD_B', 'COMM_RD_B', 'CCD2_IG1_B', 'CCD3_IG1_B', 'CCD1_TEMP_B',
+                       'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B', 'VID_PCB_TEMP_B',
+                       'FPGA_PCB_TEMP_B', 'FPGA_BIAS_DD', 'FPGA_BIAS_OG', 'FPGA_BIAS_ID1', 'FPGA_BIAS_ID2',
+                       'FPGA_BIAS_ID_T', 'FPGA_BIAS_ID_B', 'FPGA_VRCLK_V', 'FPGA_10VA_P_V', 'FPGA_VICLK_V',
+                       'FPGA_5VA_P_V', 'FPGA_5VREF_V', 'FPGA_VCCD_V', 'FPGA_1V5VD_P_V', 'FPGA_3V2_N_V',
+                       'FPGA_5VA_N_V', 'RPSU_VCCD_V', 'RPSU_VCLK_V', 'RPSU_VAN_P_V', 'RPSU_VAN_N_V',
+                       'RPSU_3V3VD_V', 'RPSU_1V5VD_V', 'RPSU_28V_PRI_V', 'RPSU_TEMP1', 'RPSU_VCCD_I',
+                       'RPSU_VCLK_I', 'RPSU_VAN_P_I', 'RPSU_VAN_N_I', 'RPSU_3V3VD_I', 'RPSU_1V5VD_I',
+                       'RPSU_28V_PRI_I', 'RPSU_TEMP_2', 'ProtOvRideFlg', 'hkInvalidFlg', 'SPI_Inh_n',
+                       '3v3ProtErr', '5vProtErr', 'V3v3ProtCnt', 'V5ProtCnt', 'VccdErrFlg', 'VclkErrFlg',
+                       'VanErrFlg', 'dacExeErr', 'hkTmErr', 'spwTmTOFlg', 'spwTmRspErrFlg', 'spwTcPktErrFlg',
+                       'adcBsyErrFlg',
+                       'CDPUClkSw', 'hkRamErr', 'ADC_BSY_ERR_CNT', 'pixelToErr', 'spwStatus',
+                       'spwTmPtypeFlag', 'TwoCmdsErr', 'SPW_STATUS_REG', 'Out_of_range']
 
 # HKlims = dict(Performance=dict(key=[Relative/Absolute/Identity,min,max]))
 
@@ -249,89 +432,201 @@ HKlims['6.3.0'] = dict(P={'CCD1_OD_T': ['R', -0.2, +0.2], 'CCD2_OD_T': ['R', -0.
 
 HKlims['6.5.X'] = dict()
 HKlims['6.5.X']['P'] = HKlims['6.3.0']['P']
-ignore = map(HKlims['6.5.X']['P'].pop, ['stTMRErrFlg', 'hkTMRErrFlg',
-                                        'spwTmTOFlg', 'CDPUClkSt', 'fpgaSpwErr', 'V3v3ProtCnt', 'V5ProtCnt',
-                                        'VccdErrFlg', 'VclkErrFlg', 'VanErrFlg', 'stRamErr', 'hkRamErr',
-                                        'ADC_BSY_ERR_CNT', 'SPW_STATUS_REG'])
+ignore = map(HKlims['6.5.X']['P'].pop,
+             ['stTMRErrFlg',
+              'hkTMRErrFlg',
+              'spwTmTOFlg',
+              'CDPUClkSt',
+              'fpgaSpwErr',
+              'V3v3ProtCnt',
+              'V5ProtCnt',
+              'VccdErrFlg',
+              'VclkErrFlg',
+              'VanErrFlg',
+              'stRamErr',
+              'hkRamErr',
+              'ADC_BSY_ERR_CNT',
+              'SPW_STATUS_REG'])
 
-HKlims['6.5.X']['P'].update({'ProtOvRideFlg': ['I', 0], 'hkInvalidFlg': ['I', 0], 'SPI_Inh_n': ['I', 0], '3v3ProtErr': ['I', 0], '5vProtErr': ['I', 0],
-                             'V3v3ProtCnt': ['I', 0], 'V5ProtCnt': ['I', 0], 'VccdErrFlg': ['I', 0], 'VclkErrFlg': ['I', 0], 'VanErrFlg': ['I', 0],
-                             'hkTmErr': ['I', 0], 'spwTmTOFlg': ['I', 0], 'CDPUClkSt': ['I', 0], 'fpgaSpwErr': ['I', 0], 'hkRamErr': ['I', 0],
-                             'ADC_BSY_ERR_CNT': ['I', 0], 'SPW_STATUS_REG': ['I', 12192], 'Out_of_range': ['I', 0]})
+HKlims['6.5.X']['P'].update(
+    {
+        'ProtOvRideFlg': [
+            'I', 0], 'hkInvalidFlg': [
+                'I', 0], 'SPI_Inh_n': [
+                    'I', 0], '3v3ProtErr': [
+                        'I', 0], '5vProtErr': [
+                            'I', 0], 'V3v3ProtCnt': [
+                                'I', 0], 'V5ProtCnt': [
+                                    'I', 0], 'VccdErrFlg': [
+                                        'I', 0], 'VclkErrFlg': [
+                                            'I', 0], 'VanErrFlg': [
+                                                'I', 0], 'hkTmErr': [
+                                                    'I', 0], 'spwTmTOFlg': [
+                                                        'I', 0], 'CDPUClkSt': [
+                                                            'I', 0], 'fpgaSpwErr': [
+                                                                'I', 0], 'hkRamErr': [
+                                                                    'I', 0], 'ADC_BSY_ERR_CNT': [
+                                                                        'I', 0], 'SPW_STATUS_REG': [
+                                                                            'I', 12192], 'Out_of_range': [
+                                                                                'I', 0]})
 
 HKlims['6.5.X']['S'] = HKlims['6.3.0']['S']
-ignore = map(HKlims['6.5.X']['S'].pop, ['stTMRErrFlg', 'hkTMRErrFlg',
-                                        'spwTmTOFlg', 'CDPUClkSt', 'fpgaSpwErr', 'V3v3ProtCnt', 'V5ProtCnt',
-                                        'VccdErrFlg', 'VclkErrFlg', 'VanErrFlg', 'stRamErr', 'hkRamErr',
-                                        'ADC_BSY_ERR_CNT', 'SPW_STATUS_REG'])
+ignore = map(HKlims['6.5.X']['S'].pop,
+             ['stTMRErrFlg',
+              'hkTMRErrFlg',
+              'spwTmTOFlg',
+              'CDPUClkSt',
+              'fpgaSpwErr',
+              'V3v3ProtCnt',
+              'V5ProtCnt',
+              'VccdErrFlg',
+              'VclkErrFlg',
+              'VanErrFlg',
+              'stRamErr',
+              'hkRamErr',
+              'ADC_BSY_ERR_CNT',
+              'SPW_STATUS_REG'])
 
-HKlims['6.5.X']['S'].update({'ProtOvRideFlg': ['I', 0], 'hkInvalidFlg': ['I', 0], 'SPI_Inh_n': ['I', 0], '3v3ProtErr': ['I', 0], '5vProtErr': ['I', 0],
-                             'V3v3ProtCnt': ['I', 0], 'V5ProtCnt': ['I', 0], 'VccdErrFlg': ['I', 0], 'VclkErrFlg': ['I', 0], 'VanErrFlg': ['I', 0],
-                             'hkTmErr': ['I', 0], 'spwTmTOFlg': ['I', 0], 'CDPUClkSt': ['I', 0], 'fpgaSpwErr': ['I', 0], 'hkRamErr': ['I', 0],
-                             'ADC_BSY_ERR_CNT': ['I', 0], 'SPW_STATUS_REG': ['I', 12192], 'Out_of_range': ['I', 0]})
+HKlims['6.5.X']['S'].update(
+    {
+        'ProtOvRideFlg': [
+            'I', 0], 'hkInvalidFlg': [
+                'I', 0], 'SPI_Inh_n': [
+                    'I', 0], '3v3ProtErr': [
+                        'I', 0], '5vProtErr': [
+                            'I', 0], 'V3v3ProtCnt': [
+                                'I', 0], 'V5ProtCnt': [
+                                    'I', 0], 'VccdErrFlg': [
+                                        'I', 0], 'VclkErrFlg': [
+                                            'I', 0], 'VanErrFlg': [
+                                                'I', 0], 'hkTmErr': [
+                                                    'I', 0], 'spwTmTOFlg': [
+                                                        'I', 0], 'CDPUClkSt': [
+                                                            'I', 0], 'fpgaSpwErr': [
+                                                                'I', 0], 'hkRamErr': [
+                                                                    'I', 0], 'ADC_BSY_ERR_CNT': [
+                                                                        'I', 0], 'SPW_STATUS_REG': [
+                                                                            'I', 12192], 'Out_of_range': [
+                                                                                'I', 0]})
 
 HKlims['7.2.X'] = dict()
 HKlims['7.2.X']['P'] = HKlims['6.5.X']['P'].copy()
 ignore = map(HKlims['7.2.X']['P'].pop, ['fpgaSpwErr'])
-HKlims['7.2.X']['P'].update({'dacExeErr': ['I', 0], 'spwTmRspErrFlg': ['I', 0], 'spwTcPktErrFlg': ['I', 0], 'adcBsyErrFlg': ['I', 0],
-                             'CDPUClkLost': ['I', 0]})
+HKlims['7.2.X']['P'].update({'dacExeErr': ['I', 0], 'spwTmRspErrFlg': ['I', 0], 'spwTcPktErrFlg': [
+                            'I', 0], 'adcBsyErrFlg': ['I', 0], 'CDPUClkLost': ['I', 0]})
 
 HKlims['7.2.X']['S'] = HKlims['6.5.X']['S'].copy()
 ignore = map(HKlims['7.2.X']['S'].pop, ['fpgaSpwErr'])
-HKlims['7.2.X']['S'].update({'dacExeErr': ['I', 0], 'spwTmRspErrFlg': ['I', 0], 'spwTcPktErrFlg': ['I', 0], 'adcBsyErrFlg': ['I', 0],
-                             'CDPUClkLost': ['I', 0]})
+HKlims['7.2.X']['S'].update({'dacExeErr': ['I', 0], 'spwTmRspErrFlg': ['I', 0], 'spwTcPktErrFlg': [
+                            'I', 0], 'adcBsyErrFlg': ['I', 0], 'CDPUClkLost': ['I', 0]})
 
 HKlims['7.5.X'] = dict()
 
-for q in ['P','S']:
+for q in ['P', 'S']:
     HKlims['7.5.X'][q] = HKlims['7.2.X'][q].copy()
-    ignore = map(HKlims['7.2.X'][q].pop, ['CDPUClkLost','CDPUClkSt'])
-    HKlims['7.5.X'][q].update(dict(CDPUClkSw=['I',0],pixelToErr=['I',0],spwStatus=['I',0],spwTmPtypeFlag=['I',0],
-          TwoCmdsErr=['I',0]))
-
+    ignore = map(HKlims['7.2.X'][q].pop, ['CDPUClkLost', 'CDPUClkSt'])
+    HKlims['7.5.X'][q].update(
+        dict(
+            CDPUClkSw=[
+                'I', 0], pixelToErr=[
+                'I', 0], spwStatus=[
+                    'I', 0], spwTmPtypeFlag=[
+                        'I', 0], TwoCmdsErr=[
+                            'I', 0]))
 
 
 HKcorr = {}
-HKcorr['6.3.0'] = {'CCD1_OD_T': 'OD_1_T', 'CCD2_OD_T': 'OD_2_T', 'CCD3_OD_T': 'OD_3_T',
-                   'CCD1_OD_B': 'OD_1_B', 'CCD2_OD_B': 'OD_2_B', 'CCD3_OD_B': 'OD_3_B',
-                   'COMM_RD_T': 'RD_T', 'COMM_RD_B': 'RD_B',
-                   'CCD1_IG1_T': 'IG1_1_T', 'CCD2_IG1_T': 'IG1_2_T', 'CCD3_IG1_T': 'IG1_3_T',
-                   'CCD2_IG1_B': 'IG1_2_T', 'CCD3_IG1_B': 'IG1_3_T', 'CCD1_IG1_B': 'IG1_1_B',
-                   'COMM_IG2_T': 'IG2_T', 'COMM_IG2_B': 'IG2_B',
-                   'CCD1_TEMP_T': None, 'CCD2_TEMP_T': None, 'CCD3_TEMP_T': None,
-                   'CCD1_TEMP_B': None, 'CCD2_TEMP_B': None, 'CCD3_TEMP_B': None,
-                   'VID_PCB_TEMP_T': None, 'FPGA_PCB_TEMP_T': None,
-                   'VID_PCB_TEMP_B': None, 'FPGA_PCB_TEMP_B': None,
-                   'FPGA_BIAS_DD': None, 'FPGA_BIAS_OG': None,
-                   'FPGA_BIAS_ID1': 'IDH', 'FPGA_BIAS_ID2': 'IDL',
-                   'FPGA_BIAS_ID_T': None, 'FPGA_BIAS_ID_B': None,
-                   'FPGA_VRCLK_V': None, 'FPGA_10VA_P_V': None,
-                   'FPGA_VICLK_V': None, 'FPGA_5VA_P_V': None, 'FPGA_5VREF_V': None,
-                   'FPGA_VCCD_V': None, 'FPGA_1V5VD_P_V': None,
-                   'FPGA_3V2_N_V': None, 'FPGA_5VA_N_V': None,
-                   'RPSU_VCCD_V': None, 'RPSU_VCLK_V': None, 'RPSU_VAN_P_V': None,
-                   'RPSU_VAN_N_V': None, 'RPSU_3V3VD_V': None, 'RPSU_1V5VD_V': None,
-                   'RPSU_28V_PRI_V': None, 'RPSU_TEMP1': None,
-                   'RPSU_VCCD_I': None, 'RPSU_VCLK_I': None, 'RPSU_VAN_P_I': None,
-                   'RPSU_VAN_N_I': None, 'RPSU_3V3VD_I': None, 'RPSU_1V5VD_I': None,
-                   'RPSU_28V_PRI_I': None, 'RPSU_TEMP_2': None,
-                   'ProtOvRideFlg': None, 'hkInvalidFlg': None, 'SPI_Inh_n': None, '3v3ProtErr': None, '5vProtErr': None,
-                   'V3v3ProtCnt': None, 'V5ProtCnt': None, 'VccdErrFlg': None, 'VclkErrFlg': None,
-                   'VanErrFlg': None, 'hkTmErr': None, 'spwTmTOFlg': None, 'CDPUClkSt': None,
-                   'fpgaSpwErr': None, 'hkRamErr': None, 'ADC_BSY_ERR_CNT': None,
-                   'SPW_STATUS_REG': None, 'Out_of_range': None}
+HKcorr['6.3.0'] = {
+    'CCD1_OD_T': 'OD_1_T',
+    'CCD2_OD_T': 'OD_2_T',
+    'CCD3_OD_T': 'OD_3_T',
+    'CCD1_OD_B': 'OD_1_B',
+    'CCD2_OD_B': 'OD_2_B',
+    'CCD3_OD_B': 'OD_3_B',
+    'COMM_RD_T': 'RD_T',
+    'COMM_RD_B': 'RD_B',
+    'CCD1_IG1_T': 'IG1_1_T',
+    'CCD2_IG1_T': 'IG1_2_T',
+    'CCD3_IG1_T': 'IG1_3_T',
+    'CCD2_IG1_B': 'IG1_2_T',
+    'CCD3_IG1_B': 'IG1_3_T',
+    'CCD1_IG1_B': 'IG1_1_B',
+    'COMM_IG2_T': 'IG2_T',
+    'COMM_IG2_B': 'IG2_B',
+    'CCD1_TEMP_T': None,
+    'CCD2_TEMP_T': None,
+    'CCD3_TEMP_T': None,
+    'CCD1_TEMP_B': None,
+    'CCD2_TEMP_B': None,
+    'CCD3_TEMP_B': None,
+    'VID_PCB_TEMP_T': None,
+    'FPGA_PCB_TEMP_T': None,
+    'VID_PCB_TEMP_B': None,
+    'FPGA_PCB_TEMP_B': None,
+    'FPGA_BIAS_DD': None,
+    'FPGA_BIAS_OG': None,
+    'FPGA_BIAS_ID1': 'IDH',
+    'FPGA_BIAS_ID2': 'IDL',
+    'FPGA_BIAS_ID_T': None,
+    'FPGA_BIAS_ID_B': None,
+    'FPGA_VRCLK_V': None,
+    'FPGA_10VA_P_V': None,
+    'FPGA_VICLK_V': None,
+    'FPGA_5VA_P_V': None,
+    'FPGA_5VREF_V': None,
+    'FPGA_VCCD_V': None,
+    'FPGA_1V5VD_P_V': None,
+    'FPGA_3V2_N_V': None,
+    'FPGA_5VA_N_V': None,
+    'RPSU_VCCD_V': None,
+    'RPSU_VCLK_V': None,
+    'RPSU_VAN_P_V': None,
+    'RPSU_VAN_N_V': None,
+    'RPSU_3V3VD_V': None,
+    'RPSU_1V5VD_V': None,
+    'RPSU_28V_PRI_V': None,
+    'RPSU_TEMP1': None,
+    'RPSU_VCCD_I': None,
+    'RPSU_VCLK_I': None,
+    'RPSU_VAN_P_I': None,
+    'RPSU_VAN_N_I': None,
+    'RPSU_3V3VD_I': None,
+    'RPSU_1V5VD_I': None,
+    'RPSU_28V_PRI_I': None,
+    'RPSU_TEMP_2': None,
+    'ProtOvRideFlg': None,
+    'hkInvalidFlg': None,
+    'SPI_Inh_n': None,
+    '3v3ProtErr': None,
+    '5vProtErr': None,
+    'V3v3ProtCnt': None,
+    'V5ProtCnt': None,
+    'VccdErrFlg': None,
+    'VclkErrFlg': None,
+    'VanErrFlg': None,
+    'hkTmErr': None,
+    'spwTmTOFlg': None,
+    'CDPUClkSt': None,
+    'fpgaSpwErr': None,
+    'hkRamErr': None,
+    'ADC_BSY_ERR_CNT': None,
+    'SPW_STATUS_REG': None,
+    'Out_of_range': None}
 
 HKcorr['6.5.X'] = HKcorr['6.3.0'].copy()
 
 HKcorr['7.2.X'] = HKcorr['6.5.X'].copy()
 ignore = map(HKcorr['7.2.X'].pop, ['fpgaSpwErr'])
-HKcorr['7.2.X'].update({'dacExeErr': None, 'spwTmRspErrFlg': None, 'spwTcPktErrFlg': None, 'adcBsyErrFlg': None,
+HKcorr['7.2.X'].update({'dacExeErr': None,
+                        'spwTmRspErrFlg': None,
+                        'spwTcPktErrFlg': None,
+                        'adcBsyErrFlg': None,
                         'CDPUClkLost': None})
 
 HKcorr['7.5.X'] = HKcorr['7.2.X'].copy()
-ignore = map(HKcorr['7.2.X'].pop, ['CDPUClkLost','CDPUClkSt'])
-HKcorr['7.5.X'].update(dict(CDPUClkSw=None,pixelToErr=None,spwStatus=None,spwTmPtypeFlag=None,
-          TwoCmdsErr=None))
+ignore = map(HKcorr['7.2.X'].pop, ['CDPUClkLost', 'CDPUClkSt'])
+HKcorr['7.5.X'].update(dict(CDPUClkSw=None, pixelToErr=None, spwStatus=None, spwTmPtypeFlag=None,
+                            TwoCmdsErr=None))
 
 allstats = ['mean', 'std', 'min', 'max']
 
@@ -339,7 +634,7 @@ allstats = ['mean', 'std', 'min', 'max']
 def loadHK_preQM(filename, elvis='5.7.07'):
     """Loads a HK file
 
-    It only assumes a structure given by a HK keyword followed by a number of 
+    It only assumes a structure given by a HK keyword followed by a number of
     of tab-separated values (number not specified).
     Note that the length of the values arrays is variable (depends on length
     of exposure and HK sampling rate).
@@ -349,7 +644,7 @@ def loadHK_preQM(filename, elvis='5.7.07'):
     :return: dictionary with pairs parameter:[values]
 
     """
-    
+
     with open(filename) as f:
         lines = f.readlines()
         f.close()
@@ -369,7 +664,7 @@ def loadHK_preQM(filename, elvis='5.7.07'):
 def loadHK_QFMsingle(filename, elvis=context.elvis, validate=False, safe=False):
     """Loads a HK file
 
-    Structure: tab separated columns, one per Keyword. First column is a 
+    Structure: tab separated columns, one per Keyword. First column is a
     timestamp, and there may be a variable number of rows (readings).
 
     :param filename: path to the file to be loaded, including the file itself
@@ -378,25 +673,25 @@ def loadHK_QFMsingle(filename, elvis=context.elvis, validate=False, safe=False):
     :return: astropy table with pairs parameter:[values]
 
     """
-    
+
     if safe:
         def wrapped_safe_open(path):
-            return utils.safe_open_file(path,prefix='HK_')
+            return utils.safe_open_file(path, prefix='HK_')
         opener = wrapped_safe_open
     else:
         opener = open
-    
+
     with opener(filename) as f:
         lines = f.readlines()
         f.close()
         table = ascii.read(lines)
-    
+
     if validate:
         expectedkeys = allHK_keys[elvis]
         assert table.keys() == expectedkeys, \
             'HK keys in %s not mathing expectation for ELVIS=%s' % \
                          (filename, elvis)
-    
+
     return table
 
 
@@ -421,7 +716,7 @@ def mergeHK(HKList):
 def loadHK_QFM(filename, elvis=context.elvis, validate=False, safe=False):
     """Loads a HK file, or list of HK files.
 
-    Structure: astropy table. First column is a timestamp, and there may be 
+    Structure: astropy table. First column is a timestamp, and there may be
     a variable number of rows (readings).
 
     :param filename: path to the file to be loaded, including the file itself, or list of paths to HK files.
@@ -474,12 +769,12 @@ def filtervalues(values, key):
 
     try:
         return values[np.where(values != defvalue)]
-    except:
-        return np.zeros_like(values)+np.nan
+    except BaseException:
+        return np.zeros_like(values) + np.nan
 
 
 def synthHK(HK):
-    """ 
+    """
     Synthetizes the values for each parameter in a HK dictionary into
     [mean,std,min,max].
 
@@ -496,19 +791,19 @@ def synthHK(HK):
         values = HK[key].data.copy()
         try:
             mean = values.mean()
-        except:
+        except BaseException:
             mean = np.nan
         try:
             std = values.std()
-        except:
+        except BaseException:
             std = np.nan
         try:
             minv = values.min()
-        except:
+        except BaseException:
             minv = np.nan
         try:
             maxv = values.max()
-        except:
+        except BaseException:
             maxv = np.nan
 
         synthHKdict[key] = np.array([mean, std, minv, maxv])
@@ -551,9 +846,9 @@ def parseDTstr(DTstr):
         century = 2000
     else:
         century = 1900
-    dd, MM, yy = int(date[0:2]), int(date[2:4]), y2d+century
+    dd, MM, yy = int(date[0:2]), int(date[2:4]), y2d + century
 
-    time = DTstr[DTstr.index('D')+1:-1]
+    time = DTstr[DTstr.index('D') + 1:-1]
     hh, mm, ss = int(time[0:2]), int(time[2:4]), int(time[4:6])
 
     DTobject = datetime.datetime(yy, MM, dd, hh, mm, ss)
@@ -587,7 +882,7 @@ def parseHKfname(HKfname):
 
 
 def parseHKfiles(HKlist, elvis=context.elvis):
-    """ 
+    """
 
     :param HKlist: list of HK files (path+name).
     :param elvis: "ELVIS" version.
@@ -598,7 +893,7 @@ def parseHKfiles(HKlist, elvis=context.elvis):
 
     nfiles = len(HKlist)
     HK_keys = allHK_keys[elvis]
-    
+
     nkeys = len(HK_keys)
 
     ver = int(st.split(elvis, '.')[0])
@@ -623,12 +918,12 @@ def parseHKfiles(HKlist, elvis=context.elvis):
         HK = HKloader(HKfname, elvis=elvis)
 
         synthHKdict = synthHK(HK)
-        
+
         for ik, key in enumerate(HK_keys):
-            try: 
+            try:
                 data[ix, :, ik] = synthHKdict[key]
-            except:
-                data[ix, :, ik] = np.nan # HACK
+            except BaseException:
+                data[ix, :, ik] = np.nan  # HACK
 
     # reordering
 
@@ -637,7 +932,7 @@ def parseHKfiles(HKlist, elvis=context.elvis):
     dtobjs = np.array(dtobjs)[tsort]
     data = np.array(data)[tsort, :, :]
 
-    tdeltasec = np.array([(item-dtobjs[0]).seconds for item in dtobjs])
+    tdeltasec = np.array([(item - dtobjs[0]).seconds for item in dtobjs])
 
     return obsids, dtobjs, tdeltasec, HK_keys, data
 
@@ -645,7 +940,7 @@ def parseHKfiles(HKlist, elvis=context.elvis):
 def format_date(x, pos=None):
     try:
         return pylab.num2date(x).strftime('%d/%b-%H:%M')
-    except:
+    except BaseException:
         pass
     # except: stop()
 
@@ -758,7 +1053,7 @@ def _ax_render_HK(ax, x, y, HKlims, HKkey, fontsize=10):
         for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
                      ax.get_xticklabels() + ax.get_yticklabels()):
             item.set_fontsize(fontsize)
-    except:
+    except BaseException:
         pass
 
     ax.xaxis.set_major_locator(xloc)
@@ -808,7 +1103,7 @@ def check_HK_vs_command(HKKeys, dd, limits='P', elvis=context.elvis):
     :param HKKeys: list of HK parameters, as named in HK files (without HK_ suffix)
     :param dd: DataDict object
     :param limits: type of limits to use, either "P" (Performance) or "S" (Safe)
-    :param elvis: ELVIS version to find correspondence between HK key and 
+    :param elvis: ELVIS version to find correspondence between HK key and
                  Exposure Log input (commanded voltage).
     :returns report: dictionary with pairs of HK-key : Bool.
                  True = All values are within limits, referred to commanded value.
@@ -851,7 +1146,7 @@ def check_HK_vs_command(HKKeys, dd, limits='P', elvis=context.elvis):
 
 
 def check_HK_abs(HKKeys, dd, limits='S', elvis=context.elvis):
-    """ 
+    """
 
     Returns report on HK parameters, in DataDict (dd), compared to absolute
     limits.
@@ -861,11 +1156,11 @@ def check_HK_abs(HKKeys, dd, limits='S', elvis=context.elvis):
     :param HKKeys: list of HK parameters, as named in HK files (without HK_ suffix)
     :param dd: DataDict object
     :param limits: type of limits to use, either "P" (Performance) or "S" (Safe)
-    :param elvis: ELVIS version to find correspondence between HK key and 
+    :param elvis: ELVIS version to find correspondence between HK key and
                  Exposure Log input (commanded voltage).
     :returns report: dictionary with pairs of HK-key : Bool.
                  True = All values for given key are within limits.
-                 False = At least one value for given key is outside limits.    
+                 False = At least one value for given key is outside limits.
 
 
     """

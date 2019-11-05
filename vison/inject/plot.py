@@ -33,8 +33,6 @@ import matplotlib.cm as cm
 # END IMPORT
 
 
-
-
 def get_phaseV(phaseID, delay, TOI=500):
     """
     A1=Iphi2
@@ -50,23 +48,22 @@ def get_phaseV(phaseID, delay, TOI=500):
     """
 
     waveform = [0, -3, 8, 8]
-    
-    steps0 = dict(A4=0,A1=3,A2=2,A3=1,
-            D1=0,D2=3,D3=2,D4=1
-            )
+
+    steps0 = dict(A4=0, A1=3, A2=2, A3=1,
+                  D1=0, D2=3, D3=2, D4=1
+                  )
 
     step0 = steps0[phaseID]
 
     step = int(np.floor(((delay / float(TOI)) + step0) % 4))
-    
-    
+
     V = waveform[step]
-    
+
     return V
 
 
 def draw_gate_voltages(IG1, IG2, IDL, IDH, delay, figname='', chpar=10, rchpar=7.5, TOI=500):
-    """ 
+    """
     IG1: float/list, volts
     IG2: float, volts
     IDL: float, volts
@@ -104,8 +101,8 @@ def draw_gate_voltages(IG1, IG2, IDL, IDH, delay, figname='', chpar=10, rchpar=7
 
     ax1 = fig.add_subplot(211)
 
-    ax1.plot(0+stepx, IDH*unity, '-', c='b', lw=2)
-    ax1.text(0, IDH+0.5, 'ID', fontsize=12, verticalalignment='top')
+    ax1.plot(0 + stepx, IDH * unity, '-', c='b', lw=2)
+    ax1.text(0, IDH + 0.5, 'ID', fontsize=12, verticalalignment='top')
 
     #IDLcolors = cm.rainbow( np.linspace( 0,1,len(IDL)))
 
@@ -114,40 +111,40 @@ def draw_gate_voltages(IG1, IG2, IDL, IDH, delay, figname='', chpar=10, rchpar=7
 
     # IDL & IDH
 
-    ax1.plot(0+stepx, IDL*unity, '--', c='r', lw=2)
-    ax1.plot(0+stepx, IDH*unity, '-', c='b', lw=2)
+    ax1.plot(0 + stepx, IDL * unity, '--', c='r', lw=2)
+    ax1.plot(0 + stepx, IDH * unity, '-', c='b', lw=2)
 
     # Gates
 
     for iVgate, Vgate in enumerate(static_voltages):
-        VV = rchpar+static_voltages[iVgate]
+        VV = rchpar + static_voltages[iVgate]
 
         if iVgate == 1:
-            VVnotch = VV + chpar-rchpar
-            ax1.plot(1+iVgate+halfstepx, VVnotch*unity, '-', c='g', lw=2)
-            ax1.plot(1+iVgate-halfstepx, VV*unity, '-', c='g', lw=2)
+            VVnotch = VV + chpar - rchpar
+            ax1.plot(1 + iVgate + halfstepx, VVnotch * unity, '-', c='g', lw=2)
+            ax1.plot(1 + iVgate - halfstepx, VV * unity, '-', c='g', lw=2)
 
-            ax1.text(1+iVgate, VVnotch+0.5, gatenames[iVgate], fontsize=12,
+            ax1.text(1 + iVgate, VVnotch + 0.5, gatenames[iVgate], fontsize=12,
                      verticalalignment='top')
         elif iVgate == 0:
-            ax1.plot(1+iVgate+stepx, VV*unity, '-', c='g', lw=2)
-            ax1.text(1+iVgate, VV+0.5, gatenames[iVgate], fontsize=12,
+            ax1.plot(1 + iVgate + stepx, VV * unity, '-', c='g', lw=2)
+            ax1.text(1 + iVgate, VV + 0.5, gatenames[iVgate], fontsize=12,
                      verticalalignment='top')
 
             if IG1range is not None:
-                x = 1+iVgate+stepx
+                x = 1 + iVgate + stepx
                 ax1.fill_between(
-                    x, rchpar+IG1range[0], rchpar+IG1range[1], facecolor='g', alpha=0.2)
-                ax1.plot(1+iVgate+stepx,
-                         (rchpar+IG1range[1])*unity, '-', c='g', lw=2)
+                    x, rchpar + IG1range[0], rchpar + IG1range[1], facecolor='g', alpha=0.2)
+                ax1.plot(1 + iVgate + stepx,
+                         (rchpar + IG1range[1]) * unity, '-', c='g', lw=2)
 
     # V-phases
 
     for iVphase, Vphase in enumerate(upperphases):
-        VV = chpar+get_phaseV(Vphase, delay, TOI=TOI)
-        ax1.plot(3+iVphase+stepx, VV*unity, '-', c='r', lw=2)
+        VV = chpar + get_phaseV(Vphase, delay, TOI=TOI)
+        ax1.plot(3 + iVphase + stepx, VV * unity, '-', c='r', lw=2)
 
-        ax1.text(3+iVphase-0.5, VV+0.5, phaselabels[Vphase], fontsize=12,
+        ax1.text(3 + iVphase - 0.5, VV + 0.5, phaselabels[Vphase], fontsize=12,
                  verticalalignment='top', horizontalalignment='left')
 
     for ix in np.arange(-0.5, 7.5, 1.):
@@ -163,13 +160,13 @@ def draw_gate_voltages(IG1, IG2, IDL, IDH, delay, figname='', chpar=10, rchpar=7
 
     ax2 = fig.add_subplot(212)
 
-    ax2.plot(0+stepx, IDH*unity, '-', c='b', lw=2)
-    ax2.text(0, IDH+0.5, 'ID', fontsize=12, verticalalignment='top')
+    ax2.plot(0 + stepx, IDH * unity, '-', c='b', lw=2)
+    ax2.text(0, IDH + 0.5, 'ID', fontsize=12, verticalalignment='top')
 
     # IDL & IDH
 
-    ax2.plot(0+stepx, IDL*unity, '--', c='r', lw=2)
-    ax2.plot(0+stepx, IDH*unity, '-', c='b', lw=2)
+    ax2.plot(0 + stepx, IDL * unity, '--', c='r', lw=2)
+    ax2.plot(0 + stepx, IDH * unity, '-', c='b', lw=2)
 
     # for ix,iIDL in enumerate(IDL):
     #    ax2.plot(0+stepx,iIDL*unity,'--',c=IDLcolors[ix],lw=2)
@@ -178,32 +175,32 @@ def draw_gate_voltages(IG1, IG2, IDL, IDH, delay, figname='', chpar=10, rchpar=7
     # Gates
 
     for iVgate, Vgate in enumerate(static_voltages):
-        VV = rchpar+static_voltages[iVgate]
+        VV = rchpar + static_voltages[iVgate]
 
         if iVgate == 1:
-            VVnotch = VV + chpar-rchpar
-            ax2.plot(1+iVgate+halfstepx, VVnotch*unity, '-', c='g', lw=2)
-            ax2.plot(1+iVgate-halfstepx, VV*unity, '-', c='g', lw=2)
-            ax2.text(1+iVgate, VVnotch+0.5, gatenames[iVgate], fontsize=12,
+            VVnotch = VV + chpar - rchpar
+            ax2.plot(1 + iVgate + halfstepx, VVnotch * unity, '-', c='g', lw=2)
+            ax2.plot(1 + iVgate - halfstepx, VV * unity, '-', c='g', lw=2)
+            ax2.text(1 + iVgate, VVnotch + 0.5, gatenames[iVgate], fontsize=12,
                      verticalalignment='top')
         elif iVgate == 0:
-            ax2.plot(1+iVgate+stepx, VV*unity, '-', c='g', lw=2)
-            ax2.text(1+iVgate, VV+0.5, gatenames[iVgate], fontsize=12,
+            ax2.plot(1 + iVgate + stepx, VV * unity, '-', c='g', lw=2)
+            ax2.text(1 + iVgate, VV + 0.5, gatenames[iVgate], fontsize=12,
                      verticalalignment='top')
 
             if IG1range is not None:
-                x = 1+iVgate+stepx
+                x = 1 + iVgate + stepx
                 ax2.fill_between(
-                    x, rchpar+IG1range[0], rchpar+IG1range[1], facecolor='g', alpha=0.2)
-                ax2.plot(1+iVgate+stepx,
-                         (rchpar+IG1range[1])*unity, '-', c='g', lw=2)
+                    x, rchpar + IG1range[0], rchpar + IG1range[1], facecolor='g', alpha=0.2)
+                ax2.plot(1 + iVgate + stepx,
+                         (rchpar + IG1range[1]) * unity, '-', c='g', lw=2)
 
     for iVphase, Vphase in enumerate(lowerphases):
-        VV = chpar+get_phaseV(Vphase, delay, TOI=TOI)
+        VV = chpar + get_phaseV(Vphase, delay, TOI=TOI)
 
-        ax2.plot(3+iVphase+stepx, VV*unity, '-', c='r', lw=2)
+        ax2.plot(3 + iVphase + stepx, VV * unity, '-', c='r', lw=2)
 
-        ax2.text(3+iVphase-0.5, VV+0.5, phaselabels[Vphase], fontsize=12,
+        ax2.text(3 + iVphase - 0.5, VV + 0.5, phaselabels[Vphase], fontsize=12,
                  verticalalignment='top', horizontalalignment='left')
 
     for ix in np.arange(-0.5, 7.5, 1.):
@@ -243,17 +240,15 @@ if __name__ == '__main__':
 
     # TEST
 
-    IG1 = [4.5,4.5]  # [1.5,6.]
+    IG1 = [4.5, 4.5]  # [1.5,6.]
     IG2 = 6.  # 5.5
     IDL = 11.
     IDH = 18.
     TOI = 500.
-    delay = TOI*1.5
+    delay = TOI * 1.5
     figname0_TEST = ''
     chpar = 10.
     rchpar = chpar - 0.2
-    
-    
 
     draw_gate_voltages(IG1, IG2, IDL, IDH, delay, figname=figname0_TEST,
                        chpar=chpar, rchpar=rchpar, TOI=TOI)

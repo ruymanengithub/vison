@@ -33,7 +33,7 @@ def proof_of_concept():
     C.add_column('Exptime', dimensions=['CCD'])
 
     def get_flux(fluence, exptime):
-        return fluence/exptime
+        return fluence / exptime
 
     C.zip(get_flux, inputs=['Fluence', 'Exptime'], outputs=['Flux'])
 

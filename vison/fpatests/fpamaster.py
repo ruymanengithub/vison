@@ -4,7 +4,7 @@
 
 Pipelining for FPA analysis.
 
-   
+
 
 Created on Wed Oct  2 16:15:56 2019
 
@@ -46,18 +46,18 @@ defaults = dict()
 
 class FpaPipe(master.GenPipe):
     """Master Class of FM-analysis at block-level of assembly."""
-    
+
     from vison.fpatests.FWD_WARM import FWD_WARM
-    
+
     Test_dict = dict(FWD_WARM=FWD_WARM)
 
     def __init__(self, inputdict, dolog=True, drill=False, debug=False, startobsid=0,
-                 processes=1, tag='',cleanafter=False):
+                 processes=1, tag='', cleanafter=False):
         """ """
-        
+
         self.inputs = defaults.copy()
         self.inputs.update(inputdict)
-        self.tasks = self.inputs['tasks']       
+        self.tasks = self.inputs['tasks']
         self.drill = drill
         self.debug = debug
         self.startobsid = startobsid
@@ -69,7 +69,7 @@ class FpaPipe(master.GenPipe):
         if self.debug:
             self.ID = 'PipeDebug%s' % self.tag
         else:
-            self.ID = '%s%s' % (vistime.get_time_tag(),self.tag)  # ID of the analysis "session"
+            self.ID = '%s%s' % (vistime.get_time_tag(), self.tag)  # ID of the analysis "session"
 
         self.inputs['ID'] = self.ID
 
@@ -84,9 +84,9 @@ class FpaPipe(master.GenPipe):
                           self._get_log_header())
         else:
             self.log = None
-        
+
         self.pipe_session = dict(ID=self.ID,
-                               processes=self.processes)
+                                 processes=self.processes)
 
     def _get_log_header(self):
         log_header = [
@@ -94,4 +94,3 @@ class FpaPipe(master.GenPipe):
             'vison version: %s\n' % __version__,
             'Tasks: %s\n' % self.tasks.__repr__()]
         return log_header
-

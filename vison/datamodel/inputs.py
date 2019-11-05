@@ -17,7 +17,7 @@ import numpy as np
 # END IMPORT
 
 CommonTaskInputs = OrderedDict(sorted([
-    ('BLOCKID', ([str,type(None)], 'Unique Detection Block Identifier.')),
+    ('BLOCKID', ([str, type(None)], 'Unique Detection Block Identifier.')),
     ('CHAMBER', ([str, type(None)], 'Test Chamber.')),
     ('processes', ([int], 'Number of Threads to use.')),
     ('datapath', ([str], 'Path to Data.')),
@@ -46,9 +46,10 @@ CommonTaskInputs = OrderedDict(sorted([
 ]))
 
 CommonFpaTaskInputs = CommonTaskInputs.copy()
-for key in ['BLOCKID','CHAMBER','diffvalues','structure']:
+for key in ['BLOCKID', 'CHAMBER', 'diffvalues', 'structure']:
     CommonFpaTaskInputs.pop(key)
-CommonFpaTaskInputs['FPAdesign'] = ([str,type(None)], 'FPA design (initial/final)')
+CommonFpaTaskInputs['FPAdesign'] = ([str, type(None)], 'FPA design (initial/final)')
+
 
 class Inputs(dict):
     """Class to hold, transfer and 'document' Task Inputs."""
@@ -57,16 +58,16 @@ class Inputs(dict):
                              ('b', ([int], 'second variable'))])
 
     def __init__(self, *args, **kwargs):
-        
+
         for key in self.manifesto:
             kmv = self.manifesto[key]
             kmvl = list(kmv)
             if type(None) not in kmvl[0]:
                 kmvl[0] += [type(None)]
             self.manifesto[key] = tuple(kmvl)
-            
+
         self._fill_with_Nones()
-        
+
         if 'args' in locals():
             for item in locals()['args']:
                 _key, _val = item
@@ -75,11 +76,10 @@ class Inputs(dict):
             for key in kwargs:
                 self.assertinputs(key, kwargs[key])
         super(Inputs, self).__init__(*args, **kwargs)
-        
+
     def _fill_with_Nones(self):
         for key in self.manifesto.keys():
             self[key] = None
-    
 
     def assertinputs(self, key, value):
         # return # TESTS

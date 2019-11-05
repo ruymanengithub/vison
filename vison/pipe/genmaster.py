@@ -30,21 +30,22 @@ from vison.support import context
 from vison.support import utils
 # END IMPORT
 
-defaults = dict(BLOCKID='FM', 
+defaults = dict(BLOCKID='FM',
                 CHAMBER='Unk')
+
 
 class GenPipe(object):
     """Abstract Master Class of FM-analysis, any level of assembly."""
-   
-    Test_dict = dict()    
+
+    Test_dict = dict()
 
     def __init__(self, inputdict, dolog=True, drill=False, debug=False, startobsid=0,
-                 processes=1,tag='',cleanafter=False):
+                 processes=1, tag='', cleanafter=False):
         """ """
-        
+
         self.inputs = defaults.copy()
         self.inputs.update(inputdict)
-        self.tasks = self.inputs['tasks']       
+        self.tasks = self.inputs['tasks']
         self.BLOCKID = self.inputs['BLOCKID']
         self.CHAMBER = self.inputs['CHAMBER']
         self.drill = drill
@@ -57,7 +58,7 @@ class GenPipe(object):
         if self.debug:
             self.ID = 'PipeDebug%s' % self.tag
         else:
-            self.ID = 'FM%s%s' % (vistime.get_time_tag(),self.tag)  # ID of the analysis "session"
+            self.ID = 'FM%s%s' % (vistime.get_time_tag(), self.tag)  # ID of the analysis "session"
 
         self.inputs['ID'] = self.ID
 
@@ -82,11 +83,19 @@ class GenPipe(object):
             'Tasks: %s\n' % self.tasks.__repr__()]
         return log_header
 
-    def get_test(self, taskname, inputs=dict(), log=None, drill=False, debug=False, cleanafter=False):
+    def get_test(
+            self,
+            taskname,
+            inputs=dict(),
+            log=None,
+            drill=False,
+            debug=False,
+            cleanafter=False):
         """ """
         testclass = self.Test_dict[taskname]
         #pathtotest = os.path.split(inspect.getfile(testclass))[0]
-        #os.system('rm %s/*.pyc' % pathtotest) # avoids problems with .pyc files from previous tasks in the run... DIRTY HACK
+        # os.system('rm %s/*.pyc' % pathtotest) # avoids problems with .pyc files
+        # from previous tasks in the run... DIRTY HACK
         test = testclass(inputs=inputs, log=log, drill=drill, debug=debug,
                          cleanafter=cleanafter)
         return test
@@ -115,24 +124,24 @@ class GenPipe(object):
 
         if self.log is not None:
             self.log.info(msg)
-        
-        print('Running: %s' % taskname)        
-        
+
+        print('Running: %s' % taskname)
+
         taskreport = self.dotask(taskname, taskinputs,
                                  drill=self.drill, debug=self.debug,
                                  cleanafter=self.cleanafter)
-        
+
         timemsg = '%.1f minutes in running Task: %s' %\
-                          (taskreport['exectime'], taskname)
+            (taskreport['exectime'], taskname)
         errormsg = 'Task %s exited with Errors: %s' %\
-                          (taskname, taskreport['Errors'])
+            (taskname, taskreport['Errors'])
         print(timemsg)
         print(errormsg)
-        
+
         if self.log is not None:
             self.log.info(timemsg)
             self.log.info(errormsg)
-        
+
         self.completion[taskname] = copy.deepcopy(taskreport)
 
     def run(self, explogf=None, elvis=None):
@@ -162,16 +171,16 @@ class GenPipe(object):
             self.inputs[taskname] = taskinputs
 
             self.launchtask(taskname)
-            
+
             tpart = datetime.datetime.now()
-            partdtm = ((tpart-tini).seconds)/60.
-            
+            partdtm = ((tpart - tini).seconds) / 60.
+
             partsummary = self.get_execution_summary(exectime=partdtm)
             if self.log is not None:
                 self.log.info(partsummary)
 
         tend = datetime.datetime.now()
-        Dtm = ((tend-tini).seconds)/60.
+        Dtm = ((tend - tini).seconds) / 60.
 
         summary = self.get_execution_summary(exectime=Dtm)
         if self.log is not None:
@@ -182,7 +191,7 @@ class GenPipe(object):
         summary = ['_', '_', '_', '_',
                    '######################################################################'] +\
             self._get_log_header()
-        
+
         for task in self.tasks:
             if task in self.completion:
                 _compl = self.completion[task]
@@ -192,27 +201,26 @@ class GenPipe(object):
                 summary += ['Raised Flags = %s' % _compl['flags']]
                 if _compl['Errors']:
                     summary += ['Executed with ERROR(s)']
-        
+
         summary += ['_', '_', '_', '_',
-                   '######################################################################']
-        
+                    '######################################################################']
+
         return summary
-    
+
     def wait_and_run(self, dayfolder, elvis=context.elvis):
         """ """
-        
+
         tasknames = self.tasks
         resultsroot = self.inputs['resultsroot']
         if not os.path.exists(resultsroot):
             os.system('mkdir %s' % resultsroot)
-        
+
         if self.log is not None:
             self.log.info('\n\nResults will be saved in: %s\n' % resultsroot)
-        
+
         # Learn how many ObsIDs will generate each task
 
         tasksequence = []
-        
 
         for taskname in tasknames:
 
@@ -223,19 +231,17 @@ class GenPipe(object):
                 resultsroot, taskinputs['resultspath'])
             taskinputs['elvis'] = elvis
             taskinputs['datapath'] = dayfolder
-                      
-                      
+
             strip_taskname = utils.remove_iter_tag(taskname, Full=False)
             test = self.get_test(strip_taskname, taskinputs, log=self.log)
             taskinputs = copy.deepcopy(test.inputs)
-            
 
             structure = taskinputs['structure']
 
             Ncols = structure['Ncols']
 
             Nframes = 0
-            for ic in range(1, Ncols+1):
+            for ic in range(1, Ncols + 1):
                 Nframes += structure['col%03i' % ic]['frames']
 
             tasksequence.append((taskname, testkey, Nframes))
@@ -247,28 +253,25 @@ class GenPipe(object):
         tlastavailable = datetime.datetime.now()
 
         while not fahrtig:
-            
+
             tmpEL = os.path.join(dayfolder, 'EXP_LOG_*.txt')
             explogfs = glob.glob(tmpEL)
             explogfs = pilib.sortbydateexplogfs(explogfs)
-            
-            
+
             #t1 = datetime.datetime.now()
             explog = pilib.loadexplogs(explogfs, elvis)
             #t2 = datetime.datetime.now()
             #print '%.1f seconds in loading explogs...' % (t2-t1).seconds
-            
-                                                          
+
             if self.startobsid > 0:
                 ixstart = np.where(explog['ObsID'] == self.startobsid)[0][0]
                 explog = explog[ixstart:].copy()
-            
 
             for it, taskitem in enumerate(tasksequence):
 
                 taskname, testkey, Nframes = taskitem
                 available = pilib.coarsefindTestinExpLog(
-                    explog, testkey, Nframes)                
+                    explog, testkey, Nframes)
 
                 if available:
                     # print '%s available, doing nothing!' % taskname # TESTS
@@ -278,11 +281,11 @@ class GenPipe(object):
                             self.startobsid, explog['ObsID'][-1]]
                     self.launchtask(taskname)
                     tasksequence.pop(it)
-                    
+
                     tlastavailable = datetime.datetime.now()
 
-                    partdtm = ((tlastavailable-tini).seconds)/60.
-            
+                    partdtm = ((tlastavailable - tini).seconds) / 60.
+
                     partsummary = self.get_execution_summary(exectime=partdtm)
                     if self.log is not None:
                         self.log.info(partsummary)
@@ -295,28 +298,28 @@ class GenPipe(object):
                         'Pipeline sleeping for %i seconds...' % waittime)
                 sleep(waittime)
                 justnow = datetime.datetime.now()
-                tsincelastavailable = ((justnow-tlastavailable).seconds)/60.
-                
+                tsincelastavailable = ((justnow - tlastavailable).seconds) / 60.
+
                 if tsincelastavailable > waitTO:
-                    
+
                     print " Im bored of waiting... do you want to give up? y/n"
-                    rlist, _, _ = select([sys.stdin], [], [], 60.) # 1 minute to answer
+                    rlist, _, _ = select([sys.stdin], [], [], 60.)  # 1 minute to answer
 
                     if rlist:
                         ans = sys.stdin.readline().lower()
                     else:
                         ans = 'y'
                         print "No input. Assuming that's a 'y' and hence quitting."
-                    
-                    
+
                     if ans == 'y':
                         if self.log is not None:
-                            self.log.info('%.1f hours since last test was available... abandoning' % tsincelastavailable/3600.)
+                            self.log.info(
+                                '%.1f hours since last test was available... abandoning' %
+                                tsincelastavailable / 3600.)
                         fahrtig = True
-                    
 
         tend = datetime.datetime.now()
-        Dtm = ((tend-tini).seconds)/60.
+        Dtm = ((tend - tini).seconds) / 60.
 
         summary = self.get_execution_summary(exectime=Dtm)
         if self.log is not None:
@@ -326,19 +329,19 @@ class GenPipe(object):
 
     def dotask(self, taskname, inputs, drill=False, debug=False, cleanafter=False):
         """Generic test master function."""
-        
-        strip_taskname = utils.remove_iter_tag(taskname,Full=False)
+
+        strip_taskname = utils.remove_iter_tag(taskname, Full=False)
 
         tini = datetime.datetime.now()
 
         Errors = False
-        
+
         try:
-            test = self.get_test(strip_taskname, inputs=inputs, log=self.log, 
+            test = self.get_test(strip_taskname, inputs=inputs, log=self.log,
                                  drill=drill, debug=debug, cleanafter=cleanafter)
-            
+
             Errors = test()  # test execution
-        except:
+        except BaseException:
             self.catchtraceback()
             Errors = True
             if self.log is not None:
@@ -347,30 +350,30 @@ class GenPipe(object):
             else:
                 print 'TASK "%s@%s" FAILED, QUITTING!' % (
                     taskname, self.Test_dict[taskname].__module__)
-        
+
         tend = datetime.datetime.now()
-        dtm = ((tend-tini).seconds)/60.
-        
+        dtm = ((tend - tini).seconds) / 60.
+
         execlog = OrderedDict()
         execlog['Task'] = taskname
         execlog['Errors'] = Errors
         execlog['exectime'] = dtm
         try:
             execlog['ObsID_range'] = (test.dd.mx['ObsID'][:].min(),
-                                   test.dd.mx['ObsID'][:].max() )
-        except:
-            execlog['ObsID_range'] = (-1,-1)
-        
+                                      test.dd.mx['ObsID'][:].max())
+        except BaseException:
+            execlog['ObsID_range'] = (-1, -1)
+
         try:
             flags = test.dd.flags.getFlagsOnList()
-        except:
+        except BaseException:
             flags = ['UNKNOWN']
         execlog['flags'] = flags.__repr__()
-        
+
         test = None
-        
+
         return execlog
-    
+
     def catchtraceback(self):
         """ """
         msg_trbk = traceback.format_exc()

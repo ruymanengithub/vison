@@ -28,7 +28,7 @@ from vison.point.basis import SpotBase
 
 class Gaussmeter(SpotBase):
     """
-    Provides methods to measure the shape of an object using 
+    Provides methods to measure the shape of an object using
     a 2D Gaussian Model.
 
     :param data: stamp to be analysed.
@@ -82,12 +82,12 @@ class Gaussmeter(SpotBase):
         params = rawres.parameters[0:-1]  # theta is fixed
         try:
             eparams = np.diag(fit_p.fit_info['param_cov'])**0.5
-        except:
+        except BaseException:
             Emsg = 'Gaussmeter.fit_Gauss did not converge'
             if self.log is not None:
                 self.log.info(Emsg)
             else:
                 print Emsg
-            eparams = np.zeros_like(params)+np.nan
+            eparams = np.zeros_like(params) + np.nan
 
         return params, eparams

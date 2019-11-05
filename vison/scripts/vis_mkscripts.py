@@ -119,7 +119,7 @@ def scwriter(toWrite, test_generator, outpath, equipment, elvis=context.elvis, C
         testobj = copy.deepcopy(test_sequence[test])
         try:
             structtest = testobj.build_scriptdict(elvis=elvis)
-        except:
+        except BaseException:
             stop()
 
         testduration = get_test_duration(structtest)
@@ -127,9 +127,9 @@ def scwriter(toWrite, test_generator, outpath, equipment, elvis=context.elvis, C
         duration += testduration
 
         iNcols = structtest['Ncols']
-        
+
         frameslist = [structtest['col%03i' % i]['frames']
-                      for i in range(1, iNcols+1)]
+                      for i in range(1, iNcols + 1)]
         iNframes = np.sum(frameslist)
 
         summarylines.append('%s: %i [%.2f min] cols: %s' % (test, iNcols, testduration,
@@ -217,7 +217,6 @@ if __name__ == '__main__':
         test_generator = mot.generate_mot_sequence
     elif inputs['camptype'] == "devel":
         test_generator = devel.generate_test_sequence
-    
 
     scwriter(inputs['toWrite'], test_generator, inputs['outpath'],
              inputs['equipment'], inputs['elvis'], inputs['CHAMBER'])

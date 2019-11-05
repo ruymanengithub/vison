@@ -65,7 +65,7 @@ def rsync_to_remote(path, broadcast):
 def rsync_to_altlocalpath(path, altpath):
     """ """
     #_altpath = os.path.join(altpath, path)
-    command = "rsync -avzq %s %s" % (path, altpath+os.sep)
+    command = "rsync -avzq %s %s" % (path, altpath + os.sep)
     print 'SYNCING TO ALTLOCAL: %s' % command
     os.system(command)
 
@@ -80,11 +80,11 @@ class Eyegore(tk.Tk):
         tk.Tk.__init__(self)
 
         if intervals is None:
-            intervals = dict(EYE=50000, 
+            intervals = dict(EYE=50000,
                              image=50000,
-                             HK=30000, 
-                             HKplots=500, 
-                             HKflags=500, 
+                             HK=30000,
+                             HKplots=500,
+                             HKflags=500,
                              EXP=20000)
 
         if path is not None:
@@ -102,12 +102,12 @@ class Eyegore(tk.Tk):
 
         if dolog:
             datestamp = vistime.get_time_tag()
-            
+
             if self.tag != '':
                 ntag = '_%s' % self.tag
             else:
                 ntag = ''
-            self.logf = 'Eyegore_%s%s.log' % (datestamp,ntag)
+            self.logf = 'Eyegore_%s%s.log' % (datestamp, ntag)
 
             if os.path.exists(self.logf):
                 os.system('rm %s' % self.logf)
@@ -130,17 +130,16 @@ class Eyegore(tk.Tk):
 
     def setup_MasterWG(self):
         """ """
-        
+
         title = 'EYEGORE'
         if self.tag != '':
-            title = '%s: %s' % (title,self.tag)
+            title = '%s: %s' % (title, self.tag)
 
         self.wm_title(title)
-        
 
         fr = tk.Frame(self)
         fr.pack(fill='both', expand=True)
-        
+
         eyegoregif = os.path.join(vdata.__path__[0], 'Eyegore.gif')
         im = Image.open(eyegoregif)
         self.tkimg = ImageTk.PhotoImage(im)
@@ -170,7 +169,6 @@ class Eyegore(tk.Tk):
 
         fr.grid_columnconfigure(0, weight=1)
         fr.grid_rowconfigure(0, weight=1)
-        
 
     def run(self):
 
@@ -183,21 +181,21 @@ class Eyegore(tk.Tk):
             ani1 = display1.start_updating(self.intervals['image'])
 
         display2 = Ds['hk'](
-            self, self.path, self.intervals['HK'], elvis=self.elvis, 
-                                dolite=self.dolite or self.blind,
-                                tag=self.tag)
-        
+            self, self.path, self.intervals['HK'], elvis=self.elvis,
+            dolite=self.dolite or self.blind,
+            tag=self.tag)
+
         if not (self.dolite or self.blind):
             ani2 = display2.start_updating_display(self.intervals['HKplots'])
 
         display2b = Ds['hkflags'](
-            self, display2, self.intervals['HKflags'], elvis=self.elvis,tag=self.tag)
-        
+            self, display2, self.intervals['HKflags'], elvis=self.elvis, tag=self.tag)
+
         if not self.dolite:
 
             display4 = Ds['explog'](
                 self, self.path, self.intervals['EXP'], elvis=self.elvis, ds9target=self.ds9target,
-                                               tag=self.tag)
+                tag=self.tag)
         self.update()
 
         self.mainloop()
@@ -238,7 +236,7 @@ def Eexecuter():
                       help="Raise warnings (via email and/or phone) if critical HK is OOL.")
     parser.add_option("-d", "--DS9", dest="ds9target", default='*',
                       help="Specify DS9 target (pyds9)?")
-    parser.add_option("-t","--tag", dest="tag", default="",
+    parser.add_option("-t", "--tag", dest="tag", default="",
                       help="add a tag to the name of windows")
     (options, args) = parser.parse_args()
 
@@ -259,7 +257,6 @@ def Eexecuter():
     doWarnings = bool(options.doWarnings)
     ds9target = options.ds9target
     tag = options.tag
-    
 
     if broadcast != 'None':
         broadcast = os.path.join(_extpath, broadcast)
@@ -281,7 +278,7 @@ def Eexecuter():
     print header % path
 
     app = Eyegore(path, broadcast=broadcast, elvis=elvis, blind=blind,
-                  dolite=dolite,altpath=altpath, doWarnings=doWarnings, 
+                  dolite=dolite, altpath=altpath, doWarnings=doWarnings,
                   dolog=dolog, ds9target=ds9target, tag=tag)
 
 

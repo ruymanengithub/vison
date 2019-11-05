@@ -28,66 +28,64 @@ from vison.datamodel import cdp
 class HER_CDP(cdp.Tables_CDP):
 
     def ingest_inputs(self, mx_dct, CCDs, Quads, meta=None, header=None, figs=None):
-        
+
         keys = mx_dct.keys()
-        
+
         _data = dict()
-        
+
         for key in keys:
-            
+
             cbe = mx_dct[key].copy()
             cbe_dict = OrderedDict()
-            
+
             for jCCD, CCDk in enumerate(CCDs):
                 cbe_dict[CCDk] = OrderedDict()
                 for kQ, Q in enumerate(Quads):
-                    cbe_dict[CCDk][Q] = cbe[jCCD,kQ]
+                    cbe_dict[CCDk][Q] = cbe[jCCD, kQ]
 
-            df = pd.DataFrame.from_dict(cbe_dict)  
+            df = pd.DataFrame.from_dict(cbe_dict)
             _data[key] = df
-        
-        
+
         super(HER_CDP, self).ingest_inputs(
             _data, meta=meta, header=header, figs=figs)
-
 
 
 def get_CDP_lib(test):
     gain_tb_cdp = cdp.Tables_CDP()
     gain_tb_cdp.rootname = '%s_GAIN_TB' % test
-    
+
     HER_cdp = HER_CDP()
     HER_cdp.rootname = '%s_HER' % test
-    
+
     HER_profiles_cdp = cdp.CDP()
     HER_profiles_cdp.rootname = 'HER_profiles_%s' % test
-    
-    
+
     ptccurves_cdp = cdp.CDP()
     ptccurves_cdp.rootname = 'PTC_curves_%s' % test
-    
+
     CDP_lib = dict(GAIN_TB=gain_tb_cdp,
                    CURVES_PTC=ptccurves_cdp,
                    HER=HER_cdp,
                    HER_PROFILES=HER_profiles_cdp)
     return CDP_lib
 
+
 def gt_PTC_curves_dict(test):
-    
-    nicetest = st.replace(test,'_','\_')
-    
+
+    nicetest = st.replace(test, '_', '\_')
+
     return dict(
-    figname='%s_PTC_curves.png' % test,
-    caption='%s: PTC curves and best fits.' % nicetest,
-    meta=dict(doLegend=True,
-              ylabel='VAR',
-              xlabel='MED',
-              xlim=[0.,2**16],
-              ylim=[0.,2.**16/3.],
-              suptitle='%s: PTC Curves.' % nicetest,
-              corekwargs=dict(data=dict(marker='.',linestyle='',color='b'),
-                             fit=dict(marker='',linestyle='-',color='r'),
-                             bloom=dict(marker='',linestyle='--',color='k')))
+        figname='%s_PTC_curves.png' % test,
+        caption='%s: PTC curves and best fits.' % nicetest,
+        meta=dict(doLegend=True,
+                  ylabel='VAR',
+                  xlabel='MED',
+                  xlim=[0., 2**16],
+                  ylim=[0., 2.**16 / 3.],
+                  suptitle='%s: PTC Curves.' % nicetest,
+                  corekwargs=dict(data=dict(marker='.', linestyle='', color='b'),
+                                  fit=dict(marker='', linestyle='-', color='r'),
+                                  bloom=dict(marker='', linestyle='--', color='k')))
     )
 
 
@@ -102,16 +100,18 @@ def gt_check_offsets_dict(test):
                           suptitle='%s-checks: offsets' % ntest,
                           ylim=trends.offset_lims))
 
+
 def gt_check_deltaoff_dict(test):
     ntest = st.replace(test, '_', '\_')
-    return dict(stats=['deltaoff_pre', 'deltaoff_ove'],
-                trendaxis='time',
-                figname='%s_deltaoff_vs_time.png' % (test,),
-                caption='%s: $\delta$offset vs. time. Offset value in each frame minus the average value.' % (ntest,),
-                meta=dict(doLegend=True,
-                          doNiceXDate=True,
-                          suptitle='%s-checks: delta-offsets' % ntest,
-                          ylim=[-10.,10.]))
+    return dict(
+        stats=[
+            'deltaoff_pre', 'deltaoff_ove'], trendaxis='time', figname='%s_deltaoff_vs_time.png' %
+        (test,), caption='%s: $\delta$offset vs. time. Offset value in each frame minus the average value.' %
+        (ntest,), meta=dict(
+            doLegend=True, doNiceXDate=True, suptitle='%s-checks: delta-offsets' %
+            ntest, ylim=[
+                -10., 10.]))
+
 
 def gt_check_std_dict(test):
     ntest = st.replace(test, '_', '\_')
@@ -150,17 +150,18 @@ def gt_check_img_std_dict(test):
                           xlabel='exptime[s]',
                           ylabel='[ADU]'))
 
+
 def gt_HER_dict(test):
     ntest = st.replace(test, '_', '\_')
     return dict(
-            figname='%s_profs_HER_ser.png' % test,
-            caption='%s: HER profiles, serial direction.' % ntest,
-            meta=dict(doLegend=True,
-              ylabel=r'$\delta ADU/Cliff Value$',
-              xlabel='Row [pix]',
-              ylim=[-0.002,0.005],
-              suptitle='%s: Serial HER.' % ntest,
-              corekwargs=dict(marker='.',linestyle='-')))
+        figname='%s_profs_HER_ser.png' % test,
+        caption='%s: HER profiles, serial direction.' % ntest,
+        meta=dict(doLegend=True,
+                  ylabel=r'$\delta ADU/Cliff Value$',
+                  xlabel='Row [pix]',
+                  ylim=[-0.002, 0.005],
+                  suptitle='%s: Serial HER.' % ntest,
+                  corekwargs=dict(marker='.', linestyle='-')))
 
 
 def gt_PTC0Xfigs(test):

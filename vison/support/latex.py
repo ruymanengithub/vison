@@ -7,7 +7,7 @@ Just a collection of LaTeX-generating functions for use in report.py
 :History:
 Created on Mon Jan 30 2017
 
-:author: Ruyman Azzollini 
+:author: Ruyman Azzollini
 
 """
 

@@ -14,7 +14,7 @@ from pdb import set_trace as stop
 import sys
 from optparse import OptionParser
 
-from pylab import plot,show
+from pylab import plot, show
 
 from vison.support import files
 
@@ -22,11 +22,7 @@ from vison.support import files
 # END IMPORT
 
 
-
-
-
 if __name__ == '__main__':
-
 
     parser = OptionParser()
     parser.add_option("-f", "--file", dest="file",
@@ -37,7 +33,6 @@ if __name__ == '__main__':
     if options.file == '':
         parser.print_help()
         sys.exit()
-        
+
     dd = files.cPickleRead(options.file)
     stop()
-

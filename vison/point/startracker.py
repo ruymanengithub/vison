@@ -36,9 +36,11 @@ default_patt_files = OrderedDict(
 
 starnames = ['ALPHA', 'BRAVO', 'CHARLIE', 'DELTA', 'ECHO']
 
+
 def sort_coordinate_pairs(coopairs):
     """ """
-    return sorted(coopairs, key=lambda k: [k[0],k[1]])
+    return sorted(coopairs, key=lambda k: [k[0], k[1]])
+
 
 class StarTracker(object):
 
@@ -166,8 +168,8 @@ class StarTracker(object):
         Xc, Yc = self.convert_Phys_2_CCD(Xp, Yp)
         return (Xc, Yc)
 
-    def get_similaritymx(self,scale, rotation_rad, translation):
-        """ 
+    def get_similaritymx(self, scale, rotation_rad, translation):
+        """
 
         :param scale: float, scale factor.
         :param rotation_deg: float, rotation angel in ccw direction in degrees.
@@ -175,13 +177,13 @@ class StarTracker(object):
 
         """
 
-        #ss = skimage.transform.SimilarityTransform(scale=scale,
+        # ss = skimage.transform.SimilarityTransform(scale=scale,
         #            rotation=np.radians(rotation_deg), translation=translation)
         ss = skimage.transform.SimilarityTransform(scale=scale,
-                    rotation=rotation_rad, translation=translation)
+                                                   rotation=rotation_rad, translation=translation)
         return ss.params
 
-    def find_patt_transform(self, Xt, Yt, Full = False, discardQ=None,debug=False):
+    def find_patt_transform(self, Xt, Yt, Full=False, discardQ=None, debug=False):
         """ """
         Xs = self.Pattern['X']
         Ys = self.Pattern['Y']
@@ -190,37 +192,35 @@ class StarTracker(object):
             sel = np.array([i for i in range(len(ID)) if ID[i][0] not in discardQ])
             Xs = Xs[sel].copy()
             Ys = Ys[sel].copy()
-        
+
         source = zip(Xs, Ys)
         target = zip(Xt, Yt)
-        
+
         source = sort_coordinate_pairs(source)
         target = sort_coordinate_pairs(target)
-        
+
         xs, ys = tuple(zip(*source))
         xt, yt = tuple(zip(*target))
-        
+
         try:
             transf, (s_list, t_list) = aa.find_transform(source, target)
-            
-        except:
+
+        except BaseException:
             raise RuntimeError
-        
+
         if debug:
             #from pylab import plot,show
             from matplotlib import pyplot as plt
             mx = self.get_similaritymx(transf.scale, transf.rotation, transf.translation)
-            xtp, ytp = self._apply_transform(s_list[:,0], s_list[:,1], mx)
+            xtp, ytp = self._apply_transform(s_list[:, 0], s_list[:, 1], mx)
             fig = plt.figure()
             ax1 = fig.add_subplot(121)
-            ax1.plot(xtp, ytp,'ro')
-            ax1.plot(xt, yt,'k.')
+            ax1.plot(xtp, ytp, 'ro')
+            ax1.plot(xt, yt, 'k.')
             ax2 = fig.add_subplot(122)
-            ax2.plot(xtp-t_list[:,0],ytp-t_list[:,1],'bo')
+            ax2.plot(xtp - t_list[:, 0], ytp - t_list[:, 1], 'bo')
             plt.show()
-            
-            
-        
+
         if Full:
             return transf, (s_list, t_list)
         else:

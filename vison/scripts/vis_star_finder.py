@@ -35,8 +35,6 @@ Quads = ['E', 'F', 'G', 'H']
 Starnames = ['ALPHA', 'BRAVO', 'CHARLIE', 'DELTA', 'ECHO']
 
 
-
-
 def write_ID_chart(filename, Quads, Starnames):
     """ """
 
@@ -115,7 +113,7 @@ def run_starfinder(FITS, tag=''):
     with fts.open(FITS, lazy_load_hdus=False) as hdulist:
 
         EXTNAME = hdulist[1].header['EXTNAME']
-        CCDkey = EXTNAME[EXTNAME.find('_')+1:]
+        CCDkey = EXTNAME[EXTNAME.find('_') + 1:]
 
         Pattfile = 'Pattern_%s%s.txt' % (CCDkey, _tag)
 
@@ -124,7 +122,7 @@ def run_starfinder(FITS, tag=''):
         assert NAXIS1 == 4238
         assert NAXIS2 in (4132, 4172)
 
-        if NAXIS2/2 == 2086:
+        if NAXIS2 / 2 == 2086:
             withpover = True
         else:
             withpover = False
@@ -146,11 +144,11 @@ def run_starfinder(FITS, tag=''):
 
         ds9regsf = '%s_ds9.reg' % SExCatroot
         regsdata = dict(
-            X=SExCat['X_IMAGE'].data.copy()-1.,
-            Y=SExCat['Y_IMAGE'].data.copy()-1.,
+            X=SExCat['X_IMAGE'].data.copy() - 1.,
+            Y=SExCat['Y_IMAGE'].data.copy() - 1.,
             THETA=SExCat['THETA_IMAGE'].data.copy(),
-            A=2.*SExCat['A_IMAGE'].data.copy(),
-            B=2.*SExCat['B_IMAGE'].data.copy()
+            A=2. * SExCat['A_IMAGE'].data.copy(),
+            B=2. * SExCat['B_IMAGE'].data.copy()
         )
         save_spots_as_ds9regs(regsdata, regfilename=ds9regsf, regtype='ellipse',
                               clobber=True)
@@ -203,13 +201,13 @@ def run_starfinder(FITS, tag=''):
         d.set("frame 1")
         d.set("regions delete all")
 
-        _X = pattern_ccd_table['X'].copy()-1.
+        _X = pattern_ccd_table['X'].copy() - 1.
         IDregs = dict(
             X=_X,
-            Y=pattern_ccd_table['Y'].copy()-1.,
+            Y=pattern_ccd_table['Y'].copy() - 1.,
             THETA=np.zeros_like(_X),
-            A=np.ones_like(_X)*15.,
-            B=np.ones_like(_X)*15.
+            A=np.ones_like(_X) * 15.,
+            B=np.ones_like(_X) * 15.
         )
         idds9regsf = tempfile.NamedTemporaryFile(mode='w+a', suffix='_ds9regs.txt',
                                                  prefix='vis_star_finder', delete=False)
@@ -235,7 +233,7 @@ def run_starfinder(FITS, tag=''):
     Xc = pattern_ccd_table['X'].copy()
     Yc = pattern_ccd_table['Y'].copy()
 
-    Xp, Yp = stracker.convert_CCD_2_Phys(Xc, Yc) # CONVERT FROM CCD TO PHYS
+    Xp, Yp = stracker.convert_CCD_2_Phys(Xc, Yc)  # CONVERT FROM CCD TO PHYS
 
     pattern_phys_table = OrderedDict()
     pattern_phys_table['ID'] = pattern_ccd_table['ID'].copy()

@@ -35,8 +35,8 @@ def simadd_points(ccdobj, flux, fwhm, CCDID='CCD1', dx=0, dy=0, extension=-1):
     from vison.point.lib import Point_CooNom
     from vison.point.models import fgauss2D
 
-    sigma = fwhm/2.355
-    i0 = flux/(2.*np.pi*sigma**2.)
+    sigma = fwhm / 2.355
+    i0 = flux / (2. * np.pi * sigma**2.)
 
     nx = 15
     ny = 15
@@ -55,10 +55,10 @@ def simadd_points(ccdobj, flux, fwhm, CCDID='CCD1', dx=0, dy=0, extension=-1):
             x0 = xp - B[0] + dx
             y0 = yp - B[2] + dy
 
-            xmin = int(np.round(x0))-nx/2
-            xmax = xmin+nx
-            ymin = int(np.round(y0))-ny/2
-            ymax = ymin+ny
+            xmin = int(np.round(x0)) - nx / 2
+            xmax = xmin + nx
+            ymin = int(np.round(y0)) - ny / 2
+            ymax = ymin + ny
 
             x = np.arange(xmin, xmax)
             y = np.arange(ymin, ymax)
@@ -85,23 +85,22 @@ def simadd_bias(ccdobj, levels=None, extension=-1):
 
 def simadd_ron(ccdobj, extension=-1):
     """ """
-    
+
     for Q in ccdobj.Quads:
-        
+
         B = ccdobj.QuadBound[Q]
 
         Qnoise = np.random.normal(
-                loc=0.0, scale=ccdobj.rn[Q], size=(ccdobj.wQ, ccdobj.hQ))
+            loc=0.0, scale=ccdobj.rn[Q], size=(ccdobj.wQ, ccdobj.hQ))
         ccdobj.extensions[extension].data[B[0]:B[1], B[2]:B[3]] += Qnoise
-    
-    
+
 
 def simadd_poisson(ccdobj, extension=-1):
     """ """
 
     gain = ccdobj.gain['E']
 
-    image_e = ccdobj.extensions[extension].data.copy()*gain
+    image_e = ccdobj.extensions[extension].data.copy() * gain
 
     rounded = np.rint(image_e)
     # ugly workaround for multiple rounding operations...
@@ -118,7 +117,7 @@ def simadd_poisson(ccdobj, extension=-1):
 def sim_window(ccdobj, vstart, vend, extension=-1):
     """ """
 
-    mask = np.ones((ccdobj.NAXIS1/2, ccdobj.NAXIS2/2), dtype='int8')
+    mask = np.ones((ccdobj.NAXIS1 / 2, ccdobj.NAXIS2 / 2), dtype='int8')
     mask[:, vstart:vend] = 0
 
     for Q in ccdobj.Quads:
@@ -135,7 +134,7 @@ def simadd_injection(ccdobj, levels, on=1E6, off=0, extension=-1):
 
     # ON/OFF masking
 
-    NX, NY = ccdobj.NAXIS1/2, ccdobj.NAXIS2/2
+    NX, NY = ccdobj.NAXIS1 / 2, ccdobj.NAXIS2 / 2
 
     mask_onoff = np.zeros((NX, NY), dtype='int8')
 
@@ -146,7 +145,7 @@ def simadd_injection(ccdobj, levels, on=1E6, off=0, extension=-1):
         y1 = min(y0 + on, NY)
         mask_onoff[:, y0:y1] = 1
         y0 = y1 + off
-        if (y0 > NY-1):
+        if (y0 > NY - 1):
             break
 
     #from astropy.io import fits as fts

@@ -12,7 +12,7 @@ Created on Fri Oct 13 14:11:41 2017
 
 # IMPORT STUFF
 #import matplotlib
-#matplotlib.use("TkAgg")
+# matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 import matplotlib.animation as animation
 from matplotlib import pyplot as plt
@@ -75,7 +75,7 @@ class SingleHKplot(tk.Toplevel):
         try:
             plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))
             self.f.autofmt_xdate()
-        except:
+        except BaseException:
             pass
         self.f.autofmt_xdate()
         plt.tight_layout(rect=[0, 0, 1, 1])
@@ -104,7 +104,7 @@ class HKButton(tk.Button, object):
 
 
 def validate_within_HKlim(val, HKlim):
-    """ 
+    """
     violation:
         0: None
         -1: below lower limit
@@ -180,10 +180,10 @@ class HKFlags(tk.Toplevel):
         self.HKkeys = self.parent.HKkeys[1:]
         self.HK = self.parent.HK
         self.tag = tag
-        
+
         title = 'HK Flags'
         if self.tag != '':
-            title = '%s: %s' % (title,self.tag)
+            title = '%s: %s' % (title, self.tag)
 
         self.wm_title(title)
 
@@ -201,7 +201,7 @@ class HKFlags(tk.Toplevel):
         HKkeys = self.HKkeys
 
         ncols = self.ncols
-        nrows = int(np.ceil(len(HKkeys)/(ncols*1.)))
+        nrows = int(np.ceil(len(HKkeys) / (ncols * 1.)))
 
         self.HKflags = []
 
@@ -224,12 +224,12 @@ class HKFlags(tk.Toplevel):
 
                 self.bind_buttons_to_methods(-1)
 
-        if ic < ncols-1:
-            icr = ic+1
+        if ic < ncols - 1:
+            icr = ic + 1
             irr = ir
         else:
             icr = 0
-            irr = ir+1
+            irr = ir + 1
 
         self.resetButton = HKButton(self, text='RESET ALL', font=small_font, bg='blue',
                                     ix=-1, ic=icr, ir=irr)
@@ -242,7 +242,7 @@ class HKFlags(tk.Toplevel):
                                      font=small_font, bg='pink',
                                      label='HK Flags: HELP')
 
-        self.HelpButton.grid(column=icr+1, row=irr, sticky='nsew',
+        self.HelpButton.grid(column=icr + 1, row=irr, sticky='nsew',
                              in_=self.HKframe)
 
     def ToggleMute(self, event):
@@ -303,7 +303,7 @@ class HKFlags(tk.Toplevel):
 
         try:
             self.find_offlims()
-        except:
+        except BaseException:
             pass
 
         self.after(self.interval, self.update)
@@ -325,7 +325,7 @@ class HKFlags(tk.Toplevel):
             if self.log is not None:
                 self.log.info('RAISED %s: %s, lims=%s (timestamp=%s)' %
                               (HKkeys[ix], lastval.__str__(), HKlim.__str__(), time_stamp))
-            
+
             if self.Warnings is not None and self.HKflags[ix].status is not None:
                 self.Warnings.process_event(
                     HKkeys[ix], violation_type, lastval, HKlim, time_stamp)
@@ -384,7 +384,7 @@ class HKDisplay(tk.Toplevel):
 
         #self.nHKlines = 1
         self.root = root
-        
+
         self.tag = tag
 
         self.HKkeys = HKtools.allHK_keys[elvis]
@@ -392,25 +392,24 @@ class HKDisplay(tk.Toplevel):
 
         if self.path is not None:
             self.search_HKfiles()
-        
+
         tk.Toplevel.__init__(self, self.root)
         if not self.dolite:
             self.initialize_display()
         else:
             self.wm_title('DO NOT CLOSE ME')
-            
+
         self.update()
-    
+
     def initialize_display(self):
-        
+
         self.minsize(width=700, height=925)
-        
+
         title = 'HK Display'
         if self.tag != '':
-            title = '%s: %s' % (title,self.tag)
+            title = '%s: %s' % (title, self.tag)
 
         self.wm_title(title)
-
 
         frame = tk.Frame(self)
         l1 = tk.Label(frame, text="Page: ", font=LARGE_FONT)
@@ -431,9 +430,8 @@ class HKDisplay(tk.Toplevel):
 
         pentry.bind('<Return>', update_page)
 
-        self.setup_plotgrid()        
-    
-    
+        self.setup_plotgrid()
+
     def setup_plotgrid(self):
 
         f = plt.figure(figsize=(4, 8), dpi=100)
@@ -442,7 +440,7 @@ class HKDisplay(tk.Toplevel):
 
         for i in range(9):
 
-            ax = f.add_subplot(3, 3, i+1)
+            ax = f.add_subplot(3, 3, i + 1)
             axs.append(ax)
 
         self.f = f
@@ -491,15 +489,15 @@ class HKDisplay(tk.Toplevel):
         """ """
 
         allHKkeys = self.HKkeys
-        nkeys = len(allHKkeys)-1
+        nkeys = len(allHKkeys) - 1
         page = self.page
         #print page
 
-        if page * 9 > nkeys+9-1:
+        if page * 9 > nkeys + 9 - 1:
             return
 
-        ix0 = (page-1)*9
-        ix1 = ix0 + 9 if ix0+9 <= nkeys else None
+        ix0 = (page - 1) * 9
+        ix1 = ix0 + 9 if ix0 + 9 <= nkeys else None
 
         HKkeys_to_plot = allHKkeys[1:][ix0:ix1]
 
@@ -507,31 +505,31 @@ class HKDisplay(tk.Toplevel):
 
     def get_data(self):
         """ """
-        
+
         print('entering HKDisplay.get_data...')
 
         self.select_HKkeys()
-        #self.search_HKfiles()
-        
+        # self.search_HKfiles()
 
         if self.HKfiles is None:
-            #yield self.HK
+            # yield self.HK
             return
 
         sizeHK = get_bitsize(self.HKfiles)
         print('sizeHK=%i' % sizeHK)
 
         if sizeHK <= self.sizeHK:
-            #yield self.HK
+            # yield self.HK
             self.sizeHK = sizeHK
             return
-        
+
         self.sizeHK = sizeHK
 
         print('loading HK...')
 
-        try: HK = HKtools.loadHK_QFM(self.HKfiles, elvis=self.elvis, safe=True)
-        except:
+        try:
+            HK = HKtools.loadHK_QFM(self.HKfiles, elvis=self.elvis, safe=True)
+        except BaseException:
             print('Failed loading: %s' % self.HKfiles.__repr__)
             return
 
@@ -549,15 +547,14 @@ class HKDisplay(tk.Toplevel):
 
         self.HK = pHK.copy()
 
-        #yield pHK
+        # yield pHK
 
     def gen_render(self):
 
         HKlims = self.HKlims
 
         def render(dummyvar):
-            
-            
+
             pHK = self.HK
 
             nHK = len(self.HKkeys_to_plot)
@@ -566,7 +563,7 @@ class HKDisplay(tk.Toplevel):
                 item.clear()
 
             if nHK < 9:
-                for item in self.axs[-(9-nHK)]:
+                for item in self.axs[-(9 - nHK)]:
                     item.get_xaxis().set_visible(False)
                     item.get_yaxis().set_visible(False)
 
@@ -589,12 +586,12 @@ class HKDisplay(tk.Toplevel):
             try:
                 plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(format_date))
                 self.f.autofmt_xdate()
-            except:
+            except BaseException:
                 pass
             plt.tight_layout(rect=[0, 0, 1, 1])
 
         return render
-    
+
     def update(self):
         print('entering HKDisplay.update. Interval=%i' % self.interval)
         self.search_HKfiles()
@@ -604,5 +601,5 @@ class HKDisplay(tk.Toplevel):
     def start_updating_display(self, interval):
         f = self.f
         render = self.gen_render()
-        #return animation.FuncAnimation(f, render, self.get_data, interval=interval)
-        return animation.FuncAnimation(f,render,None,interval=interval)
+        # return animation.FuncAnimation(f, render, self.get_data, interval=interval)
+        return animation.FuncAnimation(f, render, None, interval=interval)

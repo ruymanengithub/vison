@@ -25,110 +25,109 @@ from vison.support.files import cPickleRead
 from vison.support import vjson
 # END IMPORT
 
+
 def run_merger(infile):
     """ """
-    
+
     indata = vjson.load_jsonfile(infile, useyaml=True)
-    
+
     programme = indata['metadata']['programme']
     block = indata['metadata']['block']
     reference = indata['metadata']['reference']
-    try: 
+    try:
         Issue = indata['metadata']['issue']
-    except KeyError: 
+    except KeyError:
         Issue = 0.0
-    
+
     #indata = ascii.read(infile,data_start=0)
-    niceblock = st.replace(block,'_.','\_')
-    report = Report(TestName='Test Reports, %s' % niceblock,Model=programme,
+    niceblock = st.replace(block, '_.', '\_')
+    report = Report(TestName='Test Reports, %s' % niceblock, Model=programme,
                     Reference=reference, Issue=Issue)
-    
-    reportroot = 'EUCL_MSS_TR_%s_%s_v%.1f' % (reference,block,issue)
-    
+
+    reportroot = 'EUCL_MSS_TR_%s_%s_v%.1f' % (reference, block, issue)
+
     N2merge = len(indata)
-    
+
     for i in range(N2merge):
-        
+
         ipick = indata.columns[0][i]
         ireport = cPickleRead(ipick)
-        
+
         # TEMPORARY AD-HOC
         path, filename = os.path.split(ipick)
-        testname = st.replace(filename,'_Report.pick', '')
-        testname = st.replace(testname,'_', '\_')
+        testname = st.replace(filename, '_Report.pick', '')
+        testname = st.replace(testname, '_', '\_')
         path = os.path.normpath(path)
         folders = path.split(os.sep)
         session = folders[1]
-        
-        report.add_Chapter('%s: %s' % (session,testname))
+
+        report.add_Chapter('%s: %s' % (session, testname))
         report.Contents += ireport.Contents
-    
-    
+
     _ = report.doreport(reportroot, cleanafter=False, silent=True)
-    
+
 
 def run_merger_plus(infile, Issue=0.0):
     """ """
-    
+
     indata = vjson.load_jsonfile(infile, useyaml=True)
-    
+
     programme = indata['metadata']['programme']
     block = indata['metadata']['block']
     reference = indata['metadata']['reference']
-    
 
     #indata = ascii.read(infile,data_start=0)
-    niceblock = st.replace(block,'_.','\_')
-    report = Report(TestName='Test Reports, %s' % niceblock,Model=programme,
+    niceblock = st.replace(block, '_.', '\_')
+    report = Report(TestName='Test Reports, %s' % niceblock, Model=programme,
                     Reference=reference, Issue=Issue)
-    
-    reportroot = 'EUCL_MSS_TR_%s_%s' % (reference,block)
-    
+
+    reportroot = 'EUCL_MSS_TR_%s_%s' % (reference, block)
+
     parts_names = indata['parts_names']
     parts_dict = indata['parts'].copy()
-    
-    assert len(set(parts_names)^set(parts_dict.keys()))==0, "parts names do not match parts keys!"
-    
+
+    assert len(set(parts_names) ^ set(parts_dict.keys())
+               ) == 0, "parts names do not match parts keys!"
+
     for ipart, part in enumerate(parts_names):
         parts_list = parts_dict[part]
-        
+
         report.add_Part(part)
-    
+
         jN2merge = len(parts_list)
-        
+
         for i in range(jN2merge):
-            
+
             ipick = parts_list[i]
             ireport = cPickleRead(ipick)
-            
+
             # TEMPORARY AD-HOC
             path, filename = os.path.split(ipick)
-            testname = st.replace(filename,'_Report.pick', '')
-            testname = st.replace(testname,'_', '\_')
+            testname = st.replace(filename, '_Report.pick', '')
+            testname = st.replace(testname, '_', '\_')
             path = os.path.normpath(path)
             folders = path.split(os.sep)
             session = folders[1]
-                        
-            report.add_Chapter('%s: %s' % (session,testname))
+
+            report.add_Chapter('%s: %s' % (session, testname))
             report.Contents += ireport.Contents
-    
-    
+
     _ = report.doreport(reportroot, cleanafter=False, silent=True)
-    
+
 
 if __name__ == '__main__':
 
     parser = OptionParser()
-    
+
     parser.add_option("-i", "--infile", dest="infile",
                       default='', help="Inputs file with list of reports to be merged.")
     parser.add_option("-v", "--version", dest="version",
                       default=0.0, help="Document version number.")
-    #parser.add_option("-p", "--programme", dest="programme", 
+    # parser.add_option("-p", "--programme", dest="programme",
     #                  default="FM", help="Calibration programme (QM/FQM/FM).")
-    #parser.add_option("-b", "--block", dest="block",
+    # parser.add_option("-b", "--block", dest="block",
     #                  default="BLOCK", help="Name of the block being calibrated.")
-    #parser.add_option("-r", "--reference", dest="reference",
+    # parser.add_option("-r", "--reference", dest="reference",
     #                   default="6_666", help="")
 
     (options, args) = parser.parse_args()
@@ -138,7 +137,6 @@ if __name__ == '__main__':
     #programme = options.programme
     #block = options.block
     #reference = options.reference
-    
 
     if infile == '':
         parser.print_help()
@@ -156,4 +154,3 @@ if __name__ == '__main__':
 
     #run_merger(infile, programme, block, reference)
     run_merger_plus(infile, Issue=version)
-    

@@ -42,14 +42,14 @@ TP00_commvalues = dict(program='CALCAMP', test='TP00',
                        IDL=11, IDH=18,
                        IG1_1_T=IG1, IG1_2_T=IG1, IG1_3_T=IG1,
                        IG1_1_B=IG1, IG1_2_B=IG1, IG1_3_B=IG1,
-                       IG2_T=IG2, IG2_B=IG2,                       
+                       IG2_T=IG2, IG2_B=IG2,
                        flushes=7, siflsh=1, siflsh_p=500,
                        inisweep=1,
                        vstart=0, vend=20,
                        toi_fl=143., toi_ro=1000.,
-                       chinj=1,chinj_on=2066, chinj_of=0,                       
+                       chinj=1, chinj_on=2066, chinj_of=0,
                        id_wid=60,
-                       exptime=0., shuttr=0,e_shuttr=0,
+                       exptime=0., shuttr=0, e_shuttr=0,
                        mirr_on=0,
                        wave=4,
                        motr_on=0,
@@ -76,15 +76,14 @@ class TP00(PumpTask):
     def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
         self.subtasks = [('check', self.check_data)]
-        super(TP00, self).__init__(inputs=inputs, log=log, drill=drill, debug=debug, 
-                cleanafter=cleanafter)
+        super(TP00, self).__init__(inputs=inputs, log=log, drill=drill, debug=debug,
+                                   cleanafter=cleanafter)
         self.name = 'TP00'
         self.type = 'Simple'
-        
+
         self.HKKeys = HKKeys
         self.figdict = dict()
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles')
-        
 
     def set_inpdefaults(self, **kwargs):
         """ """
@@ -129,7 +128,7 @@ class TP00(PumpTask):
                     colkey = 'col%03i' % colcounter
 
                     TP00_sdict[colkey] = dict(frames=1, toi_tp=toi_tp,
-                                              id_dly=id_delay, 
+                                              id_dly=id_delay,
                                               s_tpump=0,
                                               v_tpump=1, v_tpmod=vpumpmode,
                                               v_tp_cnt=Nshuffles_V,
@@ -148,9 +147,9 @@ class TP00(PumpTask):
                     colkey = 'col%03i' % colcounter
 
                     TP00_sdict[colkey] = dict(frames=1,
-                                              id_dly=id_delay, 
+                                              id_dly=id_delay,
                                               v_tpump=0,
-                                              s_tpump=1, 
+                                              s_tpump=1,
                                               s_tpmod=spumpmode,
                                               s_tp_cnt=Nshuffles_S, dwell_s=dwell_tps,
                                               comments='S%i_%i' % (spumpmode, dwell_tps))
@@ -166,7 +165,7 @@ class TP00(PumpTask):
         if len(diffvalues) == 0:
             try:
                 diffvalues = self.inputs['diffvalues']
-            except:
+            except BaseException:
                 diffvalues = diffvalues = dict()
 
         TP00_sdict = sc.update_structdict(TP00_sdict, commvalues, diffvalues)
@@ -180,7 +179,7 @@ class TP00(PumpTask):
                                                  wavedkeys=wavedkeys)
 
     def check_data(self):
-        """ 
+        """
 
         TP01: Checks quality of ingested data.
 
@@ -208,7 +207,7 @@ class TP00(PumpTask):
             [plot std vs. time]
 
             issue any warnings to log
-            issue update to report          
+            issue update to report
 
 
         """

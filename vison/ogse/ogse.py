@@ -134,8 +134,10 @@ def get_FW_ID(wavelength, FW=FW):  # REDTAG: DEFAULT FW ON TESTS ONLY
     """
     return [key for key in FW if FW[key] == wavelength][0]
 
-def get_wavelength(FW_ID,FW=FW):
+
+def get_wavelength(FW_ID, FW=FW):
     return FW['F%i' % FW_ID]
+
 
 class Ogse(object):
 
@@ -145,7 +147,7 @@ class Ogse(object):
         if labels is None:
             self.labels = []
         else:
-            assert isinstance(labels,list)
+            assert isinstance(labels, list)
             self.labels = labels
         self.CHAMBER = CHAMBER
         self.profile = OrderedDict()
@@ -170,7 +172,6 @@ class Ogse(object):
 
         self.profile = profile.copy()
 
-
     def get_pspattern_paths(self):
         pspattern_paths = OrderedDict()
         for CCD in self.CCDs:
@@ -179,28 +180,27 @@ class Ogse(object):
             pspattern_paths['CCD%i' % CCD] = fpath
         return pspattern_paths
 
-            
     def load_startrackers(self, withpover=True):
         """ """
-        
+
         pspattern_paths = self.get_pspattern_paths()
-        
+
         for CCD in self.CCDs:
-            
-            if len(self.labels)>0:
-                
+
+            if len(self.labels) > 0:
+
                 for label in self.labels:
-                    
+
                     istartracker = strmod.StarTracker(
-                            CCD, withpover, patt_files=pspattern_paths)
+                        CCD, withpover, patt_files=pspattern_paths)
                     self.startrackers['CCD%i' % CCD][label] = copy.deepcopy(istartracker)
 
             else:
-                
+
                 istartracker = strmod.StarTracker(
-                            CCD, withpover, patt_files=pspattern_paths)
+                    CCD, withpover, patt_files=pspattern_paths)
                 self.startrackers['CCD%i' % CCD] = copy.deepcopy(istartracker)
-    
+
     def save_ogse_profile(self, jsonpath):
         """ """
         profile = self.profile
@@ -212,4 +212,3 @@ class Ogse(object):
 
     def get_wavelength(self, FW_ID):
         return get_wavelength(FW_ID, self.profile['FW'])
-    

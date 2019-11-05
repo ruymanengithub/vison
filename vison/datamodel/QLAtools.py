@@ -117,7 +117,7 @@ def getsectionstats(CCDobj, QUAD, section, xbuffer=(0, 0), ybuffer=(0, 0)):
         QUAD)
 
     if section == 'prescan':
-        x0, x1 = prestart, preend-xbuffer[1]
+        x0, x1 = prestart, preend - xbuffer[1]
     elif section == 'overscan':
         x0, x1 = ovstart, ovend
     elif section == 'image':
@@ -129,14 +129,17 @@ def getsectionstats(CCDobj, QUAD, section, xbuffer=(0, 0), ybuffer=(0, 0)):
     quaddata = CCDobj.get_quad(QUAD)
     NX, NY = quaddata.shape
 
-    y0, y1 = (0, NY-1)
+    y0, y1 = (0, NY - 1)
     y0 += ybuffer[0]
     y1 -= ybuffer[1]
 
     subquad = quaddata[x0:x1, y0:y1]
 
-    stats = [np.mean(subquad), np.std(subquad), np.min(subquad), np.max(subquad),
-             np.percentile(subquad, q=25), np.percentile(subquad, q=50), np.percentile(subquad, q=75)]
+    stats = [
+        np.mean(subquad), np.std(subquad), np.min(subquad), np.max(subquad), np.percentile(
+            subquad, q=25), np.percentile(
+            subquad, q=50), np.percentile(
+                subquad, q=75)]
 
     return stats
 
@@ -161,7 +164,7 @@ def plotQuads(CCDobj, filename=None, suptitle=''):
             minP = 0
             maxP = 0
 
-        axP.append(figP.add_subplot(2, 2, iQ+1))
+        axP.append(figP.add_subplot(2, 2, iQ + 1))
         axP[-1].imshow(data.transpose(), origin='lower left', cmap='hot',
                        clim=(minP, maxP))
         axP[-1].set_title(QUAD)
@@ -190,10 +193,10 @@ def plotAcROWcuts(dissection, filename=None, suptitle=''):
         data = dissection[QUAD].copy()
         ncols = data.shape[1]
 
-        col = np.arange(ncols)+1
+        col = np.arange(ncols) + 1
         meanval = data[0, :].copy()
 
-        axP.append(figP.add_subplot(2, 2, iQ+1))
+        axP.append(figP.add_subplot(2, 2, iQ + 1))
         axP[-1].plot(col, meanval)
         axP[-1].set_title(QUAD)
 
@@ -229,12 +232,12 @@ def plotAcCOLcuts(dissection, filename=None, suptitle=''):
 
         data = dissection[QUAD]
 
-        axP.append(figP.add_subplot(2, 2, iQ+1))
+        axP.append(figP.add_subplot(2, 2, iQ + 1))
 
         for ia, area in enumerate(['prescan', 'image', 'overscan']):
 
             nrows = data[area].shape[1]
-            row = np.arange(nrows)+1
+            row = np.arange(nrows) + 1
             meanval = data[area][0, :].copy()
 
             axP[-1].plot(row, meanval, color=colors[ia])
@@ -362,7 +365,7 @@ def reportFITS(FITSfile, outpath=''):
         imgstats = dissection['imgstats'][QUAD]
         overstats = dissection['overstats'][QUAD]
 
-        alignedstats = tuple([QUAD]+prestats+imgstats+overstats)
+        alignedstats = tuple([QUAD] + prestats + imgstats + overstats)
 
         template_stats = st.join(latex_templates['table_stats'], '__^__')
         table_stats = template_stats % alignedstats

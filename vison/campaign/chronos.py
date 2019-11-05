@@ -21,10 +21,10 @@ def get_dt_ro(**kwargs):
     """ """
     vstart = kwargs['vstart']
     vend = kwargs['vend']
-    toi = kwargs['toi_ro']*1.e-6
-    dtserial = 14.3E-6 * (51.+2048.+29.)
-    nlines = vend-vstart
-    dt = nlines * (4.*toi+dtserial)
+    toi = kwargs['toi_ro'] * 1.e-6
+    dtserial = 14.3E-6 * (51. + 2048. + 29.)
+    nlines = vend - vstart
+    dt = nlines * (4. * toi + dtserial)
     return dt
 
 
@@ -32,43 +32,43 @@ def get_dt_flush(**kwargs):
     """ """
     nlines = 2066
     toi_fl = kwargs['toi_fl'] * 1.E-6
-    dt = nlines * (4.*toi_fl)
+    dt = nlines * (4. * toi_fl)
     return dt
 
 
 def get_dt_chinj(**kwargs):
     """ """
 
-    dtserial = 14.3E-6 * (51.+2048.+29.)
+    dtserial = 14.3E-6 * (51. + 2048. + 29.)
     vstart = 0
     vend = 2066
-    nlines = vend-vstart
-    toi_ch = kwargs['toi_ch']*1.e-6
+    nlines = vend - vstart
+    toi_ch = kwargs['toi_ch'] * 1.e-6
     chin_dly = kwargs['chin_dly']
     dtserial *= chin_dly
 
-    dt = nlines * (4.*toi_ch+dtserial)
+    dt = nlines * (4. * toi_ch + dtserial)
     return dt
 
 
 def get_dt_stpump(**kwargs):
     """ """
     s_tp_cnt = kwargs['s_tp_cnt']
-    dwell_s = kwargs['dwell_s']*1.e-6
+    dwell_s = kwargs['dwell_s'] * 1.e-6
     vstart = kwargs['vstart']
     vend = kwargs['vend']
-    nlines = vend-vstart
+    nlines = vend - vstart
 
-    dt = nlines * ((2.*14.3E-6+dwell_s)*s_tp_cnt)
+    dt = nlines * ((2. * 14.3E-6 + dwell_s) * s_tp_cnt)
     return dt
 
 
 def get_dt_vtpump(**kwargs):
     """ """
-    toi_tp = kwargs['toi_tp']*1.e-6
+    toi_tp = kwargs['toi_tp'] * 1.e-6
     v_tp_cnt = kwargs['v_tp_cnt']
-    dwell_v = kwargs['dwell_v']*1.e-6
-    dt = ((4.*toi_tp+dwell_v)*v_tp_cnt)
+    dwell_v = kwargs['dwell_v'] * 1.e-6
+    dt = ((4. * toi_tp + dwell_v) * v_tp_cnt)
 
     return dt
 
@@ -79,12 +79,12 @@ def get_test_duration(teststruct):
     testduration = 0.
     Ncols = teststruct['Ncols']
 
-    for ixcol in range(1, Ncols+1):
+    for ixcol in range(1, Ncols + 1):
         col = teststruct['col%03i' % ixcol]
         iduration = col['exptime']
 
         if col['siflsh'] == 1:
-            iduration += col['siflsh_p']*1.e-3
+            iduration += col['siflsh_p'] * 1.e-3
 
         iduration += get_dt_flush(**col)
 
@@ -97,7 +97,7 @@ def get_test_duration(teststruct):
             iduration += get_dt_stpump(**col)
         if col['v_tpump'] == 1:
             iduration += get_dt_vtpump(**col)
-            
+
         iduration += transf_overhead
 
         iduration *= col['frames']

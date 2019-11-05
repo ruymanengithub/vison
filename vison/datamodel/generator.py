@@ -68,7 +68,7 @@ def _update_fromscript(rowdict, scriptcol):
 
     phkeys = ['IPHI1', 'IPHI2', 'IPHI3', 'IPHI4']
 
-    IPHI = st.join(['I%i' % (i+1,)
+    IPHI = st.join(['I%i' % (i + 1,)
                     for i in range(4) if scriptcol[phkeys[i]]], '')
     rowdict['IPHI'] = IPHI
 
@@ -94,7 +94,7 @@ def _update_fromscript(rowdict, scriptcol):
 
 def generate_Explog(scrdict, defaults, elvis=context.elvis, explog=None, OBSID0=1000,
                     date=vistime.dtobj_default, CHAMBER=None):
-    """ 
+    """
 
     Generates a fake ExposureLog from a test structure dictionary.
 
@@ -107,7 +107,7 @@ def generate_Explog(scrdict, defaults, elvis=context.elvis, explog=None, OBSID0=
     Temporal:
         SerRdDel
 
-    To be provided in defaults: (EASY)   
+    To be provided in defaults: (EASY)
         Lab_ver,Con_file,CnvStart,
         Flsh-Rdout_e_time,C.Inj-Rdout_e_time,
         FPGA_ver,Chmb_pre,R1CCD[1,2,3]T[T,B]
@@ -130,7 +130,7 @@ def generate_Explog(scrdict, defaults, elvis=context.elvis, explog=None, OBSID0=
     else:
         assert isinstance(explog, astpy.table.table.Table)
 
-        ixObsID = explog['ObsID'][-1]+1
+        ixObsID = explog['ObsID'][-1] + 1
 
         datelast = HKtools.parseDTstr(explog['date'][-1])
 
@@ -138,7 +138,7 @@ def generate_Explog(scrdict, defaults, elvis=context.elvis, explog=None, OBSID0=
 
         date = datelast  # + datetime.timedelta(seconds=4.+rdouttime+exptsec)
 
-    for iscrcol in range(1, Nscriptcols+1):
+    for iscrcol in range(1, Nscriptcols + 1):
 
         scriptcol = scrdict['col%03i' % iscrcol]
         N = scriptcol['frames']
@@ -168,11 +168,12 @@ def generate_Explog(scrdict, defaults, elvis=context.elvis, explog=None, OBSID0=
             exptsec = scriptcol['exptime']
 
             optime = 0.
-            if (scriptcol['chinj'] == 1) or (scriptcol['v_tpump'] == 1) or (scriptcol['s_tpump'] == 1):
+            if (scriptcol['chinj'] == 1) or (
+                    scriptcol['v_tpump'] == 1) or (scriptcol['s_tpump'] == 1):
                 optime = rdouttime
 
             date = date + \
-                datetime.timedelta(seconds=4.+rdouttime + optime + exptsec)
+                datetime.timedelta(seconds=4. + rdouttime + optime + exptsec)
 
             for ixCCD in range(1, 4):
 
@@ -187,7 +188,7 @@ def generate_Explog(scrdict, defaults, elvis=context.elvis, explog=None, OBSID0=
 
                 try:
                     explog.add_row(vals=[rowdict[key] for key in expcolkeys])
-                except:
+                except BaseException:
                     stop()
 
             ixObsID += 1
@@ -279,7 +280,7 @@ def generate_HK(explog, vals, datapath='', elvis=context.elvis):
             HKfile = HKtools.iniHK_QFM(elvis, length=int(rdouttime))
 
             TimeStampRaw = np.array(
-                [idtobj+datetime.timedelta(seconds=sec) for sec in np.arange(int(rdouttime))])
+                [idtobj + datetime.timedelta(seconds=sec) for sec in np.arange(int(rdouttime))])
             TimeStamp = [item.strftime('%d-%m-%y_%H:%M:%S')
                          for item in TimeStampRaw]
 
@@ -296,7 +297,7 @@ def generate_HK(explog, vals, datapath='', elvis=context.elvis):
     merge_HKfiles(HKfilefs, masterHKf)
 
     t1 = time()
-    dtmin = (t1-t0)/60.
+    dtmin = (t1 - t0) / 60.
     nobs = len(doneObsids)
     print '%.3f minutes in generating %i HK files' % (dtmin, nobs)
 
@@ -327,7 +328,7 @@ def IMG_bias_gen(ccdobj, ELdict, ogse=None):
     ccdobj.extensions[-1].data = np.round(
         ccdobj.extensions[-1].data).astype('int32')
 
-    if vstart != 1 or vend != ccd.NAXIS2/2:
+    if vstart != 1 or vend != ccd.NAXIS2 / 2:
         ccdobj.sim_window(vstart, vend)
 
     return ccdobj
@@ -368,7 +369,7 @@ def IMG_flat_gen(ccdobj, ELdict, ogse=None):
     ccdobj.extensions[-1].data = np.round(
         ccdobj.extensions[-1].data).astype('int32')
 
-    if vstart != 0 or vend != ccd.NAXIS2/2:
+    if vstart != 0 or vend != ccd.NAXIS2 / 2:
         ccdobj.sim_window(vstart, vend)
 
     return ccdobj
@@ -393,17 +394,16 @@ def IMG_chinj_gen(ccdobj, ELdict, ogse=None):
     IG1 = ELdict['IG1_%i_T' % iCCD]  # don't care if IG1_B is different
     IG2 = ELdict['IG2_T']
     IDL = ELdict['IDL']
-    
 
-    doInject = (chinj == 1) and (IDL < IG1+inj_threshold)
+    doInject = (chinj == 1) and (IDL < IG1 + inj_threshold)
 
     if doInject:
 
-        injlevel = 2000. + max(0, IG2-IG1)/0.5*2000.
+        injlevel = 2000. + max(0, IG2 - IG1) / 0.5 * 2000.
 
         injlevels = dict(E=injlevel, F=injlevel, G=injlevel, H=injlevel)
 
-        #ccdobj.simadd_flatilum(levels=injlevels)
+        # ccdobj.simadd_flatilum(levels=injlevels)
 
         ccdobj.simadd_injection(levels=injlevels, on=non, off=noff)
 
@@ -413,13 +413,14 @@ def IMG_chinj_gen(ccdobj, ELdict, ogse=None):
     ccdobj.extensions[-1].data = np.round(
         ccdobj.extensions[-1].data).astype('int32')
 
-    if vstart != 1 or vend != ccd.NAXIS2/2:
+    if vstart != 1 or vend != ccd.NAXIS2 / 2:
         ccdobj.sim_window(vstart, vend)
 
     ccdobj.extensions[-1].data = np.round(
         ccdobj.extensions[-1].data).astype('int32')
 
     return ccdobj
+
 
 def IMG_chinj_gen_v2(ccdobj, ELdict, ogse=None):
     """ """
@@ -442,28 +443,26 @@ def IMG_chinj_gen_v2(ccdobj, ELdict, ogse=None):
     id_wid = ELdict['ID_WID']
     id_dly = ELdict['ID_DLY']
     toi_ch = ELdict['TOI_CH']
-    
 
-    doInject = (chinj == 1) 
+    doInject = (chinj == 1)
 
     if doInject:
-        
+
         injlevels = dict()
-        
+
         for Q in Quads:
-            
-            if Q in ['E','F']:
+
+            if Q in ['E', 'F']:
                 sectag = 'B'
             else:
                 sectag = 'T'
-            
-            injlevel = injlib.predict_inj_level((IDL,IDH), (IG1, IG2),
-                                            (id_wid,id_dly), toi_ch,
-                                            sectag)
+
+            injlevel = injlib.predict_inj_level((IDL, IDH), (IG1, IG2),
+                                                (id_wid, id_dly), toi_ch,
+                                                sectag)
             if injlevel is np.nan:
                 injlevel = 0.
             injlevels[Q] = injlevel
-
 
         ccdobj.simadd_injection(levels=injlevels, on=non, off=noff)
 
@@ -473,13 +472,14 @@ def IMG_chinj_gen_v2(ccdobj, ELdict, ogse=None):
     ccdobj.extensions[-1].data = np.round(
         ccdobj.extensions[-1].data).astype('int32')
 
-    if vstart != 1 or vend != ccd.NAXIS2/2:
+    if vstart != 1 or vend != ccd.NAXIS2 / 2:
         ccdobj.sim_window(vstart, vend)
 
     ccdobj.extensions[-1].data = np.round(
         ccdobj.extensions[-1].data).astype('int32')
 
     return ccdobj
+
 
 def IMG_point_gen(ccdobj, ELdict, ogse=None):
     """ """
@@ -499,10 +499,10 @@ def IMG_point_gen(ccdobj, ELdict, ogse=None):
     mirror_nom = ogse.profile['mirror_nom']['F%i' % waveID]
     tsatur = ogse.profile['tFWC_point']['nm%i' % wavenm]
 
-    fluence = 2.*2.**16 * exptime / tsatur
+    fluence = 2. * 2.**16 * exptime / tsatur
 
     fwhm = ogse.profile['fwhm_lambda']['nm%i' % wavenm] * \
-        (1.+((mirror-mirror_nom)/0.2)**2.)
+        (1. + ((mirror - mirror_nom) / 0.2)**2.)
 
     ccdobj.simadd_points(fluence, fwhm, CCDID=iCCD, dx=0, dy=0)
 
@@ -520,7 +520,7 @@ def IMG_point_gen(ccdobj, ELdict, ogse=None):
     ccdobj.extensions[-1].data = np.round(
         ccdobj.extensions[-1].data).astype('int32')
 
-    if vstart != 1 or vend != ccd.NAXIS2/2:
+    if vstart != 1 or vend != ccd.NAXIS2 / 2:
         ccdobj.sim_window(vstart, vend)
 
     return ccdobj
@@ -607,7 +607,7 @@ def generate_FITS_fromExpLog(explog, datapath, elvis=context.elvis, CHAMBER=None
                       elvis=elvis, ogse=ogse)
 
     t1 = time()
-    dtmin = (t1-t0)/60.
+    dtmin = (t1 - t0) / 60.
 
     print '%.3f minutes in generating %i FITS files' % (dtmin, Nfiles)
 

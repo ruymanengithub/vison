@@ -21,11 +21,12 @@ from vison.plot import baseplotclasses
 from vison.datamodel.core import vColumn
 # END IMPORT
 
-offset_lims = [1000.,4000.] # ADUs
-RON_lims = [0.,5.] # ADUs
+offset_lims = [1000., 4000.]  # ADUs
+RON_lims = [0., 5.]  # ADUs
+
 
 class Fig_Basic_Checkstat(figclasses.Fig_XY_fromDD):
-    
+
     plotclass = baseplotclasses.BeamPlotYvX
 
     def __init__(self, *args, **kwargs):
@@ -38,7 +39,6 @@ class Fig_Basic_Checkstat(figclasses.Fig_XY_fromDD):
         self.caption = ''
         self.texfraction = 1.1
         self.data = dict()
-        
 
     def build_data(self, dd, **kwargs):
         """ """
@@ -58,7 +58,7 @@ class Fig_Basic_Checkstat(figclasses.Fig_XY_fromDD):
         # all stats must have same indices
         refstatindices = dd.mx[self.stats[0]].indices.get_names()
         indices2tag = [index for index in refstatindices if index not in [
-            index2margin]+indices2param]
+            index2margin] + indices2param]
 
         assert len(indices2tag) <= 1
 
@@ -105,7 +105,7 @@ class Fig_Basic_Checkstat(figclasses.Fig_XY_fromDD):
         defaults.update(kwargs)
         self.stats = defaults['stats']
         self.trendaxis = defaults['trendaxis']
-        
+
         super(Fig_Basic_Checkstat, self).configure(**defaults)
 
     def plot(self, **kwargs):

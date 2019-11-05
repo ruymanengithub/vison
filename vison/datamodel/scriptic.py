@@ -240,6 +240,7 @@ script_dictionary['7.2.X'] = copy.deepcopy(script_dictionary['6.5.X'])
 
 script_dictionary['7.5.X'] = copy.deepcopy(script_dictionary['7.2.X'])
 
+
 def update_structdict(sdict, commvalues, diffvalues):
     """Updates an script structure with common values and differential values.
 
@@ -255,7 +256,7 @@ def update_structdict(sdict, commvalues, diffvalues):
 
     Ndiff = len(diffvalues.keys())
 
-    for ic in range(1, Ncols+1):
+    for ic in range(1, Ncols + 1):
         ickey = 'col%03i' % ic
 
         for comkey in commvalues.keys():
@@ -280,7 +281,7 @@ class Script(object):
         :param elvis: ELVIS version.
 
         """
-        
+
         if defaults is None:
             defaults = dict()
         if structure is None:
@@ -313,7 +314,7 @@ class Script(object):
         # self.cargo.append([aliases[key] for key in keys]) # first column, aliases
         self.cargo.append(keys)  # first column, aliases
 
-        cols = ['col%03i' % (i+1,) for i in range(stru['Ncols'])]
+        cols = ['col%03i' % (i + 1,) for i in range(stru['Ncols'])]
 
         cumframes = 0
 
@@ -335,7 +336,7 @@ class Script(object):
             self.cargo.append(vallist)
 
         if self.elvis >= '6.0.0':
-            endcol = ['']*len(keys)
+            endcol = [''] * len(keys)
             endcol[0] = 'End'
             self.cargo.append(endcol)
 
@@ -375,7 +376,7 @@ class Script(object):
         structure = dict()
         structure['Ncols'] = Ncols
 
-        for i in range(1, Ncols+1):
+        for i in range(1, Ncols + 1):
             structure['col%03i' % i] = dict(zip(keys, self.cargo[i]))
 
         return structure
@@ -397,8 +398,8 @@ class Script(object):
         df = pd.read_excel(scriptname, header=0, converters=converters)
 
         cargo = []
-        cargo.append(['frames']+[string.strip(item)
-                                 for item in df['frames'].tolist()])
+        cargo.append(['frames'] + [string.strip(item)
+                                   for item in df['frames'].tolist()])
 
         sdict = script_dictionary[self.elvis]
         keys = sdict['keys']

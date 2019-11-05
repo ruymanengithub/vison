@@ -7,13 +7,13 @@ Guyonnet, Astier, Antilogus, Regnault and Doherty 2015
 
 
 Notes:
-    
+
 - I renamed "x" (pixel boundary index) to "b", to avoid confusion with
   cartesian "x".
 - In paper, X belongsto [(0,1),(1,0),(0,-1),(-1,0)]. Here
-  b is referred to as cardinal points "N","E","S","W". 
+  b is referred to as cardinal points "N","E","S","W".
   It is linked to matrix index ib, running between 0 and 3.
-     
+
 Created on Thu Sep 22 11:38:24 2016
 
 :author: Ruyman Azzollini
@@ -37,7 +37,7 @@ pixpitch = 12.  # um, pixel pitch
 
 
 def frdist(i, j, ib):
-    """ 
+    """
     Distance from the source charge to considered boundary "b"
 
     :param i: pixel coordinate i
@@ -48,10 +48,10 @@ def frdist(i, j, ib):
 
 
     """
-    x = i*1. + np.cos((1.-ib)*90*np.pi/180.)*0.5
-    y = j*1. + np.sin((1.-ib)*90*np.pi/180.)*0.5
+    x = i * 1. + np.cos((1. - ib) * 90 * np.pi / 180.) * 0.5
+    y = j * 1. + np.sin((1. - ib) * 90 * np.pi / 180.) * 0.5
 
-    return (x*x+y*y)**0.5
+    return (x * x + y * y)**0.5
 
 
 def ftheta_bound(i, j, ib):
@@ -69,17 +69,17 @@ def ftheta_bound(i, j, ib):
 
     # source-boundary vector
 
-    sb_v = np.array([i*1.+np.cos((1.-ib)*90*np.pi/180.)*0.5,
-                     j*1.+np.sin((1.-ib)*90.*np.pi/180.)*0.5])
+    sb_v = np.array([i * 1. + np.cos((1. - ib) * 90 * np.pi / 180.) * 0.5,
+                     j * 1. + np.sin((1. - ib) * 90. * np.pi / 180.) * 0.5])
 
     # normal vector # unit vector pointing 'outwards' of pixel i,j
-    n_v = np.array([np.cos((1.-ib)*90*np.pi/180.),
-                    np.sin((1.-ib)*90.*np.pi/180.)])
+    n_v = np.array([np.cos((1. - ib) * 90 * np.pi / 180.),
+                    np.sin((1. - ib) * 90. * np.pi / 180.)])
 
     arg = np.dot(sb_v, n_v)
     modulus = np.sqrt(np.dot(sb_v, sb_v)) * 1.
 
-    return np.arccos(arg/modulus)
+    return np.arccos(arg / modulus)
 
 
 def fpred_aijb(p, i, j, ib):
@@ -106,7 +106,7 @@ def fpred_aijb(p, i, j, ib):
 
     rdist = frdist(i, j, ib)
 
-    fr = p0 * (Ei(p1*rdist))
+    fr = p0 * (Ei(p1 * rdist))
 
     theta_ijb = ftheta_bound(i, j, ib)
 
@@ -136,13 +136,13 @@ def fun_p(x, *p):
 
 
 def solve_for_psmooth(covij, var, mu, doplot=False):
-    """Solving (p0,p1) parameters in Eq. 18 using covariance matrix and 
+    """Solving (p0,p1) parameters in Eq. 18 using covariance matrix and
     measured covariance  matrix.
 
     :param covij: array, covariance matrix
     :param var: float, variance
     :param mu: float, expected value of pixel values ("mean" of flat-field)
-    :param doplot: bool, if True, plot data and best fit model 
+    :param doplot: bool, if True, plot data and best fit model
 
     :return: best-fit parameters, and errors: 2 tuples of 2 elements each
 
@@ -170,8 +170,8 @@ def solve_for_psmooth(covij, var, mu, doplot=False):
     xdata[0, :] = ii.flatten()[ixsel]
     xdata[1, :] = jj.flatten()[ixsel]
 
-    r = (xdata[0, :]**2.+xdata[1, :]**2.)**0.5 * pixpitch  # um
-    ydata = (covij/(var*mu)).flatten()[ixsel]
+    r = (xdata[0, :]**2. + xdata[1, :]**2.)**0.5 * pixpitch  # um
+    ydata = (covij / (var * mu)).flatten()[ixsel]
 
     order = r.argsort()
     r = r[order]
@@ -204,7 +204,7 @@ def solve_for_psmooth(covij, var, mu, doplot=False):
 
 
 def _build_aijb(X, indepBounds, psmooth):
-    """ 
+    """
 
     Builds the matrix aijb, out of a matrix of independent coefficients "X",
     the (ijb) indices of such coefficients, and the parameters of the prediction
@@ -222,7 +222,7 @@ def _build_aijb(X, indepBounds, psmooth):
     :return: matrix aijx
 
     """
-    N = int((len(X)+1)**0.5)
+    N = int((len(X) + 1)**0.5)
     aijb = np.zeros((N, N, 4), dtype='float32') + np.nan
 
     # First we asign the independent coefficients
@@ -238,59 +238,59 @@ def _build_aijb(X, indepBounds, psmooth):
 
     # North of lower is like South of upper, if not at top floor
 
-    for ip in range(N-1, 1-1, -1):
-        for jp in range(N-1, 1-1, -1):
+    for ip in range(N - 1, 1 - 1, -1):
+        for jp in range(N - 1, 1 - 1, -1):
 
             #print ip, jp
 
-            if jp < N-1:
+            if jp < N - 1:
                 # North of lower is like South of upper, if not at top (inverted)
-                aijb[ip, jp, 0] = aijb[ip, jp+1, 2]*-1.
-            elif jp == N-1:
+                aijb[ip, jp, 0] = aijb[ip, jp + 1, 2] * -1.
+            elif jp == N - 1:
                 # if at top, use prediction
                 aijb[ip, jp, 0] = fpred_aijb(psmooth[0], ip, jp, 0)
 
     # West is like South times factor
 
-    for ip in range(N-1, 1-1, -1):
-        for jp in range(N-1, 1-1, -1):
+    for ip in range(N - 1, 1 - 1, -1):
+        for jp in range(N - 1, 1 - 1, -1):
 
             #print ip, jp
 
             ratioWS = fpred_aijb(
-                psmooth[0], ip, jp, 3.)/fpred_aijb(psmooth[0], ip, jp, 2.)  # *\
+                psmooth[0], ip, jp, 3.) / fpred_aijb(psmooth[0], ip, jp, 2.)  # *\
             # (ftheta_bound(ip,jp,2)/ftheta_bound(ip,jp,2))**2. # right?
 
             aijb[ip, jp, 3] = aijb[ip, jp, 2] * ratioWS
 
     # East is like west of right
 
-    for ip in range(N-1, 1-1, -1):
-        for jp in range(N-1, 1-1, -1):
+    for ip in range(N - 1, 1 - 1, -1):
+        for jp in range(N - 1, 1 - 1, -1):
 
             #print ip,jp
 
-            if ip < N-1:
-                aijb[ip, jp, 1] = aijb[ip+1, jp, 3]*-1.  # (inverted)
-            elif ip == N-1:
+            if ip < N - 1:
+                aijb[ip, jp, 1] = aijb[ip + 1, jp, 3] * -1.  # (inverted)
+            elif ip == N - 1:
                 aijb[ip, jp, 1] = fpred_aijb(
                     psmooth[0], ip, jp, 1.)  # prediction
 
     # First Row: jp==0
 
     jp = 0
-    for ip in range(N-1, 1-1, -1):
+    for ip in range(N - 1, 1 - 1, -1):
 
         #print ip,jp
 
-        if ip < N-1:
+        if ip < N - 1:
             # East is like West of Right
-            aijb[ip, jp, 1] = aijb[ip+1, jp, 3]*-1.  # inverted
-        elif ip == N-1:
+            aijb[ip, jp, 1] = aijb[ip + 1, jp, 3] * -1.  # inverted
+        elif ip == N - 1:
             aijb[ip, jp, 1] = fpred_aijb(psmooth[0], ip, jp, 1.)  # predict
 
         # North is like south of upper (inverted)
-        aijb[ip, jp, 0] = aijb[ip, jp+1, 2] * -1.
+        aijb[ip, jp, 0] = aijb[ip, jp + 1, 2] * -1.
 
         # South is like North on the horizontal
         aijb[ip, jp, 2] = aijb[ip, jp, 0]
@@ -299,14 +299,14 @@ def _build_aijb(X, indepBounds, psmooth):
 
     ip = 0
 
-    for jp in range(N-1, -1, -1):
+    for jp in range(N - 1, -1, -1):
 
         #print ip,jp
 
-        if (jp >= 0) and (jp < N-1):
+        if (jp >= 0) and (jp < N - 1):
             # North is like South of Upper if not at top (inverted)
-            aijb[ip, jp, 0] = aijb[ip, jp+1, 2]*-1.
-        elif jp == N-1:
+            aijb[ip, jp, 0] = aijb[ip, jp + 1, 2] * -1.
+        elif jp == N - 1:
             aijb[ip, jp, 0] = fpred_aijb(psmooth[0], ip, jp, 0.)
 
         if jp == 0:
@@ -314,7 +314,7 @@ def _build_aijb(X, indepBounds, psmooth):
             aijb[ip, jp, 2] = aijb[ip, jp, 0]
 
         # East is like West of Right (inverted)
-        aijb[ip, jp, 1] = aijb[ip+1, jp, 3]*-1.
+        aijb[ip, jp, 1] = aijb[ip + 1, jp, 3] * -1.
 
         # West is like East on the vertical
         aijb[ip, jp, 3] = aijb[ip, jp, 1]
@@ -352,9 +352,9 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
         # smoothing parameters, fpred(ijb)
         psmooth = solve_for_psmooth(covij, var, mu, doplot=doplot)
 
-    Rij = covij / (var*mu)  # correlation matrix
+    Rij = covij / (var * mu)  # correlation matrix
 
-    B = np.zeros(N**2-1, dtype='float32')  # Independent terms
+    B = np.zeros(N**2 - 1, dtype='float32')  # Independent terms
     Bini = B.copy()
 
     for i in range(N):
@@ -362,12 +362,12 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
             if i == 0 and j == 0:
                 continue
 
-            ix = i*N+j - 1
+            ix = i * N + j - 1
 
             B[ix] = Rij[i, j]
             Bini[ix] = Rij[i, j]
 
-    Afull = np.zeros((4*N**2, N**2-1), dtype='float32')  # N-bounds x N-corr
+    Afull = np.zeros((4 * N**2, N**2 - 1), dtype='float32')  # N-bounds x N-corr
 
     # Boundaries Names List
 
@@ -392,11 +392,11 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
 
                     for x in range(4):
 
-                        ixx = (ip * N + jp)*4 + x  # boundary index
+                        ixx = (ip * N + jp) * 4 + x  # boundary index
 
                         if (i == ip) and (j == jp):
                             Afull[ixx, jyy] = 1.
-    
+
     if verbose:
         print 'sum(A)=%.1f' % Afull.sum()
 
@@ -415,15 +415,15 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
             ip = 0
             for jp in range(N):
 
-                ixx = (ip * N + jp)*4
+                ixx = (ip * N + jp) * 4
 
                 ixxN = ixx + 0
                 ixxE = ixx + 1
                 ixxS = ixx + 2
                 ixxW = ixx + 3
 
-                ixpN = (ip * N + jp+1)*4
-                ixpE = ((ip+1) * N + jp)*4
+                ixpN = (ip * N + jp + 1) * 4
+                ixpE = ((ip + 1) * N + jp) * 4
                 #print ip, jp
 
                 # East is like West on the vertical
@@ -432,7 +432,7 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
                 Afull[ixxW, jyy] = 0.
 
                 # West of Right is like East
-                Afull[ixpE+3, jyy] = (Afull[ixpE+3, jyy]+Afull[ixxE, jyy])*1.
+                Afull[ixpE + 3, jyy] = (Afull[ixpE + 3, jyy] + Afull[ixxE, jyy]) * 1.
                 Afull[ixxE, jyy] = 0.
 
                 if jp == 0:  # (0,0)
@@ -440,12 +440,12 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
                     Afull[ixxN, jyy] += Afull[ixxS, jyy]
                     Afull[ixxS, jyy] = 0.
 
-                if (jp >= 0) and (jp < N-1):
+                if (jp >= 0) and (jp < N - 1):
                     # South of Upper is like North if not at top
-                    Afull[ixpN+2, jyy] = (Afull[ixpN+2, jyy] +
-                                          Afull[ixxN, jyy])*1.
+                    Afull[ixpN + 2, jyy] = (Afull[ixpN + 2, jyy] +
+                                            Afull[ixxN, jyy]) * 1.
                     Afull[ixxN, jyy] = 0.
-                elif jp == N-1:
+                elif jp == N - 1:
                     # if at top, add constant to B
                     Afull[ixxN, jyy] = 0.
                     if (i == ip) and (j == jp):
@@ -456,29 +456,29 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
             jp = 0
             for ip in range(1, N):
 
-                ixx = (ip * N + jp)*4
+                ixx = (ip * N + jp) * 4
 
                 ixxN = ixx + 0
                 ixxE = ixx + 1
                 ixxS = ixx + 2
 
-                ixpN = (ip * N + jp+1)*4
-                ixpE = ((ip+1) * N + jp)*4
+                ixpN = (ip * N + jp + 1) * 4
+                ixpE = ((ip + 1) * N + jp) * 4
 
                 # North is like South on the horizontal
                 Afull[ixxN, jyy] += Afull[ixxS, jyy]
                 Afull[ixxS, jyy] = 0.
 
                 # South of Upper is like North if not at top
-                Afull[ixpN+2, jyy] = (Afull[ixpN+2, jyy] + Afull[ixxN, jyy])*1.
+                Afull[ixpN + 2, jyy] = (Afull[ixpN + 2, jyy] + Afull[ixxN, jyy]) * 1.
                 Afull[ixxN, jyy] = 0.
 
-                if (ip < N-1):
+                if (ip < N - 1):
                     # West of Right is like East
-                    Afull[ixpE+3, jyy] = (Afull[ixpE+3, jyy] +
-                                          Afull[ixxE, jyy])*1.
+                    Afull[ixpE + 3, jyy] = (Afull[ixpE + 3, jyy] +
+                                            Afull[ixxE, jyy]) * 1.
                     Afull[ixxE, jyy] = 0.
-                elif ip == N-1:
+                elif ip == N - 1:
                     Afull[ixxE, jyy] = 0.
                     if (i == ip) and (j == jp):
                         B[jyy] -= fpred_aijb(psmooth[0], ip, jp, 1.)
@@ -490,16 +490,16 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
             for ip in range(1, N):
                 for jp in range(1, N):
 
-                    ixx = (ip * N + jp)*4
+                    ixx = (ip * N + jp) * 4
                     ixxE = ixx + 1
-                    ixpE = ((ip+1) * N + jp)*4
+                    ixpE = ((ip + 1) * N + jp) * 4
 
-                    if ip < N-1:
+                    if ip < N - 1:
                         # West of Right is like East
-                        Afull[ixpE+3, jyy] = (Afull[ixpE+3,
-                                                    jyy] + Afull[ixxE, jyy]) * 1.
+                        Afull[ixpE + 3, jyy] = (Afull[ixpE + 3,
+                                                      jyy] + Afull[ixxE, jyy]) * 1.
                         Afull[ixxE, jyy] = 0.
-                    elif ip == N-1:
+                    elif ip == N - 1:
                         Afull[ixxE, jyy] = 0.
                         if (i == ip) and (j == jp):
                             B[jyy] -= fpred_aijb(psmooth[0], ip, jp, 1.)
@@ -509,13 +509,13 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
             for ip in range(1, N):
                 for jp in range(1, N):
 
-                    ixx = (ip * N + jp)*4
+                    ixx = (ip * N + jp) * 4
                     ixxS = ixx + 2
                     ixxW = ixx + 3
 
                     # South is like West times factor
                     ratioWS = fpred_aijb(
-                        psmooth[0], ip, jp, 3.)/fpred_aijb(psmooth[0], ip, jp, 2.)  # *\
+                        psmooth[0], ip, jp, 3.) / fpred_aijb(psmooth[0], ip, jp, 2.)  # *\
                     # (ftheta_bound(ip,jp,2)/ftheta_bound(ip,jp,2))**2.
 
                     Afull[ixxS, jyy] += (Afull[ixxW, jyy]) * ratioWS
@@ -526,17 +526,17 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
             for ip in range(1, N):
                 for jp in range(1, N):
 
-                    ixx = (ip * N + jp)*4
+                    ixx = (ip * N + jp) * 4
                     ixxN = ixx + 0
 
-                    ixpN = (ip * N + jp+1)*4
+                    ixpN = (ip * N + jp + 1) * 4
 
-                    if jp < N-1:
+                    if jp < N - 1:
                         # South of Upper is like North if not at top
-                        Afull[ixpN+2,
-                              jyy] = (Afull[ixpN+2, jyy] + Afull[ixxN, jyy])*1.
+                        Afull[ixpN + 2,
+                              jyy] = (Afull[ixpN + 2, jyy] + Afull[ixxN, jyy]) * 1.
                         Afull[ixxN, jyy] = 0.
-                    elif jp == N-1:
+                    elif jp == N - 1:
                         # if at top, add constant to B
                         Afull[ixxN, jyy] = 0.
                         if (i == ip) and (j == jp):
@@ -556,9 +556,9 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
             for ip in range(0, N):
                 for jp in range(0, N):
                     for ib in range(4):
-                        ixb = (ip * N + jp)*4 + ib
+                        ixb = (ip * N + jp) * 4 + ib
 
-                        nsteps = np.abs(ip-i)+np.abs(jp-j)
+                        nsteps = np.abs(ip - i) + np.abs(jp - j)
                         sign = (-1.)**float(nsteps % 2 != 0)
 
                         if Afull[ixb, jyy] != 0.:
@@ -566,12 +566,12 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
 
     # Prunning the A matrix
 
-    A = np.zeros((N**2-1, N**2-1), dtype='float32')
+    A = np.zeros((N**2 - 1, N**2 - 1), dtype='float32')
 
     indepBounds = []
 
     ixp = 0
-    Nraw = 4*N**2
+    Nraw = 4 * N**2
     for ix in range(Nraw):
         if np.any(Afull[ix, :] != 0):
             A[ixp, :] = Afull[ix, :].copy()
@@ -597,7 +597,7 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
     res = Rij - aijb.sum(axis=2)  # should be close to zero, except on (0,0)
     ii, jj = np.meshgrid(np.arange(N), np.arange(N), indexing='ij')
     sel = ((ii > 0) | (jj > 0))
-    
+
     if verbose:
 
         print 'mean res = %.1e' % res[sel].mean()
@@ -611,7 +611,7 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
 
 
 def _build_aijb_synth(psmooth, N):
-    """ 
+    """
     Builds aijb matrix using fpred(p,ijb)
 
     :param psmooth: 2-tuple, coefficients of fpred(p,ijb) function
@@ -632,7 +632,7 @@ def _build_aijb_synth(psmooth, N):
 
 
 def get_kernel(aijb):
-    """ 
+    """
 
     'kernel' is an array (2N-1)x(2N-1)x4. Each plane kernel[:,:,b] is
     a 2D array with the displacement coefficients aijb, in all
@@ -647,67 +647,67 @@ def get_kernel(aijb):
     assert N == Np
     assert shouldbe4 == 4
 
-    kernel = np.zeros((2*N-1, 2*N-1, 4), dtype='float32') + np.nan
+    kernel = np.zeros((2 * N - 1, 2 * N - 1, 4), dtype='float32') + np.nan
 
     # North
 
     for i in range(N):
         for j in range(N):
 
-            kernel[i+N-1, j+N-1, 0] = aijb[i, j, 2]  # first quad
+            kernel[i + N - 1, j + N - 1, 0] = aijb[i, j, 2]  # first quad
             if i > 0 and j > 0:
-                kernel[i+N-1, N-j-1, 0] = aijb[i, j, 0]  # second quad
-                kernel[N-i-1, N-j-1, 0] = aijb[i, j, 0]  # third quad
-                kernel[N-i-1, j+N-1, 0] = aijb[i, j, 2]  # fourth quad
+                kernel[i + N - 1, N - j - 1, 0] = aijb[i, j, 0]  # second quad
+                kernel[N - i - 1, N - j - 1, 0] = aijb[i, j, 0]  # third quad
+                kernel[N - i - 1, j + N - 1, 0] = aijb[i, j, 2]  # fourth quad
             elif i == 0 and j > 0:
-                kernel[i+N-1, N-j-1, 0] = aijb[i, j, 0]  # -y
+                kernel[i + N - 1, N - j - 1, 0] = aijb[i, j, 0]  # -y
             elif i > 0 and j == 0:
-                kernel[N-i-1, j+N-1, 0] = aijb[i, j, 2]  # -x
+                kernel[N - i - 1, j + N - 1, 0] = aijb[i, j, 2]  # -x
 
     # South
 
     for i in range(N):
         for j in range(N):
 
-            kernel[i+N-1, j+N-1, 2] = aijb[i, j, 0]  # first quad
+            kernel[i + N - 1, j + N - 1, 2] = aijb[i, j, 0]  # first quad
             if i > 0 and j > 0:
-                kernel[i+N-1, N-j-1, 2] = aijb[i, j, 2]  # second quad
-                kernel[N-i-1, N-j-1, 2] = aijb[i, j, 2]  # third quad
-                kernel[N-i-1, j+N-1, 2] = aijb[i, j, 0]  # fourth quad
+                kernel[i + N - 1, N - j - 1, 2] = aijb[i, j, 2]  # second quad
+                kernel[N - i - 1, N - j - 1, 2] = aijb[i, j, 2]  # third quad
+                kernel[N - i - 1, j + N - 1, 2] = aijb[i, j, 0]  # fourth quad
             elif i == 0 and j > 0:
-                kernel[i+N-1, N-j-1, 2] = aijb[i, j, 2]  # -y
+                kernel[i + N - 1, N - j - 1, 2] = aijb[i, j, 2]  # -y
             elif i > 0 and j == 0:
-                kernel[N-i-1, j+N-1, 2] = aijb[i, j, 0]  # -x
+                kernel[N - i - 1, j + N - 1, 2] = aijb[i, j, 0]  # -x
 
     # East
 
     for i in range(N):
         for j in range(N):
 
-            kernel[i+N-1, j+N-1, 1] = aijb[i, j, 3]  # first quad
+            kernel[i + N - 1, j + N - 1, 1] = aijb[i, j, 3]  # first quad
             if i > 0 and j > 0:
-                kernel[i+N-1, N-j-1, 1] = aijb[i, j, 3]  # second quad
-                kernel[N-i-1, N-j-1, 1] = aijb[i, j, 1]  # third quad
-                kernel[N-i-1, j+N-1, 1] = aijb[i, j, 1]  # fourth quad
+                kernel[i + N - 1, N - j - 1, 1] = aijb[i, j, 3]  # second quad
+                kernel[N - i - 1, N - j - 1, 1] = aijb[i, j, 1]  # third quad
+                kernel[N - i - 1, j + N - 1, 1] = aijb[i, j, 1]  # fourth quad
             elif i == 0 and j > 0:
-                kernel[i+N-1, N-j-1, 1] = aijb[i, j, 3]  # -y
+                kernel[i + N - 1, N - j - 1, 1] = aijb[i, j, 3]  # -y
             elif i > 0 and j == 0:
-                kernel[N-i-1, j+N-1, 1] = aijb[i, j, 1]  # -x
+                kernel[N - i - 1, j + N - 1, 1] = aijb[i, j, 1]  # -x
 
     # West
 
     for i in range(N):
         for j in range(N):
 
-            kernel[i+N-1, j+N-1, 3] = aijb[i, j, 1]  # first quad
+            kernel[i + N - 1, j + N - 1, 3] = aijb[i, j, 1]  # first quad
             if i > 0 and j > 0:
-                kernel[i+N-1, N-j-1, 3] = aijb[i, j, 1]  # second quad
-                kernel[N-i-1, N-j-1, 3] = aijb[i, j, 3]  # third quad
-                kernel[N-i-1, j+N-1, 3] = aijb[i, j, 3]  # fourth quad
+                kernel[i + N - 1, N - j - 1, 3] = aijb[i, j, 1]  # second quad
+                kernel[N - i - 1, N - j - 1, 3] = aijb[i, j, 3]  # third quad
+                kernel[N - i - 1, j + N - 1, 3] = aijb[i, j, 3]  # fourth quad
             elif i == 0 and j > 0:
-                kernel[i+N-1, N-j-1, 3] = aijb[i, j, 1]  # -y
+                kernel[i + N - 1, N - j - 1, 3] = aijb[i, j, 1]  # -y
             elif i > 0 and j == 0:
-                kernel[N-i-1, j+N-1, 3] = aijb[i, j, 3]  # -x
+                kernel[N - i - 1, j + N - 1, 3] = aijb[i, j, 3]  # -x
 
     kernel[:, :, :] = kernel[::-1, ::-1, :]  # surprise!
 
@@ -718,11 +718,11 @@ def get_kernel(aijb):
 
 
 def get_Rdisp(img, aijb):
-    """ Retrieves map of relative displacements of pixel boundaries, 
+    """ Retrieves map of relative displacements of pixel boundaries,
     for input img and Aijb matrix.
 
 
-        See G15 - Eq. 6    
+        See G15 - Eq. 6
 
     :param img: image, 2D array
     :param aijb: aijb matrix, 3D array NxNx4
@@ -739,7 +739,7 @@ def get_Rdisp(img, aijb):
 
     for ixside in range(4):
         sidekernel = kernel[:, :, ixside].copy()
-        Rdisp[:, :, ixside] = 1/2. * \
+        Rdisp[:, :, ixside] = 1 / 2. * \
             convolve2d(img, sidekernel, mode='same')  # Eq. 6
 
     return Rdisp
@@ -761,16 +761,16 @@ def get_deltaQ(img, aijb):
     """
     sign = 1.
 
-    kernel = get_kernel(aijb)*sign
+    kernel = get_kernel(aijb) * sign
 
     dimg = np.zeros_like(img, dtype='float32')
 
     #shift = [[1, 0], [1, 1], [-1, 0], [-1, 1]]
-    shift = [[-1,1],[-1,0],[1,1],[1,0]]
+    shift = [[-1, 1], [-1, 0], [1, 1], [1, 0]]
 
     for ixside in range(4):
         sidekernel = kernel[:, :, ixside].copy()
-        dimg += (1/4. * (img + np.roll(img, shift[ixside][0], shift[ixside][1])) *
+        dimg += (1 / 4. * (img + np.roll(img, shift[ixside][0], shift[ixside][1])) *
                  convolve2d(img, sidekernel, mode='same'))  # Eq. 11
 
     return dimg
@@ -783,7 +783,7 @@ def degrade_estatic(img, aijb):
     :param img: image, 2D array
     :param aijb: Aijb matrix, 3D array
 
-    :return: array, img + delta-Q    
+    :return: array, img + delta-Q
 
     """
     dimg = get_deltaQ(img, aijb)
@@ -797,7 +797,7 @@ def correct_estatic(img, aijb):
     :param img: image, 2D array
     :param aijb: Aijb matrix, 3D array
 
-    :return: array, img - delta-Q    
+    :return: array, img - delta-Q
 
     """
     dimg = get_deltaQ(img, aijb)
@@ -810,12 +810,12 @@ def get_cross_shape_rough(cross, pitch=pixpitch):
     Ixwing = np.mean([cross[0, 1], cross[2, 1]])
     Iywing = np.mean([cross[1, 0], cross[1, 2]])
 
-    sigmax = np.sqrt(-pixpitch**2/(2.*np.log(Ixwing)))
+    sigmax = np.sqrt(-pixpitch**2 / (2. * np.log(Ixwing)))
     fwhmx = sigmax * 2.355
 
-    sigmay = np.sqrt(-pixpitch**2/(2.*np.log(Iywing)))
+    sigmay = np.sqrt(-pixpitch**2 / (2. * np.log(Iywing)))
     fwhmy = sigmay * 2.355
-    e = (sigmax**2-sigmay**2)/(sigmax**2.+sigmay**2.)
+    e = (sigmax**2 - sigmay**2) / (sigmax**2. + sigmay**2.)
 
     shape = dict(fwhmx=fwhmx, fwhmy=fwhmy, e=e)
 
@@ -904,14 +904,14 @@ def plot_map(z, ii, jj, title=''):
 
 
 def generate_GaussPSF(N, sigma):
-    """ 
+    """
     Create a circular symmetric Gaussian centered on the centre of
     a NxN matrix/image.
 
     """
 
-    x = (N-1.)/2.
-    y = (N-1.)/2.
+    x = (N - 1.) / 2.
+    y = (N - 1.) / 2.
 
     # x and y coordinate vectors
     Gyvect = np.arange(0, N)
@@ -926,7 +926,7 @@ def generate_GaussPSF(N, sigma):
 
     # gaussian
     exponent = (sigmax * (Gxmesh - x)**2 + sigmay * (Gymesh - y)**2)
-    Gaussian = np.exp(-exponent) / (2. * np.pi * sigma*sigma)
+    Gaussian = np.exp(-exponent) / (2. * np.pi * sigma * sigma)
 
     # normalize to unity
     Gaussian /= np.max(Gaussian)
@@ -934,7 +934,7 @@ def generate_GaussPSF(N, sigma):
     return Gaussian
 
 
-def show_disps_CCD273(aijb, stretch=5., peak=1.E5/3.5, N=25, sigma=1.6, title='', figname=''):
+def show_disps_CCD273(aijb, stretch=5., peak=1.E5 / 3.5, N=25, sigma=1.6, title='', figname=''):
     """ """
 
     sign = 1.
@@ -946,10 +946,10 @@ def show_disps_CCD273(aijb, stretch=5., peak=1.E5/3.5, N=25, sigma=1.6, title=''
 
     # stop()
 
-    x0 = -(N-1)/2.*pixpitch
-    x1 = (N-1)/2. * pixpitch
-    y0 = -(N-1)/2.*pixpitch
-    y1 = (N-1)/2.*pixpitch
+    x0 = -(N - 1) / 2. * pixpitch
+    x1 = (N - 1) / 2. * pixpitch
+    y0 = -(N - 1) / 2. * pixpitch
+    y1 = (N - 1) / 2. * pixpitch
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -967,16 +967,16 @@ def show_disps_CCD273(aijb, stretch=5., peak=1.E5/3.5, N=25, sigma=1.6, title=''
 
             # ll, ul, ur, lr
             # displacements are inside-outside oriented
-            x = (i-(N-1.)/2.)*pixpitch + (np.array([-0.5, -0.5, 0.5, 0.5, -0.5]))*pixpitch +\
+            x = (i - (N - 1.) / 2.) * pixpitch + (np.array([-0.5, -0.5, 0.5, 0.5, -0.5])) * pixpitch +\
                 sign * np.array([-d[3], -d[3], d[1], d[1], -d[3]])
 
-            y = (j-(N-1.)/2.)*pixpitch + (np.array([-0.5, 0.5, 0.5, -0.5, -0.5]))*pixpitch +\
+            y = (j - (N - 1.) / 2.) * pixpitch + (np.array([-0.5, 0.5, 0.5, -0.5, -0.5])) * pixpitch +\
                 sign * np.array([-d[2], d[0], d[0], -d[2], -d[2]])
 
             ax.plot(x, y, '%s-' % c)
 
-    ax.set_xlim((-5.*pixpitch, 5.*pixpitch))
-    ax.set_ylim((-5.*pixpitch, 5.*pixpitch))
+    ax.set_xlim((-5. * pixpitch, 5. * pixpitch))
+    ax.set_ylim((-5. * pixpitch, 5. * pixpitch))
 
     if figname != '':
         plt.savefig(figname)
@@ -992,8 +992,8 @@ def test0():
     p = (1.E-3, 1.E-3)
 
     ii, jj = np.meshgrid(np.arange(N), np.arange(N), indexing='xy')
-    rr = np.sqrt(ii**2.+jj**2.)
-    covij = np.exp(-(rr**2./(2*sigma_covij**2.))) + 0.0005*sigma_covij
+    rr = np.sqrt(ii**2. + jj**2.)
+    covij = np.exp(-(rr**2. / (2 * sigma_covij**2.))) + 0.0005 * sigma_covij
 
     i = ii.flatten().copy()
     j = jj.flatten().copy()
@@ -1032,14 +1032,14 @@ def test_solve():
     mu = 1.
 
     ii, jj = np.meshgrid(np.arange(N), np.arange(N), indexing='xy')
-    rr = np.sqrt(ii**2.+jj**2.)
+    rr = np.sqrt(ii**2. + jj**2.)
     covij = sigma_covij**2. * mu * \
-        np.exp(-(rr**2./(2*(1.3)**2.)))  # + sigma_covij * 0.0005
+        np.exp(-(rr**2. / (2 * (1.3)**2.)))  # + sigma_covij * 0.0005
 
     psmooth, epsmooth = solve_for_psmooth(covij, var, mu)
 
     Abest = solve_for_A_linalg(covij, var=1., mu=1.)
-    
+
     return Abest
 
 
@@ -1086,7 +1086,7 @@ def test_selfconsist():
 
     show_disps_CCD273(Asynth, stretch=30., peak=1.E5 /
                       3.5, N=25, sigma=1.6, title='Input')
-    show_disps_CCD273(Abest, stretch=30., peak=1.E5/3.5,
+    show_disps_CCD273(Abest, stretch=30., peak=1.E5 / 3.5,
                       N=25, sigma=1.6, title='Output')
 
     singlepixmap = np.zeros((101, 101), dtype='float32') + 0.01
@@ -1121,10 +1121,10 @@ def test_getkernel():
     aijb = np.zeros((5, 5, 4), dtype='float32')
 
     for i in range(4):
-        aijb[:, :, i] = (xx**2.+yy**2.)**0.5
+        aijb[:, :, i] = (xx**2. + yy**2.)**0.5
 
     kernel = get_kernel(aijb)
-    
+
     return kernel
 
 

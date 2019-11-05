@@ -4,7 +4,7 @@
 
 VIS Ground Calibration Campaign.
 
-Mini-Campaign Test Set: used to verify functionality of ROE + OGSE 
+Mini-Campaign Test Set: used to verify functionality of ROE + OGSE
 ahead of running the campaign itself.
 
 Created on Mon Jan 15 15:56:00 2018
@@ -32,7 +32,7 @@ from vison.support import context
 # END IMPORT
 
 
-def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis, 
+def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis,
                                    CHAMBER=None, purpose='scripts'):
     """ """
 
@@ -59,11 +59,11 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis,
                           sn_rpsu=sn_rpsu, operator=operator)
 
         bias01 = BIAS0X.BIAS0X(inputs=dict(
-                                            test='BIAS01',
-                                            N=Nbias01,
-                                           diffvalues=diffBIAS01,
-                                           elvis=elvis,
-                                           CHAMBER=CHAMBER))
+            test='BIAS01',
+            N=Nbias01,
+            diffvalues=diffBIAS01,
+            elvis=elvis,
+            CHAMBER=CHAMBER))
 
         #structBIAS01 = bias01.build_scriptdict(elvis=elvis)
         test_sequence['BIAS01'] = copy.deepcopy(bias01)
@@ -157,7 +157,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis,
 
         print 'FLAT01...'
 
-        t_dummy_F01 = np.array([25., 50., 75])/100.
+        t_dummy_F01 = np.array([25., 50., 75]) / 100.
         exptimesF01 = (exptimes_FLAT0X['nm800'] * t_dummy_F01).tolist()  # s
         framesF01 = [1, 1, 1]
 
@@ -184,7 +184,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis,
     if toGen['FLAT02']:
 
         wavesFLAT02 = [0, 590, 640, 730, 880]
-        t_dummy_F02 = np.array([50.])/100.
+        t_dummy_F02 = np.array([50.]) / 100.
         framesF02 = [2]
 
         diffFLAT02 = dict(sn_ccd1=sn_ccd1,
@@ -229,7 +229,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis,
         for iw, wave in enumerate(wavesFOCUS00w):
 
             tFWC_pointw = ogse.profile['tFWC_point']['nm%i' % wave]
-            iexptimeF00 = 60./100. * tFWC_pointw
+            iexptimeF00 = 60. / 100. * tFWC_pointw
 
             itestkey = 'FOCUS00_%i' % wave
 
@@ -259,7 +259,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis,
                           sn_rpsu=sn_rpsu, operator=operator)
 
         tFWC_pointPSF01 = ogse.profile['tFWC_point']['nm%i' % wavePSF01w]
-        exptsPSF01w = (np.array([25., 50., 75.])/100. *
+        exptsPSF01w = (np.array([25., 50., 75.]) / 100. *
                        tFWC_pointPSF01).tolist()
         frsPSF01w = [4, 4, 4]
 

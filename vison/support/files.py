@@ -32,7 +32,7 @@ def cPickleRead(ffile):
     """
     Loads data from a pickled file.
     """
-    with open(ffile,'r') as f:
+    with open(ffile, 'r') as f:
         inpick = cPickle.load(f)
     f.close()
     return inpick

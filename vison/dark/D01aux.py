@@ -25,16 +25,17 @@ from vison.datamodel import cdp
 
 
 def get_CDP_lib():
-    
+
     dk_tb_cdp = cdp.Tables_CDP()
     dk_tb_cdp.rootname = 'DARK01_TB'
-    
+
     MB_profiles_cdp = cdp.CDP()
     MB_profiles_cdp.rootname = 'MB_profiles_DARK01'
-    
+
     CDP_lib = dict(DARK_TB=dk_tb_cdp,
                    MB_profiles=MB_profiles_cdp)
     return CDP_lib
+
 
 check_offsets_dict = dict(stats=['offset_pre', 'offset_ove'],
                           trendaxis='time',
@@ -45,14 +46,20 @@ check_offsets_dict = dict(stats=['offset_pre', 'offset_ove'],
                                     suptitle='DARK01-checks: offsets',
                                     ylim=trends.offset_lims))
 
-check_deltaoff_dict = dict(stats=['deltaoff_pre', 'deltaoff_ove'],
-                          trendaxis='time',
-                          figname='DARK01_deltaoff_vs_time.png',
-                          caption='DARK01: $\delta$offset vs. time. Offset value in each frame minus the average value.',
-                          meta=dict(doLegend=True,
-                                    doNiceXDate=True,
-                                    suptitle='DARK01-checks: delta-offsets',
-                                    ylim=[-10.,10.]))
+check_deltaoff_dict = dict(
+    stats=[
+        'deltaoff_pre',
+        'deltaoff_ove'],
+    trendaxis='time',
+    figname='DARK01_deltaoff_vs_time.png',
+    caption='DARK01: $\delta$offset vs. time. Offset value in each frame minus the average value.',
+    meta=dict(
+            doLegend=True,
+            doNiceXDate=True,
+            suptitle='DARK01-checks: delta-offsets',
+            ylim=[
+                -10.,
+                10.]))
 
 
 check_std_dict = dict(stats=['std_pre', 'std_ove'],
@@ -72,7 +79,7 @@ check_flu_dict = dict(stats=['chk_flu_img'],
                       meta=dict(doLegend=False,
                                 doNiceXDate=True,
                                 suptitle='DARK01-checks: Image Area Fluence.',
-                                ylim=[-10.,20.])
+                                ylim=[-10., 20.])
                       )
 
 meta_prof1Dhor_dict = dict(
@@ -81,7 +88,7 @@ meta_prof1Dhor_dict = dict(
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Column [pix]',
-              ylim = [-20., 20.],
+              ylim=[-20., 20.],
               suptitle='DARK01/Master: Profiles across columns.')
 )
 
@@ -91,7 +98,7 @@ meta_prof1Dver_dict = dict(
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Row [pix]',
-              ylim = [-20., 100.],
+              ylim=[-20., 100.],
               suptitle='DARK01/Master: Profiles across rows.')
 )
 
@@ -101,8 +108,8 @@ meta_MDK2D_dict = dict(
     meta=dict(doLegend=False,
               doColorbar=True,
               suptitle='DARK01/Master:Quadrant Images',
-    corekwargs=dict(cmap=cm.rainbow,aspect='auto',norm=None,origin='lower left',
-                    )))
+              corekwargs=dict(cmap=cm.rainbow, aspect='auto', norm=None, origin='lower left',
+                              )))
 
 
 def get_D01figs():
@@ -112,12 +119,10 @@ def get_D01figs():
     D01figs['D01checks_stds'] = [trends.Fig_Basic_Checkstat, check_std_dict]
     D01figs['D01checks_flu'] = [trends.Fig_Basic_Checkstat, check_flu_dict]
     D01figs['D01meta_prof1D_hor'] = [
-            figclasses.Fig_Beam2DPlot, meta_prof1Dhor_dict]
+        figclasses.Fig_Beam2DPlot, meta_prof1Dhor_dict]
     D01figs['D01meta_prof1D_ver'] = [
-            figclasses.Fig_Beam2DPlot, meta_prof1Dver_dict]
+        figclasses.Fig_Beam2DPlot, meta_prof1Dver_dict]
     D01figs['D01meta_MasterDark_2D'] = [
-            figclasses.Fig_BeamImgShow, meta_MDK2D_dict]
+        figclasses.Fig_BeamImgShow, meta_MDK2D_dict]
     D01figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return D01figs
-
-

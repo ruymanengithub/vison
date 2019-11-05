@@ -42,7 +42,7 @@ def f_fitXT(source, *p):
     fwc = 2.**16  # just a scaling factor
     victim = np.zeros_like(source)
     for ip in range(len(p)):
-        victim += p[ip]*(source/fwc)**(ip+1)
+        victim += p[ip] * (source / fwc)**(ip + 1)
 
     return fwc * victim
 
@@ -52,7 +52,7 @@ def sub_bgd(img, colend, VSTART=0, VEND=2086):
 
     NX, NY = img.shape
 
-    midbgd1d = np.nanmean(img[colend+20:-20, :], axis=0)
+    midbgd1d = np.nanmean(img[colend + 20:-20, :], axis=0)
     midbgd2d = np.repeat(midbgd1d.reshape(1, NY), NX, axis=0)
 
     img = img - midbgd2d
@@ -73,7 +73,7 @@ def plot_quad(ax, Xtalk, Q):
 
     yfit = f_fitXT(x, *coefs)
 
-    xtalk_sig = np.nanstd(y-yfit)
+    xtalk_sig = np.nanstd(y - yfit)
 
     line_x = np.linspace(0., 6.5536E4, 200)
     line_y = f_fitXT(line_x, *coefs)
@@ -146,9 +146,9 @@ def xtalk_fit(x, y):
     ixmax = np.argmax(np.abs(ymodel))
     xtalk = ymodel[ixmax] / 2.**16
 
-    std_xtalk = np.nanstd(y-f_fitXT(x, *fitcoefs)) / 2.**16
+    std_xtalk = np.nanstd(y - f_fitXT(x, *fitcoefs)) / 2.**16
 
-    xtalk_atmaxinj = y[np.argmax(x)]/x[np.argmax(x)]
+    xtalk_atmaxinj = y[np.argmax(x)] / x[np.argmax(x)]
 
     results = dict(x=x.copy(), y=y.copy(), coefs=fitcoefs,
                    xtalk=xtalk, std_xtalk=std_xtalk,
@@ -166,7 +166,7 @@ def find_levels(img, colstart=1, colend=1600, rowstart=1, rowend=2086):
 
     nperbin[np.where(nperbin < 1E3)] = 0
 
-    pnperbin = np.zeros(len(nperbin)+2)
+    pnperbin = np.zeros(len(nperbin) + 2)
     pnperbin[1:-1] = nperbin
 
     argrelmax = signal.argrelmax
@@ -180,7 +180,7 @@ def find_levels(img, colstart=1, colend=1600, rowstart=1, rowend=2086):
     for ix in ixmax:
 
         lowbound = bins[ix]
-        hibound = bins[ix+1]
+        hibound = bins[ix + 1]
 
         ixsel = np.where((img >= lowbound) & (img <= hibound))
         val = np.nanmedian(img[ixsel])
@@ -200,7 +200,7 @@ def find_levels(img, colstart=1, colend=1600, rowstart=1, rowend=2086):
 
 def processXtalk_single(CCDref, Qref, OBSID, thresholdinj=0., colstart=1, colend=1600,
                         rowstart=1, rowend=2086, savefigs=False, log=None, datapath='', respath=''):
-    """ 
+    """
     # Flow:
     #
     #   load ref-CCD, put readout node in lower-left corner (0,0) for every Q
@@ -216,13 +216,13 @@ def processXtalk_single(CCDref, Qref, OBSID, thresholdinj=0., colstart=1, colend
     #
     #           put readout node of Q in lower-left corner (0,0)
     #           subtract bias (pre-scan)
-    #   
+    #
     #           divide Q of CCD by Qref of CCDref.
     #
     #           for each bin:
     #               select values of (Q-CCD)ref within bin, mask
     #               measure average value of (Q-CCD) within mask
-    # 
+    #
     #           plot av(Q-CCD)/av(Q-CCD)ref vs. av(bin)
     #           save slope (X-TALK) to log
     #
@@ -264,8 +264,8 @@ def processXtalk_single(CCDref, Qref, OBSID, thresholdinj=0., colstart=1, colend
 
     for level in levels:
 
-        lowbound = min(level * 0.99, level-100)
-        hibound = max(level * 1.01, level+100)
+        lowbound = min(level * 0.99, level - 100)
+        hibound = max(level * 1.01, level + 100)
 
         ixsel = np.where((imgref >= lowbound) & (imgref <= hibound) &
                          (X >= colstart) & (X < colend) &
@@ -278,7 +278,7 @@ def processXtalk_single(CCDref, Qref, OBSID, thresholdinj=0., colstart=1, colend
         nvals = len(vals)
 
         refpix.append(np.nanmean(vals))
-        erefpix.append(np.nanstd(vals)/np.sqrt(nvals))
+        erefpix.append(np.nanstd(vals) / np.sqrt(nvals))
 
         #npixels = len(pixels)
         # refpix.append(np.nanmean(pixels))
@@ -331,7 +331,7 @@ def processXtalk_single(CCDref, Qref, OBSID, thresholdinj=0., colstart=1, colend
                 nvals = len(vals)
 
                 xtalkpix.append(np.nanmean(vals))
-                extalkpix.append(np.nanstd(vals)/np.sqrt(nvals))
+                extalkpix.append(np.nanstd(vals) / np.sqrt(nvals))
 
             xtalkpix = np.array(xtalkpix)
             extalkpix = np.array(extalkpix)
@@ -342,7 +342,7 @@ def processXtalk_single(CCDref, Qref, OBSID, thresholdinj=0., colstart=1, colend
                 results = xtalk_fit(refpix[sellevels], xtalkpix[sellevels])
                 log.info('CCD%i-%s, xtalk=%.2e' %
                          (CCD, Quad, results['coefs'][0]))
-            except:
+            except BaseException:
                 log.info('CCD%i-%s, xtalk=?? (COULD NOT FIT)')
 
             results['ex'] = erefpix[sellevels].copy()
@@ -362,7 +362,7 @@ def processXtalk_single(CCDref, Qref, OBSID, thresholdinj=0., colstart=1, colend
             plotXtalk(Xtalk['CCD%i' % CCD], suptitle, figname)
         except KeyError:
             figname = ''
-            
+
         fignames['CCD%i' % CCD] = figname
 
     return Xtalk, fignames
@@ -397,7 +397,6 @@ def PlotSummaryFig(Xtalk, suptitle, figname='', scale='RATIO', showvalues=False)
                             iextalk = xtalk_dict['std_xtalk']
 
                         elif scale == 'ADU':
-                            
 
                             coefs = xtalk_dict['coefs']
                             xsource = np.linspace(0, 2.**16, 200)
@@ -407,7 +406,7 @@ def PlotSummaryFig(Xtalk, suptitle, figname='', scale='RATIO', showvalues=False)
                             ixtalk = yvictim[ixmax]
                             iextalk = xtalk_dict['std_xtalk'] * 2.**16
 
-                    except:
+                    except BaseException:
 
                         ixtalk = 1.E3
                         iextalk = 0.
@@ -415,8 +414,8 @@ def PlotSummaryFig(Xtalk, suptitle, figname='', scale='RATIO', showvalues=False)
                     y = iCr * 4 + iQr  # source
                     x = iC * 4 + iQ  # victim
 
-                    eratio = np.abs(iextalk/ixtalk)
-                    alpha = max(1.-eratio, 0.1)
+                    eratio = np.abs(iextalk / ixtalk)
+                    alpha = max(1. - eratio, 0.1)
 
                     if ixtalk > 0:
                         color = 'g'
@@ -429,15 +428,16 @@ def PlotSummaryFig(Xtalk, suptitle, figname='', scale='RATIO', showvalues=False)
 
                         if np.abs(ixtalk) < 0.9:
 
-                            ms = (np.abs(ixtalk) / req * 2.**16)*5.
+                            ms = (np.abs(ixtalk) / req * 2.**16) * 5.
                             #if ms <=0: color='g'
                             ms = max(ms, 5)
 
                             ax.scatter(x, y, color=color, s=[ms], alpha=alpha)
-                            
-                            if showvalues: ax.text(x,y,'%.1e' % ixtalk,fontsize=7,
-                                                   horizontalalignment='center',
-                                                   verticalalignment='center')
+
+                            if showvalues:
+                                ax.text(x, y, '%.1e' % ixtalk, fontsize=7,
+                                        horizontalalignment='center',
+                                        verticalalignment='center')
 
                         elif (iCr == iC) and (iQ == iQr):
                             # self-cross-talk
@@ -452,15 +452,16 @@ def PlotSummaryFig(Xtalk, suptitle, figname='', scale='RATIO', showvalues=False)
 
                         if np.abs(ixtalk) < 500.:
 
-                            ms = (np.abs(ixtalk) / req)*5.
+                            ms = (np.abs(ixtalk) / req) * 5.
                             #if ms <=0: color='g'
                             ms = max(ms, 5)
 
                             ax.scatter(x, y, color=color, s=[ms], alpha=alpha)
-                            
-                            if showvalues: ax.text(x,y,'%.2f' % ixtalk,fontsize=8,
-                                                   horizontalalignment='center',
-                                                   verticalalignment='center')
+
+                            if showvalues:
+                                ax.text(x, y, '%.2f' % ixtalk, fontsize=8,
+                                        horizontalalignment='center',
+                                        verticalalignment='center')
 
                         elif (iC == iCr) and (iQ == iQr):
                             # self-cross-talk
@@ -487,29 +488,29 @@ def PlotSummaryFig(Xtalk, suptitle, figname='', scale='RATIO', showvalues=False)
 
     if scale == 'RATIO':
 
-        ax.scatter(200, 200, s=5.*(3E-4 / req * 2.**16),
+        ax.scatter(200, 200, s=5. * (3E-4 / req * 2.**16),
                    label='3E-4', color='k')
-        ax.scatter(200, 200, s=5.*(2E-4 / req * 2.**16),
+        ax.scatter(200, 200, s=5. * (2E-4 / req * 2.**16),
                    label='2E-4', color='k')
-        ax.scatter(200, 200, s=5.*(1E-4 / req * 2.**16),
+        ax.scatter(200, 200, s=5. * (1E-4 / req * 2.**16),
                    label='1E-4', color='k')
-        ax.scatter(200, 200, s=5.*(5E-5 / req * 2.**16),
+        ax.scatter(200, 200, s=5. * (5E-5 / req * 2.**16),
                    label='5E-5', color='k')
-        ax.scatter(200, 200, s=5.*(1E-5 / req * 2.**16),
+        ax.scatter(200, 200, s=5. * (1E-5 / req * 2.**16),
                    label='1E-5', color='k')
-        ax.scatter(200, 200, s=5.*(5.E-6 / req * 2.**16),
+        ax.scatter(200, 200, s=5. * (5.E-6 / req * 2.**16),
                    label='5E-6', color='k')
         ax.scatter(200, 200, s=5, label='$<=$2.3e-6', color='k')
 
     elif scale == 'ADU':
 
-        ax.scatter(200, 200, s=5.*(30./req), label='30 ADU', color='k')
-        ax.scatter(200, 200, s=5.*(20./req), label='20 ADU', color='k')
-        ax.scatter(200, 200, s=5.*(10./req), label='10 ADU', color='k')
-        ax.scatter(200, 200, s=5.*(5./req), label='5 ADU', color='k')
-        ax.scatter(200, 200, s=5.*(1./req), label='1 ADU', color='k')
-        ax.scatter(200, 200, s=5.*(0.5/req), label='0.5 ADU', color='k')
-        ax.scatter(200, 200, s=5.*(0.15/req), label='$<=$0.15 ADU', color='k')
+        ax.scatter(200, 200, s=5. * (30. / req), label='30 ADU', color='k')
+        ax.scatter(200, 200, s=5. * (20. / req), label='20 ADU', color='k')
+        ax.scatter(200, 200, s=5. * (10. / req), label='10 ADU', color='k')
+        ax.scatter(200, 200, s=5. * (5. / req), label='5 ADU', color='k')
+        ax.scatter(200, 200, s=5. * (1. / req), label='1 ADU', color='k')
+        ax.scatter(200, 200, s=5. * (0.5 / req), label='0.5 ADU', color='k')
+        ax.scatter(200, 200, s=5. * (0.15 / req), label='$<=$0.15 ADU', color='k')
 
     ax.set_xlim([-1, 12])
     ax.set_ylim([-1, 12])
@@ -562,7 +563,7 @@ class ReportXL_Xtalk(ReportXL):
 
         headerdict = self.data['meta']
 
-        headkeys = ['AcqDate','ROE', 'ROE_FW', 'Injector', 'Injector_FW', 'Label',
+        headkeys = ['AcqDate', 'ROE', 'ROE_FW', 'Injector', 'Injector_FW', 'Label',
                     'Analysis_Date', 'vison']
 
         headerdict.update(dict(vison=__version__))
@@ -571,8 +572,8 @@ class ReportXL_Xtalk(ReportXL):
 
         ix0 = 5
         for ik, key in enumerate(headkeys):
-            self.wb['Header']['A%i' % (ix0+ik)] = key
-            self.wb['Header']['B%i' % (ix0+ik)] = headerdict[key]
+            self.wb['Header']['A%i' % (ix0 + ik)] = key
+            self.wb['Header']['B%i' % (ix0 + ik)] = headerdict[key]
 
         self.adjust_columns_width(sheetname='Header')
 
@@ -612,7 +613,7 @@ class ReportXL_Xtalk(ReportXL):
                         xtalks.append(ixtalk)
                         extalks.append(iextalk)
 
-                        couples.append('%i%s-%i%s' % (iCr+1, Qref, iCCD+1, Q))
+                        couples.append('%i%s-%i%s' % (iCr + 1, Qref, iCCD + 1, Q))
 
         xtalks = np.array(xtalks)
         axtalks = np.abs(xtalks)
@@ -656,17 +657,23 @@ class ReportXL_Xtalk(ReportXL):
             for Q in self.Quads:
                 colnames.append('%i%s' % (CCD, Q))
 
-        for i, col in enumerate(ws.iter_cols(min_row=1, max_row=1, min_col=2, max_col=(len(colnames)-1)*3+1)):
+        for i, col in enumerate(
+            ws.iter_cols(
+                min_row=1, max_row=1, min_col=2, max_col=(
+                len(colnames) - 1) * 3 + 1)):
             if (i % 3) == 1:
-                col[0].value = colnames[1+i/3]
-            Q = colnames[1+i/3][-1]
+                col[0].value = colnames[1 + i / 3]
+            Q = colnames[1 + i / 3][-1]
             if Q in ['E', 'G']:
                 col[0].fill = self.color_fills['blue']
             elif Q in ['F', 'H']:
                 col[0].fill = self.color_fills['green']
 
         subtitles = ['ratio', 'eratio', 'r_at_maxinj']
-        for i, col in enumerate(ws.iter_cols(min_row=2, max_row=2, min_col=2, max_col=(len(colnames)-1)*3+1)):
+        for i, col in enumerate(
+            ws.iter_cols(
+                min_row=2, max_row=2, min_col=2, max_col=(
+                len(colnames) - 1) * 3 + 1)):
             col[0].value = subtitles[i % 3]
 
         # Labelling reference channels
@@ -676,13 +683,14 @@ class ReportXL_Xtalk(ReportXL):
             for Q in self.Quads:
                 channels.append('%i%s' % (CCD, Q))
 
-        for i, row in enumerate(ws.iter_rows(min_row=3, max_row=3+len(channels)-1, min_col=1, max_col=1)):
+        for i, row in enumerate(ws.iter_rows(min_row=3, max_row=3 +
+                                             len(channels) - 1, min_col=1, max_col=1)):
             row[0].value = channels[i]
 
         for iCr, CCDref in enumerate(self.CCDs):
             for iQr, Qref in enumerate(self.Quads):
 
-                irow = iCr*4+iQr+1+1+1
+                irow = iCr * 4 + iQr + 1 + 1 + 1
 
                 for jC, CCD in enumerate(self.CCDs):
                     for jQ, Q, in enumerate(self.Quads):
@@ -699,7 +707,7 @@ class ReportXL_Xtalk(ReportXL):
                         values = [ixtalk, iextalk, xtalk_atmaxinj]
 
                         for k in range(3):
-                            jcol = jC*4*3+jQ*3+k+1+1
+                            jcol = jC * 4 * 3 + jQ * 3 + k + 1 + 1
                             jcolLetter = oxl.utils.get_column_letter(jcol)
 
                             ws['%s%i' % (jcolLetter, irow)] = values[k]
@@ -722,20 +730,26 @@ class ReportXL_Xtalk(ReportXL):
             for Q in self.Quads:
                 colnames.append('%i%s' % (CCD, Q))
 
-        for i, col in enumerate(ws.iter_cols(min_row=1, max_row=1, min_col=2, max_col=(len(colnames)-1)*2+1)):
+        for i, col in enumerate(
+            ws.iter_cols(
+                min_row=1, max_row=1, min_col=2, max_col=(
+                len(colnames) - 1) * 2 + 1)):
             if (i % 2) == 0:
                 try:
-                    col[0].value = colnames[1+i/2]
-                except:
+                    col[0].value = colnames[1 + i / 2]
+                except BaseException:
                     stop()
-            Q = colnames[1+i/2][-1]
+            Q = colnames[1 + i / 2][-1]
             if Q in ['E', 'G']:
                 col[0].fill = self.color_fills['blue']
             elif Q in ['F', 'H']:
                 col[0].fill = self.color_fills['green']
 
         subtitles = ['xtalk_lin', 'xtalk_at_maxinj']
-        for i, col in enumerate(ws.iter_cols(min_row=2, max_row=2, min_col=2, max_col=(len(colnames)-1)*2+1)):
+        for i, col in enumerate(
+            ws.iter_cols(
+                min_row=2, max_row=2, min_col=2, max_col=(
+                len(colnames) - 1) * 2 + 1)):
             col[0].value = subtitles[i % 2]
 
         # Labelling reference channels
@@ -745,13 +759,14 @@ class ReportXL_Xtalk(ReportXL):
             for Q in self.Quads:
                 channels.append('%i%s' % (CCD, Q))
 
-        for i, row in enumerate(ws.iter_rows(min_row=3, max_row=3+len(channels)-1, min_col=1, max_col=1)):
+        for i, row in enumerate(ws.iter_rows(min_row=3, max_row=3 +
+                                             len(channels) - 1, min_col=1, max_col=1)):
             row[0].value = channels[i]
 
         for iCr, CCDref in enumerate(self.CCDs):
             for iQr, Qref in enumerate(self.Quads):
 
-                irow = iCr*4+iQr+1+1+1
+                irow = iCr * 4 + iQr + 1 + 1 + 1
 
                 for jC, CCD in enumerate(self.CCDs):
                     for jQ, Q, in enumerate(self.Quads):
@@ -764,10 +779,10 @@ class ReportXL_Xtalk(ReportXL):
                         ixtalk = xtalk_dict['xtalk']
                         xtalk_atmaxinj = xtalk_dict['xtalk_atmaxinj']
 
-                        values = [ixtalk*2.**16, xtalk_atmaxinj*2.**16]
+                        values = [ixtalk * 2.**16, xtalk_atmaxinj * 2.**16]
 
                         for k in range(2):
-                            jcol = jC*4*2+jQ*2+k+1+1
+                            jcol = jC * 4 * 2 + jQ * 2 + k + 1 + 1
                             jcolLetter = oxl.utils.get_column_letter(jcol)
 
                             ws['%s%i' % (jcolLetter, irow)] = values[k]
@@ -793,13 +808,13 @@ class ReportXL_Xtalk(ReportXL):
     def fill_Figures(self):
         """ """
         figsdict = self.data['figs']
-        
+
         figskeys = figsdict['keys']
         jump = figsdict['jump']
-        
+
         ws = self.wb['Figures']
-        
+
         for ik, key in enumerate(figskeys):
             cellnum = 1 + ik * jump
-            ws.add_image(oxl.drawing.image.Image(figsdict[key]), 
-            'A%i' % cellnum)
+            ws.add_image(oxl.drawing.image.Image(figsdict[key]),
+                         'A%i' % cellnum)

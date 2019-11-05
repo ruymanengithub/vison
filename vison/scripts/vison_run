@@ -3,12 +3,12 @@
 # -*- coding: utf-8 -*-
 """
 
-Script to execute the "vison" pipeline in order to process and analyze data 
+Script to execute the "vison" pipeline in order to process and analyze data
 acquired during the VIS Ground Calibration Campaign.
 
 The pipeline is meant to be run in several modes:
-    
-    - listening and checking: 
+
+    - listening and checking:
         waiting for data as it comes out of the chamber, and doing minimal
         checks on data: consistency, HK, basic quality
     - acquired data-set / checking:
@@ -41,19 +41,19 @@ from vison.support import vjson
 # END IMPORT
 
 
-def openpyconfigf(configf,RUN,wait):
-    
+def openpyconfigf(configf, RUN, wait):
+
     with open(configf) as f:
-        #execfile(configf,dict(RUNs=['D21']))
-        RUNs=[RUN]
-        doWait=wait
+        # execfile(configf,dict(RUNs=['D21']))
+        RUNs = [RUN]
+        doWait = wait
         exec f
         f.close()
 
     return inputdict
 
-#def loadpyconfig(configf):
-#   
+# def loadpyconfig(configf):
+#
 #   c = importlib.import_module(configf)
 #   #import sys
 #   #__import__(configf)
@@ -61,10 +61,12 @@ def openpyconfigf(configf,RUN,wait):
 #   stop()
 #   return c.get_inputdict
 
+
 def parse_jsonconfig(jsonfile):
-    rawjson = vjson.load_jsonfile(json,useyaml=True)
-    #PENDING
+    rawjson = vjson.load_jsonfile(json, useyaml=True)
+    # PENDING
     sys.exit('PENDING: finish ingestion of json inputs in vison_run')
+
 
 if __name__ == '__main__':
 
@@ -74,7 +76,7 @@ if __name__ == '__main__':
                       help="Python configuration file to run the pipeline.")
     parser.add_option("-R", "--run", dest="run", default='',
                       help="Run to process - TESTS.")
-    #parser.add_option("-j", "--json", dest="json", default='',
+    # parser.add_option("-j", "--json", dest="json", default='',
     #                  help="Json configuration file to run the pipeline.")
     parser.add_option("-d", "--day", dest="dayfolder", default='',
                       help="Day-folder. Only needed in 'wait' mode.")
@@ -90,31 +92,50 @@ if __name__ == '__main__':
                       default=False, help="Do a drill execution.")
     parser.add_option("-g", "--debug", dest="debug", action="store_true",
                       default=False, help="Run in 'debug' mode.")
-    parser.add_option("-T", "--test", dest="test", action="store_true", default=False,
-                      help="Run in 'test' mode (just ingest inputs and initialize pipeline and output directories)")
+    parser.add_option(
+        "-T",
+        "--test",
+        dest="test",
+        action="store_true",
+        default=False,
+        help="Run in 'test' mode (just ingest inputs and initialize pipeline and output directories)")
     parser.add_option("-O", "--ObsID", dest="startobsid", default="0",
                       help="Only use data from given ObsID and onwards. Only used in 'wait' mode.")
-    parser.add_option("-m", "--multithread", dest="multithread", default=1,
-                      help="Use multithreading? Number of threads / cores to use. Default=1 [single thread]. Number of threads must be "+\
-                      "< number of available cores. Only some tasks are parallelized.")
+    parser.add_option(
+        "-m",
+        "--multithread",
+        dest="multithread",
+        default=1,
+        help="Use multithreading? Number of threads / cores to use. Default=1 [single thread]. Number of threads must be " +
+        "< number of available cores. Only some tasks are parallelized.")
     parser.add_option("-t", "--tag", dest="tag", default="",
                       help="Tag to be added to log-file name for ease of identification. Optional.")
-    parser.add_option("-i", "--interactive", dest="interactive", action="store_true",
-                      default=False, help="Switch matplotlib to TkAgg backend for interactive plotting (e.g. debugging)")
-    parser.add_option("-C", "--Clean", dest="cleanafter", action="store_true", default=False,
-                      help="Clean After? Aux. files are erased as soon as they are no longer needed, for each Task.")
+    parser.add_option(
+        "-i",
+        "--interactive",
+        dest="interactive",
+        action="store_true",
+        default=False,
+        help="Switch matplotlib to TkAgg backend for interactive plotting (e.g. debugging)")
+    parser.add_option(
+        "-C",
+        "--Clean",
+        dest="cleanafter",
+        action="store_true",
+        default=False,
+        help="Clean After? Aux. files are erased as soon as they are no longer needed, for each Task.")
     parser.add_option("-F", "--FPA", dest="fpa", action="store_true", default=False,
                       help="Run FPA Mode?")
     (options, args) = parser.parse_args()
 
     pyconfig = options.pyconfig
     #json = options.json
-    
-    assert len(pyconfig)>0, "\npyconfig has to be provided as input, QUITTING!\n"
-    
+
+    assert len(pyconfig) > 0, "\npyconfig has to be provided as input, QUITTING!\n"
+
     #assert ((len(pyconfig)>0) or (len(json)>0)), "\npyconfig OR json has to be provided as input, QUITTING!\n"
     #assert (len(pyconfig) >0 ) != (len(json)>0), "\npyconfig XOR json should be provided as input, not both, QUITTING!\n"
-    
+
     run = options.run
     dayfolder = options.dayfolder
     elvis = options.elvis
@@ -130,42 +151,40 @@ if __name__ == '__main__':
     interactive = options.interactive
     cleanafter = options.cleanafter
     doFPA = options.fpa
-    
+
     if wait and doFPA:
         print('\nFPA mode cannot be run in wait mode, QUITTING!')
         sys.exit()
-    
-    if len(pyconfig)>0:
-        inputdict = openpyconfigf(pyconfig,run,wait)
+
+    if len(pyconfig) > 0:
+        inputdict = openpyconfigf(pyconfig, run, wait)
         #inputdictgetter = loadpyconfig(pyconfig)
-    #elif len(json)>=0:
+    # elif len(json)>=0:
     #    inputdict = parse_jsonconfig(json)
-    
-    
+
     if docheck or dotest:
         inputdict = broadcast_todo_flags(inputdict, docheck=docheck, dotest=dotest)
-    
-    
+
     if multithread > 1:
         cpu_count = multiprocessing.cpu_count()
         assert multithread <= cpu_count, 'Number of threads (%i) exceeds number of cpus (%i).' %\
-                                                            (multithread,cpu_count)
-    
+            (multithread, cpu_count)
+
     if interactive:
         import matplotlib.pyplot as plt
         plt.switch_backend('TkAgg')
-    
+
     if doFPA:
         pipe = fpamaster.FpaPipe(inputdict, dolog=dolog, drill=drill,
-                debug=debug, startobsid=startobsid,
-                processes=multithread, tag=tag, 
-                cleanafter = cleanafter)
+                                 debug=debug, startobsid=startobsid,
+                                 processes=multithread, tag=tag,
+                                 cleanafter=cleanafter)
     else:
         pipe = Pipe(inputdict, dolog=dolog, drill=drill,
-                debug=debug, startobsid=startobsid,
-                processes=multithread, tag=tag, 
-                cleanafter = cleanafter)
-    
+                    debug=debug, startobsid=startobsid,
+                    processes=multithread, tag=tag,
+                    cleanafter=cleanafter)
+
     if wait:
         pipe.wait_and_run(dayfolder, elvis=elvis)
     else:

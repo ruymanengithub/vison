@@ -7,7 +7,7 @@
      parse HK files
      plot HK parameters vs. time
      assemble all plots into a pdf file
-     
+
      DEBUG, calls nonexistent class LaTeX
 
 Script to produce HK reports out of HK files in a folder.
@@ -72,8 +72,7 @@ if __name__ == '__main__':
     if not os.path.exists(path):
         sys.exit('HKmonitory.py: %s does not exist' % path)
 
-    HKlist = glob(os.path.join(path, 'HK_*_ROE%i.txt' % roe))
-    HKlist.sort()
+    HKlist = sorted(glob(os.path.join(path, 'HK_*_ROE%i.txt' % roe)))
 
     if OBSID is not None:
 
@@ -113,7 +112,7 @@ if __name__ == '__main__':
 
             figname = os.path.join(outpath, '%s_%s.eps' % (datetag, key,))
 
-            HKvec = HKdata[:, 0, ik+1].copy()
+            HKvec = HKdata[:, 0, ik + 1].copy()
 
             iHKlims = HKlims[elvis]['S'][key]
 

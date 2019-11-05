@@ -35,16 +35,18 @@ def get_check_offsets_dict(test):
                           suptitle='%s-checks: offsets' % ntest,
                           ylim=trends.offset_lims))
 
+
 def get_check_deltaoff_dict(test):
     ntest = st.replace(test, '_', '\_')
-    return dict(stats=['deltaoff_pre', 'deltaoff_ove'],
-                trendaxis='time',
-                figname='%s_deltaoff_vs_time.png' % (test,),
-                caption='%s: $\delta$offset vs. time. Offset value in each frame minus the average value.' % (ntest,),
-                meta=dict(doLegend=True,
-                          doNiceXDate=True,
-                          suptitle='%s-checks: delta-offsets' % ntest,
-                          ylim=[-10.,10.]))
+    return dict(
+        stats=[
+            'deltaoff_pre', 'deltaoff_ove'], trendaxis='time', figname='%s_deltaoff_vs_time.png' %
+        (test,), caption='%s: $\delta$offset vs. time. Offset value in each frame minus the average value.' %
+        (ntest,), meta=dict(
+            doLegend=True, doNiceXDate=True, suptitle='%s-checks: delta-offsets' %
+            ntest, ylim=[
+                -10., 10.]))
+
 
 def get_check_std_dict(test):
     ntest = st.replace(test, '_', '\_')
@@ -107,15 +109,16 @@ def get_check_fwhmy_dict(test):
                           xlabel='seconds',
                           ylabel='FWHMy [pix]'))
 
-def get_crosstalk_dict(test,figtype):
-    tcaption = '%s: Cross-Talk [%s]. Green means positive cross-talk, red means negative cross-talk'+\
-    ' (does not mean compliance/non-compliance). Pale colours mean less accurate results.'
-    ntest = st.replace(test,'_','\_')
+
+def get_crosstalk_dict(test, figtype):
+    tcaption = '%s: Cross-Talk [%s]. Green means positive cross-talk, red means negative cross-talk' +\
+        ' (does not mean compliance/non-compliance). Pale colours mean less accurate results.'
+    ntest = st.replace(test, '_', '\_')
     crosstalk_dict = dict(
-    figname='%s_crosstalk_%s.png' % (test,figtype),
-    caption= tcaption % (ntest,figtype),
-    meta=dict(),
-    data=None
+        figname='%s_crosstalk_%s.png' % (test, figtype),
+        caption=tcaption % (ntest, figtype),
+        meta=dict(),
+        data=None
     )
     return crosstalk_dict
 
@@ -137,9 +140,9 @@ def get_PSF0Xfigs(test):
     PSF0Xfigs['PSF0Xchecks_fwhmy'] = [
         trends.Fig_Basic_Checkstat, get_check_fwhmy_dict(test)]
     PSF0Xfigs['PSF0X_crosstalk_ADU'] = [
-            figclasses.Fig_Husk, get_crosstalk_dict(test,'ADU')]
+        figclasses.Fig_Husk, get_crosstalk_dict(test, 'ADU')]
     PSF0Xfigs['PSF0X_crosstalk_RATIO'] = [
-            figclasses.Fig_Husk, get_crosstalk_dict(test,'RATIO')]
+        figclasses.Fig_Husk, get_crosstalk_dict(test, 'RATIO')]
     PSF0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return PSF0Xfigs
 
@@ -148,15 +151,16 @@ def get_PSF01_PANCHRO_figs():
     PSF01_PANCHRO_figs = dict()
     return PSF01_PANCHRO_figs
 
+
 def get_CDP_lib(test):
     """ """
     CDP_lib = OrderedDict()
     CDP_lib['RAW_CTALK'] = cdp.CDP()
     CDP_lib['RAW_CTALK'].rootname = 'Raw_crosstalk'
-    
+
     CDP_lib['CTALK'] = cdp.CDP()
     CDP_lib['CTALK'].rootname = 'crosstalk'
-           
+
     CDP_lib.update(Paux.get_CDP_lib())
-    
+
     return CDP_lib

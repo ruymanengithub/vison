@@ -55,19 +55,18 @@ class CDP(object):
         """ """
         if pickf == '':
             pickf = os.path.join(self.path, '%s.pick' % self.rootname)
-        
+
         outdict = copy.copy(self.__dict__)
-        
+
         if 'report' in outdict:
             report = outdict['report']
-            
+
             if isinstance(outdict['report'], ReportXL):
                 report = outdict['report']
-                outdict['report'] = None # gives trouble... HACK
+                outdict['report'] = None  # gives trouble... HACK
                 self.__dict__['report'] = report
-        
+
         cPickleDumpDictionary(outdict, pickf)
-        
 
     def loadfrompickle(self, pickf=''):
         """ """
@@ -78,8 +77,8 @@ class CDP(object):
 
     def savehardcopy(self, filef=''):
         """ """
-        pass # HACK
-        #raise NotImplementedError(
+        pass  # HACK
+        # raise NotImplementedError(
         #    'Subclass implements abstract method (if needed).')
 
 
@@ -112,15 +111,15 @@ class Tables_CDP(CDP):
         self.report = ReportXL(OrderedDict())
         self.report.wb.create_sheet('Header', 0)
         self.report.wb.create_sheet('Meta', 1)
-        
+
         sheetcounter = 2
 
         for i, k in enumerate(self.data.iterkeys()):
             sheetcounter += i
             self.report.wb.create_sheet(k, sheetcounter)
-            
-        if len(self.figs)>0:
-            self.report.wb.create_sheet('figs',sheetcounter+1)
+
+        if len(self.figs) > 0:
+            self.report.wb.create_sheet('figs', sheetcounter + 1)
 
     def fill_Header(self, title=''):
         """ """
@@ -137,26 +136,24 @@ class Tables_CDP(CDP):
         df = self.data[sheet]
         self.report.df_to_sheet(df, sheet, index=True, header=True)
 
-
     def fill_allDataSheets(self):
         """ """
         for sheet in self.data.keys():
             self.fill_Sheet(sheet)
-    
+
     def fill_Figures(self):
         figsdict = self.figs
-        if len(figsdict)==0:
+        if len(figsdict) == 0:
             return
-        
-        figskeys= figsdict['keys']
+
+        figskeys = figsdict['keys']
         jump = figsdict['jump']
-        
-        for ik,key in enumerate(figskeys):
+
+        for ik, key in enumerate(figskeys):
             figpath = figsdict[key]
             cellnum = 1 + ik * jump
-            self.report.add_image(figpath,'figs',cell='A%i' % cellnum)
-        
-    
+            self.report.add_image(figpath, 'figs', cell='A%i' % cellnum)
+
     def init_wb_and_fillAll(self, header_title=''):
         self.init_workbook()
         self.fill_Header(title=header_title)
@@ -164,42 +161,39 @@ class Tables_CDP(CDP):
         self.fill_allDataSheets()
         self.fill_Figures()
 
-    def get_textable(self, sheet, caption='', fitwidth=False, tiny=False, 
+    def get_textable(self, sheet, caption='', fitwidth=False, tiny=False,
                      **kwargs):
         """ """
         _kwargs = dict(multicolumn=True, multirow=True, longtable=True, index=False)
         _kwargs.update(kwargs)
         tex = self.data[sheet].to_latex(**_kwargs)
         tex = st.split(tex, '\n')
-        
-        
+
         if fitwidth:
-                        
-            
+
             if 'columns' not in _kwargs:
                 ncols = len(self.data[sheet].columns)
             else:
                 ncols = len(_kwargs['columns'])
-            
+
             if _kwargs['index']:
                 ncols += 1
-                
-            
-            beglongtabu = '\\begin{longtabu} to \\textwidth {|%s}' % (ncols*'X|',)
+
+            beglongtabu = '\\begin{longtabu} to \\textwidth {|%s}' % (ncols * 'X|',)
             endlongtabu = '\end{longtabu}'
             tex[0] = beglongtabu
             tex[-2] = endlongtabu
-        
+
         if not _kwargs['longtable']:
             tex = ['\\begin{table}[!htb]'] + tex + ['\end{table}']
-        
+
         if tiny:
-            tex = ['\\tiny']+tex+['\\normalsize']
-        
+            tex = ['\\tiny'] + tex + ['\\normalsize']
+
         #tex = ['\\begin{table}[!htb]','\center']+tex+['\end{table}']
-        
+
         if caption != '':
-        
+
             if fitwidth:
                 ixendlongtabu = np.where(['\end{longtabu}' in item for item in tex])
                 tex.insert(ixendlongtabu[0][-1], r'\caption{%s}' % caption)
@@ -209,9 +203,8 @@ class Tables_CDP(CDP):
             elif not fitwidth and ~_kwargs['longtable']:
                 ixendtable = np.where(['\end{table}' in item for item in tex])
                 tex.insert(ixendtable[0][-1], r'\caption{%s}' % caption)
-        
-        return tex
 
+        return tex
 
     def savehardcopy(self, filef=''):
         """ """
@@ -236,7 +229,7 @@ class CCD_CDP(CDP):
         dmeta['ID'] = self.ID
         dmeta['BLOCKID'] = self.BLOCKID
         dmeta['CHAMBER'] = self.CHAMBER
-                 
+
         if meta is None:
             dmeta = dmeta.copy()
         else:
@@ -247,23 +240,23 @@ class CCD_CDP(CDP):
         self.meta.update(dmeta)
         self.header.update(header)
         self.data.update(data)
-        
-        if len(self.meta)>0:
+
+        if len(self.meta) > 0:
             self.ccdobj.add_extension(data=None,
                                       headerdict=self.meta,
                                       label='META')
-        
+
         labels = self.data['labels']
-        
+
         for i, label in enumerate(labels):
-            
-            if i==0:
+
+            if i == 0:
                 self.ccdobj.add_extension(data=self.data[label],
-                                      label=label,
-                                      headerdict=self.header)
+                                          label=label,
+                                          headerdict=self.header)
             else:
                 self.ccdobj.add_extension(data=self.data[label],
-                                      label=label)
+                                          label=label)
 
     def savehardcopy(self, filef=''):
         """ """
@@ -272,4 +265,3 @@ class CCD_CDP(CDP):
         if os.path.exists(filef):
             os.system('rm %s' % filef)
         self.ccdobj.writeto(filef)
-    

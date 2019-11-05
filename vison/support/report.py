@@ -79,7 +79,7 @@ class Container(Content, object):
 
     def add_to_Contents(self, item):
         """ """
-        
+
         try:
             if len(self.Contents) > 0:
                 lastCont = self.Contents[-1]
@@ -122,8 +122,9 @@ class Section(Container):
 
         for item in self.Contents:
             tex += item.generate_Latex()
-        
-        if self.level == 0: tex+=['\clearpage']
+
+        if self.level == 0:
+            tex += ['\clearpage']
 
         return tex
 
@@ -135,13 +136,11 @@ class Section(Container):
         return txt
 
 
-
 class Chapter(Container):
     """ """
 
     def __init__(self, Title=''):
 
-        
         self.Title = Title
         self.Contents = []
 
@@ -151,8 +150,8 @@ class Chapter(Container):
 
         for item in self.Contents:
             tex += item.generate_Latex()
-        
-        tex+=['\clearpage']
+
+        tex += ['\clearpage']
 
         return tex
 
@@ -164,13 +163,11 @@ class Chapter(Container):
         return txt
 
 
-
 class Part(Container):
     """ """
 
     def __init__(self, Title=''):
 
-        
         self.Title = Title
         self.Contents = []
 
@@ -180,8 +177,8 @@ class Part(Container):
 
         for item in self.Contents:
             tex += item.generate_Latex()
-        
-        tex+=['\clearpage']
+
+        tex += ['\clearpage']
 
         return tex
 
@@ -191,7 +188,6 @@ class Part(Container):
         for item in self.Contents:
             txt += item.__str__()
         return txt
-
 
 
 class Figure(Content):
@@ -248,7 +244,7 @@ class FigsTable(Content):
     def generate_Latex(self):
         """Generates LaTeX as list of strings"""
 
-        nrows = int(np.ceil(len(self.FigsList)/float(self.Ncols)))
+        nrows = int(np.ceil(len(self.FigsList) / float(self.Ncols)))
 
         tex = []
         tex.append('\\begin{longtable}{|%s}' % ('c|' * self.Ncols))
@@ -266,7 +262,7 @@ class FigsTable(Content):
                         (self.figswidth, image)
                 except IndexError:
                     newrow = '   &'
-                if (i+1) == self.Ncols:
+                if (i + 1) == self.Ncols:
                     newrow = newrow[0:-1] + ' \\\\ \\hline'
                 tex.append(newrow)
 
@@ -282,7 +278,7 @@ class FigsTable(Content):
 
 
 class Table(Content):
-    """ 
+    """
     PENDING:
         - adjust width of table to texwidth:
             \resizebox{\textwidth}{!}{
@@ -294,7 +290,7 @@ class Table(Content):
 
     def __init__(self, tableDict, formats=None, names=None, caption=None, col_align=None,
                  longtable=False):
-        
+
         if names is None:
             names = []
         table = astable.Table(data=tableDict, names=names)
@@ -313,7 +309,7 @@ class Table(Content):
 
         if self.col_align is None:
             Ncols = len(self.table.columns)
-            col_align = '%s|' % (Ncols*'|c',)
+            col_align = '%s|' % (Ncols * '|c',)
         else:
             col_align = self.col_align
 
@@ -378,11 +374,11 @@ class Text(Content):
 
     def generate_Latex(self):
         """ """
-        if isinstance(self.text, (str,unicode)):
+        if isinstance(self.text, (str, unicode)):
             tex = [self.text]
         elif isinstance(self.text, list):
             tex = self.text
-        
+
         tex += ['\n']  # just improves legigibility of .tex
 
         return tex
@@ -449,14 +445,14 @@ class Report(Container):
             self.add_Text(r'\texttt{local time: %s}' % str(ttag))
             self.add_Text(
                 r'\texttt{vison version: %s}\newline' % str(__version__))
-    
-    def add_Chapter(self,Title=''):
+
+    def add_Chapter(self, Title=''):
         """ """
         self.add_to_Contents(Chapter(Title))
-    
+
     def add_Part(self, Title=''):
         self.add_to_Contents(Part(Title))
-    
+
     def drop_Section(self, keyword):
 
         ix2remove = []
@@ -468,7 +464,7 @@ class Report(Container):
                 if item.keyword == keyword:
                     ix2remove.append(ix)
 
-                    children = range(ix, Ncont-1)
+                    children = range(ix, Ncont - 1)
 
                     if len(children) == 0:
                         break
@@ -490,7 +486,14 @@ class Report(Container):
         """ """
         self.add_to_Contents(Figure(figpath, texfraction, caption, label))
 
-    def add_Table(self, tableDict, formats=dict(), names=[], caption='', col_align=None, longtable=False):
+    def add_Table(
+            self,
+            tableDict,
+            formats=dict(),
+            names=[],
+            caption='',
+            col_align=None,
+            longtable=False):
         """ """
         # tableDict,formats=dict(),names=[],caption=None
         self.add_to_Contents(Table(tableDict, formats, names, caption, col_align=col_align,
@@ -510,7 +513,7 @@ class Report(Container):
             self.add_to_Contents(Text(text))
 
     def doreport(self, reportname, cleanafter=False, silent=True):
-        
+
         self.generate_Header()
         self.generate_Texbody()
         outfiles = self.writeto(reportname, cleanafter, silent=silent)
@@ -548,27 +551,27 @@ class Report(Container):
         EuclidViscls = 'EuclidVIS.cls'
         logo = 'logosmall.png'
         deluxetablesty = 'deluxetable.sty'
-        signature='signature_ec.eps'
-        
+        signature = 'signature_ec.eps'
+
         if not os.path.exists(EuclidViscls):
             os.system('ln -s %s' %
                       os.path.join(visondata.__path__[0], EuclidViscls))
         if not os.path.exists(logo):
             os.system('ln -s %s' % os.path.join(visondata.__path__[0], logo))
-        
+
         if not os.path.exists(deluxetablesty):
             os.system('ln -s %s' %
-                  os.path.join(visondata.__path__[0], deluxetablesty))
+                      os.path.join(visondata.__path__[0], deluxetablesty))
         if not os.path.exists(signature):
             os.system('ln -s %s' %
-                  os.path.join(visondata.__path__[0], signature))
+                      os.path.join(visondata.__path__[0], signature))
 
         execline1 = 'latex -interaction=nonstopmode %s.tex' % fileroot
         if silent:
             execline1 += ' > /dev/null'
         os.system(execline1)
         os.system(execline1)  # do it twice to get references right!
-        execline2 = 'dvipdf %s.dvi %s.pdf' % tuple([fileroot]*2)
+        execline2 = 'dvipdf %s.dvi %s.pdf' % tuple([fileroot] * 2)
         if silent:
             execline2 += ' > /dev/null'
         os.system(execline2)
@@ -576,7 +579,7 @@ class Report(Container):
 
         if cleanafter:
             os.system('rm %s.dvi %s.aux %s.log %s.tex %s.out %s.soc %s.toc' %
-                      tuple([fileroot]*7))
+                      tuple([fileroot] * 7))
             outfiles = [item % fileroot for item in
                         ['%s.pdf']]
         else:

@@ -3,7 +3,7 @@
 """
 
 Performance parameters of the ROE+CCDs.
-Compilation of CCD offsets, offset gradients, RONs... used for 
+Compilation of CCD offsets, offset gradients, RONs... used for
 checks.
 
 Created on Wed Nov  1 09:57:44 2017
@@ -44,7 +44,7 @@ def get_offsets(BLOCKID=None):
     offsets_json = '%s_offsets.json' % BLOCKID
     fpath = os.path.join(blockspath, offsets_json)
     offsets = vjson.load_jsonfile(fpath)
-    
+
     return offsets  # ADU
 
 
@@ -55,7 +55,7 @@ def get_offsets_lims(offsets, offsets_margins):
         offsets_lims[CCD] = OrderedDict()
         for Q in Quads:
             offsets_lims[CCD][Q] = [offsets[CCD][Q] +
-                                    offsets_margins[0], offsets[CCD][Q]+offsets_margins[1]]
+                                    offsets_margins[0], offsets[CCD][Q] + offsets_margins[1]]
     return offsets_lims
 
 
@@ -64,14 +64,14 @@ offsets_gradients = dict(CCD1=dict(pre=[0, 0], img=[-10, 10], ove=[-10, 10]),
                          CCD2=dict(pre=[0, 0], img=[-10, 10], ove=[-10, 10]),
                          CCD3=dict(pre=[0, 0], img=[-10, 10], ove=[-10, 10]))  # ADU
 
-#RONs = dict(CCD1=1.4, CCD2=1.4, CCD3=1.4)  # ADU, STD
-#RONs_margins = [-0.2, 0.2]  # ADU, STD
+# RONs = dict(CCD1=1.4, CCD2=1.4, CCD3=1.4)  # ADU, STD
+# RONs_margins = [-0.2, 0.2]  # ADU, STD
 
 RONs_lims = dict()
 for CCD in CCDs:
-    #RONs_lims[CCD] = [RONs[CCD] +
+    # RONs_lims[CCD] = [RONs[CCD] +
     #                  RONs_margins[0], RONs[CCD]+RONs_margins[1]]
-    RONs_lims[CCD] = [0.86,1.44]
+    RONs_lims[CCD] = [0.86, 1.44]
 
 gains = dict(CCD1=3.3, CCD2=3.3, CCD3=3.3)
 
@@ -81,8 +81,8 @@ def_perf_rdout = dict(
     offsets_margins=offsets_margins,
     #                  offsets_lims=offsets_lims,
     offsets_gradients=offsets_gradients,
-    #RONs=RONs,
-    #RONs_margins=RONs_margins,
+    # RONs=RONs,
+    # RONs_margins=RONs_margins,
     RONs_lims=RONs_lims)
 
 

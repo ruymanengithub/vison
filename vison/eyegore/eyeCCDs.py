@@ -12,7 +12,7 @@ Created on Fri Oct 13 16:16:08 2017
 
 # IMPORT STUFF
 #import matplotlib
-#matplotlib.use("TkAgg")
+# matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 import matplotlib.animation as animation
 from matplotlib import pyplot as plt
@@ -56,13 +56,13 @@ class ImageDisplay(tk.Toplevel):
         self.parent = parent
         self.path = path
         self.tag = tag
-        
+
         title = 'Image Display'
         if self.tag != '':
-            title = '%s: %s' % (title,self.tag)
+            title = '%s: %s' % (title, self.tag)
 
         self.wm_title(title)
-                
+
         self.log = parent.log
 
         self.minsize(width=850, height=400)
@@ -113,7 +113,7 @@ class ImageDisplay(tk.Toplevel):
                                               (lastObs, CCD)))[0]
                 img = ccdmod.CCD(
                     CCDF, extensions=[-1]).extensions[0].data.copy()
-            except:
+            except BaseException:
                 img = None
             IMGs['CCD%i' % CCD] = img
         IMGs['ObsID'] = lastObs
@@ -130,15 +130,15 @@ class ImageDisplay(tk.Toplevel):
             s = t.strftime('%H:%M:%S')
 
             for CCD in [1, 2, 3]:
-                self.axs[CCD-1].clear()
-                img = IMGs['CCD%i' % CCD]                
+                self.axs[CCD - 1].clear()
+                img = IMGs['CCD%i' % CCD]
                 if img is None:
-                    img = np.zeros((2119*2, 2086*2), dtype='int32')
-                eimg = exposure.equalize_hist(img,nbins=2**16)
-                self.axs[CCD-1].imshow(eimg.T, cmap=plt.cm.gray, origin='lower left')
-                self.axs[CCD-1].get_xaxis().set_visible(False)
-                self.axs[CCD-1].get_yaxis().set_visible(False)
-                self.axs[CCD-1].set_title('CCD%i' % CCD)
+                    img = np.zeros((2119 * 2, 2086 * 2), dtype='int32')
+                eimg = exposure.equalize_hist(img, nbins=2**16)
+                self.axs[CCD - 1].imshow(eimg.T, cmap=plt.cm.gray, origin='lower left')
+                self.axs[CCD - 1].get_xaxis().set_visible(False)
+                self.axs[CCD - 1].get_yaxis().set_visible(False)
+                self.axs[CCD - 1].set_title('CCD%i' % CCD)
             self.f.suptitle('OBS %i : %s' % (ObsID, s))
             self.f.tight_layout()
 

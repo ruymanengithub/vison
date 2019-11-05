@@ -28,7 +28,7 @@ from vison.plot import trends
 def get_CDP_lib():
     prnu_tb_cdp = cdp.Tables_CDP()
     prnu_tb_cdp.rootname = '%s_%snm_PRNU_TB'
-    
+
     CDP_lib = dict(PRNU_TB=prnu_tb_cdp)
     return CDP_lib
 
@@ -42,18 +42,19 @@ def gt_check_offsets_dict(test):
                 meta=dict(doLegend=True,
                           doNiceXDate=True,
                           suptitle='%s-checks: offsets' % ntest),
-                          ylim=trends.offset_lims)
+                ylim=trends.offset_lims)
+
 
 def gt_check_deltaoff_dict(test):
     ntest = st.replace(test, '_', '\_')
-    return dict(stats=['deltaoff_pre', 'deltaoff_ove'],
-                trendaxis='time',
-                figname='%s_deltaoff_vs_time.png' % (test,),
-                caption='%s: $\delta$offset vs. time. Offset value in each frame minus the average value.' % (ntest,),
-                meta=dict(doLegend=True,
-                          doNiceXDate=True,
-                          suptitle='%s-checks: delta-offsets' % ntest),
-                          ylim=[-10.,10.])
+    return dict(
+        stats=[
+            'deltaoff_pre', 'deltaoff_ove'], trendaxis='time', figname='%s_deltaoff_vs_time.png' %
+        (test,), caption='%s: $\delta$offset vs. time. Offset value in each frame minus the average value.' %
+        (ntest,), meta=dict(
+            doLegend=True, doNiceXDate=True, suptitle='%s-checks: delta-offsets' %
+            ntest), ylim=[
+                -10., 10.])
 
 
 def gt_check_std_dict(test):
@@ -88,7 +89,8 @@ def gt_check_img_std_dict(test):
                           doNiceXDate=True,
                           suptitle='%s-checks: Image-Area STD' % ntest,
                           ylabel='[ADU]'))
-    
+
+
 def gt_indiv_prof1Dhor_dict(test):
     ntest = st.replace(test, '_', '\_')
     return dict(
@@ -98,7 +100,8 @@ def gt_indiv_prof1Dhor_dict(test):
                   ylabel='ADU',
                   xlabel='Column [pix]',
                   suptitle='%s: Profiles across columns, PLACEHOLDER.' % ntest)
-        )
+    )
+
 
 def gt_indiv_prof1Dver_dict(test):
     ntest = st.replace(test, '_', '\_')
@@ -109,19 +112,20 @@ def gt_indiv_prof1Dver_dict(test):
                   ylabel='ADU',
                   xlabel='Row [pix]',
                   suptitle='%s: Profiles across rows, PLACEHOLDER.' % ntest)
-        )
+    )
+
 
 def gt_meta_MFF2D_dict(test):
-    ntest = st.replace(test,'_','\_')
+    ntest = st.replace(test, '_', '\_')
     return dict(
-            figname='%s_MASTERFLATFIELD_2Dimgshow_PLACEHOLDER.png' % test,
-            caption='%s: Master FlatField for the CCDs [PLACEHOLDER]. Smoothed with gaussian kernel and displayed using histogram equalization to highlight structure.' % ntest,
-            meta=dict(doLegend=False,
-              doColorbar=False,
-              suptitle='%s/Master:Quadrant Images [PLACEHOLDER].' % ntest,
-              corekwargs=dict(cmap=cm.gray,aspect='auto',#norm=None,
-                                origin='lower left'))
-                )
+        figname='%s_MASTERFLATFIELD_2Dimgshow_PLACEHOLDER.png' % test,
+        caption='%s: Master FlatField for the CCDs [PLACEHOLDER]. Smoothed with gaussian kernel and displayed using histogram equalization to highlight structure.' % ntest,
+        meta=dict(doLegend=False,
+                  doColorbar=False,
+                  suptitle='%s/Master:Quadrant Images [PLACEHOLDER].' % ntest,
+                  corekwargs=dict(cmap=cm.gray, aspect='auto',  # norm=None,
+                                  origin='lower left'))
+    )
 
 
 def gt_FL0Xfigs(test):
@@ -136,13 +140,13 @@ def gt_FL0Xfigs(test):
         trends.Fig_Basic_Checkstat, gt_check_img_flu_dict(test)]
     FL0Xfigs['FL0Xchecks_imgstd'] = [
         trends.Fig_Basic_Checkstat, gt_check_img_std_dict(test)]
-    
+
     FL0Xfigs['FL0Xindiv_prof1D_hor_generic'] = [
-            figclasses.Fig_Beam2DPlot, gt_indiv_prof1Dhor_dict(test)]
+        figclasses.Fig_Beam2DPlot, gt_indiv_prof1Dhor_dict(test)]
     FL0Xfigs['FL0Xindiv_prof1D_ver_generic'] = [
-            figclasses.Fig_Beam2DPlot, gt_indiv_prof1Dver_dict(test)]
+        figclasses.Fig_Beam2DPlot, gt_indiv_prof1Dver_dict(test)]
     FL0Xfigs['FL0Xmeta_MFF_2D'] = [
-    figclasses.Fig_BeamImgShow, gt_meta_MFF2D_dict(test)]
-    
+        figclasses.Fig_BeamImgShow, gt_meta_MFF2D_dict(test)]
+
     FL0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return FL0Xfigs

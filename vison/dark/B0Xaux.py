@@ -35,14 +35,21 @@ check_offsets_dict = dict(stats=['offset_pre', 'offset_img', 'offset_ove'],
                                     suptitle='BIAS0X-checks: offsets',
                                     ylim=trends.offset_lims))
 
-check_deltaoff_dict = dict(stats=['deltaoff_pre', 'deltaoff_img', 'deltaoff_ove'],
-                          trendaxis='time',
-                          figname='BIAS0X_deltaoff_vs_time.png',
-                          caption='BIAS0X: $\delta$offset vs. time. Offset value in each frame minus the average value.',
-                          meta=dict(doLegend=True,
-                                    doNiceXDate=True,
-                                    suptitle='BIAS0X-checks: delta-offsets',
-                                    ylim=[-10.,10.]))
+check_deltaoff_dict = dict(
+    stats=[
+        'deltaoff_pre',
+        'deltaoff_img',
+        'deltaoff_ove'],
+    trendaxis='time',
+    figname='BIAS0X_deltaoff_vs_time.png',
+    caption='BIAS0X: $\delta$offset vs. time. Offset value in each frame minus the average value.',
+    meta=dict(
+            doLegend=True,
+            doNiceXDate=True,
+            suptitle='BIAS0X-checks: delta-offsets',
+            ylim=[
+                -10.,
+                10.]))
 
 
 check_std_dict = dict(stats=['std_pre', 'std_img', 'std_ove'],
@@ -57,38 +64,38 @@ check_std_dict = dict(stats=['std_pre', 'std_img', 'std_ove'],
 
 basic_prof1Dhor_dict = dict(
     figname='BIAS0X_profs1D_hor_allOBSIDs.png',
-    caption='BIAS0X: Average profiles across columns. '+\
+    caption='BIAS0X: Average profiles across columns. ' +
             'From col. "1" to col. 51+2048+20="2119" and from vstart to vend rows.',
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Column [pix]',
-              ylim = [-20., 20.],
+              ylim=[-20., 20.],
               suptitle='BIAS0X: Profiles across columns.')
 )
 
 basic_prof1Dver_dict = dict(
     figname='BIAS0X_profs1D_ver_allOBSIDs.png',
-    caption='BIAS0X: Average profiles across rows, avg. offset subtracted.'+\
+    caption='BIAS0X: Average profiles across rows, avg. offset subtracted.' +
             ' From vstart to vend rows and from col. "1" to col. 51+2048+20="2119".',
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Row [pix]',
-              ylim = [-20., 20.],
+              ylim=[-20., 20.],
               suptitle='BIAS0X: Profiles across rows.')
 )
 
 basic_prof1Dstdver_dict = dict(
     figname='BIAS0X_profs1Dstd_ver_allOBSIDs.png',
-    caption='BIAS0X: Average STDDEV profiles across rows.'+\
+    caption='BIAS0X: Average STDDEV profiles across rows.' +
             ' From vstart to vend rows, and from col. "52" to col. "2100".',
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Row [pix]',
-              ylim = [0.5, 2.5],
+              ylim=[0.5, 2.5],
               suptitle='BIAS0X: STDDEV Profiles across rows.')
 )
 
-ronrange = [0.5,2]
+ronrange = [0.5, 2]
 
 basic_histosRON_dict = dict(
     figname='BIAS0X_RON_distro_allOBSIDs.png',
@@ -104,34 +111,34 @@ basic_histosRON_dict = dict(
 
 meta_prof1Dhor_dict = dict(
     figname='BIAS0X_profs1D_hor_MASTERBIAS.png',
-    caption='BIAS0X: Average profiles across columns of Master Bias, avg. offset subtracted.'+\
+    caption='BIAS0X: Average profiles across columns of Master Bias, avg. offset subtracted.' +
             ' From col. "1" to col. 51+2048+20="2119", and from vstart to vend rows.',
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Column [pix]',
-              ylim = [-20., 20.],
+              ylim=[-20., 20.],
               suptitle='BIAS0X/Master: Profiles across columns.')
 )
 
 meta_prof1Dver_dict = dict(
     figname='BIAS0X_profs1D_ver_MASTERBIAS.png',
-    caption='BIAS0X: Average profiles across rows of Master Bias, avg. offset subtracted.'+\
+    caption='BIAS0X: Average profiles across rows of Master Bias, avg. offset subtracted.' +
             ' From vstart to vend rows and from col. "1" to col. 51+2048+20="2119".',
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Row [pix]',
-              ylim = [-20., 20.],
+              ylim=[-20., 20.],
               suptitle='BIAS0X/Master: Profiles across rows.')
 )
 
 meta_prof1Dstdver_dict = dict(
     figname='BIAS0X_profs1Dstd_ver_MASTERBIAS.png',
-    caption='BIAS0X: Average profiles of STDDEV across rows of Master Bias.'+\
+    caption='BIAS0X: Average profiles of STDDEV across rows of Master Bias.' +
             ' From vstart to vend rows, and from col. "52" to col. "2100".',
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Row [pix]',
-              ylim = [0.0, 2.5],
+              ylim=[0.0, 2.5],
               suptitle='BIAS0X/Master: STDDEV Profiles across rows.')
 )
 
@@ -141,9 +148,9 @@ meta_MB2D_dict = dict(
     meta=dict(doLegend=False,
               doColorbar=True,
               suptitle='BIAS0X/Master:Quadrant Images',
-              corekwargs=dict(cmap=cm.gray,aspect='auto',norm=None,
+              corekwargs=dict(cmap=cm.gray, aspect='auto', norm=None,
                               origin='lower left',
-                    ))
+                              ))
 )
 
 
@@ -175,33 +182,31 @@ def get_B0Xfigs():
 class RON_CDP(cdp.Tables_CDP):
 
     def ingest_inputs(self, mx_dct, CCDs, Quads, meta=None, header=None, figs=None):
-        
+
         keys = mx_dct.keys()
-        
+
         _data = dict()
-        
+
         for key in keys:
-            
+
             mx = mx_dct[key].copy()
 
             msk = np.zeros_like(mx, dtype='int32')
             msk[np.where((np.isclose(mx, 0.)) | (np.isnan(mx)))] = 1
             cbe = np.ma.median(np.ma.masked_array(
                 mx, mask=msk), axis=0).data.copy()  # best estimate of RON
-            
+
             cbe_dict = OrderedDict()
             for jCCD, CCDk in enumerate(CCDs):
                 cbe_dict[CCDk] = OrderedDict()
                 for kQ, Q in enumerate(Quads):
                     cbe_dict[CCDk][Q] = cbe[jCCD, kQ]
             df = pd.DataFrame.from_dict(cbe_dict)  # PENDING
-            
+
             _data[key] = df
-        
-        
+
         super(RON_CDP, self).ingest_inputs(
             _data, meta=meta, header=header, figs=figs)
-
 
 
 def get_CDP_lib():
@@ -210,12 +215,11 @@ def get_CDP_lib():
     ron_cdp.rootname = 'RON_BIAS0X'
     off_cdp = RON_CDP()
     off_cdp.rootname = 'OFFSET_BIAS0X'
-    
+
     MB_profiles_cdp = cdp.CDP()
     MB_profiles_cdp.rootname = 'MB_profiles_BIAS0X'
-    
-    
+
     CDP_lib = dict(RON=ron_cdp,
-               OFF=off_cdp,
-               MB_profiles=MB_profiles_cdp)
+                   OFF=off_cdp,
+                   MB_profiles=MB_profiles_cdp)
     return CDP_lib

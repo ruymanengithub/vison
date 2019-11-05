@@ -23,7 +23,7 @@ from vison.plot import trends
 # END IMPORT
 
 
-CCDs = ['CCD1','CCD2','CCD3']
+CCDs = ['CCD1', 'CCD2', 'CCD3']
 
 check_offsets_dict = dict(stats=['offset_pre', 'offset_ove'],
                           trendaxis='time',
@@ -34,14 +34,20 @@ check_offsets_dict = dict(stats=['offset_pre', 'offset_ove'],
                                     suptitle='TP02-checks: offsets',
                                     ylim=trends.offset_lims))
 
-check_deltaoff_dict = dict(stats=['deltaoff_pre', 'deltaoff_ove'],
-                          trendaxis='time',
-                          figname='TP02_deltaoff_vs_time.png',
-                          caption='TP02: $\delta$offset vs. time. Offset value in each frame minus the average value.',
-                          meta=dict(doLegend=True,
-                                    doNiceXDate=True,
-                                    suptitle='TP02-checks: delta-offsets',
-                                    ylim=[-10.,10.]))
+check_deltaoff_dict = dict(
+    stats=[
+        'deltaoff_pre',
+        'deltaoff_ove'],
+    trendaxis='time',
+    figname='TP02_deltaoff_vs_time.png',
+    caption='TP02: $\delta$offset vs. time. Offset value in each frame minus the average value.',
+    meta=dict(
+            doLegend=True,
+            doNiceXDate=True,
+            suptitle='TP02-checks: delta-offsets',
+            ylim=[
+                -10.,
+                10.]))
 
 check_std_dict = dict(stats=['std_pre', 'std_ove'],
                       trendaxis='time',
@@ -69,21 +75,23 @@ check_injstd_dict = dict(stats=['chk_std_inject'],
                                    suptitle='TP02-checks: Injection STD')
                          )
 
+
 def gt_meta_Pctau_dict(mkey):
     return dict(
-            figname='TP02_PcTau_%s.png' % mkey,
-            caption='TP02: log10(tph[us])-log10(Pc) plot for pumping mode %s. ' % mkey+\
-                'tph is the sum of the dwell time and the serial toi, 4.75 us.',
-            meta=dict(doLegend=True,
-              doNiceXDate=False,
-              suptitle='TP02: %s' % mkey,
-              xlabel='log10(tph [us])',
-              xlim = [-2.,2],
-              ylabel='log10(Pc)',
-              ylim = [-3.,0.],
-              corekwargs=dict(North=dict(marker='.',linestyle='',color='b'),
-                              South=dict(marker='.',linestyle='',color='r'))
-                ))
+        figname='TP02_PcTau_%s.png' % mkey,
+        caption='TP02: log10(tph[us])-log10(Pc) plot for pumping mode %s. ' % mkey +
+        'tph is the sum of the dwell time and the serial toi, 4.75 us.',
+        meta=dict(doLegend=True,
+                  doNiceXDate=False,
+                  suptitle='TP02: %s' % mkey,
+                  xlabel='log10(tph [us])',
+                  xlim=[-2., 2],
+                  ylabel='log10(Pc)',
+                  ylim=[-3., 0.],
+                  corekwargs=dict(North=dict(marker='.', linestyle='', color='b'),
+                                  South=dict(marker='.', linestyle='', color='r'))
+                  ))
+
 
 def get_TP02figs():
     TP02figs = dict()
@@ -95,33 +103,30 @@ def get_TP02figs():
     TP02figs['TP02checks_injlevel'] = [
         trends.Fig_Basic_Checkstat, check_injlevel_dict]
     TP02figs['TP02checks_injstd'] = [trends.Fig_Basic_Checkstat, check_injstd_dict]
-    
-    
-    for mkey in ['m23','m31']:
-        
+
+    for mkey in ['m23', 'm31']:
+
         TP02figs['TP02meta_%s' % mkey] = [figclasses.Fig_Beam2DPlot,
-                gt_meta_Pctau_dict(mkey)]
-    
+                                          gt_meta_Pctau_dict(mkey)]
+
     TP02figs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return TP02figs
 
 
-
-
 def get_CDP_lib():
     """ """
-    
+
     mastercat = cdp.CDP()
     mastercat.rootname = 'TP02_MasterCat'
-    
+
     CDP_lib = OrderedDict()
-           
+
     for CCD in CCDs:
-    
+
         mastercat = cdp.CDP()
         mastercat.rootname = 'TP02_MasterCat_%s' % CCD
         CDP_lib['MASTERCAT_%s' % CCD] = mastercat
-               
+
         mergedcat = cdp.CDP()
         mergedcat.rootname = 'TP02_MergedCat_%s' % CCD
         CDP_lib['MERGEDCAT_%s' % CCD] = mergedcat
@@ -129,11 +134,10 @@ def get_CDP_lib():
     chinjcharact_cdp = cdp.CDP()
     chinjcharact_cdp.rootname = 'TP02_CHINJCHAR'
     CDP_lib['CHINJCHARACT'] = chinjcharact_cdp
-        
+
     chinj_cdp = cdp.Tables_CDP()
     chinj_cdp.rootname = 'TP02_CHINJ'
-        
+
     CDP_lib['CHINJ'] = chinj_cdp
 
-          
     return CDP_lib

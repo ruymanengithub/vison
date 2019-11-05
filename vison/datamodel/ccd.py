@@ -29,7 +29,7 @@ isthere = os.path.exists
 
 NrowsCCD = 2066
 NcolsCCD = 2048
-NAXIS2 = (NrowsCCD+20)*2  # 4132
+NAXIS2 = (NrowsCCD + 20) * 2  # 4132
 prescan = 51
 overscan = 20
 NAXIS1 = (prescan + NcolsCCD + overscan) * 2
@@ -39,17 +39,17 @@ RON = 1.4
 gain = 3.1  # e/adu
 
 
-QuadBound = dict(E=[0, NAXIS1/2, NAXIS2/2, NAXIS2],
-                 F=[NAXIS1/2, NAXIS1, NAXIS2/2, NAXIS2],
-                 G=[NAXIS1/2, NAXIS1, 0, NAXIS2/2],
-                 H=[0, NAXIS1/2, 0, NAXIS2/2])
+QuadBound = dict(E=[0, NAXIS1 / 2, NAXIS2 / 2, NAXIS2],
+                 F=[NAXIS1 / 2, NAXIS1, NAXIS2 / 2, NAXIS2],
+                 G=[NAXIS1 / 2, NAXIS1, 0, NAXIS2 / 2],
+                 H=[0, NAXIS1 / 2, 0, NAXIS2 / 2])
 
 
 def f_get_QuadBound(NAXIS1, NAXIS2):
-    return dict(E=[0, NAXIS1/2, NAXIS2/2, NAXIS2],
-                F=[NAXIS1/2, NAXIS1, NAXIS2/2, NAXIS2],
-                G=[NAXIS1/2, NAXIS1, 0, NAXIS2/2],
-                H=[0, NAXIS1/2, 0, NAXIS2/2])
+    return dict(E=[0, NAXIS1 / 2, NAXIS2 / 2, NAXIS2],
+                F=[NAXIS1 / 2, NAXIS1, NAXIS2 / 2, NAXIS2],
+                G=[NAXIS1 / 2, NAXIS1, 0, NAXIS2 / 2],
+                H=[0, NAXIS1 / 2, 0, NAXIS2 / 2])
 
 
 Quads = ['E', 'F', 'G', 'H']
@@ -89,7 +89,7 @@ def cooconv_arrays_decorate(func):
                 cooargs[0], (list, tuple, collections.Sequence, np.ndarray)))
         assert np.all(np.array(arearraysvec) == arearraysvec[0])
         arearrays = arearraysvec[0]
-        
+
         if arearrays:
             lengths = [len(cooarg) for cooarg in cooargs]
             assert np.all(np.array(lengths) == lengths[0])
@@ -105,7 +105,7 @@ def cooconv_arrays_decorate(func):
 
 
 class CCD(object):
-    """Class of CCD objects. 
+    """Class of CCD objects.
     Euclid Images as acquired by ELVIS software (Euclid LabView Imaging Software).
 
 
@@ -115,21 +115,21 @@ class CCD(object):
 
     A note on Coordinates Systems:
         - 'CCD': referenced to the first pixel readout from channel H. All 4 quadrants
-        in a single array, their detection nodes in the 4 "corners" of the 
+        in a single array, their detection nodes in the 4 "corners" of the
         rectangle. Same system as images are displayed on DS9. In clock-wise
         sense, quadrants are H (bottom-left), E (top-left), F (top-right),
         and G (bottom-right).
-        - 'Quadrant-canonical': Quadrant coordinates system in which the first pixel 
-        is the first pixel read out (closest pixel to the readout node), and 
-        the last is the last readout. In this system, the serial pre-scan comes 
-        before the image area, and this before the serial overscan. Parallel 
-        overscan comes after image area in the parallel direction. In this 
-        system, coordinates of pixels across quadrants, for a single readout, 
-        correspond to the same point in time. Useful when doing cross-talk analysis, 
+        - 'Quadrant-canonical': Quadrant coordinates system in which the first pixel
+        is the first pixel read out (closest pixel to the readout node), and
+        the last is the last readout. In this system, the serial pre-scan comes
+        before the image area, and this before the serial overscan. Parallel
+        overscan comes after image area in the parallel direction. In this
+        system, coordinates of pixels across quadrants, for a single readout,
+        correspond to the same point in time. Useful when doing cross-talk analysis,
         for example.
         - 'Quadrant-relative': quadrant coordinates system with the same relative orientation
         as in the 'CCD' system, but referenced to the 'lower-left' pixel of the
-        given quadrant in such system. In this system, the readout node is in a 
+        given quadrant in such system. In this system, the readout node is in a
         different corner for each quadrant: lower-left for H, top-left for E,
         top-right for F and bottom-right for G.
 
@@ -153,10 +153,10 @@ class CCD(object):
 
     #rebin = ccd_aux.rebin
 
-    def __init__(self, infits=None, extensions=None, getallextensions=False, withpover=True, 
+    def __init__(self, infits=None, extensions=None, getallextensions=False, withpover=True,
                  overscan=overscan):
         """ """
-        
+
         if extensions is None:
             extensions = [-1]
 
@@ -165,8 +165,7 @@ class CCD(object):
 
         if infits is not None:
 
-            assert type(
-                infits) is str, "'%s' can't be a name for a file!" % infits
+            assert isinstance(infits, str), "'%s' can't be a name for a file!" % infits
             assert isthere(infits), 'infits:%s is just not there :-(' % infits
 
             self.loadfromFITS(infits, extensions, getallextensions)
@@ -182,11 +181,11 @@ class CCD(object):
         if withpover:
             self.NAXIS2 = NAXIS2
         else:
-            self.NAXIS2 = NAXIS2-voverscan*2
+            self.NAXIS2 = NAXIS2 - voverscan * 2
 
         self.shape = (self.NAXIS1, self.NAXIS2)
-        self.wQ = self.NAXIS1/2
-        self.hQ = self.NAXIS2/2
+        self.wQ = self.NAXIS1 / 2
+        self.hQ = self.NAXIS2 / 2
 
         for iext in range(self.nextensions):
             if self.extensions[iext].data is not None:
@@ -206,9 +205,9 @@ class CCD(object):
 
         self.QuadBound = f_get_QuadBound(self.NAXIS1, self.NAXIS2)
 
-        self.wQphys = self.NAXIS1/2-self.prescan-self.overscan
-        self.hQphys = self.NAXIS2/2-self.voverscan+self.chinjlines
-        self.QuadBoundPhys = f_get_QuadBound(2*self.wQphys, 2*self.hQphys)
+        self.wQphys = self.NAXIS1 / 2 - self.prescan - self.overscan
+        self.hQphys = self.NAXIS2 / 2 - self.voverscan + self.chinjlines
+        self.QuadBoundPhys = f_get_QuadBound(2 * self.wQphys, 2 * self.hQphys)
 
         self.masked = False
 
@@ -223,12 +222,12 @@ class CCD(object):
 #                        UR='F')
 
         self.xCCD2Physoffsets = dict(E=self.prescan,
-                                     F=2*self.overscan+self.prescan,
-                                     G=2*self.overscan+self.prescan,
+                                     F=2 * self.overscan + self.prescan,
+                                     G=2 * self.overscan + self.prescan,
                                      H=self.prescan)
 
-        self.yCCD2Physoffsets = dict(E=2*self.voverscan-2*self.chinjlines,
-                                     F=2*self.voverscan-2*self.chinjlines,
+        self.yCCD2Physoffsets = dict(E=2 * self.voverscan - 2 * self.chinjlines,
+                                     F=2 * self.voverscan - 2 * self.chinjlines,
                                      G=0,
                                      H=0)
 
@@ -260,8 +259,8 @@ class CCD(object):
     # @cooconv_arrays_decorate
     def get_Q(self, x, y, w, h):
         """ """
-        xix = int(x >= w/2)
-        yix = int(y >= h/2)
+        xix = int(x >= w / 2)
+        yix = int(y >= h / 2)
         return self.Qmatrix[yix, xix]
 
     @cooconv_arrays_decorate
@@ -279,8 +278,8 @@ class CCD(object):
         # if arearrays:
         #    return map(self.get_Q_of_Physcoo,zip(x,y))
 
-        w = self.NAXIS1-self.prescan*2-self.overscan*2
-        h = self.NAXIS2-self.voverscan*2+self.chinjlines*2
+        w = self.NAXIS1 - self.prescan * 2 - self.overscan * 2
+        h = self.NAXIS2 - self.voverscan * 2 + self.chinjlines * 2
         return self.get_Q(x, y, w, h)
 
     @cooconv_arrays_decorate
@@ -299,12 +298,12 @@ class CCD(object):
         xsign = 1.
         ysign = 1.
         if Q in ['F', 'G']:
-            xzero = BB[1]-BB[0]-1.
+            xzero = BB[1] - BB[0] - 1.
             xsign = -1.
         if Q in ['E', 'F']:
-            yzero = BB[3]-BB[2]-1.
+            yzero = BB[3] - BB[2] - 1.
             ysign = -1.
-        return xsign*x + xzero, ysign*y + yzero
+        return xsign * x + xzero, ysign * y + yzero
 
     @cooconv_arrays_decorate
     def cooconv_Qcan_2_Qrel(self, x, y, Q):
@@ -318,8 +317,8 @@ class CCD(object):
 
         xcan, ycan = self.cooconv_CCD_2_Qcan(x, y, Q)
 
-        isonSi = ((xcan >= self.prescan) & (xcan < (self.wQ-self.overscan)) &
-                  (ycan >= 0) & (ycan < self.hQ-self.voverscan))
+        isonSi = ((xcan >= self.prescan) & (xcan < (self.wQ - self.overscan)) &
+                  (ycan >= 0) & (ycan < self.hQ - self.voverscan))
 
         xp, yp = np.nan, np.nan
         if isonSi:
@@ -332,8 +331,8 @@ class CCD(object):
         """ """
         Q = self.get_Q_of_Physcoo(x, y)
 
-        isonSi = ((x >= 0) & (x < self.wQphys*2) &
-                  False == ((y >= self.hQphys) & (y <= self.hQphys + self.chinjlines-1)))
+        isonSi = ((x >= 0) & (x < self.wQphys * 2) &
+                  False == ((y >= self.hQphys) & (y <= self.hQphys + self.chinjlines - 1)))
         xp, yp = np.nan, np.nan
         if isonSi:
             xp = x + self.xCCD2Physoffsets[Q]
@@ -343,10 +342,11 @@ class CCD(object):
     def cooconvert(self, x, y, insys, outsys, Q='U'):
         """Coordinates conversion between different systems."""
 
-        conversion_dict = dict(CCD=dict(Qrel=self.cooconv_CCD_2_Qrel, Qcan=self.cooconv_CCD_2_Qcan),
-                               Qrel=dict(CCD=self.cooconv_Qrel_2_CCD,
-                                         Qcan=self.cooconv_Qrel_2_Qcan),
-                               Qcan=dict(Qrel=self.cooconv_Qcan_2_Qrel, CCD=self.cooconv_Qcan_2_CCD))
+        conversion_dict = dict(
+            CCD=dict(
+                Qrel=self.cooconv_CCD_2_Qrel, Qcan=self.cooconv_CCD_2_Qcan), Qrel=dict(
+                CCD=self.cooconv_Qrel_2_CCD, Qcan=self.cooconv_Qrel_2_Qcan), Qcan=dict(
+                Qrel=self.cooconv_Qcan_2_Qrel, CCD=self.cooconv_Qcan_2_CCD))
 
         converter = conversion_dict[insys][outsys]
 
@@ -411,13 +411,13 @@ class CCD(object):
         :param Quadrant: Quadrant, one of 'E', 'F', 'G', 'H'
         :type Quadrant: char
 
-        :param canonical: 
+        :param canonical:
 
-        Canonical [True] = with readout-node at pixel index (0,0) regardless of quadrant. 
-        This is the orientation which corresponds to the data-reading order (useful 
-        for cross-talk measurements, for example). Non-Canonical [False] = with 
-        readout-node at corner matching placement of quadrant on the CCD. 
-        This is the orientation that would match the representation of the image on DS9.        
+        Canonical [True] = with readout-node at pixel index (0,0) regardless of quadrant.
+        This is the orientation which corresponds to the data-reading order (useful
+        for cross-talk measurements, for example). Non-Canonical [False] = with
+        readout-node at corner matching placement of quadrant on the CCD.
+        This is the orientation that would match the representation of the image on DS9.
 
         :type canonical: bool
 
@@ -441,8 +441,8 @@ class CCD(object):
 
         return Qdata
 
-    def get_tile_coos(self, Quadrant, wpx, hpx,noedges=False):
-        """ 
+    def get_tile_coos(self, Quadrant, wpx, hpx, noedges=False):
+        """
         Returns a dictionary with a tiling [coordinates of corners of tiles]
         of quadrant Q, with tiles of size wpx[width] x hpx[height].
            CAUTION: Returned coordinates are Q-relative.
@@ -451,17 +451,18 @@ class CCD(object):
         :param wpx: int, width [along NAXIS1] of tiles, in pixels.
         :param hpx: int, height [along NAXIS2] of tiles, in pixels.
         :return: tiles_dict = dict(
-                          wpx='Width of tiles, integer', 
-                          hpx='Height of tiles, integer', 
+                          wpx='Width of tiles, integer',
+                          hpx='Height of tiles, integer',
                           llpix='Lower left corner of tiles, list of tuples',
-                          ccpix= 'Central pixel of tiles, list of tuples', 
+                          ccpix= 'Central pixel of tiles, list of tuples',
                           Nsamps='Number of tiles, integer')
 
         """
 
         tiles_dict = dict()
 
-        # Retrieve boundaries (cols and rows) of image sections: s-prescan, image, s-overscan, p-overscan
+        # Retrieve boundaries (cols and rows) of image sections: s-prescan, image,
+        # s-overscan, p-overscan
         _prestarth, _preendh, _imgstarth, _imgendh, _ovstarth, _ovendh = self.getsectioncollims(
             Quadrant)
 
@@ -475,18 +476,18 @@ class CCD(object):
 
         # sampling points (lower-left)
         if noedges:
-            xsamp = np.arange(imglims[0]+wpx, imglims[1]-wpx*2-1, step=wpx)
-            ysamp = np.arange(imglims[2]+hpx, imglims[3]-hpx*2-1, step=hpx)
+            xsamp = np.arange(imglims[0] + wpx, imglims[1] - wpx * 2 - 1, step=wpx)
+            ysamp = np.arange(imglims[2] + hpx, imglims[3] - hpx * 2 - 1, step=hpx)
         else:
-            xsamp = np.arange(imglims[0], imglims[1]-wpx-1, step=wpx)
-            ysamp = np.arange(imglims[2], imglims[3]-hpx-1, step=hpx)
+            xsamp = np.arange(imglims[0], imglims[1] - wpx - 1, step=wpx)
+            ysamp = np.arange(imglims[2], imglims[3] - hpx - 1, step=hpx)
 
         # lower-left pixels of tiles
         llpix = list(itertools.product(xsamp, ysamp))
         # Number of samples-tiles
         Nsamps = len(llpix)
         # centre-pixels of tiles
-        ccpix = [(llpix[i][0]+wpx/2., llpix[i][1]+hpx/2.)
+        ccpix = [(llpix[i][0] + wpx / 2., llpix[i][1] + hpx / 2.)
                  for i in range(Nsamps)]
         # dictionary with results
         tiles_dict = dict(wpx=wpx, hpx=hpx, llpix=llpix,
@@ -504,7 +505,7 @@ class CCD(object):
         for i in range(Nsamps):
             llx = tile_coos['llpix'][i][0]
             lly = tile_coos['llpix'][i][1]
-            cc = [llx, llx+wpx+1, lly, lly+hpx+1]
+            cc = [llx, llx + wpx + 1, lly, lly + hpx + 1]
 
             tiles.append(self.get_cutout(
                 cc, Quadrant, canonical=False, extension=extension))
@@ -528,7 +529,7 @@ class CCD(object):
         return vals
 
     def get_cutout(self, corners, Quadrant, canonical=False, extension=-1):
-        """Returns a cutout from the CCD image, either in 
+        """Returns a cutout from the CCD image, either in
         canonical or non-canonical orientation.
 
 
@@ -538,13 +539,13 @@ class CCD(object):
         :param Quadrant: Quadrant, one of 'E', 'F', 'G', 'H'
         :type Quadrant: char
 
-        :param canonical: 
-         Canonical [True] = with readout-node at pixel index (0,0) regardless of quadrant. 
-         This is the orientation which corresponds to the data-readin order 
+        :param canonical:
+         Canonical [True] = with readout-node at pixel index (0,0) regardless of quadrant.
+         This is the orientation which corresponds to the data-readin order
          (useful for cross-talk measurements, for example).
-         Non-Canonical [False] = with readout-node at corner matching placement of  
-         quadrant on the CCD. This is the orientation that would match the representation 
-         of the image on DS9.        
+         Non-Canonical [False] = with readout-node at corner matching placement of
+         quadrant on the CCD. This is the orientation that would match the representation
+         of the image on DS9.
         :type canonical: bool
 
         :param extension: extension number. Default = -1 (last)
@@ -583,20 +584,20 @@ class CCD(object):
         if Q in ['E', 'H']:
 
             prestart = 0
-            preend = self.prescan-1
-            ovstart = self.wQ-self.overscan
+            preend = self.prescan - 1
+            ovstart = self.wQ - self.overscan
             ovend = ovstart + self.overscan - 1
-            imgstart = preend+1
-            imgend = ovstart-1
+            imgstart = preend + 1
+            imgend = ovstart - 1
 
         elif Q in ['F', 'G']:
 
             ovstart = 0
-            ovend = self.overscan-1
-            prestart = self.wQ-self.prescan
-            preend = prestart + self.prescan-1
-            imgstart = ovend+1
-            imgend = prestart-1
+            ovend = self.overscan - 1
+            prestart = self.wQ - self.prescan
+            preend = prestart + self.prescan - 1
+            imgstart = ovend + 1
+            imgend = prestart - 1
 
         return (prestart, preend, imgstart, imgend, ovstart, ovend)
 
@@ -633,7 +634,7 @@ class CCD(object):
         return (imgstart, imgend, ovstart, ovend)
 
     def get_stats(self, Quadrant, sector='img', statkeys=['mean'], trimscan=[0, 0],
-                  ignore_pover=True, extension=-1, VSTART=0, VEND=NrowsCCD+voverscan,
+                  ignore_pover=True, extension=-1, VSTART=0, VEND=NrowsCCD + voverscan,
                   clip=None):
         """ """
 
@@ -655,30 +656,29 @@ class CCD(object):
         if sector == 'pre':
             hlims = [0, self.prescan]
         elif sector == 'ove':
-            hlims = [self.NAXIS1/2-self.overscan, self.NAXIS1/2]
+            hlims = [self.NAXIS1 / 2 - self.overscan, self.NAXIS1 / 2]
         elif sector == 'img':
-            hlims = [self.prescan, self.NAXIS1/2-self.overscan]
+            hlims = [self.prescan, self.NAXIS1 / 2 - self.overscan]
         elif sector == 'all':
             hlims = [0, None]
-        
 
         hlims[0] += trimscan[0]
         if hlims[1] is not None:
             hlims[1] -= trimscan[1]
-        elif (hlims[1] is None) and (trimscan[1]>0):
+        elif (hlims[1] is None) and (trimscan[1] > 0):
             hlims[1] = -trimscan[1]
         else:
             pass
 
         results = []
-        
+
         vals = Qdata[hlims[0]:hlims[1], vlims[0]:vlims[1]]
-        
-        if clip is not None:            
+
+        if clip is not None:
             vals = stats.sigmaclip(vals, clip[0], clip[1]).clipped
 
         for statkey in statkeys:
-            
+
             results.append(stat_dict[statkey](vals))
 
         return results
@@ -697,7 +697,7 @@ class CCD(object):
         if scan == 'pre':
             hlims = [0, self.prescan]
         elif scan == 'ove':
-            hlims = [self.NAXIS1/2-self.overscan, self.NAXIS1/2]
+            hlims = [self.NAXIS1 / 2 - self.overscan, self.NAXIS1 / 2]
         else:
             sys.exit('ccd.sub_offset: scan=%s unkonwn' % scan)
 
@@ -711,7 +711,7 @@ class CCD(object):
 
         if method == 'row':
             offsets = []
-            for ix in range(self.NAXIS2/2):
+            for ix in range(self.NAXIS2 / 2):
                 offset = median(quaddata[hlims[0]:hlims[1], ix])
                 quaddata[:, ix] = quaddata[:, ix] - offset
                 offsets.append(offset)
@@ -779,29 +779,29 @@ class CCD(object):
             B = self.QuadBound[Quad]
 
             tmp = self.flip_tocanonical(VscanMask[B[0]:B[1], B[2]:B[3]], Quad)
-            tmp[:, VSTART:VEND+1] = False
+            tmp[:, VSTART:VEND + 1] = False
             VscanMask[B[0]:B[1], B[2]:B[3]] = self.flip_tocanonical(
                 tmp, Quad).copy()
 
         return VscanMask
-    
+
     def or_mask(self, mask):
         """ """
         assert self.shape == mask.shape
-        
+
         if not self.masked:
             self.get_mask(mask)
-        
+
         for iext in range(self.nextensions):
             if self.extensions[iext].data is not None:
-                self.extensions[iext].data.mask |= mask.astype('bool') # addition: logical OR
+                self.extensions[iext].data.mask |= mask.astype('bool')  # addition: logical OR
 
-        self.masked = True # still True
+        self.masked = True  # still True
 
     def get_mask(self, mask):
         """ """
         assert self.shape == mask.shape
-        
+
         if self.masked:
             self.or_mask(mask)
             return
@@ -870,12 +870,12 @@ class CCDPile(CCD):
 
     def __init__(self, infitsList=None, ccdobjList=None, extension=-1, withpover=True):
         """ """
-        
+
         if infitsList is None:
             infitsList = []
         if ccdobjList is None:
             ccdobjList = None
-        
+
         self.masked = False
         self.extensions = []
 
@@ -884,18 +884,18 @@ class CCDPile(CCD):
         if self.withpover:
             self.NAXIS2 = NAXIS2
         else:
-            self.NAXIS2 = NAXIS2-40
+            self.NAXIS2 = NAXIS2 - 40
 
         self.shape = (self.NAXIS1, self.NAXIS2)
 
         if len(infitsList) > 0:
 
             for i, infits in enumerate(infitsList):
-                
+
                 infits = str(infits)
 
-                assert type(infits) is str,\
-                                "'%s' can't be a name for a file!" % infits
+                assert isinstance(infits, str),\
+                    "'%s' can't be a name for a file!" % infits
 
                 assert isthere(
                     infits), 'infits:%s is just not there :-(' % infits
@@ -908,16 +908,15 @@ class CCDPile(CCD):
                 self.extensions.append(iccdobj.extensions[extension])
 
         elif len(ccdobjList) > 0:
-            
 
             for i, iccdobj in enumerate(ccdobjList):
 
                 assert self.shape == iccdobj.shape
 
                 self.extensions.append(iccdobj.extensions[extension])
-                
-            self.masked = np.any([isinstance(item.data,np.ma.core.MaskedArray) for item\
-                                in self.extensions])
+
+            self.masked = np.any([isinstance(item.data, np.ma.core.MaskedArray) for item
+                                  in self.extensions])
 
         else:
 
@@ -937,49 +936,46 @@ class CCDPile(CCD):
 
         self.QuadBound = QuadBound
 
-        
-
     def stack(self, method='median', dostd=False):
         """ """
-        
+
         fstack_dict = dict(
-                median=dict(
-                        masked=np.ma.median,
-                        unmasked=np.median),
-                mean=dict(
-                        masked=np.ma.mean,
-                        unmasked=np.mean))
+            median=dict(
+                masked=np.ma.median,
+                unmasked=np.median),
+            mean=dict(
+                masked=np.ma.mean,
+                unmasked=np.mean))
         if self.masked:
             fstack = fstack_dict[method]['masked']
             fstd = np.ma.std
-            stackimg = np.ma.zeros(self.shape,dtype='float32')
+            stackimg = np.ma.zeros(self.shape, dtype='float32')
             if dostd:
                 stackstd = np.ma.zeros(stackimg.shape, dtype='float32')
             blankarray = np.ma.core.zeros
         else:
             fstack = fstack_dict[method]['unmasked']
             fstd = np.std
-            stackimg = np.zeros(self.shape,dtype='float32')
+            stackimg = np.zeros(self.shape, dtype='float32')
             if dostd:
-                stackstd = np.zeros_like(stackimg,dtype='float32')
+                stackstd = np.zeros_like(stackimg, dtype='float32')
             blankarray = np.zeros
-        
 
         NAXIS1 = self.NAXIS1
         NAXIS2 = self.NAXIS2
-        
+
         for i in range(NAXIS2):
-            
+
             imgrow = blankarray((NAXIS1, self.nextensions), dtype='float32')
-            
+
             for j in range(self.nextensions):
                 imgrow[:, j] = self.extensions[j].data[:, i]
-            
+
             stackimg[:, i] = fstack(imgrow, axis=1).copy()
 
             if dostd:
                 stackstd[:, i] = fstd(imgrow, axis=1).copy()
-        
+
         if dostd:
             return stackimg, stackstd
         else:

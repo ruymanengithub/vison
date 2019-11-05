@@ -47,7 +47,7 @@ def extract_region(ccdobj, Q, area='img', vstart=0, vend=2086,
     """ """
     prescan = ccdobj.prescan
     overscan = ccdobj.overscan
-    imgx = ccdobj.NAXIS1/2 - prescan - overscan
+    imgx = ccdobj.NAXIS1 / 2 - prescan - overscan
 
     # the quadrant is "extracted" always in canonical orientation,
     # to ease extraction of sub-area (pre-scan, over-scan, image-area)
@@ -96,10 +96,10 @@ class Model2D():
 
     def __init__(self, img, corners=None):
         """ """
-        
+
         if corners is None:
             corners = []
-        
+
         assert isinstance(img, np.ndarray)
         self.img = img.copy()
         self.binnedimg = None
@@ -107,8 +107,8 @@ class Model2D():
         self.YYbin = None
 
         if len(corners) > 0:
-            NX = corners[1]-corners[0]+1
-            NY = corners[3]-corners[2]+1
+            NX = corners[1] - corners[0] + 1
+            NY = corners[3] - corners[2] + 1
             assert (NY, NX) == img.shape
 
         self.corners = corners
@@ -120,21 +120,20 @@ class Model2D():
         """ """
 
         ishape = self.img.shape
-        _nshape = (ishape[0]/boxsize, ishape[1]/boxsize)
-        trimshape = _nshape[0]*boxsize, _nshape[1]*boxsize
+        _nshape = (ishape[0] / boxsize, ishape[1] / boxsize)
+        trimshape = _nshape[0] * boxsize, _nshape[1] * boxsize
         _img = self.img[0:trimshape[0], 0:trimshape[1]].copy()
 
         rebinned = rebin(_img, _nshape, stat=stat)
 
-        sx = np.arange(boxsize/2, rebinned.shape[0]*boxsize+boxsize/2, boxsize)
-        sy = np.arange(boxsize/2, rebinned.shape[1]*boxsize+boxsize/2, boxsize)
+        sx = np.arange(boxsize / 2, rebinned.shape[0] * boxsize + boxsize / 2, boxsize)
+        sy = np.arange(boxsize / 2, rebinned.shape[1] * boxsize + boxsize / 2, boxsize)
 
         sxx, syy = np.meshgrid(sx, sy, indexing='ij')
 
         self.binnedimg = rebinned.copy()
         self.XXbin = sxx.copy()
         self.YYbin = syy.copy()
-        
 
     def filter_img(self, filtsize=15, filtertype='median', Tests=False):
         """ """
@@ -156,7 +155,7 @@ class Model2D():
         return None
 
     def get_model_splines(self, sampling=1, splinemethod='cubic', useBin=False,
-                          recoveredges=False,pdegree=5):
+                          recoveredges=False, pdegree=5):
         """ """
 
         #corners = self.corners
@@ -171,84 +170,81 @@ class Model2D():
 
         else:
 
-            nX = NX/sampling
-            nY = NY/sampling
+            nX = NX / sampling
+            nY = NY / sampling
 
             #samplebin = 10
 
-            sx = np.arange(sampling/2, nX*sampling+sampling/2, sampling)
-            sy = np.arange(sampling/2, nY*sampling+sampling/2, sampling)
+            sx = np.arange(sampling / 2, nX * sampling + sampling / 2, sampling)
+            sy = np.arange(sampling / 2, nY * sampling + sampling / 2, sampling)
 
             sxx, syy = np.meshgrid(sx, sy, indexing='ij')
 
             zz = self.img[(sxx, syy)]
 
-        
         if isinstance(zz, np.ma.masked_array):
             selix = np.where(~zz.mask)
             sxx = sxx[selix]
             syy = syy[selix]
             zz = zz[selix]
-            
-        xx, yy = np.mgrid[0:NX:NX*1j, 0:NY:NY*1j]
-        
-        
-        requiresextrapol = ((xx.min()<sxx.min()) or (xx.max()>sxx.max()) or\
-                            (yy.min()<syy.min()) or (yy.max()>syy.max()))
 
-        
+        xx, yy = np.mgrid[0:NX:NX * 1j, 0:NY:NY * 1j]
+
+        requiresextrapol = ((xx.min() < sxx.min()) or (xx.max() > sxx.max()) or
+                            (yy.min() < syy.min()) or (yy.max() > syy.max()))
+
         if requiresextrapol:
-            
+
             if recoveredges:
-                
-                sxx_e, syy_e = np.mgrid[-50:NX+50:50j, -50:NY+50:50j]
+
+                sxx_e, syy_e = np.mgrid[-50:NX + 50:50j, -50:NY + 50:50j]
                 zz_e = interpolate.griddata((sxx.flatten(), syy.flatten()), zz.flatten(),
-                                     (sxx_e, syy_e), method='nearest')
-                
-                ixsel = np.where((sxx_e<sxx.min()) | (sxx_e>sxx.max()) |\
-                                 (syy_e<syy.min()) & (syy_e>syy.max()))
-                
-                sxx = np.concatenate((sxx.flatten(),sxx_e[ixsel]))
-                syy = np.concatenate((syy.flatten(),syy_e[ixsel]))
-                zz = np.concatenate((zz.flatten(),zz_e[ixsel]))
-                
+                                            (sxx_e, syy_e), method='nearest')
+
+                ixsel = np.where((sxx_e < sxx.min()) | (sxx_e > sxx.max()) |
+                                 (syy_e < syy.min()) & (syy_e > syy.max()))
+
+                sxx = np.concatenate((sxx.flatten(), sxx_e[ixsel]))
+                syy = np.concatenate((syy.flatten(), syy_e[ixsel]))
+                zz = np.concatenate((zz.flatten(), zz_e[ixsel]))
+
                 pilum = interpolate.griddata((sxx.flatten(), syy.flatten()), zz.flatten(),
-                                     (xx, yy), method=splinemethod, fill_value=np.nan)
-            
+                                             (xx, yy), method=splinemethod, fill_value=np.nan)
+
             else:
-                
+
                 pilum = interpolate.griddata((sxx.flatten(), syy.flatten()), zz.flatten(),
-                                     (xx, yy), method=splinemethod, fill_value=np.nan)
-                
+                                             (xx, yy), method=splinemethod, fill_value=np.nan)
+
                 nans = np.isnan(pilum)
-                
+
                 pilum[nans] = self.img[nans].copy()
-                
+
         else:
-                
+
             pilum = interpolate.griddata((sxx.flatten(), syy.flatten()), zz.flatten(),
-                                 (xx, yy), method=splinemethod, fill_value=np.nan)
-        
+                                         (xx, yy), method=splinemethod, fill_value=np.nan)
+
         self.imgmodel = pilum.copy()
-        
+
         return None
 
 #        pilum = interpolate.griddata((sxx.flatten(), syy.flatten()), zz.flatten(),
 #                                     (xx, yy), method=splinemethod, fill_value=np.nan)
 #
 #        nans = np.isnan(pilum)
-#        
+#
 #        if nans.sum>0:
-#            
+#
 #            if recoveredges:
-#                
+#
 #                p = self.fit2Dpol_xyz(sxx.flatten(),syy.flatten(),zz,degree=pdegree)
-#                
+#
 #                pilum[nans] = p(xx[nans],yy[nans])
-#                
+#
 #            else:
 #                pilum[nans] = self.img[nans].copy()
-#        
+#
 #        self.imgmodel = pilum.copy()
 #
 #        return None
@@ -280,11 +276,11 @@ class Model2D():
 
         else:
 
-            nX = NX/sampling
-            nY = NY/sampling
+            nX = NX / sampling
+            nY = NY / sampling
 
-            x = np.arange(sampling/2, nX*sampling+sampling/2, sampling)
-            y = np.arange(sampling/2, nY*sampling+sampling/2, sampling)
+            x = np.arange(sampling / 2, nX * sampling + sampling / 2, sampling)
+            y = np.arange(sampling / 2, nY * sampling + sampling / 2, sampling)
 
             xx, yy = np.meshgrid(x, y, indexing='ij')
 
@@ -297,7 +293,6 @@ class Model2D():
             zz = zz[selix]
 
         p = self.fit2Dpol_xyz(xx, yy, zz, degree=pdegree)
-
 
         xp, yp = np.mgrid[:NX, :NY]
         pilum = p(xp, yp)
@@ -325,7 +320,7 @@ def get_region2Dmodel(ccdobj, Q, area='img', kind='spline', splinemethod='cubic'
 
     regmodel = Model2D(subregion)
 
-    if doFilter and filtsize>1:
+    if doFilter and filtsize > 1:
         regmodel.filter_img(filtsize=filtsize, filtertype=filtertype,
                             Tests=False)
 
@@ -337,7 +332,7 @@ def get_region2Dmodel(ccdobj, Q, area='img', kind='spline', splinemethod='cubic'
             sampling=filtsize, pdegree=pdegree, useBin=doBin)
     elif kind == 'spline':
         regmodel.get_model_splines(sampling=filtsize,
-                                   splinemethod=splinemethod, 
+                                   splinemethod=splinemethod,
                                    useBin=doBin,
                                    recoveredges=recoveredges,
                                    pdegree=pdegree)
@@ -352,7 +347,6 @@ class Profile1D(object):
         """ """
         assert len(x) == len(y)
         assert x.shape == y.shape
-        
 
         self.data = OrderedDict()
         self.data['x'] = x.copy()
@@ -365,9 +359,9 @@ def get_1Dprofile(ccdobj, Q, orient='hor', area='img', stacker='mean', vstart=0,
 
     prescan = ccdobj.prescan
     overscan = ccdobj.overscan
-    imgx = ccdobj.NAXIS1/2 - prescan - overscan
+    imgx = ccdobj.NAXIS1 / 2 - prescan - overscan
 
-    subregion, BB = ccdobj.extract_region(Q, area=area, vstart=vstart, 
+    subregion, BB = ccdobj.extract_region(Q, area=area, vstart=vstart,
                                           vend=vend,
                                           Full=True,
                                           extension=extension)
@@ -390,12 +384,12 @@ def get_1Dprofile(ccdobj, Q, orient='hor', area='img', stacker='mean', vstart=0,
         if Q in ['E', 'H']:
             x = np.arange(BB[0], BB[1])
         elif Q in ['F', 'G']:
-            x = np.arange(BB[1], BB[0], -1)+prescan+imgx+overscan
+            x = np.arange(BB[1], BB[0], -1) + prescan + imgx + overscan
     elif orient == 'ver':
         if Q in ['G', 'H']:
             x = np.arange(BB[2], BB[3])
         elif Q in ['E', 'F']:
-            x = np.arange(BB[3], BB[2], -1)+ccdobj.NAXIS2/2
+            x = np.arange(BB[3], BB[2], -1) + ccdobj.NAXIS2 / 2
     v1d = Profile1D(x, y)
 
     return v1d

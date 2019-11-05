@@ -38,51 +38,50 @@ class TestCCDPileClass(unittest.TestCase):
 
         baseimg = np.ones((self.NAXIS1, self.NAXIS2), dtype='float32')
         eimg = np.ones((self.NAXIS1, self.NAXIS2), dtype='float32') * self.RON
-        
-        
+
         self.ccdobjs = []
-        
-        for i in range(1,self.StackSize+1):
+
+        for i in range(1, self.StackSize + 1):
 
             self.ccdobjs.append(ccdmod.CCD(withpover=True))
             img = baseimg * i
-            img[:i,:] = np.nan
-            
-            self.ccdobjs[i-1].add_extension(data=img, label='IMAGE')
-            self.ccdobjs[i-1].add_extension(data=eimg, label='UNCERTAINTY')
+            img[:i, :] = np.nan
+
+            self.ccdobjs[i - 1].add_extension(data=img, label='IMAGE')
+            self.ccdobjs[i - 1].add_extension(data=eimg, label='UNCERTAINTY')
 
             mask = np.isnan(img)
-            self.ccdobjs[i-1].get_mask(mask)
-            
-        self.ccdpile = ccdmod.CCDPile(ccdobjList=self.ccdobjs,extension=0,
+            self.ccdobjs[i - 1].get_mask(mask)
+
+        self.ccdpile = ccdmod.CCDPile(ccdobjList=self.ccdobjs, extension=0,
                                       withpover=True)
-        
+
     #@unittest.skip("REDTAG")
     #@unittest.expectedFailure
     def test_stack_mean(self):
-        
-        stacked, stdimg = self.ccdpile.stack(method='mean',dostd=True)
-        
-        residuals_stack = stacked[0:6,0].data-\
-                                 np.array([0.,1.,1.5,2.,2.5,3.])
-        residuals_std = stdimg[0:6,0].data - \
-                      np.array([ 0.,  0.,  0.5,  0.81649661,  1.11803401,
-                                1.41421354])
-        self.assertAlmostEqual(residuals_stack.sum(),0.)
-        self.assertAlmostEqual(residuals_std.sum(),0.)
-    
+
+        stacked, stdimg = self.ccdpile.stack(method='mean', dostd=True)
+
+        residuals_stack = stacked[0:6, 0].data -\
+            np.array([0., 1., 1.5, 2., 2.5, 3.])
+        residuals_std = stdimg[0:6, 0].data - \
+            np.array([0., 0., 0.5, 0.81649661, 1.11803401,
+                      1.41421354])
+        self.assertAlmostEqual(residuals_stack.sum(), 0.)
+        self.assertAlmostEqual(residuals_std.sum(), 0.)
+
     #@unittest.expectedFailure
     def test_stack_median(self):
-        
-        stacked, stdimg = self.ccdpile.stack(method='median',dostd=True)
-        
-        residuals_stack = stacked[0:6,0].data-\
-                                 np.array([0.,1.,1.5,2.,2.5,3.])
-        residuals_std = stdimg[0:6,0].data - \
-                      np.array([ 0.,  0.,  0.5,  0.81649661,  1.11803401,
-                                1.41421354])
-        self.assertAlmostEqual(residuals_stack.sum(),0.)
-        self.assertAlmostEqual(residuals_std.sum(),0.)
+
+        stacked, stdimg = self.ccdpile.stack(method='median', dostd=True)
+
+        residuals_stack = stacked[0:6, 0].data -\
+            np.array([0., 1., 1.5, 2., 2.5, 3.])
+        residuals_std = stdimg[0:6, 0].data - \
+            np.array([0., 0., 0.5, 0.81649661, 1.11803401,
+                      1.41421354])
+        self.assertAlmostEqual(residuals_stack.sum(), 0.)
+        self.assertAlmostEqual(residuals_std.sum(), 0.)
 
 
 if __name__ == '__main__':

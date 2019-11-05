@@ -50,7 +50,7 @@ from vison.support import utils
 
 isthere = os.path.exists
 
-#HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
+# HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
 #          'CCD2_IG1_T', 'CCD3_IG1_T', 'CCD1_TEMP_T', 'CCD2_TEMP_T', 'CCD3_TEMP_T',
 #          'CCD1_IG1_T', 'COMM_IG2_T', 'FPGA_PCB_TEMP_T', 'CCD1_OD_B',
 #          'CCD2_OD_B', 'CCD3_OD_B', 'COMM_RD_B', 'CCD2_IG1_B', 'CCD3_IG1_B', 'CCD1_TEMP_B',
@@ -60,28 +60,28 @@ FLAT0X_commvalues = dict(program='CALCAMP',
                          flushes=7, siflsh=1, siflsh_p=500,
                          inisweep=1,
                          vstart=0, vend=2086,
-                         exptime=0., shuttr=1,e_shuttr=0,
+                         exptime=0., shuttr=1, e_shuttr=0,
                          motr_on=0,
                          wave=4,
                          source='flat',
                          comments='')
 
-plusminus10pcent = 1.+np.array([-0.10, 0.10])
+plusminus10pcent = 1. + np.array([-0.10, 0.10])
+
 
 def get_Flu_lims(relfluences):
-    
+
     FLU_lims = OrderedDict(CCD1=OrderedDict())
-    
-    for iflu,rflu in enumerate(relfluences):
+
+    for iflu, rflu in enumerate(relfluences):
         _cenval = min(rflu / 100., 1.) * 2.**16
         _lims = _cenval * plusminus10pcent
-        FLU_lims['CCD1']['col%03i' % (iflu+1,)] = _lims
-    
+        FLU_lims['CCD1']['col%03i' % (iflu + 1,)] = _lims
+
     for i in [2, 3]:
         FLU_lims['CCD%i' % i] = copy.deepcopy(FLU_lims['CCD1'])
-    
+
     return FLU_lims
-    
 
 
 class FLATS0X_inputs(inputs.Inputs):
@@ -105,8 +105,8 @@ class FLAT0X(FlatTask):
                          ('indivflats', self.do_indiv_flats),
                          ('masterflat', self.do_master_flat),
                          ('prmask', self.do_prdef_mask)]
-        super(FLAT0X, self).__init__(inputs=inputs, log=log, drill=drill, 
-                    debug=debug, cleanafter=cleanafter)
+        super(FLAT0X, self).__init__(inputs=inputs, log=log, drill=drill,
+                                     debug=debug, cleanafter=cleanafter)
         self.name = 'FLAT0X'
         self.type = 'Simple'
         self.CDP_lib = FL0Xaux.get_CDP_lib()
@@ -128,7 +128,7 @@ class FLAT0X(FlatTask):
         except KeyError:
             test = 'FLAT0X'
 
-        t_dummy_F0X = np.array([25., 50., 75])/100.
+        t_dummy_F0X = np.array([25., 50., 75]) / 100.
         tFWCw = self.ogse.profile['tFWC_flat']['nm%i' % wavelength]
         exptimesF0X = (tFWCw * t_dummy_F0X).tolist()  # s
         framesF0X = [80, 60, 30]
@@ -141,12 +141,12 @@ class FLAT0X(FlatTask):
     def set_perfdefaults(self, **kwargs):
         #wavelength = self.inputs['wavelength']
         super(FLAT0X, self).set_perfdefaults(**kwargs)
-        
+
         wave = self.inputs['wavelength']
         exptimes = np.array(self.inputs['exptimes'])
         tsatur = self.ogse.profile['tFWC_flat']['nm%i' % wave]
         FL0X_relfluences = exptimes / tsatur * 100.
-        
+
         self.perfdefaults['FLU_lims'] = get_Flu_lims(FL0X_relfluences)
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
@@ -172,8 +172,9 @@ class FLAT0X(FlatTask):
 
         FLAT0X_sdict = dict()
         for i, exptime in enumerate(exptimes):
-            FLAT0X_sdict['col%03i' % (i+1,)] = dict(frames=frames[i], exptime=exptimes[i],
-                                                  comments='EXP%.1e' % exptime)  # ,comments=flags[i])
+            FLAT0X_sdict['col%03i' %
+                         (i + 1,)] = dict(frames=frames[i], exptime=exptimes[i], comments='EXP%.1e' %
+                                          exptime)  # ,comments=flags[i])
 
         Ncols = len(FLAT0X_sdict.keys())
         FLAT0X_sdict['Ncols'] = Ncols
@@ -184,7 +185,7 @@ class FLAT0X(FlatTask):
         if len(diffvalues) == 0:
             try:
                 diffvalues = self.inputs['diffvalues']
-            except:
+            except BaseException:
                 diffvalues = diffvalues = dict()
 
         FLAT0X_sdict = sc.update_structdict(
@@ -211,8 +212,8 @@ class FLAT0X(FlatTask):
 
         """
         Task.prepare_images(self, doExtract=True, doBadPixels=True, doMask=True,
-                                         doOffset=True, doBias=False, doFF=False)
-        #super(FLAT0X, self).prepare_images(doExtract=True,doBadPixels=True,
+                            doOffset=True, doBias=False, doFF=False)
+        # super(FLAT0X, self).prepare_images(doExtract=True,doBadPixels=True,
         #                                   doMask=True, doOffset=True, doBias=True)
 
     def do_indiv_flats(self):
@@ -222,7 +223,7 @@ class FLAT0X(FlatTask):
 
         ::
 
-            Preparation of data for further analysis and 
+            Preparation of data for further analysis and
             produce flat-field for each OBSID.
 
             f.e. ObsID:
@@ -243,8 +244,7 @@ class FLAT0X(FlatTask):
             plot average profiles f. each CCD and Q (color coded by time)
 
         """
-        
-        
+
         if self.report is not None:
             self.report.add_Section(
                 keyword='indivFF', Title='Individual Flat-Fields', level=0)
@@ -252,7 +252,7 @@ class FLAT0X(FlatTask):
         # INITIALISATION
 
         indices = copy.deepcopy(self.dd.indices)
-        
+
         nObs, nCCD, nQuad = indices.shape
 
         CCDs = indices.get_vals('CCD')
@@ -262,39 +262,37 @@ class FLAT0X(FlatTask):
 
         self.dd.initColumn('indiv_flats', ccdindices,
                            dtype='S100', valini='None')
-        
+
         vCCDs = self.dd.mx['CCD'][:].copy()
         vlabels = self.dd.mx['label'][:].copy()
         ulabels = np.unique(vlabels)
-        
+
         # 1D Profiles
-        
-        _foox = np.linspace(0,2000,10)
-        _fooy = np.ones(10)*1.E4
-        
+
+        _foox = np.linspace(0, 2000, 10)
+        _fooy = np.ones(10) * 1.E4
+
         profs_1D = OrderedDict()
-        for dire in ['hor','ver']:
+        for dire in ['hor', 'ver']:
             profs_1D[dire] = OrderedDict()
             for ulabel in ulabels:
-                profs_1D[dire][ulabel] = OrderedDict()                
+                profs_1D[dire][ulabel] = OrderedDict()
                 for CCD in CCDs:
                     profs_1D[dire][ulabel][CCD] = OrderedDict()
                     for Q in Quads:
                         profs_1D[dire][ulabel][CCD][Q] = OrderedDict()
                         profs_1D[dire][ulabel][CCD][Q]['x'] = OrderedDict()
                         profs_1D[dire][ulabel][CCD][Q]['y'] = OrderedDict()
-                        
+
                         for i in range(3):
                             profs_1D[dire][ulabel][CCD][Q]['x']['OBS%i' % i] = _foox.copy()
                             profs_1D[dire][ulabel][CCD][Q]['y']['OBS%i' % i] = _fooy.copy()
-        
 
         # The heavy-lifting
-        
-        onTests = False # True on TESTS
-        
-                
-        def _pack_profs(outdict,inprof,tag):
+
+        onTests = False  # True on TESTS
+
+        def _pack_profs(outdict, inprof, tag):
             """ """
             _x = inprof.data['x'].copy()
             xorder = np.argsort(_x)
@@ -302,29 +300,27 @@ class FLAT0X(FlatTask):
             _x = np.arange(len(_x))
             outdict['x'][tag] = _x.copy()
             outdict['y'][tag] = _y.copy()
-            
 
         if not self.drill:
-            
-            for dire in ['hor','ver']:
+
+            for dire in ['hor', 'ver']:
                 for ulabel in ulabels:
                     for CCD in CCDs:
                         for Q in Quads:
                             profs_1D[dire][ulabel][CCD][Q]['x'] = OrderedDict()
                             profs_1D[dire][ulabel][CCD][Q]['y'] = OrderedDict()
-            
 
             dpath = self.inputs['subpaths']['ccdpickles']
             fpath = self.inputs['subpaths']['ccdflats']
-                
+
             vfullinpath_adder = utils.get_path_decorator(dpath)
-            
-            fccdobj_names = vfullinpath_adder(self.dd.mx['ccdobj_name'][:],'pick')
-            
+
+            fccdobj_names = vfullinpath_adder(self.dd.mx['ccdobj_name'][:], 'pick')
+
             wavelength = self.inputs['wavelength']
 
             for iObs in range(nObs):
-                
+
                 ObsID = self.dd.mx['ObsID'][iObs]
 
                 for jCCD, CCDk in enumerate(CCDs):
@@ -334,11 +330,11 @@ class FLAT0X(FlatTask):
                         (wavelength, ilabel, ObsID, CCDk)
 
             vfulloutpath_adder = utils.get_path_decorator(fpath)
-            
+
             findiv_flats = vfulloutpath_adder(self.dd.mx['indiv_flats'][:])
 
             ffsettings = dict()
-            
+
             if not onTests:
                 FFing.produce_IndivFlats(fccdobj_names.flatten(), findiv_flats.flatten(),
                                          settings=ffsettings,
@@ -346,87 +342,80 @@ class FLAT0X(FlatTask):
                                          processes=self.processes)
 
             # 1D profiles.
-            
-            
+
             for ulabel in ulabels:
-                
+
                 vstart = self.inputs['structure'][ulabel]['vstart']
                 truevend = self.inputs['structure'][ulabel]['vend']
-                
-                iswithpover = truevend==(ccd.NrowsCCD+ccd.voverscan)
-                
+
+                iswithpover = truevend == (ccd.NrowsCCD + ccd.voverscan)
+
                 vend1D = ccd.NrowsCCD
-                
+
                 for jCCD, CCDk in enumerate(CCDs):
-                    
+
                     selix = np.where((vlabels == ulabel) & (vCCDs == CCDk))
-                    
+
                     _indiv_flats = self.dd.mx['indiv_flats'][selix].copy()
                     f_indiv_flats = vfulloutpath_adder(_indiv_flats)
-                    
+
                     _OBSIDS = self.dd.mx['ObsID'][selix[0]].copy()
-                    
-                    for ix,f_indiv_flat in enumerate(f_indiv_flats): # TESTS
-                        
+
+                    for ix, f_indiv_flat in enumerate(f_indiv_flats):  # TESTS
+
                         OBSID = _OBSIDS[ix]
-                        
-                        ccdobj = ccd.CCD(infits=str(f_indiv_flat),getallextensions=True,
+
+                        ccdobj = ccd.CCD(infits=str(f_indiv_flat), getallextensions=True,
                                          withpover=iswithpover)
-                        
+
                         for kQ, Q in enumerate(Quads):
-                            
-                            _pro1Dhor = ccdobj.get_1Dprofile(Q=Q,orient='hor',area='img',
-                                    stacker='mean', vstart=vstart, vend=vend1D,
-                                    extension=-1)
-                            _pro1Dver = ccdobj.get_1Dprofile(Q=Q,orient='ver',area='img',
-                                    stacker='mean',vstart=vstart, vend=vend1D,
-                                    extension=-1)
-                            
-                            
+
+                            _pro1Dhor = ccdobj.get_1Dprofile(
+                                Q=Q, orient='hor', area='img', stacker='mean', vstart=vstart, vend=vend1D, extension=-1)
+                            _pro1Dver = ccdobj.get_1Dprofile(
+                                Q=Q, orient='ver', area='img', stacker='mean', vstart=vstart, vend=vend1D, extension=-1)
+
                             _pack_profs(profs_1D['hor'][ulabel][CCDk][Q],
                                         _pro1Dhor,
                                         tag='OBS%i' % OBSID)
-                            
+
                             _pack_profs(profs_1D['ver'][ulabel][CCDk][Q],
                                         _pro1Dver,
                                         tag='OBS%i' % OBSID)
-                                     
-                
 
         # Show 1D Profiles (hor/ver) for each OBSID/fluence across CCDs/Quads:
         #   2 profiles x N-fluences = 2N plots (each with 4Qx3CCD subplots)
-        
+
         for ulabel in ulabels:
-            for dire in ['hor','ver']:
-                
-                figkey = 'FL0Xindiv_prof1D_%s_%s' % (dire,ulabel)
-                
-                self.figdict[figkey]=copy.deepcopy(self.figdict['FL0Xindiv_prof1D_%s_generic' % dire])
+            for dire in ['hor', 'ver']:
+
+                figkey = 'FL0Xindiv_prof1D_%s_%s' % (dire, ulabel)
+
+                self.figdict[figkey] = copy.deepcopy(
+                    self.figdict['FL0Xindiv_prof1D_%s_generic' % dire])
                 self.figdict[figkey][1]['figname'] = '%s_profs1D_%s_%s.png' % \
-                            (self.inputs['test'],dire,ulabel)
+                    (self.inputs['test'], dire, ulabel)
                 self.figdict[figkey][1]['caption'] = st.replace(self.figdict[figkey][1]['caption'],
-                            'PLACEHOLDER',ulabel)
-                self.figdict[figkey][1]['meta']['suptitle'] = st.replace(self.figdict[figkey][1]['meta']['suptitle'],
-                            'PLACEHOLDER',ulabel)
-                
+                                                                'PLACEHOLDER', ulabel)
+                self.figdict[figkey][1]['meta']['suptitle'] = st.replace(
+                    self.figdict[figkey][1]['meta']['suptitle'], 'PLACEHOLDER', ulabel)
+
                 self.figdict[figkey][1]['data'] = profs_1D[dire][ulabel].copy()
                 labelkeys = profs_1D[dire][ulabel]['CCD1'][Q]['x'].keys()
                 self.figdict[figkey][1]['data']['labelkeys'] = labelkeys
-        
-        
+
         figkeys = []
         for ulabel in ulabels:
             figkeys += [
-                    'FL0Xindiv_prof1D_hor_%s' % ulabel,
-                    'FL0Xindiv_prof1D_ver_%s' % ulabel,
-                    ]
+                'FL0Xindiv_prof1D_hor_%s' % ulabel,
+                'FL0Xindiv_prof1D_ver_%s' % ulabel,
+            ]
 
         if self.report is not None:
             self.addFigures_ST(figkeys=figkeys, dobuilddata=False)
-            
 
     def do_master_flat(self):
-        """ 
+        """
 
         **METACODE**
 
@@ -438,7 +427,7 @@ class FLAT0X(FlatTask):
                 f.e.Q:
                     stack individual flat-fields by chosen estimator
             save Master FF to FITS
-            measure PRNU and 
+            measure PRNU and
             report PRNU figures
 
         """
@@ -446,16 +435,16 @@ class FLAT0X(FlatTask):
         if self.report is not None:
             self.report.add_Section(
                 keyword='MasterFF', Title='Master Flat-Fields', level=0)
-            
-        OnTests = False # True on TESTS
+
+        OnTests = False  # True on TESTS
 
         wavelength = self.inputs['wavelength']
         settings = dict(
-                WAVEL=wavelength,
-                ID=self.ID,
-                BLOCKID=self.BLOCKID,
-                CHAMBER=self.CHAMBER
-                )
+            WAVEL=wavelength,
+            ID=self.ID,
+            BLOCKID=self.BLOCKID,
+            CHAMBER=self.CHAMBER
+        )
 
         indices = copy.deepcopy(self.dd.indices)
 
@@ -463,32 +452,31 @@ class FLAT0X(FlatTask):
         nC = len(CCDs)
         Quads = indices.get_vals('Quad')
         nQ = len(Quads)
-        
+
         dpath = self.inputs['subpaths']['ccdflats']
         productspath = self.inputs['subpaths']['products']
-        
+
         vCCDs = self.dd.mx['CCD'][:].copy()
 
         vlabels = self.dd.mx['label'][:].copy()
         ulabels = np.unique(vlabels)
-        
+
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
         CDP_header['DATE'] = self.get_time_tag()
-        
+
         NP = nC * nQ
-        
+
         PRNU_TBs = OrderedDict()
-        
+
         for ulabel in ulabels:
             PRNU_TBs[ulabel] = OrderedDict()
-            PRNU_TBs[ulabel]['CCD'] = np.zeros(NP,dtype='int32')
-            PRNU_TBs[ulabel]['Q'] = np.zeros(NP,dtype='int32')
-            PRNU_TBs[ulabel]['AVFLUENCE'] = np.zeros(NP,dtype='float32')
-            PRNU_TBs[ulabel]['PRNU_PC'] = np.zeros(NP,dtype='float32')
-            
-            
+            PRNU_TBs[ulabel]['CCD'] = np.zeros(NP, dtype='int32')
+            PRNU_TBs[ulabel]['Q'] = np.zeros(NP, dtype='int32')
+            PRNU_TBs[ulabel]['AVFLUENCE'] = np.zeros(NP, dtype='float32')
+            PRNU_TBs[ulabel]['PRNU_PC'] = np.zeros(NP, dtype='float32')
+
         MFF_2PLOT = OrderedDict()
         for ulabel in ulabels:
             MFF_2PLOT[ulabel] = OrderedDict()
@@ -501,16 +489,13 @@ class FLAT0X(FlatTask):
 
         if not self.drill:
 
- 
             self.dd.products['MasterFFs'] = OrderedDict()
 
             for ulabel in ulabels:
 
- 
                 self.dd.products['MasterFFs'][ulabel] = OrderedDict()
 
                 for jCCD, CCDk in enumerate(CCDs):
-
 
                     FFname = 'EUC_FF_%inm_%s_ROE1_%s.fits' % \
                         (wavelength, ulabel, CCDk)
@@ -520,27 +505,26 @@ class FLAT0X(FlatTask):
                     selix = np.where((vlabels == ulabel) & (vCCDs == CCDk))
 
                     FFlist = self.dd.mx['indiv_flats'][selix].flatten().copy()
-                    
+
                     vfullinpath_adder = utils.get_path_decorator(dpath)
 
                     FFlist = vfullinpath_adder(FFlist)
 
                     # MISSING: proper defects and useful area masking
                     #   (mask-out pre/over scans)
-                    
-                    #if OnTests:
+
+                    # if OnTests:
                     #    FFlist = FFlist[0:2]
-                    
+
                     jsettings = copy.deepcopy(settings)
-                    
-                    for kQ,Q in enumerate(Quads):
+
+                    for kQ, Q in enumerate(Quads):
                         jsettings['AVFLU_%s' % Q] = \
-                                 np.nanmedian(self.dd.mx['flu_med_img'][:,:,kQ][selix])
-                    
-                    
+                            np.nanmedian(self.dd.mx['flu_med_img'][:, :, kQ][selix])
+
                     if not OnTests:
                         FFing.produce_MasterFlat(
-                                FFlist, FFpath, mask=None, settings=jsettings)
+                            FFlist, FFpath, mask=None, settings=jsettings)
 
                     self.dd.products['MasterFFs'][ulabel][CCDk] = FFpath
 
@@ -553,110 +537,111 @@ class FLAT0X(FlatTask):
                     Quads = FF.Quads
 
                     for jQ, Q in enumerate(Quads):
-                        
+
                         kk = jCCD * nQ + jQ
-                        
+
                         kQ_PRNU = FF.get_stats(Q, sector='img', statkeys=['std'],
                                                ignore_pover=True,
                                                extension=iFext,
-                                               clip=(3.,3.))[0]
-                        
-                        PRNU_TBs[ulabel]['CCD'][kk] = jCCD+1
-                        PRNU_TBs[ulabel]['Q'][kk] = jQ+1
+                                               clip=(3., 3.))[0]
+
+                        PRNU_TBs[ulabel]['CCD'][kk] = jCCD + 1
+                        PRNU_TBs[ulabel]['Q'][kk] = jQ + 1
                         PRNU_TBs[ulabel]['PRNU_PC'][kk] = kQ_PRNU * 100.
                         PRNU_TBs[ulabel]['AVFLUENCE'][kk] = jsettings['AVFLU_%s' % Q]
-                        
-                        qdata = FF.get_quad(Q,canonical=False,extension=iFext).copy()
-                        sqdata = ndimage.filters.gaussian_filter(qdata,sigma=5.,
+
+                        qdata = FF.get_quad(Q, canonical=False, extension=iFext).copy()
+                        sqdata = ndimage.filters.gaussian_filter(qdata, sigma=5.,
                                                                  mode='constant',
                                                                  cval=1.)
-                        esqdata = exposure.equalize_hist(sqdata,nbins=256)
-                        #MFF_p5s.append(np.percentile(sqdata,5))
-                        #MFF_p95s.append(np.percentile(sqdata,95))
-                        
+                        esqdata = exposure.equalize_hist(sqdata, nbins=256)
+                        # MFF_p5s.append(np.percentile(sqdata,5))
+                        # MFF_p95s.append(np.percentile(sqdata,95))
+
                         MFF_2PLOT[ulabel][CCDk][Q]['img'] = esqdata.transpose()
 
         # REPORT PRNU results
-        
-        
+
         PRNU_TB_dddf = OrderedDict()
         for ulabel in ulabels:
             PRNU_TB_dddf['PRNU_%s' % ulabel] = pd.DataFrame.from_dict(PRNU_TBs[ulabel])
-        
+
         prnu_tb_cdp = self.CDP_lib['PRNU_TB']
         prnu_tb_cdp.rootname = prnu_tb_cdp.rootname % \
-          (self.inputs['test'],self.inputs['wavelength'])
+            (self.inputs['test'], self.inputs['wavelength'])
         prnu_tb_cdp.path = self.inputs['subpaths']['products']
         prnu_tb_cdp.ingest_inputs(
-                data = PRNU_TB_dddf.copy(),
-                meta=dict(),
-                header=CDP_header.copy()
-                )
+            data=PRNU_TB_dddf.copy(),
+            meta=dict(),
+            header=CDP_header.copy()
+        )
 
-        prnu_tb_cdp.init_wb_and_fillAll(header_title='%s (%inm): PRNU TABLE' % \
-                (self.inputs['test'],self.inputs['wavelength']))
+        prnu_tb_cdp.init_wb_and_fillAll(header_title='%s (%inm): PRNU TABLE' %
+                                        (self.inputs['test'], self.inputs['wavelength']))
         self.save_CDP(prnu_tb_cdp)
         self.pack_CDP_to_dd(prnu_tb_cdp, 'PRNU_TB_CDP')
-    
+
         for ulabel in ulabels:
-            
+
             if self.report is not None:
-                
-                fccd = lambda x: CCDs[x-1]
-                fq = lambda x: Quads[x-1]
-                ff = lambda x: '%.2f' % x
-                fE = lambda x: '%.2E' % x
-                
-                cov_formatters=[fccd,fq,fE,ff]
-                
-                caption = '%s (%inm): PRNU TABLE [%s] ' % (self.inputs['test'] +\
-                    ' (image area pixels, clipped to +- 3 sigma).',
-                     self.inputs['wavelength'],ulabel)
-                nicecaption = st.replace(caption,'_','\_')
-                Ptex = prnu_tb_cdp.get_textable(sheet='PRNU_%s' % ulabel, 
-                                                   caption=nicecaption,
-                                                   fitwidth=True,
-                                                   tiny=True,
-                                                   formatters=cov_formatters)
+
+                def fccd(x): return CCDs[x - 1]
+
+                def fq(x): return Quads[x - 1]
+
+                def ff(x): return '%.2f' % x
+
+                def fE(x): return '%.2E' % x
+
+                cov_formatters = [fccd, fq, fE, ff]
+
+                caption = '%s (%inm): PRNU TABLE [%s] ' % (self.inputs['test'] +
+                                                           ' (image area pixels, clipped to +- 3 sigma).',
+                                                           self.inputs['wavelength'], ulabel)
+                nicecaption = st.replace(caption, '_', '\_')
+                Ptex = prnu_tb_cdp.get_textable(sheet='PRNU_%s' % ulabel,
+                                                caption=nicecaption,
+                                                fitwidth=True,
+                                                tiny=True,
+                                                formatters=cov_formatters)
                 self.report.add_Text(Ptex)
 
         # SHOW FFs
-        
+
         for ulabel in ulabels:
-            
-            self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel] =  copy.deepcopy(self.figdict['FL0Xmeta_MFF_2D'])
+
+            self.figdict['FL0Xmeta_MFF_2D_%s' %
+                         ulabel] = copy.deepcopy(self.figdict['FL0Xmeta_MFF_2D'])
             self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['figname'] =\
-                        st.replace(self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['figname'],
-                                   'PLACEHOLDER',
-                                   ulabel)
+                st.replace(self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['figname'],
+                           'PLACEHOLDER',
+                           ulabel)
             self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['caption'] =\
-                        st.replace(self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['caption'],
-                                   'PLACEHOLDER',
-                                   ulabel)
+                st.replace(self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['caption'],
+                           'PLACEHOLDER',
+                           ulabel)
             self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['meta']['suptitle'] =\
                 st.replace(self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['meta']['suptitle'],
-                                   'PLACEHOLDER',
-                                   ulabel)
-            
+                           'PLACEHOLDER',
+                           ulabel)
+
             self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['data'] = MFF_2PLOT[ulabel].copy()
-        
+
             # UPDATING scaling based on data
-            
-            
-            #if len(MFF_p5s)>0:
+
+            # if len(MFF_p5s)>0:
             #    normfunction = Normalize(vmin=np.nanmin(MFF_p5s),vmax=np.nanmax(MFF_p95s),clip=True)
-            #else:
+            # else:
             #    normfunction = Normalize(vmin=0.99,vmax=1.01,clip=False)
-            
+
             #self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['meta']['corekwargs']['norm'] = normfunction
-            
+
         if self.report is not None:
             MFFfigkeys = ['FL0Xmeta_MFF_2D_%s' % ulabel for ulabel in ulabels]
             self.addFigures_ST(figkeys=MFFfigkeys,
-                           dobuilddata=False)
-        
+                               dobuilddata=False)
+
         self.canbecleaned = True
-            
 
     def do_prdef_mask(self):
         """
@@ -672,7 +657,7 @@ class FLAT0X(FlatTask):
                 f.e.Q:
                     produce mask of PR defects
                     save mask of PR defects
-                    count dead pixels / columns 
+                    count dead pixels / columns
 
             report PR-defects stats
 

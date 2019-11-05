@@ -35,7 +35,7 @@ def get_body_circles(X, Y, R=None, radius=6.0):
     body = []
     for i in range(Nregs):
         body.append('circle(%.1f,%.1f,%.1f)' %
-                    (X[i]+1., Y[i]+1., R[i]))
+                    (X[i] + 1., Y[i] + 1., R[i]))
 
     return body
 
@@ -55,7 +55,7 @@ def get_body_ellipses(X, Y, A=None, B=None, THETA=None):
 
     for i in range(Nregs):
         body.append('ellipse(%.1f,%.1f,%.1f,%.1f,%.1f)' %
-                    (X[i]+1., Y[i]+1., A[i], B[i], THETA[i]))
+                    (X[i] + 1., Y[i] + 1., A[i], B[i], THETA[i]))
 
     return body
 

@@ -14,46 +14,46 @@ from pdb import set_trace as stop
 from collections import OrderedDict
 # END IMPORT
 
-flagsdict = OrderedDict(MISSDATA=[2**0L],
-                        POORQUALDATA=[2**1L],
-                        BADDATA=[2**2L],
-                        WRONGTEST=[2**3L],
-                        WRONG_ROE_CONF=[2**4L],
-                        SOURCEON=[2**5L],
-                        SOURCEOFF=[2**6L],
-                        WRONGSOURCE=[2**7L],
-                        HK_OOL=[2**8L],
-                        CCDTEMP_OOL=[2**9L],
-                        UNDERPERFORM=[2**10L],
-                        REQNOTMET=[2**11L],
-                        BADDATAPROD=[2**12L],
-                        DEADCCD=[2**13L],
-                        DEADQUAD=[2**14L],
-                        LOWMEMORY=[2**15L],
-                        TOOSLOW=[2**16L],
-                        UNKNOWN=[2**17L],
-                        RON_OOL=[2**18L],
-                        FLUENCE_OOL=[2**19L],
-                        FLUENCEGRAD_OOL=[2**20L],
-                        FOCUS_OOL=[2**21L],
-                        BGD_OOL=[2**22L],
-                        CCDSATUR=[2**23L],
-                        FLUX_OOL=[2**24L],
-                        STARS_MISSING=[2**25L],
-                        SUBTASKCRASH=[2**26L],
-                        BADFIT=[2**27L],
-                        SATURATION=[2**28L],
-                        LOSTPIXELS=[2**29L],
-                        NONSATURATION=[2**30L])
+flagsdict = OrderedDict(MISSDATA=[2**0],
+                        POORQUALDATA=[2**1],
+                        BADDATA=[2**2],
+                        WRONGTEST=[2**3],
+                        WRONG_ROE_CONF=[2**4],
+                        SOURCEON=[2**5],
+                        SOURCEOFF=[2**6],
+                        WRONGSOURCE=[2**7],
+                        HK_OOL=[2**8],
+                        CCDTEMP_OOL=[2**9],
+                        UNDERPERFORM=[2**10],
+                        REQNOTMET=[2**11],
+                        BADDATAPROD=[2**12],
+                        DEADCCD=[2**13],
+                        DEADQUAD=[2**14],
+                        LOWMEMORY=[2**15],
+                        TOOSLOW=[2**16],
+                        UNKNOWN=[2**17],
+                        RON_OOL=[2**18],
+                        FLUENCE_OOL=[2**19],
+                        FLUENCEGRAD_OOL=[2**20],
+                        FOCUS_OOL=[2**21],
+                        BGD_OOL=[2**22],
+                        CCDSATUR=[2**23],
+                        FLUX_OOL=[2**24],
+                        STARS_MISSING=[2**25],
+                        SUBTASKCRASH=[2**26],
+                        BADFIT=[2**27],
+                        SATURATION=[2**28],
+                        LOSTPIXELS=[2**29],
+                        NONSATURATION=[2**30])
 
 
 class Flags(object):
     """ """
 
-    def __init__(self,indict=None):
+    def __init__(self, indict=None):
         if indict is None:
             indict = flagsdict
-        self.value = 0L
+        self.value = 0
         self.dict = indict.copy()
 
     def isflagon(self, flag):
@@ -74,14 +74,14 @@ if __name__ == '__main__':
     flagvals = [flags.dict[key][0] for key in keys]
     maxflag = np.max(flagvals)
 
-    maxpow = int(np.log10(maxflag*1.)/np.log10(2.))
+    maxpow = int(np.log10(maxflag * 1.) / np.log10(2.))
 
     for key in keys:
         flags.add(key)
 
     test = 0
-    for i in range(maxpow+1):
-        test = test | 2**(i*1L)
+    for i in range(maxpow + 1):
+        test = test | 2**(i * 1)
 
     assert test == flags.value
 
@@ -90,6 +90,6 @@ if __name__ == '__main__':
     for key in keys:
         areOn &= flags.isflagon(key)
 
-    assert areOn == True
+    assert areOn
 
     print 'flags.py: Tests Ran Succesfully'

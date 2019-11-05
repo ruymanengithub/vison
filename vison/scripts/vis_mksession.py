@@ -23,56 +23,55 @@ from vison.support import vjson
 
 def session_builder(inputs):
     """ """
-    
+
     inpath = inputs['inpath']
     outpath = inputs['outpath']
     sess_dict = inputs['sessions'].copy()
-    
+
     assert os.path.exists(inpath)
-    
+
     if not os.path.exists(outpath):
         os.system('mkdir %s' % outpath)
-    
+
     session_names = sess_dict.keys()
-    
+
     for session in session_names:
-        
+
         print('session: %s' % session)
-        
+
         tests = sess_dict[session]
-        sesspath = os.path.join(outpath,session)
+        sesspath = os.path.join(outpath, session)
         if not os.path.exists(sesspath):
             os.system('mkdir %s' % sesspath)
         else:
-            os.system('rm %s' % os.path.join(sesspath,'*'))
-        
+            os.system('rm %s' % os.path.join(sesspath, '*'))
+
         scripts = []
-        
+
         for test in tests:
-            tmpscriptL = glob.glob(os.path.join(inpath,'*%s*xlsx' % test))
-            if len(tmpscriptL) ==0:
-                print("Did not find test %s in session %s, Quitting!" % \
-                      (test,session))
+            tmpscriptL = glob.glob(os.path.join(inpath, '*%s*xlsx' % test))
+            if len(tmpscriptL) == 0:
+                print("Did not find test %s in session %s, Quitting!" %
+                      (test, session))
                 sys.exit()
             if len(tmpscriptL) > 1:
-                print ("Found more than 1 script for test %s in session %s, Quitting!" %\
-                       (test,session))
+                print ("Found more than 1 script for test %s in session %s, Quitting!" %
+                       (test, session))
             scripts.append(tmpscriptL[0])
-        
-        seq_f = os.path.join(sesspath,'TEST_SEQUENCE_%s.txt' % session)
-        
-        with open(seq_f,'w') as f:
+
+        seq_f = os.path.join(sesspath, 'TEST_SEQUENCE_%s.txt' % session)
+
+        with open(seq_f, 'w') as f:
             for script in scripts:
-                os.system('cp %s %s/' % (script,sesspath))
+                os.system('cp %s %s/' % (script, sesspath))
                 stripscript = os.path.split(script)[-1]
                 print >> f, stripscript
                 print(stripscript)
             f.close()
-        
-        
-        
+
+
 if __name__ == '__main__':
-    
+
     parser = OptionParser()
     parser.add_option("-j", "--json", dest="json",
                       default='', help="json file with inputs")
@@ -86,6 +85,5 @@ if __name__ == '__main__':
     inputs = vjson.load_jsonfile(options.json, useyaml=True)
 
     # MISSING: INPUTS VALIDATION
-    
+
     session_builder(inputs)
-       

@@ -13,7 +13,7 @@ Created on Fri Oct 13 16:22:36 2017
 # IMPORT STUFF
 from pdb import set_trace as stop
 #import matplotlib
-#matplotlib.use("TkAgg")
+# matplotlib.use("TkAgg")
 import glob
 from astropy.table import Table
 
@@ -97,7 +97,7 @@ class ExpLogDisplay(tk.Toplevel):
         #self.updating = True
 
         tk.Toplevel.__init__(self, parent)
-        
+
         self.updating = tk.BooleanVar()
         self.updating.set(True)
 
@@ -106,10 +106,10 @@ class ExpLogDisplay(tk.Toplevel):
         self.info = """\
         Click on header to sort by that column. To change width of column drag boundary.
         """
-        
+
         title = 'EXP-LOG'
         if self.tag != '':
-            title = '%s: %s' % (title,self.tag)
+            title = '%s: %s' % (title, self.tag)
 
         self.wm_title(title)
 
@@ -138,12 +138,11 @@ class ExpLogDisplay(tk.Toplevel):
                                                   font=medium_font, bd=2, relief='groove')
         self.labels['NEntries']['app'].grid(
             row=0, column=1, in_=self.fr1, sticky='w')
-        
-        
-        pause_check = tk.Checkbutton(self,text='PAUSED',variable=self.updating,
-                                     onvalue=False,offvalue=True,height=5,
-                                     width=20,command=self.print_paused)
-        
+
+        pause_check = tk.Checkbutton(self, text='PAUSED', variable=self.updating,
+                                     onvalue=False, offvalue=True, height=5,
+                                     width=20, command=self.print_paused)
+
         pause_check.grid(column=0, row=1, sticky='w', padx=0, in_=self.fr1)
 
         self.fr1.grid_columnconfigure(0, weight=1)
@@ -161,17 +160,16 @@ class ExpLogDisplay(tk.Toplevel):
         self.fr0.grid_rowconfigure(0, weight=1)
 
         self.update(startup=True)
-        #self.update()
-        
+        # self.update()
+
     def print_paused(self):
         print 'self.updating is %s' % self.updating.get()
 
-    def update(self,startup=False):
-        
+    def update(self, startup=False):
+
         print('entering ExpLogDisplay.update. Interval=%i' % self.interval)
 
         if self.updating.get():
-            
 
             self.search_EXPLOGs()
             theresnewdata = self.get_data()
@@ -212,7 +210,7 @@ class ExpLogDisplay(tk.Toplevel):
 
     def build_elementList(self):
         """ """
-        
+
         self.elementList = []
 
         for ix in range(len(self.EXPLOG)):
@@ -268,11 +266,11 @@ class ExpLogDisplay(tk.Toplevel):
         if sEL <= self.sEL:
             return False
 
-        try: 
+        try:
             EXPLOG = self.loadExplogs()
-        except:
+        except BaseException:
             return False
-            
+
         #EXPLOG = ELtools.loadExpLog(self.explogf,elvis=self.elvis)
 
         NObsIDs = len(np.unique(EXPLOG['ObsID']))
@@ -294,9 +292,9 @@ class ExpLogDisplay(tk.Toplevel):
         for i, item in enumerate(self.elementList):
             #print i+self.nEL
 
-            if (i+self.nEL) % 2 == 0:
+            if (i + self.nEL) % 2 == 0:
                 parity = 'odd'
-            elif (i+self.nEL) % 2 != 0:
+            elif (i + self.nEL) % 2 != 0:
                 parity = 'pair'
             self.tree.insert('', 'end', values=item, tags=(parity,))
 
@@ -316,7 +314,7 @@ class ExpLogDisplay(tk.Toplevel):
                               command=lambda c=col: self.sortBy(self.tree, c, 0))
             # adjust the column's width to the header string
             self.tree.column(col, width=int(tkFont.Font(
-                font='Helvetica', size=12).measure(col)*1.5))
+                font='Helvetica', size=12).measure(col) * 1.5))
 
         self.growTree()
 

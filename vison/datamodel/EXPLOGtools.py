@@ -16,30 +16,160 @@ import datetime
 
 # END IMPORT
 
-columnlist = {'5.7.02': ['ObsID', 'File_name', 'CCD', 'ROE', 'DATE', 'PROGRAM', 'TEST', 'CCD_SN', 'BUNIT',
-                         'Operator', 'Lab_ver', 'Con_file', 'Exptime', 'N_P_high', 'Chrg_inj', 'On_cycle',
-                         'Off_cycl', 'Rpeat_cy', 'pls_leng', 'pls_del', 'Trappump', 'TP_Ser_S',
-                         'TP_Ver_S', 'TP_DW_V', 'TP_DW_H', 'TOI_flu', 'TOI _pump', 'TOI_read', 'Invflshp',
-                         'Invflush', 'Flushes', 'Vstart', 'Vend', 'Lim_scan', 'Ovrscn_H', 'Ovrscn_V',
-                         'V_clocks', 'S_clocks', 'CLK_ROE1', 'CLK_ROE2', 'ROE1_On', 'ROE2_On', 'FPGA_ver', 'EGSE_ver',
-                         'M_Steps', 'M_St_Sze', 'Wavelength', 'Lght_int', 'Chmb_pre', 'CCD_SNX', 'ROE_SN',
-                         'CalScrpt', 'R1CCD1TT', 'R1CCD1TB', 'R1CCD2TT', 'R1CCD2TB', 'R1CCD3TT',
-                         'R1CCD3TB', 'R2CCD1TT', 'R2CCD1TB', 'R2CCD2TT', 'R2CCD2TB',
-                         'R2CCD3TT', 'R2CCD3TB', 'IDL_V', 'IDH_V', 'IG1_V', 'IG2_V', 'ODCCD1_V',
-                         'RDCCD1_V', 'ODCCD2_V', 'RDCCD2_V', 'ODCCD3_V', 'RDCCD3_V'],
-              '5.7.04': ['ObsID', 'File_name', 'CCD', 'ROE', 'DATE', 'PROGRAM', 'TEST', 'CCD1_SN',
-                         'CCD2_SN', 'CCD3_SN', 'BUNIT', 'Operator', 'Lab_ver', 'Con_file',
-                         'Exptime', 'Flsh-Rdout_e_time', 'C.Inj-Rdout_e_time', 'N_P_high',
-                         'Chrg_inj', 'On_cycle', 'Off_cycl', 'Rpeat_cy', 'pls_leng', 'pls_del',
-                         'Trappump', 'TP_Ser_S', 'TP_Ver_S', 'TP_DW_V', 'TP_DW_H', 'TOI_flu',
-                         'TOI_pump', 'TOI_read', 'Invflshp', 'Invflush', 'Flushes', 'Vstart',
-                         'Vend', 'Lim_scan', 'Ovrscn_H', 'Ovrscn_V', 'V_clocks', 'S_clocks',
-                         'CLK_ROE1', 'CLK_ROE2', 'ROE1_On', 'ROE2_On', 'FPGA_ver', 'EGSE_ver',
-                         'M_Steps', 'M_St_Sze', 'Wavelength', 'Lght_int', 'Chmb_pre', 'ROE_SN',
-                         'CalScrpt', 'R1CCD1TT', 'R1CCD1TB', 'R1CCD2TT', 'R1CCD2TB', 'R1CCD3TT',
-                         'R1CCD3TB', 'R2CCD1TT', 'R2CCD1TB', 'R2CCD2TT', 'R2CCD2TB',
-                         'R2CCD3TT', 'R2CCD3TB', 'IDL_V', 'IDH_V', 'IG1_V', 'IG2_V', 'ODCCD1_V',
-                         'RDCCD1_V', 'ODCCD2_V', 'RDCCD2_V', 'ODCCD3_V', 'RDCCD3_V']}
+columnlist = {
+    '5.7.02': [
+        'ObsID',
+        'File_name',
+        'CCD',
+        'ROE',
+        'DATE',
+        'PROGRAM',
+        'TEST',
+        'CCD_SN',
+        'BUNIT',
+        'Operator',
+        'Lab_ver',
+        'Con_file',
+        'Exptime',
+        'N_P_high',
+        'Chrg_inj',
+        'On_cycle',
+        'Off_cycl',
+        'Rpeat_cy',
+        'pls_leng',
+        'pls_del',
+        'Trappump',
+        'TP_Ser_S',
+        'TP_Ver_S',
+        'TP_DW_V',
+        'TP_DW_H',
+        'TOI_flu',
+        'TOI _pump',
+        'TOI_read',
+        'Invflshp',
+        'Invflush',
+        'Flushes',
+        'Vstart',
+        'Vend',
+        'Lim_scan',
+        'Ovrscn_H',
+        'Ovrscn_V',
+        'V_clocks',
+        'S_clocks',
+        'CLK_ROE1',
+        'CLK_ROE2',
+        'ROE1_On',
+        'ROE2_On',
+        'FPGA_ver',
+        'EGSE_ver',
+        'M_Steps',
+        'M_St_Sze',
+        'Wavelength',
+        'Lght_int',
+        'Chmb_pre',
+        'CCD_SNX',
+        'ROE_SN',
+        'CalScrpt',
+        'R1CCD1TT',
+        'R1CCD1TB',
+        'R1CCD2TT',
+        'R1CCD2TB',
+        'R1CCD3TT',
+        'R1CCD3TB',
+        'R2CCD1TT',
+        'R2CCD1TB',
+        'R2CCD2TT',
+        'R2CCD2TB',
+        'R2CCD3TT',
+        'R2CCD3TB',
+        'IDL_V',
+        'IDH_V',
+        'IG1_V',
+        'IG2_V',
+        'ODCCD1_V',
+        'RDCCD1_V',
+        'ODCCD2_V',
+        'RDCCD2_V',
+        'ODCCD3_V',
+        'RDCCD3_V'],
+    '5.7.04': [
+        'ObsID',
+        'File_name',
+        'CCD',
+        'ROE',
+        'DATE',
+        'PROGRAM',
+        'TEST',
+        'CCD1_SN',
+        'CCD2_SN',
+        'CCD3_SN',
+        'BUNIT',
+        'Operator',
+        'Lab_ver',
+        'Con_file',
+        'Exptime',
+        'Flsh-Rdout_e_time',
+        'C.Inj-Rdout_e_time',
+        'N_P_high',
+        'Chrg_inj',
+        'On_cycle',
+        'Off_cycl',
+        'Rpeat_cy',
+        'pls_leng',
+        'pls_del',
+        'Trappump',
+        'TP_Ser_S',
+        'TP_Ver_S',
+        'TP_DW_V',
+        'TP_DW_H',
+        'TOI_flu',
+        'TOI_pump',
+        'TOI_read',
+        'Invflshp',
+        'Invflush',
+        'Flushes',
+        'Vstart',
+        'Vend',
+        'Lim_scan',
+        'Ovrscn_H',
+        'Ovrscn_V',
+        'V_clocks',
+        'S_clocks',
+        'CLK_ROE1',
+        'CLK_ROE2',
+        'ROE1_On',
+        'ROE2_On',
+        'FPGA_ver',
+        'EGSE_ver',
+        'M_Steps',
+        'M_St_Sze',
+        'Wavelength',
+        'Lght_int',
+        'Chmb_pre',
+        'ROE_SN',
+        'CalScrpt',
+        'R1CCD1TT',
+        'R1CCD1TB',
+        'R1CCD2TT',
+        'R1CCD2TB',
+        'R1CCD3TT',
+        'R1CCD3TB',
+        'R2CCD1TT',
+        'R2CCD1TB',
+        'R2CCD2TT',
+        'R2CCD2TB',
+        'R2CCD3TT',
+        'R2CCD3TB',
+        'IDL_V',
+        'IDH_V',
+        'IG1_V',
+        'IG2_V',
+        'ODCCD1_V',
+        'RDCCD1_V',
+        'ODCCD2_V',
+        'RDCCD2_V',
+        'ODCCD3_V',
+        'RDCCD3_V']}
 
 columnlist['5.7.09'] = columnlist['5.7.04']
 
@@ -185,21 +315,21 @@ def iniExplog(elvis):
 
 def loadExpLog(expfile, elvis=context.elvis, safe=False):
     """Loads an Exposure Log from file."""
-    
+
     if safe:
         def wrapped_safe_open(path):
-            return utils.safe_open_file(path,prefix='explog_')
+            return utils.safe_open_file(path, prefix='explog_')
         opener = wrapped_safe_open
     else:
         opener = open
-    
+
     with opener(expfile) as f:
         lines = f.readlines()
         f.close()
-        #t1 = datetime.datetime.now()        
+        #t1 = datetime.datetime.now()
         explog = ascii.read(lines, data_start=1, delimiter='\t', guess=False,
-                        names=columnlist[elvis], format='no_header')
-    
+                            names=columnlist[elvis], format='no_header')
+
     return explog
 
 
@@ -219,18 +349,17 @@ def mergeExpLogs(explogList, addpedigree=False, verbose=False):
     for iexp in range(1, nexplogs):
         iexplog = explogList[iexp]
         if verbose:
-            print 'merging explog %i/%i...' % (iexp+1, nexplogs)
+            print 'merging explog %i/%i...' % (iexp + 1, nexplogs)
 
         # Check format compatibility of columns
-        
-        
+
         for ic, colname in enumerate(colnames):
 
             if iexplog[colname].dtype.kind == 'S' and not explog[colname].dtype.kind == 'S':
                 explog[colname] = explog[colname].astype(str)
             if explog[colname].dtype.kind == 'S' and not iexplog[colname].dtype.kind == 'S':
                 iexplog[colname] = iexplog[colname].astype(str)
-            
+
             if iexplog[colname].dtype.kind == 'S':
                 Smax = max([int(str(iexplog[colname].dtype)[2:]),
                             int(str(explog[colname].dtype)[2:])])
@@ -239,12 +368,11 @@ def mergeExpLogs(explogList, addpedigree=False, verbose=False):
         if addpedigree:
             iexplog['explognumber'] = np.ones(
                 len(iexplog), dtype='int32') * iexp
-                    
-        explog = vstack([explog,iexplog])
 
+        explog = vstack([explog, iexplog])
 
         # Row-by-Row appending of the "iexp" added catalog
-        #for iL in range(len(iexplog)):
+        # for iL in range(len(iexplog)):
         #    explog.add_row(iexplog[iL].as_void().tolist())
 
     return explog
@@ -296,18 +424,18 @@ class ExpLogClass():
         for test in tests:
             ixsel = np.where(self.explog['test'] == test)
             ixlast = ixsel[0][-1]
-            ixfirst = max(0, ixsel[0][0]-1)
+            ixfirst = max(0, ixsel[0][0] - 1)
             subdates = (self.explog['date'][ixfirst],
                         self.explog['date'][ixlast])
             subdts = map(vistime.get_dtobj, subdates)
-            dtmin = (subdts[-1]-subdts[0]).seconds / 60.
+            dtmin = (subdts[-1] - subdts[0]).seconds / 60.
             durations.append(dtmin)
 
         totdurh = np.sum(durations) / 60.
 
         print '\nSummary: %s' % self.infile
         print 'Nr. of entries = %i' % nentries
-        print 'ObsIDs = (%i,%i): %i' % (ObsIDextrema+(nObsID,))
+        print 'ObsIDs = (%i,%i): %i' % (ObsIDextrema + (nObsID,))
         print 'Nr. Tests: %i' % ntests
 
         for it, test in enumerate(tests):

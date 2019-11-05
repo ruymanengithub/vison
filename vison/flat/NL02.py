@@ -52,27 +52,28 @@ from vison.flat import NL01
 from vison.flat import NL01aux
 import nl as nllib
 
-from pylab import plot,show
+from pylab import plot, show
 # END IMPORT
 
 isthere = os.path.exists
 
-#HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
+# HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
 #          'CCD2_IG1_T', 'CCD3_IG1_T', 'CCD1_TEMP_T', 'CCD2_TEMP_T', 'CCD3_TEMP_T',
 #          'CCD1_IG1_T', 'COMM_IG2_T', 'FPGA_PCB_TEMP_T', 'CCD1_OD_B',
 #          'CCD2_OD_B', 'CCD3_OD_B', 'COMM_RD_B', 'CCD2_IG1_B', 'CCD3_IG1_B', 'CCD1_TEMP_B',
 #          'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
 
 
-NL02_commvalues = dict(program='CALCAMP',test='NL02',
+NL02_commvalues = dict(program='CALCAMP', test='NL02',
                        flushes=7, siflsh=1, siflsh_p=500,
                        inisweep=1,
                        vstart=0, vend=2086,
-                       exptime=0., shuttr=1,e_shuttr=0,
+                       exptime=0., shuttr=1, e_shuttr=0,
                        mirr_on=0,
                        motr_on=0,
                        source='flat',
                        comments='')
+
 
 class NL02_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
@@ -92,67 +93,71 @@ class NL02(NL01.NL01):
     """ """
 
     inputsclass = NL02_inputs
-    FLUDIVIDE = 20. # pc
+    FLUDIVIDE = 20.  # pc
 
     def __init__(self, inputs, log=None, drill=False, debug=False, cleanafter=False):
         """ """
-        super(NL02, self).__init__(inputs=inputs, log=log, drill=drill, debug=debug, cleanafter=cleanafter)
+        super(
+            NL02,
+            self).__init__(
+            inputs=inputs,
+            log=log,
+            drill=drill,
+            debug=debug,
+            cleanafter=cleanafter)
         self.name = 'NL02'
 
     def set_inpdefaults(self, **kwargs):
-        
-        
+
         waveA = 0
         tFWCwA = self.ogse.profile['tFWC_flat']['nm%i' % waveA]
-        
-        ixLOWFLUlast = np.where(NL01.NL01_relfluences>self.FLUDIVIDE)[0][0]
+
+        ixLOWFLUlast = np.where(NL01.NL01_relfluences > self.FLUDIVIDE)[0][0]
         ixLOWFLU = (np.arange(ixLOWFLUlast),)
-        exptsA = (NL01.NL01_relfluences[ixLOWFLU]/100. *
-                 tFWCwA).tolist()  # ms
-        framesA = (np.ones(len(exptsA), dtype='int32')*4).tolist()
-        
+        exptsA = (NL01.NL01_relfluences[ixLOWFLU] / 100. *
+                  tFWCwA).tolist()  # ms
+        framesA = (np.ones(len(exptsA), dtype='int32') * 4).tolist()
+
         waveB = 880
         tFWCwB = self.ogse.profile['tFWC_flat']['nm%i' % waveB]
-        ixHIFLUfirst = np.where(NL01.NL01_relfluences<self.FLUDIVIDE)[0][-1]
-        ixHIFLU = np.where(NL01.NL01_relfluences>=self.FLUDIVIDE)
-        ixHIFLU = (np.arange(ixHIFLUfirst,len(NL01.NL01_relfluences)),)
-        exptsB = (NL01.NL01_relfluences[ixHIFLU]/100. *
-                 tFWCwB).tolist()  # ms
-        framesB = (np.ones(len(exptsB), dtype='int32')*4).tolist()
-        
-        self.inpdefaults = dict(
-                                wavelengthA=waveA,
-                                exptimesA=exptsA,
-                                framesA=framesA,
-                                wavelengthB=waveB,
-                                exptimesB=exptsB,
-                                framesB=framesB,
-                                exptinter=0.5 * tFWCwB,
-                                )
+        ixHIFLUfirst = np.where(NL01.NL01_relfluences < self.FLUDIVIDE)[0][-1]
+        ixHIFLU = np.where(NL01.NL01_relfluences >= self.FLUDIVIDE)
+        ixHIFLU = (np.arange(ixHIFLUfirst, len(NL01.NL01_relfluences)),)
+        exptsB = (NL01.NL01_relfluences[ixHIFLU] / 100. *
+                  tFWCwB).tolist()  # ms
+        framesB = (np.ones(len(exptsB), dtype='int32') * 4).tolist()
 
+        self.inpdefaults = dict(
+            wavelengthA=waveA,
+            exptimesA=exptsA,
+            framesA=framesA,
+            wavelengthB=waveB,
+            exptimesB=exptsB,
+            framesB=framesB,
+            exptinter=0.5 * tFWCwB,
+        )
 
     def build_scriptdict(self, diffvalues=dict(), elvis=context.elvis):
         """Builds NL02 script structure dictionary.
 
         """
 
-        wavelengthA = self.inputs['wavelengthA'] 
+        wavelengthA = self.inputs['wavelengthA']
         exptsA = self.inputs['exptimesA']
         framesA = self.inputs['framesA']
-        
-        wavelengthB = self.inputs['wavelengthB'] 
+
+        wavelengthB = self.inputs['wavelengthB']
         exptsB = self.inputs['exptimesB']
         framesB = self.inputs['framesB']
-        
+
         exptinter = self.inputs['exptinter']
-        
 
         assert (len(exptsA) == len(framesA)) and \
                (len(exptsB) == len(framesB))
 
         FW_IDA = self.ogse.get_FW_ID(wavelengthA)
         FW_IDXA = int(FW_IDA[-1])
-        
+
         FW_IDB = self.ogse.get_FW_ID(wavelengthB)
         FW_IDXB = int(FW_IDB[-1])
 
@@ -161,47 +166,47 @@ class NL02(NL01.NL01):
         NL02_sdict = dict()
 
         NL02_sdict['col001'] = dict(frames=self.Nbgd, exptime=0, comments='BGD',
-                  wave=FW_IDXB)
+                                    wave=FW_IDXB)
         NL02_sdict['col002'] = dict(frames=self.Nstab0, exptime=exptinter, comments='STAB',
-                  wave=FW_IDXB)
-        
+                                    wave=FW_IDXB)
+
         colcountbase = 3
 
         for ix, ifraA in enumerate(framesA):
 
             iexpA = exptsA[ix]
 
-            colkeyFlu = 'col%03i' % (ix*2+colcountbase,)
+            colkeyFlu = 'col%03i' % (ix * 2 + colcountbase,)
 
             NL02_sdict[colkeyFlu] = dict(
-                frames=ifraA, exptime=iexpA, 
+                frames=ifraA, exptime=iexpA,
                 wave=FW_IDXA,
-                comments='Fluence%i' % (ix+1,))
+                comments='Fluence%i' % (ix + 1,))
 
-            colkeySta = 'col%03i' % (ix*2+colcountbase+1,)
+            colkeySta = 'col%03i' % (ix * 2 + colcountbase + 1,)
 
             NL02_sdict[colkeySta] = dict(
-                frames=1, exptime=exptinter, 
+                frames=1, exptime=exptinter,
                 wave=FW_IDXB,
                 comments='STAB')
-        
-        colcountbase = colcountbase + 2*len(framesA)
-        
+
+        colcountbase = colcountbase + 2 * len(framesA)
+
         for jx, jfraB in enumerate(framesB):
 
             jexpB = exptsB[jx]
 
-            colkeyFlu = 'col%03i' % (jx*2+colcountbase,)
+            colkeyFlu = 'col%03i' % (jx * 2 + colcountbase,)
 
             NL02_sdict[colkeyFlu] = dict(
-                frames=jfraB, exptime=jexpB, 
+                frames=jfraB, exptime=jexpB,
                 wave=FW_IDXB,
-                comments='Fluence%i' % (jx+len(framesA)+1,))
+                comments='Fluence%i' % (jx + len(framesA) + 1,))
 
-            colkeySta = 'col%03i' % (jx*2+colcountbase+1,)
+            colkeySta = 'col%03i' % (jx * 2 + colcountbase + 1,)
 
             NL02_sdict[colkeySta] = dict(
-                frames=1, exptime=exptinter, 
+                frames=1, exptime=exptinter,
                 wave=FW_IDXB,
                 comments='STAB')
 
@@ -214,7 +219,7 @@ class NL02(NL01.NL01):
         if len(diffvalues) == 0:
             try:
                 diffvalues = self.inputs['diffvalues']
-            except:
+            except BaseException:
                 diffvalues = diffvalues = dict()
 
         NL02_sdict = sc.update_structdict(NL02_sdict, commvalues, diffvalues)
@@ -224,7 +229,7 @@ class NL02(NL01.NL01):
     def prep_data(self):
         """
 
-        Takes Raw Data and prepares it for further analysis. 
+        Takes Raw Data and prepares it for further analysis.
 
         **METACODE**
 
@@ -239,7 +244,7 @@ class NL02(NL01.NL01):
                     opt: [mask-out defects]
 
         """
-        
+
         super(NL02, self).prepare_images(doExtract=True,
                                          doBadPixels=True,
                                          doMask=True,
@@ -248,7 +253,7 @@ class NL02(NL01.NL01):
                                          doFF=False)
 
     def produce_NLCs(self):
-        """ 
+        """
 
         **METACODE**
 
@@ -259,7 +264,7 @@ class NL02(NL01.NL01):
             f.e. CCD:
                 f.e. Q:
 
-                    [opt] apply correction for source variability (interspersed exposure 
+                    [opt] apply correction for source variability (interspersed exposure
                       with constant exptime)
                     Build NL Curve (NLC) - use stats and exptimes
                     fit poly. shape to NL curve
@@ -268,69 +273,66 @@ class NL02(NL01.NL01):
             report max. values of NL (table)
 
         """
-        
+
         doExptimeCalib = True
         NLdeg = 4
-        debug = False # TESTS
-        
+        debug = False  # TESTS
+
         if self.report is not None:
             self.report.add_Section(
                 keyword='NL', Title='Non-Linearity Analysis', level=0)
-            
-        
+
         if doExptimeCalib:
-            niceshutterprofname = st.replace(self.ogse.profile['SHUTTER_CALIB'],'_','\_')
-            
+            niceshutterprofname = st.replace(self.ogse.profile['SHUTTER_CALIB'], '_', '\_')
+
             if self.report is not None:
                 self.report.add_Text('Exposure times corrected using: %s' %
-                                 niceshutterprofname)
-            if self.log is not None:                
+                                     niceshutterprofname)
+            if self.log is not None:
                 self.log.info('Exposure times corrected using: %s' %
-                                 niceshutterprofname)
-        
+                              niceshutterprofname)
+
         if self.report is not None:
-                 self.report.add_Text(['\nModel:',
-                                      '\\begin{equation}',
-                                    'NL=A \cdot e^{-(x-x_0)/s}} + P_%s(x)' % NLdeg,
-                                    '\end{equation}'])
+            self.report.add_Text(['\nModel:',
+                                  '\\begin{equation}',
+                                  'NL=A \cdot e^{-(x-x_0)/s}} + P_%s(x)' % NLdeg,
+                                  '\end{equation}'])
 
         dIndices = copy.deepcopy(self.dd.indices)
-        
+
         CCDs = dIndices.get_vals('CCD')
         Quads = dIndices.get_vals('Quad')
-        
+
         nC = len(CCDs)
-        nQ = len(Quads)        
+        nQ = len(Quads)
         NP = nC * nQ
-        
+
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
         CDP_header['DATE'] = self.get_time_tag()
-        
+
         prodspath = self.inputs['subpaths']['products']
-        
+
         # INITIALISATIONS
-        
-        
+
         # NON-LINEARITY (SUMMARY) TABLE
-        
+
         NL_TB = OrderedDict()
-        
-        NL_TB['CCD'] = np.zeros(NP,dtype='int32')
-        NL_TB['Q'] = np.zeros(NP,dtype='int32')
-        NL_TB['MAXNLPC'] = np.zeros(NP,dtype='float32')
-        NL_TB['FLU_MAXNLPC'] = np.zeros(NP,dtype='float32')
-        
+
+        NL_TB['CCD'] = np.zeros(NP, dtype='int32')
+        NL_TB['Q'] = np.zeros(NP, dtype='int32')
+        NL_TB['MAXNLPC'] = np.zeros(NP, dtype='float32')
+        NL_TB['FLU_MAXNLPC'] = np.zeros(NP, dtype='float32')
+
         # NON-LINEARITY (FULL) TABLE
         NL_FULL_TB = OrderedDict()
-        
-        NL_FULL_TB['FLUENCE'] = np.zeros(1000,dtype='float32') + np.nan        
+
+        NL_FULL_TB['FLUENCE'] = np.zeros(1000, dtype='float32') + np.nan
         for CCDk in CCDs:
             for Q in Quads:
-                NL_FULL_TB['NLPC_%s%s' % (CCDk,Q)] = np.zeros(1000,dtype='float32') + np.nan
-                
-        
+                NL_FULL_TB['NLPC_%s%s' % (CCDk, Q)] = np.zeros(1000, dtype='float32') + np.nan
+
         # NON LINEARITY RESULTS
 
         NLall_mx = OrderedDict()
@@ -339,138 +341,138 @@ class NL02(NL01.NL01):
             NLall_mx[CCDkey] = OrderedDict()
             for Quad in Quads:
                 NLall_mx[CCDkey][Quad] = OrderedDict()
-                
+
         # NL CURVES
-        
+
         curves_cdp = self.CDP_lib['NL_CURVES']
         curves_cdp.header = CDP_header.copy()
         curves_cdp.path = prodspath
         curves_cdp.data = OrderedDict()
-        
+
         for CCDk in CCDs:
-            curves_cdp.data[CCDk] = OrderedDict()            
+            curves_cdp.data[CCDk] = OrderedDict()
             for Q in Quads:
                 curves_cdp.data[CCDk][Q] = OrderedDict()
                 curves_cdp.data[CCDk][Q]['x'] = OrderedDict()
                 curves_cdp.data[CCDk][Q]['y'] = OrderedDict()
-        
-        curves_cdp.data['labelkeys'] = ['data','fit']
-        
+
+        curves_cdp.data['labelkeys'] = ['data', 'fit']
+
         # Fitting the NL curves
-        
+
         for iCCD, CCDkey in enumerate(CCDs):
-            
+
             for jQ, Q in enumerate(Quads):
-                
+
                 kk = iCCD * nQ + jQ
-                
+
                 raw_med = self.dd.mx['sec_med'][:, iCCD, jQ, :].copy()
-                raw_var = self.dd.mx['sec_var'][:,iCCD,jQ, :].copy()
-                raw_X = self.dd.mx['sec_X'][:,iCCD,jQ, :].copy() 
-                raw_Y = self.dd.mx['sec_Y'][:,iCCD,jQ, :].copy()
+                raw_var = self.dd.mx['sec_var'][:, iCCD, jQ, :].copy()
+                raw_X = self.dd.mx['sec_X'][:, iCCD, jQ, :].copy()
+                raw_Y = self.dd.mx['sec_Y'][:, iCCD, jQ, :].copy()
                 #col_labels = self.dd.mx['label'][:, iCCD].copy()
                 exptimes = self.dd.mx['exptime'][:, iCCD].copy()
                 wave = self.dd.mx['wave'][:, iCCD].copy()
                 dtobjs = self.dd.mx['time'][:, iCCD].copy()
                 ObsIDs = self.dd.mx['ObsID'][:].copy()
-                
-                ijoffset = np.median(self.dd.mx['offset_pre'][:,iCCD,jQ])
+
+                ijoffset = np.median(self.dd.mx['offset_pre'][:, iCCD, jQ])
 
                 if doExptimeCalib:
                     nexptimes = self.recalibrate_exptimes(exptimes)
-                
+
                 # fitresults = OrderedDict(coeffs, NLdeg, maxNLpc,flu_maxNLpc, bgd)
                 if debug:
-                    print('\n%s%s\n' % (CCDkey,Q))
+                    print('\n%s%s\n' % (CCDkey, Q))
                 #print('WITH shutter nl correction...')
-                
-                _fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, nexptimes, wave, 
-                                            dtobjs, 
-                                            TrackFlux=True, 
-                                            debug=debug,
-                                            ObsIDs=ObsIDs,
-                                            NLdeg=NLdeg,
-                                            #offset=0.) 
-                                            offset=ijoffset,
-                                            XX=raw_X, YY=raw_Y)
+
+                _fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, nexptimes, wave,
+                                                              dtobjs,
+                                                              TrackFlux=True,
+                                                              debug=debug,
+                                                              ObsIDs=ObsIDs,
+                                                              NLdeg=NLdeg,
+                                                              # offset=0.)
+                                                              offset=ijoffset,
+                                                              XX=raw_X, YY=raw_Y)
 #                print('WITHOUT shutter nl correction...')
-#                __fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, exptimes, wave, 
-#                                            dtobjs, 
-#                                            TrackFlux=True, 
+#                __fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, exptimes, wave,
+#                                            dtobjs,
+#                                            TrackFlux=True,
 #                                            debug=debug,
 #                                            ObsIDs=ObsIDs)
-                
+
                 NLall_mx[CCDkey][Q].update(_fitresults)
-                
-                NL_TB['CCD'][kk] = iCCD+1
-                NL_TB['Q'][kk] = jQ+1
+
+                NL_TB['CCD'][kk] = iCCD + 1
+                NL_TB['Q'][kk] = jQ + 1
                 NL_TB['MAXNLPC'][kk] = _fitresults['maxNLpc']
                 NL_TB['FLU_MAXNLPC'][kk] = _fitresults['flu_maxNLpc']
-                
-                if kk==0:
+
+                if kk == 0:
                     NL_FULL_TB['FLUENCE'] = _fitresults['outputcurve']['X'].copy()
-                NL_FULL_TB['NLPC_%s%s' % (CCDkey,Q)] = _fitresults['outputcurve']['Y'].copy() 
-                
-                curves_cdp.data[CCDkey][Q]['x']['data'] = _fitresults['inputcurve']['X'].copy()/1.E3
+                NL_FULL_TB['NLPC_%s%s' % (CCDkey, Q)] = _fitresults['outputcurve']['Y'].copy()
+
+                curves_cdp.data[CCDkey][Q]['x']['data'] = _fitresults['inputcurve']['X'].copy() / \
+                    1.E3
                 curves_cdp.data[CCDkey][Q]['y']['data'] = _fitresults['inputcurve']['Y'].copy()
-                curves_cdp.data[CCDkey][Q]['x']['fit'] = _fitresults['outputcurve']['X'].copy()/1.E3
+                curves_cdp.data[CCDkey][Q]['x']['fit'] = _fitresults['outputcurve']['X'].copy() / \
+                    1.E3
                 curves_cdp.data[CCDkey][Q]['y']['fit'] = _fitresults['outputcurve']['Y'].copy()
-        
+
         self.dd.products['NL'] = copy.deepcopy(NLall_mx)
 
-        
         # Build Tables
-        
-        NL_TB_dddf = OrderedDict(NL_TB = pd.DataFrame.from_dict(NL_TB),
+
+        NL_TB_dddf = OrderedDict(NL_TB=pd.DataFrame.from_dict(NL_TB),
                                  NL_FULL_FIT=pd.DataFrame.from_dict(NL_FULL_TB))
-        
+
         nl_tb_cdp = self.CDP_lib['NL_TB']
         nl_tb_cdp.path = prodspath
         nl_tb_cdp.ingest_inputs(
-                data = NL_TB_dddf.copy(),
-                meta=dict(),
-                header=CDP_header.copy()
-                )
+            data=NL_TB_dddf.copy(),
+            meta=dict(),
+            header=CDP_header.copy()
+        )
 
         nl_tb_cdp.init_wb_and_fillAll(header_title='NL02: RESULTS TABLE')
         self.save_CDP(nl_tb_cdp)
         self.pack_CDP_to_dd(nl_tb_cdp, 'NL_TB_CDP')
-        
-        
+
         if self.report is not None:
-            
-            fccd = lambda x: CCDs[x-1]
-            fq = lambda x: Quads[x-1]
-            ff = lambda x: '%.2f' % x
-            
-            formatters=[fccd,fq,ff,ff]
-            
-            caption = 'NL02 results TABLE' 
-            Ntex = nl_tb_cdp.get_textable(sheet='NL_TB', 
+
+            def fccd(x): return CCDs[x - 1]
+
+            def fq(x): return Quads[x - 1]
+
+            def ff(x): return '%.2f' % x
+
+            formatters = [fccd, fq, ff, ff]
+
+            caption = 'NL02 results TABLE'
+            Ntex = nl_tb_cdp.get_textable(sheet='NL_TB',
                                           caption=caption,
-                                               fitwidth=True,
-                                               tiny=True,
-                                               formatters=formatters)
-            
-            
-            self.report.add_Text(Ntex)        
+                                          fitwidth=True,
+                                          tiny=True,
+                                          formatters=formatters)
+
+            self.report.add_Text(Ntex)
 
         # Do plots
-        
-        
+
         self.save_CDP(curves_cdp)
         self.pack_CDP_to_dd(curves_cdp, 'NL_CURVES_CDP')
 
         fdict_NL = self.figdict['NL01_fit_curves'][1]
         fdict_NL['data'] = curves_cdp.data.copy()
-        fdict_NL['caption'] = st.replace(fdict_NL['caption'],'NL01','NL02')
-        fdict_NL['meta']['suptitle'] = st.replace(fdict_NL['meta']['suptitle'],'NL01','NL02')
-        fdict_NL['figname'] = st.replace(fdict_NL['figname'],'NL01','NL02')
-        
+        fdict_NL['caption'] = st.replace(fdict_NL['caption'], 'NL01', 'NL02')
+        fdict_NL['meta']['suptitle'] = st.replace(fdict_NL['meta']['suptitle'], 'NL01', 'NL02')
+        fdict_NL['figname'] = st.replace(fdict_NL['figname'], 'NL01', 'NL02')
+
         if self.report is not None:
-            self.addFigures_ST(figkeys=['NL01_fit_curves'], 
+            self.addFigures_ST(figkeys=['NL01_fit_curves'],
                                dobuilddata=False)
-        
+
         self.canbecleaned = True
 
     def do_satCTE(self):
@@ -482,12 +484,12 @@ class NL02(NL01.NL01):
 
             select ObsIDs with fluence(exptime) >~ 0.5 FWC
 
-            f.e. ObsID: 
-                CCD: 
+            f.e. ObsID:
+                CCD:
                     Q:
                         measure CTE from amount of charge in over-scan relative to fluence
 
-            f.e. CCD: 
+            f.e. CCD:
                 Q:
                     get curve of CTE vs. fluence
                     measure FWC from curve in ADU

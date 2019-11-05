@@ -69,27 +69,29 @@ def add_checkHK_report(self, report_HK, tag):
 
     return msg_HK
 
-def create_mockexplog(self,OBSID0=1000):
+
+def create_mockexplog(self, OBSID0=1000):
     """ """
-    
+
     logdefaults = {'egse_ver': self.elvis, 'con_file': 'vis_roe_config_cotsqm_273_vn.txt',
                    'fl_rdout': 0, 'ci_rdout': 0,
                    'fpga_ver': '2AC',
-                   'cdpu_clk':0, 'v_tp_mod': 123, 's_tp_mod':31,
+                   'cdpu_clk': 0, 'v_tp_mod': 123, 's_tp_mod': 31,
                    'motr': 1,
                    'R1C1_TT': -153., 'R1C2_TT': -153., 'R1C3_TT': -153.,
                    'R1C1_TB': -153., 'R1C2_TB': -153., 'R1C3_TB': -153., }
-    
-    explog = generate_Explog(self.inputs['structure'],defaults=logdefaults,
-                    elvis=self.elvis,explog=None,
-                    OBSID0=OBSID0,CHAMBER=self.inputs['CHAMBER'])
+
+    explog = generate_Explog(self.inputs['structure'], defaults=logdefaults,
+                             elvis=self.elvis, explog=None,
+                             OBSID0=OBSID0, CHAMBER=self.inputs['CHAMBER'])
     return explog
+
 
 def filterexposures(self, structure, explog, OBSID_lims, colorblind=False, wavedkeys=[],
                     surrogate=''):
     """Loads a list of Exposure Logs and selects exposures from test 'test'.
 
-    The filtering takes into account an expected structure for the 
+    The filtering takes into account an expected structure for the
     acquisition script.
 
     The datapath becomes another column in DataDict. This helps dealing
@@ -98,7 +100,7 @@ def filterexposures(self, structure, explog, OBSID_lims, colorblind=False, waved
 
 
     """
-    
+
     if len(OBSID_lims) == 0:
         OBSID_lims = [explog['ObsID'][0], explog['ObsID'][-1]]
 
@@ -112,7 +114,7 @@ def filterexposures(self, structure, explog, OBSID_lims, colorblind=False, waved
 
     if not colorblind:
 
-        Filters = np.array([structure['col%03i' % i]['wave'] for i in range(1, Ncols+1)])
+        Filters = np.array([structure['col%03i' % i]['wave'] for i in range(1, Ncols + 1)])
         Filter = Filters[0]
         assert np.all(np.array(Filters) == Filter)
 
@@ -125,7 +127,7 @@ def filterexposures(self, structure, explog, OBSID_lims, colorblind=False, waved
         selbool = (explog['test'] == testkey) & \
             (explog['ObsID'] >= OBSID_lims[0]) & \
             (explog['ObsID'] <= OBSID_lims[1])
-        
+
     explog = explog[np.where(selbool)]
 
     # Assess structure
@@ -153,14 +155,14 @@ def add_labels_to_explog(self, explog, structure):
     """ """
     Ncols = structure['Ncols']
 
-    explog['label'] = np.array(['NoneNoneNone']*len(explog))
+    explog['label'] = np.array(['NoneNoneNone'] * len(explog))
 
     frcounter = 0
-    for ic in range(1, Ncols+1):
+    for ic in range(1, Ncols + 1):
         _frames = structure['col%03i' % ic]['frames']
         #print frcounter,frcounter+_frames*3
-        explog['label'][frcounter:frcounter+_frames*3] = 'col%03i' % ic
-        frcounter += _frames*3
+        explog['label'][frcounter:frcounter + _frames * 3] = 'col%03i' % ic
+        frcounter += _frames * 3
 
     return explog
 
@@ -201,30 +203,28 @@ def save_CDP(self, cdpobj):
 
 def get_checkstats_T(self):
     """" """
-    
+
     Xindices = copy.deepcopy(self.dd.indices)
 
     if 'Quad' not in Xindices.names:
         Xindices.append(core.vIndex('Quad', vals=context.Quads))
-        
+
     if 'Spot' in Xindices.names:
         Xindices.pop(Xindices.names.index('Spot'))
-   
+
     valini = 0.
-    
+
     newcolnames = ['chk_NPIXOFF', 'chk_NPIXSAT']
     for newcolname in newcolnames:
         self.dd.initColumn(newcolname, Xindices,
                            dtype='int32', valini=valini)
-    
-    
+
     nObs = len(Xindices.get_vals('ix'))
     CCDs = Xindices.get_vals('CCD')
     Quads = Xindices.get_vals('Quad')
-    
-    
+
     if not self.drill:
-        
+
         for iObs in range(nObs):
             for jCCD, CCDk in enumerate(CCDs):
                 dpath = self.dd.mx['datapath'][iObs, jCCD]
@@ -235,17 +235,18 @@ def get_checkstats_T(self):
                 vend = self.dd.mx['vend'][iObs][jCCD]
 
                 for kQ, Quad in enumerate(Quads):
-                    
-                    qdata = ccdobj.get_quad(Quad,canonical=True,extension=-1)
-                    NPIXOFF = len(np.where(qdata[:,vstart:vend]==0)[0])
-                    NPIXSATUR = len(np.where(qdata[:,vstart:vend]==(2**16-1))[0])
-                    
+
+                    qdata = ccdobj.get_quad(Quad, canonical=True, extension=-1)
+                    NPIXOFF = len(np.where(qdata[:, vstart:vend] == 0)[0])
+                    NPIXSATUR = len(np.where(qdata[:, vstart:vend] == (2**16 - 1))[0])
+
                     self.dd.mx['chk_NPIXOFF'][iObs, jCCD, kQ] = NPIXOFF
                     self.dd.mx['chk_NPIXSAT'][iObs, jCCD, kQ] = NPIXSATUR
 
+
 def check_metrics_T(self):
     """ """
-    
+
     Xindices = self.dd.indices
     CCDs = Xindices.get_vals('CCD')
     #Quads = Xindices.get_vals('Quad')
@@ -253,30 +254,29 @@ def check_metrics_T(self):
     if self.report is not None:
         self.report.add_Section(
             keyword='check_basics', Title='SATURATIONS \& LOST PIXELS', level=1)
-    
+
     # FRACTION OF SATURATED PIXELS
-    
+
     if self.inputs['test'] != 'PERSIST01':
-    
-        _satur_lims = self.perflimits['SATUR']    
+
+        _satur_lims = self.perflimits['SATUR']
         Ncols = self.inputs['structure']['Ncols']
         satur_lims = OrderedDict()
         for CCD in CCDs:
             satur_lims[CCD] = OrderedDict()
-            for icol in range(1,Ncols+1):
+            for icol in range(1, Ncols + 1):
                 satur_lims[CCD]['col%03i' % icol] = _satur_lims[CCD]
         arrSAT = self.dd.mx['chk_NPIXSAT'][:].copy()
-        
-        NQactive = self.ccdcalc.NAXIS1/2. * (self.dd.mx['vend'][:]-self.dd.mx['vstart'][:])
-        NQactive = np.repeat(NQactive[...,np.newaxis],4,axis=-1) # extend to Quads
-        
+
+        NQactive = self.ccdcalc.NAXIS1 / 2. * (self.dd.mx['vend'][:] - self.dd.mx['vstart'][:])
+        NQactive = np.repeat(NQactive[..., np.newaxis], 4, axis=-1)  # extend to Quads
+
         FracSat = arrSAT / NQactive
-        
+
         _compliance_sat = self.check_stat_perCCDandCol(FracSat, satur_lims, CCDs)
-        
-        self.addComplianceMatrix2Self(_compliance_sat,'saturation')
-        
-        
+
+        self.addComplianceMatrix2Self(_compliance_sat, 'saturation')
+
         if not self.IsComplianceMatrixOK(_compliance_sat):
             self.dd.flags.add('POORQUALDATA')
             self.dd.flags.add('SATURATION')
@@ -287,36 +287,33 @@ def check_metrics_T(self):
             self.addComplianceMatrix2Report(
                 _compliance_sat, label='COMPLIANCE SATURATION FRACTION',
                 caption='Fraction (over 1) of CCD image saturated.'
-                    )
-    
+            )
+
     # MISSING PIXELS
-    
+
     NPIX_LOST_mx = self.dd.mx['chk_NPIXOFF'][:].copy()
-    NPIX_LOST = np.sum(NPIX_LOST_mx,axis=(1,2))
-    #NPIX_LOST[:] = 1 # TESTS
+    NPIX_LOST = np.sum(NPIX_LOST_mx, axis=(1, 2))
+    # NPIX_LOST[:] = 1 # TESTS
     ObsID = self.dd.mx['ObsID'][:].copy()
-    
+
     NPIX_LOST_summ = 'LOST PIXELS: '
-    
-    if np.any(NPIX_LOST>0):
+
+    if np.any(NPIX_LOST > 0):
         for iObs, Obs in enumerate(ObsID):
             _NPIX = NPIX_LOST[iObs]
-            if _NPIX>0:
-                NPIX_LOST_summ += '%i (OBSID:%i), ' % (_NPIX,Obs)
-    
+            if _NPIX > 0:
+                NPIX_LOST_summ += '%i (OBSID:%i), ' % (_NPIX, Obs)
+
         NPIX_LOST_summ = NPIX_LOST_summ[0:-2]
-        
+
         self.dd.flags.add('LOSTPIXELS')
-        
-    
+
     else:
-        
+
         NPIX_LOST_summ += ' None'
-    
+
     if self.log is not None:
         self.log.info(NPIX_LOST_summ)
-    
+
     if self.report is not None:
         self.report.add_Text(NPIX_LOST_summ)
-    
-    

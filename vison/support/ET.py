@@ -46,8 +46,8 @@ class ET(object):
     def dial_numbers(self, url):
         """Dials one or more phone numbers from a Twilio phone number.
 
-        :param url: char, URL with the TwiML code that Twilio uses as instructions 
-                    on call. Basically, it provides a message to be voiced, 
+        :param url: char, URL with the TwiML code that Twilio uses as instructions
+                    on call. Basically, it provides a message to be voiced,
                     as intended.
 
         """

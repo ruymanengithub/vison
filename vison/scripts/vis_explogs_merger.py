@@ -24,7 +24,7 @@ def _loader(ELf, elvis):
         return None
     try:
         return loadExpLog(ELf, elvis=elvis)
-    except:
+    except BaseException:
         return None
 
 

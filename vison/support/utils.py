@@ -54,18 +54,18 @@ def get_function_module(level=1, reference='vison'):
 
 
 def get_path_decorator(dpath):
-    def fullinpath_adder(path,extension=''): 
-        if len(extension)==0:
+    def fullinpath_adder(path, extension=''):
+        if len(extension) == 0:
             return os.path.join(dpath, path)
         else:
-            return os.path.join(dpath,'%s.%s' % (path,extension))
+            return os.path.join(dpath, '%s.%s' % (path, extension))
     return np.vectorize(fullinpath_adder)
 
 
-def remove_iter_tag(taskname,Full=False):
+def remove_iter_tag(taskname, Full=False):
     if '.' in taskname:
-        _t =  taskname[0:taskname.find('.')]
-        iteration = int(taskname[taskname.find('.')+1:])
+        _t = taskname[0:taskname.find('.')]
+        iteration = int(taskname[taskname.find('.') + 1:])
         if Full:
             return _t, iteration
         else:
@@ -76,10 +76,12 @@ def remove_iter_tag(taskname,Full=False):
         else:
             return taskname
 
-def vec_remove_iter_tag(taskslist,Full=False):
-    return np.vectorize(remove_iter_tag)(taskslist,Full).tolist()
 
-def safe_open_file(path,prefix=''):
+def vec_remove_iter_tag(taskslist, Full=False):
+    return np.vectorize(remove_iter_tag)(taskslist, Full).tolist()
+
+
+def safe_open_file(path, prefix=''):
     _, temp_path = tempfile.mkstemp(prefix=prefix)
     shutil.copy2(path, temp_path)
     f = open(temp_path)

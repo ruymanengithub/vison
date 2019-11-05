@@ -33,9 +33,9 @@ def get_dtobj(DT):
         century = 2000
     else:
         century = 1900
-    dd, MM, yy = int(date[0:2]), int(date[2:4]), y2d+century
+    dd, MM, yy = int(date[0:2]), int(date[2:4]), y2d + century
 
-    time = DT[DT.index('D')+1:-1]
+    time = DT[DT.index('D') + 1:-1]
 
     hh, mm, ss = int(time[0:2]), int(time[2:4]), int(time[4:6])
 
