@@ -294,7 +294,7 @@ class Json_CDP(CDP):
     def savehardcopy(self, filef=''):
         """ """
         if filef == '':
-            filef = os.path.join(self.path, '%s.fits' % self.rootname)
+            filef = os.path.join(self.path, self.rootname)
         if os.path.exists(filef):
             os.system('rm %s' % filef)
         
