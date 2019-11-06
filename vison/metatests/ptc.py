@@ -267,21 +267,21 @@ class MetaPTC(MetaCal):
 
     def _extract_GAIN_fromPT(self, PT, block, CCDk, Q):
         """ """
-        ixblock = self.get_ixblock(self, PT, block)
+        ixblock = self.get_ixblock(PT, block)
         column = 'GAIN_%s_Quad%s' % (CCDk, Q)
         G = PT[column][ixblock][0]
         return G
 
     def _extract_HER_fromPT(self, PT, block, CCDk, Q):
         """ """
-        ixblock = self.get_ixblock(self, PT, block)
+        ixblock = self.get_ixblock(PT, block)
         column = 'HER_%s_Quad%s' % (CCDk, Q)
         HER = PT[column][ixblock][0]
         return HER
 
     def _extract_BADU_fromPT(self, PT, block, CCDk, Q):
         """ """
-        ixblock = self.get_ixblock(self, PT, block)
+        ixblock = self.get_ixblock(PT, block)
 
         column = 'BLOOM_ADU_%s_Quad%s' % (CCDk, Q)
         badu = PT[column][ixblock][0]
@@ -292,7 +292,7 @@ class MetaPTC(MetaCal):
 
     def _extract_BE_fromPT(self, PT, block, CCDk, Q):
         """ """
-        ixblock = self.get_ixblock(self, PT, block)
+        ixblock = self.get_ixblock(PT, block)
 
         column = 'BLOOM_E_%s_Quad%s' % (CCDk, Q)
         be = PT[column][ixblock][0]

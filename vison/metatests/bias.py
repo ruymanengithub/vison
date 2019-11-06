@@ -14,6 +14,8 @@ from collections import OrderedDict
 import string as st
 import os
 
+from vison.datamodel import cdp
+from vison.support import utils
 from vison.support import files
 from vison.fpa import fpa as fpamod
 
@@ -23,7 +25,7 @@ from vison.plot import plots_fpa as plfpa
 from vison.support import vcal
 from vison.datamodel import core as vcore
 from vison.ogse import ogse
-from vison.support import vjson
+#from vison.support import vjson
 
 
 from matplotlib import pyplot as plt
@@ -159,6 +161,7 @@ class MetaBias(MetaCal):
             self.cdps['GAIN'][block] = allgains[block]['PTC01'].copy()
 
         self.init_fignames()
+        self.init_outcdpnames()
 
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
@@ -244,29 +247,49 @@ class MetaBias(MetaCal):
 
         return sit
 
-    def _get_extractor_RON_fromPT(self, units):
+    def _get_extractor_RON_fromPT(self, units, reg):
         """ """
 
         def _extract_RON_fromPT(PT, block, CCDk, Q):
-            ixblock = self.get_ixblock(self, PT, block)
-            column = 'RON_OVE_%s_Quad%s' % (CCDk, Q)
-
+            
+            ixblock = self.get_ixblock(PT, block)
+            
             if units == 'ADU':
                 unitsConvFactor = 1
             elif units == 'E':
                 unitsConvFactor = self.cdps['GAIN'][block][CCDk][Q][0]
-
-            RON = np.nanmedian(PT[column][ixblock]) * unitsConvFactor
+            
+            if reg != 'all':            
+                column = 'RON_%s_%s_Quad%s' % (reg.upper(),CCDk, Q)
+                RON = np.nanmedian(PT[column][ixblock]) * unitsConvFactor
+            else:
+                RON=OrderedDict()
+                for _reg in ['pre','img','ove']:
+                    column = 'RON_%s_%s_Quad%s' % (_reg.upper(),CCDk, Q)
+                    RON[_reg] = np.nanmedian(PT[column][ixblock]) * unitsConvFactor
+            
             return RON
 
         return _extract_RON_fromPT
-
-    def _extract_OFFSET_fromPT(self, PT, block, CCDk, Q):
+    
+    def _get_extractor_OFFSET_fromPT(self, reg):
         """ """
-        ixblock = self.get_ixblock(self, PT, block)
-        column = 'OFF_OVE_%s_Quad%s' % (CCDk, Q)
-        RON = np.nanmedian(PT[column][ixblock])
-        return RON
+    
+        def _extractor(PT, block, CCDk, Q):
+            """ """
+            ixblock = self.get_ixblock(PT, block)
+            
+            if reg != 'all':            
+                column = 'OFF_%s_%s_Quad%s' % (reg.upper(),CCDk, Q)
+                OFF = np.nanmedian(PT[column][ixblock])
+            else:
+                OFF=OrderedDict()
+                for _reg in ['pre','img','ove']:
+                    column = 'OFF_%s_%s_Quad%s' % (_reg.upper(),CCDk, Q)
+                    OFF[_reg] = np.nanmedian(PT[column][ixblock])
+            return OFF
+        
+        return _extractor
 
     def init_fignames(self):
         """ """
@@ -276,18 +299,29 @@ class MetaBias(MetaCal):
 
         for testname in self.testnames:
             self.figs['RON_ADU_%s' % testname] = os.path.join(self.figspath,
-                                                              'RON_ADU_MAP_%s.png' % testname)
-            self.figs['RONADU_MAP_%s_json' % testname] = os.path.join(
-                self.figspath, 'RON_ADU_MAP_%s.json' % testname)
+                                                              '%s_RON_ADU_MAP.png' % testname)
             self.figs['RON_ELE_%s' % testname] = os.path.join(self.figspath,
-                                                              'RON_ELE_MAP_%s.png' % testname)
+                                                              '%s_RON_ELE_MAP.png' % testname)
             self.figs['OFFSETS_%s' % testname] = os.path.join(self.figspath,
-                                                              'OFFSETS_MAP_%s.png' % testname)
-            self.figs['OFFSETS_%s_json' % testname] = os.path.join(self.figspath,
-                                                                   'OFFSETS_MAP_%s.json' % testname)
+                                                              '%s_OFFSETS_MAP.png' % testname)
+
+    def init_outcdpnames(self):
+        """ """
+
+        if not os.path.exists(self.cdpspath):
+            os.system('mkdir %s' % self.cdpspath)
+
+        for testname in self.testnames:
+            self.outcdps['RON_ADU_%s' % testname] = '%s_RON_ADU_MAP.json' % testname          
+            self.outcdps['OFFSETS_%s' % testname] = '%s_OFFSETS_MAP.json' % testname
+
 
     def dump_aggregated_results(self):
         """ """
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
 
         # RON maps (all tests/waves)
 
@@ -297,20 +331,37 @@ class MetaBias(MetaCal):
             RONADUMAP = self.get_FPAMAP_from_PT(
                 self.ParsedTable[testname],
                 extractor=self._get_extractor_RON_fromPT(
-                    units='ADU'))
-
-            vjson.save_jsonfile(RONADUMAP, self.figs['RONADU_MAP_%s_json' % testname])
+                    units='ADU',
+                    reg='all'))
+            
+            rn_header = OrderedDict()
+            rn_header['title'] = 'RON MAP'
+            rn_header.update(CDP_header)
+            
+            rn_cdp = cdp.Json_CDP(rootname=self.outcdps['RON_ADU_%s' % testname],
+                              path=self.cdpspath)
+            rn_cdp.ingest_inputs(data=RONADUMAP,
+                             header = rn_header,
+                             meta=dict(units='ADU'))
+            rn_cdp.savehardcopy()
+            
+            RON_OVE_ADUMAP = self.get_FPAMAP_from_PT(
+                self.ParsedTable[testname],
+                extractor=self._get_extractor_RON_fromPT(
+                    units='ADU',
+                    reg='ove'))
 
             stestname = st.replace(testname, '_', '\_')
-            self.plot_SimpleMAP(RONADUMAP, **dict(
-                suptitle='%s: RON [ADU]' % stestname,
+            self.plot_SimpleMAP(RON_OVE_ADUMAP, **dict(
+                suptitle='%s [OVERSCAN]: RON [ADU]' % stestname,
                 figname=self.figs['RON_ADU_%s' % testname]))
 
         # RON maps, ELECTRONs
         for testname in self.testnames:
 
             RONEMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname],
-                                              extractor=self._get_extractor_RON_fromPT(units='E'))
+                                              extractor=self._get_extractor_RON_fromPT(units='E',
+                                                                                       reg='ove'))
 
             stestname = st.replace(testname, '_', '\_')
             self.plot_SimpleMAP(RONEMAP, **dict(
@@ -323,11 +374,25 @@ class MetaBias(MetaCal):
 
             OFFMAP = self.get_FPAMAP_from_PT(
                 self.ParsedTable[testname],
-                extractor=self._extract_OFFSET_fromPT)
-
-            vjson.save_jsonfile(OFFMAP, self.figs['OFFSETS_%s_json' % testname])
+                extractor=self._get_extractor_OFFSET_fromPT(reg='all'))
+            
+            off_header = OrderedDict()
+            off_header['title'] = 'OFFSETS MAP'
+            off_header.update(CDP_header)
+            
+            off_cdp = cdp.Json_CDP(rootname=self.outcdps['OFFSETS_%s' % testname],
+                              path=self.cdpspath)
+            off_cdp.ingest_inputs(data=OFFMAP,
+                             header = off_header,
+                             meta=dict(units='ADU'))
+            off_cdp.savehardcopy()
+            
+            OFF_OVE_MAP = self.get_FPAMAP_from_PT(
+                self.ParsedTable[testname],
+                extractor=self._get_extractor_OFFSET_fromPT(reg='ove'))
+            
 
             stestname = st.replace(testname, '_', '\_')
-            self.plot_SimpleMAP(OFFMAP, **dict(
-                suptitle='%s: OFFSET' % stestname,
+            self.plot_SimpleMAP(OFF_OVE_MAP, **dict(
+                suptitle='%s [OVERSCAN]: OFFSET' % stestname,
                 figname=self.figs['OFFSETS_%s' % testname]))

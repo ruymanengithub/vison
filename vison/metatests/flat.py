@@ -297,7 +297,7 @@ class MetaFlat(MetaCal):
         """ """
 
         def _extract_PRNU_fromPT(PT, block, CCDk, Q):
-            ixblock = self.get_ixblock(self, PT, block)
+            ixblock = self.get_ixblock(PT, block)
             column = 'PRNU_PC_%s_%s_Quad%s' % (colkey.upper(), CCDk, Q)
 
             PRNU = PT[column][ixblock][0]

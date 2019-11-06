@@ -277,14 +277,14 @@ class MetaTPX1(MetaCal):
 
     def _extract_NDIP_fromPT(self, PT, block, CCDk, Q):
         """ """
-        ixblock = self.get_ixblock(self, PT, block)
+        ixblock = self.get_ixblock(PT, block)
         column = 'DIP_COUNT_%s_Quad%s' % (CCDk, Q)
         NDIP = np.nanmedian(PT[column][ixblock])
         return NDIP
 
     def _extract_TAU_fromPT(self, PT, block, CCDk, Q):
         """ """
-        ixblock = self.get_ixblock(self, PT, block)
+        ixblock = self.get_ixblock(PT, block)
         column = 'DIP_TAU_%s_Quad%s' % (CCDk, Q)
         AVTAU = np.nanmedian(PT[column][ixblock])
         return AVTAU
@@ -292,7 +292,7 @@ class MetaTPX1(MetaCal):
     def _extract_INJ_fromPT(self, PT, block, CCDk, Q):
         """ """
 
-        ixblock = self.get_ixblock(self, PT, block)
+        ixblock = self.get_ixblock(PT, block)
         if Q in ['E', 'F']:
             column = 'INJ_BOT_%s_Quad%s' % (CCDk, Q)
         elif Q in ['G', 'H']:

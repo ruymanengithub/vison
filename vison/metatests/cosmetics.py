@@ -288,7 +288,7 @@ class MetaCosmetics(MetaCal):
     def _get_extractor_LOGNDEF_fromPT(self, maskkey):
 
         def _extract_LOGNDEF_fromPT(PT, block, CCDk, Q):
-            ixblock = self.get_ixblock(self, PT, block)
+            ixblock = self.get_ixblock(PT, block)
             column = 'N%s_%s_Quad%s' % (maskkey, CCDk, Q)
             LOGNDEF = np.log10(max(PT[column][ixblock][0], 1))
             return LOGNDEF

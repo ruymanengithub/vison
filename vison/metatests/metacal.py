@@ -17,6 +17,7 @@ from astropy import table
 import glob
 import gc
 
+from vison import __version__
 from vison.support import files
 from vison.support import vjson
 from vison.datamodel import core as vcore
@@ -82,11 +83,22 @@ class MetaCal(object):
         self.roeVCals = dict()
         self.init_roeVCals()
         self.cdps = OrderedDict()
+        self.outcdps = OrderedDict()
         self.figs = dict()
         self.figspath = os.path.join(self.outpathroot, 'figs')
+        self.cdpspath = os.path.join(self.outpathroot, 'cdps')
+
+        self.CDP_header = OrderedDict()
+        self.CDP_header['vison']=__version__
+        self.CDP_header['fpa_design'] = design
+        self.CDP_header['FPA'] = self.fpa.FPA_MAP.copy()
+        self.CDP_header['vcalfile'] = os.path.split(self.vcalfile)[-1]
 
     def init_fignames(self):
-        pass
+        raise NotImplementedError("Subclass must implement abstract method")
+    
+    def init_outcdpnames(self):
+        raise NotImplementedError("Subclass must implement abstract method")
 
     def run(self, doLoad=True, doParse=True, doDump=True, doReport=True):
         """ """

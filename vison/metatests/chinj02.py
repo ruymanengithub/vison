@@ -245,7 +245,7 @@ class MetaChinj02(MetaCal):
 
     def _extract_IDLTHRESH_fromPT(self, PT, block, CCDk, Q):
 
-        ixblock = self.get_ixblock(self, PT, block)
+        ixblock = self.get_ixblock(PT, block)
         column = 'FIT_IDL_THRESH_%s_Quad%s' % (CCDk, Q)
         if len(ixblock[0]) > 0:
             idl_thresh = np.nanmedian(PT[column][ixblock])

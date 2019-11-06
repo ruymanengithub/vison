@@ -252,7 +252,7 @@ class MetaChinj01(MetaCal):
 
         def _extract_NOTCH_fromPT(PT, block, CCDk, Q):
 
-            ixblock = self.get_ixblock(self, PT, block)
+            ixblock = self.get_ixblock(PT, block)
             column = 'FIT_N_ADU_%s_Quad%s' % (CCDk, Q)
 
             if units == 'ADU':

@@ -14,9 +14,11 @@ from collections import OrderedDict
 import string as st
 import os
 
-from vison.support import vjson
+#from vison.support import vjson
+from vison.datamodel import cdp
 from vison.support import files
 from vison.fpa import fpa as fpamod
+from vison.support import utils
 
 from vison.metatests.metacal import MetaCal
 from vison.plot import plots_fpa as plfpa
@@ -160,6 +162,7 @@ class MetaMOT(MetaCal):
         self.products['RAMPS'] = OrderedDict()
 
         self.init_fignames()
+        self.init_outcdpnames()
 
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
@@ -215,7 +218,7 @@ class MetaMOT(MetaCal):
 
                 rwdvs_off_v[0, iCCD, kQ] = sidd.products['rwdvs_off_mx'][iCCD, kQ]
                 rwdvs_ron_v[0, iCCD, kQ] = sidd.products['rwdvs_ron_mx'][iCCD, kQ]
-
+        
         sidd.addColumn(rwdvs_off_v, 'RWDVS_OFF', IndexCQ)
         sidd.addColumn(rwdvs_ron_v, 'RWDVS_RON', IndexCQ)
 
@@ -279,35 +282,47 @@ class MetaMOT(MetaCal):
         return sit
 
     def _extract_INJ_fromPT(self, PT, block, CCDk, Q):
-        ixblock = self.get_ixblock(self, PT, block)
+        ixblock = self.get_ixblock(PT, block)
         column = 'INJECTION_%s_Quad%s' % (CCDk, Q)
 
         injection = PT[column][ixblock][0]
         return injection
 
     def _extract_RON_fromPT(self, PT, block, CCDk, Q):
-        ixblock = self.get_ixblock(self, PT, block)
+        ixblock = self.get_ixblock(PT, block)
         column = 'RWDVS_RON_%s_Quad%s' % (CCDk, Q)
 
         ron = PT[column][ixblock][0]
         return ron
 
     def _extract_OFF_RWDVS_fromPT(self, PT, block, CCDk, Q):
-        ixblock = self.get_ixblock(self, PT, block)
+        ixblock = self.get_ixblock(PT, block)
         column = 'RWDVS_OFF_%s_Quad%s' % (CCDk, Q)
 
         off = int(PT[column][ixblock][0])
         return off
+    
+    def _get_extractor_OFF_FWD_fromPT(self, reg):
 
-    def _extract_OFF_PREFWD_fromPT(self, PT, block, CCDk, Q):
-        ixblock = self.get_ixblock(self, PT, block)
-        column = 'offset_pre_%s_Quad%s' % (CCDk, Q)
-
-        off = int(PT[column][ixblock][0])
-        return off
+        def _extractor(PT, block, CCDk, Q):
+            
+            ixblock = self.get_ixblock(PT, block)
+            
+            if reg != 'all':
+                column = 'offset_%s_%s_Quad%s' % (reg, CCDk, Q)                            
+                off = int(PT[column][ixblock][0])
+            elif reg == 'all':
+                off = OrderedDict()
+                for _reg in ['pre','img','ove']:
+                    column = 'offset_%s_%s_Quad%s' % (_reg, CCDk, Q)                            
+                    off[_reg] = int(PT[column][ixblock][0])
+                
+            return off
+        
+        return _extractor
 
     def _extract_RAMP_fromPT(self, PT, block, CCDk, Q):
-        ixblock = self.get_ixblock(self, PT, block)
+        ixblock = self.get_ixblock(PT, block)
         column = 'RAMPKEYS_%s' % (CCDk,)
         rampkey = PT[column][ixblock][0]
 
@@ -322,51 +337,88 @@ class MetaMOT(MetaCal):
 
         if not os.path.exists(self.figspath):
             os.system('mkdir %s' % self.figspath)
-
-        self.figs['RAMP_MAP_json'] = os.path.join(self.figspath,
-                                                  'RAMP_MAP.json')
+            
 
         self.figs['INJ_MAP'] = os.path.join(self.figspath,
-                                            'INJECTION_MAP.png')
+                                            'MOT_WARM_INJECTION_MAP.png')
 
-        self.figs['INJ_MAP_json'] = os.path.join(self.figspath,
-                                                 'INJECTION_MAP.json')
 
         self.figs['RON_MAP'] = os.path.join(self.figspath,
-                                            'RON_MAP.png')
+                                            'MOT_WARM_RON_MAP.png')
 
-        self.figs['RON_MAP_json'] = os.path.join(self.figspath,
-                                                 'RON_MAP.json')
 
         self.figs['OFF_RWDVS_MAP'] = os.path.join(self.figspath,
-                                                  'OFF_RWDVS_MAP.png')
+                                                  'MOT_WARM_OFF_RWDVS_MAP.png')
 
-        self.figs['OFF_RWDVS_MAP_json'] = os.path.join(self.figspath,
-                                                       'OFF_RWDVS_MAP.json')
 
         self.figs['OFF_PREFWD_MAP'] = os.path.join(self.figspath,
-                                                   'OFF_PREFWD_MAP.png')
+                                                   'MOT_WARM_OFF_PREFWD_MAP.png')
 
-        self.figs['OFF_PREFWD_MAP_json'] = os.path.join(self.figspath,
-                                                        'OFF_PREFWD_MAP.json')
+
+    def init_outcdpnames(self):
+        """ """
+
+        if not os.path.exists(self.cdpspath):
+            os.system('mkdir %s' % self.cdpspath)
+
+        self.outcdps['RAMP_MAP_json'] = 'MOT_WARM_RAMP_MAP.json'
+
+
+        self.outcdps['INJ_MAP_json'] = 'MOT_WARM_INJECTION_MAP.json'
+
+
+        self.outcdps['RON_MAP_json'] ='MOT_WARM_RON_MAP.json'
+
+
+        self.outcdps['OFF_RWDVS_MAP_json'] = 'MOT_WARM_OFF_RWDVS_MAP.json'
+        
+
+        self.outcdps['OFF_FWD_MAP_json'] ='MOT_WARM_OFF_PREFWD_MAP.json'
+
+
 
     def dump_aggregated_results(self):
         """ """
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        
 
         # SAVING FWD RAMPs' slope & intercept
 
         RAMPMAP = self.get_FPAMAP_from_PT(self.ParsedTable['MOT_WARM'],
                                           extractor=self._extract_RAMP_fromPT)
-
-        vjson.save_jsonfile(RAMPMAP, self.figs['RAMP_MAP_json'])
+        
+        rm_header = OrderedDict()
+        rm_header['title'] = 'RAMP MAP'
+        rm_header.update(CDP_header)
+                
+        rm_cdp = cdp.Json_CDP(rootname=self.outcdps['RAMP_MAP_json'],
+                              path=self.cdpspath)
+        rm_cdp.ingest_inputs(data=RAMPMAP,
+                             header = rm_header,
+                             meta=dict(units='ADU/row, ADU'))
+        rm_cdp.savehardcopy()
+        
 
         # Injection map., ADUs
 
         INJMAP = self.get_FPAMAP_from_PT(self.ParsedTable['MOT_WARM'],
                                          extractor=self._extract_INJ_fromPT)
-
-        vjson.save_jsonfile(INJMAP, self.figs['INJ_MAP_json'])
-
+        
+        ci_header = OrderedDict()
+        ci_header['title'] = 'CHARGE INJECTION MAP'
+        ci_header.update(CDP_header)
+                
+        ci_cdp = cdp.Json_CDP(rootname=self.outcdps['INJ_MAP_json'],
+                              path=self.cdpspath)
+        ci_cdp.ingest_inputs(data=INJMAP,
+                             header = ci_header,
+                             meta=dict(units='ADU'))
+        ci_cdp.savehardcopy()
+        
+        
         self.plot_SimpleMAP(INJMAP, **dict(
             suptitle='MOT\_WARM: INJECTION LEVEL [ADU]',
             figname=self.figs['INJ_MAP']
@@ -377,7 +429,17 @@ class MetaMOT(MetaCal):
         RONMAP = self.get_FPAMAP_from_PT(self.ParsedTable['MOT_WARM'],
                                          extractor=self._extract_RON_fromPT)
 
-        vjson.save_jsonfile(RONMAP, self.figs['RON_MAP_json'])
+        
+        rn_header = OrderedDict()
+        rn_header['title'] = 'RON MAP [RWDVS]'
+        rn_header.update(CDP_header)
+                
+        rn_cdp = cdp.Json_CDP(rootname=self.outcdps['RON_MAP_json'],
+                              path=self.cdpspath)
+        rn_cdp.ingest_inputs(data=RONMAP,
+                             header = rn_header,
+                             meta=dict(units='ADU'))
+        rn_cdp.savehardcopy()
 
         self.plot_SimpleMAP(RONMAP, **dict(
             suptitle='MOT\_WARM: RON [ADU]',
@@ -385,13 +447,25 @@ class MetaMOT(MetaCal):
         ))
 
         # RON map, ELECTRONs
+        
+        
 
         # OFFSET map (RWDVS)
 
         OFF_RWDVS_MAP = self.get_FPAMAP_from_PT(self.ParsedTable['MOT_WARM'],
                                                 extractor=self._extract_OFF_RWDVS_fromPT)
-
-        vjson.save_jsonfile(OFF_RWDVS_MAP, self.figs['OFF_RWDVS_MAP_json'])
+        
+        offrwdvs_header = OrderedDict()
+        offrwdvs_header['title'] = 'OFFSET MAP [RWDVS]'
+        offrwdvs_header.update(CDP_header)
+                
+        offrwdvs_cdp = cdp.Json_CDP(rootname=self.outcdps['OFF_RWDVS_MAP_json'],
+                              path=self.cdpspath)
+        offrwdvs_cdp.ingest_inputs(data=OFF_RWDVS_MAP,
+                             header = offrwdvs_header,
+                             meta=dict(units='ADU'))
+        offrwdvs_cdp.savehardcopy()
+        
 
         self.plot_SimpleMAP(OFF_RWDVS_MAP, **dict(
             suptitle='MOT\_WARM: OFFSET, RWDVS [ADU]',
@@ -399,13 +473,26 @@ class MetaMOT(MetaCal):
         ))
 
         # OFFSET map (FWD, PRE)
-
-        OFF_PREFWD_MAP = self.get_FPAMAP_from_PT(self.ParsedTable['MOT_WARM'],
-                                                 extractor=self._extract_OFF_PREFWD_fromPT)
-
-        vjson.save_jsonfile(OFF_PREFWD_MAP, self.figs['OFF_PREFWD_MAP_json'])
-
+        
+        OFF_FWD_MAP = self.get_FPAMAP_from_PT(self.ParsedTable['MOT_WARM'],
+                                                 extractor=self._get_extractor_OFF_FWD_fromPT('all'))
+        
+        offfwd_header = OrderedDict()
+        offfwd_header['title'] = 'OFFSET MAP [FWD]'
+        offfwd_header.update(CDP_header)
+                
+        offfwd_cdp = cdp.Json_CDP(rootname=self.outcdps['OFF_FWD_MAP_json'],
+                              path=self.cdpspath)
+        offfwd_cdp.ingest_inputs(data=OFF_FWD_MAP,
+                             header = offfwd_header,
+                             meta=dict(units='ADU'))
+        offfwd_cdp.savehardcopy()
+        
+        
+        OFF_PREFWD_MAP  = self.get_FPAMAP_from_PT(self.ParsedTable['MOT_WARM'],
+                                                 extractor=self._get_extractor_OFF_FWD_fromPT('pre'))
+        
         self.plot_SimpleMAP(OFF_PREFWD_MAP, **dict(
-            suptitle='MOT\_WARM: OFFSET, PRESCAN FWD [ADU]',
+            suptitle='MOT\_WARM: OFFSET, PRE-SCAN FWD [ADU]',
             figname=self.figs['OFF_PREFWD_MAP']
         ))
