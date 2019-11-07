@@ -210,15 +210,18 @@ class MetaMOT(MetaCal):
 
         tmp_v_CQ = np.zeros((1, NCCDs, NQuads))
 
-        rwdvs_off_v = tmp_v_CQ.copy()
+        rwdv_off_v = tmp_v_CQ.copy()
+        rwdvs_off_v = tmp_v_CQ.copy()        
         rwdvs_ron_v = tmp_v_CQ.copy()
 
         for iCCD, CCDk in enumerate(CCDkeys):
             for kQ, Q in enumerate(self.Quads):
-
+                
+                rwdv_off_v[0, iCCD, kQ] = sidd.products['rwdv_off_mx'][iCCD, kQ]
                 rwdvs_off_v[0, iCCD, kQ] = sidd.products['rwdvs_off_mx'][iCCD, kQ]
                 rwdvs_ron_v[0, iCCD, kQ] = sidd.products['rwdvs_ron_mx'][iCCD, kQ]
         
+        sidd.addColumn(rwdv_off_v, 'RWDV_OFF', IndexCQ)
         sidd.addColumn(rwdvs_off_v, 'RWDVS_OFF', IndexCQ)
         sidd.addColumn(rwdvs_ron_v, 'RWDVS_RON', IndexCQ)
 
@@ -294,6 +297,13 @@ class MetaMOT(MetaCal):
 
         ron = PT[column][ixblock][0]
         return ron
+    
+    def _extract_OFF_RWDV_fromPT(self, PT, block, CCDk, Q):
+        ixblock = self.get_ixblock(PT, block)
+        column = 'RWDV_OFF_%s_Quad%s' % (CCDk, Q)
+
+        off = int(PT[column][ixblock][0])
+        return off
 
     def _extract_OFF_RWDVS_fromPT(self, PT, block, CCDk, Q):
         ixblock = self.get_ixblock(PT, block)
@@ -369,11 +379,11 @@ class MetaMOT(MetaCal):
 
         self.outcdps['RON_MAP_json'] ='MOT_WARM_RON_MAP.json'
 
-
+        self.outcdps['OFF_RWDVS_MAP_json'] = 'MOT_WARM_OFF_RWDVS_MAP.json'
         self.outcdps['OFF_RWDVS_MAP_json'] = 'MOT_WARM_OFF_RWDVS_MAP.json'
         
 
-        self.outcdps['OFF_FWD_MAP_json'] ='MOT_WARM_OFF_PREFWD_MAP.json'
+        self.outcdps['OFF_FWD_MAP_json'] ='MOT_WARM_OFF_FWD_MAP.json'
 
 
 
@@ -447,6 +457,23 @@ class MetaMOT(MetaCal):
         ))
 
         # RON map, ELECTRONs
+        
+        
+        # OFFSET map (RWDV)
+
+        OFF_RWDV_MAP = self.get_FPAMAP_from_PT(self.ParsedTable['MOT_WARM'],
+                                                extractor=self._extract_OFF_RWDV_fromPT)
+        
+        offrwdv_header = OrderedDict()
+        offrwdv_header['title'] = 'OFFSET MAP [RWDV]'
+        offrwdv_header.update(CDP_header)
+                
+        offrwdv_cdp = cdp.Json_CDP(rootname=self.outcdps['OFF_RWDV_MAP_json'],
+                              path=self.cdpspath)
+        offrwdv_cdp.ingest_inputs(data=OFF_RWDV_MAP,
+                             header = offrwdv_header,
+                             meta=dict(units='ADU'))
+        offrwdv_cdp.savehardcopy()
         
         
 
