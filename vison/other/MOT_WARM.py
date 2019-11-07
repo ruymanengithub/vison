@@ -558,12 +558,14 @@ class MOT_WARM(DarkTask):
             #       OFFSET matrix (CCDs x Qs)
             _RON_RV_matrix = self.dd.mx['std_img'][ObsIDdict['BIAS_RV'], ...].copy()
             _RON_RVS_matrix = self.dd.mx['std_img'][ObsIDdict['BIAS_RVS'], ...].copy()            
-            _OFF_matrix = self.dd.mx['offset_img'][ObsIDdict['BIAS_RVS'], ...].copy()
+            _OFF_RVS_matrix = self.dd.mx['offset_img'][ObsIDdict['BIAS_RVS'], ...].copy()
+            _OFF_RV_matrix = self.dd.mx['offset_img'][ObsIDdict['BIAS_RV'], ...].copy()
             
-            self.dd.products['rwdv_ron_mx'] = _RON_RV_matrix.copy()
-            
+            self.dd.products['rwdv_ron_mx'] = _RON_RV_matrix.copy()            
             self.dd.products['rwdvs_ron_mx'] = _RON_RVS_matrix.copy()
-            self.dd.products['rwdvs_off_mx'] = _OFF_matrix.copy()
+
+            self.dd.products['rwdvs_off_mx'] = _OFF_RVS_matrix.copy()            
+            self.dd.products['rwdv_off_mx'] = _OFF_RV_matrix.copy()
 
             _RON_RVS_matrix_reshaped = _RON_RVS_matrix[np.newaxis, ...].copy()
             RON_lims = self.perflimits['RONs_lims']
