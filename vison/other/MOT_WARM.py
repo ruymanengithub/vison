@@ -556,18 +556,30 @@ class MOT_WARM(DarkTask):
             # RWD-VS
             # BIAS: RON matrix (CCDs x Qs)
             #       OFFSET matrix (CCDs x Qs)
-            _RON_RV_matrix = self.dd.mx['std_img'][ObsIDdict['BIAS_RV'], ...].copy()
-            _RON_RVS_matrix = self.dd.mx['std_img'][ObsIDdict['BIAS_RVS'], ...].copy()            
-            _OFF_RVS_matrix = self.dd.mx['offset_img'][ObsIDdict['BIAS_RVS'], ...].copy()
-            _OFF_RV_matrix = self.dd.mx['offset_img'][ObsIDdict['BIAS_RV'], ...].copy()
             
-            self.dd.products['rwdv_ron_mx'] = _RON_RV_matrix.copy()            
-            self.dd.products['rwdvs_ron_mx'] = _RON_RVS_matrix.copy()
+            for reg in ['pre','img','ove']:
+            
+                _RON_RVS_reg_matrix = self.dd.mx['std_%s' % reg][ObsIDdict['BIAS_RVS'], ...].copy()            
+                _OFF_RVS_reg_matrix = self.dd.mx['offset_%s' % reg][ObsIDdict['BIAS_RVS'], ...].copy()
+                
+                self.dd.products['rwdvs_ron_%s_mx' % reg] = _RON_RVS_reg_matrix.copy()
+                self.dd.products['rwdvs_off_%s_mx' % reg] = _OFF_RVS_reg_matrix.copy()
+            
+                _RON_RV_reg_matrix = self.dd.mx['std_%s' % reg][ObsIDdict['BIAS_RV'], ...].copy()
+                _OFF_RV_reg_matrix = self.dd.mx['offset_%s' % reg][ObsIDdict['BIAS_RV'], ...].copy()
+            
+                self.dd.products['rwdv_ron_%s_mx' % reg] = _RON_RV_reg_matrix.copy()
+                self.dd.products['rwdv_off_%s_mx' % reg] = _OFF_RV_reg_matrix.copy()
+            
+                
+                _RON_FWD_reg_matrix = self.dd.mx['std_%s' % reg][ObsIDdict['RAMP'], ...].copy()
+                _OFF_FWD_reg_matrix = self.dd.mx['offset_%s' % reg][ObsIDdict['RAMP'], ...].copy()
+            
+                self.dd.products['fwd_ron_%s_mx' % reg] = _RON_FWD_reg_matrix.copy()
+                self.dd.products['fwd_off_%s_mx' % reg] = _OFF_FWD_reg_matrix.copy()
+                
 
-            self.dd.products['rwdvs_off_mx'] = _OFF_RVS_matrix.copy()            
-            self.dd.products['rwdv_off_mx'] = _OFF_RV_matrix.copy()
-
-            _RON_RVS_matrix_reshaped = _RON_RVS_matrix[np.newaxis, ...].copy()
+            _RON_RVS_matrix_reshaped = self.dd.products['rwdvs_ron_img_mx'][np.newaxis, ...].copy()
             RON_lims = self.perflimits['RONs_lims']
 
             _compliance_RON = Task.check_stat_perCCDandQ(self, _RON_RVS_matrix_reshaped,
