@@ -304,4 +304,18 @@ class Json_CDP(CDP):
         outdict['data'] = self.data.copy()
         
         vjson.save_jsonfile(outdict, filef)
+    
+    def loadhardcopy(self, filef=''):
+        """ """
+        if filef == '':
+            filef = os.path.join(self.path, self.rootname)
+            
+        outdict = vjson.load_jsonfile(filef, useyaml=True)
+        
+        self.header = outdict['header'].copy()
+        self.meta = outdict['meta'].copy()
+        self.data = outdict['data'].copy()
+        
+        
+        
         
