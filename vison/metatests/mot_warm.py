@@ -209,21 +209,27 @@ class MetaMOT(MetaCal):
         sidd.addColumn(test_v, 'TEST', IndexS, ix=0)
 
         tmp_v_CQ = np.zeros((1, NCCDs, NQuads))
-
-        rwdv_off_v = tmp_v_CQ.copy()
-        rwdvs_off_v = tmp_v_CQ.copy()        
-        rwdvs_ron_v = tmp_v_CQ.copy()
-
-        for iCCD, CCDk in enumerate(CCDkeys):
-            for kQ, Q in enumerate(self.Quads):
-                
-                rwdv_off_v[0, iCCD, kQ] = sidd.products['rwdv_off_mx'][iCCD, kQ]
-                rwdvs_off_v[0, iCCD, kQ] = sidd.products['rwdvs_off_mx'][iCCD, kQ]
-                rwdvs_ron_v[0, iCCD, kQ] = sidd.products['rwdvs_ron_mx'][iCCD, kQ]
         
-        sidd.addColumn(rwdv_off_v, 'RWDV_OFF', IndexCQ)
-        sidd.addColumn(rwdvs_off_v, 'RWDVS_OFF', IndexCQ)
-        sidd.addColumn(rwdvs_ron_v, 'RWDVS_RON', IndexCQ)
+        
+        for reg in ['pre','img','ove']:
+            
+            _fwd_off_v = tmp_v_CQ.copy()
+            _rwdv_off_v = tmp_v_CQ.copy()
+            _rwdvs_off_v = tmp_v_CQ.copy()        
+            _rwdvs_ron_v = tmp_v_CQ.copy()
+            
+            for iCCD, CCDk in enumerate(CCDkeys):
+                for kQ, Q in enumerate(self.Quads):
+                    
+                    _fwd_off_v[0, iCCD, kQ] = sidd.products['fwd_off_%s_mx' % reg][iCCD, kQ]
+                    _rwdv_off_v[0, iCCD, kQ] = sidd.products['rwdv_off_%s_mx' % reg][iCCD, kQ]
+                    _rwdvs_off_v[0, iCCD, kQ] = sidd.products['rwdvs_off_%s_mx' % reg][iCCD, kQ]
+                    _rwdvs_ron_v[0, iCCD, kQ] = sidd.products['rwdvs_ron_%s_mx' % reg][iCCD, kQ]
+            
+            sidd.addColumn(_fwd_off_v, 'FWD_%s_OFF' % reg.upper(), IndexCQ)
+            sidd.addColumn(_rwdv_off_v, 'RWDV_%s_OFF' % reg.upper(), IndexCQ)
+            sidd.addColumn(_rwdvs_off_v, 'RWDVS_%s_OFF' % reg.upper(), IndexCQ)
+            sidd.addColumn(_rwdvs_ron_v, 'RWDVS_%s_RON' % reg.upper(), IndexCQ)
 
         # Extracting Injection level from profiles
         profilespath = os.path.join(inventoryitem['resroot'], 'profiles')
@@ -293,38 +299,24 @@ class MetaMOT(MetaCal):
 
     def _extract_RON_fromPT(self, PT, block, CCDk, Q):
         ixblock = self.get_ixblock(PT, block)
-        column = 'RWDVS_RON_%s_Quad%s' % (CCDk, Q)
+        column = 'RWDVS_OVE_RON_%s_Quad%s' % (CCDk, Q)
 
         ron = PT[column][ixblock][0]
         return ron
     
-    def _extract_OFF_RWDV_fromPT(self, PT, block, CCDk, Q):
-        ixblock = self.get_ixblock(PT, block)
-        column = 'RWDV_OFF_%s_Quad%s' % (CCDk, Q)
-
-        off = int(PT[column][ixblock][0])
-        return off
-
-    def _extract_OFF_RWDVS_fromPT(self, PT, block, CCDk, Q):
-        ixblock = self.get_ixblock(PT, block)
-        column = 'RWDVS_OFF_%s_Quad%s' % (CCDk, Q)
-
-        off = int(PT[column][ixblock][0])
-        return off
-    
-    def _get_extractor_OFF_FWD_fromPT(self, reg):
+    def _get_extractor_OFF_fromPT(self, readout, reg):
 
         def _extractor(PT, block, CCDk, Q):
             
             ixblock = self.get_ixblock(PT, block)
             
             if reg != 'all':
-                column = 'offset_%s_%s_Quad%s' % (reg, CCDk, Q)                            
+                column = '%s_%s_OFF_%s_Quad%s' % (readout,reg.upper(), CCDk, Q)                            
                 off = int(PT[column][ixblock][0])
             elif reg == 'all':
                 off = OrderedDict()
                 for _reg in ['pre','img','ove']:
-                    column = 'offset_%s_%s_Quad%s' % (_reg, CCDk, Q)                            
+                    column = '%s_%s_OFF_%s_Quad%s' % (readout,_reg.upper(), CCDk, Q)
                     off[_reg] = int(PT[column][ixblock][0])
                 
             return off
@@ -380,9 +372,7 @@ class MetaMOT(MetaCal):
         self.outcdps['RON_MAP_json'] ='MOT_WARM_RON_MAP.json'
 
         self.outcdps['OFF_RWDVS_MAP_json'] = 'MOT_WARM_OFF_RWDVS_MAP.json'
-        self.outcdps['OFF_RWDVS_MAP_json'] = 'MOT_WARM_OFF_RWDVS_MAP.json'
-        
-
+        self.outcdps['OFF_RWDV_MAP_json'] = 'MOT_WARM_OFF_RWDV_MAP.json'
         self.outcdps['OFF_FWD_MAP_json'] ='MOT_WARM_OFF_FWD_MAP.json'
 
 
@@ -403,7 +393,7 @@ class MetaMOT(MetaCal):
         rm_header = OrderedDict()
         rm_header['title'] = 'RAMP MAP'
         rm_header.update(CDP_header)
-                
+        
         rm_cdp = cdp.Json_CDP(rootname=self.outcdps['RAMP_MAP_json'],
                               path=self.cdpspath)
         rm_cdp.ingest_inputs(data=RAMPMAP,
@@ -462,7 +452,7 @@ class MetaMOT(MetaCal):
         # OFFSET map (RWDV)
 
         OFF_RWDV_MAP = self.get_FPAMAP_from_PT(self.ParsedTable['MOT_WARM'],
-                                                extractor=self._extract_OFF_RWDV_fromPT)
+                                                extractor=self._get_extractor_OFF_fromPT('RWDV','all'))
         
         offrwdv_header = OrderedDict()
         offrwdv_header['title'] = 'OFFSET MAP [RWDV]'
@@ -480,7 +470,7 @@ class MetaMOT(MetaCal):
         # OFFSET map (RWDVS)
 
         OFF_RWDVS_MAP = self.get_FPAMAP_from_PT(self.ParsedTable['MOT_WARM'],
-                                                extractor=self._extract_OFF_RWDVS_fromPT)
+                                                extractor=self._get_extractor_OFF_fromPT('RWDVS','all'))
         
         offrwdvs_header = OrderedDict()
         offrwdvs_header['title'] = 'OFFSET MAP [RWDVS]'
@@ -493,21 +483,23 @@ class MetaMOT(MetaCal):
                              meta=dict(units='ADU'))
         offrwdvs_cdp.savehardcopy()
         
+        OFF_RWDVS_IMG_MAP = self.get_FPAMAP_from_PT(self.ParsedTable['MOT_WARM'],
+                                                extractor=self._get_extractor_OFF_fromPT('RWDVS','img'))
 
-        self.plot_SimpleMAP(OFF_RWDVS_MAP, **dict(
-            suptitle='MOT\_WARM: OFFSET, RWDVS [ADU]',
+        self.plot_SimpleMAP(OFF_RWDVS_IMG_MAP, **dict(
+            suptitle='MOT\_WARM: OFFSET-IMG, RWDVS [ADU]',
             figname=self.figs['OFF_RWDVS_MAP']
         ))
 
-        # OFFSET map (FWD, PRE)
+        # OFFSET map (FWD, 'all')
         
         OFF_FWD_MAP = self.get_FPAMAP_from_PT(self.ParsedTable['MOT_WARM'],
-                                                 extractor=self._get_extractor_OFF_FWD_fromPT('all'))
+                                                 extractor=self._get_extractor_OFF_fromPT('FWD','all'))
         
         offfwd_header = OrderedDict()
         offfwd_header['title'] = 'OFFSET MAP [FWD]'
         offfwd_header.update(CDP_header)
-                
+        
         offfwd_cdp = cdp.Json_CDP(rootname=self.outcdps['OFF_FWD_MAP_json'],
                               path=self.cdpspath)
         offfwd_cdp.ingest_inputs(data=OFF_FWD_MAP,
@@ -515,9 +507,10 @@ class MetaMOT(MetaCal):
                              meta=dict(units='ADU'))
         offfwd_cdp.savehardcopy()
         
+         # OFFSET map (FWD, PRE)
         
         OFF_PREFWD_MAP  = self.get_FPAMAP_from_PT(self.ParsedTable['MOT_WARM'],
-                                                 extractor=self._get_extractor_OFF_FWD_fromPT('pre'))
+                                                 extractor=self._get_extractor_OFF_fromPT('FWD','pre'))
         
         self.plot_SimpleMAP(OFF_PREFWD_MAP, **dict(
             suptitle='MOT\_WARM: OFFSET, PRE-SCAN FWD [ADU]',
