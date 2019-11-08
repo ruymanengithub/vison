@@ -24,6 +24,7 @@ from vison.image import bits
 from vison.other import MOT_FFaux
 from vison.fpatests import fpatask
 from vison.datamodel import inputs
+from vison.datamodel import cdp as cdpmod
 from vison.fpatests import FW_aux
 
 # END IMPORT
@@ -56,7 +57,7 @@ class FWD_WARM(fpatask.FpaTask):
 
         self.inputs['subpaths'] = dict(figs='figs',
                                        products='products')
-
+        
     def set_inpdefaults(self, **kwargs):
         self.inpdefaults = self.inputsclass(preprocessing=dict(
                                             offsetkwargs=dict(
@@ -288,14 +289,14 @@ class FWD_WARM(fpatask.FpaTask):
         XYdict_BIT = dict(x=dict(),
                           y=dict(),
                           labelkeys=[])
-
+        
         XYdict_BIT = self.iter_overCCDs(data, assigner, RetDict=XYdict_BIT)
 
         return XYdict_BIT
 
     def meta_analysis(self):
         """ """
-
+        
         if self.report is not None:
             self.report.add_Section(keyword='meta', Title='Meta-Analysis', level=0)
 
@@ -333,7 +334,28 @@ class FWD_WARM(fpatask.FpaTask):
         self.figdict['SLOPESMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
 
         # Display FPA-Map of ramp-slope differences with CALCAMP
-
+        
+        reframps_incdp = cdpmod.Json_CDP()
+        reframps_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references']['warm_ramps'])
+        
+        def _get_ref_Rslopes_MAP(inData, Ckey, Q):
+            return inData[Ckey][Q]['slope']
+        
+        
+        RefRslopesMap = self.get_FPAMAP(reframps_incdp.data.copy(),
+                                        extractor=_get_ref_Rslopes_MAP)
+        
+        self.dd.products['REFRAMPslopes'] = RefRslopesMap.copy()
+        
+        def _get_Diff_Rslopes_MAP(inData, Ckey, Q):
+            return inData[0][Ckey][Q]-inData[1][Ckey][Q]
+        
+        DiffRslopesMap = self.get_FPAMAP((RslopesMap,RefRslopesMap),
+                                        extractor=_get_Diff_Rslopes_MAP)
+        
+        self.figdict['DIFFSLOPESMAP'][1]['data'] = DiffRslopesMap
+        self.figdict['DIFFSLOPESMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
+        
         # Dispay HER profiles (single plot)
 
         XYdict_HER = self._get_XYdict_HER()
@@ -353,6 +375,9 @@ class FWD_WARM(fpatask.FpaTask):
         self.figdict['HERVALSMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
 
         # Display FPA-Map of differences with CALCAMP HER-values
+        #   On second thoughts, probably better to skip this comparison, it'll 
+        #   probably just add "noise"
+        
 
         # Display all bit-histogram maps together
 
@@ -362,7 +387,7 @@ class FWD_WARM(fpatask.FpaTask):
         self.figdict['BITHISTOS'][1]['meta']['plotter'] = self.metacal.plot_XY
 
         if self.report is not None:
-            self.addFigures_ST(figkeys=['FW_RAMPS', 'SLOPESMAP', 'HERPROFS',
+            self.addFigures_ST(figkeys=['FW_RAMPS', 'SLOPESMAP', 'DIFFSLOPESMAP','HERPROFS',
                                         'HERVALSMAP', 'BITHISTOS'],
                                dobuilddata=False)
 
@@ -373,7 +398,21 @@ class FWD_WARM(fpatask.FpaTask):
             self.report.add_Section(keyword='appendix', Title='Appendix', level=0)
 
         # TABLE: reference values of OFFSETS
+        
 
         # TABLE: reference values of SLOPES
+        
+        
+        def _getRefRSlope(self, Ckey, Q):
+            return self.dd.products['REFRAMPslopes'][Ckey][Q]
+        
+        cdpdict = dict(
+            caption = 'Reference Slopes [ADU/row] of Dark Current Ramps in FWD-WARM test. Taken from MOT-WARM test'+\
+                    ' results at det. chain level (GRCALCAMP).',
+            valformat = '%.1f')
+        
+        self.add_StandardQuadsTable(extractor=_getRefRSlope,
+                                    cdp=None,
+                                    cdpdict=cdpdict)
 
         # TABLE: reference values of HER

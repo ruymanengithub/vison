@@ -42,6 +42,11 @@ FW_SlopesMap_dict = dict(
     caption='PENDING CAPTION',
     meta=dict(suptitle='Ramp Slopes'))
 
+FW_DiffSlopesMap_dict = dict(
+    figname='FW_DiffSlopesMap.png',
+    caption='PENDING CAPTION',
+    meta=dict(suptitle='Diff. Ramp Slopes'))
+
 FW_HERPROFS_dict = dict(
     figname='FW_HERPROFS.png',
     caption='PENDING CAPTION',
@@ -79,6 +84,7 @@ def get_FWfigs():
     FWfigs['FW_img'] = [figclasses.Fig_Dynamic, FW_img_dict]
     FWfigs['FW_RAMPS'] = [figclasses.Fig_Dynamic, FW_Ramps_dict]
     FWfigs['SLOPESMAP'] = [figclasses.Fig_Dynamic, FW_SlopesMap_dict]
+    FWfigs['DIFFSLOPESMAP'] = [figclasses.Fig_Dynamic, FW_DiffSlopesMap_dict]
     FWfigs['HERPROFS'] = [figclasses.Fig_Dynamic, FW_HERPROFS_dict]
     FWfigs['HERVALSMAP'] = [figclasses.Fig_Dynamic, FW_HERvalsMap_dict]
     FWfigs['BITHISTOS'] = [figclasses.Fig_Dynamic, FW_BITHISTOS_dict]

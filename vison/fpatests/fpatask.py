@@ -523,26 +523,29 @@ class FpaTask(task.Task):
 
     def add_StandardQuadsTable(self, extractor, cdp=None, cdpdict=None):
         """ """
+        
+        defcdpdict = dict(TBkey = 'TB',
+            meta = dict(),
+            CDP_header = dict(),
+            header_title = 'generic title',
+            CDP_KEY = 'UNK',
+            caption = 'CAPTION PENDING',
+            valformat = '%.2e')
 
         if cdpdict is not None:
 
             assert isinstance(cdpdict, dict)
-
-            TBkey = cdpdict['TBkey']
-            meta = cdpdict['meta'].copy()
-            CDP_header = cdpdict['CDP_header'].copy()
-            header_title = cdpdict['header_title']
-            CDP_KEY = cdpdict['CDP_KEY']
-            valformat = cdpdict['valformat']
-            caption = cdpdict['caption']
-        else:
-            TBkey = 'TB'
-            meta = dict()
-            CDP_header = dict()
-            header_title = 'generic title'
-            CDP_KEY = 'UNK'
-            caption = 'CAPTION PENDING'
-            valformat = '%.2e'
+            
+            defcdpdict.update(cdpdict)
+        
+        TBkey = defcdpdict['TBkey']
+        meta = defcdpdict['meta'].copy()
+        CDP_header = defcdpdict['CDP_header'].copy()
+        header_title = defcdpdict['header_title']
+        CDP_KEY = defcdpdict['CDP_KEY']
+        valformat = defcdpdict['valformat']
+        caption = defcdpdict['caption']
+        
 
         NCCDs = len(self.CCDs)
         NBlocks = len(self.fpa.flight_blocks)
