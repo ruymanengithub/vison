@@ -32,7 +32,7 @@ def configuration():
     config.add_subpackage('vison/flat')
     config.add_subpackage('vison/fpa')    
     config.add_subpackage('vison/fpatests')
-    config.add_subpackage('vison/fpatests/dark')
+    config.add_subpackage('vison/fpatests/cea_dec19')
     config.add_subpackage('vison/image')
     config.add_subpackage('vison/inject')
     config.add_subpackage('vison/metatests')
