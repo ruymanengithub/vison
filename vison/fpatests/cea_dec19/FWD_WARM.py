@@ -25,7 +25,7 @@ from vison.other import MOT_FFaux
 from vison.fpatests import fpatask
 from vison.datamodel import inputs
 from vison.datamodel import cdp as cdpmod
-from vison.fpatests import FW_aux
+from vison.fpatests.cea_dec19 import FW_aux
 
 # END IMPORT
 
