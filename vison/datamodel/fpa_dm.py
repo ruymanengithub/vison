@@ -34,16 +34,16 @@ for j in range(1, NSLICES + 1):
 
         ext_ids.append((ix + 0, j, i, 'E', (0, 0)))
         ext_ids.append((ix + 1, j, i, 'F', (1, 0)))
-        ext_ids.append((ix + 2, j, i, 'H', (0, 1)))
-        ext_ids.append((ix + 3, j, i, 'G', (1, 1)))
+        ext_ids.append((ix + 2, j, i, 'G', (1, 1)))
+        ext_ids.append((ix + 3, j, i, 'H', (0, 1)))
     for i in [4, 5, 6]:
 
         ix = (j - 1) * 6 * 4 + (i - 1) * 4 + 1
 
         ext_ids.append((ix + 0, j, i, 'G', (0, 0)))
         ext_ids.append((ix + 1, j, i, 'H', (1, 0)))
-        ext_ids.append((ix + 2, j, i, 'F', (0, 1)))
-        ext_ids.append((ix + 3, j, i, 'E', (1, 1)))
+        ext_ids.append((ix + 2, j, i, 'E', (1, 1)))
+        ext_ids.append((ix + 3, j, i, 'F', (0, 1)))
 
 
 PRIhdr_dict = OrderedDict()
@@ -60,6 +60,7 @@ EXThdr_dict['BZERO'] = 32768
 EXThdr_dict['EXPTIME'] = 0
 EXThdr_dict['CCDID'] = '0-0'
 EXThdr_dict['QUADID'] = 'A'
+EXThdr_dict['EXTNAME'] = '0-0.A'
 EXThdr_dict['PRESCANX'] = 51
 EXThdr_dict['OVRSCANX'] = 29
 EXThdr_dict['GAIN'] = 3.5
@@ -112,6 +113,7 @@ class FPA_LE1(object):
 
             headerdict['CCDID'] = '%i-%i' % (_extid[1], _extid[2])
             headerdict['QUADID'] = _extid[3]
+            headerdict['EXTNAME'] = '%s.%s' % (headerdict['CCDID'],headerdict['QUADID'])
 
             self.add_extension(data, header, label=None, headerdict=headerdict)
 
@@ -245,8 +247,15 @@ class FPA_LE1(object):
             pQdata = self._padd_extra_soverscan(Qdata)
 
             pQdata = self.fpamodel.flip_img(pQdata, flip)
+            
+            _extid = self.get_extid(CCDID,Q)
+            
+            extname = '%i-%i.%s' % (_extid[1],_extid[2],_extid[3])
+            
 
             self.extensions[extix].data = pQdata.copy()
+            self.extensions[extix].header['EXTNAME'] = extname
+
 
     def _core_funct_simul(self, ccdobj, CCDID=None, simputs=None):
         """ """
