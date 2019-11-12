@@ -47,7 +47,7 @@ defaults = dict()
 class FpaPipe(master.GenPipe):
     """Master Class of FM-analysis at block-level of assembly."""
 
-    from vison.fpatests.FWD_WARM import FWD_WARM
+    from vison.fpatests.cea_dec19.FWD_WARM import FWD_WARM
 
     Test_dict = dict(FWD_WARM=FWD_WARM)
 
