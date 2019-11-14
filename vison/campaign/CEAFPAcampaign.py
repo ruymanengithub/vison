@@ -23,6 +23,8 @@ from vison.support import utils
 
 from vison.fpatests.cea_dec19 import FWD_WARM
 from vison.fpatests.cea_dec19 import FPA_BIAS
+from vison.fpatests.cea_dec19 import FPA_CHINJ
+from vison.fpatests.cea_dec19 import FPA_DARK
 
 # END IMPORT
 
@@ -58,6 +60,8 @@ def _generate_test_sequence(toGen, elvis='FPA', FPAdesign='final'):
     test_sequence = OrderedDict()
 
     _toGen = dict(FWD_WARM=False,
+                  CHINJ=False,
+                  DARK=False,
                   BIAS_RWDVS_WARM=False,
                   BIAS_RWDV_WARM=False,
                   BIAS_RWDVS_COLD=False,
@@ -79,8 +83,31 @@ def _generate_test_sequence(toGen, elvis='FPA', FPAdesign='final'):
 
         fwd_warm = FWD_WARM.FWD_WARM(inputs=fwd_warm_inp.copy())
 
-        #structBIAS01 = bias01.build_scriptdict(elvis=elvis)
         test_sequence['FWD_WARM'] = copy.deepcopy(fwd_warm)
+
+
+    if _toGen['CHINJ']:
+
+        chinj_inp = dict(
+            test='CHINJ',
+            non=30,
+            noff=50)
+        chinj_inp.update(commoninputs)
+
+        chinj = FPA_CHINJ.CHINJ(inputs=chinj_inp.copy())
+        
+        test_sequence['CHINJ'] = copy.deepcopy(chinj)
+
+    if _toGen['DARK']:
+
+        dark_inp = dict(
+            test='DARK',
+            exptime=565.)
+        dark_inp.update(commoninputs)
+
+        dark = FPA_DARK.DARK(inputs=dark_inp.copy())
+        
+        test_sequence['DARK'] = copy.deepcopy(dark)
 
     if _toGen['BIAS_RWDVS_WARM']:
         

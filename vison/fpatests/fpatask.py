@@ -301,7 +301,7 @@ class FpaTask(task.Task):
         OBSID_lims = self.inputs['OBSID_lims']
         #structure = self.inputs['structure']
         explogf = self.inputs['explogf']
-
+        
         explog = pilib.loadexplogs(explogf, elvis=self.elvis, addpedigree=True,
                                    datapath=datapath)
 

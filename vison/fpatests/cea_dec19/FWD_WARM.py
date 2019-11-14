@@ -184,8 +184,8 @@ class FWD_WARM(fpatask.FpaTask):
 
             self.dd.products[prodkey] = dict()
 
-            for jY in range(1, LE1.fpamodel.NSLICES + 1):
-                for iX in range(1, LE1.fpamodel.NSLICES + 1):
+            for jY in range(1, self.NSLICES_FPA + 1):
+                for iX in range(1, self.NCOLS_FPA + 1):
                     CCDID = 'C_%i%i' % (jY, iX)
                     self.dd.products[prodkey][CCDID] = dict()
 

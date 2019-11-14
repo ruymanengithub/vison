@@ -24,6 +24,7 @@ from vison.other import MOT_FFaux
 from vison.fpatests import fpatask
 from vison.datamodel import inputs
 from vison.datamodel import cdp as cdpmod
+from vison.fpatests.cea_dec19 import BIAS_aux
 
 # END IMPORT
 
@@ -51,7 +52,13 @@ class FPA_BIAS(fpatask.FpaTask):
 
         self.name = 'FPA_BIAS'
         self.type = 'Simple'
-        
+
+        self.figdict = BIAS_aux.get_Bfigs(self.inputs['readmode'],self.inputs['temperature'])
+        self.CDP_lib = dict()
+
+        self.inputs['subpaths'] = dict(figs='figs',
+                                       products='products')
+
 
     def set_inpdefaults(self, **kwargs):
         self.inpdefaults = self.inputsclass(
@@ -65,6 +72,10 @@ class FPA_BIAS(fpatask.FpaTask):
                                                 extension=-1,
                                                 scan='pre'
                                             )))
+    
+
+
+
     def _basic_onLE1(self, **kwargs):
     	""" """
 
@@ -81,37 +92,38 @@ class FPA_BIAS(fpatask.FpaTask):
                          img=[5, 5],
                          ove=[5, 5])
 
+        if not debug:
 
-        for Q in self.Quads:
+            for Q in self.Quads:
 
-        	# produce average profile along rows
-        	hor1Dprof = ccdobj.get_1Dprofile(
-                            Q=Q, orient='hor', area='all', stacker='mean', vstart=vstart, vend=vend)
+            	# produce average profile along rows
+            	hor1Dprof = kccdobj.get_1Dprofile(
+                                Q=Q, orient='hor', area='all', stacker='mean', vstart=vstart, vend=vend)
 
-        	self.dd.products['profiles_H_1D'][CCDID][Q] = hor1Dprof
+            	self.dd.products['profiles_H_1D'][CCDID][Q] = hor1Dprof
 
-        	# produce average profile along cols
-        	ver1Dprof = ccdobj.get_1Dprofile(
-                            Q=Q, orient='ver', area='all', stacker='mean', vstart=vstart, vend=vend)
+            	# produce average profile along cols
+            	ver1Dprof = kccdobj.get_1Dprofile(
+                                Q=Q, orient='ver', area='all', stacker='mean', vstart=vstart, vend=vend)
 
-        	
-        	self.dd.products['profiles_V_1D'][CCDID][Q] = ver1Dprof
+            	
+            	self.dd.products['profiles_V_1D'][CCDID][Q] = ver1Dprof
 
 
-        	for reg in ['pre','img','ove']:
+            	for reg in ['pre','img','ove']:
 
-        		stats = ccdobj.get_stats(
-                                Q,sector=reg,
-                                statkeys=[
-                                    'median','std'],
-                                trimscan=trimscans[reg],
-                                ignore_pover=True,
-                                extension=-1,
-                                VSTART=vstart,
-                                VEND=vend)
+            		stats = kccdobj.get_stats(
+                                    Q,sector=reg,
+                                    statkeys=[
+                                        'median','std'],
+                                    trimscan=trimscans[reg],
+                                    ignore_pover=True,
+                                    extension=-1,
+                                    VSTART=vstart,
+                                    VEND=vend)
 
-        		self.dd.products['MED_%s' % reg.upper()][CCDID][Q] = stats[0]
-        		self.dd.products['STD_%s' % reg.upper()][CCDID][Q] = stats[1]
+            		self.dd.products['MED_%s' % reg.upper()][CCDID][Q] = stats[0]
+            		self.dd.products['STD_%s' % reg.upper()][CCDID][Q] = stats[1]
 
                 
 
@@ -145,13 +157,13 @@ class FPA_BIAS(fpatask.FpaTask):
 
         # DISPLAY IMAGE
 
-        FWImgDict = self.get_ImgDictfromLE1(LE1, doequalise=True)
+        RawImgDict = self.get_ImgDictfromLE1(LE1, doequalise=True)
 
-        self.figdict['FW_img'][1]['data'] = FWImgDict
-        self.figdict['FW_img'][1]['meta']['plotter'] = self.metacal.plot_ImgFPA
+        self.figdict['raw_img'][1]['data'] = RawImgDict
+        self.figdict['raw_img'][1]['meta']['plotter'] = self.metacal.plot_ImgFPA
 
         if self.report is not None:
-            self.addFigures_ST(figkeys=['FW_img'], dobuilddata=False)
+            self.addFigures_ST(figkeys=['raw_img'], dobuilddata=False)
 
         prodkeys = ['profiles_V_1D', 'profiles_H_1D', 
         			'STD_PRE', 'STD_IMG','STD_OVE',
@@ -161,8 +173,8 @@ class FPA_BIAS(fpatask.FpaTask):
 
             self.dd.products[prodkey] = dict()
 
-            for jY in range(1, LE1.fpamodel.NSLICES + 1):
-                for iX in range(1, LE1.fpamodel.NSLICES + 1):
+            for jY in range(1, self.NSLICES_FPA + 1):
+                for iX in range(1, self.NCOLS_FPA + 1):
                     CCDID = 'C_%i%i' % (jY, iX)
                     self.dd.products[prodkey][CCDID] = dict()
 
@@ -174,7 +186,8 @@ class FPA_BIAS(fpatask.FpaTask):
 
         if self.report is not None:
             for prodkey in prodkeys:
-                self.report.add_Text('product: %s, all extracted!' % prodkey)
+                nprodkey = prodkey.replace('_','\_')
+                self.report.add_Text('product: %s, all extracted!' % nprodkey)
 
         # # Matrices: HERvalues, RAMPslopes
 
@@ -222,7 +235,8 @@ class FPA_BIAS(fpatask.FpaTask):
 
     def meta_analysis(self):
         """ """
-        pass
+        stop()
+
 
     def appendix(self):
         """Adds Appendices to Report."""

@@ -256,7 +256,6 @@ class FPA_LE1(object):
             self.extensions[extix].data = pQdata.copy()
             self.extensions[extix].header['EXTNAME'] = extname
 
-
     def _core_funct_simul(self, ccdobj, CCDID=None, simputs=None):
         """ """
         raise NotImplementedError("child class implements abstract method")
