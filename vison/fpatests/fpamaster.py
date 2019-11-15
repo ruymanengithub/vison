@@ -55,7 +55,12 @@ class FpaPipe(master.GenPipe):
     Test_dict = dict(FWD_WARM=FWD_WARM,
                      CHINJ=CHINJ,
                      DARK=DARK,
-                     BIAS_RWDVS_WARM=FPA_BIAS)
+                     BIAS_RWDVS_WARM=FPA_BIAS,
+                     BIAS_RWDV_WARM=FPA_BIAS,
+                     BIAS_FWD_WARM=FPA_BIAS,
+                     BIAS_RWDVS_COLD=FPA_BIAS,
+                     BIAS_RWDV_COLD=FPA_BIAS,
+                     BIAS_FWD_COLD=FPA_BIAS)
 
     def __init__(self, inputdict, dolog=True, drill=False, debug=False, startobsid=0,
                  processes=1, tag='', cleanafter=False):

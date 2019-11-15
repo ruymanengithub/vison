@@ -72,7 +72,7 @@ def _generate_test_sequence(toGen, elvis='FPA', FPAdesign='final'):
 
     commoninputs = dict(elvis=elvis,
                         FPAdesign=FPAdesign)
-
+    
     # DARK-CURRENT RAMP
 
     if _toGen['FWD_WARM']:
@@ -124,6 +124,14 @@ def _generate_test_sequence(toGen, elvis='FPA', FPAdesign='final'):
 
     if _toGen['BIAS_RWDV_WARM']:
 
+
+        rwdv_warm_inp = dict(
+            test='BIAS_RWDV_WARM',
+            temperature='WARM',
+            readmode='RWDV')
+
+        rwdv_warm_inp.update(commoninputs)
+
         
         rwdv_warm = FPA_BIAS.FPA_BIAS(inputs=rwdv_warm_inp.copy())     
 
@@ -132,11 +140,25 @@ def _generate_test_sequence(toGen, elvis='FPA', FPAdesign='final'):
     if _toGen['BIAS_RWDVS_COLD']:
 
 
+        rwdvs_cold_inp = dict(
+            test='BIAS_RWDVS_COLD',
+            temperature='COLD',
+            readmode='RWDVS')
+
+        rwdvs_cold_inp.update(commoninputs)
+
         rwdvs_cold = FPA_BIAS.FPA_BIAS(inputs=rwdvs_cold_inp.copy())     
 
         test_sequence['BIAS_RWDVS_COLD'] = copy.deepcopy(rwdvs_cold)
 
     if _toGen['BIAS_RWDV_COLD']:
+
+        rwdv_cold_inp = dict(
+            test='BIAS_RWDV_COLD',
+            temperature='COLD',
+            readmode='RWDV')
+
+        rwdv_cold_inp.update(commoninputs)
 
         rwdv_cold = FPA_BIAS.FPA_BIAS(inputs=rwdv_cold_inp.copy())     
 
@@ -144,7 +166,14 @@ def _generate_test_sequence(toGen, elvis='FPA', FPAdesign='final'):
 
     if _toGen['BIAS_FWD_COLD']:
 
-        fwdv_cold = FPA_BIAS.FPA_BIAS(inputs=fwd_cold_inp.copy())     
+        fwd_cold_inp = dict(
+            test='BIAS_FWD_COLD',
+            temperature='COLD',
+            readmode='FWD')
+
+        fwd_cold_inp.update(commoninputs)
+
+        fwd_cold = FPA_BIAS.FPA_BIAS(inputs=fwd_cold_inp.copy())     
 
         test_sequence['BIAS_FWD_COLD'] = copy.deepcopy(fwd_cold)    
         

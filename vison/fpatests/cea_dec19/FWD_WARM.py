@@ -376,7 +376,7 @@ class FWD_WARM(fpatask.FpaTask):
         # Display FPA-Map of differences with CALCAMP HER-values
         #   On second thoughts, probably better to skip this comparison, it'll 
         #   probably just add "noise"
-        
+        # PENDING?
 
         # Display all bit-histogram maps together
 

@@ -26,6 +26,22 @@ CI_img_dict = dict(
     caption='PENDING CAPTION',
     meta=dict(suptitle='FPA Image'))
 
+INJ_Profs_dict = dict(
+    figname='CHINJ_Injection_Profiles.png',
+    caption='PENDING CAPTION',
+    meta=dict(
+            suptitle='Avg. Injection Profiles.',
+            doLegend=True,
+            corekwargs=dict(E=dict(marker='', linestyle='-', color='r'),
+                            F=dict(marker='', linestyle='-', color='g'),
+                            G=dict(marker='', linestyle='-', color='b'),
+                            H=dict(marker='', linestyle='-', color='m'))))
+
+INJ_Diff_dict = dict(
+    figname='CHINJ_DiffInjectionMap.png',
+    caption='PENDING CAPTION',
+    meta=dict(suptitle='Diff. Injection Levels'))
+
 
 def get_CIfigs():
     """ """
@@ -33,6 +49,8 @@ def get_CIfigs():
     CIfigs = dict()
 
     CIfigs['CI_img'] = [figclasses.Fig_Dynamic, CI_img_dict]
+    CIfigs['INJ_PROFS'] = [figclasses.Fig_Dynamic, INJ_Profs_dict]
+    CIfigs['DIFF_INJMAP'] = [figclasses.Fig_Dynamic, INJ_Diff_dict]
     CIfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
 
     return CIfigs
@@ -41,6 +59,9 @@ def get_CIfigs():
 def get_CDP_lib():
     """ """
 
-    CDP_lib = dict()
+    INJ_cdp = cdp.Tables_CDP()
+    INJ_cdp.rootname = 'INJ_TB'
+
+    CDP_lib = dict(INJ_TB=INJ_cdp)
 
     return CDP_lib

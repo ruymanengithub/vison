@@ -235,7 +235,57 @@ class FPA_BIAS(fpatask.FpaTask):
 
     def meta_analysis(self):
         """ """
-        stop()
+        
+        if self.report is not None:
+            self.report.add_Section(keyword='meta', Title='Meta-Analysis', level=0)
+
+
+        readmode = self.inputs['readmode']
+        temperature = self.inputs['temperature']
+        
+
+        testkey = '%s_%s' % (readmode.upper(),temperature.upper())
+
+        lookup_OFF_refkeys = dict(
+            RWDVS_WARM = ('offsets_rwdvs_warm','ove'),
+            RWDVS_COLD = ('offsets_rwdvs_warm','ove'),
+            RWD_WARM = ('offsets_rwdv_warm','ove'),
+            RWDV_COLD = ('offsets_rwdv_warm','ove'),
+            FWD_WARM = ('offsets_fwd_cold','ove'),
+            FWD_COLD= ('offsets_fwd_cold','ove'),
+            )
+
+        refoffkey, offreg = lookup_OFF_refkeys[testkey]
+
+        refOFF_incdp = cdpmod.Json_CDP()
+        refOFF_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refoffkey])
+        
+
+        def _get_ref_OFFs_MAP(inData, Ckey, Q):
+            return inData[Ckey][Q][offreg]
+        
+        
+        RefOFFsMap = self.get_FPAMAP(refOFF_incdp.data.copy(),
+                                        extractor=_get_ref_OFFs_MAP)
+
+        self.dd.products['REF_OFFs'] = RefOFFsMap.copy()
+
+
+        refronkey = 'rons'
+        ronreg = 'img'
+
+        refRON_incdp = cdpmod.Json_CDP()
+        refRON_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refronkey])
+        
+        def _get_ref_RONs_MAP(inData, Ckey, Q):
+            return inData[Ckey][Q][ronreg]
+        
+        
+        RefRONsMap = self.get_FPAMAP(refRON_incdp.data.copy(),
+                                        extractor=_get_ref_RONs_MAP)
+
+        self.dd.products['REF_RONs'] = RefRONsMap.copy()
+
 
 
     def appendix(self):
@@ -246,34 +296,32 @@ class FPA_BIAS(fpatask.FpaTask):
         if self.report is not None:
             self.report.add_Section(keyword='appendix', Title='Appendix', level=0)
 
-        return
 
         # TABLE: reference values of OFFSETS
         
-        def _getRefVal1(self, Ckey, Q):
-            return self.dd.products['REFsomething1'][Ckey][Q]
+        def _getRefOffs(self, Ckey, Q):
+            return self.dd.products['REF_OFFs'][Ckey][Q]
         
-        cdpdict1 = dict(
+        cdpdictoff = dict(
             caption = 'Reference OFFSETS (GRCALCAMP).',
             valformat = '%.1f')
         
-        self.add_StandardQuadsTable(extractor=_getRefVal,
+        self.add_StandardQuadsTable(extractor=_getRefOffs,
                                     cdp=None,
-                                    cdpdict=cdpdict1)
-
+                                    cdpdict=cdpdictoff)
 
 
         # TABLE: reference values of RONS
         
         
-        def _getRefVal2(self, Ckey, Q):
-            return self.dd.products['REFsomething1'][Ckey][Q]
+        def _getRefRons(self, Ckey, Q):
+            return self.dd.products['REF_RONs'][Ckey][Q]
         
-        cdpdict2 = dict(
+        cdpdictron = dict(
             caption = 'Reference OFFSETS (GRCALCAMP).',
-            valformat = '%.1f')
+            valformat = '%.2f')
         
-        self.add_StandardQuadsTable(extractor=_getRefVal2,
+        self.add_StandardQuadsTable(extractor=_getRefRons,
                                     cdp=None,
-                                    cdpdict=cdpdict2)
+                                    cdpdict=cdpdictron)
         

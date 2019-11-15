@@ -117,7 +117,23 @@ class DARK(fpatask.FpaTask):
         if self.report is not None:
             self.report.add_Section(keyword='meta', Title='Meta-Analysis', level=0)
 
-       
+        
+        refoffkey, offreg = ('offsets_fwd_cold','ove')
+
+        refOFF_incdp = cdpmod.Json_CDP()
+        refOFF_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refoffkey])
+        
+
+        def _get_ref_OFFs_MAP(inData, Ckey, Q):
+            return inData[Ckey][Q][offreg]
+        
+        
+        RefOFFsMap = self.get_FPAMAP(refOFF_incdp.data.copy(),
+                                        extractor=_get_ref_OFFs_MAP)
+
+        self.dd.products['REF_OFFs'] = RefOFFsMap.copy()
+
+
 
     def appendix(self):
         """Adds Appendices to Report."""
@@ -125,3 +141,16 @@ class DARK(fpatask.FpaTask):
         if self.report is not None:
             self.report.add_Section(keyword='appendix', Title='Appendix', level=0)
 
+        # TABLE: reference values of OFFSETS
+        
+        def _getRefOffs(self, Ckey, Q):
+            return self.dd.products['REF_OFFs'][Ckey][Q]
+        
+        cdpdictoff = dict(
+            caption = 'Reference OFFSETS (GRCALCAMP).',
+            valformat = '%.1f')
+        
+        self.add_StandardQuadsTable(extractor=_getRefOffs,
+                                    cdp=None,
+                                    cdpdict=cdpdictoff)
+        

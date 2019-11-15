@@ -104,6 +104,8 @@ class CHINJ(fpatask.FpaTask):
                                     kccdobj, Q, pattern, VSTART=vstart, VEND=vend, 
                                     suboffmean=True)
 
+
+
                 # profile along columns
 
                 yalcols = ext_res['avprof_alcol'].copy()
@@ -196,9 +198,51 @@ class CHINJ(fpatask.FpaTask):
 
         # Matrix of Injection Levels
 
+        inj_tb_cdp = self.CDP_lib['INJ_TB']
+        injcdpdict = dict(
+            TBkey='INJ_TB',
+            meta=dict(),
+            CDP_header=CDP_header,
+            header_title='CHINJ: INJECTION TABLE',
+            CDP_KEY='INJ_TB_CDP',
+            caption='Median Injection value.',
+            valformat='%.1f'
+        )
+
+        def _getINJval(self, Ckey, Q):
+            return self.dd.products['INJECTION'][Ckey][Q]
+
+        self.add_StandardQuadsTable(extractor=_getINJval,
+                                    cdp=inj_tb_cdp,
+                                    cdpdict=injcdpdict)
+
         # Image with extracted Injection profiles
 
 
+        def _assignProf1D(InjProfsDict, profdict, Ckey):
+            """ """
+            Cprofs = profdict[Ckey]
+
+            res = dict(x=dict(), y=dict())
+
+            for Q in self.Quads:
+                res['x'][Q] = Cprofs[Q]['x']
+                res['y'][Q] = Cprofs[Q]['y']
+
+            InjProfsDict[Ckey] = res
+
+            return InjProfsDict
+
+        InjProfsDict = self.iter_overCCDs(self.dd.products['profiles1D'], _assignProf1D)
+        InjProfsDict['labelkeys'] = self.Quads
+
+        self.figdict['INJ_PROFS'][1]['data'] = InjProfsDict
+        self.figdict['INJ_PROFS'][1]['meta']['plotter'] = self.metacal.plot_XYMAP
+
+
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['INJ_PROFS'],
+                               dobuilddata=False)
 
     def meta_analysis(self):
         """ """
@@ -206,7 +250,56 @@ class CHINJ(fpatask.FpaTask):
         if self.report is not None:
             self.report.add_Section(keyword='meta', Title='Meta-Analysis', level=0)
 
-       
+        # REFERENCE OFFSETS
+        
+        refoffkey, offreg = ('offsets_fwd_cold','ove')
+
+        refOFF_incdp = cdpmod.Json_CDP()
+        refOFF_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refoffkey])
+        
+        def _get_ref_OFFs_MAP(inData, Ckey, Q):
+            return inData[Ckey][Q][offreg]
+        
+        RefOFFsMap = self.get_FPAMAP(refOFF_incdp.data.copy(),
+                                        extractor=_get_ref_OFFs_MAP)
+
+        self.dd.products['REF_OFFs'] = RefOFFsMap.copy()
+
+
+        # Reference Injection Values
+
+        refINJ_incdp = cdpmod.Json_CDP()
+        refINJ_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references']['injection_levels'])
+        
+        def _get_ref_INJs_MAP(inData, Ckey, Q):
+            return inData[Ckey][Q]
+        
+        RefINJsMap = self.get_FPAMAP(refINJ_incdp.data.copy(),
+                                        extractor=_get_ref_INJs_MAP)
+
+        self.dd.products['REF_INJs'] = RefINJsMap.copy()
+
+
+        # Display map of injection levels minus reference
+
+        INJsMap = self.dd.products['INJECTION'].copy()
+
+        def _get_Diff_Inj_MAP(inData, Ckey, Q):
+            return inData[0][Ckey][Q]-inData[1][Ckey][Q]
+
+
+
+        DiffInjMap = self.get_FPAMAP((INJsMap,RefINJsMap),
+                                        extractor=_get_Diff_Inj_MAP)
+        
+        self.figdict['DIFF_INJMAP'][1]['data'] = DiffInjMap
+        self.figdict['DIFF_INJMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
+
+
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['DIFF_INJMAP'],
+                               dobuilddata=False) 
+
 
  
     def appendix(self):
@@ -215,3 +308,30 @@ class CHINJ(fpatask.FpaTask):
         if self.report is not None:
             self.report.add_Section(keyword='appendix', Title='Appendix', level=0)
 
+
+        # TABLE: reference values of OFFSETS
+        
+        def _getRefOffs(self, Ckey, Q):
+            return self.dd.products['REF_OFFs'][Ckey][Q]
+        
+        cdpdictoff = dict(
+            caption = 'Reference OFFSETS (GRCALCAMP).',
+            valformat = '%.1f')
+        
+        self.add_StandardQuadsTable(extractor=_getRefOffs,
+                                    cdp=None,
+                                    cdpdict=cdpdictoff)
+
+
+        # TABLE: reference values of INJECTION
+        
+        def _getRefINJs(self, Ckey, Q):
+            return self.dd.products['REF_INJs'][Ckey][Q]
+        
+        cdpdictinj = dict(
+            caption = 'Reference charge injection levels (GRCALCAMP).',
+            valformat = '%.1f')
+        
+        self.add_StandardQuadsTable(extractor=_getRefINJs,
+                                    cdp=None,
+                                    cdpdict=cdpdictinj)
