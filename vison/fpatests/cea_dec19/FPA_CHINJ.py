@@ -73,7 +73,7 @@ class CHINJ(fpatask.FpaTask):
                                             )))
 
 
-    def load_references():
+    def load_references(self):
         """ """
 
         # REFERENCE OFFSETS

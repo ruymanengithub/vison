@@ -58,7 +58,7 @@ class FPA_BIAS(fpatask.FpaTask):
 
         self.inputs['subpaths'] = dict(figs='figs',
                                        products='products')
-        
+
 
     def set_inpdefaults(self, **kwargs):
         self.inpdefaults = self.inputsclass(
@@ -84,8 +84,8 @@ class FPA_BIAS(fpatask.FpaTask):
         lookup_OFF_refkeys = dict(
             RWDVS_WARM = ('offsets_rwdvs_warm','ove'),
             RWDVS_COLD = ('offsets_rwdvs_warm','ove'),
-            RWD_WARM = ('offsets_rwdv_warm','ove'),
-            RWDV_COLD = ('offsets_rwdv_warm','ove'),
+            RWDV_WARM = ('offsets_rwdv_warm','ove'),
+            RWDV_COLD = ('offsets_fwd_cold','ove'),
             FWD_WARM = ('offsets_fwd_cold','ove'),
             FWD_COLD= ('offsets_fwd_cold','ove'),
             )

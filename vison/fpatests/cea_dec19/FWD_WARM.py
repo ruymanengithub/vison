@@ -87,16 +87,7 @@ class FWD_WARM(fpatask.FpaTask):
 
         # Reference offsets
 
-        lookup_OFF_refkeys = dict(
-            RWDVS_WARM = ('offsets_rwdvs_warm','ove'),
-            RWDVS_COLD = ('offsets_rwdvs_warm','ove'),
-            RWD_WARM = ('offsets_rwdv_warm','ove'),
-            RWDV_COLD = ('offsets_rwdv_warm','ove'),
-            FWD_WARM = ('offsets_fwd_cold','ove'),
-            FWD_COLD= ('offsets_fwd_cold','ove'),
-            )
-
-        refoffkey, offreg = 'FWD_WARM', 'ove'
+        refoffkey, offreg = 'offsets_fwd_cold', 'ove'
 
         refOFF_incdp = cdpmod.Json_CDP()
         refOFF_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refoffkey])
