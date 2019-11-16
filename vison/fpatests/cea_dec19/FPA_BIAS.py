@@ -58,21 +58,67 @@ class FPA_BIAS(fpatask.FpaTask):
 
         self.inputs['subpaths'] = dict(figs='figs',
                                        products='products')
-
+        
 
     def set_inpdefaults(self, **kwargs):
         self.inpdefaults = self.inputsclass(
-        					temperature='cold',
-        					readmode='fwd',
-        					preprocessing=dict(
-                                            offsetkwargs=dict(
-                                                ignore_pover=True,
-                                                trimscan=[25, 5],
-                                                method='median',
-                                                extension=-1,
-                                                scan='pre'
-                                            )))
-    
+            temperature='cold',
+            readmode='fwd',
+            preprocessing=dict(
+                offsetkwargs=dict(
+                    ignore_pover=True,
+                    trimscan=[25, 5],
+                    method='median',
+                    extension=-1,
+                    scan='pre'
+                    )))
+
+    def load_references(self):
+        """ """
+
+        readmode = self.inputs['readmode']
+        temperature = self.inputs['temperature']
+        
+        testkey = '%s_%s' % (readmode.upper(),temperature.upper())
+
+        lookup_OFF_refkeys = dict(
+            RWDVS_WARM = ('offsets_rwdvs_warm','ove'),
+            RWDVS_COLD = ('offsets_rwdvs_warm','ove'),
+            RWD_WARM = ('offsets_rwdv_warm','ove'),
+            RWDV_COLD = ('offsets_rwdv_warm','ove'),
+            FWD_WARM = ('offsets_fwd_cold','ove'),
+            FWD_COLD= ('offsets_fwd_cold','ove'),
+            )
+
+        refoffkey, offreg = lookup_OFF_refkeys[testkey]
+
+        refOFF_incdp = cdpmod.Json_CDP()
+        refOFF_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refoffkey])
+        
+
+        def _get_ref_OFFs_MAP(inData, Ckey, Q):
+            return inData[Ckey][Q][offreg]
+        
+        
+        RefOFFsMap = self.get_FPAMAP(refOFF_incdp.data.copy(),
+                                        extractor=_get_ref_OFFs_MAP)
+
+        self.dd.products['REF_OFFs'] = RefOFFsMap.copy()
+
+        refronkey = 'rons'
+        ronreg = 'img'
+
+        refRON_incdp = cdpmod.Json_CDP()
+        refRON_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refronkey])
+        
+        def _get_ref_RONs_MAP(inData, Ckey, Q):
+            return inData[Ckey][Q][ronreg]
+        
+        
+        RefRONsMap = self.get_FPAMAP(refRON_incdp.data.copy(),
+                                        extractor=_get_ref_RONs_MAP)
+
+        self.dd.products['REF_RONs'] = RefRONsMap.copy()
 
 
 
@@ -96,23 +142,23 @@ class FPA_BIAS(fpatask.FpaTask):
 
             for Q in self.Quads:
 
-            	# produce average profile along rows
-            	hor1Dprof = kccdobj.get_1Dprofile(
+                # produce average profile along rows
+                hor1Dprof = kccdobj.get_1Dprofile(
                                 Q=Q, orient='hor', area='all', stacker='mean', vstart=vstart, vend=vend)
 
-            	self.dd.products['profiles_H_1D'][CCDID][Q] = hor1Dprof
+                self.dd.products['profiles_H_1D'][CCDID][Q] = hor1Dprof
 
-            	# produce average profile along cols
-            	ver1Dprof = kccdobj.get_1Dprofile(
+                # produce average profile along cols
+                ver1Dprof = kccdobj.get_1Dprofile(
                                 Q=Q, orient='ver', area='all', stacker='mean', vstart=vstart, vend=vend)
 
-            	
-            	self.dd.products['profiles_V_1D'][CCDID][Q] = ver1Dprof
+                
+                self.dd.products['profiles_V_1D'][CCDID][Q] = ver1Dprof
 
 
-            	for reg in ['pre','img','ove']:
+                for reg in ['pre','img','ove']:
 
-            		stats = kccdobj.get_stats(
+                    stats = kccdobj.get_stats(
                                     Q,sector=reg,
                                     statkeys=[
                                         'median','std'],
@@ -122,8 +168,8 @@ class FPA_BIAS(fpatask.FpaTask):
                                     VSTART=vstart,
                                     VEND=vend)
 
-            		self.dd.products['MED_%s' % reg.upper()][CCDID][Q] = stats[0]
-            		self.dd.products['STD_%s' % reg.upper()][CCDID][Q] = stats[1]
+                    self.dd.products['MED_%s' % reg.upper()][CCDID][Q] = stats[0]
+                    self.dd.products['STD_%s' % reg.upper()][CCDID][Q] = stats[1]
 
                 
 
@@ -240,51 +286,6 @@ class FPA_BIAS(fpatask.FpaTask):
             self.report.add_Section(keyword='meta', Title='Meta-Analysis', level=0)
 
 
-        readmode = self.inputs['readmode']
-        temperature = self.inputs['temperature']
-        
-
-        testkey = '%s_%s' % (readmode.upper(),temperature.upper())
-
-        lookup_OFF_refkeys = dict(
-            RWDVS_WARM = ('offsets_rwdvs_warm','ove'),
-            RWDVS_COLD = ('offsets_rwdvs_warm','ove'),
-            RWD_WARM = ('offsets_rwdv_warm','ove'),
-            RWDV_COLD = ('offsets_rwdv_warm','ove'),
-            FWD_WARM = ('offsets_fwd_cold','ove'),
-            FWD_COLD= ('offsets_fwd_cold','ove'),
-            )
-
-        refoffkey, offreg = lookup_OFF_refkeys[testkey]
-
-        refOFF_incdp = cdpmod.Json_CDP()
-        refOFF_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refoffkey])
-        
-
-        def _get_ref_OFFs_MAP(inData, Ckey, Q):
-            return inData[Ckey][Q][offreg]
-        
-        
-        RefOFFsMap = self.get_FPAMAP(refOFF_incdp.data.copy(),
-                                        extractor=_get_ref_OFFs_MAP)
-
-        self.dd.products['REF_OFFs'] = RefOFFsMap.copy()
-
-
-        refronkey = 'rons'
-        ronreg = 'img'
-
-        refRON_incdp = cdpmod.Json_CDP()
-        refRON_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refronkey])
-        
-        def _get_ref_RONs_MAP(inData, Ckey, Q):
-            return inData[Ckey][Q][ronreg]
-        
-        
-        RefRONsMap = self.get_FPAMAP(refRON_incdp.data.copy(),
-                                        extractor=_get_ref_RONs_MAP)
-
-        self.dd.products['REF_RONs'] = RefRONsMap.copy()
 
 
 
@@ -292,9 +293,8 @@ class FPA_BIAS(fpatask.FpaTask):
         """Adds Appendices to Report."""
 
 
-
         if self.report is not None:
-            self.report.add_Section(keyword='appendix', Title='Appendix', level=0)
+            self.report.add_Section(keyword='appendix', Title='Appendix', level = 0)
 
 
         # TABLE: reference values of OFFSETS
@@ -303,7 +303,7 @@ class FPA_BIAS(fpatask.FpaTask):
             return self.dd.products['REF_OFFs'][Ckey][Q]
         
         cdpdictoff = dict(
-            caption = 'Reference OFFSETS (GRCALCAMP).',
+            caption = 'Reference OFFSETs in Over-scan. (from GRCALCAMP).',
             valformat = '%.1f')
         
         self.add_StandardQuadsTable(extractor=_getRefOffs,
@@ -318,7 +318,7 @@ class FPA_BIAS(fpatask.FpaTask):
             return self.dd.products['REF_RONs'][Ckey][Q]
         
         cdpdictron = dict(
-            caption = 'Reference OFFSETS (GRCALCAMP).',
+            caption = 'Reference RONs (from GRCALCAMP).',
             valformat = '%.2f')
         
         self.add_StandardQuadsTable(extractor=_getRefRons,

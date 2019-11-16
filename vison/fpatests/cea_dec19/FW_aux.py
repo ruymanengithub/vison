@@ -10,10 +10,10 @@ Created on Tue Oct 29 14:20:00 2019
 
 
 # IMPORT STUFF
-from pdb import set_trace as stop
-import numpy as np
-import os
-from collections import OrderedDict
+# from pdb import set_trace as stop
+# import numpy as np
+# import os
+# from collections import OrderedDict
 
 from vison.plot import figclasses
 from vison.datamodel import cdp
@@ -30,12 +30,12 @@ FW_Ramps_dict = dict(
     figname='FW_Ramps.png',
     caption='PENDING CAPTION',
     meta=dict(
-            suptitle='Avg. Column Fluence Profiles.',
-            doLegend=True,
-            corekwargs=dict(E=dict(marker='', linestyle='-', color='r'),
-                            F=dict(marker='', linestyle='-', color='g'),
-                            G=dict(marker='', linestyle='-', color='b'),
-                            H=dict(marker='', linestyle='-', color='m'))))
+        suptitle='Avg. Column Fluence Profiles.',
+        doLegend=True,
+        corekwargs=dict(E=dict(marker='', linestyle='-', color='r'),
+            F=dict(marker='', linestyle='-', color='g'),
+            G=dict(marker='', linestyle='-', color='b'),
+            H=dict(marker='', linestyle='-', color='m'))))
 
 FW_SlopesMap_dict = dict(
     figname='FW_SlopesMap.png',

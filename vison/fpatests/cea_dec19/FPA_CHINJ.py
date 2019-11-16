@@ -60,6 +60,7 @@ class CHINJ(fpatask.FpaTask):
 
         self.inputs['subpaths'] = dict(figs='figs',
                                        products='products')
+
         
     def set_inpdefaults(self, **kwargs):
         self.inpdefaults = self.inputsclass(preprocessing=dict(
@@ -70,6 +71,39 @@ class CHINJ(fpatask.FpaTask):
                                                 extension=-1,
                                                 scan='pre'
                                             )))
+
+
+    def load_references():
+        """ """
+
+        # REFERENCE OFFSETS
+        
+        refoffkey, offreg = ('offsets_fwd_cold','ove')
+
+        refOFF_incdp = cdpmod.Json_CDP()
+        refOFF_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refoffkey])
+        
+        def _get_ref_OFFs_MAP(inData, Ckey, Q):
+            return inData[Ckey][Q][offreg]
+        
+        RefOFFsMap = self.get_FPAMAP(refOFF_incdp.data.copy(),
+                                        extractor=_get_ref_OFFs_MAP)
+
+        self.dd.products['REF_OFFs'] = RefOFFsMap.copy()
+
+
+        # Reference Injection Values
+
+        refINJ_incdp = cdpmod.Json_CDP()
+        refINJ_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references']['injection_levels'])
+        
+        def _get_ref_INJs_MAP(inData, Ckey, Q):
+            return inData[Ckey][Q]
+        
+        RefINJsMap = self.get_FPAMAP(refINJ_incdp.data.copy(),
+                                        extractor=_get_ref_INJs_MAP)
+
+        self.dd.products['REF_INJs'] = RefINJsMap.copy()
 
 
     def _basic_onLE1(self, **kwargs):
@@ -250,34 +284,6 @@ class CHINJ(fpatask.FpaTask):
         if self.report is not None:
             self.report.add_Section(keyword='meta', Title='Meta-Analysis', level=0)
 
-        # REFERENCE OFFSETS
-        
-        refoffkey, offreg = ('offsets_fwd_cold','ove')
-
-        refOFF_incdp = cdpmod.Json_CDP()
-        refOFF_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refoffkey])
-        
-        def _get_ref_OFFs_MAP(inData, Ckey, Q):
-            return inData[Ckey][Q][offreg]
-        
-        RefOFFsMap = self.get_FPAMAP(refOFF_incdp.data.copy(),
-                                        extractor=_get_ref_OFFs_MAP)
-
-        self.dd.products['REF_OFFs'] = RefOFFsMap.copy()
-
-
-        # Reference Injection Values
-
-        refINJ_incdp = cdpmod.Json_CDP()
-        refINJ_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references']['injection_levels'])
-        
-        def _get_ref_INJs_MAP(inData, Ckey, Q):
-            return inData[Ckey][Q]
-        
-        RefINJsMap = self.get_FPAMAP(refINJ_incdp.data.copy(),
-                                        extractor=_get_ref_INJs_MAP)
-
-        self.dd.products['REF_INJs'] = RefINJsMap.copy()
 
 
         # Display map of injection levels minus reference
@@ -287,7 +293,7 @@ class CHINJ(fpatask.FpaTask):
         def _get_Diff_Inj_MAP(inData, Ckey, Q):
             return inData[0][Ckey][Q]-inData[1][Ckey][Q]
 
-
+        RefINJsMap = self.dd.products['REF_INJs']
 
         DiffInjMap = self.get_FPAMAP((INJsMap,RefINJsMap),
                                         extractor=_get_Diff_Inj_MAP)

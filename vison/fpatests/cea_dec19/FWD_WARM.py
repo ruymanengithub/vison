@@ -56,7 +56,8 @@ class FWD_WARM(fpatask.FpaTask):
 
         self.inputs['subpaths'] = dict(figs='figs',
                                        products='products')
-        
+
+
     def set_inpdefaults(self, **kwargs):
         self.inpdefaults = self.inputsclass(preprocessing=dict(
                                             offsetkwargs=dict(
@@ -67,9 +68,53 @@ class FWD_WARM(fpatask.FpaTask):
                                                 scan='pre'
                                             )))
 
-    def _get_RAMPslope(self, vQ):
+    def load_references(self):
         """ """
 
+        # Reference Ramps
+
+        reframps_incdp = cdpmod.Json_CDP()
+        reframps_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references']['warm_ramps'])
+        
+        def _get_ref_Rslopes_MAP(inData, Ckey, Q):
+            return inData[Ckey][Q]['slope']
+        
+        
+        RefRslopesMap = self.get_FPAMAP(reframps_incdp.data.copy(),
+                                        extractor=_get_ref_Rslopes_MAP)
+        
+        self.dd.products['REFRAMPslopes'] = RefRslopesMap.copy()
+
+        # Reference offsets
+
+        lookup_OFF_refkeys = dict(
+            RWDVS_WARM = ('offsets_rwdvs_warm','ove'),
+            RWDVS_COLD = ('offsets_rwdvs_warm','ove'),
+            RWD_WARM = ('offsets_rwdv_warm','ove'),
+            RWDV_COLD = ('offsets_rwdv_warm','ove'),
+            FWD_WARM = ('offsets_fwd_cold','ove'),
+            FWD_COLD= ('offsets_fwd_cold','ove'),
+            )
+
+        refoffkey, offreg = 'FWD_WARM', 'ove'
+
+        refOFF_incdp = cdpmod.Json_CDP()
+        refOFF_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refoffkey])
+        
+
+        def _get_ref_OFFs_MAP(inData, Ckey, Q):
+            return inData[Ckey][Q][offreg]
+        
+        
+        RefOFFsMap = self.get_FPAMAP(refOFF_incdp.data.copy(),
+                                        extractor=_get_ref_OFFs_MAP)
+
+        self.dd.products['REF_OFFs'] = RefOFFsMap.copy()
+
+
+    def _get_RAMPslope(self, vQ):
+        """ """
+        
         rawy = vQ.data['y'].copy()
         rownum = np.arange(len(rawy))
         rowsat = np.where(rawy == 2.**16 - 1)[0][0]
@@ -334,20 +379,11 @@ class FWD_WARM(fpatask.FpaTask):
 
         # Display FPA-Map of ramp-slope differences with CALCAMP
         
-        reframps_incdp = cdpmod.Json_CDP()
-        reframps_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references']['warm_ramps'])
-        
-        def _get_ref_Rslopes_MAP(inData, Ckey, Q):
-            return inData[Ckey][Q]['slope']
-        
-        
-        RefRslopesMap = self.get_FPAMAP(reframps_incdp.data.copy(),
-                                        extractor=_get_ref_Rslopes_MAP)
-        
-        self.dd.products['REFRAMPslopes'] = RefRslopesMap.copy()
-        
         def _get_Diff_Rslopes_MAP(inData, Ckey, Q):
             return inData[0][Ckey][Q]-inData[1][Ckey][Q]
+
+        RefRslopesMap = self.dd.products['REFRAMPslopes'].copy()
+
         
         DiffRslopesMap = self.get_FPAMAP((RslopesMap,RefRslopesMap),
                                         extractor=_get_Diff_Rslopes_MAP)
@@ -398,9 +434,19 @@ class FWD_WARM(fpatask.FpaTask):
 
         # TABLE: reference values of OFFSETS
         
+        
+        def _getRefOffs(self, Ckey, Q):
+            return self.dd.products['REF_OFFs'][Ckey][Q]
+        
+        cdpdictoff = dict(
+            caption = 'Reference OFFSETs in Over-scan. (from GRCALCAMP).',
+            valformat = '%.1f')
+        
+        self.add_StandardQuadsTable(extractor=_getRefOffs,
+                                    cdp=None,
+                                    cdpdict=cdpdictoff)
 
         # TABLE: reference values of SLOPES
-        
         
         def _getRefRSlope(self, Ckey, Q):
             return self.dd.products['REFRAMPslopes'][Ckey][Q]

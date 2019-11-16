@@ -351,8 +351,15 @@ class FpaTask(task.Task):
 
         self.dd = fpatasklib.DataDict_builder(explog, self.inputs)
 
+        self.load_references()
+
         if not checkreport['checksout']:
             self.dd.flags.add('MISSDATA')
+
+    def load_references(self):
+        """ """
+        raise NotImplementedError("child class implements abstract method")
+
 
     def load_LE1(self, LE1fits):
         """ """

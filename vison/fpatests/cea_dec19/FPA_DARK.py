@@ -59,7 +59,10 @@ class DARK(fpatask.FpaTask):
 
         self.inputs['subpaths'] = dict(figs='figs',
                                        products='products')
-        
+
+
+
+
     def set_inpdefaults(self, **kwargs):
         self.inpdefaults = self.inputsclass(preprocessing=dict(
                                             offsetkwargs=dict(
@@ -69,6 +72,26 @@ class DARK(fpatask.FpaTask):
                                                 extension=-1,
                                                 scan='pre'
                                             )))
+
+    def load_references(self):
+        """ """
+
+        # Load Reference Offsets
+        
+        refoffkey, offreg = ('offsets_fwd_cold','ove')
+
+        refOFF_incdp = cdpmod.Json_CDP()
+        refOFF_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refoffkey])
+        
+
+        def _get_ref_OFFs_MAP(inData, Ckey, Q):
+            return inData[Ckey][Q][offreg]
+        
+        
+        RefOFFsMap = self.get_FPAMAP(refOFF_incdp.data.copy(),
+                                        extractor=_get_ref_OFFs_MAP)
+
+        self.dd.products['REF_OFFs'] = RefOFFsMap.copy()
 
 
     def _basic_onLE1(self, **kwargs):
@@ -88,8 +111,6 @@ class DARK(fpatask.FpaTask):
                          ove=[5, 5])
 
         for Q in self.Quads:
-
-            
 
             if not debug:
 
@@ -117,21 +138,6 @@ class DARK(fpatask.FpaTask):
         if self.report is not None:
             self.report.add_Section(keyword='meta', Title='Meta-Analysis', level=0)
 
-        
-        refoffkey, offreg = ('offsets_fwd_cold','ove')
-
-        refOFF_incdp = cdpmod.Json_CDP()
-        refOFF_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refoffkey])
-        
-
-        def _get_ref_OFFs_MAP(inData, Ckey, Q):
-            return inData[Ckey][Q][offreg]
-        
-        
-        RefOFFsMap = self.get_FPAMAP(refOFF_incdp.data.copy(),
-                                        extractor=_get_ref_OFFs_MAP)
-
-        self.dd.products['REF_OFFs'] = RefOFFsMap.copy()
 
 
 
