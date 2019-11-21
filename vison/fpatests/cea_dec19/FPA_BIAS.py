@@ -148,12 +148,15 @@ class FPA_BIAS(fpatask.FpaTask):
 
                 self.dd.products['profiles_H_1D'][CCDID][Q] = hor1Dprof
 
-                # produce average profile along cols
-                ver1Dprof = kccdobj.get_1Dprofile(
-                                Q=Q, orient='ver', area='all', stacker='mean', vstart=vstart, vend=vend)
 
-                
-                self.dd.products['profiles_V_1D'][CCDID][Q] = ver1Dprof
+                for reg in ['pre','img','ove']:
+
+                    # produce average profile along cols
+                    _ver1Dprof = kccdobj.get_1Dprofile(
+                                Q=Q, orient='ver', area=reg, stacker='mean', 
+                                vstart=vstart, vend=vend)
+            
+                    self.dd.products['profiles_V_1D_%s' % reg][CCDID][Q] = ver1Dprof
 
 
                 for reg in ['pre','img','ove']:
@@ -170,8 +173,6 @@ class FPA_BIAS(fpatask.FpaTask):
 
                     self.dd.products['MED_%s' % reg.upper()][CCDID][Q] = stats[0]
                     self.dd.products['STD_%s' % reg.upper()][CCDID][Q] = stats[1]
-
-                
 
 
     def basic_analysis(self):
@@ -211,9 +212,13 @@ class FPA_BIAS(fpatask.FpaTask):
         if self.report is not None:
             self.addFigures_ST(figkeys=['raw_img'], dobuilddata=False)
 
-        prodkeys = ['profiles_V_1D', 'profiles_H_1D', 
-        			'STD_PRE', 'STD_IMG','STD_OVE',
-        			'MED_PRE', 'MED_IMG', 'MED_OVE']
+        prodkeys = []
+        for reg in ['pre','img','ove']:
+            prodkeys.append('profiles_V_1D_%s' % reg)
+
+        prodkeys += ['profiles_H_1D', 
+            'STD_PRE', 'STD_IMG','STD_OVE',
+            'MED_PRE', 'MED_IMG', 'MED_OVE']
 
         for prodkey in prodkeys:
 
@@ -235,48 +240,15 @@ class FPA_BIAS(fpatask.FpaTask):
                 nprodkey = prodkey.replace('_','\_')
                 self.report.add_Text('product: %s, all extracted!' % nprodkey)
 
-        # # Matrices: HERvalues, RAMPslopes
+        # Matrix of offsets (over-scan)
 
-        # # HERvalues matrix
+        
 
-        # her_tb_cdp = self.CDP_lib['HER_TB']
-        # hercdpdict = dict(
-        #     TBkey='HER_TB',
-        #     meta=dict(),
-        #     CDP_header=CDP_header,
-        #     header_title='FWD WARM: HER TABLE',
-        #     CDP_KEY='HER_TB_CDP',
-        #     caption='HER value at first pixel.',
-        #     valformat='%.2e'
-        # )
+        # Save offsets to a json
 
-        # def _getHERval(self, Ckey, Q):
-        #     return self.dd.products['HERval'][Ckey][Q]
+        # Matrix of RONs (over-scan)
 
-        # self.add_StandardQuadsTable(extractor=_getHERval,
-        #                             cdp=her_tb_cdp,
-        #                             cdpdict=hercdpdict)
-
-        # # RAMP Slopes
-
-        # rslope_tb_cdp = self.CDP_lib['RSLOPE_TB']
-        # rslopecdpdict = dict(
-        #     TBkey='RSLOPE_TB',
-        #     meta=dict(),
-        #     CDP_header=CDP_header,
-        #     header_title='FWD WARM: RAMP SLOPES TABLE',
-        #     CDP_KEY='RSLOPE_TB_CDP',
-        #     caption='RAMP Slope in ADU/pixel row',
-        #     valformat='%.1f'
-        # )
-
-        # def _getRSlope(self, Ckey, Q):
-        #     return self.dd.products['RAMPfits'][Ckey][Q][0]
-
-        # self.add_StandardQuadsTable(extractor=_getRSlope,
-        #                             cdp=rslope_tb_cdp,
-        #                             cdpdict=rslopecdpdict)
-
+        # Save RONs to a json
 
 
     def meta_analysis(self):
@@ -285,6 +257,17 @@ class FPA_BIAS(fpatask.FpaTask):
         if self.report is not None:
             self.report.add_Section(keyword='meta', Title='Meta-Analysis', level=0)
 
+
+        # Offsets in pre-/img-/ove-: histograms?
+
+        # map difference in offset with reference
+
+        # map difference in RON with reference
+
+        # show average profiles along rows (single plot)
+
+        # show average profiles along columns (single plot): pre-/img-/ove-
+        #       Is there stray-light?
 
 
 
