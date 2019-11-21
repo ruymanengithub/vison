@@ -147,7 +147,9 @@ class FpaTask(task.Task):
         Errors = False
 
         self.CDP_header = OrderedDict(ID=self.ID,
-                                      vison=__version__)
+                                      vison=__version__,
+                                      FPA=self.fpa.FPA_MAP.copy())
+
 
         # INPUTS
 
@@ -371,7 +373,7 @@ class FpaTask(task.Task):
             self.report.add_Section(
                 keyword='check_data', Title='Data Validation', level=0)
 
-    def iterate_over_CCDs(self, LE1, method, **kwargs):
+    def iterate_over_CCDs_inLE1(self, LE1, _method, **kwargs):
         """ """
 
         for jY in range(self.NSLICES_FPA):
@@ -381,9 +383,9 @@ class FpaTask(task.Task):
                 _kwargs = dict(LE1=LE1, CCDID=CCDID)
                 _kwargs.update(kwargs)
 
-                method(self, **_kwargs)
+                _method(self, **_kwargs)
 
-    def iterate_over_CCDs_parallel(self, LE1, method, **kwargs):
+    def iterate_over_CCDs_parallel_inLE1(self, LE1, method, **kwargs):
         """DOES NOT WORK!!"""
 
         arglist = []

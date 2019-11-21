@@ -222,7 +222,7 @@ class CHINJ(fpatask.FpaTask):
                        debug=False)
 
 
-        self.iterate_over_CCDs(LE1, CHINJ._basic_onLE1, **CIkwargs)
+        self.iterate_over_CCDs_inLE1(LE1, CHINJ._basic_onLE1, **CIkwargs)
 
         if self.report is not None:
             for prodkey in prodkeys:

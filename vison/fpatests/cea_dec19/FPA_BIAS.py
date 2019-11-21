@@ -25,6 +25,7 @@ from vison.fpatests import fpatask
 from vison.datamodel import inputs
 from vison.datamodel import cdp as cdpmod
 from vison.fpatests.cea_dec19 import BIAS_aux
+from vison.datamodel import cdp
 
 # END IMPORT
 
@@ -52,9 +53,11 @@ class FPA_BIAS(fpatask.FpaTask):
 
         self.name = 'FPA_BIAS'
         self.type = 'Simple'
+        self.readmode = self.inputs['readmode']
+        self.temperature = self.inputs['readmode']
 
-        self.figdict = BIAS_aux.get_Bfigs(self.inputs['readmode'],self.inputs['temperature'])
-        self.CDP_lib = dict()
+        self.figdict = BIAS_aux.get_Bfigs(self.readmode,self.temperature)
+        self.CDP_lib = BIAS_aux.get_CDP_lib(self.readmode,self.temperature)
 
         self.inputs['subpaths'] = dict(figs='figs',
                                        products='products')
@@ -156,7 +159,7 @@ class FPA_BIAS(fpatask.FpaTask):
                                 Q=Q, orient='ver', area=reg, stacker='mean', 
                                 vstart=vstart, vend=vend)
             
-                    self.dd.products['profiles_V_1D_%s' % reg][CCDID][Q] = ver1Dprof
+                    self.dd.products['profiles_V_1D_%s' % reg][CCDID][Q] = _ver1Dprof
 
 
                 for reg in ['pre','img','ove']:
@@ -190,6 +193,9 @@ class FPA_BIAS(fpatask.FpaTask):
         iObs = 0
         vstart = 0
         vend = 2086
+
+        readmode = self.inputs['readmode']
+        temperature = self.inputs['temperature']
 
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
@@ -233,7 +239,7 @@ class FPA_BIAS(fpatask.FpaTask):
                        vend=vend,
                        debug=False)
 
-        self.iterate_over_CCDs(LE1, FPA_BIAS._basic_onLE1, **Bkwargs)
+        self.iterate_over_CCDs_inLE1(LE1, FPA_BIAS._basic_onLE1, **Bkwargs)
 
         if self.report is not None:
             for prodkey in prodkeys:
@@ -242,13 +248,110 @@ class FPA_BIAS(fpatask.FpaTask):
 
         # Matrix of offsets (over-scan)
 
-        
+        off_tb_cdp = cdp.Tables_CDP()
+        offcdpdict = dict(
+            caption='Offsets in the over-scan region.',
+            valformat='%.2f')
 
-        # Save offsets to a json
+        def _getOFF_OVEval(self, Ckey, Q):
+            return self.dd.products['MED_OVE'][Ckey][Q]
+
+        self.add_StandardQuadsTable(extractor=_getOFF_OVEval,
+                                    cdp=off_tb_cdp,
+                                    cdpdict=offcdpdict)
+
+
+        # Save offsets to a json: GIVES PROBLEMS because of serialisation of numpy.floats!
+
+        #OFF_hdr = OrderedDict()
+        #OFF_hdr['title'] = 'OFFSETS'
+        #OFF_hdr.update(CDP_header)
+
+        #OFF_cdp = self.CDP_lib['OFF_JSON']
+        #OFF_cdp.path=self.inputs['subpaths']['products']
+
+        #OFFdict = OrderedDict()
+        #OFFdict['PRE'] = self.dd.products['MED_PRE'].copy()
+        #OFFdict['IMG'] = self.dd.products['MED_IMG'].copy()
+        #OFFdict['OVE'] = self.dd.products['MED_OVE'].copy()
+
+
+        #OFF_cdp.ingest_inputs(data=OFFdict,
+        #    header=OFF_hdr,
+        #    meta=dict(units='ADU'))
+        #OFF_cdp.savehardcopy()
+
+
 
         # Matrix of RONs (over-scan)
 
+        ron_tb_cdp = cdp.Tables_CDP()
+        roncdpdict = dict(
+            caption='RON in the over-scan region.',
+            valformat='%.2f')
+
+        def _getRON_OVEval(self, Ckey, Q):
+            return self.dd.products['STD_OVE'][Ckey][Q]
+
+        self.add_StandardQuadsTable(extractor=_getRON_OVEval,
+                                    cdp=ron_tb_cdp,
+                                    cdpdict=roncdpdict)
+
         # Save RONs to a json
+
+        #OFF_hdr = OrderedDict()
+        #OFF_hdr['title'] = 'OFFSETS'
+        #OFF_hdr.update(CDP_header)
+
+        #OFF_cdp = self.CDP_lib['OFF_JSON']
+        #OFF_cdp.path=self.inputs['subpaths']['products']
+
+        #OFFdict = OrderedDict()
+        #OFFdict['PRE'] = self.dd.products['MED_PRE'].copy()
+        #OFFdict['IMG'] = self.dd.products['MED_IMG'].copy()
+        #OFFdict['OVE'] = self.dd.products['MED_OVE'].copy()
+
+
+        #OFF_cdp.ingest_inputs(data=OFFdict,
+        #    header=OFF_hdr,
+        #    meta=dict(units='ADU'))
+        #OFF_cdp.savehardcopy()
+
+
+    def _get_XYdict_VPROFS(self):
+        """ """
+
+        data = dict(pre=self.dd.products['profiles_V_1D_pre'],
+                    img=self.dd.products['profiles_V_1D_img'],
+                    ove=self.dd.products['profiles_V_1D_ove'])
+
+        regions = ['pre','img','ove']
+
+        XYdict_VPROFS = dict(x=dict(),
+                            y=dict(),
+                            labelkeys=regions)
+        for reg in regions:
+            XYdict_VPROFS['x'][reg] = []
+            XYdict_VPROFS['y'][reg] = []
+
+
+        def assigner(VPROFS, data, Ckey):
+
+            for reg in regions:
+
+                for Q in self.Quads:
+                    _x = data[reg][Ckey][Q].data['x'].copy()
+                    ixorder = np.argsort(_x)
+                    _x = _x[ixorder]-_x.min()
+                    _y = data[reg][Ckey][Q].data['y'][ixorder].copy()
+                    VPROFS['x'][reg].append(_x)
+                    VPROFS['y'][reg].append(_y)
+
+            return VPROFS
+
+        XYdict_VPROFS = self.iter_overCCDs(data, assigner, RetDict=XYdict_VPROFS)
+
+        return XYdict_VPROFS
 
 
     def meta_analysis(self):
@@ -262,14 +365,62 @@ class FPA_BIAS(fpatask.FpaTask):
 
         # map difference in offset with reference
 
-        # map difference in RON with reference
+        def _get_GenValue_MAP(inData, Ckey, Q):
+            return inData[Ckey][Q]
+
+        OffsetsMap = self.get_FPAMAP(self.dd.products['MED_OVE'],
+                                     extractor=_get_GenValue_MAP)
+
+        RefOffsetsMap = self.dd.products['REF_OFFs'].copy()
+
+        def _get_Diff_MAP(inData, Ckey, Q):
+            """ """
+            return inData[0][Ckey][Q]-inData[1][Ckey][Q]
+
+        DiffOffsetsMap = self.get_FPAMAP((OffsetsMap,RefOffsetsMap),
+                                        extractor=_get_Diff_MAP)
+        
+        self.figdict['DIFFOFFSETSMAP'][1]['data'] = DiffOffsetsMap
+        self.figdict['DIFFOFFSETSMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
+
+        # map RATIO of RON with reference
+
+
+        RonsMap = self.get_FPAMAP(self.dd.products['STD_OVE'],
+                                     extractor=_get_GenValue_MAP)
+
+        RefRonsMap = self.dd.products['REF_RONs'].copy()
+
+        def _get_Ratio_MAP(inData, Ckey, Q):
+            """ """
+            return inData[0][Ckey][Q]/inData[1][Ckey][Q]
+
+        RatioRonsMap = self.get_FPAMAP((RonsMap,RefRonsMap),
+                                        extractor=_get_Ratio_MAP)
+        
+        self.figdict['RATIORONSMAP'][1]['data'] = RatioRonsMap
+        self.figdict['RATIORONSMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
+
 
         # show average profiles along rows (single plot)
 
         # show average profiles along columns (single plot): pre-/img-/ove-
         #       Is there stray-light?
 
+        
 
+        XYdict_VPROFS = self._get_XYdict_VPROFS()
+        
+        stop()
+        
+        self.figdict['VPROFS'][1]['data'] = XYdict_VPROFS
+        self.figdict['VPROFS'][1]['meta']['plotter'] = self.metacal.plot_XY
+
+        # PLOTTING
+
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['DIFFOFFSETSMAP', 'RATIORONSMAP','VPROFS'],
+                               dobuilddata=False)
 
 
     def appendix(self):

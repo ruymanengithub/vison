@@ -229,7 +229,7 @@ class FWD_WARM(fpatask.FpaTask):
                        vend=vend,
                        debug=False)
 
-        self.iterate_over_CCDs(LE1, FWD_WARM._basic_onLE1, **Bkwargs)
+        self.iterate_over_CCDs_inLE1(LE1, FWD_WARM._basic_onLE1, **Bkwargs)
 
         if self.report is not None:
 
