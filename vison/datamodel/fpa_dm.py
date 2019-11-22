@@ -276,6 +276,20 @@ class FPA_LE1(object):
 
                 self.set_ccdobj(kccdobj, CCDID, inextension=-1)
 
+    def apply_function_to_ccds(self, ccdfunction, **kwargs):
+        """ """
+
+        for jY in range(1, self.fpamodel.NSLICES + 1):
+            for iX in range(1, self.fpamodel.NSLICES + 1):
+                CCDID = 'C_%i%i' % (jY, iX)
+                #print('Simulating CCD: %s' % CCDID)
+                kccdobj = self.get_ccdobj(CCDID)
+
+                kccdobj = ccdfunction(kccdobj, **kwargs)
+
+                self.set_ccdobj(kccdobj, CCDID, inextension=-1)
+
+
 
 def test1():
     """ """
