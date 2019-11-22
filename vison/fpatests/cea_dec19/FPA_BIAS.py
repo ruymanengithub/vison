@@ -320,7 +320,7 @@ class FPA_BIAS(fpatask.FpaTask):
 
     def _get_XYdict_VPROFS(self):
         """ """
-
+        
         data = dict(pre=self.dd.products['profiles_V_1D_pre'],
                     img=self.dd.products['profiles_V_1D_img'],
                     ove=self.dd.products['profiles_V_1D_ove'])
@@ -337,21 +337,79 @@ class FPA_BIAS(fpatask.FpaTask):
 
         def assigner(VPROFS, data, Ckey):
 
-            for reg in regions:
+            for Q in self.Quads:
 
-                for Q in self.Quads:
+                cenY = []
+
+                for reg in regions:
+                
                     _x = data[reg][Ckey][Q].data['x'].copy()
                     ixorder = np.argsort(_x)
                     _x = _x[ixorder]-_x.min()
                     _y = data[reg][Ckey][Q].data['y'][ixorder].copy()
                     VPROFS['x'][reg].append(_x)
                     VPROFS['y'][reg].append(_y)
+                    cenY.append(np.median(_y))
+                    #VPROFS['x'][reg] = [_x]
+                    #VPROFS['y'][reg] =[_y]
+
+                cenY = np.mean(cenY)
+
+                for reg in regions: # recentering profiles
+                    VPROFS['y'][reg][-1] -= cenY
 
             return VPROFS
 
         XYdict_VPROFS = self.iter_overCCDs(data, assigner, RetDict=XYdict_VPROFS)
 
+        for reg in regions:
+            XYdict_VPROFS['x'][reg] = np.array(XYdict_VPROFS['x'][reg]).T.tolist()
+            XYdict_VPROFS['y'][reg] = np.array(XYdict_VPROFS['y'][reg]).T.tolist()
+
+
         return XYdict_VPROFS
+
+    def _get_Histos_OFFSETS(self):
+        """ """
+
+        data = dict(pre=self.dd.products['MED_PRE'],
+                    img=self.dd.products['MED_IMG'],
+                    ove=self.dd.products['MED_OVE'])
+
+        regions = ['pre','img','ove']
+
+        HistosDict = dict(x=dict(),
+                            y=dict(),
+                            labelkeys=regions)
+
+        for reg in regions:
+            HistosDict['y'][reg] = []
+
+        def assigner(Histos, data, Ckey):
+            for Q in self.Quads:
+                for reg in regions:
+                    Histos['y'][reg].append(data[reg][Ckey][Q])
+            return Histos
+
+        HistosDict = self.iter_overCCDs(data, assigner, RetDict=HistosDict)
+
+        minval = 1e6
+        maxval = -1e6
+
+        for reg in regions:
+
+            regmin = int(np.nanmin(HistosDict['y'][reg]))
+            regmax =  int(np.nanmax(HistosDict['y'][reg]))
+            minval = min((minval,regmin))
+            maxval = max((maxval,regmax))
+
+        bin_edges = np.linspace(minval,maxval,max((15,int(maxval-minval))))
+        
+        for reg in regions:
+            HistosDict['x'][reg] = bin_edges
+
+        return HistosDict
+
 
 
     def meta_analysis(self):
@@ -361,7 +419,13 @@ class FPA_BIAS(fpatask.FpaTask):
             self.report.add_Section(keyword='meta', Title='Meta-Analysis', level=0)
 
 
-        # Offsets in pre-/img-/ove-: histograms?
+        # Offsets in pre-/img-/ove-: histograms
+
+        OFFSETS_HISTOS = self._get_Histos_OFFSETS()
+
+        self.figdict['OFFSETS_HISTO'][1]['data'] = OFFSETS_HISTOS
+        self.figdict['OFFSETS_HISTO'][1]['meta']['plotter'] = self.metacal.plot_HISTO
+
 
         # map difference in offset with reference
 
@@ -407,19 +471,16 @@ class FPA_BIAS(fpatask.FpaTask):
         # show average profiles along columns (single plot): pre-/img-/ove-
         #       Is there stray-light?
 
-        
-
         XYdict_VPROFS = self._get_XYdict_VPROFS()
-        
-        stop()
-        
+
         self.figdict['VPROFS'][1]['data'] = XYdict_VPROFS
         self.figdict['VPROFS'][1]['meta']['plotter'] = self.metacal.plot_XY
 
         # PLOTTING
 
         if self.report is not None:
-            self.addFigures_ST(figkeys=['DIFFOFFSETSMAP', 'RATIORONSMAP','VPROFS'],
+            self.addFigures_ST(figkeys=['OFFSETS_HISTO','DIFFOFFSETSMAP', 
+                                        'RATIORONSMAP','VPROFS'],
                                dobuilddata=False)
 
 

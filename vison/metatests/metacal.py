@@ -24,6 +24,7 @@ from vison.datamodel import core as vcore
 from vison.support import vcal
 from vison.fpa import fpa as fpamod
 from vison.plot import plots_fpa as plfpa
+from vison.plot import baseplotclasses as basepl
 
 from matplotlib import pyplot as plt
 plt.switch_backend('TkAgg')
@@ -492,67 +493,52 @@ class MetaCal(object):
 
         gc.collect()
 
-    def plot_XY(self, XYdict, **kwargs):
+
+    def _get_plot_gen(self, plotclass):
         """ """
 
-        _kwargs = dict()
-        _kwargs.update(kwargs)
+        def plot_gen(self, datadict, **kwargs):
+            _kwargs = dict()
+            _kwargs.update(kwargs)
 
-        if 'figname' in _kwargs:
-            figname = _kwargs['figname']
-        else:
-            figname = ''
+            if 'figname' in _kwargs:
+                figname = _kwargs['figname']
+            else:
+                figname = ''
 
-        with plfpa.XYPlot(XYdict, **_kwargs) as xyplot:
-            xyplot.render(figname=figname)
-        #xyplot = None
+            with plotclass(datadict, **_kwargs) as plot:
+                plot.render(figname=figname)
+
+        return plot_gen
 
         gc.collect()
+
+
+    def plot_XY(self, XYdict, **kwargs):
+        """ """
+        plotobj = self._get_plot_gen(basepl.XYPlot)
+        plotobj(self, XYdict, **kwargs)
+        
+
+    def plot_HISTO(self, Hdict, **kwargs):
+        """ """
+        plotobj = self._get_plot_gen(basepl.HistoPlot)
+        plotobj(self, Hdict, **kwargs)
+
 
     def plot_XYMAP(self, XYMAP, **kwargs):
 
-        _kwargs = dict()
-        _kwargs.update(kwargs)
+        plotobj = self._get_plot_gen(plfpa.FpaPlotYvsX)
+        plotobj(self, XYMAP, **kwargs)
 
-        if 'figname' in _kwargs:
-            figname = _kwargs['figname']
-        else:
-            figname = ''
-
-        with plfpa.FpaPlotYvsX(XYMAP, **_kwargs) as xyfpaplot:
-            xyfpaplot.render(figname=figname)
-        #xyfpaplot = None
-
-        gc.collect()
 
     def plot_XYCCD(self, XYCCD, **kwargs):
 
-        _kwargs = dict()
-        _kwargs.update(kwargs)
+        plotobj = self._get_plot_gen(basepl.CCD2DPlotYvsX)
+        plotobj(self, XYCCD, **kwargs)
 
-        if 'figname' in _kwargs:
-            figname = _kwargs['figname']
-        else:
-            figname = ''
-
-        with plfpa.CCD2DPlotYvsX(XYCCD, **_kwargs) as xyccdplot:
-            xyccdplot.render(figname=figname)
-
-        #xyccdplot = plfpa.CCD2DPlotYvsX(XYCCD, **_kwargs)
-        # xyccdplot.render(figname=figname)
-
-        gc.collect()
 
     def plot_ImgFPA(self, BCdict, **kwargs):
 
-        _kwargs = dict()
-        _kwargs.update(kwargs)
-
-        if 'figname' in _kwargs:
-            figname = _kwargs['figname']
-        else:
-            figname = ''
-
-        with plfpa.FpaImgShow(BCdict, **_kwargs) as imgfpaplot:
-            imgfpaplot.render(figname=figname)
-        gc.collect()
+        plotobj = self._get_plot_gen(plfpa.FpaImgShow)
+        plotobj(self, BCdict, **kwargs)

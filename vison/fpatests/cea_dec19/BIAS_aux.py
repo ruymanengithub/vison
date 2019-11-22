@@ -30,6 +30,20 @@ def _get_raw_img_dict(readmode, temperature):
 
     return raw_img_dict
 
+def _get_OffsetsHisto_dict(readmode,temperature):
+    """ """
+    OffsetsHisto_dict = dict(
+        figname='BIAS_OFFSETS_HISTOS_%s_%s.png' % (readmode, temperature),
+        caption='Offsets Distributions',
+        meta=dict(
+        title='Offsets Distributions',
+        doLegend=True,
+        corekwargs=dict(pre=dict(linestyle='-', color='r'),
+            img=dict(linestyle='--', color='g'),
+            ove=dict(linestyle='-.', color='b'))))
+
+    return OffsetsHisto_dict
+
 def _get_DiffOffsetsMap_dict(readmode, temperature):
     """ """
 
@@ -58,11 +72,11 @@ def _get_VPROFS_dict(readmode,temperature):
     figname='BIAS_%s_%s_VPROFS.png' % (readmode, temperature),
     caption='Vertical Average Profiles (along columns).',
     meta=dict(
-        suptitle='Avg. Column Offset Profiles.',
+        title='Avg. Column Offset Profiles.',
         doLegend=True,
-        corekwargs=dict(PRE=dict(marker='', linestyle='-', color='r'),
-            IMG=dict(marker='', linestyle='-', color='g'),
-            OVE=dict(marker='', linestyle='-', color='b'))))
+        corekwargs=dict(pre=dict(marker='', linestyle='-', color='r'),
+            img=dict(marker='', linestyle='--', color='g'),
+            ove=dict(marker='', linestyle='-.', color='b'))))
 
     return VPROFS_dict
 
@@ -72,6 +86,8 @@ def get_Bfigs(readmode, temperature):
     Bfigs = dict()
     Bfigs['raw_img'] = [figclasses.Fig_Dynamic, \
             _get_raw_img_dict(readmode, temperature)]
+    Bfigs['OFFSETS_HISTO'] = [figclasses.Fig_Dynamic, 
+            _get_OffsetsHisto_dict(readmode,temperature)]
     Bfigs['DIFFOFFSETSMAP'] = [figclasses.Fig_Dynamic, 
             _get_DiffOffsetsMap_dict(readmode,temperature)]
     Bfigs['RATIORONSMAP'] = [figclasses.Fig_Dynamic, 
