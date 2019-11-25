@@ -23,7 +23,7 @@ from vison.datamodel import cdp
 
 DK_img_dict = dict(
     figname='DARK_Img.png',
-    caption='Dark Image (offset subtracted)',
+    caption='FPA Image: "Dark" (offset subtracted).',
     meta=dict(suptitle='FPA Image'))
 
 

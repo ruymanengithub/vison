@@ -104,29 +104,6 @@ class DARK(fpatask.FpaTask):
 
         kccdobj = LE1.get_ccdobj(CCDID)
         # print(CCDID)
-        debug = kwargs['debug']
-
-        trimscans = dict(pre=[25, 5],
-                         img=[5, 5],
-                         ove=[5, 5])
-
-        for Q in self.Quads:
-
-            if not debug:
-
-                pass
-
-
-   def _basic_onLE1(self, **kwargs):
-        """ """
-
-        CCDID = kwargs['CCDID']
-        LE1 = kwargs['LE1']
-        vstart = kwargs['vstart']
-        vend = kwargs['vend']
-
-        kccdobj = LE1.get_ccdobj(CCDID)
-        # print(CCDID)
         debug = kwargs['debug']        
 
         trimscans = dict(pre=[25, 5],
@@ -272,7 +249,7 @@ class DARK(fpatask.FpaTask):
             return self.dd.products['REF_OFFs'][Ckey][Q]
         
         cdpdictoff = dict(
-            caption = 'Reference OFFSETS (GRCALCAMP).',
+            caption = 'Reference OFFSETS [ADU] (GRCALCAMP).',
             valformat = '%.1f')
         
         self.add_StandardQuadsTable(extractor=_getRefOffs,

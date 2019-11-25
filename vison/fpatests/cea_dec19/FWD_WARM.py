@@ -430,7 +430,7 @@ class FWD_WARM(fpatask.FpaTask):
             return self.dd.products['REF_OFFs'][Ckey][Q]
         
         cdpdictoff = dict(
-            caption = 'Reference OFFSETs in Over-scan. (from GRCALCAMP).',
+            caption = 'Reference OFFSETs [ADU] in Over-scan. (from GRCALCAMP).',
             valformat = '%.1f')
         
         self.add_StandardQuadsTable(extractor=_getRefOffs,

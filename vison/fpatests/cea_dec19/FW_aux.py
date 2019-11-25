@@ -23,12 +23,12 @@ from vison.datamodel import cdp
 
 FW_img_dict = dict(
     figname='FW_Img.png',
-    caption='PENDING CAPTION',
-    meta=dict(suptitle='FPA Image'))
+    caption='FPA FWD WARM Image Display',
+    meta=dict(suptitle='FPA Image - FWD-WARM'))
 
 FW_Ramps_dict = dict(
     figname='FW_Ramps.png',
-    caption='PENDING CAPTION',
+    caption='Avg. Column Fluence Profiles [ADU].',
     meta=dict(
         suptitle='Avg. Column Fluence Profiles.',
         doLegend=True,
@@ -39,17 +39,19 @@ FW_Ramps_dict = dict(
 
 FW_SlopesMap_dict = dict(
     figname='FW_SlopesMap.png',
-    caption='PENDING CAPTION',
+    caption='Ramp Slopes in ADU per pixel row.',
     meta=dict(suptitle='Ramp Slopes'))
 
 FW_DiffSlopesMap_dict = dict(
     figname='FW_DiffSlopesMap.png',
-    caption='PENDING CAPTION',
+    caption='Difference in ramp slope with reference image (from GRCALCAMP),'+\
+            ' in ADU per pixel row.',
     meta=dict(suptitle='Diff. Ramp Slopes'))
 
 FW_HERPROFS_dict = dict(
     figname='FW_HERPROFS.png',
-    caption='PENDING CAPTION',
+    caption='Hard Edge Response curves in the image to over-scan transition region, '+\
+            'all 144 quadrants.',
     meta=dict(
         title='H.E.R. Curves',
         xlabel='Pixel',
@@ -60,13 +62,13 @@ FW_HERPROFS_dict = dict(
 
 FW_HERvalsMap_dict = dict(
     figname='FW_HERvalsMap.png',
-    caption='PENDING CAPTION',
+    caption='HER values (adim.) in 1st dark pixel across FPA.',
     meta=dict(suptitle='HER (1st pixel) Map'))
 
 
 FW_BITHISTOS_dict = dict(
     figname='FW_BITS_Histos.png',
-    caption='PENDING CAPTION',
+    caption='Bit Population histograms across the 144 FPA quadrants (different colours).',
     meta=dict(
         title='Bit Histograms',
         xlabel='Bit',

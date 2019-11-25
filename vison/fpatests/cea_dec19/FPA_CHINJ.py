@@ -239,7 +239,7 @@ class CHINJ(fpatask.FpaTask):
             CDP_header=CDP_header,
             header_title='CHINJ: INJECTION TABLE',
             CDP_KEY='INJ_TB_CDP',
-            caption='Median Injection value.',
+            caption='Median Injection values in ADU.',
             valformat='%.1f'
         )
 
@@ -321,7 +321,7 @@ class CHINJ(fpatask.FpaTask):
             return self.dd.products['REF_OFFs'][Ckey][Q]
         
         cdpdictoff = dict(
-            caption = 'Reference OFFSETS (GRCALCAMP).',
+            caption = 'Reference OFFSETS [ADU] (GRCALCAMP).',
             valformat = '%.1f')
         
         self.add_StandardQuadsTable(extractor=_getRefOffs,
@@ -335,7 +335,7 @@ class CHINJ(fpatask.FpaTask):
             return self.dd.products['REF_INJs'][Ckey][Q]
         
         cdpdictinj = dict(
-            caption = 'Reference charge injection levels (GRCALCAMP).',
+            caption = 'Reference charge injection levels [ADU] (GRCALCAMP).',
             valformat = '%.1f')
         
         self.add_StandardQuadsTable(extractor=_getRefINJs,

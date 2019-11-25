@@ -23,12 +23,12 @@ from vison.datamodel import cdp
 
 CI_img_dict = dict(
     figname='CHINJ_Img.png',
-    caption='PENDING CAPTION',
+    caption='FPA Image Display: Charge Injection',
     meta=dict(suptitle='FPA Image'))
 
 INJ_Profs_dict = dict(
     figname='CHINJ_Injection_Profiles.png',
-    caption='PENDING CAPTION',
+    caption='Average Injection [ADU] profiles across the FPA.',
     meta=dict(
             suptitle='Avg. Injection Profiles.',
             doLegend=True,
@@ -39,7 +39,7 @@ INJ_Profs_dict = dict(
 
 INJ_Diff_dict = dict(
     figname='CHINJ_DiffInjectionMap.png',
-    caption='PENDING CAPTION',
+    caption='Difference in injection level [ADU] with reference image from GRCALCAMP.',
     meta=dict(suptitle='Diff. Injection Levels'))
 
 

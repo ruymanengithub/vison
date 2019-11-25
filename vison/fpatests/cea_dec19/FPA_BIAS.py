@@ -54,7 +54,7 @@ class FPA_BIAS(fpatask.FpaTask):
         self.name = 'FPA_BIAS'
         self.type = 'Simple'
         self.readmode = self.inputs['readmode']
-        self.temperature = self.inputs['readmode']
+        self.temperature = self.inputs['temperature']
 
         self.figdict = BIAS_aux.get_Bfigs(self.readmode,self.temperature)
         self.CDP_lib = BIAS_aux.get_CDP_lib(self.readmode,self.temperature)
@@ -194,8 +194,8 @@ class FPA_BIAS(fpatask.FpaTask):
         vstart = 0
         vend = 2086
 
-        readmode = self.inputs['readmode']
-        temperature = self.inputs['temperature']
+        #readmode = self.inputs['readmode']
+        #temperature = self.inputs['temperature']
 
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
@@ -403,7 +403,7 @@ class FPA_BIAS(fpatask.FpaTask):
             minval = min((minval,regmin))
             maxval = max((maxval,regmax))
 
-        bin_edges = np.linspace(minval,maxval,max((15,int(maxval-minval))))
+        bin_edges = np.linspace(minval,maxval,min((20,int(maxval-minval))))
         
         for reg in regions:
             HistosDict['x'][reg] = bin_edges
@@ -498,7 +498,7 @@ class FPA_BIAS(fpatask.FpaTask):
             return self.dd.products['REF_OFFs'][Ckey][Q]
         
         cdpdictoff = dict(
-            caption = 'Reference OFFSETs in Over-scan. (from GRCALCAMP).',
+            caption = 'Reference OFFSETs [ADU] in Over-scan. (from GRCALCAMP).',
             valformat = '%.1f')
         
         self.add_StandardQuadsTable(extractor=_getRefOffs,
@@ -513,7 +513,7 @@ class FPA_BIAS(fpatask.FpaTask):
             return self.dd.products['REF_RONs'][Ckey][Q]
         
         cdpdictron = dict(
-            caption = 'Reference RONs (from GRCALCAMP).',
+            caption = 'Reference RONs (rms, [ADU]) (from GRCALCAMP).',
             valformat = '%.2f')
         
         self.add_StandardQuadsTable(extractor=_getRefRons,
