@@ -224,7 +224,8 @@ class FPA_BIAS(fpatask.FpaTask):
 
         prodkeys += ['profiles_H_1D', 
             'STD_PRE', 'STD_IMG','STD_OVE',
-            'MED_PRE', 'MED_IMG', 'MED_OVE']
+            'MED_PRE', 'MED_IMG', 'MED_OVE',
+            'DARK']
 
         for prodkey in prodkeys:
 

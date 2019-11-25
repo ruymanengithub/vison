@@ -71,6 +71,7 @@ class FpaTask(task.Task):
         self.type = 'Fpa'
         self.HKKeys = []
         self.CDP_lib = dict()
+        self.incdps = dict()
         self.figdict = dict()
         if not hasattr(self, 'subtasks'):
             self.subtasks = [()]
@@ -564,8 +565,15 @@ class FpaTask(task.Task):
         TB['CCDID'] = np.zeros(NP, dtype='S4')
         TB['BLOCK'] = np.zeros(NP, dtype='S4')
         TB['CCD'] = np.zeros(NP, dtype='S4')
+
+        _dtype = np.array(extractor(self, 'C_11', 'E')).dtype
+        if 'S' in _dtype.str:
+            Qdtype = 'S30'
+        else:
+            Qdtype = 'float32'
+
         for Q in self.Quads:
-            TB[Q] = np.zeros(NP, dtype='float32')
+            TB[Q] = np.zeros(NP, dtype=Qdtype)
 
         for jY in range(self.NSLICES_FPA):
             for iX in range(self.NCOLS_FPA):
