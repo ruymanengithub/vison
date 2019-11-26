@@ -37,7 +37,7 @@ def get_model2d(img, pdegree=5, doFilter=False, doBin=True,
     return regmodel
 
 
-def f_get_covmap(sq1, sq2, N, submodel=False, debug=False):
+def f_get_covmap(sq1, sq2, N, submodel=False, estimator='median', debug=False):
     """ """
     #from time import time
 
@@ -74,12 +74,19 @@ def f_get_covmap(sq1, sq2, N, submodel=False, debug=False):
 
     x2d, y2d = np.meshgrid(x, y, indexing='ij')
 
+
+    if estimator == 'median':
+        festimator = np.nanmedian
+    elif estimator == 'mean':
+        festimator = np.nanmean
+    
+
     for i in range(N):
         for j in range(N):
 
-            EXY = np.median(clip(difimg[x2d, y2d] * difimg[x2d + i, y2d + j]))
-            EX = np.median(clip(difimg[x2d, y2d]))
-            EY = np.median(clip(difimg[x2d + i, y2d + j]))
+            EXY = festimator(clip(difimg[x2d, y2d] * difimg[x2d + i, y2d + j]))
+            EX = festimator(clip(difimg[x2d, y2d]))
+            EY = festimator(clip(difimg[x2d + i, y2d + j]))
 
             covmap[i, j] = (EXY - EX * EY) / var
             # covmap[i,j] = j # test
@@ -96,6 +103,7 @@ def get_cov_maps(ccdobjList, Npix=4, vstart=0, vend=2066, doTest=False, debug=Fa
     """ """
 
     maxbadfrac = 0.2
+    estimator = 'median'
     Quads = ccdobjList[0].Quads
 
     Nframes = len(ccdobjList)
@@ -142,6 +150,7 @@ def get_cov_maps(ccdobjList, Npix=4, vstart=0, vend=2066, doTest=False, debug=Fa
                     try:
                         # if Q=='F': debug=True #TEST
                         covmap, mu, var = f_get_covmap(sq1, sq2, Npix, submodel=True,
+                                                        estimator=estimator,
                                                        debug=debug)
 
                         covmapv[Q][:, :, iP] = covmap.copy()
