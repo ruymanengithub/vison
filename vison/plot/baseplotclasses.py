@@ -262,10 +262,12 @@ class HistoPlot(XYPlot):
         else:
             bins = self.data['x']
             h = self.data['y']
-            kwargs = dict(marker='.', weights=None, cumulative=False,
+            kwargs = dict(weights=None, cumulative=False,
                     histtype='step', align='mid', orientation='vertical', log=False)
             kwargs.update(ckwargs)
+            
             self.ax.hist(h, bins=bins, **kwargs)
+
             handle, label = None, None
             if self.meta['doYErrbars']:
                 eyarr = self.data['ey']
