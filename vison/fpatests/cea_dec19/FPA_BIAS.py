@@ -448,6 +448,16 @@ class FPA_BIAS(fpatask.FpaTask):
         self.figdict['DIFFOFFSETSMAP'][1]['data'] = DiffOffsetsMap
         self.figdict['DIFFOFFSETSMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
 
+        DiffOffsetsList = []
+        for Ckey in DiffOffsetsMap.keys():
+            for Q in self.Quads:
+                DiffOffsetsList.append(DiffOffsetsMap[Ckey][Q])
+
+        avgDiffOffset = np.mean(DiffOffsetsList)
+
+        if self.report is not None:
+            self.report.add_Text('Average Differerence in Offset with reference: %.2f ADU' % avgDiffOffset)
+
         # map RATIO of RON with reference
 
 
@@ -466,6 +476,15 @@ class FPA_BIAS(fpatask.FpaTask):
         self.figdict['RATIORONSMAP'][1]['data'] = RatioRonsMap
         self.figdict['RATIORONSMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
 
+        RatioRonsList = []
+        for Ckey in RatioRonsMap.keys():
+            for Q in self.Quads:
+                RatioRonsList.append(RatioRonsMap[Ckey][Q])
+
+        avgRatioRon = np.mean(RatioRonsList)
+
+        if self.report is not None:
+            self.report.add_Text('Average Ratio of RON with reference: %.2f (adim.)' % avgRatioRon)
 
         # show average profiles along rows (single plot)
 
