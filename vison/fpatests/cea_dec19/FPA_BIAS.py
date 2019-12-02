@@ -155,11 +155,24 @@ class FPA_BIAS(fpatask.FpaTask):
                 for reg in ['pre','img','ove']:
 
                     # produce average profile along cols
-                    _ver1Dprof = kccdobj.get_1Dprofile(
+                    ver1Dprof = kccdobj.get_1Dprofile(
                                 Q=Q, orient='ver', area=reg, stacker='mean', 
                                 vstart=vstart, vend=vend)
-            
-                    self.dd.products['profiles_V_1D_%s' % reg][CCDID][Q] = _ver1Dprof
+                    
+                    vQdata = ver1Dprof.data.copy()
+                    vx = vQdata['x'].copy()
+                    vy = vQdata['y'].copy()
+                    vx -= vx.min()
+                    if Q in ['E','F']:
+                        vx = kccdobj.NAXIS2/2-vx
+
+                    ixsort = np.argsort(vx)
+                    vx = vx[ixsort]
+                    vy = vy[ixsort]
+
+                    vQdata = dict(x=vx.copy(),y=vy.copy())
+
+                    self.dd.products['profiles_V_1D_%s' % reg][CCDID][Q] = vQdata.copy()
 
 
                 for reg in ['pre','img','ove']:
@@ -344,10 +357,8 @@ class FPA_BIAS(fpatask.FpaTask):
 
                 for reg in regions:
                 
-                    _x = data[reg][Ckey][Q].data['x'].copy()
-                    ixorder = np.argsort(_x)
-                    _x = _x[ixorder]-_x.min()
-                    _y = data[reg][Ckey][Q].data['y'][ixorder].copy()
+                    _x = data[reg][Ckey][Q]['x'].copy()
+                    _y = data[reg][Ckey][Q]['y'].copy()
                     VPROFS['x'][reg].append(_x)
                     VPROFS['y'][reg].append(_y)
                     cenY.append(np.median(_y))
