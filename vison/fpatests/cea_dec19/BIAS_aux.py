@@ -72,10 +72,11 @@ def _get_VPROFS_dict(readmode,temperature):
 
     VPROFS_dict = dict(
     figname='BIAS_%s_%s_VPROFS.png' % (readmode, temperature),
-    caption='Vertical Average Profiles (along columns).',
+    caption='Vertical Average Profiles (along columns). Median value across pre/img/ove profiles has been subtracted.',
     meta=dict(
-        title='Avg. Column Offset Profiles. Median value across pre/img/ove profiles subtracted.',
+        title='Avg. Column Offset Profiles.',
         doLegend=True,
+        ylim=[-20,20],
         corekwargs=dict(pre=dict(marker='', linestyle='-', color='r'),
             img=dict(marker='', linestyle='--', color='g'),
             ove=dict(marker='', linestyle='-.', color='b'))))

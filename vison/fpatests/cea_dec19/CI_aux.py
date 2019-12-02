@@ -39,7 +39,7 @@ INJ_Profs_dict = dict(
 
 INJ_Diff_dict = dict(
     figname='CHINJ_DiffInjectionMap.png',
-    caption='Difference in injection level [ADU] with reference image from GRCALCAMP.',
+    caption='Difference in injection levels [ADU] with reference image from GRCALCAMP.',
     meta=dict(suptitle='Diff. Injection Levels'))
 
 

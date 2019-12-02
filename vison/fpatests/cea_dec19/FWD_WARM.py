@@ -132,7 +132,7 @@ class FWD_WARM(fpatask.FpaTask):
         HERprofs = MOT_FFaux.extract_overscan_profiles(kccdobj,
                                                        [1.E3, 4.E4],
                                                        direction='serial')
-
+        
         for Q in self.Quads:
 
             # HERprofile
@@ -160,7 +160,20 @@ class FWD_WARM(fpatask.FpaTask):
                 vQ = kccdobj.get_1Dprofile(Q=Q, orient='ver', area='img', stacker='median',
                                            vstart=vstart, vend=vend)
 
-                self.dd.products['profiles1D'][CCDID][Q] = vQ.data.copy()
+                vQdata = vQ.data.copy()
+                vx = vQdata['x'].copy()
+                vy = vQdata['y'].copy()
+                vx -= vx.min()
+                if Q in ['E','F']:
+                    vx = kccdobj.NAXIS2/2-vx
+
+                ixsort = np.argsort(vx)
+                vx = vx[ixsort]
+                vy = vy[ixsort]
+
+                vQdata = dict(x=vx.copy(),y=vy.copy())
+
+                self.dd.products['profiles1D'][CCDID][Q] = vQdata.copy()
 
                 # extract and save slope+intercept of profile for comparison
 
@@ -169,8 +182,10 @@ class FWD_WARM(fpatask.FpaTask):
                 self.dd.products['RAMPfits'][CCDID][Q] = (rampslopeQ, rampinterQ)
 
                 # RAMP; bit-histograms extraction
+                ixsat = np.where(vy==2.**16-1)[0][0]
 
-                bitsmean = bits.get_histo_bits(kccdobj, Q, vstart=vstart, vend=vend)
+
+                bitsmean = bits.get_histo_bits(kccdobj, Q, vstart=vstart, vend=ixsat)
                 bitsbin = np.arange(0, 16) + 0.5
 
                 # save bit histograms
@@ -335,6 +350,13 @@ class FWD_WARM(fpatask.FpaTask):
         if self.report is not None:
             self.report.add_Section(keyword='meta', Title='Meta-Analysis', level=0)
 
+
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+
+
         # Display FPA-Map of ramp profiles
 
         def _assignProf1D(FWRampsDict, profdict, Ckey):
@@ -404,6 +426,21 @@ class FWD_WARM(fpatask.FpaTask):
         #   On second thoughts, probably better to skip this comparison, it'll 
         #   probably just add "noise"
         # PENDING?
+
+        # Average BIT HISTOGRAM values Matrix
+        
+        avbithist_tb_cdp = cdpmod.Tables_CDP()
+        avbithistdict = dict(
+            caption='Average Value of Bit Histogram for each quadrant in the FPA.',
+            valformat='%.2f'
+        )
+
+        def _getAvBitHisto(self, Ckey, Q):
+            return np.nanmean(self.dd.products['BITS'][Ckey][Q]['H'])
+
+        self.add_StandardQuadsTable(extractor=_getAvBitHisto,
+                                    cdp=avbithist_tb_cdp,
+                                    cdpdict=avbithistdict)
 
         # Display all bit-histogram maps together
 

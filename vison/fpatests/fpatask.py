@@ -173,6 +173,7 @@ class FpaTask(task.Task):
         except KeyError:
             cleantexafter = False
 
+
         DataDictFile = os.path.join(resultspath, '%s_DataDict.pick' % testkey)
         reportobjFile = os.path.join(resultspath, '%s_Report.pick' % testkey)
 
@@ -209,9 +210,11 @@ class FpaTask(task.Task):
             # Initialising Report Object
 
             if todo_flags['report']:
-
+                
                 self.report = Report(TestName=testkey, Model=self.Model,
-                                     Reference=self.TestReference)
+                                     Reference=self.TestReference,
+                                     doDraft = self.inputs['doDraftReport'])
+
                 self.report.add_Section(
                     keyword='init', Title='Inputs \& Data Ingestion', level=0)
                 self.add_inputs_to_report()
