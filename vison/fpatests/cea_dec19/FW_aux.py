@@ -40,13 +40,16 @@ FW_Ramps_dict = dict(
 FW_SlopesMap_dict = dict(
     figname='FW_SlopesMap.png',
     caption='Ramp Slopes in ADU per pixel row.',
-    meta=dict(suptitle='Ramp Slopes'))
+    meta=dict(suptitle='Ramp Slopes',
+                ColorbarText='ADU/row'))
 
 FW_DiffSlopesMap_dict = dict(
     figname='FW_DiffSlopesMap.png',
     caption='Difference in ramp slope with reference image (from GRCALCAMP),'+\
             ' in ADU per pixel row.',
-    meta=dict(suptitle='Diff. Ramp Slopes'))
+    meta=dict(suptitle='Diff. Ramp Slopes',
+                ColorbarText=r'$\Delta$ADU/row'
+            ))
 
 FW_HERPROFS_dict = dict(
     figname='FW_HERPROFS.png',
@@ -63,7 +66,8 @@ FW_HERPROFS_dict = dict(
 FW_HERvalsMap_dict = dict(
     figname='FW_HERvalsMap.png',
     caption='HER values (adim.) in 1st dark pixel across FPA.',
-    meta=dict(suptitle='HER (1st pixel) Map'))
+    meta=dict(suptitle='HER (1st pixel) Map',
+                ColorbarText='Fraction'))
 
 
 FW_BITHISTOS_dict = dict(
