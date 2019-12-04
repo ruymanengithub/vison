@@ -29,6 +29,9 @@
 \usepackage{tabu}
 \usepackage{ltxtable}
 \usepackage[printwatermark]{xwatermark}
+\usepackage{xcolor}
+\usepackage{tikz}
+
 \lstset{breaklines=True}
 
 
@@ -111,4 +114,7 @@
 The presented document is Proprietary information of the Euclid Consortium. This document shall be used and disclosed by the receiving Party and its related entities (e.g. contractors and subcontractors) only for the purposes of fulfilling the receiving Party's responsibilities under the Euclid Project and that the identified and marked technical data shall not be disclosed or retransferred to any other entity without prior written permission of the document preparer.}}}
 
 
-\newwatermark*[allpages,color=red!50,angle=45,scale=7,xpos=0,ypos=0]{DRAFT}
+%\newsavebox\mybox
+%\savebox\mybox{\tikz[color=red,opacity=0.3]\node{DRAFT};}
+\newwatermark*[allpages,color=red!50,opacity=0.3,angle=45,scale=5,xpos=0,ypos=0]{DRAFT}
+%\newwatermark*[allpages,angle=45,scale=7,xpos=0,ypos=0]{\usebox\mybox}
