@@ -52,7 +52,8 @@ def _get_DiffOffsetsMap_dict(readmode, temperature):
     DiffOffsetsMap_dict = dict(
         figname='BIAS_%s_%s_DiffOffsetsMap.png' % (readmode, temperature),
         caption='Difference in Offset with Reference image [ADU].',
-        meta=dict(suptitle='Diff. Offsets'))
+        meta=dict(suptitle='Diff. Offsets',
+                    ColorbarText='ADU'))
 
     return DiffOffsetsMap_dict
 
@@ -62,7 +63,8 @@ def _get_RatioRonMap_dict(readmode, temperature):
     RatioRonMap_dict = dict(
         figname='BIAS_%s_%s_RatioRonMap.png' % (readmode, temperature),
         caption='Ratio of RON measured / reference.',
-        meta=dict(suptitle='Ratio RONs'))
+        meta=dict(suptitle='Ratio RONs',
+                    ColorbarText='Fraction'))
 
     return RatioRonMap_dict
 

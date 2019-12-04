@@ -18,7 +18,7 @@ from collections import OrderedDict
 import pandas as pd
 import string as st
 
-from vison.support import utils
+from vison.support import utils, files
 from vison.image import bits
 from vison.other import MOT_FFaux
 from vison.fpatests import fpatask
@@ -61,6 +61,14 @@ class FPA_BIAS(fpatask.FpaTask):
 
         self.inputs['subpaths'] = dict(figs='figs',
                                        products='products')
+        if self.inputs['inCDPs'] is not None:
+            if 'gain' in self.inputs['inCDPs']:
+                allgains = files.cPickleRead(self.inputs['inCDPs']['gain'])
+
+                self.incdps['GAIN'] = OrderedDict()
+                
+                for block in self.fpa.flight_blocks:
+                    self.incdps['GAIN'][block] = allgains[block]['PTC01'].copy()
 
 
     def set_inpdefaults(self, **kwargs):
@@ -496,6 +504,37 @@ class FPA_BIAS(fpatask.FpaTask):
 
         if self.report is not None:
             self.report.add_Text('Average Ratio of RON with reference: %.2f (adim.)' % avgRatioRon)
+
+
+        # MATRIX of RON (electrons)
+
+        ronele_tb_cdp = cdp.Tables_CDP()
+        ronelecdpdict = dict(
+            caption='RON [electrons] in the over-scan region.',
+            valformat='%.2f')
+
+        def _getRONele_OVEval(self, Ckey, Q):
+            BLOCK, CCDk, _, _ = self.fpa.FPA_MAP[Ckey]
+            gain = self.incdps['GAIN'][BLOCK][CCDk][Q][0]
+            return self.dd.products['STD_OVE'][Ckey][Q] * gain
+
+
+        TBronele, cdpronele = self.add_StandardQuadsTable(extractor=_getRONele_OVEval,
+                                    cdp=ronele_tb_cdp,
+                                    cdpdict=ronelecdpdict)
+        RonEleList = []
+        for Q in self.Quads:
+            RonEleList += TBronele[Q].tolist()
+        RonEleList = np.array(RonEleList)
+        if self.report is not None:
+            minronele = np.nanmin(RonEleList)
+            maxronele = np.nanmax(RonEleList)
+            Naboveronreq = len(np.where(RonEleList > 4.5)[0])
+            
+            self.report.add_Text('Min Ron [electrons]: %.2f e-' % minronele)
+            self.report.add_Text('Max Ron [electrons]: %.2f e-' % maxronele)
+            self.report.add_Text('N(Ron$>$4.5 e- rms): %i' % Naboveronreq)
+
 
         # show average profiles along rows (single plot)
 
