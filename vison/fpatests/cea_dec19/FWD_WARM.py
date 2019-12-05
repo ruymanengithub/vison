@@ -111,10 +111,12 @@ class FWD_WARM(fpatask.FpaTask):
         rowsat = np.where(rawy == 2.**16 - 1)[0][0]
         ixsel = np.where((rawy < 5.E4) & (rownum < rowsat))
 
-        pol = np.polyfit(rownum[ixsel], rawy[ixsel], 1)
-
-        slope, intercept = pol[0], pol[1]
-
+        try:
+            pol = np.polyfit(rownum[ixsel], rawy[ixsel], 1)
+            slope, intercept = pol[0], pol[1]
+        except:
+            slope, intercept = np.nan, np.nan
+            
         return slope, intercept
 
     def _basic_onLE1(self, **kwargs):
