@@ -79,7 +79,7 @@ def _get_VPROFS_dict(readmode,temperature):
         title='Avg. Column Offset Profiles.',
         doLegend=True,
         ylim=[-20,20],
-        corekwargs=dict(pre=dict(marker='', linestyle='-', color='r'),
+        corekwargs=dict(pre=dict(marker='', linestyle='', color='r'),
             img=dict(marker='.', linestyle='', color='g'),
             ove=dict(marker='.', linestyle='', color='b'))))
 
