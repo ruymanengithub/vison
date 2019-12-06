@@ -19,12 +19,12 @@ from vison.fpa import fpa as fpamod
 from vison.metatests.metacal import MetaCal
 from vison.plot import plots_fpa as plfpa
 
-from vison.support import vcal
+from vison.support import vcal, utils
 from vison.datamodel import core as vcore
 from vison.ogse import ogse
 from vison.support import files
 from vison.datamodel import ccd as ccdmod
-
+from vison.datamodel import cdp as cdpmod
 
 from matplotlib import pyplot as plt
 plt.switch_backend('TkAgg')
@@ -342,8 +342,83 @@ class MetaCosmetics(MetaCal):
         self.figs['BADCOLS_COUNTS_MAP'] = os.path.join(self.figspath,
                                                        'BADCOLS_COUNTS_MAP.png')
 
+    def init_outcdpnames(self):
+        """ """
+
+        if not os.path.exists(self.cdpspath):
+            os.system('mkdir %s' % self.cdpspath)
+
+        self.outcdps['MASK_MERGE'] = os.path.join(self.cdpspath,
+            'MASK_COSMETICS_MERGED.fits')
+
+    def _get_MSKccd_dict(self, masktype='MERGE'):
+        """ """
+
+        testname = 'COSMETICS00'
+
+        MSKccd_dict = dict()
+
+        for jY in range(self.NCOLS_FPA):
+            for iX in range(self.NSLICES_FPA):
+                Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+
+                locator = self.fpa.FPA_MAP[Ckey]
+
+                block = locator[0]
+                CCDk = locator[1]
+
+                inventoryitem = self.inventory[block][testname][0]
+
+                productspath = os.path.join(inventoryitem['resroot'], 'products')
+
+                mskfits = os.path.join(productspath, 
+                    os.path.split(inventoryitem['dd'].products[masktype][CCDk])[-1])
+
+                ccdobj = ccdmod.CCD(infits=mskfits, getallextensions=True, withpover=True,
+                                    overscan=20)
+                MSKccd_dict[Ckey] = copy.deepcopy(ccdobj)
+
+        return MSKccd_dict
+
+
+
     def dump_aggregated_results(self):
         """ """
+
+        #self.init_outcdpnames()
+
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header['DATE'] = self.get_time_tag()
+
+        # save CDP: COSMETICS MASK
+
+        MSKccd_dict = self._get_MSKccd_dict(masktype='MERGE')
+
+        MSKheader = OrderedDict()
+
+        MSKheader['CDP'] = 'COSMETICS_MASK'
+        MSKheader['TEST'] = 'COSMETICS00'
+        MSKheader['MASKTYPE'] = 'MERGED'
+        MSKheader['VISON'] = CDP_header['vison']
+        MSKheader['FPA_DES'] = CDP_header['fpa_design']
+        MSKheader['DATE'] = CDP_header['DATE']
+
+        MSKcdp = cdpmod.LE1_CDP()
+
+        MSKcdp.ingest_inputs(MSKccd_dict, header=MSKheader, inextension=-1,
+                                fillval=0)
+
+        MSKcdpname = self.outcdps['MASK_MERGE']
+
+        MSKcdp.savehardcopy(MSKcdpname, clobber=True, uint16=False)
+
+        MSKccd_dict = None
+
+        #import sys
+        #print('EXITING EARLY ON TESTS!')
+        #sys.exit()
+
 
         # Maps of Defects
 
@@ -377,3 +452,5 @@ class MetaCosmetics(MetaCal):
             suptitle='NR. of BAD COLUMNS [MERGED MASK]',
             figname=self.figs['BADCOLS_COUNTS_MAP']
         ))
+
+        

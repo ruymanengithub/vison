@@ -95,6 +95,10 @@ class MetaCal(object):
         self.CDP_header['FPA'] = self.fpa.FPA_MAP.copy()
         self.CDP_header['vcalfile'] = os.path.split(self.vcalfile)[-1]
 
+    def get_time_tag(self):
+        from vison.support.vistime import get_time_tag
+        return get_time_tag()
+
     def init_fignames(self):
         raise NotImplementedError("Subclass must implement abstract method")
     

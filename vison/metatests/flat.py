@@ -19,13 +19,14 @@ import gc
 
 from vison.support import vjson
 from vison.datamodel import ccd as ccdmod
+from vison.datamodel import cdp as cdpmod
 from vison.support import files
 from vison.fpa import fpa as fpamod
 
 from vison.metatests.metacal import MetaCal
 from vison.plot import plots_fpa as plfpa
 
-from vison.support import vcal
+from vison.support import vcal, utils
 from vison.datamodel import core as vcore
 from vison.ogse import ogse
 
@@ -384,6 +385,44 @@ class MetaFlat(MetaCal):
 
         return MFdict
 
+    
+    def _get_MFccd_dict(self, testname, colkey):
+        """ """
+        PT = self.ParsedTable[testname]
+
+        MFccd_dict = dict()
+
+        for jY in range(self.NCOLS_FPA):
+            for iX in range(self.NSLICES_FPA):
+                Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+
+                locator = self.fpa.FPA_MAP[Ckey]
+
+                block = locator[0]
+                CCDk = locator[1]
+
+                inventoryitem = self.inventory[block][testname][0]
+
+                productspath = os.path.join(inventoryitem['resroot'], 'products')
+
+                ixblock = np.where(PT['BLOCK'] == block)
+
+                cdpkey = PT['MASTERFLATS_%s_%s' % (colkey.upper(), CCDk)][ixblock][0]
+
+                masterfits = os.path.join(productspath, self.products['MASTERFLATS'][cdpkey])
+
+                ccdobj = ccdmod.CCD(infits=masterfits, getallextensions=True, withpover=True,
+                                    overscan=20)
+
+                MFccd_dict[Ckey] = copy.deepcopy(ccdobj)
+
+                ccdobj=None
+
+
+        return MFccd_dict
+
+
+
     def _get_XYdict_PRNULAM(self):
         """ """
 
@@ -483,8 +522,26 @@ class MetaFlat(MetaCal):
                 self.figs['MF_%s_%s' % (testname, colkey)] = os.path.join(
                     self.figspath, 'MF_%s_%s.png' % (testname, colkey))
 
+    def init_outcdpnames(self):
+        """ """
+
+        if not os.path.exists(self.cdpspath):
+            os.system('mkdir %s' % self.cdpspath)
+
+        for testname in self.testnames:
+            for colkey in self.colkeys[testname]:
+                self.outcdps['MF_%s_%s' % (testname, colkey)] = os.path.join(
+                    self.cdpspath, 'MF_%s_%s.fits' % (testname, colkey))
+
+
     def dump_aggregated_results(self):
         """ """
+
+
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header['DATE'] = self.get_time_tag()
+        
 
         # PRNU vs. WAVELENGTH
 
@@ -508,6 +565,8 @@ class MetaFlat(MetaCal):
 
         # MASTER FLATS DISPLAY
 
+
+
         if doMFs:
 
             for testname in self.testnames:
@@ -522,10 +581,11 @@ class MetaFlat(MetaCal):
                     print('MF: %s %s' % (testname, colkey))
 
                     if testname == 'FLAT01':
-                        suptitle = 'FLAT01 800 nm, Fluence %s' % colnum
+                        _test = 'FLAT01'
+                        _wave = 800
                     else:
                         _test, _wave = st.split(testname, '_')
-                        suptitle = '%s %s nm, Fluence %i' % (_test, _wave, colnum)
+                    suptitle = '%s %s nm, Fluence %i' % (_test, _wave, colnum)
                     print(suptitle)
 
                     MFdict = self._get_MFdict(testname, colkey)
@@ -535,6 +595,38 @@ class MetaFlat(MetaCal):
 
                     self.plot_ImgFPA(MFdict, **MFkwargs)
                     MFdict = None
+
+                    # Save MF as cdp
+
+                    MFccd_dict = self._get_MFccd_dict(testname, colkey)
+
+                    MFheader = OrderedDict()
+
+                    MFheader['CDP'] = 'MASTERFLAT'
+                    MFheader['TEST'] = testname
+                    MFheader['WAVE'] = _wave
+                    MFheader['FLUENCE'] = colnum
+                    MFheader['VISON'] = CDP_header['vison']
+                    MFheader['FPA_DES'] = CDP_header['fpa_design']
+                    MFheader['DATE'] = CDP_header['DATE']
+                    MFheader['vcalfile'] = CDP_header['vcalfile']
+
+
+                    MFcdp = cdpmod.LE1_CDP()
+
+                    MFcdp.ingest_inputs(MFccd_dict, header=MFheader, inextension=1,
+                                    fillval=1.)
+
+                    MFcdpname = self.outcdps['MF_%s_%s' % (testname, colkey)]
+
+                    MFcdp.savehardcopy(MFcdpname, clobber=True, uint16=False)
+
+                    MFccd_dict = None
+
+                    #print('EXITING EARLY ON TESTS!')
+                    #import sys
+                    #sys.exit()
+
 
         # PRNU vs. FLUENCE
 
