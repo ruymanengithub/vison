@@ -86,6 +86,7 @@ class FPA_LE1(object):
         if infits is not None:
             self.loadfromFITS(infits)
         self.fpamodel = fpamod.FPA()
+        self.fillval = 0
 
     def add_extension(self, data, header, label=None, headerdict=None):
         """ """
@@ -94,18 +95,30 @@ class FPA_LE1(object):
 
         self.extensions.append(ccdmod.Extension(data, header, label, headerdict))
 
+    def set_extension(self, iext, data, header, label=None, headerdict=None):
+        """ """
+        if data is not None:
+            assert data.shape == self.Qshape
+
+        self.extensions[iext] = ccdmod.Extension(data, header, label, headerdict)
+
+
     def del_extension(self, ixextension):
         """ """
         self.extensions.pop(ixextension)
 
-    def initialise_as_zeroes(self):
+    def initialise_as_blank(self, fillval=None):
         """ """
+
+        if fillval is None:
+            fillval = self.fillval
+
         headerdict0 = PRIhdr_dict.copy()
 
         self.add_extension(data=None, header=None, label=None, headerdict=headerdict0)
 
         for iext in range(1, self.NEXTENSIONS):
-            data = np.zeros((self.QNAXIS1, self.QNAXIS2), dtype='float32')
+            data = np.zeros((self.QNAXIS1, self.QNAXIS2), dtype='float32')+fillval
             header = None
             headerdict = EXThdr_dict.copy()
 
@@ -229,7 +242,7 @@ class FPA_LE1(object):
 
     def _padd_extra_soverscan(self, Qdata):
         """ """
-        pQdata = np.zeros((self.QNAXIS1, self.QNAXIS2), dtype=Qdata.dtype)
+        pQdata = np.zeros((self.QNAXIS1, self.QNAXIS2), dtype=Qdata.dtype)+self.fillval
         pQdata[0:Qdata.shape[0], 0:Qdata.shape[1]] = Qdata.copy()
         return pQdata
 
@@ -244,7 +257,9 @@ class FPA_LE1(object):
             flip = os_coo
 
             Qdata = ccdobj.get_quad(Q, canonical=True, extension=inextension)
-            pQdata = self._padd_extra_soverscan(Qdata)
+
+            if Qdata.shape[0] < self.QNAXIS1:
+                pQdata = self._padd_extra_soverscan(Qdata)
 
             pQdata = self.fpamodel.flip_img(pQdata, flip)
             
@@ -252,9 +267,9 @@ class FPA_LE1(object):
             
             extname = '%i-%i.%s' % (_extid[1],_extid[2],_extid[3])
             
-
             self.extensions[extix].data = pQdata.copy()
             self.extensions[extix].header['EXTNAME'] = extname
+
 
     def _core_funct_simul(self, ccdobj, CCDID=None, simputs=None):
         """ """

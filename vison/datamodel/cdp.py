@@ -21,6 +21,7 @@ import numpy as np
 from vison import __version__
 from vison.support.files import cPickleDumpDictionary, cPickleRead
 from vison.datamodel import ccd as ccdmod
+from vison.datamodel import fpa_dm
 from vison.support.excel import ReportXL
 from vison.support import vjson
 # END IMPORT
@@ -40,6 +41,7 @@ class CDP(object):
     header = OrderedDict()
     meta = OrderedDict()
     data = None
+
 
     def __init__(self, *args, **kwargs):
         """ """
@@ -267,6 +269,50 @@ class CCD_CDP(CDP):
         if os.path.exists(filef):
             os.system('rm %s' % filef)
         self.ccdobj.writeto(filef)
+
+class LE1_CDP(CDP):
+    """LE1 FPA Image CDP. One extension per Quadrant."""
+
+    def __init__(self, *args, **kwargs):
+        super(LE1_CDP, self).__init__(*args, **kwargs)
+        self.fpaobj = fpa_dm.FPA_LE1()
+
+
+    def ingest_inputs(self, data, header=None, inextension=-1, fillval=0):
+        """ """
+
+        if header is None:
+            header = OrderedDict()
+
+        self.header.update(header)
+        
+        self.fpaobj.fillval=fillval
+        self.fpaobj.initialise_as_blank()
+
+        self.fpaobj.set_extension(iext=0, data=None, header=None, headerdict=self.header, label=None)
+
+        # Get the CCDs from data and fill up self.fpaobj
+        
+        NCOLS_FPA = self.fpaobj.fpamodel.NCOLS
+        NROWS_FPA = self.fpaobj.fpamodel.NSLICES
+
+        for jY in range(NCOLS_FPA):
+            for iX in range(NROWS_FPA):
+                Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+                ccdobj = copy.deepcopy(data[Ckey])
+
+                self.fpaobj.set_ccdobj(ccdobj, Ckey, inextension=inextension)
+
+
+    def savehardcopy(self, filef='', clobber=True, uint16=False):
+        """ """
+        if filef == '':
+            filef = os.path.join(self.path, '%s.fits' % self.rootname)
+        if os.path.exists(filef):
+            os.system('rm %s' % filef)
+        self.fpaobj.savetoFITS(filef,clobber=clobber,unsigned16bit=uint16)
+
+
 
 
 
