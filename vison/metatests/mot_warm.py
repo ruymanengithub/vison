@@ -15,7 +15,7 @@ import string as st
 import os
 
 #from vison.support import vjson
-from vison.datamodel import cdp
+from vison.datamodel import cdp as cdpmod
 from vison.support import files
 from vison.fpa import fpa as fpamod
 from vison.support import utils
@@ -394,7 +394,7 @@ class MetaMOT(MetaCal):
         rm_header['title'] = 'RAMP MAP'
         rm_header.update(CDP_header)
         
-        rm_cdp = cdp.Json_CDP(rootname=self.outcdps['RAMP_MAP_json'],
+        rm_cdp = cdpmod.Json_CDP(rootname=self.outcdps['RAMP_MAP_json'],
                               path=self.cdpspath)
         rm_cdp.ingest_inputs(data=RAMPMAP,
                              header = rm_header,
@@ -411,7 +411,7 @@ class MetaMOT(MetaCal):
         ci_header['title'] = 'CHARGE INJECTION MAP'
         ci_header.update(CDP_header)
                 
-        ci_cdp = cdp.Json_CDP(rootname=self.outcdps['INJ_MAP_json'],
+        ci_cdp = cdpmod.Json_CDP(rootname=self.outcdps['INJ_MAP_json'],
                               path=self.cdpspath)
         ci_cdp.ingest_inputs(data=INJMAP,
                              header = ci_header,
@@ -434,7 +434,7 @@ class MetaMOT(MetaCal):
         rn_header['title'] = 'RON MAP [RWDVS]'
         rn_header.update(CDP_header)
                 
-        rn_cdp = cdp.Json_CDP(rootname=self.outcdps['RON_MAP_json'],
+        rn_cdp = cdpmod.Json_CDP(rootname=self.outcdps['RON_MAP_json'],
                               path=self.cdpspath)
         rn_cdp.ingest_inputs(data=RONMAP,
                              header = rn_header,
@@ -458,7 +458,7 @@ class MetaMOT(MetaCal):
         offrwdv_header['title'] = 'OFFSET MAP [RWDV]'
         offrwdv_header.update(CDP_header)
                 
-        offrwdv_cdp = cdp.Json_CDP(rootname=self.outcdps['OFF_RWDV_MAP_json'],
+        offrwdv_cdp = cdpmod.Json_CDP(rootname=self.outcdps['OFF_RWDV_MAP_json'],
                               path=self.cdpspath)
         offrwdv_cdp.ingest_inputs(data=OFF_RWDV_MAP,
                              header = offrwdv_header,
@@ -476,7 +476,7 @@ class MetaMOT(MetaCal):
         offrwdvs_header['title'] = 'OFFSET MAP [RWDVS]'
         offrwdvs_header.update(CDP_header)
                 
-        offrwdvs_cdp = cdp.Json_CDP(rootname=self.outcdps['OFF_RWDVS_MAP_json'],
+        offrwdvs_cdp = cdpmod.Json_CDP(rootname=self.outcdps['OFF_RWDVS_MAP_json'],
                               path=self.cdpspath)
         offrwdvs_cdp.ingest_inputs(data=OFF_RWDVS_MAP,
                              header = offrwdvs_header,
@@ -500,7 +500,7 @@ class MetaMOT(MetaCal):
         offfwd_header['title'] = 'OFFSET MAP [FWD]'
         offfwd_header.update(CDP_header)
         
-        offfwd_cdp = cdp.Json_CDP(rootname=self.outcdps['OFF_FWD_MAP_json'],
+        offfwd_cdp = cdpmod.Json_CDP(rootname=self.outcdps['OFF_FWD_MAP_json'],
                               path=self.cdpspath)
         offfwd_cdp.ingest_inputs(data=OFF_FWD_MAP,
                              header = offfwd_header,
