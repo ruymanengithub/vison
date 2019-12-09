@@ -259,15 +259,15 @@ class FPA_LE1(object):
             Qdata = ccdobj.get_quad(Q, canonical=True, extension=inextension)
 
             if Qdata.shape[0] < self.QNAXIS1:
-                pQdata = self._padd_extra_soverscan(Qdata)
+                Qdata = self._padd_extra_soverscan(Qdata)
 
-            pQdata = self.fpamodel.flip_img(pQdata, flip)
+            Qdata = self.fpamodel.flip_img(Qdata, flip)
             
             _extid = self.get_extid(CCDID,Q)
             
             extname = '%i-%i.%s' % (_extid[1],_extid[2],_extid[3])
             
-            self.extensions[extix].data = pQdata.copy()
+            self.extensions[extix].data = Qdata.copy()
             self.extensions[extix].header['EXTNAME'] = extname
 
 
