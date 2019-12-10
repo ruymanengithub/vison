@@ -42,9 +42,23 @@ DK_VPROFS_dict = dict(
     meta=dict(
         title='Avg. Column Profiles',
         doLegend=True,
-        corekwargs=dict(pre=dict(marker='', linestyle='-', color='r'),
-            img=dict(marker='', linestyle='--', color='g'),
-            ove=dict(marker='', linestyle='-.', color='b'))))
+        corekwargs=dict(pre=dict(marker='.', linestyle='', color='r', ms=3),
+            img=dict(marker='.', linestyle='', color='g', ms=3),
+            ove=dict(marker='.', linestyle='', color='b', ms=3))))
+
+DK_HPROFS_dict = dict(
+    figname='DARK_HPROFS.png',
+    caption='Horizontal Average Profiles (along rows). Split in pre-scan-to-image (left, red) and'+\
+            ' image-to-over-scan cuts (right, blue). Image area boundaries indicated by vertical lines.',
+    meta=dict(
+        title='Avg. Row Profiles.',
+        doLegend=True,
+        ylim=[-10,20],
+        corekwargs=dict(pre=dict(marker='.', linestyle='', color='r', ms=3),
+            pre2img=dict(marker='', linestyle='--', color='r'),
+            ove=dict(marker='.', linestyle='', color='b', ms=3),
+            img2ove=dict(marker='', linestyle='--', color='b'),
+            )))
 
 
 def get_DKfigs():
@@ -54,6 +68,7 @@ def get_DKfigs():
     DKfigs['DK_img'] = [figclasses.Fig_Dynamic, DK_img_dict]
     DKfigs['DK_HISTO'] = [figclasses.Fig_Dynamic,DK_Histo_dict]
     DKfigs['VPROFS'] = [figclasses.Fig_Dynamic,DK_VPROFS_dict]
+    DKfigs['HPROFS'] = [figclasses.Fig_Dynamic,DK_HPROFS_dict]
     DKfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
 
     return DKfigs

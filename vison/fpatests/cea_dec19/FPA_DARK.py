@@ -24,7 +24,7 @@ from vison.other import MOT_FFaux
 from vison.fpatests import fpatask
 from vison.datamodel import inputs
 from vison.datamodel import cdp as cdpmod
-from vison.fpatests.cea_dec19 import DK_aux
+from vison.fpatests.cea_dec19 import DK_aux, FPA_BIAS
 from vison.inject import lib as ilib
 # END IMPORT
 
@@ -126,7 +126,20 @@ class DARK(fpatask.FpaTask):
                 hor1Dprof = kccdobj.get_1Dprofile(
                                 Q=Q, orient='hor', area='all', stacker='mean', vstart=vstart, vend=vend)
 
-                self.dd.products['profiles_H_1D'][CCDID][Q] = hor1Dprof
+                hQdata = hor1Dprof.data.copy()
+                hx = hQdata['x'].copy()
+                hy = hQdata['y'].copy()
+                hx -= hx.min()
+                if Q in ['F','G']:
+                    hx = kccdobj.NAXIS1/2-hx
+
+                ixsort = np.argsort(hx)
+                hx = hx[ixsort]
+                hy = hy[ixsort]
+
+                hQdata = dict(x=hx.copy(),y=hy.copy())
+
+                self.dd.products['profiles_H_1D'][CCDID][Q] = hQdata.copy()
 
 
                 for reg in ['pre','img','ove']:
@@ -135,8 +148,21 @@ class DARK(fpatask.FpaTask):
                     _ver1Dprof = kccdobj.get_1Dprofile(
                                 Q=Q, orient='ver', area=reg, stacker='mean', 
                                 vstart=vstart, vend=vend)
-            
-                    self.dd.products['profiles_V_1D_%s' % reg][CCDID][Q] = _ver1Dprof
+                    
+                    vQdata = _ver1Dprof.data.copy()
+                    vx = vQdata['x'].copy()
+                    vy = vQdata['y'].copy()
+                    vx -= vx.min()
+                    if Q in ['E','F']:
+                        vx = kccdobj.NAXIS2/2-vx
+
+                    ixsort = np.argsort(vx)
+                    vx = vx[ixsort]
+                    vy = vy[ixsort]
+
+                    vQdata = dict(x=vx.copy(),y=vy.copy())
+
+                    self.dd.products['profiles_V_1D_%s' % reg][CCDID][Q] = vQdata.copy()
 
 
                 for reg in ['pre','img','ove']:
@@ -307,6 +333,7 @@ class DARK(fpatask.FpaTask):
         if self.report is not None:
             self.addFigures_ST(figkeys=['DK_img'], dobuilddata=False)
 
+
     def _get_XYdict_VPROFS(self):
         """ """
         
@@ -332,10 +359,8 @@ class DARK(fpatask.FpaTask):
 
                 for reg in regions:
                 
-                    _x = data[reg][Ckey][Q].data['x'].copy()
-                    ixorder = np.argsort(_x)
-                    _x = _x[ixorder]-_x.min()
-                    _y = data[reg][Ckey][Q].data['y'][ixorder].copy()
+                    _x = data[reg][Ckey][Q]['x'].copy()
+                    _y = data[reg][Ckey][Q]['y'].copy()
                     VPROFS['x'][reg].append(_x)
                     VPROFS['y'][reg].append(_y)
                     cenY.append(np.median(_y))
@@ -358,6 +383,61 @@ class DARK(fpatask.FpaTask):
 
         return XYdict_VPROFS
 
+    def _get_XYdict_HPROFS(self):
+        """ """
+
+        regions = ['pre','ove']
+
+        XYdict_HPROFS = dict(x=dict(),
+                            y=dict())
+        for reg in regions:
+            XYdict_HPROFS['x'][reg] = []
+            XYdict_HPROFS['y'][reg] = []
+
+        xgap = 3
+
+        def assigner(HPROFS, data, Ckey):
+
+            
+
+            for Q in self.Quads:
+
+                #_x = data[Ckey][Q]['x'].copy()
+                _y = data[Ckey][Q]['y'].copy()
+
+                _y -= np.nanmean(_y[-29+5:-5+1]) # subtract ove-scan offset
+                
+                _ypre = _y[0:51+20]
+                _yove = _y[-(29+20):]
+
+                HPROFS['x']['pre'].append(np.arange(len(_ypre)))
+                HPROFS['y']['pre'].append(_ypre)
+
+                HPROFS['x']['ove'].append(np.arange(len(_yove))+len(_ypre)+xgap)
+                HPROFS['y']['ove'].append(_yove)
+                
+
+            return HPROFS
+
+        XYdict_HPROFS = self.iter_overCCDs(self.dd.products['profiles_H_1D'], 
+                        assigner, RetDict=XYdict_HPROFS)
+
+        for reg in regions:
+            XYdict_HPROFS['x'][reg] = np.array(XYdict_HPROFS['x'][reg]).T.tolist()
+            XYdict_HPROFS['y'][reg] = np.array(XYdict_HPROFS['y'][reg]).T.tolist()
+
+
+        XYdict_HPROFS['x']['pre2img'] = np.array([1,1])*51
+        XYdict_HPROFS['y']['pre2img'] = np.array([-1.E3,1.E3])
+
+        XYdict_HPROFS['x']['img2ove'] = np.array([1,1]) * (51+20+20+xgap)
+        XYdict_HPROFS['y']['img2ove'] = np.array([-1.E3,1.E3])
+
+        XYdict_HPROFS['labelkeys'] = ['pre','pre2img','img2ove','ove']
+
+        return XYdict_HPROFS
+
+
 
     def _get_Histos_DARKS(self):
         """ """
@@ -373,8 +453,8 @@ class DARK(fpatask.FpaTask):
 
         HistosDict = self.iter_overCCDs(self.dd.products['DARK'], assigner, RetDict=HistosDict)
 
-        minval = -1
-        maxval = +1
+        minval = np.percentile(HistosDict['y'],5)
+        maxval = np.percentile(HistosDict['y'],95)
 
         bin_edges = np.linspace(minval,maxval,20)
         
@@ -436,10 +516,17 @@ class DARK(fpatask.FpaTask):
         self.figdict['VPROFS'][1]['data'] = XYdict_VPROFS
         self.figdict['VPROFS'][1]['meta']['plotter'] = self.metacal.plot_XY
 
+        XYdict_HPROFS = self._get_XYdict_HPROFS()
+
+        self.figdict['HPROFS'][1]['data'] = XYdict_HPROFS
+        self.figdict['HPROFS'][1]['meta']['plotter'] = self.metacal.plot_XY        
+
+
+
         # PLOTTING
 
         if self.report is not None:
-            self.addFigures_ST(figkeys=['DK_HISTO', 'VPROFS'], dobuilddata=False)
+            self.addFigures_ST(figkeys=['DK_HISTO', 'VPROFS', 'HPROFS'], dobuilddata=False)
 
 
 
