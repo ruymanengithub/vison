@@ -157,7 +157,20 @@ class FPA_BIAS(fpatask.FpaTask):
                 hor1Dprof = kccdobj.get_1Dprofile(
                                 Q=Q, orient='hor', area='all', stacker='mean', vstart=vstart, vend=vend)
 
-                self.dd.products['profiles_H_1D'][CCDID][Q] = hor1Dprof
+                hQdata = hor1Dprof.data.copy()
+                hx = hQdata['x'].copy()
+                hy = hQdata['y'].copy()
+                hx -= hx.min()
+                if Q in ['F','G']:
+                    hx = kccdobj.NAXIS1/2-hx
+
+                ixsort = np.argsort(hx)
+                hx = hx[ixsort]
+                hy = hy[ixsort]
+
+                hQdata = dict(x=hx.copy(),y=hy.copy())
+
+                self.dd.products['profiles_H_1D'][CCDID][Q] = hQdata.copy()
 
 
                 for reg in ['pre','img','ove']:
@@ -389,6 +402,60 @@ class FPA_BIAS(fpatask.FpaTask):
 
         return XYdict_VPROFS
 
+    def _get_XYdict_HPROFS(self):
+        """ """
+
+        regions = ['pre','ove']
+
+        XYdict_HPROFS = dict(x=dict(),
+                            y=dict())
+        for reg in regions:
+            XYdict_HPROFS['x'][reg] = []
+            XYdict_HPROFS['y'][reg] = []
+
+        xgap = 3
+
+        def assigner(HPROFS, data, Ckey):
+
+            
+
+            for Q in self.Quads:
+
+                #_x = data[Ckey][Q]['x'].copy()
+                _y = data[Ckey][Q]['y'].copy()
+
+                _y -= np.nanmean(_y[-29+5:-5+1]) # subtract ove-scan offset
+                
+                _ypre = _y[0:51+20]
+                _yove = _y[-(29+20):]
+
+                HPROFS['x']['pre'].append(np.arange(len(_ypre)))
+                HPROFS['y']['pre'].append(_ypre)
+
+                HPROFS['x']['ove'].append(np.arange(len(_yove))+len(_ypre)+xgap)
+                HPROFS['y']['ove'].append(_yove)
+                
+
+            return HPROFS
+
+        XYdict_HPROFS = self.iter_overCCDs(self.dd.products['profiles_H_1D'], 
+                        assigner, RetDict=XYdict_HPROFS)
+
+        for reg in regions:
+            XYdict_HPROFS['x'][reg] = np.array(XYdict_HPROFS['x'][reg]).T.tolist()
+            XYdict_HPROFS['y'][reg] = np.array(XYdict_HPROFS['y'][reg]).T.tolist()
+
+
+        XYdict_HPROFS['x']['pre2img'] = np.array([1,1])*51
+        XYdict_HPROFS['y']['pre2img'] = np.array([-1.E3,1.E3])
+
+        XYdict_HPROFS['x']['img2ove'] = np.array([1,1]) * (51+20+20+xgap)
+        XYdict_HPROFS['y']['img2ove'] = np.array([-1.E3,1.E3])
+
+        XYdict_HPROFS['labelkeys'] = ['pre','pre2img','img2ove','ove']
+
+        return XYdict_HPROFS
+
     def _get_Histos_OFFSETS(self):
         """ """
 
@@ -536,6 +603,11 @@ class FPA_BIAS(fpatask.FpaTask):
             self.report.add_Text('N(Ron$>$4.5 e- rms): %i' % Naboveronreq)
 
 
+        XYdict_HPROFS = self._get_XYdict_HPROFS()
+
+        self.figdict['HPROFS'][1]['data'] = XYdict_HPROFS
+        self.figdict['HPROFS'][1]['meta']['plotter'] = self.metacal.plot_XY        
+
         # show average profiles along rows (single plot)
 
         # show average profiles along columns (single plot): pre-/img-/ove-
@@ -546,11 +618,15 @@ class FPA_BIAS(fpatask.FpaTask):
         self.figdict['VPROFS'][1]['data'] = XYdict_VPROFS
         self.figdict['VPROFS'][1]['meta']['plotter'] = self.metacal.plot_XY
 
+
+        
+
         # PLOTTING
+        
 
         if self.report is not None:
             self.addFigures_ST(figkeys=['OFFSETS_HISTO','DIFFOFFSETSMAP', 
-                                        'RATIORONSMAP','VPROFS'],
+                                        'RATIORONSMAP','VPROFS','HPROFS'],
                                dobuilddata=False)
 
 

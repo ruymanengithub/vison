@@ -85,6 +85,27 @@ def _get_VPROFS_dict(readmode,temperature):
 
     return VPROFS_dict
 
+def _get_HPROFS_dict(readmode,temperature):
+    """ """
+
+    HPROFS_dict = dict(
+    figname='BIAS_%s_%s_HPROFS.png' % (readmode, temperature),
+    caption='Horizontal Average Profiles (along rows). Split in pre-scan-to-image (left, red) and'+\
+            ' image-to-over-scan cuts (right, blue). Image area boundaries indicated by vertical lines.',
+    meta=dict(
+        title='Avg. Row Offset Profiles.',
+        doLegend=True,
+        ylim=[-10,20],
+        corekwargs=dict(pre=dict(marker='.', linestyle='', color='r', ms=3),
+            pre2img=dict(marker='', linestyle='--', color='r'),
+            ove=dict(marker='.', linestyle='', color='b', ms=3),
+            img2ove=dict(marker='', linestyle='--', color='b'),
+            )))
+
+    return HPROFS_dict
+
+
+
 def get_Bfigs(readmode, temperature):
     """ """
 
@@ -99,6 +120,8 @@ def get_Bfigs(readmode, temperature):
             _get_RatioRonMap_dict(readmode,temperature)]
     Bfigs['VPROFS'] = [figclasses.Fig_Dynamic, 
             _get_VPROFS_dict(readmode,temperature)]
+    Bfigs['HPROFS'] = [figclasses.Fig_Dynamic, 
+            _get_HPROFS_dict(readmode,temperature)]
     Bfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
 
     return Bfigs
