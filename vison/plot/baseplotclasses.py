@@ -149,6 +149,7 @@ class XYPlot(BasicPlot):
             else:
                 kwargs.update(ckwargs)
             handle = self.ax.plot(xarr, yarr, **kwargs)
+            
             if len(handle)>1:
                 handle = [handle[-1]]
             
