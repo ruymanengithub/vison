@@ -516,17 +516,30 @@ class DARK(fpatask.FpaTask):
         self.figdict['VPROFS'][1]['data'] = XYdict_VPROFS
         self.figdict['VPROFS'][1]['meta']['plotter'] = self.metacal.plot_XY
 
+        # show average profiles along rows
+
         XYdict_HPROFS = self._get_XYdict_HPROFS()
 
         self.figdict['HPROFS'][1]['data'] = XYdict_HPROFS
         self.figdict['HPROFS'][1]['meta']['plotter'] = self.metacal.plot_XY        
 
 
+        # show map of measured dark current across FPA
+
+        def _get_FirstValue_MAP(inData, Ckey, Q):
+            return inData[Ckey][Q][0]
+
+        DKMap = self.get_FPAMAP(self.dd.products['DARK'],
+                                        extractor=_get_FirstValue_MAP)
+        
+        self.figdict['DKMAP'][1]['data'] = DKMap
+        self.figdict['DKMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
+
 
         # PLOTTING
 
         if self.report is not None:
-            self.addFigures_ST(figkeys=['DK_HISTO', 'VPROFS', 'HPROFS'], dobuilddata=False)
+            self.addFigures_ST(figkeys=['DK_HISTO', 'VPROFS', 'HPROFS', 'DKMAP'], dobuilddata=False)
 
 
 

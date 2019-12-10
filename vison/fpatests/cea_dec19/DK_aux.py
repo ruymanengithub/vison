@@ -60,6 +60,11 @@ DK_HPROFS_dict = dict(
             img2ove=dict(marker='', linestyle='--', color='b'),
             )))
 
+DKMap_dict = dict(
+        figname='DARK_Map.png',
+        caption='Dark Current rates across FPA in e-/pix/hour.',
+        meta=dict(suptitle='Dark Current Rates',
+                    ColorbarText='e-/pix/hour'))
 
 def get_DKfigs():
     """ """
@@ -69,6 +74,7 @@ def get_DKfigs():
     DKfigs['DK_HISTO'] = [figclasses.Fig_Dynamic,DK_Histo_dict]
     DKfigs['VPROFS'] = [figclasses.Fig_Dynamic,DK_VPROFS_dict]
     DKfigs['HPROFS'] = [figclasses.Fig_Dynamic,DK_HPROFS_dict]
+    DKfigs['DKMAP'] = [figclasses.Fig_Dynamic,DKMap_dict]
     DKfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
 
     return DKfigs
