@@ -483,13 +483,18 @@ class DARK(fpatask.FpaTask):
                     DK_UNCs.append(self.dd.products['DARK'][Ckey][Q][1])
 
 
-        avgDK = np.median(DKs)
-        avgDK_UNK = np.median(DK_UNCs)
+        medDK = np.median(DKs)
+        medDK_UNK = np.median(DK_UNCs)
+        meanDK = np.mean(DKs)
+
+        dkcaption = 'Dark Current estimates in e-/pix/hr. '+\
+                'Median (Value, Unc) = %.1e $\pm$ %.1e e-/pix/hr. '+\
+                'Mean(Value) = %.1e'
+        dkcaption = dkcaption % (medDK, medDK_UNK, meanDK)
 
         dk_tb_cdp = cdpmod.Tables_CDP()
         dkcdpdict = dict(
-            caption='Dark Current estimates in e-/pix/hr. '+\
-                'Median (Value, Unc) = %.1e $\pm$ %.1e e-/pix/hr.' % (avgDK, avgDK_UNK),
+            caption= dkcaption,
             valformat='%s')
 
 
