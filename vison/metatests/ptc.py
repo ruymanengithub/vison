@@ -14,12 +14,13 @@ from collections import OrderedDict
 import string as st
 import os
 
+from vison.datamodel import cdp
 from vison.fpa import fpa as fpamod
 
 from vison.metatests.metacal import MetaCal
 from vison.plot import plots_fpa as plfpa
 
-from vison.support import vcal
+from vison.support import vcal, utils
 from vison.datamodel import core as vcore
 from vison.ogse import ogse
 from vison.support import files
@@ -159,6 +160,7 @@ class MetaPTC(MetaCal):
         self.censored = []
 
         self.init_fignames()
+        self.init_outcdpnames()
 
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
@@ -361,6 +363,15 @@ class MetaPTC(MetaCal):
             self.figs['HER_curves_%s' % testname] = os.path.join(self.figspath,
                                                                  'HER_curves_%s.png' % testname)
 
+    def init_outcdpnames(self):
+
+        if not os.path.exists(self.cdpspath):
+            os.system('mkdir %s' % self.cdpspath)
+
+        for testname in self.testnames:
+            self.outcdps['GAIN_%s' % testname] = '%s_GAIN_elperadu_MAP.json' % testname
+            self.outcdps['HER_%s' % testname] = '%s_HER_profiles_MAP.json' % testname
+
     def _get_XYdict_GvsLAM(self):
         """ """
 
@@ -553,6 +564,11 @@ class MetaPTC(MetaCal):
     def dump_aggregated_results(self):
         """ """
 
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+
+
         outpathroot = self.outpathroot
 
         doGainMaps = True
@@ -590,6 +606,18 @@ class MetaPTC(MetaCal):
                 self.plot_SimpleMAP(GMAP, **dict(
                     suptitle='%s: GAIN e-/ADU' % stestname,
                     figname=self.figs['GAIN_MAP_%s' % testname]))
+
+                g_header = OrderedDict()
+                g_header['title'] = 'GAIN MAP'
+                g_header.update(CDP_header)
+            
+                g_cdp = cdp.Json_CDP(rootname=self.outcdps['GAIN_%s' % testname],
+                              path=self.cdpspath)
+                g_cdp.ingest_inputs(data=GMAP,
+                             header = g_header,
+                             meta=dict(units='e-/ADU'))
+                g_cdp.savehardcopy()
+
 
         if doBloomMaps:
 
@@ -634,6 +662,12 @@ class MetaPTC(MetaCal):
                     suptitle='%s: Hard Edge Response Factor' % stestname,
                     figname=self.figs['HER_MAP_%s' % testname]))
 
+                #HERMAPfull = self.get_FPAMAP_from_PT(
+                #    self.ParsedTable[testname],
+                #    extractor=self._get_extractor_HER_fromPT(full=True))
+                stop()
+
+
         # HER Curves
 
         if doHERcurves:
@@ -653,6 +687,8 @@ class MetaPTC(MetaCal):
                     xlim=[9, 15],
                     corekwargs=dict(linestyle='-', marker=''),
                     figname=self.figs['HER_curves_%s' % testname]))
+
+
 
         # GAIN vs. Wavelength
 
