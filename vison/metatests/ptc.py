@@ -173,6 +173,10 @@ class MetaPTC(MetaCal):
 
         IndexS = vcore.vMultiIndex([vcore.vIndex('ix', vals=[0])])
 
+
+        IndexC = vcore.vMultiIndex([vcore.vIndex('ix', vals=[0]),
+                                     vcore.vIndex('CCD', vals=self.CCDs)])
+
         IndexCQ = vcore.vMultiIndex([vcore.vIndex('ix', vals=[0]),
                                      vcore.vIndex('CCD', vals=self.CCDs),
                                      vcore.vIndex('Quad', vals=self.Quads)])
@@ -249,7 +253,7 @@ class MetaPTC(MetaCal):
         her_pick = os.path.join(productspath, os.path.split(sidd.products['HER_PROFILES'])[-1])
         her_profs = files.cPickleRead(her_pick)['data'].copy()
 
-        herprofkeys_v = np.zeros((1), dtype='S50')
+        herprofkeys_v = np.zeros((1,NCCDs), dtype='S50')
 
         for iCCD, CCDk in enumerate(CCDkeys):
 
@@ -257,9 +261,9 @@ class MetaPTC(MetaCal):
 
             self.products['HER_CURVES'][herkey] = her_profs.copy()
 
-            herprofkeys_v[0] = herkey
+            herprofkeys_v[0, iCCD] = herkey
 
-        sidd.addColumn(herprofkeys_v, 'HERPROF_KEY', IndexS)
+        sidd.addColumn(herprofkeys_v, 'HERPROF_KEY', IndexC)
 
         # flatten sidd to table
 
@@ -280,6 +284,19 @@ class MetaPTC(MetaCal):
         column = 'HER_%s_Quad%s' % (CCDk, Q)
         HER = PT[column][ixblock][0]
         return HER
+
+    def _extract_HERprof_fromPT(self, PT, block, CCDk, Q):
+        """ """
+        ixblock = self.get_ixblock(PT, block)
+        column = 'HERPROF_KEY_%s' % (CCDk, )
+        HERprof_key = PT[column][ixblock][0]
+        data = self.products['HER_CURVES'][HERprof_key][CCDk][Q]
+        ixsel = np.where(data['x']>51+2048)
+        HERy = data['y'][ixsel].tolist()
+
+        
+        return HERy
+
 
     def _extract_BADU_fromPT(self, PT, block, CCDk, Q):
         """ """
@@ -537,11 +554,12 @@ class MetaPTC(MetaCal):
 
         for block in self.flight_blocks:
             ixsel = np.where(PT['BLOCK'] == block)
-            herprof_key = PT['HERPROF_KEY'][ixsel][0]
-            i_her = self.products['HER_CURVES'][herprof_key].copy()
 
             for iCCD, CCD in enumerate(self.CCDs):
                 CCDk = 'CCD%i' % CCD
+
+                herprof_key = PT['HERPROF_KEY_%s' % CCDk][ixsel][0]
+                i_her = self.products['HER_CURVES'][herprof_key].copy()
 
                 for kQ, Q in enumerate(self.Quads):
 
@@ -662,11 +680,21 @@ class MetaPTC(MetaCal):
                     suptitle='%s: Hard Edge Response Factor' % stestname,
                     figname=self.figs['HER_MAP_%s' % testname]))
 
-                #HERMAPfull = self.get_FPAMAP_from_PT(
-                #    self.ParsedTable[testname],
-                #    extractor=self._get_extractor_HER_fromPT(full=True))
-                stop()
-
+                HERMAPprofs = self.get_FPAMAP_from_PT(
+                    self.ParsedTable[testname],
+                    extractor=self._extract_HERprof_fromPT)
+                
+                her_header = OrderedDict()
+                her_header['title'] = 'HARD EDGE RESPONSE'
+                her_header.update(CDP_header)
+            
+                her_cdp = cdp.Json_CDP(rootname=self.outcdps['HER_%s' % testname],
+                              path=self.cdpspath)
+                her_cdp.ingest_inputs(data=HERMAPprofs,
+                             header = her_header,
+                             meta=dict(units='adim'))
+                her_cdp.savehardcopy()
+                
 
         # HER Curves
 
