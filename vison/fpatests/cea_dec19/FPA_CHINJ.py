@@ -138,15 +138,22 @@ class CHINJ(fpatask.FpaTask):
                                     kccdobj, Q, pattern, VSTART=vstart, VEND=vend, 
                                     suboffmean=True)
 
-
-
                 # profile along columns
 
                 yalcols = ext_res['avprof_alcol'].copy()
                 xalcols = np.arange(len(yalcols), dtype='float32')
 
-                self.dd.products['profiles1D'][CCDID][Q] = \
+                self.dd.products['profiles1D_V'][CCDID][Q] = \
                         dict(x=xalcols,y=yalcols)
+
+                # profile along rows
+
+                yalrows = ext_res['avprof_alrow'].copy()
+                xalrows = np.arange(len(yalrows), dtype='float32')
+
+                self.dd.products['profiles1D_H'][CCDID][Q] = \
+                        dict(x=xalrows,y=yalrows)                
+
 
                 # save INJECTION value
 
@@ -204,8 +211,8 @@ class CHINJ(fpatask.FpaTask):
         if self.report is not None:
             self.addFigures_ST(figkeys=['CI_img'], dobuilddata=False)
 
-        prodkeys = ['profiles1D','INJECTION',
-                    'STD_OVE','OFF_OVE']
+        prodkeys = ['profiles1D_H', 'profiles1D_V',
+                    'INJECTION','STD_OVE','OFF_OVE']
 
         for prodkey in prodkeys:
 
@@ -250,10 +257,10 @@ class CHINJ(fpatask.FpaTask):
                                     cdp=inj_tb_cdp,
                                     cdpdict=injcdpdict)
 
-        # Image with extracted Injection profiles
+        # FPA MAP with extracted Injection profiles
 
 
-        def _assignProf1D(InjProfsDict, profdict, Ckey):
+        def _assignProf1D(InjProfsMapDict, profdict, Ckey):
             """ """
             Cprofs = profdict[Ckey]
 
@@ -263,20 +270,65 @@ class CHINJ(fpatask.FpaTask):
                 res['x'][Q] = Cprofs[Q]['x']
                 res['y'][Q] = Cprofs[Q]['y']
 
-            InjProfsDict[Ckey] = res
+            InjProfsMapDict[Ckey] = res
 
-            return InjProfsDict
+            return InjProfsMapDict
 
-        InjProfsDict = self.iter_overCCDs(self.dd.products['profiles1D'], _assignProf1D)
-        InjProfsDict['labelkeys'] = self.Quads
+        InjProfsMapDict = self.iter_overCCDs(self.dd.products['profiles1D_V'], _assignProf1D)
+        InjProfsMapDict['labelkeys'] = self.Quads
 
-        self.figdict['INJ_PROFS'][1]['data'] = InjProfsDict
-        self.figdict['INJ_PROFS'][1]['meta']['plotter'] = self.metacal.plot_XYMAP
+        self.figdict['INJ_PROFS_MAP'][1]['data'] = InjProfsMapDict
+        self.figdict['INJ_PROFS_MAP'][1]['meta']['plotter'] = self.metacal.plot_XYMAP
 
 
         if self.report is not None:
             self.addFigures_ST(figkeys=['INJ_PROFS'],
                                dobuilddata=False)
+
+    def _get_XYdict_PROFS(self, kind):
+        """ """
+
+        Quads = self.Quads
+
+        XYdict_PROFS = dict(x=dict(),
+                            y=dict())
+        for Q in Quads:
+            XYdict_PROFS['x'][Q] = []
+            XYdict_PROFS['y'][Q] = []
+
+
+        def assigner(PROFS, data, Ckey):
+
+
+            for Q in self.Quads:
+
+                _x = data[Ckey][Q]['x'].copy()
+                _y = data[Ckey][Q]['y'].copy()
+
+
+                PROFS['x'][Q].append(_x)
+                PROFS['y'][Q].append(_y)
+                
+
+            return PROFS
+
+        if kind == 'HOR':
+            data = self.dd.products['profiles1D_H']
+        elif kind == 'VER':
+            data = self.dd.products['profiles1D_V']
+
+        XYdict_PROFS = self.iter_overCCDs(data, 
+                        assigner, RetDict=XYdict_PROFS)
+
+        for Q in Quads:
+            XYdict_PROFS['x'][Q] = np.array(XYdict_PROFS['x'][Q]).T.tolist()
+            XYdict_PROFS['y'][Q] = np.array(XYdict_PROFS['y'][Q]).T.tolist()
+
+        XYdict_PROFS['labelkeys'] = Quads
+
+        return XYdict_PROFS
+ 
+
 
     def meta_analysis(self):
         """ """
@@ -301,9 +353,24 @@ class CHINJ(fpatask.FpaTask):
         self.figdict['DIFF_INJMAP'][1]['data'] = DiffInjMap
         self.figdict['DIFF_INJMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
 
+        # Show average horizontal injection profiles
+
+        XYdict_HPROFS = self._get_XYdict_PROFS(kind='HOR')
+
+        self.figdict['INJ_PROFS_HOR'][1]['data'] = XYdict_HPROFS
+        self.figdict['INJ_PROFS_HOR'][1]['meta']['plotter'] = self.metacal.plot_XY        
+
+        # Show average vertical injection profiles
+
+        XYdict_VPROFS = self._get_XYdict_PROFS(kind='VER')
+
+        self.figdict['INJ_PROFS_VER'][1]['data'] = XYdict_VPROFS
+        self.figdict['INJ_PROFS_VER'][1]['meta']['plotter'] = self.metacal.plot_XY
+
 
         if self.report is not None:
-            self.addFigures_ST(figkeys=['DIFF_INJMAP'],
+            self.addFigures_ST(figkeys=['DIFF_INJMAP','INJ_PROFS_VER',
+                            'INJ_PROFS_HOR'],
                                dobuilddata=False) 
 
 
