@@ -80,7 +80,7 @@ def _get_VPROFS_dict(readmode,temperature):
         doLegend=True,
         ylim=[-20,20],
         ylabel=r'$\Delta ADU$',
-        xlabel='row#',
+        xlabel='row nr.',
         corekwargs=dict(pre=dict(marker='.', linestyle='', color='r', ms=3),
             img=dict(marker='.', linestyle='', color='g', ms=3),
             ove=dict(marker='.', linestyle='', color='b', ms=3))))
