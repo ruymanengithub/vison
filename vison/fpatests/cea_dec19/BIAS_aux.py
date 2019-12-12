@@ -52,7 +52,7 @@ def _get_DiffOffsetsMap_dict(readmode, temperature):
     DiffOffsetsMap_dict = dict(
         figname='BIAS_%s_%s_DiffOffsetsMap.png' % (readmode, temperature),
         caption='Difference in Offset with Reference image [ADU].',
-        meta=dict(suptitle='Diff. Offsets',
+        meta=dict(suptitle='Difference in Offsets',
                     ColorbarText='ADU'))
 
     return DiffOffsetsMap_dict
@@ -64,7 +64,7 @@ def _get_RatioRonMap_dict(readmode, temperature):
         figname='BIAS_%s_%s_RatioRonMap.png' % (readmode, temperature),
         caption='Ratio of RON measured / reference.',
         meta=dict(suptitle='Ratio RONs',
-                    ColorbarText='Fraction'))
+                    ColorbarText='Ratio Measured/Reference'))
 
     return RatioRonMap_dict
 
@@ -79,6 +79,8 @@ def _get_VPROFS_dict(readmode,temperature):
         title='Avg. Column Offset Profiles.',
         doLegend=True,
         ylim=[-20,20],
+        ylabel=r'$\Delta ADU$',
+        xlabel='row#',
         corekwargs=dict(pre=dict(marker='.', linestyle='', color='r', ms=3),
             img=dict(marker='.', linestyle='', color='g', ms=3),
             ove=dict(marker='.', linestyle='', color='b', ms=3))))
@@ -96,6 +98,8 @@ def _get_HPROFS_dict(readmode,temperature):
         title='Avg. Row Offset Profiles.',
         doLegend=True,
         ylim=[-10,20],
+        ylabel=r'$\Delta ADU$',
+        xlabel='pixel',
         corekwargs=dict(pre=dict(marker='.', linestyle='', color='r', ms=3),
             pre2img=dict(marker='', linestyle='--', color='r'),
             ove=dict(marker='.', linestyle='', color='b', ms=3),
