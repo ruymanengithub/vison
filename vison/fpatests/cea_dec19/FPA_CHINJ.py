@@ -282,7 +282,7 @@ class CHINJ(fpatask.FpaTask):
 
 
         if self.report is not None:
-            self.addFigures_ST(figkeys=['INJ_PROFS'],
+            self.addFigures_ST(figkeys=['INJ_PROFS_MAP'],
                                dobuilddata=False)
 
     def _get_XYdict_PROFS(self, kind):
