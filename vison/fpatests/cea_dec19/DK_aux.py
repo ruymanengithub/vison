@@ -42,6 +42,7 @@ DK_VPROFS_dict = dict(
     meta=dict(
         title='Avg. Column Profiles',
         doLegend=True,
+        ylim=[-10.,20.],
         corekwargs=dict(pre=dict(marker='.', linestyle='', color='r', ms=3),
             img=dict(marker='.', linestyle='', color='g', ms=3),
             ove=dict(marker='.', linestyle='', color='b', ms=3))))
