@@ -304,6 +304,13 @@ class MetaBias(MetaCal):
                                                               '%s_RON_ELE_MAP.png' % testname)
             self.figs['OFFSETS_%s' % testname] = os.path.join(self.figspath,
                                                               '%s_OFFSETS_MAP.png' % testname)
+        profdirs = ['hor','ver']
+
+        for testname in self.testnames:
+            for profdir in profdirs:
+                self.figs['PROFS_%s_%s' % (testname, profdir)] =  os.path.join(self.figspath,
+                                    '%s_PROFS_%s.png' % (testname,profdir))
+
 
     def init_outcdpnames(self):
         """ """
@@ -315,6 +322,11 @@ class MetaBias(MetaCal):
             self.outcdps['RON_ADU_%s' % testname] = '%s_RON_ADU_MAP.json' % testname          
             self.outcdps['OFFSETS_%s' % testname] = '%s_OFFSETS_MAP.json' % testname
 
+    def _get_XYdict_NL(self,test,profdir):
+        """ """
+
+        stop()
+    
 
     def dump_aggregated_results(self):
         """ """
@@ -396,3 +408,27 @@ class MetaBias(MetaCal):
             self.plot_SimpleMAP(OFF_OVE_MAP, **dict(
                 suptitle='%s [OVERSCAN]: OFFSET' % stestname,
                 figname=self.figs['OFFSETS_%s' % testname]))
+
+        # Vertical and Horizonal average profiles
+
+        xlabels_profs = dict(hor='column [pix]',
+                            ver='row [pix]')
+
+        for testname in self.testnames:
+
+            profdirs = ['hor','ver']
+
+            for profdir in profdirs:
+
+                XY_profs = self._get_XYdict_NL(test=testname,profdir=profdir)
+
+                profkwargs = dict(
+                    title='Average profiles, direction: %s' % profdir,
+                    doLegend=False,
+                    xlabel=xlabels_profs[profdir],
+                    ylabel=r'$\delta ADU$',
+                    ylim=[-20,20],
+                    figname=self.figs['PROFS_%s_%s' % (testname,profdir)],
+                    corekwargs=dict(linestyle='',marker='.',color='r'))
+
+                self.plot_XY(XY_profs, **profkwargs)
