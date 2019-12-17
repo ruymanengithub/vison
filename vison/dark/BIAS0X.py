@@ -569,9 +569,9 @@ class BIAS0X(DarkTask):
 
             def _pack_profs(CQdict, prof):
                 """ """
-                _x = prof.data['x'].copy()
-                xorder = np.argsort(prof.data['x'])
-                _y = prof.data['y'][xorder].copy()
+                #_x = prof.data['x'].copy()
+                #xorder = np.argsort(prof.data['x'])
+                _y = prof.data['y'].copy()
                 _x = np.arange(len(_y))
 
                 CQdict['x'] = _x.copy()

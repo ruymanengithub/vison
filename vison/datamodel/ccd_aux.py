@@ -364,7 +364,8 @@ def get_1Dprofile(ccdobj, Q, orient='hor', area='img', stacker='mean', vstart=0,
     subregion, BB = ccdobj.extract_region(Q, area=area, vstart=vstart,
                                           vend=vend,
                                           Full=True,
-                                          extension=extension)
+                                          extension=extension,
+                                          canonical=True)
 
     if isinstance(subregion, np.ma.masked_array):
         stacker_dict = dict(mean=np.ma.mean, median=np.ma.median,
