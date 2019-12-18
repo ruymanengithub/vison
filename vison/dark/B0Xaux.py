@@ -113,7 +113,8 @@ basic_histosRON_dict = dict(
 
 meta_prof1Dhor_dict = dict(
     figname='BIAS0X_profs1D_hor_MASTERBIAS.png',
-    caption='BIAS0X: Average profiles across columns of Master Bias, avg. offset subtracted.' +
+    caption='BIAS0X: Average profiles across columns of Master Bias, avg. offset subtracted. ' +
+            'Output node on the left.'+\
             ' From col. "1" to col. 51+2048+20="2119", and from vstart to vend rows.',
     meta=dict(doLegend=False,
               ylabel='ADU',
@@ -124,7 +125,8 @@ meta_prof1Dhor_dict = dict(
 
 meta_prof1Dver_dict = dict(
     figname='BIAS0X_profs1D_ver_MASTERBIAS.png',
-    caption='BIAS0X: Average profiles across rows of Master Bias, avg. offset subtracted.' +
+    caption='BIAS0X: Average profiles across rows of Master Bias, avg. offset subtracted. ' +
+            'Output node on the left.'+\
             ' From vstart to vend rows and from col. "1" to col. 51+2048+20="2119".',
     meta=dict(doLegend=False,
               ylabel='ADU',
