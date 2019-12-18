@@ -215,6 +215,7 @@ class MetaBias(MetaCal):
         ron_ove_v = tmp_v_CQ.copy()
 
         productspath = os.path.join(inventoryitem['resroot'], 'products')
+        profspath = os.path.join(inventoryitem['resroot'], 'profiles')
 
         roncdp_pick = os.path.join(productspath, os.path.split(sidd.products['RON_CDP'])[-1])
         roncdp = files.cPickleRead(roncdp_pick)
@@ -222,7 +223,12 @@ class MetaBias(MetaCal):
         offcdp_pick = os.path.join(productspath, os.path.split(sidd.products['OFF_CDP'])[-1])
         offcdp = files.cPickleRead(offcdp_pick)
 
+        profskeys_v = np.zeros((1),dtype='S50')
+
         for iCCD, CCDk in enumerate(CCDkeys):
+
+            profkey = '%s_%s_%s_%i_%s' % (testname, block, session, jrep + 1, CCDk)
+
             for kQ, Q in enumerate(self.Quads):
 
                 off_pre_v[0, iCCD, kQ] = offcdp['data']['OFF_PRE'][CCDk][Q]
@@ -232,6 +238,9 @@ class MetaBias(MetaCal):
                 ron_pre_v[0, iCCD, kQ] = roncdp['data']['RON_PRE'][CCDk][Q]
                 ron_img_v[0, iCCD, kQ] = roncdp['data']['RON_IMG'][CCDk][Q]
                 ron_ove_v[0, iCCD, kQ] = roncdp['data']['RON_OVE'][CCDk][Q]
+
+            stop()
+
 
         sidd.addColumn(off_pre_v, 'OFF_PRE', IndexCQ)
         sidd.addColumn(off_img_v, 'OFF_IMG', IndexCQ)
