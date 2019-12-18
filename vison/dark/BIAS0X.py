@@ -306,14 +306,12 @@ class BIAS0X(DarkTask):
                         # produce average profile along cols
 
                         ver1Dprof = ccdobj.get_1Dprofile(
-                            Q=Q, orient='ver', area='all', stacker='mean', canonical=True,
-                                        vstart=vstart, vend=vend)
+                            Q=Q, orient='ver', area='all', stacker='mean', vstart=vstart, vend=vend)
 
                         # produce average profile along cols of STD
 
                         ver1Dstdprof = ccdobj.get_1Dprofile(
-                            Q=Q, orient='ver', area='img', stacker='std', canonical=True,
-                                        vstart=vstart, vend=vend)
+                            Q=Q, orient='ver', area='img', stacker='std', vstart=vstart, vend=vend)
 
                         # save profiles in locally for plotting
 
