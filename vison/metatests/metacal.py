@@ -25,6 +25,7 @@ from vison.support import vcal
 from vison.fpa import fpa as fpamod
 from vison.plot import plots_fpa as plfpa
 from vison.plot import baseplotclasses as basepl
+from vison.support.report import Report
 
 from matplotlib import pyplot as plt
 plt.switch_backend('TkAgg')
@@ -114,6 +115,7 @@ class MetaCal(object):
         dictiopick = os.path.join(self.outpathroot,
                                   '%s_dictionary.pick' % self.testkey.lower())
 
+
         if doLoad:
             print('Loading block(s) results...')
             self.load_block_results()
@@ -139,11 +141,27 @@ class MetaCal(object):
             self.ParsedTable = parsedbundle['PT'].copy()
             self.products = parsedbundle['products'].copy()
 
+        if doReport:
+            self.report = Report(TestName=self.testkey.upper(), 
+                            Model='FM',
+                            Reference='7-XXX',
+                            doDraft = False)
+
         if doDump:
             self.dump_aggregated_results()
 
         if doReport:
-            self.report()
+            cleantexafter = False # hard-wired by now
+            reportroot = '%s_TR' % self.testkey.upper()
+            #self.report()
+            outfiles = self.report.doreport(
+                reportroot,
+                cleanafter=cleantexafter,
+                silent=True)  # commented on TESTS
+
+            for outfile in outfiles:
+                os.system('mv %s %s/' % (outfile, self.outpathroot))
+
 
     def init_roeVCals(self):
 
@@ -202,7 +220,7 @@ class MetaCal(object):
         try:
             dd = files.cPickleRead(DDfile)
         except BaseException:
-            print('Could not load %s' % DDfile)
+            print('Could not load %s\n\n' % DDfile)
             raise RuntimeError
 
         ii['dd'] = copy.deepcopy(dd)

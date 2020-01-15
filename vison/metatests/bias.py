@@ -27,7 +27,7 @@ from vison.datamodel import core as vcore
 from vison.ogse import ogse
 #from vison.support import vjson
 
-
+import matplotlib.cm as cm
 from matplotlib import pyplot as plt
 plt.switch_backend('TkAgg')
 from matplotlib.colors import Normalize
@@ -160,6 +160,8 @@ class MetaBias(MetaCal):
         for block in self.blocks:
             self.cdps['GAIN'][block] = allgains[block]['PTC01'].copy()
 
+        self.products['MB_PROFILES'] = OrderedDict()
+
         self.init_fignames()
         self.init_outcdpnames()
 
@@ -223,11 +225,18 @@ class MetaBias(MetaCal):
         offcdp_pick = os.path.join(productspath, os.path.split(sidd.products['OFF_CDP'])[-1])
         offcdp = files.cPickleRead(offcdp_pick)
 
+        profs_pick = os.path.join(profspath, os.path.split(sidd.products['MB_PROFILES'])[-1])
+        profs_dict = files.cPickleRead(profs_pick)
+
+        profkey = '%s_%s_%s_%i' % (testname, block, session, jrep + 1)
+
+        self.products['MB_PROFILES'][profkey] = profs_dict.copy()
+
         profskeys_v = np.zeros((1),dtype='S50')
+        
+        profskeys_v[0] = profkey
 
         for iCCD, CCDk in enumerate(CCDkeys):
-
-            profkey = '%s_%s_%s_%i_%s' % (testname, block, session, jrep + 1, CCDk)
 
             for kQ, Q in enumerate(self.Quads):
 
@@ -238,9 +247,7 @@ class MetaBias(MetaCal):
                 ron_pre_v[0, iCCD, kQ] = roncdp['data']['RON_PRE'][CCDk][Q]
                 ron_img_v[0, iCCD, kQ] = roncdp['data']['RON_IMG'][CCDk][Q]
                 ron_ove_v[0, iCCD, kQ] = roncdp['data']['RON_OVE'][CCDk][Q]
-
-            stop()
-
+                
 
         sidd.addColumn(off_pre_v, 'OFF_PRE', IndexCQ)
         sidd.addColumn(off_img_v, 'OFF_IMG', IndexCQ)
@@ -249,6 +256,8 @@ class MetaBias(MetaCal):
         sidd.addColumn(ron_pre_v, 'RON_PRE', IndexCQ)
         sidd.addColumn(ron_img_v, 'RON_IMG', IndexCQ)
         sidd.addColumn(ron_ove_v, 'RON_OVE', IndexCQ)
+
+        sidd.addColumn(profskeys_v, 'MBPROFS_KEY', IndexS)
 
         # flatten sidd to table
 
@@ -331,15 +340,49 @@ class MetaBias(MetaCal):
             self.outcdps['RON_ADU_%s' % testname] = '%s_RON_ADU_MAP.json' % testname          
             self.outcdps['OFFSETS_%s' % testname] = '%s_OFFSETS_MAP.json' % testname
 
-    def _get_XYdict_NL(self,test,profdir):
+    def _get_XYdict_PROFS(self,test,proftype):
         """ """
 
-        stop()
+        x = dict()
+        y = dict()
+
+        labelkeys = []
+
+        PT = self.ParsedTable[test]
+
+        for block in self.flight_blocks:
+
+            ixsel = np.where(PT['BLOCK'] == block)
+            prof_key = PT['MBPROFS_KEY'][ixsel][0]
+
+            i_Prof = self.products['MB_PROFILES'][prof_key].copy()
+
+            for iCCD, CCD in enumerate(self.CCDs):
+                CCDk = 'CCD%i' % CCD
+
+                for kQ, Q in enumerate(self.Quads):
+
+                    pkey = '%s_%s_%s' % (block, CCDk, Q)
+
+                    _pcq = i_Prof['data'][proftype][CCDk][Q].copy()
+
+                    x[pkey] = _pcq['x'].copy()
+                    y[pkey] = _pcq['y'] - np.nanmedian(_pcq['y'])
+
+                    labelkeys.append(pkey)
+
+        Pdict = dict(x=x,y=y,labelkeys=labelkeys)
+
+        return Pdict
+
     
 
     def dump_aggregated_results(self):
         """ """
         
+        if self.report is not None:
+            self.report.add_Section(keyword='dump', Title='Aggregated Results', level=0)
+
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
@@ -423,21 +466,37 @@ class MetaBias(MetaCal):
         xlabels_profs = dict(hor='column [pix]',
                             ver='row [pix]')
 
+        proftypes = ['hor','ver']
+
+        BLOCKcolors = cm.rainbow(np.linspace(0, 1, len(self.flight_blocks)))
+
+        pointcorekwargs = dict()
+        for jblock, block in enumerate(self.flight_blocks):
+            jcolor = BLOCKcolors[jblock]
+            for iCCD in self.CCDs:
+                for kQ in self.Quads:
+                    pointcorekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(
+                        linestyle='', marker='.', color=jcolor, ms=0.8)
+
         for testname in self.testnames:
 
-            profdirs = ['hor','ver']
+            for proftype in proftypes:
 
-            for profdir in profdirs:
+                XY_profs = self._get_XYdict_PROFS(test=testname,proftype=proftype)
 
-                XY_profs = self._get_XYdict_NL(test=testname,profdir=profdir)
+                if proftype=='hor':
+                    xlim=[0,100]
+                else:
+                    xlim=None
 
                 profkwargs = dict(
-                    title='Average profiles, direction: %s' % profdir,
+                    title='%s: Avg. profiles, direction: %s' % (testname, proftype),
                     doLegend=False,
-                    xlabel=xlabels_profs[profdir],
+                    xlabel=xlabels_profs[proftype],
                     ylabel=r'$\delta ADU$',
                     ylim=[-20,20],
-                    figname=self.figs['PROFS_%s_%s' % (testname,profdir)],
-                    corekwargs=dict(linestyle='',marker='.',color='r'))
+                    xlim=xlim,
+                    figname=self.figs['PROFS_%s_%s' % (testname,proftype)],
+                    corekwargs=pointcorekwargs)
 
                 self.plot_XY(XY_profs, **profkwargs)

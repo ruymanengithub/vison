@@ -541,7 +541,7 @@ class MetaNL(MetaCal):
                     linecorekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(
                         linestyle='-', marker='', color=jcolor)
                     pointcorekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(
-                        linestyle='', marker=',', color=jcolor)
+                        linestyle='', marker='.', color=jcolor)
 
         NLkwargs['corekwargs'] = linecorekwargs
 
