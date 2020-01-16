@@ -16,11 +16,14 @@ import os
 from astropy import table
 import glob
 import gc
+import string as st
+import pandas as pd
 
 from vison import __version__
 from vison.support import files
 from vison.support import vjson
 from vison.datamodel import core as vcore
+from vison.datamodel import cdp as cdpmod
 from vison.support import vcal
 from vison.fpa import fpa as fpamod
 from vison.plot import plots_fpa as plfpa
@@ -564,3 +567,129 @@ class MetaCal(object):
 
         plotobj = self._get_plot_gen(plfpa.FpaImgShow)
         plotobj(self, BCdict, **kwargs)
+
+
+    def add_StdQuadsTable2Report(self, extractor=None, Matrix=None, cdp=None, cdpdict=None):
+        """ """
+
+        assert (extractor is None) != (Matrix is None)
+        
+        if extractor is not None:
+            def _get_val(Ckey,Q):
+                return extractor(Ckey,Q)
+        elif Matrix is not None:
+            def _get_val(Ckey,Q):
+                return Matrix[Ckey][Q]
+        
+
+        defcdpdict = dict(TBkey = 'TB',
+            meta = dict(),
+            CDP_header = dict(),
+            header_title = 'generic title',
+            CDP_KEY = 'UNK',
+            caption = 'CAPTION PENDING',
+            valformat = '%.2e')
+
+        if cdpdict is not None:
+
+            assert isinstance(cdpdict, dict)
+            
+            defcdpdict.update(cdpdict)
+        
+        TBkey = defcdpdict['TBkey']
+        meta = defcdpdict['meta'].copy()
+        CDP_header = defcdpdict['CDP_header'].copy()
+        header_title = defcdpdict['header_title']
+        CDP_KEY = defcdpdict['CDP_KEY']
+        valformat = defcdpdict['valformat']
+        caption = defcdpdict['caption']
+        
+
+        NCCDs = len(self.CCDs)
+        NBlocks = len(self.fpa.flight_blocks)
+        NP = NBlocks * NCCDs
+
+        TB = OrderedDict()
+        TB['CCDID'] = np.zeros(NP, dtype='S4')
+        TB['BLOCK'] = np.zeros(NP, dtype='S4')
+        TB['CCD'] = np.zeros(NP, dtype='S4')
+
+        _dtype = np.array(_get_val('C_11','E')).dtype
+        if 'S' in _dtype.str:
+            Qdtype = 'S30'
+        else:
+            Qdtype = 'float32'
+
+        for Q in self.Quads:
+            TB[Q] = np.zeros(NP, dtype=Qdtype)
+
+        for jY in range(self.NSLICES_FPA):
+            for iX in range(self.NCOLS_FPA):
+
+                Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+
+                locator = self.fpa.FPA_MAP[Ckey]
+                block = locator[0]
+                CCDk = locator[1]
+
+                indx = jY * self.NCOLS_FPA + iX
+
+                TB['CCDID'][indx] = Ckey
+                TB['BLOCK'][indx] = block[0:4]
+                TB['CCD'][indx] = CCDk
+
+                for iQ, Q in enumerate(self.Quads):
+                    TB[Q][indx] = _get_val(Ckey, Q)
+        
+        TB_ddf = OrderedDict()
+        TB_ddf[TBkey] = pd.DataFrame.from_dict(TB)
+
+        if cdp is not None:
+            cdp.path = self.inputs['subpaths']['products']
+            cdp.ingest_inputs(
+                data=TB_ddf.copy(),
+                meta=meta.copy(),
+                header=CDP_header.copy()
+            )
+
+            cdp.init_wb_and_fillAll(header_title=header_title)
+            self.save_CDP(cdp)
+            self.pack_CDP_to_dd(cdp, CDP_KEY)
+        else:
+            cdp = cdpmod.Tables_CDP()
+            cdp.ingest_inputs(
+                data=TB_ddf.copy(),
+                meta=meta.copy(),
+                header=CDP_header.copy()
+            )
+
+        def fstr(x): return '%s' % x
+
+        def ff(x): return valformat % x
+
+        her_formatters = [fstr, fstr, fstr]
+        for iQ, Q in enumerate(self.Quads):
+            her_formatters.append(ff)
+
+        nicecaption = st.replace(caption, '_', '\_')
+        Ttex = cdp.get_textable(sheet=TBkey, caption=nicecaption,
+                                fitwidth=True,
+                                tiny=True,
+                                formatters=her_formatters)
+
+        self.report.add_Text(Ttex)
+
+        return TB, cdp
+
+
+    def addFigure2Report(self, png, figkey, caption='', texfraction=0.7):
+        """ """
+
+        assert os.path.exists(png)
+        eps = '%s.eps' % os.path.splitext(png)[0]
+        os.system('convert %s %s' % (png, eps))
+        self.report.add_Figure(eps, texfraction=texfraction,
+            caption=caption,
+            label=figkey)
+
+

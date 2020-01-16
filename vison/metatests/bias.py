@@ -428,9 +428,31 @@ class MetaBias(MetaCal):
                                                                                        reg='ove'))
 
             stestname = st.replace(testname, '_', '\_')
+            figkey = 'RON_ELE_%s' % testname
+            figname = self.figs[figkey]
+
             self.plot_SimpleMAP(RONEMAP, **dict(
                 suptitle='%s: RON [ELECTRONS]' % stestname,
-                figname=self.figs['RON_ELE_%s' % testname]))
+                figname=figname))
+
+            self.addFigure2Report(figname, 
+                    figkey=figkey, 
+                    caption='%s: RON in e- (rms).' % stestname, 
+                    texfraction=0.7)
+            
+            # reporting tables of RON-e to report
+
+            if self.report is not None:
+
+                eroncdpdict = dict(
+                    caption='%s: RON (e-, rms) in the over-scan region.' % testname,
+                    valformat='%.2f')
+
+                ignore = self.add_StdQuadsTable2Report( 
+                                Matrix = RONEMAP,
+                                cdpdict = eroncdpdict)
+
+
 
         # OFFSET maps
 
@@ -455,11 +477,30 @@ class MetaBias(MetaCal):
                 self.ParsedTable[testname],
                 extractor=self._get_extractor_OFFSET_fromPT(reg='ove'))
             
+            figkey = 'OFFSETS_%s' % testname
 
             stestname = st.replace(testname, '_', '\_')
             self.plot_SimpleMAP(OFF_OVE_MAP, **dict(
                 suptitle='%s [OVERSCAN]: OFFSET' % stestname,
-                figname=self.figs['OFFSETS_%s' % testname]))
+                figname=self.figs[figkey]))
+
+            self.addFigure2Report(self.figs[figkey], 
+                    figkey=figkey, 
+                    caption='%s: Avg. offsets in ADU. Measured in serial over-scan.' % stestname, 
+                    texfraction=0.7)
+
+            if self.report is not None:
+
+                offcdpdict = dict(
+                    caption='%s: Offset levels [ADU].' % testname,
+                    valformat='%.2f')
+                
+                def _getOFF_val(Ckey, Q):
+                    return OFFMAP[Ckey][Q]['ove']
+
+                ignore = self.add_StdQuadsTable2Report( 
+                                extractor = _getOFF_val,
+                                cdpdict = offcdpdict)
 
         # Vertical and Horizonal average profiles
 
@@ -489,6 +530,8 @@ class MetaBias(MetaCal):
                 else:
                     xlim=None
 
+                figkey = 'PROFS_%s_%s' % (testname,proftype)
+
                 profkwargs = dict(
                     title='%s: Avg. profiles, direction: %s' % (testname, proftype),
                     doLegend=False,
@@ -496,7 +539,23 @@ class MetaBias(MetaCal):
                     ylabel=r'$\delta ADU$',
                     ylim=[-20,20],
                     xlim=xlim,
-                    figname=self.figs['PROFS_%s_%s' % (testname,proftype)],
+                    figname=self.figs[figkey],
                     corekwargs=pointcorekwargs)
 
                 self.plot_XY(XY_profs, **profkwargs)
+
+                if proftype == 'ver':
+                    captemp = '%s: Stacked profiles of Master Bias quadrant'+\
+                    ' images in "parallel" direction. Median value of profile has been subtracted for '+\
+                    'clarity. Each colour corresponds to a different block (each with 3x4 quadrants).'
+                elif proftype == 'hor':
+                    captemp = '%s: Stacked profiles of Master Bias quadrant'+\
+                    ' images in "serial" direction. Median value of profile has been subtracted for '+\
+                    'clarity. Only the first 100 columns are shown, because that is where most of the '+\
+                    'intersting structure of this type of profile is. Each colour corresponds to a'+\
+                    ' different block (each with 3x4 quadrants).'
+
+                self.addFigure2Report(self.figs[figkey], 
+                    figkey=figkey, 
+                    caption= captemp % (stestname,),
+                    texfraction=0.7)
