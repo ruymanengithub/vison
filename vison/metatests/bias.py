@@ -552,7 +552,7 @@ class MetaBias(MetaCal):
                     captemp = '%s: Stacked profiles of Master Bias quadrant'+\
                     ' images in "serial" direction. Median value of profile has been subtracted for '+\
                     'clarity. Only the first 100 columns are shown, because that is where most of the '+\
-                    'intersting structure of this type of profile is. Each colour corresponds to a'+\
+                    'interesting structure of this type of profile is. Each colour corresponds to a'+\
                     ' different block (each with 3x4 quadrants).'
 
                 self.addFigure2Report(self.figs[figkey], 
