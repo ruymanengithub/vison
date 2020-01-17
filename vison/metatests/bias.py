@@ -435,10 +435,12 @@ class MetaBias(MetaCal):
                 suptitle='%s: RON [ELECTRONS]' % stestname,
                 figname=figname))
 
-            self.addFigure2Report(figname, 
-                    figkey=figkey, 
-                    caption='%s: RON in e- (rms).' % stestname, 
-                    texfraction=0.7)
+
+            if self.report is not None:
+                self.addFigure2Report(figname, 
+                        figkey=figkey, 
+                        caption='%s: RON in e- (rms).' % stestname, 
+                        texfraction=0.7)
             
             # reporting tables of RON-e to report
 

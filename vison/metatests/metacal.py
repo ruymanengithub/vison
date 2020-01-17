@@ -685,6 +685,9 @@ class MetaCal(object):
     def addFigure2Report(self, png, figkey, caption='', texfraction=0.7):
         """ """
 
+        if self.report is None:
+            return
+
         assert os.path.exists(png)
         eps = '%s.eps' % os.path.splitext(png)[0]
         os.system('convert %s %s' % (png, eps))
