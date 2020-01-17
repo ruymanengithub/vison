@@ -358,15 +358,30 @@ class MetaPsf(MetaCal):
     def dump_aggregated_results(self):
         """ """
 
+        if self.report is not None:
+            self.report.add_Section(keyword='dump', Title='Aggregated Results', level=0)
+
         # XTALK MAP (ROE-TAB)
 
         XTALKs_RT = self.products['XTALK_RT'].copy()
+
+        figkey0 = 'XTALK_MAP_RT'
+        figname0 = self.figs[figkey0]
 
         self.plot_XtalkMAP(XTALKs_RT, **dict(
             scale='ADU',
             showvalues=False,
             title='XTALK [ADU] - ROE-TAB',
-            figname=self.figs['XTALK_MAP_RT']))
+            figname=figname0))
+
+        captemp0 = 'ROE-TAB: Cross-Talk matrix [in ADU] obtained '+\
+            'using the ROE-TAB [electrical injection].'
+
+        if self.report is not None:
+            self.addFigure2Report(figname0, 
+                figkey=figkey0, 
+                caption= captemp0, 
+                texfraction=0.7)
 
         # XTALK MAPS (OPTICAL)
 
@@ -374,16 +389,33 @@ class MetaPsf(MetaCal):
 
             XTALKs = self.get_XTALKDICT_from_PT(testname)
 
+            figkey1 = 'XTALK_MAP_%s' % testname
+            figname1 = self.figs[figkey1]
+
             stestname = st.replace(testname, '_', '\_')
             self.plot_XtalkMAP(XTALKs, **dict(
                 scale='ADU',
                 showvalues=False,
                 title='%s: XTALK [ADU]' % stestname,
-                figname=self.figs['XTALK_MAP_%s' % testname]))
+                figname=figname1))
+
+            captemp1 = '%s: Cross-Talk as amplitude in ADU of ghost in victim channel,'+\
+            ' for a saturating signal in the source channel.'
+
+            if self.report is not None:
+                self.addFigure2Report(figname1, 
+                        figkey=figkey1, 
+                        caption= captemp1 % stestname, 
+                        texfraction=0.7)
+
 
         # XTALK: 800-optical vs. RT  (with SIGN)
 
         XT_RTvs800 = self._get_XYdict_XT('PSF01_800', 'RT', mode='sign')
+
+        figkey2 = 'XTALK_RTvs800'
+        figname2 = self.figs[figkey2]
+
 
         XTkwargs = dict(
             title='Cross-Talk Comparison',
@@ -392,7 +424,7 @@ class MetaPsf(MetaCal):
             ylabel='Xtalk - ROE-TAB',
             xlim=[-20, 50],
             ylim=[-20, 50],
-            figname=self.figs['XTALK_RTvs800'])
+            figname=figname2)
 
         BLOCKcolors = cm.rainbow(np.linspace(0, 1, len(self.flight_blocks)))
 
@@ -408,9 +440,23 @@ class MetaPsf(MetaCal):
 
         self.plot_XY(XT_RTvs800, **XTkwargs)
 
+
+        if self.report is not None:
+            
+            captemp2 = '%s: Cross-talk coupling factor measured using the ROE-TAB, vs. using '+\
+            'optical stimulation (at 800 nm). Sign of coupling preserved.'
+
+            self.addFigure2Report(figname2, 
+                        figkey=figkey2, 
+                        caption=captemp2 % stestname, 
+                        texfraction=0.7)
+
         # XTALK: 800-optical vs. RT (ABS-VALUE)
 
         XT_RTvs800_abs = self._get_XYdict_XT('PSF01_800', 'RT', mode='abs')
+
+        figkey3 = 'XTALK_RTvs800_ABS'
+        figname3 = self.figs[figkey3]
 
         XTABSkwargs = dict(
             title='Cross-Talk Comparison - ABS. Value',
@@ -419,17 +465,30 @@ class MetaPsf(MetaCal):
             ylabel='Abs(Xtalk - ROE-TAB)',
             xlim=[-20, 50],
             ylim=[-20, 50],
-            figname=self.figs['XTALK_RTvs800_ABS'])
+            figname=figname3)
 
         XTABSkwargs['corekwargs'] = xtcorekwargs
 
         self.plot_XY(XT_RTvs800_abs, **XTABSkwargs)
+
+        if self.report is not None:
+            
+            captemp3 = '%s: Cross-talk coupling factor (in absolute value) measured '+\
+            'using the ROE-TAB, vs. using optical stimulation (at 800 nm).'
+
+            self.addFigure2Report(figname3, 
+                        figkey=figkey3, 
+                        caption=captemp3 % stestname, 
+                        texfraction=0.7)
 
         # XTALK: 800-optical vs. OTHER-opt (with SIGN)
 
         for wave in [590, 730, 880]:
 
             XT_NMvs800 = self._get_XYdict_XT('PSF01_800', 'PSF01_%i' % wave, mode='sign')
+
+            figkey4 = 'XTALK_%ivs800' % wave
+            figname4 = self.figs[figkey4]
 
             XTNMvs800kwargs = dict(
                 title='Cross-Talk Comparison - With Sign',
@@ -438,8 +497,18 @@ class MetaPsf(MetaCal):
                 ylabel='Xtalk - Opt. %i nm' % wave,
                 xlim=[-20, 50],
                 ylim=[-20, 50],
-                figname=self.figs['XTALK_%ivs800' % wave])
+                figname=figname4)
 
             XTNMvs800kwargs['corekwargs'] = xtcorekwargs
 
             self.plot_XY(XT_NMvs800, **XTNMvs800kwargs)
+
+            if self.report is not None:
+            
+                captemp4 = '%s: Cross-talk coupling factor measured at %i nm '+\
+                'vs. 800 nm.'
+
+                self.addFigure2Report(figname4, 
+                        figkey=figkey4, 
+                        caption=captemp4 % (stestname, wave),
+                        texfraction=0.7)
