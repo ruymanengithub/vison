@@ -381,7 +381,8 @@ class MetaBias(MetaCal):
         """ """
         
         if self.report is not None:
-            self.report.add_Section(keyword='dump', Title='Aggregated Results', level=0)
+            self.report.add_Section(keyword='dump', 
+                Title='Aggregated Results', level=0)
 
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
@@ -418,7 +419,10 @@ class MetaBias(MetaCal):
             stestname = st.replace(testname, '_', '\_')
             self.plot_SimpleMAP(RON_OVE_ADUMAP, **dict(
                 suptitle='%s [OVERSCAN]: RON [ADU]' % stestname,
+                ColorbarText='ADU',
                 figname=self.figs['RON_ADU_%s' % testname]))
+
+
 
         # RON maps, ELECTRONs
         for testname in self.testnames:
@@ -428,17 +432,18 @@ class MetaBias(MetaCal):
                                                                                        reg='ove'))
 
             stestname = st.replace(testname, '_', '\_')
-            figkey = 'RON_ELE_%s' % testname
-            figname = self.figs[figkey]
+            figkey1 = 'RON_ELE_%s' % testname
+            figname1 = self.figs[figkey1]
 
             self.plot_SimpleMAP(RONEMAP, **dict(
                 suptitle='%s: RON [ELECTRONS]' % stestname,
-                figname=figname))
+                ColorbarText='electrons',
+                figname=figname1))
 
 
             if self.report is not None:
-                self.addFigure2Report(figname, 
-                        figkey=figkey, 
+                self.addFigure2Report(figname1, 
+                        figkey=figkey1, 
                         caption='%s: RON in e- (rms).' % stestname, 
                         texfraction=0.7)
             
@@ -484,12 +489,14 @@ class MetaBias(MetaCal):
             stestname = st.replace(testname, '_', '\_')
             self.plot_SimpleMAP(OFF_OVE_MAP, **dict(
                 suptitle='%s [OVERSCAN]: OFFSET' % stestname,
+                ColorbarText='ADU',
                 figname=self.figs[figkey]))
 
-            self.addFigure2Report(self.figs[figkey], 
-                    figkey=figkey, 
-                    caption='%s: Avg. offsets in ADU. Measured in serial over-scan.' % stestname, 
-                    texfraction=0.7)
+            if self.report is not None:
+                self.addFigure2Report(self.figs[figkey], 
+                        figkey=figkey, 
+                        caption='%s: Avg. offsets in ADU. Measured in serial over-scan.' % stestname, 
+                        texfraction=0.7)
 
             if self.report is not None:
 
@@ -556,8 +563,9 @@ class MetaBias(MetaCal):
                     'clarity. Only the first 100 columns are shown, because that is where most of the '+\
                     'interesting structure of this type of profile is. Each colour corresponds to a'+\
                     ' different block (each with 3x4 quadrants).'
+                if self.report is not None:
 
-                self.addFigure2Report(self.figs[figkey], 
-                    figkey=figkey, 
-                    caption= captemp % (stestname,),
-                    texfraction=0.7)
+                    self.addFigure2Report(self.figs[figkey], 
+                        figkey=figkey, 
+                        caption= captemp % (stestname,),
+                        texfraction=0.7)
