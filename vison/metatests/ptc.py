@@ -582,6 +582,10 @@ class MetaPTC(MetaCal):
     def dump_aggregated_results(self):
         """ """
 
+        if self.report is not None:
+            self.report.add_Section(keyword='dump', 
+                Title='Aggregated Results', level=0)
+
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
@@ -617,13 +621,27 @@ class MetaPTC(MetaCal):
                     extractor=self._extract_GAIN_fromPT)
 
                 avgG = self.get_stat_from_FPAMAP(GMAP, np.nanmean)
-                print('Average G [%s]: %.2f' % (testname, avgG))
+                avgGtext = 'Average G [%s]: %.2f' % (testname, avgG)
+                if self.report is not None:
+                    self.report.add_Text(avgGtext)
+                else:
+                    print(avgGtext)
 
                 stestname = st.replace(testname, '_', '\_')
 
+                figkey1 = 'GAIN_MAP_%s' % testname
+                figname1 = self.figs[figkey1]
+
                 self.plot_SimpleMAP(GMAP, **dict(
                     suptitle='%s: GAIN e-/ADU' % stestname,
-                    figname=self.figs['GAIN_MAP_%s' % testname]))
+                    ColorbarText = 'e-/ADU',
+                    figname=figname1))
+
+                if self.report is not None:
+                    self.addFigure2Report(figname1, 
+                        figkey=figkey1, 
+                        caption='%s: Gain Map [e-/ADU].' % stestname, 
+                        texfraction=0.7)
 
                 g_header = OrderedDict()
                 g_header['title'] = 'GAIN MAP'
@@ -647,10 +665,23 @@ class MetaPTC(MetaCal):
                     self.ParsedTable[testname], extractor=self._extract_BADU_fromPT)
 
                 stestname = st.replace(testname, '_', '\_')
+
+                figkey2 = 'BLOOM_ADU_MAP_%s' % testname
+                figname2 = self.figs[figkey2]
+
                 self.plot_SimpleMAP(BADU_MAP, **dict(
                     suptitle='%s: BLOOM-ADU [DN]' % stestname,
-                    figname=self.figs['BLOOM_ADU_MAP_%s' % testname]))  # ,
+                    ColorbarText='ADU',
+                    figname=figname2))  # ,
                 # corekwargs=dict(norm = Normalize(vmin=3e4,vmax=2**16, clip=False))))
+
+                if self.report is not None:
+                    self.addFigure2Report(figname2, 
+                        figkey=figkey2, 
+                        caption='%s: Blooming onset threshold map in ADU.' % stestname, 
+                        texfraction=0.7)
+
+
 
             for testname in self.testnames:
 
@@ -658,11 +689,21 @@ class MetaPTC(MetaCal):
                     self.ParsedTable[testname],
                     extractor=self._extract_BE_fromPT)
 
+                figkey3 = 'BLOOM_ELE_MAP_%s' % testname
+                figname3 = self.figs[figkey3]
+
                 stestname = st.replace(testname, '_', '\_')
                 self.plot_SimpleMAP(BE_MAP, **dict(
                     suptitle='%s: BLOOM-ELECTRONS' % stestname,
-                    figname=self.figs['BLOOM_ELE_MAP_%s' % testname]))  # ,
+                    ColorbarText='electrons',
+                    figname=figname3))  # ,
                 # corekwargs=dict(norm = Normalize(vmin=1e5,vmax=2.2E5, clip=False))))
+
+                if self.report is not None:
+                    self.addFigure2Report(figname3, 
+                        figkey=figkey3, 
+                        caption='%s: Blooming Map in electrons.' % stestname, 
+                        texfraction=0.7)
 
         # HER map
 
@@ -676,13 +717,27 @@ class MetaPTC(MetaCal):
 
                 stestname = st.replace(testname, '_', '\_')
 
+                figkey4 = 'HER_MAP_%s' % testname
+                figname4 = self.figs[figkey4]
+
                 self.plot_SimpleMAP(HERMAP, **dict(
                     suptitle='%s: Hard Edge Response Factor' % stestname,
-                    figname=self.figs['HER_MAP_%s' % testname]))
+                    ColorbarText='[adim]',
+                    figname=figname4))
+
+                if self.report is not None:
+                    captemp = '%s: Hard Edge Response Map,'+\
+                    ' first pixel relative response.'
+
+                    self.addFigure2Report(figname4, 
+                        figkey=figkey4, 
+                        caption= captemp % stestname, 
+                        texfraction=0.7)
 
                 HERMAPprofs = self.get_FPAMAP_from_PT(
                     self.ParsedTable[testname],
                     extractor=self._extract_HERprof_fromPT)
+
                 
                 her_header = OrderedDict()
                 her_header['title'] = 'HARD EDGE RESPONSE'
@@ -706,6 +761,9 @@ class MetaPTC(MetaCal):
 
                 stestname = st.replace(testname, '_', '\_')
 
+                figkey5 = 'HER_curves_%s' % testname
+                figname5 = self.figs[figkey5]
+
                 self.plot_XY(HERSingledict, **dict(
                     title='%s: H.E.R. CURVES' % stestname,
                     doLegend=False,
@@ -714,15 +772,25 @@ class MetaPTC(MetaCal):
                     ylim=[-2.E-4, 5.e-4],
                     xlim=[9, 15],
                     corekwargs=dict(linestyle='-', marker=''),
-                    figname=self.figs['HER_curves_%s' % testname]))
+                    figname=figname5))
 
+                if self.report is not None:
 
+                    captemp = '%s: H.E.R. curves, all 144 quadrant channels.'
+
+                    self.addFigure2Report(figname5, 
+                        figkey=figkey5, 
+                        caption=captemp % stestname, 
+                        texfraction=0.7)
 
         # GAIN vs. Wavelength
 
         if doGvsWave:
 
             GvsWavedict = self._get_XYdict_GvsLAM()
+
+            figkey6 = 'GvsWave'
+            figname6 = self.figs[figkey6]
 
             self.plot_XY(GvsWavedict, **dict(
                 title='Gain vs. Wavelength',
@@ -733,7 +801,15 @@ class MetaPTC(MetaCal):
                 ylim=[3.3, 3.7],
                 corekwargs=dict(linestyle='', marker='.'),
                 # figname = ''))
-                figname=self.figs['GvsWave']))
+                figname=figname6))
+
+            if self.report is not None:
+                self.addFigure2Report(figname6, 
+                        figkey=figkey6, 
+                        caption='Measured Gain [e-/ADU] as a function of wavelength.', 
+                        texfraction=0.7)
+
+
 
         # GAIN vs. detector temperature (PTC01)
 
@@ -741,19 +817,32 @@ class MetaPTC(MetaCal):
 
             GvsTdict = self._get_XYdict_GvsT()
 
+            figkey7 = 'GvsT'
+            figname7 = self.figs[figkey7]
+
             self.plot_XY(GvsTdict, **dict(
                 title='Gain vs. Detector Temperature',
                 doLegend=True,
                 xlabel='Detector Temperature',
                 ylabel='Gain [e-/ADU]',
                 corekwargs=dict(linestyle='', marker='.'),
-                figname=self.figs['GvsT']))
+                figname=figname7))
+
+            if self.report is not None:
+                self.addFigure2Report(figname7, 
+                        figkey=figkey7, 
+                        caption='Measured Gain (at 800 nm) vs. detector Temperature,'+\
+                                ' all quadrant channels.', 
+                        texfraction=0.7)
 
         # GAIN vs. OD-CAL (PTC01)
 
         if doGvsOD:
 
             GvsODdict = self._get_XYdict_GvsOD()
+
+            figkey8 = 'GvsOD'
+            figname8 = self.figs[figkey8]
 
             self.plot_XY(GvsODdict, **dict(
                 title='Gain vs. Output Drain',
@@ -762,11 +851,23 @@ class MetaPTC(MetaCal):
                 ylabel='Gain [e-/ADU]',
                 corekwargs=dict(linestyle='', marker='.'),
                 # figname=''))
-                figname=self.figs['GvsOD']))
+                figname=figname8))
 
-#        # GAIN vs. RD-CAL (PTC01)
+            if self.report is not None:
+                self.addFigure2Report(figname8, 
+                        figkey=figkey8, 
+                        caption='Gain vs. Output Drain Voltage,'+\
+                        ' all 144 quadrants. The (small) range in OD is given '+\
+                        'from differences in voltage outputs / calibration'+\
+                        ' across ROEs.', 
+                        texfraction=0.7)
+
+        # GAIN vs. RD-CAL (PTC01)
 
         if doGvsRD:
+
+            figkey9 = 'GvsRD'
+            figname9 = self.figs[figkey9]
 
             GvsRDdict = self._get_XYdict_GvsRD()
 
@@ -777,6 +878,15 @@ class MetaPTC(MetaCal):
                 ylabel='Gain [e-/ADU]',
                 corekwargs=dict(linestyle='', marker='.'),
                 # figname=''))
-                figname=self.figs['GvsRD']))
+                figname=figname9))
+
+            if self.report is not None:
+                self.addFigure2Report(figname9, 
+                        figkey=figkey9, 
+                        caption='Gain vs. Reset Drain Voltage,'+\
+                        ' all 144 quadrants. The (small) range in RD is given '+\
+                        'from differences in voltage outputs / calibration'+\
+                        ' across ROEs.', 
+                        texfraction=0.7)
 
         # Save the ParsedTable(s)
