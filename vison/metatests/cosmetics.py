@@ -148,6 +148,7 @@ class MetaCosmetics(MetaCal):
         self.maskkeys = ['DARK', 'FLAT', 'MERGE']
 
         self.init_fignames()
+        self.init_outcdpnames()
 
     def _extract_badpix_coordinates(self, all_mask_fits, block):
         """ """
@@ -334,11 +335,13 @@ class MetaCosmetics(MetaCal):
         if not os.path.exists(self.figspath):
             os.system('mkdir %s' % self.figspath)
 
-        self.figs['DEFECTS_MAP'] = os.path.join(self.figspath,
-                                                'DEFECTS_MAP.png')
+        for maskkey in self.maskkeys:
+            self.figs['DEFECTS_MAP_%s' % maskkey] = os.path.join(self.figspath,
+                                                    'DEFECTS_MAP_%s.png' % maskkey)
 
-        self.figs['DEFECTS_COUNTS_MAP'] = os.path.join(self.figspath,
-                                                       'DEFECTS_COUNTS_MAP.png')
+            self.figs['DEFECTS_COUNTS_MAP_%s' % maskkey] = \
+                os.path.join(self.figspath, 'DEFECTS_COUNTS_MAP_%s.png' % maskkey)
+
         self.figs['BADCOLS_COUNTS_MAP'] = os.path.join(self.figspath,
                                                        'BADCOLS_COUNTS_MAP.png')
 
@@ -384,6 +387,12 @@ class MetaCosmetics(MetaCal):
 
     def dump_aggregated_results(self):
         """ """
+        
+
+        if self.report is not None:
+            self.report.add_Section(keyword='dump', 
+                Title='Aggregated Results', level=0)
+
 
         #self.init_outcdpnames()
 
@@ -426,10 +435,24 @@ class MetaCosmetics(MetaCal):
 
             DEFMAP = self._get_DEFECTSMAP_from_PT(maskkey)
 
-            self.plot_XYMAP(DEFMAP, kwargs=dict(
+            figkey1 = 'DEFECTS_MAP_%s' % maskkey
+            figname1 = self.figs[figkey1]
+
+            self.plot_XYMAP(DEFMAP, **dict(
                 suptitle='DEFECTS: %s' % maskkey,
-                figname=self.figs['DEFECTS_MAP']
+                figname=figname1
             ))
+
+            if self.report is not None:
+
+                captemp = 'Defects Map across the FPA [Mask Type: "%s". Each bad pixel is '+\
+                        'represented by a dot. As a results, bad pixels are not to scale.'
+
+                self.addFigure2Report(figname1, 
+                        figkey=figkey1, 
+                        caption=captemp % maskkey, 
+                        texfraction=0.7)
+
 
         # Defects Counts
 
@@ -438,19 +461,46 @@ class MetaCosmetics(MetaCal):
             NDEFMAP = self.get_FPAMAP_from_PT(self.ParsedTable['COSMETICS00'],
                                               extractor=self._get_extractor_LOGNDEF_fromPT(maskkey))
 
-            self.plot_SimpleMAP(NDEFMAP, kwargs=dict(
+            figkey2 = 'DEFECTS_COUNTS_MAP_%s' % maskkey
+            figname2 = self.figs[figkey2]
+
+            self.plot_SimpleMAP(NDEFMAP, **dict(
                 suptitle='NR. DEFECTS: %s' % maskkey,
-                figname=self.figs['DEFECTS_COUNTS_MAP']
+                figname=figname2,
+                ColorbarText='log(N)'
             ))
+
+            if self.report is not None:
+
+                captemp = 'Number of defects in each CCD quadrant of the FPA. '+\
+                'Mask of Type: %s.'
+
+                self.addFigure2Report(figname2, 
+                    figkey=figkey2, 
+                    caption=captemp % maskkey, 
+                    texfraction=0.7)
+
+
 
         # Bad Column Counts
 
         NBADCOLSMAP = self.get_FPAMAP_from_PT(self.ParsedTable['COSMETICS00'],
                                               extractor=self._get_NBADCOLS_fromPT)
 
-        self.plot_SimpleMAP(NBADCOLSMAP, kwargs=dict(
+
+        figkey3 = 'BADCOLS_COUNTS_MAP'
+        figname3 = self.figs[figkey3]
+
+        self.plot_SimpleMAP(NBADCOLSMAP, **dict(
             suptitle='NR. of BAD COLUMNS [MERGED MASK]',
-            figname=self.figs['BADCOLS_COUNTS_MAP']
+            figname=figname3,
+            ColorbarText='N'
         ))
+
+        if self.report is not None:
+            self.addFigure2Report(figname3, 
+                figkey=figkey3, 
+                caption='Number of bad columns in each CCD quadrant of the FPA.', 
+                texfraction=0.7)
 
         
