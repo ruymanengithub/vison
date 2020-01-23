@@ -174,6 +174,7 @@ class MetaFlat(MetaCal):
         self.batches_highPRNU = ['14313', '14471']
 
         self.init_fignames()
+        self.init_outcdpnames()
 
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
@@ -537,6 +538,9 @@ class MetaFlat(MetaCal):
     def dump_aggregated_results(self):
         """ """
 
+        if self.report is not None:
+            self.report.add_Section(keyword='dump', 
+                Title='Aggregated Results', level=0)
 
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
@@ -553,19 +557,27 @@ class MetaFlat(MetaCal):
 
             XYPLam = self._get_XYdict_PRNULAM()
 
+            figkey1 = 'PRNU_vs_WAVE'
+            figname1 = self.figs[figkey1]
+
             self.plot_XY(XYPLam, **dict(
                 title='PRNU vs. Wavelength',
                 doLegend=True,
                 doYErrbars=True,
                 xlabel='Wavelength [nm]',
                 ylabel='PRNU',
-                figname=self.figs['PRNU_vs_WAVE'],
+                figname=figname1,
                 corekwargs=dict(linestyle='-', marker='o')))
             gc.collect()
 
+            if self.report is not None:
+                self.addFigure2Report(figname1, 
+                        figkey=figkey1, 
+                        caption='PRNU (rms, %s ) vs. wavelength.' % ('\\%',), 
+                        texfraction=0.7)
+
+
         # MASTER FLATS DISPLAY
-
-
 
         if doMFs:
 
@@ -588,12 +600,23 @@ class MetaFlat(MetaCal):
                     suptitle = '%s %s nm, Fluence %i' % (_test, _wave, colnum)
                     print(suptitle)
 
+                    figkey2 = 'MF_%s_%s' % (testname, colkey)
+                    figname2 = self.figs[figkey2]
+
                     MFdict = self._get_MFdict(testname, colkey)
                     MFkwargs = dict(  # suptitle='%s, %s: Master Flat Field' % (stestname, colkey),
                         suptitle=suptitle,
-                        figname=self.figs['MF_%s_%s' % (testname, colkey)])
+                        figname=figname2)
 
                     self.plot_ImgFPA(MFdict, **MFkwargs)
+
+                    if self.report is not None:
+                        self.addFigure2Report(figname2,
+                            figkey=figkey2,
+                            caption='%s: Master Flat-field. Fluence \\#%i' % \
+                                    (stestname,colnum), 
+                            texfraction=0.7)
+
                     MFdict = None
 
                     # Save MF as cdp
@@ -627,7 +650,6 @@ class MetaFlat(MetaCal):
                     #import sys
                     #sys.exit()
 
-
         # PRNU vs. FLUENCE
 
         if doPRNUvsFLU:
@@ -639,12 +661,22 @@ class MetaFlat(MetaCal):
 
                 XYdict = self._get_XYdict_PRNUFLU(self.ParsedTable[testname], NFluCols)
 
+                figkey3 = 'PRNU_vs_FLU_%s' % testname
+                figname3 = self.figs[figkey3]
+
                 self.plot_XY(XYdict, **dict(
                     title='%s: PRNU' % (stestname,),
                     doLegend=True,
                     xlabel='Fluence [ke-]',
                     ylabel='PRNU',
-                    figname=self.figs['PRNU_vs_FLU_%s' % testname]))
+                    figname=figname3))
+
+                if self.report is not None:
+                    self.addFigure2Report(figname3, 
+                        figkey=figkey3, 
+                        caption='%s: PRNU (rms, %s ) vs. fluence.' % \
+                            (stestname, '\\%'),
+                        texfraction=0.7)
 
         # PRNU maps
 
@@ -659,7 +691,16 @@ class MetaFlat(MetaCal):
 
                 vjson.save_jsonfile(PRNUMAP, self.figs['PRNU_MAP_%s_%s_json' % (testname, colkey)])
 
+                figkey4 = 'PRNU_MAP_%s_%s' % (testname, colkey)
+                figname4 = self.figs[figkey4]
+
                 self.plot_SimpleMAP(PRNUMAP, **dict(
                     suptitle='%s [%s]: PRNU' % (stestname, colkey),
-                    figname=self.figs['PRNU_MAP_%s_%s' % (testname, colkey)]
+                    figname=figname4
                 ))
+
+                if self.report is not None:
+                    self.addFigure2Report(figname4,
+                        figkey=figkey4,
+                        caption='%s: PRNU (rms, %s ) Map across FPA.' % (stestname, '\\%'),
+                        texfraction=0.7)
