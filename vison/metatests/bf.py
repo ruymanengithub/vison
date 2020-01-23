@@ -502,80 +502,79 @@ class MetaBF(MetaCal):
     def dump_aggregated_results(self):
         """ """
 
-        # FWHMX vs. WAVE
+        if self.report is not None:
+            self.report.add_Section(keyword='dump', 
+                Title='Aggregated Results', level=0)
 
-        BLOCKcolors = cm.rainbow(np.linspace(0, 1, len(self.flight_blocks)))
 
-        FWHMxWAVEdict = self._get_FWHMZ_vs_WAVE(orientation='X')
+        # FWHM? vs. WAVE
 
-        FWHMxWAVEkwargs = dict(
-            title='FWHM-X vs. Wavelength',
-            doLegend=False,
-            xlabel='Wavelength [nm]',
-            ylabel='FWHMx [um]',
-            ylim=[7.5, 9.5],
-            figname=self.figs['FWHMX_vs_WAVE'])
 
-        corekwargs = dict()
-        for jblock, block in enumerate(self.flight_blocks):
-            jcolor = BLOCKcolors[jblock]
-            for iCCD in self.CCDs:
-                for kQ in self.Quads:
-                    corekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(linestyle='-',
-                                                                         marker='.', color=jcolor)
-        corekwargs['Niemi'] = dict(linestyle='--', marker='o', color='k')
+        for dim in ['x','y']:
 
-        FWHMxWAVEkwargs['corekwargs'] = corekwargs
+            figkey1 = 'FWHM%s_vs_WAVE' % dim.upper()
+            figname1 = self.figs[figkey1]
 
-        self.plot_XY(FWHMxWAVEdict, **FWHMxWAVEkwargs)
+            BLOCKcolors = cm.rainbow(np.linspace(0, 1, len(self.flight_blocks)))
 
-        # FWHMY vs. WAVE
+            FWHMzWAVEdict = self._get_FWHMZ_vs_WAVE(orientation=dim.upper())
 
-        FWHMyWAVEdict = self._get_FWHMZ_vs_WAVE(orientation='Y')
+            FWHMzWAVEkwargs = dict(
+                title='FWHM-%s vs. Wavelength' % dim.upper(),
+                doLegend=False,
+                xlabel='Wavelength [nm]',
+                ylabel='FWHM%s [um]' % dim,
+                ylim=[7.5, 9.5],
+                figname=figname1)
 
-        FWHMyWAVEkwargs = dict(
-            title='FWHM-Y vs. Wavelength',
-            doLegend=False,
-            xlabel='Wavelength [nm]',
-            ylabel='FWHMy [um]',
-            ylim=[7.5, 9.5],
-            figname=self.figs['FWHMY_vs_WAVE'])
+            corekwargs = dict()
+            for jblock, block in enumerate(self.flight_blocks):
+                jcolor = BLOCKcolors[jblock]
+                for iCCD in self.CCDs:
+                    for kQ in self.Quads:
+                        corekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(linestyle='-',
+                                                                             marker='.', color=jcolor)
+            corekwargs['Niemi'] = dict(linestyle='--', marker='o', color='k')
 
-        FWHMyWAVEkwargs['corekwargs'] = corekwargs
+            FWHMzWAVEkwargs['corekwargs'] = corekwargs
 
-        self.plot_XY(FWHMyWAVEdict, **FWHMyWAVEkwargs)
+            self.plot_XY(FWHMzWAVEdict, **FWHMzWAVEkwargs)
 
-        # FWHMX vs. FLUENCE
+            if self.report is not None:
+                self.addFigure2Report(figname1, 
+                    figkey=figkey1, 
+                    caption='FWHM%s vs. Wavelength' % dim, 
+                    texfraction=0.7)
 
-        FWHMxFLUdict = self._get_FWHMZ_vs_FLU('BF01', orientation='X')
 
-        FWHMxFLUkwargs = dict(
-            title='FWHM-X (800nm) vs. Fluence',
-            doLegend=False,
-            xlabel='Fluence [ke-]',
-            ylabel='FWHMx [um]',
-            ylim=[6., 10.],
-            figname=self.figs['FWHMX_vs_FLU'])
+        # FWHM? vs. FLUENCE
 
-        FWHMxFLUkwargs['corekwargs'] = corekwargs
+        for dim in ['x','y']:
 
-        self.plot_XY(FWHMxFLUdict, **FWHMxFLUkwargs)
+            figkey2 = 'FWHM%s_vs_FLU' % dim.upper()
+            figname2 = self.figs[figkey2]
 
-        # FWHMY vs. FLUENCE
 
-        FWHMyFLUdict = self._get_FWHMZ_vs_FLU('BF01', orientation='Y')
+            FWHMzFLUdict = self._get_FWHMZ_vs_FLU('BF01', orientation=dim.upper())
 
-        FWHMyFLUkwargs = dict(
-            title='FWHM-Y (800nm) vs. Fluence',
-            doLegend=False,
-            xlabel='Fluence [ke-]',
-            ylabel='FWHMy [um]',
-            ylim=[6., 10.],
-            figname=self.figs['FWHMY_vs_FLU'])
+            FWHMzFLUkwargs = dict(
+                title='FWHM-%s (800nm) vs. Fluence' % dim.upper(),
+                doLegend=False,
+                xlabel='Fluence [ke-]',
+                ylabel='FWHM%s [um]' % dim,
+                ylim=[6., 10.],
+                figname=figname2)
 
-        FWHMyFLUkwargs['corekwargs'] = corekwargs
+            FWHMzFLUkwargs['corekwargs'] = corekwargs
 
-        self.plot_XY(FWHMyFLUdict, **FWHMyFLUkwargs)
+            self.plot_XY(FWHMzFLUdict, **FWHMzFLUkwargs)
+
+            if self.report is not None:
+                self.addFigure2Report(figname2, 
+                    figkey=figkey2, 
+                    caption='FWHM%s vs. Wavelength' % dim, 
+                    texfraction=0.7)
+
 
         # MAPS
 
@@ -583,94 +582,102 @@ class MetaBF(MetaCal):
 
             stestname = st.replace(testname, '_', '\_')
 
-            # FWHMX CURVES MAP
+            for dim in ['x','y']:
 
-            corekwargs_fwhmzmap = dict(E=dict(linestyle='', marker='.', color='r'),
-                                       Efit=dict(linestyle='--', marker='', color='r'),
-                                       F=dict(linestyle='', marker='.', color='g'),
-                                       Ffit=dict(linestyle='--', marker='', color='g'),
-                                       G=dict(linestyle='', marker='.', color='b'),
-                                       Gfit=dict(linestyle='--', marker='', color='b'),
-                                       H=dict(linestyle='', marker='.', color='m'),
-                                       Hfit=dict(linestyle='--', marker='', color='m'))
+                # FWHMz CURVES MAP
 
-            FWHMX_fits_MAP = self._get_FWHMzfitsMAP_from_PT(testname, orientation='x')
+                figkey3 = 'FWHM%s_curves_MAP_%s' \
+                            % (dim.upper(),testname)
 
-            self.plot_XYMAP(FWHMX_fits_MAP, **dict(
-                suptitle='%s: FWHMx Fits' % stestname,
-                doLegend=True,
-                xlabel='kADU',
-                ylim=[6., 10.],
-                ylabel='FWHMx [um]',
-                corekwargs=corekwargs_fwhmzmap,
-                figname=self.figs['FWHMX_curves_MAP_%s' % testname]
-                #figname = ''
-            ))
+                figname3 = self.figs[figkey3]
 
-            # FWHMY CURVES MAP
+                corekwargs_fwhmzmap = dict(E=dict(linestyle='', marker='.', color='r'),
+                                           Efit=dict(linestyle='--', marker='', color='r'),
+                                           F=dict(linestyle='', marker='.', color='g'),
+                                           Ffit=dict(linestyle='--', marker='', color='g'),
+                                           G=dict(linestyle='', marker='.', color='b'),
+                                           Gfit=dict(linestyle='--', marker='', color='b'),
+                                           H=dict(linestyle='', marker='.', color='m'),
+                                           Hfit=dict(linestyle='--', marker='', color='m'))
 
-            FWHMY_fits_MAP = self._get_FWHMzfitsMAP_from_PT(testname, orientation='y')
+                FWHMZ_fits_MAP = self._get_FWHMzfitsMAP_from_PT(testname, orientation=dim)
 
-            self.plot_XYMAP(FWHMY_fits_MAP, **dict(
-                suptitle='%s: FWHMy Fits' % stestname,
-                doLegend=True,
-                xlabel='kADU',
-                ylim=[6., 10.],
-                ylabel='FWHMy [um]',
-                corekwargs=corekwargs_fwhmzmap,
-                figname=self.figs['FWHMY_curves_MAP_%s' % testname]
-                #figname = ''
-            ))
+                self.plot_XYMAP(FWHMZ_fits_MAP, **dict(
+                    suptitle='%s: FWHM%s Fits' % (stestname,dim),
+                    doLegend=True,
+                    xlabel='kADU',
+                    ylim=[6., 10.],
+                    ylabel='FWH%s [um]' % dim,
+                    corekwargs=corekwargs_fwhmzmap,
+                    figname=figname3
+                    #figname = ''
+                ))
 
-            # SLOPEX MAP
+                if self.report is not None:
+                    self.addFigure2Report(figname3, 
+                        figkey=figkey3, 
+                        caption='%s' % stestname, 
+                        texfraction=0.7)
 
-            SLOPEX_MAP = self.get_FPAMAP_from_PT(
-                self.ParsedTable[testname],
-                extractor=self._get_GEN_extractor_fromPT('FWHMX_SLOPE'))
 
-            self.plot_SimpleMAP(SLOPEX_MAP, **dict(
-                suptitle='%s: Slope-x, um/10kADU' % stestname,
-                figname=self.figs['SLOPEX_MAP_%s' % testname]))
+                # SLOPEZ MAP
 
-            # FWHMX MAP
+                figkey4 = 'SLOPE%s_MAP_%s' % (dim.upper(),testname)
+                figname4 = self.figs[figkey4]
 
-            FWHMX_MAP = self.get_FPAMAP_from_PT(
-                self.ParsedTable[testname],
-                extractor=self._get_GEN_extractor_fromPT('FWHMX_HWC'))
+                SLOPEz_MAP = self.get_FPAMAP_from_PT(
+                    self.ParsedTable[testname],
+                    extractor=self._get_GEN_extractor_fromPT('FWHM%s_SLOPE' % \
+                        dim.upper()))
 
-            stestname = st.replace(testname, '_', '\_')
-            self.plot_SimpleMAP(FWHMX_MAP, **dict(
-                suptitle='%s: FWHM-X at HWC' % stestname,
-                figname=self.figs['FWHMX_MAP_%s' % testname]))
+                self.plot_SimpleMAP(SLOPEz_MAP, **dict(
+                    suptitle='%s: Slope-%s, um/10kADU' % (stestname,dim),
+                    figname=figname4))
 
-            # SLOPEY MAP
+                if self.report is not None:
+                    self.addFigure2Report(figname4, 
+                        figkey=figkey4, 
+                        caption='%s' % stestname, 
+                        texfraction=0.7)
 
-            SLOPEY_MAP = self.get_FPAMAP_from_PT(
-                self.ParsedTable[testname],
-                extractor=self._get_GEN_extractor_fromPT('FWHMY_SLOPE'))
+                # FWHMZ MAP
 
-            stestname = st.replace(testname, '_', '\_')
-            self.plot_SimpleMAP(SLOPEY_MAP, **dict(
-                suptitle='%s: Slope-y, um/10kADU' % stestname,
-                figname=self.figs['SLOPEY_MAP_%s' % testname]))
+                figkey5 = 'FWHM%s_MAP_%s' % (dim.upper(),testname)
+                figname5 = self.figs[figkey5]
 
-            # FWHMY MAP
+                FWHMZ_MAP = self.get_FPAMAP_from_PT(
+                    self.ParsedTable[testname],
+                    extractor=self._get_GEN_extractor_fromPT('FWHM%s_HWC' % \
+                        dim.upper()))
 
-            FWHMY_MAP = self.get_FPAMAP_from_PT(
-                self.ParsedTable[testname],
-                extractor=self._get_GEN_extractor_fromPT('FWHMY_HWC'))
+                stestname = st.replace(testname, '_', '\_')
+                self.plot_SimpleMAP(FWHMZ_MAP, **dict(
+                    suptitle='%s: FWHM-%s at HWC' % (stestname,dim.upper()),
+                    figname=figname5))
 
-            stestname = st.replace(testname, '_', '\_')
-            self.plot_SimpleMAP(FWHMY_MAP, **dict(
-                suptitle='%s: FWHM-Y at HWC' % stestname,
-                figname=self.figs['FWHMY_MAP_%s' % testname]))
+                if self.report is not None:
+                    self.addFigure2Report(figname5, 
+                        figkey=figkey5, 
+                        caption='%s' % stestname, 
+                        texfraction=0.7)
+            
+
 
             # ELL MAP
 
+            figkey6 = 'ELL_MAP_%s' % testname
+            figname6 = self.figs[figkey6]
+
             ELL_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname],
-                                              extractor=self._get_GEN_extractor_fromPT('ELL_HWC'))
+                            extractor=self._get_GEN_extractor_fromPT('ELL_HWC'))
 
             stestname = st.replace(testname, '_', '\_')
             self.plot_SimpleMAP(ELL_MAP, **dict(
                 suptitle='%s: ellipticity at HWC' % stestname,
-                figname=self.figs['ELL_MAP_%s' % testname]))
+                figname=figname6))
+
+            if self.report is not None:
+                self.addFigure2Report(figname6,
+                    figkey=figkey6,
+                    caption='%s: Ellipticity of the Gaussian-equivalent kernel.' % stestname, 
+                    texfraction=0.7)
