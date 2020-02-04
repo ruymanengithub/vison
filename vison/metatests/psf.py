@@ -15,8 +15,9 @@ import string as st
 import os
 import matplotlib.cm as cm
 
+from vison.datamodel import cdp
 from vison.fpa import fpa as fpamod
-
+from vison.support import utils
 from vison.metatests.metacal import MetaCal
 from vison.plot import plots_fpa as plfpa
 
@@ -170,6 +171,7 @@ class MetaPsf(MetaCal):
         self.products['XTALK_RT'] = files.cPickleRead(kwargs['cdps']['xtalk_roetab'])
 
         self.init_fignames()
+        self.init_outcdpnames()
 
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
@@ -355,11 +357,63 @@ class MetaPsf(MetaCal):
             self.figs['XTALK_MAP_%s' % testname] = os.path.join(self.figspath,
                                                                 'XTALK_MAP_%s.png' % testname)
 
+    def init_outcdpnames(self):
+        """ """
+
+        if not os.path.exists(self.cdpspath):
+            os.system('mkdir %s' % self.cdpspath)
+
+        for testname in self.testnames:
+            self.outcdps['XTALK_MX_%s' % testname] = 'XTALK_MX_%s.json' % testname
+
+    def _serialise_XTALKs(self,XTALKs):
+        """ """
+        blocks = XTALKs['blocks']
+        dd = OrderedDict(blocks=blocks)
+        
+        for block in blocks:
+
+            dd[block] = OrderedDict()
+
+            for CCDso in self.CCDs:
+
+                CCDsok = 'CCD%i' % CCDso
+
+                dd[block][CCDsok] = OrderedDict()
+
+                for Qso in self.Quads:
+                    
+                    dd[block][CCDsok][Qso] = OrderedDict()
+
+                    for CCDvi in self.CCDs:
+                        
+                        CCDvik = 'CCD%i' % CCDvi
+                        dd[block][CCDsok][Qso][CCDvik]=OrderedDict()
+
+                        for Qvi in self.Quads:
+                            
+                            inval = XTALKs[block][CCDsok][Qso][CCDvik][Qvi]
+
+                            if len(inval)==0:
+                                val=(None,None)
+                            else:
+                                val = ('%.3e' % inval['xtalk'],
+                                    '%.3e' % inval['std_xtalk'])
+
+                            dd[block][CCDsok][Qso][CCDvik][Qvi]=val
+
+        return dd
+        
+
     def dump_aggregated_results(self):
         """ """
 
         if self.report is not None:
             self.report.add_Section(keyword='dump', Title='Aggregated Results', level=0)
+
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
 
         # XTALK MAP (ROE-TAB)
 
@@ -408,6 +462,24 @@ class MetaPsf(MetaCal):
                         caption= captemp1 % stestname, 
                         texfraction=0.7)
 
+            xt_header = OrderedDict()
+            xt_header['title'] = 'XTALK_MATRIX:%s' % testname
+            xt_header.update(CDP_header)
+
+            xt_cdp = cdp.Json_CDP(rootname=self.outcdps['XTALK_MX_%s' % testname],
+                path=self.cdpspath)
+
+            XTALKs_CDP_MX = self._serialise_XTALKs(XTALKs)
+
+            xt_cdp.ingest_inputs(data=XTALKs_CDP_MX,
+                    header = xt_header,
+                    meta=dict(units='ADIM',
+                        structure='block:ccd_source:Q_source:'+\
+                        'ccd_victim:Q_victim:(xtalk,e_xtalk)'))
+
+            xt_cdp.savehardcopy()
+
+            
 
         # XTALK: 800-optical vs. RT  (with SIGN)
 
