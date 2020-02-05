@@ -81,7 +81,8 @@ def pre_process(FITS_list, subOffset=False, validrange=None):
     return ccdobj_list
 
 
-def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None):
+def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None,
+            flagWholeColumns=False):
     """ """
 
     assert subbgd != normbybgd
@@ -153,6 +154,11 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None):
 
     mask = cosmetics.get_Thresholding_DefectsMask(stacked, thresholds)
 
+    # DISCARDING WHOLE COLUMNS [OPTIONAL]
+
+    if flagWholeColumns:
+        mask = cosmetics.mask_badcolumns(mask,colthreshold=200)
+
     # SAVING to a CDP
 
     data = OrderedDict()
@@ -181,11 +187,12 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None):
 
 def do_DarkMask(inputs):
     return do_Mask(inputs, 'dkmask', subbgd=True, normbybgd=False,
-                   validrange=[0.0, 1000.])
+                   validrange=[0.0, 1000.],flagWholeColumns=True)
 
 
 def do_FlatMask(inputs):
-    return do_Mask(inputs, 'flmask', subbgd=False, normbybgd=True)
+    return do_Mask(inputs, 'flmask', subbgd=False, normbybgd=True,
+        flagWholeColumns=True)
 
 
 def do_MergeMasks(inputs):

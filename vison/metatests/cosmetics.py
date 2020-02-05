@@ -394,7 +394,6 @@ class MetaCosmetics(MetaCal):
                 Title='Aggregated Results', level=0)
 
 
-        #self.init_outcdpnames()
 
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
