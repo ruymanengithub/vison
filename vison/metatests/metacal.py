@@ -90,6 +90,7 @@ class MetaCal(object):
         self.cdps = OrderedDict()
         self.outcdps = OrderedDict()
         self.figs = dict()
+        self.report = None
         self.figspath = os.path.join(self.outpathroot, 'figs')
         self.cdpspath = os.path.join(self.outpathroot, 'cdps')
 
@@ -149,6 +150,8 @@ class MetaCal(object):
                             Model='FM',
                             Reference='7-XXX',
                             doDraft = False)
+        else:
+            self.report = None
 
         if doDump:
             self.dump_aggregated_results()
