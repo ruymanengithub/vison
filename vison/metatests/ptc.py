@@ -13,6 +13,7 @@ import numpy as np
 from collections import OrderedDict
 import string as st
 import os
+import pandas as pd
 
 from vison.datamodel import cdp
 from vison.fpa import fpa as fpamod
@@ -347,6 +348,115 @@ class MetaPTC(MetaCal):
 
         return G_MX
 
+    def _do_GvsTime(self):
+        """ """
+
+        def reshape_PT(PT, blocks, CCDs, Quads):
+
+            datadict = OrderedDict()
+            cols = ['CCDQID', 'BLOCK', 'CCD', 'time', 'TEST', 'WAVENM', 'GAIN', 'EGAIN']
+            for col in cols:
+                datadict[col] = []
+
+            ptdf = PT.to_pandas()
+            
+            for block in blocks:
+                ixsel = np.where(ptdf.BLOCK == block)
+
+                for iix in ixsel[0]:
+
+                    for CCD in CCDs:
+
+                        for Q in Quads:
+
+                            ccdqid = '%s_%s' % (ptdf['sn_ccd%i_CCD%i' % (CCD,CCD)][iix],Q)
+                            datadict['CCDQID'].append(ccdqid)
+                            datadict['BLOCK'].append(ptdf.BLOCK[iix])
+                            datadict['CCD'].append(CCD)
+                            datadict['time'].append(ptdf['time_CCD%i' % CCD][iix])
+                            datadict['TEST'].append(ptdf.TEST[iix])
+                            datadict['WAVENM'].append(ptdf.WAVENM[iix])
+                            datadict['GAIN'].append(ptdf['GAIN_CCD%i_Quad%s' % (CCD,Q)][iix])
+                            datadict['EGAIN'].append(ptdf['EGAIN_CCD%i_Quad%s' % (CCD,Q)][iix])
+            for col in cols:
+                datadict[col] = np.array(datadict[col])
+
+            optdf = pd.DataFrame(datadict)
+
+            return optdf
+
+
+        for itest, testname in enumerate(self.testnames):
+
+            t_PT_df = reshape_PT(self.ParsedTable[testname],
+                                self.blocks,
+                                self.CCDs, self.Quads)
+            
+            if itest==0:
+                PT_df = copy.deepcopy(t_PT_df)
+            else:
+                PT_df = pd.concat([PT_df, t_PT_df])
+
+        uCCDQIDs = np.unique(PT_df.CCDQID)
+
+        # discriminating CCDs that were calibrated more than once and 
+        # those that were not.
+
+        Lreps = []
+        Lnoreps = []
+        for uCCDQID in uCCDQIDs:
+            utime = PT_df.loc[PT_df.CCDQID==uCCDQID].time
+            dtime = utime.max()-utime.min()
+            if dtime.days > 10:
+                Lreps.append(uCCDQID)
+            else:
+                Lnoreps.append(uCCDQID)
+        
+        noreps = pd.DataFrame(dict(CCDQID=Lnoreps))
+        reps = pd.DataFrame(dict(CCDQID=Lreps))
+
+        PTnorep_df = PT_df[PT_df.CCDQID.isin(noreps.CCDQID)]
+        PTrep_df = PT_df[PT_df.CCDQID.isin(reps.CCDQID)]
+
+        # average gain values for each wavelength
+
+        res = PTnorep_df.groupby(['WAVENM']).median()['GAIN']
+        avG = res.values.copy()
+        waves = res.index.values.copy()
+        fcorr = avG/avG[np.where(waves==800)]
+
+        # correcting gains for wavelength effect
+        
+        for iw,wave in enumerate(waves):
+
+            PTnorep_df.loc[PTnorep_df.WAVENM==wave,
+                            PTnorep_df.columns=='GAIN'] /= fcorr[iw]
+            PTrep_df.loc[PTrep_df.WAVENM==wave,
+                            PTrep_df.columns=='GAIN'] /= fcorr[iw]
+
+        
+        def get_avtempGrelstd(df,ccdqids):
+            gains = np.array([df.loc[df.CCDQID==iid].GAIN.mean() for iid in ccdqids])
+            stdgains = np.array([df.loc[df.CCDQID==iid].GAIN.std() for iid in ccdqids])
+            return np.median(stdgains/gains)
+
+        stdGnorep = get_avtempGrelstd(PTnorep_df, Lnoreps)
+        stdGrep = get_avtempGrelstd(PTrep_df, Lreps)
+
+        res = dict(NOREPCAL=dict(relstdG=stdGnorep,
+                    N=len(Lnoreps)),
+                  REPCAL=dict(
+                    relstdG=stdGrep,
+                    N=len(Lreps)),
+                  Gwave=dict(
+                    waves=waves,
+                    avgG=avG))
+
+        return res
+
+
+
+
     def init_fignames(self):
 
         if not os.path.exists(self.figspath):
@@ -593,14 +703,17 @@ class MetaPTC(MetaCal):
 
         outpathroot = self.outpathroot
 
-        doGainMaps = True
-        doBloomMaps = True
-        doHERMaps = True
-        doHERcurves = True
-        doGvsWave = True
-        doGvsT = True
-        doGvsOD = True
-        doGvsRD = True
+        doAll = False
+
+        doGainMaps = doAll
+        doBloomMaps = doAll
+        doHERMaps = doAll
+        doHERcurves = doAll
+        doGvsWave = doAll
+        doGvsT = doAll
+        doGvsOD = doAll
+        doGvsRD = doAll
+        doGvsTime = True
 
         # GAIN matrix (all blocks and test/waves) to dict() saved as pickle
 
@@ -809,7 +922,11 @@ class MetaPTC(MetaCal):
                         caption='Measured Gain [e-/ADU] as a function of wavelength.', 
                         texfraction=0.7)
 
-
+        if doGvsTime:
+            
+            self._do_GvsTime()
+            
+            stop()
 
         # GAIN vs. detector temperature (PTC01)
 
