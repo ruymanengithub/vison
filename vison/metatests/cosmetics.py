@@ -150,7 +150,7 @@ class MetaCosmetics(MetaCal):
         self.init_fignames()
         self.init_outcdpnames()
 
-    def _extract_badpix_coordinates(self, all_mask_fits, block):
+    def _extract_badpix_coordinates(self, all_mask_fits, block, debug=False):
         """ """
 
         coordinates = OrderedDict()
@@ -165,15 +165,18 @@ class MetaCosmetics(MetaCal):
             if Ckey is None:
                 flip = (1, 0)  # block outside FPA (reserves)
             else:
-                flip = flip = self.fpa.FPA_MAP[Ckey][-1]
+                flip = self.fpa.FPA_MAP[Ckey][2]
 
             coordinates[CCDkey] = OrderedDict()
 
-            img = ccdobj.extensions[-1].data.copy()
+            img = ccdobj.extensions[-1].data.T.copy()
 
             flipimg = self.fpa.flip_img(img, flip)
+            
+            y, x = np.where(flipimg > 0)
 
-            x, y = np.where(flipimg > 0)
+            if debug:
+                stop()
 
             coordinates[CCDkey] = OrderedDict(x=x,
                                               y=y)
@@ -182,6 +185,7 @@ class MetaCosmetics(MetaCal):
 
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
+
 
         NCCDs = len(self.CCDs)
         NQuads = len(self.Quads)
@@ -273,8 +277,12 @@ class MetaCosmetics(MetaCal):
 
             _mskkey = '%s_%s_%s_R%i' % (maskkey, block, session, jrep + 1)
 
+            #debug=False
+            #if block == 'GUYE' and maskkey=='MERGE':
+            #    debug=True
+
             self.products['MASKSCOOS'][_mskkey] = self._extract_badpix_coordinates(
-                all_mask_fits, block)
+                all_mask_fits, block) #,debug=debug)
 
             mskkey_v[0] = _mskkey
 
@@ -393,7 +401,7 @@ class MetaCosmetics(MetaCal):
             self.report.add_Section(keyword='dump', 
                 Title='Aggregated Results', level=0)
 
-
+        skip = True
 
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
@@ -401,27 +409,29 @@ class MetaCosmetics(MetaCal):
 
         # save CDP: COSMETICS MASK
 
-        MSKccd_dict = self._get_MSKccd_dict(masktype='MERGE')
+        if not skip:
 
-        MSKheader = OrderedDict()
+            MSKccd_dict = self._get_MSKccd_dict(masktype='MERGE')
 
-        MSKheader['CDP'] = 'COSMETICS_MASK'
-        MSKheader['TEST'] = 'COSMETICS00'
-        MSKheader['MASKTYPE'] = 'MERGED'
-        MSKheader['VISON'] = CDP_header['vison']
-        MSKheader['FPA_DES'] = CDP_header['fpa_design']
-        MSKheader['DATE'] = CDP_header['DATE']
+            MSKheader = OrderedDict()
 
-        MSKcdp = cdpmod.LE1_CDP()
+            MSKheader['CDP'] = 'COSMETICS_MASK'
+            MSKheader['TEST'] = 'COSMETICS00'
+            MSKheader['MASKTYPE'] = 'MERGED'
+            MSKheader['VISON'] = CDP_header['vison']
+            MSKheader['FPA_DES'] = CDP_header['fpa_design']
+            MSKheader['DATE'] = CDP_header['DATE']
 
-        MSKcdp.ingest_inputs(MSKccd_dict, header=MSKheader, inextension=-1,
-                                fillval=0)
+            MSKcdp = cdpmod.LE1_CDP()
 
-        MSKcdpname = self.outcdps['MASK_MERGE']
+            MSKcdp.ingest_inputs(MSKccd_dict, header=MSKheader, inextension=-1,
+                                    fillval=0)
 
-        MSKcdp.savehardcopy(MSKcdpname, clobber=True, uint16=False)
+            MSKcdpname = self.outcdps['MASK_MERGE']
 
-        MSKccd_dict = None
+            MSKcdp.savehardcopy(MSKcdpname, clobber=True, uint16=False)
+
+            MSKccd_dict = None
 
         #import sys
         #print('EXITING EARLY ON TESTS!')
