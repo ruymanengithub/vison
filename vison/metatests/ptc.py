@@ -703,7 +703,7 @@ class MetaPTC(MetaCal):
 
         outpathroot = self.outpathroot
 
-        doAll = False
+        doAll = True
 
         doGainMaps = doAll
         doBloomMaps = doAll
@@ -713,7 +713,7 @@ class MetaPTC(MetaCal):
         doGvsT = doAll
         doGvsOD = doAll
         doGvsRD = doAll
-        doGvsTime = True
+        doGvsTime = doAll
 
         # GAIN matrix (all blocks and test/waves) to dict() saved as pickle
 
@@ -924,9 +924,29 @@ class MetaPTC(MetaCal):
 
         if doGvsTime:
             
-            self._do_GvsTime()
-            
-            stop()
+            res_GvsTime = self._do_GvsTime()
+
+            if self.report is not None:
+
+                avgGw = ['%.3f' % item for item in res_GvsTime['Gwave']['avgG']]
+
+                GvsTimeText = ['Wavelengths = %s nm\n' % res_GvsTime['Gwave']['waves'].tolist().__repr__(),
+                'Avg. Gain in each Wavelength = %s\n' % avgGw.__repr__(),
+                '\\textbf{WARNING}: Wavelength dependency of G (through B-F) has been removed in'+\
+                ' the following stats.\n',
+                '\\textbf{Non Repeated} Calibrations,\n '+\
+                    'Nr. of measurements (quadrants x tests) = %i\n' % res_GvsTime['NOREPCAL']['N'],
+                'mean rel. std. of G values per quadrant across tests: %.2f \\%%.\n' % \
+                            (res_GvsTime['NOREPCAL']['relstdG']*100.,),
+                '\\textbf{Repeated} Calibrations,\n '+\
+                    'Nr. of measurements (quadrants x tests) = %i\n' % res_GvsTime['REPCAL']['N'],
+                'mean rel. std. of G values per quadrant across Tests: %.2f \\%%.\n' % \
+                            (res_GvsTime['REPCAL']['relstdG']*100.,),
+                ]
+
+                self.report.add_Text(GvsTimeText)
+
+                
 
         # GAIN vs. detector temperature (PTC01)
 
