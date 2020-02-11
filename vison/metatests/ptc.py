@@ -689,12 +689,16 @@ class MetaPTC(MetaCal):
 
         return HERdict
 
+
     def dump_aggregated_results(self):
         """ """
 
         if self.report is not None:
             self.report.add_Section(keyword='dump', 
                 Title='Aggregated Results', level=0)
+
+            self.add_DataAlbaran2Report()
+
 
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
@@ -703,7 +707,7 @@ class MetaPTC(MetaCal):
 
         outpathroot = self.outpathroot
 
-        doAll = True
+        doAll = False
 
         doGainMaps = doAll
         doBloomMaps = doAll
@@ -713,7 +717,7 @@ class MetaPTC(MetaCal):
         doGvsT = doAll
         doGvsOD = doAll
         doGvsRD = doAll
-        doGvsTime = doAll
+        doGvsTime = True
 
         # GAIN matrix (all blocks and test/waves) to dict() saved as pickle
 

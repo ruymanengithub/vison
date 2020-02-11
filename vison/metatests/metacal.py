@@ -455,6 +455,60 @@ class MetaCal(object):
                     pt = self.stackTables(pt, sit)
 
         self.ParsedTable[testname] = pt
+
+    def add_DataAlbaran2Report(self):
+        """Adds a data delivery note to the report."""
+
+        albaran_dict = OrderedDict()
+        cols = ['BLOCK','TEST','SESSION','DAY-FOLDER','OBSIDS']
+        for col in cols:
+            albaran_dict[col] = []
+
+        for iblock, block in enumerate(self.blocks):
+
+            for testname in self.testnames:
+
+                try:
+                    Nreps = len(self.inventory[block][testname])
+                except KeyError:
+                    print('block %s not found!' % block)
+                    continue
+
+                for jrep in range(Nreps):
+                    
+                    iitem = self.inventory[block][testname][jrep]
+
+                    dayfolder = os.path.split(iitem['dd'].meta['inputs']['datapath'])[-1]
+                    sdayfolder = st.replace(dayfolder,'_','\\textbackslash_')
+                    
+
+                    OBSID_min = iitem['dd'].meta['data_inventory']['ObsID'].min()
+                    OBSID_max = iitem['dd'].meta['data_inventory']['ObsID'].max()
+
+                    OBSID_lims = '%i-%i' % (OBSID_min, OBSID_max)
+
+                    albaran_dict['BLOCK'].append(block)
+                    albaran_dict['TEST'].append(testname)
+                    albaran_dict['SESSION'].append(iitem['session'])
+                    albaran_dict['DAY-FOLDER'].append(sdayfolder)
+                    albaran_dict['OBSIDS'].append(OBSID_lims)
+
+        albaran_df = pd.DataFrame(albaran_dict)
+        
+        kwargs = dict(multicolumn=True, multirow=True, longtable=True, index=False)
+        
+        tex = albaran_df.to_latex(**kwargs)
+
+        ncols = len(cols)
+
+        caption = 'Data Inventory.'
+        wtex = cdpmod.wraptextable(tex, ncols, caption, fitwidth=True, tiny=True, 
+            longtable=True)
+
+        self.report.add_Text(wtex)
+
+
+
     
     def get_ixblock(self, PT, block):
         return np.where(PT['BLOCK'].data==block)
