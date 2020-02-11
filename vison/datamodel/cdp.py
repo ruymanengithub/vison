@@ -32,6 +32,40 @@ def loadCDPfromPickle(pickf):
     cdp = cPickleRead(pickf)
     return cdp
 
+def wraptextable(tex, ncols=1, caption='', fitwidth=False, tiny=False, longtable=False):
+    """ """
+    
+    tex = st.split(tex, '\n')
+
+    if fitwidth:
+
+        beglongtabu = '\\begin{longtabu} to \\textwidth {|%s}' % (ncols * 'X|',)
+        endlongtabu = '\end{longtabu}'
+        tex[0] = beglongtabu
+        tex[-2] = endlongtabu
+
+    if not longtable:
+        tex = ['\\begin{table}[!htb]'] + tex + ['\end{table}']
+
+    if tiny:
+        tex = ['\\tiny'] + tex + ['\\normalsize']
+
+    #tex = ['\\begin{table}[!htb]','\center']+tex+['\end{table}']
+
+    if caption != '':
+
+        if fitwidth:
+            ixendlongtabu = np.where(['\end{longtabu}' in item for item in tex])
+            tex.insert(ixendlongtabu[0][-1], r'\caption{%s}' % caption)
+        elif not fitwidth and longtable:
+            ixendlongtable = np.where(['\end{longtable}' in item for item in tex])
+            tex.insert(ixendlongtable[0][-1], r'\caption{%s}' % caption)
+        elif not fitwidth and ~longtable:
+            ixendtable = np.where(['\end{table}' in item for item in tex])
+            tex.insert(ixendtable[0][-1], r'\caption{%s}' % caption)
+
+    return tex
+
 
 class CDP(object):
     """ """
@@ -170,44 +204,20 @@ class Tables_CDP(CDP):
         _kwargs = dict(multicolumn=True, multirow=True, longtable=True, index=False)
         _kwargs.update(kwargs)
         tex = self.data[sheet].to_latex(**_kwargs)
-        tex = st.split(tex, '\n')
 
-        if fitwidth:
+        if 'columns' not in _kwargs:
+            ncols = len(self.data[sheet].columns)
+        else:
+            ncols = len(_kwargs['columns'])
 
-            if 'columns' not in _kwargs:
-                ncols = len(self.data[sheet].columns)
-            else:
-                ncols = len(_kwargs['columns'])
+        if _kwargs['index']:
+            ncols += 1
 
-            if _kwargs['index']:
-                ncols += 1
+        wrapped = wraptextable(tex, ncols, caption, fitwidth, tiny, 
+            longtable=_kwargs['longtable'])
 
-            beglongtabu = '\\begin{longtabu} to \\textwidth {|%s}' % (ncols * 'X|',)
-            endlongtabu = '\end{longtabu}'
-            tex[0] = beglongtabu
-            tex[-2] = endlongtabu
+        return wrapped
 
-        if not _kwargs['longtable']:
-            tex = ['\\begin{table}[!htb]'] + tex + ['\end{table}']
-
-        if tiny:
-            tex = ['\\tiny'] + tex + ['\\normalsize']
-
-        #tex = ['\\begin{table}[!htb]','\center']+tex+['\end{table}']
-
-        if caption != '':
-
-            if fitwidth:
-                ixendlongtabu = np.where(['\end{longtabu}' in item for item in tex])
-                tex.insert(ixendlongtabu[0][-1], r'\caption{%s}' % caption)
-            elif not fitwidth and _kwargs['longtable']:
-                ixendlongtable = np.where(['\end{longtable}' in item for item in tex])
-                tex.insert(ixendlongtable[0][-1], r'\caption{%s}' % caption)
-            elif not fitwidth and ~_kwargs['longtable']:
-                ixendtable = np.where(['\end{table}' in item for item in tex])
-                tex.insert(ixendtable[0][-1], r'\caption{%s}' % caption)
-
-        return tex
 
     def savehardcopy(self, filef=''):
         """ """
