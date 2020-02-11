@@ -340,24 +340,25 @@ class DARK01(DarkTask):
                                         'D01meta_prof1D_ver'],
                                dobuilddata=False)
 
-        # SAVING 1D PROFILES OF MASTER BIAS as a CDP
+        # SAVING 1D PROFILES OF MASTER DARK as a CDP
 
-        MB_profiles_cdp = self.CDP_lib['MB_profiles']
-        MB_profiles_cdp.header = CDP_header.copy()
-        MB_profiles_cdp.path = profilespath
-        MB_profiles_cdp.data = profs1D2plot.copy()
+        MD_profiles_cdp = self.CDP_lib['MD_profiles']
+        MD_profiles_cdp.header = CDP_header.copy()
+        MD_profiles_cdp.path = profilespath
+        MD_profiles_cdp.data = profs1D2plot.copy()
 
-        self.save_CDP(MB_profiles_cdp)
-        self.pack_CDP_to_dd(MB_profiles_cdp, 'MB_PROFILES')
+        self.save_CDP(MD_profiles_cdp)
+        self.pack_CDP_to_dd(MD_profiles_cdp, 'MD_PROFILES')
 
-        # DISPLAYING THE MASTER BIAS FRAMES
+        # DISPLAYING THE MASTER DARK FRAMES
 
         self.figdict['D01meta_MasterDark_2D'][1]['data'] = MDK_2PLOT.copy()
 
         # UPDATING scaling based on data
 
         if len(MDK_p5s) > 0:
-            normfunction = Normalize(vmin=np.min(MDK_p5s), vmax=np.max(MDK_p95s), clip=False)
+            normfunction = Normalize(vmin=np.min(MDK_p5s),\
+                vmax=np.max(MDK_p95s), clip=False)
         else:
             normfunction = False
 

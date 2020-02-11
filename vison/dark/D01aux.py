@@ -29,11 +29,11 @@ def get_CDP_lib():
     dk_tb_cdp = cdp.Tables_CDP()
     dk_tb_cdp.rootname = 'DARK01_TB'
 
-    MB_profiles_cdp = cdp.CDP()
-    MB_profiles_cdp.rootname = 'MB_profiles_DARK01'
+    MD_profiles_cdp = cdp.CDP()
+    MD_profiles_cdp.rootname = 'MD_profiles_DARK01'
 
     CDP_lib = dict(DARK_TB=dk_tb_cdp,
-                   MB_profiles=MB_profiles_cdp)
+                   MD_profiles=MD_profiles_cdp)
     return CDP_lib
 
 
