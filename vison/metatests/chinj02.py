@@ -268,6 +268,8 @@ class MetaChinj02(MetaCal):
         if self.report is not None:
             self.report.add_Section(keyword='dump', 
                 Title='Aggregated Results', level=0)
+            
+            self.add_DataAlbaran2Report()
 
         # Histogram of IDL_THRESH
 

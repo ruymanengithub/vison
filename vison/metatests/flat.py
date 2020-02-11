@@ -541,6 +541,8 @@ class MetaFlat(MetaCal):
         if self.report is not None:
             self.report.add_Section(keyword='dump', 
                 Title='Aggregated Results', level=0)
+            
+            self.add_DataAlbaran2Report()
 
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
