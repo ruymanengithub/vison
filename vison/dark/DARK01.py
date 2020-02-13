@@ -63,6 +63,8 @@ DARK01_commvalues = dict(program='CALCAMP', test='DARK01',
                          comments='DARK')
 
 
+DKMSKthresholds = [-1000.,50.0]
+
 class DARK01_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
@@ -245,6 +247,7 @@ class DARK01(DarkTask):
         if not self.drill:
 
             self.dd.products['MasterDKs'] = OrderedDict()
+            self.dd.products['DKMSKs'] = OrderedDict()
 
             def _pack_profs(CQdict, prof):
                 """ """
@@ -297,6 +300,20 @@ class DARK01(DarkTask):
 
                 iDext = DK.extnames.index('DARK')
 
+
+                DKMSK_cdp = self.get_DarkDefectsMask_CDP(DK,
+                    thresholds=DKMSKthresholds,
+                    subbgd=True,bgdmodel=None,
+                    extension=iDext,
+                    sn_ccd=self.inputs['diffvalues']['sn_%s' % CCDk.lower()])
+
+                DKMSKname = 'EUC_DKMSK_ROE1_%s.fits' % (CCDk,)
+                DKMSKpath = os.path.join(productspath, DKMSKname)
+
+                DKMSK_cdp.savehardcopy(DKMSKpath)
+
+                self.dd.products['DKMSKs'][CCDk] = DKpath
+
                 Quads = DK.Quads
 
                 for jQ, Q in enumerate(Quads):
@@ -305,7 +322,6 @@ class DARK01(DarkTask):
 
                     DK_TB['CCD'][kk] = jCCD + 1
                     DK_TB['Q'][kk] = jQ + 1
-                    DK_TB['N_HOT'][kk] = 0  # PENDING!
                     DK_TB['AVSIGNAL'][kk] = jsettings['AVFLU_%s' % Q]
 
                     qdata = DK.get_quad(Q, canonical=False, extension=iDext).copy()
@@ -329,6 +345,14 @@ class DARK01(DarkTask):
 
                     profs1D2plot['ver'][CCDk][Q] = _pack_profs(
                         profs1D2plot['ver'][CCDk][Q], ver1Dprof)
+
+                    # Number of Hot Pixels
+
+                    N_HOT = DK.get_stats(Q,sector='img',statkeys=['sum'],
+                        ignore_pover=True,extension=-1)[0]
+
+                    DK_TB['N_HOT'][kk] = N_HOT  
+
 
         # PLOTTING 1D PROFILES OF MASTER BIAS
 

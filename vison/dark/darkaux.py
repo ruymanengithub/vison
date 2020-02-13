@@ -28,10 +28,11 @@ from vison.support.files import cPickleRead
 def get_DarkDefectsMask_CDP(
         taskobj,
         darkccdobj,
-        threshold,
+        thresholds,
         subbgd=True,
         bgdmodel=None,
-        extension=-1):
+        extension=-1,
+        sn_ccd='Unknown'):
     """ """
 
     if subbgd:
@@ -40,22 +41,30 @@ def get_DarkDefectsMask_CDP(
 
         darkccdobj.sub_bias(bgdmodel, extension=extension)
 
-    thresholds = [-1.E-6, threshold]
+    
     darkdata = darkccdobj.extensions[extension].data.copy()
     mask = cosmetics.get_Thresholding_DefectsMask(darkdata, thresholds)
+    mask = cosmetics.mask_badcolumns(mask,colthreshold=200)
 
-    ID = taskobj.ID
-    BLOCKID = taskobj.BLOCKID
-    CHAMBER = taskobj.CHAMBER
+    data = OrderedDict(mask=copy.deepcopy(mask),
+                        labels=['mask'])
+    meta = OrderedDict(
+                       MASKTYPE='DARK',
+                       SN=sn_ccd,
+                       THRESH=thresholds.__repr__(), 
+                       SUBBGD=subbgd,
+                       NORMED=False,
+                       FUNCTION=cosmetics.get_Thresholding_DefectsMask.__name__)
 
-    data = OrderedDict(mask=copy.deepcopy(mask))
-    meta = OrderedDict(threshold=threshold, subbgd=subbgd,
-                       function=cosmetics.get_Thresholding_DefectsMask.__name__)
+    maskcdp = cdp.CCD_CDP(ID=taskobj.ID,
+                      BLOCKID=taskobj.BLOCKID, 
+                      CHAMBER=taskobj.CHAMBER)
 
-    maskcdp = cdp.CDP(data=data, meta=meta, ID=ID,
-                      BLOCKID=BLOCKID, CHAMBER=CHAMBER)
+    maskcdp.ingest_inputs(data=data, meta=meta)
 
     return maskcdp
+
+
 
 
 def produce_MasterDark(outfits, infitsList=[], ccdpickList=[], mask=None, settings={}):
