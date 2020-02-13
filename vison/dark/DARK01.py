@@ -156,7 +156,7 @@ class DARK01(DarkTask):
 
         """
         super(DARK01, self).prepare_images(
-            doExtract=True, doBadPixels=True,
+            doExtract=True, doBadPixels=False,
             doMask=False, doOffset=True,
             doBias=False, doFF=False)
 
