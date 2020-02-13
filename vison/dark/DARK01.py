@@ -296,11 +296,11 @@ class DARK01(DarkTask):
 
                 self.dd.products['MasterDKs'][CCDk] = DKpath
 
-                DK = darkaux.DarkCDP(DKpath)
+                DK = darkaux.DarkCDP(fitsfile=DKpath)
                 iDext = DK.extnames.index('DARK')
 
 
-                DKMSK_cdp = self.get_DarkDefectsMask_CDP(DK,
+                DKMSK_cdp = self.get_DarkDefectsMask_CDP(copy.deepcopy(DK),
                     thresholds=DKMSKthresholds,
                     subbgd=True, bgdmodel=None,
                     extension=iDext,
@@ -346,8 +346,8 @@ class DARK01(DarkTask):
                         profs1D2plot['ver'][CCDk][Q], ver1Dprof)
 
                     # Number of Hot Pixels
-
-                    N_HOT = DK.get_stats(Q,sector='img',statkeys=['sum'],
+                    
+                    N_HOT = DKMSK_cdp.ccdobj.get_stats(Q,sector='img',statkeys=['sum'],
                         ignore_pover=True,extension=-1)[0]
 
                     DK_TB['N_HOT'][kk] = N_HOT  
@@ -386,7 +386,7 @@ class DARK01(DarkTask):
             normfunction = False
 
         self.figdict['D01meta_MasterDark_2D'][1]['meta']['corekwargs']['norm'] = normfunction
-
+        
         if self.report is not None:
             self.addFigures_ST(figkeys=['D01meta_MasterDark_2D'],
                                dobuilddata=False)
