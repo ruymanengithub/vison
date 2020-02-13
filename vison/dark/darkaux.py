@@ -38,7 +38,7 @@ def get_DarkDefectsMask_CDP(
     if subbgd:
         if bgdmodel is None:
 
-            reg2Dmodkwargs = dict(modeltype='poly2D', pdegree=5,
+            reg2Dmodkwargs = dict(kind='poly2D', pdegree=5,
                 doBin=True, binsize=200, recoveredges=True,
                 filtertype='median', vstart=0, vend=2066)
 
