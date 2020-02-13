@@ -88,7 +88,7 @@ meta_prof1Dhor_dict = dict(
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Column [pix]',
-              ylim=[-20., 20.],
+              ylim=[-10., 50.],
               suptitle='DARK01/Master: Profiles across columns.')
 )
 
@@ -98,7 +98,7 @@ meta_prof1Dver_dict = dict(
     meta=dict(doLegend=False,
               ylabel='ADU',
               xlabel='Row [pix]',
-              ylim=[-20., 100.],
+              ylim=[-10., 50.],
               suptitle='DARK01/Master: Profiles across rows.')
 )
 
