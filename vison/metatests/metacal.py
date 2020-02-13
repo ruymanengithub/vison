@@ -479,7 +479,7 @@ class MetaCal(object):
                     iitem = self.inventory[block][testname][jrep]
 
                     dayfolder = os.path.split(iitem['dd'].meta['inputs']['datapath'])[-1]
-                    sdayfolder = st.replace(dayfolder,'_','\\textbackslash_')
+                    sdayfolder = st.replace(dayfolder,'_','\\_')
                     
 
                     OBSID_min = iitem['dd'].meta['data_inventory']['ObsID'].min()

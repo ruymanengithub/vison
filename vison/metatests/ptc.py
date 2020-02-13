@@ -707,7 +707,7 @@ class MetaPTC(MetaCal):
 
         outpathroot = self.outpathroot
 
-        doAll = False
+        doAll = True
 
         doGainMaps = doAll
         doBloomMaps = doAll
@@ -717,7 +717,7 @@ class MetaPTC(MetaCal):
         doGvsT = doAll
         doGvsOD = doAll
         doGvsRD = doAll
-        doGvsTime = True
+        doGvsTime = doAll
 
         # GAIN matrix (all blocks and test/waves) to dict() saved as pickle
 

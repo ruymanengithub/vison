@@ -16,8 +16,11 @@ import numpy as np
 from collections import OrderedDict
 import string as st
 import os
+from scipy import ndimage
+from skimage import exposure
 
 from vison.datamodel import cdp
+from vison.datamodel import ccd as ccdmod
 from vison.support import utils
 from vison.support import files
 from vison.fpa import fpa as fpamod
@@ -29,6 +32,7 @@ from vison.support import vcal
 from vison.datamodel import core as vcore
 from vison.ogse import ogse
 #from vison.support import vjson
+from vison.image import cosmetics
 
 import matplotlib.cm as cm
 from matplotlib import pyplot as plt
@@ -140,9 +144,8 @@ cols2keep = [
     'offset_img',
     'offset_ove',
     'std_pre',
-    'std_img',
     'std_ove',
-    'RON']
+    'chk_flu_img']
 
 
 class MetaDark(MetaCal):
@@ -163,7 +166,8 @@ class MetaDark(MetaCal):
         for block in self.blocks:
             self.cdps['GAIN'][block] = allgains[block]['PTC01'].copy()
 
-        # self.products['MD_PROFILES'] = OrderedDict()
+        self.products['MD_PROFILES'] = OrderedDict()
+        self.products['MASTERDARKS'] = OrderedDict()
 
         self.init_fignames()
         self.init_outcdpnames()
@@ -179,11 +183,15 @@ class MetaDark(MetaCal):
 
         IndexS = vcore.vMultiIndex([vcore.vIndex('ix', vals=[0])])
 
+        IndexC = vcore.vMultiIndex([vcore.vIndex('ix', vals=[0]),
+                                    vcore.vIndex('CCD', vals=self.CCDs)])
+
         IndexCQ = vcore.vMultiIndex([vcore.vIndex('ix', vals=[0]),
                                      vcore.vIndex('CCD', vals=self.CCDs),
                                      vcore.vIndex('Quad', vals=self.Quads)])
 
         #idd = copy.deepcopy(inventoryitem['dd'])
+        
         sidd = self.parse_single_test_gen(jrep, block, testname, inventoryitem)
 
         # TEST SCPECIFIC
@@ -242,12 +250,29 @@ class MetaDark(MetaCal):
                 dksignal_v[0, iCCD, kQ] = dktbcdp['data']['DARK']['AVSIGNAL'][kk]
                 hotpixels_v[0, iCCD, kQ] = dktbcdp['data']['DARK']['N_HOT'][kk]
 
-                
-
+        
         sidd.addColumn(dksignal_v, 'DK_SIGNAL', IndexCQ)
         sidd.addColumn(hotpixels_v, 'DK_N_HOT', IndexCQ)
 
         sidd.addColumn(profskeys_v, 'MDPROFS_KEY', IndexS)
+
+        # ADDING REFERENCES TO MASTER DARKS
+
+        tmp_v_C = np.zeros((1, NCCDs), dtype='S50')
+        
+        mdkey_v = tmp_v_C.copy()
+
+        for jCCD, CCDk in enumerate(CCDkeys):
+
+            mdkey = '%s_%s_%s_%i_%s' % (testname, block, session, jrep + 1, CCDk)
+
+            mdkey_v[0, jCCD] = mdkey
+
+            self.products['MASTERDARKS'][mdkey] = os.path.split(
+                sidd.products['MasterDKs'][CCDk])[-1]
+
+        sidd.addColumn(mdkey_v, 'MASTERDARKS', IndexC)
+
 
         # flatten sidd to table
 
@@ -297,6 +322,53 @@ class MetaDark(MetaCal):
 
         self.outcdps['DK_SIGNAL'] = 'DARK01_DK_SIGNAL_ADU_MAP.json'
 
+    def _get_MDdict(self):
+        """ """
+
+        PT = self.ParsedTable['DARK01']
+
+        MDdict = dict()
+
+        for jY in range(self.NCOLS_FPA):
+            for iX in range(self.NSLICES_FPA):
+                Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+
+                locator = self.fpa.FPA_MAP[Ckey]
+
+                block = locator[0]
+                CCDk = locator[1]
+                flip = locator[2]
+
+                inventoryitem = self.inventory[block]['DARK01'][0]
+
+                productspath = os.path.join(inventoryitem['resroot'], 'products')
+
+                ixblock = np.where(PT['BLOCK'] == block)
+
+                cdpkey = PT['MASTERDARKS_%s' % CCDk][ixblock][0]
+
+                masterfits = os.path.join(productspath, self.products['MASTERDARKS'][cdpkey])
+
+                ccdobj = ccdmod.CCD(infits=masterfits, getallextensions=True, withpover=True,
+                                    overscan=20)
+
+                img = ccdobj.extensions[1].data.transpose().copy()
+
+
+                simg = ndimage.filters.gaussian_filter(img, sigma=5.,
+                                                       mode='constant',
+                                                       cval=1.)
+                esimg = exposure.equalize_hist(simg, nbins=256)
+
+                MDdict[Ckey] = dict(img=self.fpa.flip_img(esimg, flip))
+
+                #ccdobj = None
+                #img = None
+                #simg = None
+                #esimg = None
+
+        return MDdict
+
 
     def _get_XYdict_PROFS(self,proftype):
         """ """
@@ -333,9 +405,17 @@ class MetaDark(MetaCal):
 
         return Pdict
 
+    def _extract_NPHOT_fromPT(self, PT, block, CCDk, Q):
+        """ """
+        ixblock = self.get_ixblock(PT, block)
+        column = 'DK_N_HOT_%s_Quad%s' % (CCDk, Q)
+        NHP = PT[column][ixblock][0]
+        return NHP
 
     def dump_aggregated_results(self):
         """ """
+
+
 
         if self.report is not None:
             self.report.add_Section(keyword='dump',
@@ -364,7 +444,7 @@ class MetaDark(MetaCal):
                              meta=dict(units='ADU'))
         dksig_cdp.savehardcopy()
         
-        figkey1 = 'DK_SIGNAL_MAP' % testname
+        figkey1 = 'DK_SIGNAL_MAP'
         figname1 = self.figs[figkey1]
         
         self.plot_SimpleMAP(DKSIGMAP, **dict(
@@ -376,11 +456,13 @@ class MetaDark(MetaCal):
         if self.report is not None:
             self.addFigure2Report(figname1,
                 figkey=figkey1, 
-                caption='DARK01: "Dark" Signal (ADU) [Mostly stray-light, in fact. See text].', 
+                caption='DARK01: "Dark" Signal (ADU) integrated over 565 seconds. '+\
+                'This is mostly stray-light, in fact. See text].', 
                 texfraction=0.7)
 
             dksigcdpdict = dict(
-                caption='DARK01: "Dark" Signal (ADU) [Mostly stray-light, in fact. See text].',
+                caption='DARK01: "Dark" Signal (ADU) integrated over 565 seconds. '+\
+                '[Mostly stray-light, in fact. See text].',
                 valformat='%.2f')
 
             ignore = self.add_StdQuadsTable2Report( 
@@ -389,10 +471,49 @@ class MetaDark(MetaCal):
 
         # MASTER DARK DISPLAY [PENDING]
 
+        figkey2 = 'MD'
+        figname2 = self.figs[figkey2]
+
+        MDdict = self._get_MDdict()
+        MDkwargs = dict(  # suptitle='%s, %s: Master Flat Field' % (stestname, colkey),
+            suptitle='DARK01: Master "Dark" [stray-light]',
+            figname=figname2)
+
+        self.plot_ImgFPA(MDdict, **MDkwargs)
+
+        if self.report is not None:
+            self.addFigure2Report(figname2,
+                figkey=figkey2,
+                caption='DARK01: Master Dark [ADU]. Dominated by stray-light. See text.', 
+                texfraction=0.7)
+
+        MDdict = None
+
         # HOT PIXELS MAP [PENDING]
 
+        NHPMAP = self.get_FPAMAP_from_PT(self.ParsedTable['DARK01'],
+                                              extractor=self._extract_NPHOT_fromPT)
 
-        # Vertical and Horizonal average profiles
+        figkey3 = 'HOTPIX_COUNT_MAP'
+        figname3 = self.figs[figkey3]
+
+        self.plot_SimpleMAP(NHPMAP, **dict(
+                suptitle='DARK01: NR. of Hot Pixels',
+                figname=figname3,
+                ColorbarText='N'
+            ))
+
+        if self.report is not None:
+
+            captemp = 'Number of hot pixels in each CCD quadrant of the FPA. '
+
+            self.addFigure2Report(figname3, 
+                figkey=figkey3, 
+                caption=captemp, 
+                texfraction=0.7)
+
+
+        # Vertical and Horizonal AVG PROFILES
 
         xlabels_profs = dict(hor='column [pix]',
                             ver='row [pix]')
@@ -414,22 +535,27 @@ class MetaDark(MetaCal):
 
             XY_profs = self._get_XYdict_PROFS(proftype=proftype)
 
-            figkey = 'PROFS_%s' % (proftype,)
+            figkey4 = 'PROFS_%s' % (proftype,)
+
+            if proftype == 'hor':
+                ylim = [-20,50]
+            elif proftype == 'ver':
+                ylim = [-20,30]
 
             profkwargs = dict(
                 title='DARK01: Avg. profiles, direction: %s' % (proftype,),
                 doLegend=False,
                 xlabel=xlabels_profs[proftype],
                 ylabel=r'$ADU$',
-#                ylim=[-20,20],
+                ylim=ylim,
                 xlim=None,
-                figname=self.figs[figkey],
+                figname=self.figs[figkey4],
                 corekwargs=pointcorekwargs)
 
             self.plot_XY(XY_profs, **profkwargs)
 
             if proftype == 'ver':
-                captemp = '%s: Stacked profiles of Master Dark quadrant'+\
+                captemp = 'DARK01: Stacked profiles of Master Dark quadrant'+\
                 ' images in "parallel" direction. Median value of profile has been subtracted for '+\
                 'clarity. Each colour corresponds to a different block (each with 3x4 quadrants).'
             elif proftype == 'hor':
@@ -439,9 +565,9 @@ class MetaDark(MetaCal):
                 ' different block (each with 3x4 quadrants).'
 
             if self.report is not None:
-
-                self.addFigure2Report(self.figs[figkey], 
-                    figkey=figkey, 
+                
+                self.addFigure2Report(self.figs[figkey4], 
+                    figkey=figkey4, 
                     caption= captemp,
                     texfraction=0.7)
 
