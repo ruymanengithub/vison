@@ -37,7 +37,13 @@ def get_DarkDefectsMask_CDP(
 
     if subbgd:
         if bgdmodel is None:
-            bgdmodel = cosmetics.get_bgd_model(darkccdobj, extension=extension)
+
+            reg2Dmodkwargs = dict(modeltype='poly2D', pdegree=5,
+                doBin=True, binsize=200, recoveredges=True,
+                filtertype='median', vstart=0, vend=2066)
+
+            bgdmodel = cosmetics.get_bgd_model(darkccdobj, extension=extension,
+                reg2Dmodkwargs=reg2Dmodkwargs)
 
         darkccdobj.sub_bias(bgdmodel, extension=extension)
 
@@ -68,8 +74,7 @@ def get_DarkDefectsMask_CDP(
 
 
 def produce_MasterDark(outfits, infitsList=[], ccdpickList=[], mask=None, settings={}):
-    """Produces a Master Flat out of a number of flat-illumination exposures.
-    Takes the outputs from produce_IndivFlats."""
+    """Produces a Master Dark out of a number of flat-illumination exposures."""
 
     assert (len(infitsList) == 0) != (len(ccdpickList) == 0)
 

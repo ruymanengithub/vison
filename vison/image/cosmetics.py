@@ -18,7 +18,26 @@ from vison.datamodel import cdp
 # END IMPORT
 
 
-def get_bgd_model(ccdobj, extension=-1, margins=None):
+def get_bgd_model(ccdobj, extension=-1, margins=None, 
+        reg2Dmodkwargs=None):
+    
+    reg2Dmodkwargs_def = dict(area='img',
+                        kind='poly2D', 
+                        splinemethod='cubic',
+                        pdegree=5,
+                        doFilter=False, 
+                        doBin=False,
+                        filtsize=30, 
+                        binsize=1,
+                        filtertype='mean',
+                        recoveredges=False,
+                        vstart=0,
+                        vend=2066,
+                        canonical=True,
+                        extension=extension)
+
+    if reg2Dmodkwargs is not None:
+        reg2Dmodkwargs_def.update(reg2Dmodkwargs)
 
     prescan = ccdobj.prescan
 
@@ -28,11 +47,8 @@ def get_bgd_model(ccdobj, extension=-1, margins=None):
 
     for Quad in ccdobj.Quads:
 
-        Qimgmodel = ccdobj.get_region2Dmodel(Quad, area='img', kind='poly2D',
-                                             pdegree=5, doFilter=False,
-                                             doBin=False, filtsize=30,
-                                             vstart=0, vend=2066, canonical=True,
-                                             extension=extension).imgmodel.copy()
+        Qimgmodel = ccdobj.get_region2Dmodel(Quad, 
+            **reg2Dmodkwargs_def).imgmodel.copy()
 
         # pre/overscans will not be modified unles margins is not None
 

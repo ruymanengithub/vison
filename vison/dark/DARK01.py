@@ -157,7 +157,8 @@ class DARK01(DarkTask):
         """
         super(DARK01, self).prepare_images(
             doExtract=True, doBadPixels=True,
-            doMask=True, doOffset=True, doBias=True, doFF=False)
+            doMask=False, doOffset=True,
+            doBias=False, doFF=False)
 
     def stack_analysis(self):
         """
@@ -283,7 +284,6 @@ class DARK01(DarkTask):
 
                 jsettings = copy.deepcopy(settings)
                 jsettings['CCDSerial'] = self.inputs['diffvalues']['sn_ccd%i' % (jCCD + 1)]
-
                 jsettings['CCDTempTop'] = self.dd.mx['HK_CCD%i_TEMP_T' % (jCCD + 1,)][:].mean()
                 jsettings['CCDTempBot'] = self.dd.mx['HK_CCD%i_TEMP_B' % (jCCD + 1,)][:].mean()
 
@@ -297,13 +297,12 @@ class DARK01(DarkTask):
                 self.dd.products['MasterDKs'][CCDk] = DKpath
 
                 DK = darkaux.DarkCDP(DKpath)
-
                 iDext = DK.extnames.index('DARK')
 
 
                 DKMSK_cdp = self.get_DarkDefectsMask_CDP(DK,
                     thresholds=DKMSKthresholds,
-                    subbgd=True,bgdmodel=None,
+                    subbgd=True, bgdmodel=None,
                     extension=iDext,
                     sn_ccd=self.inputs['diffvalues']['sn_%s' % CCDk.lower()])
 
