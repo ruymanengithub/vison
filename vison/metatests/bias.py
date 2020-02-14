@@ -13,8 +13,12 @@ import numpy as np
 from collections import OrderedDict
 import string as st
 import os
+from scipy import ndimage
+from skimage import exposure
+import pandas as pd
 
 from vison.datamodel import cdp
+from vison.datamodel import ccd as ccdmod
 from vison.support import utils
 from vison.support import files
 from vison.fpa import fpa as fpamod
@@ -161,6 +165,7 @@ class MetaBias(MetaCal):
             self.cdps['GAIN'][block] = allgains[block]['PTC01'].copy()
 
         self.products['MB_PROFILES'] = OrderedDict()
+        self.products['MASTERBIAS'] = OrderedDict()
 
         self.init_fignames()
         self.init_outcdpnames()
@@ -175,6 +180,9 @@ class MetaBias(MetaCal):
         CCDkeys = ['CCD%i' % CCD for CCD in self.CCDs]
 
         IndexS = vcore.vMultiIndex([vcore.vIndex('ix', vals=[0])])
+
+        IndexC = vcore.vMultiIndex([vcore.vIndex('ix', vals=[0]),
+                                    vcore.vIndex('CCD', vals=self.CCDs)])
 
         IndexCQ = vcore.vMultiIndex([vcore.vIndex('ix', vals=[0]),
                                      vcore.vIndex('CCD', vals=self.CCDs),
@@ -259,6 +267,25 @@ class MetaBias(MetaCal):
 
         sidd.addColumn(profskeys_v, 'MBPROFS_KEY', IndexS)
 
+
+        # ADDING REFERENCES TO MASTER BIAS
+
+        tmp_v_C = np.zeros((1, NCCDs), dtype='S50')
+        
+        mbkey_v = tmp_v_C.copy()
+
+        for jCCD, CCDk in enumerate(CCDkeys):
+
+            mbkey = '%s_%s_%s_%i_%s' % (testname, block, session, jrep + 1, CCDk)
+
+            mbkey_v[0, jCCD] = mbkey
+
+            self.products['MASTERBIAS'][mbkey] = os.path.split(
+                sidd.products['MASTERBIAS_%s' % CCDk])[-1]
+
+        sidd.addColumn(mbkey_v, 'MASTERBIAS', IndexC)
+
+
         # flatten sidd to table
 
         sit = sidd.flattentoTable()
@@ -322,6 +349,10 @@ class MetaBias(MetaCal):
                                                               '%s_RON_ELE_MAP.png' % testname)
             self.figs['OFFSETS_%s' % testname] = os.path.join(self.figspath,
                                                               '%s_OFFSETS_MAP.png' % testname)
+        for testname in self.testnames:
+            self.figs['MB_%s' % testname] = os.path.join(self.figspath, \
+                'MASTER_BIAS_%s.png' % testname)
+
         profdirs = ['hor','ver']
 
         for testname in self.testnames:
@@ -339,6 +370,67 @@ class MetaBias(MetaCal):
         for testname in self.testnames:
             self.outcdps['RON_ADU_%s' % testname] = '%s_RON_ADU_MAP.json' % testname          
             self.outcdps['OFFSETS_%s' % testname] = '%s_OFFSETS_MAP.json' % testname
+
+        for testname in self.testnames:
+            self.outcdps['MB_%s' % testname] = os.path.join(
+                self.cdpspath, 'MASTER_BIAS_%s.fits' % testname)
+
+    def _get_MBdict(self, testname):
+        """ """
+
+        PT = self.ParsedTable[testname]
+
+        MBdict = dict()
+
+        for jY in range(self.NCOLS_FPA):
+            for iX in range(self.NSLICES_FPA):
+                Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+
+                locator = self.fpa.FPA_MAP[Ckey]
+
+                block = locator[0]
+                CCDk = locator[1]
+                flip = locator[2]
+
+                inventoryitem = self.inventory[block][testname][-1] # last test
+
+                productspath = os.path.join(inventoryitem['resroot'], 'products')
+
+                ixblock = np.where(PT['BLOCK'] == block)
+                
+
+                cdpkey = PT['MASTERBIAS_%s' % CCDk][ixblock][0]
+
+                masterpick = os.path.join(productspath, self.products['MASTERBIAS'][cdpkey])
+                masterfits = st.replace(masterpick,'.pick','.fits')
+
+                ccdobj = ccdmod.CCD(infits=masterfits, getallextensions=True, withpover=True,
+                                    overscan=20)
+
+                img = ccdobj.extensions[1].data.transpose().copy()
+
+
+                # coarse hot pixel masking (just for display)
+                medval = np.median(img)
+                img[np.where(img>100)] = medval
+
+                # image smoothing
+
+                simg = ndimage.filters.gaussian_filter(img, sigma=5.,
+                                                       mode='constant',
+                                                       cval=medval)
+
+                esimg = exposure.equalize_hist(simg, nbins=256)
+
+                MBdict[Ckey] = dict(img=self.fpa.flip_img(esimg, flip))
+
+                #ccdobj = None
+                #img = None
+                #simg = None
+                #esimg = None
+
+        return MBdict
+
 
     def _get_XYdict_PROFS(self,test,proftype):
         """ """
@@ -375,7 +467,88 @@ class MetaBias(MetaCal):
 
         return Pdict
 
+    def _do_OffRonvsTime(self, testname):
+        """ """
+
+        datadict = OrderedDict()
+        cols = ['CCDQID', 'BLOCK', 'CCD', 'time', 'REP', 'OFF', 'RON']
+        for col in cols:
+            datadict[col] = []
+
+        rawptdf = self.ParsedTable[testname].to_pandas()
+            
+        for block in self.blocks:
+            
+            ixsel = np.where(rawptdf.BLOCK == block)
+
+            for iix in ixsel[0]:
+
+                for CCD in self.CCDs:
+
+                    for Q in self.Quads:
+
+                        ccdqid = '%s_%s' % (rawptdf['sn_ccd%i_CCD%i' % (CCD,CCD)][iix],Q)
+                        datadict['CCDQID'].append(ccdqid)
+                        datadict['BLOCK'].append(rawptdf.BLOCK[iix])
+                        datadict['CCD'].append(CCD)
+                        datadict['time'].append(rawptdf['time_CCD%i' % CCD][iix])
+                        datadict['REP'].append(rawptdf.REP[iix])                        
+                        datadict['OFF'].append(rawptdf['OFF_OVE_CCD%i_Quad%s' % (CCD,Q)][iix])
+                        datadict['RON'].append(rawptdf['RON_OVE_CCD%i_Quad%s' % (CCD,Q)][iix])
+        for col in cols:
+            datadict[col] = np.array(datadict[col])
+
+        ptdf = pd.DataFrame(datadict)
+        
+        
+        uCCDQIDs = np.unique(ptdf.CCDQID)
+
+        # discriminating CCDs that were calibrated more than once and 
+        # those that were not.
+
+        Lreps = []
+        Lnoreps = []
+        for uCCDQID in uCCDQIDs:
+            utime = ptdf.loc[ptdf.CCDQID==uCCDQID].time
+            dtime = utime.max()-utime.min()
+            if dtime.days > 10:
+                Lreps.append(uCCDQID)
+            else:
+                Lnoreps.append(uCCDQID)
     
+        noreps = pd.DataFrame(dict(CCDQID=Lnoreps))
+        reps = pd.DataFrame(dict(CCDQID=Lreps))
+
+        ptnorep_df = ptdf[ptdf.CCDQID.isin(noreps.CCDQID)]
+        ptrep_df = ptdf[ptdf.CCDQID.isin(reps.CCDQID)]
+
+        def get_avtempmagstat(df, col, ccdqids, stat, debug=False):
+            fstats = dict(mean=np.nanmean,
+                            std=np.nanstd)
+            statsvec = np.array([fstats[stat](df.loc[df.CCDQID==iid][col]) for iid in ccdqids])
+            if debug: stop()
+            return np.mean(statsvec)
+
+        stdOFFnorep = get_avtempmagstat(ptnorep_df, 'OFF', Lnoreps, 'std')
+        stdOFFrep = get_avtempmagstat(ptrep_df, 'OFF', Lreps, 'std')
+
+        meanRONnorep = get_avtempmagstat(ptnorep_df, 'RON', Lnoreps, 'mean') 
+        stdRONnorep = get_avtempmagstat(ptnorep_df, 'RON', Lnoreps, 'std')
+        meanRONrep = get_avtempmagstat(ptrep_df, 'RON', Lreps, 'mean') 
+        stdRONrep = get_avtempmagstat(ptrep_df, 'RON', Lreps, 'std')
+
+        res = dict(NOREPCAL=dict(
+                        stdOFF=stdOFFnorep,
+                        meanRON=meanRONnorep,
+                        stdRON=stdRONnorep,
+                        N=len(ptnorep_df)),
+                  REPCAL=dict(
+                    stdOFF=stdOFFrep,
+                    meanRON=meanRONrep,
+                    stdRON=stdRONrep,
+                    N=len(ptrep_df)))
+        
+        return res
 
     def dump_aggregated_results(self):
         """ """
@@ -390,188 +563,267 @@ class MetaBias(MetaCal):
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
 
-        # RON maps (all tests/waves)
 
-        # RON maps, ADUs
-        for testname in self.testnames:
+        doAll = True
+        doRONMaps = doAll
+        doOffMaps = doAll
+        doProfs = doAll
+        doMaster = doAll
+        doTemp = doAll
 
-            RONADUMAP = self.get_FPAMAP_from_PT(
-                self.ParsedTable[testname],
-                extractor=self._get_extractor_RON_fromPT(
-                    units='ADU',
-                    reg='all'))
-            
-            rn_header = OrderedDict()
-            rn_header['title'] = 'RON MAP'
-            rn_header.update(CDP_header)
-            
-            rn_cdp = cdp.Json_CDP(rootname=self.outcdps['RON_ADU_%s' % testname],
-                              path=self.cdpspath)
-            rn_cdp.ingest_inputs(data=RONADUMAP,
-                             header = rn_header,
-                             meta=dict(units='ADU'))
-            rn_cdp.savehardcopy()
-            
-            RON_OVE_ADUMAP = self.get_FPAMAP_from_PT(
-                self.ParsedTable[testname],
-                extractor=self._get_extractor_RON_fromPT(
-                    units='ADU',
-                    reg='ove'))
+        if doRONMaps:
 
-            stestname = st.replace(testname, '_', '\_')
-            self.plot_SimpleMAP(RON_OVE_ADUMAP, **dict(
-                suptitle='%s [OVERSCAN]: RON [ADU]' % stestname,
-                ColorbarText='ADU',
-                figname=self.figs['RON_ADU_%s' % testname]))
+            # RON maps (all tests/waves)
 
+            # RON maps, ADUs
+            for testname in self.testnames:
 
-
-        # RON maps, ELECTRONs
-        for testname in self.testnames:
-
-            RONEMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname],
-                                              extractor=self._get_extractor_RON_fromPT(units='E',
-                                                                                       reg='ove'))
-
-            stestname = st.replace(testname, '_', '\_')
-            figkey1 = 'RON_ELE_%s' % testname
-            figname1 = self.figs[figkey1]
-
-            self.plot_SimpleMAP(RONEMAP, **dict(
-                suptitle='%s: RON [ELECTRONS]' % stestname,
-                ColorbarText='electrons',
-                figname=figname1))
-
-
-            if self.report is not None:
-                self.addFigure2Report(figname1, 
-                        figkey=figkey1, 
-                        caption='%s: RON in e- (rms).' % stestname, 
-                        texfraction=0.7)
-            
-            # reporting tables of RON-e to report
-
-            if self.report is not None:
-
-                eroncdpdict = dict(
-                    caption='%s: RON (e-, rms) in the over-scan region.' % testname,
-                    valformat='%.2f')
-
-                ignore = self.add_StdQuadsTable2Report( 
-                                Matrix = RONEMAP,
-                                cdpdict = eroncdpdict)
-
-
-
-        # OFFSET maps
-
-        for testname in self.testnames:
-
-            OFFMAP = self.get_FPAMAP_from_PT(
-                self.ParsedTable[testname],
-                extractor=self._get_extractor_OFFSET_fromPT(reg='all'))
-            
-            off_header = OrderedDict()
-            off_header['title'] = 'OFFSETS MAP'
-            off_header.update(CDP_header)
-            
-            off_cdp = cdp.Json_CDP(rootname=self.outcdps['OFFSETS_%s' % testname],
-                              path=self.cdpspath)
-            off_cdp.ingest_inputs(data=OFFMAP,
-                             header = off_header,
-                             meta=dict(units='ADU'))
-            off_cdp.savehardcopy()
-            
-            OFF_OVE_MAP = self.get_FPAMAP_from_PT(
-                self.ParsedTable[testname],
-                extractor=self._get_extractor_OFFSET_fromPT(reg='ove'))
-            
-            figkey = 'OFFSETS_%s' % testname
-
-            stestname = st.replace(testname, '_', '\_')
-            self.plot_SimpleMAP(OFF_OVE_MAP, **dict(
-                suptitle='%s [OVERSCAN]: OFFSET' % stestname,
-                ColorbarText='ADU',
-                figname=self.figs[figkey]))
-
-            if self.report is not None:
-                self.addFigure2Report(self.figs[figkey], 
-                        figkey=figkey, 
-                        caption='%s: Avg. offsets in ADU. Measured in serial over-scan.' % stestname, 
-                        texfraction=0.7)
-
-            if self.report is not None:
-
-                offcdpdict = dict(
-                    caption='%s: Offset levels [ADU].' % testname,
-                    valformat='%.2f')
+                RONADUMAP = self.get_FPAMAP_from_PT(
+                    self.ParsedTable[testname],
+                    extractor=self._get_extractor_RON_fromPT(
+                        units='ADU',
+                        reg='all'))
                 
-                def _getOFF_val(Ckey, Q):
-                    return OFFMAP[Ckey][Q]['ove']
+                rn_header = OrderedDict()
+                rn_header['title'] = 'RON MAP'
+                rn_header.update(CDP_header)
+                
+                rn_cdp = cdp.Json_CDP(rootname=self.outcdps['RON_ADU_%s' % testname],
+                                  path=self.cdpspath)
+                rn_cdp.ingest_inputs(data=RONADUMAP,
+                                 header = rn_header,
+                                 meta=dict(units='ADU'))
+                rn_cdp.savehardcopy()
+                
+                RON_OVE_ADUMAP = self.get_FPAMAP_from_PT(
+                    self.ParsedTable[testname],
+                    extractor=self._get_extractor_RON_fromPT(
+                        units='ADU',
+                        reg='ove'))
 
-                ignore = self.add_StdQuadsTable2Report( 
-                                extractor = _getOFF_val,
-                                cdpdict = offcdpdict)
+                stestname = st.replace(testname, '_', '\_')
+                self.plot_SimpleMAP(RON_OVE_ADUMAP, **dict(
+                    suptitle='%s [OVERSCAN]: RON [ADU]' % stestname,
+                    ColorbarText='ADU',
+                    figname=self.figs['RON_ADU_%s' % testname]))
 
-        # Vertical and Horizonal average profiles
 
-        xlabels_profs = dict(hor='column [pix]',
-                            ver='row [pix]')
 
-        proftypes = ['hor','ver']
+            # RON maps, ELECTRONs
+            for testname in self.testnames:
 
-        BLOCKcolors = cm.rainbow(np.linspace(0, 1, len(self.flight_blocks)))
+                RONEMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname],
+                                                  extractor=self._get_extractor_RON_fromPT(units='E',
+                                                                                           reg='ove'))
 
-        pointcorekwargs = dict()
-        for jblock, block in enumerate(self.flight_blocks):
-            jcolor = BLOCKcolors[jblock]
-            for iCCD in self.CCDs:
-                for kQ in self.Quads:
-                    pointcorekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(
-                        linestyle='', marker='.', color=jcolor, ms=0.8)
+                stestname = st.replace(testname, '_', '\_')
+                figkey1 = 'RON_ELE_%s' % testname
+                figname1 = self.figs[figkey1]
 
-        for testname in self.testnames:
+                self.plot_SimpleMAP(RONEMAP, **dict(
+                    suptitle='%s: RON [ELECTRONS]' % stestname,
+                    ColorbarText='electrons',
+                    figname=figname1))
 
-            for proftype in proftypes:
 
-                XY_profs = self._get_XYdict_PROFS(test=testname,proftype=proftype)
+                if self.report is not None:
+                    self.addFigure2Report(figname1, 
+                            figkey=figkey1, 
+                            caption='%s: RON in e- (rms).' % stestname, 
+                            texfraction=0.7)
+                
+                # reporting tables of RON-e to report
 
-                if proftype=='hor':
-                    xlim=[0,100]
-                else:
-                    xlim=None
-
-                figkey = 'PROFS_%s_%s' % (testname,proftype)
-
-                profkwargs = dict(
-                    title='%s: Avg. profiles, direction: %s' % (testname, proftype),
-                    doLegend=False,
-                    xlabel=xlabels_profs[proftype],
-                    ylabel=r'$\delta ADU$',
-                    ylim=[-20,20],
-                    xlim=xlim,
-                    figname=self.figs[figkey],
-                    corekwargs=pointcorekwargs)
-
-                self.plot_XY(XY_profs, **profkwargs)
-
-                if proftype == 'ver':
-                    captemp = '%s: Stacked profiles of Master Bias quadrant'+\
-                    ' images in "parallel" direction. Median value of profile has been subtracted for '+\
-                    'clarity. Each colour corresponds to a different block (each with 3x4 quadrants).'
-                elif proftype == 'hor':
-                    captemp = '%s: Stacked profiles of Master Bias quadrant'+\
-                    ' images in "serial" direction. Median value of profile has been subtracted for '+\
-                    'clarity. Only the first 100 columns are shown, because that is where most of the '+\
-                    'interesting structure of this type of profile is. Each colour corresponds to a'+\
-                    ' different block (each with 3x4 quadrants).'
                 if self.report is not None:
 
-                    self.addFigure2Report(self.figs[figkey], 
-                        figkey=figkey, 
-                        caption= captemp % (stestname,),
+                    eroncdpdict = dict(
+                        caption='%s: RON (e-, rms) in the over-scan region.' % testname,
+                        valformat='%.2f')
+
+                    ignore = self.add_StdQuadsTable2Report( 
+                                    Matrix = RONEMAP,
+                                    cdpdict = eroncdpdict)
+
+
+        if doOffMaps:
+
+            # OFFSET maps
+
+            for testname in self.testnames:
+
+                OFFMAP = self.get_FPAMAP_from_PT(
+                    self.ParsedTable[testname],
+                    extractor=self._get_extractor_OFFSET_fromPT(reg='all'))
+                
+                off_header = OrderedDict()
+                off_header['title'] = 'OFFSETS MAP'
+                off_header.update(CDP_header)
+                
+                off_cdp = cdp.Json_CDP(rootname=self.outcdps['OFFSETS_%s' % testname],
+                                  path=self.cdpspath)
+                off_cdp.ingest_inputs(data=OFFMAP,
+                                 header = off_header,
+                                 meta=dict(units='ADU'))
+                off_cdp.savehardcopy()
+                
+                OFF_OVE_MAP = self.get_FPAMAP_from_PT(
+                    self.ParsedTable[testname],
+                    extractor=self._get_extractor_OFFSET_fromPT(reg='ove'))
+                
+                figkey2 = 'OFFSETS_%s' % testname
+                figname2 = self.figs[figkey2]
+
+                stestname = st.replace(testname, '_', '\_')
+                self.plot_SimpleMAP(OFF_OVE_MAP, **dict(
+                    suptitle='%s [OVERSCAN]: OFFSET' % stestname,
+                    ColorbarText='ADU',
+                    figname=figname2))
+
+                if self.report is not None:
+                    self.addFigure2Report(figname2, 
+                            figkey=figkey2, 
+                            caption='%s: Avg. offsets in ADU. Measured in serial over-scan.' % stestname, 
+                            texfraction=0.7)
+
+                if self.report is not None:
+
+                    offcdpdict = dict(
+                        caption='%s: Offset levels [ADU].' % testname,
+                        valformat='%.2f')
+                    
+                    def _getOFF_val(Ckey, Q):
+                        return OFFMAP[Ckey][Q]['ove']
+
+                    _ = self.add_StdQuadsTable2Report( 
+                                    extractor = _getOFF_val,
+                                    cdpdict = offcdpdict)
+
+        if doProfs:
+
+            # Vertical and Horizonal average profiles
+
+            xlabels_profs = dict(hor='column [pix]',
+                                ver='row [pix]')
+
+            proftypes = ['hor','ver']
+
+            BLOCKcolors = cm.rainbow(np.linspace(0, 1, len(self.flight_blocks)))
+
+            pointcorekwargs = dict()
+            for jblock, block in enumerate(self.flight_blocks):
+                jcolor = BLOCKcolors[jblock]
+                for iCCD in self.CCDs:
+                    for kQ in self.Quads:
+                        pointcorekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(
+                            linestyle='', marker='.', color=jcolor, ms=0.8)
+
+            for testname in self.testnames:
+
+                for proftype in proftypes:
+
+                    XY_profs = self._get_XYdict_PROFS(test=testname,proftype=proftype)
+
+                    if proftype=='hor':
+                        xlim=[0,100]
+                    else:
+                        xlim=None
+
+                    figkey3 = 'PROFS_%s_%s' % (testname,proftype)
+                    figname3 = self.figs[figkey3]
+
+                    profkwargs = dict(
+                        title='%s: Avg. profiles, direction: %s' % (testname, proftype),
+                        doLegend=False,
+                        xlabel=xlabels_profs[proftype],
+                        ylabel=r'$\delta ADU$',
+                        ylim=[-20,20],
+                        xlim=xlim,
+                        figname=figname3,
+                        corekwargs=pointcorekwargs)
+
+                    self.plot_XY(XY_profs, **profkwargs)
+
+                    if proftype == 'ver':
+                        captemp = '%s: Stacked profiles of Master Bias quadrant'+\
+                        ' images in "parallel" direction. Median value of profile has been subtracted for '+\
+                        'clarity. Each colour corresponds to a different block (each with 3x4 quadrants).'
+                    elif proftype == 'hor':
+                        captemp = '%s: Stacked profiles of Master Bias quadrant'+\
+                        ' images in "serial" direction. Median value of profile has been subtracted for '+\
+                        'clarity. Only the first 100 columns are shown, because that is where most of the '+\
+                        'interesting structure of this type of profile is. Each colour corresponds to a'+\
+                        ' different block (each with 3x4 quadrants).'
+                    if self.report is not None:
+
+                        self.addFigure2Report(figname3, 
+                            figkey=figkey3, 
+                            caption= captemp % (stestname,),
+                            texfraction=0.7)
+
+        # MASTER BIAS
+
+        if doMaster:
+
+            for testname in self.testnames:
+
+                figkey4 = 'MB_%s' % testname
+                figname4 = self.figs[figkey4]
+
+                MBdict = self._get_MBdict(testname)
+                MBkwargs = dict(  # suptitle='%s, %s: Master Flat Field' % (stestname, colkey),
+                    suptitle='%s: Master "Bias"' % testname, 
+                    figname=figname4)
+
+                self.plot_ImgFPA(MBdict, **MBkwargs)
+
+                if self.report is not None:
+                    self.addFigure2Report(figname4,
+                        figkey=figkey4,
+                        caption='%s: Master Bias [ADU].' % testname, 
                         texfraction=0.7)
 
         # Temporal Stability of Offsets
 
-        # PENDING
+
+        if doTemp:
+
+            res_time = self._do_OffRonvsTime('BIAS02')
+
+            if self.report is not None:
+
+                self.report.add_Section(keyword='timestab',
+                    Title='Time Stability', level=1)
+
+                self.report.add_Section(keyword='RONtimestab',
+                    Title='RON Time Stability', level=2)                
+
+                RonvsTimeText = [
+                '\\textbf{Non Repeated} Calibrations, \n',
+                'Nr. of measurements (quadrants x tests) = %i\n' % res_time['NOREPCAL']['N'],
+                'mean RON: \\textbf{%.3f} ADU\n' % res_time['NOREPCAL']['meanRON'],
+                'std RON: \\textbf{%.3f} ADU\n' % res_time['NOREPCAL']['stdRON'],
+                '\\newline',
+                '\\textbf{Repeated} Calibrations, \n',
+                'Nr. of measurements (quadrants x tests) = %i\n' % res_time['REPCAL']['N'],
+                'mean RON: \\textbf{%.3f} ADU\n' % res_time['REPCAL']['meanRON'],
+                'std RON: \\textbf{%.3f} ADU\n' % res_time['REPCAL']['stdRON'],
+                '\\newline'
+                ]
+
+                self.report.add_Text(RonvsTimeText)
+
+                self.report.add_Section(keyword='OFFtimestab',
+                    Title='Offset Time Stability', level=2)           
+
+                
+                OffvsTimeText = [
+                '\\textbf{Non Repeated} Calibrations, \n',
+                'Nr. of measurements (quadrants x tests) = %i\n' % res_time['NOREPCAL']['N'],
+                'std OFF: \\textbf{%.3f} ADU\n' % res_time['NOREPCAL']['stdOFF'],
+                '\\newline',
+                '\\textbf{Repeated} Calibrations, \n',
+                'Nr. of measurements (quadrants x tests) = %i\n' % res_time['REPCAL']['N'],
+                'std OFF: \\textbf{%.3f} ADU\n' % res_time['REPCAL']['stdOFF']
+                ]
+
+                self.report.add_Text(OffvsTimeText)
