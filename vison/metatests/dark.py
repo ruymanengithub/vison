@@ -313,7 +313,6 @@ class MetaDark(MetaCal):
             self.figs['PROFS_%s' % (profdir,)] =  os.path.join(self.figspath,
                                 'DK_PROFS_%s.png' % (profdir,))
 
-
     def init_outcdpnames(self):
         """ """
 
@@ -355,9 +354,16 @@ class MetaDark(MetaCal):
                 img = ccdobj.extensions[1].data.transpose().copy()
 
 
+                # coarse hot pixel masking (just for display)
+                medval = np.median(img)
+                img[np.where(img>medval*50)] = medval
+
+                # image smoothing
+
                 simg = ndimage.filters.gaussian_filter(img, sigma=5.,
                                                        mode='constant',
                                                        cval=1.)
+
                 esimg = exposure.equalize_hist(simg, nbins=256)
 
                 MDdict[Ckey] = dict(img=self.fpa.flip_img(esimg, flip))
@@ -469,7 +475,7 @@ class MetaDark(MetaCal):
                 Matrix=DKSIGMAP,
                 cdpdict=dksigcdpdict)
 
-        # MASTER DARK DISPLAY [PENDING]
+        # MASTER DARK DISPLAY 
 
         figkey2 = 'MD'
         figname2 = self.figs[figkey2]
