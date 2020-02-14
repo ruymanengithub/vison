@@ -405,12 +405,12 @@ class MetaDark(MetaCal):
 
         return Pdict
 
-    def _extract_NPHOT_fromPT(self, PT, block, CCDk, Q):
+    def _extract_logNPHOT_fromPT(self, PT, block, CCDk, Q):
         """ """
         ixblock = self.get_ixblock(PT, block)
         column = 'DK_N_HOT_%s_Quad%s' % (CCDk, Q)
-        NHP = PT[column][ixblock][0]
-        return NHP
+        logNHP = np.log10(max(PT[column][ixblock][0],1.))
+        return logNHP
 
     def dump_aggregated_results(self):
         """ """
@@ -491,21 +491,21 @@ class MetaDark(MetaCal):
 
         # HOT PIXELS MAP [PENDING]
 
-        NHPMAP = self.get_FPAMAP_from_PT(self.ParsedTable['DARK01'],
-                                              extractor=self._extract_NPHOT_fromPT)
+        logNHPMAP = self.get_FPAMAP_from_PT(self.ParsedTable['DARK01'],
+                                              extractor=self._extract_logNPHOT_fromPT)
 
         figkey3 = 'HOTPIX_COUNT_MAP'
         figname3 = self.figs[figkey3]
 
-        self.plot_SimpleMAP(NHPMAP, **dict(
-                suptitle='DARK01: NR. of Hot Pixels',
+        self.plot_SimpleMAP(logNHPMAP, **dict(
+                suptitle='DARK01: log(NR) of Hot Pixels',
                 figname=figname3,
-                ColorbarText='N'
+                ColorbarText='log(N)'
             ))
 
         if self.report is not None:
 
-            captemp = 'Number of hot pixels in each CCD quadrant of the FPA. '
+            captemp = 'log(Number) of hot pixels in each CCD quadrant of the FPA. '
 
             self.addFigure2Report(figname3, 
                 figkey=figkey3, 
