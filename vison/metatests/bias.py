@@ -719,14 +719,18 @@ class MetaBias(MetaCal):
 
             for testname in self.testnames:
 
+                stestname = st.replace(testname, '_', '\_')
+
                 for proftype in proftypes:
 
                     XY_profs = self._get_XYdict_PROFS(test=testname,proftype=proftype)
 
                     if proftype=='hor':
                         xlim=[0,100]
+                        ylim=[-5,25]
                     else:
                         xlim=None
+                        ylim=[-5,5]
 
                     figkey3 = 'PROFS_%s_%s' % (testname,proftype)
                     figname3 = self.figs[figkey3]
@@ -736,7 +740,7 @@ class MetaBias(MetaCal):
                         doLegend=False,
                         xlabel=xlabels_profs[proftype],
                         ylabel=r'$\delta ADU$',
-                        ylim=[-20,20],
+                        ylim=ylim,
                         xlim=xlim,
                         figname=figname3,
                         corekwargs=pointcorekwargs)
