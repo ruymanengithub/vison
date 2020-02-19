@@ -548,12 +548,13 @@ class MetaFlat(MetaCal):
         CDP_header = self.CDP_header.copy()
         CDP_header['DATE'] = self.get_time_tag()
         
+        doPRNUvsWAVE = False
+        doMFs = False
+        doMF_CHAR = True
+        doPRNUvsFLU = False
 
         # PRNU vs. WAVELENGTH
 
-        doPRNUvsWAVE = True
-        doMFs = True
-        doPRNUvsFLU = True
 
         if doPRNUvsWAVE:
 
@@ -577,6 +578,11 @@ class MetaFlat(MetaCal):
                         figkey=figkey1, 
                         caption='PRNU (rms, %s ) vs. wavelength.' % ('\\%',), 
                         texfraction=0.7)
+
+
+        # MASTER FLATS CHAR
+        # PRNU, FLUENCES, ERRORs
+                
 
 
         # MASTER FLATS DISPLAY
@@ -629,8 +635,11 @@ class MetaFlat(MetaCal):
 
                     MFheader['CDP'] = 'MASTERFLAT'
                     MFheader['TEST'] = testname
-                    MFheader['WAVE'] = _wave
-                    MFheader['FLUENCE'] = colnum
+                    MFheader['WAVE'] = [_wave, 'nm']
+                    MFheader['FLUCOL'] = [colnum, 'Fluence Column']
+                    #MFheader['FLUENCE'] = [fluence, 'Average Fluence, ADU']
+                    #MFheader['PRNU'] = [medprnu, 'Average PRNU']
+                    #MFheader['ERROR'] = [mederror, 'Average Error (rms)']
                     MFheader['VISON'] = CDP_header['vison']
                     MFheader['FPA_DES'] = CDP_header['fpa_design']
                     MFheader['DATE'] = CDP_header['DATE']
