@@ -16,6 +16,7 @@ import os
 from skimage import exposure
 from scipy import ndimage
 import gc
+import pandas as pd
 
 from vison.support import vjson
 from vison.datamodel import ccd as ccdmod
@@ -386,6 +387,80 @@ class MetaFlat(MetaCal):
 
         return MFdict
 
+    def _get_MF_stats(self, testname, colkey):
+        """ """
+
+        PT = self.ParsedTable[testname]
+
+        MFstats = OrderedDict()
+
+        MFstats['AVPRNU'] = None
+        MFstats['AVFLUADU'] = None
+        MFstats['AVFLUELE'] = None
+        MFstats['AVEFLAT'] = None
+
+
+        prnus = []
+        fluadus = []
+        flueles = []
+        eflats = []
+
+
+        for jY in range(self.NCOLS_FPA):
+            for iX in range(self.NSLICES_FPA):
+                Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+
+                locator = self.fpa.FPA_MAP[Ckey]
+
+                block = locator[0]
+                CCDk = locator[1]
+
+                inventoryitem = self.inventory[block][testname][0]
+                productspath = os.path.join(inventoryitem['resroot'], 'products')
+
+                ixblock = np.where(PT['BLOCK'] == block)
+
+                cdpkey = PT['MASTERFLATS_%s_%s' % (colkey.upper(), CCDk)][ixblock][0]
+
+                masterfits = os.path.join(productspath, self.products['MASTERFLATS'][cdpkey])
+
+                ccdobj = ccdmod.CCD(infits=masterfits, getallextensions=True, withpover=True,
+                                    overscan=20)
+
+                MFstats[Ckey] = OrderedDict()
+
+                for Q in self.Quads:
+
+                    MFstats[Ckey][Q] = OrderedDict()
+
+                    MFstats[Ckey][Q]['PRNU'] = PT['PRNU_PC_%s_%s_Quad%s' % \
+                        (colkey.upper(),CCDk, Q)][ixblock][0]
+                    prnus.append(MFstats[Ckey][Q]['PRNU'])
+
+                    MFstats[Ckey][Q]['FLUADU'] = PT['PRNU_FLUADU_%s_%s_Quad%s' % \
+                        (colkey.upper(),CCDk, Q)][ixblock][0]
+                    fluadus.append(MFstats[Ckey][Q]['FLUADU'])
+
+                    MFstats[Ckey][Q]['FLUELE'] = PT['PRNU_FLUELE_%s_%s_Quad%s' % \
+                        (colkey.upper(),CCDk, Q)][ixblock][0]
+                    flueles.append(MFstats[Ckey][Q]['FLUELE'])
+
+                    i_eflat = ccdobj.get_stats(Q,sector='img',statkeys=['median'],
+                        ignore_pover=True,extension=-1)[0]
+
+                    MFstats[Ckey][Q]['EFLAT'] = float(i_eflat)
+                    eflats.append(i_eflat)
+
+        MFstats['AVPRNU'] = float(np.nanmean(prnus))
+        MFstats['AVFLUADU'] = float(np.nanmean(fluadus))
+        MFstats['AVFLUELE'] = float(np.nanmean(flueles))
+        MFstats['AVEFLAT'] = float(np.nanmean(eflats))
+        
+
+        return MFstats
+
+
+
     
     def _get_MFccd_dict(self, testname, colkey):
         """ """
@@ -534,6 +609,12 @@ class MetaFlat(MetaCal):
                 self.outcdps['MF_%s_%s' % (testname, colkey)] = os.path.join(
                     self.cdpspath, 'MF_%s_%s.fits' % (testname, colkey))
 
+        for testname in self.testnames:
+            for colkey in self.colkeys[testname]:
+                self.outcdps['MF_STATS_%s_%s' % (testname, colkey)] = \
+                 'MF_STATS_%s_%s.json' % (testname, colkey)
+
+
 
     def dump_aggregated_results(self):
         """ """
@@ -548,11 +629,11 @@ class MetaFlat(MetaCal):
         CDP_header = self.CDP_header.copy()
         CDP_header['DATE'] = self.get_time_tag()
         
-        doPRNUvsWAVE = False
-        doMFs = False
-        doMF_CHAR = True
-        doPRNUvsFLU = False
-
+        doPRNUvsWAVE = True
+        doMFs = True
+        doMF_STATS = True
+        doPRNUvsFLU = True
+        
         # PRNU vs. WAVELENGTH
 
 
@@ -580,9 +661,72 @@ class MetaFlat(MetaCal):
                         texfraction=0.7)
 
 
-        # MASTER FLATS CHAR
+        # MASTER FLATS STATS
         # PRNU, FLUENCES, ERRORs
+        
+        if doMF_STATS:
+
+            MF_stats_sum = OrderedDict()
+            sumcols = ['TEST','COL','PRNU','FLUADU','FLUELE','EFLAT']
+            for scol in sumcols:
+                MF_stats_sum[scol] = []
+
+
+            for testname in self.testnames:
                 
+                stestname = st.replace(testname, '_', '\_')
+
+                for colkey in self.colkeys[testname]:
+                    
+                    MF_STATS_MX = self._get_MF_stats(testname, colkey)
+
+
+                    MF_stats_sum['TEST'].append(testname)
+                    MF_stats_sum['COL'].append(colkey)
+                    MF_stats_sum['PRNU'].append('%.2f' % MF_STATS_MX['AVPRNU'])
+                    MF_stats_sum['FLUADU'].append('%.1f' % MF_STATS_MX['AVFLUADU'])
+                    MF_stats_sum['FLUELE'].append('%.1f' % MF_STATS_MX['AVFLUELE'])
+                    MF_stats_sum['EFLAT'].append('%.2e' % MF_STATS_MX['AVEFLAT'])
+
+                    mfstats_header = OrderedDict()
+                    mfstats_header['title'] = 'MF_STATS'
+                    mfstats_header['test']=testname
+                    mfstats_header['column']=colkey
+                    mfstats_header.update(CDP_header)
+
+                    mfstats_meta=dict(
+                        PRNU='Photon Response Non-Uniformity',
+                        FLUADU='Fluence in ADU',
+                        FLUELE='Fluence in electrons',
+                        EFLAT='Statistical error in the flat',
+                        structure=\
+                        'CCDID:Q:dict(PRNU:[pc],FLUADU:[ADU],FLUELE:[e-],EFLAT:[ADIM]')
+
+                    mfstats_cdp = cdpmod.Json_CDP(rootname=self.outcdps['MF_STATS_%s_%s' %\
+                                (testname, colkey)],
+                                path=self.cdpspath)
+                    
+                    mfstats_cdp.ingest_inputs(data=MF_STATS_MX,
+                        header=mfstats_header,
+                        meta=mfstats_meta)
+
+                    mfstats_cdp.savehardcopy()
+
+
+            if self.report is not None:
+
+                MF_stats_sum_df = pd.DataFrame(MF_stats_sum)
+                lxkwargs = dict(multicolumn=True, multirow=True, longtable=True,index=False)
+                MFtex = MF_stats_sum_df.to_latex(**lxkwargs)
+
+                ncolsstats = len(sumcols)
+
+                caption = 'Master Flats Statistics.'
+                wtex = cdpmod.wraptextable(MFtex, ncolsstats, caption, fitwidth=True,
+                    tiny=True, longtable=True)
+                self.report.add_Text(wtex)
+
+
 
 
         # MASTER FLATS DISPLAY
