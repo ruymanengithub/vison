@@ -728,7 +728,6 @@ class MetaFlat(MetaCal):
 
 
 
-
         # MASTER FLATS DISPLAY
 
         if doMFs:
@@ -775,15 +774,28 @@ class MetaFlat(MetaCal):
 
                     MFccd_dict = self._get_MFccd_dict(testname, colkey)
 
+                    ixstat = np.where((MF_stats_sum['TEST'] == testname) &\
+                        (MF_stats_sum['COL'] == colkey))[0][0]
+
+
+
                     MFheader = OrderedDict()
+
+                    # sumcols = ['TEST','COL','PRNU','FLUADU','FLUELE','EFLAT']
+                    avprnu = MF_stats_sum['PRNU'][ixstat]
+                    avfluadu = MF_stats_sum['FLUADU'][ixstat]
+                    avfluele = MF_stats_sum['FLUELE'][ixstat]
+                    aveflat = MF_stats_sum['EFLAT'][ixstat]
+
 
                     MFheader['CDP'] = 'MASTERFLAT'
                     MFheader['TEST'] = testname
-                    MFheader['WAVE'] = [_wave, 'nm']
-                    MFheader['FLUCOL'] = [colnum, 'Fluence Column']
-                    #MFheader['FLUENCE'] = [fluence, 'Average Fluence, ADU']
-                    #MFheader['PRNU'] = [medprnu, 'Average PRNU']
-                    #MFheader['ERROR'] = [mederror, 'Average Error (rms)']
+                    MFheader['WAVE'] = _wave # 'nm'
+                    MFheader['FLUCOL'] = colnum # 'Fluence Column'
+                    MFheader['FLUADU'] = avfluadu # 'Average Fluence, ADU
+                    MFheader['FLUELE'] = avfluele # 'Average Fluence, electrons
+                    MFheader['PRNU'] = avprnu # 'Average PRNU']
+                    MFheader['STERROR'] = aveflat # 'Average Error (rms)']
                     MFheader['VISON'] = CDP_header['vison']
                     MFheader['FPA_DES'] = CDP_header['fpa_design']
                     MFheader['DATE'] = CDP_header['DATE']
