@@ -630,8 +630,8 @@ class MetaFlat(MetaCal):
         CDP_header['DATE'] = self.get_time_tag()
         
         doPRNUvsWAVE = True
-        doMFs = True
         doMF_STATS = True
+        doMFs = True 
         doPRNUvsFLU = True
         
         # PRNU vs. WAVELENGTH
@@ -727,7 +727,6 @@ class MetaFlat(MetaCal):
                 self.report.add_Text(wtex)
 
 
-
         # MASTER FLATS DISPLAY
 
         if doMFs:
@@ -774,9 +773,8 @@ class MetaFlat(MetaCal):
 
                     MFccd_dict = self._get_MFccd_dict(testname, colkey)
 
-                    ixstat = np.where((MF_stats_sum['TEST'] == testname) &\
-                        (MF_stats_sum['COL'] == colkey))[0][0]
-
+                    ixstat = np.where((np.array(MF_stats_sum['TEST']) == testname) &\
+                        (np.array(MF_stats_sum['COL']) == colkey))[0][0]
 
 
                     MFheader = OrderedDict()
