@@ -860,13 +860,15 @@ class MetaPTC(MetaCal):
                 
                 her_header = OrderedDict()
                 her_header['title'] = 'HARD EDGE RESPONSE'
+                her_header['test'] = stestname
                 her_header.update(CDP_header)
             
                 her_cdp = cdp.Json_CDP(rootname=self.outcdps['HER_%s' % testname],
                               path=self.cdpspath)
                 her_cdp.ingest_inputs(data=HERMAPprofs,
                              header = her_header,
-                             meta=dict(units='adim'))
+                             meta=dict(units='adim',
+                                structure="CCDID:Q:[serial profile]"))
                 her_cdp.savehardcopy()
                 
 
