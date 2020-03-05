@@ -762,13 +762,15 @@ class MetaPTC(MetaCal):
 
                 g_header = OrderedDict()
                 g_header['title'] = 'GAIN MAP'
+                g_header['test'] = stestname
                 g_header.update(CDP_header)
             
                 g_cdp = cdp.Json_CDP(rootname=self.outcdps['GAIN_%s' % testname],
                               path=self.cdpspath)
                 g_cdp.ingest_inputs(data=GMAP,
                              header = g_header,
-                             meta=dict(units='e-/ADU'))
+                             meta=dict(units='e-/ADU',
+                                        structure='CCDID:Q:gain'))
                 g_cdp.savehardcopy()
 
 
