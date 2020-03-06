@@ -960,7 +960,7 @@ class MetaPTC(MetaCal):
                 xlabel='Wavelength',
                 ylabel='Gain [e-/ADU]',
                 ylim=[3.3, 3.7],
-                corekwargs=dict(linestyle='', marker='.'),
+                corekwargs=dict(linestyle='', marker='o'),
                 # figname = ''))
                 figname=figname6))
 
