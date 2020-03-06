@@ -498,6 +498,8 @@ class MetaPTC(MetaCal):
         for testname in self.testnames:
             self.outcdps['GAIN_%s' % testname] = '%s_GAIN_elperadu_MAP.json' % testname
             self.outcdps['HER_%s' % testname] = '%s_HER_profiles_MAP.json' % testname
+            self.outcdps['BLOOM_ADU_%s' % testname] = '%s_BLOOM_ADU_MAP.json' % testname
+            self.outcdps['BLOOM_ELE_%s' % testname] = '%s_BLOOM_ELE_MAP.json' % testname
 
     def _get_XYdict_GvsLAM(self):
         """ """
@@ -737,14 +739,26 @@ class MetaPTC(MetaCal):
                     self.ParsedTable[testname],
                     extractor=self._extract_GAIN_fromPT)
 
+                stestname = st.replace(testname, '_', '\_')
+
                 avgG = self.get_stat_from_FPAMAP(GMAP, np.nanmean)
-                avgGtext = 'Average G [%s]: %.2f' % (testname, avgG)
+                avgGtext = 'Average G [%s]: %.2f' % (stestname, avgG)
                 if self.report is not None:
                     self.report.add_Text(avgGtext)
                 else:
                     print(avgGtext)
 
-                stestname = st.replace(testname, '_', '\_')
+                def _count_within_REQ(vals):
+                    req = [3.0,3.5]
+                    return np.sum(np.array([(item>req[0] and item<=req[1]) for item in vals]))
+
+                NwithinREQ = self.get_stat_from_FPAMAP(GMAP, _count_within_REQ)
+                ReqText = 'N-Quadrants within requirement (3.0-3.5 e/ADU): %i' % (NwithinREQ)
+                if self.report is not None:
+                    self.report.add_Text(ReqText)
+                else:
+                    print(ReqText)
+
 
                 figkey1 = 'GAIN_MAP_%s' % testname
                 figname1 = self.figs[figkey1]
@@ -801,6 +815,18 @@ class MetaPTC(MetaCal):
                         texfraction=0.7)
 
 
+                ba_header = OrderedDict()
+                ba_header['title'] = 'BLOOMING MAP [ADU]'
+                ba_header['test'] = stestname
+                ba_header.update(CDP_header)
+            
+                ba_cdp = cdp.Json_CDP(rootname=self.outcdps['BLOOM_ADU_%s' % testname],
+                              path=self.cdpspath)
+                ba_cdp.ingest_inputs(data=BADU_MAP,
+                             header = ba_header,
+                             meta=dict(units='ADU',
+                                        structure='CCDID:Q:bloom threshold'))
+                ba_cdp.savehardcopy()
 
             for testname in self.testnames:
 
@@ -823,6 +849,20 @@ class MetaPTC(MetaCal):
                         figkey=figkey3, 
                         caption='%s: Blooming Map in electrons.' % stestname, 
                         texfraction=0.7)
+
+                be_header = OrderedDict()
+                be_header['title'] = 'BLOOMING MAP [ELECTRONS]'
+                be_header['test'] = stestname
+                be_header.update(CDP_header)
+            
+                be_cdp = cdp.Json_CDP(rootname=self.outcdps['BLOOM_ELE_%s' % testname],
+                              path=self.cdpspath)
+                be_cdp.ingest_inputs(data=BE_MAP,
+                             header = be_header,
+                             meta=dict(units='electrons',
+                                        structure='CCDID:Q:bloom threshold'))
+                be_cdp.savehardcopy()
+
 
         # HER map
 

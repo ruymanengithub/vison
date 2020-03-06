@@ -522,7 +522,6 @@ class MetaCal(object):
             for iX in range(self.NCOLS_FPA):
                 Ckey = 'C_%i%i' % (jY + 1, iX + 1)
                 for Q in self.Quads:
-
                     vals.append(M[Ckey][Q])
 
         return numpystat(vals)
