@@ -983,11 +983,11 @@ class MetaPTC(MetaCal):
                 '\\textbf{WARNING}: Wavelength dependency of G (through B-F) has been removed in'+\
                 ' the following stats.\n',
                 '\\textbf{Non Repeated} Calibrations,\n '+\
-                    'Nr. of measurements (quadrants x tests) = %i\n' % res_GvsTime['NOREPCAL']['N'],
+                    'Nr. of measurements (CCDs x tests) = %i\n' % res_GvsTime['NOREPCAL']['N'],
                 'mean rel. std. of G values per quadrant across tests: %.2f \\%%.\n' % \
                             (res_GvsTime['NOREPCAL']['relstdG']*100.,),
                 '\\textbf{Repeated} Calibrations,\n '+\
-                    'Nr. of measurements (quadrants x tests) = %i\n' % res_GvsTime['REPCAL']['N'],
+                    'Nr. of measurements (CCDs x tests) = %i\n' % res_GvsTime['REPCAL']['N'],
                 'mean rel. std. of G values per quadrant across Tests: %.2f \\%%.\n' % \
                             (res_GvsTime['REPCAL']['relstdG']*100.,),
                 ]
