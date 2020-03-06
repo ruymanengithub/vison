@@ -1014,6 +1014,7 @@ class MetaPTC(MetaCal):
                 figname=figname7))
 
             if self.report is not None:
+
                 self.addFigure2Report(figname7, 
                         figkey=figkey7, 
                         caption='Measured Gain (at 800 nm) vs. detector Temperature,'+\
