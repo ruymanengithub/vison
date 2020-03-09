@@ -677,15 +677,16 @@ class MetaPTC(MetaCal):
 
                     pkey = '%s_%s_%s' % (block, CCDk, Q)
 
-                    _x = i_her[CCDk][Q]['x'].copy()
+                    _x = i_her[CCDk][Q]['x'][10:].copy()
                     _x -= _x.min()
-                    _y = i_her[CCDk][Q]['y'].copy()
+                    _y = i_her[CCDk][Q]['y'][10:].copy()
 
                     if pkey not in self.censored:
 
                         x[pkey] = _x.copy()
                         y[pkey] = _y.copy()
                         labelkeys.append(pkey)
+
 
         HERdict = dict(x=x, y=y, labelkeys=labelkeys)
 
@@ -931,7 +932,7 @@ class MetaPTC(MetaCal):
                     xlabel='Pixel',
                     ylabel='HER [frac]',
                     ylim=[-2.E-4, 5.e-4],
-                    xlim=[9, 15],
+                    xlim=[0, 6],
                     corekwargs=dict(linestyle='-', marker=''),
                     figname=figname5))
 
