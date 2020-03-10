@@ -492,12 +492,12 @@ class MetaPsf(MetaCal):
 
 
         XTkwargs = dict(
-            title='Cross-Talk Comparison',
+            title='Cross-Talk Direct Comparison',
             doLegend=False,
             xlabel='Xtalk - Opt. 800nm',
             ylabel='Xtalk - ROE-TAB',
-            xlim=[-20, 50],
-            ylim=[-20, 50],
+            xlim=[-20, 40],
+            ylim=[-20, 40],
             figname=figname2)
 
         BLOCKcolors = cm.rainbow(np.linspace(0, 1, len(self.flight_blocks)))
