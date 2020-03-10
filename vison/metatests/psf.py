@@ -579,10 +579,22 @@ class MetaPsf(MetaCal):
 
             if self.report is not None:
             
-                captemp4 = '%s: Cross-talk coupling factor measured at %i nm '+\
+                captemp4 = 'Cross-talk coupling factor measured at %i nm '+\
                 'vs. 800 nm.'
 
                 self.addFigure2Report(figname4, 
                         figkey=figkey4, 
-                        caption=captemp4 % (stestname, wave),
+                        caption=captemp4 % wave,
                         texfraction=0.7)
+
+                std_comparisons = []
+
+                for block in self.flight_blocks:
+                    std_comparisons.append(np.nanstd(XT_NMvs800['y'][block]-\
+                            XT_NMvs800['x'][block]))
+
+                avg_std = np.nanmedian(std_comparisons)
+
+                self.report.add_Text('Avg. STD of comparison (%i vs. 800 nm): %.2e ADU' %\
+                        (wave, avg_std))
+
