@@ -510,6 +510,26 @@ class MetaChinj01(MetaCal):
                         'CHINJ01_%s_%s_PROFILES.png' % \
                             (proftype.upper(),ccdhalf.upper()))
 
+    def _extract_NUNHOR_fromPT(self, PT, block, CCDk, Q):
+        """ """
+
+        IG1 = 4.5
+
+        ixblock = self.get_ixblock(PT, block)
+
+        profcol = 'HORPROFS_KEY'
+        prodkey = 'HORPROFILES'
+
+        prof_key = PT[profcol][ixblock][0]
+
+        i_Prof = self.products[prodkey][prof_key].copy()
+            
+        IG1key = 'IG1_%.2fV' % IG1
+
+        _pcq = i_Prof['data'][CCDk][Q].copy()
+        _y = _pcq['y'][IG1key].copy()
+
+        return np.nanstd(_y)/np.nanmean(_y)*100.
 
 
     def dump_aggregated_results(self):
@@ -697,7 +717,7 @@ class MetaChinj01(MetaCal):
             for iCCD in self.CCDs:
                 for kQ in self.Quads:
                     pointcorekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(
-                        linestyle='', marker='.', color=jcolor, ms=1.0)
+                        linestyle='', marker='.', color=jcolor, ms=2.0)
 
 
         for ccdhalf in ccdhalves:
@@ -720,14 +740,17 @@ class MetaChinj01(MetaCal):
 
                 if proftype == 'ver':
                     xlim=[0,50]
+                    ylim=None
                 elif proftype == 'hor':
                     xlim=None
+                    ylim=[0.5,1.5]
 
                 profkwargs = dict(
                     title=title,
                     doLegend=False,
                     xlabel=xlabels_profs[proftype],
                     xlim=xlim,
+                    ylim=ylim,
                     ylabel=ylabels_profs[proftype],
                     figname=figname6,
                     corekwargs=pointcorekwargs)
@@ -752,5 +775,18 @@ class MetaChinj01(MetaCal):
                         texfraction=0.7)
 
 
+        # reporting non-uniformity of injection lines to report
 
+        if self.report is not None:
+
+                NUN_HOR = self.get_FPAMAP_from_PT(self.ParsedTable['CHINJ01'],
+                            extractor=self._extract_NUNHOR_fromPT)
+
+                nun_cdpdict = dict(
+                    caption='CHINJ01: Non-Uniformity of the injection lines, rms, as percentage.',
+                    valformat='%.2f')
+
+                ignore = self.add_StdQuadsTable2Report( 
+                                Matrix = NUN_HOR,
+                                cdpdict = nun_cdpdict)
 
