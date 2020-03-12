@@ -14,13 +14,14 @@ from collections import OrderedDict
 import string as st
 import os
 
+from vison.datamodel import cdp
 from vison.support import files
 from vison.fpa import fpa as fpamod
 
 from vison.metatests.metacal import MetaCal
 from vison.plot import plots_fpa as plfpa
 
-from vison.support import vcal
+from vison.support import vcal, utils
 from vison.datamodel import core as vcore
 from vison.ogse import ogse
 from vison.inject import lib as ilib
@@ -161,6 +162,7 @@ class MetaChinj01(MetaCal):
         self.products['HORPROFILES'] = OrderedDict()
 
         self.init_fignames()
+        self.init_outcdpnames()
 
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
@@ -436,6 +438,27 @@ class MetaChinj01(MetaCal):
 
         return CHdict
 
+    def _extract_INJCURVES_PAR_fromPT(self,PT,block,CCDk,Q):
+        """ """
+        ixblock = self.get_ixblock(PT,block)
+        column = 'METAFIT'
+        ch_key = PT[column][ixblock][0]
+        chfitdf = self.products['METAFIT'][ch_key]
+
+        ixCCD = ['CCD1','CCD2','CCD3'].index(CCDk)+1
+        ixQ = ['E','F','G','H'].index(Q)+1
+
+        ixsel = np.where((chfitdf['CCD'] == ixCCD) & (chfitdf['Q'] == ixQ))
+
+        pars = ['BGD', 'K', 'XT', 'XN', 'A', 'N']
+        trans = dict(BGD='b', K='k', XT='xt', XN='xN', A='a', N='N')
+
+        parsdict = dict()
+        for par in pars:
+            parsdict[trans[par]] = '%.3e' % chfitdf[par].as_matrix()[ixsel][0]
+
+        return parsdict
+
     def _get_XYdict_PROFS(self,proftype, IG1=4.5, Quads=None):
         """ """
 
@@ -510,6 +533,13 @@ class MetaChinj01(MetaCal):
                         'CHINJ01_%s_%s_PROFILES.png' % \
                             (proftype.upper(),ccdhalf.upper()))
 
+    def init_outcdpnames(self):
+
+        if not os.path.exists(self.cdpspath):
+            os.system('mkdir %s' % self.cdpspath)
+
+        self.outcdps['INJCURVES'] = 'CHINJ01_INJCURVES_PAR.json'
+
     def _extract_NUNHOR_fromPT(self, PT, block, CCDk, Q):
         """ """
 
@@ -541,6 +571,9 @@ class MetaChinj01(MetaCal):
             
             self.add_DataAlbaran2Report()
 
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
 
         # Histogram of Slopes [ADU/electrons]
 
@@ -567,12 +600,41 @@ class MetaChinj01(MetaCal):
                         figname=figname1
                         ))
 
+
+
         if self.report is not None:
             self.addFigure2Report(figname1, 
                         figkey=figkey1, 
                         caption='CHINJ01: Charge injection level [ke-] as a function of '+\
                             'calibrated IG1 voltage.', 
                         texfraction=0.7)
+
+        # saving charge injection parameters to a json CDP
+
+        ICURVES_PAR_MAP = self.get_FPAMAP_from_PT(
+                    self.ParsedTable['CHINJ01'],
+                    extractor=self._extract_INJCURVES_PAR_fromPT)
+
+        ic_header = OrderedDict()
+        ic_header['title'] = 'Injection Curves Parameters'
+        ic_header['test'] = 'CHINJ01'
+        ic_header.update(CDP_header)
+        
+        ic_meta = OrderedDict()
+        ic_meta['units'] ='/2^16 ADU',
+        ic_meta['model'] = 'I=b+1/(1+exp(-K(IG1-XT))) * (-A*(IG1-XN)[IG1<XN] + N)'
+        ic_meta['structure'] = ''
+
+        ic_cdp = cdp.Json_CDP(rootname=self.outcdps['INJCURVES'],
+                         path=self.cdpspath)
+
+        ic_cdp.ingest_inputs(data=ICURVES_PAR_MAP,
+                header = ic_header,
+                meta=ic_meta)
+        ic_cdp.savehardcopy()
+
+        stop()
+
 
         # Injection level vs. Calibrated IG1, single plot
 
