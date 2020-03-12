@@ -226,7 +226,7 @@ class CHINJ02(InjTask):
                                   '\\begin{equation}',
                                   'I=b+\\frac{A}{1+e^{K(IDL-X_T)}}',
                                   '\end{equation}'])
-
+        
         DDindices = copy.deepcopy(self.dd.indices)
 
         nObs, nCCD, nQuad = DDindices.shape[0:3]
