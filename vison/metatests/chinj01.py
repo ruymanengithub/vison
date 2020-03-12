@@ -785,7 +785,7 @@ class MetaChinj01(MetaCal):
                 nun_cdpdict = dict(
                     caption='CHINJ01: Non-Uniformity of the injection lines, rms, as percentage.',
                     valformat='%.2f')
-
+                
                 ignore = self.add_StdQuadsTable2Report( 
                                 Matrix = NUN_HOR,
                                 cdpdict = nun_cdpdict)
