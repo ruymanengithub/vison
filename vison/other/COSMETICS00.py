@@ -183,8 +183,8 @@ class COSMETICS00(DarkTask):
                 keyword='masks', Title='COSMETICS00: MASKS', level=0)
 
         DDindices = copy.deepcopy(self.dd.indices)
-
-        nObs, nCCD = DDindices.shape
+        
+        nObs, nCCD, nQuads = DDindices.shape
         #Quads = DDindices.get_vals('Quad')
         CCDs = DDindices.get_vals('CCD')
 
