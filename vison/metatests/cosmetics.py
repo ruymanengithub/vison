@@ -456,7 +456,7 @@ class MetaCosmetics(MetaCal):
 
             if self.report is not None:
 
-                captemp = 'Defects Map across the FPA [Mask Type: "%s". Each bad pixel is '+\
+                captemp = 'Defects Map across the FPA of Type: "%s". Each "bad" pixel is '+\
                         'represented by a dot. As a results, bad pixels are not to scale.'
 
                 self.addFigure2Report(figname1, 

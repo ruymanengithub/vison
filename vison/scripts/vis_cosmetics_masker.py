@@ -187,7 +187,8 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None,
 
 def do_DarkMask(inputs):
     return do_Mask(inputs, 'dkmask', subbgd=True, normbybgd=False,
-                   validrange=[0.0, 1.E6],flagWholeColumns=True)
+                   validrange=[0.0, 1.E6],
+                   flagWholeColumns=True)
 
 
 def do_FlatMask(inputs):
