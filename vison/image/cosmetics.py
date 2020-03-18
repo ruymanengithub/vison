@@ -72,6 +72,39 @@ def get_Thresholding_DefectsMask(maskdata, thresholds):
     return mask
 
 
+def set_extrascans(mask, val=0):
+    """ """
+
+    assert isinstance(mask,np.ndarray)
+
+    soverscan = mask.shape[0]/2-ccdmod.prescan-ccdmod.NcolsCCD
+    withpover = mask.shape[1]/2==(ccdmod.NrowsCCD+ccdmod.voverscan)
+
+    mskccd = ccdmod.CCD(withpover=withpover,overscan=soverscan)
+    mskccd.add_extension(data=mask)
+
+    Qshape = mskccd.shape[0]/2, mskccd.shape[1]/2
+
+    prescan = mskccd.prescan
+
+    for Q in mskccd.Quads:
+
+        Qmaskimg = mskccd.extract_region(Q, area='img', 
+            vstart=0, vend=ccdmod.NrowsCCD,
+            Full=False, canonical=True,
+            extension=-1)
+        
+        Qmask = np.zeros(Qshape,dtype='int32')
+
+        Qmask[prescan:prescan + Qmaskimg.shape[0],
+               0:Qmaskimg.shape[1]] = Qmaskimg.copy()
+
+        mskccd.set_quad(Qmask, Q, canonical=True, extension=-1)
+
+    mask = mskccd.extensions[-1].data.copy()
+
+    return mask
+
 def mask_badcolumns(mask,colthreshold=200):
     """Flags entire column of pixels if N>colthreshold pixels in column are bad. """
 

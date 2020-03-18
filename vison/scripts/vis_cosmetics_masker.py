@@ -122,7 +122,7 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None,
         if subbgd:
 
             for i, iccdobj in enumerate(ccdobjList):
-                bgdmodel = cosmetics.get_bgd_model(iccdobj, extension=-1)
+                bgdmodel = cosmetics.get_bgd_model(iccdobj, extension=-1, margins=0.)
                 iccdobj.sub_bias(bgdmodel, extension=-1)
 
                 if iccdobj.masked:
@@ -133,7 +133,7 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None,
         elif normbybgd:
 
             for i, iccdobj in enumerate(ccdobjList):
-                bgdmodel = cosmetics.get_bgd_model(iccdobj, extension=-1)
+                bgdmodel = cosmetics.get_bgd_model(iccdobj, extension=-1, margins=1.)
                 iccdobj.divide_by_flatfield(bgdmodel, extension=-1)
 
         files.cPickleDumpDictionary(dict(ccdobjs=ccdobjList), tmp_pickf)
@@ -153,6 +153,10 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None,
     # THRESHOLDING
 
     mask = cosmetics.get_Thresholding_DefectsMask(stacked, thresholds)
+
+    # SETTING PRE/OVERSCANS TO ZERO (those can't have cosmetic defects)
+
+    mask = cosmetics.set_extrascans(mask, val=0)
 
     # DISCARDING WHOLE COLUMNS [OPTIONAL]
 
