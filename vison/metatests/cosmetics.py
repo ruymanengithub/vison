@@ -206,12 +206,7 @@ class MetaCosmetics(MetaCal):
 
         sidd = self.parse_single_test_gen(jrep, block, testname, inventoryitem)
 
-        # TEST SCPECIFIC
-        # TO BE ADDED:
-        #   BLOCK, TEST, REPEAT
-        #   wavenm, calibrated HK (voltages),
-        #   GAIN, EGAIN, ALPHA, BLOOM_ADU, BLOOM_E
-        #   REFERENCES TO CURVES
+        # TEST SPECIFIC
 
         CHAMBER = sidd.meta['inputs']['CHAMBER']
         CHAMBER_key = CHAMBER[0]
