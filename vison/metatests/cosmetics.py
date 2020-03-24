@@ -294,15 +294,17 @@ class MetaCosmetics(MetaCal):
 
         return sit
 
-    def _get_extractor_LOGNDEF_fromPT(self, maskkey):
+    def _get_extractor_NDEF_fromPT(self, maskkey, doLog=False):
 
-        def _extract_LOGNDEF_fromPT(PT, block, CCDk, Q):
+        def _extract_NDEF_fromPT(PT, block, CCDk, Q):
             ixblock = self.get_ixblock(PT, block)
             column = 'N%s_%s_Quad%s' % (maskkey, CCDk, Q)
-            LOGNDEF = np.log10(max(PT[column][ixblock][0], 1))
-            return LOGNDEF
+            quantity = max(PT[column][ixblock][0], 1)
+            if doLog:
+                quantity = np.log10(quantity)
+            return quantity
 
-        return _extract_LOGNDEF_fromPT
+        return _extract_NDEF_fromPT
 
     def _get_NBADCOLS_fromPT(self, PT, block, CCDk, Q):
         ixblock = np.where(PT['BLOCK'].data == block)
@@ -469,14 +471,14 @@ class MetaCosmetics(MetaCal):
 
         for maskkey in self.maskkeys:
 
-            NDEFMAP = self.get_FPAMAP_from_PT(self.ParsedTable['COSMETICS00'],
-                                              extractor=self._get_extractor_LOGNDEF_fromPT(maskkey))
+            logNDEFMAP = self.get_FPAMAP_from_PT(self.ParsedTable['COSMETICS00'],
+                    extractor=self._get_extractor_NDEF_fromPT(maskkey,doLog=True))
 
             figkey2 = 'DEFECTS_COUNTS_MAP_%s' % maskkey
             figname2 = self.figs[figkey2]
 
-            self.plot_SimpleMAP(NDEFMAP, **dict(
-                suptitle='NR. DEFECTS: %s' % maskkey,
+            self.plot_SimpleMAP(logNDEFMAP, **dict(
+                suptitle='log NR. DEFECTS: %s' % maskkey,
                 figname=figname2,
                 ColorbarText='log(N)'
             ))
@@ -491,6 +493,16 @@ class MetaCosmetics(MetaCal):
                     caption=captemp % maskkey, 
                     texfraction=0.7)
 
+                ndef_cdpdict = dict(
+                    caption='COSMETICS00: Nr. of defects, mask of type %s' % maskkey,
+                    valformat='%i')
+
+                NDEFMAP = self.get_FPAMAP_from_PT(self.ParsedTable['COSMETICS00'],
+                    extractor=self._get_extractor_NDEF_fromPT(maskkey,doLog=False))
+
+                ignore = self.add_StdQuadsTable2Report( 
+                                Matrix = NDEFMAP,
+                                cdpdict = ndef_cdpdict)
 
 
         # Bad Column Counts
@@ -513,5 +525,13 @@ class MetaCosmetics(MetaCal):
                 figkey=figkey3, 
                 caption='Number of bad columns in each CCD quadrant of the FPA.', 
                 texfraction=0.7)
+
+            nbadcols_cdpdict = dict(
+                    caption='COSMETICS00: Nr. of bad columns (MERGED).',
+                    valformat='%i')
+
+            ignore = self.add_StdQuadsTable2Report( 
+                                Matrix = NBADCOLSMAP,
+                                cdpdict = nbadcols_cdpdict)
 
         
