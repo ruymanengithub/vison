@@ -109,7 +109,7 @@ class ShellPlot(BasicPlot):
 
 
 class XYPlot(BasicPlot):
-
+    
     def __init__(self, data, **kwargs):
 
         super(XYPlot, self).__init__(**kwargs)
@@ -165,9 +165,22 @@ class XYPlot(BasicPlot):
             handle, label = None, None
             if self.meta['doYErrbars']:
                 eyarr = self.data['ey']
-                self.ax.errorbar(xarr, yarr, yerr=eyarr, color='k', fmt='', linestyle='')
+                self.ax.errorbar(xarr, yarr, yerr=eyarr, 
+                    color='k', fmt='', linestyle='')
 
         return handle, label
+
+    def plot_confidence_intervals(self):
+        """ """
+        condict = self.data['confidence'].copy()
+        x = condict['x'].copy()
+        yminus = condict['yminus'].copy()
+        yplus = condict['yplus'].copy()
+
+        conkwargs = self.meta['confidence_kwargs'].copy()
+
+        self.ax.fill_between(x, yminus, yplus, **conkwargs)
+
 
     def populate_axes(self):
 
@@ -193,6 +206,9 @@ class XYPlot(BasicPlot):
             _xticks = self.ax.get_xticks()
             if len(_xticks) > 6:
                 self.ax.set_xticks(_xticks[::2])
+
+        if self.meta['doConfidence']:
+            self.plot_confidence_intervals()
 
         if 'title' in self.meta:
             self.ax.set_title(self.meta['title'])
