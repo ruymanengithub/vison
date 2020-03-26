@@ -633,8 +633,6 @@ class MetaChinj01(MetaCal):
                 meta=ic_meta)
         ic_cdp.savehardcopy()
 
-        stop()
-
 
         # Injection level vs. Calibrated IG1, single plot
 

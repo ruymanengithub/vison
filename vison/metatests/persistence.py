@@ -26,6 +26,7 @@ from vison.ogse import ogse
 from vison.support import files
 from vison.datamodel import ccd as ccdmod
 from vison.datamodel import cdp as cdpmod
+from vison.plot.baseplotclasses import XYPlot
 
 from matplotlib import pyplot as plt
 plt.switch_backend('TkAgg')
@@ -130,6 +131,17 @@ cols2keep = [
     'HK_FPGA_PCB_TEMP_B',
     'HK_RPSU_TEMP_2',
     'HK_RPSU_28V_PRI_I']
+
+class XYPlotPER(XYPlot):
+
+    def populate_axes(self):
+        """ """
+        super(XYPlotPER,self).populate_axes()        
+        self.ax.axvline(x=0., linestyle='--',color='r')
+        self.ax.axhline(y=0, linestyle=':', color='b')
+
+
+
 
 class MetaPersist(MetaCal):
     """ """
@@ -276,7 +288,10 @@ class MetaPersist(MetaCal):
         return sit
 
 
-
+    def plot_XY(self, XYdict, **kwargs):
+        """ """
+        plotobj = self._get_plot_gen(XYPlotPER)
+        plotobj(self, XYdict, **kwargs)
 
     def init_fignames(self):
         """ """
@@ -285,10 +300,94 @@ class MetaPersist(MetaCal):
             os.system('mkdir %s' % self.figspath)
 
 
-        #self.figs['BADCOLS_COUNTS_MAP'] = os.path.join(self.figspath,
-        #                                                'BADCOLS_COUNTS_MAP.png')
+        self.figs['PERSIST_curves'] = os.path.join(self.figspath,
+                        'PERSIST_curves.png')
 
+    
+    def _get_XYdict_PER(self):
+        """ """
 
+        x = dict()
+        y = dict()
+        ey = dict()
+
+        PT = self.ParsedTable['PERSIST01']
+        column = 'PERSIST'
+
+        labelkeys = []
+
+        pmeans = []
+        pmeds = []
+        p25s = []
+        p75s = []
+        pstds = []
+
+        for iblock, block in enumerate(self.flight_blocks):
+
+            ixblock = np.where(PT['BLOCK'] == block)
+            per_key = PT[column][ixblock][0]
+            per = self.products['PERSIST'][per_key]
+
+            if iblock == 0:
+                dtsec = np.concatenate((
+                    per['data']['CCD1']['E']['REF']['deltasec'],
+                    per['data']['CCD1']['E']['LAT']['deltasec']))
+
+            for iCCD, CCD in enumerate(self.CCDs):
+
+                CCDk = 'CCD%i' % CCD
+
+                for kQ, Q in enumerate(self.Quads):
+
+                    pmeans.append(np.concatenate(
+                        (per['data'][CCDk][Q]['REF']['mean'],
+                        per['data'][CCDk][Q]['LAT']['mean']))
+                        )
+                    pmeds.append(np.concatenate(
+                        (per['data'][CCDk][Q]['REF']['p50'],
+                        per['data'][CCDk][Q]['LAT']['p50']))
+                        )
+
+                    p25s.append(np.concatenate(
+                        (per['data'][CCDk][Q]['REF']['p25'],
+                        per['data'][CCDk][Q]['LAT']['p25']))
+                        )
+
+                    p75s.append(np.concatenate(
+                        (per['data'][CCDk][Q]['REF']['p75'],
+                        per['data'][CCDk][Q]['LAT']['p75']))
+                        )
+
+                    pstds.append(np.concatenate(
+                        (per['data'][CCDk][Q]['REF']['std'],
+                        per['data'][CCDk][Q]['LAT']['std']))
+                        )
+
+        Nprof = len(pmeans)
+
+        avmeans = np.nanmedian(np.stack(pmeans), axis=0)
+        avmeds = np.nanmedian(np.stack(pmeds), axis=0)
+        avp25 = np.nanmedian(np.stack(p25s), axis=0)
+        avp75 = np.nanmedian(np.stack(p75s), axis=0)
+        avstd = np.nanmedian(np.stack(pstds), axis=0) / np.sqrt(Nprof)
+
+        x['mean'] = dtsec.copy()
+        y['mean'] = avmeans.copy()
+        ey['mean'] = avstd.copy()
+        labelkeys = ['mean']
+
+        outdict = dict(x=x, y=y, ey=ey,
+            labelkeys=labelkeys,
+            confidence=dict(
+                x = dtsec.copy(),
+                yminus = avp25.copy(),
+                yplus = avp75.copy()
+                )
+            )
+
+        return outdict
+
+    
     def dump_aggregated_results(self):
         """ """
         
@@ -302,3 +401,46 @@ class MetaPersist(MetaCal):
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header['DATE'] = self.get_time_tag()
+
+        # Persistence Main Plot
+
+        PER_singledict = self._get_XYdict_PER()
+
+        figkey1 = 'PERSIST_curves'
+        figname1 = self.figs[figkey1]
+
+        PER_kwargs = dict(
+            title='Average Persistence Curve',
+            doLegend=False,
+            doYErrbars=True,
+            doConfidence=True,
+            xlabel='time [seconds]',
+            ylabel='Excess signal [ADUs]',
+            figname=figname1,
+            corekwargs=dict(
+                mean=dict(linestyle='-',marker='o',color='b'))
+            )
+
+        PER_kwargs['confidence_kwargs'] = dict(
+            color='g',
+            alpha=0.2
+            )
+
+        self.plot_XY(PER_singledict, **PER_kwargs)
+
+        if self.report is not None:
+            self.addFigure2Report(figname1,
+                figkey=figkey1,
+                caption='PERSIST01: Persistence plot, stacked across all 144 '+\
+                    'quadrants in the FPA. The shown signal is the average '+\
+                    'within the saturation mask, minus the background, for '+\
+                    'the 3 frames acquired before and after the saturation '+\
+                    '(at t=0), stacked by the median across the 144 quadrants '+\
+                    'in the FPA. The green shaded area marks the average extent '+\
+                    'of the 25 to 75 percentile of pixel values within the mask. '+\
+                    'The error bars show the (average) standard deviation '+\
+                    'divided by sqrt(144), to give an idea of the statistical '+\
+                    'error. No significant latent is measured in this test.',
+                texfraction=1.)
+
+
