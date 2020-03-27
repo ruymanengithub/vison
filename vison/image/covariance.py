@@ -184,7 +184,8 @@ def get_cov_maps(ccdobjList, Npix=4, vstart=0, vend=2066,
 
     maxbadfrac = 0.2
     estimator = 'median'
-    fcorr = f_get_corrmap
+    corefunc = f_get_corrmap
+    doCorrClip = False
     Quads = ccdobjList[0].Quads
 
     Nframes = len(ccdobjList)
@@ -230,14 +231,24 @@ def get_cov_maps(ccdobjList, Npix=4, vstart=0, vend=2066,
                 else:
                     try:
                         # if Q=='F': debug=True #TEST
-                        corrmap, mu, var = fcorr(sq1, sq2, Npix, submodel=True,
+                        corrmap, mu, var = corefunc(sq1, sq2, Npix, submodel=True,
                                                         estimator=estimator,
                                                         clipsigma=clipsigma,
                                                        debug=debug)
 
+                        if doCorrClip:
+                            corrclip = get_sigmaclipcorr(var, clipsigma, estimator,
+                                dims = sq1.shape)
+                            corrmap /= corrclip
+
                         corrmapv[Q][:, :, iP] = corrmap.copy()
                         muv[Q][iP] = mu
                         varv[Q][iP] = var
+
+                        
+
+
+
                     except BaseException:
                         pass
 
