@@ -54,7 +54,7 @@ def f_get_corrmap(sq1, sq2, N, submodel=False, estimator='median', clipsigma=4.,
 
     difimg = sq1 - sq2
 
-    difimg -= np.median(difimg)  # ?
+    difimg -= np.nanmedian(difimg)  # ?
 
     if submodel:
         #t1 = time()
@@ -67,7 +67,7 @@ def f_get_corrmap(sq1, sq2, N, submodel=False, estimator='median', clipsigma=4.,
     NAXIS2 = difimg.shape[1]
 
 
-    var = np.nanvar(fclipsig(difimg, clipsigma))
+    vardif = np.nanvar(fclipsig(difimg, clipsigma))
     mu = np.nanmedian(sq1)
 
     corrmap = np.zeros((N, N), dtype='float32')
@@ -76,7 +76,6 @@ def f_get_corrmap(sq1, sq2, N, submodel=False, estimator='median', clipsigma=4.,
     y = np.arange(0, NAXIS2 - N)
 
     x2d, y2d = np.meshgrid(x, y, indexing='ij')
-
 
     if estimator == 'median':
         festimator = np.nanmedian
@@ -92,7 +91,7 @@ def f_get_corrmap(sq1, sq2, N, submodel=False, estimator='median', clipsigma=4.,
             EX = festimator(fclipsig(difimg[x2d, y2d], clipsigma))
             EY = festimator(fclipsig(difimg[x2d + i, y2d + j], clipsigma))
 
-            corrmap[i, j] = (EXY - EX * EY) / var
+            corrmap[i, j] = (EXY - EX * EY) / vardif
             # corrmap[i,j] = j # test
 
     # better keep corrmap[0,0] for debugging purposes
@@ -101,7 +100,7 @@ def f_get_corrmap(sq1, sq2, N, submodel=False, estimator='median', clipsigma=4.,
     if debug:
         stop()
 
-    return corrmap, mu, var
+    return corrmap, mu, vardif
 
 def f_get_corrmap_v2(sq1, sq2, N, submodel=False, estimator='median', clipsigma=4.,
         debug=False):
@@ -117,7 +116,7 @@ def f_get_corrmap_v2(sq1, sq2, N, submodel=False, estimator='median', clipsigma=
 
     difimg = sq1 - sq2
 
-    difimg -= np.median(difimg)  # ?
+    difimg -= np.nanmedian(difimg)  # ?
 
     if submodel:
         #t1 = time()
@@ -129,7 +128,7 @@ def f_get_corrmap_v2(sq1, sq2, N, submodel=False, estimator='median', clipsigma=
     NAXIS1 = difimg.shape[0]
     NAXIS2 = difimg.shape[1]
 
-    var = np.nanvar(fclipsig(difimg, clipsigma))
+    vardif = np.nanvar(fclipsig(difimg, clipsigma))
     mu = np.nanmedian(sq1)
 
     corrmap = np.zeros((N, N), dtype='float32')
@@ -155,38 +154,51 @@ def f_get_corrmap_v2(sq1, sq2, N, submodel=False, estimator='median', clipsigma=
             difimgij -= np.nanmean(difimgij)
 
             corrmap[i,j] = festimator(fclipsig(difimg0 * difimgij, 
-                    clipsigma)) / var
-
+                    clipsigma)) / vardif
 
     if debug:
         stop()
 
-    return corrmap, mu, var
+    return corrmap, mu, vardif
 
-def get_sigmaclipcorr(var, clipsigma, estimator, dims=None):
+def get_sigmaclipcorr(vardif, clipsigma, estimator, dims=None):
     """ """
 
     if dims is None:
         dims = (ccdmod.NcolsCCD,ccdmod.NrowsCCD)
 
+    if estimator == 'median':
+        festimator = np.nanmedian
+    elif estimator == 'mean':
+        festimator = np.nanmean
+
     QDiffnoise = np.random.normal(
-            loc=0.0, scale=np.sqrt(var*2.), 
+            loc=0.0, scale=vardif**0.5, 
             size=dims)
 
-    sigvar = np.nanvar(QDiffnoise)
+    
+    QDiffnoise -= np.nanmean(QDiffnoise)
 
-    return sigvar / var
+    clipvar = festimator(fclipsig(QDiffnoise * QDiffnoise, 
+                    clipsigma))
+    clipcorr = clipvar / vardif
+    print('var= %.3f, clipcorr = %.3f' % (vardif, clipcorr))
+
+    return clipcorr
 
 
 def get_cov_maps(ccdobjList, Npix=4, vstart=0, vend=2066, 
-        clipsigma=4., doTest=False, debug=False):
+        clipsigma=4., covfunc='ver1', doBiasCorr=False, 
+        central='median', doTest=False, debug=False):
     """ """
 
     maxbadfrac = 0.2
-    estimator = 'median'
-    corefunc = f_get_corrmap
-    doCorrClip = False
+    estimator = central
+    corefuncs = dict(ver1=f_get_corrmap,
+        ver2=f_get_corrmap_v2)
+    corefunc = corefuncs[covfunc]
     Quads = ccdobjList[0].Quads
+
 
     Nframes = len(ccdobjList)
     Npairs = Nframes / 2
@@ -204,6 +216,14 @@ def get_cov_maps(ccdobjList, Npix=4, vstart=0, vend=2066,
     varv = dict()
     for Q in Quads:
         varv[Q] = tvarv.copy()
+
+
+    nomshape = (ccdobjList[0].NcolsCCD,ccdobjList[0].NrowsCCD)
+    if doBiasCorr:
+        corrclip = get_sigmaclipcorr(1., clipsigma, estimator,
+            dims = nomshape)
+    else:
+        corrclip = 1.
 
     if not doTest:
 
@@ -231,23 +251,17 @@ def get_cov_maps(ccdobjList, Npix=4, vstart=0, vend=2066,
                 else:
                     try:
                         # if Q=='F': debug=True #TEST
-                        corrmap, mu, var = corefunc(sq1, sq2, Npix, submodel=True,
+                        corrmap, mu, vardif = corefunc(sq1, sq2, Npix, submodel=True,
                                                         estimator=estimator,
                                                         clipsigma=clipsigma,
                                                        debug=debug)
 
-                        if doCorrClip:
-                            corrclip = get_sigmaclipcorr(var, clipsigma, estimator,
-                                dims = sq1.shape)
+                        if doBiasCorr:
                             corrmap /= corrclip
 
                         corrmapv[Q][:, :, iP] = corrmap.copy()
                         muv[Q][iP] = mu
-                        varv[Q][iP] = var
-
-                        
-
-
+                        varv[Q][iP] = vardif / 2.
 
                     except BaseException:
                         pass

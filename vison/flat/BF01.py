@@ -62,6 +62,9 @@ def process_one_fluence_covmaps(q, dd, dpath, CCDs, jCCD, ku, ulabels,
     labels = dd.mx['label'][:, 0].copy()
 
     Npix = kwargs['Npix']
+    covfunc = kwargs['covfunc']
+    doBiasCorr = kwargs['doBiasCorr']
+    central = kwargs['central']
     vstart = kwargs['vstart']
     vend = kwargs['vend']
     clipsigma = kwargs['clipsigma']
@@ -82,6 +85,7 @@ def process_one_fluence_covmaps(q, dd, dpath, CCDs, jCCD, ku, ulabels,
 
     icovdict = covlib.get_cov_maps(
         ccdobjList, Npix=Npix, vstart=vstart, vend=vend, clipsigma=clipsigma,
+        covfunc = covfunc, doBiasCorr=doBiasCorr,central=central,
         doTest=False, debug=False)
     q.put([jCCD, ku, icovdict])
 
@@ -94,6 +98,9 @@ class BF01_inputs(inputs.Inputs):
         ('wavelength', ([int], 'Wavelength')),
         ('Npix', ([int], 'Number of Pixels (linear) to consider for Covariance Matrix')),
         ('clipsigma', ([float], 'Nsigma clipping.')),
+        ('covfunc', ([str], 'ID of the covariance function.')),
+        ('doBiasCorr', ([bool], 'Do correction bias for sigma clipping.')),
+        ('central', ([str], 'Central Estimator.')),
         ('surrogate', ([str], 'Test to use as surrogate'))
     ])))
 
@@ -234,10 +241,14 @@ class BF01(PTC0X):
 
         Npix = self.inputs['Npix']
         clipsigma = self.inputs['clipsigma']
+        covfunc = self.inputs['covfunc']
+        doBiasCorr = self.inputs['doBiasCorr']
+        central = self.inputs['central']
 
         # labels should be the same accross CCDs. PATCH.
         labels = self.dd.mx['label'][:, 0].copy()
         ulabels = np.unique(labels)
+        #ulabels = ['col003'] # TEST
         nL = len(ulabels)
 
         # vstart and vend should be the same for all OBSIDs in test
@@ -297,7 +308,8 @@ class BF01(PTC0X):
             # doTest=False
 
             kwargs = dict(Npix=Npix, vstart=vstart, vend=vend, 
-                clipsigma=clipsigma)
+                clipsigma=clipsigma, covfunc=covfunc,
+                doBiasCorr=doBiasCorr,central=central)
 
             arglist = []
 
@@ -371,6 +383,8 @@ class BF01(PTC0X):
                             np.arange(Npix - 1)
                         profscov_1D.data['ver'][CCDk][Q]['y'][ulabel] = \
                             np.arange(Npix - 1)
+
+        #stop() # TESTS
 
         # PLOTS
 
