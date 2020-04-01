@@ -263,6 +263,8 @@ def get_cov_maps(ccdobjList, Npix=4, vstart=0, vend=2066,
                         muv[Q][iP] = mu
                         varv[Q][iP] = vardif / 2.
 
+                        #stop()
+
                     except BaseException:
                         pass
 
