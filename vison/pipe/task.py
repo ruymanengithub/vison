@@ -801,7 +801,8 @@ class Task(object):
 
         def _loadCDP(cdpkey, msg):
             CDPData = calibration.load_FITS_CDPs(
-                self.inputs['inCDPs'][cdpkey], ccd.CCD,
+                self.inputs['inCDPs'][cdpkey], 
+                ccd.CCD,
                 getallextensions=True,
                 withpover=self.ccdcalc.withpover)
             cdpstr = self.inputs['inCDPs'][cdpkey].__str__()

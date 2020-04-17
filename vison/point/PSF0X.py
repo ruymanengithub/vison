@@ -300,9 +300,55 @@ class PSF0X(PT.PointTask):
             ixsel = np.where(self.dd.mx['label'][:, 0] == ulabel)[0][0]
             ObsList.append(ixsel)
 
-        PT.PointTask.lock_on_stars(self, iObs=ObsList,
-                                   labels=ulabels,
-                                   sexconfig=sexconfig)
+        PT.PointTask.lock_on_stars(self, 
+            iObs=ObsList,
+            labels=ulabels,
+            sexconfig=sexconfig)
+
+        self._aprox_missing_locks()
+
+    def relock(self):
+        """ """
+        PT.PointTask.relock(self, check_ok=False)
+        self._aprox_missing_locks()
+
+    def _aprox_missing_locks(self):
+        """ """
+        lock_tb_cdp = files.cPickleRead(self.dd.products['LOCK_TB_CDP'])
+        CCDs = self.ogse.startrackers.keys()
+        ulabels = self.ogse.startrackers[CCDs[0]].keys()
+
+        enough_stars = 10
+
+        lock_tb = lock_tb_cdp['data']['LOCK_TB'].copy()
+
+        Nrows = len(lock_tb)
+
+        for iCCD,CCDk in enumerate(CCDs):
+            for k, ulabel in enumerate(ulabels):
+                
+                jj = np.where((lock_tb.CCD==iCCD+1) & (lock_tb.LABEL==k))[0][0]
+
+                if lock_tb.NMATCH[jj] < enough_stars:
+                    ixgood = np.where((lock_tb.CCD==iCCD+1) &\
+                     (lock_tb.NMATCH>=enough_stars))[0]
+                    jjgood = ixgood[np.abs(ixgood-jj).argmin()]
+
+                    kgood = lock_tb.LABEL[jjgood]
+                    ulabelgood = ulabels[kgood]
+
+                    self.ogse.startrackers[CCDk][ulabel] = \
+                        self.ogse.startrackers[CCDk][ulabelgood].copy()
+
+                    if self.log is not None:
+                        msg = 'WARNING: lock of %s/%s replaced with %s/%s' % \
+                            (CCDk, ulabel, CCDk, ulabelgood)
+                        self.log.info(msg)
+
+                else:
+                    pass
+
+
 
     def prep_data(self):
         """
@@ -338,8 +384,12 @@ class PSF0X(PT.PointTask):
             self.dd.indices[0].len = 1
 
         super(PSF0X, self).prepare_images(
-            doExtract=True, doBadPixels=True,
-            doMask=True, doOffset=True, doBias=True, doFF=True)
+            doExtract=True, 
+            doBadPixels=True,
+            doMask=True, 
+            doOffset=True, 
+            doBias=False, 
+            doFF=True)
 
         dIndices = copy.deepcopy(self.dd.indices)
 
