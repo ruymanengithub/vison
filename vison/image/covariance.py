@@ -37,8 +37,12 @@ def get_model2d(img, pdegree=5, doFilter=False, doBin=True,
 
     return regmodel
 
-def fclipsig(img, clipsigma): 
-    return stats.sigmaclip(img, clipsigma, clipsigma).clipped
+def fclipsig(img, clipsigma=None):
+    
+    if clipsigma is not None:
+        return stats.sigmaclip(img, clipsigma, clipsigma).clipped
+    else:
+        return img.flatten().copy()
 
 def f_get_corrmap(sq1, sq2, N, submodel=False, estimator='median', clipsigma=4.,
         debug=False):
@@ -127,9 +131,20 @@ def f_get_corrmap_v2(sq1, sq2, N, submodel=False, estimator='median', clipsigma=
 
     NAXIS1 = difimg.shape[0]
     NAXIS2 = difimg.shape[1]
+    
+    ixnan = np.where(difimg.mask==True)
+    msksq1 = sq1.data.copy()
+    msksq1[ixnan] = np.nan
+    msksq2 = sq2.data.copy()
+    msksq2[ixnan] = np.nan
+    mskdifimg = difimg.data.copy()
+    mskdifimg[ixnan] = np.nan
 
-    vardif = np.nanvar(fclipsig(difimg, clipsigma))
-    mu = np.nanmedian(sq1)
+    _mskdifimg = mskdifimg.copy()
+    _mskdifimg[ixnan] = clipsigma * 10 * np.nanstd(mskdifimg)
+
+    vardif = np.nanvar(fclipsig(_mskdifimg, clipsigma))
+    mu = np.nanmean([np.nanmedian(msksq1),np.nanmedian(msksq2)])
 
     corrmap = np.zeros((N, N), dtype='float32')
 
@@ -144,16 +159,101 @@ def f_get_corrmap_v2(sq1, sq2, N, submodel=False, estimator='median', clipsigma=
     elif estimator == 'mean':
         festimator = np.nanmean
     
-    difimg0 = difimg[x2d, y2d].copy()
-    difimg0 -= np.nanmean(difimg[x2d, y2d])
+    difimg0 = mskdifimg[x2d, y2d].copy()
+    difimg0 -= np.nanmean(difimg0)
 
     for i in range(N):
         for j in range(N):
 
-            difimgij = difimg[x2d + i, y2d + j]
+            difimgij = mskdifimg[x2d + i, y2d + j]
             difimgij -= np.nanmean(difimgij)
 
-            corrmap[i,j] = festimator(fclipsig(difimg0 * difimgij, 
+            product = difimg0 * difimgij
+            product[np.where(np.isnan(product))] = clipsigma*10.*vardif
+
+            corrmap[i,j] = festimator(fclipsig(product, 
+                    clipsigma)) / vardif
+
+    if debug:
+        stop()
+    
+    return corrmap, mu, vardif
+
+
+def f_get_corrmap_tests(sq1, sq2, N, submodel=False, estimator='median', clipsigma=4.,
+        debug=False):
+    """ """
+    from time import time
+    #from astropy.io import fits as fts
+    # BY-PASS on TESTS
+    # corrmap = np.zeros((N,N),dtype='float32')+0.01 # TESTS
+    #corrmap[0,0] = 1.-0.01
+    #mu = 1.
+    #var = 1.
+    # return corrmap, mu, var
+
+    #difimg = sq1 - sq2
+
+    #difimg -= np.nanmedian(difimg)  # ?
+
+    def f_submodel(img):
+        model2d = get_model2d(img, pdegree=5, doBin=True, binsize=300, doFilter=False)
+        img -= model2d.imgmodel
+        fluence = np.nanmean(model2d.imgmodel)
+        return img, fluence
+
+    if submodel:
+
+        t1 = time()
+        ssq1, flu1 = f_submodel(sq1)
+        ssq2, flu2 = f_submodel(sq2)
+        t2 = time()
+        print('%.1f seconds in computing 2D models...' % (t2-t1,))
+
+    mu = np.mean([flu1,flu2])
+
+    difimg = ssq1 * mu/flu1 - ssq2 * (mu/flu2)
+    
+    NAXIS1 = difimg.shape[0]
+    NAXIS2 = difimg.shape[1]
+
+    mskdifimg = difimg.data.copy()
+    ixnan = np.where(difimg.mask==True)
+    mskdifimg[ixnan] = np.nan
+
+
+    _mskdifimg = mskdifimg.copy()
+    _mskdifimg[ixnan] = clipsigma * 10 * np.nanstd(mskdifimg) 
+    # setting masked values to an arbitrarily large value so they get clipped
+    # clipping can't work with nans..
+
+    vardif = np.nanvar(fclipsig(_mskdifimg, clipsigma))
+
+    corrmap = np.zeros((N, N), dtype='float32')
+
+    x = np.arange(0, NAXIS1 - N)
+    y = np.arange(0, NAXIS2 - N)
+
+    x2d, y2d = np.meshgrid(x, y, indexing='ij')
+
+    if estimator == 'median':
+        festimator = np.nanmedian
+    elif estimator == 'mean':
+        festimator = np.nanmean
+    
+    difimg0 = mskdifimg[x2d, y2d].copy()
+    difimg0 -= np.nanmean(difimg0)
+
+    for i in range(N):
+        for j in range(N):
+
+            difimgij = mskdifimg[x2d + i, y2d + j]
+            difimgij -= np.nanmean(difimgij)
+
+            product = difimg0 * difimgij
+            product[np.where(np.isnan(product))] = clipsigma*10.*vardif
+
+            corrmap[i,j] = festimator(fclipsig(product, 
                     clipsigma)) / vardif
 
     if debug:
@@ -182,7 +282,7 @@ def get_sigmaclipcorr(vardif, clipsigma, estimator, dims=None):
     clipvar = festimator(fclipsig(QDiffnoise * QDiffnoise, 
                     clipsigma))
     clipcorr = clipvar / vardif
-    print('var= %.3f, clipcorr = %.3f' % (vardif, clipcorr))
+    #print('var= %.3f, clipcorr = %.3f' % (vardif, clipcorr))
 
     return clipcorr
 
@@ -195,7 +295,8 @@ def get_cov_maps(ccdobjList, Npix=4, vstart=0, vend=2066,
     maxbadfrac = 0.2
     estimator = central
     corefuncs = dict(ver1=f_get_corrmap,
-        ver2=f_get_corrmap_v2)
+        ver2=f_get_corrmap_v2,
+        tests=f_get_corrmap_tests)
     corefunc = corefuncs[covfunc]
     Quads = ccdobjList[0].Quads
 
@@ -251,14 +352,21 @@ def get_cov_maps(ccdobjList, Npix=4, vstart=0, vend=2066,
                 else:
                     try:
                         # if Q=='F': debug=True #TEST
-                        corrmap, mu, vardif = corefunc(sq1, sq2, Npix, submodel=True,
-                                                        estimator=estimator,
-                                                        clipsigma=clipsigma,
-                                                       debug=debug)
+                        #mskdsq1 = sq1.data.copy()
+                        #mskdsq1[np.where(sq1.mask==True)] = np.nan
+
+                        #mskdsq2 = sq2.data.copy()
+                        #mskdsq2[np.where(sq2.mask==True)] = np.nan                        
+
+                        corrmap, mu, vardif = corefunc(sq1, sq2, Npix, 
+                                                submodel=True,
+                                                estimator=estimator,
+                                                clipsigma=clipsigma,
+                                                debug=debug)
 
                         if doBiasCorr:
                             corrmap /= corrclip
-
+                        
                         corrmapv[Q][:, :, iP] = corrmap.copy()
                         muv[Q][iP] = mu
                         varv[Q][iP] = vardif / 2.
