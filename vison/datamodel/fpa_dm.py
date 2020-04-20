@@ -34,16 +34,16 @@ for j in range(1, NSLICES + 1):
 
         ext_ids.append((ix + 0, j, i, 'E', (0, 0)))
         ext_ids.append((ix + 1, j, i, 'F', (1, 0)))
-        ext_ids.append((ix + 2, j, i, 'H', (0, 1)))
-        ext_ids.append((ix + 3, j, i, 'G', (1, 1)))
+        ext_ids.append((ix + 2, j, i, 'G', (1, 1)))
+        ext_ids.append((ix + 3, j, i, 'H', (0, 1)))
     for i in [4, 5, 6]:
 
         ix = (j - 1) * 6 * 4 + (i - 1) * 4 + 1
 
         ext_ids.append((ix + 0, j, i, 'G', (0, 0)))
         ext_ids.append((ix + 1, j, i, 'H', (1, 0)))
-        ext_ids.append((ix + 2, j, i, 'F', (0, 1)))
-        ext_ids.append((ix + 3, j, i, 'E', (1, 1)))
+        ext_ids.append((ix + 2, j, i, 'E', (1, 1)))
+        ext_ids.append((ix + 3, j, i, 'F', (0, 1)))
 
 
 PRIhdr_dict = OrderedDict()
@@ -60,6 +60,7 @@ EXThdr_dict['BZERO'] = 32768
 EXThdr_dict['EXPTIME'] = 0
 EXThdr_dict['CCDID'] = '0-0'
 EXThdr_dict['QUADID'] = 'A'
+EXThdr_dict['EXTNAME'] = '0-0.A'
 EXThdr_dict['PRESCANX'] = 51
 EXThdr_dict['OVRSCANX'] = 29
 EXThdr_dict['GAIN'] = 3.5
@@ -85,6 +86,7 @@ class FPA_LE1(object):
         if infits is not None:
             self.loadfromFITS(infits)
         self.fpamodel = fpamod.FPA()
+        self.fillval = 0
 
     def add_extension(self, data, header, label=None, headerdict=None):
         """ """
@@ -93,18 +95,30 @@ class FPA_LE1(object):
 
         self.extensions.append(ccdmod.Extension(data, header, label, headerdict))
 
+    def set_extension(self, iext, data, header, label=None, headerdict=None):
+        """ """
+        if data is not None:
+            assert data.shape == self.Qshape
+
+        self.extensions[iext] = ccdmod.Extension(data, header, label, headerdict)
+
+
     def del_extension(self, ixextension):
         """ """
         self.extensions.pop(ixextension)
 
-    def initialise_as_zeroes(self):
+    def initialise_as_blank(self, fillval=None):
         """ """
+
+        if fillval is None:
+            fillval = self.fillval
+
         headerdict0 = PRIhdr_dict.copy()
 
         self.add_extension(data=None, header=None, label=None, headerdict=headerdict0)
 
         for iext in range(1, self.NEXTENSIONS):
-            data = np.zeros((self.QNAXIS1, self.QNAXIS2), dtype='float32')
+            data = np.zeros((self.QNAXIS1, self.QNAXIS2), dtype='float32')+fillval
             header = None
             headerdict = EXThdr_dict.copy()
 
@@ -112,6 +126,7 @@ class FPA_LE1(object):
 
             headerdict['CCDID'] = '%i-%i' % (_extid[1], _extid[2])
             headerdict['QUADID'] = _extid[3]
+            headerdict['EXTNAME'] = '%s.%s' % (headerdict['CCDID'],headerdict['QUADID'])
 
             self.add_extension(data, header, label=None, headerdict=headerdict)
 
@@ -227,7 +242,7 @@ class FPA_LE1(object):
 
     def _padd_extra_soverscan(self, Qdata):
         """ """
-        pQdata = np.zeros((self.QNAXIS1, self.QNAXIS2), dtype=Qdata.dtype)
+        pQdata = np.zeros((self.QNAXIS1, self.QNAXIS2), dtype=Qdata.dtype)+self.fillval
         pQdata[0:Qdata.shape[0], 0:Qdata.shape[1]] = Qdata.copy()
         return pQdata
 
@@ -242,11 +257,19 @@ class FPA_LE1(object):
             flip = os_coo
 
             Qdata = ccdobj.get_quad(Q, canonical=True, extension=inextension)
-            pQdata = self._padd_extra_soverscan(Qdata)
 
-            pQdata = self.fpamodel.flip_img(pQdata, flip)
+            if Qdata.shape[0] < self.QNAXIS1:
+                Qdata = self._padd_extra_soverscan(Qdata)
 
-            self.extensions[extix].data = pQdata.copy()
+            Qdata = self.fpamodel.flip_img(Qdata, flip)
+            
+            _extid = self.get_extid(CCDID,Q)
+            
+            extname = '%i-%i.%s' % (_extid[1],_extid[2],_extid[3])
+            
+            self.extensions[extix].data = Qdata.copy()
+            self.extensions[extix].header['EXTNAME'] = extname
+
 
     def _core_funct_simul(self, ccdobj, CCDID=None, simputs=None):
         """ """
@@ -267,6 +290,20 @@ class FPA_LE1(object):
                 kccdobj = self._core_funct_simul(kccdobj, CCDID, simputs)
 
                 self.set_ccdobj(kccdobj, CCDID, inextension=-1)
+
+    def apply_function_to_ccds(self, ccdfunction, **kwargs):
+        """ """
+
+        for jY in range(1, self.fpamodel.NSLICES + 1):
+            for iX in range(1, self.fpamodel.NSLICES + 1):
+                CCDID = 'C_%i%i' % (jY, iX)
+                #print('Simulating CCD: %s' % CCDID)
+                kccdobj = self.get_ccdobj(CCDID)
+
+                kccdobj = ccdfunction(kccdobj, **kwargs)
+
+                self.set_ccdobj(kccdobj, CCDID, inextension=-1)
+
 
 
 def test1():

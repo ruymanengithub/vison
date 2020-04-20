@@ -245,7 +245,7 @@ class MetaChinj02(MetaCal):
 
     def _extract_IDLTHRESH_fromPT(self, PT, block, CCDk, Q):
 
-        ixblock = np.where(PT['BLOCK'].data == block)
+        ixblock = self.get_ixblock(PT, block)
         column = 'FIT_IDL_THRESH_%s_Quad%s' % (CCDk, Q)
         if len(ixblock[0]) > 0:
             idl_thresh = np.nanmedian(PT[column][ixblock])
@@ -265,6 +265,12 @@ class MetaChinj02(MetaCal):
     def dump_aggregated_results(self):
         """ """
 
+        if self.report is not None:
+            self.report.add_Section(keyword='dump', 
+                Title='Aggregated Results', level=0)
+            
+            self.add_DataAlbaran2Report()
+
         # Histogram of IDL_THRESH
 
         # Amplitude vs. calibrated IG1
@@ -276,6 +282,17 @@ class MetaChinj02(MetaCal):
         IDLTHRESHMAP = self.get_FPAMAP_from_PT(self.ParsedTable['CHINJ02'],
                                                extractor=self._extract_IDLTHRESH_fromPT)
 
+        figkey1 = 'IDL_THRESH_MAP'
+        figname1 = self.figs[figkey1]
+
         self.plot_SimpleMAP(IDLTHRESHMAP, **dict(
             suptitle='CHINJ02: IDL THESHOLD',
-            figname=self.figs['IDL_THRESH_MAP']))
+            figname=figname1,
+            ColorbarText='Volts'))
+
+        if self.report is not None:
+            self.addFigure2Report(figname1, 
+                        figkey=figkey1, 
+                        caption='CHINJ02: IDL injection threshold, in Volts.', 
+                        texfraction=0.7)
+

@@ -35,7 +35,7 @@ matplotlib.rcParams['image.interpolation'] = 'none'
 import matplotlib.cm as cm
 from mpl_toolkits.mplot3d import Axes3D
 
-from vison.plot.baseplotclasses import BasicPlot, XYPlot, CCD2DPlotYvsX
+from vison.plot.baseplotclasses import BasicPlot #, XYPlot, CCD2DPlotYvsX
 # END IMPORT
 
 
@@ -347,8 +347,10 @@ class FpaHeatMap(BasicPlot):
         if self.meta['doColorbar']:
             #cbar_ax = self.fig.add_axes([0.85, 0.15, 0.05, 0.7])
             #plt.colorbar(cax=cbar_ax, mappable=self.mappables[0],orientation='vertical')
-            self.fig.colorbar(self.mappable, ax=self.ax,
+            ax_cbar = self.fig.colorbar(self.mappable, ax=self.ax,
                               orientation='vertical', fraction=.1)
+            if 'ColorbarText' in self.meta.keys():
+                ax_cbar.set_label(self.meta['ColorbarText'])
 
 
 class FpaFindingChart(FpaHeatMap):

@@ -71,6 +71,7 @@ class FpaTask(task.Task):
         self.type = 'Fpa'
         self.HKKeys = []
         self.CDP_lib = dict()
+        self.incdps = dict()
         self.figdict = dict()
         if not hasattr(self, 'subtasks'):
             self.subtasks = [()]
@@ -147,7 +148,9 @@ class FpaTask(task.Task):
         Errors = False
 
         self.CDP_header = OrderedDict(ID=self.ID,
-                                      vison=__version__)
+                                      vison=__version__,
+                                      FPA=self.fpa.FPA_MAP.copy())
+
 
         # INPUTS
 
@@ -169,6 +172,7 @@ class FpaTask(task.Task):
             cleantexafter = self.inputs['cleantexafter']
         except KeyError:
             cleantexafter = False
+
 
         DataDictFile = os.path.join(resultspath, '%s_DataDict.pick' % testkey)
         reportobjFile = os.path.join(resultspath, '%s_Report.pick' % testkey)
@@ -206,9 +210,11 @@ class FpaTask(task.Task):
             # Initialising Report Object
 
             if todo_flags['report']:
-
+                
                 self.report = Report(TestName=testkey, Model=self.Model,
-                                     Reference=self.TestReference)
+                                     Reference=self.TestReference,
+                                     doDraft = self.inputs['doDraftReport'])
+
                 self.report.add_Section(
                     keyword='init', Title='Inputs \& Data Ingestion', level=0)
                 self.add_inputs_to_report()
@@ -301,7 +307,7 @@ class FpaTask(task.Task):
         OBSID_lims = self.inputs['OBSID_lims']
         #structure = self.inputs['structure']
         explogf = self.inputs['explogf']
-
+        
         explog = pilib.loadexplogs(explogf, elvis=self.elvis, addpedigree=True,
                                    datapath=datapath)
 
@@ -351,8 +357,15 @@ class FpaTask(task.Task):
 
         self.dd = fpatasklib.DataDict_builder(explog, self.inputs)
 
+        self.load_references()
+
         if not checkreport['checksout']:
             self.dd.flags.add('MISSDATA')
+
+    def load_references(self):
+        """ """
+        raise NotImplementedError("child class implements abstract method")
+
 
     def load_LE1(self, LE1fits):
         """ """
@@ -364,7 +377,7 @@ class FpaTask(task.Task):
             self.report.add_Section(
                 keyword='check_data', Title='Data Validation', level=0)
 
-    def iterate_over_CCDs(self, LE1, method, **kwargs):
+    def iterate_over_CCDs_inLE1(self, LE1, _method, **kwargs):
         """ """
 
         for jY in range(self.NSLICES_FPA):
@@ -374,9 +387,9 @@ class FpaTask(task.Task):
                 _kwargs = dict(LE1=LE1, CCDID=CCDID)
                 _kwargs.update(kwargs)
 
-                method(self, **_kwargs)
+                _method(self, **_kwargs)
 
-    def iterate_over_CCDs_parallel(self, LE1, method, **kwargs):
+    def iterate_over_CCDs_parallel_inLE1(self, LE1, method, **kwargs):
         """DOES NOT WORK!!"""
 
         arglist = []
@@ -523,26 +536,29 @@ class FpaTask(task.Task):
 
     def add_StandardQuadsTable(self, extractor, cdp=None, cdpdict=None):
         """ """
+        
+        defcdpdict = dict(TBkey = 'TB',
+            meta = dict(),
+            CDP_header = dict(),
+            header_title = 'generic title',
+            CDP_KEY = 'UNK',
+            caption = 'CAPTION PENDING',
+            valformat = '%.2e')
 
         if cdpdict is not None:
 
             assert isinstance(cdpdict, dict)
-
-            TBkey = cdpdict['TBkey']
-            meta = cdpdict['meta'].copy()
-            CDP_header = cdpdict['CDP_header'].copy()
-            header_title = cdpdict['header_title']
-            CDP_KEY = cdpdict['CDP_KEY']
-            valformat = cdpdict['valformat']
-            caption = cdpdict['caption']
-        else:
-            TBkey = 'TB'
-            meta = dict()
-            CDP_header = dict()
-            header_title = 'generic title'
-            CDP_KEY = 'UNK'
-            caption = 'CAPTION PENDING'
-            valformat = '%.2e'
+            
+            defcdpdict.update(cdpdict)
+        
+        TBkey = defcdpdict['TBkey']
+        meta = defcdpdict['meta'].copy()
+        CDP_header = defcdpdict['CDP_header'].copy()
+        header_title = defcdpdict['header_title']
+        CDP_KEY = defcdpdict['CDP_KEY']
+        valformat = defcdpdict['valformat']
+        caption = defcdpdict['caption']
+        
 
         NCCDs = len(self.CCDs)
         NBlocks = len(self.fpa.flight_blocks)
@@ -552,8 +568,15 @@ class FpaTask(task.Task):
         TB['CCDID'] = np.zeros(NP, dtype='S4')
         TB['BLOCK'] = np.zeros(NP, dtype='S4')
         TB['CCD'] = np.zeros(NP, dtype='S4')
+
+        _dtype = np.array(extractor(self, 'C_11', 'E')).dtype
+        if 'S' in _dtype.str:
+            Qdtype = 'S30'
+        else:
+            Qdtype = 'float32'
+
         for Q in self.Quads:
-            TB[Q] = np.zeros(NP, dtype='float32')
+            TB[Q] = np.zeros(NP, dtype=Qdtype)
 
         for jY in range(self.NSLICES_FPA):
             for iX in range(self.NCOLS_FPA):

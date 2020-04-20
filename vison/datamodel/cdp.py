@@ -21,7 +21,9 @@ import numpy as np
 from vison import __version__
 from vison.support.files import cPickleDumpDictionary, cPickleRead
 from vison.datamodel import ccd as ccdmod
+from vison.datamodel import fpa_dm
 from vison.support.excel import ReportXL
+from vison.support import vjson
 # END IMPORT
 
 
@@ -29,6 +31,40 @@ def loadCDPfromPickle(pickf):
     """ """
     cdp = cPickleRead(pickf)
     return cdp
+
+def wraptextable(tex, ncols=1, caption='', fitwidth=False, tiny=False, longtable=False):
+    """ """
+    
+    tex = st.split(tex, '\n')
+
+    if fitwidth:
+
+        beglongtabu = '\\begin{longtabu} to \\textwidth {|%s}' % (ncols * 'X|',)
+        endlongtabu = '\end{longtabu}'
+        tex[0] = beglongtabu
+        tex[-2] = endlongtabu
+
+    if not longtable:
+        tex = ['\\begin{table}[!htb]'] + tex + ['\end{table}']
+
+    if tiny:
+        tex = ['\\tiny'] + tex + ['\\normalsize']
+
+    #tex = ['\\begin{table}[!htb]','\center']+tex+['\end{table}']
+
+    if caption != '':
+
+        if fitwidth:
+            ixendlongtabu = np.where(['\end{longtabu}' in item for item in tex])
+            tex.insert(ixendlongtabu[0][-1], r'\caption{%s}' % caption)
+        elif not fitwidth and longtable:
+            ixendlongtable = np.where(['\end{longtable}' in item for item in tex])
+            tex.insert(ixendlongtable[0][-1], r'\caption{%s}' % caption)
+        elif not fitwidth and ~longtable:
+            ixendtable = np.where(['\end{table}' in item for item in tex])
+            tex.insert(ixendtable[0][-1], r'\caption{%s}' % caption)
+
+    return tex
 
 
 class CDP(object):
@@ -39,6 +75,7 @@ class CDP(object):
     header = OrderedDict()
     meta = OrderedDict()
     data = None
+
 
     def __init__(self, *args, **kwargs):
         """ """
@@ -83,7 +120,7 @@ class CDP(object):
 
 
 class Tables_CDP(CDP):
-    """ """
+    """Table CDP. Can export to excel."""
 
     def __init__(self, *args, **kwargs):
         """ """
@@ -167,44 +204,20 @@ class Tables_CDP(CDP):
         _kwargs = dict(multicolumn=True, multirow=True, longtable=True, index=False)
         _kwargs.update(kwargs)
         tex = self.data[sheet].to_latex(**_kwargs)
-        tex = st.split(tex, '\n')
 
-        if fitwidth:
+        if 'columns' not in _kwargs:
+            ncols = len(self.data[sheet].columns)
+        else:
+            ncols = len(_kwargs['columns'])
 
-            if 'columns' not in _kwargs:
-                ncols = len(self.data[sheet].columns)
-            else:
-                ncols = len(_kwargs['columns'])
+        if _kwargs['index']:
+            ncols += 1
 
-            if _kwargs['index']:
-                ncols += 1
+        wrapped = wraptextable(tex, ncols, caption, fitwidth, tiny, 
+            longtable=_kwargs['longtable'])
 
-            beglongtabu = '\\begin{longtabu} to \\textwidth {|%s}' % (ncols * 'X|',)
-            endlongtabu = '\end{longtabu}'
-            tex[0] = beglongtabu
-            tex[-2] = endlongtabu
+        return wrapped
 
-        if not _kwargs['longtable']:
-            tex = ['\\begin{table}[!htb]'] + tex + ['\end{table}']
-
-        if tiny:
-            tex = ['\\tiny'] + tex + ['\\normalsize']
-
-        #tex = ['\\begin{table}[!htb]','\center']+tex+['\end{table}']
-
-        if caption != '':
-
-            if fitwidth:
-                ixendlongtabu = np.where(['\end{longtabu}' in item for item in tex])
-                tex.insert(ixendlongtabu[0][-1], r'\caption{%s}' % caption)
-            elif not fitwidth and _kwargs['longtable']:
-                ixendlongtable = np.where(['\end{longtable}' in item for item in tex])
-                tex.insert(ixendlongtable[0][-1], r'\caption{%s}' % caption)
-            elif not fitwidth and ~_kwargs['longtable']:
-                ixendtable = np.where(['\end{table}' in item for item in tex])
-                tex.insert(ixendtable[0][-1], r'\caption{%s}' % caption)
-
-        return tex
 
     def savehardcopy(self, filef=''):
         """ """
@@ -216,6 +229,7 @@ class Tables_CDP(CDP):
 
 
 class CCD_CDP(CDP):
+    """CCD Calibration Data Product"""
 
     def __init__(self, *args, **kwargs):
         """ """
@@ -265,3 +279,99 @@ class CCD_CDP(CDP):
         if os.path.exists(filef):
             os.system('rm %s' % filef)
         self.ccdobj.writeto(filef)
+
+class LE1_CDP(CDP):
+    """LE1 FPA Image CDP. One extension per Quadrant."""
+
+    def __init__(self, *args, **kwargs):
+        super(LE1_CDP, self).__init__(*args, **kwargs)
+        self.fpaobj = fpa_dm.FPA_LE1()
+
+
+    def ingest_inputs(self, data, header=None, inextension=-1, fillval=0):
+        """ """
+
+        if header is None:
+            header = OrderedDict()
+
+        self.header.update(header)
+        
+        self.fpaobj.fillval=fillval
+        self.fpaobj.initialise_as_blank()
+
+        self.fpaobj.set_extension(iext=0, data=None, header=None, headerdict=self.header, label=None)
+
+        # Get the CCDs from data and fill up self.fpaobj
+        
+        NCOLS_FPA = self.fpaobj.fpamodel.NCOLS
+        NROWS_FPA = self.fpaobj.fpamodel.NSLICES
+
+        for jY in range(NCOLS_FPA):
+            for iX in range(NROWS_FPA):
+                Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+                ccdobj = copy.deepcopy(data[Ckey])
+
+                self.fpaobj.set_ccdobj(ccdobj, Ckey, inextension=inextension)
+
+
+    def savehardcopy(self, filef='', clobber=True, uint16=False):
+        """ """
+        if filef == '':
+            filef = os.path.join(self.path, '%s.fits' % self.rootname)
+        if os.path.exists(filef):
+            os.system('rm %s' % filef)
+        self.fpaobj.savetoFITS(filef,clobber=clobber,unsigned16bit=uint16)
+
+
+
+
+
+class Json_CDP(CDP):
+    """Generic Json Object CDP."""
+    
+    def __init__(self,*args,**kwargs):
+        """ """
+        super(Json_CDP, self).__init__(*args, **kwargs)
+        
+        self.data = OrderedDict()
+
+    def ingest_inputs(self, data, meta=None, header=None):
+        """ """
+        if meta is None:
+            meta = OrderedDict()
+        if header is None:
+            header = OrderedDict()
+
+        self.header.update(header)
+        self.meta.update(meta)
+        self.data.update(data)
+        
+        
+    def savehardcopy(self, filef=''):
+        """ """
+        if filef == '':
+            filef = os.path.join(self.path, self.rootname)
+        if os.path.exists(filef):
+            os.system('rm %s' % filef)
+        
+        outdict = OrderedDict()
+        outdict['header'] = self.header.copy()
+        outdict['meta'] = self.meta.copy()
+        outdict['data'] = self.data.copy()
+        
+        vjson.save_jsonfile(outdict, filef)
+    
+    def loadhardcopy(self, filef=''):
+        """ """
+        if filef == '':
+            filef = os.path.join(self.path, self.rootname)
+            
+        outdict = vjson.load_jsonfile(filef, useyaml=True)
+        
+        self.header = outdict['header'].copy()
+        self.meta = outdict['meta'].copy()
+        self.data = outdict['data'].copy()
+        
+        
+        
+        

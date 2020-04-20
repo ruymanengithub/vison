@@ -47,9 +47,20 @@ defaults = dict()
 class FpaPipe(master.GenPipe):
     """Master Class of FM-analysis at block-level of assembly."""
 
-    from vison.fpatests.FWD_WARM import FWD_WARM
+    from vison.fpatests.cea_dec19.FWD_WARM import FWD_WARM
+    from vison.fpatests.cea_dec19.FPA_BIAS import FPA_BIAS
+    from vison.fpatests.cea_dec19.FPA_CHINJ import CHINJ
+    from vison.fpatests.cea_dec19.FPA_DARK import DARK
 
-    Test_dict = dict(FWD_WARM=FWD_WARM)
+    Test_dict = dict(FWD_WARM=FWD_WARM,
+                     CHINJ=CHINJ,
+                     DARK=DARK,
+                     BIAS_RWDVS_WARM=FPA_BIAS,
+                     BIAS_RWDV_WARM=FPA_BIAS,
+                     BIAS_FWD_WARM=FPA_BIAS,
+                     BIAS_RWDVS_COLD=FPA_BIAS,
+                     BIAS_RWDV_COLD=FPA_BIAS,
+                     BIAS_FWD_COLD=FPA_BIAS)
 
     def __init__(self, inputdict, dolog=True, drill=False, debug=False, startobsid=0,
                  processes=1, tag='', cleanafter=False):

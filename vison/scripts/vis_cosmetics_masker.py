@@ -81,7 +81,8 @@ def pre_process(FITS_list, subOffset=False, validrange=None):
     return ccdobj_list
 
 
-def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None):
+def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None,
+            flagWholeColumns=False):
     """ """
 
     assert subbgd != normbybgd
@@ -121,7 +122,7 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None):
         if subbgd:
 
             for i, iccdobj in enumerate(ccdobjList):
-                bgdmodel = cosmetics.get_bgd_model(iccdobj, extension=-1)
+                bgdmodel = cosmetics.get_bgd_model(iccdobj, extension=-1, margins=0.)
                 iccdobj.sub_bias(bgdmodel, extension=-1)
 
                 if iccdobj.masked:
@@ -132,7 +133,7 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None):
         elif normbybgd:
 
             for i, iccdobj in enumerate(ccdobjList):
-                bgdmodel = cosmetics.get_bgd_model(iccdobj, extension=-1)
+                bgdmodel = cosmetics.get_bgd_model(iccdobj, extension=-1, margins=1.)
                 iccdobj.divide_by_flatfield(bgdmodel, extension=-1)
 
         files.cPickleDumpDictionary(dict(ccdobjs=ccdobjList), tmp_pickf)
@@ -152,6 +153,15 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None):
     # THRESHOLDING
 
     mask = cosmetics.get_Thresholding_DefectsMask(stacked, thresholds)
+
+    # SETTING PRE/OVERSCANS TO ZERO (those can't have cosmetic defects)
+
+    mask = cosmetics.set_extrascans(mask, val=0)
+
+    # DISCARDING WHOLE COLUMNS [OPTIONAL]
+
+    if flagWholeColumns:
+        mask = cosmetics.mask_badcolumns(mask,colthreshold=200)
 
     # SAVING to a CDP
 
@@ -181,11 +191,16 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None):
 
 def do_DarkMask(inputs):
     return do_Mask(inputs, 'dkmask', subbgd=True, normbybgd=False,
-                   validrange=[0.0, 1000.])
+                   validrange=[0.0, 1.E6],
+                   flagWholeColumns=True)
 
 
 def do_FlatMask(inputs):
-    return do_Mask(inputs, 'flmask', subbgd=False, normbybgd=True)
+    return do_Mask(inputs, 'flmask', 
+        validrange=[0.0, 1.E6],
+        subbgd=False, 
+        normbybgd=True,
+        flagWholeColumns=True)
 
 
 def do_MergeMasks(inputs):

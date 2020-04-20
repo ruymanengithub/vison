@@ -16,13 +16,19 @@ import os
 from astropy import table
 import glob
 import gc
+import string as st
+import pandas as pd
 
+from vison import __version__
 from vison.support import files
 from vison.support import vjson
 from vison.datamodel import core as vcore
+from vison.datamodel import cdp as cdpmod
 from vison.support import vcal
 from vison.fpa import fpa as fpamod
 from vison.plot import plots_fpa as plfpa
+from vison.plot import baseplotclasses as basepl
+from vison.support.report import Report
 
 from matplotlib import pyplot as plt
 plt.switch_backend('TkAgg')
@@ -82,11 +88,27 @@ class MetaCal(object):
         self.roeVCals = dict()
         self.init_roeVCals()
         self.cdps = OrderedDict()
+        self.outcdps = OrderedDict()
         self.figs = dict()
+        self.report = None
         self.figspath = os.path.join(self.outpathroot, 'figs')
+        self.cdpspath = os.path.join(self.outpathroot, 'cdps')
+
+        self.CDP_header = OrderedDict()
+        self.CDP_header['vison']=__version__
+        self.CDP_header['fpa_design'] = design
+        self.CDP_header['FPA'] = self.fpa.FPA_MAP.copy()
+        self.CDP_header['vcalfile'] = os.path.split(self.vcalfile)[-1]
+
+    def get_time_tag(self):
+        from vison.support.vistime import get_time_tag
+        return get_time_tag()
 
     def init_fignames(self):
-        pass
+        raise NotImplementedError("Subclass must implement abstract method")
+    
+    def init_outcdpnames(self):
+        raise NotImplementedError("Subclass must implement abstract method")
 
     def run(self, doLoad=True, doParse=True, doDump=True, doReport=True):
         """ """
@@ -96,6 +118,7 @@ class MetaCal(object):
 
         dictiopick = os.path.join(self.outpathroot,
                                   '%s_dictionary.pick' % self.testkey.lower())
+
 
         if doLoad:
             print('Loading block(s) results...')
@@ -122,11 +145,29 @@ class MetaCal(object):
             self.ParsedTable = parsedbundle['PT'].copy()
             self.products = parsedbundle['products'].copy()
 
+        if doReport:
+            self.report = Report(TestName=self.testkey.upper(), 
+                            Model='FM',
+                            Reference='7-XXX',
+                            doDraft = False)
+        else:
+            self.report = None
+
         if doDump:
             self.dump_aggregated_results()
 
         if doReport:
-            self.report()
+            cleantexafter = False # hard-wired by now
+            reportroot = '%s_TR' % self.testkey.upper()
+            #self.report()
+            outfiles = self.report.doreport(
+                reportroot,
+                cleanafter=cleantexafter,
+                silent=True)  # commented on TESTS
+
+            for outfile in outfiles:
+                os.system('mv %s %s/' % (outfile, self.outpathroot))
+
 
     def init_roeVCals(self):
 
@@ -185,7 +226,11 @@ class MetaCal(object):
         try:
             dd = files.cPickleRead(DDfile)
         except BaseException:
+<<<<<<< HEAD
             print(('Could not load %s' % DDfile))
+=======
+            print('Could not load %s\n\n' % DDfile)
+>>>>>>> master
             raise RuntimeError
 
         ii['dd'] = copy.deepcopy(dd)
@@ -415,6 +460,63 @@ class MetaCal(object):
 
         self.ParsedTable[testname] = pt
 
+    def add_DataAlbaran2Report(self):
+        """Adds a data delivery note to the report."""
+
+        albaran_dict = OrderedDict()
+        cols = ['BLOCK','TEST','SESSION','DAY-FOLDER','OBSIDS']
+        for col in cols:
+            albaran_dict[col] = []
+
+        for iblock, block in enumerate(self.blocks):
+
+            for testname in self.testnames:
+
+                try:
+                    Nreps = len(self.inventory[block][testname])
+                except KeyError:
+                    print('block %s not found!' % block)
+                    continue
+
+                for jrep in range(Nreps):
+                    
+                    iitem = self.inventory[block][testname][jrep]
+
+                    dayfolder = os.path.split(iitem['dd'].meta['inputs']['datapath'])[-1]
+                    sdayfolder = st.replace(dayfolder,'_','\\_')
+                    
+
+                    OBSID_min = iitem['dd'].meta['data_inventory']['ObsID'].min()
+                    OBSID_max = iitem['dd'].meta['data_inventory']['ObsID'].max()
+
+                    OBSID_lims = '%i-%i' % (OBSID_min, OBSID_max)
+
+                    albaran_dict['BLOCK'].append(block)
+                    albaran_dict['TEST'].append(testname)
+                    albaran_dict['SESSION'].append(iitem['session'])
+                    albaran_dict['DAY-FOLDER'].append(sdayfolder)
+                    albaran_dict['OBSIDS'].append(OBSID_lims)
+
+        albaran_df = pd.DataFrame(albaran_dict)
+        
+        kwargs = dict(multicolumn=True, multirow=True, longtable=True, index=False)
+        
+        tex = albaran_df.to_latex(**kwargs)
+
+        ncols = len(cols)
+
+        caption = 'Data Inventory.'
+        wtex = cdpmod.wraptextable(tex, ncols, caption, fitwidth=True, tiny=True, 
+            longtable=True)
+
+        self.report.add_Text(wtex)
+
+
+
+    
+    def get_ixblock(self, PT, block):
+        return np.where(PT['BLOCK'].data==block)
+    
     def get_stat_from_FPAMAP(self, M, numpystat):
         """ """
 
@@ -424,7 +526,6 @@ class MetaCal(object):
             for iX in range(self.NCOLS_FPA):
                 Ckey = 'C_%i%i' % (jY + 1, iX + 1)
                 for Q in self.Quads:
-
                     vals.append(M[Ckey][Q])
 
         return numpystat(vals)
@@ -477,67 +578,181 @@ class MetaCal(object):
 
         gc.collect()
 
-    def plot_XY(self, XYdict, **kwargs):
+
+    def _get_plot_gen(self, plotclass):
         """ """
 
-        _kwargs = dict()
-        _kwargs.update(kwargs)
+        def plot_gen(self, datadict, **kwargs):
+            _kwargs = dict()
+            _kwargs.update(kwargs)
 
-        if 'figname' in _kwargs:
-            figname = _kwargs['figname']
-        else:
-            figname = ''
+            if 'figname' in _kwargs:
+                figname = _kwargs['figname']
+            else:
+                figname = ''
 
-        with plfpa.XYPlot(XYdict, **_kwargs) as xyplot:
-            xyplot.render(figname=figname)
-        #xyplot = None
+            with plotclass(datadict, **_kwargs) as plot:
+                plot.render(figname=figname)
+
+        return plot_gen
 
         gc.collect()
+
+
+    def plot_XY(self, XYdict, **kwargs):
+        """ """
+        plotobj = self._get_plot_gen(basepl.XYPlot)
+        plotobj(self, XYdict, **kwargs)
+        
+
+    def plot_HISTO(self, Hdict, **kwargs):
+        """ """
+        plotobj = self._get_plot_gen(basepl.HistoPlot)
+        plotobj(self, Hdict, **kwargs)
+
 
     def plot_XYMAP(self, XYMAP, **kwargs):
 
-        _kwargs = dict()
-        _kwargs.update(kwargs)
+        plotobj = self._get_plot_gen(plfpa.FpaPlotYvsX)
+        plotobj(self, XYMAP, **kwargs)
 
-        if 'figname' in _kwargs:
-            figname = _kwargs['figname']
-        else:
-            figname = ''
-
-        with plfpa.FpaPlotYvsX(XYMAP, **_kwargs) as xyfpaplot:
-            xyfpaplot.render(figname=figname)
-        #xyfpaplot = None
-
-        gc.collect()
 
     def plot_XYCCD(self, XYCCD, **kwargs):
 
-        _kwargs = dict()
-        _kwargs.update(kwargs)
+        plotobj = self._get_plot_gen(basepl.CCD2DPlotYvsX)
+        plotobj(self, XYCCD, **kwargs)
 
-        if 'figname' in _kwargs:
-            figname = _kwargs['figname']
-        else:
-            figname = ''
-
-        with plfpa.CCD2DPlotYvsX(XYCCD, **_kwargs) as xyccdplot:
-            xyccdplot.render(figname=figname)
-
-        #xyccdplot = plfpa.CCD2DPlotYvsX(XYCCD, **_kwargs)
-        # xyccdplot.render(figname=figname)
-
-        gc.collect()
 
     def plot_ImgFPA(self, BCdict, **kwargs):
 
-        _kwargs = dict()
-        _kwargs.update(kwargs)
+        plotobj = self._get_plot_gen(plfpa.FpaImgShow)
+        plotobj(self, BCdict, **kwargs)
 
-        if 'figname' in _kwargs:
-            figname = _kwargs['figname']
+
+    def add_StdQuadsTable2Report(self, extractor=None, Matrix=None, cdp=None, cdpdict=None):
+        """ """
+
+        assert (extractor is None) != (Matrix is None)
+        
+        if extractor is not None:
+            def _get_val(Ckey,Q):
+                return extractor(Ckey,Q)
+        elif Matrix is not None:
+            def _get_val(Ckey,Q):
+                return Matrix[Ckey][Q]
+        
+
+        defcdpdict = dict(TBkey = 'TB',
+            meta = dict(),
+            CDP_header = dict(),
+            header_title = 'generic title',
+            CDP_KEY = 'UNK',
+            caption = 'CAPTION PENDING',
+            valformat = '%.2e')
+
+        if cdpdict is not None:
+
+            assert isinstance(cdpdict, dict)
+            
+            defcdpdict.update(cdpdict)
+        
+        TBkey = defcdpdict['TBkey']
+        meta = defcdpdict['meta'].copy()
+        CDP_header = defcdpdict['CDP_header'].copy()
+        header_title = defcdpdict['header_title']
+        CDP_KEY = defcdpdict['CDP_KEY']
+        valformat = defcdpdict['valformat']
+        caption = defcdpdict['caption']
+        
+
+        NCCDs = len(self.CCDs)
+        NBlocks = len(self.fpa.flight_blocks)
+        NP = NBlocks * NCCDs
+
+        TB = OrderedDict()
+        TB['CCDID'] = np.zeros(NP, dtype='S4')
+        TB['BLOCK'] = np.zeros(NP, dtype='S4')
+        TB['CCD'] = np.zeros(NP, dtype='S4')
+
+        _dtype = np.array(_get_val('C_11','E')).dtype
+        if 'S' in _dtype.str:
+            Qdtype = 'S30'
         else:
-            figname = ''
+            Qdtype = 'float32'
 
-        with plfpa.FpaImgShow(BCdict, **_kwargs) as imgfpaplot:
-            imgfpaplot.render(figname=figname)
-        gc.collect()
+        for Q in self.Quads:
+            TB[Q] = np.zeros(NP, dtype=Qdtype)
+
+        for jY in range(self.NSLICES_FPA):
+            for iX in range(self.NCOLS_FPA):
+
+                Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+
+                locator = self.fpa.FPA_MAP[Ckey]
+                block = locator[0]
+                CCDk = locator[1]
+
+                indx = jY * self.NCOLS_FPA + iX
+
+                TB['CCDID'][indx] = Ckey
+                TB['BLOCK'][indx] = block[0:4]
+                TB['CCD'][indx] = CCDk
+
+                for iQ, Q in enumerate(self.Quads):
+                    TB[Q][indx] = _get_val(Ckey, Q)
+        
+        TB_ddf = OrderedDict()
+        TB_ddf[TBkey] = pd.DataFrame.from_dict(TB)
+
+        if cdp is not None:
+            cdp.path = self.inputs['subpaths']['products']
+            cdp.ingest_inputs(
+                data=TB_ddf.copy(),
+                meta=meta.copy(),
+                header=CDP_header.copy()
+            )
+
+            cdp.init_wb_and_fillAll(header_title=header_title)
+            self.save_CDP(cdp)
+            self.pack_CDP_to_dd(cdp, CDP_KEY)
+        else:
+            cdp = cdpmod.Tables_CDP()
+            cdp.ingest_inputs(
+                data=TB_ddf.copy(),
+                meta=meta.copy(),
+                header=CDP_header.copy()
+            )
+
+        def fstr(x): return '%s' % x
+
+        def ff(x): return valformat % x
+
+        her_formatters = [fstr, fstr, fstr]
+        for iQ, Q in enumerate(self.Quads):
+            her_formatters.append(ff)
+
+        nicecaption = st.replace(caption, '_', '\_')
+        Ttex = cdp.get_textable(sheet=TBkey, caption=nicecaption,
+                                fitwidth=True,
+                                tiny=True,
+                                formatters=her_formatters)
+
+        self.report.add_Text(Ttex)
+
+        return TB, cdp
+
+
+    def addFigure2Report(self, png, figkey, caption='', texfraction=0.7):
+        """ """
+
+        if self.report is None:
+            return
+
+        assert os.path.exists(png)
+        eps = '%s.eps' % os.path.splitext(png)[0]
+        os.system('convert %s %s' % (png, eps))
+        self.report.add_Figure(eps, texfraction=texfraction,
+            caption=caption,
+            label=figkey)
+
+

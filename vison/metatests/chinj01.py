@@ -14,18 +14,20 @@ from collections import OrderedDict
 import string as st
 import os
 
+from vison.datamodel import cdp
 from vison.support import files
 from vison.fpa import fpa as fpamod
 
 from vison.metatests.metacal import MetaCal
 from vison.plot import plots_fpa as plfpa
 
-from vison.support import vcal
+from vison.support import vcal, utils
 from vison.datamodel import core as vcore
 from vison.ogse import ogse
 from vison.inject import lib as ilib
 
 
+import matplotlib.cm as cm
 from matplotlib import pyplot as plt
 plt.switch_backend('TkAgg')
 from matplotlib.colors import Normalize
@@ -156,8 +158,11 @@ class MetaChinj01(MetaCal):
             self.cdps['GAIN'][block] = allgains[block]['PTC01'].copy()
 
         self.products['METAFIT'] = OrderedDict()
+        self.products['VERPROFILES'] = OrderedDict()
+        self.products['HORPROFILES'] = OrderedDict()
 
         self.init_fignames()
+        self.init_outcdpnames()
 
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
@@ -217,6 +222,7 @@ class MetaChinj01(MetaCal):
         metacdp = files.cPickleRead(metacdp_pick)
         meta = metacdp['data']['ANALYSIS']  # this is a pandas DataFrame
 
+        
         tmp_v_CQ = np.zeros((1, NCCDs, NQuads))
 
         bgd_adu_v = tmp_v_CQ.copy()
@@ -241,6 +247,38 @@ class MetaChinj01(MetaCal):
         sidd.addColumn(ig1_notch_v, 'FIT_IG1_NOTCH', IndexCQ)
         sidd.addColumn(slope_v, 'FIT_SLOPE', IndexCQ)
         sidd.addColumn(n_adu_v, 'FIT_N_ADU', IndexCQ)
+
+        # charge injection profiles
+
+        verprofspick = os.path.join(productspath,
+            os.path.split(sidd.products['PROFS_ALCOL'])[-1])
+        verprofs = files.cPickleRead(verprofspick)
+
+        vprofkey = '%s_%s_%s_%i' % (testname, block, session, jrep + 1)
+
+        self.products['VERPROFILES'][vprofkey] = verprofs.copy()
+
+        vprofskeys_v = np.zeros((1),dtype='S50')
+        
+        vprofskeys_v[0] = vprofkey
+
+        sidd.addColumn(vprofskeys_v, 'VERPROFS_KEY', IndexS)
+
+        horprofspick = os.path.join(productspath,
+            os.path.split(sidd.products['PROFS_ALROW'])[-1])
+        horprofs = files.cPickleRead(horprofspick)        
+
+        hprofkey = '%s_%s_%s_%i' % (testname, block, session, jrep + 1)
+
+        self.products['HORPROFILES'][hprofkey] = horprofs.copy()
+
+        hprofskeys_v = np.zeros((1),dtype='S50')
+        
+        hprofskeys_v[0] = hprofkey
+
+        sidd.addColumn(hprofskeys_v, 'HORPROFS_KEY', IndexS)
+
+
         # flatten sidd to table
 
         sit = sidd.flattentoTable()
@@ -252,7 +290,7 @@ class MetaChinj01(MetaCal):
 
         def _extract_NOTCH_fromPT(PT, block, CCDk, Q):
 
-            ixblock = np.where(PT['BLOCK'].data == block)
+            ixblock = self.get_ixblock(PT, block)
             column = 'FIT_N_ADU_%s_Quad%s' % (CCDk, Q)
 
             if units == 'ADU':
@@ -400,6 +438,73 @@ class MetaChinj01(MetaCal):
 
         return CHdict
 
+    def _extract_INJCURVES_PAR_fromPT(self,PT,block,CCDk,Q):
+        """ """
+        ixblock = self.get_ixblock(PT,block)
+        column = 'METAFIT'
+        ch_key = PT[column][ixblock][0]
+        chfitdf = self.products['METAFIT'][ch_key]
+
+        ixCCD = ['CCD1','CCD2','CCD3'].index(CCDk)+1
+        ixQ = ['E','F','G','H'].index(Q)+1
+
+        ixsel = np.where((chfitdf['CCD'] == ixCCD) & (chfitdf['Q'] == ixQ))
+
+        pars = ['BGD', 'K', 'XT', 'XN', 'A', 'N']
+        trans = dict(BGD='b', K='k', XT='xt', XN='xN', A='a', N='N')
+
+        parsdict = dict()
+        for par in pars:
+            parsdict[trans[par]] = '%.3e' % chfitdf[par].as_matrix()[ixsel][0]
+
+        return parsdict
+
+    def _get_XYdict_PROFS(self,proftype, IG1=4.5, Quads=None):
+        """ """
+
+        if Quads is None:
+            Quads = self.Quads
+
+        x = dict()
+        y = dict()
+
+        labelkeys = []
+
+        PT = self.ParsedTable['CHINJ01']
+
+        profcol = '%sPROFS_KEY' % proftype.upper()
+        prodkey = '%sPROFILES' % proftype.upper()
+
+        for block in self.flight_blocks:
+
+            ixsel = np.where(PT['BLOCK'] == block)
+            prof_key = PT[profcol][ixsel][0]
+
+            i_Prof = self.products[prodkey][prof_key].copy()
+            
+            IG1key = 'IG1_%.2fV' % IG1
+
+            for iCCD, CCD in enumerate(self.CCDs):
+                CCDk = 'CCD%i' % CCD
+
+                for kQ, Q in enumerate(Quads):
+
+                    pkey = '%s_%s_%s' % (block, CCDk, Q)
+
+                    _pcq = i_Prof['data'][CCDk][Q].copy()
+
+                    _x = _pcq['x'][IG1key].copy()
+                    _y = _pcq['y'][IG1key].copy()
+
+                    x[pkey] = _x
+                    y[pkey] = _y / np.nanmedian(_y)
+
+                    labelkeys.append(pkey)
+
+        Pdict = dict(x=x,y=y,labelkeys=labelkeys)
+
+        return Pdict
+
     def init_fignames(self):
         """ """
 
@@ -421,8 +526,54 @@ class MetaChinj01(MetaCal):
         self.figs['CHINJ01_curves_MAP_IG1_CAL'] = os.path.join(self.figspath,
                                                                'CHINJ01_CURVES_MAP_IG1_CAL.png')
 
+        for proftype in ['ver','hor']:
+            for ccdhalf in ['top','bot']:
+                figkey = 'PROFS_%s_%s' % (proftype.upper(),ccdhalf.upper())
+                self.figs[figkey] = os.path.join(self.figspath,
+                        'CHINJ01_%s_%s_PROFILES.png' % \
+                            (proftype.upper(),ccdhalf.upper()))
+
+    def init_outcdpnames(self):
+
+        if not os.path.exists(self.cdpspath):
+            os.system('mkdir %s' % self.cdpspath)
+
+        self.outcdps['INJCURVES'] = 'CHINJ01_INJCURVES_PAR.json'
+
+    def _extract_NUNHOR_fromPT(self, PT, block, CCDk, Q):
+        """ """
+
+        IG1 = 4.5
+
+        ixblock = self.get_ixblock(PT, block)
+
+        profcol = 'HORPROFS_KEY'
+        prodkey = 'HORPROFILES'
+
+        prof_key = PT[profcol][ixblock][0]
+
+        i_Prof = self.products[prodkey][prof_key].copy()
+            
+        IG1key = 'IG1_%.2fV' % IG1
+
+        _pcq = i_Prof['data'][CCDk][Q].copy()
+        _y = _pcq['y'][IG1key].copy()
+
+        return np.nanstd(_y)/np.nanmean(_y)*100.
+
+
     def dump_aggregated_results(self):
         """ """
+
+        if self.report is not None:
+            self.report.add_Section(keyword='dump', 
+                Title='Aggregated Results', level=0)
+            
+            self.add_DataAlbaran2Report()
+
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
 
         # Histogram of Slopes [ADU/electrons]
 
@@ -430,9 +581,12 @@ class MetaChinj01(MetaCal):
 
         # Histogram of IG1_THRESH
 
-        # Injection level vs. Calibrated IG1, all channels
+        # Injection level vs. Calibrated IG1, MAP
 
         CURVES_IG1CAL_MAP = self._get_CHIG1_MAP_from_PT(kind='CAL')
+
+        figkey1 = 'CHINJ01_curves_MAP_IG1_CAL'
+        figname1 = self.figs[figkey1]
 
         self.plot_XYMAP(CURVES_IG1CAL_MAP, **dict(
                         suptitle='Charge Injection Curves - Calibrated IG1',
@@ -443,17 +597,56 @@ class MetaChinj01(MetaCal):
                                         F=dict(linestyle='-', marker='', color='g'),
                                         G=dict(linestyle='-', marker='', color='b'),
                                         H=dict(linestyle='-', marker='', color='m')),
-                        figname=self.figs['CHINJ01_curves_MAP_IG1_CAL']
+                        figname=figname1
                         ))
 
+
+
+        if self.report is not None:
+            self.addFigure2Report(figname1, 
+                        figkey=figkey1, 
+                        caption='CHINJ01: Charge injection level [ke-] as a function of '+\
+                            'calibrated IG1 voltage.', 
+                        texfraction=0.7)
+
+        # saving charge injection parameters to a json CDP
+
+        ICURVES_PAR_MAP = self.get_FPAMAP_from_PT(
+                    self.ParsedTable['CHINJ01'],
+                    extractor=self._extract_INJCURVES_PAR_fromPT)
+
+        ic_header = OrderedDict()
+        ic_header['title'] = 'Injection Curves Parameters'
+        ic_header['test'] = 'CHINJ01'
+        ic_header.update(CDP_header)
+        
+        ic_meta = OrderedDict()
+        ic_meta['units'] ='/2^16 ADU',
+        ic_meta['model'] = 'I=b+1/(1+exp(-K(IG1-XT))) * (-A*(IG1-XN)[IG1<XN] + N)'
+        ic_meta['structure'] = ''
+
+        ic_cdp = cdp.Json_CDP(rootname=self.outcdps['INJCURVES'],
+                         path=self.cdpspath)
+
+        ic_cdp.ingest_inputs(data=ICURVES_PAR_MAP,
+                header = ic_header,
+                meta=ic_meta)
+        ic_cdp.savehardcopy()
+
+
+        # Injection level vs. Calibrated IG1, single plot
+
         IG1CAL_Singledict = self._get_XYdict_INJ(kind='CAL')
+
+        figkey2 = 'CHINJ01_curves_IG1_CAL'
+        figname2 = self.figs[figkey2]
 
         IG1CAL_kwargs = dict(
             title='Charge Injection Curves - Calibrated IG1',
             doLegend=False,
             xlabel='IG1 (Calibrated) [V]',
             ylabel='Injection [kel]',
-            figname=self.figs['CHINJ01_curves_IG1_CAL'])
+            figname=figname2)
 
         corekwargs = dict()
         for block in self.flight_blocks:
@@ -471,14 +664,27 @@ class MetaChinj01(MetaCal):
 
         self.plot_XY(IG1CAL_Singledict, **IG1CAL_kwargs)
 
+        if self.report is not None:
+            self.addFigure2Report(figname2, 
+                        figkey=figkey2, 
+                        caption='CHINJ01: Charge injection level [ke-] as a function of '+\
+                            'calibrated IG1 voltage.', 
+                        texfraction=0.7)        
+
+        # Injection level vs. Non-Calibrated IG1, single plot
+
+
         IG1RAW_Singledict = self._get_XYdict_INJ(kind='RAW')
+
+        figkey3 = 'CHINJ01_curves_IG1_RAW'
+        figname3 = self.figs[figkey3]
 
         IG1RAW_kwargs = dict(
             title='Charge Injection Curves - RAW IG1',
             doLegend=False,
             xlabel='IG1 (RAW) [V]',
             ylabel='Injection [kel]',
-            figname=self.figs['CHINJ01_curves_IG1_RAW'])
+            figname=figname3)
 
         corekwargs = dict()
         for block in self.flight_blocks:
@@ -496,6 +702,13 @@ class MetaChinj01(MetaCal):
 
         self.plot_XY(IG1RAW_Singledict, **IG1RAW_kwargs)
 
+        if self.report is not None:
+            self.addFigure2Report(figname3, 
+                        figkey=figkey3, 
+                        caption='CHINJ01: Charge injection level [ke-] as a function of '+\
+                            'Non-calibrated IG1 voltage.', 
+                        texfraction=0.7)        
+
         # Notch level vs. calibrated IG2
 
         # Notch level vs. calibrated IDL
@@ -509,15 +722,131 @@ class MetaChinj01(MetaCal):
             extractor=self._get_extractor_NOTCH_fromPT(
                 units='ADU'))
 
+        figkey4 = 'NOTCH_ADU_MAP'
+        figname4 = self.figs[figkey4]
+
         self.plot_SimpleMAP(NOTCHADUMAP, **dict(
             suptitle='CHINJ01: NOTCH INJECTION [ADU]',
-            figname=self.figs['NOTCH_ADU_MAP']))
+            ColorbarText='ADU',
+            figname=figname4))
+
+        if self.report is not None:
+            self.addFigure2Report(figname4, 
+                        figkey=figkey4, 
+                        caption='CHINJ01: notch injection level, in ADU.', 
+                        texfraction=0.7)
 
         # Notch injection map, ELECTRONs
 
         NOTCHEMAP = self.get_FPAMAP_from_PT(self.ParsedTable['CHINJ01'],
                                             extractor=self._get_extractor_NOTCH_fromPT(units='E'))
 
+        figkey5 = 'NOTCH_ELE_MAP'
+        figname5 = self.figs[figkey5]
+
         self.plot_SimpleMAP(NOTCHEMAP, **dict(
             suptitle='CHINJ01: NOTCH INJECTION [ELECTRONS]',
-            figname=self.figs['NOTCH_ELE_MAP']))
+            ColorbarText='electrons',
+            figname=figname5))
+
+        if self.report is not None:
+            self.addFigure2Report(figname5, 
+                        figkey=figkey5, 
+                        caption='CHINJ01: notch injection level, in electrons.', 
+                        texfraction=0.7)
+
+        # Average injection profiles
+
+        IG1profs = 4.5
+
+        xlabels_profs = dict(hor='column [pix]',
+                            ver='row [pix]')
+
+        ylabels_profs = dict(hor='Injection level [Normalized]',
+                            ver='Injection level [ADU]',)
+
+        proftypes = ['hor','ver']
+        ccdhalves = ['top','bot']
+
+        BLOCKcolors = cm.rainbow(np.linspace(0, 1, len(self.flight_blocks)))
+
+
+        pointcorekwargs = dict()
+        for jblock, block in enumerate(self.flight_blocks):
+            jcolor = BLOCKcolors[jblock]
+            for iCCD in self.CCDs:
+                for kQ in self.Quads:
+                    pointcorekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(
+                        linestyle='', marker='.', color=jcolor, ms=2.0)
+
+
+        for ccdhalf in ccdhalves:
+
+            if ccdhalf == 'top':
+                _Quads = ['G','H']
+            elif ccdhalf == 'bot':
+                _Quads = ['E','F']
+
+            for proftype in proftypes:
+
+                XY_profs = self._get_XYdict_PROFS(proftype=proftype,
+                    IG1=IG1profs,Quads=_Quads)
+
+                figkey6 = 'PROFS_%s_%s' % (proftype.upper(),ccdhalf.upper())
+                figname6 = self.figs[figkey6]
+
+                title = 'CHINJ01: Direction: %s, CCDHalf: %s' % \
+                    (proftype.upper(),ccdhalf.upper()),
+
+                if proftype == 'ver':
+                    xlim=[0,50]
+                    ylim=None
+                elif proftype == 'hor':
+                    xlim=None
+                    ylim=[0.5,1.5]
+
+                profkwargs = dict(
+                    title=title,
+                    doLegend=False,
+                    xlabel=xlabels_profs[proftype],
+                    xlim=xlim,
+                    ylim=ylim,
+                    ylabel=ylabels_profs[proftype],
+                    figname=figname6,
+                    corekwargs=pointcorekwargs)
+
+                self.plot_XY(XY_profs, **profkwargs)
+
+                if proftype == 'ver':
+                    captemp = 'CHINJ01: Average injection profiles in vertical direction (along CCD columns) '+\
+                        'for IG1=%.2fV. Only the 2 channels in the CCD %s-half are shown '+\
+                        '(%s, %s). Each colour corresponds to a '+\
+                        'different block (2x3 quadrant-channels in each colour).'
+                elif proftype == 'hor':
+                    captemp = 'CHINJ01: Average injection profiles in horizontal direction (along CCD rows) '+\
+                        'for IG1=%.2fV. The profiles have been normalized by the median injection level. '+\
+                        'Only the 2 channels in the CCD %s-half are shown (%s, %s). Each colour corresponds to a '+\
+                        'different block (2x3 quadrant-channels in each colour).'
+
+                if self.report is not None:
+                    self.addFigure2Report(figname6, 
+                        figkey=figkey6, 
+                        caption= captemp % (IG1profs, ccdhalf, _Quads[0],_Quads[1]),
+                        texfraction=0.7)
+
+
+        # reporting non-uniformity of injection lines to report
+
+        if self.report is not None:
+
+                NUN_HOR = self.get_FPAMAP_from_PT(self.ParsedTable['CHINJ01'],
+                            extractor=self._extract_NUNHOR_fromPT)
+
+                nun_cdpdict = dict(
+                    caption='CHINJ01: Non-Uniformity of the injection lines, rms, as percentage.',
+                    valformat='%.2f')
+                
+                ignore = self.add_StdQuadsTable2Report( 
+                                Matrix = NUN_HOR,
+                                cdpdict = nun_cdpdict)
+

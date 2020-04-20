@@ -545,7 +545,7 @@ class PointTask(Task):
                 caption='Peak saturation times in seconds. Correcting for a FWHM of %.1f pixels (best focus).' %
                 avgfwhm)
 
-    def relock(self,):
+    def relock(self,check_ok=True):
         """ """
 
         if 'LOCK_TB_CDP' not in self.dd.products:
@@ -569,7 +569,7 @@ class PointTask(Task):
         maxSTDpix = meta['maxSTDpix']
 
         # Reloading Patterns without displacement
-
+        
         self.ogse.load_startrackers(withpover=True)
 
         # CHECK COMPLIANCE of transformations against allowed changes in
@@ -599,7 +599,7 @@ class PointTask(Task):
 
         # Applying Transformations to the Pattern
 
-        if all_ok:
+        if all_ok or ~check_ok:
 
             strackers = self.ogse.startrackers
 
@@ -649,7 +649,10 @@ class PointTask(Task):
                 self.ogse.startrackers = copy.deepcopy(newstrackers)
 
             if self.log is not None:
-                self.log.info('%s: Relocating Point Sources!' % CCDk)
+                self.log.info('Relocating Point Sources!')
+                if not all_ok:
+                    self.log.info('Beware of some problematic locations!')
+            
 
     def lock_on_stars(self, iObs=0, labels=None, sexconfig=None):
         """ """

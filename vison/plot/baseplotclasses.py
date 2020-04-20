@@ -109,7 +109,7 @@ class ShellPlot(BasicPlot):
 
 
 class XYPlot(BasicPlot):
-
+    
     def __init__(self, data, **kwargs):
 
         super(XYPlot, self).__init__(**kwargs)
@@ -135,7 +135,7 @@ class XYPlot(BasicPlot):
 
     def _ax_core_funct(self, key=''):
         """ """
-
+        
         ckwargs = self.corekwargs.copy()
 
         if key != '':
@@ -149,6 +149,10 @@ class XYPlot(BasicPlot):
             else:
                 kwargs.update(ckwargs)
             handle = self.ax.plot(xarr, yarr, **kwargs)
+            
+            if len(handle)>1:
+                handle = [handle[-1]]
+            
             if self.meta['doYErrbars']:
                 eyarr = self.data['ey'][key]
                 self.ax.errorbar(xarr, yarr, yerr=eyarr, color='k', fmt='', linestyle='')
@@ -161,9 +165,22 @@ class XYPlot(BasicPlot):
             handle, label = None, None
             if self.meta['doYErrbars']:
                 eyarr = self.data['ey']
-                self.ax.errorbar(xarr, yarr, yerr=eyarr, color='k', fmt='', linestyle='')
+                self.ax.errorbar(xarr, yarr, yerr=eyarr, 
+                    color='k', fmt='', linestyle='')
 
         return handle, label
+
+    def plot_confidence_intervals(self):
+        """ """
+        condict = self.data['confidence'].copy()
+        x = condict['x'].copy()
+        yminus = condict['yminus'].copy()
+        yplus = condict['yplus'].copy()
+
+        conkwargs = self.meta['confidence_kwargs'].copy()
+
+        self.ax.fill_between(x, yminus, yplus, **conkwargs)
+
 
     def populate_axes(self):
 
@@ -175,10 +192,12 @@ class XYPlot(BasicPlot):
             labelkeys = []
 
         if len(labelkeys) > 0:
+            
             for labelkey in labelkeys:
                 handle, label = self._ax_core_funct(labelkey)
                 self.handles += handle
                 self.labels.append(label)
+            
         else:
 
             _, _ = self._ax_core_funct()
@@ -187,6 +206,9 @@ class XYPlot(BasicPlot):
             _xticks = self.ax.get_xticks()
             if len(_xticks) > 6:
                 self.ax.set_xticks(_xticks[::2])
+
+        if self.meta['doConfidence']:
+            self.plot_confidence_intervals()
 
         if 'title' in self.meta:
             self.ax.set_title(self.meta['title'])
@@ -202,8 +224,9 @@ class XYPlot(BasicPlot):
             self.ax.set_xlim(self.meta['xlim'])
 
     def plt_trimmer(self):
-
+        
         if self.meta['doLegend']:
+
             plt.figlegend(self.handles, self.labels, loc='center right')
 
         if self.meta['doNiceXDate']:
@@ -219,6 +242,55 @@ class XYPlot(BasicPlot):
 
         if self.meta['doLegend']:
             plt.subplots_adjust(right=0.85)
+
+
+class HistoPlot(XYPlot):
+
+    def __init__(self, data, **kwargs):
+
+        super(HistoPlot, self).__init__(data, **kwargs)
+
+    def _ax_core_funct(self, key=''):
+        """ """
+        
+        ckwargs = self.corekwargs.copy()
+
+        if key != '':
+            bins = self.data['x'][key]
+            h = self.data['y'][key]
+
+            label = st.replace(key, '_', '\_')
+            kwargs = dict(label=label, weights=None, cumulative=False,
+                    histtype='step', align='mid', orientation='vertical', log=False)
+            if key in ckwargs:
+                kwargs.update(ckwargs[key])
+            else:
+                kwargs.update(ckwargs)
+            #kwargs = dict()
+            _, _, handle = self.ax.hist(h, bins=bins, **kwargs)
+            #handle = self.ax.plot(bins,h)
+
+            #if len(handle)>1:
+            #    handle = [handle[-1]]
+            
+            if self.meta['doYErrbars']:
+                eyarr = self.data['ey'][key]
+                self.ax.errorbar(bins, h, yerr=eyarr, color='k', fmt='', linestyle='')
+        else:
+            bins = self.data['x']
+            h = self.data['y']
+            kwargs = dict(weights=None, cumulative=False,
+                    histtype='step', align='mid', orientation='vertical', log=False)
+            kwargs.update(ckwargs)
+            
+            self.ax.hist(h, bins=bins, **kwargs)
+
+            handle, label = None, None
+            if self.meta['doYErrbars']:
+                eyarr = self.data['ey']
+                self.ax.errorbar(bins, h, yerr=eyarr, color='k', fmt='', linestyle='')
+
+        return handle, label
 
 
 class CCD2DPlot(BasicPlot):

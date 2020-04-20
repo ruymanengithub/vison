@@ -63,6 +63,8 @@ DARK01_commvalues = dict(program='CALCAMP', test='DARK01',
                          comments='DARK')
 
 
+DKMSKthresholds = [-1000.,50.0]
+
 class DARK01_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
@@ -154,8 +156,9 @@ class DARK01(DarkTask):
 
         """
         super(DARK01, self).prepare_images(
-            doExtract=True, doBadPixels=True,
-            doMask=True, doOffset=True, doBias=True, doFF=False)
+            doExtract=True, doBadPixels=False,
+            doMask=False, doOffset=True,
+            doBias=False, doFF=False)
 
     def stack_analysis(self):
         """
@@ -245,6 +248,7 @@ class DARK01(DarkTask):
         if not self.drill:
 
             self.dd.products['MasterDKs'] = OrderedDict()
+            self.dd.products['DKMSKs'] = OrderedDict()
 
             def _pack_profs(CQdict, prof):
                 """ """
@@ -280,7 +284,6 @@ class DARK01(DarkTask):
 
                 jsettings = copy.deepcopy(settings)
                 jsettings['CCDSerial'] = self.inputs['diffvalues']['sn_ccd%i' % (jCCD + 1)]
-
                 jsettings['CCDTempTop'] = self.dd.mx['HK_CCD%i_TEMP_T' % (jCCD + 1,)][:].mean()
                 jsettings['CCDTempBot'] = self.dd.mx['HK_CCD%i_TEMP_B' % (jCCD + 1,)][:].mean()
 
@@ -293,9 +296,22 @@ class DARK01(DarkTask):
 
                 self.dd.products['MasterDKs'][CCDk] = DKpath
 
-                DK = darkaux.DarkCDP(DKpath)
-
+                DK = darkaux.DarkCDP(fitsfile=DKpath)
                 iDext = DK.extnames.index('DARK')
+
+
+                DKMSK_cdp = self.get_DarkDefectsMask_CDP(copy.deepcopy(DK),
+                    thresholds=DKMSKthresholds,
+                    subbgd=True, bgdmodel=None,
+                    extension=iDext,
+                    sn_ccd=self.inputs['diffvalues']['sn_%s' % CCDk.lower()])
+
+                DKMSKname = 'EUC_DKMSK_ROE1_%s.fits' % (CCDk,)
+                DKMSKpath = os.path.join(productspath, DKMSKname)
+
+                DKMSK_cdp.savehardcopy(DKMSKpath)
+
+                self.dd.products['DKMSKs'][CCDk] = DKpath
 
                 Quads = DK.Quads
 
@@ -305,7 +321,6 @@ class DARK01(DarkTask):
 
                     DK_TB['CCD'][kk] = jCCD + 1
                     DK_TB['Q'][kk] = jQ + 1
-                    DK_TB['N_HOT'][kk] = 0  # PENDING!
                     DK_TB['AVSIGNAL'][kk] = jsettings['AVFLU_%s' % Q]
 
                     qdata = DK.get_quad(Q, canonical=False, extension=iDext).copy()
@@ -330,6 +345,14 @@ class DARK01(DarkTask):
                     profs1D2plot['ver'][CCDk][Q] = _pack_profs(
                         profs1D2plot['ver'][CCDk][Q], ver1Dprof)
 
+                    # Number of Hot Pixels
+                    
+                    N_HOT = DKMSK_cdp.ccdobj.get_stats(Q,sector='img',statkeys=['sum'],
+                        ignore_pover=True,extension=-1)[0]
+
+                    DK_TB['N_HOT'][kk] = N_HOT  
+
+
         # PLOTTING 1D PROFILES OF MASTER BIAS
 
         self.figdict['D01meta_prof1D_hor'][1]['data'] = profs1D2plot['hor'].copy()
@@ -340,29 +363,30 @@ class DARK01(DarkTask):
                                         'D01meta_prof1D_ver'],
                                dobuilddata=False)
 
-        # SAVING 1D PROFILES OF MASTER BIAS as a CDP
+        # SAVING 1D PROFILES OF MASTER DARK as a CDP
 
-        MB_profiles_cdp = self.CDP_lib['MB_profiles']
-        MB_profiles_cdp.header = CDP_header.copy()
-        MB_profiles_cdp.path = profilespath
-        MB_profiles_cdp.data = profs1D2plot.copy()
+        MD_profiles_cdp = self.CDP_lib['MD_profiles']
+        MD_profiles_cdp.header = CDP_header.copy()
+        MD_profiles_cdp.path = profilespath
+        MD_profiles_cdp.data = profs1D2plot.copy()
 
-        self.save_CDP(MB_profiles_cdp)
-        self.pack_CDP_to_dd(MB_profiles_cdp, 'MB_PROFILES')
+        self.save_CDP(MD_profiles_cdp)
+        self.pack_CDP_to_dd(MD_profiles_cdp, 'MD_PROFILES')
 
-        # DISPLAYING THE MASTER BIAS FRAMES
+        # DISPLAYING THE MASTER DARK FRAMES
 
         self.figdict['D01meta_MasterDark_2D'][1]['data'] = MDK_2PLOT.copy()
 
         # UPDATING scaling based on data
 
         if len(MDK_p5s) > 0:
-            normfunction = Normalize(vmin=np.min(MDK_p5s), vmax=np.max(MDK_p95s), clip=False)
+            normfunction = Normalize(vmin=np.min(MDK_p5s),\
+                vmax=np.max(MDK_p95s), clip=False)
         else:
             normfunction = False
 
         self.figdict['D01meta_MasterDark_2D'][1]['meta']['corekwargs']['norm'] = normfunction
-
+        
         if self.report is not None:
             self.addFigures_ST(figkeys=['D01meta_MasterDark_2D'],
                                dobuilddata=False)

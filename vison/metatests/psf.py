@@ -15,8 +15,9 @@ import string as st
 import os
 import matplotlib.cm as cm
 
+from vison.datamodel import cdp
 from vison.fpa import fpa as fpamod
-
+from vison.support import utils
 from vison.metatests.metacal import MetaCal
 from vison.plot import plots_fpa as plfpa
 
@@ -170,6 +171,7 @@ class MetaPsf(MetaCal):
         self.products['XTALK_RT'] = files.cPickleRead(kwargs['cdps']['xtalk_roetab'])
 
         self.init_fignames()
+        self.init_outcdpnames()
 
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
@@ -355,18 +357,87 @@ class MetaPsf(MetaCal):
             self.figs['XTALK_MAP_%s' % testname] = os.path.join(self.figspath,
                                                                 'XTALK_MAP_%s.png' % testname)
 
+    def init_outcdpnames(self):
+        """ """
+
+        if not os.path.exists(self.cdpspath):
+            os.system('mkdir %s' % self.cdpspath)
+
+        for testname in self.testnames:
+            self.outcdps['XTALK_MX_%s' % testname] = 'XTALK_MX_%s.json' % testname
+
+    def _serialise_XTALKs(self,XTALKs):
+        """ """
+        blocks = XTALKs['blocks']
+        dd = OrderedDict(blocks=blocks)
+        
+        for block in blocks:
+
+            dd[block] = OrderedDict()
+
+            for CCDso in self.CCDs:
+
+                CCDsok = 'CCD%i' % CCDso
+
+                dd[block][CCDsok] = OrderedDict()
+
+                for Qso in self.Quads:
+                    
+                    dd[block][CCDsok][Qso] = OrderedDict()
+
+                    for CCDvi in self.CCDs:
+                        
+                        CCDvik = 'CCD%i' % CCDvi
+                        dd[block][CCDsok][Qso][CCDvik]=OrderedDict()
+
+                        for Qvi in self.Quads:
+                            
+                            inval = XTALKs[block][CCDsok][Qso][CCDvik][Qvi]
+
+                            if len(inval)==0:
+                                val=(None,None)
+                            else:
+                                val = ('%.3e' % inval['xtalk'],
+                                    '%.3e' % inval['std_xtalk'])
+
+                            dd[block][CCDsok][Qso][CCDvik][Qvi]=val
+
+        return dd
+        
+
     def dump_aggregated_results(self):
         """ """
+
+        if self.report is not None:
+            self.report.add_Section(keyword='dump', Title='Aggregated Results', level=0)
+            
+            self.add_DataAlbaran2Report()
+
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
 
         # XTALK MAP (ROE-TAB)
 
         XTALKs_RT = self.products['XTALK_RT'].copy()
 
+        figkey0 = 'XTALK_MAP_RT'
+        figname0 = self.figs[figkey0]
+
         self.plot_XtalkMAP(XTALKs_RT, **dict(
             scale='ADU',
             showvalues=False,
             title='XTALK [ADU] - ROE-TAB',
-            figname=self.figs['XTALK_MAP_RT']))
+            figname=figname0))
+
+        captemp0 = 'ROE-TAB: Cross-Talk matrix [in ADU] obtained '+\
+            'using the ROE-TAB [electrical injection].'
+
+        if self.report is not None:
+            self.addFigure2Report(figname0, 
+                figkey=figkey0, 
+                caption= captemp0, 
+                texfraction=0.7)
 
         # XTALK MAPS (OPTICAL)
 
@@ -374,25 +445,60 @@ class MetaPsf(MetaCal):
 
             XTALKs = self.get_XTALKDICT_from_PT(testname)
 
+            figkey1 = 'XTALK_MAP_%s' % testname
+            figname1 = self.figs[figkey1]
+
             stestname = st.replace(testname, '_', '\_')
             self.plot_XtalkMAP(XTALKs, **dict(
                 scale='ADU',
                 showvalues=False,
                 title='%s: XTALK [ADU]' % stestname,
-                figname=self.figs['XTALK_MAP_%s' % testname]))
+                figname=figname1))
+
+            captemp1 = '%s: Cross-Talk as amplitude in ADU of ghost in victim channel,'+\
+            ' for a saturating signal in the source channel.'
+
+            if self.report is not None:
+                self.addFigure2Report(figname1, 
+                        figkey=figkey1, 
+                        caption= captemp1 % stestname, 
+                        texfraction=0.7)
+
+            xt_header = OrderedDict()
+            xt_header['title'] = 'XTALK_MATRIX:%s' % testname
+            xt_header.update(CDP_header)
+
+            xt_cdp = cdp.Json_CDP(rootname=self.outcdps['XTALK_MX_%s' % testname],
+                path=self.cdpspath)
+
+            XTALKs_CDP_MX = self._serialise_XTALKs(XTALKs)
+
+            xt_cdp.ingest_inputs(data=XTALKs_CDP_MX,
+                    header = xt_header,
+                    meta=dict(units='ADIM',
+                        structure='block:ccd_source:Q_source:'+\
+                        'ccd_victim:Q_victim:(xtalk,e_xtalk)'))
+
+            xt_cdp.savehardcopy()
+
+            
 
         # XTALK: 800-optical vs. RT  (with SIGN)
 
         XT_RTvs800 = self._get_XYdict_XT('PSF01_800', 'RT', mode='sign')
 
+        figkey2 = 'XTALK_RTvs800'
+        figname2 = self.figs[figkey2]
+
+
         XTkwargs = dict(
-            title='Cross-Talk Comparison',
+            title='Cross-Talk Direct Comparison',
             doLegend=False,
             xlabel='Xtalk - Opt. 800nm',
             ylabel='Xtalk - ROE-TAB',
-            xlim=[-20, 50],
-            ylim=[-20, 50],
-            figname=self.figs['XTALK_RTvs800'])
+            xlim=[-20, 40],
+            ylim=[-20, 40],
+            figname=figname2)
 
         BLOCKcolors = cm.rainbow(np.linspace(0, 1, len(self.flight_blocks)))
 
@@ -408,9 +514,23 @@ class MetaPsf(MetaCal):
 
         self.plot_XY(XT_RTvs800, **XTkwargs)
 
+
+        if self.report is not None:
+            
+            captemp2 = '%s: Cross-talk coupling factor measured using the ROE-TAB, vs. using '+\
+            'optical stimulation (at 800 nm). Sign of coupling preserved.'
+
+            self.addFigure2Report(figname2, 
+                        figkey=figkey2, 
+                        caption=captemp2 % stestname, 
+                        texfraction=0.7)
+
         # XTALK: 800-optical vs. RT (ABS-VALUE)
 
         XT_RTvs800_abs = self._get_XYdict_XT('PSF01_800', 'RT', mode='abs')
+
+        figkey3 = 'XTALK_RTvs800_ABS'
+        figname3 = self.figs[figkey3]
 
         XTABSkwargs = dict(
             title='Cross-Talk Comparison - ABS. Value',
@@ -419,17 +539,30 @@ class MetaPsf(MetaCal):
             ylabel='Abs(Xtalk - ROE-TAB)',
             xlim=[-20, 50],
             ylim=[-20, 50],
-            figname=self.figs['XTALK_RTvs800_ABS'])
+            figname=figname3)
 
         XTABSkwargs['corekwargs'] = xtcorekwargs
 
         self.plot_XY(XT_RTvs800_abs, **XTABSkwargs)
+
+        if self.report is not None:
+            
+            captemp3 = '%s: Cross-talk coupling factor (in absolute value) measured '+\
+            'using the ROE-TAB, vs. using optical stimulation (at 800 nm).'
+
+            self.addFigure2Report(figname3, 
+                        figkey=figkey3, 
+                        caption=captemp3 % stestname, 
+                        texfraction=0.7)
 
         # XTALK: 800-optical vs. OTHER-opt (with SIGN)
 
         for wave in [590, 730, 880]:
 
             XT_NMvs800 = self._get_XYdict_XT('PSF01_800', 'PSF01_%i' % wave, mode='sign')
+
+            figkey4 = 'XTALK_%ivs800' % wave
+            figname4 = self.figs[figkey4]
 
             XTNMvs800kwargs = dict(
                 title='Cross-Talk Comparison - With Sign',
@@ -438,8 +571,30 @@ class MetaPsf(MetaCal):
                 ylabel='Xtalk - Opt. %i nm' % wave,
                 xlim=[-20, 50],
                 ylim=[-20, 50],
-                figname=self.figs['XTALK_%ivs800' % wave])
+                figname=figname4)
 
             XTNMvs800kwargs['corekwargs'] = xtcorekwargs
 
             self.plot_XY(XT_NMvs800, **XTNMvs800kwargs)
+
+            if self.report is not None:
+            
+                captemp4 = 'Cross-talk coupling factor measured at %i nm '+\
+                'vs. 800 nm.'
+
+                self.addFigure2Report(figname4, 
+                        figkey=figkey4, 
+                        caption=captemp4 % wave,
+                        texfraction=0.7)
+
+                std_comparisons = []
+
+                for block in self.flight_blocks:
+                    std_comparisons.append(np.nanstd(XT_NMvs800['y'][block]-\
+                            XT_NMvs800['x'][block]))
+
+                avg_std = np.nanmedian(std_comparisons)
+
+                self.report.add_Text('Avg. STD of comparison (%i vs. 800 nm): %.2e ADU' %\
+                        (wave, avg_std))
+

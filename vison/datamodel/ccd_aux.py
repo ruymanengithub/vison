@@ -117,7 +117,7 @@ class Model2D():
         self.polyfunc = None
 
     def bin_img(self, boxsize, stat='median'):
-        """ """
+        """Bins down image in self."""
 
         ishape = self.img.shape
         _nshape = (ishape[0] / boxsize, ishape[1] / boxsize)
@@ -136,7 +136,7 @@ class Model2D():
         self.YYbin = syy.copy()
 
     def filter_img(self, filtsize=15, filtertype='median', Tests=False):
-        """ """
+        """Returns filtered version of self.img."""
 
         if Tests:
             filtered = np.ones_like(self.img)
@@ -306,13 +306,30 @@ class Model2D():
 
 def get_region2Dmodel(ccdobj, Q, area='img', kind='spline', splinemethod='cubic', pdegree=2,
                       doFilter=False, doBin=True, filtsize=1, binsize=1, filtertype='mean',
-                      recoveredges=False,
-                      vstart=0, vend=2086, canonical=True, extension=-1):
-    """ """
+                      recoveredges=False,vstart=0, vend=2086, canonical=True, extension=-1):
+    """ 
+
+    Args:
+        ccdobj (obj): ccd object
+        Q (char): Quadrant
+        kind (char): type of 
+        doFilter (bool):  
+        filtsize (int): 
+        doBin (bool):
+        binsize (int):
+        filtertype (char):
+        recoveredges (bool):
+        vstart (int): windowing parameter, start line (from 0) to consider in image area.
+        vend (int): windowing parameter, end line (+1) to consider in image area.
+        canonical (bool): 
+        extension (int): image extension to be used from ccdobj.
+
+    """
 
     #prescan = ccdobj.prescan
     #overscan = ccdobj.overscan
     #imgx = ccdobj.NAXIS1/2 - prescan - overscan
+
 
     subregion, BB = ccdobj.extract_region(Q, area=area, vstart=vstart, vend=vend,
                                           Full=True, canonical=canonical,
@@ -364,7 +381,8 @@ def get_1Dprofile(ccdobj, Q, orient='hor', area='img', stacker='mean', vstart=0,
     subregion, BB = ccdobj.extract_region(Q, area=area, vstart=vstart,
                                           vend=vend,
                                           Full=True,
-                                          extension=extension)
+                                          extension=extension,
+                                          canonical=True)
 
     if isinstance(subregion, np.ma.masked_array):
         stacker_dict = dict(mean=np.ma.mean, median=np.ma.median,

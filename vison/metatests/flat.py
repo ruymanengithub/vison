@@ -16,16 +16,18 @@ import os
 from skimage import exposure
 from scipy import ndimage
 import gc
+import pandas as pd
 
 from vison.support import vjson
 from vison.datamodel import ccd as ccdmod
+from vison.datamodel import cdp as cdpmod
 from vison.support import files
 from vison.fpa import fpa as fpamod
 
 from vison.metatests.metacal import MetaCal
 from vison.plot import plots_fpa as plfpa
 
-from vison.support import vcal
+from vison.support import vcal, utils
 from vison.datamodel import core as vcore
 from vison.ogse import ogse
 
@@ -173,6 +175,7 @@ class MetaFlat(MetaCal):
         self.batches_highPRNU = ['14313', '14471']
 
         self.init_fignames()
+        self.init_outcdpnames()
 
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
@@ -297,7 +300,7 @@ class MetaFlat(MetaCal):
         """ """
 
         def _extract_PRNU_fromPT(PT, block, CCDk, Q):
-            ixblock = np.where(PT['BLOCK'].data == block)
+            ixblock = self.get_ixblock(PT, block)
             column = 'PRNU_PC_%s_%s_Quad%s' % (colkey.upper(), CCDk, Q)
 
             PRNU = PT[column][ixblock][0]
@@ -383,6 +386,118 @@ class MetaFlat(MetaCal):
                 #esimg = None
 
         return MFdict
+
+    def _get_MF_stats(self, testname, colkey):
+        """ """
+
+        PT = self.ParsedTable[testname]
+
+        MFstats = OrderedDict()
+
+        MFstats['AVPRNU'] = None
+        MFstats['AVFLUADU'] = None
+        MFstats['AVFLUELE'] = None
+        MFstats['AVEFLAT'] = None
+
+
+        prnus = []
+        fluadus = []
+        flueles = []
+        eflats = []
+
+
+        for jY in range(self.NCOLS_FPA):
+            for iX in range(self.NSLICES_FPA):
+                Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+
+                locator = self.fpa.FPA_MAP[Ckey]
+
+                block = locator[0]
+                CCDk = locator[1]
+
+                inventoryitem = self.inventory[block][testname][0]
+                productspath = os.path.join(inventoryitem['resroot'], 'products')
+
+                ixblock = np.where(PT['BLOCK'] == block)
+
+                cdpkey = PT['MASTERFLATS_%s_%s' % (colkey.upper(), CCDk)][ixblock][0]
+
+                masterfits = os.path.join(productspath, self.products['MASTERFLATS'][cdpkey])
+
+                ccdobj = ccdmod.CCD(infits=masterfits, getallextensions=True, withpover=True,
+                                    overscan=20)
+
+                MFstats[Ckey] = OrderedDict()
+
+                for Q in self.Quads:
+
+                    MFstats[Ckey][Q] = OrderedDict()
+
+                    MFstats[Ckey][Q]['PRNU'] = PT['PRNU_PC_%s_%s_Quad%s' % \
+                        (colkey.upper(),CCDk, Q)][ixblock][0]
+                    prnus.append(MFstats[Ckey][Q]['PRNU'])
+
+                    MFstats[Ckey][Q]['FLUADU'] = PT['PRNU_FLUADU_%s_%s_Quad%s' % \
+                        (colkey.upper(),CCDk, Q)][ixblock][0]
+                    fluadus.append(MFstats[Ckey][Q]['FLUADU'])
+
+                    MFstats[Ckey][Q]['FLUELE'] = PT['PRNU_FLUELE_%s_%s_Quad%s' % \
+                        (colkey.upper(),CCDk, Q)][ixblock][0]
+                    flueles.append(MFstats[Ckey][Q]['FLUELE'])
+
+                    i_eflat = ccdobj.get_stats(Q,sector='img',statkeys=['median'],
+                        ignore_pover=True,extension=-1)[0]
+
+                    MFstats[Ckey][Q]['EFLAT'] = float(i_eflat)
+                    eflats.append(i_eflat)
+
+        MFstats['AVPRNU'] = float(np.nanmean(prnus))
+        MFstats['AVFLUADU'] = float(np.nanmean(fluadus))
+        MFstats['AVFLUELE'] = float(np.nanmean(flueles))
+        MFstats['AVEFLAT'] = float(np.nanmean(eflats))
+        
+
+        return MFstats
+
+
+
+    
+    def _get_MFccd_dict(self, testname, colkey):
+        """ """
+        PT = self.ParsedTable[testname]
+
+        MFccd_dict = dict()
+
+        for jY in range(self.NCOLS_FPA):
+            for iX in range(self.NSLICES_FPA):
+                Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+
+                locator = self.fpa.FPA_MAP[Ckey]
+
+                block = locator[0]
+                CCDk = locator[1]
+
+                inventoryitem = self.inventory[block][testname][0]
+
+                productspath = os.path.join(inventoryitem['resroot'], 'products')
+
+                ixblock = np.where(PT['BLOCK'] == block)
+
+                cdpkey = PT['MASTERFLATS_%s_%s' % (colkey.upper(), CCDk)][ixblock][0]
+
+                masterfits = os.path.join(productspath, self.products['MASTERFLATS'][cdpkey])
+
+                ccdobj = ccdmod.CCD(infits=masterfits, getallextensions=True, withpover=True,
+                                    overscan=20)
+
+                MFccd_dict[Ckey] = copy.deepcopy(ccdobj)
+
+                ccdobj=None
+
+
+        return MFccd_dict
+
+
 
     def _get_XYdict_PRNULAM(self):
         """ """
@@ -483,18 +598,51 @@ class MetaFlat(MetaCal):
                 self.figs['MF_%s_%s' % (testname, colkey)] = os.path.join(
                     self.figspath, 'MF_%s_%s.png' % (testname, colkey))
 
+    def init_outcdpnames(self):
+        """ """
+
+        if not os.path.exists(self.cdpspath):
+            os.system('mkdir %s' % self.cdpspath)
+
+        for testname in self.testnames:
+            for colkey in self.colkeys[testname]:
+                self.outcdps['MF_%s_%s' % (testname, colkey)] = os.path.join(
+                    self.cdpspath, 'MF_%s_%s.fits' % (testname, colkey))
+
+        for testname in self.testnames:
+            for colkey in self.colkeys[testname]:
+                self.outcdps['MF_STATS_%s_%s' % (testname, colkey)] = \
+                 'MF_STATS_%s_%s.json' % (testname, colkey)
+
+
+
     def dump_aggregated_results(self):
         """ """
 
+        if self.report is not None:
+            self.report.add_Section(keyword='dump', 
+                Title='Aggregated Results', level=0)
+            
+            self.add_DataAlbaran2Report()
+
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header['DATE'] = self.get_time_tag()
+        
+        doPRNUvsWAVE = True
+        doMF_STATS = True
+        doMFs = True 
+        doPRNUvsFLU = True
+        
         # PRNU vs. WAVELENGTH
 
-        doPRNUvsWAVE = True
-        doMFs = True
-        doPRNUvsFLU = True
 
         if doPRNUvsWAVE:
 
             XYPLam = self._get_XYdict_PRNULAM()
+
+            figkey1 = 'PRNU_vs_WAVE'
+            figname1 = self.figs[figkey1]
 
             self.plot_XY(XYPLam, **dict(
                 title='PRNU vs. Wavelength',
@@ -502,9 +650,82 @@ class MetaFlat(MetaCal):
                 doYErrbars=True,
                 xlabel='Wavelength [nm]',
                 ylabel='PRNU',
-                figname=self.figs['PRNU_vs_WAVE'],
+                figname=figname1,
                 corekwargs=dict(linestyle='-', marker='o')))
             gc.collect()
+
+            if self.report is not None:
+                self.addFigure2Report(figname1, 
+                        figkey=figkey1, 
+                        caption='PRNU (rms, %s ) vs. wavelength.' % ('\\%',), 
+                        texfraction=0.7)
+
+
+        # MASTER FLATS STATS
+        # PRNU, FLUENCES, ERRORs
+        
+        if doMF_STATS:
+
+            MF_stats_sum = OrderedDict()
+            sumcols = ['TEST','COL','PRNU','FLUADU','FLUELE','EFLAT']
+            for scol in sumcols:
+                MF_stats_sum[scol] = []
+
+
+            for testname in self.testnames:
+                
+                stestname = st.replace(testname, '_', '\_')
+
+                for colkey in self.colkeys[testname]:
+                    
+                    MF_STATS_MX = self._get_MF_stats(testname, colkey)
+
+
+                    MF_stats_sum['TEST'].append(testname)
+                    MF_stats_sum['COL'].append(colkey)
+                    MF_stats_sum['PRNU'].append('%.2f' % MF_STATS_MX['AVPRNU'])
+                    MF_stats_sum['FLUADU'].append('%.1f' % MF_STATS_MX['AVFLUADU'])
+                    MF_stats_sum['FLUELE'].append('%.1f' % MF_STATS_MX['AVFLUELE'])
+                    MF_stats_sum['EFLAT'].append('%.2e' % MF_STATS_MX['AVEFLAT'])
+
+                    mfstats_header = OrderedDict()
+                    mfstats_header['title'] = 'MF_STATS'
+                    mfstats_header['test']=testname
+                    mfstats_header['column']=colkey
+                    mfstats_header.update(CDP_header)
+
+                    mfstats_meta=dict(
+                        PRNU='Photon Response Non-Uniformity',
+                        FLUADU='Fluence in ADU',
+                        FLUELE='Fluence in electrons',
+                        EFLAT='Statistical error in the flat',
+                        structure=\
+                        'CCDID:Q:dict(PRNU:[pc],FLUADU:[ADU],FLUELE:[e-],EFLAT:[ADIM]')
+
+                    mfstats_cdp = cdpmod.Json_CDP(rootname=self.outcdps['MF_STATS_%s_%s' %\
+                                (testname, colkey)],
+                                path=self.cdpspath)
+                    
+                    mfstats_cdp.ingest_inputs(data=MF_STATS_MX,
+                        header=mfstats_header,
+                        meta=mfstats_meta)
+
+                    mfstats_cdp.savehardcopy()
+
+
+            if self.report is not None:
+
+                MF_stats_sum_df = pd.DataFrame(MF_stats_sum)
+                lxkwargs = dict(multicolumn=True, multirow=True, longtable=True,index=False)
+                MFtex = MF_stats_sum_df.to_latex(**lxkwargs)
+
+                ncolsstats = len(sumcols)
+
+                caption = 'Master Flats Statistics.'
+                wtex = cdpmod.wraptextable(MFtex, ncolsstats, caption, fitwidth=True,
+                    tiny=True, longtable=True)
+                self.report.add_Text(wtex)
+
 
         # MASTER FLATS DISPLAY
 
@@ -522,19 +743,77 @@ class MetaFlat(MetaCal):
                     print(('MF: %s %s' % (testname, colkey)))
 
                     if testname == 'FLAT01':
-                        suptitle = 'FLAT01 800 nm, Fluence %s' % colnum
+                        _test = 'FLAT01'
+                        _wave = 800
                     else:
                         _test, _wave = st.split(testname, '_')
-                        suptitle = '%s %s nm, Fluence %i' % (_test, _wave, colnum)
+                    suptitle = '%s %s nm, Fluence %i' % (_test, _wave, colnum)
                     print(suptitle)
+
+                    figkey2 = 'MF_%s_%s' % (testname, colkey)
+                    figname2 = self.figs[figkey2]
 
                     MFdict = self._get_MFdict(testname, colkey)
                     MFkwargs = dict(  # suptitle='%s, %s: Master Flat Field' % (stestname, colkey),
                         suptitle=suptitle,
-                        figname=self.figs['MF_%s_%s' % (testname, colkey)])
+                        figname=figname2)
 
                     self.plot_ImgFPA(MFdict, **MFkwargs)
+
+                    if self.report is not None:
+                        self.addFigure2Report(figname2,
+                            figkey=figkey2,
+                            caption='%s: Master Flat-field. Fluence \\#%i' % \
+                                    (stestname,colnum), 
+                            texfraction=0.7)
+
                     MFdict = None
+
+                    # Save MF as cdp
+
+                    MFccd_dict = self._get_MFccd_dict(testname, colkey)
+
+                    ixstat = np.where((np.array(MF_stats_sum['TEST']) == testname) &\
+                        (np.array(MF_stats_sum['COL']) == colkey))[0][0]
+
+
+                    MFheader = OrderedDict()
+
+                    # sumcols = ['TEST','COL','PRNU','FLUADU','FLUELE','EFLAT']
+                    avprnu = MF_stats_sum['PRNU'][ixstat]
+                    avfluadu = MF_stats_sum['FLUADU'][ixstat]
+                    avfluele = MF_stats_sum['FLUELE'][ixstat]
+                    aveflat = MF_stats_sum['EFLAT'][ixstat]
+
+
+                    MFheader['CDP'] = 'MASTERFLAT'
+                    MFheader['TEST'] = testname
+                    MFheader['WAVE'] = _wave # 'nm'
+                    MFheader['FLUCOL'] = colnum # 'Fluence Column'
+                    MFheader['FLUADU'] = avfluadu # 'Average Fluence, ADU
+                    MFheader['FLUELE'] = avfluele # 'Average Fluence, electrons
+                    MFheader['PRNU'] = avprnu # 'Average PRNU']
+                    MFheader['STERROR'] = aveflat # 'Average Error (rms)']
+                    MFheader['VISON'] = CDP_header['vison']
+                    MFheader['FPA_DES'] = CDP_header['fpa_design']
+                    MFheader['DATE'] = CDP_header['DATE']
+                    MFheader['vcalfile'] = CDP_header['vcalfile']
+
+
+                    MFcdp = cdpmod.LE1_CDP()
+
+                    MFcdp.ingest_inputs(MFccd_dict, header=MFheader, inextension=1,
+                                    fillval=1.)
+
+                    MFcdpname = self.outcdps['MF_%s_%s' % (testname, colkey)]
+
+                    MFcdp.savehardcopy(MFcdpname, clobber=True, uint16=False)
+
+                    MFccd_dict = None
+
+                    #print('EXITING EARLY ON TESTS!')
+                    #import sys
+                    #sys.exit()
 
         # PRNU vs. FLUENCE
 
@@ -547,12 +826,22 @@ class MetaFlat(MetaCal):
 
                 XYdict = self._get_XYdict_PRNUFLU(self.ParsedTable[testname], NFluCols)
 
+                figkey3 = 'PRNU_vs_FLU_%s' % testname
+                figname3 = self.figs[figkey3]
+
                 self.plot_XY(XYdict, **dict(
                     title='%s: PRNU' % (stestname,),
                     doLegend=True,
                     xlabel='Fluence [ke-]',
                     ylabel='PRNU',
-                    figname=self.figs['PRNU_vs_FLU_%s' % testname]))
+                    figname=figname3))
+
+                if self.report is not None:
+                    self.addFigure2Report(figname3, 
+                        figkey=figkey3, 
+                        caption='%s: PRNU (rms, %s ) vs. fluence.' % \
+                            (stestname, '\\%'),
+                        texfraction=0.7)
 
         # PRNU maps
 
@@ -567,7 +856,16 @@ class MetaFlat(MetaCal):
 
                 vjson.save_jsonfile(PRNUMAP, self.figs['PRNU_MAP_%s_%s_json' % (testname, colkey)])
 
+                figkey4 = 'PRNU_MAP_%s_%s' % (testname, colkey)
+                figname4 = self.figs[figkey4]
+
                 self.plot_SimpleMAP(PRNUMAP, **dict(
                     suptitle='%s [%s]: PRNU' % (stestname, colkey),
-                    figname=self.figs['PRNU_MAP_%s_%s' % (testname, colkey)]
+                    figname=figname4
                 ))
+
+                if self.report is not None:
+                    self.addFigure2Report(figname4,
+                        figkey=figkey4,
+                        caption='%s: PRNU (rms, %s ) Map across FPA.' % (stestname, '\\%'),
+                        texfraction=0.7)

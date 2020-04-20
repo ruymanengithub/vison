@@ -259,7 +259,7 @@ class MetaNL(MetaCal):
 
     def _extract_SOURCESTAB_fromPT(self, PT, block, CCDk, Q):
         """ """
-        ixblock = np.where(PT['BLOCK'].data == block)
+        ixblock = self.get_ixblock(PT, block)
 
         column = 'STABILITYPC_%s_Quad%s' % (CCDk, Q)
         stab = PT[column][ixblock][0]
@@ -541,7 +541,7 @@ class MetaNL(MetaCal):
                     linecorekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(
                         linestyle='-', marker='', color=jcolor)
                     pointcorekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(
-                        linestyle='', marker=',', color=jcolor)
+                        linestyle='', marker='.', color=jcolor)
 
         NLkwargs['corekwargs'] = linecorekwargs
 

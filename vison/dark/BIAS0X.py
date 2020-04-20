@@ -323,8 +323,8 @@ class BIAS0X(DarkTask):
 
                         for oritag in ['hor', 'ver', 'verstd']:
                             _profdata = _profs[oritag].data.copy()
-                            xorder = np.argsort(_profdata['x'])
-                            _y = _profdata['y'][xorder]
+                            #xorder = np.argsort(_profdata['x'])
+                            _y = _profdata['y'].copy()
                             _x = np.arange(len(_y))
                             profs1D2plot[oritag][CCDk][Q]['y']['OBS%i' %
                                                                OBSID] = _y.copy()
@@ -569,9 +569,9 @@ class BIAS0X(DarkTask):
 
             def _pack_profs(CQdict, prof):
                 """ """
-                _x = prof.data['x'].copy()
-                xorder = np.argsort(prof.data['x'])
-                _y = prof.data['y'][xorder].copy()
+                #_x = prof.data['x'].copy()
+                #xorder = np.argsort(prof.data['x'])
+                _y = prof.data['y'].copy()
                 _x = np.arange(len(_y))
 
                 CQdict['x'] = _x.copy()

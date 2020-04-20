@@ -162,6 +162,7 @@ def get_rawcrosstalk_mx(dd, respath):
     for CCDsk in CCDs:
 
         rawcrosstalks[CCDsk] = OrderedDict()
+        
         for Qs in Quads:
             rawcrosstalks[CCDsk][Qs] = OrderedDict()
             for CCDvk in CCDs:

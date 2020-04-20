@@ -19,12 +19,12 @@ from vison.fpa import fpa as fpamod
 from vison.metatests.metacal import MetaCal
 from vison.plot import plots_fpa as plfpa
 
-from vison.support import vcal
+from vison.support import vcal, utils
 from vison.datamodel import core as vcore
 from vison.ogse import ogse
 from vison.support import files
 from vison.datamodel import ccd as ccdmod
-
+from vison.datamodel import cdp as cdpmod
 
 from matplotlib import pyplot as plt
 plt.switch_backend('TkAgg')
@@ -148,8 +148,9 @@ class MetaCosmetics(MetaCal):
         self.maskkeys = ['DARK', 'FLAT', 'MERGE']
 
         self.init_fignames()
+        self.init_outcdpnames()
 
-    def _extract_badpix_coordinates(self, all_mask_fits, block):
+    def _extract_badpix_coordinates(self, all_mask_fits, block, debug=False):
         """ """
 
         coordinates = OrderedDict()
@@ -164,15 +165,18 @@ class MetaCosmetics(MetaCal):
             if Ckey is None:
                 flip = (1, 0)  # block outside FPA (reserves)
             else:
-                flip = flip = self.fpa.FPA_MAP[Ckey][-1]
+                flip = self.fpa.FPA_MAP[Ckey][2]
 
             coordinates[CCDkey] = OrderedDict()
 
-            img = ccdobj.extensions[-1].data.copy()
+            img = ccdobj.extensions[-1].data.T.copy()
 
             flipimg = self.fpa.flip_img(img, flip)
+            
+            y, x = np.where(flipimg > 0)
 
-            x, y = np.where(flipimg > 0)
+            if debug:
+                stop()
 
             coordinates[CCDkey] = OrderedDict(x=x,
                                               y=y)
@@ -181,6 +185,7 @@ class MetaCosmetics(MetaCal):
 
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
+
 
         NCCDs = len(self.CCDs)
         NQuads = len(self.Quads)
@@ -201,12 +206,7 @@ class MetaCosmetics(MetaCal):
 
         sidd = self.parse_single_test_gen(jrep, block, testname, inventoryitem)
 
-        # TEST SCPECIFIC
-        # TO BE ADDED:
-        #   BLOCK, TEST, REPEAT
-        #   wavenm, calibrated HK (voltages),
-        #   GAIN, EGAIN, ALPHA, BLOOM_ADU, BLOOM_E
-        #   REFERENCES TO CURVES
+        # TEST SPECIFIC
 
         CHAMBER = sidd.meta['inputs']['CHAMBER']
         CHAMBER_key = CHAMBER[0]
@@ -272,8 +272,12 @@ class MetaCosmetics(MetaCal):
 
             _mskkey = '%s_%s_%s_R%i' % (maskkey, block, session, jrep + 1)
 
+            #debug=False
+            #if block == 'GUYE' and maskkey=='MERGE':
+            #    debug=True
+
             self.products['MASKSCOOS'][_mskkey] = self._extract_badpix_coordinates(
-                all_mask_fits, block)
+                all_mask_fits, block) #,debug=debug)
 
             mskkey_v[0] = _mskkey
 
@@ -285,15 +289,17 @@ class MetaCosmetics(MetaCal):
 
         return sit
 
-    def _get_extractor_LOGNDEF_fromPT(self, maskkey):
+    def _get_extractor_NDEF_fromPT(self, maskkey, doLog=False):
 
-        def _extract_LOGNDEF_fromPT(PT, block, CCDk, Q):
-            ixblock = np.where(PT['BLOCK'].data == block)
+        def _extract_NDEF_fromPT(PT, block, CCDk, Q):
+            ixblock = self.get_ixblock(PT, block)
             column = 'N%s_%s_Quad%s' % (maskkey, CCDk, Q)
-            LOGNDEF = np.log10(max(PT[column][ixblock][0], 1))
-            return LOGNDEF
+            quantity = max(PT[column][ixblock][0], 1)
+            if doLog:
+                quantity = np.log10(quantity)
+            return quantity
 
-        return _extract_LOGNDEF_fromPT
+        return _extract_NDEF_fromPT
 
     def _get_NBADCOLS_fromPT(self, PT, block, CCDk, Q):
         ixblock = np.where(PT['BLOCK'].data == block)
@@ -334,16 +340,102 @@ class MetaCosmetics(MetaCal):
         if not os.path.exists(self.figspath):
             os.system('mkdir %s' % self.figspath)
 
-        self.figs['DEFECTS_MAP'] = os.path.join(self.figspath,
-                                                'DEFECTS_MAP.png')
+        for maskkey in self.maskkeys:
+            self.figs['DEFECTS_MAP_%s' % maskkey] = os.path.join(self.figspath,
+                                                    'DEFECTS_MAP_%s.png' % maskkey)
 
-        self.figs['DEFECTS_COUNTS_MAP'] = os.path.join(self.figspath,
-                                                       'DEFECTS_COUNTS_MAP.png')
+            self.figs['DEFECTS_COUNTS_MAP_%s' % maskkey] = \
+                os.path.join(self.figspath, 'DEFECTS_COUNTS_MAP_%s.png' % maskkey)
+
         self.figs['BADCOLS_COUNTS_MAP'] = os.path.join(self.figspath,
                                                        'BADCOLS_COUNTS_MAP.png')
 
+    def init_outcdpnames(self):
+        """ """
+
+        if not os.path.exists(self.cdpspath):
+            os.system('mkdir %s' % self.cdpspath)
+
+        self.outcdps['MASK_MERGE'] = os.path.join(self.cdpspath,
+            'MASK_COSMETICS_MERGED.fits')
+
+    def _get_MSKccd_dict(self, masktype='MERGE'):
+        """ """
+
+        testname = 'COSMETICS00'
+
+        MSKccd_dict = dict()
+
+        for jY in range(self.NCOLS_FPA):
+            for iX in range(self.NSLICES_FPA):
+                Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+
+                locator = self.fpa.FPA_MAP[Ckey]
+
+                block = locator[0]
+                CCDk = locator[1]
+
+                inventoryitem = self.inventory[block][testname][0]
+
+                productspath = os.path.join(inventoryitem['resroot'], 'products')
+
+                mskfits = os.path.join(productspath, 
+                    os.path.split(inventoryitem['dd'].products[masktype][CCDk])[-1])
+
+                ccdobj = ccdmod.CCD(infits=mskfits, getallextensions=True, withpover=True,
+                                    overscan=20)
+                MSKccd_dict[Ckey] = copy.deepcopy(ccdobj)
+
+        return MSKccd_dict
+
+
+
     def dump_aggregated_results(self):
         """ """
+        
+
+        if self.report is not None:
+            self.report.add_Section(keyword='dump', 
+                Title='Aggregated Results', level=0)
+            
+            self.add_DataAlbaran2Report()
+
+        skip = True
+
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header['DATE'] = self.get_time_tag()
+
+        # save CDP: COSMETICS MASK
+
+        if not skip:
+
+            MSKccd_dict = self._get_MSKccd_dict(masktype='MERGE')
+
+            MSKheader = OrderedDict()
+
+            MSKheader['CDP'] = 'COSMETICS_MASK'
+            MSKheader['TEST'] = 'COSMETICS00'
+            MSKheader['MASKTYPE'] = 'MERGED'
+            MSKheader['VISON'] = CDP_header['vison']
+            MSKheader['FPA_DES'] = CDP_header['fpa_design']
+            MSKheader['DATE'] = CDP_header['DATE']
+
+            MSKcdp = cdpmod.LE1_CDP()
+
+            MSKcdp.ingest_inputs(MSKccd_dict, header=MSKheader, inextension=-1,
+                                    fillval=0)
+
+            MSKcdpname = self.outcdps['MASK_MERGE']
+
+            MSKcdp.savehardcopy(MSKcdpname, clobber=True, uint16=False)
+
+            MSKccd_dict = None
+
+        #import sys
+        #print('EXITING EARLY ON TESTS!')
+        #sys.exit()
+
 
         # Maps of Defects
 
@@ -351,29 +443,90 @@ class MetaCosmetics(MetaCal):
 
             DEFMAP = self._get_DEFECTSMAP_from_PT(maskkey)
 
-            self.plot_XYMAP(DEFMAP, kwargs=dict(
+            figkey1 = 'DEFECTS_MAP_%s' % maskkey
+            figname1 = self.figs[figkey1]
+
+            self.plot_XYMAP(DEFMAP, **dict(
                 suptitle='DEFECTS: %s' % maskkey,
-                figname=self.figs['DEFECTS_MAP']
+                figname=figname1
             ))
+
+            if self.report is not None:
+
+                captemp = 'Defects Map across the FPA of Type: "%s". Each "bad" pixel is '+\
+                        'represented by a dot. As a results, bad pixels are not to scale.'
+
+                self.addFigure2Report(figname1, 
+                        figkey=figkey1, 
+                        caption=captemp % maskkey, 
+                        texfraction=0.7)
+
 
         # Defects Counts
 
         for maskkey in self.maskkeys:
 
-            NDEFMAP = self.get_FPAMAP_from_PT(self.ParsedTable['COSMETICS00'],
-                                              extractor=self._get_extractor_LOGNDEF_fromPT(maskkey))
+            logNDEFMAP = self.get_FPAMAP_from_PT(self.ParsedTable['COSMETICS00'],
+                    extractor=self._get_extractor_NDEF_fromPT(maskkey,doLog=True))
 
-            self.plot_SimpleMAP(NDEFMAP, kwargs=dict(
-                suptitle='NR. DEFECTS: %s' % maskkey,
-                figname=self.figs['DEFECTS_COUNTS_MAP']
+            figkey2 = 'DEFECTS_COUNTS_MAP_%s' % maskkey
+            figname2 = self.figs[figkey2]
+
+            self.plot_SimpleMAP(logNDEFMAP, **dict(
+                suptitle='log NR. DEFECTS: %s' % maskkey,
+                figname=figname2,
+                ColorbarText='log(N)'
             ))
+
+            if self.report is not None:
+
+                captemp = 'Number of defects in each CCD quadrant of the FPA. '+\
+                'Mask of Type: %s.'
+
+                self.addFigure2Report(figname2, 
+                    figkey=figkey2, 
+                    caption=captemp % maskkey, 
+                    texfraction=0.7)
+
+                ndef_cdpdict = dict(
+                    caption='COSMETICS00: Nr. of defects, mask of type %s' % maskkey,
+                    valformat='%i')
+
+                NDEFMAP = self.get_FPAMAP_from_PT(self.ParsedTable['COSMETICS00'],
+                    extractor=self._get_extractor_NDEF_fromPT(maskkey,doLog=False))
+
+                ignore = self.add_StdQuadsTable2Report( 
+                                Matrix = NDEFMAP,
+                                cdpdict = ndef_cdpdict)
+
 
         # Bad Column Counts
 
         NBADCOLSMAP = self.get_FPAMAP_from_PT(self.ParsedTable['COSMETICS00'],
                                               extractor=self._get_NBADCOLS_fromPT)
 
-        self.plot_SimpleMAP(NBADCOLSMAP, kwargs=dict(
+
+        figkey3 = 'BADCOLS_COUNTS_MAP'
+        figname3 = self.figs[figkey3]
+
+        self.plot_SimpleMAP(NBADCOLSMAP, **dict(
             suptitle='NR. of BAD COLUMNS [MERGED MASK]',
-            figname=self.figs['BADCOLS_COUNTS_MAP']
+            figname=figname3,
+            ColorbarText='N'
         ))
+
+        if self.report is not None:
+            self.addFigure2Report(figname3, 
+                figkey=figkey3, 
+                caption='Number of bad columns in each CCD quadrant of the FPA.', 
+                texfraction=0.7)
+
+            nbadcols_cdpdict = dict(
+                    caption='COSMETICS00: Nr. of bad columns (MERGED).',
+                    valformat='%i')
+
+            ignore = self.add_StdQuadsTable2Report( 
+                                Matrix = NBADCOLSMAP,
+                                cdpdict = nbadcols_cdpdict)
+
+        

@@ -28,48 +28,65 @@ from vison.support.files import cPickleRead
 def get_DarkDefectsMask_CDP(
         taskobj,
         darkccdobj,
-        threshold,
+        thresholds,
         subbgd=True,
         bgdmodel=None,
-        extension=-1):
+        extension=-1,
+        sn_ccd='Unknown'):
     """ """
 
     if subbgd:
         if bgdmodel is None:
-            bgdmodel = cosmetics.get_bgd_model(darkccdobj, extension=extension)
+
+            reg2Dmodkwargs = dict(kind='poly2D', pdegree=5,
+                doBin=True, binsize=200, recoveredges=True,
+                filtertype='median', vstart=0, vend=2066)
+
+            bgdmodel = cosmetics.get_bgd_model(darkccdobj, extension=extension,
+                reg2Dmodkwargs=reg2Dmodkwargs)
 
         darkccdobj.sub_bias(bgdmodel, extension=extension)
 
-    thresholds = [-1.E-6, threshold]
+    
     darkdata = darkccdobj.extensions[extension].data.copy()
     mask = cosmetics.get_Thresholding_DefectsMask(darkdata, thresholds)
+    mask = cosmetics.mask_badcolumns(mask,colthreshold=200)
 
-    ID = taskobj.ID
-    BLOCKID = taskobj.BLOCKID
-    CHAMBER = taskobj.CHAMBER
+    data = OrderedDict(mask=copy.deepcopy(mask),
+                        labels=['mask'])
+    meta = OrderedDict(
+                       MASKTYPE='DARK',
+                       SN=sn_ccd,
+                       THRESH=thresholds.__repr__(), 
+                       SUBBGD=subbgd,
+                       NORMED=False,
+                       FUNCTION=cosmetics.get_Thresholding_DefectsMask.__name__)
 
-    data = OrderedDict(mask=copy.deepcopy(mask))
-    meta = OrderedDict(threshold=threshold, subbgd=subbgd,
-                       function=cosmetics.get_Thresholding_DefectsMask.__name__)
+    maskcdp = cdp.CCD_CDP(ID=taskobj.ID,
+                      BLOCKID=taskobj.BLOCKID, 
+                      CHAMBER=taskobj.CHAMBER)
 
-    maskcdp = cdp.CDP(data=data, meta=meta, ID=ID,
-                      BLOCKID=BLOCKID, CHAMBER=CHAMBER)
+    maskcdp.ingest_inputs(data=data, meta=meta)
 
     return maskcdp
 
 
+
+
 def produce_MasterDark(outfits, infitsList=[], ccdpickList=[], mask=None, settings={}):
-    """Produces a Master Flat out of a number of flat-illumination exposures.
-    Takes the outputs from produce_IndivFlats."""
+    """Produces a Master Dark out of a number of flat-illumination exposures."""
 
     assert (len(infitsList) == 0) != (len(ccdpickList) == 0)
+
 
     if len(ccdpickList) > 0:
         ccdobjList = [copy.deepcopy(cPickleRead(item)) for item in ccdpickList]
         ccdpile = ccdmod.CCDPile(ccdobjList=ccdobjList, extension=-1, withpover=True)
+        NCOMB = len(ccdpickList)
     elif len(infitsList) > 0:
         ccdpile = ccdmod.CCDPile(
             infitsList=infitsList, extension=0, withpover=True)
+        NCOMB = len(infitsList)
 
     stackimg, stackstd = ccdpile.stack(method='median', dostd=True)
 
@@ -77,8 +94,10 @@ def produce_MasterDark(outfits, infitsList=[], ccdpickList=[], mask=None, settin
         stackmask = stackimg.mask.copy()
         stackimg = stackimg.data.copy()
         stackstd = stackstd.data.copy()
-        if mask is not None:
+        if mask is not None and len(stackmask.shape)>0:
             mask = mask | stackmask
+        if mask is not None and len(stackmask.shape)==0:
+            pass
         else:
             mask = stackmask.copy()
 
@@ -89,7 +108,7 @@ def produce_MasterDark(outfits, infitsList=[], ccdpickList=[], mask=None, settin
     metabag.update(settings)
 
     dkdata = dict(Dark=stackimg, eDark=stackstd)
-    dkmeta = dict(NCOMB=len(infitsList),
+    dkmeta = dict(NCOMB=NCOMB,
                   CCDTTOP=metabag['CCDTempTop'],
                   CCDTBOT=metabag['CCDTempBot'],
                   CCDSN=metabag['CCDSerial']
@@ -101,7 +120,7 @@ def produce_MasterDark(outfits, infitsList=[], ccdpickList=[], mask=None, settin
 
     if mask is not None and len(mask.shape) > 0:
         mdk.get_mask(mask)
-
+    
     mdk.writeto(outfits, clobber=True, unsigned16bit=False)
 
 
@@ -123,6 +142,9 @@ class DarkCDP(ccdmod.CCD, CDPClass):
         self.ID = ID
         self.CHAMBER = CHAMBER
         self.vison = __version__
+        #self.Dark = None
+        #self.eDark = None
+        #self.Mask = None
 
         if data is None:
             data = dict()
@@ -133,7 +155,8 @@ class DarkCDP(ccdmod.CCD, CDPClass):
 
         if fitsfile != '':
             super(DarkCDP, self).__init__(infits=fitsfile,
-                                          getallextensions=True, withpover=withpover)
+                                          getallextensions=True, 
+                                          withpover=withpover)
             self.parse_fits()
         else:
             super(DarkCDP, self).__init__(infits=None, withpover=withpover)
@@ -160,15 +183,13 @@ class DarkCDP(ccdmod.CCD, CDPClass):
         assert self.nextensions >= 3
 
         self.ncomb = self.extensions[0].header['NCOMB']
-
         assert self.extensions[1].label.upper() == 'DARK'
-        self.Dark = self.extensions[1].data
-
+        #self.Dark = self.extensions[1].data
         assert self.extensions[2].label.upper() == 'EDARK'
-        self.eDark = self.extensions[2].data
+        #self.eDark = self.extensions[2].data
 
         if self.nextensions > 3:
             assert self.extensions[3].label.upper() == 'MASK'
-            self.Mask = self.extensions[3].data
-        else:
-            self.Mask = None
+        #    self.Mask = self.extensions[3].data
+        #else:
+        #    self.Mask = None

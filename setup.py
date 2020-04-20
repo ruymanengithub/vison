@@ -32,7 +32,7 @@ def configuration():
     config.add_subpackage('vison/flat')
     config.add_subpackage('vison/fpa')    
     config.add_subpackage('vison/fpatests')
-    config.add_subpackage('vison/fpatests/dark')
+    config.add_subpackage('vison/fpatests/cea_dec19')
     config.add_subpackage('vison/image')
     config.add_subpackage('vison/inject')
     config.add_subpackage('vison/metatests')
@@ -76,7 +76,8 @@ def configuration():
                         'vison/scripts/vis_reports_merger.py',
                         'vison/scripts/vis_mksession.py',
                         'vison/scripts/vis_dnl_extract.py',
-                        'vison/scripts/vison'])
+                        'vison/scripts/vison'
+                        ])
 
     return config
 

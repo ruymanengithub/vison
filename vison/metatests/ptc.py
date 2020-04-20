@@ -13,13 +13,15 @@ import numpy as np
 from collections import OrderedDict
 import string as st
 import os
+import pandas as pd
 
+from vison.datamodel import cdp
 from vison.fpa import fpa as fpamod
 
 from vison.metatests.metacal import MetaCal
 from vison.plot import plots_fpa as plfpa
 
-from vison.support import vcal
+from vison.support import vcal, utils
 from vison.datamodel import core as vcore
 from vison.ogse import ogse
 from vison.support import files
@@ -159,6 +161,7 @@ class MetaPTC(MetaCal):
         self.censored = []
 
         self.init_fignames()
+        self.init_outcdpnames()
 
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
@@ -170,6 +173,10 @@ class MetaPTC(MetaCal):
         CCDkeys = ['CCD%i' % CCD for CCD in self.CCDs]
 
         IndexS = vcore.vMultiIndex([vcore.vIndex('ix', vals=[0])])
+
+
+        IndexC = vcore.vMultiIndex([vcore.vIndex('ix', vals=[0]),
+                                     vcore.vIndex('CCD', vals=self.CCDs)])
 
         IndexCQ = vcore.vMultiIndex([vcore.vIndex('ix', vals=[0]),
                                      vcore.vIndex('CCD', vals=self.CCDs),
@@ -247,7 +254,7 @@ class MetaPTC(MetaCal):
         her_pick = os.path.join(productspath, os.path.split(sidd.products['HER_PROFILES'])[-1])
         her_profs = files.cPickleRead(her_pick)['data'].copy()
 
-        herprofkeys_v = np.zeros((1), dtype='S50')
+        herprofkeys_v = np.zeros((1,NCCDs), dtype='S50')
 
         for iCCD, CCDk in enumerate(CCDkeys):
 
@@ -255,9 +262,9 @@ class MetaPTC(MetaCal):
 
             self.products['HER_CURVES'][herkey] = her_profs.copy()
 
-            herprofkeys_v[0] = herkey
+            herprofkeys_v[0, iCCD] = herkey
 
-        sidd.addColumn(herprofkeys_v, 'HERPROF_KEY', IndexS)
+        sidd.addColumn(herprofkeys_v, 'HERPROF_KEY', IndexC)
 
         # flatten sidd to table
 
@@ -267,21 +274,34 @@ class MetaPTC(MetaCal):
 
     def _extract_GAIN_fromPT(self, PT, block, CCDk, Q):
         """ """
-        ixblock = np.where(PT['BLOCK'].data == block)
+        ixblock = self.get_ixblock(PT, block)
         column = 'GAIN_%s_Quad%s' % (CCDk, Q)
         G = PT[column][ixblock][0]
         return G
 
     def _extract_HER_fromPT(self, PT, block, CCDk, Q):
         """ """
-        ixblock = np.where(PT['BLOCK'].data == block)
+        ixblock = self.get_ixblock(PT, block)
         column = 'HER_%s_Quad%s' % (CCDk, Q)
         HER = PT[column][ixblock][0]
         return HER
 
+    def _extract_HERprof_fromPT(self, PT, block, CCDk, Q):
+        """ """
+        ixblock = self.get_ixblock(PT, block)
+        column = 'HERPROF_KEY_%s' % (CCDk, )
+        HERprof_key = PT[column][ixblock][0]
+        data = self.products['HER_CURVES'][HERprof_key][CCDk][Q]
+        ixsel = np.where(data['x']>51+2048)
+        HERy = data['y'][ixsel].tolist()
+
+        
+        return HERy
+
+
     def _extract_BADU_fromPT(self, PT, block, CCDk, Q):
         """ """
-        ixblock = np.where(PT['BLOCK'].data == block)
+        ixblock = self.get_ixblock(PT, block)
 
         column = 'BLOOM_ADU_%s_Quad%s' % (CCDk, Q)
         badu = PT[column][ixblock][0]
@@ -292,7 +312,7 @@ class MetaPTC(MetaCal):
 
     def _extract_BE_fromPT(self, PT, block, CCDk, Q):
         """ """
-        ixblock = np.where(PT['BLOCK'].data == block)
+        ixblock = self.get_ixblock(PT, block)
 
         column = 'BLOOM_E_%s_Quad%s' % (CCDk, Q)
         be = PT[column][ixblock][0]
@@ -328,6 +348,115 @@ class MetaPTC(MetaCal):
 
         return G_MX
 
+    def _do_GvsTime(self):
+        """ """
+
+        def reshape_PT(PT, blocks, CCDs, Quads):
+
+            datadict = OrderedDict()
+            cols = ['CCDQID', 'BLOCK', 'CCD', 'time', 'TEST', 'WAVENM', 'GAIN', 'EGAIN']
+            for col in cols:
+                datadict[col] = []
+
+            ptdf = PT.to_pandas()
+            
+            for block in blocks:
+                ixsel = np.where(ptdf.BLOCK == block)
+
+                for iix in ixsel[0]:
+
+                    for CCD in CCDs:
+
+                        for Q in Quads:
+
+                            ccdqid = '%s_%s' % (ptdf['sn_ccd%i_CCD%i' % (CCD,CCD)][iix],Q)
+                            datadict['CCDQID'].append(ccdqid)
+                            datadict['BLOCK'].append(ptdf.BLOCK[iix])
+                            datadict['CCD'].append(CCD)
+                            datadict['time'].append(ptdf['time_CCD%i' % CCD][iix])
+                            datadict['TEST'].append(ptdf.TEST[iix])
+                            datadict['WAVENM'].append(ptdf.WAVENM[iix])
+                            datadict['GAIN'].append(ptdf['GAIN_CCD%i_Quad%s' % (CCD,Q)][iix])
+                            datadict['EGAIN'].append(ptdf['EGAIN_CCD%i_Quad%s' % (CCD,Q)][iix])
+            for col in cols:
+                datadict[col] = np.array(datadict[col])
+
+            optdf = pd.DataFrame(datadict)
+
+            return optdf
+
+
+        for itest, testname in enumerate(self.testnames):
+
+            t_PT_df = reshape_PT(self.ParsedTable[testname],
+                                self.blocks,
+                                self.CCDs, self.Quads)
+            
+            if itest==0:
+                PT_df = copy.deepcopy(t_PT_df)
+            else:
+                PT_df = pd.concat([PT_df, t_PT_df])
+
+        uCCDQIDs = np.unique(PT_df.CCDQID)
+
+        # discriminating CCDs that were calibrated more than once and 
+        # those that were not.
+
+        Lreps = []
+        Lnoreps = []
+        for uCCDQID in uCCDQIDs:
+            utime = PT_df.loc[PT_df.CCDQID==uCCDQID].time
+            dtime = utime.max()-utime.min()
+            if dtime.days > 10:
+                Lreps.append(uCCDQID)
+            else:
+                Lnoreps.append(uCCDQID)
+        
+        noreps = pd.DataFrame(dict(CCDQID=Lnoreps))
+        reps = pd.DataFrame(dict(CCDQID=Lreps))
+
+        PTnorep_df = PT_df[PT_df.CCDQID.isin(noreps.CCDQID)]
+        PTrep_df = PT_df[PT_df.CCDQID.isin(reps.CCDQID)]
+
+        # average gain values for each wavelength
+
+        res = PTnorep_df.groupby(['WAVENM']).median()['GAIN']
+        avG = res.values.copy()
+        waves = res.index.values.copy()
+        fcorr = avG/avG[np.where(waves==800)]
+
+        # correcting gains for wavelength effect
+        
+        for iw,wave in enumerate(waves):
+
+            PTnorep_df.loc[PTnorep_df.WAVENM==wave,
+                            PTnorep_df.columns=='GAIN'] /= fcorr[iw]
+            PTrep_df.loc[PTrep_df.WAVENM==wave,
+                            PTrep_df.columns=='GAIN'] /= fcorr[iw]
+
+        
+        def get_avtempGrelstd(df,ccdqids):
+            gains = np.array([df.loc[df.CCDQID==iid].GAIN.mean() for iid in ccdqids])
+            stdgains = np.array([df.loc[df.CCDQID==iid].GAIN.std() for iid in ccdqids])
+            return np.median(stdgains/gains)
+
+        stdGnorep = get_avtempGrelstd(PTnorep_df, Lnoreps)
+        stdGrep = get_avtempGrelstd(PTrep_df, Lreps)
+
+        res = dict(NOREPCAL=dict(relstdG=stdGnorep,
+                    N=len(Lnoreps)),
+                  REPCAL=dict(
+                    relstdG=stdGrep,
+                    N=len(Lreps)),
+                  Gwave=dict(
+                    waves=waves,
+                    avgG=avG))
+
+        return res
+
+
+
+
     def init_fignames(self):
 
         if not os.path.exists(self.figspath):
@@ -360,6 +489,17 @@ class MetaPTC(MetaCal):
 
             self.figs['HER_curves_%s' % testname] = os.path.join(self.figspath,
                                                                  'HER_curves_%s.png' % testname)
+
+    def init_outcdpnames(self):
+
+        if not os.path.exists(self.cdpspath):
+            os.system('mkdir %s' % self.cdpspath)
+
+        for testname in self.testnames:
+            self.outcdps['GAIN_%s' % testname] = '%s_GAIN_elperadu_MAP.json' % testname
+            self.outcdps['HER_%s' % testname] = '%s_HER_profiles_MAP.json' % testname
+            self.outcdps['BLOOM_ADU_%s' % testname] = '%s_BLOOM_ADU_MAP.json' % testname
+            self.outcdps['BLOOM_ELE_%s' % testname] = '%s_BLOOM_ELE_MAP.json' % testname
 
     def _get_XYdict_GvsLAM(self):
         """ """
@@ -526,19 +666,20 @@ class MetaPTC(MetaCal):
 
         for block in self.flight_blocks:
             ixsel = np.where(PT['BLOCK'] == block)
-            herprof_key = PT['HERPROF_KEY'][ixsel][0]
-            i_her = self.products['HER_CURVES'][herprof_key].copy()
 
             for iCCD, CCD in enumerate(self.CCDs):
                 CCDk = 'CCD%i' % CCD
+
+                herprof_key = PT['HERPROF_KEY_%s' % CCDk][ixsel][0]
+                i_her = self.products['HER_CURVES'][herprof_key].copy()
 
                 for kQ, Q in enumerate(self.Quads):
 
                     pkey = '%s_%s_%s' % (block, CCDk, Q)
 
-                    _x = i_her[CCDk][Q]['x'].copy()
+                    _x = i_her[CCDk][Q]['x'][10:].copy()
                     _x -= _x.min()
-                    _y = i_her[CCDk][Q]['y'].copy()
+                    _y = i_her[CCDk][Q]['y'][10:].copy()
 
                     if pkey not in self.censored:
 
@@ -546,23 +687,40 @@ class MetaPTC(MetaCal):
                         y[pkey] = _y.copy()
                         labelkeys.append(pkey)
 
+
         HERdict = dict(x=x, y=y, labelkeys=labelkeys)
 
         return HERdict
 
+
     def dump_aggregated_results(self):
         """ """
 
+        if self.report is not None:
+            self.report.add_Section(keyword='dump', 
+                Title='Aggregated Results', level=0)
+
+            self.add_DataAlbaran2Report()
+
+
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+
+
         outpathroot = self.outpathroot
 
-        doGainMaps = True
-        doBloomMaps = True
-        doHERMaps = True
-        doHERcurves = True
-        doGvsWave = True
-        doGvsT = True
-        doGvsOD = True
-        doGvsRD = True
+        doAll = True
+
+        doGainMaps = doAll
+        doBloomMaps = doAll
+        doHERMaps = doAll
+        doHERcurves = doAll
+        doGvsWave = doAll
+        doGvsT = doAll
+        doGvsOD = doAll
+        doGvsRD = doAll
+        doGvsTime = doAll
 
         # GAIN matrix (all blocks and test/waves) to dict() saved as pickle
 
@@ -582,14 +740,58 @@ class MetaPTC(MetaCal):
                     self.ParsedTable[testname],
                     extractor=self._extract_GAIN_fromPT)
 
-                avgG = self.get_stat_from_FPAMAP(GMAP, np.nanmean)
-                print(('Average G [%s]: %.2f' % (testname, avgG)))
-
                 stestname = st.replace(testname, '_', '\_')
+
+                avgG = self.get_stat_from_FPAMAP(GMAP, np.nanmean)
+<<<<<<< HEAD
+                print(('Average G [%s]: %.2f' % (testname, avgG)))
+=======
+                avgGtext = 'Average G [%s]: %.2f' % (stestname, avgG)
+                if self.report is not None:
+                    self.report.add_Text(avgGtext)
+                else:
+                    print(avgGtext)
+>>>>>>> master
+
+                def _count_within_REQ(vals):
+                    req = [3.0,3.5]
+                    return np.sum(np.array([(item>req[0] and item<=req[1]) for item in vals]))
+
+                NwithinREQ = self.get_stat_from_FPAMAP(GMAP, _count_within_REQ)
+                ReqText = 'N-Quadrants within requirement (3.0-3.5 e/ADU): %i' % (NwithinREQ)
+                if self.report is not None:
+                    self.report.add_Text(ReqText)
+                else:
+                    print(ReqText)
+
+
+                figkey1 = 'GAIN_MAP_%s' % testname
+                figname1 = self.figs[figkey1]
 
                 self.plot_SimpleMAP(GMAP, **dict(
                     suptitle='%s: GAIN e-/ADU' % stestname,
-                    figname=self.figs['GAIN_MAP_%s' % testname]))
+                    ColorbarText = 'e-/ADU',
+                    figname=figname1))
+
+                if self.report is not None:
+                    self.addFigure2Report(figname1, 
+                        figkey=figkey1, 
+                        caption='%s: Gain Map [e-/ADU].' % stestname, 
+                        texfraction=0.7)
+
+                g_header = OrderedDict()
+                g_header['title'] = 'GAIN MAP'
+                g_header['test'] = stestname
+                g_header.update(CDP_header)
+            
+                g_cdp = cdp.Json_CDP(rootname=self.outcdps['GAIN_%s' % testname],
+                              path=self.cdpspath)
+                g_cdp.ingest_inputs(data=GMAP,
+                             header = g_header,
+                             meta=dict(units='e-/ADU',
+                                        structure='CCDID:Q:gain'))
+                g_cdp.savehardcopy()
+
 
         if doBloomMaps:
 
@@ -601,10 +803,35 @@ class MetaPTC(MetaCal):
                     self.ParsedTable[testname], extractor=self._extract_BADU_fromPT)
 
                 stestname = st.replace(testname, '_', '\_')
+
+                figkey2 = 'BLOOM_ADU_MAP_%s' % testname
+                figname2 = self.figs[figkey2]
+
                 self.plot_SimpleMAP(BADU_MAP, **dict(
                     suptitle='%s: BLOOM-ADU [DN]' % stestname,
-                    figname=self.figs['BLOOM_ADU_MAP_%s' % testname]))  # ,
+                    ColorbarText='ADU',
+                    figname=figname2))  # ,
                 # corekwargs=dict(norm = Normalize(vmin=3e4,vmax=2**16, clip=False))))
+
+                if self.report is not None:
+                    self.addFigure2Report(figname2, 
+                        figkey=figkey2, 
+                        caption='%s: Blooming onset threshold map in ADU.' % stestname, 
+                        texfraction=0.7)
+
+
+                ba_header = OrderedDict()
+                ba_header['title'] = 'BLOOMING MAP [ADU]'
+                ba_header['test'] = stestname
+                ba_header.update(CDP_header)
+            
+                ba_cdp = cdp.Json_CDP(rootname=self.outcdps['BLOOM_ADU_%s' % testname],
+                              path=self.cdpspath)
+                ba_cdp.ingest_inputs(data=BADU_MAP,
+                             header = ba_header,
+                             meta=dict(units='ADU',
+                                        structure='CCDID:Q:bloom threshold'))
+                ba_cdp.savehardcopy()
 
             for testname in self.testnames:
 
@@ -612,11 +839,35 @@ class MetaPTC(MetaCal):
                     self.ParsedTable[testname],
                     extractor=self._extract_BE_fromPT)
 
+                figkey3 = 'BLOOM_ELE_MAP_%s' % testname
+                figname3 = self.figs[figkey3]
+
                 stestname = st.replace(testname, '_', '\_')
                 self.plot_SimpleMAP(BE_MAP, **dict(
                     suptitle='%s: BLOOM-ELECTRONS' % stestname,
-                    figname=self.figs['BLOOM_ELE_MAP_%s' % testname]))  # ,
+                    ColorbarText='electrons',
+                    figname=figname3))  # ,
                 # corekwargs=dict(norm = Normalize(vmin=1e5,vmax=2.2E5, clip=False))))
+
+                if self.report is not None:
+                    self.addFigure2Report(figname3, 
+                        figkey=figkey3, 
+                        caption='%s: Blooming Map in electrons.' % stestname, 
+                        texfraction=0.7)
+
+                be_header = OrderedDict()
+                be_header['title'] = 'BLOOMING MAP [ELECTRONS]'
+                be_header['test'] = stestname
+                be_header.update(CDP_header)
+            
+                be_cdp = cdp.Json_CDP(rootname=self.outcdps['BLOOM_ELE_%s' % testname],
+                              path=self.cdpspath)
+                be_cdp.ingest_inputs(data=BE_MAP,
+                             header = be_header,
+                             meta=dict(units='electrons',
+                                        structure='CCDID:Q:bloom threshold'))
+                be_cdp.savehardcopy()
+
 
         # HER map
 
@@ -630,9 +881,41 @@ class MetaPTC(MetaCal):
 
                 stestname = st.replace(testname, '_', '\_')
 
+                figkey4 = 'HER_MAP_%s' % testname
+                figname4 = self.figs[figkey4]
+
                 self.plot_SimpleMAP(HERMAP, **dict(
                     suptitle='%s: Hard Edge Response Factor' % stestname,
-                    figname=self.figs['HER_MAP_%s' % testname]))
+                    ColorbarText='[adim]',
+                    figname=figname4))
+
+                if self.report is not None:
+                    captemp = '%s: Hard Edge Response Map,'+\
+                    ' first pixel relative response.'
+
+                    self.addFigure2Report(figname4, 
+                        figkey=figkey4, 
+                        caption= captemp % stestname, 
+                        texfraction=0.7)
+
+                HERMAPprofs = self.get_FPAMAP_from_PT(
+                    self.ParsedTable[testname],
+                    extractor=self._extract_HERprof_fromPT)
+
+                
+                her_header = OrderedDict()
+                her_header['title'] = 'HARD EDGE RESPONSE'
+                her_header['test'] = stestname
+                her_header.update(CDP_header)
+            
+                her_cdp = cdp.Json_CDP(rootname=self.outcdps['HER_%s' % testname],
+                              path=self.cdpspath)
+                her_cdp.ingest_inputs(data=HERMAPprofs,
+                             header = her_header,
+                             meta=dict(units='adim',
+                                structure="CCDID:Q:[serial profile]"))
+                her_cdp.savehardcopy()
+                
 
         # HER Curves
 
@@ -644,21 +927,36 @@ class MetaPTC(MetaCal):
 
                 stestname = st.replace(testname, '_', '\_')
 
+                figkey5 = 'HER_curves_%s' % testname
+                figname5 = self.figs[figkey5]
+
                 self.plot_XY(HERSingledict, **dict(
                     title='%s: H.E.R. CURVES' % stestname,
                     doLegend=False,
                     xlabel='Pixel',
                     ylabel='HER [frac]',
                     ylim=[-2.E-4, 5.e-4],
-                    xlim=[9, 15],
+                    xlim=[0, 6],
                     corekwargs=dict(linestyle='-', marker=''),
-                    figname=self.figs['HER_curves_%s' % testname]))
+                    figname=figname5))
+
+                if self.report is not None:
+
+                    captemp = '%s: H.E.R. curves, all 144 quadrant channels.'
+
+                    self.addFigure2Report(figname5, 
+                        figkey=figkey5, 
+                        caption=captemp % stestname, 
+                        texfraction=0.7)
 
         # GAIN vs. Wavelength
 
         if doGvsWave:
 
             GvsWavedict = self._get_XYdict_GvsLAM()
+
+            figkey6 = 'GvsWave'
+            figname6 = self.figs[figkey6]
 
             self.plot_XY(GvsWavedict, **dict(
                 title='Gain vs. Wavelength',
@@ -667,9 +965,41 @@ class MetaPTC(MetaCal):
                 xlabel='Wavelength',
                 ylabel='Gain [e-/ADU]',
                 ylim=[3.3, 3.7],
-                corekwargs=dict(linestyle='', marker='.'),
+                corekwargs=dict(linestyle='', marker='o'),
                 # figname = ''))
-                figname=self.figs['GvsWave']))
+                figname=figname6))
+
+            if self.report is not None:
+                self.addFigure2Report(figname6, 
+                        figkey=figkey6, 
+                        caption='Measured Gain [e-/ADU] as a function of wavelength.', 
+                        texfraction=0.7)
+
+        if doGvsTime:
+            
+            res_GvsTime = self._do_GvsTime()
+
+            if self.report is not None:
+
+                avgGw = ['%.3f' % item for item in res_GvsTime['Gwave']['avgG']]
+
+                GvsTimeText = ['Wavelengths = %s nm\n' % res_GvsTime['Gwave']['waves'].tolist().__repr__(),
+                'Avg. Gain in each Wavelength = %s\n' % avgGw.__repr__(),
+                '\\textbf{WARNING}: Wavelength dependency of G (through B-F) has been removed in'+\
+                ' the following stats.\n',
+                '\\textbf{Non Repeated} Calibrations,\n '+\
+                    'Nr. of measurements (CCDs x tests) = %i\n' % res_GvsTime['NOREPCAL']['N'],
+                'mean rel. std. of G values per quadrant across tests: %.2f \\%%.\n' % \
+                            (res_GvsTime['NOREPCAL']['relstdG']*100.,),
+                '\\textbf{Repeated} Calibrations,\n '+\
+                    'Nr. of measurements (CCDs x tests) = %i\n' % res_GvsTime['REPCAL']['N'],
+                'mean rel. std. of G values per quadrant across Tests: %.2f \\%%.\n' % \
+                            (res_GvsTime['REPCAL']['relstdG']*100.,),
+                ]
+
+                self.report.add_Text(GvsTimeText)
+
+                
 
         # GAIN vs. detector temperature (PTC01)
 
@@ -677,19 +1007,33 @@ class MetaPTC(MetaCal):
 
             GvsTdict = self._get_XYdict_GvsT()
 
+            figkey7 = 'GvsT'
+            figname7 = self.figs[figkey7]
+
             self.plot_XY(GvsTdict, **dict(
                 title='Gain vs. Detector Temperature',
                 doLegend=True,
                 xlabel='Detector Temperature',
                 ylabel='Gain [e-/ADU]',
                 corekwargs=dict(linestyle='', marker='.'),
-                figname=self.figs['GvsT']))
+                figname=figname7))
+
+            if self.report is not None:
+
+                self.addFigure2Report(figname7, 
+                        figkey=figkey7, 
+                        caption='Measured Gain (at 800 nm) vs. detector Temperature,'+\
+                                ' all quadrant channels.', 
+                        texfraction=0.7)
 
         # GAIN vs. OD-CAL (PTC01)
 
         if doGvsOD:
 
             GvsODdict = self._get_XYdict_GvsOD()
+
+            figkey8 = 'GvsOD'
+            figname8 = self.figs[figkey8]
 
             self.plot_XY(GvsODdict, **dict(
                 title='Gain vs. Output Drain',
@@ -698,11 +1042,23 @@ class MetaPTC(MetaCal):
                 ylabel='Gain [e-/ADU]',
                 corekwargs=dict(linestyle='', marker='.'),
                 # figname=''))
-                figname=self.figs['GvsOD']))
+                figname=figname8))
 
-#        # GAIN vs. RD-CAL (PTC01)
+            if self.report is not None:
+                self.addFigure2Report(figname8, 
+                        figkey=figkey8, 
+                        caption='Gain vs. Output Drain Voltage,'+\
+                        ' all 144 quadrants. The (small) range in OD is given '+\
+                        'from differences in voltage outputs / calibration'+\
+                        ' across ROEs.', 
+                        texfraction=0.7)
+
+        # GAIN vs. RD-CAL (PTC01)
 
         if doGvsRD:
+
+            figkey9 = 'GvsRD'
+            figname9 = self.figs[figkey9]
 
             GvsRDdict = self._get_XYdict_GvsRD()
 
@@ -713,6 +1069,15 @@ class MetaPTC(MetaCal):
                 ylabel='Gain [e-/ADU]',
                 corekwargs=dict(linestyle='', marker='.'),
                 # figname=''))
-                figname=self.figs['GvsRD']))
+                figname=figname9))
+
+            if self.report is not None:
+                self.addFigure2Report(figname9, 
+                        figkey=figkey9, 
+                        caption='Gain vs. Reset Drain Voltage,'+\
+                        ' all 144 quadrants. The (small) range in RD is given '+\
+                        'from differences in voltage outputs / calibration'+\
+                        ' across ROEs.', 
+                        texfraction=0.7)
 
         # Save the ParsedTable(s)

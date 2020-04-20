@@ -55,11 +55,19 @@ isthere = os.path.exists
 #          'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
 
 
-def process_one_fluence_covmaps(q, dd, dpath, CCDs, jCCD, ku, ulabels, Npix,
-                                vstart, vend):
+def process_one_fluence_covmaps(q, dd, dpath, CCDs, jCCD, ku, ulabels, 
+                                **kwargs):
     """ """
 
     labels = dd.mx['label'][:, 0].copy()
+
+    Npix = kwargs['Npix']
+    covfunc = kwargs['covfunc']
+    doBiasCorr = kwargs['doBiasCorr']
+    central = kwargs['central']
+    vstart = kwargs['vstart']
+    vend = kwargs['vend']
+    clipsigma = kwargs['clipsigma']
 
     vfullinpath_adder = utils.get_path_decorator(dpath)
 
@@ -76,7 +84,8 @@ def process_one_fluence_covmaps(q, dd, dpath, CCDs, jCCD, ku, ulabels, Npix,
     ccdobjList = [cPickleRead(item) for item in ccdobjNamesList]
 
     icovdict = covlib.get_cov_maps(
-        ccdobjList, Npix=Npix, vstart=vstart, vend=vend,
+        ccdobjList, Npix=Npix, vstart=vstart, vend=vend, clipsigma=clipsigma,
+        covfunc = covfunc, doBiasCorr=doBiasCorr,central=central,
         doTest=False, debug=False)
     q.put([jCCD, ku, icovdict])
 
@@ -88,6 +97,10 @@ class BF01_inputs(inputs.Inputs):
         ('frames', ([list], 'Number of Frames for each fluence.')),
         ('wavelength', ([int], 'Wavelength')),
         ('Npix', ([int], 'Number of Pixels (linear) to consider for Covariance Matrix')),
+        ('clipsigma', ([float], 'Nsigma clipping.')),
+        ('covfunc', ([str], 'ID of the covariance function.')),
+        ('doBiasCorr', ([bool], 'Do correction bias for sigma clipping.')),
+        ('central', ([str], 'Central Estimator.')),
         ('surrogate', ([str], 'Test to use as surrogate'))
     ])))
 
@@ -169,6 +182,7 @@ class BF01(PTC0X):
         self.inpdefaults['test'] = kwargs['test']
         self.inpdefaults['surrogate'] = kwargs['surrogate']
         self.inpdefaults['Npix'] = 5
+        self.inpdefaults['clipsigma'] = 4.
 
     def set_perfdefaults(self, **kwargs):
         # maskerading as PTC0X here...
@@ -226,10 +240,15 @@ class BF01(PTC0X):
                 keyword='extractCOV', Title='Covariance-Matrices Extraction', level=0)
 
         Npix = self.inputs['Npix']
+        clipsigma = self.inputs['clipsigma']
+        covfunc = self.inputs['covfunc']
+        doBiasCorr = self.inputs['doBiasCorr']
+        central = self.inputs['central']
 
         # labels should be the same accross CCDs. PATCH.
         labels = self.dd.mx['label'][:, 0].copy()
         ulabels = np.unique(labels)
+        #ulabels = ['col003'] # TEST
         nL = len(ulabels)
 
         # vstart and vend should be the same for all OBSIDs in test
@@ -275,10 +294,10 @@ class BF01(PTC0X):
         COV_dd['col'] = np.zeros(NP, dtype='int32')
         COV_dd['av_mu'] = np.zeros(NP, dtype='float32')
         COV_dd['av_var'] = np.zeros(NP, dtype='float32')
-        COV_dd['COV_00'] = np.zeros(NP, dtype='float32')
-        COV_dd['COV_01'] = np.zeros(NP, dtype='float32')
-        COV_dd['COV_10'] = np.zeros(NP, dtype='float32')
-        COV_dd['COV_11'] = np.zeros(NP, dtype='float32')
+        COV_dd['CORR_00'] = np.zeros(NP, dtype='float32')
+        COV_dd['CORR_01'] = np.zeros(NP, dtype='float32')
+        COV_dd['CORR_10'] = np.zeros(NP, dtype='float32')
+        COV_dd['CORR_11'] = np.zeros(NP, dtype='float32')
 
         self.dd.products['COV'] = OrderedDict()
         for CCDk in CCDs:
@@ -287,6 +306,10 @@ class BF01(PTC0X):
         if not self.drill:
 
             # doTest=False
+
+            kwargs = dict(Npix=Npix, vstart=vstart, vend=vend, 
+                clipsigma=clipsigma, covfunc=covfunc,
+                doBiasCorr=doBiasCorr,central=central)
 
             arglist = []
 
@@ -297,13 +320,16 @@ class BF01(PTC0X):
 
                 for ku, ulabel in enumerate(ulabels):
 
-                    arglist.append([queue, self.dd, dpath, CCDs, jCCD, ku, ulabels,
-                                    Npix, vstart, vend])
+                    arglist.append([queue, self.dd, dpath, CCDs, jCCD, ku, ulabels])
+
+            #process_one_fluence_covmaps(*arglist[-2],**kwargs) # TEST
+            #stop()
 
             pool = mp.Pool(processes=self.processes)
 
             for ii in range(len(arglist)):
-                pool.apply_async(process_one_fluence_covmaps, args=arglist[ii])
+                pool.apply_async(process_one_fluence_covmaps, args=arglist[ii],
+                                    kwds=kwargs)
             pool.close()
             pool.join()
 
@@ -328,20 +354,20 @@ class BF01(PTC0X):
                     COV_dd['col'][jj] = int(st.replace(ulabel, 'col', ''))
                     COV_dd['av_mu'][jj] = icovdict['av_mu'][Q]
                     COV_dd['av_var'][jj] = icovdict['av_var'][Q]
-                    COV_dd['COV_00'][jj] = icovdict['av_covmap'][Q][0, 0]
-                    COV_dd['COV_01'][jj] = icovdict['av_covmap'][Q][0, 1]
-                    COV_dd['COV_10'][jj] = icovdict['av_covmap'][Q][1, 0]
-                    COV_dd['COV_11'][jj] = icovdict['av_covmap'][Q][1, 1]
+                    COV_dd['CORR_00'][jj] = icovdict['av_corrmap'][Q][0, 0]
+                    COV_dd['CORR_01'][jj] = icovdict['av_corrmap'][Q][0, 1]
+                    COV_dd['CORR_10'][jj] = icovdict['av_corrmap'][Q][1, 0]
+                    COV_dd['CORR_11'][jj] = icovdict['av_corrmap'][Q][1, 1]
 
                     profscov_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
                         np.arange(Npix - 1)
                     profscov_1D.data['hor'][CCDk][Q]['y'][ulabel] = \
-                        icovdict['av_covmap'][Q][0, 1:].copy()
+                        icovdict['av_corrmap'][Q][0, 1:].copy()
 
                     profscov_1D.data['ver'][CCDk][Q]['x'][ulabel] = \
                         np.arange(Npix - 1)
                     profscov_1D.data['ver'][CCDk][Q]['y'][ulabel] = \
-                        icovdict['av_covmap'][Q][1:, 0].copy()
+                        icovdict['av_corrmap'][Q][1:, 0].copy()
 
         else:
 
@@ -360,6 +386,8 @@ class BF01(PTC0X):
                             np.arange(Npix - 1)
                         profscov_1D.data['ver'][CCDk][Q]['y'][ulabel] = \
                             np.arange(Npix - 1)
+
+        #stop() # TESTS
 
         # PLOTS
 
@@ -508,7 +536,7 @@ class BF01(PTC0X):
 
                         jj = jCCD * (nQ * nL) + ix * nQ + kQ
 
-                        COV_mx = COV_dict['av_covmap'][Q].copy()
+                        CORR_mx = COV_dict['av_corrmap'][Q].copy()
 
                         BF_dd['CCD'][jj] = jCCD + 1
                         BF_dd['Q'][jj] = kQ + 1
@@ -518,7 +546,7 @@ class BF01(PTC0X):
                         try:
 
                             Asol_Q, psmooth_Q = G15.solve_for_A_linalg(
-                                COV_mx, var=1., mu=1., returnAll=True, doplot=False,
+                                CORR_mx, var=1., mu=1., returnAll=True, doplot=False,
                                 verbose=False)
 
                             kernel_Q = G15.degrade_estatic(singlepixmap, Asol_Q)
