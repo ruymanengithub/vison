@@ -126,7 +126,7 @@ def batch_extract_histos(explog, respath, multithread=1):
         if os.path.exists(fits_name):
             arglist.append((fits_name, i, N))
         else:
-            print('%s is MISSING' % fits_name)
+            print(('%s is MISSING' % fits_name))
 
     pool = mp.Pool(processes=multithread)
     pool.map(_wrap_extract_histograms, arglist)

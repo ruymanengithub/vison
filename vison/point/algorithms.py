@@ -61,7 +61,7 @@ def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35
     if CEN0 is not None:
         XPEAK, YPEAK = CEN0
         if verbose:
-            print("Input guess position is %d, %d" % (XPEAK, YPEAK))
+            print(("Input guess position is %d, %d" % (XPEAK, YPEAK)))
     else:
 
         # Determine starting peak location
@@ -72,7 +72,7 @@ def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35
             w = np.where(image == image.max())
             YPEAK, XPEAK = w[0][0], w[1][0]
             if verbose:
-                print("Peak pixels are %d, %d" % (XPEAK, YPEAK))
+                print(("Peak pixels are %d, %d" % (XPEAK, YPEAK)))
 
     # Calculate centroid for first iteration
     SUM = 0.0

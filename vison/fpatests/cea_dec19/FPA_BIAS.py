@@ -535,7 +535,7 @@ class FPA_BIAS(fpatask.FpaTask):
         self.figdict['DIFFOFFSETSMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
 
         DiffOffsetsList = []
-        for Ckey in DiffOffsetsMap.keys():
+        for Ckey in list(DiffOffsetsMap.keys()):
             for Q in self.Quads:
                 DiffOffsetsList.append(DiffOffsetsMap[Ckey][Q])
 
@@ -563,7 +563,7 @@ class FPA_BIAS(fpatask.FpaTask):
         self.figdict['RATIORONSMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
 
         RatioRonsList = []
-        for Ckey in RatioRonsMap.keys():
+        for Ckey in list(RatioRonsMap.keys()):
             for Q in self.Quads:
                 RatioRonsList.append(RatioRonsMap[Ckey][Q])
 

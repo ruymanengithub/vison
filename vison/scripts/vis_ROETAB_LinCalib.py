@@ -270,7 +270,7 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
 
     for ix, CHAN in enumerate(CHANNELS):
 
-        print('Processing Channel %s...' % CHAN)
+        print(('Processing Channel %s...' % CHAN))
 
         WFf = os.path.join(datapath, WFList[ix])
 

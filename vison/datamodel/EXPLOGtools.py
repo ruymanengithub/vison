@@ -349,7 +349,7 @@ def mergeExpLogs(explogList, addpedigree=False, verbose=False):
     for iexp in range(1, nexplogs):
         iexplog = explogList[iexp]
         if verbose:
-            print('merging explog %i/%i...' % (iexp + 1, nexplogs))
+            print(('merging explog %i/%i...' % (iexp + 1, nexplogs)))
 
         # Check format compatibility of columns
 
@@ -433,15 +433,15 @@ class ExpLogClass():
 
         totdurh = np.sum(durations) / 60.
 
-        print('\nSummary: %s' % self.infile)
-        print('Nr. of entries = %i' % nentries)
-        print('ObsIDs = (%i,%i): %i' % (ObsIDextrema + (nObsID,)))
-        print('Nr. Tests: %i' % ntests)
+        print(('\nSummary: %s' % self.infile))
+        print(('Nr. of entries = %i' % nentries))
+        print(('ObsIDs = (%i,%i): %i' % (ObsIDextrema + (nObsID,))))
+        print(('Nr. Tests: %i' % ntests))
 
         for it, test in enumerate(tests):
-            print('%s\t %.2f min' % (test, durations[it]))
+            print(('%s\t %.2f min' % (test, durations[it])))
 
-        print('Total Run Time = %.2f h' % totdurh)
+        print(('Total Run Time = %.2f h' % totdurh))
 
 
 def test():

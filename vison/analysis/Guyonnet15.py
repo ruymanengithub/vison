@@ -186,7 +186,7 @@ def solve_for_psmooth(covij, var, mu, doplot=False):
     epopt = np.sqrt(np.diagonal(pcov))  # errors
 
     if doplot:
-        print('popt = #', popt)
+        print(('popt = #', popt))
 
         fig = plt.figure()
         ax = fig.add_subplot(111)
@@ -398,7 +398,7 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
                             Afull[ixx, jyy] = 1.
 
     if verbose:
-        print('sum(A)=%.1f' % Afull.sum())
+        print(('sum(A)=%.1f' % Afull.sum()))
 
     #  REDUCING THE COEFFICIENTS MATRIX
 
@@ -581,8 +581,8 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
     Nindep = len(indepBounds)
 
     if verbose:
-        print('\n Independent Coeffs. = %i / %i' % (Nindep, Nraw))
-        print('\n A.shape = ', A.shape)
+        print(('\n Independent Coeffs. = %i / %i' % (Nindep, Nraw)))
+        print(('\n A.shape = ', A.shape))
 
     Atrans = A.transpose()
 
@@ -600,9 +600,9 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
 
     if verbose:
 
-        print('mean res = %.1e' % res[sel].mean())
-        print('max res = %.1e' % res[sel].max())
-        print('min res = %.1e' % res[sel].min())
+        print(('mean res = %.1e' % res[sel].mean()))
+        print(('max res = %.1e' % res[sel].max()))
+        print(('min res = %.1e' % res[sel].min()))
 
     if returnAll:
         return aijb, psmooth

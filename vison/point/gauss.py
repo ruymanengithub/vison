@@ -60,7 +60,7 @@ class Gaussmeter(SpotBase):
 
         self.gasettings.update(kwargs)
 
-        for key, value in self.gasettings.items():
+        for key, value in list(self.gasettings.items()):
             if self.log is not None:
                 self.log.info('%s = %s' % (key, value))
 

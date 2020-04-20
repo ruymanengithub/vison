@@ -163,7 +163,7 @@ class ExpLogDisplay(tk.Toplevel):
         # self.update()
 
     def print_paused(self):
-        print('self.updating is %s' % self.updating.get())
+        print(('self.updating is %s' % self.updating.get()))
 
     def update(self, startup=False):
 
@@ -242,7 +242,7 @@ class ExpLogDisplay(tk.Toplevel):
         if arethere:
             self.explogfs = explogfs
         else:
-            print('EXPLOGs %s not found' % tmp_EL)
+            print(('EXPLOGs %s not found' % tmp_EL))
             self.explogfs = None
 
     def loadExplogs(self):

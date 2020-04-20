@@ -208,7 +208,7 @@ def f_get_corrmap_tests(sq1, sq2, N, submodel=False, estimator='median', clipsig
         ssq1, flu1 = f_submodel(sq1)
         ssq2, flu2 = f_submodel(sq2)
         t2 = time()
-        print('%.1f seconds in computing 2D models...' % (t2-t1,))
+        print(('%.1f seconds in computing 2D models...' % (t2-t1,)))
 
     mu = np.mean([flu1,flu2])
 
@@ -330,7 +330,7 @@ def get_cov_maps(ccdobjList, Npix=4, vstart=0, vend=2066,
 
         for iP in range(Npairs):
 
-            print('Processing pair %i/%i' % (iP + 1, Npairs))
+            print(('Processing pair %i/%i' % (iP + 1, Npairs)))
 
             ccd1 = ccdobjList[iP * 2]
             ccd2 = ccdobjList[iP * 2 + 1]

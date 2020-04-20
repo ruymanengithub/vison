@@ -63,7 +63,7 @@ def removescalars_from_dict(indict):
     """ """
 
     def traverse_tree(indict):
-        for key, value in indict.items():
+        for key, value in list(indict.items()):
             if isinstance(value, (dict, OrderedDict)):
                 indict[key] = traverse_tree(value)
             elif not isinstance(value, collections.Sequence):
@@ -84,7 +84,7 @@ def texarize_complidict(indict):
             return '%.2e'
 
     def traverse_tree(indict):
-        for key, value in indict.items():
+        for key, value in list(indict.items()):
             if isinstance(value, (dict, OrderedDict)):
                 indict[key] = traverse_tree(value)
             else:
@@ -151,7 +151,7 @@ def gen_compliance_tex(indict, escape=True, caption=''):
     elif level == 3:
         keys = []
         frames = []
-        for key, d in tcomplidict.items():
+        for key, d in list(tcomplidict.items()):
             keys.append(key)
             frames.append(pd.DataFrame.from_dict(d))
         series = pd.concat(frames, keys=keys)

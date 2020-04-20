@@ -332,8 +332,8 @@ class PSF0X(PT.PointTask):
     def _aprox_missing_locks(self):
         """ """
         lock_tb_cdp = files.cPickleRead(self.dd.products['LOCK_TB_CDP'])
-        CCDs = self.ogse.startrackers.keys()
-        ulabels = self.ogse.startrackers[CCDs[0]].keys()
+        CCDs = list(self.ogse.startrackers.keys())
+        ulabels = list(self.ogse.startrackers[CCDs[0]].keys())
 
         enough_stars = 10
 
@@ -600,7 +600,7 @@ class PSF0X(PT.PointTask):
 
             for iObs in range(nObs):
 
-                print('\nopt_xtalk: sextracting ObsID %i/%i' % (iObs + 1, nObs))
+                print(('\nopt_xtalk: sextracting ObsID %i/%i' % (iObs + 1, nObs)))
 
                 ObsID = self.dd.mx['ObsID'][iObs]
                 timestamp = self.dd.mx['date'][iObs, 0]

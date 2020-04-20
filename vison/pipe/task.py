@@ -76,8 +76,8 @@ def prepare_one_image(q, dd, ogse, inputs, iObs,
         infits = os.path.join(dpath, '%s.fits' %
                               dd.mx['File_name'][iObs, jCCD])
 
-        print('Test %s, OBS %i/%i: preparing %s...' % (
-            inputs['test'], iObs + 1, nObs, infits))
+        print(('Test %s, OBS %i/%i: preparing %s...' % (
+            inputs['test'], iObs + 1, nObs, infits)))
 
         # converting the FITS file into a CCD Object
         ccdobj = ccd.CCD(infits)
@@ -324,7 +324,7 @@ class Task(object):
                     'find %s -maxdepth 1 -type f -exec rm -f {} \;' % resultspath)
 
             # Creating/clearing sub-resultspath
-            for _, subpath in self.inputs['subpaths'].items():
+            for _, subpath in list(self.inputs['subpaths'].items()):
                 if not isthere(subpath):
                     os.system('mkdir %s' % subpath)
                 else:
@@ -752,13 +752,13 @@ class Task(object):
                                        doReport=self.report is not None,
                                        doLog=self.log is not None)
         HK_perf_ok = np.all(
-            [value for key, value in report_HK_perf.items()])
+            [value for key, value in list(report_HK_perf.items())])
 
         report_HK_safe = self.check_HK(HKKeys, reference='abs', limits='S', tag='Safe',
                                        doReport=self.report is not None,
                                        doLog=self.log is not None)
         HK_safe_ok = np.all(
-            [value for ke, value in report_HK_safe.items()])
+            [value for ke, value in list(report_HK_safe.items())])
 
         if (not HK_perf_ok) or (not HK_safe_ok):
             self.dd.flags.add('HK_OOL')

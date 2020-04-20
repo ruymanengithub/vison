@@ -30,7 +30,7 @@ def find_and_erase(path, keyword):
     print('\nDirectories that will be WIPED OUT clear:\n')
     os.system(execline1)
     print('\n')
-    ans1 = input('Are you happy with the selection? yes=y/Y ')
+    ans1 = eval(input('Are you happy with the selection? yes=y/Y '))
     if ans1.lower() != 'y':
         sys.exit()
 
@@ -44,16 +44,16 @@ def find_and_erase(path, keyword):
         Nselfiles = sum([len(files) for directory, folders, files in os.walk(selpath)])
         selsize = sum([sum([os.path.getsize(os.path.join(directory, fname)) for fname in files])
                        for directory, folders, files in os.walk(selpath)])
-        print('%s, %s files, %.1e bytes' % (selpath, Nselfiles, selsize))
+        print(('%s, %s files, %.1e bytes' % (selpath, Nselfiles, selsize)))
         totNfiles += Nselfiles
         totsize += selsize
-    print('\nTOTAL: %s files, %.1e bytes\n' % (totNfiles, totsize))
+    print(('\nTOTAL: %s files, %.1e bytes\n' % (totNfiles, totsize)))
 
     execline2 = "find %s -type d -name '%s' -exec sh -c '%s' {} \;" % (
         path, keyword, 'rm -r "$0"/*')
 
     print(('\nTo be executed: "%s"\n' % execline2))
-    ans2 = input('Still want to proceed? yes=y/Y ')
+    ans2 = eval(input('Still want to proceed? yes=y/Y '))
 
     if ans2.lower() != 'y':
         sys.exit()

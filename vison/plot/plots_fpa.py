@@ -349,7 +349,7 @@ class FpaHeatMap(BasicPlot):
             #plt.colorbar(cax=cbar_ax, mappable=self.mappables[0],orientation='vertical')
             ax_cbar = self.fig.colorbar(self.mappable, ax=self.ax,
                               orientation='vertical', fraction=.1)
-            if 'ColorbarText' in self.meta.keys():
+            if 'ColorbarText' in list(self.meta.keys()):
                 ax_cbar.set_label(self.meta['ColorbarText'])
 
 

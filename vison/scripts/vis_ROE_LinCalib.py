@@ -155,7 +155,7 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
 
     for ix, CHAN in enumerate(CHANNELS):
 
-        print('Processing Channel %s...' % CHAN)
+        print(('Processing Channel %s...' % CHAN))
 
         adus_pickf = os.path.join(respath, '%s_%s_%s_NL_ADUs.pick' % (ROE, Date, CHAN))
 

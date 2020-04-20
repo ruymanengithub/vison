@@ -201,7 +201,7 @@ class FpaTask(task.Task):
                     'find %s -maxdepth 1 -type f -exec rm -f {} \;' % resultspath)
 
             # Creating/clearing sub-resultspath
-            for _, subpath in self.inputs['subpaths'].items():
+            for _, subpath in list(self.inputs['subpaths'].items()):
                 if not os.path.exists(subpath):
                     os.system('mkdir %s' % subpath)
                 else:
