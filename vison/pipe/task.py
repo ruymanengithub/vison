@@ -63,7 +63,7 @@ def prepare_one_image(q, dd, ogse, inputs, iObs,
 
     if doFF:
         FW_ID = dd.mx['wave'][iObs, 0]
-        wavelength = ogse['FW']['F%i' % FW_ID]
+        wavelength = ogse.get_wavelength(FW_ID)
 
     for jCCD, CCDkey in enumerate(CCDs):
 
@@ -104,9 +104,14 @@ def prepare_one_image(q, dd, ogse, inputs, iObs,
                             extension=-1)
 
         if doFF:
-            FF = FFData['nm%i' % wavelength][CCDkey]
-            ccdobj.divide_by_flatfield(FF.extensions[-1].data,
+            nmkey = 'nm%i' % wavelength
+            if nmkey in FFData:
+                FF=FFData[nmkey][CCDkey]
+            else:
+                FF = FFData[CCDkey]
+            ccdobj.divide_by_flatfield(FF.extensions[FF.extnames.index('FLAT')].data,
                                        extension=-1)
+            
 
         # cPickleDumpDictionary(dict(ccdobj=ccdobj),fullccdobj_name)
         cPickleDumpDictionary(ccdobj, fullccdobj_name)
@@ -889,6 +894,7 @@ class Task(object):
 
         CCDs = DDindices.get_vals('CCD')
 
+
         if not self.drill:
 
             picklespath = self.inputs['subpaths']['ccdpickles']
@@ -905,6 +911,10 @@ class Task(object):
                                 doOffset, offsetkwargs,
                                 doBias, BiasData,
                                 doFF, FFData])
+
+            
+            #prepare_one_image(*arglist[0]) # TEST
+            #stop()
 
             pool = mp.Pool(processes=self.processes)
 
