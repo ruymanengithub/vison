@@ -557,7 +557,6 @@ class PointTask(Task):
         lock_tb_cdp = cPickleRead(self.dd.products['LOCK_TB_CDP'])
         lock_tb = lock_tb_cdp['data']['LOCK_TB']
 
-
         doMulti = False
         if 'LABEL' in lock_tb.columns:
             doMulti = True
@@ -653,6 +652,7 @@ class PointTask(Task):
                 self.log.info('Relocating Point Sources!')
                 if not all_ok:
                     self.log.info('Beware of some problematic locations!')
+            
 
     def lock_on_stars(self, iObs=0, labels=None, sexconfig=None):
         """ """

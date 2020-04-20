@@ -190,6 +190,22 @@ class PSF0X(PT.PointTask):
                                        products='products', spots='spots',
                                        xtalk='xtalk')
 
+
+        try:
+            selectFF = ('inCDPs'  in self.inputs) and\
+            isinstance(self.inputs['inCDPs'],dict) and\
+            ('wavelength' in self.inputs) and \
+            ('FF' in self.inputs['inCDPs'])
+        except TypeError:
+            selectFF = False
+
+        if selectFF:
+            wavelength = self.inputs['wavelength']
+            nmkey = 'nm%i' % wavelength
+            nmFFs = self.inputs['inCDPs']['FF'][nmkey]
+            self.inputs['inCDPs']['FF'] = nmFFs.copy()
+
+
     def set_inpdefaults(self, **kwargs):
 
         testkey = kwargs['test']
@@ -312,6 +328,7 @@ class PSF0X(PT.PointTask):
         PT.PointTask.relock(self, check_ok=False)
         self._aprox_missing_locks()
 
+
     def _aprox_missing_locks(self):
         """ """
         lock_tb_cdp = files.cPickleRead(self.dd.products['LOCK_TB_CDP'])
@@ -322,7 +339,6 @@ class PSF0X(PT.PointTask):
 
         lock_tb = lock_tb_cdp['data']['LOCK_TB'].copy()
 
-        Nrows = len(lock_tb)
 
         for iCCD,CCDk in enumerate(CCDs):
             for k, ulabel in enumerate(ulabels):
@@ -338,7 +354,7 @@ class PSF0X(PT.PointTask):
                     ulabelgood = ulabels[kgood]
 
                     self.ogse.startrackers[CCDk][ulabel] = \
-                        self.ogse.startrackers[CCDk][ulabelgood].copy()
+                        copy.deepcopy(self.ogse.startrackers[CCDk][ulabelgood])
 
                     if self.log is not None:
                         msg = 'WARNING: lock of %s/%s replaced with %s/%s' % \
@@ -368,8 +384,6 @@ class PSF0X(PT.PointTask):
 
         """
 
-        stop()
-
         onTests = False
 
         if onTests:
@@ -383,14 +397,18 @@ class PSF0X(PT.PointTask):
             self.dd.indices[0].vals = [0]
             self.dd.indices[0].len = 1
 
-        super(PSF0X, self).prepare_images(
-            doExtract=True, 
-            doBadPixels=True,
-            doMask=True, 
-            doOffset=True, 
-            doBias=False, 
-            doFF=True)
 
+        bypass = False
+        if not bypass: #TEST
+        
+            super(PSF0X, self).prepare_images(
+                doExtract=True, 
+                doBadPixels=True,
+                doMask=True, 
+                doOffset=True, 
+                doBias=False, 
+                doFF=True)
+        
         dIndices = copy.deepcopy(self.dd.indices)
 
         CCDs = dIndices[dIndices.names.index('CCD')].vals
@@ -410,17 +428,20 @@ class PSF0X(PT.PointTask):
         self.dd.initColumn('spots_name', CIndices, dtype='S100', valini='None')
 
         if not self.drill:
-
             #rpath = self.inputs['resultspath']
             picklespath = self.inputs['subpaths']['ccdpickles']
             spotspath = self.inputs['subpaths']['spots']
             strackers = self.ogse.startrackers
             stlabels = self.ogse.labels
 
-            psCCDcoodicts = OrderedDict(names=strackers['CCD1']['col001'].starnames)
+            psCCDcoodicts = OrderedDict(names=strackers['CCD1']['col001'].starnames,
+                CCDs=CCDs,
+                labels=stlabels)
 
             for jCCD, CCDk in enumerate(CCDs):
+                psCCDcoodicts[CCDk] = OrderedDict()
                 for ilabel, label in enumerate(stlabels):
+                    
                     psCCDcoodicts[CCDk][label] = strackers[CCDk][label].get_allCCDcoos(
                         nested=True)
 
@@ -464,17 +485,23 @@ class PSF0X(PT.PointTask):
                     files.cPickleDumpDictionary(spotsdict, fullspots_name)
 
                     if onTests:
+                    #doPlot=True
+                    #if doPlot and iObs==3 and CCDk=='CCD1':
 
-                        from pylab import imshow, show
+                        from matplotlib import pyplot as plt
 
                         for kQ, Quad in enumerate(Quads):
 
                             for lS, SpotName in enumerate(SpotNames):
 
                                 img = spotsdict['spots'][kQ, lS].data
-                                imshow(img.T, origin='lower left')
-                                show()
-                        stop()
+                                fig = plt.figure()
+                                ax = fig.add_subplot(111)
+                                ax.imshow(img.T, origin='lower left')
+                                ax.set_title('Obs%i, %s-%s, %s' % \
+                                    (iObs+1,CCDk,Quad,SpotName))
+                                plt.show()
+
 
         if self.log is not None:
             self.log.info('Saved spot "bag" files to %s' % spotspath)
