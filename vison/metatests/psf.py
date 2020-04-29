@@ -453,7 +453,7 @@ class MetaPsf(MetaCal):
         for block in xtalks_VI['blocks']:
             viks = xtalks_VI[block].keys()
             for vik in viks:
-                ixorder = np.argsort(xtalks_VI[block][vik]['xtalk'])[::-1]                
+                ixorder = np.argsort(np.abs(xtalks_VI[block][vik]['xtalk']))[::-1]
 
                 _xtalks = np.array(xtalks_VI[block][vik]['xtalk'])[ixorder]
                 _soks = np.array(xtalks_VI[block][vik]['sok'])[ixorder]
@@ -462,7 +462,7 @@ class MetaPsf(MetaCal):
                     validation.append('REQ1 viol.: $|%.2e| >$ %.2e %s; source:%s; victim:%s\n' %\
                         (_xtalks[0], req1, block, _soks[0], vik))
 
-                NREQ2 = len([val for val in _xtalks[1:] if np.abs(val)>7.6E-5])
+                NREQ2 = len([val for val in _xtalks[1:] if np.abs(val)>req2])
                 if NREQ2>1:
                     for i in range(1,len(_xtalks)):
                         if np.abs(_xtalks[i]) > req2:
@@ -471,7 +471,7 @@ class MetaPsf(MetaCal):
                         else:
                             break
 
-
+        
         return validation
 
 
@@ -680,6 +680,6 @@ class MetaPsf(MetaCal):
 
                 avg_std = np.nanmedian(std_comparisons)
 
-                self.report.add_Text('Avg. STD of comparison (%i vs. 800 nm): %.2e ADU' %\
+                self.report.add_Text('\nAvg. STD of comparison (%i vs. 800 nm): %.2e ADU' %\
                         (wave, avg_std))
 
