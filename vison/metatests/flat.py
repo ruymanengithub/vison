@@ -629,10 +629,11 @@ class MetaFlat(MetaCal):
         CDP_header = self.CDP_header.copy()
         CDP_header['DATE'] = self.get_time_tag()
         
-        doPRNUvsWAVE = True
-        doMF_STATS = True
-        doMFs = True 
-        doPRNUvsFLU = True
+        doAll = True
+        doPRNUvsWAVE = doAll
+        doMF_STATS = doAll
+        doMFs = doAll 
+        doPRNUvsFLU = doAll
         
         # PRNU vs. WAVELENGTH
 
