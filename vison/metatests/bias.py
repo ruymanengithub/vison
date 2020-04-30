@@ -454,7 +454,7 @@ class MetaBias(MetaCal):
 
                 ixblock = np.where(PT['BLOCK'] == block)
 
-                cdpkey = PT['MASTERBIAS_%s' % (CCDk,)][ixblock][0]
+                cdpkey = PT['MASTERBIAS_%s' % (CCDk,)][ixblock][0] # first instance of test
 
                 masterbias = os.path.join(productspath, self.products['MASTERBIAS'][cdpkey])
                 
@@ -602,7 +602,9 @@ class MetaBias(MetaCal):
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
 
+        stop()
         
         doAll = True
         doRONMaps = doAll
