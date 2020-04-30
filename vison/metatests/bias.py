@@ -564,11 +564,11 @@ class MetaBias(MetaCal):
         CDP_header.update(dict(function=function, module=module))
 
 
-        doAll = True
+        doAll = False
         doRONMaps = doAll
         doOffMaps = doAll
         doProfs = doAll
-        doMaster = doAll
+        doMaster = True
         doTemp = doAll
 
         if doRONMaps:
@@ -785,6 +785,10 @@ class MetaBias(MetaCal):
                         figkey=figkey4,
                         caption='%s: Master Bias [ADU].' % testname, 
                         texfraction=0.7)
+
+                # Save Master Bias as cdp
+
+
 
         # Temporal Stability of Offsets
 
