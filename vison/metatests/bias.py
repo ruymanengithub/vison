@@ -604,7 +604,7 @@ class MetaBias(MetaCal):
         CDP_header.update(dict(function=function, module=module))
         CDP_header['DATE'] = self.get_time_tag()
 
-        stop()
+        
         
         doAll = True
         doRONMaps = doAll
@@ -620,6 +620,8 @@ class MetaBias(MetaCal):
             # RON maps, ADUs
             for testname in self.testnames:
 
+                stestname = stestname = st.replace(testname, '_', '\_')
+
                 RONADUMAP = self.get_FPAMAP_from_PT(
                     self.ParsedTable[testname],
                     extractor=self._get_extractor_RON_fromPT(
@@ -628,6 +630,7 @@ class MetaBias(MetaCal):
                 
                 rn_header = OrderedDict()
                 rn_header['title'] = 'RON MAP'
+                rn_header['test'] = stestname
                 rn_header.update(CDP_header)
                 
                 rn_cdp = cdp.Json_CDP(rootname=self.outcdps['RON_ADU_%s' % testname],
@@ -635,7 +638,7 @@ class MetaBias(MetaCal):
                 rn_cdp.ingest_inputs(data=RONADUMAP,
                                  header = rn_header,
                                  meta=dict(units='ADU',
-                                 structure='CCDID:Q:dict(pre,img,ove)'))
+                                 structure='CCDID:Q:RON'))
                 rn_cdp.savehardcopy()
                 
                 RON_OVE_ADUMAP = self.get_FPAMAP_from_PT(
@@ -644,7 +647,6 @@ class MetaBias(MetaCal):
                         units='ADU',
                         reg='ove'))
 
-                stestname = st.replace(testname, '_', '\_')
                 self.plot_SimpleMAP(RON_OVE_ADUMAP, **dict(
                     suptitle='%s [OVERSCAN]: RON [ADU]' % stestname,
                     ColorbarText='ADU',
@@ -655,12 +657,15 @@ class MetaBias(MetaCal):
             # RON maps, ELECTRONs
             for testname in self.testnames:
 
+                stestname = stestname = st.replace(testname, '_', '\_')
+
                 RONEMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname],
                                                   extractor=self._get_extractor_RON_fromPT(units='E',
                                                                                            reg='ove'))
 
                 rne_header = OrderedDict()
                 rne_header['title'] = 'RON_ELE MAP'
+                rne_header['test'] = stestname
                 rne_header.update(CDP_header)
                 
                 rne_cdp = cdp.Json_CDP(rootname=self.outcdps['RON_ELE_%s' % testname],
@@ -668,11 +673,10 @@ class MetaBias(MetaCal):
                 rne_cdp.ingest_inputs(data=RONEMAP,
                                  header = rne_header,
                                  meta=dict(units='ELECTRONS',
-                                 structure='CCDID:Q:dict(pre,img,ove)'))
+                                 structure='CCDID:Q:RON'))
                 rne_cdp.savehardcopy()
 
 
-                stestname = st.replace(testname, '_', '\_')
                 figkey1 = 'RON_ELE_%s' % testname
                 figname1 = self.figs[figkey1]
 
@@ -707,12 +711,15 @@ class MetaBias(MetaCal):
 
             for testname in self.testnames:
 
+                stestname = st.replace(testname, '_', '\_')
+
                 OFFMAP = self.get_FPAMAP_from_PT(
                     self.ParsedTable[testname],
                     extractor=self._get_extractor_OFFSET_fromPT(reg='all'))
                 
                 off_header = OrderedDict()
                 off_header['title'] = 'OFFSETS MAP'
+                off_header['test'] = stestname
                 off_header.update(CDP_header)
                 
                 off_cdp = cdp.Json_CDP(rootname=self.outcdps['OFFSETS_%s' % testname],
