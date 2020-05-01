@@ -706,7 +706,7 @@ class MetaPTC(MetaCal):
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
-
+        CDP_header['DATE'] = self.get_time_tag()
 
         outpathroot = self.outpathroot
 

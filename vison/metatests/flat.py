@@ -677,6 +677,12 @@ class MetaFlat(MetaCal):
                 
                 stestname = st.replace(testname, '_', '\_')
 
+                if testname == 'FLAT01':
+                    _test = 'FLAT01'
+                    _wave = 800
+                else:
+                    _test, _wave = st.split(testname, '_')
+
                 for colkey in self.colkeys[testname]:
                     
                     MF_STATS_MX = self._get_MF_stats(testname, colkey)
@@ -691,8 +697,9 @@ class MetaFlat(MetaCal):
 
                     mfstats_header = OrderedDict()
                     mfstats_header['title'] = 'MF_STATS'
-                    mfstats_header['test']=testname
-                    mfstats_header['column']=colkey
+                    mfstats_header['test'] = testname
+                    mfstats_header['wave'] = _wave 
+                    mfstats_header['column'] = colkey
                     mfstats_header.update(CDP_header)
 
                     mfstats_meta=dict(
