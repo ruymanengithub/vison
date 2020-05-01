@@ -601,7 +601,6 @@ class MetaChinj01(MetaCal):
                         ))
 
 
-
         if self.report is not None:
             self.addFigure2Report(figname1, 
                         figkey=figkey1, 
