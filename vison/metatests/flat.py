@@ -627,6 +627,7 @@ class MetaFlat(MetaCal):
 
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
         CDP_header['DATE'] = self.get_time_tag()
         
         doAll = True
@@ -719,6 +720,7 @@ class MetaFlat(MetaCal):
                         meta=mfstats_meta)
 
                     mfstats_cdp.savehardcopy()
+                    
 
 
             if self.report is not None:
