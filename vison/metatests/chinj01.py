@@ -13,6 +13,7 @@ import numpy as np
 from collections import OrderedDict
 import string as st
 import os
+import pandas as pd
 
 from vison.datamodel import cdp
 from vison.support import files
@@ -539,6 +540,9 @@ class MetaChinj01(MetaCal):
             os.system('mkdir %s' % self.cdpspath)
 
         self.outcdps['INJCURVES'] = 'CHINJ01_INJCURVES_PAR.json'
+        self.outcdps['INJPROF_HOR'] = 'CHINJ01_INJPROFILES_HOR.xlsx'
+        self.outcdps['INJPROF_VER'] = 'CHINJ01_INJPROFILES_VER.xlsx'
+
 
     def _extract_NUNHOR_fromPT(self, PT, block, CCDk, Q):
         """ """
@@ -561,6 +565,75 @@ class MetaChinj01(MetaCal):
 
         return np.nanstd(_y)/np.nanmean(_y)*100.
 
+    def get_injprof_cdp(self, direction, CDP_header=None, IG1=4.5):
+        """ """
+
+        if CDP_header is None:
+            CDP_header = OrderedDict()
+
+        cdpname = self.outcdps['INJPROF_%s' % direction.upper()]
+        path = self.cdpspath
+
+        injprof_cdp = cdp.Tables_CDP()
+        injprof_cdp.rootname = os.path.splitext(cdpname)[0]
+
+        injprofs_meta = OrderedDict()
+
+        injprofs = OrderedDict()
+
+        Quads = self.Quads
+        PT = self.ParsedTable['CHINJ01']
+        profcol = '%sPROFS_KEY' % direction.upper()
+        prodkey = '%sPROFILES' % direction.upper()
+
+
+        for block in self.flight_blocks:
+            injprofs[block] = OrderedDict()
+
+            ixsel = np.where(PT['BLOCK'] == block)
+            prof_key = PT[profcol][ixsel][0]
+
+            i_Prof = self.products[prodkey][prof_key].copy()
+            
+            IG1key = 'IG1_%.2fV' % IG1
+
+
+            for iCCD, CCD in enumerate(self.CCDs):
+                CCDk = 'CCD%i' % CCD
+
+                Ckey = self.fpa.get_Ckey_from_BlockCCD(block, CCD)
+
+                for kQ, Q in enumerate(Quads):
+
+                    _pcq = i_Prof['data'][CCDk][Q].copy()
+
+                    _x = _pcq['x'][IG1key].copy()
+                    _y = _pcq['y'][IG1key].copy()
+
+                    _y /= np.nanmedian(_y)
+
+
+                    if iCCD==0 and kQ==0:
+                        injprofs[block]['pixel'] = _x.copy()
+                    injprofs[block]['%s%s' % (Ckey,Q)] = _y.copy() 
+
+        for block in self.flight_blocks:
+            injprofs[block] = pd.DataFrame.from_dict(injprofs[block])
+
+        CDP_header['IG1'] = IG1
+        injprofs_meta['norm'] = 'median'
+
+
+        injprof_cdp.ingest_inputs(data=injprofs.copy(),
+            meta=injprofs_meta.copy(),
+            header=CDP_header.copy())
+        injprof_cdp.init_wb_and_fillAll(
+            header_title='CHINJ01: INJPROFS-%s' % direction.upper())
+
+        return injprof_cdp
+
+
+
 
     def dump_aggregated_results(self):
         """ """
@@ -574,6 +647,7 @@ class MetaChinj01(MetaCal):
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
 
         # Histogram of Slopes [ADU/electrons]
 
@@ -832,6 +906,17 @@ class MetaChinj01(MetaCal):
                         figkey=figkey6, 
                         caption= captemp % (IG1profs, ccdhalf, _Quads[0],_Quads[1]),
                         texfraction=0.7)
+
+
+        # creating and saving INJ PROFILES CDPs.
+
+        injprof_hor_cdp = self.get_injprof_cdp(direction='hor',
+            CDP_header=CDP_header)
+        injprof_hor_cdp.savehardcopy()
+
+        injprof_ver_cdp = self.get_injprof_cdp(direction='ver',
+            CDP_header=CDP_header)
+        injprof_ver_cdp.savehardcopy()
 
 
         # reporting non-uniformity of injection lines to report
