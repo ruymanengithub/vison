@@ -576,6 +576,7 @@ class MetaChinj01(MetaCal):
 
         injprof_cdp = cdp.Tables_CDP()
         injprof_cdp.rootname = os.path.splitext(cdpname)[0]
+        injprof_cdp.path = path
 
         injprofs_meta = OrderedDict()
 
@@ -620,7 +621,7 @@ class MetaChinj01(MetaCal):
         for block in self.flight_blocks:
             injprofs[block] = pd.DataFrame.from_dict(injprofs[block])
 
-        CDP_header['IG1'] = IG1
+        injprofs_meta['IG1'] = IG1
         injprofs_meta['norm'] = 'median'
 
 
