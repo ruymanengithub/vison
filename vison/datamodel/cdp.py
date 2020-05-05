@@ -17,6 +17,9 @@ import copy
 import os
 import string as st
 import numpy as np
+from astropy.io import fits as fts
+import pandas as pd
+from astropy import table as atable
 
 from vison import __version__
 from vison.support.files import cPickleDumpDictionary, cPickleRead
@@ -226,6 +229,83 @@ class Tables_CDP(CDP):
         if os.path.exists(filef):
             os.system('rm %s' % filef)
         self.report.save(filef)
+
+
+class FitsTables_CDP(CDP):
+    """Fits Table CDP."""
+
+    formatsdict = dict(
+            int16='I',
+            int32='J',
+            int64='K',
+            char='A',
+            float32='E',
+            float64='D')
+
+    def __init__(self, *args, **kwargs):
+        """ """
+        super(FitsTables_CDP, self).__init__(*args, **kwargs)
+        self.data = OrderedDict()
+        self.hdulist = None
+
+    def ingest_inputs(self, data, meta=None, header=None, figs=None):
+        """ """
+        if meta is None:
+            meta = OrderedDict()
+        if header is None:
+            header = OrderedDict()
+
+        self.header.update(header)
+        self.meta.update(meta)
+        self.data.update(data)
+
+    def init_HDUList(self):
+        """ """
+        self.hdulist = fts.HDUList()
+        self.hdulist.append(fts.PrimaryHDU())
+        self.hdulist.append(fts.TableHDU(name='META'))
+    
+        
+    def fill_Header(self):
+        """ """
+        self.hdulist[0].header.update(self.header)
+
+    def fill_Meta(self):
+        """ """
+        self.hdulist[1].header.update(self.meta)
+
+    def fill_Table(self, sheet):
+        """ """
+        dd = self.data[sheet]
+
+        columns = []
+        for k in dd.keys():
+            dtype = dd[k].dtype.name
+            
+            columns.append(fts.Column(name=k,
+                format=self.formatsdict[dtype],
+                array=dd[k].copy()))
+
+        self.hdulist.append(fts.BinTableHDU.from_columns(columns))
+
+    def fill_allTables(self):
+        """ """
+        for sheet in self.data.keys():
+            self.fill_Table(sheet)
+    
+    def init_HL_and_fillAll(self, header_title=''):
+        
+        self.init_HDUList()
+        self.fill_Header()
+        self.fill_Meta()
+        self.fill_allTables()
+        
+
+    def savehardcopy(self, filef=''):
+        """ """
+        if filef == '':
+            filef = os.path.join(self.path, '%s.fits' % self.rootname)
+        self.hdulist.writeto(filef,overwrite=True)
 
 
 class CCD_CDP(CDP):
