@@ -751,4 +751,24 @@ class MetaCal(object):
             caption=caption,
             label=figkey)
 
+    def FITSify_CDP_header(self, CDP_header):
+        """ """
+        
+        outCDP_header = CDP_header.copy()
+
+        if 'fpa_design' in outCDP_header:
+            fpa_design = outCDP_header.pop('fpa_design')
+            outCDP_header['fpadesi'] = fpa_design
+
+        if 'FPA' in outCDP_header:
+            rawFPA = outCDP_header.pop('FPA')
+            
+            for jY in range(self.NSLICES_FPA):
+                for iX in range(self.NCOLS_FPA):
+                    Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+                    outCDP_header[Ckey] = rawFPA[Ckey][-1]
+                    
+        return outCDP_header
+
+
 

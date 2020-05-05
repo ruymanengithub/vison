@@ -665,19 +665,9 @@ class MetaChinj01(MetaCal):
         injprofs_meta['IG1'] = IG1
         injprofs_meta['norm'] = 'median'
 
-        if 'fpa_design' in CDP_header:
-            fpa_design = CDP_header.pop('fpa_design')
-            CDP_header['fpadesi'] = fpa_design
+        CDP_header = self.FITSify_CDP_header(CDP_header)
 
-        if 'FPA' in CDP_header:
-            rawFPA = CDP_header.pop('FPA')
-            
-            for jY in range(self.NSLICES_FPA):
-                for iX in range(self.NCOLS_FPA):
-                    Ckey = 'C_%i%i' % (jY + 1, iX + 1)
-                    CDP_header[Ckey] = rawFPA[Ckey][-1]
-
-
+        
         injprof_cdp.ingest_inputs(data=injprofs.copy(),
             meta=injprofs_meta.copy(),
             header=CDP_header.copy())
