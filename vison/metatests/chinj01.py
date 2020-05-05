@@ -540,8 +540,10 @@ class MetaChinj01(MetaCal):
             os.system('mkdir %s' % self.cdpspath)
 
         self.outcdps['INJCURVES'] = 'CHINJ01_INJCURVES_PAR.json'
-        self.outcdps['INJPROF_HOR'] = 'CHINJ01_INJPROFILES_HOR.xlsx'
-        self.outcdps['INJPROF_VER'] = 'CHINJ01_INJPROFILES_VER.xlsx'
+        self.outcdps['INJPROF_XLSX_HOR'] = 'CHINJ01_INJPROFILES_HOR.xlsx'
+        self.outcdps['INJPROF_XLSX_VER'] = 'CHINJ01_INJPROFILES_VER.xlsx'
+        self.outcdps['INJPROF_FITS_HOR'] = 'CHINJ01_INJPROFILES_HOR.fits'
+        self.outcdps['INJPROF_FITS_VER'] = 'CHINJ01_INJPROFILES_VER.fits'
 
 
     def _extract_NUNHOR_fromPT(self, PT, block, CCDk, Q):
@@ -565,20 +567,8 @@ class MetaChinj01(MetaCal):
 
         return np.nanstd(_y)/np.nanmean(_y)*100.
 
-    def get_injprof_cdp(self, direction, CDP_header=None, IG1=4.5):
+    def _get_injprof_dfdict(self, direction, IG1=4.5, pandice=False):
         """ """
-
-        if CDP_header is None:
-            CDP_header = OrderedDict()
-
-        cdpname = self.outcdps['INJPROF_%s' % direction.upper()]
-        path = self.cdpspath
-
-        injprof_cdp = cdp.Tables_CDP()
-        injprof_cdp.rootname = os.path.splitext(cdpname)[0]
-        injprof_cdp.path = path
-
-        injprofs_meta = OrderedDict()
 
         injprofs = OrderedDict()
 
@@ -616,14 +606,34 @@ class MetaChinj01(MetaCal):
 
                     if iCCD==0 and kQ==0:
                         injprofs[block]['pixel'] = _x.copy()
-                    injprofs[block]['%s%s' % (Ckey,Q)] = _y.copy() 
+                    injprofs[block]['%s_%s' % (Ckey,Q)] = _y.copy() 
 
-        for block in self.flight_blocks:
-            injprofs[block] = pd.DataFrame.from_dict(injprofs[block])
+        if pandice:
+            for block in self.flight_blocks:
+                injprofs[block] = pd.DataFrame.from_dict(injprofs[block])
+
+        return injprofs
+
+
+    def get_injprof_xlsx_cdp(self, direction, CDP_header=None, IG1=4.5):
+        """ """
+
+        if CDP_header is None:
+            CDP_header = OrderedDict()
+
+        cdpname = self.outcdps['INJPROF_XLSX_%s' % direction.upper()]
+        path = self.cdpspath
+
+        injprof_cdp = cdp.Tables_CDP()
+        injprof_cdp.rootname = os.path.splitext(cdpname)[0]
+        injprof_cdp.path = path
+
+        injprofs_meta = OrderedDict()
+
+        injprofs = self._get_injprof_dfdict(direction, IG1, pandice=True)        
 
         injprofs_meta['IG1'] = IG1
         injprofs_meta['norm'] = 'median'
-
 
         injprof_cdp.ingest_inputs(data=injprofs.copy(),
             meta=injprofs_meta.copy(),
@@ -634,6 +644,36 @@ class MetaChinj01(MetaCal):
         return injprof_cdp
 
 
+    def get_injprof_fits_cdp(self, direction, CDP_header=None, IG1=4.5):
+        """ """
+
+        if CDP_header is None:
+            CDP_header = OrderedDict()
+
+        cdpname = self.outcdps['INJPROF_FITS_%s' % direction.upper()]
+        path = self.cdpspath
+
+        injprof_cdp = cdp.FitsTables_CDP()
+        injprof_cdp.rootname = os.path.splitext(cdpname)[0]
+        injprof_cdp.path = path
+
+        injprofs_meta = OrderedDict()
+
+        injprofs = self._get_injprof_dfdict(direction, IG1, pandice=False)
+
+        injprofs_meta['IG1'] = IG1
+        injprofs_meta['norm'] = 'median'
+
+        injprof_cdp.ingest_inputs(data=injprofs.copy(),
+            meta=injprofs_meta.copy(),
+            header=CDP_header.copy())
+        
+        injprof_cdp.init_HL_and_fillAll()
+
+        injprof_cdp.hdulist[0].header.insert(CDP_header.keys()[0],
+            ('title', 'CHINJ01: INJPROFS-%s' % direction.upper()))
+
+        return injprof_cdp
 
 
     def dump_aggregated_results(self):
@@ -911,13 +951,15 @@ class MetaChinj01(MetaCal):
 
         # creating and saving INJ PROFILES CDPs.
 
-        injprof_hor_cdp = self.get_injprof_cdp(direction='hor',
-            CDP_header=CDP_header)
-        injprof_hor_cdp.savehardcopy()
+        for direction in ['hor','ver']:
 
-        injprof_ver_cdp = self.get_injprof_cdp(direction='ver',
-            CDP_header=CDP_header)
-        injprof_ver_cdp.savehardcopy()
+            _injprof_xlsx_cdp = self.get_injprof_xlsx_cdp(direction=direction,
+                CDP_header=CDP_header)
+            _injprof_xlsx_cdp.savehardcopy()
+
+            _injprof_fits_cdp = self.get_injprof_fits_cdp(direction=direction,
+                CDP_header=CDP_header)
+            _injprof_fits_cdp.savehardcopy()
 
 
         # reporting non-uniformity of injection lines to report
