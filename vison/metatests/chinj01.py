@@ -615,11 +615,12 @@ class MetaChinj01(MetaCal):
         return injprofs
 
 
-    def get_injprof_xlsx_cdp(self, direction, CDP_header=None, IG1=4.5):
+    def get_injprof_xlsx_cdp(self, direction, inCDP_header=None, IG1=4.5):
         """ """
 
-        if CDP_header is None:
-            CDP_header = OrderedDict()
+        CDP_header = OrderedDict()
+        if CDP_header is not None:
+            CDP_header.update(inCDP_header)
 
         cdpname = self.outcdps['INJPROF_XLSX_%s' % direction.upper()]
         path = self.cdpspath
@@ -643,12 +644,12 @@ class MetaChinj01(MetaCal):
 
         return injprof_cdp
 
-
-    def get_injprof_fits_cdp(self, direction, CDP_header=None, IG1=4.5):
+    def get_injprof_fits_cdp(self, direction, inCDP_header=None, IG1=4.5):
         """ """
 
-        if CDP_header is None:
-            CDP_header = OrderedDict()
+        CDP_header = OrderedDict()
+        if inCDP_header is not None:
+            CDP_header.update(inCDP_header)
 
         cdpname = self.outcdps['INJPROF_FITS_%s' % direction.upper()]
         path = self.cdpspath
@@ -663,6 +664,15 @@ class MetaChinj01(MetaCal):
 
         injprofs_meta['IG1'] = IG1
         injprofs_meta['norm'] = 'median'
+
+        if 'FPA' in CDP_header:
+            rawFPA = CDP_header.pop('FPA')
+            FPA = OrderedDict()
+            for jY in range(self.NSLICES_FPA):
+                for iX in range(self.NCOLS_FPA):
+                    Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+                    FPA[Ckey] = rawFPA[Ckey][-1]
+            CDP_header['FPA'] = FPA.copy()
 
         injprof_cdp.ingest_inputs(data=injprofs.copy(),
             meta=injprofs_meta.copy(),
@@ -954,11 +964,11 @@ class MetaChinj01(MetaCal):
         for direction in ['hor','ver']:
 
             _injprof_xlsx_cdp = self.get_injprof_xlsx_cdp(direction=direction,
-                CDP_header=CDP_header)
+                inCDP_header=CDP_header)
             _injprof_xlsx_cdp.savehardcopy()
 
             _injprof_fits_cdp = self.get_injprof_fits_cdp(direction=direction,
-                CDP_header=CDP_header)
+                inCDP_header=CDP_header)
             _injprof_fits_cdp.savehardcopy()
 
 
