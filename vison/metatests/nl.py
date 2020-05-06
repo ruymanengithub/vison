@@ -385,19 +385,19 @@ class MetaNL(MetaCal):
         ixblock1 = np.where(PT['BLOCK'] == BLOCK1)
         ixblock2 = np.where(PT['BLOCK'] == BLOCK2)
 
-        reply.append('SOURCE STABILITIES: %s/%s, CCD%i' % (BLOCK1, BLOCK2, CCD))
+        reply.append('\n\nSOURCE STABILITIES: %s/%s, CCD%i\n' % (BLOCK1, BLOCK2, CCD))
 
         for Q in self.Quads:
 
             qstab1 = PT['STABILITYPC_CCD%s_Quad%s' % (CCD, Q)][ixblock1][0]
             qstab2 = PT['STABILITYPC_CCD%s_Quad%s' % (CCD, Q)][ixblock2][0]
 
-            reply.append('%s/%s, CCD%i-%s: %.3f/%.3f' % (BLOCK1, BLOCK2, CCD, Q, qstab1, qstab2))
+            reply.append('%s/%s, CCD%i-%s: %.3f/%.3f\n' % (BLOCK1, BLOCK2, CCD, Q, qstab1, qstab2))
 
             stab1.append(qstab1)
             stab2.append(qstab2)
 
-        reply.append('AV. %s/%s, CCD%i: %.3f/%.3f' % (BLOCK1, BLOCK2, CCD,
+        reply.append('AV. %s/%s, CCD%i: %.3f/%.3f\n' % (BLOCK1, BLOCK2, CCD,
                                                np.mean(stab1),
                                                np.mean(stab2)))
         return reply
