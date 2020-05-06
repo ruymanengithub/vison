@@ -397,7 +397,7 @@ class MetaNL(MetaCal):
             stab1.append(qstab1)
             stab2.append(qstab2)
 
-        reply.append('AV. %s/%s, CCD%i: %.3f/%.3f\n' % (BLOCK1, BLOCK2, CCD,
+        reply.append('AV. %s/%s, CCD%i: %.3f/%.3f\n\n' % (BLOCK1, BLOCK2, CCD,
                                                np.mean(stab1),
                                                np.mean(stab2)))
         return reply
