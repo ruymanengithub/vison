@@ -511,6 +511,11 @@ class MetaNL(MetaCal):
         CDP_header = self.FITSify_CDP_header(CDP_header)
 
         
+        
+        _nl_XY_data = self._get_XYdict_NL(mode='data', scale='rel')
+        _nl_XY_fit = self._get_XYdict_NL(mode='fit', scale='rel')
+
+
 
         nl_cdp.ingest_inputs(data=nl.copy(),
             meta=meta.copy(),
@@ -541,6 +546,8 @@ class MetaNL(MetaCal):
 
     def dump_aggregated_results(self):
         """ """
+
+        stop()
 
         if self.report is not None:
             self.report.add_Section(keyword='dump',\
