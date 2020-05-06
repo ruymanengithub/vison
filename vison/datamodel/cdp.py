@@ -286,7 +286,8 @@ class FitsTables_CDP(CDP):
                 format=self.formatsdict[dtype],
                 array=dd[k].copy()))
 
-        self.hdulist.append(fts.BinTableHDU.from_columns(columns))
+        self.hdulist.append(fts.BinTableHDU.from_columns(columns,
+            name=sheet))
 
     def fill_allTables(self):
         """ """

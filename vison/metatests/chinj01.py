@@ -667,7 +667,6 @@ class MetaChinj01(MetaCal):
 
         CDP_header = self.FITSify_CDP_header(CDP_header)
 
-        
         injprof_cdp.ingest_inputs(data=injprofs.copy(),
             meta=injprofs_meta.copy(),
             header=CDP_header.copy())
