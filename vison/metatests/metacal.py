@@ -568,6 +568,7 @@ class MetaCal(object):
         else:
             figname = ''
 
+
         with plfpa.FpaHeatMap(MAPdict, **_kwargs) as heatmap:
             heatmap.render(figname=figname)
         #heatmap = None

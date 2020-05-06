@@ -17,7 +17,7 @@ import os
 import matplotlib.cm as cm
 
 from vison.fpa import fpa as fpamod
-
+from vison.datamodel import cdp as cdpmod
 from vison.metatests.metacal import MetaCal
 from vison.plot import plots_fpa as plfpa
 
@@ -227,9 +227,10 @@ class MetaNL(MetaCal):
 
         nlcdpkeys_v = np.zeros((1), dtype='S50')
 
-        for iCCD, CCDk in enumerate(CCDkeys):
+        nlcdpkey = '%s_%s_%s_%i' % (testname, block, session, jrep + 1)
 
-            nlcdpkey = '%s_%s_%s_%i_%s' % (testname, block, session, jrep + 1, CCDk)
+        for iCCD, CCDk in enumerate(CCDkeys):
+            
 
             for kQ, Q in enumerate(self.Quads):
 
@@ -242,9 +243,8 @@ class MetaNL(MetaCal):
 
                 stabilitypc_v[0, iCCD, kQ] = NL_dict[CCDk][Q]['stability_pc']
 
-            self.products['NL'][nlcdpkey] = NL_dict.copy()
-
-            nlcdpkeys_v[0] = nlcdpkey
+        self.products['NL'][nlcdpkey] = NL_dict.copy()
+        nlcdpkeys_v[0] = nlcdpkey
 
         sidd.addColumn(maxNLpc_v, 'MAXNL', IndexCQ)
         sidd.addColumn(fluADU_maxNLpc_v, 'FLUADU_MAXNL', IndexCQ)
@@ -325,7 +325,7 @@ class MetaNL(MetaCal):
 
         return NLMAP
 
-    def _get_XYdict_NL(self, mode='fit', scale='rel'):
+    def _get_XYdict_NL(self, mode='fit', scale='rel', doCensor=False):
 
         x = dict()
         y = dict()
@@ -356,7 +356,7 @@ class MetaNL(MetaCal):
                     xfluadu = i_NL[CCDk][Q][curvekey]['X'].copy()
                     xfluKele = xfluadu * gain / 1.E3
 
-                    if pkey not in self.censored:
+                    if (pkey not in self.censored) and doCensor:
 
                         x[pkey] = xfluKele.copy()
 
@@ -385,7 +385,7 @@ class MetaNL(MetaCal):
         ixblock1 = np.where(PT['BLOCK'] == BLOCK1)
         ixblock2 = np.where(PT['BLOCK'] == BLOCK2)
 
-        reply.append('SOURCE STABILITIES: %s/%s, CCD%i' % (BLOCK1, BLOCK2, CCD)))
+        reply.append('SOURCE STABILITIES: %s/%s, CCD%i' % (BLOCK1, BLOCK2, CCD))
 
         for Q in self.Quads:
 
@@ -468,19 +468,19 @@ class MetaNL(MetaCal):
             os.system('mkdir %s' % self.figspath)
 
         self.figs['STABILITY_MAP'] = os.path.join(self.figspath,
-                                                  'SOURCE_STABILITY_MAP.png')
+                                'SOURCE_STABILITY_MAP.png')
 
         self.figs['NL_curves_MAP'] = os.path.join(self.figspath,
-                                                  'NL_curves_FPAMAP.png')
+                                'NL_curves_FPAMAP.png')
 
         self.figs['NL_curves'] = os.path.join(self.figspath,
-                                              'NL_curves_rel_fit.png')
+                                'NL_curves_rel_fit.png')
 
         self.figs['NL_curves_data'] = os.path.join(self.figspath,
-                                                   'NL_curves_rel_data.png')
+                                'NL_curves_rel_data.png')
 
         self.figs['NL_curves_abs'] = os.path.join(self.figspath,
-                                                  'NL_curves_abs_fit.png')
+                                'NL_curves_abs_fit.png')
 
         for CCD in [1, 2]:
             self.figs['HvsK_CCD%s' % CCD] = os.path.join(self.figspath,
@@ -497,12 +497,12 @@ class MetaNL(MetaCal):
         if inCDP_header is not None:
             CDP_header.update(inCDP_header)
 
-        PT = self.ParsedTable['NL02']
+        #PT = self.ParsedTable['NL02']
 
-        cdpname = self.outcdps['INJPROF_FITS_%s' % direction.upper()]
+        cdpname = self.outcdps['NL_CURVES']
         path = self.cdpspath
 
-        nl_cdp = cdp.FitsTables_CDP()
+        nl_cdp = cdpmod.FitsTables_CDP()
         nl_cdp.rootname = os.path.splitext(cdpname)[0]
         nl_cdp.path = path
 
@@ -510,12 +510,12 @@ class MetaNL(MetaCal):
 
         CDP_header = self.FITSify_CDP_header(CDP_header)
 
-        
-        
-        _nl_XY_data = self._get_XYdict_NL(mode='data', scale='rel')
-        _nl_XY_fit = self._get_XYdict_NL(mode='fit', scale='rel')
+        _nl_XY_data = self._get_XYdict_NL(mode='data', scale='rel',
+            doCensor=False)
+        _nl_XY_fit = self._get_XYdict_NL(mode='fit', scale='rel',
+            doCensor=False)
 
-
+        stop()
 
         nl_cdp.ingest_inputs(data=nl.copy(),
             meta=meta.copy(),
@@ -527,10 +527,6 @@ class MetaNL(MetaCal):
             ('title', 'NL02: CURVES'))
 
         return nl_cdp
-
-
-
-
 
 
     def init_outcdpnames(self):
@@ -546,8 +542,6 @@ class MetaNL(MetaCal):
 
     def dump_aggregated_results(self):
         """ """
-
-        stop()
 
         if self.report is not None:
             self.report.add_Section(keyword='dump',\
@@ -572,9 +566,9 @@ class MetaNL(MetaCal):
             extractor=self._extract_SOURCESTAB_fromPT)
 
         figkey1 = 'STABILITY_MAP'
-        figname1 = self.figs['STABILITY_MAP']
+        figname1 = self.figs[figkey1]
 
-        self.plot_SimpleMAP(STABILITY_MAP, kwargs=dict(
+        self.plot_SimpleMAP(STABILITY_MAP, **dict(
             suptitle='NL02: Source Stability [pc]',
             figname=figname1,
             corekwargs=dict(norm=Normalize(vmin=0., vmax=0.05, clip=False))))
@@ -593,7 +587,7 @@ class MetaNL(MetaCal):
         figkey2 = 'NL_curves_MAP'
         figname2 = self.figs[figkey2]
 
-        self.plot_XYMAP(NLMAP, kwargs=dict(
+        self.plot_XYMAP(NLMAP, **dict(
                         suptitle='Non-Linearity Curves',
                         doLegend=True,
                         ylim=[-3., 7.],
@@ -614,7 +608,8 @@ class MetaNL(MetaCal):
 
         # PLOT All NL curves in single Plot - Relative, best fit curve
 
-        NLSingledict = self._get_XYdict_NL(mode='fit', scale='rel')
+        NLSingledict = self._get_XYdict_NL(mode='fit', scale='rel',
+            doCensor=True)
 
         figkey3 = 'NL_curves'
         figname3 = self.figs[figkey3] 
@@ -642,7 +637,7 @@ class MetaNL(MetaCal):
 
         NLkwargs['corekwargs'] = linecorekwargs
 
-        self.plot_XY(NLSingledict, kwargs=NLkwargs)
+        self.plot_XY(NLSingledict, **NLkwargs)
 
         if self.report is not None:
             self.addFigure2Report(figname3,
@@ -652,7 +647,8 @@ class MetaNL(MetaCal):
 
         # PLOT All NL curves in single Plot - Relative, data points
 
-        NLSingleDatadict = self._get_XYdict_NL(mode='data', scale='rel')
+        NLSingleDatadict = self._get_XYdict_NL(mode='data', scale='rel',
+            doCensor=True)
 
         figkey4 = 'NL_curves_data'
         figname4 = self.figs[figkey4]
@@ -667,7 +663,7 @@ class MetaNL(MetaCal):
 
         NLDatakwargs['corekwargs'] = pointcorekwargs
 
-        self.plot_XY(NLSingleDatadict, kwargs=NLDatakwargs)
+        self.plot_XY(NLSingleDatadict, **NLDatakwargs)
 
         if self.report is not None:
             self.addFigure2Report(figname4,
@@ -678,12 +674,13 @@ class MetaNL(MetaCal):
 
         # Save NL curves
 
-        NLcurves_cdp = self._get_NLcurves_fits_cdp(inCDP_header=CDP_header)
-        NLcurves_cdp.savehardcopy()
+        #NLcurves_cdp = self._get_NLcurves_fits_cdp(inCDP_header=CDP_header)
+        #NLcurves_cdp.savehardcopy()
 
         # PLOT All NL (best fit) curves in single Plot - Abs
 
-        NLSingledict_abs = self._get_XYdict_NL(mode='fit', scale='abs')
+        NLSingledict_abs = self._get_XYdict_NL(mode='fit', scale='abs',
+            doCensor=True)
 
         figkey5 = 'NL_curves_abs'
         figname5 = self.figs[figkey5]
@@ -698,7 +695,7 @@ class MetaNL(MetaCal):
 
         NLabskwargs['corekwargs'] = linecorekwargs
 
-        self.plot_XY(NLSingledict_abs, kwargs=NLabskwargs)
+        self.plot_XY(NLSingledict_abs, **NLabskwargs)
 
         if self.report is not None:
             self.addFigure2Report(figname5,
@@ -754,7 +751,7 @@ class MetaNL(MetaCal):
 
             HvsSK_kwargs['corekwargs'] = HvsSK_corekwargs
 
-            self.plot_XYCCD(XYCCD_HvsSK_CCDX, kwargs=HvsSK_kwargs)
+            self.plot_XYCCD(XYCCD_HvsSK_CCDX, **HvsSK_kwargs)
 
             if self.report is not None:
                 self.addFigure2Report(figname6,
@@ -803,7 +800,7 @@ class MetaNL(MetaCal):
                          marker=marker, color=color)
             JvsJ2_kwargs['corekwargs'] = JvsJ2_corekwargs
 
-            self.plot_XYCCD(XYCCD_JvsJ2_CCDX, kwargs=JvsJ2_kwargs)
+            self.plot_XYCCD(XYCCD_JvsJ2_CCDX, **JvsJ2_kwargs)
 
             if self.report is not None:
                 self.addFigure2Report(figname7,
