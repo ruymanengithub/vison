@@ -553,7 +553,7 @@ class MetaNL(MetaCal):
             xlk = 'X_%s' % _lk
             ylk = 'Y_%s' % _lk
             nl['BESTFIT'][xlk] = _padder(_nl_XY_fit['x'][_lk],bfNPs)
-            nl['BESTFIT'][ylk] = _padder(_nl_XY_fit['y'][_lk],bfNPs
+            nl['BESTFIT'][ylk] = _padder(_nl_XY_fit['y'][_lk],bfNPs)
 
         nl_cdp.ingest_inputs(data=nl.copy(),
             meta=meta.copy(),
