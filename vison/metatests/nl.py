@@ -356,7 +356,7 @@ class MetaNL(MetaCal):
                     xfluadu = i_NL[CCDk][Q][curvekey]['X'].copy()
                     xfluKele = xfluadu * gain / 1.E3
 
-                    if (pkey not in self.censored) and doCensor:
+                    if (pkey not in self.censored) or ~doCensor:
 
                         x[pkey] = xfluKele.copy()
 
@@ -510,17 +510,55 @@ class MetaNL(MetaCal):
 
         CDP_header = self.FITSify_CDP_header(CDP_header)
 
+        nl = OrderedDict()
+
         _nl_XY_data = self._get_XYdict_NL(mode='data', scale='rel',
             doCensor=False)
+
+        nl['DATAPOINTS'] = OrderedDict()
+
+        NPs = 0
+        for _lk in _nl_XY_data['labelkeys']:
+            kNP = len(_nl_XY_data['x'][_lk])
+            if kNP>NPs:
+                NPs = kNP
+
+        def _padder(array,N):
+            return np.pad(array, (0,N-len(array)), 'constant', 
+                constant_values=(0.,0.))
+
+        for _lk in _nl_XY_data['labelkeys']:
+
+            xlk = 'X_%s' % _lk
+            ylk = 'Y_%s' % _lk
+
+            nl['DATAPOINTS'][xlk] = _padder(_nl_XY_data['x'][_lk],NPs)
+            nl['DATAPOINTS'][ylk] = _padder(_nl_XY_data['y'][_lk],NPs)
+
+        nl['BESTFIT'] = OrderedDict()
+
         _nl_XY_fit = self._get_XYdict_NL(mode='fit', scale='rel',
             doCensor=False)
 
-        stop()
+        bflkeys = _nl_XY_fit['labelkeys']
+
+        bfNPs = 0
+        for _lk in bflkeys:
+            qNP = len(_nl_XY_fit['x'][_lk])
+            if qNP>bfNPs:
+                bfNPs = qNP
+        
+        for _lk in bflkeys:
+
+            xlk = 'X_%s' % _lk
+            ylk = 'Y_%s' % _lk
+            nl['BESTFIT'][xlk] = _padder(_nl_XY_fit['x'][_lk],bfNPs)
+            nl['BESTFIT'][ylk] = _padder(_nl_XY_fit['y'][_lk],bfNPs
 
         nl_cdp.ingest_inputs(data=nl.copy(),
             meta=meta.copy(),
             header=CDP_header.copy())
-        
+
         nl_cdp.init_HL_and_fillAll()
 
         nl_cdp.hdulist[0].header.insert(CDP_header.keys()[0],
@@ -571,12 +609,16 @@ class MetaNL(MetaCal):
         self.plot_SimpleMAP(STABILITY_MAP, **dict(
             suptitle='NL02: Source Stability [pc]',
             figname=figname1,
+            ColorbarText='\\%',
             corekwargs=dict(norm=Normalize(vmin=0., vmax=0.05, clip=False))))
 
         if self.report is not None:
             self.addFigure2Report(figname1,
                 figkey=figkey1,
-                caption='',
+                caption='Normalized standard deviation of the '+\
+                'light source flux along test duration, for each quadrant in the FPA. '+\
+                'The source flux is sampled along test duration with interleaved exposures '+\
+                'using the same filter and exposure time. The value given is a percentage.',
                 texfraction=0.8)
 
 
@@ -591,6 +633,8 @@ class MetaNL(MetaCal):
                         suptitle='Non-Linearity Curves',
                         doLegend=True,
                         ylim=[-3., 7.],
+                        ylabel='NL [\\%]',
+                        xlabel='F[ke]',
                         corekwargs=dict(E=dict(linestyle='-', marker='', color='r'),
                                         F=dict(linestyle='-', marker='', color='g'),
                                         G=dict(linestyle='-', marker='', color='b'),
@@ -598,12 +642,12 @@ class MetaNL(MetaCal):
                         figname=figname2
                         ))
 
-
         if self.report is not None:
 
             self.addFigure2Report(figname2,
                 figkey=figkey2,
-                caption='',
+                caption='Best fit non-linearity curves for all quadrants in the '+\
+                'flight FPA, given as a percentage vs. fluence in ke-.',
                 texfraction=0.8)
 
         # PLOT All NL curves in single Plot - Relative, best fit curve
@@ -642,7 +686,10 @@ class MetaNL(MetaCal):
         if self.report is not None:
             self.addFigure2Report(figname3,
                 figkey=figkey3,
-                caption='',
+                caption='Best fit non-linearity curves for all quadrants in the '+\
+                'flight FPA, given as a percentage vs. fluence in ke-. '+\
+                'The particularly deviant curves of OWEN have been omitted '+\
+                'for clarity. Different colours correspond to different blocks.',
                 texfraction=0.8)
 
         # PLOT All NL curves in single Plot - Relative, data points
@@ -668,14 +715,17 @@ class MetaNL(MetaCal):
         if self.report is not None:
             self.addFigure2Report(figname4,
                 figkey=figkey4,
-                caption='',
+                caption='Data points of the Non-linearity curves for all quadrants '+\
+                'in the flight FPA, given as a percentage vs. fluence in ke-. '+\
+                'The particularly deviant curves of OWEN have been omitted '+\
+                'for clarity. Different colours correspond to different blocks.',
                 texfraction=0.8)
 
 
         # Save NL curves
 
-        #NLcurves_cdp = self._get_NLcurves_fits_cdp(inCDP_header=CDP_header)
-        #NLcurves_cdp.savehardcopy()
+        NLcurves_cdp = self._get_NLcurves_fits_cdp(inCDP_header=CDP_header)
+        NLcurves_cdp.savehardcopy()
 
         # PLOT All NL (best fit) curves in single Plot - Abs
 
@@ -700,7 +750,11 @@ class MetaNL(MetaCal):
         if self.report is not None:
             self.addFigure2Report(figname5,
                 figkey=figkey5,
-                caption='',
+                caption='Best fit non-linearity curves for all quadrants in the '+\
+                'flight FPA, given as absolute deviation from linearity in '+\
+                'electrons vs. fluence in ke-. '+\
+                'The particularly deviant curves of OWEN have been omitted '+\
+                'for clarity. Different colours correspond to different blocks.',
                 texfraction=0.8)
 
         # Compare NL curves of same CCD in different Epochs (re-calibrations)

@@ -121,7 +121,7 @@ class NL02(NL01.NL01):
         waveB = 880
         tFWCwB = self.ogse.profile['tFWC_flat']['nm%i' % waveB]
         ixHIFLUfirst = np.where(NL01.NL01_relfluences < self.FLUDIVIDE)[0][-1]
-        ixHIFLU = np.where(NL01.NL01_relfluences >= self.FLUDIVIDE)
+        #ixHIFLU = np.where(NL01.NL01_relfluences >= self.FLUDIVIDE)
         ixHIFLU = (np.arange(ixHIFLUfirst, len(NL01.NL01_relfluences)),)
         exptsB = (NL01.NL01_relfluences[ixHIFLU] / 100. *
                   tFWCwB).tolist()  # ms
