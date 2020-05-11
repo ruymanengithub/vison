@@ -356,7 +356,7 @@ class MetaNL(MetaCal):
                     xfluadu = i_NL[CCDk][Q][curvekey]['X'].copy()
                     xfluKele = xfluadu * gain / 1.E3
 
-                    if (pkey not in self.censored) or ~doCensor:
+                    if (doCensor and (pkey not in self.censored)) or not doCensor:
 
                         x[pkey] = xfluKele.copy()
 
