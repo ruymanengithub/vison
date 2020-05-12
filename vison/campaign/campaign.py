@@ -533,6 +533,10 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             frames=frsBF01,
             wavelength=800,
             Npix=5,
+            clipsigma=4.,
+            covfunc='ver2',
+            doBiasCorr=True,
+            central='mean',
             surrogate='PTC01',
             diffvalues=diffBF01))
 
@@ -565,6 +569,11 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                                           exptimes=exptsBF01w,
                                           frames=frsBF01w,
                                           wavelength=wave,
+                                          Npix=5,
+                                          clipsigma=4.,
+                                          covfunc='ver2',
+                                          doBiasCorr=True,
+                                          central='mean',
                                           surrogate=isurrogate,
                                           diffvalues=diffBF01w))
 

@@ -183,6 +183,9 @@ class BF01(PTC0X):
         self.inpdefaults['surrogate'] = kwargs['surrogate']
         self.inpdefaults['Npix'] = 5
         self.inpdefaults['clipsigma'] = 4.
+        self.inpdefaults['covfunc'] = 'ver2'
+        self.inpdefaults['doBiasCorr'] = True
+        self.inpdefaults['central'] = 'mean'
 
     def set_perfdefaults(self, **kwargs):
         # maskerading as PTC0X here...
