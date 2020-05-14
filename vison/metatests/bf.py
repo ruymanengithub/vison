@@ -550,6 +550,7 @@ class MetaBF(MetaCal):
 
                         COV_mxs[tn][Ckey][colk]['mu'] = OrderedDict()
                         COV_mxs[tn][Ckey][colk]['var'] = OrderedDict()
+                        COV_mxs[tn][Ckey][colk]['corrmap'] = OrderedDict()
 
                         for Q in self.Quads:
 
@@ -557,15 +558,80 @@ class MetaBF(MetaCal):
                                  float(_COV[colk]['av_mu'][Q])
                             COV_mxs[tn][Ckey][colk]['var'][Q] =\
                                  float(_COV[colk]['av_var'][Q])
-
-                        COV_mxs[tn][Ckey][colk]['corrmap'] = OrderedDict()
-
-                        for Q in self.Quads:
                             COV_mxs[tn][Ckey][colk]['corrmap'][Q] = \
                                 _COV[colk]['av_corrmap'][Q].tolist()
 
         return COV_mxs                       
 
+    def _get_G15P_mxs(self):
+        """ """
+
+        G15P_mxs = OrderedDict()
+
+        for tn in self.testnames:
+ 
+            G15P_mxs[tn] = OrderedDict()
+
+            PT = self.ParsedTable[tn]
+
+            metrics = ['fluence','psmooth','e_psmooth','Asol']
+            filldefault = OrderedDict()
+            for metric in metrics:
+                filldefault[metric] = OrderedDict()
+            filldefault['fluence']['E'] = np.nan
+            filldefault['psmooth']['E'] = [np.nan,np.nan]
+            filldefault['e_psmooth']['E'] = [np.nan, np.nan]
+            filldefault['Asol']['E'] = [[[np.nan]]]
+            for metric in metrics:
+                for Q in ['F','G','H']:
+                    filldefault[metric][Q] = copy.deepcopy(filldefault[metric]['E'])
+
+            for jY in range(self.NSLICES_FPA):
+                for iX in range(self.NCOLS_FPA):
+                    Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+
+                    G15P_mxs[tn][Ckey] = OrderedDict()
+
+                    locator = self.fpa.FPA_MAP[Ckey]
+                    block = locator[0]
+                    CCDk = locator[1]
+
+                    G15P_mxs[tn][Ckey]['block'] = block
+                    G15P_mxs[tn][Ckey]['CCD'] = CCDk
+
+                    ixblock = np.where(PT['BLOCK'] == block)
+
+                    _bfkey = PT['BFCDP_KEY'][ixblock][0]
+                    _, session, srep = st.split(st.replace(_bfkey,'%s_' % tn,''),'_')
+
+                    rep = int(srep)
+
+                    bf = self.inventory[block][tn][rep-1]['dd'].products['BF']
+
+                    cols = bf['ulabels']
+
+
+                    for ic, colk in enumerate(cols):
+                        colk = 'col%03i' % (ic+1,)
+
+                        G15P_mxs[tn][Ckey][colk] = filldefault.copy()
+
+                        for Q in self.Quads:
+
+                            if len(bf[CCDk][Q][colk])>0:
+
+                                G15P_mxs[tn][Ckey][colk]['fluence'][Q] =\
+                                    float(bf[CCDk][Q][colk]['fluence'])
+                                
+                                G15P_mxs[tn][Ckey][colk]['psmooth'][Q] =\
+                                     bf[CCDk][Q][colk]['psmooth'][0].tolist()
+                                G15P_mxs[tn][Ckey][colk]['e_psmooth'][Q] =\
+                                     bf[CCDk][Q][colk]['psmooth'][1].tolist()
+                                G15P_mxs[tn][Ckey][colk]['Asol'][Q] =\
+                                     bf[CCDk][Q][colk]['Asol'].tolist()
+
+
+        return G15P_mxs                       
 
 
 
@@ -815,10 +881,42 @@ class MetaBF(MetaCal):
                 meta=cov_meta)
             cov_cdp.savehardcopy()
 
-            stop()
+            
 
             # G15 Parameters
             # json
+
+            G15P_mx = self._get_G15P_mxs()
+
+            g15p_header = OrderedDict()
+            g15p_header['title'] = 'Guyonnet+15 Parameters'
+            g15p_header['test'] = 'BF0X'
+            g15p_header.update(CDP_header)
+
+            g15p_meta = OrderedDict()
+            g15p_meta['structure'] = dict(
+                    TEST=dict(
+                        CCDID=dict(
+                            block="BLOCK ID",
+                            CCD="ROE CCD",
+                            colXXX=dict(
+                                fluence="dict(Q), Fluence, [ADU]",
+                                psmooth="dict(Q), (p0, p1), [p0,p1]=[L, 1/L]",
+                                e_psmooth="dict(Q), (unc(p0), unc(p1))",
+                                Asol="dict(Q), matrix of a_{i,j}^X coefficients."
+                                )
+                            )
+                        )
+                    )
+
+
+            g15p_cdp = cdp.Json_CDP(rootname=self.outcdps['G15_PARS'],
+                path=self.cdpspath)
+
+            g15p_cdp.ingest_inputs(data=G15P_mx,
+                header=g15p_header,
+                meta=g15p_meta)
+            g15p_cdp.savehardcopy()
 
 
             # G15 G-PSF Equivalent Parameters
