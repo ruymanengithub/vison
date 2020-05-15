@@ -506,8 +506,9 @@ class MetaBF(MetaCal):
         if not os.path.exists(self.cdpspath):
             os.system('mkdir %s' % self.cdpspath)
 
-        self.outcdps['COV'] = 'BF_COV_matrices.json'
-        self.outcdps['G15_PARS'] = 'BF_GUYO15_PARS.json'
+        self.outcdps['COV'] = 'BFE_COV_matrices.json'
+        self.outcdps['G15_PARS'] = 'BFE_GUYO15_PARS.json'
+        self.outcdps['G15_GAUSS_PSF'] = 'BFE_GUYO15_GAUSSEQUIV_PSFs.fits'
 
     def _get_COV_mxs(self):
         """ """
@@ -634,6 +635,55 @@ class MetaBF(MetaCal):
         return G15P_mxs                       
 
 
+
+    def _get_g15_gpsf_cdp(self, inCDP_header=None):
+        """ """
+        
+        CDP_header = OrderedDict()
+        if CDP_header is not None:
+            CDP_header.update(inCDP_header)
+
+        cdpname = self.outcdps['G15_GAUSS_PSF']
+        path = self.cdpspath
+
+        gpsf_cdp = cdp.FitsTables_CDP()
+        gpsf_cdp.rootname = os.path.splitext(cdpname)[0]
+        gpsf_cdp.path = path
+
+        gpsf_meta = OrderedDict()
+
+        gpsf_data = OrderedDict()
+
+        cols = ['col', 'CCD', 'Q', 'fluence', 'FWHMx', 'FWHMy', 'e']
+
+        for tn in self.testnames:
+
+            PT = self.ParsedTable[tn]
+
+            for block in self.flight_blocks:
+                ixblock = np.where(PT['BLOCK'] == block)
+                _bfkey = PT['BFCDP_KEY'][ixblock][0]
+
+                BFdf = self.products['BF'][_bfkey]['data']['BF'].copy()
+
+                rawd=BFdf.to_dict(orient='list')
+                dd = OrderedDict()
+                for col in cols: dd[col] = np.array(rawd[col]).copy()
+                
+
+                gpsf_data['%s_%s' % (tn, block)] = dd.copy()
+
+        CDP_header = self.FITSify_CDP_header(CDP_header)
+
+        gpsf_cdp.ingest_inputs(data=gpsf_data.copy(),
+            meta=gpsf_meta.copy(),
+            header=CDP_header.copy())
+        gpsf_cdp.init_HL_and_fillAll()
+
+        gpsf_cdp.hdulist[0].header.insert(CDP_header.keys()[0],
+            ('title','BF0X: GAUSS PSF EQUIVALENTS TO BFE-G+15'))
+
+        return gpsf_cdp
 
 
 
@@ -879,7 +929,7 @@ class MetaBF(MetaCal):
             cov_cdp.ingest_inputs(data=COVs_mx,
                 header=cov_header,
                 meta=cov_meta)
-            cov_cdp.savehardcopy()
+            #cov_cdp.savehardcopy()
 
             
 
@@ -916,11 +966,28 @@ class MetaBF(MetaCal):
             g15p_cdp.ingest_inputs(data=G15P_mx,
                 header=g15p_header,
                 meta=g15p_meta)
-            g15p_cdp.savehardcopy()
+            #g15p_cdp.savehardcopy()
 
 
             # G15 G-PSF Equivalent Parameters
             # FITS table
 
-            
+            g15_gpsf_cdp = self._get_g15_gpsf_cdp(inCDP_header=CDP_header)
+
+            for i in range(2,len(g15_gpsf_cdp.hdulist)):
+                extname = g15_gpsf_cdp.hdulist[i].header['EXTNAME']
+                block = st.split(extname,'_')[-1]
+                tn = st.join(st.split(extname,'_')[:-1],'_')
+
+                g15_gpsf_cdp.hdulist[i].header['TEST'] = tn
+                g15_gpsf_cdp.hdulist[i].header['BLOCK'] = block
+
+                for CCD in self.CCDs:
+                    CCDk = 'CCD%i' % CCD
+                    CCDID = self.fpa.get_Ckey_from_BlockCCD(block, CCD)
+                    g15_gpsf_cdp.hdulist[i].header[CCDk] = CCDID
+
+                g15_gpsf_cdp.hdulist[0].header['EXT_%i' % (i+1,)] = extname
+
+            g15_gpsf_cdp.savehardcopy()
 
