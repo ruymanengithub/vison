@@ -697,12 +697,14 @@ class MetaBF(MetaCal):
             
             self.add_DataAlbaran2Report()
 
-        doFWHMvWAVE = False
-        doFWHMvFLU = False
-        doTestMAPs = False
-        doELLMAP = False
-        doCDPs = True
+        doAll = True
 
+        doFWHMvWAVE = doAll
+        doFWHMvFLU = doAll
+        doTestMAPs = doAll
+        doELLMAP = doAll
+        doCDPs = doAll
+        
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
@@ -929,7 +931,7 @@ class MetaBF(MetaCal):
             cov_cdp.ingest_inputs(data=COVs_mx,
                 header=cov_header,
                 meta=cov_meta)
-            #cov_cdp.savehardcopy()
+            cov_cdp.savehardcopy()
 
             
 
@@ -966,7 +968,7 @@ class MetaBF(MetaCal):
             g15p_cdp.ingest_inputs(data=G15P_mx,
                 header=g15p_header,
                 meta=g15p_meta)
-            #g15p_cdp.savehardcopy()
+            g15p_cdp.savehardcopy()
 
 
             # G15 G-PSF Equivalent Parameters
