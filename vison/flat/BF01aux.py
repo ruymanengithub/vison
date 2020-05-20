@@ -102,6 +102,7 @@ FWHMx_v_flu_dict = dict(
     meta=dict(doLegend=True,
               ylabel='FWHM(x), [um]',
               xlabel='ADU',
+              ylim = [5.,15.],
               corekwargs=dict(
                   data=dict(marker='o', linestyle=''),
                   fit=dict(marker='', linestyle='--')),
@@ -114,6 +115,7 @@ FWHMy_v_flu_dict = dict(
     meta=dict(doLegend=True,
               ylabel='FWHM(y), [um]',
               xlabel='ADU',
+              ylim = [5.,15.],
               corekwargs=dict(
                   data=dict(marker='o', linestyle=''),
                   fit=dict(marker='', linestyle='--')),

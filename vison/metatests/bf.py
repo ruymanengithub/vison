@@ -268,10 +268,10 @@ class MetaBF(MetaCal):
 
         return _extract_fromPT
 
-    def _get_BFvalues(self, _BF, CCD, iQ, orientation):
+    def _get_BFvalues(self, data, CCD, iQ, orientation):
         """ """
 
-        data = _BF['data']['BF']
+        #data = _BF['data']['BF']
 
         ixsel = np.where((data['CCD'] == CCD) & (data['Q'] == iQ))
 
@@ -291,10 +291,53 @@ class MetaBF(MetaCal):
 
         return x, y
 
-    def _get_BFFITvalues(self, _BFfit, CCD, iQ, orientation):
+
+    def _get_BFvalues_fromA(self, _BFmx, _BFraw, CCD, iQ, orientation, relflu=0.5):
         """ """
 
-        data = _BFfit['data']['BFFIT']
+        #data = _BF['data']['BF']
+
+        ixsel = np.where((_BFmx['CCD'] == CCD) & (_BFmx['Q'] == iQ))
+
+        x = []
+        y = []
+
+        
+        fluences = _BFmx['fluence'].values[ixsel]
+        maxflu = np.nanmax(fluences)
+        ixflu = np.argmin(np.abs(fluences/maxflu-relflu))
+        selcol = _BFmx['col'].values[ixsel][ixflu]
+
+        corrmap = _BFraw['CCD%i' % CCD][selcol]['av_corrmap'][Q]
+        #var = _BFraw['CCD%i' % CCD][selcol]['av_corrmap'][Q]
+        #mu = _BFraw['CCD%i' % CCD][selcol]['av_mu'][Q]
+
+
+        Asol_Q, psmooth_Q = G15.solve_for_A_linalg(
+                                CORR_mx, var=1., mu=1., returnAll=True, doplot=False,
+                                verbose=False)
+
+        stop()
+
+
+        for ix in ixsel[0]:
+            x.append(_BFmx['fluence'][ix])
+            #y.append(data['FWHM%s' % orientation.lower()][ix])
+            stop()
+
+        x = np.array(x)
+        y = np.array(y)
+
+        order = np.argsort(x)
+        x = x[order].copy()
+        y = y[order].copy()
+
+        return x, y
+
+    def _get_BFFITvalues(self, data, CCD, iQ, orientation):
+        """ """
+
+        #data = _BFfit['data']['BFFIT']
 
         ixsel = np.where((data['CCD'] == CCD) & (data['Q'] == iQ))
 
@@ -334,8 +377,8 @@ class MetaBF(MetaCal):
                 _bfkey = PT['BFCDP_KEY'][ixblock][0]
                 _bffitkey = PT['BFFITCDP_KEY'][ixblock][0]
 
-                _BF = self.products['BF'][_bfkey]
-                _BFfit = self.products['BFFIT'][_bffitkey]
+                _BF = self.products['BF'][_bfkey]['data']['BF']
+                _BFfit = self.products['BFFIT'][_bffitkey]['data']['BFFIT']
 
                 _ccd_bfdict = OrderedDict(x=OrderedDict(),
                                           y=OrderedDict())
@@ -411,7 +454,8 @@ class MetaBF(MetaCal):
 
         return FWHMZdict
 
-    def _get_FWHMZ_vs_FLU(self, test, orientation='X'):
+    def _get_FWHMZ_vs_FLU(self, test, orientation='X',
+                fixFluKernel=False):
         """ """
 
         x = dict()
@@ -433,20 +477,29 @@ class MetaBF(MetaCal):
                 ixblock = np.where(PT['BLOCK'] == block)
 
                 _bfkey = PT['BFCDP_KEY'][ixblock][0]
-                _BF = self.products['BF'][_bfkey]
+                _BFmx = self.products['BF'][_bfkey]['data']['BF']
+                _BFraw = self.products['BFCOV'][_bfkey]
 
-                for iQ, Q in enumerate(self.Quads):
 
-                    _xRAW, _yRAW = self._get_BFvalues(_BF, CCD, iQ + 1, orientation)
+                if fixFluKernel:
+                    
+                    for iQ, Q in enumerate(self.Quads):
+                        _xRAW, _yRAW = self._get_BFvalues_fromA(_BFmx, _BFraw, CCD, iQ+1,
+                            orientation, relflu=0.5)
+                else:
 
-                    labelkey = '%s_CCD%i_%s' % (block, CCD, Q)
+                    for iQ, Q in enumerate(self.Quads):
 
-                    gain = self.cdps['GAIN'][block][CCDk][Q][0]
+                        _xRAW, _yRAW = self._get_BFvalues(_BFmx, CCD, iQ + 1, orientation)
 
-                    x[labelkey] = (_xRAW * gain / 1.e3).copy()
-                    y[labelkey] = _yRAW.copy()
+                labelkey = '%s_CCD%i_%s' % (block, CCD, Q)
 
-                    labelkeys.append(labelkey)
+                gain = self.cdps['GAIN'][block][CCDk][Q][0]
+
+                x[labelkey] = (_xRAW * gain / 1.e3).copy()
+                y[labelkey] = _yRAW.copy()
+
+                labelkeys.append(labelkey)
 
         x['Niemi'] = np.linspace(1.5e1, 2.e2, 10)  # kilo-electrons
         if orientation == 'X':
@@ -475,6 +528,11 @@ class MetaBF(MetaCal):
                                                  'FWHMX_vs_FLUENCE.png')
         self.figs['FWHMY_vs_FLU'] = os.path.join(self.figspath,
                                                  'FWHMY_vs_FLUENCE.png')
+
+        self.figs['FWHMX_vs_FLU_fixkernel'] = os.path.join(self.figspath,
+                                                 'FWHMX_vs_FLUENCE_fixkernel.png')
+        self.figs['FWHMY_vs_FLU_fixkernel'] = os.path.join(self.figspath,
+                                                 'FWHMY_vs_FLUENCE_fixkernel.png')
 
         # self.figs['SLOPEXY_vs_WAVE'] = os.path.join(self.figspath,
         #                 'SLOPEXY_vs_WAVELENGTH.png')
@@ -697,10 +755,11 @@ class MetaBF(MetaCal):
             
             self.add_DataAlbaran2Report()
 
-        doAll = True
+        doAll = False
 
         doFWHMvWAVE = doAll
         doFWHMvFLU = doAll
+        doFWHMvFLUalt = True
         doTestMAPs = doAll
         doELLMAP = doAll
         doCDPs = doAll
@@ -781,6 +840,39 @@ class MetaBF(MetaCal):
                     self.addFigure2Report(figname2, 
                         figkey=figkey2, 
                         caption='FWHM%s vs. Wavelength' % dim, 
+                        texfraction=0.7)
+
+
+        if doFWHMvFLUalt:
+
+            # FWHM? vs. FLUENCE
+            # Using a fixed-fluence kernel this time
+
+            for dim in ['x','y']:
+
+                figkey21 = 'FWHM%s_vs_FLU_fixkernel' % dim.upper()
+                figname21 = self.figs[figkey21]
+
+
+                FWHMzFLUFKdict = self._get_FWHMZ_vs_FLU('BF01', orientation=dim.upper(),
+                    fixFluKernel=True)
+
+                FWHMzFLUFKkwargs = dict(
+                    title='FWHM-%s (800nm) vs. Fluence, Fixed Kernel' % dim.upper(),
+                    doLegend=False,
+                    xlabel='Fluence [ke-]',
+                    ylabel='FWHM%s [um]' % dim,
+                    ylim=[6., 12.5],
+                    figname=figname2)
+
+                FWHMzFLUFKkwargs['corekwargs'] = corekwargs
+
+                self.plot_XY(FWHMzFLUFKdict, **FWHMzFLUFKkwargs)
+
+                if self.report is not None:
+                    self.addFigure2Report(figname21, 
+                        figkey=figkey21, 
+                        caption='FWHM%s vs. Wavelength, using the kernel at mid-fluence.' % dim, 
                         texfraction=0.7)
 
 

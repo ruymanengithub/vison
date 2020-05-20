@@ -544,20 +544,23 @@ class BF01(PTC0X):
                         BF_dd['CCD'][jj] = jCCD + 1
                         BF_dd['Q'][jj] = kQ + 1
                         BF_dd['col'][jj] = ulabel
-                        BF_dd['fluence'][jj] = COV_dict['av_mu'][Q].copy()
+                        fluence = COV_dict['av_mu'][Q]
+                        BF_dd['fluence'][jj] = fluence
 
                         try:
 
                             Asol_Q, psmooth_Q = G15.solve_for_A_linalg(
-                                CORR_mx, var=1., mu=1., returnAll=True, doplot=False,
+                                CORR_mx, var=1., mu=fluence, returnAll=True, doplot=False,
                                 verbose=False)
 
-                            kernel_Q = G15.degrade_estatic(singlepixmap, Asol_Q)
+
+                            kernel_Q = G15.degrade_estatic(singlepixmap*fluence, Asol_Q)
 
                             cross_Q = kernel_Q[Npix / 2 - 1:Npix / 2 +
                                                2, Npix / 2 - 1:Npix / 2 + 2].copy()
                             kerQshape = G15.get_cross_shape_rough(
                                 cross_Q, pitch=12.)
+
 
                             self.dd.products['BF'][CCDk][Q][ulabel] = OrderedDict(
                                 Asol=Asol_Q.copy(),
@@ -595,6 +598,7 @@ class BF01(PTC0X):
                                                   figname=dispfig)
 
                         except BaseException:
+
 
                             self.dd.products['BF'][CCDk][Q][ulabel] = OrderedDict()
 
