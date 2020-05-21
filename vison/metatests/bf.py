@@ -25,7 +25,7 @@ from vison.datamodel import core as vcore
 from vison.datamodel import cdp
 from vison.ogse import ogse
 from vison.support import files
-
+from vison.analysis import Guyonnet15 as G15
 
 from matplotlib import pyplot as plt
 plt.switch_backend('TkAgg')
@@ -295,6 +295,8 @@ class MetaBF(MetaCal):
     def _get_BFvalues_fromA(self, _BFmx, _BFraw, CCD, iQ, orientation, relflu=0.5):
         """ """
 
+        Npix = 51
+
         #data = _BF['data']['BF']
 
         ixsel = np.where((_BFmx['CCD'] == CCD) & (_BFmx['Q'] == iQ))
@@ -306,25 +308,35 @@ class MetaBF(MetaCal):
         fluences = _BFmx['fluence'].values[ixsel]
         maxflu = np.nanmax(fluences)
         ixflu = np.argmin(np.abs(fluences/maxflu-relflu))
-        selcol = _BFmx['col'].values[ixsel][ixflu]
+        refcol = _BFmx['col'].values[ixsel][ixflu]
 
-        corrmap = _BFraw['CCD%i' % CCD][selcol]['av_corrmap'][Q]
+        refcorrmap = _BFraw['CCD%i' % CCD][refcol]['av_corrmap'][Q]
         #var = _BFraw['CCD%i' % CCD][selcol]['av_corrmap'][Q]
-        #mu = _BFraw['CCD%i' % CCD][selcol]['av_mu'][Q]
+        refmu = _BFraw['CCD%i' % CCD][refcol]['av_mu'][Q]
 
+        singlepixmap = np.zeros((Npix, Npix), dtype='float32') + 0.0
+        singlepixmap[(Npix - 1) / 2, (Npix - 1) / 2] = 1.
 
         Asol_Q, psmooth_Q = G15.solve_for_A_linalg(
-                                CORR_mx, var=1., mu=1., returnAll=True, doplot=False,
+                                refcorrmap, var=1., mu=refmu, returnAll=True, 
+                                doplot=False,
                                 verbose=False)
 
-        stop()
-
-
         for ix in ixsel[0]:
-            x.append(_BFmx['fluence'][ix])
-            #y.append(data['FWHM%s' % orientation.lower()][ix])
-            stop()
+            imu = _BFmx['fluence'][ix]
+            x.append(imu)
 
+            kernel_Q = G15.degrade_estatic(singlepixmap*imu, Asol_Q)
+
+            cross_Q = kernel_Q[Npix / 2 - 1:Npix / 2 + 2, 
+                    Npix / 2 - 1:Npix / 2 + 2].copy()
+            kerQshape = G15.get_cross_shape_rough(
+                cross_Q, pitch=12.)
+
+            fwhm = kerQshape['fwhm%s' % orientation.lower()]
+
+            y.append(fwhm)
+        
         x = np.array(x)
         y = np.array(y)
 
@@ -1047,7 +1059,7 @@ class MetaBF(MetaCal):
                                 fluence="dict(Q), Fluence, [ADU]",
                                 psmooth="dict(Q), (p0, p1), [p0,p1]=[L, 1/L]",
                                 e_psmooth="dict(Q), (unc(p0), unc(p1))",
-                                Asol="dict(Q), matrix of a_{i,j}^X coefficients."
+                                Asol="dict(Q), matrix of a_{i,j}^X coefficients, [ADU^{-1}]."
                                 )
                             )
                         )
