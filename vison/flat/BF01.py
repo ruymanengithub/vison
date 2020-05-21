@@ -556,8 +556,8 @@ class BF01(PTC0X):
 
                             kernel_Q = G15.degrade_estatic(singlepixmap*fluence, Asol_Q)
 
-                            cross_Q = kernel_Q[Npix / 2 - 1:Npix / 2 +
-                                               2, Npix / 2 - 1:Npix / 2 + 2].copy()
+                            cross_Q = kernel_Q[Npix / 2 - 1:Npix / 2 + 2, 
+                                               Npix / 2 - 1:Npix / 2 + 2].copy()
                             kerQshape = G15.get_cross_shape_rough(
                                 cross_Q, pitch=12.)
 
