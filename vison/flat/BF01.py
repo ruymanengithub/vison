@@ -577,14 +577,14 @@ class BF01(PTC0X):
 
                             profsker_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
                                 np.arange(Npixplot) - Npixplot / 2
-                            profsker_1D.data['hor'][CCDk][Q]['y'][ulabel] = kernel_Q[Npix / \
-                                2, Npix / 2 - Npixplot / 2:Npix / 2 + Npixplot / 2 + 1].copy()
+                            profsker_1D.data['hor'][CCDk][Q]['y'][ulabel] = np.log10(kernel_Q[Npix / \
+                                2, Npix / 2 - Npixplot / 2:Npix / 2 + Npixplot / 2 + 1].copy())
 
                             profsker_1D.data['ver'][CCDk][Q]['x'][ulabel] = \
                                 np.arange(Npixplot) - Npixplot / 2
 
-                            profsker_1D.data['ver'][CCDk][Q]['y'][ulabel] = kernel_Q[Npix / \
-                                2 - Npixplot / 2:Npix / 2 + Npixplot / 2 + 1, Npix / 2].copy()
+                            profsker_1D.data['ver'][CCDk][Q]['y'][ulabel] = np.log10(kernel_Q[Npix / \
+                                2 - Npixplot / 2:Npix / 2 + Npixplot / 2 + 1, Npix / 2].copy())
 
                             # BEWARE, PENDING: dispfig is saved but NOT REPORTED anywhere!
 

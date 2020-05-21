@@ -58,7 +58,7 @@ prof_COV_ver_dict = dict(
     meta=dict(doLegend=True,
               ylabel='COV/VAR, ADIM.',
               xlabel='Y',
-              # ylim=[-0.005,0.07],
+              ylim=[-0.005,0.07],
               corekwargs=dict(marker='.', linestyle='-'),
               suptitle='BF01: COV 1D Profile, Vertical/Parallel.')
 )
@@ -69,7 +69,7 @@ prof_COV_ser_dict = dict(
     meta=dict(doLegend=True,
               ylabel='COV/VAR, ADIM.',
               xlabel='X',
-              # ylim=[-0.005,0.07],
+              ylim=[-0.005,0.07],
               corekwargs=dict(marker='.', linestyle='-'),
               suptitle='BF01: COV 1D Profile, Serial.')
 )
@@ -78,9 +78,9 @@ prof_KER_ver_dict = dict(
     figname='BF01_KER_profs_ver.png',
     caption='BF01: KERNEL 1D profiles, vertical/parallel direction.',
     meta=dict(doLegend=True,
-              ylabel='ADIM.',
+              ylabel='log([ADU])',
               xlabel='Y [pix]',
-              ylim=[-0.03, 0.1],
+              #ylim=[-0.03, 0.1],
               corekwargs=dict(marker='.', linestyle='-'),
               suptitle='BF01: Kernels 1D Profile, Vertical/Parallel.')
 )
@@ -89,9 +89,9 @@ prof_KER_ser_dict = dict(
     figname='BF01_KER_profs_ser.png',
     caption='BF01: KERNEL 1D profiles, serial direction.',
     meta=dict(doLegend=True,
-              ylabel='ADIM.',
+              ylabel='log([ADU])',
               xlabel='X [pix]',
-              ylim=[-0.03, 0.1],
+              #ylim=[-0.03, 0.1],
               corekwargs=dict(marker='.', linestyle='-'),
               suptitle='BF01: Kernels 1D Profile, Serial.')
 )
