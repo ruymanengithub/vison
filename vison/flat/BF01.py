@@ -562,6 +562,9 @@ class BF01(PTC0X):
                                 cross_Q, pitch=12.)
 
 
+                            #kerQshapealt = BF01aux.get_kernel_gauss_shape(kernel_Q,pitch=12)
+
+
                             self.dd.products['BF'][CCDk][Q][ulabel] = OrderedDict(
                                 Asol=Asol_Q.copy(),
                                 psmooth=copy.deepcopy(psmooth_Q),

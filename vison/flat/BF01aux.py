@@ -24,6 +24,8 @@ from vison.plot import trends
 
 from vison.datamodel import cdp
 
+from vison.point import spot as spotmod
+
 # END IMPORT
 
 
@@ -174,3 +176,4 @@ def gt_BF01figs(test):
         figclasses.Fig_Beam2DPlot, FWHMy_v_flu_dict]
 
     return BF01figs
+

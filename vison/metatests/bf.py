@@ -298,6 +298,7 @@ class MetaBF(MetaCal):
         Npix = 51
 
         #data = _BF['data']['BF']
+        Q = self.Quads[iQ-1]
 
         ixsel = np.where((_BFmx['CCD'] == CCD) & (_BFmx['Q'] == iQ))
 
@@ -307,9 +308,8 @@ class MetaBF(MetaCal):
         
         fluences = _BFmx['fluence'].values[ixsel]
         maxflu = np.nanmax(fluences)
-        ixflu = np.argmin(np.abs(fluences/maxflu-relflu))
+        ixflu = np.nanargmin(np.abs(fluences/maxflu-relflu))
         refcol = _BFmx['col'].values[ixsel][ixflu]
-
         refcorrmap = _BFraw['CCD%i' % CCD][refcol]['av_corrmap'][Q]
         #var = _BFraw['CCD%i' % CCD][selcol]['av_corrmap'][Q]
         refmu = _BFraw['CCD%i' % CCD][refcol]['av_mu'][Q]
@@ -317,10 +317,11 @@ class MetaBF(MetaCal):
         singlepixmap = np.zeros((Npix, Npix), dtype='float32') + 0.0
         singlepixmap[(Npix - 1) / 2, (Npix - 1) / 2] = 1.
 
+        
         Asol_Q, psmooth_Q = G15.solve_for_A_linalg(
-                                refcorrmap, var=1., mu=refmu, returnAll=True, 
-                                doplot=False,
-                                verbose=False)
+            refcorrmap, var=1., mu=refmu, returnAll=True, 
+            doplot=False,
+            verbose=False)
 
         for ix in ixsel[0]:
             imu = _BFmx['fluence'][ix]
@@ -767,11 +768,11 @@ class MetaBF(MetaCal):
             
             self.add_DataAlbaran2Report()
 
-        doAll = False
+        doAll = True
 
         doFWHMvWAVE = doAll
         doFWHMvFLU = doAll
-        doFWHMvFLUalt = True
+        doFWHMvFLUalt = doAll
         doTestMAPs = doAll
         doELLMAP = doAll
         doCDPs = doAll
@@ -785,6 +786,18 @@ class MetaBF(MetaCal):
 
         # FWHM? vs. WAVE
 
+        BLOCKcolors = cm.rainbow(np.linspace(0, 1, len(self.flight_blocks)))
+
+        comcorekwargs = dict()
+        for jblock, block in enumerate(self.flight_blocks):
+            jcolor = BLOCKcolors[jblock]
+            for iCCD in self.CCDs:
+                for kQ in self.Quads:
+                    comcorekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(linestyle='-',
+                        marker='.', color=jcolor)
+        comcorekwargs['Niemi'] = dict(linestyle='--', marker='o', color='k')
+
+
         if doFWHMvWAVE:
 
 
@@ -793,7 +806,6 @@ class MetaBF(MetaCal):
                 figkey1 = 'FWHM%s_vs_WAVE' % dim.upper()
                 figname1 = self.figs[figkey1]
 
-                BLOCKcolors = cm.rainbow(np.linspace(0, 1, len(self.flight_blocks)))
 
                 FWHMzWAVEdict = self._get_FWHMZ_vs_WAVE(orientation=dim.upper())
 
@@ -805,16 +817,8 @@ class MetaBF(MetaCal):
                     ylim=[7.5, 12.5],
                     figname=figname1)
 
-                corekwargs = dict()
-                for jblock, block in enumerate(self.flight_blocks):
-                    jcolor = BLOCKcolors[jblock]
-                    for iCCD in self.CCDs:
-                        for kQ in self.Quads:
-                            corekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(linestyle='-',
-                                                                                 marker='.', color=jcolor)
-                corekwargs['Niemi'] = dict(linestyle='--', marker='o', color='k')
 
-                FWHMzWAVEkwargs['corekwargs'] = corekwargs
+                FWHMzWAVEkwargs['corekwargs'] = comcorekwargs
 
                 self.plot_XY(FWHMzWAVEdict, **FWHMzWAVEkwargs)
 
@@ -844,7 +848,7 @@ class MetaBF(MetaCal):
                     ylim=[6., 12.5],
                     figname=figname2)
 
-                FWHMzFLUkwargs['corekwargs'] = corekwargs
+                FWHMzFLUkwargs['corekwargs'] = comcorekwargs
 
                 self.plot_XY(FWHMzFLUdict, **FWHMzFLUkwargs)
 
@@ -875,9 +879,9 @@ class MetaBF(MetaCal):
                     xlabel='Fluence [ke-]',
                     ylabel='FWHM%s [um]' % dim,
                     ylim=[6., 12.5],
-                    figname=figname2)
+                    figname=figname21)
 
-                FWHMzFLUFKkwargs['corekwargs'] = corekwargs
+                FWHMzFLUFKkwargs['corekwargs'] = comcorekwargs
 
                 self.plot_XY(FWHMzFLUFKdict, **FWHMzFLUFKkwargs)
 
