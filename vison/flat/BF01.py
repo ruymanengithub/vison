@@ -412,7 +412,7 @@ class BF01(PTC0X):
             fdict_C['data'] = profscov_1D.data[tag].copy()
 
             for ic, ulabel in enumerate(ulabels):
-                fdict_C['corekwargs'][ulabel]=\
+                fdict_C['meta']['corekwargs'][ulabel]=\
                     dict(marker='.', linestyle='-',color=rbcolors[ic])
 
             if self.report is not None:
