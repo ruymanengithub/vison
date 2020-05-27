@@ -44,6 +44,9 @@ from sklearn import linear_model
 
 from vison.support import utils
 from vison.support.files import cPickleRead, cPickleDumpDictionary
+
+import matplotlib.cm as cm
+
 # END IMPORT
 
 isthere = os.path.exists
@@ -282,6 +285,7 @@ class BF01(PTC0X):
 
         for tag in ['hor', 'ver']:
             profscov_1D.data[tag] = OrderedDict()
+            profscov_1D.data[tag]['labelkeys'] = ulabels
             for CCDk in CCDs:
                 profscov_1D.data[tag][CCDk] = OrderedDict()
                 for Q in Quads:
@@ -362,6 +366,7 @@ class BF01(PTC0X):
                     COV_dd['CORR_10'][jj] = icovdict['av_corrmap'][Q][1, 0]
                     COV_dd['CORR_11'][jj] = icovdict['av_corrmap'][Q][1, 1]
 
+
                     profscov_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
                         np.arange(Npix - 1)
                     profscov_1D.data['hor'][CCDk][Q]['y'][ulabel] = \
@@ -394,14 +399,22 @@ class BF01(PTC0X):
 
         # PLOTS
 
-        for tag in ['hor', 'ver']:
-            profscov_1D.data[tag]['labelkeys'] = \
-                profscov_1D.data[tag][CCDs[0]][Quads[0]]['x'].keys()
+        #for tag in ['hor', 'ver']:
+        #    profscov_1D.data[tag]['labelkeys'] = \
+        #        profscov_1D.data[tag][CCDs[0]][Quads[0]]['x'].keys()
+
+        rbcolors = cm.rainbow(np.linspace(0, 1, len(ulabels)))
+
 
         for tag in ['ver', 'hor']:
 
             fdict_C = self.figdict['BF01_COV_%s' % tag][1]
             fdict_C['data'] = profscov_1D.data[tag].copy()
+
+            for ic, ulabel in enumerate(ulabels):
+                fdict_C['corekwargs'][ulabel]=\
+                    dict(marker='.', linestyle='-',color=rbcolors[ic])
+
             if self.report is not None:
                 self.addFigures_ST(figkeys=['BF01_COV_%s' % tag],
                                    dobuilddata=False)
@@ -506,7 +519,7 @@ class BF01(PTC0X):
         profsker_1D.data['ver'] = OrderedDict()
 
         for tag in ['hor', 'ver']:
-            profsker_1D.data[tag] = OrderedDict()
+            profsker_1D.data[tag] = OrderedDict(labelkeys=ulabels)
             for CCDk in CCDs:
                 profsker_1D.data[tag][CCDk] = OrderedDict()
                 for Q in Quads:
@@ -635,14 +648,20 @@ class BF01(PTC0X):
 
         # Plots
 
-        for tag in ['hor', 'ver']:
-            profsker_1D.data[tag]['labelkeys'] = \
-                profsker_1D.data[tag][CCDs[0]][Quads[0]]['x'].keys()
+        #for tag in ['hor', 'ver']:
+        #    profsker_1D.data[tag]['labelkeys'] = \
+        #        profsker_1D.data[tag][CCDs[0]][Quads[0]]['x'].keys()
+
+        rbcolors = cm.rainbow(np.linspace(0, 1, len(ulabels)))
 
         for tag in ['ver', 'hor']:
 
             fdict_K = self.figdict['BF01_KER_%s' % tag][1]
             fdict_K['data'] = profsker_1D.data[tag].copy()
+
+            for ic, ulabel in enumerate(ulabels):
+                fdict_K['corekwargs'][ulabel]=\
+                    dict(marker='.', linestyle='-',color=rbcolors[ic])
 
             if self.report is not None:
                 self.addFigures_ST(figkeys=['BF01_KER_%s' % tag],
