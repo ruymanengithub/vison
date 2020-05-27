@@ -807,8 +807,10 @@ def correct_estatic(img, aijb):
 def get_cross_shape_rough(cross, pitch=pixpitch):
     """ """
 
-    Ixwing = np.mean([cross[0, 1], cross[2, 1]])
-    Iywing = np.mean([cross[1, 0], cross[1, 2]])
+    ncross = cross / cross.max()
+
+    Ixwing = np.mean([ncross[0, 1], ncross[2, 1]])
+    Iywing = np.mean([ncross[1, 0], ncross[1, 2]])
 
     sigmax = np.sqrt(-pixpitch**2 / (2. * np.log(Ixwing)))
     fwhmx = sigmax * 2.355
