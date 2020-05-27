@@ -95,6 +95,15 @@ Charge Injection Tools
     
     flat
 
+
+FPA Tests
+=========
+
+.. toctree::
+    :maxdepth: 4
+    
+    fpatests
+
 Image
 =====
 
@@ -103,6 +112,13 @@ Image
 
     image
 
+Metatests
+=========
+
+.. toctree::
+    :maxdepth: 4
+    
+    metatests
 
 Monitoring ("Eyegore")
 ======================
@@ -178,12 +194,6 @@ Test Scripts
 These are the scripts that hold the description, execution, data validation and
 analysis of the tests that make the campaign. They are served by the
 infrasctructure and tools provided by the pipeline.
-
-**WARNING**: Currently most of the test scripts are largely meta-code, with the
-exception of very basic functionality used to generate acqusition scripts and
-validate the acquisitions, as listed in the Exposure Log, against the
-description of the test. The metacode has been included in the doc-strings for
-ease of browsing.
 
 
 Charge Injection Scripts

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Pipeline &#8212; vison 0.9+322.g903ad35 documentation</title>
+    <title>Pipeline &#8212; vison 0.9+327.gdfc1435 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9+322.g903ad35',
+        VERSION:     '0.9+327.gdfc1435',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+322.g903ad35 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+327.gdfc1435 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -56,6 +56,95 @@
             
   <div class="section" id="pipeline">
 <h1>Pipeline<a class="headerlink" href="#pipeline" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-vison.pipe.genmaster">
+<span id="genmaster-py"></span><h2>genmaster.py<a class="headerlink" href="#module-vison.pipe.genmaster" title="Permalink to this headline">¶</a></h2>
+<p>Created on Wed Sep 25 17:07:21 2019</p>
+<p>&#64;author: raf</p>
+<dl class="class">
+<dt id="vison.pipe.genmaster.GenPipe">
+<em class="property">class </em><code class="descclassname">vison.pipe.genmaster.</code><code class="descname">GenPipe</code><span class="sig-paren">(</span><em>inputdict</em>, <em>dolog=True</em>, <em>drill=False</em>, <em>debug=False</em>, <em>startobsid=0</em>, <em>processes=1</em>, <em>tag=''</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.genmaster.GenPipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract Master Class of FM-analysis, any level of assembly.</p>
+<dl class="method">
+<dt id="vison.pipe.genmaster.GenPipe.catchtraceback">
+<code class="descname">catchtraceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.genmaster.GenPipe.catchtraceback" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.genmaster.GenPipe.dotask">
+<code class="descname">dotask</code><span class="sig-paren">(</span><em>taskname</em>, <em>inputs</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.genmaster.GenPipe.dotask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic test master function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.genmaster.GenPipe.get_execution_summary">
+<code class="descname">get_execution_summary</code><span class="sig-paren">(</span><em>exectime=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.genmaster.GenPipe.get_execution_summary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.genmaster.GenPipe.get_test">
+<code class="descname">get_test</code><span class="sig-paren">(</span><em>taskname</em>, <em>inputs={}</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.genmaster.GenPipe.get_test" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.genmaster.GenPipe.launchtask">
+<code class="descname">launchtask</code><span class="sig-paren">(</span><em>taskname</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.genmaster.GenPipe.launchtask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.genmaster.GenPipe.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>explogf=None</em>, <em>elvis=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.genmaster.GenPipe.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.genmaster.GenPipe.wait_and_run">
+<code class="descname">wait_and_run</code><span class="sig-paren">(</span><em>dayfolder</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.genmaster.GenPipe.wait_and_run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">vison.pipe.genmaster.</code><code class="descname">GenPipe</code><span class="sig-paren">(</span><em>inputdict</em>, <em>dolog=True</em>, <em>drill=False</em>, <em>debug=False</em>, <em>startobsid=0</em>, <em>processes=1</em>, <em>tag=''</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
+<dd><p>Abstract Master Class of FM-analysis, any level of assembly.</p>
+<dl class="method">
+<dt>
+<code class="descname">catchtraceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">dotask</code><span class="sig-paren">(</span><em>taskname</em>, <em>inputs</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
+<dd><p>Generic test master function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">get_execution_summary</code><span class="sig-paren">(</span><em>exectime=None</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">get_test</code><span class="sig-paren">(</span><em>taskname</em>, <em>inputs={}</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">launchtask</code><span class="sig-paren">(</span><em>taskname</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">run</code><span class="sig-paren">(</span><em>explogf=None</em>, <em>elvis=None</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">wait_and_run</code><span class="sig-paren">(</span><em>dayfolder</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-vison.pipe.master">
 <span id="master-py"></span><h2>master.py<a class="headerlink" href="#module-vison.pipe.master" title="Permalink to this headline">¶</a></h2>
 <p>This is the main script that will orchestrate the analysis of
@@ -2871,6 +2960,7 @@ date-folders.</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Pipeline</a><ul>
+<li><a class="reference internal" href="#module-vison.pipe.genmaster">genmaster.py</a></li>
 <li><a class="reference internal" href="#module-vison.pipe.master">master.py</a></li>
 <li><a class="reference internal" href="#module-vison.pipe.task">task.py</a></li>
 </ul>
@@ -2919,7 +3009,7 @@ date-folders.</p>
         <li class="right" >
           <a href="installation.html" title="Installation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+322.g903ad35 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+327.gdfc1435 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

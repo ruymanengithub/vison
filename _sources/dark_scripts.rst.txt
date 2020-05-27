@@ -7,7 +7,7 @@
 BIAS01
 ------
 
-.. automodule:: vison.dark.BIAS01
+.. automodule:: vison.dark.BIAS0X
         :members:
 
 
