@@ -660,7 +660,7 @@ class BF01(PTC0X):
             fdict_K['data'] = profsker_1D.data[tag].copy()
 
             for ic, ulabel in enumerate(ulabels):
-                fdict_K['corekwargs'][ulabel]=\
+                fdict_K['meta']['corekwargs'][ulabel]=\
                     dict(marker='.', linestyle='-',color=rbcolors[ic])
 
             if self.report is not None:
