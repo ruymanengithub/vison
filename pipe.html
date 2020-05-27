@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Pipeline &#8212; vison 0.6+93.g5fec365 documentation</title>
+    <title>Pipeline &#8212; vison 0.9+319.g4f6704e.dirty documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.6+93.g5fec365',
+        VERSION:     '0.9+319.g4f6704e.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+93.g5fec365 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+319.g4f6704e.dirty documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -67,7 +67,7 @@ Euclid-VIS FM Ground Calibration Campaign.</p>
 are to be run on it.</li>
 <li>Set the variables necessary to process this batch of FM calib. data.</li>
 <li>Start a log of actions to keep track of what is being done.</li>
-<li>Provide inputs to scripts, execute the analysis scripts and report location of analysis 
+<li>Provide inputs to scripts, execute the analysis scripts and report location of analysis
 results.</li>
 </ul>
 </div></blockquote>
@@ -78,7 +78,7 @@ results.</li>
 <li>Each execution of Master must have associated a unique ANALYSIS-ID.</li>
 <li>All the Analysis must be divided in TASKS. TASKS can have SUB-TASKS.</li>
 <li>All data for each TASK must be under a single day-folder.</li>
-<li>All results from the execution of FMmaster must be under a single directory 
+<li>All results from the execution of FMmaster must be under a single directory
 with subdirectories for each TASK run.</li>
 <li><dl class="first docutils">
 <dt>A subfolder of this root directory will contain the logging information:</dt>
@@ -97,15 +97,52 @@ with subdirectories for each TASK run.</li>
 </tbody>
 </table>
 <dl class="class">
+<dt id="vison.pipe.master.GenPipe">
+<em class="property">class </em><code class="descclassname">vison.pipe.master.</code><code class="descname">GenPipe</code><span class="sig-paren">(</span><em>inputdict</em>, <em>dolog=True</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.GenPipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Master Pipeline Class.</p>
+<dl class="method">
+<dt id="vison.pipe.master.GenPipe.catchtraceback">
+<code class="descname">catchtraceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.GenPipe.catchtraceback" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.GenPipe.dotask">
+<code class="descname">dotask</code><span class="sig-paren">(</span><em>taskname</em>, <em>inputs</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.GenPipe.dotask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic test master function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.GenPipe.get_execution_summary">
+<code class="descname">get_execution_summary</code><span class="sig-paren">(</span><em>exectime=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.GenPipe.get_execution_summary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.GenPipe.get_test">
+<code class="descname">get_test</code><span class="sig-paren">(</span><em>taskname</em>, <em>inputs={}</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.GenPipe.get_test" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.GenPipe.launchtask">
+<code class="descname">launchtask</code><span class="sig-paren">(</span><em>taskname</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.GenPipe.launchtask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.GenPipe.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>explogf=None</em>, <em>elvis=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.GenPipe.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="vison.pipe.master.Pipe">
-<em class="property">class </em><code class="descclassname">vison.pipe.master.</code><code class="descname">Pipe</code><span class="sig-paren">(</span><em>inputdict</em>, <em>dolog=True</em>, <em>drill=False</em>, <em>debug=False</em>, <em>startobsid=0</em>, <em>processes=1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe" title="Permalink to this definition">¶</a></dt>
-<dd><p>Master Class of FM-analysis</p>
+<em class="property">class </em><code class="descclassname">vison.pipe.master.</code><code class="descname">Pipe</code><span class="sig-paren">(</span><em>inputdict</em>, <em>dolog=True</em>, <em>drill=False</em>, <em>debug=False</em>, <em>startobsid=0</em>, <em>processes=1</em>, <em>tag=''</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Master Class of FM-analysis at block-level of assembly.</p>
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.BF01">
-<em class="property">class </em><code class="descname">BF01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BF01" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">BF01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BF01" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.BF01.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BF01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BF01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds PTC0X script structure dictionary.</p>
 <p>#:param exptimes: list of ints [ms], exposure times.
 #:param frames: list of ints, number of frames for each exposure time.
@@ -156,12 +193,12 @@ with subdirectories for each TASK run.</li>
 </dd></dl>
 
 <dl class="class">
-<dt id="vison.pipe.master.Pipe.BIAS01">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">BIAS01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BIAS01" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.pipe.master.Pipe.BIAS0X">
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">BIAS0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BIAS0X" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="vison.pipe.master.Pipe.BIAS01.basic_analysis">
-<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BIAS01.basic_analysis" title="Permalink to this definition">¶</a></dt>
-<dd><p>BIAS01: Basic analysis of data.</p>
+<dt id="vison.pipe.master.Pipe.BIAS0X.basic_analysis">
+<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BIAS0X.basic_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>BIAS0X: Basic analysis of data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
@@ -182,26 +219,26 @@ with subdirectories for each TASK run.</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="vison.pipe.master.Pipe.BIAS01.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BIAS01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Builds BIAS01 script structure dictionary.</p>
+<dt id="vison.pipe.master.Pipe.BIAS0X.build_scriptdict">
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BIAS0X.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds BIAS0X script structure dictionary.</p>
 <p>###:param N: integer, number of frames to acquire.
 :param diffvalues: dict, opt, differential values.
 :param elvis: char, ELVIS version.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="vison.pipe.master.Pipe.BIAS01.filterexposures">
-<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BIAS01.filterexposures" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.pipe.master.Pipe.BIAS0X.filterexposures">
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BIAS0X.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="vison.pipe.master.Pipe.BIAS01.meta_analysis">
-<code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BIAS01.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.pipe.master.Pipe.BIAS0X.meta_analysis">
+<code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BIAS0X.meta_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">:</span>
    <span class="n">stack</span> <span class="nb">all</span> <span class="n">ObsIDs</span> <span class="n">to</span> <span class="n">produce</span> <span class="n">Master</span> <span class="n">Bias</span>
-   <span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">Q</span><span class="p">:</span>    
+   <span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">Q</span><span class="p">:</span>
        <span class="n">measure</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">rows</span>
        <span class="n">measure</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">cols</span>
 <span class="n">plot</span> <span class="n">average</span> <span class="n">profiles</span> <span class="n">of</span> <span class="n">Master</span> <span class="n">Bias</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">,</span><span class="n">Q</span>
@@ -214,9 +251,9 @@ with subdirectories for each TASK run.</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="vison.pipe.master.Pipe.BIAS01.prep_data">
-<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BIAS01.prep_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>BIAS01: Preparation of data for further analysis.
+<dt id="vison.pipe.master.Pipe.BIAS0X.prep_data">
+<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BIAS0X.prep_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>BIAS0X: Preparation of data for further analysis.
 Calls task.prepare_images().</p>
 <dl class="docutils">
 <dt>Applies:</dt>
@@ -229,10 +266,10 @@ cosmetics masking</dd>
 
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.CHINJ00">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ00" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ00" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.CHINJ00.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ00.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ00.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds CHINJ00 script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -258,10 +295,10 @@ cosmetics masking</dd>
 
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.CHINJ01">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ01" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ01" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.CHINJ01.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds CHINJ01 script structure dictionary.</p>
 <p>#:param IDL: float, [V], value of IDL (Inject. Drain Low).
 #:param IDH: float, [V], Injection Drain High.
@@ -280,33 +317,9 @@ cosmetics masking</dd>
 <dl class="method">
 <dt id="vison.pipe.master.Pipe.CHINJ01.meta_analysis">
 <code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ01.meta_analysis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find injection threshold: Min IG1
-Plot and model charge injection vs. IG1
+<dd><p>Plot and model charge injection vs. IG1
+Find injection threshold: Min IG1
 Find notch injection amount.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.pipe.master.Pipe.CHINJ01.old_basic_analysis">
-<code class="descname">old_basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ01.old_basic_analysis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Basic analysis of data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">extract</span> <span class="n">average</span> <span class="mi">2</span><span class="n">D</span> <span class="n">injection</span> <span class="n">pattern</span> <span class="p">(</span><span class="ow">and</span> <span class="n">save</span><span class="p">)</span>
-            <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span><span class="o">/</span><span class="n">across</span> <span class="n">lines</span>
-            <span class="n">measure</span> <span class="n">charge</span><span class="o">-</span><span class="n">inj</span><span class="o">.</span> <span class="n">non</span><span class="o">-</span><span class="n">uniformity</span>
-            <span class="n">measure</span> <span class="n">charge</span> <span class="n">spillover</span> <span class="n">into</span> <span class="n">non</span><span class="o">-</span><span class="n">injection</span>
-            <span class="n">measure</span> <span class="n">stats</span> <span class="n">of</span> <span class="n">injection</span> <span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">med</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="nb">min</span><span class="o">/</span><span class="nb">max</span><span class="p">,</span> <span class="n">percentiles</span><span class="p">)</span>
-
-<span class="n">plot</span> <span class="n">average</span> <span class="n">inj</span><span class="o">.</span> <span class="n">profiles</span> <span class="n">along</span> <span class="n">lines</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span> <span class="ow">and</span> <span class="n">IG1</span>
-    <span class="n">save</span> <span class="k">as</span> <span class="n">a</span> <span class="n">rationalized</span> <span class="nb">set</span> <span class="n">of</span> <span class="n">curves</span>
-<span class="n">plot</span> <span class="n">average</span> <span class="n">inj</span><span class="o">.</span> <span class="n">profiles</span> <span class="n">across</span> <span class="n">lines</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span> <span class="ow">and</span> <span class="n">IG1</span>
-    <span class="n">save</span> <span class="k">as</span> <span class="n">a</span> <span class="n">rationalized</span> <span class="nb">set</span> <span class="n">of</span>  <span class="n">curves</span>
-
-<span class="n">Report</span> <span class="n">injection</span> <span class="n">stats</span> <span class="k">as</span> <span class="n">a</span> <span class="n">table</span><span class="o">/</span><span class="n">tables</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="method">
@@ -318,59 +331,16 @@ Find notch injection amount.</p>
 
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.CHINJ02">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ02" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ02" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="vison.pipe.master.Pipe.CHINJ02.basic_analysis">
-<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ02.basic_analysis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Basic analysis of data.
-AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">load</span> <span class="n">average</span> <span class="mi">2</span><span class="n">D</span> <span class="n">injection</span> <span class="n">pattern</span>
-            <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">lines</span>
-            <span class="p">[</span><span class="n">measure</span> <span class="n">charge</span><span class="o">-</span><span class="n">inj</span><span class="o">.</span> <span class="n">non</span><span class="o">-</span><span class="n">uniformity</span><span class="p">]</span>
-            <span class="p">[</span><span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">across</span> <span class="n">lines</span><span class="p">]</span>
-            <span class="p">[</span><span class="n">measure</span> <span class="n">charge</span> <span class="n">spillover</span> <span class="n">into</span> <span class="n">non</span><span class="o">-</span><span class="n">injection</span><span class="p">]</span>
-            <span class="n">measure</span> <span class="n">stats</span> <span class="n">of</span> <span class="n">injection</span> <span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">med</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="nb">min</span><span class="o">/</span><span class="nb">max</span><span class="p">,</span> <span class="n">percentiles</span><span class="p">)</span>
-
-<span class="p">[</span><span class="n">plot</span> <span class="n">average</span> <span class="n">inj</span><span class="o">.</span> <span class="n">profiles</span> <span class="n">along</span> <span class="n">lines</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span> <span class="ow">and</span> <span class="n">IG1</span><span class="p">]</span>
-<span class="p">[</span>    <span class="n">save</span> <span class="k">as</span> <span class="n">a</span> <span class="n">rationalized</span> <span class="nb">set</span> <span class="n">of</span> <span class="n">curves</span><span class="p">]</span>
-<span class="p">[</span><span class="n">plot</span> <span class="n">average</span> <span class="n">inj</span><span class="o">.</span> <span class="n">profiles</span> <span class="n">across</span> <span class="n">lines</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span> <span class="ow">and</span> <span class="n">IG1</span><span class="p">]</span>
-<span class="p">[</span>    <span class="n">save</span> <span class="k">as</span> <span class="n">a</span> <span class="n">rationalized</span> <span class="nb">set</span> <span class="n">of</span>  <span class="n">curves</span><span class="p">]</span>
-
-<span class="n">save</span><span class="o">&amp;</span><span class="n">plot</span> <span class="n">charge</span> <span class="n">injection</span> <span class="n">vs</span><span class="o">.</span> <span class="n">IDL</span>
-<span class="n">report</span> <span class="n">injection</span> <span class="n">stats</span> <span class="k">as</span> <span class="n">a</span> <span class="n">table</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
 <dt id="vison.pipe.master.Pipe.CHINJ02.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ02.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ02.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds CHINJ02 script structure dictionary.</p>
 <p>#:param IDLs: list of 2 ints, [V], [min,max] values of IDL (Inject. Drain Low).
 #:param IDH: int, [V], Injection Drain High.
 #:param id_delays: list of 2 ints, [us], injection drain delays.
 #:param toi_chinj: int, [us], TOI-charge injection.
 :param diffvalues: dict, opt, differential values.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.pipe.master.Pipe.CHINJ02.extract_data">
-<code class="descname">extract_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.CHINJ02.extract_data" title="Permalink to this definition">¶</a></dt>
-<dd><p><strong>NEEDED?</strong> Could be merged with basic_analysis</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Preparation</span> <span class="n">of</span> <span class="n">data</span> <span class="k">for</span> <span class="n">further</span> <span class="n">analysis</span><span class="p">:</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">subtract</span> <span class="n">offset</span>
-            <span class="n">extract</span> <span class="n">average</span> <span class="mi">2</span><span class="n">D</span> <span class="n">injection</span> <span class="n">pattern</span> <span class="ow">and</span> <span class="n">save</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="method">
@@ -401,32 +371,64 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 </dd></dl>
 
 <dl class="class">
-<dt id="vison.pipe.master.Pipe.DARK01">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">DARK01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.DARK01" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.pipe.master.Pipe.COSMETICS00">
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">COSMETICS00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.COSMETICS00" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="vison.pipe.master.Pipe.DARK01.basic_analysis">
-<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.DARK01.basic_analysis" title="Permalink to this definition">¶</a></dt>
-<dd><p>DARK01: Basic analysis of data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">produce</span> <span class="n">mask</span> <span class="n">of</span> <span class="n">hot</span> <span class="n">pixels</span>
-            <span class="n">count</span> <span class="n">hot</span> <span class="n">pixels</span> <span class="o">/</span> <span class="n">columns</span>
-            <span class="n">produce</span> <span class="n">a</span> <span class="mi">2</span><span class="n">D</span> <span class="n">poly</span> <span class="n">model</span> <span class="n">of</span> <span class="n">masked</span><span class="o">-</span><span class="n">image</span><span class="p">,</span> <span class="n">save</span> <span class="n">coefficients</span>
-            <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">rows</span>
-            <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">cols</span>
-            <span class="n">measure</span> <span class="ow">and</span> <span class="n">save</span> <span class="n">RON</span> <span class="n">after</span> <span class="n">subtracting</span> <span class="n">large</span> <span class="n">scale</span> <span class="n">structure</span>
-        <span class="n">save</span> <span class="mi">2</span><span class="n">D</span> <span class="n">model</span> <span class="ow">and</span> <span class="n">profiles</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">pick</span> <span class="n">file</span> <span class="k">for</span> <span class="n">each</span> <span class="n">OBSID</span><span class="o">-</span><span class="n">CCD</span>
-
-<span class="n">plot</span> <span class="n">average</span> <span class="n">profiles</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span> <span class="ow">and</span> <span class="n">Q</span> <span class="p">(</span><span class="n">color</span> <span class="n">coded</span> <span class="n">by</span> <span class="n">time</span><span class="p">)</span>
-</pre></div>
-</div>
+<dt id="vison.pipe.master.Pipe.COSMETICS00.build_scriptdict">
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.COSMETICS00.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds COSMETICS00 script structure dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
+<li><strong>elvis</strong> &#8211; char, ELVIS version.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
+<dt id="vison.pipe.master.Pipe.COSMETICS00.check_data">
+<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.COSMETICS00.check_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.COSMETICS00.check_metrics_ST">
+<code class="descname">check_metrics_ST</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.COSMETICS00.check_metrics_ST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.COSMETICS00.do_masks">
+<code class="descname">do_masks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.COSMETICS00.do_masks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.COSMETICS00.filterexposures">
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.COSMETICS00.filterexposures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.COSMETICS00.get_checkstats_ST">
+<code class="descname">get_checkstats_ST</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.COSMETICS00.get_checkstats_ST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.COSMETICS00.meta">
+<code class="descname">meta</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.COSMETICS00.meta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vison.pipe.master.Pipe.DARK01">
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">DARK01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.DARK01" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.DARK01.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.DARK01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.DARK01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds DARK01 script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -444,8 +446,21 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="vison.pipe.master.Pipe.DARK01.meta_analysis">
-<code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.DARK01.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.pipe.master.Pipe.DARK01.prep_data">
+<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.DARK01.prep_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>DARK01: Preparation of data for further analysis.
+Calls task.prepare_images().</p>
+<dl class="docutils">
+<dt>Applies:</dt>
+<dd>offset subtraction
+[BIAS SUBTRACTION]
+cosmetics masking</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.DARK01.stack_analysis">
+<code class="descname">stack_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.DARK01.stack_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">Q</span><span class="p">:</span>
@@ -464,27 +479,14 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="vison.pipe.master.Pipe.DARK01.prep_data">
-<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.DARK01.prep_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>DARK01: Preparation of data for further analysis.
-Calls task.prepare_images().</p>
-<dl class="docutils">
-<dt>Applies:</dt>
-<dd>offset subtraction
-[BIAS SUBTRACTION]
-cosmetics masking</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.FLAT0X">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">FLAT0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FLAT0X" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">FLAT0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FLAT0X" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.FLAT0X.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FLAT0X.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FLAT0X.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds FLAT0X script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -500,7 +502,7 @@ cosmetics masking</dd>
 <dt id="vison.pipe.master.Pipe.FLAT0X.do_indiv_flats">
 <code class="descname">do_indiv_flats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FLAT0X.do_indiv_flats" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>Preparation of data for further analysis and 
+<div class="highlight-default"><div class="highlight"><pre><span></span>Preparation of data for further analysis and
 produce flat-field for each OBSID.
 
 f.e. ObsID:
@@ -533,7 +535,7 @@ plot average profiles f. each CCD and Q (color coded by time)
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
         <span class="n">stack</span> <span class="n">individual</span> <span class="n">flat</span><span class="o">-</span><span class="n">fields</span> <span class="n">by</span> <span class="n">chosen</span> <span class="n">estimator</span>
 <span class="n">save</span> <span class="n">Master</span> <span class="n">FF</span> <span class="n">to</span> <span class="n">FITS</span>
-<span class="n">measure</span> <span class="n">PRNU</span> <span class="ow">and</span> 
+<span class="n">measure</span> <span class="n">PRNU</span> <span class="ow">and</span>
 <span class="n">report</span> <span class="n">PRNU</span> <span class="n">figures</span>
 </pre></div>
 </div>
@@ -551,7 +553,7 @@ plot average profiles f. each CCD and Q (color coded by time)
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
         <span class="n">produce</span> <span class="n">mask</span> <span class="n">of</span> <span class="n">PR</span> <span class="n">defects</span>
         <span class="n">save</span> <span class="n">mask</span> <span class="n">of</span> <span class="n">PR</span> <span class="n">defects</span>
-        <span class="n">count</span> <span class="n">dead</span> <span class="n">pixels</span> <span class="o">/</span> <span class="n">columns</span> 
+        <span class="n">count</span> <span class="n">dead</span> <span class="n">pixels</span> <span class="o">/</span> <span class="n">columns</span>
 
 <span class="n">report</span> <span class="n">PR</span><span class="o">-</span><span class="n">defects</span> <span class="n">stats</span>
 </pre></div>
@@ -585,7 +587,7 @@ cosmetics masking</dd>
 
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.FOCUS00">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">FOCUS00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FOCUS00" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">FOCUS00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FOCUS00" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.FOCUS00.basic_analysis">
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FOCUS00.basic_analysis" title="Permalink to this definition">¶</a></dt>
@@ -594,7 +596,7 @@ cosmetics masking</dd>
 
 <dl class="method">
 <dt id="vison.pipe.master.Pipe.FOCUS00.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FOCUS00.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.FOCUS00.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds FOCUS00 script structure dictionary.</p>
 <p>#:param wavelength: int, [nm], wavelength.
 #:param exptime: int, [ms], exposure time.
@@ -625,7 +627,7 @@ cosmetics masking</dd>
 
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.MOT_FF">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">MOT_FF</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.MOT_FF" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">MOT_FF</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.MOT_FF" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.MOT_FF.extract_HER">
 <code class="descname">extract_HER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.MOT_FF.extract_HER" title="Permalink to this definition">¶</a></dt>
@@ -634,11 +636,68 @@ cosmetics masking</dd>
 </dd></dl>
 
 <dl class="class">
+<dt id="vison.pipe.master.Pipe.MOT_WARM">
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">MOT_WARM</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.MOT_WARM" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.pipe.master.Pipe.MOT_WARM.basic_analysis">
+<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.MOT_WARM.basic_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>EXPOSURES:</dt>
+<dd>BIAS, RAMP, CHINJ, FLAT, POINT_w x waves_PNT</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.MOT_WARM.build_scriptdict">
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.MOT_WARM.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds MOT_WARM script structure dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
+<li><strong>elvis</strong> &#8211; char, ELVIS version.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.MOT_WARM.check_data">
+<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.MOT_WARM.check_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.MOT_WARM.check_metrics_ST">
+<code class="descname">check_metrics_ST</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.MOT_WARM.check_metrics_ST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.MOT_WARM.filterexposures">
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.MOT_WARM.filterexposures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.MOT_WARM.get_checkstats_ST">
+<code class="descname">get_checkstats_ST</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.MOT_WARM.get_checkstats_ST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.MOT_WARM.lock_on_stars">
+<code class="descname">lock_on_stars</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.MOT_WARM.lock_on_stars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="vison.pipe.master.Pipe.NL01">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">NL01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL01" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">NL01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL01" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.NL01.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds NL01 script structure dictionary.</p>
 <p>#:param expts: list of ints [ms], exposure times.
 #:param exptinter: int, ms, exposure time of interleaved source-stability exposures.
@@ -653,12 +712,12 @@ cosmetics masking</dd>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">select</span> <span class="n">ObsIDs</span> <span class="k">with</span> <span class="n">fluence</span><span class="p">(</span><span class="n">exptime</span><span class="p">)</span> <span class="o">&gt;~</span> <span class="mf">0.5</span> <span class="n">FWC</span>
 
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span> 
-    <span class="n">CCD</span><span class="p">:</span> 
+<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
+    <span class="n">CCD</span><span class="p">:</span>
         <span class="n">Q</span><span class="p">:</span>
             <span class="n">measure</span> <span class="n">CTE</span> <span class="kn">from</span> <span class="nn">amount</span> <span class="n">of</span> <span class="n">charge</span> <span class="ow">in</span> <span class="n">over</span><span class="o">-</span><span class="n">scan</span> <span class="n">relative</span> <span class="n">to</span> <span class="n">fluence</span>
 
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">:</span> 
+<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">:</span>
     <span class="n">Q</span><span class="p">:</span>
         <span class="n">get</span> <span class="n">curve</span> <span class="n">of</span> <span class="n">CTE</span> <span class="n">vs</span><span class="o">.</span> <span class="n">fluence</span>
         <span class="n">measure</span> <span class="n">FWC</span> <span class="kn">from</span> <span class="nn">curve</span> <span class="ow">in</span> <span class="n">ADU</span>
@@ -671,10 +730,10 @@ cosmetics masking</dd>
 <dl class="method">
 <dt id="vison.pipe.master.Pipe.NL01.extract_stats">
 <code class="descname">extract_stats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL01.extract_stats" title="Permalink to this definition">¶</a></dt>
-<dd><p>Performs basic analysis: extracts statistics from 
+<dd><p>Performs basic analysis: extracts statistics from
 image regions to later build NLC.</p>
 <p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">create</span> <span class="n">segmentation</span> <span class="nb">map</span> <span class="n">given</span> <span class="n">grid</span> <span class="n">parameters</span>    
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">create</span> <span class="n">segmentation</span> <span class="nb">map</span> <span class="n">given</span> <span class="n">grid</span> <span class="n">parameters</span>
 
 <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
@@ -689,8 +748,8 @@ image regions to later build NLC.</p>
 <dl class="method">
 <dt id="vison.pipe.master.Pipe.NL01.filterexposures">
 <code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL01.filterexposures" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads a list of Exposure Logs and selects exposures from test PSF0X.</p>
-<p>The filtering takes into account an expected structure for the 
+<dd><p>Loads a list of Exposure Logs and selects exposures from test NL01.</p>
+<p>The filtering takes into account an expected structure for the
 acquisition script.</p>
 <p>The datapath becomes another column in DataDict. This helps dealing
 with tests that run overnight and for which the input data is in several
@@ -722,7 +781,81 @@ date-folders.</p>
 <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">Q</span><span class="p">:</span>
 
-        <span class="p">[</span><span class="n">opt</span><span class="p">]</span> <span class="n">apply</span> <span class="n">correction</span> <span class="k">for</span> <span class="n">source</span> <span class="n">variability</span> <span class="p">(</span><span class="n">interspersed</span> <span class="n">exposure</span> 
+        <span class="p">[</span><span class="n">opt</span><span class="p">]</span> <span class="n">apply</span> <span class="n">correction</span> <span class="k">for</span> <span class="n">source</span> <span class="n">variability</span> <span class="p">(</span><span class="n">interspersed</span> <span class="n">exposure</span>
+          <span class="k">with</span> <span class="n">constant</span> <span class="n">exptime</span><span class="p">)</span>
+        <span class="n">Build</span> <span class="n">NL</span> <span class="n">Curve</span> <span class="p">(</span><span class="n">NLC</span><span class="p">)</span> <span class="o">-</span> <span class="n">use</span> <span class="n">stats</span> <span class="ow">and</span> <span class="n">exptimes</span>
+        <span class="n">fit</span> <span class="n">poly</span><span class="o">.</span> <span class="n">shape</span> <span class="n">to</span> <span class="n">NL</span> <span class="n">curve</span>
+
+<span class="n">plot</span> <span class="n">NL</span> <span class="n">curves</span> <span class="k">for</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span>
+<span class="n">report</span> <span class="nb">max</span><span class="o">.</span> <span class="n">values</span> <span class="n">of</span> <span class="n">NL</span> <span class="p">(</span><span class="n">table</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.NL01.recalibrate_exptimes">
+<code class="descname">recalibrate_exptimes</code><span class="sig-paren">(</span><em>exptimes</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL01.recalibrate_exptimes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Corrects exposure times given independent calibration of the shutter.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vison.pipe.master.Pipe.NL02">
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">NL02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL02" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.pipe.master.Pipe.NL02.build_scriptdict">
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL02.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds NL02 script structure dictionary.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.NL02.do_satCTE">
+<code class="descname">do_satCTE</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL02.do_satCTE" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">select</span> <span class="n">ObsIDs</span> <span class="k">with</span> <span class="n">fluence</span><span class="p">(</span><span class="n">exptime</span><span class="p">)</span> <span class="o">&gt;~</span> <span class="mf">0.5</span> <span class="n">FWC</span>
+
+<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
+    <span class="n">CCD</span><span class="p">:</span>
+        <span class="n">Q</span><span class="p">:</span>
+            <span class="n">measure</span> <span class="n">CTE</span> <span class="kn">from</span> <span class="nn">amount</span> <span class="n">of</span> <span class="n">charge</span> <span class="ow">in</span> <span class="n">over</span><span class="o">-</span><span class="n">scan</span> <span class="n">relative</span> <span class="n">to</span> <span class="n">fluence</span>
+
+<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">:</span>
+    <span class="n">Q</span><span class="p">:</span>
+        <span class="n">get</span> <span class="n">curve</span> <span class="n">of</span> <span class="n">CTE</span> <span class="n">vs</span><span class="o">.</span> <span class="n">fluence</span>
+        <span class="n">measure</span> <span class="n">FWC</span> <span class="kn">from</span> <span class="nn">curve</span> <span class="ow">in</span> <span class="n">ADU</span>
+
+<span class="n">report</span> <span class="n">FWCs</span> <span class="ow">in</span> <span class="n">electrons</span> <span class="p">[</span><span class="n">via</span> <span class="n">gain</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">]</span> <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span> <span class="p">(</span><span class="n">table</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.NL02.prep_data">
+<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL02.prep_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes Raw Data and prepares it for further analysis.</p>
+<p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
+            <span class="n">subtract</span> <span class="n">offset</span>
+        <span class="n">opt</span><span class="p">:</span> <span class="p">[</span><span class="n">sub</span> <span class="n">bias</span> <span class="n">frame</span><span class="p">]</span>
+        <span class="n">opt</span><span class="p">:</span> <span class="p">[</span><span class="n">divide</span> <span class="n">by</span> <span class="n">FF</span><span class="p">]</span>
+        <span class="n">opt</span><span class="p">:</span> <span class="p">[</span><span class="n">mask</span><span class="o">-</span><span class="n">out</span> <span class="n">defects</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.NL02.produce_NLCs">
+<code class="descname">produce_NLCs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.NL02.produce_NLCs" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Obtains</span> <span class="n">Best</span><span class="o">-</span><span class="n">Fit</span> <span class="n">Non</span><span class="o">-</span><span class="n">Linearity</span> <span class="n">Curve</span>
+
+<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">Q</span><span class="p">:</span>
+
+        <span class="p">[</span><span class="n">opt</span><span class="p">]</span> <span class="n">apply</span> <span class="n">correction</span> <span class="k">for</span> <span class="n">source</span> <span class="n">variability</span> <span class="p">(</span><span class="n">interspersed</span> <span class="n">exposure</span>
           <span class="k">with</span> <span class="n">constant</span> <span class="n">exptime</span><span class="p">)</span>
         <span class="n">Build</span> <span class="n">NL</span> <span class="n">Curve</span> <span class="p">(</span><span class="n">NLC</span><span class="p">)</span> <span class="o">-</span> <span class="n">use</span> <span class="n">stats</span> <span class="ow">and</span> <span class="n">exptimes</span>
         <span class="n">fit</span> <span class="n">poly</span><span class="o">.</span> <span class="n">shape</span> <span class="n">to</span> <span class="n">NL</span> <span class="n">curve</span>
@@ -737,7 +870,7 @@ date-folders.</p>
 
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.PERSIST01">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">PERSIST01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PERSIST01" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">PERSIST01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PERSIST01" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.PERSIST01.basic_analysis">
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PERSIST01.basic_analysis" title="Permalink to this definition">¶</a></dt>
@@ -745,8 +878,7 @@ date-folders.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-        <span class="n">use</span> <span class="n">SATURATED</span> <span class="n">frame</span> <span class="n">to</span> <span class="n">generate</span> <span class="n">pixel</span> <span class="n">saturation</span> <span class="n">MASK</span>
-        <span class="n">measure</span> <span class="n">stats</span> <span class="ow">in</span> <span class="n">pix</span> <span class="n">satur</span> <span class="n">MASK</span> <span class="n">across</span> <span class="n">OBSIDs</span> 
+        <span class="n">measure</span> <span class="n">stats</span> <span class="ow">in</span> <span class="n">pix</span> <span class="n">satur</span> <span class="n">MASK</span> <span class="n">across</span> <span class="n">OBSIDs</span>
          <span class="p">(</span><span class="n">pre</span><span class="o">-</span><span class="n">satur</span><span class="p">,</span> <span class="n">satur</span><span class="p">,</span> <span class="n">post</span><span class="o">-</span><span class="n">satur</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -754,7 +886,7 @@ date-folders.</p>
 
 <dl class="method">
 <dt id="vison.pipe.master.Pipe.PERSIST01.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PERSIST01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PERSIST01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds PERSISTENCE01 script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -795,15 +927,36 @@ date-folders.</p>
 <span class="p">[</span><span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
 
 <span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>          
+<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="method">
+<dt id="vison.pipe.master.Pipe.PERSIST01.check_metrics_ST">
+<code class="descname">check_metrics_ST</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PERSIST01.check_metrics_ST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="vison.pipe.master.Pipe.PERSIST01.filterexposures">
 <code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PERSIST01.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.PERSIST01.get_checkstats_ST">
+<code class="descname">get_checkstats_ST</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PERSIST01.get_checkstats_ST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.PERSIST01.get_satur_masks">
+<code class="descname">get_satur_masks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PERSIST01.get_satur_masks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic analysis of data.</p>
+<p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
+    <span class="n">use</span> <span class="n">SATURATED</span> <span class="n">frame</span> <span class="n">to</span> <span class="n">generate</span> <span class="n">pixel</span> <span class="n">saturation</span> <span class="n">MASKs</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="method">
 <dt id="vison.pipe.master.Pipe.PERSIST01.meta_analysis">
@@ -814,7 +967,7 @@ date-folders.</p>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
         <span class="n">estimate</span> <span class="n">delta</span><span class="o">-</span><span class="n">charge_0</span> <span class="ow">and</span> <span class="n">decay</span> <span class="n">tau</span> <span class="kn">from</span> <span class="nn">time</span><span class="o">-</span><span class="n">series</span>
 
-<span class="n">report</span><span class="p">:</span>  
+<span class="n">report</span><span class="p">:</span>
     <span class="n">persistence</span> <span class="n">level</span> <span class="p">(</span><span class="n">delta</span><span class="o">-</span><span class="n">charge_0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">time</span> <span class="n">constant</span>
 </pre></div>
 </div>
@@ -841,15 +994,21 @@ cosmetics masking</dd>
 
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.PTC0X">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">PTC0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PTC0X" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">PTC0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PTC0X" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.PTC0X.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PTC0X.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PTC0X.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds PTC0X script structure dictionary.</p>
 <p>#:param exptimes: list of ints [ms], exposure times.
 #:param frames: list of ints, number of frames for each exposure time.
 #:param wavelength: int, wavelength. Default: 800 nm.
 :param diffvalues: dict, opt, differential values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.PTC0X.extract_HER">
+<code class="descname">extract_HER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PTC0X.extract_HER" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hard Edge Response Analysis</p>
 </dd></dl>
 
 <dl class="method">
@@ -914,11 +1073,11 @@ gain, and gain(fluence)</p>
 
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.STRAY00">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">STRAY00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.STRAY00" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">STRAY00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.STRAY00" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.STRAY00.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.STRAY00.build_scriptdict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Builds STRAY00 script structure dictionary.        
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.STRAY00.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds STRAY00 script structure dictionary.
 :param diffvalues: dict, opt, differential values.</p>
 </dd></dl>
 
@@ -936,10 +1095,10 @@ gain, and gain(fluence)</p>
 
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.TP00">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP00" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP00" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.TP00.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP00.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP00.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -966,7 +1125,7 @@ gain, and gain(fluence)</p>
 <span class="p">[</span><span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
 
 <span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>          
+<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -985,7 +1144,7 @@ gain, and gain(fluence)</p>
 
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.TP01">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP01" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP01" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.TP01.basic_analysis">
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP01.basic_analysis" title="Permalink to this definition">¶</a></dt>
@@ -998,7 +1157,7 @@ gain, and gain(fluence)</p>
             <span class="n">find_dipoles</span><span class="p">:</span>
                 <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rel</span><span class="o">-</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">orientation</span>
 
-<span class="n">produce</span> <span class="o">&amp;</span> <span class="n">report</span><span class="p">:</span>  
+<span class="n">produce</span> <span class="o">&amp;</span> <span class="n">report</span><span class="p">:</span>
     <span class="nb">map</span> <span class="n">location</span> <span class="n">of</span> <span class="n">dipoles</span>
     <span class="n">PDF</span> <span class="n">of</span> <span class="n">dipole</span> <span class="n">amplitudes</span> <span class="p">(</span><span class="k">for</span> <span class="n">N</span> <span class="ow">and</span> <span class="n">S</span><span class="p">)</span>
     <span class="n">Counts</span> <span class="n">of</span> <span class="n">dipoles</span> <span class="p">(</span><span class="ow">and</span> <span class="n">N</span> <span class="n">vs</span><span class="o">.</span> <span class="n">S</span><span class="p">)</span>
@@ -1008,7 +1167,7 @@ gain, and gain(fluence)</p>
 
 <dl class="method">
 <dt id="vison.pipe.master.Pipe.TP01.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1024,7 +1183,7 @@ gain, and gain(fluence)</p>
 <span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">:</span>
 
-        <span class="n">load</span> <span class="n">ccdobj</span>                    
+        <span class="n">load</span> <span class="n">ccdobj</span>
         <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
             <span class="n">divide</span> <span class="n">ccdobj</span><span class="o">.</span><span class="n">Q</span> <span class="n">by</span> <span class="n">injection</span> <span class="nb">map</span>
 
@@ -1047,13 +1206,14 @@ gain, and gain(fluence)</p>
 Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">across</span> <span class="n">TOI_TP</span><span class="p">,</span> <span class="n">patterns</span><span class="p">:</span>
-    <span class="n">build</span> <span class="n">catalog</span> <span class="n">of</span> <span class="n">traps</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">I</span><span class="o">-</span><span class="n">phase</span><span class="p">,</span> <span class="n">Amp</span>
-    <span class="kn">from</span> <span class="nn">Amp</span><span class="p">(</span><span class="n">TOI</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tau</span><span class="p">,</span> <span class="n">Pc</span>
+
+    <span class="n">build</span> <span class="n">catalog</span> <span class="n">of</span> <span class="n">traps</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">tp</span><span class="o">-</span><span class="n">mode</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">Pc</span>
+    <span class="n">tau</span><span class="p">,</span> <span class="n">Pc</span> <span class="o">=</span> <span class="n">f</span><span class="p">({</span><span class="n">A</span><span class="p">,</span><span class="n">TOI</span><span class="p">})</span>
 
 <span class="n">Report</span> <span class="n">on</span> <span class="p">:</span>
     <span class="n">Histogram</span> <span class="n">of</span> <span class="n">Taus</span>
     <span class="n">Histogram</span> <span class="n">of</span> <span class="n">Pc</span> <span class="p">(</span><span class="n">capture</span> <span class="n">probability</span><span class="p">)</span>
-    <span class="n">Histogram</span> <span class="n">of</span> <span class="n">I</span><span class="o">-</span><span class="n">phases</span> <span class="p">(</span><span class="n">larger</span> <span class="n">phases</span> <span class="n">should</span> <span class="n">have</span> <span class="n">more</span> <span class="n">traps</span><span class="p">,</span> 
+    <span class="n">Histogram</span> <span class="n">of</span> <span class="n">I</span><span class="o">-</span><span class="n">phases</span> <span class="p">(</span><span class="n">larger</span> <span class="n">phases</span> <span class="n">should</span> <span class="n">have</span> <span class="n">more</span> <span class="n">traps</span><span class="p">,</span>
                       <span class="n">statistically</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">check</span>
 
     <span class="n">Total</span> <span class="n">Count</span> <span class="n">of</span> <span class="n">Traps</span>
@@ -1070,7 +1230,7 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 
 <dl class="class">
 <dt id="vison.pipe.master.Pipe.TP02">
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP02" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP02" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.master.Pipe.TP02.basic_analysis">
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP02.basic_analysis" title="Permalink to this definition">¶</a></dt>
@@ -1083,7 +1243,7 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
             <span class="n">identify</span> <span class="n">dipoles</span><span class="p">:</span>
                 <span class="n">x</span><span class="p">,</span> <span class="n">rel</span><span class="o">-</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">orientation</span> <span class="p">(</span><span class="n">E</span> <span class="ow">or</span> <span class="n">W</span><span class="p">)</span>
 
-<span class="n">produce</span> <span class="o">&amp;</span> <span class="n">report</span><span class="p">:</span>  
+<span class="n">produce</span> <span class="o">&amp;</span> <span class="n">report</span><span class="p">:</span>
     <span class="nb">map</span> <span class="n">location</span> <span class="n">of</span> <span class="n">dipoles</span>
     <span class="n">PDF</span> <span class="n">of</span> <span class="n">dipole</span> <span class="n">amplitudes</span> <span class="p">(</span><span class="k">for</span> <span class="n">E</span> <span class="ow">and</span> <span class="n">W</span><span class="p">)</span>
     <span class="n">Counts</span> <span class="n">of</span> <span class="n">dipoles</span> <span class="p">(</span><span class="ow">and</span> <span class="n">E</span> <span class="n">vs</span><span class="o">.</span> <span class="n">W</span><span class="p">)</span>
@@ -1093,7 +1253,7 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 
 <dl class="method">
 <dt id="vison.pipe.master.Pipe.TP02.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP02.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP02.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1136,54 +1296,39 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 
 </dd></dl>
 
-<dl class="method">
-<dt id="vison.pipe.master.Pipe.catchtraceback">
-<code class="descclassname">Pipe.</code><code class="descname">catchtraceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.catchtraceback" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="vison.pipe.master.Pipe.TP11">
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP11</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP11" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="vison.pipe.master.Pipe.TP21">
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP21</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.TP21" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="vison.pipe.master.Pipe.dotask">
-<code class="descclassname">Pipe.</code><code class="descname">dotask</code><span class="sig-paren">(</span><em>taskname</em>, <em>inputs</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.dotask" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Pipe.</code><code class="descname">dotask</code><span class="sig-paren">(</span><em>taskname</em>, <em>inputs</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.dotask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic test master function.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="vison.pipe.master.Pipe.get_execution_summary">
-<code class="descclassname">Pipe.</code><code class="descname">get_execution_summary</code><span class="sig-paren">(</span><em>exectime=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.get_execution_summary" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vison.pipe.master.Pipe.get_test">
-<code class="descclassname">Pipe.</code><code class="descname">get_test</code><span class="sig-paren">(</span><em>taskname</em>, <em>inputs={}</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.get_test" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vison.pipe.master.Pipe.launchtask">
-<code class="descclassname">Pipe.</code><code class="descname">launchtask</code><span class="sig-paren">(</span><em>taskname</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.launchtask" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vison.pipe.master.Pipe.run">
-<code class="descclassname">Pipe.</code><code class="descname">run</code><span class="sig-paren">(</span><em>explogf=None</em>, <em>elvis=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.run" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="vison.pipe.master.Pipe.wait_and_run">
-<code class="descclassname">Pipe.</code><code class="descname">wait_and_run</code><span class="sig-paren">(</span><em>dayfolder</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.wait_and_run" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Pipe.</code><code class="descname">wait_and_run</code><span class="sig-paren">(</span><em>dayfolder</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.wait_and_run" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">vison.pipe.master.</code><code class="descname">Pipe</code><span class="sig-paren">(</span><em>inputdict</em>, <em>dolog=True</em>, <em>drill=False</em>, <em>debug=False</em>, <em>startobsid=0</em>, <em>processes=1</em><span class="sig-paren">)</span></dt>
-<dd><p>Master Class of FM-analysis</p>
+<em class="property">class </em><code class="descclassname">vison.pipe.master.</code><code class="descname">Pipe</code><span class="sig-paren">(</span><em>inputdict</em>, <em>dolog=True</em>, <em>drill=False</em>, <em>debug=False</em>, <em>startobsid=0</em>, <em>processes=1</em>, <em>tag=''</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
+<dd><p>Master Class of FM-analysis at block-level of assembly.</p>
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descname">BF01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descname">BF01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
 <dd><p>Builds PTC0X script structure dictionary.</p>
 <p>#:param exptimes: list of ints [ms], exposure times.
 #:param frames: list of ints, number of frames for each exposure time.
@@ -1235,11 +1380,11 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">BIAS01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">BIAS0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p>BIAS01: Basic analysis of data.</p>
+<dd><p>BIAS0X: Basic analysis of data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
@@ -1261,8 +1406,8 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 
 <dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
-<dd><p>Builds BIAS01 script structure dictionary.</p>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
+<dd><p>Builds BIAS0X script structure dictionary.</p>
 <p>###:param N: integer, number of frames to acquire.
 :param diffvalues: dict, opt, differential values.
 :param elvis: char, ELVIS version.</p>
@@ -1279,7 +1424,7 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">:</span>
    <span class="n">stack</span> <span class="nb">all</span> <span class="n">ObsIDs</span> <span class="n">to</span> <span class="n">produce</span> <span class="n">Master</span> <span class="n">Bias</span>
-   <span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">Q</span><span class="p">:</span>    
+   <span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">Q</span><span class="p">:</span>
        <span class="n">measure</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">rows</span>
        <span class="n">measure</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">cols</span>
 <span class="n">plot</span> <span class="n">average</span> <span class="n">profiles</span> <span class="n">of</span> <span class="n">Master</span> <span class="n">Bias</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">,</span><span class="n">Q</span>
@@ -1294,7 +1439,7 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 <dl class="method">
 <dt>
 <code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p>BIAS01: Preparation of data for further analysis.
+<dd><p>BIAS0X: Preparation of data for further analysis.
 Calls task.prepare_images().</p>
 <dl class="docutils">
 <dt>Applies:</dt>
@@ -1307,10 +1452,10 @@ cosmetics masking</dd>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
 <dd><p>Builds CHINJ00 script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1336,10 +1481,10 @@ cosmetics masking</dd>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
 <dd><p>Builds CHINJ01 script structure dictionary.</p>
 <p>#:param IDL: float, [V], value of IDL (Inject. Drain Low).
 #:param IDH: float, [V], Injection Drain High.
@@ -1358,33 +1503,9 @@ cosmetics masking</dd>
 <dl class="method">
 <dt>
 <code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p>Find injection threshold: Min IG1
-Plot and model charge injection vs. IG1
+<dd><p>Plot and model charge injection vs. IG1
+Find injection threshold: Min IG1
 Find notch injection amount.</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">old_basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p>Basic analysis of data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">extract</span> <span class="n">average</span> <span class="mi">2</span><span class="n">D</span> <span class="n">injection</span> <span class="n">pattern</span> <span class="p">(</span><span class="ow">and</span> <span class="n">save</span><span class="p">)</span>
-            <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span><span class="o">/</span><span class="n">across</span> <span class="n">lines</span>
-            <span class="n">measure</span> <span class="n">charge</span><span class="o">-</span><span class="n">inj</span><span class="o">.</span> <span class="n">non</span><span class="o">-</span><span class="n">uniformity</span>
-            <span class="n">measure</span> <span class="n">charge</span> <span class="n">spillover</span> <span class="n">into</span> <span class="n">non</span><span class="o">-</span><span class="n">injection</span>
-            <span class="n">measure</span> <span class="n">stats</span> <span class="n">of</span> <span class="n">injection</span> <span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">med</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="nb">min</span><span class="o">/</span><span class="nb">max</span><span class="p">,</span> <span class="n">percentiles</span><span class="p">)</span>
-
-<span class="n">plot</span> <span class="n">average</span> <span class="n">inj</span><span class="o">.</span> <span class="n">profiles</span> <span class="n">along</span> <span class="n">lines</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span> <span class="ow">and</span> <span class="n">IG1</span>
-    <span class="n">save</span> <span class="k">as</span> <span class="n">a</span> <span class="n">rationalized</span> <span class="nb">set</span> <span class="n">of</span> <span class="n">curves</span>
-<span class="n">plot</span> <span class="n">average</span> <span class="n">inj</span><span class="o">.</span> <span class="n">profiles</span> <span class="n">across</span> <span class="n">lines</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span> <span class="ow">and</span> <span class="n">IG1</span>
-    <span class="n">save</span> <span class="k">as</span> <span class="n">a</span> <span class="n">rationalized</span> <span class="nb">set</span> <span class="n">of</span>  <span class="n">curves</span>
-
-<span class="n">Report</span> <span class="n">injection</span> <span class="n">stats</span> <span class="k">as</span> <span class="n">a</span> <span class="n">table</span><span class="o">/</span><span class="n">tables</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="method">
@@ -1396,59 +1517,16 @@ Find notch injection amount.</p>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">CHINJ02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
-<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p>Basic analysis of data.
-AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">load</span> <span class="n">average</span> <span class="mi">2</span><span class="n">D</span> <span class="n">injection</span> <span class="n">pattern</span>
-            <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">lines</span>
-            <span class="p">[</span><span class="n">measure</span> <span class="n">charge</span><span class="o">-</span><span class="n">inj</span><span class="o">.</span> <span class="n">non</span><span class="o">-</span><span class="n">uniformity</span><span class="p">]</span>
-            <span class="p">[</span><span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">across</span> <span class="n">lines</span><span class="p">]</span>
-            <span class="p">[</span><span class="n">measure</span> <span class="n">charge</span> <span class="n">spillover</span> <span class="n">into</span> <span class="n">non</span><span class="o">-</span><span class="n">injection</span><span class="p">]</span>
-            <span class="n">measure</span> <span class="n">stats</span> <span class="n">of</span> <span class="n">injection</span> <span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">med</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="nb">min</span><span class="o">/</span><span class="nb">max</span><span class="p">,</span> <span class="n">percentiles</span><span class="p">)</span>
-
-<span class="p">[</span><span class="n">plot</span> <span class="n">average</span> <span class="n">inj</span><span class="o">.</span> <span class="n">profiles</span> <span class="n">along</span> <span class="n">lines</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span> <span class="ow">and</span> <span class="n">IG1</span><span class="p">]</span>
-<span class="p">[</span>    <span class="n">save</span> <span class="k">as</span> <span class="n">a</span> <span class="n">rationalized</span> <span class="nb">set</span> <span class="n">of</span> <span class="n">curves</span><span class="p">]</span>
-<span class="p">[</span><span class="n">plot</span> <span class="n">average</span> <span class="n">inj</span><span class="o">.</span> <span class="n">profiles</span> <span class="n">across</span> <span class="n">lines</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span> <span class="ow">and</span> <span class="n">IG1</span><span class="p">]</span>
-<span class="p">[</span>    <span class="n">save</span> <span class="k">as</span> <span class="n">a</span> <span class="n">rationalized</span> <span class="nb">set</span> <span class="n">of</span>  <span class="n">curves</span><span class="p">]</span>
-
-<span class="n">save</span><span class="o">&amp;</span><span class="n">plot</span> <span class="n">charge</span> <span class="n">injection</span> <span class="n">vs</span><span class="o">.</span> <span class="n">IDL</span>
-<span class="n">report</span> <span class="n">injection</span> <span class="n">stats</span> <span class="k">as</span> <span class="n">a</span> <span class="n">table</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
 <dd><p>Builds CHINJ02 script structure dictionary.</p>
 <p>#:param IDLs: list of 2 ints, [V], [min,max] values of IDL (Inject. Drain Low).
 #:param IDH: int, [V], Injection Drain High.
 #:param id_delays: list of 2 ints, [us], injection drain delays.
 #:param toi_chinj: int, [us], TOI-charge injection.
 :param diffvalues: dict, opt, differential values.</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">extract_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p><strong>NEEDED?</strong> Could be merged with basic_analysis</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Preparation</span> <span class="n">of</span> <span class="n">data</span> <span class="k">for</span> <span class="n">further</span> <span class="n">analysis</span><span class="p">:</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">subtract</span> <span class="n">offset</span>
-            <span class="n">extract</span> <span class="n">average</span> <span class="mi">2</span><span class="n">D</span> <span class="n">injection</span> <span class="n">pattern</span> <span class="ow">and</span> <span class="n">save</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="method">
@@ -1480,31 +1558,63 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">DARK01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">COSMETICS00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
-<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p>DARK01: Basic analysis of data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">produce</span> <span class="n">mask</span> <span class="n">of</span> <span class="n">hot</span> <span class="n">pixels</span>
-            <span class="n">count</span> <span class="n">hot</span> <span class="n">pixels</span> <span class="o">/</span> <span class="n">columns</span>
-            <span class="n">produce</span> <span class="n">a</span> <span class="mi">2</span><span class="n">D</span> <span class="n">poly</span> <span class="n">model</span> <span class="n">of</span> <span class="n">masked</span><span class="o">-</span><span class="n">image</span><span class="p">,</span> <span class="n">save</span> <span class="n">coefficients</span>
-            <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">rows</span>
-            <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">cols</span>
-            <span class="n">measure</span> <span class="ow">and</span> <span class="n">save</span> <span class="n">RON</span> <span class="n">after</span> <span class="n">subtracting</span> <span class="n">large</span> <span class="n">scale</span> <span class="n">structure</span>
-        <span class="n">save</span> <span class="mi">2</span><span class="n">D</span> <span class="n">model</span> <span class="ow">and</span> <span class="n">profiles</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">pick</span> <span class="n">file</span> <span class="k">for</span> <span class="n">each</span> <span class="n">OBSID</span><span class="o">-</span><span class="n">CCD</span>
-
-<span class="n">plot</span> <span class="n">average</span> <span class="n">profiles</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span> <span class="ow">and</span> <span class="n">Q</span> <span class="p">(</span><span class="n">color</span> <span class="n">coded</span> <span class="n">by</span> <span class="n">time</span><span class="p">)</span>
-</pre></div>
-</div>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
+<dd><p>Builds COSMETICS00 script structure dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
+<li><strong>elvis</strong> &#8211; char, ELVIS version.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">check_metrics_ST</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">do_masks</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">get_checkstats_ST</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">meta</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">DARK01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
+<dd><dl class="method">
+<dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
 <dd><p>Builds DARK01 script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1523,7 +1633,20 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 
 <dl class="method">
 <dt>
-<code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>DARK01: Preparation of data for further analysis.
+Calls task.prepare_images().</p>
+<dl class="docutils">
+<dt>Applies:</dt>
+<dd>offset subtraction
+[BIAS SUBTRACTION]
+cosmetics masking</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">stack_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">Q</span><span class="p">:</span>
@@ -1542,27 +1665,14 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt>
-<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p>DARK01: Preparation of data for further analysis.
-Calls task.prepare_images().</p>
-<dl class="docutils">
-<dt>Applies:</dt>
-<dd>offset subtraction
-[BIAS SUBTRACTION]
-cosmetics masking</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">FLAT0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">FLAT0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
 <dd><p>Builds FLAT0X script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1578,7 +1688,7 @@ cosmetics masking</dd>
 <dt>
 <code class="descname">do_indiv_flats</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd><p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>Preparation of data for further analysis and 
+<div class="highlight-default"><div class="highlight"><pre><span></span>Preparation of data for further analysis and
 produce flat-field for each OBSID.
 
 f.e. ObsID:
@@ -1611,7 +1721,7 @@ plot average profiles f. each CCD and Q (color coded by time)
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
         <span class="n">stack</span> <span class="n">individual</span> <span class="n">flat</span><span class="o">-</span><span class="n">fields</span> <span class="n">by</span> <span class="n">chosen</span> <span class="n">estimator</span>
 <span class="n">save</span> <span class="n">Master</span> <span class="n">FF</span> <span class="n">to</span> <span class="n">FITS</span>
-<span class="n">measure</span> <span class="n">PRNU</span> <span class="ow">and</span> 
+<span class="n">measure</span> <span class="n">PRNU</span> <span class="ow">and</span>
 <span class="n">report</span> <span class="n">PRNU</span> <span class="n">figures</span>
 </pre></div>
 </div>
@@ -1629,7 +1739,7 @@ plot average profiles f. each CCD and Q (color coded by time)
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
         <span class="n">produce</span> <span class="n">mask</span> <span class="n">of</span> <span class="n">PR</span> <span class="n">defects</span>
         <span class="n">save</span> <span class="n">mask</span> <span class="n">of</span> <span class="n">PR</span> <span class="n">defects</span>
-        <span class="n">count</span> <span class="n">dead</span> <span class="n">pixels</span> <span class="o">/</span> <span class="n">columns</span> 
+        <span class="n">count</span> <span class="n">dead</span> <span class="n">pixels</span> <span class="o">/</span> <span class="n">columns</span>
 
 <span class="n">report</span> <span class="n">PR</span><span class="o">-</span><span class="n">defects</span> <span class="n">stats</span>
 </pre></div>
@@ -1663,7 +1773,7 @@ cosmetics masking</dd>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">FOCUS00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">FOCUS00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
@@ -1672,7 +1782,7 @@ cosmetics masking</dd>
 
 <dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
 <dd><p>Builds FOCUS00 script structure dictionary.</p>
 <p>#:param wavelength: int, [nm], wavelength.
 #:param exptime: int, [ms], exposure time.
@@ -1703,7 +1813,7 @@ cosmetics masking</dd>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">MOT_FF</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">MOT_FF</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
 <code class="descname">extract_HER</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
@@ -1713,10 +1823,67 @@ cosmetics masking</dd>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">NL01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">MOT_WARM</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><dl class="docutils">
+<dt>EXPOSURES:</dt>
+<dd>BIAS, RAMP, CHINJ, FLAT, POINT_w x waves_PNT</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
+<dd><p>Builds MOT_WARM script structure dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>diffvalues</strong> &#8211; dict, opt, differential values.</li>
+<li><strong>elvis</strong> &#8211; char, ELVIS version.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">check_metrics_ST</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">get_checkstats_ST</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">lock_on_stars</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">NL01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
+<dd><dl class="method">
+<dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
 <dd><p>Builds NL01 script structure dictionary.</p>
 <p>#:param expts: list of ints [ms], exposure times.
 #:param exptinter: int, ms, exposure time of interleaved source-stability exposures.
@@ -1731,12 +1898,12 @@ cosmetics masking</dd>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">select</span> <span class="n">ObsIDs</span> <span class="k">with</span> <span class="n">fluence</span><span class="p">(</span><span class="n">exptime</span><span class="p">)</span> <span class="o">&gt;~</span> <span class="mf">0.5</span> <span class="n">FWC</span>
 
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span> 
-    <span class="n">CCD</span><span class="p">:</span> 
+<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
+    <span class="n">CCD</span><span class="p">:</span>
         <span class="n">Q</span><span class="p">:</span>
             <span class="n">measure</span> <span class="n">CTE</span> <span class="kn">from</span> <span class="nn">amount</span> <span class="n">of</span> <span class="n">charge</span> <span class="ow">in</span> <span class="n">over</span><span class="o">-</span><span class="n">scan</span> <span class="n">relative</span> <span class="n">to</span> <span class="n">fluence</span>
 
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">:</span> 
+<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">:</span>
     <span class="n">Q</span><span class="p">:</span>
         <span class="n">get</span> <span class="n">curve</span> <span class="n">of</span> <span class="n">CTE</span> <span class="n">vs</span><span class="o">.</span> <span class="n">fluence</span>
         <span class="n">measure</span> <span class="n">FWC</span> <span class="kn">from</span> <span class="nn">curve</span> <span class="ow">in</span> <span class="n">ADU</span>
@@ -1749,10 +1916,10 @@ cosmetics masking</dd>
 <dl class="method">
 <dt>
 <code class="descname">extract_stats</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p>Performs basic analysis: extracts statistics from 
+<dd><p>Performs basic analysis: extracts statistics from
 image regions to later build NLC.</p>
 <p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">create</span> <span class="n">segmentation</span> <span class="nb">map</span> <span class="n">given</span> <span class="n">grid</span> <span class="n">parameters</span>    
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">create</span> <span class="n">segmentation</span> <span class="nb">map</span> <span class="n">given</span> <span class="n">grid</span> <span class="n">parameters</span>
 
 <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
@@ -1767,8 +1934,8 @@ image regions to later build NLC.</p>
 <dl class="method">
 <dt>
 <code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span></dt>
-<dd><p>Loads a list of Exposure Logs and selects exposures from test PSF0X.</p>
-<p>The filtering takes into account an expected structure for the 
+<dd><p>Loads a list of Exposure Logs and selects exposures from test NL01.</p>
+<p>The filtering takes into account an expected structure for the
 acquisition script.</p>
 <p>The datapath becomes another column in DataDict. This helps dealing
 with tests that run overnight and for which the input data is in several
@@ -1800,7 +1967,81 @@ date-folders.</p>
 <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">Q</span><span class="p">:</span>
 
-        <span class="p">[</span><span class="n">opt</span><span class="p">]</span> <span class="n">apply</span> <span class="n">correction</span> <span class="k">for</span> <span class="n">source</span> <span class="n">variability</span> <span class="p">(</span><span class="n">interspersed</span> <span class="n">exposure</span> 
+        <span class="p">[</span><span class="n">opt</span><span class="p">]</span> <span class="n">apply</span> <span class="n">correction</span> <span class="k">for</span> <span class="n">source</span> <span class="n">variability</span> <span class="p">(</span><span class="n">interspersed</span> <span class="n">exposure</span>
+          <span class="k">with</span> <span class="n">constant</span> <span class="n">exptime</span><span class="p">)</span>
+        <span class="n">Build</span> <span class="n">NL</span> <span class="n">Curve</span> <span class="p">(</span><span class="n">NLC</span><span class="p">)</span> <span class="o">-</span> <span class="n">use</span> <span class="n">stats</span> <span class="ow">and</span> <span class="n">exptimes</span>
+        <span class="n">fit</span> <span class="n">poly</span><span class="o">.</span> <span class="n">shape</span> <span class="n">to</span> <span class="n">NL</span> <span class="n">curve</span>
+
+<span class="n">plot</span> <span class="n">NL</span> <span class="n">curves</span> <span class="k">for</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span>
+<span class="n">report</span> <span class="nb">max</span><span class="o">.</span> <span class="n">values</span> <span class="n">of</span> <span class="n">NL</span> <span class="p">(</span><span class="n">table</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">recalibrate_exptimes</code><span class="sig-paren">(</span><em>exptimes</em><span class="sig-paren">)</span></dt>
+<dd><p>Corrects exposure times given independent calibration of the shutter.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">NL02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
+<dd><dl class="method">
+<dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
+<dd><p>Builds NL02 script structure dictionary.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">do_satCTE</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">select</span> <span class="n">ObsIDs</span> <span class="k">with</span> <span class="n">fluence</span><span class="p">(</span><span class="n">exptime</span><span class="p">)</span> <span class="o">&gt;~</span> <span class="mf">0.5</span> <span class="n">FWC</span>
+
+<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
+    <span class="n">CCD</span><span class="p">:</span>
+        <span class="n">Q</span><span class="p">:</span>
+            <span class="n">measure</span> <span class="n">CTE</span> <span class="kn">from</span> <span class="nn">amount</span> <span class="n">of</span> <span class="n">charge</span> <span class="ow">in</span> <span class="n">over</span><span class="o">-</span><span class="n">scan</span> <span class="n">relative</span> <span class="n">to</span> <span class="n">fluence</span>
+
+<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">:</span>
+    <span class="n">Q</span><span class="p">:</span>
+        <span class="n">get</span> <span class="n">curve</span> <span class="n">of</span> <span class="n">CTE</span> <span class="n">vs</span><span class="o">.</span> <span class="n">fluence</span>
+        <span class="n">measure</span> <span class="n">FWC</span> <span class="kn">from</span> <span class="nn">curve</span> <span class="ow">in</span> <span class="n">ADU</span>
+
+<span class="n">report</span> <span class="n">FWCs</span> <span class="ow">in</span> <span class="n">electrons</span> <span class="p">[</span><span class="n">via</span> <span class="n">gain</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">]</span> <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span> <span class="p">(</span><span class="n">table</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Takes Raw Data and prepares it for further analysis.</p>
+<p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
+            <span class="n">subtract</span> <span class="n">offset</span>
+        <span class="n">opt</span><span class="p">:</span> <span class="p">[</span><span class="n">sub</span> <span class="n">bias</span> <span class="n">frame</span><span class="p">]</span>
+        <span class="n">opt</span><span class="p">:</span> <span class="p">[</span><span class="n">divide</span> <span class="n">by</span> <span class="n">FF</span><span class="p">]</span>
+        <span class="n">opt</span><span class="p">:</span> <span class="p">[</span><span class="n">mask</span><span class="o">-</span><span class="n">out</span> <span class="n">defects</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">produce_NLCs</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Obtains</span> <span class="n">Best</span><span class="o">-</span><span class="n">Fit</span> <span class="n">Non</span><span class="o">-</span><span class="n">Linearity</span> <span class="n">Curve</span>
+
+<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">Q</span><span class="p">:</span>
+
+        <span class="p">[</span><span class="n">opt</span><span class="p">]</span> <span class="n">apply</span> <span class="n">correction</span> <span class="k">for</span> <span class="n">source</span> <span class="n">variability</span> <span class="p">(</span><span class="n">interspersed</span> <span class="n">exposure</span>
           <span class="k">with</span> <span class="n">constant</span> <span class="n">exptime</span><span class="p">)</span>
         <span class="n">Build</span> <span class="n">NL</span> <span class="n">Curve</span> <span class="p">(</span><span class="n">NLC</span><span class="p">)</span> <span class="o">-</span> <span class="n">use</span> <span class="n">stats</span> <span class="ow">and</span> <span class="n">exptimes</span>
         <span class="n">fit</span> <span class="n">poly</span><span class="o">.</span> <span class="n">shape</span> <span class="n">to</span> <span class="n">NL</span> <span class="n">curve</span>
@@ -1815,7 +2056,7 @@ date-folders.</p>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">PERSIST01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">PERSIST01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
@@ -1823,8 +2064,7 @@ date-folders.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-        <span class="n">use</span> <span class="n">SATURATED</span> <span class="n">frame</span> <span class="n">to</span> <span class="n">generate</span> <span class="n">pixel</span> <span class="n">saturation</span> <span class="n">MASK</span>
-        <span class="n">measure</span> <span class="n">stats</span> <span class="ow">in</span> <span class="n">pix</span> <span class="n">satur</span> <span class="n">MASK</span> <span class="n">across</span> <span class="n">OBSIDs</span> 
+        <span class="n">measure</span> <span class="n">stats</span> <span class="ow">in</span> <span class="n">pix</span> <span class="n">satur</span> <span class="n">MASK</span> <span class="n">across</span> <span class="n">OBSIDs</span>
          <span class="p">(</span><span class="n">pre</span><span class="o">-</span><span class="n">satur</span><span class="p">,</span> <span class="n">satur</span><span class="p">,</span> <span class="n">post</span><span class="o">-</span><span class="n">satur</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1832,7 +2072,7 @@ date-folders.</p>
 
 <dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
 <dd><p>Builds PERSISTENCE01 script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1873,15 +2113,36 @@ date-folders.</p>
 <span class="p">[</span><span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
 
 <span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>          
+<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="method">
 <dt>
+<code class="descname">check_metrics_ST</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
 <code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">get_checkstats_ST</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">get_satur_masks</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Basic analysis of data.</p>
+<p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
+    <span class="n">use</span> <span class="n">SATURATED</span> <span class="n">frame</span> <span class="n">to</span> <span class="n">generate</span> <span class="n">pixel</span> <span class="n">saturation</span> <span class="n">MASKs</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="method">
 <dt>
@@ -1892,7 +2153,7 @@ date-folders.</p>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
         <span class="n">estimate</span> <span class="n">delta</span><span class="o">-</span><span class="n">charge_0</span> <span class="ow">and</span> <span class="n">decay</span> <span class="n">tau</span> <span class="kn">from</span> <span class="nn">time</span><span class="o">-</span><span class="n">series</span>
 
-<span class="n">report</span><span class="p">:</span>  
+<span class="n">report</span><span class="p">:</span>
     <span class="n">persistence</span> <span class="n">level</span> <span class="p">(</span><span class="n">delta</span><span class="o">-</span><span class="n">charge_0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">time</span> <span class="n">constant</span>
 </pre></div>
 </div>
@@ -1919,15 +2180,21 @@ cosmetics masking</dd>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">PTC0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">PTC0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
 <dd><p>Builds PTC0X script structure dictionary.</p>
 <p>#:param exptimes: list of ints [ms], exposure times.
 #:param frames: list of ints, number of frames for each exposure time.
 #:param wavelength: int, wavelength. Default: 800 nm.
 :param diffvalues: dict, opt, differential values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">extract_HER</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Hard Edge Response Analysis</p>
 </dd></dl>
 
 <dl class="method">
@@ -1992,11 +2259,11 @@ gain, and gain(fluence)</p>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">STRAY00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">STRAY00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
-<dd><p>Builds STRAY00 script structure dictionary.        
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
+<dd><p>Builds STRAY00 script structure dictionary.
 :param diffvalues: dict, opt, differential values.</p>
 </dd></dl>
 
@@ -2014,10 +2281,10 @@ gain, and gain(fluence)</p>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -2044,7 +2311,7 @@ gain, and gain(fluence)</p>
 <span class="p">[</span><span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
 
 <span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>          
+<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2063,7 +2330,7 @@ gain, and gain(fluence)</p>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
@@ -2076,7 +2343,7 @@ gain, and gain(fluence)</p>
             <span class="n">find_dipoles</span><span class="p">:</span>
                 <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rel</span><span class="o">-</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">orientation</span>
 
-<span class="n">produce</span> <span class="o">&amp;</span> <span class="n">report</span><span class="p">:</span>  
+<span class="n">produce</span> <span class="o">&amp;</span> <span class="n">report</span><span class="p">:</span>
     <span class="nb">map</span> <span class="n">location</span> <span class="n">of</span> <span class="n">dipoles</span>
     <span class="n">PDF</span> <span class="n">of</span> <span class="n">dipole</span> <span class="n">amplitudes</span> <span class="p">(</span><span class="k">for</span> <span class="n">N</span> <span class="ow">and</span> <span class="n">S</span><span class="p">)</span>
     <span class="n">Counts</span> <span class="n">of</span> <span class="n">dipoles</span> <span class="p">(</span><span class="ow">and</span> <span class="n">N</span> <span class="n">vs</span><span class="o">.</span> <span class="n">S</span><span class="p">)</span>
@@ -2086,7 +2353,7 @@ gain, and gain(fluence)</p>
 
 <dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -2102,7 +2369,7 @@ gain, and gain(fluence)</p>
 <span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">:</span>
 
-        <span class="n">load</span> <span class="n">ccdobj</span>                    
+        <span class="n">load</span> <span class="n">ccdobj</span>
         <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="p">:</span>
             <span class="n">divide</span> <span class="n">ccdobj</span><span class="o">.</span><span class="n">Q</span> <span class="n">by</span> <span class="n">injection</span> <span class="nb">map</span>
 
@@ -2125,13 +2392,14 @@ gain, and gain(fluence)</p>
 Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">across</span> <span class="n">TOI_TP</span><span class="p">,</span> <span class="n">patterns</span><span class="p">:</span>
-    <span class="n">build</span> <span class="n">catalog</span> <span class="n">of</span> <span class="n">traps</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">I</span><span class="o">-</span><span class="n">phase</span><span class="p">,</span> <span class="n">Amp</span>
-    <span class="kn">from</span> <span class="nn">Amp</span><span class="p">(</span><span class="n">TOI</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tau</span><span class="p">,</span> <span class="n">Pc</span>
+
+    <span class="n">build</span> <span class="n">catalog</span> <span class="n">of</span> <span class="n">traps</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">tp</span><span class="o">-</span><span class="n">mode</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">Pc</span>
+    <span class="n">tau</span><span class="p">,</span> <span class="n">Pc</span> <span class="o">=</span> <span class="n">f</span><span class="p">({</span><span class="n">A</span><span class="p">,</span><span class="n">TOI</span><span class="p">})</span>
 
 <span class="n">Report</span> <span class="n">on</span> <span class="p">:</span>
     <span class="n">Histogram</span> <span class="n">of</span> <span class="n">Taus</span>
     <span class="n">Histogram</span> <span class="n">of</span> <span class="n">Pc</span> <span class="p">(</span><span class="n">capture</span> <span class="n">probability</span><span class="p">)</span>
-    <span class="n">Histogram</span> <span class="n">of</span> <span class="n">I</span><span class="o">-</span><span class="n">phases</span> <span class="p">(</span><span class="n">larger</span> <span class="n">phases</span> <span class="n">should</span> <span class="n">have</span> <span class="n">more</span> <span class="n">traps</span><span class="p">,</span> 
+    <span class="n">Histogram</span> <span class="n">of</span> <span class="n">I</span><span class="o">-</span><span class="n">phases</span> <span class="p">(</span><span class="n">larger</span> <span class="n">phases</span> <span class="n">should</span> <span class="n">have</span> <span class="n">more</span> <span class="n">traps</span><span class="p">,</span>
                       <span class="n">statistically</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">check</span>
 
     <span class="n">Total</span> <span class="n">Count</span> <span class="n">of</span> <span class="n">Traps</span>
@@ -2148,7 +2416,7 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
@@ -2161,7 +2429,7 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
             <span class="n">identify</span> <span class="n">dipoles</span><span class="p">:</span>
                 <span class="n">x</span><span class="p">,</span> <span class="n">rel</span><span class="o">-</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">orientation</span> <span class="p">(</span><span class="n">E</span> <span class="ow">or</span> <span class="n">W</span><span class="p">)</span>
 
-<span class="n">produce</span> <span class="o">&amp;</span> <span class="n">report</span><span class="p">:</span>  
+<span class="n">produce</span> <span class="o">&amp;</span> <span class="n">report</span><span class="p">:</span>
     <span class="nb">map</span> <span class="n">location</span> <span class="n">of</span> <span class="n">dipoles</span>
     <span class="n">PDF</span> <span class="n">of</span> <span class="n">dipole</span> <span class="n">amplitudes</span> <span class="p">(</span><span class="k">for</span> <span class="n">E</span> <span class="ow">and</span> <span class="n">W</span><span class="p">)</span>
     <span class="n">Counts</span> <span class="n">of</span> <span class="n">dipoles</span> <span class="p">(</span><span class="ow">and</span> <span class="n">E</span> <span class="n">vs</span><span class="o">.</span> <span class="n">W</span><span class="p">)</span>
@@ -2171,7 +2439,7 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 
 <dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -2214,40 +2482,25 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 
 </dd></dl>
 
-<dl class="method">
+<dl class="class">
 <dt>
-<code class="descclassname">Pipe.</code><code class="descname">catchtraceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP11</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">Pipe.</code><code class="descname">TP21</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descclassname">Pipe.</code><code class="descname">dotask</code><span class="sig-paren">(</span><em>taskname</em>, <em>inputs</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<code class="descclassname">Pipe.</code><code class="descname">dotask</code><span class="sig-paren">(</span><em>taskname</em>, <em>inputs</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
 <dd><p>Generic test master function.</p>
 </dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descclassname">Pipe.</code><code class="descname">get_execution_summary</code><span class="sig-paren">(</span><em>exectime=None</em><span class="sig-paren">)</span></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descclassname">Pipe.</code><code class="descname">get_test</code><span class="sig-paren">(</span><em>taskname</em>, <em>inputs={}</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descclassname">Pipe.</code><code class="descname">launchtask</code><span class="sig-paren">(</span><em>taskname</em><span class="sig-paren">)</span></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descclassname">Pipe.</code><code class="descname">run</code><span class="sig-paren">(</span><em>explogf=None</em>, <em>elvis=None</em><span class="sig-paren">)</span></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descclassname">Pipe.</code><code class="descname">wait_and_run</code><span class="sig-paren">(</span><em>dayfolder</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<code class="descclassname">Pipe.</code><code class="descname">wait_and_run</code><span class="sig-paren">(</span><em>dayfolder</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2267,7 +2520,7 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 </table>
 <dl class="class">
 <dt id="vison.pipe.task.Task">
-<em class="property">class </em><code class="descclassname">vison.pipe.task.</code><code class="descname">Task</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.task.Task" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.pipe.task.</code><code class="descname">Task</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.task.Task" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.pipe.task.Task.IsComplianceMatrixOK">
 <code class="descname">IsComplianceMatrixOK</code><span class="sig-paren">(</span><em>complidict</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.task.Task.IsComplianceMatrixOK" title="Permalink to this definition">¶</a></dt>
@@ -2331,7 +2584,7 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 
 <dl class="method">
 <dt id="vison.pipe.task.Task.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.task.Task.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.task.Task.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -2356,6 +2609,11 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 </dd></dl>
 
 <dl class="method">
+<dt id="vison.pipe.task.Task.check_metrics_T">
+<code class="descname">check_metrics_T</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.task.Task.check_metrics_T" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="vison.pipe.task.Task.check_stat_perCCD">
 <code class="descname">check_stat_perCCD</code><span class="sig-paren">(</span><em>arr, CCDlims, CCDs=['CCD1', 'CCD2', 'CCD3']</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.task.Task.check_stat_perCCD" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -2376,6 +2634,11 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="vison.pipe.task.Task.cleanaux">
+<code class="descname">cleanaux</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.task.Task.cleanaux" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="vison.pipe.task.Task.create_mockexplog">
 <code class="descname">create_mockexplog</code><span class="sig-paren">(</span><em>OBSID0=1000</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.task.Task.create_mockexplog" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -2389,7 +2652,7 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 <dt id="vison.pipe.task.Task.filterexposures">
 <code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em>, <em>colorblind=False</em>, <em>wavedkeys=[]</em>, <em>surrogate=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.task.Task.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a list of Exposure Logs and selects exposures from test &#8216;test&#8217;.</p>
-<p>The filtering takes into account an expected structure for the 
+<p>The filtering takes into account an expected structure for the
 acquisition script.</p>
 <p>The datapath becomes another column in DataDict. This helps dealing
 with tests that run overnight and for which the input data is in several
@@ -2397,8 +2660,14 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="vison.pipe.task.Task.get_checkstats_T">
+<code class="descname">get_checkstats_T</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.task.Task.get_checkstats_T" title="Permalink to this definition">¶</a></dt>
+<dd><p>&#8220;</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="vison.pipe.task.Task.prepare_images">
-<code class="descname">prepare_images</code><span class="sig-paren">(</span><em>doExtract=True</em>, <em>doMask=False</em>, <em>doOffset=False</em>, <em>doBias=False</em>, <em>doFF=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.task.Task.prepare_images" title="Permalink to this definition">¶</a></dt>
+<code class="descname">prepare_images</code><span class="sig-paren">(</span><em>doExtract=True</em>, <em>doBadPixels=False</em>, <em>doMask=False</em>, <em>doOffset=False</em>, <em>doBias=False</em>, <em>doFF=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.task.Task.prepare_images" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -2420,7 +2689,7 @@ date-folders.</p>
 
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">vison.pipe.task.</code><code class="descname">Task</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="descclassname">vison.pipe.task.</code><code class="descname">Task</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span></dt>
 <dd><dl class="method">
 <dt>
 <code class="descname">IsComplianceMatrixOK</code><span class="sig-paren">(</span><em>complidict</em><span class="sig-paren">)</span></dt>
@@ -2484,7 +2753,7 @@ date-folders.</p>
 
 <dl class="method">
 <dt>
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -2510,6 +2779,11 @@ date-folders.</p>
 
 <dl class="method">
 <dt>
+<code class="descname">check_metrics_T</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
 <code class="descname">check_stat_perCCD</code><span class="sig-paren">(</span><em>arr, CCDlims, CCDs=['CCD1', 'CCD2', 'CCD3']</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
@@ -2530,6 +2804,11 @@ date-folders.</p>
 
 <dl class="method">
 <dt>
+<code class="descname">cleanaux</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
 <code class="descname">create_mockexplog</code><span class="sig-paren">(</span><em>OBSID0=1000</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
@@ -2542,7 +2821,7 @@ date-folders.</p>
 <dt>
 <code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em>, <em>colorblind=False</em>, <em>wavedkeys=[]</em>, <em>surrogate=''</em><span class="sig-paren">)</span></dt>
 <dd><p>Loads a list of Exposure Logs and selects exposures from test &#8216;test&#8217;.</p>
-<p>The filtering takes into account an expected structure for the 
+<p>The filtering takes into account an expected structure for the
 acquisition script.</p>
 <p>The datapath becomes another column in DataDict. This helps dealing
 with tests that run overnight and for which the input data is in several
@@ -2551,7 +2830,13 @@ date-folders.</p>
 
 <dl class="method">
 <dt>
-<code class="descname">prepare_images</code><span class="sig-paren">(</span><em>doExtract=True</em>, <em>doMask=False</em>, <em>doOffset=False</em>, <em>doBias=False</em>, <em>doFF=False</em><span class="sig-paren">)</span></dt>
+<code class="descname">get_checkstats_T</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>&#8220;</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">prepare_images</code><span class="sig-paren">(</span><em>doExtract=True</em>, <em>doBadPixels=False</em>, <em>doMask=False</em>, <em>doOffset=False</em>, <em>doBias=False</em>, <em>doFF=False</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -2634,7 +2919,7 @@ date-folders.</p>
         <li class="right" >
           <a href="installation.html" title="Installation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+93.g5fec365 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+319.g4f6704e.dirty documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

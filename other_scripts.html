@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Other Scripts &#8212; vison 0.6+93.g5fec365 documentation</title>
+    <title>Other Scripts &#8212; vison 0.9+319.g4f6704e.dirty documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.6+93.g5fec365',
+        VERSION:     '0.9+319.g4f6704e.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -41,7 +41,7 @@
         <li class="right" >
           <a href="tp_scripts.html" title="Trap-Pumping Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+93.g5fec365 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+319.g4f6704e.dirty documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -73,7 +73,7 @@ Bit Correlations (ADC health)</p>
 </table>
 <dl class="class">
 <dt id="vison.other.MOT_FF.MOT_FF">
-<em class="property">class </em><code class="descclassname">vison.other.MOT_FF.</code><code class="descname">MOT_FF</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.MOT_FF.MOT_FF" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.other.MOT_FF.</code><code class="descname">MOT_FF</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.MOT_FF.MOT_FF" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.other.MOT_FF.MOT_FF.extract_HER">
 <code class="descname">extract_HER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.MOT_FF.MOT_FF.extract_HER" title="Permalink to this definition">¶</a></dt>
@@ -98,7 +98,7 @@ TEST: PERSIST01</p>
 </table>
 <dl class="class">
 <dt id="vison.other.PERSIST01.PERSIST01">
-<em class="property">class </em><code class="descclassname">vison.other.PERSIST01.</code><code class="descname">PERSIST01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.other.PERSIST01.</code><code class="descname">PERSIST01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.other.PERSIST01.PERSIST01.basic_analysis">
 <code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01.basic_analysis" title="Permalink to this definition">¶</a></dt>
@@ -106,8 +106,7 @@ TEST: PERSIST01</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-        <span class="n">use</span> <span class="n">SATURATED</span> <span class="n">frame</span> <span class="n">to</span> <span class="n">generate</span> <span class="n">pixel</span> <span class="n">saturation</span> <span class="n">MASK</span>
-        <span class="n">measure</span> <span class="n">stats</span> <span class="ow">in</span> <span class="n">pix</span> <span class="n">satur</span> <span class="n">MASK</span> <span class="n">across</span> <span class="n">OBSIDs</span> 
+        <span class="n">measure</span> <span class="n">stats</span> <span class="ow">in</span> <span class="n">pix</span> <span class="n">satur</span> <span class="n">MASK</span> <span class="n">across</span> <span class="n">OBSIDs</span>
          <span class="p">(</span><span class="n">pre</span><span class="o">-</span><span class="n">satur</span><span class="p">,</span> <span class="n">satur</span><span class="p">,</span> <span class="n">post</span><span class="o">-</span><span class="n">satur</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -115,7 +114,7 @@ TEST: PERSIST01</p>
 
 <dl class="method">
 <dt id="vison.other.PERSIST01.PERSIST01.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds PERSISTENCE01 script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -156,15 +155,36 @@ TEST: PERSIST01</p>
 <span class="p">[</span><span class="n">plot</span> <span class="n">std</span> <span class="n">vs</span><span class="o">.</span> <span class="n">time</span><span class="p">]</span>
 
 <span class="n">issue</span> <span class="nb">any</span> <span class="n">warnings</span> <span class="n">to</span> <span class="n">log</span>
-<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>          
+<span class="n">issue</span> <span class="n">update</span> <span class="n">to</span> <span class="n">report</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="method">
+<dt id="vison.other.PERSIST01.PERSIST01.check_metrics_ST">
+<code class="descname">check_metrics_ST</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01.check_metrics_ST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="vison.other.PERSIST01.PERSIST01.filterexposures">
 <code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.other.PERSIST01.PERSIST01.get_checkstats_ST">
+<code class="descname">get_checkstats_ST</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01.get_checkstats_ST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.other.PERSIST01.PERSIST01.get_satur_masks">
+<code class="descname">get_satur_masks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.other.PERSIST01.PERSIST01.get_satur_masks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic analysis of data.</p>
+<p><strong>METACODE</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
+    <span class="n">use</span> <span class="n">SATURATED</span> <span class="n">frame</span> <span class="n">to</span> <span class="n">generate</span> <span class="n">pixel</span> <span class="n">saturation</span> <span class="n">MASKs</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="method">
 <dt id="vison.other.PERSIST01.PERSIST01.meta_analysis">
@@ -175,7 +195,7 @@ TEST: PERSIST01</p>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
         <span class="n">estimate</span> <span class="n">delta</span><span class="o">-</span><span class="n">charge_0</span> <span class="ow">and</span> <span class="n">decay</span> <span class="n">tau</span> <span class="kn">from</span> <span class="nn">time</span><span class="o">-</span><span class="n">series</span>
 
-<span class="n">report</span><span class="p">:</span>  
+<span class="n">report</span><span class="p">:</span>
     <span class="n">persistence</span> <span class="n">level</span> <span class="p">(</span><span class="n">delta</span><span class="o">-</span><span class="n">charge_0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">time</span> <span class="n">constant</span>
 </pre></div>
 </div>
@@ -257,7 +277,7 @@ cosmetics masking</dd>
         <li class="right" >
           <a href="tp_scripts.html" title="Trap-Pumping Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+93.g5fec365 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+319.g4f6704e.dirty documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

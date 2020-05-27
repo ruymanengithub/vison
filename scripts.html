@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Scripts &#8212; vison 0.6+93.g5fec365 documentation</title>
+    <title>Scripts &#8212; vison 0.9+319.g4f6704e.dirty documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.6+93.g5fec365',
+        VERSION:     '0.9+319.g4f6704e.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="point.html" title="Point-Source Analysis"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+93.g5fec365 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+319.g4f6704e.dirty documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -99,25 +99,8 @@ of Euclid-VIS.</p>
 <p>Created on Thu Mar 17 13:18:10 2016</p>
 <p>&#64;author: Ruyman Azzollini</p>
 </div>
-<div class="section" id="module-vison.scripts.run_xtalk">
-<span id="run-xtalk-py"></span><h2>run_xtalk.py<a class="headerlink" href="#module-vison.scripts.run_xtalk" title="Permalink to this headline">¶</a></h2>
-<p>Master Script to measure and report cross-talk levels among 12 ROE channels.
-Takes as input a data-set composed of 3x12 CCD images, corresponding to 
-injecting a &#8220;ladder&#8221; of signal on each of the 12 channels, using the ROE-TAB.</p>
-<p>Created on Thu Mar 22 16:17:39 2018</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
-<dl class="function">
-<dt id="vison.scripts.run_xtalk.run_xtalk">
-<code class="descclassname">vison.scripts.run_xtalk.</code><code class="descname">run_xtalk</code><span class="sig-paren">(</span><em>incat</em>, <em>inpath=''</em>, <em>respath=''</em>, <em>metafile=''</em>, <em>doCompute=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.scripts.run_xtalk.run_xtalk" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="run-xtalk-py">
+<h2>run_xtalk.py<a class="headerlink" href="#run-xtalk-py" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-vison.scripts.vis_cosmetics_masker">
 <span id="vis-cosmetics-masker-py"></span><h2>vis_cosmetics_masker.py<a class="headerlink" href="#module-vison.scripts.vis_cosmetics_masker" title="Permalink to this headline">¶</a></h2>
@@ -133,7 +116,7 @@ injecting a &#8220;ladder&#8221; of signal on each of the 12 channels, using the
 </table>
 <dl class="function">
 <dt id="vison.scripts.vis_cosmetics_masker.do_Mask">
-<code class="descclassname">vison.scripts.vis_cosmetics_masker.</code><code class="descname">do_Mask</code><span class="sig-paren">(</span><em>inputs</em>, <em>masktype</em>, <em>subbgd=True</em>, <em>normbybgd=False</em>, <em>validrange=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.scripts.vis_cosmetics_masker.do_Mask" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.scripts.vis_cosmetics_masker.</code><code class="descname">do_Mask</code><span class="sig-paren">(</span><em>inputs</em>, <em>masktype</em>, <em>subbgd=True</em>, <em>normbybgd=False</em>, <em>validrange=None</em>, <em>flagWholeColumns=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.scripts.vis_cosmetics_masker.do_Mask" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -158,7 +141,7 @@ injecting a &#8220;ladder&#8221; of signal on each of the 12 channels, using the
 <p>&#64;author: raf</p>
 <dl class="function">
 <dt id="vison.scripts.vis_explogs_merger.explog_merger">
-<code class="descclassname">vison.scripts.vis_explogs_merger.</code><code class="descname">explog_merger</code><span class="sig-paren">(</span><em>ELlist</em>, <em>output='EXP_LOG_merged.txt'</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.scripts.vis_explogs_merger.explog_merger" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.scripts.vis_explogs_merger.</code><code class="descname">explog_merger</code><span class="sig-paren">(</span><em>ELlist</em>, <em>output='EXP_LOG_merged.txt'</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.scripts.vis_explogs_merger.explog_merger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -181,7 +164,7 @@ injecting a &#8220;ladder&#8221; of signal on each of the 12 channels, using the
 
 <dl class="function">
 <dt id="vison.scripts.vis_genDataSet.genExpLog">
-<code class="descclassname">vison.scripts.vis_genDataSet.</code><code class="descname">genExpLog</code><span class="sig-paren">(</span><em>toGen</em>, <em>explogf</em>, <em>equipment</em>, <em>elvis='6.5.X'</em>, <em>CHAMBER=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.scripts.vis_genDataSet.genExpLog" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.scripts.vis_genDataSet.</code><code class="descname">genExpLog</code><span class="sig-paren">(</span><em>toGen</em>, <em>explogf</em>, <em>equipment</em>, <em>elvis='7.5.X'</em>, <em>CHAMBER=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.scripts.vis_genDataSet.genExpLog" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -231,67 +214,11 @@ Used to &#8216;prime&#8217; the position tables of point-source objects.</p>
 <dd></dd></dl>
 
 </div>
-<div class="section" id="module-vison.scripts.v_ROE_LinCalib">
-<span id="v-roe-lincalib-py"></span><h2>v_ROE_LinCalib.py<a class="headerlink" href="#module-vison.scripts.v_ROE_LinCalib" title="Permalink to this headline">¶</a></h2>
-<p>Non-Linearity Calibration of ROE (on bench).</p>
-<p>Created on Thu Mar 15 15:32:11 2018</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
-<dl class="function">
-<dt id="vison.scripts.v_ROE_LinCalib.find_adu_levels">
-<code class="descclassname">vison.scripts.v_ROE_LinCalib.</code><code class="descname">find_adu_levels</code><span class="sig-paren">(</span><em>qdata</em>, <em>Nlevels</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.scripts.v_ROE_LinCalib.find_adu_levels" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="vison.scripts.v_ROE_LinCalib.run_ROE_LinCalib">
-<code class="descclassname">vison.scripts.v_ROE_LinCalib.</code><code class="descname">run_ROE_LinCalib</code><span class="sig-paren">(</span><em>inputsfile</em>, <em>incatfile</em>, <em>datapath=''</em>, <em>respath=''</em>, <em>doExtractFits=True</em>, <em>dopolyRT=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.scripts.v_ROE_LinCalib.run_ROE_LinCalib" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="v-roe-lincalib-py">
+<h2>v_ROE_LinCalib.py<a class="headerlink" href="#v-roe-lincalib-py" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-vison.scripts.v_ROETAB_LinCalib">
-<span id="v-roetab-lincalib-py"></span><h2>v_ROETAB_LinCalib.py<a class="headerlink" href="#module-vison.scripts.v_ROETAB_LinCalib" title="Permalink to this headline">¶</a></h2>
-<p>Linearity Calibration of ROE-TAB.</p>
-<p>Created on Tue Mar 27 14:42:00 2018
-Modified on Fri Sep 14 10:53:00 2018</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
-<dl class="function">
-<dt id="vison.scripts.v_ROETAB_LinCalib.filter_Voltage_uni">
-<code class="descclassname">vison.scripts.v_ROETAB_LinCalib.</code><code class="descname">filter_Voltage_uni</code><span class="sig-paren">(</span><em>rV</em>, <em>filt_kernel</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.scripts.v_ROETAB_LinCalib.filter_Voltage_uni" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="vison.scripts.v_ROETAB_LinCalib.find_discrete_voltages_inwaveform">
-<code class="descclassname">vison.scripts.v_ROETAB_LinCalib.</code><code class="descname">find_discrete_voltages_inwaveform</code><span class="sig-paren">(</span><em>rV</em>, <em>levels</em>, <em>filtered=None</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.scripts.v_ROETAB_LinCalib.find_discrete_voltages_inwaveform" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="vison.scripts.v_ROETAB_LinCalib.load_WF">
-<code class="descclassname">vison.scripts.v_ROETAB_LinCalib.</code><code class="descname">load_WF</code><span class="sig-paren">(</span><em>WFf</em>, <em>chkNsamp=None</em>, <em>chkSampInter=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.scripts.v_ROETAB_LinCalib.load_WF" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="vison.scripts.v_ROETAB_LinCalib.plot_waveform">
-<code class="descclassname">vison.scripts.v_ROETAB_LinCalib.</code><code class="descname">plot_waveform</code><span class="sig-paren">(</span><em>WF</em>, <em>disc_voltages=[]</em>, <em>figname=''</em>, <em>chan='Unknown'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.scripts.v_ROETAB_LinCalib.plot_waveform" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="vison.scripts.v_ROETAB_LinCalib.run_ROETAB_LinCalib">
-<code class="descclassname">vison.scripts.v_ROETAB_LinCalib.</code><code class="descname">run_ROETAB_LinCalib</code><span class="sig-paren">(</span><em>inputsfile</em>, <em>incatfile</em>, <em>datapath=''</em>, <em>respath=''</em>, <em>doBayes=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.scripts.v_ROETAB_LinCalib.run_ROETAB_LinCalib" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="v-roetab-lincalib-py">
+<h2>v_ROETAB_LinCalib.py<a class="headerlink" href="#v-roetab-lincalib-py" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -309,15 +236,15 @@ Modified on Fri Sep 14 10:53:00 2018</p>
 <li><a class="reference internal" href="#">Scripts</a><ul>
 <li><a class="reference internal" href="#module-vison.scripts.HKmonitor">HKmonitor.py</a></li>
 <li><a class="reference internal" href="#module-vison.scripts.quickds9">quickds9.py</a></li>
-<li><a class="reference internal" href="#module-vison.scripts.run_xtalk">run_xtalk.py</a></li>
+<li><a class="reference internal" href="#run-xtalk-py">run_xtalk.py</a></li>
 <li><a class="reference internal" href="#module-vison.scripts.vis_cosmetics_masker">vis_cosmetics_masker.py</a></li>
 <li><a class="reference internal" href="#module-vison.scripts.vis_explogs_merger">vis_explogs_merger.py</a></li>
 <li><a class="reference internal" href="#module-vison.scripts.vis_genDataSet">vis_genDataSet.py</a></li>
 <li><a class="reference internal" href="#module-vison.scripts.vis_load_DD">vis_load_DD.py</a></li>
 <li><a class="reference internal" href="#module-vison.scripts.vis_mkscripts">vis_mkscripts.py</a></li>
 <li><a class="reference internal" href="#module-vison.scripts.vis_star_finder">vis_star_finder.py</a></li>
-<li><a class="reference internal" href="#module-vison.scripts.v_ROE_LinCalib">v_ROE_LinCalib.py</a></li>
-<li><a class="reference internal" href="#module-vison.scripts.v_ROETAB_LinCalib">v_ROETAB_LinCalib.py</a></li>
+<li><a class="reference internal" href="#v-roe-lincalib-py">v_ROE_LinCalib.py</a></li>
+<li><a class="reference internal" href="#v-roetab-lincalib-py">v_ROETAB_LinCalib.py</a></li>
 </ul>
 </li>
 </ul>
@@ -364,7 +291,7 @@ Modified on Fri Sep 14 10:53:00 2018</p>
         <li class="right" >
           <a href="point.html" title="Point-Source Analysis"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+93.g5fec365 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+319.g4f6704e.dirty documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

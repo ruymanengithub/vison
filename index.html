@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to vison’s documentation! &#8212; vison 0.6+93.g5fec365 documentation</title>
+    <title>Welcome to vison’s documentation! &#8212; vison 0.9+319.g4f6704e.dirty documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.6+93.g5fec365',
+        VERSION:     '0.9+319.g4f6704e.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -41,7 +41,7 @@
         <li class="right" >
           <a href="source/includeme.html" title="README"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">vison 0.6+93.g5fec365 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">vison 0.9+319.g4f6704e.dirty documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -66,11 +66,11 @@
 </tr>
 <tr class="field-even field"><th class="field-name">Contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">issue:</th><td class="field-body">0.6+93.g5fec365</td>
+<tr class="field-odd field"><th class="field-name">issue:</th><td class="field-body">0.9+319.g4f6704e.dirty</td>
 </tr>
-<tr class="field-even field"><th class="field-name">version:</th><td class="field-body">0.6+93.g5fec365</td>
+<tr class="field-even field"><th class="field-name">version:</th><td class="field-body">0.9+319.g4f6704e.dirty</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">date:</th><td class="field-body">Sep 28, 2018</td>
+<tr class="field-odd field"><th class="field-name">date:</th><td class="field-body">May 27, 2020</td>
 </tr>
 </tbody>
 </table>
@@ -170,7 +170,7 @@ HK files, FITS files, etc.</p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="flat.html">&#8220;Flat&#8221; Acq. Analysis Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="flat.html#module-vison.flat.FlatTask">FlatTask.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="flat.html#module-vison.pipe.FlatFielding">FlatFielding.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flat.html#flatfielding-py">FlatFielding.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="flat.html#module-vison.flat.nl">nl.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="flat.html#module-vison.flat.ptc">ptc.py</a></li>
 </ul>
@@ -280,15 +280,15 @@ visual display of Exposure Log with some interactive capabilities, and display o
 <li class="toctree-l1"><a class="reference internal" href="scripts.html">Scripts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.HKmonitor">HKmonitor.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.quickds9">quickds9.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.run_xtalk">run_xtalk.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#run-xtalk-py">run_xtalk.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.vis_cosmetics_masker">vis_cosmetics_masker.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.vis_explogs_merger">vis_explogs_merger.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.vis_genDataSet">vis_genDataSet.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.vis_load_DD">vis_load_DD.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.vis_mkscripts">vis_mkscripts.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.vis_star_finder">vis_star_finder.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.v_ROE_LinCalib">v_ROE_LinCalib.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.v_ROETAB_LinCalib">v_ROETAB_LinCalib.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#v-roe-lincalib-py">v_ROE_LinCalib.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#v-roetab-lincalib-py">v_ROETAB_LinCalib.py</a></li>
 </ul>
 </li>
 </ul>
@@ -354,7 +354,7 @@ ease of browsing.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dark_scripts.html">&#8220;Dark Acquisitions&#8221; Scripts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="dark_scripts.html#module-vison.dark.BIAS01">BIAS01</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dark_scripts.html#bias01">BIAS01</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dark_scripts.html#module-vison.dark.DARK01">DARK01</a></li>
 </ul>
 </li>
@@ -497,7 +497,7 @@ ease of browsing.</p>
         <li class="right" >
           <a href="source/includeme.html" title="README"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">vison 0.6+93.g5fec365 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">vison 0.9+319.g4f6704e.dirty documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

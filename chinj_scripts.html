@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Charge Injection Scripts &#8212; vison 0.6+93.g5fec365 documentation</title>
+    <title>Charge Injection Scripts &#8212; vison 0.9+319.g4f6704e.dirty documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.6+93.g5fec365',
+        VERSION:     '0.9+319.g4f6704e.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="utests.html" title="Unit Testing"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+93.g5fec365 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+319.g4f6704e.dirty documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -75,10 +75,10 @@ TEST: CHINJ01</p>
 </table>
 <dl class="class">
 <dt id="vison.inject.CHINJ01.CHINJ01">
-<em class="property">class </em><code class="descclassname">vison.inject.CHINJ01.</code><code class="descname">CHINJ01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.inject.CHINJ01.</code><code class="descname">CHINJ01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.inject.CHINJ01.CHINJ01.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds CHINJ01 script structure dictionary.</p>
 <p>#:param IDL: float, [V], value of IDL (Inject. Drain Low).
 #:param IDH: float, [V], Injection Drain High.
@@ -97,33 +97,9 @@ TEST: CHINJ01</p>
 <dl class="method">
 <dt id="vison.inject.CHINJ01.CHINJ01.meta_analysis">
 <code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01.meta_analysis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find injection threshold: Min IG1
-Plot and model charge injection vs. IG1
+<dd><p>Plot and model charge injection vs. IG1
+Find injection threshold: Min IG1
 Find notch injection amount.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.inject.CHINJ01.CHINJ01.old_basic_analysis">
-<code class="descname">old_basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ01.CHINJ01.old_basic_analysis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Basic analysis of data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">extract</span> <span class="n">average</span> <span class="mi">2</span><span class="n">D</span> <span class="n">injection</span> <span class="n">pattern</span> <span class="p">(</span><span class="ow">and</span> <span class="n">save</span><span class="p">)</span>
-            <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span><span class="o">/</span><span class="n">across</span> <span class="n">lines</span>
-            <span class="n">measure</span> <span class="n">charge</span><span class="o">-</span><span class="n">inj</span><span class="o">.</span> <span class="n">non</span><span class="o">-</span><span class="n">uniformity</span>
-            <span class="n">measure</span> <span class="n">charge</span> <span class="n">spillover</span> <span class="n">into</span> <span class="n">non</span><span class="o">-</span><span class="n">injection</span>
-            <span class="n">measure</span> <span class="n">stats</span> <span class="n">of</span> <span class="n">injection</span> <span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">med</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="nb">min</span><span class="o">/</span><span class="nb">max</span><span class="p">,</span> <span class="n">percentiles</span><span class="p">)</span>
-
-<span class="n">plot</span> <span class="n">average</span> <span class="n">inj</span><span class="o">.</span> <span class="n">profiles</span> <span class="n">along</span> <span class="n">lines</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span> <span class="ow">and</span> <span class="n">IG1</span>
-    <span class="n">save</span> <span class="k">as</span> <span class="n">a</span> <span class="n">rationalized</span> <span class="nb">set</span> <span class="n">of</span> <span class="n">curves</span>
-<span class="n">plot</span> <span class="n">average</span> <span class="n">inj</span><span class="o">.</span> <span class="n">profiles</span> <span class="n">across</span> <span class="n">lines</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span> <span class="ow">and</span> <span class="n">IG1</span>
-    <span class="n">save</span> <span class="k">as</span> <span class="n">a</span> <span class="n">rationalized</span> <span class="nb">set</span> <span class="n">of</span>  <span class="n">curves</span>
-
-<span class="n">Report</span> <span class="n">injection</span> <span class="n">stats</span> <span class="k">as</span> <span class="n">a</span> <span class="n">table</span><span class="o">/</span><span class="n">tables</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="method">
@@ -153,59 +129,16 @@ TEST: CHINJ02</p>
 </table>
 <dl class="class">
 <dt id="vison.inject.CHINJ02.CHINJ02">
-<em class="property">class </em><code class="descclassname">vison.inject.CHINJ02.</code><code class="descname">CHINJ02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.inject.CHINJ02.</code><code class="descname">CHINJ02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="vison.inject.CHINJ02.CHINJ02.basic_analysis">
-<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02.basic_analysis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Basic analysis of data.
-AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">load</span> <span class="n">average</span> <span class="mi">2</span><span class="n">D</span> <span class="n">injection</span> <span class="n">pattern</span>
-            <span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">along</span> <span class="n">lines</span>
-            <span class="p">[</span><span class="n">measure</span> <span class="n">charge</span><span class="o">-</span><span class="n">inj</span><span class="o">.</span> <span class="n">non</span><span class="o">-</span><span class="n">uniformity</span><span class="p">]</span>
-            <span class="p">[</span><span class="n">produce</span> <span class="n">average</span> <span class="n">profile</span> <span class="n">across</span> <span class="n">lines</span><span class="p">]</span>
-            <span class="p">[</span><span class="n">measure</span> <span class="n">charge</span> <span class="n">spillover</span> <span class="n">into</span> <span class="n">non</span><span class="o">-</span><span class="n">injection</span><span class="p">]</span>
-            <span class="n">measure</span> <span class="n">stats</span> <span class="n">of</span> <span class="n">injection</span> <span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">med</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="nb">min</span><span class="o">/</span><span class="nb">max</span><span class="p">,</span> <span class="n">percentiles</span><span class="p">)</span>
-
-<span class="p">[</span><span class="n">plot</span> <span class="n">average</span> <span class="n">inj</span><span class="o">.</span> <span class="n">profiles</span> <span class="n">along</span> <span class="n">lines</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span> <span class="ow">and</span> <span class="n">IG1</span><span class="p">]</span>
-<span class="p">[</span>    <span class="n">save</span> <span class="k">as</span> <span class="n">a</span> <span class="n">rationalized</span> <span class="nb">set</span> <span class="n">of</span> <span class="n">curves</span><span class="p">]</span>
-<span class="p">[</span><span class="n">plot</span> <span class="n">average</span> <span class="n">inj</span><span class="o">.</span> <span class="n">profiles</span> <span class="n">across</span> <span class="n">lines</span> <span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span> <span class="ow">and</span> <span class="n">IG1</span><span class="p">]</span>
-<span class="p">[</span>    <span class="n">save</span> <span class="k">as</span> <span class="n">a</span> <span class="n">rationalized</span> <span class="nb">set</span> <span class="n">of</span>  <span class="n">curves</span><span class="p">]</span>
-
-<span class="n">save</span><span class="o">&amp;</span><span class="n">plot</span> <span class="n">charge</span> <span class="n">injection</span> <span class="n">vs</span><span class="o">.</span> <span class="n">IDL</span>
-<span class="n">report</span> <span class="n">injection</span> <span class="n">stats</span> <span class="k">as</span> <span class="n">a</span> <span class="n">table</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
 <dt id="vison.inject.CHINJ02.CHINJ02.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds CHINJ02 script structure dictionary.</p>
 <p>#:param IDLs: list of 2 ints, [V], [min,max] values of IDL (Inject. Drain Low).
 #:param IDH: int, [V], Injection Drain High.
 #:param id_delays: list of 2 ints, [us], injection drain delays.
 #:param toi_chinj: int, [us], TOI-charge injection.
 :param diffvalues: dict, opt, differential values.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.inject.CHINJ02.CHINJ02.extract_data">
-<code class="descname">extract_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.inject.CHINJ02.CHINJ02.extract_data" title="Permalink to this definition">¶</a></dt>
-<dd><p><strong>NEEDED?</strong> Could be merged with basic_analysis</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Preparation</span> <span class="n">of</span> <span class="n">data</span> <span class="k">for</span> <span class="n">further</span> <span class="n">analysis</span><span class="p">:</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">subtract</span> <span class="n">offset</span>
-            <span class="n">extract</span> <span class="n">average</span> <span class="mi">2</span><span class="n">D</span> <span class="n">injection</span> <span class="n">pattern</span> <span class="ow">and</span> <span class="n">save</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="method">
@@ -298,7 +231,7 @@ AS IT IS, REPEATS WHAT&#8217;S DONE IN THE CHECK_DATA. CONSIDER MERGING/SKIPPING
         <li class="right" >
           <a href="utests.html" title="Unit Testing"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+93.g5fec365 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+319.g4f6704e.dirty documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

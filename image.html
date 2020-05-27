@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Image Analysis &#8212; vison 0.6+93.g5fec365 documentation</title>
+    <title>Image Analysis &#8212; vison 0.9+319.g4f6704e.dirty documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.6+93.g5fec365',
+        VERSION:     '0.9+319.g4f6704e.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="flat.html" title="“Flat” Acq. Analysis Tools"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+93.g5fec365 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+319.g4f6704e.dirty documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -69,6 +69,11 @@
 </tr>
 </tbody>
 </table>
+<dl class="function">
+<dt id="vison.image.bits.get_histo_bits">
+<code class="descclassname">vison.image.bits.</code><code class="descname">get_histo_bits</code><span class="sig-paren">(</span><em>ccdobj</em>, <em>Q</em>, <em>vstart=0</em>, <em>vend=2086</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.bits.get_histo_bits" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="module-vison.image.calibration">
 <span id="calibration-py"></span><h2>calibration.py<a class="headerlink" href="#module-vison.image.calibration" title="Permalink to this headline">¶</a></h2>
@@ -99,6 +104,17 @@ Input is of type dict(CCD1=&#8217;&#8216;,CCD2=&#8217;&#8216;,CCD3=&#8217;&#8216
 <code class="descclassname">vison.image.cosmetics.</code><code class="descname">get_Thresholding_DefectsMask</code><span class="sig-paren">(</span><em>maskdata</em>, <em>thresholds</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.cosmetics.get_Thresholding_DefectsMask" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="function">
+<dt id="vison.image.cosmetics.mask_badcolumns">
+<code class="descclassname">vison.image.cosmetics.</code><code class="descname">mask_badcolumns</code><span class="sig-paren">(</span><em>mask</em>, <em>colthreshold=200</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.cosmetics.mask_badcolumns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flags entire column of pixels if N&gt;colthreshold pixels in column are bad.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.image.cosmetics.set_extrascans">
+<code class="descclassname">vison.image.cosmetics.</code><code class="descname">set_extrascans</code><span class="sig-paren">(</span><em>mask</em>, <em>val=0</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.cosmetics.set_extrascans" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="module-vison.image.covariance">
 <span id="covariance-py"></span><h2>covariance.py<a class="headerlink" href="#module-vison.image.covariance" title="Permalink to this headline">¶</a></h2>
@@ -114,13 +130,28 @@ Used in the context of Brighter-Fatter analysis, mainly.</p>
 </tbody>
 </table>
 <dl class="function">
-<dt id="vison.image.covariance.f_get_covmap">
-<code class="descclassname">vison.image.covariance.</code><code class="descname">f_get_covmap</code><span class="sig-paren">(</span><em>sq1</em>, <em>sq2</em>, <em>N</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.covariance.f_get_covmap" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.image.covariance.f_get_corrmap">
+<code class="descclassname">vison.image.covariance.</code><code class="descname">f_get_corrmap</code><span class="sig-paren">(</span><em>sq1</em>, <em>sq2</em>, <em>N</em>, <em>submodel=False</em>, <em>estimator='median'</em>, <em>clipsigma=4.0</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.covariance.f_get_corrmap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.image.covariance.f_get_corrmap_tests">
+<code class="descclassname">vison.image.covariance.</code><code class="descname">f_get_corrmap_tests</code><span class="sig-paren">(</span><em>sq1</em>, <em>sq2</em>, <em>N</em>, <em>submodel=False</em>, <em>estimator='median'</em>, <em>clipsigma=4.0</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.covariance.f_get_corrmap_tests" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.image.covariance.f_get_corrmap_v2">
+<code class="descclassname">vison.image.covariance.</code><code class="descname">f_get_corrmap_v2</code><span class="sig-paren">(</span><em>sq1</em>, <em>sq2</em>, <em>N</em>, <em>submodel=False</em>, <em>estimator='median'</em>, <em>clipsigma=4.0</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.covariance.f_get_corrmap_v2" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="vison.image.covariance.get_cov_maps">
-<code class="descclassname">vison.image.covariance.</code><code class="descname">get_cov_maps</code><span class="sig-paren">(</span><em>ccdobjList</em>, <em>Npix=4</em>, <em>doTest=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.covariance.get_cov_maps" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.image.covariance.</code><code class="descname">get_cov_maps</code><span class="sig-paren">(</span><em>ccdobjList</em>, <em>Npix=4</em>, <em>vstart=0</em>, <em>vend=2066</em>, <em>clipsigma=4.0</em>, <em>covfunc='ver1'</em>, <em>doBiasCorr=False</em>, <em>central='median'</em>, <em>doTest=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.covariance.get_cov_maps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.image.covariance.get_sigmaclipcorr">
+<code class="descclassname">vison.image.covariance.</code><code class="descname">get_sigmaclipcorr</code><span class="sig-paren">(</span><em>vardif</em>, <em>clipsigma</em>, <em>estimator</em>, <em>dims=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.covariance.get_sigmaclipcorr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -155,7 +186,7 @@ Used in the context of Brighter-Fatter analysis, mainly.</p>
 <div class="section" id="module-vison.image.performance">
 <span id="performance-py"></span><h2>performance.py<a class="headerlink" href="#module-vison.image.performance" title="Permalink to this headline">¶</a></h2>
 <p>Performance parameters of the ROE+CCDs.
-Compilation of CCD offsets, offset gradients, RONs... used for 
+Compilation of CCD offsets, offset gradients, RONs... used for
 checks.</p>
 <p>Created on Wed Nov  1 09:57:44 2017</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -192,9 +223,9 @@ checks.</p>
 <dl class="function">
 <dt id="vison.image.pixbounce.get_pixbounce_from_overscan">
 <code class="descclassname">vison.image.pixbounce.</code><code class="descname">get_pixbounce_from_overscan</code><span class="sig-paren">(</span><em>ccdobj</em>, <em>thresholds=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.pixbounce.get_pixbounce_from_overscan" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves Hard Edge Respose for all Quadrants of a CCD. 
+<dd><p>Retrieves Hard Edge Respose for all Quadrants of a CCD.
 Uses the transition from image to overscan (along rows). Averages
-across rows. Input image should have high image-area fluence but not 
+across rows. Input image should have high image-area fluence but not
 saturating. Rows can be filtered by average fluence in them via &#8220;thresholds&#8221;
 keyword. Do not use on images acquired with irradiated CCDs.</p>
 </dd></dl>
@@ -301,7 +332,7 @@ keyword. Do not use on images acquired with irradiated CCDs.</p>
         <li class="right" >
           <a href="flat.html" title="“Flat” Acq. Analysis Tools"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+93.g5fec365 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+319.g4f6704e.dirty documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Analysis (Shared) &#8212; vison 0.6+93.g5fec365 documentation</title>
+    <title>Analysis (Shared) &#8212; vison 0.9+319.g4f6704e.dirty documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.6+93.g5fec365',
+        VERSION:     '0.9+319.g4f6704e.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="datamodel.html" title="Data Model"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+93.g5fec365 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+319.g4f6704e.dirty documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -82,15 +82,15 @@
 <dl class="function">
 <dt id="vison.analysis.ellipse.dist_superellipse">
 <code class="descclassname">vison.analysis.ellipse.</code><code class="descname">dist_superellipse</code><span class="sig-paren">(</span><em>n</em>, <em>center</em>, <em>q=1.0</em>, <em>pos_ang=0.0</em>, <em>c=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.ellipse.dist_superellipse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Form an array in which the value of each element is equal to the 
+<dd><p>Form an array in which the value of each element is equal to the
 semi-major axis of the superellipse of specified center, axial ratio,
-position  angle, and c parameter which passes through that element.  
+position  angle, and c parameter which passes through that element.
 Useful for super-elliptical aperture photometry.</p>
 <p>Inspired on dist_ellipse.pro from AstroLib (IDL).</p>
 <p>Note: this program doesn&#8217;t take into account the change in the order of axes
 from IDL to Python. That means, that in &#8216;n&#8217; and in &#8216;center&#8217;, the order of the
 coordinates must be reversed with respect to the case for dist_ellipse.pro, in
-order to get expected results. Nonetheless, the polar angle means the 
+order to get expected results. Nonetheless, the polar angle means the
 counter-clock wise angle with respect to the &#8216;y&#8217; axis.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -126,7 +126,7 @@ Guyonnet, Astier, Antilogus, Regnault and Doherty 2015</p>
 <li>I renamed &#8220;x&#8221; (pixel boundary index) to &#8220;b&#8221;, to avoid confusion with
 cartesian &#8220;x&#8221;.</li>
 <li>In paper, X belongsto [(0,1),(1,0),(0,-1),(-1,0)]. Here
-b is referred to as cardinal points &#8220;N&#8221;,&#8221;E&#8221;,&#8221;S&#8221;,&#8221;W&#8221;. 
+b is referred to as cardinal points &#8220;N&#8221;,&#8221;E&#8221;,&#8221;S&#8221;,&#8221;W&#8221;.
 It is linked to matrix index ib, running between 0 and 3.</li>
 </ul>
 <p>Created on Thu Sep 22 11:38:24 2016</p>
@@ -271,7 +271,7 @@ a NxN matrix/image.</p>
 <dl class="function">
 <dt id="vison.analysis.Guyonnet15.get_Rdisp">
 <code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">get_Rdisp</code><span class="sig-paren">(</span><em>img</em>, <em>aijb</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.get_Rdisp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves map of relative displacements of pixel boundaries, 
+<dd><p>Retrieves map of relative displacements of pixel boundaries,
 for input img and Aijb matrix.</p>
 <blockquote>
 <div>See G15 - Eq. 6</div></blockquote>
@@ -299,7 +299,7 @@ for input img and Aijb matrix.</p>
 
 <dl class="function">
 <dt id="vison.analysis.Guyonnet15.get_deltaQ">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">get_deltaQ</code><span class="sig-paren">(</span><em>img</em>, <em>aijb</em>, <em>writeFits=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.get_deltaQ" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">get_deltaQ</code><span class="sig-paren">(</span><em>img</em>, <em>aijb</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.get_deltaQ" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieves deltaQ map for input image and aijb matrix.</p>
 <p>See G15 - Eq. 11</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -309,7 +309,6 @@ for input img and Aijb matrix.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>img</strong> &#8211; image, 2D array</li>
 <li><strong>aijb</strong> &#8211; Aijb matrix, 3D array</li>
-<li><strong>writeFits</strong> &#8211; save FITS file with resulting dQ map (optional)</li>
 </ul>
 </td>
 </tr>
@@ -330,14 +329,9 @@ directions around a pixel at (0,0).</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>aijb</strong> &#8211; array, matrix with displacements in 1st quadrant</li>
-<li><strong>writeFits</strong> &#8211; save kernel to 4 FITS files</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>aijb</strong> &#8211; array, matrix with displacements in 1st quadrant</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">kernel matrix, (2N-1)x(2N-1)x4</p>
-</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">kernel matrix, (2N-1)x(2N-1)x4</td>
 </tr>
 </tbody>
 </table>
@@ -360,7 +354,7 @@ directions around a pixel at (0,0).</p>
 
 <dl class="function">
 <dt id="vison.analysis.Guyonnet15.solve_for_A_linalg">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">solve_for_A_linalg</code><span class="sig-paren">(</span><em>covij</em>, <em>var=1.0</em>, <em>mu=1.0</em>, <em>doplot=False</em>, <em>psmooth=None</em>, <em>returnAll=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.solve_for_A_linalg" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">solve_for_A_linalg</code><span class="sig-paren">(</span><em>covij</em>, <em>var=1.0</em>, <em>mu=1.0</em>, <em>doplot=False</em>, <em>psmooth=None</em>, <em>returnAll=False</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.solve_for_A_linalg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to retrieve the A matrix of pixel boundaries
 displacements, given a matrix of pixel covariances, variance, and mu.</p>
 <p>if var==1 and mu==1, it is understood that covij is
@@ -377,6 +371,7 @@ the correlation matrix.</p>
 <li><strong>doplot</strong> &#8211; if True, plot the fit of the fpred(ijb) function</li>
 <li><strong>psmooth</strong> &#8211; coefficients of the fpred(aijb) function (Eq. 18)</li>
 <li><strong>returnAll</strong> &#8211; bool, controls return values</li>
+<li><strong>verbose</strong> &#8211; bool, be verbose or not.</li>
 </ul>
 </td>
 </tr>
@@ -390,7 +385,7 @@ the correlation matrix.</p>
 <dl class="function">
 <dt id="vison.analysis.Guyonnet15.solve_for_psmooth">
 <code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">solve_for_psmooth</code><span class="sig-paren">(</span><em>covij</em>, <em>var</em>, <em>mu</em>, <em>doplot=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.solve_for_psmooth" title="Permalink to this definition">¶</a></dt>
-<dd><p>Solving (p0,p1) parameters in Eq. 18 using covariance matrix and 
+<dd><p>Solving (p0,p1) parameters in Eq. 18 using covariance matrix and
 measured covariance  matrix.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -494,7 +489,7 @@ measured covariance  matrix.</p>
         <li class="right" >
           <a href="datamodel.html" title="Data Model"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+93.g5fec365 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+319.g4f6704e.dirty documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

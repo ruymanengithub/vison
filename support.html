@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Support Code &#8212; vison 0.6+93.g5fec365 documentation</title>
+    <title>Support Code &#8212; vison 0.9+319.g4f6704e.dirty documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.6+93.g5fec365',
+        VERSION:     '0.9+319.g4f6704e.dirty',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="scripts.html" title="Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+93.g5fec365 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+319.g4f6704e.dirty documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -95,8 +95,8 @@ Uses Twilio.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>url</strong> &#8211; char, URL with the TwiML code that Twilio uses as instructions 
-on call. Basically, it provides a message to be voiced, 
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>url</strong> &#8211; char, URL with the TwiML code that Twilio uses as instructions
+on call. Basically, it provides a message to be voiced,
 as intended.</td>
 </tr>
 </tbody>
@@ -195,7 +195,7 @@ as intended.</td>
 
 <dl class="function">
 <dt id="vison.support.files.cPickleRead">
-<code class="descclassname">vison.support.files.</code><code class="descname">cPickleRead</code><span class="sig-paren">(</span><em>file</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.files.cPickleRead" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.support.files.</code><code class="descname">cPickleRead</code><span class="sig-paren">(</span><em>ffile</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.files.cPickleRead" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads data from a pickled file.</p>
 </dd></dl>
 
@@ -246,7 +246,7 @@ as intended.</td>
 </table>
 <dl class="function">
 <dt id="vison.support.latex.generate_header">
-<code class="descclassname">vison.support.latex.</code><code class="descname">generate_header</code><span class="sig-paren">(</span><em>test</em>, <em>model</em>, <em>author</em>, <em>reference='7-XXX'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.latex.generate_header" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vison.support.latex.</code><code class="descname">generate_header</code><span class="sig-paren">(</span><em>test</em>, <em>model</em>, <em>author</em>, <em>reference='7-XXX'</em>, <em>issue=0.0</em>, <em>doDraft=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.latex.generate_header" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -329,6 +329,16 @@ as intended.</td>
 </tbody>
 </table>
 <dl class="class">
+<dt id="vison.support.report.Chapter">
+<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Chapter</code><span class="sig-paren">(</span><em>Title=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Chapter" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.support.report.Chapter.generate_Latex">
+<code class="descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Chapter.generate_Latex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="vison.support.report.Container">
 <em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Container</code><a class="headerlink" href="#vison.support.report.Container" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
@@ -367,6 +377,16 @@ as intended.</td>
 </dd></dl>
 
 <dl class="class">
+<dt id="vison.support.report.Part">
+<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Part</code><span class="sig-paren">(</span><em>Title=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Part" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.support.report.Part.generate_Latex">
+<code class="descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Part.generate_Latex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="vison.support.report.Section">
 <em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Section</code><span class="sig-paren">(</span><em>keyword</em>, <em>Title=''</em>, <em>level=0</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Section" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
@@ -378,7 +398,7 @@ as intended.</td>
 
 <dl class="class">
 <dt id="vison.support.report.Table">
-<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Table</code><span class="sig-paren">(</span><em>tableDict</em>, <em>formats={}</em>, <em>names=[]</em>, <em>caption=None</em>, <em>col_align=None</em>, <em>longtable=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Table" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Table</code><span class="sig-paren">(</span><em>tableDict</em>, <em>formats=None</em>, <em>names=None</em>, <em>caption=None</em>, <em>col_align=None</em>, <em>longtable=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Table" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
 <div><dl class="docutils">
 <dt>PENDING:</dt>
@@ -552,7 +572,7 @@ end{tabular}}</div></blockquote>
         <li class="right" >
           <a href="scripts.html" title="Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.6+93.g5fec365 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+319.g4f6704e.dirty documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
