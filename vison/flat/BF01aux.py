@@ -61,7 +61,7 @@ prof_COV_ver_dict = dict(
               ylabel='COV/VAR, ADIM.',
               xlabel='Y',
               ylim=[-0.005,0.07],
-              corekwargs=dict(marker='.', linestyle='-'),
+              corekwargs=dict(),
               suptitle='BF01: COV 1D Profile, Vertical/Parallel.')
 )
 
@@ -72,7 +72,7 @@ prof_COV_ser_dict = dict(
               ylabel='COV/VAR, ADIM.',
               xlabel='X',
               ylim=[-0.005,0.07],
-              corekwargs=dict(marker='.', linestyle='-'),
+              corekwargs=dict(),
               suptitle='BF01: COV 1D Profile, Serial.')
 )
 
@@ -83,7 +83,7 @@ prof_KER_ver_dict = dict(
               ylabel='log([ADU])',
               xlabel='Y [pix]',
               #ylim=[-0.03, 0.1],
-              corekwargs=dict(marker='.', linestyle='-'),
+              corekwargs=dict(),
               suptitle='BF01: Kernels 1D Profile, Vertical/Parallel.')
 )
 
@@ -94,7 +94,7 @@ prof_KER_ser_dict = dict(
               ylabel='log([ADU])',
               xlabel='X [pix]',
               #ylim=[-0.03, 0.1],
-              corekwargs=dict(marker='.', linestyle='-'),
+              corekwargs=dict(),
               suptitle='BF01: Kernels 1D Profile, Serial.')
 )
 
