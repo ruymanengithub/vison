@@ -15,6 +15,13 @@ ccd_aux.py
 .. automodule:: vison.datamodel.ccd_aux
       :members:
 
+cdp.py
+------
+
+.. automodule:: vison.datamodel.cdp
+      :members:
+
+
 ccdsim.py
 ---------
 
@@ -33,12 +40,24 @@ core.py
 .. automodule:: vison.datamodel.core
       :members:
 
+elvis.py
+--------
+
+.. automodule:: vison.datamodel.elvis
+    :members:
+
 
 EXPLOGtools.py
 --------------
 
 .. automodule:: vison.datamodel.EXPLOGtools
       :members:
+
+fpa_dm.py
+---------
+
+.. automodule:: vison.datamodel.fpa_dm
+    :members:
 
 generator.py
 ------------

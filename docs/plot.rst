@@ -38,6 +38,12 @@ figclasses.py
 .. automodule:: vison.plot.figclasses
     :members:
 
+plots_fpa.py
+------------
+
+.. automodule:: vison.plot.plots_fpa
+    :members:
+
 trends.py
 ----------
 
