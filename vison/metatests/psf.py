@@ -407,9 +407,9 @@ class MetaPsf(MetaCal):
     def verify_reqs(self, XTALKs):
         """ 
         for each victim channel, the maximum (dominant) coupling with any
-            other channel shall be |c| <= 6x10-4.
+            other channel shall be abs(c) <= 6x10-4.
         for each victim channel, only one other channel, the “dominant”, can
-            have a coupling factor |c|> 7.6x10-5.
+            have a coupling factor abs(c)> 7.6x10-5.
         """
 
         xtalks_VI = OrderedDict() # reformating the crosstalk matrix for easy

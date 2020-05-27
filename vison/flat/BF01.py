@@ -568,7 +568,7 @@ class BF01(PTC0X):
                             self.dd.products['BF'][CCDk][Q][ulabel] = OrderedDict(
                                 Asol=Asol_Q.copy(),
                                 psmooth=copy.deepcopy(psmooth_Q),
-                                kernel=kernel_Q.copy(),
+                               sole kernel=kernel_Q.copy(),
                                 fluence=BF_dd['fluence'][jj],
                                 fwhmx=kerQshape['fwhmx'],
                                 fwhmy=kerQshape['fwhmy'],

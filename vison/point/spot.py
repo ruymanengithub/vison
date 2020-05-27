@@ -26,9 +26,9 @@ class Spot(Shapemeter, Photometer, Gaussmeter):
     """
     Provides methods to do point-source analysis on a stamp.
     Aimed at basic analysis:
-        - Photometry
-        - Quadrupole Moments
-        - Gaussian Fit
+     - Photometry
+     - Quadrupole Moments
+     - Gaussian Fit
 
     :param data: stamp to be analysed.
     :type data: np.ndarray

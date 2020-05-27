@@ -12,89 +12,90 @@ metacal.py
 ----------
 
 .. automodule:: vison.metatests.metacal
-        :members:
+    :members:
 
 bf.py
 -----
 
 .. automodule:: vison.metatests.bf
-        :members:
+    :members:
 
 
 bias.py
 -------
 
 .. automodule:: vison.metatests.bias
-        :members:
+    :members:
 
 chinj01.py
 ----------
 
 .. automodule:: vison.metatests.chinj01
-        :members:
+    :members:
+
 
 chinj02.py
 ----------
 
 .. automodule:: vison.metatests.chinj02
-        :members:
+    :members:
 
 cosmetics.py
 ------------
 
 .. automodule:: vison.metatests.cosmetics
-        :members:
+    :members:
 
 dark.py
 -------
 
 .. automodule:: vison.metatests.dark
-        :members:
+    :members:
 
 flat.py
 -------
 
 .. automodule:: vison.metatests.flat
-        :members
+    :members:
 
 mot_warm.py
 -----------
 
 .. automodule:: vison.metatests.mot_warm
-        :members:
+    :members:
 
 nl.py
 -----
 
 .. automodule:: vison.metatests.nl
-        :members:
+    :members:
 
 persistence.py
 --------------
 
 .. automodule:: vison.metatests.persistence
-        :members:
+    :members:
 
 psf.py
 ------
 
 .. automodule:: vison.metatests.psf
-        :members:
+    :members:
 
 ptc.py
 ------
 
 .. automodule:: vison.metatests.ptc
-        :members:
+    :members:
 
 tpx1.py
 -------
 
 .. automodule:: vison.metatests.tpx1
-        :members:
+    :members:
 
 tpx2.py
 -------
 
 .. automodule:: vison.metatests.tpx2
-        :members:
+    :members:
