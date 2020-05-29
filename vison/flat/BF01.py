@@ -873,7 +873,7 @@ class BF01(PTC0X):
         # INITIALISATIONS
 
         indices = copy.deepcopy(self.dd.indices)
-        nObs, nC, nQ = indices.shape
+        nObs, nC, nQ = indices.shape[0:3]
         CCDs = np.array(indices.get_vals('CCD'))
         Quads = np.array(indices.get_vals('Quad'))
 
@@ -945,7 +945,50 @@ class BF01(PTC0X):
                 ell = np.abs((sigmax**2. - sigmay**2.) / (sigmax**2. + sigmay**2.))
                 BFfit_dd['ELL_HWC'][jj] = ell
 
-        stop()
+        hasPTCs = ('sec_var' in self.dd.colnames) and\
+         ('sec_var_noBFE' in self.dd.colnames)
+
+        if hasPTCs:
+            labelkeysPTC = ['data','one-2-one']
+            curves_cdp = OrderedDict(BF=OrderedDict(labelkeys=labelkeys),
+                NOBF=OrderedDict(labelkeys=labelkeys))
+            
+            PTCkeys = ['BF','NOBF']
+
+            for key in PTCkeys:
+                for CCDk in CCDs:
+                    for Q in Quads:
+                        curves_cdp[key][CCDk][Q] = OrderedDict()
+                        curves_cdp[key][CCDk][Q]['x'] = OrderedDict()
+                        curves_cdp[key][CCDk][Q]['y'] = OrderedDict()
+
+            for iCCD, CCD in enumerate(CCDs):
+                for jQ, Q in enumerate(Quads):
+                    ixsel = np.where(~np.isnan(self.dd.mx['ObsID_pair'][:]))
+
+                    for key in PTCkeys:
+                        medcol = medcols[key]
+                        varcol = varcols[key]
+
+                        raw_var = self.dd.mx[varcol][ixsel, iCCD, jQ, :]
+                        raw_med = self.dd.mx[medcol][ixsel, iCCD, jQ, :]
+                        ixnonan = np.where(~np.isnan(raw_var) & ~np.isnan(raw_med))
+                        var = raw_var[ixnonan]
+                        med = raw_med[ixnonan]
+
+                        curves_cdp[key][CCDk][Q]['x']['data'] = med.copy()
+                        curves_cdp[key][CCDk][Q]['y']['data'] = var.copy()
+
+                        curves_cdp[key][CCDk][Q]['x']['one-2-one'] = med.copy()
+                        curves_cdp[key][CCDk][Q]['y']['one-2-one'] = med.copy()
+
+            for key in PTCkeys:
+
+
+            if self.report is not None:
+                self.addFigures_ST(figkeys=['BF0X_PTC_curves',
+                    'BF0X_PTC_curves_noBFE'],
+                    dobuilddata=False)
 
         for tag in ['fwhmx', 'fwhmy']:
 

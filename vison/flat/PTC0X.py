@@ -358,7 +358,7 @@ class PTC0X(FlatTask):
         valini = 0.
         self.dd.initColumn(medcol, Sindices, dtype='float32', valini=valini)
         self.dd.initColumn(varcol, Sindices, dtype='float32', valini=valini)
-        
+
 
         # labels should be the same accross CCDs. PATCH.
         label = self.dd.mx['label'][:, 0].copy()
@@ -608,7 +608,6 @@ class PTC0X(FlatTask):
 
                 raw_var = self.dd.mx['sec_var'][ixsel, iCCD, jQ, :]
                 raw_med = self.dd.mx['sec_med'][ixsel, iCCD, jQ, :]
-
                 ixnonan = np.where(~np.isnan(raw_var) & ~np.isnan(raw_med))
                 var = raw_var[ixnonan]
                 med = raw_med[ixnonan]
