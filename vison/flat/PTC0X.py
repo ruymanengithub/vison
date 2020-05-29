@@ -332,12 +332,44 @@ class PTC0X(FlatTask):
     def f_extract_PTC(self, ccdobjcol, medcol, varcol):
         """ """
 
+        # HARDWIRED VALUES
+        wpx = self.window['wpx']
+        hpx = self.window['hpx']
+
+        indices = copy.deepcopy(self.dd.indices)
+
+        nObs, nCCD, nQuad = indices.shape[0:3]
+
+        Quads = indices.get_vals('Quad')
+        CCDs = indices.get_vals('CCD')
+
+        tile_coos = dict()
+        for Quad in Quads:
+            tile_coos[Quad] = self.ccdcalc.get_tile_coos(Quad, wpx, hpx)
+        Nsectors = tile_coos[Quads[0]]['Nsamps']
+        sectornames = np.arange(Nsectors)
+
+        Sindices = copy.deepcopy(self.dd.indices)
+        if 'Sector' not in Sindices.names:
+            Sindices.append(core.vIndex('Sector', vals=sectornames))
+
+        # Initializing new columns
+
+        valini = 0.
+        self.dd.initColumn(medcol, Sindices, dtype='float32', valini=valini)
+        self.dd.initColumn(varcol, Sindices, dtype='float32', valini=valini)
+        
+
+        # labels should be the same accross CCDs. PATCH.
+        label = self.dd.mx['label'][:, 0].copy()
+        ulabels = np.unique(label)
+        ObsIDs = self.dd.mx['ObsID'][:].copy()
+
         # Pairing ObsIDs
 
         self.dd.initColumn(
             'ObsID_pair', self.dd.mx['ObsID'].indices, dtype='int64', valini=np.nan)
 
-        ulabels = np.unique(label)
 
         for ulabel in ulabels:
             six = np.where(label == ulabel)
@@ -447,38 +479,12 @@ class PTC0X(FlatTask):
                 keyword='extract', Title='PTC Extraction', level=0)
             self.report.add_Text('Segmenting on %i x %i windows...' % (wpx, hpx))
 
-        # labels should be the same accross CCDs. PATCH.
-        label = self.dd.mx['label'][:, 0].copy()
-        ObsIDs = self.dd.mx['ObsID'][:].copy()
-
-        indices = copy.deepcopy(self.dd.indices)
-
-        nObs, nCCD, nQuad = indices.shape[0:3]
-
-        Quads = indices.get_vals('Quad')
-        CCDs = indices.get_vals('CCD')
-
-        tile_coos = dict()
-        for Quad in Quads:
-            tile_coos[Quad] = self.ccdcalc.get_tile_coos(Quad, wpx, hpx)
-        Nsectors = tile_coos[Quads[0]]['Nsamps']
-        sectornames = np.arange(Nsectors)
-
-        Sindices = copy.deepcopy(self.dd.indices)
-        if 'Sector' not in Sindices.names:
-            Sindices.append(core.vIndex('Sector', vals=sectornames))
-
         # Initializing new columns and computing PTC
 
-        valini = 0.
 
         medcol = 'sec_med'
         varcol = 'sec_var'
         ccdobjcol = 'ccdobj_name'
-
-        self.dd.initColumn(medcol, Sindices, dtype='float32', valini=valini)
-        self.dd.initColumn(varcol, Sindices, dtype='float32', valini=valini)
-
         self.f_extract_PTC(ccdobjcol, medcol, varcol)
 
         # MISSING: any figure?

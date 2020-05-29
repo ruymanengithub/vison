@@ -814,7 +814,6 @@ class BF01(PTC0X):
 
     def extract_PTCs(self):
         """ """
-
         # HARDWIRED VALUES
         wpx = self.window['wpx']
         hpx = self.window['hpx']
@@ -824,38 +823,10 @@ class BF01(PTC0X):
                 keyword='extract', Title='PTC Extraction', level=0)
             self.report.add_Text('Segmenting on %i x %i windows...' % (wpx, hpx))
 
-
-        # labels should be the same accross CCDs. PATCH.
-        label = self.dd.mx['label'][:, 0].copy()
-        ObsIDs = self.dd.mx['ObsID'][:].copy()
-
-        indices = copy.deepcopy(self.dd.indices)
-
-        nObs, nCCD, nQuad = indices.shape[0:3]
-
-        Quads = indices.get_vals('Quad')
-        CCDs = indices.get_vals('CCD')
-
-        tile_coos = dict()
-        for Quad in Quads:
-            tile_coos[Quad] = self.ccdcalc.get_tile_coos(Quad, wpx, hpx)
-        Nsectors = tile_coos[Quads[0]]['Nsamps']
-        sectornames = np.arange(Nsectors)
-
-        Sindices = copy.deepcopy(self.dd.indices)
-        if 'Sector' not in Sindices.names:
-            Sindices.append(core.vIndex('Sector', vals=sectornames))
-
-        # Initializing new columns and computing PTCs
-
-        valini = 0.
-
+        
         medcol = 'sec_med'
         varcol = 'sec_var'
         ccdobjcol = 'ccdobj_name'
-
-        self.dd.initColumn(medcol, Sindices, dtype='float32', valini=valini)
-        self.dd.initColumn(varcol, Sindices, dtype='float32', valini=valini)
 
         self.f_extract_PTC(ccdobjcol, medcol, varcol)
 
@@ -865,10 +836,8 @@ class BF01(PTC0X):
         varcol_nobfe = 'sec_var_noBFE'
         ccdobjcol_nobfe = 'ccdobj_bfe_name'
 
-        self.dd.initColumn(medcol_nobfe, Sindices, dtype='float32', valini=valini)
-        self.dd.initColumn(varcol_nobfe, Sindices, dtype='float32', valini=valini)
 
-        self.f_extract_PTC(ccdobjcol_nobfe, medcol_nobfe, varcol_nobffe)
+        self.f_extract_PTC(ccdobjcol_nobfe, medcol_nobfe, varcol_nobfe)
 
 
     def meta_analysis(self):
@@ -976,6 +945,8 @@ class BF01(PTC0X):
                 ell = np.abs((sigmax**2. - sigmay**2.) / (sigmax**2. + sigmay**2.))
                 BFfit_dd['ELL_HWC'][jj] = ell
 
+        stop()
+
         for tag in ['fwhmx', 'fwhmy']:
 
             fdict_FF = self.figdict['BF01_%s_v_flu' % tag][1]
@@ -1024,5 +995,8 @@ class BF01(PTC0X):
                                                    formatters=cov_formatters)
 
             self.report.add_Text(BFfittex)
+
+
+
 
         self.canbecleaned = True
