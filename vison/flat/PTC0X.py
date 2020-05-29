@@ -328,6 +328,92 @@ class PTC0X(FlatTask):
         # super(PTC0X, self).prepare_images(doExtract=True, doMask=True,
         #                                  doOffset=True, doBias=False, doFF=False)
 
+
+    def f_extract_PTC(self, ccdobjcol, medcol, varcol):
+        """ """
+
+        # Pairing ObsIDs
+
+        self.dd.initColumn(
+            'ObsID_pair', self.dd.mx['ObsID'].indices, dtype='int64', valini=np.nan)
+
+        ulabels = np.unique(label)
+
+        for ulabel in ulabels:
+            six = np.where(label == ulabel)
+            nsix = len(six[0])
+            ixeven = np.arange(0, nsix, 2)
+            ixodd = np.arange(1, nsix, 2)
+
+            self.dd.mx['ObsID_pair'][six[0][ixeven]] = ObsIDs[six[0][ixodd]]
+
+        if not self.drill:
+
+            # if self.proc_histo['Masked']:
+            #    estimators = dict(median=np.ma.median,std=np.ma.std)
+            # else:
+            #    estimators = dict(median=np.median,std=np.std)
+
+            dpath = self.inputs['subpaths']['ccdpickles']
+
+            misspairs = []
+
+            for iObs in range(nObs):
+
+                _ObsID_pair = self.dd.mx['ObsID_pair'][iObs]
+                if np.isnan(_ObsID_pair):
+                    continue
+                iObs_pair = np.where(ObsIDs == _ObsID_pair)[0][0]
+
+                flu_i = self.dd.mx['flu_med_img'][iObs, ...].mean()
+                flu_p = self.dd.mx['flu_med_img'][iObs_pair, ...].mean()
+
+                flus = np.array([flu_i, flu_p])
+
+                if flus.std() / flus.mean() > 0.1:
+
+                    self.dd.mx[medcol][iObs, ...] = np.nan
+                    self.dd.mx[varcol][iObs, ...] = np.nan
+
+                    misspairs.append((self.dd.mx['ObsID'][iObs], self.dd.mx['ObsID'][iObs_pair]))
+
+                    continue
+
+                for jCCD, CCDk in enumerate(CCDs):
+
+                    ccdobj_odd_f = os.path.join(
+                        dpath, '%s.pick' % self.dd.mx[ccdobjcol][iObs, jCCD])
+                    ccdobj_eve_f = os.path.join(
+                        dpath, '%s.pick' % self.dd.mx[ccdobjcol][iObs_pair, jCCD])
+
+                    ccdobj_odd = copy.deepcopy(
+                        cPickleRead(ccdobj_odd_f))
+                    ccdobj_eve = copy.deepcopy(
+                        cPickleRead(ccdobj_eve_f))
+
+                    evedata = ccdobj_eve.extensions[-1].data.copy()
+
+                    # easy way to subtract one image from the other
+                    ccdobj_sub = copy.deepcopy(ccdobj_odd)
+                    ccdobj_sub.sub_bias(evedata, extension=-1)
+
+                    for kQ in range(nQuad):
+
+                        Quad = Quads[kQ]
+
+                        _tile_coos = tile_coos[Quad]
+
+                        _meds = ccdobj_odd.get_tiles_stats(
+                            Quad, _tile_coos, 'median', extension=-1)
+
+                        # IT'S A SUBTRACTION, SO WE HAVE TO DIVIDE BY 2 THE VARIANCE!
+                        _vars = ccdobj_sub.get_tiles_stats(
+                            Quad, _tile_coos, 'std', extension=-1)**2. / 2.
+
+                        self.dd.mx[medcol][iObs, jCCD, kQ, :] = _meds.copy()
+                        self.dd.mx[varcol][iObs, jCCD, kQ, :] = _vars.copy()
+
+
     def extract_PTC(self):
         """
 
@@ -386,89 +472,14 @@ class PTC0X(FlatTask):
 
         valini = 0.
 
-        self.dd.initColumn('sec_med', Sindices, dtype='float32', valini=valini)
-        self.dd.initColumn('sec_var', Sindices, dtype='float32', valini=valini)
+        medcol = 'sec_med'
+        varcol = 'sec_var'
+        ccdobjcol = 'ccdobj_name'
 
-        # Pairing ObsIDs
+        self.dd.initColumn(medcol, Sindices, dtype='float32', valini=valini)
+        self.dd.initColumn(varcol, Sindices, dtype='float32', valini=valini)
 
-        self.dd.initColumn(
-            'ObsID_pair', self.dd.mx['ObsID'].indices, dtype='int64', valini=np.nan)
-
-        ulabels = np.unique(label)
-
-        for ulabel in ulabels:
-            six = np.where(label == ulabel)
-            nsix = len(six[0])
-            ixeven = np.arange(0, nsix, 2)
-            ixodd = np.arange(1, nsix, 2)
-
-            self.dd.mx['ObsID_pair'][six[0][ixeven]] = ObsIDs[six[0][ixodd]]
-
-        if not self.drill:
-
-            # if self.proc_histo['Masked']:
-            #    estimators = dict(median=np.ma.median,std=np.ma.std)
-            # else:
-            #    estimators = dict(median=np.median,std=np.std)
-
-            dpath = self.inputs['subpaths']['ccdpickles']
-
-            misspairs = []
-
-            for iObs in range(nObs):
-
-                _ObsID_pair = self.dd.mx['ObsID_pair'][iObs]
-                if np.isnan(_ObsID_pair):
-                    continue
-                iObs_pair = np.where(ObsIDs == _ObsID_pair)[0][0]
-
-                flu_i = self.dd.mx['flu_med_img'][iObs, ...].mean()
-                flu_p = self.dd.mx['flu_med_img'][iObs_pair, ...].mean()
-
-                flus = np.array([flu_i, flu_p])
-
-                if flus.std() / flus.mean() > 0.1:
-
-                    self.dd.mx['sec_med'][iObs, ...] = np.nan
-                    self.dd.mx['sec_var'][iObs, ...] = np.nan
-
-                    misspairs.append((self.dd.mx['ObsID'][iObs], self.dd.mx['ObsID'][iObs_pair]))
-
-                    continue
-
-                for jCCD, CCDk in enumerate(CCDs):
-
-                    ccdobj_odd_f = os.path.join(
-                        dpath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs, jCCD])
-                    ccdobj_eve_f = os.path.join(
-                        dpath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs_pair, jCCD])
-
-                    ccdobj_odd = copy.deepcopy(
-                        cPickleRead(ccdobj_odd_f))
-                    ccdobj_eve = copy.deepcopy(
-                        cPickleRead(ccdobj_eve_f))
-
-                    evedata = ccdobj_eve.extensions[-1].data.copy()
-
-                    # easy way to subtract one image from the other
-                    ccdobj_sub = copy.deepcopy(ccdobj_odd)
-                    ccdobj_sub.sub_bias(evedata, extension=-1)
-
-                    for kQ in range(nQuad):
-
-                        Quad = Quads[kQ]
-
-                        _tile_coos = tile_coos[Quad]
-
-                        _meds = ccdobj_odd.get_tiles_stats(
-                            Quad, _tile_coos, 'median', extension=-1)
-
-                        # IT'S A SUBTRACTION, SO WE HAVE TO DIVIDE BY 2 THE VARIANCE!
-                        _vars = ccdobj_sub.get_tiles_stats(
-                            Quad, _tile_coos, 'std', extension=-1)**2. / 2.
-
-                        self.dd.mx['sec_med'][iObs, jCCD, kQ, :] = _meds.copy()
-                        self.dd.mx['sec_var'][iObs, jCCD, kQ, :] = _vars.copy()
+        self.f_extract_PTC(ccdobjcol, medcol, varcol)
 
         # MISSING: any figure?
         # MISSING: any Table?

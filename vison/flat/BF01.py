@@ -704,6 +704,11 @@ class BF01(PTC0X):
 
             self.report.add_Text(BFtex)
 
+    def correct_PTC_G15(self):
+        """Applies BFE solutions from G+15 to PTC curves, to test effectivity."""
+
+        
+
     def meta_analysis(self):
         """
 
