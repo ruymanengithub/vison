@@ -93,6 +93,46 @@ def process_one_fluence_covmaps(q, dd, dpath, CCDs, jCCD, ku, ulabels,
     q.put([jCCD, ku, icovdict])
 
 
+def correct_BFE_one_image(q, dd, inputs, iObs, nObs, CCDs, Quads, picklespath):
+    """ """
+
+    for jCCD, CCDkey in enumerate(CCDs):
+
+        inccdobj_name = '%s.pick' % dd.mx['ccdobj_name'][iObs, jCCD]
+        full_inccdobj_name = os.path.join(picklespath, inccdobj_name)
+                              
+
+        print 'Test %s, OBS %i/%i: correcting BFE in %s...' % (
+            inputs['test'], iObs + 1, nObs, inccdobj_name)
+
+        # loading CCD Object
+        ccdobj = copy.deepcopy(cPickleRead(full_inccdobj_name))
+
+        ccdobj_bfe_name = '%s_proc_bfe' % dd.mx['File_name'][iObs, jCCD]
+
+        fullccdobj_bfe_name = os.path.join(
+            picklespath, '%s.pick' % ccdobj_bfe_name)
+
+        colkey = dd.mx['label'][iObs,jCCD]
+
+
+        for Q in Quads:
+            Asol = dd.products['BF'][CCDkey][Q][colkey]['Asol'].copy()
+
+            Qimg = ccdobj.get_quad(Q, canonical=True, extension=-1)
+
+            Qimg = G15.correct_estatic(Qimg, Asol)
+
+            ccdobj.set_quad(Qimg, Q, canonical=True, extension=-1)
+            
+
+        # cPickleDumpDictionary(dict(ccdobj=ccdobj),fullccdobj_name)
+        cPickleDumpDictionary(ccdobj, fullccdobj_bfe_name)
+        # ccdobj.writeto(fullccdobj_name,clobber=True)
+        # self.dd.mx['ccdobj_name'][iObs, jCCD] = ccdobj_name
+        q.put([iObs, jCCD, ccdobj_bfe_name])
+
+
 class BF01_inputs(inputs.Inputs):
     manifesto = inputs.CommonTaskInputs.copy()
     manifesto.update(OrderedDict(sorted([
@@ -156,6 +196,8 @@ class BF01(PTC0X):
                          ('prep', self.prepare_images),
                          ('extract_COV', self.extract_COV),
                          ('extract_BF', self.extract_BF),
+                         ('correct_BFE_G15', self.correct_BFE_G15),
+                         ('extract_PTCs', self.extract_PTCs),
                          ('meta', self.meta_analysis)]
         FlatTask.__init__(self, inputs=inputs, log=log, drill=drill, debug=debug,
                           cleanafter=cleanafter)
@@ -174,6 +216,7 @@ class BF01(PTC0X):
                                        covariance='covariance',
                                        kernels='kernels',
                                        products='products')
+        self.window = dict(wpx=300, hpx=300)
 
     def set_inpdefaults(self, **kwargs):
         """ """
@@ -704,10 +747,129 @@ class BF01(PTC0X):
 
             self.report.add_Text(BFtex)
 
-    def correct_PTC_G15(self):
-        """Applies BFE solutions from G+15 to PTC curves, to test effectivity."""
+    def correct_BFE_G15(self):
+        """Applies BFE solutions from G+15 to images, to later test effectivity through PTC."""
 
+
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='correct_BFE_G15', Title='Correcting BFE (G+15)', level=0)
         
+
+        # Initialize new columns
+
+        Cindices = copy.deepcopy(self.dd.mx['File_name'].indices)
+        self.dd.initColumn('ccdobj_bfe_name', Cindices,
+                           dtype='S100', valini='None')
+
+        DDindices = copy.deepcopy(self.dd.indices)
+
+        #nObs,nCCD,nQuad = DDindices.shape
+        #Quads = DDindices[2].vals
+
+        nObs = DDindices.get_len('ix')
+        # nObs = 3  # TESTS!
+        #print 'TESTS: task.prepare_images: LIMITTING TO 3 IMAGES!'
+
+        CCDs = DDindices.get_vals('CCD')
+        Quads = DDindices.get_vals('Quad')
+
+
+        if not self.drill:
+
+            picklespath = self.inputs['subpaths']['ccdpickles']
+
+            arglist = []
+
+            mgr = mp.Manager()
+            queue = mgr.Queue()
+
+            for iObs in range(nObs):
+                arglist.append([queue, self.dd, self.inputs,
+                                iObs, nObs, CCDs, Quads, picklespath])
+            
+            #correct_BFE_one_image(*arglist[0]) # TEST
+            #nobfe = 'results_atCALDATA/DTEST/BF01_730/ccdpickles/EUC_31074_300719D121603T_ROE1_CCD1_proc_bfe.pick'
+            #wbfe = 'results_atCALDATA/DTEST/BF01_730/ccdpickles/EUC_31074_300719D121603T_ROE1_CCD1_proc.pick'
+            #ccdobj_nobfe = cPickleRead(nobfe)
+            #ccdobj_wbfe = cPickleRead(wbfe)
+            #stop()
+
+            pool = mp.Pool(processes=self.processes)
+
+            for i in range(len(arglist)):
+                pool.apply_async(correct_BFE_one_image, args=arglist[i])
+            pool.close()
+            pool.join()
+
+            replies = []
+            while not queue.empty():
+                replies.append(queue.get())
+
+            for reply in replies:
+                iObs, jCCD, ccdobj_name = reply
+                self.dd.mx['ccdobj_bfe_name'][iObs, jCCD] = ccdobj_name
+
+        return None
+
+    def extract_PTCs(self):
+        """ """
+
+        # HARDWIRED VALUES
+        wpx = self.window['wpx']
+        hpx = self.window['hpx']
+
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='extract', Title='PTC Extraction', level=0)
+            self.report.add_Text('Segmenting on %i x %i windows...' % (wpx, hpx))
+
+
+        # labels should be the same accross CCDs. PATCH.
+        label = self.dd.mx['label'][:, 0].copy()
+        ObsIDs = self.dd.mx['ObsID'][:].copy()
+
+        indices = copy.deepcopy(self.dd.indices)
+
+        nObs, nCCD, nQuad = indices.shape[0:3]
+
+        Quads = indices.get_vals('Quad')
+        CCDs = indices.get_vals('CCD')
+
+        tile_coos = dict()
+        for Quad in Quads:
+            tile_coos[Quad] = self.ccdcalc.get_tile_coos(Quad, wpx, hpx)
+        Nsectors = tile_coos[Quads[0]]['Nsamps']
+        sectornames = np.arange(Nsectors)
+
+        Sindices = copy.deepcopy(self.dd.indices)
+        if 'Sector' not in Sindices.names:
+            Sindices.append(core.vIndex('Sector', vals=sectornames))
+
+        # Initializing new columns and computing PTCs
+
+        valini = 0.
+
+        medcol = 'sec_med'
+        varcol = 'sec_var'
+        ccdobjcol = 'ccdobj_name'
+
+        self.dd.initColumn(medcol, Sindices, dtype='float32', valini=valini)
+        self.dd.initColumn(varcol, Sindices, dtype='float32', valini=valini)
+
+        self.f_extract_PTC(ccdobjcol, medcol, varcol)
+
+        valini = 0.
+
+        medcol_nobfe = 'sec_med_noBFE'
+        varcol_nobfe = 'sec_var_noBFE'
+        ccdobjcol_nobfe = 'ccdobj_bfe_name'
+
+        self.dd.initColumn(medcol_nobfe, Sindices, dtype='float32', valini=valini)
+        self.dd.initColumn(varcol_nobfe, Sindices, dtype='float32', valini=valini)
+
+        self.f_extract_PTC(ccdobjcol_nobfe, medcol_nobfe, varcol_nobffe)
+
 
     def meta_analysis(self):
         """

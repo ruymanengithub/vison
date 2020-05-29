@@ -468,7 +468,7 @@ class PTC0X(FlatTask):
         if 'Sector' not in Sindices.names:
             Sindices.append(core.vIndex('Sector', vals=sectornames))
 
-        # Initializing new columns
+        # Initializing new columns and computing PTC
 
         valini = 0.
 
