@@ -125,17 +125,21 @@ FWHMy_v_flu_dict = dict(
 )
 
 
-def gt_PTC_curves_dict(test, NOBFE=False):
+def gt_PTC_curves_dict(test, BFEcorr='no'):
 
   nicetest = st.replace(test, '_', '\_')
 
-  if NOBFE:
-    BFEtag = 'noBFE'
-    BFEcap = 'BFE removed'
-  else:
+  if BFEcorr=='no':
     BFEtag = 'wBFE'
     BFEcap = 'BFE left in'
+  elif BFEcorr == 'fludep':
+    BFEtag = 'noBFE'
+    BFEcap = 'BFE removed'
+  elif BFEcorr == 'flufix':
+    BFEtag = 'noBFEfixflu'
+    BFEcap = 'BFE removed, mid-fluence Axij'
 
+  
   return dict(
       figname='%s_PTC_curves_%s.png' % (test,BFEtag),
       caption='%s: PTC curves and best fits (%s).' % (nicetest,BFEcap),
@@ -201,10 +205,14 @@ def gt_BF01figs(test):
         figclasses.Fig_Beam2DPlot, FWHMy_v_flu_dict]
 
     BF01figs['BF01_PTC_BFE'] = [
-        figclasses.Fig_Beam2DPlot, gt_PTC_curves_dict(test, NOBFE=False)]
+        figclasses.Fig_Beam2DPlot, gt_PTC_curves_dict(test, BFEcorr='no')]
 
     BF01figs['BF01_PTC_NOBFE'] = [
-        figclasses.Fig_Beam2DPlot, gt_PTC_curves_dict(test, NOBFE=True)]
+        figclasses.Fig_Beam2DPlot, gt_PTC_curves_dict(test, BFEcorr='fludep')]
+
+    BF01figs['BF01_PTC_NOBFEALT'] = [
+        figclasses.Fig_Beam2DPlot, gt_PTC_curves_dict(test, BFEcorr='flufix')]
+
 
 
     return BF01figs

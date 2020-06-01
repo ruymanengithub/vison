@@ -93,8 +93,12 @@ def process_one_fluence_covmaps(q, dd, dpath, CCDs, jCCD, ku, ulabels,
     q.put([jCCD, ku, icovdict])
 
 
-def correct_BFE_one_image(q, dd, inputs, iObs, nObs, CCDs, Quads, picklespath):
+def correct_BFE_one_image(q, dd, inputs, iObs, nObs, CCDs, Quads, picklespath, Asol):
     """ """
+    if Asol is None:
+        tempccdobj = '%s_proc_bfe'
+    else:
+        tempccdobj = '%s_proc_bfe_alt'
 
     for jCCD, CCDkey in enumerate(CCDs):
 
@@ -102,26 +106,29 @@ def correct_BFE_one_image(q, dd, inputs, iObs, nObs, CCDs, Quads, picklespath):
         full_inccdobj_name = os.path.join(picklespath, inccdobj_name)
                               
 
-        print 'Test %s, OBS %i/%i: correcting BFE in %s...' % (
-            inputs['test'], iObs + 1, nObs, inccdobj_name)
+        print('Test %s, OBS %i/%i: correcting BFE in %s...' % (
+            inputs['test'], iObs + 1, nObs, inccdobj_name))
 
         # loading CCD Object
         ccdobj = copy.deepcopy(cPickleRead(full_inccdobj_name))
 
-        ccdobj_bfe_name = '%s_proc_bfe' % dd.mx['File_name'][iObs, jCCD]
+        ccdobj_bfe_name = tempccdobj % dd.mx['File_name'][iObs, jCCD]
 
         fullccdobj_bfe_name = os.path.join(
             picklespath, '%s.pick' % ccdobj_bfe_name)
 
         colkey = dd.mx['label'][iObs,jCCD]
 
-
         for Q in Quads:
-            Asol = dd.products['BF'][CCDkey][Q][colkey]['Asol'].copy()
+
+            if Asol is None:
+                _Asol = dd.products['BF'][CCDkey][Q][colkey]['Asol'].copy()
+            else:
+                _Asol = Asol[CCDkey][Q].copy()
 
             Qimg = ccdobj.get_quad(Q, canonical=True, extension=-1)
 
-            Qimg = G15.correct_estatic(Qimg, Asol)
+            Qimg = G15.correct_estatic(Qimg, _Asol)
 
             ccdobj.set_quad(Qimg, Q, canonical=True, extension=-1)
             
@@ -747,19 +754,14 @@ class BF01(PTC0X):
 
             self.report.add_Text(BFtex)
 
-    def correct_BFE_G15(self):
+    def f_correct_BFE_G15(self, ccdobjname, fixA=False):
         """Applies BFE solutions from G+15 to images, to later test effectivity through PTC."""
-
-
-        if self.report is not None:
-            self.report.add_Section(
-                keyword='correct_BFE_G15', Title='Correcting BFE (G+15)', level=0)
         
 
         # Initialize new columns
 
         Cindices = copy.deepcopy(self.dd.mx['File_name'].indices)
-        self.dd.initColumn('ccdobj_bfe_name', Cindices,
+        self.dd.initColumn(ccdobjname, Cindices,
                            dtype='S100', valini='None')
 
         DDindices = copy.deepcopy(self.dd.indices)
@@ -779,6 +781,25 @@ class BF01(PTC0X):
 
             picklespath = self.inputs['subpaths']['ccdpickles']
 
+            if fixA:
+                
+                fluences = self.dd.mx['flu_med_img'].array.mean(axis=(1,2))
+                minflu = np.nanmin(fluences)
+                maxflu = np.nanmax(fluences)
+                midflu = (minflu+maxflu)/2.
+                ixsel = np.argmin(np.abs(fluences-midflu))
+                colkey = self.dd.mx['label'][ixsel,0]
+
+
+                Asol = OrderedDict()
+                for CCDk in CCDs:
+                    Asol[CCDk] = OrderedDict()
+                    for Q in Quads:
+                        Asol[CCDk][Q] = self.dd.products['BF'][CCDk][Q][colkey]['Asol'].copy()
+
+            else: 
+                Asol =None
+
             arglist = []
 
             mgr = mp.Manager()
@@ -786,7 +807,7 @@ class BF01(PTC0X):
 
             for iObs in range(nObs):
                 arglist.append([queue, self.dd, self.inputs,
-                                iObs, nObs, CCDs, Quads, picklespath])
+                                iObs, nObs, CCDs, Quads, picklespath, Asol])
             
             #correct_BFE_one_image(*arglist[0]) # TEST
             #nobfe = 'results_atCALDATA/DTEST/BF01_730/ccdpickles/EUC_31074_300719D121603T_ROE1_CCD1_proc_bfe.pick'
@@ -808,9 +829,20 @@ class BF01(PTC0X):
 
             for reply in replies:
                 iObs, jCCD, ccdobj_name = reply
-                self.dd.mx['ccdobj_bfe_name'][iObs, jCCD] = ccdobj_name
+                self.dd.mx[ccdobjname][iObs, jCCD] = ccdobj_name
 
         return None
+
+    def correct_BFE_G15(self):
+        """ """
+
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='correct_BFE_G15', Title='Correcting BFE (G+15)', level=0)
+
+        self.f_correct_BFE_G15('ccdobj_bfe_fixA_name', fixA=True)
+        self.f_correct_BFE_G15('ccdobj_bfe_name', fixA=False)
+
 
     def extract_PTCs(self):
         """ """
@@ -837,6 +869,15 @@ class BF01(PTC0X):
 
 
         self.f_extract_PTC(ccdobjcol_nobfe, medcol_nobfe, varcol_nobfe)
+
+        
+        medcol_nobfealt = 'sec_med_noBFEalt'
+        varcol_nobfealt = 'sec_var_noBFEalt'
+        ccdobjcol_nobfealt = 'ccdobj_bfe_fixA_name'
+
+
+        self.f_extract_PTC(ccdobjcol_nobfealt, medcol_nobfealt, varcol_nobfealt)
+
 
 
     def meta_analysis(self):
@@ -952,15 +993,18 @@ class BF01(PTC0X):
             av_gain = 3.5 # just for display purposes
 
             medcols = dict(BFE='sec_med',
-                            NOBFE='sec_med_noBFE')
+                            NOBFE='sec_med_noBFE',
+                            NOBFEALT='sec_med_noBFEalt')
             varcols = dict(BFE='sec_var',
-                            NOBFE='sec_var_noBFE')
+                            NOBFE='sec_var_noBFE',
+                            NOBFEALT='sec_var_noBFEalt')
 
             labelkeysPTC = ['data','theo']
             curves_cdp = OrderedDict(BFE=OrderedDict(labelkeys=labelkeysPTC),
-                NOBFE=OrderedDict(labelkeys=labelkeysPTC))
+                NOBFE=OrderedDict(labelkeys=labelkeysPTC),
+                NOBFEALT=OrderedDict(labelkeys=labelkeysPTC))
             
-            PTCkeys = ['BFE','NOBFE']
+            PTCkeys = ['BFE','NOBFE','NOBFEALT']
 
             for key in PTCkeys:
                 for CCDk in CCDs:
@@ -997,7 +1041,8 @@ class BF01(PTC0X):
 
             if self.report is not None:
                 self.addFigures_ST(figkeys=['BF01_PTC_BFE',
-                    'BF01_PTC_NOBFE'],
+                    'BF01_PTC_NOBFE',
+                    'BF01_PTC_NOBFEALT'],
                     dobuilddata=False)
 
         for tag in ['fwhmx', 'fwhmy']:
