@@ -830,7 +830,6 @@ class BF01(PTC0X):
 
         self.f_extract_PTC(ccdobjcol, medcol, varcol)
 
-        valini = 0.
 
         medcol_nobfe = 'sec_med_noBFE'
         varcol_nobfe = 'sec_var_noBFE'
@@ -949,20 +948,29 @@ class BF01(PTC0X):
          ('sec_var_noBFE' in self.dd.colnames)
 
         if hasPTCs:
-            labelkeysPTC = ['data','one-2-one']
-            curves_cdp = OrderedDict(BF=OrderedDict(labelkeys=labelkeys),
-                NOBF=OrderedDict(labelkeys=labelkeys))
+
+            av_gain = 3.5 # just for display purposes
+
+            medcols = dict(BFE='sec_med',
+                            NOBFE='sec_med_noBFE')
+            varcols = dict(BFE='sec_var',
+                            NOBFE='sec_var_noBFE')
+
+            labelkeysPTC = ['data','theo']
+            curves_cdp = OrderedDict(BFE=OrderedDict(labelkeys=labelkeysPTC),
+                NOBFE=OrderedDict(labelkeys=labelkeysPTC))
             
-            PTCkeys = ['BF','NOBF']
+            PTCkeys = ['BFE','NOBFE']
 
             for key in PTCkeys:
                 for CCDk in CCDs:
+                    curves_cdp[key][CCDk] = OrderedDict()
                     for Q in Quads:
                         curves_cdp[key][CCDk][Q] = OrderedDict()
                         curves_cdp[key][CCDk][Q]['x'] = OrderedDict()
                         curves_cdp[key][CCDk][Q]['y'] = OrderedDict()
 
-            for iCCD, CCD in enumerate(CCDs):
+            for iCCD, CCDk in enumerate(CCDs):
                 for jQ, Q in enumerate(Quads):
                     ixsel = np.where(~np.isnan(self.dd.mx['ObsID_pair'][:]))
 
@@ -979,15 +987,17 @@ class BF01(PTC0X):
                         curves_cdp[key][CCDk][Q]['x']['data'] = med.copy()
                         curves_cdp[key][CCDk][Q]['y']['data'] = var.copy()
 
-                        curves_cdp[key][CCDk][Q]['x']['one-2-one'] = med.copy()
-                        curves_cdp[key][CCDk][Q]['y']['one-2-one'] = med.copy()
+                        curves_cdp[key][CCDk][Q]['x']['theo'] = med.copy()
+                        curves_cdp[key][CCDk][Q]['y']['theo'] = med.copy()/av_gain
 
             for key in PTCkeys:
-
+                
+                fdict_PTC = self.figdict['BF01_PTC_%s' % key][1]
+                fdict_PTC['data'] = curves_cdp[key].copy()
 
             if self.report is not None:
-                self.addFigures_ST(figkeys=['BF0X_PTC_curves',
-                    'BF0X_PTC_curves_noBFE'],
+                self.addFigures_ST(figkeys=['BF01_PTC_BFE',
+                    'BF01_PTC_NOBFE'],
                     dobuilddata=False)
 
         for tag in ['fwhmx', 'fwhmy']:
