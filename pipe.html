@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Pipeline &#8212; vison 0.9+327.gdfc1435 documentation</title>
+    <title>Pipeline &#8212; vison 0.9+339.g03a673c documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9+327.gdfc1435',
+        VERSION:     '0.9+339.g03a673c',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -27,7 +27,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Data Model" href="datamodel.html" />
-    <link rel="prev" title="Installation" href="installation.html" /> 
+    <link rel="prev" title="Code Guide" href="guide.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -43,9 +43,9 @@
           <a href="datamodel.html" title="Data Model"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="installation.html" title="Installation"
+          <a href="guide.html" title="Code Guide"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+327.gdfc1435 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+339.g03a673c documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -240,6 +240,11 @@ with subdirectories for each TASK run.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="vison.pipe.master.Pipe.BF01.correct_BFE_G15">
+<code class="descname">correct_BFE_G15</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BF01.correct_BFE_G15" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="vison.pipe.master.Pipe.BF01.extract_BF">
 <code class="descname">extract_BF</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BF01.extract_BF" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
@@ -261,6 +266,17 @@ with subdirectories for each TASK run.</li>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.BF01.extract_PTCs">
+<code class="descname">extract_PTCs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BF01.extract_PTCs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.pipe.master.Pipe.BF01.f_correct_BFE_G15">
+<code class="descname">f_correct_BFE_G15</code><span class="sig-paren">(</span><em>ccdobjname</em>, <em>fixA=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BF01.f_correct_BFE_G15" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies BFE solutions from G+15 to images, to later test effectivity through PTC.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1127,6 +1143,11 @@ cosmetics masking</dd>
 </dd></dl>
 
 <dl class="method">
+<dt id="vison.pipe.master.Pipe.PTC0X.f_extract_PTC">
+<code class="descname">f_extract_PTC</code><span class="sig-paren">(</span><em>ccdobjcol</em>, <em>medcol</em>, <em>varcol</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PTC0X.f_extract_PTC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="vison.pipe.master.Pipe.PTC0X.filterexposures">
 <code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.PTC0X.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1427,6 +1448,11 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 
 <dl class="method">
 <dt>
+<code class="descname">correct_BFE_G15</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
 <code class="descname">extract_BF</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd><dl class="docutils">
 <dt>Performs basic analysis of images:</dt>
@@ -1447,6 +1473,17 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">extract_PTCs</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">f_correct_BFE_G15</code><span class="sig-paren">(</span><em>ccdobjname</em>, <em>fixA=False</em><span class="sig-paren">)</span></dt>
+<dd><p>Applies BFE solutions from G+15 to images, to later test effectivity through PTC.</p>
 </dd></dl>
 
 <dl class="method">
@@ -2314,6 +2351,11 @@ cosmetics masking</dd>
 
 <dl class="method">
 <dt>
+<code class="descname">f_extract_PTC</code><span class="sig-paren">(</span><em>ccdobjcol</em>, <em>medcol</em>, <em>varcol</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
 <code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
@@ -2968,8 +3010,8 @@ date-folders.</p>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="installation.html"
-                        title="previous chapter">Installation</a></p>
+  <p class="topless"><a href="guide.html"
+                        title="previous chapter">Code Guide</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="datamodel.html"
                         title="next chapter">Data Model</a></p>
@@ -3007,9 +3049,9 @@ date-folders.</p>
           <a href="datamodel.html" title="Data Model"
              >next</a> |</li>
         <li class="right" >
-          <a href="installation.html" title="Installation"
+          <a href="guide.html" title="Code Guide"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+327.gdfc1435 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+339.g03a673c documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
