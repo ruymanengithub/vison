@@ -206,6 +206,7 @@ class BF01(PTC0X):
                          ('correct_BFE_G15', self.correct_BFE_G15),
                          ('extract_PTCs', self.extract_PTCs),
                          ('meta', self.meta_analysis)]
+                         #('debugtask', self.debugtask)]
         FlatTask.__init__(self, inputs=inputs, log=log, drill=drill, debug=debug,
                           cleanafter=cleanafter)
         #self.inputs['todo_flags'] = self.init_todo_flags()
@@ -992,6 +993,24 @@ class BF01(PTC0X):
 
             av_gain = 3.5 # just for display purposes
 
+            has_gain_cal = True
+            try:
+                wave = self.inputs['wavelength']
+                gaincdp = self.inputs['inCDPs']['Gain']['nm%i' % wave]
+                df = cPickleRead(gaincdp)['data']['GAIN_TB']
+
+                gaindict = dict()
+                for iCCD, CCDk in enumerate(CCDs):
+                    gaindict[CCDk] = dict()
+                    for jQ, Q in enumerate(Quads):
+                        _gain = df.loc[df['CCD']==iCCD+1].loc[df['Q']==jQ+1]['gain'].values[0]
+                        gaindict[CCDk][Q] = _gain
+
+            except:
+                has_gain_cal = False
+                if self.log is not None:
+                    self.log.info('Gain matrix not found!')
+
             medcols = dict(BFE='sec_med',
                             NOBFE='sec_med_noBFE',
                             NOBFEALT='sec_med_noBFEalt')
@@ -1031,8 +1050,14 @@ class BF01(PTC0X):
                         curves_cdp[key][CCDk][Q]['x']['data'] = med.copy()
                         curves_cdp[key][CCDk][Q]['y']['data'] = var.copy()
 
+                        if has_gain_cal:
+                            _gain = gaindict[CCDk][Q]
+                        else:
+                            _gain = av_gain
+
+
                         curves_cdp[key][CCDk][Q]['x']['theo'] = med.copy()
-                        curves_cdp[key][CCDk][Q]['y']['theo'] = med.copy()/av_gain
+                        curves_cdp[key][CCDk][Q]['y']['theo'] = med.copy()/_gain
 
             for key in PTCkeys:
                 

@@ -765,6 +765,7 @@ class Task(object):
 
     def debugtask(self):
 
+        stop()
         pass
 
 #        if self.report is not None:
