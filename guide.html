@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Code Guide &#8212; vison 0.9+342.gc8a7d88 documentation</title>
+    <title>Code Guide &#8212; vison 0.9+343.g53af90f documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9+342.gc8a7d88',
+        VERSION:     '0.9+343.g53af90f',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+342.gc8a7d88 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+343.g53af90f documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -56,6 +56,21 @@
             
   <div class="section" id="code-guide">
 <span id="guide"></span><h1>Code Guide<a class="headerlink" href="#code-guide" title="Permalink to this headline">¶</a></h1>
+<p>Here we provide an overal description of the code, what it does and how it is organised, to help the user / developer understand how things work.</p>
+<div class="section" id="capabilities-of-the-code">
+<h2>Capabilities of the Code<a class="headerlink" href="#capabilities-of-the-code" title="Permalink to this headline">¶</a></h2>
+<p>First, it is convenient to know what the code here provided can do:</p>
+<ol class="arabic simple">
+<li>Write excel scripts for the acquisition of data using ELVIS. Each test has an associated class, and this class has a method which generates the description of the test that is then converted to excel. The test description can be modified at runtime by means of test object parameters. These test descriptions are a key element of the pipeline. Monitoring and analysis capabilities depend on them (i.e. knowing what <em>should</em> happen).</li>
+<li>Monitor the data acquisition of the calibration campaign in real time. This is done through the sub-package &#8220;eyegore&#8221;. It can monitor the data flow, values in the HK data stream (cheking value against limits), display images and the exposure log, and issue warnings via sms and e-mail.</li>
+<li>Analyse the data from the tests. This is the core functionality of the pipeline.</li>
+<li>Produce calibration / analysis results in a range of formats: json, FITS, excel, etc.</li>
+<li>Produce test reports for each test in pdf (via LaTeX).</li>
+<li>Collate and produce summary reports from a set of tests across all calibrated blocks (metatests).</li>
+<li>Analyse data from the whole VIS FPA (fpatests).</li>
+<li>Simulate data (very basic capabilities).</li>
+</ol>
+</div>
 <div class="section" id="code-architecture">
 <h2>Code Architecture<a class="headerlink" href="#code-architecture" title="Permalink to this headline">¶</a></h2>
 <p>See <a class="reference internal" href="datamodel.html#datamodel"><span class="std std-ref">Data Model</span></a></p>
@@ -83,6 +98,7 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Code Guide</a><ul>
+<li><a class="reference internal" href="#capabilities-of-the-code">Capabilities of the Code</a></li>
 <li><a class="reference internal" href="#code-architecture">Code Architecture</a></li>
 <li><a class="reference internal" href="#code-flow">Code Flow</a></li>
 <li><a class="reference internal" href="#data-models">Data Models</a></li>
@@ -133,7 +149,7 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+342.gc8a7d88 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+343.g53af90f documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

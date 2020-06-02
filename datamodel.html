@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Data Model &#8212; vison 0.9+342.gc8a7d88 documentation</title>
+    <title>Data Model &#8212; vison 0.9+343.g53af90f documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9+342.gc8a7d88',
+        VERSION:     '0.9+343.g53af90f',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="pipe.html" title="Pipeline"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+342.gc8a7d88 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+343.g53af90f documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -82,28 +82,31 @@ the instrument ROEs and saved in FITS format by the acquisition software, ELVIS.
 to also &#8220;host&#8221; calibration data-products, such as Flat-Fields.</p>
 <dl class="docutils">
 <dt>A note on Coordinates Systems:</dt>
-<dd><ul class="first simple">
-<li>&#8216;CCD&#8217;: referenced to the first pixel readout from channel H. All 4 quadrants</li>
-</ul>
-<p class="last">are in a single array, their detection nodes in the 4 &#8220;corners&#8221; of the
+<dd><ul class="first last simple">
+<li><dl class="first docutils">
+<dt>&#8216;CCD&#8217;: referenced to the first pixel readout from channel H. All 4 quadrants</dt>
+<dd>are in a single array, their detection nodes in the 4 &#8220;corners&#8221; of the
 rectangle. Same system as images are displayed on DS9. In clock-wise
 sense, quadrants are H (bottom-left), E (top-left), F (top-right),
-and G (bottom-right).
-* Physical: same as &#8216;CCD&#8217; but takes into account virtual and non-active pixels. 
-It is the closest to measuring real &#8220;distances&#8221; on the silicon.
-* &#8216;Quadrant-canonical&#8217;: Quadrant coordinates system in which the first pixel
+and G (bottom-right).</dd>
+</dl>
+</li>
+<li>Physical: same as &#8216;CCD&#8217; but takes into account virtual and non-active pixels. 
+It is the closest to measuring real &#8220;distances&#8221; on the silicon.</li>
+<li>&#8216;Quadrant-canonical&#8217;: Quadrant coordinates system in which the first pixel
 is the first pixel read out (closest pixel to the readout node), and
 the last is the last readout. In this system, the serial pre-scan comes
 before the image area, and this before the serial overscan. Parallel
 overscan comes after image area in the parallel direction. In this
 system, coordinates of pixels across quadrants, for a single readout,
 correspond to the same point in time. Useful when doing cross-talk analysis,
-for example.
-* &#8216;Quadrant-relative&#8217;: quadrant coordinates system with the same relative orientation
+for example.</li>
+<li>&#8216;Quadrant-relative&#8217;: quadrant coordinates system with the same relative orientation
 as in the &#8216;CCD&#8217; system, but referenced to the &#8216;lower-left&#8217; pixel of the
 given quadrant in such system. In this system, the readout node is in a
 different corner for each quadrant: lower-left for H, top-left for E,
-top-right for F and bottom-right for G.</p>
+top-right for F and bottom-right for G.</li>
+</ul>
 </dd>
 </dl>
 <dl class="method">
@@ -114,7 +117,7 @@ top-right for F and bottom-right for G.</p>
 
 <dl class="method">
 <dt id="vison.datamodel.ccd.CCD.add_to_hist">
-<code class="descname">add_to_hist</code><span class="sig-paren">(</span><em>action</em>, <em>extension=-1</em>, <em>vison=u'0.9+342.gc8a7d88'</em>, <em>params={}</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.add_to_hist" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_to_hist</code><span class="sig-paren">(</span><em>action</em>, <em>extension=-1</em>, <em>vison=u'0.9+343.g53af90f'</em>, <em>params={}</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.add_to_hist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds information to historial of operations applied on object.</p>
 </dd></dl>
 
@@ -1620,7 +1623,7 @@ commvalues.</li>
         <li class="right" >
           <a href="pipe.html" title="Pipeline"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+342.gc8a7d88 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+343.g53af90f documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
