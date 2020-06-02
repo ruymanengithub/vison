@@ -56,6 +56,14 @@ vis_mkscripts.py
 
 .. automodule:: vison.scripts.vis_mkscripts
 
+vison_run
+---------
+
+.. automodule:: vison.scripts.vison_run
+    :members:
+
+
+
 
 vis_star_finder.py
 ------------------
