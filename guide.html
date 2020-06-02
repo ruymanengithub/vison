@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Code Guide &#8212; vison 0.9+345.g3d1166f documentation</title>
+    <title>Code Guide &#8212; vison 0.9+346.g79246ad documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9+345.g3d1166f',
+        VERSION:     '0.9+346.g79246ad',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+345.g3d1166f documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+346.g79246ad documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -102,14 +102,14 @@
 <span class="sd">Filled in by: RAF   # NEEDS USER INPUTS.</span>
 
 <span class="sd">:author: Ruyman Azzollini</span>
-<span class="hll"><span class="sd">:contact: r.azzollini_at_ucl.ac.uk</span>
-</span>
+<span class="sd">:contact: r.azzollini_at_ucl.ac.uk</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="hll">
-</span><span class="hll"><span class="c1"># IMPORT STUFF</span>
-</span><span class="hll"><span class="kn">from</span> <span class="nn">pdb</span> <span class="kn">import</span> <span class="n">set_trace</span> <span class="k">as</span> <span class="n">stop</span>
-</span><span class="hll"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-</span><span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c1"># IMPORT STUFF</span>
+<span class="kn">from</span> <span class="nn">pdb</span> <span class="kn">import</span> <span class="n">set_trace</span> <span class="k">as</span> <span class="n">stop</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">vison.campaign</span> <span class="kn">import</span> <span class="n">campaign</span><span class="p">,</span> <span class="n">devel</span>
 <span class="kn">import</span> <span class="nn">copy</span>
@@ -120,7 +120,7 @@
 <span class="c1">#</span>
 <span class="c1"># MOT_WARM: [None,None],dict(init=True,check=True,basic=True)</span>
 <span class="c1"># COSMETICS00: [None,None],dict(init=True,check=True,masks=True,meta=True)</span>
-<span class="c1"># ...</span>
+<span class="c1"># [...]</span>
                  
 <span class="k">def</span> <span class="nf">get_config_dict</span><span class="p">(</span><span class="n">testgenerator</span><span class="p">,</span> <span class="n">datapath</span><span class="p">,</span> <span class="n">resroot</span><span class="p">,</span> 
                     <span class="n">BLOCKID</span><span class="p">,</span><span class="n">CHAMBER</span><span class="p">,</span><span class="n">diffvalues</span><span class="p">,</span>
@@ -165,7 +165,7 @@
     
     <span class="c1"># END USER INPUTS</span>
     
-    <span class="c1"># ...</span>
+    <span class="c1"># [...]</span>
     
     
     <span class="k">return</span> <span class="n">inputdict</span>
@@ -238,7 +238,7 @@
         
         <span class="n">tasks2execute</span> <span class="o">=</span> <span class="n">tasks2execute_dict</span><span class="p">[</span><span class="n">RUN</span><span class="p">]</span>
         
-            <span class="c1"># ...</span>
+            <span class="c1"># [...]</span>
             
             
             <span class="n">inputdict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_inputdict</span><span class="p">)</span>
@@ -246,6 +246,21 @@
 
 </pre></div>
 </div>
+<p>When vison_run is executed, this literally <em>executes</em> the vison_config script which generates a dictionary called <strong>inputdict</strong>. This dictionary has all the information necessary for the pipeline to run:</p>
+<ul class="simple">
+<li>in which facility (<em>chamber</em>) was the data acquired (relevant to know exposure times, for example).</li>
+<li>what tasks (tests) are to be executed/analysed.</li>
+<li>what values to assign to the free parameters of the tasks.</li>
+<li>what hardware are we testing.</li>
+<li>where to find the input data, and where to put the output results.</li>
+<li>where to find input calibration data products (e.g. cosmetics masks).</li>
+</ul>
+<p>When vison_config.py is executed, it starts from:</p>
+<dl class="docutils">
+<dt>::</dt>
+<dd>if __name__ == &#8216;__main__&#8217;</dd>
+</dl>
+<p>From there, it calls the function <em>get_config_dict</em> to create a standard version of the inputs dictionary, setting up the tasks and their standard inputs. Then it calls <em>add_RUN_specifics</em> to add data locations, OBSID ranges, and apply a selector of sub-tasks to execute for each task.</p>
 </div>
 <div class="section" id="data-models">
 <h2>Data Models<a class="headerlink" href="#data-models" title="Permalink to this headline">¶</a></h2>
@@ -319,7 +334,7 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+345.g3d1166f documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+346.g79246ad documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

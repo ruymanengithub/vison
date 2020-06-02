@@ -50,10 +50,22 @@ Let's have a look at the contents of a vison_config.py script, in simplified for
 
 .. literalinclude:: vison_config_example.py
    :language: python
-   :emphasize-lines: 12,15-18
 
+When vison_run is executed, this literally *executes* the vison_config script which generates a dictionary called **inputdict**. This dictionary has all the information necessary for the pipeline to run:
 
+* in which facility (*chamber*) was the data acquired (relevant to know exposure times, for example).
+* what tasks (tests) are to be executed/analysed.
+* what values to assign to the free parameters of the tasks.
+* what hardware are we testing.
+* where to find the input data, and where to put the output results.
+* where to find input calibration data products (e.g. cosmetics masks).
 
+When vison_config.py is executed, it starts from:
+
+::
+    if __name__ == '__main__'
+
+From there, it calls the function *get_config_dict* to create a standard version of the inputs dictionary, setting up the tasks and their standard inputs. Then it calls *add_RUN_specifics* to add data locations, OBSID ranges, and apply a selector of sub-tasks to execute for each task.
 
 
 
