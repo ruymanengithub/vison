@@ -19,7 +19,7 @@ Contents:
 :version: |version|
 :date: |today|
 
-This Python package "vison" is the pipeline that will be used at MSSL for ground calibration of the VIS detection chains (12 + 2 spares), including one ROE, one RPSU and three CCDs each.
+This Python package "vison" is the software pipeline that has been used at MSSL for ground calibration of the VIS detection chains (12 + 2 spares), including one ROE, one RPSU and three CCDs each.
 
 Installation
 ============
@@ -44,6 +44,21 @@ dependencies is included in the package. See :ref:`installation` instructions fo
 details. The only package that will not be installed by this means is SAO-DS9,
 which must be installed separetly, in order to be able to use some of the
 interactive inspection capabilities of Eyegore (data acquisition monitoring).
+
+How to Use it
+=============
+
+TBW
+
+Guide through
+=============
+
+In this section we provide an overal description of the capabilities and organisation of the code.
+
+.. toctree::
+    :maxdepth: 4
+    
+    guide
 
 
 Pipeline Core
