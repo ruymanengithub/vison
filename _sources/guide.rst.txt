@@ -4,7 +4,7 @@
 Code Guide
 ==========
 
-Here we provide an overal description of the code, what it does and how it is organised, to help the user / developer understand how things work.
+Here we provide a succint description of the code, what it does and how it is organised, to help the user / developer understand how things work, to better make use of it / repurpose it.
 
 Capabilities of the Code
 ------------------------
