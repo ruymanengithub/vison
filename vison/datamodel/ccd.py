@@ -534,8 +534,8 @@ class CCD(object):
 
         :param Quadrant: Quadrant where to take the cutouts from.
         :type Quadrant: str
-            :param tile_coos: A dictionary with tiles coordinates, as output by 
-        get_tile_coos.
+        :param tile_coos: A dictionary with tiles coordinates, as output by 
+            get_tile_coos.
         :type tile_coos: dict()
         :param extension: extension to consider, by index. Last is -1.
         :type extension: int
@@ -559,17 +559,21 @@ class CCD(object):
     def get_tiles_stats(self, Quad, tile_coos, statkey, extension=-1):
         """Returns statistics on a list of tiles.
 
-        :param Quad:
+        :param Quad: Quadrant where to take the cutouts from.
         :type Quad: str
 
-        :param tile_coos:
-        :type tile_coos:
+        :param tile_coos: A dictionary with tiles coordinates, as output by 
+            get_tile_coos.
+        :type tile_coos: dict()
 
-        :param statkey: stat to retrieve
+        :param statkey: stat to retrieve (one of mean, median, std)
         :type statkey: str
 
         :param extension: Extension index, last is -1
         :type extension: int
+        
+
+        :return: A 1D numpy array with the stat values for the tiles. 
 
         """
 
@@ -617,7 +621,7 @@ class CCD(object):
         return cutout
 
     def set_quad(self, inQdata, Quadrant, canonical=False, extension=-1):
-        """ """
+        """Sets the contents of a quadrant in an extension."""
         edges = self.QuadBound[Quadrant]
         #Qdata = self.data[edges[0]:edges[1],edges[2]:edges[3]]
 
@@ -692,12 +696,18 @@ class CCD(object):
 
         return (imgstart, imgend, ovstart, ovend)
 
-    def get_stats(self, Quadrant, sector='img', statkeys=['mean'], trimscan=[0, 0],
+    def get_stats(self, Quadrant, sector='img', statkeys=None, trimscan=None,
                   ignore_pover=True, extension=-1, VSTART=0, VEND=NrowsCCD + voverscan,
                   clip=None):
         """ """
 
         Qdata = self.get_quad(Quadrant, canonical=True, extension=extension)
+
+        if statkeys is None:
+            statkeys = ['mean']
+
+        if trimscan is None:
+            trimscan = [0, 0]
 
         if isinstance(Qdata, np.ma.masked_array):
             stat_dict = dict(
@@ -744,7 +754,7 @@ class CCD(object):
 
     def sub_offset(self, Quad, method='row', scan='pre', trimscan=[3, 2],
                    ignore_pover=True, extension=-1):
-        """ """
+        """Subtracts the offset from a quadrant."""
 
         if self.masked:
             median = np.ma.median
@@ -793,7 +803,7 @@ class CCD(object):
         return offsets
 
     def sub_bias(self, superbias, extension=-1):
-        """Subtracts a superbias"""
+        """Subtracts a superbias from CCD image."""
 
         assert self.shape == superbias.shape
         self.extensions[extension].data -= superbias
@@ -801,7 +811,7 @@ class CCD(object):
                          params=dict(superbias=superbias))
 
     def divide_by_flatfield(self, FF, extension=-1):
-        """Divides by a Flat-field"""
+        """Divides CCD image by a Flat-field."""
         print 'TODO: ccd.CCD.divide_by_flatfield needs improvements: handling of masked values, overscans (V & H)'
 
         assert self.shape == FF.shape
@@ -811,13 +821,15 @@ class CCD(object):
                          params=dict(FF=FF))
 
     def add_to_hist(self, action, extension=-1, vison=__version__, params=dict()):
-        """ """
+        """Adds information to historial of operations applied on object."""
         tstamp = (datetime.datetime.now()).strftime('%d%m%yD%H%M%ST')
         hist = [dict(timestamp=tstamp, action=action, extension=extension,
                      vison=vison, params=params)]
         self.historial += hist
 
     def flip_tocanonical(self, array, Quad):
+        """Reorients an array to canonical orientation, according to quadrant.
+        Assuming the array is in "relative" orientation"""
 
         if Quad == 'E':
             return array[:, ::-1].copy()
@@ -829,7 +841,7 @@ class CCD(object):
             return array.copy()
 
     def do_Vscan_Mask(self, VSTART, VEND):
-        """ """
+        """Returns a vertical scan mask."""
 
         VscanMask = np.ones((self.NAXIS1, self.NAXIS2), dtype='bool')
 
@@ -845,7 +857,7 @@ class CCD(object):
         return VscanMask
 
     def or_mask(self, mask):
-        """ """
+        """Adds (OR) a mask to self.extensions[*].data.mask"""
         assert self.shape == mask.shape
 
         if not self.masked:
@@ -858,7 +870,7 @@ class CCD(object):
         self.masked = True  # still True
 
     def get_mask(self, mask):
-        """ """
+        """Loads a mask into the extensions."""
         assert self.shape == mask.shape
 
         if self.masked:
@@ -873,7 +885,7 @@ class CCD(object):
         self.masked = True
 
     def writeto(self, fitsf, clobber=False, unsigned16bit=False):
-        """ """
+        """Writes self to a FITS file."""
 
         #prihdu = fts.PrimaryHDU()
 
@@ -996,7 +1008,7 @@ class CCDPile(CCD):
         self.QuadBound = QuadBound
 
     def stack(self, method='median', dostd=False):
-        """ """
+        """Stacking images with an stat."""
 
         fstack_dict = dict(
             median=dict(
