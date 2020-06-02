@@ -124,26 +124,26 @@ class CCD(object):
     to also "host" calibration data-products, such as Flat-Fields.
 
     A note on Coordinates Systems:
-        * 'CCD': referenced to the first pixel readout from channel H. All 4 quadrants
-        are in a single array, their detection nodes in the 4 "corners" of the
-        rectangle. Same system as images are displayed on DS9. In clock-wise
-        sense, quadrants are H (bottom-left), E (top-left), F (top-right),
-        and G (bottom-right).
-        * Physical: same as 'CCD' but takes into account virtual and non-active pixels. 
-        It is the closest to measuring real "distances" on the silicon.
-        * 'Quadrant-canonical': Quadrant coordinates system in which the first pixel
-        is the first pixel read out (closest pixel to the readout node), and
-        the last is the last readout. In this system, the serial pre-scan comes
-        before the image area, and this before the serial overscan. Parallel
-        overscan comes after image area in the parallel direction. In this
-        system, coordinates of pixels across quadrants, for a single readout,
-        correspond to the same point in time. Useful when doing cross-talk analysis,
-        for example.
-        * 'Quadrant-relative': quadrant coordinates system with the same relative orientation
-        as in the 'CCD' system, but referenced to the 'lower-left' pixel of the
-        given quadrant in such system. In this system, the readout node is in a
-        different corner for each quadrant: lower-left for H, top-left for E,
-        top-right for F and bottom-right for G.
+        -  'CCD': referenced to the first pixel readout from channel H. All 4 quadrants
+            are in a single array, their detection nodes in the 4 "corners" of the
+            rectangle. Same system as images are displayed on DS9. In clock-wise
+            sense, quadrants are H (bottom-left), E (top-left), F (top-right),
+            and G (bottom-right).
+        -   Physical: same as 'CCD' but takes into account virtual and non-active pixels. 
+            It is the closest to measuring real "distances" on the silicon.
+        -   'Quadrant-canonical': Quadrant coordinates system in which the first pixel
+            is the first pixel read out (closest pixel to the readout node), and
+            the last is the last readout. In this system, the serial pre-scan comes
+            before the image area, and this before the serial overscan. Parallel
+            overscan comes after image area in the parallel direction. In this
+            system, coordinates of pixels across quadrants, for a single readout,
+            correspond to the same point in time. Useful when doing cross-talk analysis,
+            for example.
+        -   'Quadrant-relative': quadrant coordinates system with the same relative orientation
+            as in the 'CCD' system, but referenced to the 'lower-left' pixel of the
+            given quadrant in such system. In this system, the readout node is in a
+            different corner for each quadrant: lower-left for H, top-left for E,
+            top-right for F and bottom-right for G.
 
     """
 
