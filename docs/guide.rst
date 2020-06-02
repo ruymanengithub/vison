@@ -32,6 +32,29 @@ Code Flow
 
 It is perhaps easier to describe what the pipeline does, and how it is organised, following what it does when we try to analyse a data-set.
 
+We will call the script **vison_run** which instantiates a Pipeline object, loads it with the tests that we are going to process, the inputs to the tasks for those tests, and then runs the pipeline object. Let's go step by step with an example.
+
+::
+    ~$ vison_run -y [vison_config.py] -R [SESSION] -l -t [TAG]
+
+Here vison_config.py stands for a python script with inputs (more on that soon), SESSION is a name to select the acquisition session within the the configuration file we want to select for analysis (there usually are several sessions within a configuration script), and TAG is just a character string to label the directory with results.
+
+Before we go on, some basic notions regarding the organisation of the GCC:
+
+* the campaign was sub-divided in campaigns for each block.
+* within each block-campaign there were sessions/runs (-R comes from "run") in which several tests are executed one after another, autonomously by ELVIS.
+
+For each block-campaign we created a vison_config script, with the name of the block in question and the date of the campaign (e.g. vison_config_EINSTEIN_JUL19.py). This script is important because it is required to run the pipeline, and because it serves as registry of the inputs used to run it.
+
+Let's have a look at the contents of a vison_config.py script, in simplified form.
+
+.. literalinclude:: vison_config_example.py
+   :language: python
+   :emphasize-lines: 12,15-18
+
+
+
+
 
 
 
