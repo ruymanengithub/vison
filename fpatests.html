@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>FPA Tests &#8212; vison 0.9+339.g03a673c documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.9+339.g03a673c',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Image Analysis" href="image.html" />
+    <link rel="prev" title="“Flat” Acq. Analysis Tools" href="flat.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="image.html" title="Image Analysis"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="flat.html" title="“Flat” Acq. Analysis Tools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+339.g03a673c documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="fpa-tests">
+<h1>FPA Tests<a class="headerlink" href="#fpa-tests" title="Permalink to this headline">¶</a></h1>
+<p>These are tests made at FPA level, instead of block-level.</p>
+<div class="section" id="module-vison.fpatests.fpamaster">
+<span id="fpamaster-py"></span><h2>fpamaster.py<a class="headerlink" href="#module-vison.fpatests.fpamaster" title="Permalink to this headline">¶</a></h2>
+<p>Pipelining for FPA analysis.</p>
+<p>Created on Wed Oct  2 16:15:56 2019</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="vison.fpatests.fpamaster.FpaPipe">
+<em class="property">class </em><code class="descclassname">vison.fpatests.fpamaster.</code><code class="descname">FpaPipe</code><span class="sig-paren">(</span><em>inputdict</em>, <em>dolog=True</em>, <em>drill=False</em>, <em>debug=False</em>, <em>startobsid=0</em>, <em>processes=1</em>, <em>tag=''</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.fpatests.fpamaster.FpaPipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Master Class of FM-analysis at block-level of assembly.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vison.fpatests.fpatask">
+<span id="fpatask"></span><h2>fpatask<a class="headerlink" href="#module-vison.fpatests.fpatask" title="Permalink to this headline">¶</a></h2>
+<p>Generic FPA Test Class</p>
+<p>Created on Tue Aug 20 11:25:55 2019</p>
+<p>&#64;author: raf</p>
+<dl class="class">
+<dt id="vison.fpatests.fpatask.FpaTask">
+<em class="property">class </em><code class="descclassname">vison.fpatests.fpatask.</code><code class="descname">FpaTask</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.fpatests.fpatask.FpaTask" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.fpatests.fpatask.FpaTask.add_StandardQuadsTable">
+<code class="descname">add_StandardQuadsTable</code><span class="sig-paren">(</span><em>extractor</em>, <em>cdp=None</em>, <em>cdpdict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.fpatests.fpatask.FpaTask.add_StandardQuadsTable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.fpatests.fpatask.FpaTask.catchtraceback">
+<code class="descname">catchtraceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.fpatests.fpatask.FpaTask.catchtraceback" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.fpatests.fpatask.FpaTask.check_data">
+<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.fpatests.fpatask.FpaTask.check_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.fpatests.fpatask.FpaTask.filterexposures">
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.fpatests.fpatask.FpaTask.filterexposures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a list of Exposure Logs and selects exposures from test &#8216;test&#8217;.</p>
+<p>The datapath becomes another column in DataDict. This helps dealing
+with tests that run overnight and for which the input data is in several
+date-folders.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.fpatests.fpatask.FpaTask.get_ImgDictfromLE1">
+<code class="descname">get_ImgDictfromLE1</code><span class="sig-paren">(</span><em>LE1</em>, <em>doequalise=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.fpatests.fpatask.FpaTask.get_ImgDictfromLE1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.fpatests.fpatask.FpaTask.ingest_data">
+<code class="descname">ingest_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.fpatests.fpatask.FpaTask.ingest_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vison.fpatests.fpatask.FpaTask.inputsclass">
+<code class="descname">inputsclass</code><a class="headerlink" href="#vison.fpatests.fpatask.FpaTask.inputsclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">Inputs</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.fpatests.fpatask.FpaTask.iter_overCCDs">
+<code class="descname">iter_overCCDs</code><span class="sig-paren">(</span><em>data</em>, <em>assigner</em>, <em>RetDict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.fpatests.fpatask.FpaTask.iter_overCCDs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.fpatests.fpatask.FpaTask.iterate_over_CCDs_inLE1">
+<code class="descname">iterate_over_CCDs_inLE1</code><span class="sig-paren">(</span><em>LE1</em>, <em>_method</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.fpatests.fpatask.FpaTask.iterate_over_CCDs_inLE1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.fpatests.fpatask.FpaTask.iterate_over_CCDs_parallel_inLE1">
+<code class="descname">iterate_over_CCDs_parallel_inLE1</code><span class="sig-paren">(</span><em>LE1</em>, <em>method</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.fpatests.fpatask.FpaTask.iterate_over_CCDs_parallel_inLE1" title="Permalink to this definition">¶</a></dt>
+<dd><p>DOES NOT WORK!!</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.fpatests.fpatask.FpaTask.load_LE1">
+<code class="descname">load_LE1</code><span class="sig-paren">(</span><em>LE1fits</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.fpatests.fpatask.FpaTask.load_LE1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.fpatests.fpatask.FpaTask.load_references">
+<code class="descname">load_references</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.fpatests.fpatask.FpaTask.load_references" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/vison_logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">FPA Tests</a><ul>
+<li><a class="reference internal" href="#module-vison.fpatests.fpamaster">fpamaster.py</a></li>
+<li><a class="reference internal" href="#module-vison.fpatests.fpatask">fpatask</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="flat.html"
+                        title="previous chapter">&#8220;Flat&#8221; Acq. Analysis Tools</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="image.html"
+                        title="next chapter">Image Analysis</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/fpatests.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="image.html" title="Image Analysis"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="flat.html" title="“Flat” Acq. Analysis Tools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+339.g03a673c documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Ruyman Azzollini.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>
