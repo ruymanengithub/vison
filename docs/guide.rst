@@ -8,6 +8,7 @@ Code Guide
 Code Architecture
 -----------------
 
+See :ref:`datamodel`
 
 Code Flow
 ---------
