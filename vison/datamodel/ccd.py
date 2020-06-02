@@ -530,7 +530,18 @@ class CCD(object):
         return tiles_dict
 
     def get_tiles(self, Quadrant, tile_coos, extension=-1):
-        """ """
+        """Returns cutouts from Quadrant using the coordinates in tile_coos.
+
+        :param Quadrant: Quadrant where to take the cutouts from.
+        :type Quadrant: str
+            :param tile_coos: A dictionary with tiles coordinates, as output by 
+        get_tile_coos.
+        :type tile_coos: dict()
+        :param extension: extension to consider, by index. Last is -1.
+        :type extension: int
+
+        :return: A list with the cutouts. 
+        """
 
         tiles = []
         Nsamps = tile_coos['Nsamps']
@@ -546,7 +557,21 @@ class CCD(object):
         return tiles
 
     def get_tiles_stats(self, Quad, tile_coos, statkey, extension=-1):
-        """ """
+        """Returns statistics on a list of tiles.
+
+        :param Quad:
+        :type Quad: str
+
+        :param tile_coos:
+        :type tile_coos:
+
+        :param statkey: stat to retrieve
+        :type statkey: str
+
+        :param extension: Extension index, last is -1
+        :type extension: int
+
+        """
 
         if isinstance(self.extensions[extension].data, np.ma.masked_array):
             stat_dict = dict(
