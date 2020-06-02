@@ -27,7 +27,7 @@ import copy
 #
 # MOT_WARM: [None,None],dict(init=True,check=True,basic=True)
 # COSMETICS00: [None,None],dict(init=True,check=True,masks=True,meta=True)
-# ...
+# [...]
                  
 def get_config_dict(testgenerator, datapath, resroot, 
                     BLOCKID,CHAMBER,diffvalues,
@@ -72,7 +72,7 @@ def add_RUN_specifics(inputdict,RUN,dataroot=''):
     
     # END USER INPUTS
     
-    # ...
+    # [...]
     
     
     return inputdict
@@ -145,7 +145,7 @@ if __name__ == '__main__':
         
         tasks2execute = tasks2execute_dict[RUN]
         
-            # ...
+            # [...]
             
             
             inputdict.update(_inputdict)
