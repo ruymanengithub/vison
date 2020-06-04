@@ -137,7 +137,7 @@ def correct_BFE_one_image(q, dd, inputs, iObs, nObs, CCDs, Quads, picklespath, A
                 Qimg = G15.correct_estatic(Qimg, _Asol)
                 ccdobj.set_quad(Qimg, Q, canonical=True, extension=-1)
             
-        if hasallAsols
+        if hasallAsols:
             cPickleDumpDictionary(ccdobj, fullccdobj_bfe_name)
             q.put([iObs, jCCD, ccdobj_bfe_name])
         else:
