@@ -418,6 +418,10 @@ class PTC0X(FlatTask):
                     ccdobj_eve_f = os.path.join(
                         dpath, '%s.pick' % self.dd.mx[ccdobjcol][iObs_pair, jCCD])
 
+                    if ~os.path.exists(ccdobj_odd_f) or \
+                        ~os.path.exists(ccdobj_eve_f):
+                        continue
+
                     ccdobj_odd = copy.deepcopy(
                         cPickleRead(ccdobj_odd_f))
                     ccdobj_eve = copy.deepcopy(

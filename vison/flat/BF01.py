@@ -119,25 +119,29 @@ def correct_BFE_one_image(q, dd, inputs, iObs, nObs, CCDs, Quads, picklespath, A
 
         colkey = dd.mx['label'][iObs,jCCD]
 
+        hasallAsols = True
+
         for Q in Quads:
 
             if Asol is None:
-                _Asol = dd.products['BF'][CCDkey][Q][colkey]['Asol'].copy()
+               try:
+                    _Asol = dd.products['BF'][CCDkey][Q][colkey]['Asol'].copy()
+                except:
+                    _Asol = None
+                    hasallAsols = False
             else:
                 _Asol = Asol[CCDkey][Q].copy()
 
-            Qimg = ccdobj.get_quad(Q, canonical=True, extension=-1)
-
-            Qimg = G15.correct_estatic(Qimg, _Asol)
-
-            ccdobj.set_quad(Qimg, Q, canonical=True, extension=-1)
+            if _Asol is not one:
+                Qimg = ccdobj.get_quad(Q, canonical=True, extension=-1)
+                Qimg = G15.correct_estatic(Qimg, _Asol)
+                ccdobj.set_quad(Qimg, Q, canonical=True, extension=-1)
             
-
-        # cPickleDumpDictionary(dict(ccdobj=ccdobj),fullccdobj_name)
-        cPickleDumpDictionary(ccdobj, fullccdobj_bfe_name)
-        # ccdobj.writeto(fullccdobj_name,clobber=True)
-        # self.dd.mx['ccdobj_name'][iObs, jCCD] = ccdobj_name
-        q.put([iObs, jCCD, ccdobj_bfe_name])
+        if hasallAsols
+            cPickleDumpDictionary(ccdobj, fullccdobj_bfe_name)
+            q.put([iObs, jCCD, ccdobj_bfe_name])
+        else:
+            q.put([iObs, jCCD, 'None.pick'])
 
 
 class BF01_inputs(inputs.Inputs):
@@ -816,7 +820,8 @@ class BF01(PTC0X):
             #wbfe = 'results_atCALDATA/DTEST/BF01_730/ccdpickles/EUC_31074_300719D121603T_ROE1_CCD1_proc.pick'
             #ccdobj_nobfe = cPickleRead(nobfe)
             #ccdobj_wbfe = cPickleRead(wbfe)
-            #stop()
+            #arglist = [arglist[0]]
+            
 
             pool = mp.Pool(processes=self.processes)
 
@@ -832,7 +837,7 @@ class BF01(PTC0X):
             for reply in replies:
                 iObs, jCCD, ccdobj_name = reply
                 self.dd.mx[ccdobjname][iObs, jCCD] = ccdobj_name
-
+            
         return None
 
     def correct_BFE_G15(self):
@@ -842,7 +847,7 @@ class BF01(PTC0X):
             self.report.add_Section(
                 keyword='correct_BFE_G15', Title='Correcting BFE (G+15)', level=0)
 
-        self.f_correct_BFE_G15('ccdobj_bfe_fixA_name', fixA=True)
+        #self.f_correct_BFE_G15('ccdobj_bfe_fixA_name', fixA=True)
         self.f_correct_BFE_G15('ccdobj_bfe_name', fixA=False)
 
 
