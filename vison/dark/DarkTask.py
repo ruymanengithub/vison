@@ -75,7 +75,7 @@ class DarkTask(Task):
             self.dd.initColumn('chk_flu_img', Xindices,
                                dtype='float32', valini=valini)
 
-        nObs, _, _ = Xindices.shape
+        nObs = Xindices.shape[0]
         CCDs = Xindices.get_vals('CCD')
         Quads = Xindices.get_vals('Quad')
 

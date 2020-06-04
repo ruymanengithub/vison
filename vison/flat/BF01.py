@@ -528,7 +528,7 @@ class BF01(PTC0X):
         label = self.dd.mx['label'][:, 0].copy()
 
         indices = copy.deepcopy(self.dd.indices)
-        nObs, nC, nQ = indices.shape
+        nObs, nC, nQ = indices.shape[0:3]
         CCDs = np.array(indices.get_vals('CCD'))
         Quads = np.array(indices.get_vals('Quad'))
 

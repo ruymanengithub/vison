@@ -331,7 +331,7 @@ class MOT_WARM(DarkTask):
             self.dd.initColumn(newcolname_std, Xindices,
                                dtype='float32', valini=valini)
 
-        nObs, _, _ = Xindices.shape
+        nObs = Xindices.shape[0]
         CCDs = Xindices.get_vals('CCD')
         Quads = Xindices.get_vals('Quad')
 
@@ -482,7 +482,7 @@ class MOT_WARM(DarkTask):
 
         DDindices = copy.deepcopy(self.dd.indices)
 
-        nObs, nCCD, nQuad = DDindices.shape
+        nObs, nCCD, nQuad = DDindices.shape[0:3]
         Quads = DDindices.get_vals('Quad')
         CCDs = DDindices.get_vals('CCD')
 

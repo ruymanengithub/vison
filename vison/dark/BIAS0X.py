@@ -197,7 +197,7 @@ class BIAS0X(DarkTask):
 
         self.dd.initColumn('RON', DDindices, dtype='float32', valini=0.)
 
-        nObs, nCCD, nQuad = DDindices.shape
+        nObs, nCCD, nQuad = DDindices.shape[0:3]
         Quads = DDindices[2].vals
         CCDs = DDindices.get_vals('CCD')
 
@@ -523,7 +523,7 @@ class BIAS0X(DarkTask):
 
         DDindices = copy.deepcopy(self.dd.indices)
 
-        nObs, nCCD, nQuad = DDindices.shape
+        nObs, nCCD, nQuad = DDindices.shape[0:3]
         Quads = DDindices[2].vals
         CCDs = DDindices.get_vals('CCD')
 

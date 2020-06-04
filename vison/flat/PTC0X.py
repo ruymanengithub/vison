@@ -737,7 +737,7 @@ class PTC0X(FlatTask):
 
         DDindices = copy.deepcopy(self.dd.indices)
 
-        nObs, nCCD, nQuad, nSec = DDindices.shape
+        nObs, nCCD, nQuad, nSec = DDindices.shape[0:4]
         Quads = DDindices.get_vals('Quad')
         CCDs = DDindices.get_vals('CCD')
 

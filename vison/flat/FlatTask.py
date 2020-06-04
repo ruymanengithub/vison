@@ -96,7 +96,7 @@ class FlatTask(Task):
             self.dd.initColumn(newcolname_std, Xindices,
                                dtype='float32', valini=valini)
 
-        nObs, _, _ = Xindices.shape
+        nObs = Xindices.shape[0]
         CCDs = Xindices.get_vals('CCD')
         Quads = Xindices.get_vals('Quad')
 
