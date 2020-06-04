@@ -847,7 +847,7 @@ class BF01(PTC0X):
             self.report.add_Section(
                 keyword='correct_BFE_G15', Title='Correcting BFE (G+15)', level=0)
 
-        #self.f_correct_BFE_G15('ccdobj_bfe_fixA_name', fixA=True)
+        self.f_correct_BFE_G15('ccdobj_bfe_fixA_name', fixA=True)
         self.f_correct_BFE_G15('ccdobj_bfe_name', fixA=False)
 
 
