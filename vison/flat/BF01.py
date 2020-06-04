@@ -132,7 +132,7 @@ def correct_BFE_one_image(q, dd, inputs, iObs, nObs, CCDs, Quads, picklespath, A
             else:
                 _Asol = Asol[CCDkey][Q].copy()
 
-            if _Asol is not one:
+            if _Asol is not None:
                 Qimg = ccdobj.get_quad(Q, canonical=True, extension=-1)
                 Qimg = G15.correct_estatic(Qimg, _Asol)
                 ccdobj.set_quad(Qimg, Q, canonical=True, extension=-1)
