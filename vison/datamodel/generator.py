@@ -238,9 +238,9 @@ def merge_HKfiles(HKfilefs, masterHKf):
         body += lines
 
     f = open(masterHKf, 'w')
-    print >> f, hdr
+    print(hdr, file=f)
     for line in body:
-        print >> f, line[:-1]
+        print(line[:-1], file=f)
     f.close()
 
 
@@ -299,7 +299,7 @@ def generate_HK(explog, vals, datapath='', elvis=context.elvis):
     t1 = time()
     dtmin = (t1 - t0) / 60.
     nobs = len(doneObsids)
-    print '%.3f minutes in generating %i HK files' % (dtmin, nobs)
+    print('%.3f minutes in generating %i HK files' % (dtmin, nobs))
 
     return None
 
@@ -609,6 +609,6 @@ def generate_FITS_fromExpLog(explog, datapath, elvis=context.elvis, CHAMBER=None
     t1 = time()
     dtmin = (t1 - t0) / 60.
 
-    print '%.3f minutes in generating %i FITS files' % (dtmin, Nfiles)
+    print('%.3f minutes in generating %i FITS files' % (dtmin, Nfiles))
 
     return None

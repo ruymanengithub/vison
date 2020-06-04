@@ -76,8 +76,8 @@ def prepare_one_image(q, dd, ogse, inputs, iObs,
         infits = os.path.join(dpath, '%s.fits' %
                               dd.mx['File_name'][iObs, jCCD])
 
-        print 'Test %s, OBS %i/%i: preparing %s...' % (
-            inputs['test'], iObs + 1, nObs, infits)
+        print('Test %s, OBS %i/%i: preparing %s...' % (
+            inputs['test'], iObs + 1, nObs, infits))
 
         # converting the FITS file into a CCD Object
         ccdobj = ccd.CCD(infits)
@@ -421,7 +421,7 @@ class Task(object):
         if self.log is not None and not self.debug:
             self.log.info(msg_trbk)
         else:
-            print msg_trbk
+            print(msg_trbk)
 
     def addHK_2_dd(self):
         """ """
@@ -559,7 +559,7 @@ class Task(object):
 
             figobj = copy.deepcopy(self.figdict[figkey][0]())
         except BaseException:
-            print 'DEBUGGING IN Task.doPlot...'
+            print('DEBUGGING IN Task.doPlot...')
             msg_trbk = traceback.format_exc()
             self.log.info(msg_trbk)
             self.log.info('%s, %s' %

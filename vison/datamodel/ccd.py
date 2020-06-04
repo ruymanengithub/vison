@@ -1071,7 +1071,7 @@ def test_create_from_scratch():
 
     ccdin = CCD(fitsname, getallextensions=True)
 
-    print('Number of extensions = %i' % ccdin.nextensions)
+    print(('Number of extensions = %i' % ccdin.nextensions))
     stop()
 
 

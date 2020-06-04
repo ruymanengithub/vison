@@ -87,7 +87,7 @@ class Gaussmeter(SpotBase):
             if self.log is not None:
                 self.log.info(Emsg)
             else:
-                print Emsg
+                print(Emsg)
             eparams = np.zeros_like(params) + np.nan
 
         return params, eparams

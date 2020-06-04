@@ -51,7 +51,7 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['BIAS01']:
 
-        print 'BIAS01...'
+        print('BIAS01...')
 
         Nbias01 = 5
         diffBIAS01 = dict(mirr_on=0)
@@ -71,7 +71,7 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['CHINJ01']:
 
-        print 'CHINJ01...'
+        print('CHINJ01...')
 
         # CHINJ01
 
@@ -105,7 +105,7 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['TP01']:
 
-        print 'TP01...'
+        print('TP01...')
 
         TOI_TPv = [200]
         Nshuffles_V = 5000
@@ -133,7 +133,7 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['TP02']:
 
-        print 'TP02...'
+        print('TP02...')
 
         Nshuffles_H = 5000
         dwell_sv = [0., 4.75, 14.3, 28.6]  # us
@@ -159,7 +159,7 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['PTC01']:
 
-        print 'PTC01...'
+        print('PTC01...')
 
         diffPTC01 = dict(mirr_on=0,
                          vstart=0,
@@ -182,7 +182,7 @@ def generate_mot_sequence(diffvalues, toGen, elvis=context.elvis,
 
     if _toGen['MOT_FF']:
 
-        print 'MOT_FF...'
+        print('MOT_FF...')
 
         diffMOT_FF = dict(mirr_on=0,
                           vstart=0,

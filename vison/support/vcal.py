@@ -348,7 +348,7 @@ def proto(calfile, ROE):
     VCALdict = load_VCal(calfile, ROE)
 
     if VCALdict is None:
-        print('vcal not available roe ROE %i' % ROE)
+        print(('vcal not available roe ROE %i' % ROE))
         sys.exit()
 
     script = OrderedDict(
@@ -400,7 +400,7 @@ def proto(calfile, ROE):
 
                 outV = f_counts2V_CAL(Ecounts, VCALdict, keytuple, mode='DAC')
 
-                print('%s=%.1f     %s=%.2f' % (Ekey, inV, Vkey, outV))
+                print(('%s=%.1f     %s=%.2f' % (Ekey, inV, Vkey, outV)))
 
     HK = dict(ccd3_od_t=26.115, ccd2_od_t=26.061, ccd1_od_t=26.006,
               comm_rd_t=16.09,
@@ -439,7 +439,7 @@ def proto(calfile, ROE):
 
                 trueVHK = f_counts2V_CAL(countsHK, VCALdict, keytuple, mode='ADC')
 
-                print('%s=%.1f     %s=%.2f' % (HKkey, EVHK, Vkey, trueVHK))
+                print(('%s=%.1f     %s=%.2f' % (HKkey, EVHK, Vkey, trueVHK)))
 
 
 if __name__ == '__main__':

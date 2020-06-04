@@ -84,7 +84,7 @@ def explog_selector(explog, testkeys):
 def extract_histograms(infile_name, i, N):
     """ """
 
-    print('Extracting histos from image %i/%i' % (i + 1, N))
+    print(('Extracting histos from image %i/%i' % (i + 1, N)))
 
     ccdobj = ccdmod.CCD(infile_name)
 
@@ -126,7 +126,7 @@ def batch_extract_histos(explog, respath, multithread=1):
         if os.path.exists(fits_name):
             arglist.append((fits_name, i, N))
         else:
-            print '%s is MISSING' % fits_name
+            print('%s is MISSING' % fits_name)
 
     pool = mp.Pool(processes=multithread)
     pool.map(_wrap_extract_histograms, arglist)
@@ -194,7 +194,7 @@ def interpol_histo_cubic(histo):
 
 def extract_dnls(histofile_name, dnl_name, i, N, interptype):
 
-    print('Extracting DNLs from image %i/%i' % (i + 1, N))
+    print(('Extracting DNLs from image %i/%i' % (i + 1, N)))
 
     histodict = cPickleRead(histofile_name)
 
@@ -246,7 +246,7 @@ def batch_extract_dnls(explog, respath, interptype, multithread=1):
             arglist.append((histofile_name, dnl_name, i, N, interptype))
         else:
 
-            print('%s is MISSING' % histofile_name)
+            print(('%s is MISSING' % histofile_name))
 
     pool = mp.Pool(processes=multithread)
     pool.map(_wrap_extract_dnls, arglist)

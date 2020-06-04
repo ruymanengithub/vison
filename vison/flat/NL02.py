@@ -383,7 +383,7 @@ class NL02(NL01.NL01):
 
                 # fitresults = OrderedDict(coeffs, NLdeg, maxNLpc,flu_maxNLpc, bgd)
                 if debug:
-                    print('\n%s%s\n' % (CCDkey, Q))
+                    print(('\n%s%s\n' % (CCDkey, Q)))
                 #print('WITH shutter nl correction...')
 
                 _fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, nexptimes, wave,

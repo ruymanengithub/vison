@@ -125,7 +125,7 @@ def test0():
 
     ws2.add_image(img, 'A1')
 
-    print (wb.sheetnames)
+    print((wb.sheetnames))
 
     wb.save('Test0.xlsx')
 

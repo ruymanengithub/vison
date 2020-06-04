@@ -298,7 +298,7 @@ class FpaTask(task.Task):
         if self.log is not None and not self.debug:
             self.log.info(msg_trbk)
         else:
-            print msg_trbk
+            print(msg_trbk)
 
     def ingest_data(self):
         """ """

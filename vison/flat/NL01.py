@@ -340,7 +340,7 @@ class NL01(FlatTask):
 
             for iObs, ObsID in enumerate(ObsIDs):
 
-                print 'Extracting from OBSID %i/%i' % (iObs + 1, nObs)
+                print('Extracting from OBSID %i/%i' % (iObs + 1, nObs))
 
                 for jCCD, CCDk in enumerate(CCDs):
 

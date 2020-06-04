@@ -381,11 +381,11 @@ class TP02(PumpTask):
 
                 for id_dly in id_dlys:
 
-                    print('idl_dly = %s' % id_dly)
+                    print(('idl_dly = %s' % id_dly))
 
                     for jCCD, CCDk in enumerate(CCDs):
 
-                        print('CCD=%s' % CCDk)
+                        print(('CCD=%s' % CCDk))
 
                         ixsel = np.where((self.dd.mx['id_dly'][:, 0] == id_dly) & (
                             self.dd.mx['s_tpump'][:, 0] != 0))
@@ -413,7 +413,7 @@ class TP02(PumpTask):
 
                             imapccdobj = ccd.CCD(os.path.join(productspath, imapf))
 
-                            print('OBSID=%s, %s' % (ObsID, imapf))
+                            print(('OBSID=%s, %s' % (ObsID, imapf)))
 
                             for iQ, Q in enumerate(Quads):
 
@@ -567,7 +567,7 @@ class TP02(PumpTask):
 
                     for modkey in modkeys:
 
-                        print('%s%s, %s...' % (CCDk, Q, modkey))
+                        print(('%s%s, %s...' % (CCDk, Q, modkey)))
 
                         kqkmerged = tptools.merge_stp_dipole_cats_bypos(
                             rawcatCQ[modkey].copy(),

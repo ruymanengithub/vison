@@ -33,7 +33,7 @@ import tkFont as tkFont
 try:
     import pyds9
 except ImportError:
-    print 'pyds9 not installed in the system. Will not be possible to liaise with SAO-ds9.'
+    print('pyds9 not installed in the system. Will not be possible to liaise with SAO-ds9.')
 
 
 # END IMPORT
@@ -163,11 +163,11 @@ class ExpLogDisplay(tk.Toplevel):
         # self.update()
 
     def print_paused(self):
-        print 'self.updating is %s' % self.updating.get()
+        print('self.updating is %s' % self.updating.get())
 
     def update(self, startup=False):
 
-        print('entering ExpLogDisplay.update. Interval=%i' % self.interval)
+        print(('entering ExpLogDisplay.update. Interval=%i' % self.interval))
 
         if self.updating.get():
 
@@ -242,7 +242,7 @@ class ExpLogDisplay(tk.Toplevel):
         if arethere:
             self.explogfs = explogfs
         else:
-            print 'EXPLOGs %s not found' % tmp_EL
+            print('EXPLOGs %s not found' % tmp_EL)
             self.explogfs = None
 
     def loadExplogs(self):
@@ -336,7 +336,7 @@ class ExpLogDisplay(tk.Toplevel):
         try:
             d = pyds9.DS9(target=self.ds9target)
         except NameError:
-            print "pyds9 not installed, can't open DS9!"
+            print("pyds9 not installed, can't open DS9!")
             return
 
         for CCD in [1, 2, 3]:

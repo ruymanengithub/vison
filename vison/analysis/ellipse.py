@@ -56,7 +56,7 @@ def dist_superellipse(n, center, q=1., pos_ang=0., c=0.):
     criterio2 = isinstance(q, (int, float))
 
     if not criterio2:
-        print 'q must be an integer or float'
+        print('q must be an integer or float')
         criterio3 = False
     else:
         criterio3 = q >= 0 and q <= 1
@@ -68,7 +68,7 @@ def dist_superellipse(n, center, q=1., pos_ang=0., c=0.):
 
     criterio4 = isinstance(pos_ang, (int, float))
     if not criterio4:
-        print 'pos_ang must be an integer or float'
+        print('pos_ang must be an integer or float')
         criterio5 = 'False'
     else:
         criterio5 = -180 <= pos_ang <= 180
@@ -80,13 +80,13 @@ def dist_superellipse(n, center, q=1., pos_ang=0., c=0.):
 
     criterio6 = isinstance(c, (int, float))
     if not criterio6:
-        print 'c must be an integer or float'
+        print('c must be an integer or float')
     else:
         c = float(c)
 
     criterio7 = isinstance(center, collections.Sequence) and len(center) == 2
     if not criterio7:
-        print 'center must be a 2 element tuple'
+        print('center must be a 2 element tuple')
     else:
         center = tuple([float(x) for x in center])
 

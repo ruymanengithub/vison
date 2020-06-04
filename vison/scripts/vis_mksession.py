@@ -37,7 +37,7 @@ def session_builder(inputs):
 
     for session in session_names:
 
-        print('session: %s' % session)
+        print(('session: %s' % session))
 
         tests = sess_dict[session]
         sesspath = os.path.join(outpath, session)
@@ -51,12 +51,12 @@ def session_builder(inputs):
         for test in tests:
             tmpscriptL = glob.glob(os.path.join(inpath, '*%s*xlsx' % test))
             if len(tmpscriptL) == 0:
-                print("Did not find test %s in session %s, Quitting!" %
-                      (test, session))
+                print(("Did not find test %s in session %s, Quitting!" %
+                      (test, session)))
                 sys.exit()
             if len(tmpscriptL) > 1:
-                print ("Found more than 1 script for test %s in session %s, Quitting!" %
-                       (test, session))
+                print(("Found more than 1 script for test %s in session %s, Quitting!" %
+                       (test, session)))
             scripts.append(tmpscriptL[0])
 
         seq_f = os.path.join(sesspath, 'TEST_SEQUENCE_%s.txt' % session)
@@ -65,7 +65,7 @@ def session_builder(inputs):
             for script in scripts:
                 os.system('cp %s %s/' % (script, sesspath))
                 stripscript = os.path.split(script)[-1]
-                print >> f, stripscript
+                print(stripscript, file=f)
                 print(stripscript)
             f.close()
 

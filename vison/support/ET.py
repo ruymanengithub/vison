@@ -53,7 +53,7 @@ class ET(object):
         """
 
         for number in self.DIAL_NUMBERS:
-            print("Dialing " + number)
+            print(("Dialing " + number))
             # set the method to "GET" from default POST because Amazon S3 only
             # serves GET requests on files. Typically POST would be used for apps
             self.client.calls.create(to=number, from_=self.TWILIO_PHONE_NUMBER,
@@ -62,7 +62,7 @@ class ET(object):
     def send_sms(self, body):
         """ """
         for number in self.DIAL_NUMBERS:
-            print("Texting " + number)
+            print(("Texting " + number))
             self.client.messages.create(
                 to=number,
                 from_=self.TWILIO_PHONE_NUMBER,
@@ -75,7 +75,7 @@ def test_do_phonecall():
     try:
         et = ET()
     except IOError:
-        print 'vison.support.ET: Phone Calling is limited to personel with access details.'
+        print('vison.support.ET: Phone Calling is limited to personel with access details.')
         ETavailable = False
 
     if ETavailable:
@@ -87,7 +87,7 @@ def test_send_sms():
     try:
         et = ET()
     except IOError:
-        print 'vison.support.ET: Phone Calling is limited to personel with access details.'
+        print('vison.support.ET: Phone Calling is limited to personel with access details.')
         ETavailable = False
 
     if ETavailable:

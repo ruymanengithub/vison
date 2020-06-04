@@ -195,7 +195,7 @@ class InjTask(Task):
             for iObs in range(nObs):
 
                 if self.debug:
-                    print 'InjTask.get_checkstats_ST: processing ObsID %i/%i' % (iObs + 1, nObs)
+                    print('InjTask.get_checkstats_ST: processing ObsID %i/%i' % (iObs + 1, nObs))
 
                 for jCCD, CCDk in enumerate(CCDs):
                     dpath = self.dd.mx['datapath'][iObs, jCCD]
@@ -545,7 +545,7 @@ class InjTask(Task):
                 #            for iObs in range(5): # TESTS
 
                 ObsID = self.dd.mx['ObsID'][iObs]
-                print 'Processing Obsid %i/%i' % (iObs + 1, nObs)
+                print('Processing Obsid %i/%i' % (iObs + 1, nObs))
 
                 for jCCD, CCDk in enumerate(CCDs):
 

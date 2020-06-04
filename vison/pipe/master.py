@@ -148,7 +148,7 @@ class GenPipe(object):
         if self.log is not None:
             self.log.info(msg)
 
-        print('Running: %s' % taskname)
+        print(('Running: %s' % taskname))
 
         taskreport = self.dotask(taskname, taskinputs,
                                  drill=self.drill, debug=self.debug,
@@ -251,8 +251,8 @@ class GenPipe(object):
                 self.log.info('TASK "%s@%s" FAILED, QUITTING!' %
                               (taskname, self.Test_dict[strip_taskname].__module__))
             else:
-                print 'TASK "%s@%s" FAILED, QUITTING!' % (
-                    taskname, self.Test_dict[taskname].__module__)
+                print('TASK "%s@%s" FAILED, QUITTING!' % (
+                    taskname, self.Test_dict[taskname].__module__))
 
         tend = datetime.datetime.now()
         dtm = ((tend - tini).seconds) / 60.
@@ -283,7 +283,7 @@ class GenPipe(object):
         if self.log is not None:
             self.log.info(msg_trbk)
         else:
-            print msg_trbk
+            print(msg_trbk)
 
 
 class Pipe(GenPipe):
@@ -498,14 +498,14 @@ class Pipe(GenPipe):
 
                 if tsincelastavailable > waitTO:
 
-                    print " Im bored of waiting... do you want to give up? y/n"
+                    print(" Im bored of waiting... do you want to give up? y/n")
                     rlist, _, _ = select([sys.stdin], [], [], 60.)  # 1 minute to answer
 
                     if rlist:
                         ans = sys.stdin.readline().lower()
                     else:
                         ans = 'y'
-                        print "No input. Assuming that's a 'y' and hence quitting."
+                        print("No input. Assuming that's a 'y' and hence quitting.")
 
                     if ans == 'y':
                         if self.log is not None:
@@ -544,8 +544,8 @@ class Pipe(GenPipe):
                 self.log.info('TASK "%s@%s" FAILED, QUITTING!' %
                               (taskname, self.Test_dict[strip_taskname].__module__))
             else:
-                print 'TASK "%s@%s" FAILED, QUITTING!' % (
-                    taskname, self.Test_dict[taskname].__module__)
+                print('TASK "%s@%s" FAILED, QUITTING!' % (
+                    taskname, self.Test_dict[taskname].__module__))
 
         tend = datetime.datetime.now()
         dtm = ((tend - tini).seconds) / 60.

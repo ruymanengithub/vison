@@ -542,11 +542,11 @@ class Report(Container):
 
         f = open(filename, 'a')
         for line in self.Texheader:
-            print >> f, line
+            print(line, file=f)
         for line in self.Texbody:
-            print >> f, line
+            print(line, file=f)
         for line in self.Texfooter:
-            print >> f, line
+            print(line, file=f)
         f.close()
 
     def compileLaTex2pdf(self, fileroot, cleanafter=False, silent=True):

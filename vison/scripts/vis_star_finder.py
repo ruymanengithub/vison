@@ -45,9 +45,9 @@ def write_ID_chart(filename, Quads, Starnames):
     hdr = '# ID NUMBER'
 
     with open(filename, 'wa') as f:
-        print >> f, hdr
+        print(hdr, file=f)
         for item in IDs:
-            print >> f, item
+            print(item, file=f)
     f.close()
 
 
@@ -187,8 +187,8 @@ def run_starfinder(FITS, tag=''):
         proc1 = subprocess.Popen(["nedit", IDfile])
         proc2 = subprocess.Popen(["nedit", SExCat_dat_name])
 
-        print 'Fill in the identification chart: %s\n' % IDfile
-        print 'Use the SExCat %s and the image & segmentation map on DS9\n' % SExCat_dat_name
+        print('Fill in the identification chart: %s\n' % IDfile)
+        print('Use the SExCat %s and the image & segmentation map on DS9\n' % SExCat_dat_name)
 
         holdon = raw_input('Press any key when finished!\n ')
 

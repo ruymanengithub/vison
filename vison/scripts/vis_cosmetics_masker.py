@@ -257,17 +257,17 @@ def run_maskmaker(inputs):
     outputs = dict()
 
     if inputs['doDarkMask']:
-        print 'Generating Defects in Darkness Mask...'
+        print('Generating Defects in Darkness Mask...')
         dkmask_f = do_DarkMask(inputs)
         outputs['DARK'] = dkmask_f
 
     if inputs['doFlatMask']:
-        print 'Generating Defects in PR Mask...'
+        print('Generating Defects in PR Mask...')
         flmask_f = do_FlatMask(inputs)
         outputs['FLAT'] = flmask_f
 
     if inputs['doMerge']:
-        print 'Generating Cosmetics Mask (Dark | PR)...'
+        print('Generating Cosmetics Mask (Dark | PR)...')
         mgmask_f = do_MergeMasks(inputs)
         outputs['MERGE'] = mgmask_f
 

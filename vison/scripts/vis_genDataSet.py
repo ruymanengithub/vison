@@ -81,7 +81,7 @@ def datasetGenerator(TestsSelector, doGenExplog, doGenHK, doGenFITS, outpath, el
 
     if doGenExplog:
 
-        print 'Generating EXPOSURE LOG...'
+        print('Generating EXPOSURE LOG...')
 
         explog = genExpLog(TestsSelector, explogf, equipment, elvis, CHAMBER)
 
@@ -90,7 +90,7 @@ def datasetGenerator(TestsSelector, doGenExplog, doGenHK, doGenFITS, outpath, el
 
     if doGenHK:
 
-        print 'Generating HK files...'
+        print('Generating HK files...')
 
 #        HKvals = {'HK_OD_Top_CCD1':'OD_T1_V','HK_OD_Bottom_CCD1':'OD_B1_V',
 #                  'HK_OD_Top_CCD2':'OD_T2_V','HK_OD_Bottom_CCD2':'OD_B2_V','HK_OD_Top_CCD3':'OD_T3_V',
@@ -196,7 +196,7 @@ def datasetGenerator(TestsSelector, doGenExplog, doGenHK, doGenFITS, outpath, el
         # selix = [0,113,314,3988] # bias=0,flat=314,chinj=113,psf=3988
         #selix = [0,113,314,3988]
 
-        print 'Generating FITS files... '
+        print('Generating FITS files... ')
 
         if Nrows > 0:
             sexplog = explog[0:Nrows]

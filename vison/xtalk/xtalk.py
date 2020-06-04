@@ -232,7 +232,7 @@ def processXtalk_single(CCDref, Qref, OBSID, thresholdinj=0., colstart=1, colend
     Quads = ['E', 'F', 'G', 'H']
 
     msg = 'Reference = CCD%i-Q:%s' % (CCDref, Qref)
-    print msg
+    print(msg)
 
     if log is not None:
         log.info(msg)
@@ -297,7 +297,7 @@ def processXtalk_single(CCDref, Qref, OBSID, thresholdinj=0., colstart=1, colend
 
     for CCD in CCDs:
 
-        print CCD
+        print(CCD)
 
         tCCDfile = os.path.join(
             datapath, 'EUC_%i_*_CCD%i.fits' % (OBSID, CCD,))

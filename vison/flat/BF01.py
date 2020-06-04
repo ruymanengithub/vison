@@ -82,7 +82,7 @@ def process_one_fluence_covmaps(q, dd, dpath, CCDs, jCCD, ku, ulabels,
 
     ccdobjNamesList = vfullinpath_adder(dd.mx['ccdobj_name'][six[0], jCCD], 'pick')
 
-    print('%s: column %i/%i; %i OBSIDs' % (CCDs[jCCD], ku + 1, len(ulabels), len(ccdobjNamesList)))
+    print(('%s: column %i/%i; %i OBSIDs' % (CCDs[jCCD], ku + 1, len(ulabels), len(ccdobjNamesList))))
 
     ccdobjList = [cPickleRead(item) for item in ccdobjNamesList]
     
@@ -106,8 +106,8 @@ def correct_BFE_one_image(q, dd, inputs, iObs, nObs, CCDs, Quads, picklespath, A
         full_inccdobj_name = os.path.join(picklespath, inccdobj_name)
                               
 
-        print('Test %s, OBS %i/%i: correcting BFE in %s...' % (
-            inputs['test'], iObs + 1, nObs, inccdobj_name))
+        print(('Test %s, OBS %i/%i: correcting BFE in %s...' % (
+            inputs['test'], iObs + 1, nObs, inccdobj_name)))
 
         # loading CCD Object
         ccdobj = copy.deepcopy(cPickleRead(full_inccdobj_name))

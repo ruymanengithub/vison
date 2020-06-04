@@ -297,7 +297,7 @@ class HKFlags(tk.Toplevel):
             window = SingleHKplot(self.parent.root)
             window.render(HKkey, HKlim, t, y)
         except KeyError:
-            print 'Cant find %s in HK!\n' % HKkey
+            print('Cant find %s in HK!\n' % HKkey)
 
     def update(self):
 
@@ -482,7 +482,7 @@ class HKDisplay(tk.Toplevel):
         if arethere:
             self.HKfiles = HKfiles
         else:
-            print 'HKfiles %s not found' % tmp_HK
+            print('HKfiles %s not found' % tmp_HK)
             self.HKfiles = None
 
     def select_HKkeys(self):
@@ -516,7 +516,7 @@ class HKDisplay(tk.Toplevel):
             return
 
         sizeHK = get_bitsize(self.HKfiles)
-        print('sizeHK=%i' % sizeHK)
+        print(('sizeHK=%i' % sizeHK))
 
         if sizeHK <= self.sizeHK:
             # yield self.HK
@@ -530,7 +530,7 @@ class HKDisplay(tk.Toplevel):
         try:
             HK = HKtools.loadHK_QFM(self.HKfiles, elvis=self.elvis, safe=True)
         except BaseException:
-            print('Failed loading: %s' % self.HKfiles.__repr__)
+            print(('Failed loading: %s' % self.HKfiles.__repr__))
             return
 
         print('done loading HK!')
@@ -593,7 +593,7 @@ class HKDisplay(tk.Toplevel):
         return render
 
     def update(self):
-        print('entering HKDisplay.update. Interval=%i' % self.interval)
+        print(('entering HKDisplay.update. Interval=%i' % self.interval))
         self.search_HKfiles()
         self.get_data()
         self.after(self.interval, self.update)

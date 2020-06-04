@@ -600,7 +600,7 @@ class PSF0X(PT.PointTask):
 
             for iObs in range(nObs):
 
-                print '\nopt_xtalk: sextracting ObsID %i/%i' % (iObs + 1, nObs)
+                print('\nopt_xtalk: sextracting ObsID %i/%i' % (iObs + 1, nObs))
 
                 ObsID = self.dd.mx['ObsID'][iObs]
                 timestamp = self.dd.mx['date'][iObs, 0]

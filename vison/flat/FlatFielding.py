@@ -165,7 +165,7 @@ class FlatField(ccdmodule.CCD, CDPClass):
         self.vison = __version__
 
         # super(FlatField,self).__init__(infits=None)
-        print 'TODO: FlatFielding.FlatField needs improvemenents: masking'
+        print('TODO: FlatFielding.FlatField needs improvemenents: masking')
 
         if fitsfile != '':
             super(FlatField, self).__init__(infits=fitsfile,

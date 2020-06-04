@@ -155,7 +155,7 @@ class vColumn(object):
 
     def name_indices(self):
         """ """
-        print(self.indices.names)
+        print((self.indices.names))
 
     def __repr__(self):
         return self.array.__repr__()
@@ -267,7 +267,7 @@ class DataDict(object):
 
     def name_indices(self):
         """ """
-        print(self.indices.names)
+        print((self.indices.names))
 
     def col_has_index(self, colname, indexname):
         """ """
@@ -386,12 +386,12 @@ def useCases():
     dd.loadExpLog(explog)
 
     print('dd.indices')
-    print(dd.indices)
+    print((dd.indices))
 
     ans1 = dd.col_has_index('ObsID', 'ix')
-    print('ix in ObsID-col: %s' % ans1)
+    print(('ix in ObsID-col: %s' % ans1))
     ans2 = dd.col_has_index('ObsID', 'CCD')
-    print('CCD in ObsID-col: %s' % ans2)
+    print(('CCD in ObsID-col: %s' % ans2))
 
     Xindices = deepcopy(dd.indices)
     Xindices.append(vIndex('Quad', vals=['E', 'F', 'G', 'H']))
@@ -408,22 +408,22 @@ def useCases():
     dd.addColumn(spot_fluence, 'spot_fluence', Xindices)
 
     print('dd indices = ')
-    print(dd.indices)
+    print((dd.indices))
 
     ans3 = dd.col_has_index('spot_fluence', 'Quad')
-    print('Quad in spot_fluence: %s' % ans3)
+    print(('Quad in spot_fluence: %s' % ans3))
 
     def all_checker(key): return dd.col_has_index(key, 'Quad')
 
     ans4 = np.any(map(all_checker, [
                   colname for colname in dd.colnames if colname != 'spot_fluence']))
-    print('Quad in colnames != spot_fluence: %s' % ans4)
+    print(('Quad in colnames != spot_fluence: %s' % ans4))
 
     print('Dropping spot_fluence')
     dd.dropColumn('spot_fluence')
 
-    print('Columns: ', dd.colnames)
-    print('Indices: ', dd.indices)
+    print(('Columns: ', dd.colnames))
+    print(('Indices: ', dd.indices))
 
     OCQindices = Xindices
 
@@ -468,7 +468,7 @@ def useCases():
 
     ddret = res['dd']
 
-    print('Pickled == Original : %s' % (dd == ddret,))
+    print(('Pickled == Original : %s' % (dd == ddret,)))
 
     outf = 'test_DD.txt'
 
@@ -477,8 +477,8 @@ def useCases():
     with f2:
         try:
             dd.saveToFile(outf, format='ascii')
-            print('saved catalog to temp file: %s' % f2.name)
-            print('erased %s...' % f2.name)
+            print(('saved catalog to temp file: %s' % f2.name))
+            print(('erased %s...' % f2.name))
         except BaseException:
             print('failed to save catalog to temp file')
 

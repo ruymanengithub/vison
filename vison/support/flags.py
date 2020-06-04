@@ -92,4 +92,4 @@ if __name__ == '__main__':
 
     assert areOn
 
-    print 'flags.py: Tests Ran Succesfully'
+    print('flags.py: Tests Ran Succesfully')

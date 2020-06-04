@@ -175,7 +175,7 @@ def get_rawcrosstalk_mx(dd, respath):
 
     for iobs, obsid in enumerate(obsids):
 
-        print('\nGetting cross-talks from obsid %i/%i\n' % (iobs + 1, len(obsids)))
+        print(('\nGetting cross-talks from obsid %i/%i\n' % (iobs + 1, len(obsids))))
 
         datestamp = dd.mx['date'][iobs, 0]
 

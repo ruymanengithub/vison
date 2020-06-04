@@ -51,7 +51,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis,
 
     if toGen['BIAS01']:
 
-        print 'BIAS01...'
+        print('BIAS01...')
 
         Nbias01 = 3
         diffBIAS01 = dict(sn_ccd1=sn_ccd1,
@@ -72,7 +72,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis,
 
     if toGen['DARK01']:
 
-        print 'DARK01...'
+        print('DARK01...')
 
         Ndark01 = 1
         exptime_dark01 = 565.  # s
@@ -94,7 +94,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis,
 
     if toGen['CHINJ00']:
 
-        print 'CHINJ00...'
+        print('CHINJ00...')
 
         IDH = 18.
         toi_chinj00 = 500
@@ -121,7 +121,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis,
 
     if toGen['TP00']:
 
-        print 'TP00...'
+        print('TP00...')
 
         Nshuffles_V = 500
         TOI_TPv = [200, 1000, 4000]
@@ -155,7 +155,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis,
 
     if toGen['FLAT01']:
 
-        print 'FLAT01...'
+        print('FLAT01...')
 
         t_dummy_F01 = np.array([25., 50., 75]) / 100.
         exptimesF01 = (exptimes_FLAT0X['nm800'] * t_dummy_F01).tolist()  # s
@@ -194,7 +194,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis,
         for iw, wave in enumerate(wavesFLAT02):
 
             itestkey = 'FLAT02_%i' % wave
-            print '%s...' % itestkey
+            print('%s...' % itestkey)
 
             iexptimesF02 = (
                 exptimes_FLAT0X['nm%i' % wave] * t_dummy_F02).tolist()
@@ -218,7 +218,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis,
 
     if toGen['FOCUS00']:
 
-        print 'FOCUS00...'
+        print('FOCUS00...')
 
         wavesFOCUS00w = [590, 800, 880]
 
@@ -235,7 +235,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis,
 
             diffFOCUS00w['test'] = itestkey
 
-            print '%s...' % itestkey
+            print('%s...' % itestkey)
 
             focus00 = FOCUS00.FOCUS00(inputs=dict(wavelength=wave,
                                                   exptime=iexptimeF00,
@@ -250,7 +250,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis,
 
     if toGen['PSF01']:
 
-        print 'PSF01...'
+        print('PSF01...')
 
         wavePSF01w = 800
 
@@ -266,7 +266,7 @@ def generate_reduced_test_sequence(equipment, toGen, elvis=context.elvis,
         itestkey = 'PSF01_%i' % wavePSF01w
         diffPSF01w['test'] = itestkey
 
-        print '%s...' % itestkey
+        print('%s...' % itestkey)
 
         psf01w = PSF0X.PSF0X(inputs=dict(wavelength=wave,
                                          exptimes=exptsPSF01w,

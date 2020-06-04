@@ -750,7 +750,7 @@ class MetaFlat(MetaCal):
 
                     colnum = int(colkey[-1])
 
-                    print('MF: %s %s' % (testname, colkey))
+                    print(('MF: %s %s' % (testname, colkey)))
 
                     if testname == 'FLAT01':
                         _test = 'FLAT01'
