@@ -89,7 +89,7 @@ def process_one_fluence_covmaps(q, dd, dpath, CCDs, jCCD, ku, ulabels,
     icovdict = covlib.get_cov_maps(
         ccdobjList, Npix=Npix, vstart=vstart, vend=vend, clipsigma=clipsigma,
         covfunc = covfunc, doBiasCorr=doBiasCorr,central=central,
-        doTest=False, debug=True)
+        doTest=False, debug=False)
     q.put([jCCD, ku, icovdict])
 
 
