@@ -124,7 +124,7 @@ def correct_BFE_one_image(q, dd, inputs, iObs, nObs, CCDs, Quads, picklespath, A
         for Q in Quads:
 
             if Asol is None:
-               try:
+                try:
                     _Asol = dd.products['BF'][CCDkey][Q][colkey]['Asol'].copy()
                 except:
                     _Asol = None
