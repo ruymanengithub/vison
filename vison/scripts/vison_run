@@ -47,7 +47,7 @@ def openpyconfigf(configf, RUN, wait):
         # execfile(configf,dict(RUNs=['D21']))
         RUNs = [RUN]
         doWait = wait
-        exec f
+        exec(f)
         f.close()
 
     return inputdict
