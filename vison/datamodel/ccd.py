@@ -812,7 +812,7 @@ class CCD(object):
 
     def divide_by_flatfield(self, FF, extension=-1):
         """Divides CCD image by a Flat-field."""
-        print 'TODO: ccd.CCD.divide_by_flatfield needs improvements: handling of masked values, overscans (V & H)'
+        print('TODO: ccd.CCD.divide_by_flatfield needs improvements: handling of masked values, overscans (V & H)')
 
         assert self.shape == FF.shape
         self.extensions[extension].data /= FF
@@ -1071,7 +1071,7 @@ def test_create_from_scratch():
 
     ccdin = CCD(fitsname, getallextensions=True)
 
-    print 'Number of extensions = %i' % ccdin.nextensions
+    print('Number of extensions = %i' % ccdin.nextensions)
     stop()
 
 
