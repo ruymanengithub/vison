@@ -944,7 +944,7 @@ def show_disps_CCD273(aijb, stretch=5., peak=1.E5 / 3.5, N=25, sigma=1.6, title=
     gaussPSF = generate_GaussPSF(N, sigma)
     gaussPSF = gaussPSF / gaussPSF.max() * peak
 
-    Rdisp_Q = get_Rdisp(gaussPSF, aijb) / peak  # ??
+    Rdisp_Q = get_Rdisp(gaussPSF, aijb) #/ peak  # ??
 
     # stop()
 
@@ -969,10 +969,12 @@ def show_disps_CCD273(aijb, stretch=5., peak=1.E5 / 3.5, N=25, sigma=1.6, title=
 
             # ll, ul, ur, lr
             # displacements are inside-outside oriented
-            x = (i - (N - 1.) / 2.) * pixpitch + (np.array([-0.5, -0.5, 0.5, 0.5, -0.5])) * pixpitch +\
+            x = (i - (N - 1.) / 2.) * pixpitch + \
+                (np.array([-0.5, -0.5, 0.5, 0.5, -0.5])) * pixpitch +\
                 sign * np.array([-d[3], -d[3], d[1], d[1], -d[3]])
 
-            y = (j - (N - 1.) / 2.) * pixpitch + (np.array([-0.5, 0.5, 0.5, -0.5, -0.5])) * pixpitch +\
+            y = (j - (N - 1.) / 2.) * pixpitch +\
+                 (np.array([-0.5, 0.5, 0.5, -0.5, -0.5])) * pixpitch +\
                 sign * np.array([-d[2], d[0], d[0], -d[2], -d[2]])
 
             ax.plot(x, y, '%s-' % c)

@@ -142,7 +142,7 @@ def gt_PTC_curves_dict(test, BFEcorr='no'):
   
   return dict(
       figname='%s_PTC_curves_%s.png' % (test,BFEtag),
-      caption='%s: PTC curves and best fits (%s).' % (nicetest,BFEcap),
+      caption='%s: PTC curves, %s. Theoretical line has a fixed gain of 3.5.' % (nicetest,BFEcap),
       meta=dict(doLegend=True,
               ylabel='VAR',
               xlabel='MED',

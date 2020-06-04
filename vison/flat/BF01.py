@@ -85,11 +85,11 @@ def process_one_fluence_covmaps(q, dd, dpath, CCDs, jCCD, ku, ulabels,
     print('%s: column %i/%i; %i OBSIDs' % (CCDs[jCCD], ku + 1, len(ulabels), len(ccdobjNamesList)))
 
     ccdobjList = [cPickleRead(item) for item in ccdobjNamesList]
-
+    
     icovdict = covlib.get_cov_maps(
         ccdobjList, Npix=Npix, vstart=vstart, vend=vend, clipsigma=clipsigma,
         covfunc = covfunc, doBiasCorr=doBiasCorr,central=central,
-        doTest=False, debug=False)
+        doTest=False, debug=True)
     q.put([jCCD, ku, icovdict])
 
 
@@ -313,7 +313,7 @@ class BF01(PTC0X):
         vend = min(self.dd.mx['vend'][0, 0], self.ccdcalc.NrowsCCD)
 
         indices = copy.deepcopy(self.dd.indices)
-        nObs, nC, nQ = indices.shape
+        nObs, nC, nQ = indices.shape[0:3]
         CCDs = indices.get_vals('CCD')
         Quads = indices.get_vals('Quad')
 
@@ -380,7 +380,7 @@ class BF01(PTC0X):
 
                     arglist.append([queue, self.dd, dpath, CCDs, jCCD, ku, ulabels])
 
-            #process_one_fluence_covmaps(*arglist[-2],**kwargs) # TEST
+            #process_one_fluence_covmaps(*arglist[-3],**kwargs) # TEST
             #stop()
 
             pool = mp.Pool(processes=self.processes)
@@ -421,12 +421,12 @@ class BF01(PTC0X):
                     profscov_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
                         np.arange(Npix - 1)
                     profscov_1D.data['hor'][CCDk][Q]['y'][ulabel] = \
-                        icovdict['av_corrmap'][Q][0, 1:].copy()
+                        icovdict['av_corrmap'][Q][1:, 0].copy()
 
                     profscov_1D.data['ver'][CCDk][Q]['x'][ulabel] = \
                         np.arange(Npix - 1)
                     profscov_1D.data['ver'][CCDk][Q]['y'][ulabel] = \
-                        icovdict['av_corrmap'][Q][1:, 0].copy()
+                        icovdict['av_corrmap'][Q][0, 1:].copy()
 
         else:
 
@@ -645,13 +645,14 @@ class BF01(PTC0X):
                             profsker_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
                                 np.arange(Npixplot) - Npixplot / 2
                             profsker_1D.data['hor'][CCDk][Q]['y'][ulabel] = np.log10(kernel_Q[Npix / \
-                                2, Npix / 2 - Npixplot / 2:Npix / 2 + Npixplot / 2 + 1].copy())
+                                2 - Npixplot / 2:Npix / 2 + Npixplot / 2 + 1, Npix / 2].copy())
 
                             profsker_1D.data['ver'][CCDk][Q]['x'][ulabel] = \
                                 np.arange(Npixplot) - Npixplot / 2
 
                             profsker_1D.data['ver'][CCDk][Q]['y'][ulabel] = np.log10(kernel_Q[Npix / \
-                                2 - Npixplot / 2:Npix / 2 + Npixplot / 2 + 1, Npix / 2].copy())
+                                2, Npix / 2 - Npixplot / 2:Npix / 2 + Npixplot / 2 + 1].copy())
+
 
                             # BEWARE, PENDING: dispfig is saved but NOT REPORTED anywhere!
 
@@ -993,23 +994,23 @@ class BF01(PTC0X):
 
             av_gain = 3.5 # just for display purposes
 
-            has_gain_cal = True
-            try:
-                wave = self.inputs['wavelength']
-                gaincdp = self.inputs['inCDPs']['Gain']['nm%i' % wave]
-                df = cPickleRead(gaincdp)['data']['GAIN_TB']
+            has_gain_cal = False
+            #try:
+            #    wave = self.inputs['wavelength']
+            #    gaincdp = self.inputs['inCDPs']['Gain']['nm%i' % wave]
+            #    df = cPickleRead(gaincdp)['data']['GAIN_TB']
 
-                gaindict = dict()
-                for iCCD, CCDk in enumerate(CCDs):
-                    gaindict[CCDk] = dict()
-                    for jQ, Q in enumerate(Quads):
-                        _gain = df.loc[df['CCD']==iCCD+1].loc[df['Q']==jQ+1]['gain'].values[0]
-                        gaindict[CCDk][Q] = _gain
+            #    gaindict = dict()
+            #    for iCCD, CCDk in enumerate(CCDs):
+            #        gaindict[CCDk] = dict()
+            #        for jQ, Q in enumerate(Quads):
+            #            _gain = df.loc[df['CCD']==iCCD+1].loc[df['Q']==jQ+1]['gain'].values[0]
+            #            gaindict[CCDk][Q] = _gain
 
-            except:
-                has_gain_cal = False
-                if self.log is not None:
-                    self.log.info('Gain matrix not found!')
+            #except:
+            #    has_gain_cal = False
+            #    if self.log is not None:
+            #        self.log.info('Gain matrix not found!')
 
             medcols = dict(BFE='sec_med',
                             NOBFE='sec_med_noBFE',
