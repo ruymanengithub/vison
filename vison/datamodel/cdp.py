@@ -283,14 +283,17 @@ class FitsTables_CDP(CDP):
             dtype = dd[k].dtype.name
 
             if 'string' in dtype:
-                kformat = self.formatsdict['char']
+                kformat = '%s%i' % (self.formatsdict['char'],
+                    dd[k].dtype.itemsize)
+
             else:
                 kformat = self.formatsdict[dtype]
             
             columns.append(fts.Column(name=k,
                 format=kformat,
                 array=dd[k].copy()))
-
+            if kformat=='A':stop()
+        
         self.hdulist.append(fts.BinTableHDU.from_columns(columns,
             name=sheet))
 

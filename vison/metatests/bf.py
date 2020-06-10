@@ -746,6 +746,8 @@ class MetaBF(MetaCal):
 
                 gpsf_data['%s_%s' % (tn, block)] = dd.copy()
 
+
+
         CDP_header = self.FITSify_CDP_header(CDP_header)
 
         gpsf_cdp.ingest_inputs(data=gpsf_data.copy(),
