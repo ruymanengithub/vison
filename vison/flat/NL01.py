@@ -239,10 +239,10 @@ class NL01(FlatTask):
             f.e. ObsID:
                 f.e.CCD:
                     f.e.Q:
+                        mask-out bad pixels
+                        mask-out detector cosmetics
                         subtract offset
-                    opt: [sub bias frame]
-                    opt: [divide by FF]
-                    opt: [mask-out defects]
+                        opt: [sub bias frame]
 
         """
 
@@ -308,7 +308,7 @@ class NL01(FlatTask):
         ishape = indices.shape
 
         nObs = ishape[0]
-        nCCD = ishape[1]
+        #nCCD = ishape[1]
         nQuad = ishape[2]
 
         Quads = indices.get_vals('Quad')

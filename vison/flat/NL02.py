@@ -238,10 +238,10 @@ class NL02(NL01.NL01):
             f.e. ObsID:
                 f.e.CCD:
                     f.e.Q:
+                        mask-out bad pixels
+                        mask-out detector cosmetics
                         subtract offset
-                    opt: [sub bias frame]
-                    opt: [divide by FF]
-                    opt: [mask-out defects]
+                        opt: [sub bias frame]
 
         """
 
