@@ -86,4 +86,5 @@ if __name__ == '__main__':
         d.set("frame %i" % (ifits + 1,))
         d.set('file %s' % FITS)
         d.set('zoom to fit')
-        d.set('scale histequ zscale')
+        d.set('scale histequ')
+        d.set('scale zscale')
