@@ -26,18 +26,29 @@ Code Architecture
 
 **TBW**
 
+Here it is convenient to introduce some nomenclature regarding the executiong of the pipeline that you may see used in the naming of classes and functions therein:
+
+* A **Task** is basically a test (e.g. BIAS02), with a description of how the test data should be acquired, methods to analyse the data once acquired, and others to plot, produce reports, check compliances, etc. 
+* The execution of a Task is broken down in subtasks, which are methods of the the Task classes.
+* A pipeline is a sequential execution of a number of a tasks. In the pipeline it takes shape as a class (Pipe) that has to be instantiated with inputs to perform analysis on a number of tests, using the data stored somewhere.
+
 
 Code Flow
 ---------
 
-It is perhaps easier to describe what the pipeline does, and how it is organised, following what it does when we try to analyse a data-set.
+It is perhaps easier to describe what the pipeline does, and how it is organised, following what it does when we use to perform different tasks.
+
+Data-set Analysis
+^^^^^^^^^^^^^^^^^
+
+Let's first try to analyse a data-set.
 
 We will call the script **vison_run** which instantiates a Pipeline object, loads it with the tests that we are going to process, the inputs to the tasks for those tests, and then runs the pipeline object. Let's go step by step with an example.
 
 ::
     ~$ vison_run -y [vison_config.py] -R [SESSION] -l -t [TAG]
 
-Here vison_config.py stands for a python script with inputs (more on that soon), SESSION is a name to select the acquisition session within the the configuration file we want to select for analysis (there usually are several sessions within a configuration script), and TAG is just a character string to label the directory with results.
+Here vison_config.py stands for a python script with inputs (more on that soon), SESSION is a name to select the acquisition session within the the configuration file we want to select for analysis (there usually are several sessions within a configuration script, as there are data acquisition sessions in a multi-day campaign), and TAG is just a character string to label the directory with results, and the text log file, for ease of identification.
 
 Before we go on, some basic notions regarding the organisation of the GCC:
 
@@ -66,6 +77,24 @@ When vison_config.py is executed, it starts from:
     if __name__ == '__main__'
 
 From there, it calls the function *get_config_dict* to create a standard version of the inputs dictionary, setting up the tasks and their standard inputs. Then it calls *add_RUN_specifics* to add data locations, OBSID ranges, and apply a selector of sub-tasks to execute for each task.
+
+Going back to *vison_run*, once the inputs in the configuration file are ingested, the next important thing is to create an instance of the pipeline class:
+
+::
+    pipe = Pipe(inputdict, dolog=dolog, drill=drill,
+                    debug=debug, startobsid=startobsid,
+                    processes=multithread, tag=tag,
+                    cleanafter=cleanafter)
+
+This takes as input the input dictionary (inputdict) and other keywords to control the execution of the pipeline.
+
+Then, the pipeline is executed, either in wait-for-data mode (in parallel with acquisition), or directly (assuming all data has already been acquired previously):
+
+::
+    if wait:
+        pipe.wait_and_run(dayfolder, elvis=elvis)
+    else:
+        pipe.run()
 
 
 
