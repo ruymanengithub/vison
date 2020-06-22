@@ -24,13 +24,19 @@ First, it is convenient to know what the code here provided can do:
 Code Architecture
 -----------------
 
-**TBW**
-
 Here it is convenient to introduce some nomenclature regarding the executiong of the pipeline that you may see used in the naming of classes and functions therein:
 
 * A **Task** is basically a test (e.g. BIAS02), with a description of how the test data should be acquired, methods to analyse the data once acquired, and others to plot, produce reports, check compliances, etc. 
-* The execution of a Task is broken down in subtasks, which are methods of the the Task classes.
-* A pipeline is a sequential execution of a number of a tasks. In the pipeline it takes shape as a class (Pipe) that has to be instantiated with inputs to perform analysis on a number of tests, using the data stored somewhere.
+* The execution of a Task is broken down into **subtasks**, which are methods of the the Task classes.
+* A **pipeline** is a sequential execution of a number of a tasks. In the pipeline it takes shape as a class (**Pipe**) that has to be instantiated with inputs to perform analysis on a number of tests, using the data stored somewhere.
+
+A diagram with the classes for the parent classes Task and Pipe (which inherits from a generic pipeline class, GenPipe) is shown in the next figure.
+
+.. figure:: figs/pyreverse/classes_pipe.png
+    :align: center
+    :width: 400
+
+
 
 
 Code Flow

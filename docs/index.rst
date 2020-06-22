@@ -50,8 +50,8 @@ How to Use it
 
 TBW
 
-Guide through
-=============
+Guide through the code
+======================
 
 In this section we provide an overal description of the capabilities and organisation of the code.
 
