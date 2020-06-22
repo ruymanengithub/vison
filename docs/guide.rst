@@ -45,12 +45,12 @@ All tests in the campaign have an associated class, which inherits from **Task**
 
 These Task subclasses have some methods which are common to all tests and are worth explaining what they do:
 
-* **build_scriptdict()**: 
-* **filterexposures()**:
-* **check_data()** (in parent class DarkTask): 
-* **prep_data()**:
-* **basic_analysis()**:
-* **meta_analysis()**:
+* **build_scriptdict()**: builds the a dictionary with the structure of the data acquisition of the test. This is, assigns values to each of the keywords in the *excel script* used to acquire the data, and for each column (exposure) in the script, according to the internal structure of the test inherent to the class (usually with some free parameters accessible to input parameters). 
+* **filterexposures()**: This method sub-selects the exposures in the (ELVIS generated) EXPLOG that correspond to the test, taking into account the values in the *Test* column, and usually a user-specified range of OBSIDs to consider. It also validates the acquisition parameters (collected in the EXPLOG) against the expected structure of the test.
+* **check_data()** (in parent class DarkTask): This abstract method performs validation of the HK and the image values (e.g. RON, offsets, fluences) against expected values, according to the test design. The polymorphism of this method, which has to catter to the structure of very different tests, is managed through the call to sub-methods which are test-specific (and thus subclass-specific).
+* **prep_data()**: Prepares images for further analysis. For example, converting the FITS files to CCD objects with analysis methods, subtracting offsets, dividing by flat-fields, etc. Depending on the test/subclass, it will perform different corrections.
+* **basic_analysis()**: This is a generic method that performs the basic steps of analysis. For example, in the case of PTC analysis, this method may just extract means and variances from the pairs of images in the sequnce acquired.
+* **meta_analysis()**: This is another generic method, that usually performs the important / final part of the analysis, building on the preparation of images and the *basic_analysis()* performed before. In the example of the PTC analysis, this method actually builds the PTC curves and extracts the gain and other parameters from its analysis.
 
 
 
