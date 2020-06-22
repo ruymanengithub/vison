@@ -48,14 +48,13 @@ interactive inspection capabilities of Eyegore (data acquisition monitoring).
 How to Use it
 =============
 
-Some kind of **cook-book**. 
-
-*A bit like when your grandmother tells you to put a pinch of sugar and heat it for a while... that kind of accuracy.*
+This is some kind of **"cook-book"**.  Written *a bit like when your grandmother tells you to put a pinch of sugar and heat it for a while... that kind of accuracy.*
 
 .. toctree::
     :maxdepth: 4
 
     cookbook
+
 
 Guide through the code
 ======================
