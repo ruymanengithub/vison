@@ -24,7 +24,7 @@ First, it is convenient to know what the code here provided can do:
 Code Architecture
 -----------------
 
-Here it is convenient to introduce some nomenclature regarding the executiong of the pipeline that you may see used in the naming of classes and functions therein:
+First, it is convenient to introduce some nomenclature regarding the executiong of the pipeline that you may see used in the naming of classes and functions therein:
 
 * A **Task** is basically a test (e.g. BIAS02), with a description of how the test data should be acquired, methods to analyse the data once acquired, and others to plot, produce reports, check compliances, etc. 
 * The execution of a Task is broken down into **subtasks**, which are methods of the the Task classes.
@@ -34,7 +34,24 @@ A diagram with the classes for the parent classes Task and Pipe (which inherits 
 
 .. figure:: figs/pyreverse/classes_pipe.png
     :align: center
-    :width: 400
+    :width: 500
+
+
+All tests in the campaign have an associated class, which inherits from **Task**. For example, tests BIAS01 and BIAS02 are created as "instances" of the class BIAS0X, and test DARK01 from the class DARK01. Both inherit from a common class, DarkTask, which in turn inherits from Task.
+
+.. figure:: figs/pyreverse/classes_dark.png
+    :align: center
+    :width: 500
+
+These Task subclasses have some methods which are common to all tests and are worth explaining what they do:
+
+* **build_scriptdict()**: 
+* **filterexposures()**:
+* **check_data()** (in parent class DarkTask): 
+* **prep_data()**:
+* **basic_analysis()**:
+* **meta_analysis()**:
+
 
 
 
