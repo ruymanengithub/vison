@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 """
 
-DataDict Class : holds data and results across sub-tasks of a "task" (Test).
-This is the CORE data-structure used to do analysis and report results.
+| DataDict Class : holds data and results across sub-tasks of a "task" (Test).
+| This is the **CORE data-structure** used to do analysis and report results.
 
 
+:History:
 Created on Thu Sep 21 16:47:09 2017
 
 :author: Ruyman Azzollini
@@ -30,7 +31,7 @@ from vison.support import flags
 
 
 class vIndex(object):
-    """ """
+    """Class for indexes of a Column."""
 
     def __init__(self, name, vals=None, N=0):
         """ """
@@ -61,6 +62,10 @@ class vIndex(object):
 
 
 class vMultiIndex(list, object):
+    """
+    | Class for indices of a DataDict, which is made of Columns.
+    | A MultiIndex is made up of individual Index objects.
+    """
 
     def __init__(self, IndexList=None):
 
@@ -78,35 +83,41 @@ class vMultiIndex(list, object):
         self.shape = self.get_shape()
 
     def get_names(self):
-        """ """
+        """Returns the names of all indices in self."""
         names = []
         for item in self:
             names.append(item.name)
         return names
 
     def find(self, indexname):
+        """finds the index an index name in self."""
         return self.names.index(indexname)
 
     def get_vals(self, indexname):
-        """ """
+        """Returns the values of the index *indexname* in self."""
         return self[self.find(indexname)].get_vals()
 
     def get_len(self, indexname):
+        """Returns the length of index indexname in self."""
         return self[self.find(indexname)].get_len()
 
     def get_shape(self):
+        """Gets the dimensions of the indices in self."""
         shape = []
         for item in self:
             shape.append(item.len)
         return tuple(shape)
 
     def update_names(self):
+        """ """
         self.names = self.get_names()
 
     def update_shape(self):
+        """ """
         self.shape = self.get_shape()
 
     def append(self, *args):
+        """Adds indices to self."""
         super(vMultiIndex, self).append(*args)
         self.update_names()
         self.update_shape()
@@ -117,20 +128,27 @@ class vMultiIndex(list, object):
         self.update_shape()
 
     def pop(self, *args):
+        """Removes indices"""
         super(vMultiIndex, self).pop(*args)
         self.update_names()
         self.update_shape()
 
     def __getslice__(self, i, j):
+        """slicing method"""
         return vMultiIndex(super(vMultiIndex, self).__getslice__(i, j))
 
     def __str__(self):
+        """String representation method"""
         inside = st.join(['%s' % item.__str__() for item in self], ',')
         return '[%s]' % inside
 
 
 class vColumn(object):
-    """ """
+    """
+    |Class for Column objects.
+    | A column has contents (an array) and an Index/vMultiIndex 
+    object associated.
+    """
 
     def __init__(self, array, name, indices):
         """ """
@@ -158,29 +176,55 @@ class vColumn(object):
         print((self.indices.names))
 
     def __repr__(self):
+        """ """
         return self.array.__repr__()
 
     def __call__(self):
+        """Returns self.array"""
         return self.array
 
     def __getslice__(self, i, j):
+        """Slicing method, retrieval."""
         return self.array.__getslice__(i, j)
 
     def __setslice__(self, i, j, y):
+        """Slicing method, setting"""
         return self.array.__setslice__(i, j, y)
 
     def __setitem__(self, i, y):
+        """Sets an item in self.array"""
         return self.array.__setitem__(i, y)
 
     def __getitem__(self, i):
+        """Returns an item in self.array"""
         return self.array.__getitem__(i)
 
     def __str__(self):
+        """String representation method"""
         return '%s: %s' % (self.name, self.array.__str__())
 
 
 class DataDict(object):
-    """ """
+    """
+    | A Task object has associated a DataDict object where the input data for the Task/Test, 
+    | from the EXPLOG and HK files, and also results obtained through the Task.methods() 
+    | are stored. 
+
+    | So, DataDict is a data structure that usually grows as the Task execution progress. 
+
+    A DataDict is basically a dictionary of arrays, but with some specific properties:
+        * All the arrays have a common dimension, equal to the number of frames / OBSIDs 
+          in the test.
+        * Other dimensions of the arrays may vary, depending on contents.
+            * For example, the OBSID column only has this common dimension.
+            * a column holding PSF FWHM ofspots, may have this common dimension, plus
+              a dimension for the 3 CCDs, another for the 4 Quadrants in each CCD,
+              and another for the 5 spots in each Quadrant.
+        * The DataDict is composed of Column arrays.
+        * The DataDict object has methods to save / reload from hard copies.
+
+
+    """
 
     def __init__(self, meta=None):
         """ """
@@ -197,7 +241,7 @@ class DataDict(object):
         self.compliances = OrderedDict()
 
     def loadExpLog(self, explog):
-        """ """
+        """Loads the contents of an EXPLOG."""
         # CCDs = [1,2,3]
         CCDs = ['CCD1', 'CCD2', 'CCD3']
 
@@ -227,7 +271,7 @@ class DataDict(object):
         return None
 
     def initColumn(self, name, indices, dtype='float32', valini=0.):
-        """ """
+        """Initialises a Column in self."""
 
         assert isinstance(indices, vMultiIndex)
 
@@ -244,7 +288,7 @@ class DataDict(object):
         self.addColumn(array, name, indices)
 
     def addColumn(self, array, name, indices, ix=-1):
-        """ """
+        """Adds a Column to self."""
 
         column = vColumn(array, name, indices)
 
@@ -266,11 +310,11 @@ class DataDict(object):
                 self.indices.append(index)
 
     def name_indices(self):
-        """ """
+        """Returns the names of the indices in self."""
         print((self.indices.names))
 
     def col_has_index(self, colname, indexname):
-        """ """
+        """Verifies whether column *colname* has an index called *indexname*"""
         assert colname in self.colnames
         assert indexname in self.indices.names
         if indexname in self.mx[colname].indices.names:
@@ -278,7 +322,7 @@ class DataDict(object):
         return False
 
     def dropColumn(self, colname):
-        """ """
+        """Removes column *colname* from self."""
 
         assert colname in self.colnames
 
@@ -298,7 +342,11 @@ class DataDict(object):
         self.colnames.pop(self.colnames.index(colname))
 
     def flattentoTable(self):
-        """ """
+        """
+        | Flattens the multidimensional contents of self to a 2D table.
+        | Returns an astropy.table.Table object.
+
+        """
 
         t = ast.table.Table()
 
@@ -330,7 +378,9 @@ class DataDict(object):
         return t
 
     def saveToFile(self, outfile, format='ascii.commented_header'):
-        """ """
+        """
+        | Saves self to a hardcopy.
+        | uses the .write method of astropy.tables.Table."""
 
         t = self.flattentoTable()
         t.write(outfile, format=format, overwrite=True)
@@ -340,6 +390,7 @@ class DataDict(object):
 
 
 class FpaDataDict(DataDict):
+    """ """
 
     def loadExpLog(self, explog):
         """ """

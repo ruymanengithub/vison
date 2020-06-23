@@ -27,6 +27,7 @@ vis_mkscripts.py
 ----------------
 
 .. automodule:: vison.scripts.vis_mkscripts
+    :members:
 
 
 vis_genDataSet.py
