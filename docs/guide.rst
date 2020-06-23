@@ -69,6 +69,7 @@ Let's first try to analyse a data-set.
 We will call the script **vison_run** which instantiates a Pipeline object, loads it with the tests that we are going to process, the inputs to the tasks for those tests, and then runs the pipeline object. Let's go step by step with an example.
 
 ::
+
     ~$ vison_run -y [vison_config.py] -R [SESSION] -l -t [TAG]
 
 Here vison_config.py stands for a python script with inputs (more on that soon), SESSION is a name to select the acquisition session within the the configuration file we want to select for analysis (there usually are several sessions within a configuration script, as there are data acquisition sessions in a multi-day campaign), and TAG is just a character string to label the directory with results, and the text log file, for ease of identification.
@@ -97,6 +98,7 @@ When vison_run is executed, this literally *executes* the vison_config script wh
 When vison_config.py is executed, it starts from:
 
 ::
+
     if __name__ == '__main__'
 
 From there, it calls the function *get_config_dict* to create a standard version of the inputs dictionary, setting up the tasks and their standard inputs. Then it calls *add_RUN_specifics* to add data locations, OBSID ranges, and apply a selector of sub-tasks to execute for each task.
@@ -104,6 +106,7 @@ From there, it calls the function *get_config_dict* to create a standard version
 Going back to *vison_run*, once the inputs in the configuration file are ingested, the next important thing is to create an instance of the pipeline class:
 
 ::
+
     pipe = Pipe(inputdict, dolog=dolog, drill=drill,
                     debug=debug, startobsid=startobsid,
                     processes=multithread, tag=tag,
@@ -114,10 +117,64 @@ This takes as input the input dictionary (inputdict) and other keywords to contr
 Then, the pipeline is executed, either in wait-for-data mode (in parallel with acquisition), or directly (assuming all data has already been acquired previously):
 
 ::
+
     if wait:
         pipe.wait_and_run(dayfolder, elvis=elvis)
     else:
         pipe.run()
+
+
+In the **run** method, the pipe object cyles over the list of tasks to be executed, and launches each task with its specific inputs:
+
+::
+    for taskname in tasknames:
+
+        taskinputs = self.inputs[taskname]
+        taskinputs['resultspath'] = os.path.join(
+        resultsroot, taskinputs['resultspath'])
+
+        if explogf is not None:
+            taskinputs['explogf'] = explogf
+        if elvis is not None:
+            taskinputs['elvis'] = elvis
+
+        self.inputs[taskname] = taskinputs
+
+        self.launchtask(taskname)
+
+        [...]
+    
+
+The **launchtask** method is also a method of Pipe. Here, some further inputs parsing, and task execution logging are handled. But the actual instantiation of the Task object happens in the **dotask** method within **launchtask**.
+
+::
+    
+    [...]
+    taskreport = self.dotask(taskname, taskinputs,
+                    drill=self.drill, debug=self.debug,
+                    cleanafter=self.cleanafter)
+    [...]
+
+In **Pipe.dotask(...)** is where the Task object gets instantiated and executed:
+
+::
+
+    [...]
+
+    test = self.get_test(strip_taskname, inputs=inputs, log=self.log,
+            drill=drill, debug=debug, cleanafter=cleanafter)
+
+    [...]
+
+    Errors = test()
+
+    [...]
+
+The rest in that method is handling exceptions, and logging errors and test analysis execution durations.
+
+Each Task has a **__call__()** method that is what is called when we do Errors = test(), and obviously returns any errors raised during the execution of the task.
+
+The **__call__()** method is common to all Task subclasses, because it is inherited from Task class itself. The polymorphism of the tasks in their execution (e.g. different subtask methods), is handled through subclass methods, which are called via internal dictionaries that link methods to subtask names.
 
 
 

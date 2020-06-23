@@ -2,14 +2,15 @@
 # -*- coding: utf-8 -*-
 """
 
-Master Script to measure and report cross-talk levels among 12 ROE channels.
-Takes as input a data-set composed of 3x12 CCD images, corresponding to
-injecting a "ladder" of signal on each of the 12 channels, using the ROE-TAB.
+Master Script to measure and report cross-talk levels among 12 ROE channels. Takes as input a data-set 
+composed of 3x12 CCD images, corresponding to injecting a "ladder" of signal on each of the 
+12 channels, using the **ROE-TAB**.
 
-
+:History:
 Created on Thu Mar 22 16:17:39 2018
 
-:author: Ruyman Azzollini
+:author:
+Ruyman Azzollini
 
 """
 

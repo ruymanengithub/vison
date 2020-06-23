@@ -5,11 +5,12 @@
 Script to clean-up processing files produced by the pipeline.
 Useful to free-up space.
 
-USE WITH CAUTION.
+**USE WITH CAUTION**.
 
+:History:
 Created on Thu Dec  6 10:19:24 2018
 
-@author: raf
+:author: raf
 
 """
 

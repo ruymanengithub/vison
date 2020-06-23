@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 """
 
-Script to build test SEQUENCES easily
+Script to build test SEQUENCES easily and reliably.
 
+:History:
 Created on Thu Mar 14 10:30:33 2019
 
-@author: raf
+:author: raf
+
 """
 
 # IMPORT STUFF

@@ -1,9 +1,12 @@
 #!/usr/bin/env python2
+
 # -*- coding: utf-8 -*-
 """
+
 Script to find point sources in VIS Ground Calibration Campaign.
 Used to 'prime' the position tables of point-source objects.
 
+:History:
 Created on Tue Jun 12 16:09:31 2018
 
 :author: Ruyman Azzollini
@@ -11,6 +14,8 @@ Created on Tue Jun 12 16:09:31 2018
 """
 
 # IMPORT STUFF
+from __future__ import print_function
+
 from pdb import set_trace as stop
 from optparse import OptionParser
 import sys
