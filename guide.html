@@ -1,0 +1,431 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Code Guide &#8212; vison 0.9+374.gd7313d7 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.9+374.gd7313d7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Pipeline" href="pipe.html" />
+    <link rel="prev" title="vison cook-book" href="cookbook.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pipe.html" title="Pipeline"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="cookbook.html" title="vison cook-book"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="code-guide">
+<span id="guide"></span><h1>Code Guide<a class="headerlink" href="#code-guide" title="Permalink to this headline">¶</a></h1>
+<p>Here we provide a succint description of the code, what it does and how it is organised, to help the user / developer understand how things work, to better make use of it / repurpose it.</p>
+<div class="section" id="capabilities-of-the-code">
+<h2>Capabilities of the Code<a class="headerlink" href="#capabilities-of-the-code" title="Permalink to this headline">¶</a></h2>
+<p>First, it is convenient to know what the code here provided can do:</p>
+<ol class="arabic simple">
+<li>Write <strong>excel scripts for the acquisition of data</strong> using ELVIS. Each test has an associated class, and this class has a method which generates the description of the test that is then converted to excel. The test description can be modified at runtime by means of test object parameters. These test descriptions are a key element of the pipeline. Monitoring and analysis capabilities depend on them (i.e. knowing what <em>should</em> happen).</li>
+<li><strong>Monitor the data acquisition</strong> of the calibration campaign in real time. This is done through the sub-package &#8220;eyegore&#8221;. It can monitor the data flow, values in the HK data stream (cheking value against limits), display images and the exposure log, and issue warnings via sms and e-mail.</li>
+<li><strong>Analyse the data</strong> from the tests. This is the core functionality of the pipeline.</li>
+<li>Produce calibration / analysis results in a range of formats: <strong>Json, FITS, excel</strong>, etc.</li>
+<li>Produce <strong>test reports</strong> for each test in pdf (via LaTeX).</li>
+<li>Collate and produce summary reports from a set of tests across all calibrated blocks (<strong>metatests</strong>).</li>
+<li>Analyse data from the whole VIS FPA (<strong>fpatests</strong>).</li>
+<li><strong>Simulate data</strong> (very basic capabilities).</li>
+</ol>
+</div>
+<div class="section" id="code-architecture">
+<h2>Code Architecture<a class="headerlink" href="#code-architecture" title="Permalink to this headline">¶</a></h2>
+<p>First, it is convenient to introduce some nomenclature regarding the executiong of the pipeline that you may see used in the naming of classes and functions therein:</p>
+<ul class="simple">
+<li>A <strong>Task</strong> is basically a test (e.g. BIAS02), with a description of how the test data should be acquired, methods to analyse the data once acquired, and others to plot, produce reports, check compliances, etc.</li>
+<li>The execution of a Task is broken down into <strong>subtasks</strong>, which are methods of the the Task classes.</li>
+<li>A <strong>pipeline</strong> is a sequential execution of a number of a tasks. In the pipeline it takes shape as a class (<strong>Pipe</strong>) that has to be instantiated with inputs to perform analysis on a number of tests, using the data stored somewhere.</li>
+</ul>
+<p>A diagram with the classes for the parent classes Task and Pipe (which inherits from a generic pipeline class, GenPipe) is shown in the next figure.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/classes_pipe.png"><img alt="_images/classes_pipe.png" src="_images/classes_pipe.png" style="width: 500px;" /></a>
+</div>
+<p>All tests in the campaign have an associated class, which inherits from <strong>Task</strong>. For example, tests BIAS01 and BIAS02 are created as &#8220;instances&#8221; of the class BIAS0X, and test DARK01 from the class DARK01. Both inherit from a common class, DarkTask, which in turn inherits from Task.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/classes_dark.png"><img alt="_images/classes_dark.png" src="_images/classes_dark.png" style="width: 500px;" /></a>
+</div>
+<p>These Task subclasses have some methods which are common to all tests and are worth explaining what they do:</p>
+<ul class="simple">
+<li><strong>build_scriptdict()</strong>: builds the a dictionary with the structure of the data acquisition of the test. This is, assigns values to each of the keywords in the <em>excel script</em> used to acquire the data, and for each column (exposure) in the script, according to the internal structure of the test inherent to the class (usually with some free parameters accessible to input parameters).</li>
+<li><strong>filterexposures()</strong>: This method sub-selects the exposures in the (ELVIS generated) EXPLOG that correspond to the test, taking into account the values in the <em>Test</em> column, and usually a user-specified range of OBSIDs to consider. It also validates the acquisition parameters (collected in the EXPLOG) against the expected structure of the test.</li>
+<li><strong>check_data()</strong> (in parent class DarkTask): This abstract method performs validation of the HK and the image values (e.g. RON, offsets, fluences) against expected values, according to the test design. The polymorphism of this method, which has to catter to the structure of very different tests, is managed through the call to sub-methods which are test-specific (and thus subclass-specific).</li>
+<li><strong>prep_data()</strong>: Prepares images for further analysis. For example, converting the FITS files to CCD objects with analysis methods, subtracting offsets, dividing by flat-fields, etc. Depending on the test/subclass, it will perform different corrections.</li>
+<li><strong>basic_analysis()</strong>: This is a generic method that performs the basic steps of analysis. For example, in the case of PTC analysis, this method may just extract means and variances from the pairs of images in the sequnce acquired.</li>
+<li><strong>meta_analysis()</strong>: This is another generic method, that usually performs the important / final part of the analysis, building on the preparation of images and the <em>basic_analysis()</em> performed before. In the example of the PTC analysis, this method actually builds the PTC curves and extracts the gain and other parameters from its analysis.</li>
+</ul>
+</div>
+<div class="section" id="code-flow">
+<h2>Code Flow<a class="headerlink" href="#code-flow" title="Permalink to this headline">¶</a></h2>
+<p>It is perhaps easier to describe what the pipeline does, and how it is organised, following what it does when we use to perform different tasks.</p>
+<div class="section" id="data-set-analysis">
+<h3>Data-set Analysis<a class="headerlink" href="#data-set-analysis" title="Permalink to this headline">¶</a></h3>
+<p>Let&#8217;s first try to analyse a data-set.</p>
+<p>We will call the script <strong>vison_run</strong> which instantiates a Pipeline object, loads it with the tests that we are going to process, the inputs to the tasks for those tests, and then runs the pipeline object. Let&#8217;s go step by step with an example.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>~$ vison_run -y [vison_config.py] -R [SESSION] -l -t [TAG]
+</pre></div>
+</div>
+<p>Here vison_config.py stands for a python script with inputs (more on that soon), SESSION is a name to select the acquisition session within the the configuration file we want to select for analysis (there usually are several sessions within a configuration script, as there are data acquisition sessions in a multi-day campaign), and TAG is just a character string to label the directory with results, and the text log file, for ease of identification.</p>
+<p>Before we go on, some basic notions regarding the organisation of the GCC:</p>
+<ul class="simple">
+<li>the campaign was sub-divided in campaigns for each block.</li>
+<li>within each block-campaign there were sessions/runs (-R comes from &#8220;run&#8221;) in which several tests are executed one after another, autonomously by ELVIS.</li>
+</ul>
+<p>For each block-campaign we created a vison_config script, with the name of the block in question and the date of the campaign (e.g. vison_config_EINSTEIN_JUL19.py). This script is important because it is required to run the pipeline, and because it serves as registry of the inputs used to run it.</p>
+<p>Let&#8217;s have a look at the contents of a vison_config.py script, in simplified form.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python2</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">EUCLID VIS CALIBRATION CAMPAIGN</span>
+<span class="sd">&quot;vison&quot; CONFIGURATION FILE</span>
+
+<span class="sd">BLOCKID: EINSTEIN   # NEEDS USER INPUTS.</span>
+<span class="sd">Filled in by: RAF   # NEEDS USER INPUTS.</span>
+
+<span class="sd">:author: Ruyman Azzollini</span>
+<span class="sd">:contact: r.azzollini_at_ucl.ac.uk</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># IMPORT STUFF</span>
+<span class="kn">from</span> <span class="nn">pdb</span> <span class="kn">import</span> <span class="n">set_trace</span> <span class="k">as</span> <span class="n">stop</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">vison.campaign</span> <span class="kn">import</span> <span class="n">campaign</span><span class="p">,</span> <span class="n">devel</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="c1"># END IMPORT</span>
+
+
+<span class="c1"># ALL to_do dictionaries:</span>
+<span class="c1">#</span>
+<span class="c1"># MOT_WARM: [None,None],dict(init=True,check=True,basic=True)</span>
+<span class="c1"># COSMETICS00: [None,None],dict(init=True,check=True,masks=True,meta=True)</span>
+<span class="c1"># [...]</span>
+                 
+<span class="k">def</span> <span class="nf">get_config_dict</span><span class="p">(</span><span class="n">testgenerator</span><span class="p">,</span> <span class="n">datapath</span><span class="p">,</span> <span class="n">resroot</span><span class="p">,</span> 
+                    <span class="n">BLOCKID</span><span class="p">,</span><span class="n">CHAMBER</span><span class="p">,</span><span class="n">diffvalues</span><span class="p">,</span>
+                    <span class="n">inCDPs</span><span class="p">,</span><span class="n">perflimits</span><span class="p">,</span><span class="n">tasks2execute</span><span class="o">=</span><span class="p">[],</span>
+                    <span class="n">doReport</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">elvis</span><span class="o">=</span><span class="s1">&#39;7.5.X&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Produces input dictionaries to run the pipeline on a series of Tasks/Tests.&quot;&quot;&quot;</span>
+    
+    <span class="k">return</span> <span class="n">inputdict</span>
+
+
+
+<span class="k">def</span> <span class="nf">add_RUN_specifics</span><span class="p">(</span><span class="n">inputdict</span><span class="p">,</span><span class="n">RUN</span><span class="p">,</span><span class="n">dataroot</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Adds specifics to the input dictionaries of each Task/Test. This is where</span>
+<span class="sd">    we taylor execution for each test (e.g. choose what to do within the Task, </span>
+<span class="sd">    or tell the pipeline where to find the data and what OBSIDs to consider for </span>
+<span class="sd">    each Test).</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="kn">import</span> <span class="nn">copy</span>
+    <span class="kn">import</span> <span class="nn">glob</span>
+    <span class="kn">from</span> <span class="nn">vison.pipe.lib</span> <span class="kn">import</span> <span class="n">sortbydateexplogfs</span>
+    
+    <span class="c1"># How to fill-in the specifics for each test within a RUN:</span>
+    <span class="c1"># Code for the test spec lists:</span>
+    <span class="c1">#    [&#39;TEST-NAME&#39;, [START-OBSID(integer), END-OBSID(integer)],todo(dictionary)]</span>
+    <span class="c1">#    All to-do dictionaries provided at the beginning of this script.</span>
+    <span class="c1">#    If you want to by-pass a test within a RUN, comment the line with a &#39;hash&#39;.</span>
+    
+    <span class="c1"># NEEDS USER INPUTS: Tests lists, ObsID limits, sub-tasts todo booleans</span>
+    
+    <span class="n">test_specifics</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    
+    <span class="n">D00</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            
+            <span class="n">schedule</span><span class="o">=</span><span class="p">[</span>
+                    <span class="p">[</span><span class="s1">&#39;MOT_WARM&#39;</span><span class="p">,[</span><span class="mi">30332</span><span class="p">,</span> <span class="mi">30339</span><span class="p">],</span><span class="nb">dict</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">check</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">basic</span><span class="o">=</span><span class="bp">True</span><span class="p">)]</span>
+                    <span class="p">],</span>
+            <span class="n">datapath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataroot</span><span class="p">,</span><span class="s1">&#39;25_Jul_19&#39;</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># END USER INPUTS</span>
+    
+    <span class="c1"># [...]</span>
+    
+    
+    <span class="k">return</span> <span class="n">inputdict</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    
+    <span class="c1"># MASTER</span>
+    
+    <span class="c1"># NEEDS USER INPUTS:</span>
+    <span class="n">dataroot</span> <span class="o">=</span> <span class="s1">&#39;../atCALDATA/data&#39;</span>
+    <span class="n">datapath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataroot</span><span class="p">,</span><span class="s1">&#39;NN_Mmm_19&#39;</span><span class="p">)</span>
+    <span class="n">cdppath</span> <span class="o">=</span> <span class="s1">&#39;calproducts&#39;</span>
+    <span class="n">resroot</span> <span class="o">=</span> <span class="s1">&#39;results_atCALDATA/&#39;</span>
+    <span class="n">BLOCKID</span> <span class="o">=</span> <span class="s1">&#39;EINSTEIN&#39;</span>
+    <span class="n">CHAMBER</span> <span class="o">=</span> <span class="s1">&#39;B_EINSTEIN&#39;</span> <span class="c1"># example: &#39;A_MAX&#39;</span>
+    
+    <span class="n">diffvalues</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">operator</span> <span class="o">=</span> <span class="s1">&#39;unk&#39;</span><span class="p">,</span>
+            <span class="n">sn_ccd1</span> <span class="o">=</span> <span class="s1">&#39;14471-19-01&#39;</span><span class="p">,</span> <span class="c1"># example: &#39;14183-18-01&#39;,</span>
+            <span class="n">sn_ccd2</span> <span class="o">=</span> <span class="s1">&#39;15081-15-02&#39;</span><span class="p">,</span> <span class="c1"># example: &#39;14311-04-01&#39;,</span>
+            <span class="n">sn_ccd3</span> <span class="o">=</span> <span class="s1">&#39;14471-10-02&#39;</span><span class="p">,</span> <span class="c1"># example: &#39;14173-14-02&#39;,</span>
+            <span class="n">sn_roe</span><span class="o">=</span> <span class="s1">&#39;FM14&#39;</span><span class="p">,</span> <span class="c1"># example: FM01</span>
+            <span class="n">sn_rpsu</span> <span class="o">=</span> <span class="s1">&#39;FM14&#39;</span><span class="p">)</span> <span class="c1"># example: FM02</span>
+
+    <span class="n">inCDPs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">Mask</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">CCD1</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cdppath</span><span class="p">,</span><span class="s1">&#39;masks/EUC_MASK_</span><span class="si">%s</span><span class="s1">_CCD1_SN_</span><span class="si">%s</span><span class="s1">.fits&#39;</span> <span class="o">%</span> \
+                              <span class="p">(</span><span class="n">BLOCKID</span><span class="p">,</span><span class="n">diffvalues</span><span class="p">[</span><span class="s1">&#39;sn_ccd1&#39;</span><span class="p">])),</span>
+            <span class="n">CCD2</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cdppath</span><span class="p">,</span><span class="s1">&#39;masks/EUC_MASK_</span><span class="si">%s</span><span class="s1">_CCD2_SN_</span><span class="si">%s</span><span class="s1">.fits&#39;</span> <span class="o">%</span> \
+                              <span class="p">(</span><span class="n">BLOCKID</span><span class="p">,</span><span class="n">diffvalues</span><span class="p">[</span><span class="s1">&#39;sn_ccd2&#39;</span><span class="p">])),</span>
+            <span class="n">CCD3</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cdppath</span><span class="p">,</span><span class="s1">&#39;masks/EUC_MASK_</span><span class="si">%s</span><span class="s1">_CCD3_SN_</span><span class="si">%s</span><span class="s1">.fits&#39;</span> <span class="o">%</span> \
+                              <span class="p">(</span><span class="n">BLOCKID</span><span class="p">,</span><span class="n">diffvalues</span><span class="p">[</span><span class="s1">&#39;sn_ccd3&#39;</span><span class="p">]))),</span>
+        <span class="n">Gain</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">nm730</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cdppath</span><span class="p">,</span> <span class="s1">&#39;gain/nm730/PTC02_730_GAIN_TB.pick&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+        <span class="n">FF</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">nm730</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">CCD1</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cdppath</span><span class="p">,</span><span class="s1">&#39;flats/nm730/EUC_FF_730nm_col001_ROE1_CCD1.fits&#39;</span><span class="p">),</span>
+                <span class="n">CCD2</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cdppath</span><span class="p">,</span><span class="s1">&#39;flats/nm730/EUC_FF_730nm_col001_ROE1_CCD2.fits&#39;</span><span class="p">),</span>
+                <span class="n">CCD3</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cdppath</span><span class="p">,</span><span class="s1">&#39;flats/nm730/EUC_FF_730nm_col001_ROE1_CCD3.fits&#39;</span><span class="p">)))</span>
+        <span class="p">)</span>
+
+    <span class="n">perflimits</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">doReport</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">elvis</span><span class="o">=</span><span class="s1">&#39;7.5.X&#39;</span>
+    <span class="c1"># END USER INPUTS.</span>
+    
+    <span class="c1"># NEEDS USER INPUTS.</span>
+    
+    <span class="n">tasks2execute_dict</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                            <span class="n">D00</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;MOT_WARM&#39;</span><span class="p">],</span>
+                            <span class="n">D11</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;COSMETICS00&#39;</span><span class="p">,</span> <span class="s1">&#39;FOCUS00&#39;</span><span class="p">,</span> <span class="s1">&#39;PSFLUX00&#39;</span><span class="p">,</span> <span class="s1">&#39;FLATFLUX00&#39;</span><span class="p">,</span> <span class="s1">&#39;FLAT_STB&#39;</span><span class="p">,</span> <span class="s1">&#39;PTC02WAVE&#39;</span><span class="p">],</span>
+                            <span class="n">D12</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;BIAS02&#39;</span><span class="p">,</span><span class="s1">&#39;BIAS01&#39;</span><span class="p">,</span><span class="s1">&#39;CHINJ01&#39;</span><span class="p">,</span><span class="s1">&#39;CHINJ02&#39;</span><span class="p">,</span><span class="s1">&#39;TP11&#39;</span><span class="p">,</span><span class="s1">&#39;TP21&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;FLATFLUX00&#39;</span><span class="p">,</span> <span class="s1">&#39;PTC01&#39;</span><span class="p">,</span><span class="s1">&#39;NL02&#39;</span><span class="p">,</span><span class="s1">&#39;FLAT01&#39;</span><span class="p">,</span><span class="s1">&#39;DARK01&#39;</span><span class="p">,</span><span class="s1">&#39;PTC02WAVE&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;PERSIST01&#39;</span><span class="p">,</span><span class="s1">&#39;PSFLUX00&#39;</span><span class="p">],</span>
+                            <span class="n">D12E</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;BF01&#39;</span><span class="p">,</span><span class="s1">&#39;BF01WAVE&#39;</span><span class="p">],</span>
+                            <span class="n">D21</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;BIAS02&#39;</span><span class="p">,</span><span class="s1">&#39;PSF01&#39;</span><span class="p">,</span><span class="s1">&#39;PTC02WAVE&#39;</span><span class="p">],</span>
+                            <span class="n">D21E</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;BF01WAVE&#39;</span><span class="p">],</span>
+                            <span class="n">D22</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;BIAS02&#39;</span><span class="p">,</span><span class="s1">&#39;PSF01&#39;</span><span class="p">,</span><span class="s1">&#39;FLAT02&#39;</span><span class="p">],</span>
+                            <span class="n">DTEST</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;BF01WAVE&#39;</span><span class="p">]</span><span class="c1">#&#39;BF01WAVE&#39;]</span>
+                        <span class="p">)</span>
+    <span class="c1"># END USER INPUTS.</span>
+    
+    <span class="n">testgenerator</span> <span class="o">=</span> <span class="n">campaign</span><span class="o">.</span><span class="n">generate_test_sequence</span>
+    
+    <span class="n">inputdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">([</span><span class="n">RUN</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="k">for</span> <span class="n">RUN</span> <span class="ow">in</span> <span class="n">RUNs</span><span class="p">]):</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;Hey, what RUN do you want to process?&#39;</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">RUN</span> <span class="ow">in</span> <span class="n">RUNs</span><span class="p">:</span>
+        
+        <span class="n">tasks2execute</span> <span class="o">=</span> <span class="n">tasks2execute_dict</span><span class="p">[</span><span class="n">RUN</span><span class="p">]</span>
+        
+            <span class="c1"># [...]</span>
+            
+            
+            <span class="n">inputdict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_inputdict</span><span class="p">)</span>
+            
+
+</pre></div>
+</div>
+<p>When vison_run is executed, this literally <em>executes</em> the vison_config script which generates a dictionary called <strong>inputdict</strong>. This dictionary has all the information necessary for the pipeline to run:</p>
+<ul class="simple">
+<li>in which facility (<em>chamber</em>) was the data acquired (relevant to know exposure times, for example).</li>
+<li>what tasks (tests) are to be executed/analysed.</li>
+<li>what values to assign to the free parameters of the tasks.</li>
+<li>what hardware are we testing.</li>
+<li>where to find the input data, and where to put the output results.</li>
+<li>where to find input calibration data products (e.g. cosmetics masks).</li>
+</ul>
+<p>When vison_config.py is executed, it starts from:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span>
+</pre></div>
+</div>
+<p>From there, it calls the function <em>get_config_dict</em> to create a standard version of the inputs dictionary, setting up the tasks and their standard inputs. Then it calls <em>add_RUN_specifics</em> to add data locations, OBSID ranges, and apply a selector of sub-tasks to execute for each task.</p>
+<p>Going back to <em>vison_run</em>, once the inputs in the configuration file are ingested, the next important thing is to create an instance of the pipeline class:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pipe</span> <span class="o">=</span> <span class="n">Pipe</span><span class="p">(</span><span class="n">inputdict</span><span class="p">,</span> <span class="n">dolog</span><span class="o">=</span><span class="n">dolog</span><span class="p">,</span> <span class="n">drill</span><span class="o">=</span><span class="n">drill</span><span class="p">,</span>
+                <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">,</span> <span class="n">startobsid</span><span class="o">=</span><span class="n">startobsid</span><span class="p">,</span>
+                <span class="n">processes</span><span class="o">=</span><span class="n">multithread</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span>
+                <span class="n">cleanafter</span><span class="o">=</span><span class="n">cleanafter</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This takes as input the input dictionary (inputdict) and other keywords to control the execution of the pipeline.</p>
+<p>Then, the pipeline is executed, either in wait-for-data mode (in parallel with acquisition), or directly (assuming all data has already been acquired previously):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
+    <span class="n">pipe</span><span class="o">.</span><span class="n">wait_and_run</span><span class="p">(</span><span class="n">dayfolder</span><span class="p">,</span> <span class="n">elvis</span><span class="o">=</span><span class="n">elvis</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">pipe</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>In the <strong>run</strong> method, the pipe object cyles over the list of tasks to be executed, and launches each task with its specific inputs:</p>
+<dl class="docutils">
+<dt>::</dt>
+<dd><p class="first">for taskname in tasknames:</p>
+<blockquote class="last">
+<div><p>taskinputs = self.inputs[taskname]
+taskinputs[&#8216;resultspath&#8217;] = os.path.join(
+resultsroot, taskinputs[&#8216;resultspath&#8217;])</p>
+<dl class="docutils">
+<dt>if explogf is not None:</dt>
+<dd>taskinputs[&#8216;explogf&#8217;] = explogf</dd>
+<dt>if elvis is not None:</dt>
+<dd>taskinputs[&#8216;elvis&#8217;] = elvis</dd>
+</dl>
+<p>self.inputs[taskname] = taskinputs</p>
+<p>self.launchtask(taskname)</p>
+<p>[...]</p>
+</div></blockquote>
+</dd>
+</dl>
+<p>The <strong>launchtask</strong> method is also a method of Pipe. Here, some further inputs parsing, and task execution logging are handled. But the actual instantiation of the Task object happens in the <strong>dotask</strong> method within <strong>launchtask</strong>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<span class="n">taskreport</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dotask</span><span class="p">(</span><span class="n">taskname</span><span class="p">,</span> <span class="n">taskinputs</span><span class="p">,</span>
+                <span class="n">drill</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">drill</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">,</span>
+                <span class="n">cleanafter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cleanafter</span><span class="p">)</span>
+<span class="p">[</span><span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>In <strong>Pipe.dotask(...)</strong> is where the Task object gets instantiated and executed:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">...</span><span class="p">]</span>
+
+<span class="n">test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_test</span><span class="p">(</span><span class="n">strip_taskname</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">,</span>
+        <span class="n">drill</span><span class="o">=</span><span class="n">drill</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">,</span> <span class="n">cleanafter</span><span class="o">=</span><span class="n">cleanafter</span><span class="p">)</span>
+
+<span class="p">[</span><span class="o">...</span><span class="p">]</span>
+
+<span class="n">Errors</span> <span class="o">=</span> <span class="n">test</span><span class="p">()</span>
+
+<span class="p">[</span><span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The rest in that method is handling exceptions, and logging errors and test analysis execution durations.</p>
+<p>Each Task has a <strong>__call__()</strong> method that is what is called when we do Errors = test(), and obviously returns any errors raised during the execution of the task.</p>
+<p>The <strong>__call__()</strong> method is common to all Task subclasses, because it is inherited from Task class itself. The polymorphism of the tasks in their execution (e.g. different subtask methods), is handled through subclass methods, which are called via internal dictionaries that link methods to subtask names.</p>
+</div>
+</div>
+<div class="section" id="data-models">
+<h2>Data Models<a class="headerlink" href="#data-models" title="Permalink to this headline">¶</a></h2>
+<p>See <a class="reference internal" href="datamodel.html#datamodel"><span class="std std-ref">Data Model</span></a></p>
+</div>
+<div class="section" id="reusing-adapting-the-code">
+<h2>Reusing / adapting the code<a class="headerlink" href="#reusing-adapting-the-code" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/vison_logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Code Guide</a><ul>
+<li><a class="reference internal" href="#capabilities-of-the-code">Capabilities of the Code</a></li>
+<li><a class="reference internal" href="#code-architecture">Code Architecture</a></li>
+<li><a class="reference internal" href="#code-flow">Code Flow</a><ul>
+<li><a class="reference internal" href="#data-set-analysis">Data-set Analysis</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#data-models">Data Models</a></li>
+<li><a class="reference internal" href="#reusing-adapting-the-code">Reusing / adapting the code</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="cookbook.html"
+                        title="previous chapter">vison cook-book</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pipe.html"
+                        title="next chapter">Pipeline</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/guide.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pipe.html" title="Pipeline"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="cookbook.html" title="vison cook-book"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Ruyman Azzollini.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>

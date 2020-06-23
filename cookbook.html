@@ -1,0 +1,1736 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vison cook-book &#8212; vison 0.9+374.gd7313d7 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.9+374.gd7313d7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Code Guide" href="guide.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="guide.html" title="Code Guide"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vison-cook-book">
+<span id="cookbook"></span><h1>vison cook-book<a class="headerlink" href="#vison-cook-book" title="Permalink to this headline">¶</a></h1>
+<p>This cook-book is an adaptation of a guide used during the actual calibration campaign. As such, it contains mentions to specific machines in MSSL, which are not really important to the workings of the code, but we have decided to leave the document as close to the original as possible, for it illustrate how the code was used in practice.</p>
+<p>This guide was written for users with little acquaintance with Linux. That is why there are so many comments about linux commands and their use throughout the text.</p>
+<div class="section" id="accessing-vison-the-pipeline">
+<h2>Accessing “vison”, the pipeline<a class="headerlink" href="#accessing-vison-the-pipeline" title="Permalink to this headline">¶</a></h2>
+<p>The pipeline and all accessory software is installed at:</p>
+<p><strong>/disk/euclid_caldata06/data06/SOFTWARE_LITE/</strong></p>
+<p>To use it, we have to do a few steps that will be detailed below, but in a nutshell these are:</p>
+<ul class="simple">
+<li>ssh-connect to a Linux machine in the MSSL network from where we can access both the software and the data, which will be in any of the euclid_caldata0X drives.</li>
+<li>Change the shell to “bash” and change the system paths to the right values necessary to find the conda environment within which the pipeline is installed.</li>
+<li>Activate the “conda” environment in which the pipeline runs. This environment has all the libraries that the pipeline needs to run.</li>
+</ul>
+<p>Then you should be ready to use the pipeline, which can be imported as a Python package, or most likely, you will use via one of its several command line scripts.</p>
+<p>Now we explain and show these steps in more detail.</p>
+<div class="section" id="connecting-to-the-remote-machine-via-ssh">
+<h3>Connecting to the remote machine via ssh<a class="headerlink" href="#connecting-to-the-remote-machine-via-ssh" title="Permalink to this headline">¶</a></h3>
+<p>The machines in which we’ll run the pipeline to do data “checks” and “analysis” are:</p>
+<ul class="simple">
+<li>MSSLAP</li>
+<li>MSSLAN</li>
+<li>MSSLAO</li>
+</ul>
+<p>To ssh any of them do, from a terminal:</p>
+<blockquote>
+<div><div class="highlight-default"><div class="highlight"><pre><span></span>&gt;&gt; ssh -Y mssla?    # ? is here just a wildcard, one of (p,n,o)
+Mullard Space Science Laboratory (Distribution 11.0)
+</pre></div>
+</div>
+<p>This computer system is the property of University College London.</p>
+<p>Use of this system is limited to authorised individuals only. You are
+committing a criminal offence under the Computer Misuse Act 1990 sect 1,
+if you attempt to gain any unauthorised access either to this system or any
+others at this site.</p>
+<p>Communications on or through University College London&#8217;s computer systems
+may be monitored or recorded to secure effective system operation and for
+other lawful purposes.</p>
+</div></blockquote>
+<div class="highlight-default"><div class="highlight"><pre><span></span>user@mssla?&#39;s password:   # enter here you password
+</pre></div>
+</div>
+<p>The “-Y” in the command allows to have graphical output from the program redirected to your computer screen.</p>
+</div>
+<div class="section" id="changing-shell-to-bash-and-updating-system-paths">
+<h3>Changing shell to bash and updating system paths<a class="headerlink" href="#changing-shell-to-bash-and-updating-system-paths" title="Permalink to this headline">¶</a></h3>
+<p><strong>IMPORTANT</strong>: once we’re connected to the remote machine, mssla?, we change the command shell to “bash”:</p>
+<blockquote>
+<div><div class="highlight-default"><div class="highlight"><pre><span></span>[user@mssla? ~]$ bash   # hit Enter
+bash-4.2$
+</pre></div>
+</div>
+</div></blockquote>
+<p>Then we have to source a “bashrc” file so that we have the right system “PATHS” to find the pipeline.</p>
+<blockquote>
+<div><div class="highlight-default"><div class="highlight"><pre><span></span>bash-4.2$ source /disk/euclid_caldata06/data06/SOFTWARE_LITE/bashrc_lite # hit Enter
+bash-4.2$
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="activating-the-vison-conda-environment">
+<h3>Activating the “vison” conda environment<a class="headerlink" href="#activating-the-vison-conda-environment" title="Permalink to this headline">¶</a></h3>
+<p>Now we can activate the “vison” conda environment within which the pipeline is installed. If you want to know what “conda” is, check this out <a class="reference external" href="https://www.anaconda.com/">https://www.anaconda.com/</a>.</p>
+<p>All you have to do to activate the environment is this:</p>
+<blockquote>
+<div><div class="highlight-default"><div class="highlight"><pre><span></span>bash-4.2$ source activate vison # hit Enter
+(vison) bash-4.2$
+</pre></div>
+</div>
+</div></blockquote>
+<p>Now we see (vison) preceeding the bash prompt. This indicates we’re within the “vison” conda environment, and the pipeline should already be accessible. To check this is the case, do this and check you get the same reply:</p>
+<blockquote>
+<div><div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ which vison_run # hit Enter
+/disk/euclid_caldata06/data06/SOFTWARE_LITE/anaconda2/envs/vison/bin/vison_run
+</pre></div>
+</div>
+</div></blockquote>
+<p>This indicates both that the command “vison_run” which executes the pipeline is accessible, and that we’re using the pipeline installed in euclid_caldata06/data06/SOFTWARE_LITE, as we should.</p>
+</div>
+</div>
+<div class="section" id="data-checks-analysis-work-environment-setup">
+<h2>Data Checks / Analysis Work Environment Setup<a class="headerlink" href="#data-checks-analysis-work-environment-setup" title="Permalink to this headline">¶</a></h2>
+<p>Before we can start using the pipeline, it is most convenient, and strongly suggested, to set up a consistent work environment, creating a number of folders and symbolic links in a workspace directory, so we can produce results that are useful, traceable, and easy to recognize by other members of the team (for inspection, or collaborative work). This is a guide to set up such a workflow. We’ll go step-by-step.</p>
+<div class="section" id="starting-point-assumptions">
+<h3>1. Starting point: assumptions<a class="headerlink" href="#starting-point-assumptions" title="Permalink to this headline">¶</a></h3>
+<p>We’ll assume that we are already ssh-connected to one of mssla? and activated the “vison” conda environment, following the indications of the first part of this tutorial: Accessing “vison”, the pipeline.</p>
+</div>
+<div class="section" id="creating-a-working-calcamp-directory-tree-in-our-home-folder">
+<h3>2. Creating a working CALCAMP directory tree in our $HOME folder.<a class="headerlink" href="#creating-a-working-calcamp-directory-tree-in-our-home-folder" title="Permalink to this headline">¶</a></h3>
+<p>We’ll first create a work folder in your $home folder, where we’ll do all the check/analysis tasks related to the CALCAMP.</p>
+<div class="figure align-center">
+<img alt="_images/cookbook_1.png" src="_images/cookbook_1.png" />
+</div>
+<p>We move into CALCAMP and create a FLIGHT subfolder:</p>
+<div class="figure align-center">
+<img alt="_images/cookbook_2.png" src="_images/cookbook_2.png" />
+</div>
+<p>Note: the “pwd” command shows where we are, the current directory.</p>
+<p>Now, for the sake of exercise, we’ll assume we’re going to calibrate a block dubbed “NOSTROMO”. <strong>We’ll create the following folder structure below “FLIGHT”</strong>:</p>
+<div class="figure align-center">
+<img alt="_images/cookbook_3.png" src="_images/cookbook_3.png" />
+</div>
+<p>Note: the “ls” command lists the contents of the folder we’re in, and “pwd” shows where we are.</p>
+<p>Now we will create symbolic links to the folders where the data are, so the paths we give to the pipeline are conveniently short. So, while at the NOSTROMO folder, we first create a link to the path in euclid_caldata0X where the data are:</p>
+<div class="figure align-center">
+<img alt="_images/cookbook_4.png" src="_images/cookbook_4.png" />
+</div>
+<p><strong>Note</strong>: of course, it is an assumption for the exercise that the data for the fictitious block NOSTROMO is in euclid_caldata04/data04… in practice you’ll have to ask test_scheduler where the data is to be copied in euclid_caldata0X for the block of concern.</p>
+<p>Now, if we’re also writing scripts for the test_operators, and/or doing data acquisition monitoring using eyegore, it’ll also be convenient to create a symbolic link to the folder in MSSL3M/EEDisk5 for this block. That’s where the data is being copied by the laptop running ELVIS in ISO8 [lab room].</p>
+<p><strong>NOTE: In order to have permanently mounted access points to the EEDisk5 drive of MSSL3M you’ll have to ask help from IT… and you’re not guaranteed to get it, they’re very reluctant about this. So, it’s likely that only if you connect to MSSLLX, where those access points have already been created (and are at least accessible for user raf), instead of MSSLA[O/N/P], that you’ll be able to link to / access that drive in the convenient way we describe in this tutorial.</strong></p>
+<p>For the time being we’ll assume you also have EEDisk5 permanently mounted for you in
+/mssl3m/D5/, as it’s done in MSSLLX (for user raf, at least).</p>
+<p>So, we create a symbolic link to the NOSTROMO folder in MSSL3M/EEDisk5 at your NOSTROMO folder in CALCAMP.</p>
+<div class="figure align-center">
+<img alt="_images/cookbook_5.png" src="_images/cookbook_5.png" />
+</div>
+<p>So far we haven’t really done anything but creating directories and some symbolic links. Now let’s move to start copying some template input files and python scripts we’ll need to actually do something.</p>
+</div>
+<div class="section" id="copying-the-script-writer-session-builder-scripts-from-the-templates-folder">
+<h3>3. Copying the script-writer session-builder scripts from the templates folder<a class="headerlink" href="#copying-the-script-writer-session-builder-scripts-from-the-templates-folder" title="Permalink to this headline">¶</a></h3>
+<p>The template scripts that are used by the pipeline to run, are all saved in:
+/disk/euclid_caldata06/data06/SOFTWARE_LITE/TEMPLATES_CALCAMP</p>
+<p>To do a local copy of the scripts-writer inputs file we’ll do the following:</p>
+<div class="figure align-center">
+<img alt="_images/cookbook_6.png" src="_images/cookbook_6.png" />
+</div>
+<p>Now we rename the file to a name that’s meaningful for the calibration campaign of NOSTROMO, in particular:</p>
+<div class="figure align-center">
+<img alt="_images/cookbook_7.png" src="_images/cookbook_7.png" />
+</div>
+<p>Where we have assumed that this BLOCK will be calibrated in April ‘19, on week 17 in the year, in particular.</p>
+<p>Then you’ll have to go to the specific tutorial on writing scripts for the campaign to follow on that.</p>
+<p>Once you’ve written the scripts you’ll also want to create a number of “sessions”, with a specific set of tests in a specific order within them. This is most safely done using another pipeline script, vis_mksession.py. In order to run this script you’ll also need an inputs file, which we’ll copy from the templates folder:</p>
+<div class="figure align-center">
+<img alt="_images/cookbook_8.png" src="_images/cookbook_8.png" />
+</div>
+</div>
+<div class="section" id="copying-the-check-analysis-script-from-the-templates-folder">
+<h3>4. Copying the check/analysis script from the templates folder<a class="headerlink" href="#copying-the-check-analysis-script-from-the-templates-folder" title="Permalink to this headline">¶</a></h3>
+<p>To copy the template analysis script to the local working folder, and renaming it with a meaningful name we’ll do:</p>
+<p>It is <strong>very important</strong> to rename the copied file to something that actually has meaning, so that when this file is moved to the results folder, for reference, it’s easy to find, and we know what it is. The analysis script holds most of the relevant information about the configuration of the pipeline when the analysis was performed, which is useful for tracing back what has been done. The rest of the information about what the pipeline did will be stored in the outputs of the analysis itself.</p>
+<p>To learn about how to edit this script and actually use the pipeline to check / analyze data, follow to the corresponding tutorial.</p>
+</div>
+</div>
+<div class="section" id="workflow-description">
+<h2>Workflow Description<a class="headerlink" href="#workflow-description" title="Permalink to this headline">¶</a></h2>
+<p>In this section we describe the work-flow of operations for those doing the following tasks during the calibration campaign:</p>
+<ul class="simple">
+<li>Writing acquisition scripts (using vis_mkscripts.py and vis_mksession.py).</li>
+<li>Doing the data-acquisition monitoring in real-time (using eyegore).</li>
+<li>Doing the analysis (using vison_run).</li>
+</ul>
+<p>These activities should be assigned to different roles/persons, and formally the are. But because in practice, they are usually done by the same person, and regardless of this, they are so closely related, we’ll present them together and interleaved, as they are in practice.</p>
+<div class="section" id="writing-scripts-sessions">
+<h3>WRITING SCRIPTS / SESSIONS<a class="headerlink" href="#writing-scripts-sessions" title="Permalink to this headline">¶</a></h3>
+<p>Step-by-step description of what to do regarding the writing of test scripts and building sessions.</p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="5%" />
+<col width="32%" />
+<col width="63%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Step</th>
+<th class="head">Action</th>
+<th class="head">Comment</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>1</td>
+<td>Get hardware serials from Campaign director.</td>
+<td>We need these to write the scripts, so that ELVIS writes the meta-data of the images and EXP-LOG correctly.</td>
+</tr>
+<tr class="row-odd"><td>2</td>
+<td>Using the CHAMBER profile that corresponds to the chamber, write scripts.</td>
+<td>Here we’re using the best focus from the last time we measured it in this chamber. So, it may be slightly off. Still, we only run tests without point-source in the first sessions, D00, D11 and D12 (except the FOCUS00 test that measures the focus), and so this is not a problem.</td>
+</tr>
+<tr class="row-even"><td>3</td>
+<td>We create the sessions D00, D11, D12</td>
+<td>Using the written scripts, and the schedule provided by Cal. Camp. Scheduler, we’ll build the sessions D00, D11, D12 using vis_mksession.py. These sessions do not include point-source tests, except the FOCUS00, in some cases, the PSFLUX00 test, for which the focus setting is not critical, and the PERSIST00 test in which we deliberately de-focus the source by a large margin.</td>
+</tr>
+<tr class="row-odd"><td>4</td>
+<td>Inspect at least some of the scripts</td>
+<td>At least verify the serials of the hardware are correct in the scripts.</td>
+</tr>
+<tr class="row-even"><td>5</td>
+<td>We copy the sessions to MSSL3M/D5</td>
+<td>We copy the scripts and sequence files from these sessions to the corresponding block folder in MSSL3M/D5, and let the test operators know via email (with test camp. Director on copy).</td>
+</tr>
+<tr class="row-odd"><td>6</td>
+<td>Update focus in pipeline based on results from PSF01_NNN (_800)</td>
+<td>As soon as the results from the focus test in session D11 are out, we can update the focus position for this chamber. It’s the pipeline custodian who does it, but we can give him the new best estimate given the results from test PSF01_NNN.</td>
+</tr>
+<tr class="row-even"><td>7</td>
+<td>Update exposure times, if needed</td>
+<td>If the results from the campaign so far require it (say from any test FLATFLUX00 or PSFLUX00), also update the exposure times at this point. We do not expect this to be necessary once the chamber has been commissioned.</td>
+</tr>
+<tr class="row-odd"><td>8</td>
+<td>Write scripts for sessions D21 and D22</td>
+<td>We write the scripts again, with the new focus position update.</td>
+</tr>
+<tr class="row-even"><td>9</td>
+<td>Make sessions D21 and D22</td>
+<td>Using vis_mksession.py we create sessions D21 and D22 using the latest scripts.</td>
+</tr>
+<tr class="row-odd"><td>10</td>
+<td>Check new scripts</td>
+<td>Check serials are right in at least one of the new scripts, and verify the changes in focus (and exposure time, if there have been), have been effective in the tests where this applies.</td>
+</tr>
+<tr class="row-even"><td>11</td>
+<td>Copy session D12 and D22 to MSSL3M/D5</td>
+<td>We copy the sessions D21 and D22 to MSSL3M/5 and let the test operators know via email with test director on copy.</td>
+</tr>
+</tbody>
+</table>
+<p>Details on how to write scripts and sessions, using the pipeline scripts <strong>vis_mkscripts.py</strong> and <strong>vis_mksession.py</strong>, are provided elsewhere.</p>
+</div>
+<div class="section" id="real-time-data-inspections-using-eyegore">
+<h3>Real Time Data Inspections using Eyegore<a class="headerlink" href="#real-time-data-inspections-using-eyegore" title="Permalink to this headline">¶</a></h3>
+<p>As soon as we start acquiring, we should be running “<strong>eyegore</strong>” on the data that should be “flowing” to MSSL3M from the laptop running ELVIS in ISO8.</p>
+<p><strong>WARNING</strong>: Currently, many of the eyegore capabilities quoted below can only be performed by <strong>user “raf”</strong> from “his” machine MSSLLX. The reason for this are mostly down to limitations of permissions granted to users for (convenient) access to servers (to MSSL3M and MSSLUS) or files (with passwords needed to send warning sms, for example).</p>
+<p>These are the main capabilities of eyegore, that justify its use in parallel with the acquisition at all times:</p>
+<ul class="simple">
+<li>Eyegore gives a <strong>synoptic view</strong> of the HK that can allow for quick identification of major issues with the hardware (voltages / currents / temperatures out-of-limits). This of course requires visual attention to the eyegore windows from time to time (<strong>at least once every hour</strong>), while in office hours.</li>
+<li>We can track progress with the <strong>EXP-LOG display</strong> of the data acquisition. We can also use it to send images to DS9 with a mouse double-click, for quick inspection of incoming data.</li>
+<li>We can activate the <strong>warning system</strong> of eyegore so we’re warned of major HK OOL conditions (e.g. detectors being dangerously cold) via email and sms (though this latter function can only be used by user raf, by now).</li>
+<li>Eyegore can also be used for <strong>automatic and on-the-fly back-up of the data to the euclid_caldata</strong> drive of choice for this block. And this is not only a safety/precaution measure, we also need the data to be in a euclid_caldata folder in order to run the pipeline for checks/analysis from any of the designated linux machines in the network for this tasks.</li>
+<li>Eyegore can also be used to rely the data to the “<strong>msslus</strong>” server as we acquire it, so that external data inspectors can have access to it asap. These “external eyes” have proved to be very useful in identifying issues with the hardware in the past, and so it’s deemed very important for the calibration campaign that we keep serving them the data through msslus as we acquire it.</li>
+</ul>
+<p>Details on how to do the data acquisition monitoring using <strong>eyegore</strong> are provided elsewhere.</p>
+</div>
+<div class="section" id="checking-data-quality-analysis">
+<h3>Checking Data Quality / Analysis<a class="headerlink" href="#checking-data-quality-analysis" title="Permalink to this headline">¶</a></h3>
+<p>The data-checks and data-analysis are related tasks, but they are not the same thing. Let’s clarify the differences, before proceeding to explain how and when to do both.</p>
+<p>The pipeline has assigned to each test we perform in the calibration campaign a “Task”. These Tasks are Python objects with some methods that effect some processing (not in-place), measurements, and in general analysis, on the data of a test (or type of tests). The, these “Tasks” are subdivided in “sub-tasks”, and the pipeline, executes these sub-tasks in sequence when we call that Task to be run on a data-set. Then, the “data checks” are just a part of the sub-tasks that compose the Tasks. This is effected by a sub-task which invariably is named “check_data” in the Task classes, and is activated by setting check=True in the todo_flags dictionary of the Task. For doing the “data checks” we need to at least have been done before all the previous sub-tasks in the Task (Task initialisation, and in some cases also point-source locking / targets finding). The “data checks” are a very limited set of measurements performed on the raw data that allow to judge whether the data acquired is complete and of sufficient quality to perform the analysis which the data is intended for.</p>
+<p>Without further ado, let’s proceed to enumerate the steps we have to follow to do the data-checking and analysis during the calibration campaign, in parallell with the data acquisition.</p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="43%" />
+<col width="57%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Action</th>
+<th class="head">Comment</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>folder trees and links to data folders</td>
+<td>Create the folder structure, with symbolic links as needed, described in section 2.</td>
+</tr>
+<tr class="row-odd"><td>Rename and Fill the vison configuration script</td>
+<td>Copy the vison configuration python script, rename it with the right block name and date, and edit it according to the expected distribution of tests in sessions, hardware serials, chamber ID, block ID, etc.</td>
+</tr>
+<tr class="row-even"><td>Check todo_flags</td>
+<td>Check values of the todo_flags dictionaries in the vison configuration Python script.</td>
+</tr>
+<tr class="row-odd"><td>Session <strong>D00</strong>: Run Pipeline on <strong>MOT_WARM</strong> test in <strong>wait mode</strong></td>
+<td>Run pipeline on test MOT_WARM (as soon as test is finished) to check data and give the go-ahead signal to pump down or not, according to results.</td>
+</tr>
+<tr class="row-even"><td>Session <strong>D11</strong>: run in <strong>wait mode</strong>.</td>
+<td>Run pipeline in wait-mode along with acquisition of D11 session. Use results from FOCUS00, and FLATFLUX00/PSFLUX00 to update focus and/or saturation times in pipeline, as needed.</td>
+</tr>
+<tr class="row-odd"><td>Fill up Test Record with results from session D11</td>
+<td>Done by data analysts, using the results from the pipeline on session D11.</td>
+</tr>
+<tr class="row-even"><td>Alert pipeline custodian of need to change to pipeline / ogse configuration</td>
+<td>Ask pipeline custodian to update ogse values (focus, fluxes), so that the script writers can write updated scripts for next sessions (in particular point-source tests).</td>
+</tr>
+<tr class="row-odd"><td>Update day-folders and Obsid limits in config file</td>
+<td>Update day-folder value for session D11 and OBSID limits for each test within the session in the vison configuration script.</td>
+</tr>
+<tr class="row-even"><td><strong>Session D11: run in aim mode</strong></td>
+<td>After session D11 is finished, run the pipeline again on the session to complete analysis while the data from session D12 is being acquired. Some test results are more urgent than others, and this must be taken into account. Prioritize as needed.</td>
+</tr>
+<tr class="row-odd"><td><strong>Session D12: run in wait mode</strong></td>
+<td>For all tests in this session the pipeline will be asked to at least do the data-checks, and for some other tests we’ll also ask full-analysis, so that those results can be put in the test report (excel) asap. These choices are efected by changes to the todo_flags in the vison Python configuration script.</td>
+</tr>
+<tr class="row-even"><td>Update day-folders and Obsid limits in config file</td>
+<td>Update day-folder value for session D12 and OBSID limits for each test within the session in the vison configuration script.</td>
+</tr>
+<tr class="row-odd"><td><strong>Session D12: run in aim mode</strong></td>
+<td>After session D12 is finished, run the pipeline again on the session to complete analysis while the data from session D21 is being acquired. Some test results are more urgent than others, and this must be taken into account. Prioritize as needed.</td>
+</tr>
+<tr class="row-even"><td><strong>Session D21: run in wait mode</strong></td>
+<td>While data from session D21 is being acquired, run pipeline in wait mode, in parallel, to produce check-data results.</td>
+</tr>
+<tr class="row-odd"><td>Update day-folders and Obsid limits in config file</td>
+<td>Update day-folder value for session D21 and OBSID limits for each test within the session in the vison configuration script.</td>
+</tr>
+<tr class="row-even"><td>Session D21: aim mode.</td>
+<td>After session D21 is finished, run the pipeline again on the session to complete analysis while the data from session D22 is being acquired. Some test results are more urgent than others, and this must be taken into account. Prioritize as needed.</td>
+</tr>
+<tr class="row-odd"><td>Session D22: run in wait mode</td>
+<td>While data from session D21 is being acquired, run pipeline in wait mode, in parallel, to produce check-data results.</td>
+</tr>
+<tr class="row-even"><td>Update day-folders and Obsid limits in config file</td>
+<td>Update day-folder value for session D22 and OBSID limits for each test within the session in the vison configuration script.</td>
+</tr>
+<tr class="row-odd"><td>Session D22: run in aim mode.</td>
+<td>After session D22 is finished, run the pipeline again on the session to complete analysis. Some test results are more urgent than others, and this must be taken into account. Prioritize as needed.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>IMPORTANT</strong>: If there are test failures, or we just decide to change the order of some tests after the run has started (hopefully not a common situation) we’ll need to reschedule tests, and this may require modifications to the vison configuration script so that the pipeline knows in which session are the tests, and where is the data.</p>
+<p>Detailed instructions on how to run the pipeline using vison_run are provided elsewhere.</p>
+</div>
+<div class="section" id="how-to-write-test-scripts-and-create-sessions">
+<h3>How to Write Test Scripts and Create Sessions<a class="headerlink" href="#how-to-write-test-scripts-and-create-sessions" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="writing-test-scripts">
+<h4>Writing Test Scripts<a class="headerlink" href="#writing-test-scripts" title="Permalink to this headline">¶</a></h4>
+<p>To write scripts we use a pipeline script, vis_mkscripts.py. This is called like this from a terminal:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>bash$ vis_mkscripts.py -j scripts_inputs_BLOCK_MMM19_WN.json
+</pre></div>
+</div>
+<p>The .json file has information about the hardware serials, ELVIS version to be used, Chamber and tests to be written. Here is an example of input json file to write scripts with the pipeline, with comments. The comments, even if they are behind “#” signs make the pipeline fail:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>  <span class="p">{</span>
+    <span class="s2">&quot;equipment&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;sn_roe&quot;</span><span class="p">:</span> <span class="s2">&quot;FMNN&quot;</span><span class="p">,</span> <span class="c1"># substitute NN with the right serial.</span>
+        <span class="s2">&quot;sn_rpsu&quot;</span><span class="p">:</span> <span class="s2">&quot;FMNN&quot;</span><span class="p">,</span> <span class="c1"># substitute NN with the right serial.</span>
+        <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;unk&quot;</span><span class="p">,</span> <span class="c1"># do not modify, it&#39;s just not possible to know who will execute the script in advance.</span>
+        <span class="s2">&quot;sn_ccd1&quot;</span><span class="p">:</span> <span class="s2">&quot;14XXX-XX-XX&quot;</span><span class="p">,</span> <span class="c1"># substitute NN with the right serial.</span>
+        <span class="s2">&quot;sn_ccd2&quot;</span><span class="p">:</span> <span class="s2">&quot;14XXX-XX-XX&quot;</span><span class="p">,</span> <span class="c1"># substitute NN with the right serial.</span>
+        <span class="s2">&quot;sn_ccd3&quot;</span><span class="p">:</span> <span class="s2">&quot;14XXX-XX-XX&quot;</span>  <span class="c1"># substitute NN with the right serial</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;elvis&quot;</span><span class="p">:</span> <span class="s2">&quot;7.5.X&quot;</span><span class="p">,</span> <span class="c1"># elvis version</span>
+    <span class="s2">&quot;CHAMBER&quot;</span><span class="p">:</span> <span class="s2">&quot;CHAMBER_ID&quot;</span><span class="p">,</span> <span class="c1"># This is used by the pipeline to compute the right exposure times, for example.</span>
+    <span class="s2">&quot;camptype&quot;</span><span class="p">:</span> <span class="s2">&quot;Full&quot;</span><span class="p">,</span>      <span class="c1"># Type of campaign. Always &quot;Full&quot; for FM Calibration campaign.</span>
+    <span class="s2">&quot;outpath&quot;</span><span class="p">:</span> <span class="s2">&quot;Scripts_BLOCK_MMM19_WN&quot;</span><span class="p">,</span> <span class="c1"># output path, example: Scripts_BORN_MAR19_W1</span>
+    <span class="s2">&quot;toWrite&quot;</span><span class="p">:</span> <span class="p">{</span>   <span class="c1"># 1 means write the script(s) and 0 do not write.</span>
+                <span class="n">Some</span> <span class="n">test</span> <span class="n">labels</span> <span class="n">produce</span> <span class="n">more</span> <span class="n">than</span> <span class="mi">1</span> <span class="n">script</span><span class="o">.</span> <span class="n">For</span> <span class="n">example</span><span class="p">,</span> <span class="k">if</span> <span class="n">there</span> <span class="n">are</span>
+                <span class="n">several</span> <span class="n">wavelengths</span><span class="o">.</span>
+        <span class="s2">&quot;BIAS01&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;BIAS02&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;DARK01&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;CHINJ01&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;CHINJ02&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;TP01&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;TP02&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;FLATFLUX00&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;FLAT01&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;FLAT02&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;PTC01&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;PTC02WAVE&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;PTC02TEMP&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;PTC02RD&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;NL01&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;NL02&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;NL02RD&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;PSFLUX00&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;PSF01&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;PSF02&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;FOCUS00&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;PERSIST01&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;MOT_WARM&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;COSMETICS00&quot;</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Here’s an example of the contents of the folder where the pipeline outputs all the scripts:</p>
+<div class="figure align-center">
+<img alt="_images/cookbook_10.png" src="_images/cookbook_10.png" />
+</div>
+<p>Contents of the folder where the scripts are written.</p>
+<p>One-by-one, these files are:</p>
+<ul class="simple">
+<li><strong>CHECK_SUMS_01Feb19.txt</strong>: this is a plain-text file with the name of the scripts and their checksums. I usually reuse this file, the listing of script names, to build the “sequence” files used by ELVIS to execute the tests in sequence. I just copy the names from this file to the sequence files, manually.</li>
+<li><dl class="first docutils">
+<dt><strong>TESTS_INVENTORY_01Feb19.txt</strong>: plain-text file with a summary of the tests. Contents:</dt>
+<dd><ul class="first last">
+<li><dl class="first docutils">
+<dt>Header:</dt>
+<dd><ul class="first last">
+<li>Date and time when scripts have been written.</li>
+<li>Name of the corresponding CHECK_SUMS file.</li>
+<li>Pipeline version.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>For each test:</dt>
+<dd><ul class="first last">
+<li>Test Name: Nr. of columns, expected duration, frames in each column.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>Total Nr. of Frames.</li>
+<li>Total duration in minutes.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><strong>TESTS_SCHEDULER_01Feb19.xlsx</strong>: An excel with all the tests, their number of columns, frames and durations. These test entries (rows in the excel) can be easily copied across to the “scheduler” spreadsheet for the Cal. Camp. of each block.</li>
+<li>The test scripts: <strong>vis_CalCamp_TESTNAME_DDMmmYY_v7.X.X.xlsx</strong>.</li>
+</ul>
+</div>
+<div class="section" id="making-sessions">
+<h4>Making Sessions<a class="headerlink" href="#making-sessions" title="Permalink to this headline">¶</a></h4>
+<p>As we have seen, the pipeline writes all scripts to the same folder. And there is no “sequence” file that can be used by ELVIS to ingest tests. Thus, dividing the tests in session folders, each with a sequence file (a list of script file names, one per line) that can be ingested by ELVIS, would have to be done by hand. But now it is possible to do it in a less prone-to-error fashion using the pipeline, through a script named vis_mksession.py. Here we describe how.</p>
+<p>To create a number of sessions from a directory with test scripts, we’d command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash$ vis_mksession.py -j sessions_builder_BLOCK_MMM19_YWNN.json
+</pre></div>
+</div>
+<p>The .json file has information about where to find the scripts (written with vis_mkscripts.py), where to create the session folders, and the tests that are within each session, and in which order. The tests are identified by their name on the script files, and they will be added to each session in the specified order. If there are more than 1 script for the same test in the inputs folder, the application will halt with a message alerting of the issue. The same would happen if it doesn’t find at least one script for that test. Example of input json file to create the sessions with the pipeline, using vis_mksession.py:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;inpath&quot;</span><span class="p">:</span> <span class="s2">&quot;Scripts_BLOCK_MMM19_YWNN&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;outpath&quot;</span><span class="p">:</span> <span class="s2">&quot;SEQUENCES_BLOCK_MMM19_YWNN&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sessions&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;D00&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;MOT_WARM&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;D11&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;COSMETICS00&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;FOCUS00_800&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;FLATFLUX00_800&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;PSFLUX00_800&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;PTC02_730&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;D12&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;BIAS02&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;BIAS01&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;CHINJ01&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;CHINJ02&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;TP01&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;TP02&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;PTC01&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;NL02&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;FLAT01&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;DARK01&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;PTC02_590&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;PTC02_880&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;PERSIST01&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;D21&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;BIAS02&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;PSF01_590&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;FLAT02_590&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;D22&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;BIAS02&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;PSF01_730&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;FLAT02_730&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;PSF01_800&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;FLAT02_880&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;PSF01_880&quot;</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>WARNING</strong>: We may need to write scripts and make sessions more than once during a run, if there’s an update to the OGSE parameters (focus / fluxes), or there’s a change in the schedule for any reason.</p>
+</div>
+</div>
+</div>
+<div class="section" id="data-analysis-cookbook">
+<h2>Data Analysis Cookbook<a class="headerlink" href="#data-analysis-cookbook" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="introduction">
+<h3>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h3>
+<p>In this part we describe how to run the ground calibration pipeline, vison, to <strong>analyse test data</strong>. The pipeline has multiple functions, which can be accessed either as a Python package, or more usually for the end-user (aka you), via several command scripts. Here we will restrict ourselves to using the pipeline to do:</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Analyse data on-the-fly (as we acquire it), and optionally restricting ourselves to just checking the integrity and quality of the data (i.e. without doing the actual analysis the test is intended for).</dt>
+<dd><ul class="first last">
+<li><strong>Nota bene</strong>: when we say analysis / check on-the-fly, it isn’t strictly on-the-fly, as the pipeline has to wait for all the data from a given test to be acquired to actually start inspecting / analysing the test.</li>
+<li><strong>Nota bene 2</strong>: there are tools in the pipeline to inspect data / HK as it is acquired, via the “eyegore” tool, but that’s the subject of another dedicated tutorial.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p><a href="#id1"><span class="problematic" id="id2">*</span></a>(In depth) Analysis of the data post-acquisition.</p>
+</div>
+<div class="section" id="editing-the-vison-config-py-file">
+<h3>Editing the vison_config_*.py file<a class="headerlink" href="#editing-the-vison-config-py-file" title="Permalink to this headline">¶</a></h3>
+<p>The most delicate and complicated part of running the pipeline is editing the configuration script, a Python script itself, that’s used to configure the pipeline, to tell it what to do, and with which data.</p>
+<p>To execute the pipeline we’ll use the command “<strong>vison_run</strong>”, with a number of options, like for example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash$ vison_run vison_run -y vison_config_BLOCK_MMM19.py -R DNN -l -t _DNN -m 6
+</pre></div>
+</div>
+<p>In the preceding command, we have highlighted the reference to the Python configuration file, <strong>vison_config_BLOCK_MMM19.py</strong> of concern here. Now we will go through a template for this file, and comment on what inputs we must provide in order to run the pipeline with it.</p>
+<p>The script is about 400 lines long (the exact total length depends on how many tests are done within the run, as you will soon understand), but you only have to modify some of them.</p>
+<p>To copy the template analysis script to the local working folder, we will do:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash $ cp /disk/euclid_caldata06/data06/SOFTWARE_LITE/TEMPLATES_CALCAMP/ANALYSIS/vison_config_BLOCK_MMM19.py .
+</pre></div>
+</div>
+<p>It is <strong>very important</strong> to rename the copied file to something that actually has meaning, so that when this file is moved to the results folder, for reference, it is easy to find, and we know what it is (years from now). So, you will replace “BLOCK” with the block-name (e.g. “BORN”), and “MMM19” with the month-year date.</p>
+<p>In Fig. 1 we see a commented version of the first part (first ~70 lines) of the configuration script. There you have pointed out where you would put the name of the BLOCK you’re about to analyse (e.g. BORN), and your name, for the record.</p>
+<div class="align-left figure align-center" id="id5">
+<img alt="_images/cookbook_vison_config_1.png" src="_images/cookbook_vison_config_1.png" />
+<p class="caption"><span class="caption-text">Fig. 1: First part of the configuration file (edited first). Here you have to introduce the BLOCKID “nickname”, as corresponding (e.g. “BORN”), and your name, for the record (the configuration file will be saved as part of the record of what has been done). In the commented-out area you have a cheat-sheet with the todo_flags for each test.</span></p>
+</div>
+<p>Then we will skip to the last part of the script, which we show in Fig. 2. Here we will edit a number of entries:</p>
+<ul class="simple">
+<li><strong>dataroot</strong>: where the parent data folder is, relative to where the configuration file is.</li>
+<li><strong>datapath</strong>: you can leave this with the default values.</li>
+<li><strong>cdppath</strong>: a folder where you’ll put some calibration data-products needed by the pipeline (namely the cosmetics masks, by now).</li>
+<li><strong>resroot</strong> : the parent folder where the results from the pipeline will be written. The session folders will hang from this path. Usually this will be a symbolic link named “results” to a folder in euclid_caldata0X/data0X/results (exact location depends on block).</li>
+<li><strong>BLOCKID</strong>: The block nickname.</li>
+<li><strong>CHAMBER</strong>: What chamber profile we’re using. Depends on what chamber we’re testing in, obviously. This is a critical parameter, because depending on this we’ll use the right exposure times, or not.</li>
+<li><strong>diffvalues</strong>: in this Python dictionary we provide the pipeline with information about the hardware under testing. This is, the serials of the ROE, RPSU and CCDs. If the serials do not match those provided at the time of writing the acuisition scripts, the pipeline will report about it, but will still analyse the data.</li>
+<li><strong>inCDPs</strong>: if you have cosmetics masks computed for the detectors, here’s where you tell the pipeline where to find them.</li>
+</ul>
+<p>Then, there is the dictionary “tasks2execute_dict”, where you tell what “tasks” are to be executed within each session. Each “task” corresponds to a “test”. But, as you will see, <strong>the task names in this dictionary do not exactly correspond to the test names</strong>, but they are shorter and/or slightly different. This is because some of the tests are particular “instances” (using this Python term loosely here) of more general tests which can have different wavelengths or other characteristics. In this dictionary we provide “handles” to those more generic test types. The correspondence between test names and the generic handles is given in the following table.</p>
+<table border="1" class="colwidths-given docutils" id="id6">
+<caption><span class="caption-text">Correspondence between specific test names and generic test handles.</span><a class="headerlink" href="#id6" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Action</th>
+<th class="head">Comment</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>&#8220;TEST/TASK&#8221; NAME&#8221;</strong></td>
+<td><strong>GENERIC TEST HANDLE</strong></td>
+</tr>
+<tr class="row-odd"><td>MOT_WARM</td>
+<td>MOT_WARM</td>
+</tr>
+<tr class="row-even"><td>BIAS01</td>
+<td>BIAS01</td>
+</tr>
+<tr class="row-odd"><td>BIAS02</td>
+<td>BIAS02</td>
+</tr>
+<tr class="row-even"><td>DARK01</td>
+<td>DARK01</td>
+</tr>
+<tr class="row-odd"><td>COSMETICS00</td>
+<td>COSMETICS00</td>
+</tr>
+<tr class="row-even"><td>FOCUS00_NNN [NNN=wavelength in nm]</td>
+<td>FOCUS00</td>
+</tr>
+<tr class="row-odd"><td>PSFLUX00_NNN [NNN=wavelength in nm]</td>
+<td>PSFLUX00</td>
+</tr>
+<tr class="row-even"><td>FLATFUX00_NNN [NNN=wavelength in nm]</td>
+<td>FLATFLUX00</td>
+</tr>
+<tr class="row-odd"><td>CHNJ01</td>
+<td>CHINJ01</td>
+</tr>
+<tr class="row-even"><td>CHINJ02</td>
+<td>CHINJ02</td>
+</tr>
+<tr class="row-odd"><td>TP11</td>
+<td>TP11</td>
+</tr>
+<tr class="row-even"><td>TP21</td>
+<td>TP21</td>
+</tr>
+<tr class="row-odd"><td>NL02</td>
+<td>NL02</td>
+</tr>
+<tr class="row-even"><td>PTC01</td>
+<td>PTC01</td>
+</tr>
+<tr class="row-odd"><td>PTC02_NNN [NNN=wavelength in nm]</td>
+<td>PTC02WAVE</td>
+</tr>
+<tr class="row-even"><td>FLAT01</td>
+<td>FLAT01</td>
+</tr>
+<tr class="row-odd"><td>FLAT02_NNN [NNN=wavelength in nm]</td>
+<td>FLAT02</td>
+</tr>
+<tr class="row-even"><td>BF01</td>
+<td>BF01</td>
+</tr>
+<tr class="row-odd"><td>BF01_NNN [NNN=wavelength in nm]</td>
+<td>BF01WAVE</td>
+</tr>
+<tr class="row-even"><td>PSF01_NNN [NNN=wavelength in nm]</td>
+<td>PSF01</td>
+</tr>
+<tr class="row-odd"><td>PERSIST01</td>
+<td>PERSIST01</td>
+</tr>
+</tbody>
+</table>
+<div class="align-left figure align-center" id="id7">
+<img alt="_images/cookbook_vison_config_3.png" src="_images/cookbook_vison_config_3.png" />
+<p class="caption"><span class="caption-text">Fig. 2.: Third/last part of the configuration file (edited second).</span></p>
+</div>
+<p>Then we proceed to the third part to edit, which is actually in the ~middle of the script, and is shown in Fig. 3. What we have to edit is the first part of the function “add_RUN_specifics” (around line 113 in the script).</p>
+<p>Because of its verbosity, this part of the configuration file is probably where it’s more likely that we’ll make errors that will lead to not getting results, or at least not those we hope for out of the pipeline. So tread with even more care here than in the previous sections.</p>
+<p>In this section you “only” have to edit the contents of the dictionary “test_specifics”. In it, there are all the sessions which will compose this run. For each of these sessions (named DNN, like D11), there is a list of lists, each corresponding to a specific test.</p>
+<p><strong>Here, the tests are named by their specific name, not the generic ones. So, for example, including the wavelength, where it applies.</strong></p>
+<p>For each test, there’s an entry with the following structure:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>[‘TEST_NAME’, [Obsid_start, Obsid_end], dict(init=True,check=True,basic=True)]
+</pre></div>
+</div>
+<p>Let’s break up these entries:</p>
+<ul class="simple">
+<li><strong>TEST_NAME</strong> is just that, the test name (e.g. BIAS01).</li>
+<li>The second item is a list, which contains the first and last obsid for the test data. When we’re running the pipeline in “listening/wait” mode we won’t know this in advance, and this list will have the value: [None, None] (None is a valid variable in Python which has a “null” value).</li>
+<li>The third item is a dictionary, called the “todo_flags”. This tells the pipeline which sub-tasks within the task to execute. And as you may expect, “True” means you want the sub-task executed, and “False”, that you don’t. This allows for fine control of what we want to do for each test, and is most convenient as we may just want to do part of the analysis at a given time, or we may not want to repeat all the analysis for a test, but just part of it, when rerunning the pipeline.</li>
+</ul>
+<blockquote>
+<div>You’ll find templates of how the specific inputs for each test look like at the top of the script (commented lines).</div></blockquote>
+<div class="align-left figure align-center" id="id8">
+<img alt="_images/cookbook_vison_config_2.png" src="_images/cookbook_vison_config_2.png" />
+<p class="caption"><span class="caption-text">Fig. 3. Second part of the configuration file, to be edited last.</span></p>
+</div>
+</div>
+<div class="section" id="executing-the-pipeline">
+<h3>Executing the pipeline<a class="headerlink" href="#executing-the-pipeline" title="Permalink to this headline">¶</a></h3>
+<p>As we said above, we can run the pipeline in several “modes”. Here we describe briefly what are these modes, and provide a high-level description of the inputs in each case, leaving the details for the recipes section below.</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>“<strong>Wait</strong>” mode</dt>
+<dd><ul class="first last">
+<li>In this mode, the pipeline is launched as soon as the data acquisition of a session starts, and the pipeline will process the data of each test as soon as it is completed.</li>
+<li>This is the quickest way to obtain check/data-quality assessments of the tests.</li>
+<li><dl class="first docutils">
+<dt>Basically we have to give the pipeline (via the configuration file and keyword inputs to the command):</dt>
+<dd><ul class="first last">
+<li>a location where to find the data (the path to the “data” folder)</li>
+<li>A location where to store results.</li>
+<li>Where to find calibration data products, if needed.</li>
+<li>A BLOCKID and a CHAMBER identifier.</li>
+<li>Serials for the hardware,</li>
+<li>Names of the input calibration data products (e.g. cosmetics masks), if needed.</li>
+<li>A test list.</li>
+<li>Optionally, test-specific todo_flags (via the entries in the test_specifics dictionary within add_RUN_specifics function) if we’re not just “checking” on all tests using option -k.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>“<strong>Aim</strong>” Mode</dt>
+<dd><ul class="first last">
+<li>In this mode we tell the pipeline where to find the data, with specific starting and ending obsids, and, in general, we’ll aim at doing more extensive analysis of the data. But the real difference with the previous mode is that the pipeline will not be waiting for the data, but rather assume it’s already there, and it is told exactly where to find it.</li>
+<li>This is the mode we’ll use to produce the end-results of the calibration.</li>
+<li><dl class="first docutils">
+<dt>We have to give the following inputs in this mode:</dt>
+<dd><ul class="first last">
+<li>a location where to find the data, including the day-folder, via the test_specifics dictionary within add_RUN_specifics function.</li>
+<li>A location where to store results (“resroot”).</li>
+<li>Where to find calibration data products, if needed.</li>
+<li>A BLOCKID and a CHAMBER identifier.</li>
+<li>Serials for the hardware,</li>
+<li>Names of the input calibration data products (e.g. cosmetics masks), if needed.</li>
+<li>A test list, and a filled-in “test_specifics” dictionary in add_RUN_specifics.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="section" id="advanced-using-nohup">
+<h4><strong>Advanced</strong>: using “nohup”<a class="headerlink" href="#advanced-using-nohup" title="Permalink to this headline">¶</a></h4>
+<p>In general, and in particular the windows users, we’ll run the pipeline in a remote machine, via ssh, or Putty. But, if we close the window from which we run the “vison_run” command, the pipeline will halt. To prevent that from happening, we can use “nohup”, that will let the process(es) running even if the window is terminated (because, for example, the connection is terminated). This is simple to do:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash$ nohup vison_run -y .... &gt; nohup_DNN
+</pre></div>
+</div>
+<p>We have just preceded the pipeline executing command with the command “nohup”, and appended piping the on-screen outputs to a text file called nohup_DNN (NN can be the session number, for example), so we that screen output is not lost.</p>
+</div>
+</div>
+<div class="section" id="pipeline-feedback-and-results">
+<h3>Pipeline Feedback and Results<a class="headerlink" href="#pipeline-feedback-and-results" title="Permalink to this headline">¶</a></h3>
+<p>When we run the pipeline we will want to know a) that the pipeline is actually running, and b) what progress has been made.</p>
+<p>The on-screen output of the pipeline, at start, is quite limited. It will just state something along the lines of:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash$ vison_run -y …
+Running: TESTNAME
+</pre></div>
+</div>
+<p>Where TESTNAME will be the name of one of the tests you’ve asked the pipeline to run upon. Most of the times, if the inputs are wrong, the pipeline will end abruptly on start, with a list of Python errors written to the screen, and/or the pipeline log. But sometimes, these errors on the inputs won’t be noticed until much later (for example, if they’re specific to a test, and not general to the overall pipeline session).</p>
+<p>The most informative document will be the pipeline log, which will be created everytime we run the pipeline with the “-l” option. The name of the pipe-log is of the type:</p>
+<p><strong>Calib_FM20190323_193647_D22.log</strong></p>
+<p>Where the first 2 numbers are the data and time when we started the pipeline execution, and the _D22 comes from the tag option at running the pipeline (“-t _D22”).</p>
+<p>Let’s look at the contents of the pipe-log file, highlighting the most important parts:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>2019-03-23 19:36:47,504 - INFO - _
+Starting FM Calib. Pipeline
+Pipeline ID: FM20190323_193647_D22
+BLOCK ID: BORN
+Chamber: B_CBE_MAR19
+vison version: 0.8+51.g5301278
+Tasks: [&#39;PSF01_730&#39;, &#39;PSF01_800&#39;, &#39;PSF01_880&#39;]
+
+2019-03-23 19:36:47,506 - INFO -   Results will be saved in: results_atCALDATA/
+
+2019-03-23 19:36:47,507 - INFO -   Running Task: PSF01_730
+Inputs:
+perflimits = {}
+elvis = 7.5.X
+BLOCKID = BORN
+OBSID_lims = [17968, 18020]
+offsetxy = [0.0, 0.0]
+CHAMBER = B_CBE_MAR19
+preprocessing = {&#39;offsetkwargs&#39;: {&#39;ignore_pover&#39;: True, &#39;trimscan&#39;: [25, 5],
+&#39;method&#39;: &#39;row&#39;, &#39;extension&#39;: -1, &#39;scan&#39;: &#39;pre&#39;}}
+frames = [20, 15, 10, 4, 4]
+[…]
+2019-03-23 19:36:47,729 - INFO - Executing xtalk_sex: vison.point.PSF0X
+
+2019-03-23 19:46:27,062 - INFO - 9.7 minutes in running Sub-task: xtalk_sex
+
+2019-03-23 19:46:27,133 - INFO - Executing xtalk_build: vison.point.PSF0X
+
+2019-03-23 19:50:06,835 - INFO - 3.6 minutes in running Sub-task: xtalk_build
+
+2019-03-23 19:50:06,916 - INFO - Executing xtalk_meta: vison.point.PSF0X
+
+2019-03-23 19:50:10,906 - INFO - 0.1 minutes in running Sub-task: xtalk_meta
+
+2019-03-23 19:51:18,023 - INFO - Finished PSF0X
+
+2019-03-23 19:51:18,024 - INFO - 14.5 minutes in running Task: PSF01_730
+
+2019-03-23 19:51:18,024 - INFO - Task PSF01_730 exited with Errors: False
+
+2019-03-23 19:51:18,026 - INFO - _
+</pre></div>
+</div>
+<p>As you can see, there’s a first part where the general parameters of the pipeline execution are listed (block ID, chamber ID, tasks to be executed), and then comes, for each test, a listing of its inputs, and then reports of progress within the test/task.</p>
+<p>Every time the pipeline finishes processing one test/task, it prints to the log a report of progress with a few lines on each executed task. At the end there will be a similar report with all the tasks executed:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">######################################################################</span>
+<span class="n">Pipeline</span> <span class="n">ID</span><span class="p">:</span> <span class="n">FM20190323_193647_D22</span>
+<span class="n">BLOCK</span> <span class="n">ID</span><span class="p">:</span> <span class="n">BORN</span>
+<span class="n">Chamber</span><span class="p">:</span> <span class="n">B_CBE_MAR19</span>
+<span class="n">vison</span> <span class="n">version</span><span class="p">:</span> <span class="mf">0.8</span><span class="o">+</span><span class="mf">51.</span><span class="n">g5301278</span>
+<span class="n">Tasks</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;PSF01_730&#39;</span><span class="p">,</span> <span class="s1">&#39;PSF01_800&#39;</span><span class="p">,</span> <span class="s1">&#39;PSF01_880&#39;</span><span class="p">]</span>
+<span class="n">_</span>
+<span class="n">PSF01_730</span>
+<span class="n">Executed</span> <span class="ow">in</span> <span class="mf">14.5</span> <span class="n">minutes</span>
+<span class="n">Raised</span> <span class="n">Flags</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;FLUENCE_OOL&#39;</span><span class="p">,</span> <span class="s1">&#39;FOCUS_OOL&#39;</span><span class="p">,</span> <span class="s1">&#39;RON_OOL&#39;</span><span class="p">,</span> <span class="s1">&#39;HK_OOL&#39;</span><span class="p">,</span> <span class="s1">&#39;FLUX_OOL&#39;</span><span class="p">,</span>
+<span class="s1">&#39;POORQUALDATA&#39;</span><span class="p">]</span>
+<span class="n">_</span>
+<span class="n">PSF01_800</span>
+<span class="n">Executed</span> <span class="ow">in</span> <span class="mf">14.8</span> <span class="n">minutes</span>
+<span class="n">Raised</span> <span class="n">Flags</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;FLUENCE_OOL&#39;</span><span class="p">,</span> <span class="s1">&#39;FOCUS_OOL&#39;</span><span class="p">,</span> <span class="s1">&#39;RON_OOL&#39;</span><span class="p">,</span> <span class="s1">&#39;HK_OOL&#39;</span><span class="p">,</span> <span class="s1">&#39;FLUX_OOL&#39;</span><span class="p">,</span>
+<span class="s1">&#39;POORQUALDATA&#39;</span><span class="p">]</span>
+<span class="n">_</span>
+<span class="n">PSF01_880</span>
+<span class="n">Executed</span> <span class="ow">in</span> <span class="mf">15.1</span> <span class="n">minutes</span>
+<span class="n">Raised</span> <span class="n">Flags</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;FLUENCE_OOL&#39;</span><span class="p">,</span> <span class="s1">&#39;FOCUS_OOL&#39;</span><span class="p">,</span> <span class="s1">&#39;RON_OOL&#39;</span><span class="p">,</span> <span class="s1">&#39;HK_OOL&#39;</span><span class="p">,</span> <span class="s1">&#39;FLUX_OOL&#39;</span><span class="p">,</span>
+<span class="s1">&#39;POORQUALDATA&#39;</span><span class="p">]</span>
+<span class="n">_</span>
+<span class="n">_</span>
+<span class="n">_</span>
+<span class="n">_</span>
+<span class="c1">######################################################################</span>
+</pre></div>
+</div>
+<p>If the test fails for any reason, then the pipeline will say “Executed with Error(s)” for that specific test in these reports.</p>
+<p>The best way to consult this pipe-log is using “nedit”, or just doing, from the command line:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash $ cat Calib_FM20190323_193647_D22.log
+</pre></div>
+</div>
+</div>
+<div class="section" id="quick-reference-on-running-the-pipeline">
+<h3>Quick Reference on running the pipeline<a class="headerlink" href="#quick-reference-on-running-the-pipeline" title="Permalink to this headline">¶</a></h3>
+<p>Asking for Help</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash $ vison_run -h
+
+Usage: vison_run [options]
+
+Options:
+    -h, --help            show this help message and exit
+    -y PYCONFIG, --pyconfig=PYCONFIG
+                        Python configuration file to run the pipeline.
+    -R RUN, --run=RUN     Run to process - TESTS.
+    -j JSON, --json=JSON  Json configuration file to run the pipeline.
+    -d DAYFOLDER, --day=DAYFOLDER
+                    Day-folder. Only needed in &#39;wait&#39; mode.
+    -v ELVIS, --elvis=ELVIS
+                    ELVIS vrsion. Only needed in &#39;wait&#39; mode.
+    -W, --wait            Run in &#39;data-waiting/listening&#39; mode.
+    -k, --check           Check consistency and basic quality of data only.
+    -l, --log             Start an Execution Log.
+    -r, --drill           Do a drill execution.
+    -g, --debug           Run in &#39;debug&#39; mode.
+    -T, --test            Run in &#39;test&#39; mode (just ingest inputs and initialize
+                        pipeline and output directories)
+    -O STARTOBSID, --ObsID=STARTOBSID
+                    Only use data from given ObsID and onwards. Only used
+                    in &#39;wait&#39; mode.
+    -m MULTITHREAD, --multithread=MULTITHREAD
+                    Use multithreading? Number of threads / cores to use.
+                    Default=1 [single thread]. Number of threads must be &lt;
+                    number of available cores. Only some tasks are
+                    parallelized.
+    -t TAG, --tag=TAG     Tag to be added to log-file name for ease of
+                    identification. Optional.
+    -i, --interactive     Switch matplotlib to TkAgg backend for interactive
+                    plotting (e.g. debugging)
+</pre></div>
+</div>
+<p>Options to execute the pipeline using “vison_run” console command / script.</p>
+</div>
+<div class="section" id="listening-wait-mode">
+<h3>Listening/Wait Mode<a class="headerlink" href="#listening-wait-mode" title="Permalink to this headline">¶</a></h3>
+<p>To run the pipeline in “listening mode” (-W) doing only test “checks” (-k):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash $ vison_run -y vison_config_BLOCK_MMM19.py -R RUN -d path_to_dayfolder -v ELVIS_VERSION -W -k -l [-O STARTOBSID] -t TAG -m NTHREADS
+
+
+-y vison_config_BLOCK_MMM19.py
+    Configuration file. It’s a python script itself.
+-R RUN
+    Which “RUN” to consider in the configuration file. This will restrict the list of tests we’re expecting data from in this session.
+-d path_to_dayfolder
+    Day-folder where the data is being stored for the session.
+-v ELVIS_VERSION
+    ELVIS version we’re using (7.5.X is should work for FM).So write “-v 7.5.X”
+-W
+    Executing in “listening” mode. The pipeline knows what tests to expect, and their structure. Only when it sees that the data for a test has been acquired, starts the processing of that data-set. It waits a maximum of 4 hours since launching application or the last test was completed. Then asks whether you want to abort pipeline listening, as the data acquisition may have been interrupted or aborted.
+-k
+    Only executes the “check” subtask of each test. In tests with point source, it will also do “source locking” before doing any checks, to be able to find the sources. If you omit this option, then the todo_flags in “add_RUN_specifics” function within the python configuration script.
+-l
+    Log pipeline execution results. This is to write a .log file with outputs from the pipeline used to monitor progress with the pipeline execution. Each test has its own test report.
+-O STARTOBSID
+    Use this option if you want to start from a particular OBSID. This is useful when we resubmit a session after a failure. If a test has 15 frames and the pipeline finds, say, 19, 4 from a previous aborted submission, and 15 from the second submission, it won’t identify the test as completed and won’t analyse the data. This option can be used to correct this, telling the pipeline to start the progress tracking from the OBSID that corresponds to the 5th frame of that test, in this example.
+-t tag
+    Use if we want to add a text tag to be added to the pipeline .log file name, for ease of identification. Suggestion: use the RUN name: D00, D11, D12, etc.
+-m NTHREADS
+    Use multithreading. NTHREADS is an integer &lt; number of CPU cores in the machine we’re using to process the data. The multithreading is only used in selected subtasks. If you’re only “checking”, this is indeed not used.
+</pre></div>
+</div>
+<p><strong>NOTE</strong>: You can also run the pipeline in “Wait” mode and use the todo_flags for each test assigned in “add_RUN_specifics”, if you just omit the “-k” option.</p>
+</div>
+<div class="section" id="aim-mode">
+<h3>Aim Mode<a class="headerlink" href="#aim-mode" title="Permalink to this headline">¶</a></h3>
+<p>To run the pipeline in “aim mode”:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>bash $ vison_run -y vison_config_BLOCK_MMM19.py -R RUN -l -m NTHREADS -t TAG
+-y vison_config_BLOCK_MMM19.py
+    Configuration file. It’s a python script itself.
+-R RUN
+    Which “RUN” to consider in the configuration file. This will restrict the list of tests we’re expecting data from in this session.
+-l
+    Log pipeline execution results. This is to write a .log file with outputs from the pipeline used to monitor progress with the pipeline execution. Each test has its own test report.
+-m NTHREADS
+    Use multithreading. NTHREADS is an integer &lt; number of CPU cores in the machine we’re using to process the data. The multithreading is only used in selected subtasks.
+-t tag
+    Use if we want to add a text tag to be added to the pipeline .log file name, for ease of identification. Suggestion: use the RUN name: D00, D11, D12, etc.
+</pre></div>
+</div>
+</div>
+<div class="section" id="estimated-processing-times">
+<h3>Estimated Processing Times<a class="headerlink" href="#estimated-processing-times" title="Permalink to this headline">¶</a></h3>
+<p>Here we provide some estimates of how long does it take the pipeline to process tests. These are based on running the pipeline in the MSSLA[N/O/P] machines, using multithreading (with 6 cores). But notice that only some sub-tasks in some tests can be run in “multi-thread” mode.</p>
+<table border="1" class="colwidths-given docutils" id="id9">
+<caption><span class="caption-text">Aprox. test processing times</span><a class="headerlink" href="#id9" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="24%" />
+<col width="14%" />
+<col width="14%" />
+<col width="48%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Action</th>
+<th class="head">Comment</th>
+<th class="head">&nbsp;</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>TEST</td>
+<td>ONLY CHECKS</td>
+<td>FULL ANALYSIS</td>
+<td>Comments</td>
+</tr>
+<tr class="row-odd"><td><ul class="first last simple">
+<li></li>
+</ul>
+</td>
+<td>minutes</td>
+<td>minutes</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>MOT_WARM</td>
+<td>3</td>
+<td>4</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>COSMETICS00</td>
+<td>3</td>
+<td>6</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>FOCUS00</td>
+<td>7</td>
+<td>10</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>PSFLUX00</td>
+<td>7</td>
+<td>N/A</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>FLATFLUX00</td>
+<td>3</td>
+<td>N/A</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>BIAS01/02</td>
+<td>3</td>
+<td>11</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>DARK01</td>
+<td>3</td>
+<td>6</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>CHINJ01</td>
+<td>13</td>
+<td>50</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>CHINJ02</td>
+<td>11</td>
+<td>37</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>TP01</td>
+<td>23</td>
+<td>92</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>TP02</td>
+<td>6</td>
+<td>11</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>NL02</td>
+<td>10</td>
+<td>32</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>PTC01</td>
+<td>9</td>
+<td>26</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>PTC02WAVE</td>
+<td>4</td>
+<td>10</td>
+<td>Fewer frames than PTC01</td>
+</tr>
+<tr class="row-even"><td>FLAT01</td>
+<td>14</td>
+<td>97</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>FLAT02</td>
+<td>10</td>
+<td>63</td>
+<td>Fewer frames than FLAT01</td>
+</tr>
+<tr class="row-even"><td>BF01</td>
+<td>9</td>
+<td>86</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>BF01WAVE</td>
+<td>3</td>
+<td>28</td>
+<td>Fewer frames than BF01</td>
+</tr>
+<tr class="row-even"><td>PSF01</td>
+<td>35</td>
+<td>57</td>
+<td>Task Analysis Incomplete!</td>
+</tr>
+<tr class="row-odd"><td>PERSIST01</td>
+<td>3</td>
+<td>7</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="real-time-data-acquisition-monitoring-eyegore">
+<h2>Real-Time Data Acquisition Monitoring: “Eyegore”<a class="headerlink" href="#real-time-data-acquisition-monitoring-eyegore" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="visons-data-acquisition-monitoring-tool">
+<h3>Vison’s data acquisition monitoring tool<a class="headerlink" href="#visons-data-acquisition-monitoring-tool" title="Permalink to this headline">¶</a></h3>
+<p><em>Eyegore</em> is part of the calibration pipeline, vison. It can be used to monitor data acquisition, as it happens: does automatic HK plots, checks HK against HK limits, and displays the EXPLOG as it grows. Also, it can be used to copy the data to a backup drive, and to a server “behind” the firewall so that the data can be accessed by selected people for independent and external data acquisition monitoring (e.g. by Ralf Kohley at ESAC/Madrid).</p>
+<div class="section" id="asking-for-help">
+<h4>Asking for help<a class="headerlink" href="#asking-for-help" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">eyegore</span> <span class="o">-</span><span class="n">h</span>
+
+<span class="n">Usage</span><span class="p">:</span> <span class="n">eyegore</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span>
+
+<span class="n">Options</span><span class="p">:</span>
+    <span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>            <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span>
+    <span class="o">-</span><span class="n">p</span> <span class="n">PATH</span><span class="p">,</span> <span class="o">--</span><span class="n">path</span><span class="o">=</span><span class="n">PATH</span>  <span class="n">day</span><span class="o">-</span><span class="n">path</span> <span class="n">to</span> <span class="n">be</span> <span class="n">monitored</span><span class="o">.</span>
+    <span class="o">-</span><span class="n">B</span> <span class="n">BROADCAST</span><span class="p">,</span> <span class="o">--</span><span class="n">broadcast</span><span class="o">=</span><span class="n">BROADCAST</span>
+                    <span class="n">Synchronize</span> <span class="n">data</span> <span class="n">to</span> <span class="n">gateway</span> <span class="n">folder</span> <span class="n">at</span> <span class="n">msslus</span>
+    <span class="o">-</span><span class="n">E</span> <span class="n">ELVIS</span><span class="p">,</span> <span class="o">--</span><span class="n">elvis</span><span class="o">=</span><span class="n">ELVIS</span>
+                    <span class="n">ELVIS</span> <span class="n">version</span><span class="o">.</span>
+    <span class="o">-</span><span class="n">b</span><span class="p">,</span> <span class="o">--</span><span class="n">blind</span>           <span class="n">Run</span> <span class="n">without</span> <span class="n">image</span> <span class="n">displays</span><span class="o">.</span>
+    <span class="o">-</span><span class="n">L</span><span class="p">,</span> <span class="o">--</span><span class="n">lite</span>            <span class="n">Run</span> <span class="n">a</span> <span class="n">lighter</span> <span class="n">version</span> <span class="n">of</span> <span class="n">the</span> <span class="n">program</span> <span class="p">(</span><span class="n">no</span> <span class="n">image</span>
+                        <span class="n">displays</span> <span class="ow">and</span> <span class="n">no</span> <span class="n">ExpLog</span><span class="p">)</span><span class="o">.</span>
+    <span class="o">-</span><span class="n">r</span> <span class="n">ALTPATH</span><span class="p">,</span> <span class="o">--</span><span class="n">rsync</span><span class="o">=</span><span class="n">ALTPATH</span>
+                    <span class="n">rsync</span> <span class="n">to</span> <span class="n">an</span> <span class="n">alternative</span> <span class="n">local</span> <span class="n">path</span><span class="o">.</span>
+    <span class="o">-</span><span class="n">g</span><span class="p">,</span> <span class="o">--</span><span class="n">log</span>             <span class="n">keep</span> <span class="n">a</span> <span class="n">log</span>
+    <span class="o">-</span><span class="n">W</span><span class="p">,</span> <span class="o">--</span><span class="n">Warnings</span>        <span class="n">Raise</span> <span class="n">warnings</span> <span class="p">(</span><span class="n">via</span> <span class="n">email</span> <span class="ow">and</span><span class="o">/</span><span class="ow">or</span> <span class="n">phone</span><span class="p">)</span> <span class="k">if</span> <span class="n">critical</span> <span class="n">HK</span>
+                    <span class="ow">is</span> <span class="n">OOL</span><span class="o">.</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="use-case-1">
+<h3>Use Case 1<a class="headerlink" href="#use-case-1" title="Permalink to this headline">¶</a></h3>
+<p>We just want to monitor the data acquisition, doing a backup, but without broadcasting to outside world. We also don’t want to send warnings via email/sms if HK temps are OOL.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">eyegore</span> <span class="o">-</span><span class="n">p</span> <span class="o">../</span><span class="n">atMSSL3M</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">DD_Mmm_YY</span> <span class="o">-</span><span class="n">E</span> <span class="mf">7.5</span><span class="o">.</span><span class="n">X</span> <span class="o">-</span><span class="n">g</span> <span class="o">-</span><span class="n">r</span> <span class="n">atCALDATA</span><span class="o">/</span><span class="n">data</span>
+</pre></div>
+</div>
+<p><strong>Notes:</strong></p>
+<ul class="simple">
+<li>atMSSL3M is a symbolic link to the right folder for this run/BLOCK in MSSL3M/EEDisk5.</li>
+<li>Note the path (-p) has the date-folder included, but the remote (-r ALTpath) does not.</li>
+<li>-g does writes a log which can be helpful to find out what happened overnight.</li>
+</ul>
+</div>
+<div class="section" id="use-case-2">
+<h3>Use Case 2<a class="headerlink" href="#use-case-2" title="Permalink to this headline">¶</a></h3>
+<p>We just want to monitor the data acquisition, doing a backup, and also broadcasting to outside world via msslus server. We also don’t want to send warnings via email/sms if HK temps are OOL.</p>
+<ul class="simple">
+<li>Note 1: currently, only user “raf” can do the broadcasting in this way.</li>
+<li>Note 2: the folder for the BLOCK in msslus where the data is to be copied across has to be created in advance to running eyegore in this way.</li>
+</ul>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">eyegore</span> <span class="o">-</span><span class="n">p</span> <span class="o">../</span><span class="n">atMSSL3M</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">DD_Mmm_YY</span> <span class="o">-</span><span class="n">E</span> <span class="mf">7.5</span><span class="o">.</span><span class="n">X</span> <span class="o">-</span><span class="n">g</span> <span class="o">-</span><span class="n">r</span> <span class="o">../</span><span class="n">atCALDATA</span><span class="o">/</span><span class="n">data</span> <span class="o">-</span><span class="n">B</span> <span class="o">/</span><span class="n">data2</span><span class="o">/</span><span class="n">gaia</span><span class="o">/</span><span class="n">usdownloads</span><span class="o">/</span><span class="n">EuclidCaldata</span><span class="o">/</span><span class="n">Quarantine</span><span class="o">/</span><span class="n">BLOCKNAME</span><span class="o">/</span><span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="use-case-3">
+<h3>Use Case 3<a class="headerlink" href="#use-case-3" title="Permalink to this headline">¶</a></h3>
+<p>Like Use Case 3, but we also want to issue warnings via email/sms.</p>
+<p><strong>Note</strong>: Sending sms can only be done by user “raf”, by now.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">eyegore</span> <span class="o">-</span><span class="n">p</span> <span class="o">../</span><span class="n">atMSSL3M</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">DD_Mmm_YY</span> <span class="o">-</span><span class="n">E</span> <span class="mf">7.5</span><span class="o">.</span><span class="n">X</span> <span class="o">-</span><span class="n">W</span> <span class="o">-</span><span class="n">r</span> <span class="o">../</span><span class="n">atCALDATA</span><span class="o">/</span><span class="n">data</span> <span class="o">-</span><span class="n">B</span> <span class="o">/</span><span class="n">data2</span><span class="o">/</span><span class="n">gaia</span><span class="o">/</span><span class="n">usdownloads</span><span class="o">/</span><span class="n">EuclidCaldata</span><span class="o">/</span><span class="n">Quarantine</span><span class="o">/</span><span class="n">BLOCKNAME</span><span class="o">/</span><span class="n">data</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="quickds9-quick-loading-many-images-into-ds9">
+<h2>Quickds9: quick-loading many images into ds9<a class="headerlink" href="#quickds9-quick-loading-many-images-into-ds9" title="Permalink to this headline">¶</a></h2>
+<p>When inspecting test data, it is very handy to use the SAO DS9 program, which allows to display the image with different options for scaling and palette, do area statistics in regions of different shapes, extract profile cuts, and many other useful things. In the pipeline what we have added is a script to load a number of images, which you can use to, for example, load all the images in a given test, to inspect them visually. The script is called “quickds9.py”.</p>
+<p>The script can only load images of one CCD at a time, which you have to specify, and only works with consecutive OBSIDs. It may be used to load images output by ELVIS, and also images produced with other programs, as long as the image names conform to some basic rules (and we provide a template for the name), but here we will only give a recipe to load calibration campaign images written by ELVIS.</p>
+<p><strong>Use case</strong>: We want to load all images between OBSIDs 1000 and 1020, from a day folder 21_Feb_80, selecting CCD 2. Here’s how to load all those in DS9 images using the script:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ quickds9.py -p ../atCALDATA/data/21_Feb_80 -r 1 -c 2 1000 1020
+-p ../atCALDATA/data/21_Feb_80
+    Where the images are.
+-r 1
+    ROE selected (always 1 for Cal. Camp data).
+-c 2
+    CCD selected.
+1000 1020
+    First and last OBSID to load.
+</pre></div>
+</div>
+<p><strong>WARNING</strong>: You may encounter problems when using the program if there are several instances of DS9 running (for example, launched by eyegore, or yourself). You may tell the program what instance of DS9 to use, using the option “-d” and then the ds9 instance ID. This you can get from the DS9 window itself: In the above menu, click on File&gt; XPA &gt; Information. Then, a window will pop-up with a message like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">XPA_VERSION</span><span class="p">:</span>    <span class="mf">2.1</span><span class="o">.</span><span class="mi">17</span>
+<span class="n">XPA_CLASS</span><span class="p">:</span>  <span class="n">DS9</span>
+<span class="n">XPA_NAME</span><span class="p">:</span>   <span class="n">ds9</span>
+<span class="n">XPA_METHOD</span><span class="p">:</span> <span class="mi">802847</span><span class="n">c3</span><span class="p">:</span><span class="mi">37111</span>
+</pre></div>
+</div>
+<p>Then to select this specific instance, you would have to call quickds9.py using the highlighted number, like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ quickds9.py -p ../atCALDATA/data/21_Feb_80 -r 1 -c 2 -d  802847c3:37111 1000 1020
+</pre></div>
+</div>
+<p>If you want more help, you can just type:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ quickds9.py -h
+Usage: quickds9.py [options] arg1 [arg2]
+arg1: starting OBSID
+[arg2]: optional, end OBSID. If not provided, arg2==arg1.
+
+Options:
+    -h, --help            show this help message and exit
+    -p PATH, --path=PATH  path where to look for FITS files. Search is not
+                    recursive.
+    -r ROE, --roe=ROE     ROE to select
+    -c CCD, --ccd=CCD     CCD to select
+    -t TEMP, --template=TEMP
+                    Image Name Template
+    -d DS9TARGET, --DS9=DS9TARGET
+                    Specify DS9 target (pyds9)?
+</pre></div>
+</div>
+</div>
+<div class="section" id="practical-case-nostromo">
+<h2>PRACTICAL CASE: “NOSTROMO&#8221;<a class="headerlink" href="#practical-case-nostromo" title="Permalink to this headline">¶</a></h2>
+<p>In this section we will try to guide you through some practical cases covering the writing of acquisition scripts and performing data analysis on sample data, using the pipeline.</p>
+<p>We’ll use a fake block, called “NOSTROMO” (you know where this is going… ), as a working example. The data we will process is part of the data that was acquired with block “BORN/FM1” in March 2019.</p>
+<div class="section" id="environment-setup">
+<h3>ENVIRONMENT SETUP<a class="headerlink" href="#environment-setup" title="Permalink to this headline">¶</a></h3>
+<p>First we will connect to MSSLAP (using ssh or Putty), and activate the pipeline. We also check that we’re using the pipeline installed in euclid_cadata06/</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>[raf@msslap ~]$ bash
+bash-4.2$ source /disk/euclid_caldata06/data06/SOFTWARE_LITE/bashrc_lite
+bash-4.2$ source activate vison
+(vison) bash-4.2$ which vison
+/disk/euclid_caldata06/data06/SOFTWARE_LITE/anaconda2/envs/vison/bin/vison
+</pre></div>
+</div>
+<p>Now we create a folder structure to write the scripts and and process the data. I trace my steps from my $HOME folder.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ pwd
+/home/raf
+(vison) bash-4.2$ mkdir CALCAMP
+(vison) bash-4.2$ cd CALCAMP
+(vison) bash-4.2$ pwd
+/home/raf/CALCAMP
+(vison) bash-4.2$ mkdir TRAIN
+(vison) bash-4.2$ cd TRAIN/
+(vison) bash-4.2$ mkdir NOSTROMO
+(vison) bash-4.2$ cd NOSTROMO
+(vison) bash-4.2$ mkdir ANALYSIS
+(vison) bash-4.2$ mkdir SCRIPTS
+(vison) bash-4.2$ ls
+    ANALYSIS  SCRIPTS
+</pre></div>
+</div>
+<p>Finally, we also create a link to the “block” folder in caldata so that the paths to data and results are conveniently short, when doing analysis. In the following box, we show how to do this, and including some commands to check we’ve done it correctly.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ pwd
+/home/raf/CALCAMP/TRAIN/NOSTROMO
+(vison) bash-4.2$ ls
+ANALYSIS  SCRIPTS
+(vison) bash-4.2$ ln -s /disk/euclid_caldata06/data06/TRAIN/NOSTROMO atCALDATA
+(vison) bash-4.2$ ls
+    ANALYSIS  atCALDATA  SCRIPTS
+(vison) bash-4.2$ readlink atCALDATA
+    /disk/euclid_caldata06/data06/TRAIN/NOSTROMO
+(vison) bash-4.2$ ls atCALDATA/
+    calproducts data  solutions
+</pre></div>
+</div>
+</div>
+<div class="section" id="writing-acquisition-scripts-for-nostromo">
+<h3>Writing Acquisition Scripts for NOSTROMO<a class="headerlink" href="#writing-acquisition-scripts-for-nostromo" title="Permalink to this headline">¶</a></h3>
+<p>We are going to create the scripts first. First we copy the template script-writer and session-writer input json files, and rename them to something that makes sense (for this example).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ cd SCRIPTS
+(vison) bash-4.2$ pwd
+    /home/raf/CALCAMP/TRAIN/NOSTROMO/SCRIPTS
+(vison) bash-4.2$ cp /disk/euclid_caldata06/data06/SOFTWARE_LITE/TEMPLATES_CALCAMP/SCRIPTS/scripts_inputs_BLOCK_MMM19_WN.json .
+(vison) bash-4.2$ mv scripts_inputs_BLOCK_MMM19_WN.json scripts_inputs_NOSTROMO_APR19_W18.json
+(vison) bash-4.2$ cp /disk/euclid_caldata06/data06/SOFTWARE_LITE/TEMPLATES_CALCAMP/SCRIPTS/sessions_builder_BLOCK_MMM19_WN.json .
+(vison) bash-4.2$ mv sessions_builder_BLOCK_MMM19_WN.json sessions_builder_NOSTROMO_APR19_W18.json
+(vison) bash-4.2$ ls
+    scripts_inputs_NOSTROMO_APR19_W18.json  sessions_builder_NOSTROMO_APR19_W18.json
+</pre></div>
+</div>
+<p>First we edit the json to write scripts with the following inputs, but (VERY IMPORTANT) following the formatting of the template json:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ROE</span><span class="p">:</span> <span class="n">FM15</span>
+<span class="n">RPSU</span><span class="p">:</span> <span class="n">FM15</span>
+<span class="n">CCD1</span><span class="p">:</span> <span class="mi">14888</span><span class="o">-</span><span class="mi">88</span><span class="o">-</span><span class="mi">81</span>
+<span class="n">CCD2</span><span class="p">:</span> <span class="mi">14888</span><span class="o">-</span><span class="mi">88</span><span class="o">-</span><span class="mi">82</span>
+<span class="n">CCD3</span><span class="p">:</span> <span class="mi">14888</span><span class="o">-</span><span class="mi">88</span><span class="o">-</span><span class="mi">83</span>
+<span class="n">Elvis</span><span class="p">:</span> <span class="mf">7.5</span><span class="o">.</span><span class="n">X</span>
+<span class="n">CHAMBER</span><span class="p">:</span> <span class="n">B_NOSTROMO</span>
+<span class="n">Outpath</span><span class="p">:</span> <span class="n">Scripts_NOSTROMO_APR19_W18</span>
+
+<span class="n">Tests</span> <span class="n">to</span> <span class="n">be</span> <span class="n">done</span><span class="p">:</span>
+<span class="n">FOCUS00</span><span class="p">,</span> <span class="n">BIAS01</span><span class="p">,</span> <span class="n">BIAS02</span><span class="p">,</span> <span class="n">CHINJ01</span><span class="p">,</span> <span class="n">CHINJ02</span><span class="p">,</span> <span class="n">TP01</span>
+</pre></div>
+</div>
+<p>Then we execute the script-writer with the modified json file as input:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ vis_mkscripts.py -j scripts_inputs_NOSTROMO_APR19_W18.json
+
+WRITING SCRIPTS...
+CHINJ02...
+BIAS01...
+TP01...
+BIAS02...
+CHINJ01...
+FOCUS00_590...
+FOCUS00_730...
+FOCUS00_800...
+FOCUS00_880...
+</pre></div>
+</div>
+<p>These are the contents of the newly created folder, Scripts_BLOCK_APR19_w18:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ ls -1 Scripts_NOSTROMO_APR19_W18/
+    CHECK_SUMS_01Apr19.txt
+    TESTS_INVENTORY_01Apr19.txt
+    TESTS_SCHEDULER_01Apr19.xlsx
+    vis_CalCamp_BIAS01_01Apr19_v7.5.X.xlsx
+    vis_CalCamp_BIAS02_01Apr19_v7.5.X.xlsx
+    vis_CalCamp_CHINJ01_01Apr19_v7.5.X.xlsx
+    vis_CalCamp_CHINJ02_01Apr19_v7.5.X.xlsx
+    vis_CalCamp_FOCUS00_590_01Apr19_v7.5.X.xlsx
+    vis_CalCamp_FOCUS00_730_01Apr19_v7.5.X.xlsx
+    vis_CalCamp_FOCUS00_800_01Apr19_v7.5.X.xlsx
+    vis_CalCamp_FOCUS00_880_01Apr19_v7.5.X.xlsx
+    vis_CalCamp_TP01_01Apr19_v7.5.X.xlsx
+</pre></div>
+</div>
+<p>And the test inventory (TESTS_INVENTORY_01Apr19.txt) should look like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ cat Scripts_NOSTROMO_APR19_W18/TESTS_INVENTORY_01Apr19.txt
+Scripts written on 01Apr19 12:56:31
+checksumf: CHECK_SUMS_01Apr19.txt
+vison version: 0.8+69.gf135883
+
+CHINJ02: 26 [42.31 min] cols: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+BIAS01: 1 [15.58 min] cols: [10]
+TP01: 50 [120.31 min] cols: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+BIAS02: 1 [15.58 min] cols: [10]
+CHINJ01: 36 [58.58 min] cols: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+FOCUS00_590: 9 [15.11 min] cols: [1, 1, 1, 1, 1, 1, 1, 1, 1]
+FOCUS00_730: 9 [14.25 min] cols: [1, 1, 1, 1, 1, 1, 1, 1, 1]
+FOCUS00_800: 9 [14.22 min] cols: [1, 1, 1, 1, 1, 1, 1, 1, 1]
+FOCUS00_880: 9 [14.39 min] cols: [1, 1, 1, 1, 1, 1, 1, 1, 1]
+
+168 Frames Total
+
+310.33 Minutes Total
+</pre></div>
+</div>
+<p>Now we edit the json file to create the sequences (again following the format of the template):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">inpath</span><span class="p">:</span> <span class="n">Scripts_NOSTROMO_APR19_W18</span>
+<span class="n">outpath</span><span class="p">:</span> <span class="n">SEQUENCES_NOSTROMO_APR19_W18</span>
+<span class="n">Sessions</span><span class="p">:</span>
+
+    <span class="n">D00</span><span class="p">:</span> <span class="n">FOCUS00_800</span>
+    <span class="n">D11</span><span class="p">:</span> <span class="n">BIAS01</span><span class="p">,</span> <span class="n">BIAS02</span><span class="p">,</span> <span class="n">CHINJ01</span><span class="p">,</span> <span class="n">CHINJ02</span><span class="p">,</span> <span class="n">TP01</span>
+</pre></div>
+</div>
+<p>Then we execute the sessions builder with the modified file as input:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ vis_mksession.py -j sessions_builder_NOSTROMO_APR19_W18.json
+session: D11
+    vis_CalCamp_BIAS01_01Apr19_v7.5.X.xlsx
+    vis_CalCamp_BIAS02_01Apr19_v7.5.X.xlsx
+    vis_CalCamp_CHINJ01_01Apr19_v7.5.X.xlsx
+    vis_CalCamp_CHINJ02_01Apr19_v7.5.X.xlsx
+    vis_CalCamp_TP01_01Apr19_v7.5.X.xlsx
+session: D00
+    vis_CalCamp_FOCUS00_800_01Apr19_v7.5.X.xlsx
+</pre></div>
+</div>
+<p>And we check the sessions folder has the following contents:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ find SEQUENCES_NOSTROMO_APR19_W18/
+SEQUENCES_NOSTROMO_APR19_W18/
+SEQUENCES_NOSTROMO_APR19_W18/D11
+SEQUENCES_NOSTROMO_APR19_W18/D11/vis_CalCamp_BIAS01_01Apr19_v7.5.X.xlsx
+SEQUENCES_NOSTROMO_APR19_W18/D11/vis_CalCamp_CHINJ02_01Apr19_v7.5.X.xlsx
+SEQUENCES_NOSTROMO_APR19_W18/D11/vis_CalCamp_CHINJ01_01Apr19_v7.5.X.xlsx
+SEQUENCES_NOSTROMO_APR19_W18/D11/vis_CalCamp_BIAS02_01Apr19_v7.5.X.xlsx
+SEQUENCES_NOSTROMO_APR19_W18/D11/TEST_SEQUENCE_D11.txt
+SEQUENCES_NOSTROMO_APR19_W18/D11/vis_CalCamp_TP01_01Apr19_v7.5.X.xlsx
+SEQUENCES_NOSTROMO_APR19_W18/D00
+SEQUENCES_NOSTROMO_APR19_W18/D00/TEST_SEQUENCE_D00.txt
+SEQUENCES_NOSTROMO_APR19_W18/D00/vis_CalCamp_FOCUS00_800_01Apr19_v7.5.X.xlsx
+</pre></div>
+</div>
+<p>Then, we would copy the session folders to the appropiated folder in MSSL3M, and let the test-operator (and campaign director) where to find the scripts for the sessions.</p>
+</div>
+<div class="section" id="updates-to-the-scripts">
+<h3>UPDATES to the Scripts<a class="headerlink" href="#updates-to-the-scripts" title="Permalink to this headline">¶</a></h3>
+<p>Imagine now that we’ve executed session D00, which has test FOCUS00_800, and after analysing results, we see a need to update the focus position. Then the campaign director would have to ask the pipeline custodian to modify the focus for this chamber profile (B_NOSTROMO), and we would have to write scripts again for session D11, and build a new session folder D11. We will not cover this case in this exercise though, but we aware that would be a common case when writing (and re-writing) scripts.</p>
+</div>
+<div class="section" id="using-vison-to-analyse-acquired-data">
+<h3>Using vison to analyse acquired data<a class="headerlink" href="#using-vison-to-analyse-acquired-data" title="Permalink to this headline">¶</a></h3>
+<p>Now we’re going to run the pipeline in “Wait” mode on the data of session D00, using the pipeline.</p>
+<p>First we move to the ANALYSIS subfolder we created above:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ ls
+ANALYSIS  atCALDATA  SCRIPTS
+(vison) bash-4.2$ cd ANALYSIS/
+(vison) bash-4.2$ ls
+(vison) bash-4.2$
+</pre></div>
+</div>
+<p>Then we copy the template analysis input script from the templates and rename it:</p>
+<dl class="docutils">
+<dt>::</dt>
+<dd>(vison) bash-4.2$ cp /disk/euclid_caldata06/data06/SOFTWARE_LITE/TEMPLATES_CALCAMP/ANALYSIS/vison_config_BLOCK_MMM19.py .
+(vison) bash-4.2$ mv vison_config_BLOCK_MMM19.py vison_config_NOSTROMO_APR19.py</dd>
+</dl>
+<p>In the “header” of the file vison_config_NOSTROMO_ARP19.py we put the BLOCKID value and the “Filled in by” with the values that apply:</p>
+<div class="figure align-center">
+<img alt="_images/cookbook_11.png" src="_images/cookbook_11.png" />
+</div>
+<p><strong>Note</strong>: I’m using “Spyder” to edit the configuration script, but you can use nedit, or emacs, as well, if you find it more convenient (almost any text editor would work... as long as it can edit and save ascii without adding formatting code, as WordTM does).</p>
+<p>Now we got to the bottom part of the script, where we introduce general inputs about the data and hardware under test. Notice that we only consider two sessions, D00 and D11, following what we assumed when writing the scripts. Also, look at the line numbers to an idea of where in the script you have to do the edits.</p>
+<div class="figure align-center">
+<img alt="_images/cookbook_12.png" src="_images/cookbook_12.png" />
+</div>
+<p>Now, you’ll have noticed that the results folder, “results_atCALDATA”, which is suppossed to be in ANALYSIS (where the vison_config*py file is), hasn’t been created. We’ll fix that now.</p>
+<p>That folder is, in fact, a symbolic link, to a results folder in caldata (we’ll see exactly how). But as several of you are going to follow this exercise, you’ll have to create a dedicated folder in euclid_caldata, so that you don’t collide with each other when following this exercise.</p>
+<p>So, I’ll create a results folder in euclid_caldata, adding my initials to it, so it’s “unique”.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ pwd
+/home/raf/CALCAMP/TRAIN/NOSTROMO/ANALYSIS
+(vison) bash-4.2$ ls
+    vison_config_NOSTROMO_APR19.py
+(vison) bash-4.2$ ls ../atCALDATA/
+    data  solutions
+(vison) bash-4.2$ mkdir ../atCALDATA/results_raf
+</pre></div>
+</div>
+<p>By the way, remember the ../atCALDATA folder is in fact a symbolic link:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ readlink ../atCALDATA
+    /disk/euclid_caldata06/data06/TRAIN/NOSTROMO
+</pre></div>
+</div>
+<p>Now we create a symbolic link to the results_xxx folder (substitute xxx with your 3 letters linux user id), in the ANALYSIS folder (I’ll use results_raf in this example, as I’m user raf):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ ln -s ../atCALDATA/results_raf results_atCALDATA
+(vison) bash-4.2$ ls
+    results_atCALDATA  vison_config_NOSTROMO_APR19.py
+(vison) bash-4.2$ readlink results_atCALDATA
+    ../atCALDATA/results_raf
+</pre></div>
+</div>
+<p>Then we’ll check that the test_specifics dictionary in add_RUN_specifics function, for session D00, is correctly configured, and ready to do the FULL analysis:</p>
+<div class="figure align-center">
+<img alt="_images/cookbook_13.png" src="_images/cookbook_13.png" />
+</div>
+</div>
+<div class="section" id="session-d00-running-the-pipeline-in-wait-mode">
+<h3>Session D00: running the Pipeline in “wait” mode<a class="headerlink" href="#session-d00-running-the-pipeline-in-wait-mode" title="Permalink to this headline">¶</a></h3>
+<p>Now we can and will run the pipeline in “wait” mode, using the configuration file we’ve just edited as input. We’re assuming that the data is being copied to caldata from MSSL3M by eyegore, in the background (either we’re running that code as well, or somebody else is doing it).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ vison_run -y vison_config_NOSTROMO_APR19.py -R D00 -d ../atCALDATA/data/12_Mar_19/ -v 7.5.X -W -l -m 6 -t _D00
+</pre></div>
+</div>
+<p><strong>Reminders</strong>:
+* We’re telling the pipeline on session D00 (-R D00).
+* We’re telling the pipeline where to look for the data in the command line (-d ../atCALDATA/data/12_Mar_19/).
+* We’re running in “Wait” mode (-W).
+* We’re using multithreading (to 6 cores, -m 6).</p>
+<p>The output pipeline log will be named something like: Calib_FM20190401_141840_D00.log.</p>
+<p>When the pipeline has finished running, it will provide this screen output:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>  &quot;Unnamed&quot; / no ext. header / 4238x4172 / 32 bits (floats)
+(M+D) Background: 2682.43    RMS: 4.38461    / Threshold: 100
+  Objects: detected 46       / sextracted 46
+
+&gt; All done (in 2.2 s: 1916.9 lines/s , 21.1 detections/s)
+rm: cannot remove ‘sex.param’: No such file or directory
+Algorithm terminated at max iterations without convergence.
+Algorithm terminated at max iterations without convergence.
+Algorithm terminated at max iterations without convergence.
+Algorithm terminated at max iterations without convergence.
+Algorithm terminated at max iterations without convergence.
+Algorithm terminated at max iterations without convergence.
+Algorithm terminated at max iterations without convergence.
+8.9 minutes in running Task: FOCUS00_800
+Task FOCUS00_800 exited with Errors: False
+</pre></div>
+</div>
+<p>Then, the pipeline will start waiting for the data from tests FOCUS00_590, _730, and _880, but those will never arrive (remember that we entered “FOCUS00” in the declaration of tasks to be executed).</p>
+<p>Just to be sure that the pipeline is just waiting for data that we know won’t never come, we just display the contents of the pipeline log, and loot at the end:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ cat Calib_FM20190401_141840_D00.log
+[...a lot of outputs....]
+_
+_
+_
+######################################################################
+Pipeline ID: FM20190401_141840_D00
+BLOCK ID: NOSTROMO
+Chamber: B_NOSTROMO
+vison version: 0.8+69.gf135883
+Tasks: [&#39;FOCUS00_590&#39;, &#39;FOCUS00_730&#39;, &#39;FOCUS00_800&#39;, &#39;FOCUS00_880&#39;]
+_
+FOCUS00_800
+Executed in 8.9 minutes
+OBSIDs range = [17210,17218]
+Raised Flags = [&#39;FLUENCE_OOL&#39;, &#39;FOCUS_OOL&#39;, &#39;BGD_OOL&#39;, &#39;HK_OOL&#39;, &#39;FLUX_OOL&#39;,
+&#39;MISSDATA&#39;, &#39;POORQUALDATA&#39;]
+_
+_
+_
+_
+######################################################################
+
+2019-04-01 14:27:37,934 - INFO - Pipeline sleeping for 120 seconds...
+</pre></div>
+</div>
+<p>So, we see the pipeline is “sleeping”, waiting for the data, and what we can do to terminate this early is just “Ctrl+c”.</p>
+<p>About the summary of results in pipeline (the part within the long lines of hashes #), we see that:
+* Task FOCUS00_800 was executed in 8.9 minutes.
+* The OBSIDs range where the data was found is [17210, 17218].
+* The following flags were raised: [&#8216;FLUENCE_OOL&#8217;, &#8216;FOCUS_OOL&#8217;, &#8216;BGD_OOL&#8217;, &#8216;HK_OOL&#8217;, &#8216;FLUX_OOL&#8217;, &#8216;MISSDATA&#8217;, &#8216;POORQUALDATA&#8217;]</p>
+<p>And in results_atCALDATA/D00 you should see the following contents:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ ls -1 results_atCALDATA/D00/FOCUS00_800/
+    figs
+    FOCUS00_800_DataDict.pick
+    FOCUS00_800_report.aux
+    FOCUS00_800_report.dvi
+    FOCUS00_800_report.log
+    FOCUS00_800_report.out
+    FOCUS00_800_report.pdf
+    FOCUS00_800_Report.pick
+    FOCUS00_800_report.soc
+    FOCUS00_800_report.tex
+    FOCUS00_800_report.toc
+    products
+</pre></div>
+</div>
+<p>Check the contents of the pdf report. The best focus position should be 47.21 mm, and the CBE_FWHM, 2.34 pixels.
+This is what the FWHM(x) plot should look like:</p>
+<div class="figure align-center">
+<img alt="_images/cookbook_14.png" src="_images/cookbook_14.png" />
+</div>
+<p>The pipeline complained by raising the “MISSDATA” flag. Does it mean that the data-set is incomplete for this test? No, in this case it’s because the acquired data has the wrong ccd, roe and rpsu serials, and also exposure times. Remember the input data is actually from another block, BORN (this is just a copy of real data), and in our analysis script we’re using fake serials. Also the exposure times are wrong, but that’s a known (non-)issue with this data-set in particular.</p>
+<p>Then, the CCD?_IG1_T/B HK parameters do not match the inputs, but that again was known, and is due to ELVIS using a default HK calibration for the block.</p>
+<p><strong>Note</strong>: As pipeline “runners”, we’d probably update, in the google-sheets test report for the run of NOSTROMO, tab “TESTS_RECORD”, the values of OBSID_lims, test-script name, session name and day-folder for the test FOCUS00_800.</p>
+</div>
+<div class="section" id="session-d11-running-the-pipeline-in-aim-mode">
+<h3>Session D11: running the Pipeline in “aim” mode<a class="headerlink" href="#session-d11-running-the-pipeline-in-aim-mode" title="Permalink to this headline">¶</a></h3>
+<p>Now let’s run the pipeline in “aim” mode for session D11. This is just an example for didactic purposes; when acquiring the data of session D11 we’d actually run the pipeline in “wait” mode in parallel with the acquisition. But as we already did that in the previous section of the tutorial, we’ll now use the “aim” mode instead. The aim mode is the preferred mode we’ll use whenever the data has already been acquired.</p>
+<p>In the configuration file we just have to edit the test_specifics dict, session D11, in add_RUN_specifics. Use these todo_flags (careful with what is set True, and what’s False, and try to predict from them what the pipeline will do given those):</p>
+<div class="figure align-center">
+<img alt="_images/cookbook_15.png" src="_images/cookbook_15.png" />
+</div>
+<p>As you can see, in some of the test we require to do the image processing (prep=True), and in general, this implies using cosmetics masks, specific to the CCDs at hand. In order for the pipeline to find them, we’ll have to link them in the ANALYSIS folder (we have the masks already generated from a previous run on the data-set BORN, for these CCDs).</p>
+<p>Let’s do that extra link:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ ln -s ../atCALDATA/calproducts
+(vison) bash-4.2$ find calproducts/
+    calproducts/
+    calproducts/masks
+    calproducts/masks/EUC_MASK_NOSTROMO_CCD2_SN_14888-88-82.fits
+    calproducts/masks/EUC_MASK_NOSTROMO_CCD3_SN_14888-88-83.fits
+    calproducts/masks/EUC_MASK_NOSTROMO_CCD1_SN_14888-88-81.fits
+</pre></div>
+</div>
+<p><strong>NOTE</strong>: these masks are the output (renamed to NOSTROMO and fake serials for the tutorial) from COSMETICS00 test. You just have to copy them to a suitable folder (calproducts/masks/) in the block-folder in euclid_caldata, from the “products” subfolder of the COSMETICS00 test-folder, and then link the calproducts folder, as we’ve done above.</p>
+<p>Then we’ll just have to run the pipeline, which is done with this (shorter) command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ vison_run -y vison_config_NOSTROMO_APR19.py -R D11 -l -m 6 -t _D11
+</pre></div>
+</div>
+<p>This time it will take quite longer to run (~50 minutes). Here’s the tasks execution report at the end of the Pipeline log for this analysis session:</p>
+<dl class="docutils">
+<dt>::</dt>
+<dd>Pipeline ID: FM20190401_170628_D11
+BLOCK ID: NOSTROMO
+Chamber: B_NOSTROMO
+vison version: 0.8+69.gf135883
+Tasks: [&#8216;BIAS01&#8217;, &#8216;BIAS02&#8217;, &#8216;CHINJ02&#8217;, &#8216;TP01&#8217;]
+_
+BIAS01
+Executed in 9.8 minutes
+OBSIDs range = [17283,17292]
+Raised Flags = [&#8216;RON_OOL&#8217;, &#8216;HK_OOL&#8217;, &#8216;MISSDATA&#8217;, &#8216;POORQUALDATA&#8217;]
+_
+BIAS02
+Executed in 9.4 minutes
+OBSIDs range = [17273,17282]
+Raised Flags = [&#8216;RON_OOL&#8217;, &#8216;HK_OOL&#8217;, &#8216;MISSDATA&#8217;, &#8216;POORQUALDATA&#8217;]
+_
+CHINJ02
+Executed in 8.8 minutes
+OBSIDs range = [17329,17354]
+Raised Flags = [&#8216;FLUENCE_OOL&#8217;, &#8216;RON_OOL&#8217;, &#8216;FLUENCEGRAD_OOL&#8217;, &#8216;MISSDATA&#8217;,
+&#8216;POORQUALDATA&#8217;]
+_
+TP01
+Executed in 19.5 minutes
+OBSIDs range = [17355,17404]
+Raised Flags = [&#8216;FLUENCE_OOL&#8217;, &#8216;RON_OOL&#8217;, &#8216;FLUENCEGRAD_OOL&#8217;, &#8216;MISSDATA&#8217;,
+&#8216;POORQUALDATA&#8217;]
+_
+_
+_
+_
+######################################################################</dd>
+</dl>
+<p>There should be a pdf report for each test in the D11 results sub-folder:</p>
+<dl class="docutils">
+<dt>::</dt>
+<dd><dl class="first last docutils">
+<dt>(vison) bash-4.2$ find results_atCALDATA/ -type f -name <a href="#id3"><span class="problematic" id="id4">*</span></a>.pdf</dt>
+<dd>results_atCALDATA/D11/TP01/TP01_report.pdf
+results_atCALDATA/D11/CHINJ02/CHINJ02_report.pdf
+results_atCALDATA/D11/BIAS02/BIAS02_report.pdf
+results_atCALDATA/D11/BIAS01/BIAS01_report.pdf
+results_atCALDATA/D00/FOCUS00_800/FOCUS00_800_report.pdf</dd>
+</dl>
+</dd>
+</dl>
+<p>And the total “weight” of the D11 results sub-folder is ~3.3 GB:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ du --si results_atCALDATA/D11
+    512     results_atCALDATA/D11/TP01/products
+    512     results_atCALDATA/D11/TP01/ccdpickles
+    5.0M    results_atCALDATA/D11/TP01/figs
+    5.7M    results_atCALDATA/D11/TP01
+    512     results_atCALDATA/D11/CHINJ02/products
+    512     results_atCALDATA/D11/CHINJ02/ccdpickles
+    4.7M    results_atCALDATA/D11/CHINJ02/figs
+    5.3M    results_atCALDATA/D11/CHINJ02
+    7.0M    results_atCALDATA/D11/BIAS02/profiles
+    7.3M    results_atCALDATA/D11/BIAS02/figs
+    980M    results_atCALDATA/D11/BIAS02/ccdpickles
+    462M    results_atCALDATA/D11/BIAS02/products
+    1.5G    results_atCALDATA/D11/BIAS02
+    8.0M    results_atCALDATA/D11/BIAS01/figs
+    619M    results_atCALDATA/D11/BIAS01/products
+    1.2G    results_atCALDATA/D11/BIAS01/ccdpickles
+    7.6M    results_atCALDATA/D11/BIAS01/profiles
+    1.9G    results_atCALDATA/D11/BIAS01
+    3.3G    results_atCALDATA/D11
+</pre></div>
+</div>
+<p>Check that the reports make sense, given your experience as (Cal-camp.) data analyst. Just be aware that we’re using data with the “wrong” meta-data information (namely hardware serials), and that makes the pipeline to report the data as not being conformant with expectations (ast it should).</p>
+</div>
+<div class="section" id="cleaning-up-after-ourselves">
+<h3>Cleaning Up after Ourselves<a class="headerlink" href="#cleaning-up-after-ourselves" title="Permalink to this headline">¶</a></h3>
+<p>After doing these analysis exercises, we’ve generated a fair amount of accessory files we can/should get rid off so we don’t waste storage resources in euclid_caldata06. This can be done with another pipeline tool, vis_clear_space.py.</p>
+<p>The pipeline stores modified versions of the images (for example, with the offset subtracted) in a sub-folder (of each test) called “ccdpickles”. Once we’ve passed that stage, and done other subtasks, these images are no longer needed by the pipeline, and we can erase them. Also, when doing flat-fields, the individual flat-fields for each image can be erased once we’ve produced the master flat-fields. In the session D00 we just did “checks”, and so there was no production of prepared images (and so the whole D00 sub-folder is only 6.5MB). In D11 we didn’t flat-fields, but we did “prep” for some tests, and so there are some hefty “ccdpickles” folders in there. Let’s clear them up. The program will warn us of what we’re going to erase, and then ask for confirmation.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ vis_clear_space.py -p results_atCALDATA/D11/ -k ccdpickles
+
+    Directories that will be WIPED OUT clear:
+
+    results_atCALDATA/D11/TP01/ccdpickles
+    results_atCALDATA/D11/CHINJ02/ccdpickles
+    results_atCALDATA/D11/BIAS02/ccdpickles
+    results_atCALDATA/D11/BIAS01/ccdpickles
+
+
+    Are you happy with the selection? yes=y/Y y
+
+    Preparing to CLEAR OUT:
+
+    results_atCALDATA/D11/TP01/ccdpickles, 0 files, 0.0e+00 bytes
+    results_atCALDATA/D11/CHINJ02/ccdpickles, 0 files, 0.0e+00 bytes
+    results_atCALDATA/D11/BIAS02/ccdpickles, 30 files, 2.7e+09 bytes
+    results_atCALDATA/D11/BIAS01/ccdpickles, 30 files, 2.7e+09 bytes
+
+    TOTAL: 60 files, 5.3e+09 bytes
+
+    To be executed: &quot;find results_atCALDATA/D11/ -type d -name &#39;ccdpickles&#39; -exec sh -c &#39;rm -r &quot;$0&quot;/*&#39; {} \;&quot;
+
+    Still want to proceed? yes=y/Y y
+        rm: cannot remove ‘results_atCALDATA/D11/TP01/ccdpickles/*’: No such file or directory
+        rm: cannot remove ‘results_atCALDATA/D11/CHINJ02/ccdpickles/*’: No such file or directory
+</pre></div>
+</div>
+<p>After we’ve done this, the D11 sub-folder is significantly lighter. There’s still some “bulk” in it, because of the master bias images (which are now multi-extension, and stored in two formats, FITS, and as python pickles):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>(vison) bash-4.2$ du --si results_atCALDATA/D11/
+512     results_atCALDATA/D11/TP01/products
+512     results_atCALDATA/D11/TP01/ccdpickles
+5.0M    results_atCALDATA/D11/TP01/figs
+5.7M    results_atCALDATA/D11/TP01
+512     results_atCALDATA/D11/CHINJ02/products
+512     results_atCALDATA/D11/CHINJ02/ccdpickles
+4.7M    results_atCALDATA/D11/CHINJ02/figs
+5.3M    results_atCALDATA/D11/CHINJ02
+7.0M    results_atCALDATA/D11/BIAS02/profiles
+7.3M    results_atCALDATA/D11/BIAS02/figs
+512     results_atCALDATA/D11/BIAS02/ccdpickles
+462M    results_atCALDATA/D11/BIAS02/products
+477M    results_atCALDATA/D11/BIAS02
+8.0M    results_atCALDATA/D11/BIAS01/figs
+619M    results_atCALDATA/D11/BIAS01/products
+512     results_atCALDATA/D11/BIAS01/ccdpickles
+7.6M    results_atCALDATA/D11/BIAS01/profiles
+636M    results_atCALDATA/D11/BIAS01
+1.2G    results_atCALDATA/D11/
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/vison_logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">vison cook-book</a><ul>
+<li><a class="reference internal" href="#accessing-vison-the-pipeline">Accessing “vison”, the pipeline</a><ul>
+<li><a class="reference internal" href="#connecting-to-the-remote-machine-via-ssh">Connecting to the remote machine via ssh</a></li>
+<li><a class="reference internal" href="#changing-shell-to-bash-and-updating-system-paths">Changing shell to bash and updating system paths</a></li>
+<li><a class="reference internal" href="#activating-the-vison-conda-environment">Activating the “vison” conda environment</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#data-checks-analysis-work-environment-setup">Data Checks / Analysis Work Environment Setup</a><ul>
+<li><a class="reference internal" href="#starting-point-assumptions">1. Starting point: assumptions</a></li>
+<li><a class="reference internal" href="#creating-a-working-calcamp-directory-tree-in-our-home-folder">2. Creating a working CALCAMP directory tree in our $HOME folder.</a></li>
+<li><a class="reference internal" href="#copying-the-script-writer-session-builder-scripts-from-the-templates-folder">3. Copying the script-writer session-builder scripts from the templates folder</a></li>
+<li><a class="reference internal" href="#copying-the-check-analysis-script-from-the-templates-folder">4. Copying the check/analysis script from the templates folder</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#workflow-description">Workflow Description</a><ul>
+<li><a class="reference internal" href="#writing-scripts-sessions">WRITING SCRIPTS / SESSIONS</a></li>
+<li><a class="reference internal" href="#real-time-data-inspections-using-eyegore">Real Time Data Inspections using Eyegore</a></li>
+<li><a class="reference internal" href="#checking-data-quality-analysis">Checking Data Quality / Analysis</a></li>
+<li><a class="reference internal" href="#how-to-write-test-scripts-and-create-sessions">How to Write Test Scripts and Create Sessions</a><ul>
+<li><a class="reference internal" href="#writing-test-scripts">Writing Test Scripts</a></li>
+<li><a class="reference internal" href="#making-sessions">Making Sessions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#data-analysis-cookbook">Data Analysis Cookbook</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#editing-the-vison-config-py-file">Editing the vison_config_*.py file</a></li>
+<li><a class="reference internal" href="#executing-the-pipeline">Executing the pipeline</a><ul>
+<li><a class="reference internal" href="#advanced-using-nohup"><strong>Advanced</strong>: using “nohup”</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pipeline-feedback-and-results">Pipeline Feedback and Results</a></li>
+<li><a class="reference internal" href="#quick-reference-on-running-the-pipeline">Quick Reference on running the pipeline</a></li>
+<li><a class="reference internal" href="#listening-wait-mode">Listening/Wait Mode</a></li>
+<li><a class="reference internal" href="#aim-mode">Aim Mode</a></li>
+<li><a class="reference internal" href="#estimated-processing-times">Estimated Processing Times</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#real-time-data-acquisition-monitoring-eyegore">Real-Time Data Acquisition Monitoring: “Eyegore”</a><ul>
+<li><a class="reference internal" href="#visons-data-acquisition-monitoring-tool">Vison’s data acquisition monitoring tool</a><ul>
+<li><a class="reference internal" href="#asking-for-help">Asking for help</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#use-case-1">Use Case 1</a></li>
+<li><a class="reference internal" href="#use-case-2">Use Case 2</a></li>
+<li><a class="reference internal" href="#use-case-3">Use Case 3</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#quickds9-quick-loading-many-images-into-ds9">Quickds9: quick-loading many images into ds9</a></li>
+<li><a class="reference internal" href="#practical-case-nostromo">PRACTICAL CASE: “NOSTROMO&#8221;</a><ul>
+<li><a class="reference internal" href="#environment-setup">ENVIRONMENT SETUP</a></li>
+<li><a class="reference internal" href="#writing-acquisition-scripts-for-nostromo">Writing Acquisition Scripts for NOSTROMO</a></li>
+<li><a class="reference internal" href="#updates-to-the-scripts">UPDATES to the Scripts</a></li>
+<li><a class="reference internal" href="#using-vison-to-analyse-acquired-data">Using vison to analyse acquired data</a></li>
+<li><a class="reference internal" href="#session-d00-running-the-pipeline-in-wait-mode">Session D00: running the Pipeline in “wait” mode</a></li>
+<li><a class="reference internal" href="#session-d11-running-the-pipeline-in-aim-mode">Session D11: running the Pipeline in “aim” mode</a></li>
+<li><a class="reference internal" href="#cleaning-up-after-ourselves">Cleaning Up after Ourselves</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="guide.html"
+                        title="next chapter">Code Guide</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/cookbook.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="guide.html" title="Code Guide"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Ruyman Azzollini.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>
