@@ -1,7 +1,16 @@
 Pipeline
 ========
 
-.. currentmodule:: pipe
+.. currentmodule:: vison.pipe
+
+genmaster.py
+------------
+
+.. automodule:: vison.pipe.genmaster
+        :members:
+
+.. autoclass:: GenPipe
+    :members:
 
 master.py
 ---------
@@ -10,5 +19,14 @@ master.py
         :members:
 
 .. autoclass:: Pipe
+    :members:
+
+task.py
+-------
+
+.. automodule:: vison.pipe.task
+        :members:
+
+.. autoclass:: Task
     :members:
 

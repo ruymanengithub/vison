@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to vison’s documentation! &#8212; vison 0.4+119.g8cde5f6 documentation</title>
+    <title>Welcome to vison’s documentation! &#8212; vison 0.9+374.gd7313d7 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4+119.g8cde5f6',
+        VERSION:     '0.9+374.gd7313d7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -41,7 +41,7 @@
         <li class="right" >
           <a href="source/includeme.html" title="README"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -66,15 +66,15 @@
 </tr>
 <tr class="field-even field"><th class="field-name">Contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">issue:</th><td class="field-body">0.4+119.g8cde5f6</td>
+<tr class="field-odd field"><th class="field-name">issue:</th><td class="field-body">0.9+374.gd7313d7</td>
 </tr>
-<tr class="field-even field"><th class="field-name">version:</th><td class="field-body">0.4+119.g8cde5f6</td>
+<tr class="field-even field"><th class="field-name">version:</th><td class="field-body">0.9+374.gd7313d7</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">date:</th><td class="field-body">Mar 09, 2018</td>
+<tr class="field-odd field"><th class="field-name">date:</th><td class="field-body">Jun 23, 2020</td>
 </tr>
 </tbody>
 </table>
-<p>This Python package &#8220;vison&#8221; is the pipeline that will be used at MSSL for ground calibration of the VIS detection chains, including one ROE, one RPSU and three CCDs.</p>
+<p>This Python package &#8220;vison&#8221; is the software pipeline that has been used at MSSL for ground calibration of the VIS detection chains (12 + 2 spares), including one ROE, one RPSU and three CCDs each.</p>
 </div>
 <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
@@ -96,9 +96,100 @@
 </div>
 <div class="section" id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
-<p>Instructions to acquire a copy of the &#8220;conda&#8221; environment that provides all
+<p>Instructions to acquire a copy of the &#8220;conda&#8221; environment that provides almost all
 dependencies is included in the package. See <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a> instructions for
-details.</p>
+details. The only package that will not be installed by this means is SAO-DS9,
+which must be installed separetly, in order to be able to use some of the
+interactive inspection capabilities of Eyegore (data acquisition monitoring).</p>
+</div>
+</div>
+<div class="section" id="how-to-use-it">
+<h1>How to Use it<a class="headerlink" href="#how-to-use-it" title="Permalink to this headline">¶</a></h1>
+<p>This is some kind of <strong>&#8220;cook-book&#8221;</strong>.  Written <em>a bit like when your grandmother tells you to put a pinch of sugar and heat it for a while... that kind of accuracy.</em></p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">vison cook-book</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cookbook.html#accessing-vison-the-pipeline">Accessing “vison”, the pipeline</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#connecting-to-the-remote-machine-via-ssh">Connecting to the remote machine via ssh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#changing-shell-to-bash-and-updating-system-paths">Changing shell to bash and updating system paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#activating-the-vison-conda-environment">Activating the “vison” conda environment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cookbook.html#data-checks-analysis-work-environment-setup">Data Checks / Analysis Work Environment Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#starting-point-assumptions">1. Starting point: assumptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#creating-a-working-calcamp-directory-tree-in-our-home-folder">2. Creating a working CALCAMP directory tree in our $HOME folder.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#copying-the-script-writer-session-builder-scripts-from-the-templates-folder">3. Copying the script-writer session-builder scripts from the templates folder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#copying-the-check-analysis-script-from-the-templates-folder">4. Copying the check/analysis script from the templates folder</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cookbook.html#workflow-description">Workflow Description</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#writing-scripts-sessions">WRITING SCRIPTS / SESSIONS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#real-time-data-inspections-using-eyegore">Real Time Data Inspections using Eyegore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#checking-data-quality-analysis">Checking Data Quality / Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#how-to-write-test-scripts-and-create-sessions">How to Write Test Scripts and Create Sessions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cookbook.html#writing-test-scripts">Writing Test Scripts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cookbook.html#making-sessions">Making Sessions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cookbook.html#data-analysis-cookbook">Data Analysis Cookbook</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#introduction">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#editing-the-vison-config-py-file">Editing the vison_config_*.py file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#executing-the-pipeline">Executing the pipeline</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cookbook.html#advanced-using-nohup"><strong>Advanced</strong>: using “nohup”</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#pipeline-feedback-and-results">Pipeline Feedback and Results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#quick-reference-on-running-the-pipeline">Quick Reference on running the pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#listening-wait-mode">Listening/Wait Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#aim-mode">Aim Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#estimated-processing-times">Estimated Processing Times</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cookbook.html#real-time-data-acquisition-monitoring-eyegore">Real-Time Data Acquisition Monitoring: “Eyegore”</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#visons-data-acquisition-monitoring-tool">Vison’s data acquisition monitoring tool</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cookbook.html#asking-for-help">Asking for help</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#use-case-1">Use Case 1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#use-case-2">Use Case 2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#use-case-3">Use Case 3</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cookbook.html#quickds9-quick-loading-many-images-into-ds9">Quickds9: quick-loading many images into ds9</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cookbook.html#practical-case-nostromo">PRACTICAL CASE: “NOSTROMO&#8221;</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#environment-setup">ENVIRONMENT SETUP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#writing-acquisition-scripts-for-nostromo">Writing Acquisition Scripts for NOSTROMO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#updates-to-the-scripts">UPDATES to the Scripts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#using-vison-to-analyse-acquired-data">Using vison to analyse acquired data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#session-d00-running-the-pipeline-in-wait-mode">Session D00: running the Pipeline in “wait” mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#session-d11-running-the-pipeline-in-aim-mode">Session D11: running the Pipeline in “aim” mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cookbook.html#cleaning-up-after-ourselves">Cleaning Up after Ourselves</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="guide-through-the-code">
+<h1>Guide through the code<a class="headerlink" href="#guide-through-the-code" title="Permalink to this headline">¶</a></h1>
+<p>In this section we provide an overal description of the capabilities and organisation of the code.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guide.html">Code Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#capabilities-of-the-code">Capabilities of the Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#code-architecture">Code Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#code-flow">Code Flow</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.html#data-set-analysis">Data-set Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#data-models">Data Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#reusing-adapting-the-code">Reusing / adapting the code</a></li>
+</ul>
+</li>
+</ul>
 </div>
 </div>
 <div class="section" id="pipeline-core">
@@ -107,7 +198,9 @@ details.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pipe.html">Pipeline</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pipe.html#module-vison.pipe.genmaster">genmaster.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pipe.html#module-vison.pipe.master">master.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipe.html#module-vison.pipe.task">task.py</a></li>
 </ul>
 </li>
 </ul>
@@ -121,9 +214,19 @@ HK files, FITS files, etc.</p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="datamodel.html">Data Model</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="datamodel.html#module-vison.datamodel.ccd">ccd.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datamodel.html#module-vison.datamodel.ccd_aux">ccd_aux.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datamodel.html#module-vison.datamodel.cdp">cdp.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datamodel.html#module-vison.datamodel.ccdsim">ccdsim.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datamodel.html#module-vison.datamodel.compliance">compliance.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datamodel.html#module-vison.datamodel.core">core.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datamodel.html#module-vison.datamodel.elvis">elvis.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datamodel.html#module-vison.datamodel.EXPLOGtools">EXPLOGtools.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datamodel.html#module-vison.datamodel.fpa_dm">fpa_dm.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datamodel.html#module-vison.datamodel.generator">generator.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datamodel.html#module-vison.datamodel.HKtools">HKtools.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datamodel.html#module-vison.datamodel.inputs">inputs.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datamodel.html#module-vison.datamodel.QLAtools">QLAtools.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datamodel.html#module-vison.datamodel.scriptic">scriptic.py</a></li>
 </ul>
 </li>
 </ul>
@@ -146,6 +249,7 @@ HK files, FITS files, etc.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="inject.html">Charge Injection Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="inject.html#module-vison.inject.InjTask">InjTask.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inject.html#module-vison.inject.lib">lib.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inject.html#module-vison.inject.plot">plot.py</a></li>
 </ul>
@@ -158,9 +262,22 @@ HK files, FITS files, etc.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="flat.html">&#8220;Flat&#8221; Acq. Analysis Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="flat.html#module-vison.flat.FlatTask">FlatTask.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="flat.html#module-vison.pipe.FlatFielding">FlatFielding.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="flat.html#module-vison.flat.ptc">ptc.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="flat.html#module-vison.flat.nl">nl.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flat.html#module-vison.flat.ptc">ptc.py</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="fpa-tests">
+<h1>FPA Tests<a class="headerlink" href="#fpa-tests" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="fpatests.html">FPA Tests</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fpatests.html#module-vison.fpatests.fpamaster">fpamaster.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fpatests.html#module-vison.fpatests.fpatask">fpatask</a></li>
 </ul>
 </li>
 </ul>
@@ -172,7 +289,38 @@ HK files, FITS files, etc.</p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="image.html">Image Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="image.html#module-vison.image.bits">bits.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image.html#module-vison.image.calibration">calibration.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image.html#module-vison.image.cosmetics">cosmetics.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image.html#module-vison.image.covariance">covariance.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image.html#module-vison.image.ds9reg">ds9reg.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image.html#module-vison.image.performance">performance.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="image.html#module-vison.image.pixbounce">pixbounce.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image.html#module-vison.image.sextractor">sextractor.py</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="metatests">
+<h1>Metatests<a class="headerlink" href="#metatests" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="metatests.html">Metatests</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.metacal">metacal.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.bf">bf.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.bias">bias.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.chinj01">chinj01.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.chinj02">chinj02.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.cosmetics">cosmetics.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.dark">dark.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.flat">flat.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.mot_warm">mot_warm.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.nl">nl.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.persistence">persistence.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.psf">psf.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.ptc">ptc.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.tpx1">tpx1.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.tpx2">tpx2.py</a></li>
 </ul>
 </li>
 </ul>
@@ -185,10 +333,11 @@ visual display of Exposure Log with some interactive capabilities, and display o
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="eyegore.html">Monitoring (&#8220;Eyegore&#8221;)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="eyegore.html#module-vison.eyegore.eyegore">eyegore.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eyegore.html#eyegore-py">eyegore.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eyegore.html#module-vison.eyegore.eyeCCDs">eyeCCDs.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eyegore.html#module-vison.eyegore.eyeHK">eyeHK.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eyegore.html#module-vison.eyegore.eyeObs">eyeObs.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eyegore.html#eyewarnings-py">eyeWarnings.py</a></li>
 </ul>
 </li>
 </ul>
@@ -212,7 +361,10 @@ visual display of Exposure Log with some interactive capabilities, and display o
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="plot.html">Plotting</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="plot.html#module-vison.plot.classes">classes.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot.html#module-vison.plot.baseplotclasses">baseplotclasses.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot.html#module-vison.plot.figclasses">figclasses.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot.html#module-vison.plot.plots_fpa">plots_fpa.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot.html#module-vison.plot.trends">trends.py</a></li>
 </ul>
 </li>
 </ul>
@@ -257,10 +409,23 @@ visual display of Exposure Log with some interactive capabilities, and display o
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="scripts.html">Scripts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="scripts.html#hkmonitor-py">HKmonitor.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.HKmonitor">HKmonitor.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.QLA">QLA.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.quickds9">quickds9.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.vis_genDataSet">vis_genDataSet.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.vis_mkscripts">vis_mkscripts.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.vis_genDataSet">vis_genDataSet.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#vison-run"><strong>vison_run</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.vis_explogs_merger">vis_explogs_merger.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.vis_run_xtalk">vis_run_xtalk.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#vis-roe-lincalib-py">vis_ROE_LinCalib.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#vis-roetab-lincalib-py">vis_ROETAB_LinCalib.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.vis_star_finder">vis_star_finder.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.vis_load_DD">vis_load_DD.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.vis_cosmetics_masker">vis_cosmetics_masker.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.vis_clear_space">vis_clear_space.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.vis_reports_merger">vis_reports_merger.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.vis_mksession">vis_mksession.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#module-vison.scripts.vis_dnl_extract">vis_dnl_extract.py</a></li>
 </ul>
 </li>
 </ul>
@@ -270,7 +435,32 @@ visual display of Exposure Log with some interactive capabilities, and display o
 <h1>Support Code<a class="headerlink" href="#support-code" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="support.html">Support Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support Code</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="support.html#module-vison.support.context">context.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="support.html#module-vison.support.ET">ET.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="support.html#module-vison.support.excel">excel.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="support.html#module-vison.support.files">files.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="support.html#module-vison.support.flags">flags.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="support.html#module-vison.support.latex">latex.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="support.html#module-vison.support.logger">logger.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="support.html#module-vison.support.report">report.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="support.html#module-vison.support.utils">utils.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="support.html#module-vison.support.vistime">vistime.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="support.html#module-vison.support.vjson">vjson.py</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="unit-testing">
+<h1>Unit Testing<a class="headerlink" href="#unit-testing" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="utests.html">Unit Testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utests.html#module-vison.test.test_ccdpile">test_ccdpile.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utests.html#module-vison.test.test_ccd">test_ccd.py</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -279,11 +469,6 @@ visual display of Exposure Log with some interactive capabilities, and display o
 <p>These are the scripts that hold the description, execution, data validation and
 analysis of the tests that make the campaign. They are served by the
 infrasctructure and tools provided by the pipeline.</p>
-<p><strong>WARNING</strong>: Currently most of the test scripts are largely meta-code, with the
-exception of very basic functionality used to generate acqusition scripts and
-validate the acquisitions, as listed in the Exposure Log, against the
-description of the test. The metacode has been included in the doc-strings for
-ease of browsing.</p>
 <div class="section" id="charge-injection-scripts">
 <h2>Charge Injection Scripts<a class="headerlink" href="#charge-injection-scripts" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
@@ -301,7 +486,7 @@ ease of browsing.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dark_scripts.html">&#8220;Dark Acquisitions&#8221; Scripts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="dark_scripts.html#module-vison.dark.BIAS01">BIAS01</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dark_scripts.html#module-vison.dark.BIAS0X">BIAS01</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dark_scripts.html#module-vison.dark.DARK01">DARK01</a></li>
 </ul>
 </li>
@@ -338,8 +523,10 @@ ease of browsing.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tp_scripts.html">Trap-Pumping Scripts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tp_scripts.html#module-vison.pump.TP01">TP01</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tp_scripts.html#module-vison.pump.TP02">TP02</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tp_scripts.html#module-vison.pump.TP11">TP11</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tp_scripts.html#module-vison.pump.TP21">TP21</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tp_scripts.html#module-vison.pump.PumpTask">PumpTask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tp_scripts.html#module-vison.pump.tptools">tptools</a></li>
 </ul>
 </li>
 </ul>
@@ -350,7 +537,11 @@ ease of browsing.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="other_scripts.html">Other Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="other_scripts.html#module-vison.other.COSMETICS00">COSMETICS00</a></li>
+<li class="toctree-l2"><a class="reference internal" href="other_scripts.html#module-vison.other.MOT_FF">MOT_FF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="other_scripts.html#module-vison.other.MOT_WARM">MOT_WARM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="other_scripts.html#module-vison.other.PERSIST01">PERSIST01</a></li>
+<li class="toctree-l2"><a class="reference internal" href="other_scripts.html#module-vison.other.STRAY00">STRAY00</a></li>
 </ul>
 </li>
 </ul>
@@ -382,18 +573,23 @@ ease of browsing.</p>
 <li><a class="reference internal" href="#dependencies">Dependencies</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#how-to-use-it">How to Use it</a></li>
+<li><a class="reference internal" href="#guide-through-the-code">Guide through the code</a></li>
 <li><a class="reference internal" href="#pipeline-core">Pipeline Core</a></li>
 <li><a class="reference internal" href="#data-model">Data Model</a></li>
 <li><a class="reference internal" href="#analysis-shared">Analysis (Shared)</a></li>
 <li><a class="reference internal" href="#charge-injection-tools">Charge Injection Tools</a></li>
 <li><a class="reference internal" href="#flat-acq-analysis-tools">&#8220;Flat&#8221; Acq. Analysis Tools</a></li>
+<li><a class="reference internal" href="#fpa-tests">FPA Tests</a></li>
 <li><a class="reference internal" href="#image">Image</a></li>
+<li><a class="reference internal" href="#metatests">Metatests</a></li>
 <li><a class="reference internal" href="#monitoring-eyegore">Monitoring (&#8220;Eyegore&#8221;)</a></li>
 <li><a class="reference internal" href="#ogse">OGSE</a></li>
 <li><a class="reference internal" href="#plotting">Plotting</a></li>
 <li><a class="reference internal" href="#point-source-analysis">Point-Source Analysis</a></li>
 <li><a class="reference internal" href="#scripts">Scripts</a></li>
 <li><a class="reference internal" href="#support-code">Support Code</a></li>
+<li><a class="reference internal" href="#unit-testing">Unit Testing</a></li>
 <li><a class="reference internal" href="#test-scripts">Test Scripts</a><ul>
 <li><a class="reference internal" href="#charge-injection-scripts">Charge Injection Scripts</a></li>
 <li><a class="reference internal" href="#dark-scripts">Dark Scripts</a></li>
@@ -442,7 +638,7 @@ ease of browsing.</p>
         <li class="right" >
           <a href="source/includeme.html" title="README"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

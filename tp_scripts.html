@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Trap-Pumping Scripts &#8212; vison 0.4+119.g8cde5f6 documentation</title>
+    <title>Trap-Pumping Scripts &#8212; vison 0.9+374.gd7313d7 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4+119.g8cde5f6',
+        VERSION:     '0.9+374.gd7313d7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="point_scripts.html" title="Point-Source Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -56,106 +56,30 @@
             
   <div class="section" id="trap-pumping-scripts">
 <h1>Trap-Pumping Scripts<a class="headerlink" href="#trap-pumping-scripts" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-vison.pump.TP01">
-<span id="tp01"></span><h2>TP01<a class="headerlink" href="#module-vison.pump.TP01" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-vison.pump.TP11">
+<span id="tp11"></span><h2>TP11<a class="headerlink" href="#module-vison.pump.TP11" title="Permalink to this headline">¶</a></h2>
 <p>VIS Ground Calibration
-TEST: TP01</p>
+TEST: TP11</p>
 <p>Trap-Pumping calibration (vertical)</p>
-<p>Created on Tue Aug 29 17:37:00 2017</p>
+<p>Created on Thu May 23 10:42:00 2019</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
 </tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini__at__ucl.ac.uk</td>
-</tr>
 </tbody>
 </table>
 <dl class="class">
-<dt id="vison.pump.TP01.TP01">
-<em class="property">class </em><code class="descclassname">vison.pump.TP01.</code><code class="descname">TP01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.TP01" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="vison.pump.TP01.TP01.basic_analysis">
-<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.TP01.basic_analysis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Basic analysis of data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span> <span class="p">[</span><span class="n">there</span> <span class="n">are</span> <span class="n">different</span> <span class="n">TOI_TP</span> <span class="ow">and</span> <span class="n">TP</span><span class="o">-</span><span class="n">patterns</span><span class="p">]:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">load</span> <span class="s2">&quot;map of relative pumping&quot;</span>
-            <span class="n">find_dipoles</span><span class="p">:</span>
-                <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rel</span><span class="o">-</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">orientation</span>
-
-<span class="n">produce</span> <span class="o">&amp;</span> <span class="n">report</span><span class="p">:</span>  
-    <span class="nb">map</span> <span class="n">location</span> <span class="n">of</span> <span class="n">dipoles</span>
-    <span class="n">PDF</span> <span class="n">of</span> <span class="n">dipole</span> <span class="n">amplitudes</span> <span class="p">(</span><span class="k">for</span> <span class="n">N</span> <span class="ow">and</span> <span class="n">S</span><span class="p">)</span>
-    <span class="n">Counts</span> <span class="n">of</span> <span class="n">dipoles</span> <span class="p">(</span><span class="ow">and</span> <span class="n">N</span> <span class="n">vs</span><span class="o">.</span> <span class="n">S</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.pump.TP01.TP01.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.TP01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.pump.TP11.TP11">
+<em class="property">class </em><code class="descclassname">vison.pump.TP11.</code><code class="descname">TP11</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP11.TP11" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="vison.pump.TP01.TP01.filterexposures">
-<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.TP01.filterexposures" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vison.pump.TP01.TP01.meta_analysis">
-<code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.TP01.meta_analysis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Meta-analysis of data:</p>
-<blockquote>
-<div>Try to identify tau and pixel-phase location for each trap.
-Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">across</span> <span class="n">TOI_TP</span><span class="p">,</span> <span class="n">patterns</span><span class="p">:</span>
-    <span class="n">build</span> <span class="n">catalog</span> <span class="n">of</span> <span class="n">traps</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">I</span><span class="o">-</span><span class="n">phase</span><span class="p">,</span> <span class="n">Amp</span>
-    <span class="kn">from</span> <span class="nn">Amp</span><span class="p">(</span><span class="n">TOI</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tau</span><span class="p">,</span> <span class="n">Pc</span>
-
-<span class="n">Report</span> <span class="n">on</span> <span class="p">:</span>
-    <span class="n">Histogram</span> <span class="n">of</span> <span class="n">Taus</span>
-    <span class="n">Histogram</span> <span class="n">of</span> <span class="n">Pc</span> <span class="p">(</span><span class="n">capture</span> <span class="n">probability</span><span class="p">)</span>
-    <span class="n">Histogram</span> <span class="n">of</span> <span class="n">I</span><span class="o">-</span><span class="n">phases</span> <span class="p">(</span><span class="n">larger</span> <span class="n">phases</span> <span class="n">should</span> <span class="n">have</span> <span class="n">more</span> <span class="n">traps</span><span class="p">,</span> 
-                      <span class="n">statistically</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">check</span>
-
-    <span class="n">Total</span> <span class="n">Count</span> <span class="n">of</span> <span class="n">Traps</span>
-</pre></div>
 </div>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.pump.TP01.TP01.prep_data">
-<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.TP01.prep_data" title="Permalink to this definition">¶</a></dt>
-<dd><p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Preparation</span> <span class="n">of</span> <span class="n">data</span> <span class="k">for</span> <span class="n">further</span> <span class="n">analysis</span><span class="p">:</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span> <span class="p">[</span><span class="n">images</span> <span class="k">with</span> <span class="n">TPing</span> <span class="n">only</span><span class="p">]:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">subtract</span> <span class="n">offset</span>
-            <span class="n">divide</span> <span class="n">by</span> <span class="n">reference</span> <span class="n">image</span> <span class="n">wo</span> <span class="n">TPing</span>
-            <span class="n">save</span> <span class="s2">&quot;map of relative pumping&quot;</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.pump.TP01.TP01.set_inpdefaults">
-<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP01.TP01.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-vison.pump.TP02">
-<span id="tp02"></span><h2>TP02<a class="headerlink" href="#module-vison.pump.TP02" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-vison.pump.TP21">
+<span id="tp21"></span><h2>TP21<a class="headerlink" href="#module-vison.pump.TP21" title="Permalink to this headline">¶</a></h2>
 <p>VIS Ground Calibration
-TEST: TP01</p>
+TEST: TP02</p>
 <p>Trap-Pumping calibration (serial)</p>
 <p>Created on Tue Aug 29 17:38:00 2017</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -164,88 +88,133 @@ TEST: TP01</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
 </tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini__at__ucl.ac.uk</td>
-</tr>
 </tbody>
 </table>
 <dl class="class">
-<dt id="vison.pump.TP02.TP02">
-<em class="property">class </em><code class="descclassname">vison.pump.TP02.</code><code class="descname">TP02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.TP02" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="vison.pump.TP02.TP02.basic_analysis">
-<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.TP02.basic_analysis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Basic analysis of data.</p>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span> <span class="p">[</span><span class="n">there</span> <span class="n">are</span> <span class="n">different</span> <span class="n">TOI_TP</span> <span class="ow">and</span> <span class="n">TP</span><span class="o">-</span><span class="n">patterns</span><span class="p">]:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">load</span> <span class="n">raw</span> <span class="mi">1</span><span class="n">D</span> <span class="nb">map</span> <span class="n">of</span> <span class="n">relative</span> <span class="n">pumping</span> <span class="p">(</span><span class="kn">from</span> <span class="nn">extract_data</span><span class="p">)</span>
-            <span class="n">identify</span> <span class="n">dipoles</span><span class="p">:</span>
-                <span class="n">x</span><span class="p">,</span> <span class="n">rel</span><span class="o">-</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">orientation</span> <span class="p">(</span><span class="n">E</span> <span class="ow">or</span> <span class="n">W</span><span class="p">)</span>
-
-<span class="n">produce</span> <span class="o">&amp;</span> <span class="n">report</span><span class="p">:</span>  
-    <span class="nb">map</span> <span class="n">location</span> <span class="n">of</span> <span class="n">dipoles</span>
-    <span class="n">PDF</span> <span class="n">of</span> <span class="n">dipole</span> <span class="n">amplitudes</span> <span class="p">(</span><span class="k">for</span> <span class="n">E</span> <span class="ow">and</span> <span class="n">W</span><span class="p">)</span>
-    <span class="n">Counts</span> <span class="n">of</span> <span class="n">dipoles</span> <span class="p">(</span><span class="ow">and</span> <span class="n">E</span> <span class="n">vs</span><span class="o">.</span> <span class="n">W</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.pump.TP02.TP02.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.TP02.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.pump.TP21.TP21">
+<em class="property">class </em><code class="descclassname">vison.pump.TP21.</code><code class="descname">TP21</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP21.TP21" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="vison.pump.TP02.TP02.filterexposures">
-<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.TP02.filterexposures" title="Permalink to this definition">¶</a></dt>
+</div>
+<div class="section" id="module-vison.pump.PumpTask">
+<span id="pumptask"></span><h2>PumpTask<a class="headerlink" href="#module-vison.pump.PumpTask" title="Permalink to this headline">¶</a></h2>
+<p>Common Use Task for Trap-Pumping Analysis.</p>
+<p>Created on Tue Jan  2 17:44:04 2018</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="module-vison.pump.tptools">
+<span id="tptools"></span><h2>tptools<a class="headerlink" href="#module-vison.pump.tptools" title="Permalink to this headline">¶</a></h2>
+<p>Trap-pumping Analysis Tools.</p>
+<p>Created on Fri Mar 16 14:38:51 2018</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="vison.pump.tptools.batch_fit_PcTau_stp">
+<code class="descclassname">vison.pump.tptools.</code><code class="descname">batch_fit_PcTau_stp</code><span class="sig-paren">(</span><em>Amplitudes</em>, <em>dwells</em>, <em>Nshuffles=5000</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.tptools.batch_fit_PcTau_stp" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="vison.pump.TP02.TP02.meta_analysis">
-<code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.TP02.meta_analysis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Meta-analysis of data:</p>
-<blockquote>
-<div>Try to identify tau and pixel-phase location for each trap.
-Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
-<p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">across</span> <span class="n">TOI_TP</span><span class="p">,</span> <span class="n">patterns</span><span class="p">:</span>
-    <span class="n">build</span> <span class="n">catalog</span> <span class="n">of</span> <span class="n">traps</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">R</span><span class="o">-</span><span class="n">phase</span><span class="p">,</span> <span class="n">amp</span><span class="p">(</span><span class="n">dwell</span><span class="p">)</span>
-    <span class="kn">from</span> <span class="nn">Amp</span><span class="p">(</span><span class="n">dwell</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tau</span><span class="p">,</span> <span class="n">Pc</span>
-    
-<span class="n">Report</span> <span class="n">on</span> <span class="p">:</span>
-   <span class="n">Histogram</span> <span class="n">of</span> <span class="n">Taus</span>
-   <span class="n">Histogram</span> <span class="n">of</span> <span class="n">Pc</span> <span class="p">(</span><span class="n">capture</span> <span class="n">probability</span><span class="p">)</span>
-   <span class="n">Histogram</span> <span class="n">of</span> <span class="n">R</span><span class="o">-</span><span class="n">phases</span>
-
-   <span class="n">Total</span> <span class="n">Count</span> <span class="n">of</span> <span class="n">Traps</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.pump.TP02.TP02.prep_data">
-<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.TP02.prep_data" title="Permalink to this definition">¶</a></dt>
-<dd><p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Preparation</span> <span class="n">of</span> <span class="n">data</span> <span class="k">for</span> <span class="n">further</span> <span class="n">analysis</span><span class="p">:</span>
-
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span> <span class="p">[</span><span class="n">images</span> <span class="k">with</span> <span class="n">TPing</span> <span class="n">only</span><span class="p">]:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
-            <span class="n">subtract</span> <span class="n">offset</span>
-            <span class="n">divide</span> <span class="n">by</span> <span class="n">reference</span> <span class="n">image</span> <span class="n">wo</span> <span class="n">TPing</span>
-            <span class="n">average</span> <span class="n">across</span> <span class="n">readout</span> <span class="n">lines</span> <span class="p">(</span><span class="n">iterations</span><span class="p">)</span>
-            <span class="n">save</span> <span class="n">raw</span> <span class="mi">1</span><span class="n">D</span> <span class="nb">map</span> <span class="n">of</span> <span class="n">relative</span> <span class="n">pumping</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="vison.pump.TP02.TP02.set_inpdefaults">
-<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.TP02.TP02.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
+<dl class="function">
+<dt id="vison.pump.tptools.batch_fit_PcTau_vtp">
+<code class="descclassname">vison.pump.tptools.</code><code class="descname">batch_fit_PcTau_vtp</code><span class="sig-paren">(</span><em>Amplitudes</em>, <em>tois</em>, <em>Nshuffles=5000</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.tptools.batch_fit_PcTau_vtp" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="function">
+<dt id="vison.pump.tptools.charact_injection">
+<code class="descclassname">vison.pump.tptools.</code><code class="descname">charact_injection</code><span class="sig-paren">(</span><em>ccdobj</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.tptools.charact_injection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.tptools.fcomp_distamp_dipoles_1D">
+<code class="descclassname">vison.pump.tptools.</code><code class="descname">fcomp_distamp_dipoles_1D</code><span class="sig-paren">(</span><em>merged</em>, <em>mcat</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.tptools.fcomp_distamp_dipoles_1D" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.tptools.fcomp_distamp_dipoles_2D">
+<code class="descclassname">vison.pump.tptools.</code><code class="descname">fcomp_distamp_dipoles_2D</code><span class="sig-paren">(</span><em>merged</em>, <em>mcat</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.tptools.fcomp_distamp_dipoles_2D" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.tptools.find_dipoles_stpump">
+<code class="descclassname">vison.pump.tptools.</code><code class="descname">find_dipoles_stpump</code><span class="sig-paren">(</span><em>ccdobj</em>, <em>threshold</em>, <em>Q</em>, <em>vstart=0</em>, <em>vend=2066</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.tptools.find_dipoles_stpump" title="Permalink to this definition">¶</a></dt>
+<dd><p>Using Jesper Skottfelt&#8217;s algorithm, as described in
+Trap_Pumping_Analysis_GCALCAMP_17OCT17_Azzollini.pdf</p>
+<p>&#8216;West&#8217; dipole: brighter pixel closer to serial register than dimmer pixel.
+&#8216;East&#8217; dipole: brighter pixel farther to serial register than dimmer pixel.</p>
 </dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.tptools.find_dipoles_vtpump">
+<code class="descclassname">vison.pump.tptools.</code><code class="descname">find_dipoles_vtpump</code><span class="sig-paren">(</span><em>ccdobj</em>, <em>threshold</em>, <em>Q</em>, <em>vstart=0</em>, <em>vend=2066</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.tptools.find_dipoles_vtpump" title="Permalink to this definition">¶</a></dt>
+<dd><p>Using Jesper Skottfelt&#8217;s algorithm, as described in
+Trap_Pumping_Analysis_GCALCAMP_17OCT17_Azzollini.pdf</p>
+<p>&#8216;South&#8217; dipole: brighter pixel closer to serial register than dimmer pixel.
+&#8216;North&#8217; dipole: brighter pixel farther to serial register than dimmer pixel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.tptools.fit_PcTau_stp">
+<code class="descclassname">vison.pump.tptools.</code><code class="descname">fit_PcTau_stp</code><span class="sig-paren">(</span><em>A</em>, <em>dwells</em>, <em>stoi</em>, <em>Nshuffles=5000</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.tptools.fit_PcTau_stp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.tptools.fit_PcTau_vtp">
+<code class="descclassname">vison.pump.tptools.</code><code class="descname">fit_PcTau_vtp</code><span class="sig-paren">(</span><em>A</em>, <em>tois</em>, <em>Nshuffles=5000</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.tptools.fit_PcTau_vtp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.tptools.gen_raw_dpmap_stpump">
+<code class="descclassname">vison.pump.tptools.</code><code class="descname">gen_raw_dpmap_stpump</code><span class="sig-paren">(</span><em>ccdobj</em>, <em>injprofiles</em>, <em>vstart=0</em>, <em>vend=2066</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.tptools.gen_raw_dpmap_stpump" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.tptools.gen_raw_dpmap_vtpump">
+<code class="descclassname">vison.pump.tptools.</code><code class="descname">gen_raw_dpmap_vtpump</code><span class="sig-paren">(</span><em>ccdobj</em>, <em>Navgrows=-1</em>, <em>vstart=0</em>, <em>vend=2066</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.tptools.gen_raw_dpmap_vtpump" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.tptools.get_InjProfile">
+<code class="descclassname">vison.pump.tptools.</code><code class="descname">get_InjProfile</code><span class="sig-paren">(</span><em>ccdobj</em>, <em>Q</em>, <em>Navgrows=-1</em>, <em>vstart=0</em>, <em>vend=2066</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.tptools.get_InjProfile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.tptools.get_injprofile_tpnorm">
+<code class="descclassname">vison.pump.tptools.</code><code class="descname">get_injprofile_tpnorm</code><span class="sig-paren">(</span><em>ccdobj</em>, <em>vstart</em>, <em>vend</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.tptools.get_injprofile_tpnorm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produces a 2D Map of charge injection to be used in trap-pumping analysis,
+to obtain dipole maps.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.tptools.merge_2dcats_generic">
+<code class="descclassname">vison.pump.tptools.</code><code class="descname">merge_2dcats_generic</code><span class="sig-paren">(</span><em>catsdict</em>, <em>catkeys</em>, <em>parentkey</em>, <em>columns</em>, <em>opcolumns</em>, <em>fcomp</em>, <em>dropna=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.tptools.merge_2dcats_generic" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.tptools.merge_vtp_dipole_cats_bypos">
+<code class="descclassname">vison.pump.tptools.</code><code class="descname">merge_vtp_dipole_cats_bypos</code><span class="sig-paren">(</span><em>catsdict</em>, <em>catkeys</em>, <em>parentkey</em>, <em>dropna=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.tptools.merge_vtp_dipole_cats_bypos" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.tptools.save_dipcat2D_as_ds9regs">
+<code class="descclassname">vison.pump.tptools.</code><code class="descname">save_dipcat2D_as_ds9regs</code><span class="sig-paren">(</span><em>df</em>, <em>regfilename</em>, <em>clobber=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.tptools.save_dipcat2D_as_ds9regs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.pump.tptools.wrap_gen_InjProfiles">
+<code class="descclassname">vison.pump.tptools.</code><code class="descname">wrap_gen_InjProfiles</code><span class="sig-paren">(</span><em>ccdobj</em>, <em>Navgrows=-1</em>, <em>vstart=0</em>, <em>vend=2066</em>, <em>extension=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.pump.tptools.wrap_gen_InjProfiles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 </div>
@@ -262,8 +231,10 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Trap-Pumping Scripts</a><ul>
-<li><a class="reference internal" href="#module-vison.pump.TP01">TP01</a></li>
-<li><a class="reference internal" href="#module-vison.pump.TP02">TP02</a></li>
+<li><a class="reference internal" href="#module-vison.pump.TP11">TP11</a></li>
+<li><a class="reference internal" href="#module-vison.pump.TP21">TP21</a></li>
+<li><a class="reference internal" href="#module-vison.pump.PumpTask">PumpTask</a></li>
+<li><a class="reference internal" href="#module-vison.pump.tptools">tptools</a></li>
 </ul>
 </li>
 </ul>
@@ -310,7 +281,7 @@ Need to associate dipoles across TOI_TPs and TP-patterns</div></blockquote>
         <li class="right" >
           <a href="point_scripts.html" title="Point-Source Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -2,7 +2,17 @@
 Charge Injection Tools
 ======================
 
-.. currentmodule:: inject
+.. currentmodule:: vison.inject
+
+
+InjTask.py
+----------
+
+.. automodule:: vison.inject.InjTask
+        :members:
+
+.. autoclass:: InjTask
+    :members:
 
 
 lib.py

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Installation &#8212; vison 0.4+119.g8cde5f6 documentation</title>
+    <title>Installation &#8212; vison 0.9+374.gd7313d7 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4+119.g8cde5f6',
+        VERSION:     '0.9+374.gd7313d7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Pipeline" href="pipe.html" />
+    <link rel="next" title="vison cook-book" href="cookbook.html" />
     <link rel="prev" title="README" href="source/includeme.html" /> 
   </head>
   <body role="document">
@@ -40,12 +40,12 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pipe.html" title="Pipeline"
+          <a href="cookbook.html" title="vison cook-book"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="source/includeme.html" title="README"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -96,7 +96,8 @@ follow the instructions in this <a class="reference external" href="https://cond
 <div class="section" id="installing-conda-and-creating-vison-environment">
 <h3>Installing conda and creating <cite>vison</cite> environment<a class="headerlink" href="#installing-conda-and-creating-vison-environment" title="Permalink to this headline">¶</a></h3>
 <p>Once you have succesfully installed conda, we will create an environment that will
-allow you to install the pipeline and meet all its dependencies.</p>
+allow you to install the pipeline and meet all its dependencies (save for SAO DS9, which
+is only used in real-time monitoring, optionally).</p>
 <p>Step-by-Step:</p>
 <ul>
 <li><p class="first">change directory to your copy of the vison repository:</p>
@@ -107,16 +108,14 @@ allow you to install the pipeline and meet all its dependencies.</p>
 <li><p class="first">Under the &#8216;conda&#8217; sub-folder, you will find several text files:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>~$ cd conda
 ~$ ls
-  env-conda_vison_linux.txt  env-conda_vison_windows.txt
-  env-conda_vison_old.txt  env-pip_vison_old.txt
-  env-pip_vison.txt
+env-conda_vison_linux.txt  env-pip_vison.txt
 </pre></div>
 </div>
 </li>
 <li><p class="first">Then execute the following command to create a new conda environment, <cite>vison</cite>.</p>
 </li>
 </ul>
-<p>Use the OS version that may correspond in your case (by now, only linux and windows versions available, and for 64 bits machines).</p>
+<p>Use the OS version that may correspond in your case (by now, only linux-64 bits version available).</p>
 <blockquote>
 <div><dl class="docutils">
 <dt>::</dt>
@@ -128,6 +127,11 @@ allow you to install the pipeline and meet all its dependencies.</p>
 </li>
 <li><p class="first">Activate the new environment</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>~$ source activate vison
+</pre></div>
+</div>
+</li>
+<li><p class="first">Update pipe</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>~$ pip install --upgrade pip
 </pre></div>
 </div>
 </li>
@@ -168,8 +172,9 @@ within the <cite>vison</cite> conda environment. For example:</p>
 &gt;&gt;&gt; import vison
 &gt;&gt;&gt; dir(vison)
 [&#39;Eyegore&#39;, &#39;FlatFielding&#39;, &#39;Pipe&#39;, &#39;Report&#39;, &#39;__all__&#39;, &#39;__builtins__&#39;, &#39;__doc__&#39;, &#39;__file__&#39;,
-&#39;__name__&#39;, &#39;__package__&#39;, &#39;__path__&#39;, &#39;__version__&#39;, &#39;analysis&#39;, &#39;data&#39;, &#39;datamodel&#39;,
-     &#39;eyegore&#39;, &#39;pipe&#39;, &#39;point&#39;, &#39;support&#39;]
+&#39;__name__&#39;, &#39;__package__&#39;, &#39;__path__&#39;, &#39;__version__&#39;, &#39;_version&#39;, &#39;analysis&#39;, &#39;blocks&#39;, &#39;dark&#39;,
+&#39;data&#39;, &#39;datamodel&#39;, &#39;eyegore&#39;, &#39;flat&#39;, &#39;image&#39;, &#39;inject&#39;, &#39;matplotlib&#39;, &#39;ogse&#39;, &#39;ogse_profiles&#39;,
+&#39;other&#39;, &#39;pipe&#39;, &#39;plot&#39;, &#39;point&#39;, &#39;pump&#39;, &#39;stop&#39;, &#39;support&#39;]
 </pre></div>
 </div>
 </li>
@@ -204,8 +209,8 @@ within the <cite>vison</cite> conda environment. For example:</p>
   <p class="topless"><a href="source/includeme.html"
                         title="previous chapter">README</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="pipe.html"
-                        title="next chapter">Pipeline</a></p>
+  <p class="topless"><a href="cookbook.html"
+                        title="next chapter">vison cook-book</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -237,12 +242,12 @@ within the <cite>vison</cite> conda environment. For example:</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pipe.html" title="Pipeline"
+          <a href="cookbook.html" title="vison cook-book"
              >next</a> |</li>
         <li class="right" >
           <a href="source/includeme.html" title="README"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

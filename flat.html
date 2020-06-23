@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>“Flat” Acq. Analysis Tools &#8212; vison 0.4+119.g8cde5f6 documentation</title>
+    <title>“Flat” Acq. Analysis Tools &#8212; vison 0.9+374.gd7313d7 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4+119.g8cde5f6',
+        VERSION:     '0.9+374.gd7313d7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Image Analysis" href="image.html" />
+    <link rel="next" title="FPA Tests" href="fpatests.html" />
     <link rel="prev" title="Charge Injection Tools" href="inject.html" /> 
   </head>
   <body role="document">
@@ -40,12 +40,12 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="image.html" title="Image Analysis"
+          <a href="fpatests.html" title="FPA Tests"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="inject.html" title="Charge Injection Tools"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -56,6 +56,48 @@
             
   <div class="section" id="flat-acq-analysis-tools">
 <h1>&#8220;Flat&#8221; Acq. Analysis Tools<a class="headerlink" href="#flat-acq-analysis-tools" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-vison.flat.FlatTask">
+<span id="flattask-py"></span><h2>FlatTask.py<a class="headerlink" href="#module-vison.flat.FlatTask" title="Permalink to this headline">¶</a></h2>
+<p>Created on Mon Dec  4 16:00:10 2017</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="vison.flat.FlatTask.FlatTask">
+<em class="property">class </em><code class="descclassname">vison.flat.FlatTask.</code><code class="descname">FlatTask</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FlatTask.FlatTask" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.flat.FlatTask.FlatTask.check_data">
+<code class="descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FlatTask.FlatTask.check_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.flat.FlatTask.FlatTask.check_metrics_ST">
+<code class="descname">check_metrics_ST</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FlatTask.FlatTask.check_metrics_ST" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>TODO:</dt>
+<dd><ul class="first last simple">
+<li>offset levels (pre and over-scan), abs. and relative</li>
+<li>RON in pre and overscan</li>
+<li>fluence in image area [script-column-dependent]</li>
+<li>variance in image area [script-column-dependent]</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.flat.FlatTask.FlatTask.get_checkstats_ST">
+<code class="descname">get_checkstats_ST</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FlatTask.FlatTask.get_checkstats_ST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-vison.pipe.FlatFielding">
 <span id="flatfielding-py"></span><h2>FlatFielding.py<a class="headerlink" href="#module-vison.pipe.FlatFielding" title="Permalink to this headline">¶</a></h2>
 <p>Flat-fielding Utilities.</p>
@@ -104,33 +146,6 @@ Takes the outputs from produce_IndivFlats.</p>
 <dd></dd></dl>
 
 </div>
-<div class="section" id="module-vison.flat.ptc">
-<span id="ptc-py"></span><h2>ptc.py<a class="headerlink" href="#module-vison.flat.ptc" title="Permalink to this headline">¶</a></h2>
-<p>NEEDSREVISION</p>
-<p>Module with tools used in PTC analysis.</p>
-<p>Created on Thu Sep 14 16:29:36 2017</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
-</tr>
-</tbody>
-</table>
-<dl class="function">
-<dt id="vison.flat.ptc.fitPTC">
-<code class="descclassname">vison.flat.ptc.</code><code class="descname">fitPTC</code><span class="sig-paren">(</span><em>means</em>, <em>var</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.ptc.fitPTC" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="vison.flat.ptc.foo_bloom">
-<code class="descclassname">vison.flat.ptc.</code><code class="descname">foo_bloom</code><span class="sig-paren">(</span><em>means</em>, <em>var</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.ptc.foo_bloom" title="Permalink to this definition">¶</a></dt>
-<dd><p>DUMMY function (PLACE-HOLDER)</p>
-</dd></dl>
-
-</div>
 <div class="section" id="module-vison.flat.nl">
 <span id="nl-py"></span><h2>nl.py<a class="headerlink" href="#module-vison.flat.nl" title="Permalink to this headline">¶</a></h2>
 <p>NEEDSREVISION</p>
@@ -142,18 +157,46 @@ Takes the outputs from produce_IndivFlats.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
 </tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
-</tr>
 </tbody>
 </table>
 <dl class="function">
-<dt id="vison.flat.nl.fitNL">
-<code class="descclassname">vison.flat.nl.</code><code class="descname">fitNL</code><span class="sig-paren">(</span><em>fluences</em>, <em>exptimes</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.nl.fitNL" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.flat.nl.fNL">
+<code class="descclassname">vison.flat.nl.</code><code class="descname">fNL</code><span class="sig-paren">(</span><em>x</em>, <em>*p</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.nl.fNL" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="vison.flat.nl.get_exptime_atmiddynrange">
-<code class="descclassname">vison.flat.nl.</code><code class="descname">get_exptime_atmiddynrange</code><span class="sig-paren">(</span><em>flu1D</em>, <em>exp1D</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.nl.get_exptime_atmiddynrange" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.flat.nl.fNL_wExp">
+<code class="descclassname">vison.flat.nl.</code><code class="descname">fNL_wExp</code><span class="sig-paren">(</span><em>x</em>, <em>*p</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.nl.fNL_wExp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.nl.fitNL_pol">
+<code class="descclassname">vison.flat.nl.</code><code class="descname">fitNL_pol</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>W</em>, <em>Exptimes</em>, <em>minfitFl</em>, <em>maxfitFl</em>, <em>display=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.nl.fitNL_pol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.nl.fitNL_taylored">
+<code class="descclassname">vison.flat.nl.</code><code class="descname">fitNL_taylored</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>W</em>, <em>Exptimes</em>, <em>minfitFl</em>, <em>maxfitFl</em>, <em>display=False</em>, <em>addExp=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.nl.fitNL_taylored" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.nl.getXYW_NL">
+<code class="descclassname">vison.flat.nl.</code><code class="descname">getXYW_NL</code><span class="sig-paren">(</span><em>fluencesNL</em>, <em>exptimes</em>, <em>nomG</em>, <em>pivotfrac=0.5</em>, <em>maxrelflu=None</em>, <em>method='spline'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.nl.getXYW_NL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.nl.getXYW_NL02">
+<code class="descclassname">vison.flat.nl.</code><code class="descname">getXYW_NL02</code><span class="sig-paren">(</span><em>fluencesNL</em>, <em>exptimes</em>, <em>nomG</em>, <em>minrelflu=None</em>, <em>maxrelflu=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.nl.getXYW_NL02" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.nl.get_exptime_atfracdynrange">
+<code class="descclassname">vison.flat.nl.</code><code class="descname">get_exptime_atfracdynrange</code><span class="sig-paren">(</span><em>flu1D</em>, <em>exp1D</em>, <em>frac=0.5</em>, <em>method='spline'</em>, <em>maxrelflu=None</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.nl.get_exptime_atfracdynrange" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.nl.recalibrate_exptimes">
+<code class="descclassname">vison.flat.nl.</code><code class="descname">recalibrate_exptimes</code><span class="sig-paren">(</span><em>exptimes</em>, <em>calibrationfile</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.nl.recalibrate_exptimes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -162,9 +205,51 @@ Takes the outputs from produce_IndivFlats.</p>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="vison.flat.nl.wrap_fitNL">
-<code class="descclassname">vison.flat.nl.</code><code class="descname">wrap_fitNL</code><span class="sig-paren">(</span><em>raw_data</em>, <em>exptimes</em>, <em>col_labels</em>, <em>times=array([]</em>, <em>dtype=float64)</em>, <em>TrackFlux=True</em>, <em>subBgd=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.nl.wrap_fitNL" title="Permalink to this definition">¶</a></dt>
+<dt id="vison.flat.nl.wrap_fitNL_SingleFilter">
+<code class="descclassname">vison.flat.nl.</code><code class="descname">wrap_fitNL_SingleFilter</code><span class="sig-paren">(</span><em>fluences</em>, <em>variances</em>, <em>exptimes</em>, <em>times=array([]</em>, <em>dtype=float64)</em>, <em>TrackFlux=True</em>, <em>subBgd=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.nl.wrap_fitNL_SingleFilter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.nl.wrap_fitNL_TwoFilters">
+<code class="descclassname">vison.flat.nl.</code><code class="descname">wrap_fitNL_TwoFilters</code><span class="sig-paren">(</span><em>fluences</em>, <em>variances</em>, <em>exptimes</em>, <em>wave</em>, <em>times=array([]</em>, <em>dtype=float64)</em>, <em>TrackFlux=True</em>, <em>subBgd=True</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.nl.wrap_fitNL_TwoFilters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.nl.wrap_fitNL_TwoFilters_Alt">
+<code class="descclassname">vison.flat.nl.</code><code class="descname">wrap_fitNL_TwoFilters_Alt</code><span class="sig-paren">(</span><em>fluences</em>, <em>variances</em>, <em>exptimes</em>, <em>wave</em>, <em>times=array([]</em>, <em>dtype=float64)</em>, <em>TrackFlux=True</em>, <em>debug=False</em>, <em>ObsIDs=None</em>, <em>NLdeg=4</em>, <em>offset=0.0</em>, <em>XX=None</em>, <em>YY=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.nl.wrap_fitNL_TwoFilters_Alt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-vison.flat.ptc">
+<span id="ptc-py"></span><h2>ptc.py<a class="headerlink" href="#module-vison.flat.ptc" title="Permalink to this headline">¶</a></h2>
+<p>NEEDSREVISION</p>
+<p>Module with tools used in PTC analysis.</p>
+<p>Created on Thu Sep 14 16:29:36 2017</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="vison.flat.ptc.fitPTC">
+<code class="descclassname">vison.flat.ptc.</code><code class="descname">fitPTC</code><span class="sig-paren">(</span><em>means</em>, <em>var</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.ptc.fitPTC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fits Photon Transfer Curve to obtain gain.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.ptc.foo_bloom_advanced">
+<code class="descclassname">vison.flat.ptc.</code><code class="descname">foo_bloom_advanced</code><span class="sig-paren">(</span><em>means</em>, <em>var</em>, <em>_fit</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.ptc.foo_bloom_advanced" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds blooming limit (where variance drops, if it does...).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.flat.ptc.foo_bloom_advanced_demoted">
+<code class="descclassname">vison.flat.ptc.</code><code class="descname">foo_bloom_advanced_demoted</code><span class="sig-paren">(</span><em>means</em>, <em>var</em>, <em>_fit</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.ptc.foo_bloom_advanced_demoted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds blooming limit (where variance drops, if it does...).</p>
+</dd></dl>
 
 </div>
 </div>
@@ -181,9 +266,10 @@ Takes the outputs from produce_IndivFlats.</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">&#8220;Flat&#8221; Acq. Analysis Tools</a><ul>
+<li><a class="reference internal" href="#module-vison.flat.FlatTask">FlatTask.py</a></li>
 <li><a class="reference internal" href="#module-vison.pipe.FlatFielding">FlatFielding.py</a></li>
-<li><a class="reference internal" href="#module-vison.flat.ptc">ptc.py</a></li>
 <li><a class="reference internal" href="#module-vison.flat.nl">nl.py</a></li>
+<li><a class="reference internal" href="#module-vison.flat.ptc">ptc.py</a></li>
 </ul>
 </li>
 </ul>
@@ -192,8 +278,8 @@ Takes the outputs from produce_IndivFlats.</p>
   <p class="topless"><a href="inject.html"
                         title="previous chapter">Charge Injection Tools</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="image.html"
-                        title="next chapter">Image Analysis</a></p>
+  <p class="topless"><a href="fpatests.html"
+                        title="next chapter">FPA Tests</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -225,12 +311,12 @@ Takes the outputs from produce_IndivFlats.</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="image.html" title="Image Analysis"
+          <a href="fpatests.html" title="FPA Tests"
              >next</a> |</li>
         <li class="right" >
           <a href="inject.html" title="Charge Injection Tools"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

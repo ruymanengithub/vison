@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Flat-Illumination Scripts &#8212; vison 0.4+119.g8cde5f6 documentation</title>
+    <title>Flat-Illumination Scripts &#8212; vison 0.9+374.gd7313d7 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4+119.g8cde5f6',
+        VERSION:     '0.9+374.gd7313d7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="dark_scripts.html" title="“Dark Acquisitions” Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -68,16 +68,14 @@ TEST: FLAT0X</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
 </tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini__at__ucl.ac.uk</td>
-</tr>
 </tbody>
 </table>
 <dl class="class">
 <dt id="vison.flat.FLAT0X.FLAT0X">
-<em class="property">class </em><code class="descclassname">vison.flat.FLAT0X.</code><code class="descname">FLAT0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.flat.FLAT0X.</code><code class="descname">FLAT0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.flat.FLAT0X.FLAT0X.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds FLAT0X script structure dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -93,20 +91,20 @@ TEST: FLAT0X</p>
 <dt id="vison.flat.FLAT0X.FLAT0X.do_indiv_flats">
 <code class="descname">do_indiv_flats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.do_indiv_flats" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>Preparation of data for further analysis and 
+<div class="highlight-default"><div class="highlight"><pre><span></span>Preparation of data for further analysis and
 produce flat-field for each OBSID.
 
 f.e. ObsID:
     f.e.CCD:
-        
+
         load ccdobj
-        
+
         f.e.Q:
-            
+
             model 2D fluence distro in image area
             produce average profile along rows
             produce average profile along cols
-            
+
         save 2D model and profiles in a pick file for each OBSID-CCD
         divide by 2D model to produce indiv-flat
         save indiv-Flat to FITS(?), update add filename
@@ -126,7 +124,7 @@ plot average profiles f. each CCD and Q (color coded by time)
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
         <span class="n">stack</span> <span class="n">individual</span> <span class="n">flat</span><span class="o">-</span><span class="n">fields</span> <span class="n">by</span> <span class="n">chosen</span> <span class="n">estimator</span>
 <span class="n">save</span> <span class="n">Master</span> <span class="n">FF</span> <span class="n">to</span> <span class="n">FITS</span>
-<span class="n">measure</span> <span class="n">PRNU</span> <span class="ow">and</span> 
+<span class="n">measure</span> <span class="n">PRNU</span> <span class="ow">and</span>
 <span class="n">report</span> <span class="n">PRNU</span> <span class="n">figures</span>
 </pre></div>
 </div>
@@ -144,7 +142,7 @@ plot average profiles f. each CCD and Q (color coded by time)
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
         <span class="n">produce</span> <span class="n">mask</span> <span class="n">of</span> <span class="n">PR</span> <span class="n">defects</span>
         <span class="n">save</span> <span class="n">mask</span> <span class="n">of</span> <span class="n">PR</span> <span class="n">defects</span>
-        <span class="n">count</span> <span class="n">dead</span> <span class="n">pixels</span> <span class="o">/</span> <span class="n">columns</span> 
+        <span class="n">count</span> <span class="n">dead</span> <span class="n">pixels</span> <span class="o">/</span> <span class="n">columns</span>
 
 <span class="n">report</span> <span class="n">PR</span><span class="o">-</span><span class="n">defects</span> <span class="n">stats</span>
 </pre></div>
@@ -153,7 +151,7 @@ plot average profiles f. each CCD and Q (color coded by time)
 
 <dl class="method">
 <dt id="vison.flat.FLAT0X.FLAT0X.filterexposures">
-<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.filterexposures" title="Permalink to this definition">¶</a></dt>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -207,16 +205,14 @@ TEST: NL01</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">raf</td>
 </tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
-</tr>
 </tbody>
 </table>
 <dl class="class">
 <dt id="vison.flat.NL01.NL01">
-<em class="property">class </em><code class="descclassname">vison.flat.NL01.</code><code class="descname">NL01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.NL01" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.flat.NL01.</code><code class="descname">NL01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.NL01" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.flat.NL01.NL01.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.NL01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.NL01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds NL01 script structure dictionary.</p>
 <p>#:param expts: list of ints [ms], exposure times.
 #:param exptinter: int, ms, exposure time of interleaved source-stability exposures.
@@ -231,12 +227,12 @@ TEST: NL01</p>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">select</span> <span class="n">ObsIDs</span> <span class="k">with</span> <span class="n">fluence</span><span class="p">(</span><span class="n">exptime</span><span class="p">)</span> <span class="o">&gt;~</span> <span class="mf">0.5</span> <span class="n">FWC</span>
 
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span> 
-    <span class="n">CCD</span><span class="p">:</span> 
+<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
+    <span class="n">CCD</span><span class="p">:</span>
         <span class="n">Q</span><span class="p">:</span>
             <span class="n">measure</span> <span class="n">CTE</span> <span class="kn">from</span> <span class="nn">amount</span> <span class="n">of</span> <span class="n">charge</span> <span class="ow">in</span> <span class="n">over</span><span class="o">-</span><span class="n">scan</span> <span class="n">relative</span> <span class="n">to</span> <span class="n">fluence</span>
 
-<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">:</span> 
+<span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">:</span>
     <span class="n">Q</span><span class="p">:</span>
         <span class="n">get</span> <span class="n">curve</span> <span class="n">of</span> <span class="n">CTE</span> <span class="n">vs</span><span class="o">.</span> <span class="n">fluence</span>
         <span class="n">measure</span> <span class="n">FWC</span> <span class="kn">from</span> <span class="nn">curve</span> <span class="ow">in</span> <span class="n">ADU</span>
@@ -249,10 +245,10 @@ TEST: NL01</p>
 <dl class="method">
 <dt id="vison.flat.NL01.NL01.extract_stats">
 <code class="descname">extract_stats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.NL01.extract_stats" title="Permalink to this definition">¶</a></dt>
-<dd><p>Performs basic analysis: extracts statistics from 
+<dd><p>Performs basic analysis: extracts statistics from
 image regions to later build NLC.</p>
 <p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">create</span> <span class="n">segmentation</span> <span class="nb">map</span> <span class="n">given</span> <span class="n">grid</span> <span class="n">parameters</span>    
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">create</span> <span class="n">segmentation</span> <span class="nb">map</span> <span class="n">given</span> <span class="n">grid</span> <span class="n">parameters</span>
 
 <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
@@ -266,9 +262,9 @@ image regions to later build NLC.</p>
 
 <dl class="method">
 <dt id="vison.flat.NL01.NL01.filterexposures">
-<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.NL01.filterexposures" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads a list of Exposure Logs and selects exposures from test PSF0X.</p>
-<p>The filtering takes into account an expected structure for the 
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.NL01.filterexposures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a list of Exposure Logs and selects exposures from test NL01.</p>
+<p>The filtering takes into account an expected structure for the
 acquisition script.</p>
 <p>The datapath becomes another column in DataDict. This helps dealing
 with tests that run overnight and for which the input data is in several
@@ -283,10 +279,10 @@ date-folders.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
+            <span class="n">mask</span><span class="o">-</span><span class="n">out</span> <span class="n">bad</span> <span class="n">pixels</span>
+            <span class="n">mask</span><span class="o">-</span><span class="n">out</span> <span class="n">detector</span> <span class="n">cosmetics</span>
             <span class="n">subtract</span> <span class="n">offset</span>
-        <span class="n">opt</span><span class="p">:</span> <span class="p">[</span><span class="n">sub</span> <span class="n">bias</span> <span class="n">frame</span><span class="p">]</span>
-        <span class="n">opt</span><span class="p">:</span> <span class="p">[</span><span class="n">divide</span> <span class="n">by</span> <span class="n">FF</span><span class="p">]</span>
-        <span class="n">opt</span><span class="p">:</span> <span class="p">[</span><span class="n">mask</span><span class="o">-</span><span class="n">out</span> <span class="n">defects</span><span class="p">]</span>
+            <span class="n">opt</span><span class="p">:</span> <span class="p">[</span><span class="n">sub</span> <span class="n">bias</span> <span class="n">frame</span><span class="p">]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -300,7 +296,7 @@ date-folders.</p>
 <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">Q</span><span class="p">:</span>
 
-        <span class="p">[</span><span class="n">opt</span><span class="p">]</span> <span class="n">apply</span> <span class="n">correction</span> <span class="k">for</span> <span class="n">source</span> <span class="n">variability</span> <span class="p">(</span><span class="n">interspersed</span> <span class="n">exposure</span> 
+        <span class="p">[</span><span class="n">opt</span><span class="p">]</span> <span class="n">apply</span> <span class="n">correction</span> <span class="k">for</span> <span class="n">source</span> <span class="n">variability</span> <span class="p">(</span><span class="n">interspersed</span> <span class="n">exposure</span>
           <span class="k">with</span> <span class="n">constant</span> <span class="n">exptime</span><span class="p">)</span>
         <span class="n">Build</span> <span class="n">NL</span> <span class="n">Curve</span> <span class="p">(</span><span class="n">NLC</span><span class="p">)</span> <span class="o">-</span> <span class="n">use</span> <span class="n">stats</span> <span class="ow">and</span> <span class="n">exptimes</span>
         <span class="n">fit</span> <span class="n">poly</span><span class="o">.</span> <span class="n">shape</span> <span class="n">to</span> <span class="n">NL</span> <span class="n">curve</span>
@@ -311,17 +307,23 @@ date-folders.</p>
 </div>
 </dd></dl>
 
+<dl class="method">
+<dt id="vison.flat.NL01.NL01.recalibrate_exptimes">
+<code class="descname">recalibrate_exptimes</code><span class="sig-paren">(</span><em>exptimes</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL01.NL01.recalibrate_exptimes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Corrects exposure times given independent calibration of the shutter.</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
 <div class="section" id="module-vison.flat.PTC0X">
 <span id="ptc0x"></span><h2>PTC0X<a class="headerlink" href="#module-vison.flat.PTC0X" title="Permalink to this headline">¶</a></h2>
 <p>VIS Ground Calibration
-TEST: PTC_0X</p>
+TEST: PTC0X</p>
 <dl class="docutils">
 <dt>Photon-Transfer-Curve Analysis</dt>
 <dd>PTC01 - nominal temperature and wavelength
-PTC02 - alternative temperatures / wavelengths</dd>
+PTC02 - alternative temperatures / wavelengths / RD</dd>
 </dl>
 <p>Tasks:</p>
 <blockquote>
@@ -348,21 +350,25 @@ variance(binned difference-frames) vs. fluence</dd>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">raf</td>
 </tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
-</tr>
 </tbody>
 </table>
 <dl class="class">
 <dt id="vison.flat.PTC0X.PTC0X">
-<em class="property">class </em><code class="descclassname">vison.flat.PTC0X.</code><code class="descname">PTC0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">vison.flat.PTC0X.</code><code class="descname">PTC0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="vison.flat.PTC0X.PTC0X.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='6.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds PTC0X script structure dictionary.</p>
 <p>#:param exptimes: list of ints [ms], exposure times.
 #:param frames: list of ints, number of frames for each exposure time.
 #:param wavelength: int, wavelength. Default: 800 nm.
 :param diffvalues: dict, opt, differential values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vison.flat.PTC0X.PTC0X.extract_HER">
+<code class="descname">extract_HER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.extract_HER" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hard Edge Response Analysis</p>
 </dd></dl>
 
 <dl class="method">
@@ -392,8 +398,13 @@ variance(binned difference-frames) vs. fluence</dd>
 </dd></dl>
 
 <dl class="method">
+<dt id="vison.flat.PTC0X.PTC0X.f_extract_PTC">
+<code class="descname">f_extract_PTC</code><span class="sig-paren">(</span><em>ccdobjcol</em>, <em>medcol</em>, <em>varcol</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.f_extract_PTC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="vison.flat.PTC0X.PTC0X.filterexposures">
-<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explogf</em>, <em>datapath</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.filterexposures" title="Permalink to this definition">¶</a></dt>
+<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -489,7 +500,7 @@ gain, and gain(fluence)</p>
         <li class="right" >
           <a href="dark_scripts.html" title="“Dark Acquisitions” Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

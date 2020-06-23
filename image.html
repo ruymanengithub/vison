@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Image Analysis &#8212; vison 0.4+119.g8cde5f6 documentation</title>
+    <title>Image Analysis &#8212; vison 0.9+374.gd7313d7 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4+119.g8cde5f6',
+        VERSION:     '0.9+374.gd7313d7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -26,8 +26,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Monitoring (“Eyegore”)" href="eyegore.html" />
-    <link rel="prev" title="“Flat” Acq. Analysis Tools" href="flat.html" /> 
+    <link rel="next" title="Metatests" href="metatests.html" />
+    <link rel="prev" title="FPA Tests" href="fpatests.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -40,12 +40,12 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="eyegore.html" title="Monitoring (“Eyegore”)"
+          <a href="metatests.html" title="Metatests"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="flat.html" title="“Flat” Acq. Analysis Tools"
+          <a href="fpatests.html" title="FPA Tests"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -67,14 +67,149 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
 </tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
+</tbody>
+</table>
+<dl class="function">
+<dt id="vison.image.bits.get_histo_bits">
+<code class="descclassname">vison.image.bits.</code><code class="descname">get_histo_bits</code><span class="sig-paren">(</span><em>ccdobj</em>, <em>Q</em>, <em>vstart=0</em>, <em>vend=2086</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.bits.get_histo_bits" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-vison.image.calibration">
+<span id="calibration-py"></span><h2>calibration.py<a class="headerlink" href="#module-vison.image.calibration" title="Permalink to this headline">¶</a></h2>
+<p>Common use CDP functions / methods.</p>
+<p>Created on Thu Nov  2 16:54:28 2017</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
 </tr>
 </tbody>
 </table>
+<dl class="function">
+<dt id="vison.image.calibration.load_FITS_CDPs">
+<code class="descclassname">vison.image.calibration.</code><code class="descname">load_FITS_CDPs</code><span class="sig-paren">(</span><em>FDict</em>, <em>dataclass</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.calibration.load_FITS_CDPs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dummy function to load CDPs for all 3 CCDs.
+Input is of type dict(CCD1=&#8217;&#8216;,CCD2=&#8217;&#8216;,CCD3=&#8217;&#8216;)</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vison.image.cosmetics">
+<span id="cosmetics-py"></span><h2>cosmetics.py<a class="headerlink" href="#module-vison.image.cosmetics" title="Permalink to this headline">¶</a></h2>
+<p>Created on Wed Aug  1 11:55:12 2018</p>
+<p>&#64;author: Ruyman Azzollini</p>
+<dl class="function">
+<dt id="vison.image.cosmetics.get_Thresholding_DefectsMask">
+<code class="descclassname">vison.image.cosmetics.</code><code class="descname">get_Thresholding_DefectsMask</code><span class="sig-paren">(</span><em>maskdata</em>, <em>thresholds</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.cosmetics.get_Thresholding_DefectsMask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.image.cosmetics.mask_badcolumns">
+<code class="descclassname">vison.image.cosmetics.</code><code class="descname">mask_badcolumns</code><span class="sig-paren">(</span><em>mask</em>, <em>colthreshold=200</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.cosmetics.mask_badcolumns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flags entire column of pixels if N&gt;colthreshold pixels in column are bad.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vison.image.cosmetics.set_extrascans">
+<code class="descclassname">vison.image.cosmetics.</code><code class="descname">set_extrascans</code><span class="sig-paren">(</span><em>mask</em>, <em>val=0</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.cosmetics.set_extrascans" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-vison.image.covariance">
+<span id="covariance-py"></span><h2>covariance.py<a class="headerlink" href="#module-vison.image.covariance" title="Permalink to this headline">¶</a></h2>
+<p>Tools to retrieve covariance matrices for (differences of) Flat-Field images.
+Used in the context of Brighter-Fatter analysis, mainly.</p>
+<p>Created on Wed Mar  7 11:54:54 2018</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="vison.image.covariance.f_get_corrmap">
+<code class="descclassname">vison.image.covariance.</code><code class="descname">f_get_corrmap</code><span class="sig-paren">(</span><em>sq1</em>, <em>sq2</em>, <em>N</em>, <em>submodel=False</em>, <em>estimator='median'</em>, <em>clipsigma=4.0</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.covariance.f_get_corrmap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.image.covariance.f_get_corrmap_tests">
+<code class="descclassname">vison.image.covariance.</code><code class="descname">f_get_corrmap_tests</code><span class="sig-paren">(</span><em>sq1</em>, <em>sq2</em>, <em>N</em>, <em>submodel=False</em>, <em>estimator='median'</em>, <em>clipsigma=4.0</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.covariance.f_get_corrmap_tests" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.image.covariance.f_get_corrmap_v2">
+<code class="descclassname">vison.image.covariance.</code><code class="descname">f_get_corrmap_v2</code><span class="sig-paren">(</span><em>sq1</em>, <em>sq2</em>, <em>N</em>, <em>submodel=False</em>, <em>estimator='median'</em>, <em>clipsigma=4.0</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.covariance.f_get_corrmap_v2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.image.covariance.get_cov_maps">
+<code class="descclassname">vison.image.covariance.</code><code class="descname">get_cov_maps</code><span class="sig-paren">(</span><em>ccdobjList</em>, <em>Npix=4</em>, <em>vstart=0</em>, <em>vend=2066</em>, <em>clipsigma=4.0</em>, <em>covfunc='ver1'</em>, <em>doBiasCorr=False</em>, <em>central='median'</em>, <em>doTest=False</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.covariance.get_cov_maps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.image.covariance.get_sigmaclipcorr">
+<code class="descclassname">vison.image.covariance.</code><code class="descname">get_sigmaclipcorr</code><span class="sig-paren">(</span><em>vardif</em>, <em>clipsigma</em>, <em>estimator</em>, <em>dims=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.covariance.get_sigmaclipcorr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-vison.image.ds9reg">
+<span id="ds9reg-py"></span><h2>ds9reg.py<a class="headerlink" href="#module-vison.image.ds9reg" title="Permalink to this headline">¶</a></h2>
+<p>DS9 Regions tool.</p>
+<p>Created on Fri May 18 15:02:07 2018</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">raf</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="vison.image.ds9reg.get_body_circles">
+<code class="descclassname">vison.image.ds9reg.</code><code class="descname">get_body_circles</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>R=None</em>, <em>radius=6.0</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.ds9reg.get_body_circles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.image.ds9reg.get_body_ellipses">
+<code class="descclassname">vison.image.ds9reg.</code><code class="descname">get_body_ellipses</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>A=None</em>, <em>B=None</em>, <em>THETA=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.ds9reg.get_body_ellipses" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.image.ds9reg.save_spots_as_ds9regs">
+<code class="descclassname">vison.image.ds9reg.</code><code class="descname">save_spots_as_ds9regs</code><span class="sig-paren">(</span><em>data</em>, <em>regfilename=None</em>, <em>regfile=None</em>, <em>regtype='circle'</em>, <em>clobber=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.ds9reg.save_spots_as_ds9regs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-vison.image.performance">
+<span id="performance-py"></span><h2>performance.py<a class="headerlink" href="#module-vison.image.performance" title="Permalink to this headline">¶</a></h2>
+<p>Performance parameters of the ROE+CCDs.
+Compilation of CCD offsets, offset gradients, RONs... used for
+checks.</p>
+<p>Created on Wed Nov  1 09:57:44 2017</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="vison.image.performance.get_offsets_lims">
+<code class="descclassname">vison.image.performance.</code><code class="descname">get_offsets_lims</code><span class="sig-paren">(</span><em>offsets</em>, <em>offsets_margins</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.performance.get_offsets_lims" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vison.image.performance.get_perf_rdout">
+<code class="descclassname">vison.image.performance.</code><code class="descname">get_perf_rdout</code><span class="sig-paren">(</span><em>BLOCKID</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.performance.get_perf_rdout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="module-vison.image.pixbounce">
 <span id="pixbounce-py"></span><h2>pixbounce.py<a class="headerlink" href="#module-vison.image.pixbounce" title="Permalink to this headline">¶</a></h2>
-<p>Euclid-VIS Ground Calibration Campaign</p>
 <p>Pixel Bounce Analysis methods.</p>
 <p>Created on Fri Mar  9 09:50:16 2018</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -83,18 +218,49 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
 </tr>
-<tr class="field-even field"><th class="field-name">contact:</th><td class="field-body">r.azzollini_at_ucl.ac.uk</td>
-</tr>
 </tbody>
 </table>
 <dl class="function">
 <dt id="vison.image.pixbounce.get_pixbounce_from_overscan">
-<code class="descclassname">vison.image.pixbounce.</code><code class="descname">get_pixbounce_from_overscan</code><span class="sig-paren">(</span><em>ccdobj, thresholds=[0, 65536.0]</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.pixbounce.get_pixbounce_from_overscan" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves Hard Edge Respose for all Quadrants of a CCD. 
+<code class="descclassname">vison.image.pixbounce.</code><code class="descname">get_pixbounce_from_overscan</code><span class="sig-paren">(</span><em>ccdobj</em>, <em>thresholds=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.pixbounce.get_pixbounce_from_overscan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves Hard Edge Respose for all Quadrants of a CCD.
 Uses the transition from image to overscan (along rows). Averages
-across rows. Input image should have high image-area fluence but not 
+across rows. Input image should have high image-area fluence but not
 saturating. Rows can be filtered by average fluence in them via &#8220;thresholds&#8221;
 keyword. Do not use on images acquired with irradiated CCDs.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vison.image.sextractor">
+<span id="sextractor-py"></span><h2>sextractor.py<a class="headerlink" href="#module-vison.image.sextractor" title="Permalink to this headline">¶</a></h2>
+<p>Sextractor interface.</p>
+<p>Created on Thu May 17 13:29:05 2018</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">raf</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="vison.image.sextractor.VSExtractor">
+<em class="property">class </em><code class="descclassname">vison.image.sextractor.</code><code class="descname">VSExtractor</code><span class="sig-paren">(</span><em>img=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.sextractor.VSExtractor" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vison.image.sextractor.VSExtractor.load_catalog">
+<code class="descname">load_catalog</code><span class="sig-paren">(</span><em>catpath</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.sextractor.VSExtractor.load_catalog" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.image.sextractor.VSExtractor.run_SEx">
+<code class="descname">run_SEx</code><span class="sig-paren">(</span><em>catroot</em>, <em>config=None</em>, <em>checks=None</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.sextractor.VSExtractor.run_SEx" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vison.image.sextractor.VSExtractor.save_img_to_tmp">
+<code class="descname">save_img_to_tmp</code><span class="sig-paren">(</span><em>img</em>, <em>delete=True</em>, <em>close=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.image.sextractor.VSExtractor.save_img_to_tmp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>
@@ -113,17 +279,23 @@ keyword. Do not use on images acquired with irradiated CCDs.</p>
   <ul>
 <li><a class="reference internal" href="#">Image Analysis</a><ul>
 <li><a class="reference internal" href="#module-vison.image.bits">bits.py</a></li>
+<li><a class="reference internal" href="#module-vison.image.calibration">calibration.py</a></li>
+<li><a class="reference internal" href="#module-vison.image.cosmetics">cosmetics.py</a></li>
+<li><a class="reference internal" href="#module-vison.image.covariance">covariance.py</a></li>
+<li><a class="reference internal" href="#module-vison.image.ds9reg">ds9reg.py</a></li>
+<li><a class="reference internal" href="#module-vison.image.performance">performance.py</a></li>
 <li><a class="reference internal" href="#module-vison.image.pixbounce">pixbounce.py</a></li>
+<li><a class="reference internal" href="#module-vison.image.sextractor">sextractor.py</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="flat.html"
-                        title="previous chapter">&#8220;Flat&#8221; Acq. Analysis Tools</a></p>
+  <p class="topless"><a href="fpatests.html"
+                        title="previous chapter">FPA Tests</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="eyegore.html"
-                        title="next chapter">Monitoring (&#8220;Eyegore&#8221;)</a></p>
+  <p class="topless"><a href="metatests.html"
+                        title="next chapter">Metatests</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -155,12 +327,12 @@ keyword. Do not use on images acquired with irradiated CCDs.</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="eyegore.html" title="Monitoring (“Eyegore”)"
+          <a href="metatests.html" title="Metatests"
              >next</a> |</li>
         <li class="right" >
-          <a href="flat.html" title="“Flat” Acq. Analysis Tools"
+          <a href="fpatests.html" title="FPA Tests"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.4+119.g8cde5f6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
