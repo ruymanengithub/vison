@@ -43,15 +43,53 @@ All tests in the campaign have an associated class, which inherits from **Task**
     :align: center
     :width: 500
 
-These Task subclasses have some methods which are common to all tests and are worth explaining what they do:
+
+
+
+Delving into the Task class
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Because the **Task** class is central to the workings of the pipeline, as it is "what tests are made of", let's have a closer look at its methods and attributes.
+
+First, the **Attributes**, in a lax order of relevance:
+
+* **dd**: an instance of the class datamodels.core.DataDict (see :ref:`datamodel`/core.py). This is where almost all key data needed to perform analysis of the test is stored. Basically, it is a copy of the EXPLOG for the test, with HK added. Then, as the analysis of the Task progresses, more data from the analysis performed gets added to dd. dd is saved after each subtask in the task is executed, and reloaded before starting the next, to keep an updated hardcopy throught the analysis work, in case the task is interrupted unexpectedly, to be able to retake it from the last step.
+* **report**: This is an instance of the class *support.report.Report*. It is populated with tables, statements and figures as the task execution progresses. The report has a *.doreport()* method that generates a LaTeX version of itself, and compiles it to a .pdf file.
+* **BLOCKID**: a character string with a label identifying the block (piece of hardware) being analysed / worked on. In the VGCC these were names of famous physicists. These BLOCKID labels are used in loading inputs specific to the block (for example, expected values of offsets for each quadrant), or labelling some outputs.
+* **CHAMBER**: a character to distinguish the chamber where the analysis of the data is to be conducted (when writing scripts), or has been conducted (when analysing data). Used, for example, to load specific tables with exposure times, focus positions, and other OGSE-related parameters.
+* HKKeys: a list with the list of HK parameters from HK files to be added to the **DataDict**.
+* **CDP_lib**: This is dictionary with the pairs of keywords and CDP objects. The CDP contents are added as the task progresses, and dumped as they are generated, usually towards the end of the execution of the task (in the "meta analysis" method).
+* **ccdcalc**: an empty CCD object, created just to access to have at hand attributes (e.g. CCD dimensions) and methods (e.g. coordinates transformations) at any point in the task execution.
+* **figdict**: a dictionary with pairs of figure keywords and 2 element lists. 
+* **inpdefaults**: dictionary with default values of task inputs.
+* **inputs**: the dictionary with inputs that is used to execute the subtasks. Populated at runtime.
+* **inputsclass**: this is a class that can validate input values on ingestion of inputs. It is used by *set_inpdefaults()* method to set the *.inpdefaults* attribute.
+* **log**: an instance of the class support.logger._myLogger. This is used to create a log that is "loaned" by the pipeline to the tasks while they are executing so that there is a common .txt log file to cover the whole execution of the pipeline.
+* name:
+* **ogse**: an instance of the class *ogse.ogse.Ogse*. This object is used to load and access information regarding the ogse, such as exposure times, for example.
+* **perfdefaults**: dictionary with (default) performance limits.
+* **perflimits**: dictionary with performance limits.
+* **subtasks**: This is a list with the subtasks that are part of the task. Each entry has a keyword/name, and a method of the task class.
+
+
+And regarding methods, these are the most important (common ones):
 
 * **build_scriptdict()**: builds the a dictionary with the structure of the data acquisition of the test. This is, assigns values to each of the keywords in the *excel script* used to acquire the data, and for each column (exposure) in the script, according to the internal structure of the test inherent to the class (usually with some free parameters accessible to input parameters). 
+* **set_inpdefaults()**: [defined at child classes, i.e. specific test classes] executed at instantiation (__init__()), this method populates *self.inpdefaults*, a dictioary with default inputs. These defaults are either too common, or they are just required to be able to instantiate the class, even if it's just to access some of its method, but not to do actual data analysis with it.
+* **set_perfdefaults()**: this method sets values to the dictionary of default performance limits, *self.perdefaults*. These limits may be updated / overriden at run time by adding a dictionary named 'perflimits' to the pipeline inputs (*inputdict* in the input configuration script).
 * **filterexposures()**: This method sub-selects the exposures in the (ELVIS generated) EXPLOG that correspond to the test, taking into account the values in the *Test* column, and usually a user-specified range of OBSIDs to consider. It also validates the acquisition parameters (collected in the EXPLOG) against the expected structure of the test.
-* **check_data()** (in parent class DarkTask): This abstract method performs validation of the HK and the image values (e.g. RON, offsets, fluences) against expected values, according to the test design. The polymorphism of this method, which has to catter to the structure of very different tests, is managed through the call to sub-methods which are test-specific (and thus subclass-specific).
-* **prep_data()**: Prepares images for further analysis. For example, converting the FITS files to CCD objects with analysis methods, subtracting offsets, dividing by flat-fields, etc. Depending on the test/subclass, it will perform different corrections.
+* **check_data()**: This abstract method performs validation of the HK and the image values (e.g. RON, offsets, fluences) against expected values, according to the test design. The polymorphism of this method, which has to catter to the structure of very different tests, is managed through the call to sub-methods which are test-specific (and thus subclass-specific).
+* ***prepare_images()**: Prepares images for further analysis. For example, converting the FITS files to CCD objects which *carry* analysis methods, subtracting offsets, dividing by flat-fields, etc. Depending on the test/subclass, it will perform different corrections.
+* **addFigures_ST()**: adds a number of figures to the test report object, *self.report*. It uses the methods self.doPlot() and self.addFigure2Report().
+* **doPlot()**: instantiates a figure object, and makes it dump the figure (to *render*) to a hard copy (a .png file).
+* **addFigure2Report()**: Takes the figure file from the figure object and adds it to *self.report*.
+* **save_progress()**: Saves self.dd and self.report to hardcopy files to save progress.
+* **recover_progress()**: Reloads dd and report from hardcopies generated by self.save_progress().
+
+Then, other common methods of Task subclasses are:
+
 * **basic_analysis()**: This is a generic method that performs the basic steps of analysis. For example, in the case of PTC analysis, this method may just extract means and variances from the pairs of images in the sequnce acquired.
 * **meta_analysis()**: This is another generic method, that usually performs the important / final part of the analysis, building on the preparation of images and the *basic_analysis()* performed before. In the example of the PTC analysis, this method actually builds the PTC curves and extracts the gain and other parameters from its analysis.
-
 
 
 
@@ -187,3 +225,8 @@ See :ref:`datamodel`
 
 Reusing / adapting the code
 ---------------------------
+
+.. toctree::
+    :maxdepth: 4
+    
+    reuse

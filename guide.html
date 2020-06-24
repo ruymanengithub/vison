@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Code Guide &#8212; vison 0.9+374.gd7313d7 documentation</title>
+    <title>Code Guide &#8212; vison 0.9+378.g80283fd documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9+374.gd7313d7',
+        VERSION:     '0.9+378.g80283fd',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Pipeline" href="pipe.html" />
+    <link rel="next" title="Repurposing the vison package" href="reuse.html" />
     <link rel="prev" title="vison cook-book" href="cookbook.html" /> 
   </head>
   <body role="document">
@@ -40,12 +40,12 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pipe.html" title="Pipeline"
+          <a href="reuse.html" title="Repurposing the vison package"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="cookbook.html" title="vison cook-book"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+378.g80283fd documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -87,15 +87,49 @@
 <div class="figure align-center">
 <a class="reference internal image-reference" href="_images/classes_dark.png"><img alt="_images/classes_dark.png" src="_images/classes_dark.png" style="width: 500px;" /></a>
 </div>
-<p>These Task subclasses have some methods which are common to all tests and are worth explaining what they do:</p>
+<div class="section" id="delving-into-the-task-class">
+<h3>Delving into the Task class<a class="headerlink" href="#delving-into-the-task-class" title="Permalink to this headline">¶</a></h3>
+<p>Because the <strong>Task</strong> class is central to the workings of the pipeline, as it is &#8220;what tests are made of&#8221;, let&#8217;s have a closer look at its methods and attributes.</p>
+<p>First, the <strong>Attributes</strong>, in a lax order of relevance:</p>
+<ul class="simple">
+<li><strong>dd</strong>: an instance of the class datamodels.core.DataDict (see <a class="reference internal" href="datamodel.html#datamodel"><span class="std std-ref">Data Model</span></a>/core.py). This is where almost all key data needed to perform analysis of the test is stored. Basically, it is a copy of the EXPLOG for the test, with HK added. Then, as the analysis of the Task progresses, more data from the analysis performed gets added to dd. dd is saved after each subtask in the task is executed, and reloaded before starting the next, to keep an updated hardcopy throught the analysis work, in case the task is interrupted unexpectedly, to be able to retake it from the last step.</li>
+<li><strong>report</strong>: This is an instance of the class <em>support.report.Report</em>. It is populated with tables, statements and figures as the task execution progresses. The report has a <em>.doreport()</em> method that generates a LaTeX version of itself, and compiles it to a .pdf file.</li>
+<li><strong>BLOCKID</strong>: a character string with a label identifying the block (piece of hardware) being analysed / worked on. In the VGCC these were names of famous physicists. These BLOCKID labels are used in loading inputs specific to the block (for example, expected values of offsets for each quadrant), or labelling some outputs.</li>
+<li><strong>CHAMBER</strong>: a character to distinguish the chamber where the analysis of the data is to be conducted (when writing scripts), or has been conducted (when analysing data). Used, for example, to load specific tables with exposure times, focus positions, and other OGSE-related parameters.</li>
+<li>HKKeys: a list with the list of HK parameters from HK files to be added to the <strong>DataDict</strong>.</li>
+<li><strong>CDP_lib</strong>: This is dictionary with the pairs of keywords and CDP objects. The CDP contents are added as the task progresses, and dumped as they are generated, usually towards the end of the execution of the task (in the &#8220;meta analysis&#8221; method).</li>
+<li><strong>ccdcalc</strong>: an empty CCD object, created just to access to have at hand attributes (e.g. CCD dimensions) and methods (e.g. coordinates transformations) at any point in the task execution.</li>
+<li><strong>figdict</strong>: a dictionary with pairs of figure keywords and 2 element lists.</li>
+<li><strong>inpdefaults</strong>: dictionary with default values of task inputs.</li>
+<li><strong>inputs</strong>: the dictionary with inputs that is used to execute the subtasks. Populated at runtime.</li>
+<li><strong>inputsclass</strong>: this is a class that can validate input values on ingestion of inputs. It is used by <em>set_inpdefaults()</em> method to set the <em>.inpdefaults</em> attribute.</li>
+<li><strong>log</strong>: an instance of the class support.logger._myLogger. This is used to create a log that is &#8220;loaned&#8221; by the pipeline to the tasks while they are executing so that there is a common .txt log file to cover the whole execution of the pipeline.</li>
+<li>name:</li>
+<li><strong>ogse</strong>: an instance of the class <em>ogse.ogse.Ogse</em>. This object is used to load and access information regarding the ogse, such as exposure times, for example.</li>
+<li><strong>perfdefaults</strong>: dictionary with (default) performance limits.</li>
+<li><strong>perflimits</strong>: dictionary with performance limits.</li>
+<li><strong>subtasks</strong>: This is a list with the subtasks that are part of the task. Each entry has a keyword/name, and a method of the task class.</li>
+</ul>
+<p>And regarding methods, these are the most important (common ones):</p>
 <ul class="simple">
 <li><strong>build_scriptdict()</strong>: builds the a dictionary with the structure of the data acquisition of the test. This is, assigns values to each of the keywords in the <em>excel script</em> used to acquire the data, and for each column (exposure) in the script, according to the internal structure of the test inherent to the class (usually with some free parameters accessible to input parameters).</li>
+<li><strong>set_inpdefaults()</strong>: [defined at child classes, i.e. specific test classes] executed at instantiation (__init__()), this method populates <em>self.inpdefaults</em>, a dictioary with default inputs. These defaults are either too common, or they are just required to be able to instantiate the class, even if it&#8217;s just to access some of its method, but not to do actual data analysis with it.</li>
+<li><strong>set_perfdefaults()</strong>: this method sets values to the dictionary of default performance limits, <em>self.perdefaults</em>. These limits may be updated / overriden at run time by adding a dictionary named &#8216;perflimits&#8217; to the pipeline inputs (<em>inputdict</em> in the input configuration script).</li>
 <li><strong>filterexposures()</strong>: This method sub-selects the exposures in the (ELVIS generated) EXPLOG that correspond to the test, taking into account the values in the <em>Test</em> column, and usually a user-specified range of OBSIDs to consider. It also validates the acquisition parameters (collected in the EXPLOG) against the expected structure of the test.</li>
-<li><strong>check_data()</strong> (in parent class DarkTask): This abstract method performs validation of the HK and the image values (e.g. RON, offsets, fluences) against expected values, according to the test design. The polymorphism of this method, which has to catter to the structure of very different tests, is managed through the call to sub-methods which are test-specific (and thus subclass-specific).</li>
-<li><strong>prep_data()</strong>: Prepares images for further analysis. For example, converting the FITS files to CCD objects with analysis methods, subtracting offsets, dividing by flat-fields, etc. Depending on the test/subclass, it will perform different corrections.</li>
+<li><strong>check_data()</strong>: This abstract method performs validation of the HK and the image values (e.g. RON, offsets, fluences) against expected values, according to the test design. The polymorphism of this method, which has to catter to the structure of very different tests, is managed through the call to sub-methods which are test-specific (and thus subclass-specific).</li>
+<li><strong>*prepare_images()</strong>: Prepares images for further analysis. For example, converting the FITS files to CCD objects which <em>carry</em> analysis methods, subtracting offsets, dividing by flat-fields, etc. Depending on the test/subclass, it will perform different corrections.</li>
+<li><strong>addFigures_ST()</strong>: adds a number of figures to the test report object, <em>self.report</em>. It uses the methods self.doPlot() and self.addFigure2Report().</li>
+<li><strong>doPlot()</strong>: instantiates a figure object, and makes it dump the figure (to <em>render</em>) to a hard copy (a .png file).</li>
+<li><strong>addFigure2Report()</strong>: Takes the figure file from the figure object and adds it to <em>self.report</em>.</li>
+<li><strong>save_progress()</strong>: Saves self.dd and self.report to hardcopy files to save progress.</li>
+<li><strong>recover_progress()</strong>: Reloads dd and report from hardcopies generated by self.save_progress().</li>
+</ul>
+<p>Then, other common methods of Task subclasses are:</p>
+<ul class="simple">
 <li><strong>basic_analysis()</strong>: This is a generic method that performs the basic steps of analysis. For example, in the case of PTC analysis, this method may just extract means and variances from the pairs of images in the sequnce acquired.</li>
 <li><strong>meta_analysis()</strong>: This is another generic method, that usually performs the important / final part of the analysis, building on the preparation of images and the <em>basic_analysis()</em> performed before. In the example of the PTC analysis, this method actually builds the PTC curves and extracts the gain and other parameters from its analysis.</li>
 </ul>
+</div>
 </div>
 <div class="section" id="code-flow">
 <h2>Code Flow<a class="headerlink" href="#code-flow" title="Permalink to this headline">¶</a></h2>
@@ -351,6 +385,11 @@ resultsroot, taskinputs[&#8216;resultspath&#8217;])</p>
 </div>
 <div class="section" id="reusing-adapting-the-code">
 <h2>Reusing / adapting the code<a class="headerlink" href="#reusing-adapting-the-code" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="reuse.html">Repurposing the vison package</a></li>
+</ul>
+</div>
 </div>
 </div>
 
@@ -367,7 +406,10 @@ resultsroot, taskinputs[&#8216;resultspath&#8217;])</p>
   <ul>
 <li><a class="reference internal" href="#">Code Guide</a><ul>
 <li><a class="reference internal" href="#capabilities-of-the-code">Capabilities of the Code</a></li>
-<li><a class="reference internal" href="#code-architecture">Code Architecture</a></li>
+<li><a class="reference internal" href="#code-architecture">Code Architecture</a><ul>
+<li><a class="reference internal" href="#delving-into-the-task-class">Delving into the Task class</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#code-flow">Code Flow</a><ul>
 <li><a class="reference internal" href="#data-set-analysis">Data-set Analysis</a></li>
 </ul>
@@ -382,8 +424,8 @@ resultsroot, taskinputs[&#8216;resultspath&#8217;])</p>
   <p class="topless"><a href="cookbook.html"
                         title="previous chapter">vison cook-book</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="pipe.html"
-                        title="next chapter">Pipeline</a></p>
+  <p class="topless"><a href="reuse.html"
+                        title="next chapter">Repurposing the vison package</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -415,16 +457,16 @@ resultsroot, taskinputs[&#8216;resultspath&#8217;])</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pipe.html" title="Pipeline"
+          <a href="reuse.html" title="Repurposing the vison package"
              >next</a> |</li>
         <li class="right" >
           <a href="cookbook.html" title="vison cook-book"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+378.g80283fd documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, Ruyman Azzollini.
+        &#169; Copyright 2020, Ruyman Azzollini.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>

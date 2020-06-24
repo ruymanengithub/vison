@@ -14,7 +14,7 @@ Contents:
    source/includeme
 
 :Author: Ruyman Azzollini
-:Contact: r.azzollini_at_ucl.ac.uk
+:Contact: <e-mail Ruyman Azzollini at UCL>
 :issue: |release|
 :version: |version|
 :date: |today|
@@ -97,6 +97,16 @@ Analysis (Shared)
     :maxdepth: 4
 
     analysis
+
+
+Test Campaign Definitions
+=========================
+
+.. toctree::
+  :maxdepth: 4
+
+  campaign
+
 
 
 Charge Injection Tools

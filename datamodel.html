@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Data Model &#8212; vison 0.9+374.gd7313d7 documentation</title>
+    <title>Data Model &#8212; vison 0.9+378.g80283fd documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9+374.gd7313d7',
+        VERSION:     '0.9+378.g80283fd',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="pipe.html" title="Pipeline"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+378.g80283fd documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -56,9 +56,9 @@
             
   <div class="section" id="data-model">
 <span id="datamodel"></span><h1>Data Model<a class="headerlink" href="#data-model" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-vison.datamodel.ccd">
-<span id="ccd-py"></span><h2>ccd.py<a class="headerlink" href="#module-vison.datamodel.ccd" title="Permalink to this headline">¶</a></h2>
-<p>Data model for Euclid-VIS CCDs (ground testing at MSSL).</p>
+<div class="section" id="ccd-py">
+<h2>ccd.py<a class="headerlink" href="#ccd-py" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vison.datamodel.ccd"></span><p>Data model for Euclid-VIS CCDs (ground testing at MSSL).</p>
 <p>VIS CCDs have 4 quadrants (E,F,G &amp; H). Each quadrant has 2048 (hor.) x 2066 (ver.) active pixels.
 To these we have to add 51 columns of prescan and 20 columns of overscan (29 in flight/FM). There 
 are also 20 lines of parallel overscan. These pre and over scan pixels are virtual.</p>
@@ -125,7 +125,7 @@ top-right for F and bottom-right for G.</li>
 
 <dl class="method">
 <dt id="vison.datamodel.ccd.CCD.add_to_hist">
-<code class="descname">add_to_hist</code><span class="sig-paren">(</span><em>action</em>, <em>extension=-1</em>, <em>vison=u'0.9+374.gd7313d7'</em>, <em>params={}</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.add_to_hist" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_to_hist</code><span class="sig-paren">(</span><em>action</em>, <em>extension=-1</em>, <em>vison=u'0.9+378.g80283fd'</em>, <em>params={}</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.add_to_hist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds information to historial of operations applied on object.</p>
 </dd></dl>
 
@@ -576,9 +576,9 @@ a label, and data.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-vison.datamodel.cdp">
-<span id="cdp-py"></span><h2>cdp.py<a class="headerlink" href="#module-vison.datamodel.cdp" title="Permalink to this headline">¶</a></h2>
-<p>Classes to store Calibration Data Products.</p>
+<div class="section" id="cdp-py">
+<h2>cdp.py<a class="headerlink" href="#cdp-py" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vison.datamodel.cdp"></span><p>Classes to store Calibration Data Products.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -852,9 +852,9 @@ a label, and data.</p>
 <dd></dd></dl>
 
 </div>
-<div class="section" id="module-vison.datamodel.core">
-<span id="core-py"></span><h2>core.py<a class="headerlink" href="#module-vison.datamodel.core" title="Permalink to this headline">¶</a></h2>
-<div class="line-block">
+<div class="section" id="core-py">
+<h2>core.py<a class="headerlink" href="#core-py" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vison.datamodel.core"></span><div class="line-block">
 <div class="line">DataDict Class : holds data and results across sub-tasks of a &#8220;task&#8221; (Test).</div>
 <div class="line">This is the <strong>CORE data-structure</strong> used to do analysis and report results.</div>
 </div>
@@ -1067,9 +1067,9 @@ object associated.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-vison.datamodel.elvis">
-<span id="elvis-py"></span><h2>elvis.py<a class="headerlink" href="#module-vison.datamodel.elvis" title="Permalink to this headline">¶</a></h2>
-<p>ELVIS variables dictionaries.</p>
+<div class="section" id="elvis-py">
+<h2>elvis.py<a class="headerlink" href="#elvis-py" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vison.datamodel.elvis"></span><p>ELVIS variables dictionaries.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1300,9 +1300,9 @@ IniSweep?,+etc.</div></blockquote>
 <dd></dd></dl>
 
 </div>
-<div class="section" id="module-vison.datamodel.HKtools">
-<span id="hktools-py"></span><h2>HKtools.py<a class="headerlink" href="#module-vison.datamodel.HKtools" title="Permalink to this headline">¶</a></h2>
-<p>House-Keeping inspection and handling tools.</p>
+<div class="section" id="hktools-py">
+<h2>HKtools.py<a class="headerlink" href="#hktools-py" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vison.datamodel.HKtools"></span><p>House-Keeping inspection and handling tools.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1756,17 +1756,17 @@ commvalues.</li>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Data Model</a><ul>
-<li><a class="reference internal" href="#module-vison.datamodel.ccd">ccd.py</a></li>
+<li><a class="reference internal" href="#ccd-py">ccd.py</a></li>
 <li><a class="reference internal" href="#module-vison.datamodel.ccd_aux">ccd_aux.py</a></li>
-<li><a class="reference internal" href="#module-vison.datamodel.cdp">cdp.py</a></li>
+<li><a class="reference internal" href="#cdp-py">cdp.py</a></li>
 <li><a class="reference internal" href="#module-vison.datamodel.ccdsim">ccdsim.py</a></li>
 <li><a class="reference internal" href="#module-vison.datamodel.compliance">compliance.py</a></li>
-<li><a class="reference internal" href="#module-vison.datamodel.core">core.py</a></li>
-<li><a class="reference internal" href="#module-vison.datamodel.elvis">elvis.py</a></li>
+<li><a class="reference internal" href="#core-py">core.py</a></li>
+<li><a class="reference internal" href="#elvis-py">elvis.py</a></li>
 <li><a class="reference internal" href="#module-vison.datamodel.EXPLOGtools">EXPLOGtools.py</a></li>
 <li><a class="reference internal" href="#module-vison.datamodel.fpa_dm">fpa_dm.py</a></li>
 <li><a class="reference internal" href="#module-vison.datamodel.generator">generator.py</a></li>
-<li><a class="reference internal" href="#module-vison.datamodel.HKtools">HKtools.py</a></li>
+<li><a class="reference internal" href="#hktools-py">HKtools.py</a></li>
 <li><a class="reference internal" href="#module-vison.datamodel.inputs">inputs.py</a></li>
 <li><a class="reference internal" href="#module-vison.datamodel.QLAtools">QLAtools.py</a></li>
 <li><a class="reference internal" href="#module-vison.datamodel.scriptic">scriptic.py</a></li>
@@ -1816,11 +1816,11 @@ commvalues.</li>
         <li class="right" >
           <a href="pipe.html" title="Pipeline"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+374.gd7313d7 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+378.g80283fd documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, Ruyman Azzollini.
+        &#169; Copyright 2020, Ruyman Azzollini.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>
