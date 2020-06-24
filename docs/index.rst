@@ -14,7 +14,7 @@ Contents:
    source/includeme
 
 :Author: Ruyman Azzollini
-:Contact: r.azzollini_at_ucl.ac.uk
+:Contact: <e-mail Ruyman Azzollini at UCL>
 :issue: |release|
 :version: |version|
 :date: |today|
