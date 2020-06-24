@@ -4,7 +4,7 @@
 
 Description of the Ground Calibration Campaign.
 
-
+:History:
 Created on Wed Oct 11 11:43:54 2017
 
 :author: Ruyman Azzollini
@@ -34,7 +34,13 @@ from vison.support import utils
 
 def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                            CHAMBER=None, purpose='scripts'):
-    """Now supporting test repetitions."""
+    """
+    | Function that generates a number of tests, as instances of their corresponding
+    task classes. 
+
+    | Aimed at the VGCC.
+
+    | Now supporting test repetitions."""
     taskslist = toGen.keys()
     test_sequence = OrderedDict()
     for taskname in taskslist:

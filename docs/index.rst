@@ -99,6 +99,16 @@ Analysis (Shared)
     analysis
 
 
+Test Campaign Definitions
+=========================
+
+.. toctree::
+  :maxdepth: 4
+
+  campaign
+
+
+
 Charge Injection Tools
 ======================
 

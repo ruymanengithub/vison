@@ -58,14 +58,14 @@ vis_run_xtalk.py
 
 
 vis_ROE_LinCalib.py
------------------
+-------------------
 
 .. automodule:: vison.scripts.vis_ROE_LinCalib
     :members:
 
 
 vis_ROETAB_LinCalib.py
---------------------
+----------------------
 
 .. automodule:: vison.scripts.vis_ROETAB_LinCalib
     :members:
