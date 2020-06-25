@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Repurposing the vison package &#8212; vison 0.9+378.g80283fd documentation</title>
+    <title>Repurposing the vison package &#8212; vison 0.9+380.g343fa63 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9+378.g80283fd',
+        VERSION:     '0.9+380.g343fa63',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="guide.html" title="Code Guide"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+378.g80283fd documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+380.g343fa63 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="guide.html" accesskey="U">Code Guide</a> &#187;</li> 
       </ul>
     </div>  
@@ -57,6 +57,48 @@
             
   <div class="section" id="repurposing-the-vison-package">
 <span id="reuse"></span><h1>Repurposing the vison package<a class="headerlink" href="#repurposing-the-vison-package" title="Permalink to this headline">¶</a></h1>
+<p>Could we reuse this package to write scripts, monitor the data acquisition, analyze data, etc. from other instruments? Probably, but it is not straight-forward, at best. Let me first describe the current situation, enumerating all aspects that make the code specific to the VGCC:</p>
+<ul class="simple">
+<li>The test definitions are specific to the VGCC, obviously. These specificity is mostly embodied in the methods of the Task classes (specifically through the .build_scriptdict() method, but also in the other methods which expect a particular test structure). Then, the campaign description itself, with the specific values of free parameters of the tests (e.g. exposure times, or number of frames, as in some tests), is also specific. This second aspect is much easier to modify than the test/task classes, of course.</li>
+<li>The main data structure for each task is the <em>dd</em> attribute (DataDict instance). This comes shaped by the EXPLOG output by ELVIS. The specific column names and contents in the EXPLOG, and the HK files can be relatively easy modified, as their format and contents are handled through specific modules/functions, but probably quite a few things could break if the format of the EXPLOG or HK files was different (if they are not there at all, then that probably would make the possibility of &#8220;migration&#8221; to vanish... it could be better to start from scratch).</li>
+<li>Insisting on the DataDict catalog / data structure, this is a <em>monster</em> of its own, and I was to write the code again, I&#8217;d consider using something less contrived. Probably I&#8217;d go for a pandas or an astropy table structure, or an object that would encapsulate an object of that kind. It could be done, and it could be worth it, if the code was to be reused for more than a single mission, but that would require knowledge of the code, not to waste too much time finding your way through the code.</li>
+<li>The analysis of the images relies mostly on an object, the CCD class, which is shaped according to the Euclid CCDs. It would not be too difficult to repurpose this as a CCD with other dimensions and architecture, because things are mostly defined just once, but it&#8217;s not trivial either.</li>
+<li>The fact that there are 3 CCDs per ROE in the VIS detection chain is probably hardwired in more places than it should be, and may pose a problem when migrating to a system with a different number of CCDs per ROE / detection chain.</li>
+<li>Plotting is done through figure objects, and these are shaped for the specific case of EUCLID. As an example, one of the most repeated plots is shaped to have 12 panels, as there are 3 CCDs per beam, 4 quadrants per CCD.</li>
+</ul>
+<p>Other considerations:</p>
+<ul class="simple">
+<li>The code is still poorly documented.</li>
+<li>The code works for what it was intended, but it wasn&#8217;t designed as a general purpose code. This means that in some cases, decisions were made taking into account limited resources (time), and in many cases, the working solution was preferred over the general solution.</li>
+</ul>
+<div class="section" id="you-are-still-not-deterred-and-want-to-reuse-the-code">
+<h2>You are still not deterred and want to reuse the code<a class="headerlink" href="#you-are-still-not-deterred-and-want-to-reuse-the-code" title="Permalink to this headline">¶</a></h2>
+<p>Brave you! Well, here is some kind of to-do list to accomplish that:</p>
+<ul class="simple">
+<li>Collect all the information regarding the description of the detection chains, the OGSE, and the outputs from the lab acquisition software. Maket it easy to share and edit collaboratively. A google drive could help you with this, just sayin&#8217;...</li>
+<li>Clone the vison project to another project in github, or wherever you want to host the new project (version control is a must, and having a remote repository is an added safety measure against data loss).</li>
+<li><strong>No, it&#8217;s not good idea to split vison in a EUCLID area and some additional sub-packages for other(s) mission(s)</strong>. It will get far too messy in no time. Let <em>vison</em> die, let it have (improved, more versatile) offspring. It&#8217;s absolutely recommended to start a new project.</li>
+<li>First, I&#8217;d tackle the interfaces to the new? lab output files, starting with the EXPLOG and the HK. Adapt the existing modules to ingest those new files, test that it works.</li>
+<li>Then go for the CCDs, and create a class &#8220;XCCD&#8221; that inherits from CCD, and try to make it work for the new CCD images just by adjusting the values of pre-scan, over-scan, quadrant lists, etc. If that doesn&#8217;t suffice, keep working until you get a CCD class that works for you, and you can at least do the same analysis that was possible using CCD for Euclid (get statitistics from selected regions, get 2D models, do some arithmetics with the images, collapse them along different axes, etc.).</li>
+<li><dl class="first docutils">
+<dt>Time to create the first Task class. Consider the easiest test, ideally one that may be common with Euclid. For example a bias acquisition test? Try to create a class for your specific test, and make it write the acquisition script for your test.</dt>
+<dd><ul class="first last">
+<li>Modify the build_scriptdict() method, and all the other things you may need to accomplish this.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>Then, you could create a second class, for a different test (flat-fields?).</li>
+<li>Now you could try to create a minimum campaign with just these 2 tests.</li>
+<li>If you have available already acquired test data, try to run the pipeline to ingest that campaign and use the newly created test classes, and do the analysis... good luck!</li>
+<li>If you don&#8217;t yet have the data, you could try to generate it yourself, with the data simulator (which may also need adaptation, though after modifying the other modules, this will be easy cake).</li>
+</ul>
+<div class="section" id="i-just-want-to-write-acquisition-scripts-for-elvis">
+<h3>I just want to write acquisition scripts for &#8220;ELVIS&#8221;<a class="headerlink" href="#i-just-want-to-write-acquisition-scripts-for-elvis" title="Permalink to this headline">¶</a></h3>
+<p>Then use Pandas, it can write excel files, for example.</p>
+<p>If you want to also have classes that hold the description of the test, produce the script according to this description, and then you want to analyse the data, then, well, you&#8217;ll have to follow the path above, or something similar (if reusing vison, that is, of course).</p>
+</div>
+</div>
 </div>
 
 
@@ -68,6 +110,17 @@
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/vison_logo.png" alt="Logo"/>
             </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Repurposing the vison package</a><ul>
+<li><a class="reference internal" href="#you-are-still-not-deterred-and-want-to-reuse-the-code">You are still not deterred and want to reuse the code</a><ul>
+<li><a class="reference internal" href="#i-just-want-to-write-acquisition-scripts-for-elvis">I just want to write acquisition scripts for &#8220;ELVIS&#8221;</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="guide.html"
                         title="previous chapter">Code Guide</a></p>
@@ -110,7 +163,7 @@
         <li class="right" >
           <a href="guide.html" title="Code Guide"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+378.g80283fd documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+380.g343fa63 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="guide.html" >Code Guide</a> &#187;</li> 
       </ul>
     </div>
