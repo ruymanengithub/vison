@@ -27,16 +27,24 @@ You are still not deterred and want to reuse the code
 
 Brave you! Well, here is some kind of to-do list to accomplish that:
 
-* collect all the information regarding the description of the detection chains, the OGSE, and the outputs from the lab acquisition software.
-* clone the vison project to another project in github, or wherever you want to host the new project (version control is a must, and having a remote repository is an added safety measure against data loss).
-* No, it's not good idea to split vison in a EUCLID area and some additional sub-packages for other(s) mission(s). It will get far too messy. It's absolutely recommended to start a new project.
+* Collect all the information regarding the description of the detection chains, the OGSE, and the outputs from the lab acquisition software. Maket it easy to share and edit collaboratively. A google drive could help you with this, just sayin'...
+* Clone the vison project to another project in github, or wherever you want to host the new project (version control is a must, and having a remote repository is an added safety measure against data loss).
+* **No, it's not good idea to split vison in a EUCLID area and some additional sub-packages for other(s) mission(s)**. It will get far too messy in no time. Let *vison* die, let it have (improved, more versatile) offspring. It's absolutely recommended to start a new project.
 * First, I'd tackle the interfaces to the new? lab output files, starting with the EXPLOG and the HK. Adapt the existing modules to ingest those new files, test that it works.
-* Then go for the CCDs, and create a class "XCCD" that inherits from CCD, and try to make it work for the new CCD images just by adjusting the values of pre-scan, over-scan, quadrant lists, etc. If that doesn't suffice, keep working until you get a CCD class that works for you, and you can at least do the same analysis that was possible using CCD for Euclid.
+* Then go for the CCDs, and create a class "XCCD" that inherits from CCD, and try to make it work for the new CCD images just by adjusting the values of pre-scan, over-scan, quadrant lists, etc. If that doesn't suffice, keep working until you get a CCD class that works for you, and you can at least do the same analysis that was possible using CCD for Euclid (get statitistics from selected regions, get 2D models, do some arithmetics with the images, collapse them along different axes, etc.).
 * Time to create the first Task class. Consider the easiest test, ideally one that may be common with Euclid. For example a bias acquisition test? Try to create a class for your specific test, and make it write the acquisition script for your test.
     * Modify the build_scriptdict() method, and all the other things you may need to accomplish this.
 * Then, you could create a second class, for a different test (flat-fields?).
 * Now you could try to create a minimum campaign with just these 2 tests.
 * If you have available already acquired test data, try to run the pipeline to ingest that campaign and use the newly created test classes, and do the analysis... good luck!
+* If you don't yet have the data, you could try to generate it yourself, with the data simulator (which may also need adaptation, though after modifying the other modules, this will be easy cake).
 
+
+I just want to write acquisition scripts for "ELVIS"
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Then use Pandas, it can write excel files, for example. 
+
+If you want to also have classes that hold the description of the test, produce the script according to this description, and then you want to analyse the data, then, well, you'll have to follow the path above, or something similar (if reusing vison, that is, of course).
 
 
