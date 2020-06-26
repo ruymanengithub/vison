@@ -3,6 +3,7 @@
 """
 Script to create cosmetics masks in VIS Ground Calibration Campaign.
 
+:History:
 Created on Wed Aug 1 11:02:00 2018
 
 :author: Ruyman Azzollini

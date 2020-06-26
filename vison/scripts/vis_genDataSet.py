@@ -1,10 +1,13 @@
 """
 
-Development: Creating Calibration Campaign Fake Data-set
+Development: Creating Calibration Campaign Fake Data-sets.
+
+:History:
 
 Created on Tue Sep 05 16:07:00 2017
 
-:autor: Ruyman Azzollini
+:autor: 
+Ruyman Azzollini
 
 """
 

@@ -10,10 +10,11 @@ This issue was brought to attention of VIS IDT by Ralf Kohley on
 Jan 10th 2019.
 
 
-
+:History:
 Created on Tue Feb  5 09:35:25 2019
 
-@author: raf
+:author: raf
+
 """
 
 # IMPORT STUFF

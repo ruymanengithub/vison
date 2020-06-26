@@ -4,6 +4,7 @@
 Automatically Generating Calibration Campaign Data Acquisition Scripts.
 Aimed at ELVIS.
 
+:History:
 Created on Fri Sep 08 12:03:00 2017
 
 :autor: Ruyman Azzollini
@@ -34,6 +35,14 @@ from vison.support import excel
 
 
 def f_write_script(struct, filename, outpath, elvis):
+    """ 
+    
+    Function that writes the test structure (as a dictionary) to an
+    .xlsx file.
+
+    Calls vison.datamodel.scriptic.Script class.
+
+    """
 
     script = sc.Script(structure=struct, elvis=elvis)
     script.build_cargo()
@@ -48,6 +57,7 @@ def f_write_script(struct, filename, outpath, elvis):
 
 
 def write_summary_astextfile(summarylines, inventoryfile, meta):
+    """Writes a summary of the scripts generated, in .txt format."""
 
     fulldatetag = meta['date']
     checksumf = meta['checksumfile']
@@ -70,6 +80,10 @@ def write_summary_astextfile(summarylines, inventoryfile, meta):
 
 
 def write_summary_asexcel(summarydict, excelf, meta):
+    """Writes a summary of the tests generated in .xlsx format.
+    Uses vison.support.excel.ReportXL class and Pandas.
+
+    """
 
     report = excel.ReportXL()
     report.wb.create_sheet('Meta', 0)
@@ -84,7 +98,35 @@ def write_summary_asexcel(summarydict, excelf, meta):
 
 
 def scwriter(toWrite, test_generator, outpath, equipment, elvis=context.elvis, CHAMBER=None):
-    """ """
+    """Parent function writing the test scripts.
+
+        * calls test_generator to create a sequence of test objects, instantiated with 
+          their inputs.
+        * the method build_scriptdict() of each test object is called to generate the 
+          dictionary-based structure of the test
+        * test acquisition durations are estimated
+        * the function f_write_script is called to write the script to an excel.
+        * a txt file is written with a summary of the tests written.
+        * a .xlsx file is written with the same summary.
+        * the checksums of the scripts are written to a .txt file.
+
+    :param toWrite: a dictionary with pairs of test_name: flat, where flag is either 1 (create 
+        script), or 0 (do not create).
+    :type toWrite: dict()
+    :param test_generator: a function that instanstiates test objects for a given campaign type.
+    :type test_generator: function
+    :param outpath: outputs directory. Created on the fly if not already-existent.
+    :type outpath: str
+    :param equipment: dictionary with equipment serials.
+    :type equipment: dict()
+    :param elvis: elvis version to write scripts for.
+    :type elvis: str
+    :param CHAMBER: chamber where the tests will be executed (affects exposure times, for exapmle).
+    :type CHAMBER: str
+
+    :return: None
+
+    """
 
     datetag = (datetime.datetime.now()).strftime('%d%b%y')
     fulldatetag = (datetime.datetime.now()).strftime('%d%b%y %H:%M:%S')

@@ -1,9 +1,15 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
+
+Merges [concatenates] a list of [ELVIS] exposure logs.
+
+:History:
 Created on Fri Feb  9 15:20:01 2018
 
-@author: raf
+:author:
+Ruyman Azzollini
+
 """
 
 # IMPORT STUFF

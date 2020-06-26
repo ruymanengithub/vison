@@ -4,6 +4,7 @@
 
 Classes to store Calibration Data Products.
 
+:History:
 Created on Tue Feb 27 10:58:42 2018
 
 :author: Ruyman Azzollini
@@ -31,12 +32,12 @@ from vison.support import vjson
 
 
 def loadCDPfromPickle(pickf):
-    """ """
+    """Function to load a CDP from a pickle file."""
     cdp = cPickleRead(pickf)
     return cdp
 
 def wraptextable(tex, ncols=1, caption='', fitwidth=False, tiny=False, longtable=False):
-    """ """
+    """Auxiliary function to Tables_CDP class"""
     
     tex = st.split(tex, '\n')
 
@@ -71,7 +72,7 @@ def wraptextable(tex, ncols=1, caption='', fitwidth=False, tiny=False, longtable
 
 
 class CDP(object):
-    """ """
+    """Parent CDP Class."""
 
     rootname = 'Unknown'
     path = ''
