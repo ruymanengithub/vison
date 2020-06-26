@@ -761,7 +761,8 @@ class BF01(PTC0X):
             self.report.add_Text(BFtex)
 
     def f_correct_BFE_G15(self, ccdobjname, fixA=False):
-        """Applies BFE solutions from G+15 to images, to later test effectivity through PTC."""
+        """Applies BFE solutions from G+15 to images, to later test effectivity 
+        through PTC."""
         
 
         # Initialize new columns

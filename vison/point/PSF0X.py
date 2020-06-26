@@ -51,6 +51,7 @@ from vison.support.files import cPickleRead, cPickleDumpDictionary
 from vison.datamodel import ccd
 from vison.xtalk import opt_xtalk as oxt
 from vison.xtalk import xtalk as xt
+from vison.analysis import Guyonnet15 as G15
 # END IMPORT
 
 isthere = os.path.exists
@@ -171,6 +172,7 @@ class PSF0X(PT.PointTask):
                          ('relock', self.relock),
                          ('check', self.check_data),
                          ('prep', self.prep_data),
+                         ('corrBFE_G15',self.corrBFE_G15),
                          ('basic', self.basic_analysis),
                          ('bayes', self.bayes_analysis),
                          ('meta', self.meta_analysis),
@@ -190,20 +192,20 @@ class PSF0X(PT.PointTask):
                                        products='products', spots='spots',
                                        xtalk='xtalk')
 
+        if 'inCDPs' in self.inputs:
+            if isinstance(self.inputs['inCDPs'],dict):
 
-        try:
-            selectFF = ('inCDPs'  in self.inputs) and\
-            isinstance(self.inputs['inCDPs'],dict) and\
-            ('wavelength' in self.inputs) and \
-            ('FF' in self.inputs['inCDPs'])
-        except TypeError:
-            selectFF = False
+                try:
+                    selectFF = ('wavelength' in self.inputs) and \
+                    ('FF' in self.inputs['inCDPs'])
+                except TypeError:
+                    selectFF = False
 
-        if selectFF:
-            wavelength = self.inputs['wavelength']
-            nmkey = 'nm%i' % wavelength
-            nmFFs = self.inputs['inCDPs']['FF'][nmkey]
-            self.inputs['inCDPs']['FF'] = nmFFs.copy()
+                if selectFF:
+                    wavelength = self.inputs['wavelength']
+                    nmkey = 'nm%i' % wavelength
+                    nmFFs = self.inputs['inCDPs']['FF'][nmkey]
+                    self.inputs['inCDPs']['FF'] = nmFFs.copy()
 
 
     def set_inpdefaults(self, **kwargs):
@@ -505,6 +507,128 @@ class PSF0X(PT.PointTask):
 
         if self.log is not None:
             self.log.info('Saved spot "bag" files to %s' % spotspath)
+
+
+    def corrBFE_G15(self):
+        """Corrects BFE using the matrices from Guyonnet et al. 2015."""
+
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='corrG15', Title='Correction of BFE using G15', level=0)
+
+
+        if 'BFE' not in self.inputs['inCDPs'].keys():
+
+            if self.log is not None:
+                self.log.info('Cannot correct BFE without BFE CDP!')
+
+            if self.reports is not None:
+                self.report.add_Text('Cannot correct BFE without BFE CDP!')
+
+            return None
+
+        # Loading the BFE model
+
+
+        wavelength = self.inputs['wavelength']
+
+        BFEddpick = self.inputs['inCDPs']['BFE']['nm%i' % wavelength]
+        BFEall = files.cPickleRead(BFEddpick).products['BF'].copy()
+        ulabels = BFEall['ulabels']
+        midrangekey = ulabels[len(ulabels)/2]
+        inCCDs = BFEall['CCDs']
+        inQuads = BFEall['Quads']
+
+        Asols = dict()
+        for inCCD in inCCDs:
+            Asols[inCCD] = dict()
+            for Q in inQuads:
+                Asols[inCCD][Q] = BFEall[inCCD][Q][midrangekey]['Asol'].copy()
+
+
+        dIndices = copy.deepcopy(self.dd.indices)
+
+        CCDs = dIndices[dIndices.names.index('CCD')].vals
+        #nCCD = len(CCDs)
+        Quads = dIndices[dIndices.names.index('Quad')].vals
+        nQuads = len(Quads)
+        nObs = dIndices[dIndices.names.index('ix')].len
+        SpotNames = dIndices[dIndices.names.index('Spot')].vals
+        nSpots = len(SpotNames)
+
+        CIndices = copy.deepcopy(dIndices)
+        CIndices.pop(CIndices.names.index('Quad'))
+        CIndices.pop(CIndices.names.index('Spot'))
+
+        # INITIALIZATIONS
+
+        outcol = 'spots_name_nobfe'
+        self.dd.initColumn(outcol, CIndices, dtype='S100', valini='None')
+
+        if not self.drill:
+
+            spotspath = self.inputs['subpaths']['spots']
+            strackers = self.ogse.startrackers
+            stlabels = self.ogse.labels
+
+            psCCDcoodicts = OrderedDict(names=strackers['CCD1']['col001'].starnames,
+                CCDs=CCDs,
+                labels=stlabels)
+
+            for jCCD, CCDk in enumerate(CCDs):
+                psCCDcoodicts[CCDk] = OrderedDict()
+                for ilabel, label in enumerate(stlabels):
+                    
+                    psCCDcoodicts[CCDk][label] = strackers[CCDk][label].get_allCCDcoos(
+                        nested=True)
+
+            for iObs in range(nObs):
+            #for iObs in range(3): # TESTS
+            #for iObs in [20]: # TESTs
+
+                for jCCD, CCDk in enumerate(CCDs):
+
+                    fullINspots_name = os.path.join(
+                        spotspath, '%s.pick' % self.dd.mx['spots_name'][iObs, jCCD])
+
+                    spotsIN_array = files.cPickleRead(fullINspots_name)['spots']
+                    
+
+                    # Process individual "spots"
+
+                    spotsOUT_array = np.zeros((nQuads, nSpots), dtype=object)
+
+                    for kQ, Quad in enumerate(Quads):
+
+                        _Asol = Asols[CCDk][Quad]
+
+                        for lS, SpotName in enumerate(SpotNames):
+
+
+                            inSpot = copy.deepcopy(spotsIN_array[kQ, lS])
+                            img = inSpot.data.copy()
+                            try:
+                                oimg = G15.correct_estatic(img, _Asol)
+                                outSpot = copy.deepcopy(inSpot)
+                                outSpot.data = oimg.copy()
+                                spotsOUT_array[kQ, lS] = copy.deepcopy(outSpot)
+                            except:
+                                spotsOUT_array[kQ, lS] = None
+
+                    # save "spots" to a separate file and keep name in dd
+
+                    self.dd.mx[outcol][iObs,
+                                             jCCD] = '%s_spots_nobfe' % self.dd.mx['File_name'][iObs, jCCD]
+
+                    fullspots_name = os.path.join(
+                        spotspath, '%s.pick' % self.dd.mx[outcol][iObs, jCCD])
+
+                    spotsdict = dict(spots=spotsOUT_array)
+
+                    files.cPickleDumpDictionary(spotsdict, fullspots_name)
+
+        if self.log is not None:
+            self.log.info('Saved BFE-corrected spot "bag" files to %s' % spotspath)
 
     def basic_analysis(self):
         """Performs basic analysis on spots:
