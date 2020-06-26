@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Index &#8212; vison 0.9+380.g343fa63 documentation</title>
+    <title>Index &#8212; vison 0.9+381.g2c9b2c7 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9+380.g343fa63',
+        VERSION:     '0.9+381.g2c9b2c7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+380.g343fa63 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+381.g2c9b2c7 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -172,6 +172,8 @@
 </li>
       <li><a href="plot.html#vison.plot.baseplotclasses.BeamPlotYvX">BeamPlotYvX (class in vison.plot.baseplotclasses)</a>
 </li>
+      <li><a href="flat_scripts.html#vison.flat.BF01.BF01">BF01 (class in vison.flat.BF01)</a>
+</li>
       <li><a href="dark_scripts.html#vison.dark.BIAS0X.BIAS0X">BIAS0X (class in vison.dark.BIAS0X)</a>
 </li>
       <li><a href="datamodel.html#vison.datamodel.ccd_aux.Model2D.bin_img">bin_img() (vison.datamodel.ccd_aux.Model2D method)</a>
@@ -191,9 +193,11 @@
       <ul>
         <li><a href="dark_scripts.html#vison.dark.DARK01.DARK01.build_scriptdict">(vison.dark.DARK01.DARK01 method)</a>
 </li>
+        <li><a href="flat_scripts.html#vison.flat.BF01.BF01.build_scriptdict">(vison.flat.BF01.BF01 method)</a>
+</li>
         <li><a href="flat_scripts.html#vison.flat.FLAT0X.FLAT0X.build_scriptdict">(vison.flat.FLAT0X.FLAT0X method)</a>
 </li>
-        <li><a href="flat_scripts.html#vison.flat.NL01.NL01.build_scriptdict">(vison.flat.NL01.NL01 method)</a>
+        <li><a href="flat_scripts.html#vison.flat.NL02.NL02.build_scriptdict">(vison.flat.NL02.NL02 method)</a>
 </li>
         <li><a href="flat_scripts.html#vison.flat.PTC0X.PTC0X.build_scriptdict">(vison.flat.PTC0X.PTC0X method)</a>
 </li>
@@ -370,7 +374,13 @@
 </li>
       <li><a href="datamodel.html#vison.datamodel.ccd.CCD.cooconvert">cooconvert() (vison.datamodel.ccd.CCD method)</a>
 </li>
-      <li><a href="pipe.html#vison.pipe.master.Pipe.BF01.correct_BFE_G15">correct_BFE_G15() (vison.pipe.master.Pipe.BF01 method)</a>, <a href="pipe.html#vison.pipe.master.Pipe.BF01.correct_BFE_G15">[1]</a>
+      <li><a href="flat_scripts.html#vison.flat.BF01.BF01.correct_BFE_G15">correct_BFE_G15() (vison.flat.BF01.BF01 method)</a>
+
+      <ul>
+        <li><a href="pipe.html#vison.pipe.master.Pipe.BF01.correct_BFE_G15">(vison.pipe.master.Pipe.BF01 method)</a>, <a href="pipe.html#vison.pipe.master.Pipe.BF01.correct_BFE_G15">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="flat_scripts.html#vison.flat.BF01.correct_BFE_one_image">correct_BFE_one_image() (in module vison.flat.BF01)</a>
 </li>
       <li><a href="analysis.html#vison.analysis.Guyonnet15.correct_estatic">correct_estatic() (in module vison.analysis.Guyonnet15)</a>
 </li>
@@ -438,7 +448,7 @@
         <li><a href="pipe.html#vison.pipe.master.Pipe.FLAT0X.do_prdef_mask">(vison.pipe.master.Pipe.FLAT0X method)</a>, <a href="pipe.html#vison.pipe.master.Pipe.FLAT0X.do_prdef_mask">[1]</a>
 </li>
       </ul></li>
-      <li><a href="flat_scripts.html#vison.flat.NL01.NL01.do_satCTE">do_satCTE() (vison.flat.NL01.NL01 method)</a>
+      <li><a href="flat_scripts.html#vison.flat.NL02.NL02.do_satCTE">do_satCTE() (vison.flat.NL02.NL02 method)</a>
 
       <ul>
         <li><a href="pipe.html#vison.pipe.master.Pipe.NL01.do_satCTE">(vison.pipe.master.Pipe.NL01 method)</a>, <a href="pipe.html#vison.pipe.master.Pipe.NL01.do_satCTE">[1]</a>
@@ -528,10 +538,18 @@
         <li><a href="pipe.html#vison.pipe.master.Pipe.TP02.extract">(vison.pipe.master.Pipe.TP02 method)</a>, <a href="pipe.html#vison.pipe.master.Pipe.TP02.extract">[1]</a>
 </li>
       </ul></li>
-      <li><a href="pipe.html#vison.pipe.master.Pipe.BF01.extract_BF">extract_BF() (vison.pipe.master.Pipe.BF01 method)</a>, <a href="pipe.html#vison.pipe.master.Pipe.BF01.extract_BF">[1]</a>
+      <li><a href="flat_scripts.html#vison.flat.BF01.BF01.extract_BF">extract_BF() (vison.flat.BF01.BF01 method)</a>
+
+      <ul>
+        <li><a href="pipe.html#vison.pipe.master.Pipe.BF01.extract_BF">(vison.pipe.master.Pipe.BF01 method)</a>, <a href="pipe.html#vison.pipe.master.Pipe.BF01.extract_BF">[1]</a>
 </li>
-      <li><a href="pipe.html#vison.pipe.master.Pipe.BF01.extract_COV">extract_COV() (vison.pipe.master.Pipe.BF01 method)</a>, <a href="pipe.html#vison.pipe.master.Pipe.BF01.extract_COV">[1]</a>
+      </ul></li>
+      <li><a href="flat_scripts.html#vison.flat.BF01.BF01.extract_COV">extract_COV() (vison.flat.BF01.BF01 method)</a>
+
+      <ul>
+        <li><a href="pipe.html#vison.pipe.master.Pipe.BF01.extract_COV">(vison.pipe.master.Pipe.BF01 method)</a>, <a href="pipe.html#vison.pipe.master.Pipe.BF01.extract_COV">[1]</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="flat_scripts.html#vison.flat.PTC0X.PTC0X.extract_HER">extract_HER() (vison.flat.PTC0X.PTC0X method)</a>
@@ -552,8 +570,12 @@
         <li><a href="pipe.html#vison.pipe.master.Pipe.PTC0X.extract_PTC">(vison.pipe.master.Pipe.PTC0X method)</a>, <a href="pipe.html#vison.pipe.master.Pipe.PTC0X.extract_PTC">[1]</a>
 </li>
       </ul></li>
-      <li><a href="pipe.html#vison.pipe.master.Pipe.BF01.extract_PTCs">extract_PTCs() (vison.pipe.master.Pipe.BF01 method)</a>, <a href="pipe.html#vison.pipe.master.Pipe.BF01.extract_PTCs">[1]</a>
+      <li><a href="flat_scripts.html#vison.flat.BF01.BF01.extract_PTCs">extract_PTCs() (vison.flat.BF01.BF01 method)</a>
+
+      <ul>
+        <li><a href="pipe.html#vison.pipe.master.Pipe.BF01.extract_PTCs">(vison.pipe.master.Pipe.BF01 method)</a>, <a href="pipe.html#vison.pipe.master.Pipe.BF01.extract_PTCs">[1]</a>
 </li>
+      </ul></li>
       <li><a href="datamodel.html#vison.datamodel.ccd_aux.extract_region">extract_region() (in module vison.datamodel.ccd_aux)</a>
 
       <ul>
@@ -562,20 +584,20 @@
       </ul></li>
       <li><a href="point.html#vison.point.lib.extract_spot">extract_spot() (in module vison.point.lib)</a>
 </li>
-      <li><a href="flat_scripts.html#vison.flat.NL01.NL01.extract_stats">extract_stats() (vison.flat.NL01.NL01 method)</a>
-
-      <ul>
-        <li><a href="pipe.html#vison.pipe.master.Pipe.NL01.extract_stats">(vison.pipe.master.Pipe.NL01 method)</a>, <a href="pipe.html#vison.pipe.master.Pipe.NL01.extract_stats">[1]</a>
+      <li><a href="pipe.html#vison.pipe.master.Pipe.NL01.extract_stats">extract_stats() (vison.pipe.master.Pipe.NL01 method)</a>, <a href="pipe.html#vison.pipe.master.Pipe.NL01.extract_stats">[1]</a>
 </li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pipe.html#vison.pipe.master.Pipe.BF01.f_correct_BFE_G15">f_correct_BFE_G15() (vison.pipe.master.Pipe.BF01 method)</a>, <a href="pipe.html#vison.pipe.master.Pipe.BF01.f_correct_BFE_G15">[1]</a>
+      <li><a href="flat_scripts.html#vison.flat.BF01.BF01.f_correct_BFE_G15">f_correct_BFE_G15() (vison.flat.BF01.BF01 method)</a>
+
+      <ul>
+        <li><a href="pipe.html#vison.pipe.master.Pipe.BF01.f_correct_BFE_G15">(vison.pipe.master.Pipe.BF01 method)</a>, <a href="pipe.html#vison.pipe.master.Pipe.BF01.f_correct_BFE_G15">[1]</a>
 </li>
+      </ul></li>
       <li><a href="flat_scripts.html#vison.flat.PTC0X.PTC0X.f_extract_PTC">f_extract_PTC() (vison.flat.PTC0X.PTC0X method)</a>
 
       <ul>
@@ -635,9 +657,9 @@
       <ul>
         <li><a href="dark_scripts.html#vison.dark.DARK01.DARK01.filterexposures">(vison.dark.DARK01.DARK01 method)</a>
 </li>
-        <li><a href="flat_scripts.html#vison.flat.FLAT0X.FLAT0X.filterexposures">(vison.flat.FLAT0X.FLAT0X method)</a>
+        <li><a href="flat_scripts.html#vison.flat.BF01.BF01.filterexposures">(vison.flat.BF01.BF01 method)</a>
 </li>
-        <li><a href="flat_scripts.html#vison.flat.NL01.NL01.filterexposures">(vison.flat.NL01.NL01 method)</a>
+        <li><a href="flat_scripts.html#vison.flat.FLAT0X.FLAT0X.filterexposures">(vison.flat.FLAT0X.FLAT0X method)</a>
 </li>
         <li><a href="flat_scripts.html#vison.flat.PTC0X.PTC0X.filterexposures">(vison.flat.PTC0X.PTC0X method)</a>
 </li>
@@ -713,6 +735,8 @@
       <li><a href="flat.html#vison.pipe.FlatFielding.fit2D">fit2D() (in module vison.pipe.FlatFielding)</a>
 </li>
       <li><a href="datamodel.html#vison.datamodel.ccd_aux.Model2D.fit2Dpol_xyz">fit2Dpol_xyz() (vison.datamodel.ccd_aux.Model2D method)</a>
+</li>
+      <li><a href="flat_scripts.html#vison.flat.BF01.fit_BF">fit_BF() (in module vison.flat.BF01)</a>
 </li>
       <li><a href="point.html#vison.point.gauss.Gaussmeter.fit_Gauss">fit_Gauss() (vison.point.gauss.Gaussmeter method)</a>
 </li>
@@ -1255,6 +1279,8 @@
       <li><a href="dark_scripts.html#vison.dark.BIAS0X.BIAS0X.meta_analysis">meta_analysis() (vison.dark.BIAS0X.BIAS0X method)</a>
 
       <ul>
+        <li><a href="flat_scripts.html#vison.flat.BF01.BF01.meta_analysis">(vison.flat.BF01.BF01 method)</a>
+</li>
         <li><a href="flat_scripts.html#vison.flat.PTC0X.PTC0X.meta_analysis">(vison.flat.PTC0X.PTC0X method)</a>
 </li>
         <li><a href="chinj_scripts.html#vison.inject.CHINJ01.CHINJ01.meta_analysis">(vison.inject.CHINJ01.CHINJ01 method)</a>
@@ -1336,7 +1362,7 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="flat_scripts.html#vison.flat.NL01.NL01">NL01 (class in vison.flat.NL01)</a>
+      <li><a href="flat_scripts.html#vison.flat.NL02.NL02">NL02 (class in vison.flat.NL02)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1485,7 +1511,7 @@
       <ul>
         <li><a href="dark_scripts.html#vison.dark.DARK01.DARK01.prep_data">(vison.dark.DARK01.DARK01 method)</a>
 </li>
-        <li><a href="flat_scripts.html#vison.flat.NL01.NL01.prep_data">(vison.flat.NL01.NL01 method)</a>
+        <li><a href="flat_scripts.html#vison.flat.NL02.NL02.prep_data">(vison.flat.NL02.NL02 method)</a>
 </li>
         <li><a href="other_scripts.html#vison.other.PERSIST01.PERSIST01.prep_data">(vison.other.PERSIST01.PERSIST01 method)</a>
 </li>
@@ -1514,11 +1540,13 @@
         <li><a href="pipe.html#vison.pipe.task.Task.prepare_images">(vison.pipe.task.Task method)</a>, <a href="pipe.html#vison.pipe.task.Task.prepare_images">[1]</a>
 </li>
       </ul></li>
+      <li><a href="flat_scripts.html#vison.flat.BF01.process_one_fluence_covmaps">process_one_fluence_covmaps() (in module vison.flat.BF01)</a>
+</li>
       <li><a href="flat.html#vison.pipe.FlatFielding.produce_IndivFlats">produce_IndivFlats() (in module vison.pipe.FlatFielding)</a>
 </li>
       <li><a href="flat.html#vison.pipe.FlatFielding.produce_MasterFlat">produce_MasterFlat() (in module vison.pipe.FlatFielding)</a>
 </li>
-      <li><a href="flat_scripts.html#vison.flat.NL01.NL01.produce_NLCs">produce_NLCs() (vison.flat.NL01.NL01 method)</a>
+      <li><a href="flat_scripts.html#vison.flat.NL02.NL02.produce_NLCs">produce_NLCs() (vison.flat.NL02.NL02 method)</a>
 
       <ul>
         <li><a href="pipe.html#vison.pipe.master.Pipe.NL01.produce_NLCs">(vison.pipe.master.Pipe.NL01 method)</a>, <a href="pipe.html#vison.pipe.master.Pipe.NL01.produce_NLCs">[1]</a>
@@ -1555,8 +1583,6 @@
       <li><a href="flat.html#vison.flat.nl.recalibrate_exptimes">recalibrate_exptimes() (in module vison.flat.nl)</a>
 
       <ul>
-        <li><a href="flat_scripts.html#vison.flat.NL01.NL01.recalibrate_exptimes">(vison.flat.NL01.NL01 method)</a>
-</li>
         <li><a href="pipe.html#vison.pipe.master.Pipe.NL01.recalibrate_exptimes">(vison.pipe.master.Pipe.NL01 method)</a>, <a href="pipe.html#vison.pipe.master.Pipe.NL01.recalibrate_exptimes">[1]</a>
 </li>
       </ul></li>
@@ -1568,10 +1594,10 @@
 </li>
       <li><a href="datamodel.html#vison.datamodel.QLAtools.reportFITS">reportFITS() (in module vison.datamodel.QLAtools)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="datamodel.html#vison.datamodel.HKtools.reportHK">reportHK() (in module vison.datamodel.HKtools)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="eyegore.html#vison.eyegore.eyeHK.HKFlags.ResetFlag">ResetFlag() (vison.eyegore.eyeHK.HKFlags method)</a>
 </li>
       <li><a href="pipe.html#vison.pipe.genmaster.GenPipe.run">run() (vison.pipe.genmaster.GenPipe method)</a>, <a href="pipe.html#vison.pipe.genmaster.GenPipe.run">[1]</a>
@@ -1658,9 +1684,11 @@
       </ul></li>
       <li><a href="image.html#vison.image.cosmetics.set_extrascans">set_extrascans() (in module vison.image.cosmetics)</a>
 </li>
-      <li><a href="flat_scripts.html#vison.flat.FLAT0X.FLAT0X.set_inpdefaults">set_inpdefaults() (vison.flat.FLAT0X.FLAT0X method)</a>
+      <li><a href="flat_scripts.html#vison.flat.BF01.BF01.set_inpdefaults">set_inpdefaults() (vison.flat.BF01.BF01 method)</a>
 
       <ul>
+        <li><a href="flat_scripts.html#vison.flat.FLAT0X.FLAT0X.set_inpdefaults">(vison.flat.FLAT0X.FLAT0X method)</a>
+</li>
         <li><a href="flat_scripts.html#vison.flat.PTC0X.PTC0X.set_inpdefaults">(vison.flat.PTC0X.PTC0X method)</a>
 </li>
         <li><a href="chinj_scripts.html#vison.inject.CHINJ01.CHINJ01.set_inpdefaults">(vison.inject.CHINJ01.CHINJ01 method)</a>
@@ -1912,13 +1940,15 @@
 </li>
       <li><a href="eyegore.html#module-vison.eyegore.eyeObs">vison.eyegore.eyeObs (module)</a>
 </li>
+      <li><a href="flat_scripts.html#module-vison.flat.BF01">vison.flat.BF01 (module)</a>
+</li>
       <li><a href="flat_scripts.html#module-vison.flat.FLAT0X">vison.flat.FLAT0X (module)</a>
 </li>
       <li><a href="flat.html#module-vison.flat.FlatTask">vison.flat.FlatTask (module)</a>
 </li>
       <li><a href="flat.html#module-vison.flat.nl">vison.flat.nl (module)</a>
 </li>
-      <li><a href="flat_scripts.html#module-vison.flat.NL01">vison.flat.NL01 (module)</a>
+      <li><a href="flat_scripts.html#module-vison.flat.NL02">vison.flat.NL02 (module)</a>
 </li>
       <li><a href="flat.html#module-vison.flat.ptc">vison.flat.ptc (module)</a>
 </li>
@@ -2187,7 +2217,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+380.g343fa63 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+381.g2c9b2c7 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
