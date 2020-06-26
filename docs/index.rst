@@ -59,7 +59,7 @@ This is some kind of **"cook-book"**.  Written *a bit like when your grandmother
 Guide through the code
 ======================
 
-In this section we provide an overal description of the capabilities and organisation of the code.
+In this section we provide an overall description of the capabilities and organisation of the code.
 
 .. toctree::
     :maxdepth: 4
@@ -81,7 +81,7 @@ Pipeline master classes.
 Data Model
 ==========
 
-Modules with classes to hold data model for inputs and outputs: exposure log,
+Modules with classes of data models for inputs and outputs: exposure log,
 HK files, FITS files, etc.
 
 .. toctree::
@@ -93,6 +93,9 @@ HK files, FITS files, etc.
 Analysis (Shared)
 =================
 
+Some shared analysis tools.
+
+
 .. toctree::
     :maxdepth: 4
 
@@ -101,6 +104,8 @@ Analysis (Shared)
 
 Test Campaign Definitions
 =========================
+
+The tests usually have free parameters (e.g. the wavelength, or the number of frames of each fluence in a flat-field test). When executing a test campaign, one has to choose what specific values to use for each test, to generate scripts and do the corresponding, and consistent analysis. This is done through the main functions in the following modules.
 
 .. toctree::
   :maxdepth: 4
@@ -112,6 +117,8 @@ Test Campaign Definitions
 Charge Injection Tools
 ======================
 
+Tools for analysis of charge injection data.
+
 .. toctree::
     :maxdepth: 4
     
@@ -120,6 +127,8 @@ Charge Injection Tools
 
 "Flat" Acq. Analysis Tools
 ==========================
+
+Tools for analysis of flat-illumination tests.
 
 .. toctree::
     :maxdepth: 4
@@ -130,6 +139,9 @@ Charge Injection Tools
 FPA Tests
 =========
 
+Analysing FPA-level data.
+
+
 .. toctree::
     :maxdepth: 4
     
@@ -138,6 +150,9 @@ FPA Tests
 Image
 =====
 
+General purpose image analysis tools.
+
+
 .. toctree::
     :maxdepth: 4
 
@@ -145,6 +160,8 @@ Image
 
 Metatests
 =========
+
+Tests that ingest results from a test / type of test across a collection of block-calibrations. This is used to compare results across the "as-built" FM FPA, and produce CDPs at FPA level from the results of the calibrations of the individual blocks that make up the FPA.
 
 .. toctree::
     :maxdepth: 4
@@ -185,6 +202,8 @@ General use plotting facilities.
 Point-Source Analysis
 =====================
 
+General purpose tools for the analysis of point-source images.
+
 .. toctree::
     :maxdepth: 4
 
@@ -203,6 +222,8 @@ These are pipeline scripts, not the Test Scripts (for those keep scrolling down)
 
 Support Code
 ============
+
+Other support software.
 
 .. toctree::
    :maxdepth: 4
@@ -230,6 +251,8 @@ infrasctructure and tools provided by the pipeline.
 Charge Injection Scripts
 ------------------------
 
+Charge Injection
+
 .. toctree::
     :maxdepth: 4
 
@@ -238,6 +261,8 @@ Charge Injection Scripts
 
 Dark Scripts
 --------------
+
+Darks and Bias tests.
 
 .. toctree::
     :maxdepth: 4
@@ -248,6 +273,7 @@ Dark Scripts
 Flat-Illumination Scripts
 -------------------------
 
+Flat-fields, Non-Linearity, PTC, BFE.
 
 .. toctree::
     :maxdepth: 4
@@ -258,6 +284,8 @@ Flat-Illumination Scripts
 Point-Source Scripts
 --------------------
 
+Point-source imaging tests.
+
 .. toctree::
     :maxdepth: 4
 
@@ -265,6 +293,8 @@ Point-Source Scripts
 
 Trap-Pumping Scripts
 --------------------
+
+Trap-Pumping tests.
 
 .. toctree::
     :maxdepth: 4
@@ -275,6 +305,8 @@ Trap-Pumping Scripts
 
 Other Test Scripts
 ------------------
+
+Cosmetics, Persistence, etc.
 
 .. toctree::
 
