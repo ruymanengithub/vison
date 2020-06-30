@@ -508,6 +508,21 @@ class PSF0X(PT.PointTask):
         if self.log is not None:
             self.log.info('Saved spot "bag" files to %s' % spotspath)
 
+    def _get_psCCDcoodicts(CCDs,stlabels):
+
+        psCCDcoodicts = OrderedDict(names=strackers['CCD1']['col001'].starnames,
+            CCDs=CCDs,
+            labels=stlabels)
+
+        for jCCD, CCDk in enumerate(CCDs):
+            psCCDcoodicts[CCDk] = OrderedDict()
+            for ilabel, label in enumerate(stlabels):
+                
+                psCCDcoodicts[CCDk][label] = strackers[CCDk][label].get_allCCDcoos(
+                    nested=True)
+
+        return psCCDcoodicts
+
 
     def corrBFE_G15(self):
         """Corrects BFE using the matrices from Guyonnet et al. 2015."""
@@ -571,16 +586,7 @@ class PSF0X(PT.PointTask):
             strackers = self.ogse.startrackers
             stlabels = self.ogse.labels
 
-            psCCDcoodicts = OrderedDict(names=strackers['CCD1']['col001'].starnames,
-                CCDs=CCDs,
-                labels=stlabels)
-
-            for jCCD, CCDk in enumerate(CCDs):
-                psCCDcoodicts[CCDk] = OrderedDict()
-                for ilabel, label in enumerate(stlabels):
-                    
-                    psCCDcoodicts[CCDk][label] = strackers[CCDk][label].get_allCCDcoos(
-                        nested=True)
+            psCCDcoodicts = self._get_psCCDcoodicts(CCDs,stlabels)
 
             for iObs in range(nObs):
             #for iObs in range(3): # TESTS
@@ -630,6 +636,59 @@ class PSF0X(PT.PointTask):
         if self.log is not None:
             self.log.info('Saved BFE-corrected spot "bag" files to %s' % spotspath)
 
+    def self._extract_basic(spotscol='spots_name',prefix=''):
+        """ """
+
+        CQSindices = copy.deepcopy(self.dd.indices)
+
+        assert 'Spot' in CQSindices.names
+
+        valini = 0.0
+
+        colnames = []
+        ncols = len(colnames)
+        for i in range(ncols):
+            colnames[i] = '%s%s' % (prefix,colnames[i])
+
+        for i in range(ncols):
+            self.dd.initColumn(colnames[i],CQSindices,dtype='float32',valini=valini)
+
+        nObs = Qindices[0].len
+        CCDs = Qindices.get_vals('CCD')
+        Quads = Qindices.get_vals('Quad')
+        Spots = Sindices.get_vals('Spot')
+
+        if self.drill:
+            return
+
+        spotspath = self.inputs['path']['spots']
+        
+
+        strackers = self.ogse.startrackers
+        stlabels = self.ogse.labels
+
+        psCCDcoodicts = self._get_psCCDcoodicts(CCDs,stlabels)
+
+        for iObs in range(nObs):
+
+            for jCCD, CCDk in enumerate(CCDs):
+
+                fullINspots_name = os.path.join(
+                        spotspath, '%s.pick' % self.dd.mx[spotscol][iObs, jCCD])
+
+                spots_array = files.cPickleRead(fullINspots_name)['spots']
+
+                for kQ, Quad in enumerate(Quads):
+
+                    for lS, SpotName in enumerate(SpotNames):
+
+                        inSpot = copy.deepcopy(spots_array[kQ, lS])
+
+                        stop()
+
+
+
+
     def basic_analysis(self):
         """Performs basic analysis on spots:
              - shape from moments
@@ -637,7 +696,13 @@ class PSF0X(PT.PointTask):
 
         """
 
-        raise NotImplementedError
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='basic', Title='Basic Extraction of Spots Shapes', level=0)
+
+        self._extract_basic()
+
+
 
     def bayes_analysis(self):
         """

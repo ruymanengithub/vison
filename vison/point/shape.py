@@ -50,11 +50,11 @@ class Shapemeter(SpotBase):
         super(Shapemeter, self).__init__(data, log, verbose)
 
         self.shsettings = dict(iterations=4,
-                               sampling=1.0,
-                               platescale=120.0,
-                               pixelSize=12.0,
-                               sigma=0.75,
-                               weighted=True,
+                               sampling=1.0,  # oversampling if > 1
+                               platescale=120.0,  # microns / arcsecond
+                               pixelSize=12.0,  # um/pix
+                               sigma=0.75,  # arcseconds
+                               weighted=True,  # use weighted moments
                                conservePeak=True,
                                debug=False,
                                fixedPosition=False,
