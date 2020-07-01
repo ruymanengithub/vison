@@ -662,7 +662,7 @@ class PSF0X(PT.PointTask):
         if self.drill:
             return
 
-        spotspath = self.inputs['path']['spots']
+        spotspath = self.inputs['subpaths']['spots']
 
         stlabels = self.ogse.labels
 
