@@ -636,7 +636,7 @@ class PSF0X(PT.PointTask):
         if self.log is not None:
             self.log.info('Saved BFE-corrected spot "bag" files to %s' % spotspath)
 
-    def self._extract_basic(spotscol='spots_name',prefix=''):
+    def _extract_basic(self, spotscol='spots_name', prefix=''):
         """ """
 
         CQSindices = copy.deepcopy(self.dd.indices)
@@ -648,26 +648,25 @@ class PSF0X(PT.PointTask):
         colnames = []
         ncols = len(colnames)
         for i in range(ncols):
-            colnames[i] = '%s%s' % (prefix,colnames[i])
+            colnames[i] = '%s%s' % (prefix, colnames[i])
 
         for i in range(ncols):
-            self.dd.initColumn(colnames[i],CQSindices,dtype='float32',valini=valini)
+            self.dd.initColumn(colnames[i], CQSindices, dtype='float32',
+                 valini=valini)
 
-        nObs = Qindices[0].len
-        CCDs = Qindices.get_vals('CCD')
-        Quads = Qindices.get_vals('Quad')
-        Spots = Sindices.get_vals('Spot')
+        nObs = CQSindices[0].len
+        CCDs = CQSindices.get_vals('CCD')
+        Quads = CQSindices.get_vals('Quad')
+        SpotNames = CQSindices.get_vals('Spot')
 
         if self.drill:
             return
 
         spotspath = self.inputs['path']['spots']
-        
 
-        strackers = self.ogse.startrackers
         stlabels = self.ogse.labels
 
-        psCCDcoodicts = self._get_psCCDcoodicts(CCDs,stlabels)
+        psCCDcoodicts = self._get_psCCDcoodicts(CCDs, stlabels)
 
         for iObs in range(nObs):
 
