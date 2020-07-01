@@ -684,7 +684,48 @@ class PSF0X(PT.PointTask):
 
                         inSpot = copy.deepcopy(spots_array[kQ, lS])
 
+                        bas_res = inSpot.measure_basic(rap=10, rin=15, rout=-1,
+                            gain=3.5, debug=False)
+                        #bas_res = dict(bgd=bgd, peak=peak, fluence=flu, efluence=eflu,
+                        #    x=x, y=y, x_ccd=x_ccd, y_ccd=y_ccd,
+                        #    fwhmx=fwhmx, fwhmy=fwhmy)
+
+                        loc_bgd =bas_res['bgd']
+
+                        inSpot.data -= loc_bgd # background subtraction
+
+                        inSpot.shsettings = dict(iterations=4,
+                               sampling=1.0,  # oversampling if > 1
+                               platescale=120.0,  # microns / arcsecond
+                               pixelSize=12.0,  # um/pix
+                               sigma=0.75,  # arcseconds
+                               weighted=True,  # use weighted moments
+                               conservePeak=True,
+                               debug=False,
+                               fixedPosition=True,
+                               fixedX=bas_res['x'],
+                               fixedY=bas_res['y'])
+
+                        ref_quad_res = inSpot.measureRefinedEllipticity()
+
+                        #ref_quad_res = dict(centreX=quad['centreX'] + 1, 
+                        #    centreY=quad['centreY'] + 1,
+                        #    e1=quad['e1'], e2=quad['e2'],
+                        #    ellipticity=quad['ellipticity'],
+                        #    R2=R2,
+                        #    R2arcsec=R2arcsec,
+                        #    GaussianWeighted=GaussianWeighted,
+                        #    a=quad['a'], b=quad['b'])
+
+                        gauss_res = inSpot.fit_Gauss()
+
                         stop()
+
+
+
+
+
+
 
 
 
