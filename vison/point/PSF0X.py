@@ -692,7 +692,7 @@ class PSF0X(PT.PointTask):
 
                         loc_bgd = bas_res['bgd']
 
-                        inSpot.data -= loc_bgd # background subtraction
+                        #inSpot.data -= loc_bgd # UNNECESSARY? background subtraction
 
                         inSpot.shsettings = dict(iterations=4,
                                sampling=1.0,  # oversampling if > 1

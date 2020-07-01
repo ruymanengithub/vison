@@ -149,9 +149,13 @@ def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35
                 XLOC = i
                 YLOC = j
 
+                try:
+                    _ = image[j,i]
+                except IndexError:
+                    continue
+
                 #print "pix (%d, %d) weight %f" % (i, j, WEIGHT)
-                try: SUM = SUM + image[j, i] * WEIGHT
-                except: stop()
+                SUM = SUM + image[j, i] * WEIGHT
                 XSUM = XSUM + XLOC * image[j, i] * WEIGHT
                 XSUM2 = XSUM2 + XLOC**2 * image[j, i] * WEIGHT
                 XSUM3 = XSUM3 + XLOC**3 * image[j, i] * WEIGHT
