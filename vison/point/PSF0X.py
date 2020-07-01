@@ -172,8 +172,9 @@ class PSF0X(PT.PointTask):
                          ('relock', self.relock),
                          ('check', self.check_data),
                          ('prep', self.prep_data),
-                         ('corrBFE_G15',self.corrBFE_G15),
+                         ('corrBFE_G15', self.corrBFE_G15),
                          ('basic', self.basic_analysis),
+                         ('basic_nobfe', self.basic_analysis_noBFE),
                          ('bayes', self.bayes_analysis),
                          ('meta', self.meta_analysis),
                          ('xtalk_sex', self.opt_xtalk_sextract),
@@ -647,8 +648,22 @@ class PSF0X(PT.PointTask):
         assert 'Spot' in CQSindices.names
 
         valini = 0.0
+        sig2fwhm = 2.355
 
-        colnames = []
+        colnames = ['bas_bgd', 'bas_peak', 'bas_fluence', 'bas_efluence',
+            'bas_x', 'bas_y', 'bas_x_ccd', 'bas_y_ccd',
+            'bas_fwhmx', 'bas_fwhmy',
+            'sh_x', 'sh_y', 'sh_e1', 'sh_e2',
+            'sh_ell', 'sh_R2', 'sh_R2arcsec',
+            'sh_a', 'sh_b', 
+            'gau_i00', 'gau_ei00',
+            'gau_xcen', 'gau_excen',
+            'gau_ycen', 'gau_eycen',
+            'gau_sigmax', 'gau_esigmax',
+            'gau_fwhmx', 'gau_efwhmx',
+            'gau_sigmay', 'gau_esigmay',
+            'gau_fwhmy', 'gau_efwhmy']
+
         ncols = len(colnames)
         for i in range(ncols):
             colnames[i] = '%s%s' % (prefix, colnames[i])
@@ -682,6 +697,8 @@ class PSF0X(PT.PointTask):
 
                     for lS, SpotName in enumerate(SpotNames):
 
+                        ixtup = (iObs, jCCD, kQ, lS)
+
                         inSpot = copy.deepcopy(spots_array[kQ, lS])
 
                         bas_res = inSpot.measure_basic(rap=10, rin=15, rout=-1,
@@ -690,7 +707,17 @@ class PSF0X(PT.PointTask):
                         #    x=x, y=y, x_ccd=x_ccd, y_ccd=y_ccd,
                         #    fwhmx=fwhmx, fwhmy=fwhmy)
 
-                        loc_bgd = bas_res['bgd']
+                        self.dd.mx['%sbas_bgd' % prefix][ixtup] = bas_res['bgd']
+                        self.dd.mx['%sbas_peak' % prefix][ixtup] = bas_res['peak']
+                        self.dd.mx['%sbas_fluence' % prefix][ixtup] = bas_res['fluence']
+                        self.dd.mx['%sbas_efluence' % prefix][ixtup] = bas_res['efluence']
+                        self.dd.mx['%sbas_x' % prefix][ixtup] = bas_res['x']
+                        self.dd.mx['%sbas_y' % prefix][ixtup] = bas_res['y']
+                        self.dd.mx['%sbas_x_ccd' % prefix][ixtup] = bas_res['x_ccd']
+                        self.dd.mx['%sbas_y_ccd' % prefix][ixtup] = bas_res['y_ccd']
+                        self.dd.mx['%sbas_fwhmx' % prefix][ixtup] = bas_res['fwhmx']
+                        self.dd.mx['%sbas_fwhmy' % prefix][ixtup] = bas_res['fwhmy']
+
 
                         #inSpot.data -= loc_bgd # UNNECESSARY? background subtraction
 
@@ -717,16 +744,35 @@ class PSF0X(PT.PointTask):
                         #    GaussianWeighted=GaussianWeighted,
                         #    a=quad['a'], b=quad['b'])
 
+                        self.dd.mx['%ssh_x' % prefix][ixtup] = ref_quad_res['centreX']
+                        self.dd.mx['%ssh_y' % prefix][ixtup] = ref_quad_res['centreY']
+                        self.dd.mx['%ssh_e1' % prefix][ixtup] = ref_quad_res['e1']
+                        self.dd.mx['%ssh_e2' % prefix][ixtup] = ref_quad_res['e2']
+                        self.dd.mx['%ssh_ell' % prefix][ixtup] = ref_quad_res['ellipticity']
+                        self.dd.mx['%ssh_R2' % prefix][ixtup] = ref_quad_res['R2']
+                        self.dd.mx['%ssh_R2arcsec' % prefix][ixtup] = ref_quad_res['R2arcsec']
+                        self.dd.mx['%ssh_a' % prefix][ixtup] = ref_quad_res['a']
+                        self.dd.mx['%ssh_b' % prefix][ixtup] = ref_quad_res['b']
+
+
                         gauss_res = inSpot.fit_Gauss()
+                        # tuple: (vals, evals)
+                        # i00, xcen, ycen, xsigma, ysigma
 
-                        stop()
-
-
-
-
-
-
-
+                        self.dd.mx['%sgau_i0' % prefix][ixtup] = gauss_res[0][0]
+                        self.dd.mx['%sgau_ei0' % prefix][ixtup] = gauss_res[1][0]
+                        self.dd.mx['%sgau_xcen' % prefix][ixtup] = gauss_res[0][1]
+                        self.dd.mx['%sgau_xcen' % prefix][ixtup] = gauss_res[1][1]
+                        self.dd.mx['%sgau_ycen' % prefix][ixtup] = gauss_res[0][2]
+                        self.dd.mx['%sgau_eycen' % prefix][ixtup] = gauss_res[1][2]
+                        self.dd.mx['%sgau_sigmax' % prefix][ixtup] = gauss_res[0][3]
+                        self.dd.mx['%sgau_esigmax' % prefix][ixtup] = gauss_res[1][3]
+                        self.dd.mx['%sgau_fwhmx' % prefix][ixtup] = gauss_res[0][3] * sig2fwhm
+                        self.dd.mx['%sgau_efwhmx' % prefix][ixtup] = gauss_res[1][3] * sig2fwhm
+                        self.dd.mx['%sgau_sigmay' % prefix][ixtup] = gauss_res[0][4]
+                        self.dd.mx['%sgau_esigmay' % prefix][ixtup] = gauss_res[1][4]
+                        self.dd.mx['%sgau_fwhmy' % prefix][ixtup] = gauss_res[0][4] * sig2fwhm
+                        self.dd.mx['%sgau_efwhmy' % prefix][ixtup] = gauss_res[1][4] * sig2fwhm
 
 
 
@@ -741,7 +787,20 @@ class PSF0X(PT.PointTask):
             self.report.add_Section(
                 keyword='basic', Title='Basic Extraction of Spots Shapes', level=0)
 
-        self._extract_basic()
+        self._extract_basic(spotscol='spots_name', prefix='')
+
+    def basic_analysis_noBFE(self):
+        """Performs basic analysis on [BFE-corrected] spots:
+             - shape from moments
+             - Gaussian fitting: peak intensity, position, width_x, width_y
+
+        """
+
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='nobfe_basic', Title='BFE corrected: Basic Extraction of Spots Shapes', level=0)
+
+        self._extract_basic(spotscol='spots_name_nobfe', prefix='nobfe_')        
 
 
 
