@@ -413,12 +413,12 @@ class PSF0X(PT.PointTask):
         
         dIndices = copy.deepcopy(self.dd.indices)
 
-        CCDs = dIndices[dIndices.names.index('CCD')].vals
+        CCDs = dIndices.get_vals('CCD')
         #nCCD = len(CCDs)
-        Quads = dIndices[dIndices.names.index('Quad')].vals
+        Quads = dIndices.get_vals('Quad')
         nQuads = len(Quads)
         nObs = dIndices[dIndices.names.index('ix')].len
-        SpotNames = dIndices[dIndices.names.index('Spot')].vals
+        SpotNames = dIndices.get_vals('Spot')
         nSpots = len(SpotNames)
 
         CIndices = copy.deepcopy(dIndices)
@@ -508,7 +508,11 @@ class PSF0X(PT.PointTask):
         if self.log is not None:
             self.log.info('Saved spot "bag" files to %s' % spotspath)
 
-    def _get_psCCDcoodicts(CCDs,stlabels):
+    def _get_psCCDcoodicts(self):
+
+        CCDs = self.dd.indices.get_vals('CCD')
+        strackers = self.ogse.startrackers
+        stlabels = self.ogse.labels
 
         psCCDcoodicts = OrderedDict(names=strackers['CCD1']['col001'].starnames,
             CCDs=CCDs,
@@ -517,8 +521,8 @@ class PSF0X(PT.PointTask):
         for jCCD, CCDk in enumerate(CCDs):
             psCCDcoodicts[CCDk] = OrderedDict()
             for ilabel, label in enumerate(stlabels):
-                
-                psCCDcoodicts[CCDk][label] = strackers[CCDk][label].get_allCCDcoos(
+                psCCDcoodicts[CCDk][label] = \
+                    strackers[CCDk][label].get_allCCDcoos(
                     nested=True)
 
         return psCCDcoodicts
@@ -563,12 +567,12 @@ class PSF0X(PT.PointTask):
 
         dIndices = copy.deepcopy(self.dd.indices)
 
-        CCDs = dIndices[dIndices.names.index('CCD')].vals
+        CCDs = dIndices.get_vals('CCD')
         #nCCD = len(CCDs)
-        Quads = dIndices[dIndices.names.index('Quad')].vals
+        Quads = dIndices.get_vals('Quad')
         nQuads = len(Quads)
         nObs = dIndices[dIndices.names.index('ix')].len
-        SpotNames = dIndices[dIndices.names.index('Spot')].vals
+        SpotNames = dIndices.get_vals('Spot')
         nSpots = len(SpotNames)
 
         CIndices = copy.deepcopy(dIndices)
@@ -583,10 +587,9 @@ class PSF0X(PT.PointTask):
         if not self.drill:
 
             spotspath = self.inputs['subpaths']['spots']
-            strackers = self.ogse.startrackers
-            stlabels = self.ogse.labels
-
-            psCCDcoodicts = self._get_psCCDcoodicts(CCDs,stlabels)
+            #strackers = self.ogse.startrackers
+            #stlabels = self.ogse.labels
+            #psCCDcoodicts = self._get_psCCDcoodicts()
 
             for iObs in range(nObs):
             #for iObs in range(3): # TESTS
@@ -624,7 +627,7 @@ class PSF0X(PT.PointTask):
                     # save "spots" to a separate file and keep name in dd
 
                     self.dd.mx[outcol][iObs,
-                                             jCCD] = '%s_spots_nobfe' % self.dd.mx['File_name'][iObs, jCCD]
+                        jCCD] = '%s_spots_nobfe' % self.dd.mx['File_name'][iObs, jCCD]
 
                     fullspots_name = os.path.join(
                         spotspath, '%s.pick' % self.dd.mx[outcol][iObs, jCCD])
@@ -666,7 +669,7 @@ class PSF0X(PT.PointTask):
 
         stlabels = self.ogse.labels
 
-        psCCDcoodicts = self._get_psCCDcoodicts(CCDs, stlabels)
+        psCCDcoodicts = self._get_psCCDcoodicts()
 
         for iObs in range(nObs):
 
@@ -685,17 +688,17 @@ class PSF0X(PT.PointTask):
 
                         bas_res = inSpot.measure_basic(rap=10, rin=15, rout=-1,
                             gain=3.5, debug=False)
-                        #bas_res = dict(bgd=bgd, peak=peak, fluence=flu, efluence=eflu,
+                        # bas_res = dict(bgd=bgd, peak=peak, fluence=flu, efluence=eflu,
                         #    x=x, y=y, x_ccd=x_ccd, y_ccd=y_ccd,
                         #    fwhmx=fwhmx, fwhmy=fwhmy)
 
-                        loc_bgd =bas_res['bgd']
+                        loc_bgd = bas_res['bgd']
 
                         inSpot.data -= loc_bgd # background subtraction
 
                         inSpot.shsettings = dict(iterations=4,
                                sampling=1.0,  # oversampling if > 1
-                               platescale=120.0,  # microns / arcsecond
+                               platescale = 120.0,  # microns / arcsecond
                                pixelSize=12.0,  # um/pix
                                sigma=0.75,  # arcseconds
                                weighted=True,  # use weighted moments
@@ -758,12 +761,12 @@ class PSF0X(PT.PointTask):
 
         dIndices = copy.deepcopy(self.dd.indices)
 
-        CCDs = dIndices[dIndices.names.index('CCD')].vals
+        CCDs = dIndices.get_vals('CCD')
         #nCCD = len(CCDs)
-        Quads = dIndices[dIndices.names.index('Quad')].vals
+        Quads = dIndices.get_vals('Quad')
         nQuads = len(Quads)
         nObs = dIndices[dIndices.names.index('ix')].len
-        SpotNames = dIndices[dIndices.names.index('Spot')].vals
+        SpotNames = dIndices.get_vals('Spot')
         nSpots = len(SpotNames)
 
         jCCD = 0
