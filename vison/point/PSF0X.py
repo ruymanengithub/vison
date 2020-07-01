@@ -667,8 +667,6 @@ class PSF0X(PT.PointTask):
 
         spotspath = self.inputs['subpaths']['spots']
 
-        stlabels = self.ogse.labels
-
         psCCDcoodicts = self._get_psCCDcoodicts()
 
         for iObs in range(nObs):
