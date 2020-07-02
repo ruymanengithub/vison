@@ -53,8 +53,6 @@ def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35
         -Marshall Perrin 2011-02-11
     """
 
-    stop()
-
     if hasattr(halfwidth, '__iter__'):
         XHW, YHW = halfwidth[0:2]
     else:
