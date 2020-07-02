@@ -936,6 +936,7 @@ class PSF0X(PT.PointTask):
 
 
         SpotsPoster = self._build_SpotsPoster(spotscol='spots_name')
+        SpotsPosterNOBFE = self._build_SpotsPoster(spotscol='spots_name_nobfe')
         stop()
 
 
