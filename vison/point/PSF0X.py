@@ -759,8 +759,8 @@ class PSF0X(PT.PointTask):
                         # tuple: (vals, evals)
                         # i00, xcen, ycen, xsigma, ysigma
 
-                        self.dd.mx['%sgau_i0' % prefix][ixtup] = gauss_res[0][0]
-                        self.dd.mx['%sgau_ei0' % prefix][ixtup] = gauss_res[1][0]
+                        self.dd.mx['%sgau_i00' % prefix][ixtup] = gauss_res[0][0]
+                        self.dd.mx['%sgau_ei00' % prefix][ixtup] = gauss_res[1][0]
                         self.dd.mx['%sgau_xcen' % prefix][ixtup] = gauss_res[0][1]
                         self.dd.mx['%sgau_xcen' % prefix][ixtup] = gauss_res[1][1]
                         self.dd.mx['%sgau_ycen' % prefix][ixtup] = gauss_res[0][2]
