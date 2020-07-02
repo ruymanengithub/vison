@@ -810,7 +810,56 @@ class PSF0X(PT.PointTask):
 
         self._extract_basic(spotscol='spots_name_nobfe', prefix='nobfe_')        
 
+def _build_SpotsPoster(self, spotscol='spots_name'):
+        """ """
 
+        CQSindices = copy.deepcopy(self.dd.indices)
+
+        assert 'Spot' in CQSindices.names
+
+        nObs = CQSindices[0].len
+        CCDs = CQSindices.get_vals('CCD')
+        nCCDs = len(CCDs)
+        Quads = CQSindices.get_vals('Quad')
+        nQuads = len(Quads)
+        SpotNames = CQSindices.get_vals('Spot')
+        nSpots = len(SpotNames)
+
+        if self.drill:
+            return
+
+        spotspath = self.inputs['subpaths']['spots']
+
+        psCCDcoodicts = self._get_psCCDcoodicts()
+
+        NY = stampw * nObs
+        NX = stampw * nCCDs * nQuads * nSpots
+
+        SpotsPoster = np.zeros((NY,NX),dtype='float32')
+
+
+        for iObs in range(nObs):
+
+            for jCCD, CCDk in enumerate(CCDs):
+
+                fullINspots_name = os.path.join(
+                        spotspath, '%s.pick' % self.dd.mx[spotscol][iObs, jCCD])
+
+                spots_array = files.cPickleRead(fullINspots_name)['spots']
+
+                for kQ, Quad in enumerate(Quads):
+
+                    for lS, SpotName in enumerate(SpotNames):
+
+                        inSpot = copy.deepcopy(spots_array[kQ, lS])
+
+                        lly = stampw * iObs
+                        llx = stampw * (jCCD*(nQuads+nSpots)+kQ*(nSpots)+lS)
+
+                        SpotsPoster[lly:lly+stampw, llx:llx+stampw] = np.log10(inSpot.data.copy())
+
+
+        return SpotsPoster
 
     def bayes_analysis(self):
         """
@@ -881,7 +930,26 @@ class PSF0X(PT.PointTask):
 
         """
         
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='meta', Title='Meta Analysis: Shapes', level=0)
+
+
+        SpotsPoster = self._build_SpotsPoster(spotscol='spots_name')
         stop()
+
+
+        fdict = self.figdict['SpotsPoster'][1]
+        fdict['data'] = SpotsPoster.copy()
+
+        normfunction = Normalize(vmin=0.,vmax=np.log10(2.**16),clip=False)
+
+        fdict['meta']['corekwargs']['norm'] = normfunction
+
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['SpotsPoster'],
+                dobuilddata=False)
+
 
     def opt_xtalk_sextract(self):
         """Runs sextractor on images for optical-crosstalk measurements."""
