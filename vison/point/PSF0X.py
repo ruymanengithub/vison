@@ -880,7 +880,8 @@ class PSF0X(PT.PointTask):
         Analyzes the relation between detector PSF and fluence.
 
         """
-        raise NotImplementedError
+        
+        stop()
 
     def opt_xtalk_sextract(self):
         """Runs sextractor on images for optical-crosstalk measurements."""
