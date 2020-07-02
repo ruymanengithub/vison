@@ -810,7 +810,7 @@ class PSF0X(PT.PointTask):
 
         self._extract_basic(spotscol='spots_name_nobfe', prefix='nobfe_')        
 
-def _build_SpotsPoster(self, spotscol='spots_name'):
+    def _build_SpotsPoster(self, spotscol='spots_name'):
         """ """
 
         CQSindices = copy.deepcopy(self.dd.indices)
