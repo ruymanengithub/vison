@@ -86,6 +86,13 @@ def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35
 
     for i in np.arange(2 * XHW + 1) + XPEAK - XHW:
         for j in np.arange(2 * YHW + 1) + YPEAK - YHW:
+
+            outside_xallow = (i<0) or (i>=image.shape[1])
+            outside_yallow = (j<0) or (j>=image.shape[0])
+
+            if outside_xallow or outside_yallow:
+                continue
+
             XLOC = i
             YLOC = j
             SUM += image[j, i]
@@ -149,9 +156,10 @@ def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35
                 XLOC = i
                 YLOC = j
 
-                try:
-                    _ = image[j,i]
-                except IndexError:
+                outside_xallow = (i<0) or (i>=image.shape[1])
+                outside_yallow = (j<0) or (j>=image.shape[0])
+
+                if outside_xallow or outside_yallow:
                     continue
 
                 #print "pix (%d, %d) weight %f" % (i, j, WEIGHT)
