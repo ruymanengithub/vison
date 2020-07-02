@@ -684,6 +684,11 @@ class PSF0X(PT.PointTask):
 
         psCCDcoodicts = self._get_psCCDcoodicts()
 
+        bas_keys = ['bgd','peak','fluence','efluence',
+                        'x','y','x_ccd','y_ccd','fwhmx','fwhmy']
+        bas_res_def = dict(zip(bas_keys, np.zeros(
+                                    len(bas_keys), dtype='float32')))
+
         for iObs in range(nObs):
 
             for jCCD, CCDk in enumerate(CCDs):
@@ -701,8 +706,11 @@ class PSF0X(PT.PointTask):
 
                         inSpot = copy.deepcopy(spots_array[kQ, lS])
 
-                        bas_res = inSpot.measure_basic(rap=10, rin=15, rout=-1,
+                        try: 
+                            bas_res = inSpot.measure_basic(rap=10, rin=15, rout=-1,
                             gain=3.5, debug=False)
+                        except BaseException:
+                            continue
                         # bas_res = dict(bgd=bgd, peak=peak, fluence=flu, efluence=eflu,
                         #    x=x, y=y, x_ccd=x_ccd, y_ccd=y_ccd,
                         #    fwhmx=fwhmx, fwhmy=fwhmy)
