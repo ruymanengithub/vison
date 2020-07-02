@@ -162,7 +162,9 @@ def fwcentroid(image, checkbox=1, maxiterations=30, threshold=1e-5, halfwidth=35
                 YSUM = YSUM + YLOC * image[j, i] * WEIGHT
                 YSUM2 = YSUM2 + YLOC**2 * image[j, i] * WEIGHT
                 YSUM3 = YSUM3 + YLOC**3 * image[j, i] * WEIGHT
-        XCEN = XSUM / SUM
+
+        try: XCEN = XSUM / SUM
+        except: stop()
         XMOM2 = XSUM2 / SUM
         XMOM3 = XSUM3 / SUM
         YCEN = YSUM / SUM
