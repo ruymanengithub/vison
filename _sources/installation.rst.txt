@@ -38,8 +38,10 @@ Installation
 We recommend installing the code through a `conda` environment, with a specific list
 of packages, so you can be sure you have all the needed dependencies.
 
+**Note**: as of version 1.0 of vison, make sure you use the Python 3.X installer of Anaconda. 
+
 First, if you don't have `conda` already installed in your system already, 
-follow the instructions in this `link <https://conda.io/docs/install/quick.html>`_.
+follow the instructions in this `link <https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html#regular-installation>`_.
 
 
 Installing conda and creating `vison` environment
@@ -71,7 +73,7 @@ Use the OS version that may correspond in your case (by now, only linux-64 bits 
 * When prompted, type "y" and return to install the listed packages.
 * Activate the new environment
   ::
-    ~$ source activate vison
+    ~$ conda activate vison
 
 * Update pipe
   ::
@@ -80,7 +82,30 @@ Use the OS version that may correspond in your case (by now, only linux-64 bits 
 * Install the packages that are accessed via `pip`, within the conda environment:
   ::
     ~$ pip install -r env-pip_vison.txt
-        
+
+
+Hackity-Hack: installing astromatic_wrapper
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+One dependency of vison not covered by conda, or pip, (in Python > 3.5) is "astromatic_wrapper", an apparently no longer-maintained Python wrapper for the tools of astromatic.net. In vison, this package is used to interface with SExtractor (source detection in images). I've had to do a little patch (literally one line change) to the code so that it can actually be installed in the Python 3.6 environment used for vison. But you'll have to install this version of mine manually. It's not hard, though:
+
+* Without deactivating the 'vison' conda environment, go to the folder in your system where you install software and do the following to clone the repository of this hacked version of astromatic_wrapper:
+  ::
+    ~$ git clone git://github.com/ruymanengithub/astromatic_wrapper.git
+
+* once done, you'll have a new folder created under where you executed this last command, named "astromatic_wrapper". Now:
+  ::
+    ~$ cd astromatic_wrapper
+    ~$ python setup.py install
+
+And that should be it. You can check it is installed by trying to import it from the python interpreter:
+  ::
+    ~$ python
+    >>> import astromatic_wrapper
+    >>> print(astromatic_wrapper.__version__)
+    0.0.dev260
+
+
 
 Installing `vison`
 ^^^^^^^^^^^^^^^^^^
@@ -88,7 +113,7 @@ Installing `vison`
 Finally, to install the `vison` pipeline itself, we will go back to the folder we downloaded
 from the github repository:
 ::
-    ~$ cd ../
+    ~$ cd [wherever you pulled vison to...]
     ~$ ls
     conda  docs  LICENSE  manual_vison.pdf  README.md  setup.cfg  setup_distutils.py  setup.py  vison
 
@@ -96,8 +121,7 @@ Then do the actual installation, via:
 
 ~$ python setup.py install
 
-Now the vison package will be accessible from anywhere in your system, whenever you start python from 
-within the `vison` conda environment. For example:
+Now the vison package will be accessible from anywhere in your system, whenever you start python from  within the `vison` conda environment. For example:
 
 * open a new terminal and go to your home directory
   ::
@@ -105,11 +129,10 @@ within the `vison` conda environment. For example:
 
 * activate the vison environment:
   ::
-    ~$ source activate vison
+    ~$ conda activate vison
 
 * start the python interpreter and import vison:
   ::
-    ~$ source activate vison
     ~$ python
     >>> import vison
     >>> dir(vison)
