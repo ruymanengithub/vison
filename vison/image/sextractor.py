@@ -11,7 +11,9 @@ Created on Thu May 17 13:29:05 2018
 
 # IMPORT STUFF
 from pdb import set_trace as stop
-import astromatic_wrapper as aw
+try: import astromatic_wrapper as aw
+except ModuleNotFoundError:
+    pass
 import os
 import string as st
 import numpy as np
