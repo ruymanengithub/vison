@@ -297,7 +297,8 @@ class HKFlags(tk.Toplevel):
             window = SingleHKplot(self.parent.root)
             window.render(HKkey, HKlim, t, y)
         except KeyError:
-            print(('Cant find %s in HK!\n' % HKkey))
+            print('Cant find %s in HK!\n' % HKkey)
+
 
     def update(self):
 
@@ -482,7 +483,7 @@ class HKDisplay(tk.Toplevel):
         if arethere:
             self.HKfiles = HKfiles
         else:
-            print(('HKfiles %s not found' % tmp_HK))
+            print('HKfiles %s not found' % tmp_HK)
             self.HKfiles = None
 
     def select_HKkeys(self):

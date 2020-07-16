@@ -11,6 +11,7 @@ Created on Thu Apr 19 16:09:02 2018
 """
 
 # IMPORT  STUFF
+from __future__ import print_function
 import os
 from pdb import set_trace as stop
 import string as st
@@ -253,11 +254,11 @@ def test_URLs():
 
     for key, value in URLs.items():
         try:
-            urllib.request.urlopen(value)
+            urllib2.urlopen(value)
             print('Found %s' % key, value)
-        except urllib.error.HTTPError as e:
+        except urllib2.HTTPError as e:
             print(key, value, e.code)
-        except urllib.error.URLError as e:
+        except urllib2.URLError as e:
             print(key, value, e.args)
 
 

@@ -2,14 +2,17 @@
 # -*- coding: utf-8 -*-
 """
 
-Script to build test SEQUENCES easily
+Script to build test SEQUENCES easily and reliably.
 
+:History:
 Created on Thu Mar 14 10:30:33 2019
 
-@author: raf
+:author: raf
+
 """
 
 # IMPORT STUFF
+from __future__ import print_function
 from pdb import set_trace as stop
 from optparse import OptionParser
 import string as st

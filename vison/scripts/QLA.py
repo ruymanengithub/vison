@@ -7,22 +7,23 @@ Aimed at quick inspection of data from Characterization and Calibration Campaign
 of Euclid-VIS.
 
 :TODO:
-  find FITS files in a folder
-  load FITS file into a CCD object
-  obtain metrics on the data:
-    image of 4 quadrants
-    across-rows and across-columns plots
-    statistics of image, pre and over scan regions: mea, med, std, p25, p75
-  parse header
-  do plots
-  assemble all plots into a pdf file per image
-  merge all pdfs into a single pdf file
+  * find FITS files in a folder
+  * load FITS file into a CCD object
+  * obtain metrics on the data:
+        * image of 4 quadrants
+        * across-rows and across-columns plots
+        * statistics of image, pre and over scan regions: mea, med, std, p25, p75
+  * parse header
+  * do plots
+  * assemble all plots into a pdf file per image
+  * merge all pdfs into a single pdf file
 
 
 :History:
 Created on Wed Mar 16 11:33:21 2016
 
-@author: Ruyman Azzollini
+:author:
+Ruyman Azzollini
 
 """
 

@@ -4,6 +4,7 @@
 
 Methods to simulate data. Used by ccd.CCD class.
 
+:History:
 Created on Wed Apr  4 11:13:30 2018
 
 :author: Ruyman Azzollini

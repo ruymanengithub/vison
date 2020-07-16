@@ -117,7 +117,8 @@ class XYPlot(BasicPlot):
         meta = dict(suptitle='',
                     doLegend=False,
                     doNiceXDate=False,
-                    doYErrbars=False)
+                    doYErrbars=False,
+                    doConfidence=False)
 
         meta.update(kwargs)
 

@@ -4,6 +4,7 @@
 
 Linearity Calibration of ROE-TAB.
 
+:History:
 Created on Tue Mar 27 14:42:00 2018
 Modified on Fri Sep 14 10:53:00 2018
 
@@ -270,7 +271,7 @@ def run_ROETAB_LinCalib(inputsfile, incatfile, datapath='', respath='', doBayes=
 
     for ix, CHAN in enumerate(CHANNELS):
 
-        print(('Processing Channel %s...' % CHAN))
+        print('Processing Channel %s...' % CHAN)
 
         WFf = os.path.join(datapath, WFList[ix])
 

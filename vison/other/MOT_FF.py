@@ -118,7 +118,7 @@ class MOT_FF(BF01):
         flu_med_img = self.dd.mx['flu_med_img'][:].copy()
 
         indices = copy.deepcopy(self.dd.indices)
-        nObs, nCCD, nQuad = indices.shape
+        nObs, nCCD, nQuad = indices.shape[0:3]
         CCDs = indices.get_vals('CCD')
         Quads = indices.get_vals('Quad')
 

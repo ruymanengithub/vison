@@ -20,11 +20,12 @@ from vison.fpa import fpa as fpamod
 from vison.metatests.metacal import MetaCal
 from vison.plot import plots_fpa as plfpa
 
-from vison.support import vcal
+from vison.support import vcal, utils
 from vison.datamodel import core as vcore
+from vison.datamodel import cdp
 from vison.ogse import ogse
 from vison.support import files
-
+from vison.analysis import Guyonnet15 as G15
 
 from matplotlib import pyplot as plt
 plt.switch_backend('TkAgg')
@@ -134,6 +135,7 @@ class MetaBF(MetaCal):
             self.cdps['GAIN'][block] = allgains[block]['PTC01'].copy()
 
         self.init_fignames()
+        self.init_outcdpnames()
 
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
@@ -266,10 +268,10 @@ class MetaBF(MetaCal):
 
         return _extract_fromPT
 
-    def _get_BFvalues(self, _BF, CCD, iQ, orientation):
+    def _get_BFvalues(self, data, CCD, iQ, orientation):
         """ """
 
-        data = _BF['data']['BF']
+        #data = _BF['data']['BF']
 
         ixsel = np.where((data['CCD'] == CCD) & (data['Q'] == iQ))
 
@@ -289,10 +291,66 @@ class MetaBF(MetaCal):
 
         return x, y
 
-    def _get_BFFITvalues(self, _BFfit, CCD, iQ, orientation):
+
+    def _get_BFvalues_fromA(self, _BFmx, _BFraw, CCD, iQ, orientation, relflu=0.5):
         """ """
 
-        data = _BFfit['data']['BFFIT']
+        Npix = 51
+
+        #data = _BF['data']['BF']
+        Q = self.Quads[iQ-1]
+
+        ixsel = np.where((_BFmx['CCD'] == CCD) & (_BFmx['Q'] == iQ))
+
+        x = []
+        y = []
+
+        
+        fluences = _BFmx['fluence'].values[ixsel]
+        maxflu = np.nanmax(fluences)
+        ixflu = np.nanargmin(np.abs(fluences/maxflu-relflu))
+        refcol = _BFmx['col'].values[ixsel][ixflu]
+        refcorrmap = _BFraw['CCD%i' % CCD][refcol]['av_corrmap'][Q]
+        #var = _BFraw['CCD%i' % CCD][selcol]['av_corrmap'][Q]
+        refmu = _BFraw['CCD%i' % CCD][refcol]['av_mu'][Q]
+
+        singlepixmap = np.zeros((Npix, Npix), dtype='float32') + 0.0
+        singlepixmap[(Npix - 1) / 2, (Npix - 1) / 2] = 1.
+
+        
+        Asol_Q, psmooth_Q = G15.solve_for_A_linalg(
+            refcorrmap, var=1., mu=refmu, returnAll=True, 
+            doplot=False,
+            verbose=False)
+
+        for ix in ixsel[0]:
+            imu = _BFmx['fluence'][ix]
+            x.append(imu)
+
+            kernel_Q = G15.degrade_estatic(singlepixmap*imu, Asol_Q)
+
+            cross_Q = kernel_Q[Npix / 2 - 1:Npix / 2 + 2, 
+                    Npix / 2 - 1:Npix / 2 + 2].copy()
+            kerQshape = G15.get_cross_shape_rough(
+                cross_Q, pitch=12.)
+
+            fwhm = kerQshape['fwhm%s' % orientation.lower()]
+
+            y.append(fwhm)
+        
+        x = np.array(x)
+        y = np.array(y)
+
+        order = np.argsort(x)
+        x = x[order].copy()
+        y = y[order].copy()
+
+        return x, y
+
+    def _get_BFFITvalues(self, data, CCD, iQ, orientation):
+        """ """
+
+        #data = _BFfit['data']['BFFIT']
 
         ixsel = np.where((data['CCD'] == CCD) & (data['Q'] == iQ))
 
@@ -332,8 +390,8 @@ class MetaBF(MetaCal):
                 _bfkey = PT['BFCDP_KEY'][ixblock][0]
                 _bffitkey = PT['BFFITCDP_KEY'][ixblock][0]
 
-                _BF = self.products['BF'][_bfkey]
-                _BFfit = self.products['BFFIT'][_bffitkey]
+                _BF = self.products['BF'][_bfkey]['data']['BF']
+                _BFfit = self.products['BFFIT'][_bffitkey]['data']['BFFIT']
 
                 _ccd_bfdict = OrderedDict(x=OrderedDict(),
                                           y=OrderedDict())
@@ -409,7 +467,8 @@ class MetaBF(MetaCal):
 
         return FWHMZdict
 
-    def _get_FWHMZ_vs_FLU(self, test, orientation='X'):
+    def _get_FWHMZ_vs_FLU(self, test, orientation='X',
+                fixFluKernel=False):
         """ """
 
         x = dict()
@@ -431,20 +490,31 @@ class MetaBF(MetaCal):
                 ixblock = np.where(PT['BLOCK'] == block)
 
                 _bfkey = PT['BFCDP_KEY'][ixblock][0]
-                _BF = self.products['BF'][_bfkey]
+                _BFmx = self.products['BF'][_bfkey]['data']['BF']
+                _BFraw = self.products['BFCOV'][_bfkey]
 
-                for iQ, Q in enumerate(self.Quads):
 
-                    _xRAW, _yRAW = self._get_BFvalues(_BF, CCD, iQ + 1, orientation)
+                if fixFluKernel:
+                    
+                    for iQ, Q in enumerate(self.Quads):
+                        _xRAW, _yRAW = self._get_BFvalues_fromA(_BFmx, _BFraw, CCD, iQ+1,
+                            orientation, relflu=0.5)
+                else:
 
-                    labelkey = '%s_CCD%i_%s' % (block, CCD, Q)
+                    for iQ, Q in enumerate(self.Quads):
 
-                    gain = self.cdps['GAIN'][block][CCDk][Q][0]
+                        _xRAW, _yRAW = self._get_BFvalues(_BFmx, CCD, iQ + 1, orientation)
 
-                    x[labelkey] = (_xRAW * gain / 1.e3).copy()
-                    y[labelkey] = _yRAW.copy()
+                labelkey = '%s_CCD%i_%s' % (block, CCD, Q)
 
-                    labelkeys.append(labelkey)
+                gain = self.cdps['GAIN'][block][CCDk][Q][0]
+
+                x[labelkey] = (_xRAW * gain / 1.e3).copy()
+                y[labelkey] = _yRAW.copy()
+
+                labelkeys.append(labelkey)
+
+                
 
         x['Niemi'] = np.linspace(1.5e1, 2.e2, 10)  # kilo-electrons
         if orientation == 'X':
@@ -474,6 +544,11 @@ class MetaBF(MetaCal):
         self.figs['FWHMY_vs_FLU'] = os.path.join(self.figspath,
                                                  'FWHMY_vs_FLUENCE.png')
 
+        self.figs['FWHMX_vs_FLU_fixkernel'] = os.path.join(self.figspath,
+                                                 'FWHMX_vs_FLUENCE_fixkernel.png')
+        self.figs['FWHMY_vs_FLU_fixkernel'] = os.path.join(self.figspath,
+                                                 'FWHMY_vs_FLUENCE_fixkernel.png')
+
         # self.figs['SLOPEXY_vs_WAVE'] = os.path.join(self.figspath,
         #                 'SLOPEXY_vs_WAVELENGTH.png')
 
@@ -499,171 +574,416 @@ class MetaBF(MetaCal):
             self.figs['ELL_MAP_%s' % testname] = os.path.join(self.figspath,
                                                               'ELL_MAP_%s.png' % testname)
 
+    def init_outcdpnames(self):
+
+        if not os.path.exists(self.cdpspath):
+            os.system('mkdir %s' % self.cdpspath)
+
+        self.outcdps['COV'] = 'BFE_COV_matrices.json'
+        self.outcdps['G15_PARS'] = 'BFE_GUYO15_PARS.json'
+        self.outcdps['G15_GAUSS_PSF'] = 'BFE_GUYO15_GAUSSEQUIV_PSFs.fits'
+
+    def _get_COV_mxs(self):
+        """ """
+
+        COV_mxs = OrderedDict()
+
+        for tn in self.testnames:
+ 
+            COV_mxs[tn] = OrderedDict()
+
+            PT = self.ParsedTable[tn]
+
+            for jY in range(self.NSLICES_FPA):
+                for iX in range(self.NCOLS_FPA):
+                    Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+
+                    COV_mxs[tn][Ckey] = OrderedDict()
+
+                    locator = self.fpa.FPA_MAP[Ckey]
+                    block = locator[0]
+                    CCDk = locator[1]
+
+                    COV_mxs[tn][Ckey]['block'] = block
+                    COV_mxs[tn][Ckey]['CCD'] = CCDk
+
+                    ixblock = np.where(PT['BLOCK'] == block)
+
+                    _covkey = PT['BFCOV_KEY'][ixblock][0]
+
+                    _COV = self.products['BFCOV'][_covkey][CCDk]
+
+                    Ncols = len(_COV.keys())
+
+                    for ic in range(Ncols):
+                        colk = 'col%03i' % (ic+1,)
+
+                        COV_mxs[tn][Ckey][colk] = OrderedDict()
+
+                        COV_mxs[tn][Ckey][colk]['Npairs'] = _COV[colk]['Npairs']
+
+                        COV_mxs[tn][Ckey][colk]['mu'] = OrderedDict()
+                        COV_mxs[tn][Ckey][colk]['var'] = OrderedDict()
+                        COV_mxs[tn][Ckey][colk]['corrmap'] = OrderedDict()
+
+                        for Q in self.Quads:
+
+                            COV_mxs[tn][Ckey][colk]['mu'][Q] =\
+                                 float(_COV[colk]['av_mu'][Q])
+                            COV_mxs[tn][Ckey][colk]['var'][Q] =\
+                                 float(_COV[colk]['av_var'][Q])
+                            COV_mxs[tn][Ckey][colk]['corrmap'][Q] = \
+                                _COV[colk]['av_corrmap'][Q].tolist()
+
+        return COV_mxs                       
+
+    def _get_G15P_mxs(self):
+        """ """
+
+        G15P_mxs = OrderedDict()
+
+        for tn in self.testnames:
+ 
+            G15P_mxs[tn] = OrderedDict()
+
+            PT = self.ParsedTable[tn]
+
+            metrics = ['fluence','psmooth','e_psmooth','Asol']
+            filldefault = OrderedDict()
+            for metric in metrics:
+                filldefault[metric] = OrderedDict()
+            filldefault['fluence']['E'] = np.nan
+            filldefault['psmooth']['E'] = [np.nan,np.nan]
+            filldefault['e_psmooth']['E'] = [np.nan, np.nan]
+            filldefault['Asol']['E'] = [[[np.nan]]]
+            for metric in metrics:
+                for Q in ['F','G','H']:
+                    filldefault[metric][Q] = copy.deepcopy(filldefault[metric]['E'])
+
+            for jY in range(self.NSLICES_FPA):
+                for iX in range(self.NCOLS_FPA):
+                    Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+
+                    G15P_mxs[tn][Ckey] = OrderedDict()
+
+                    locator = self.fpa.FPA_MAP[Ckey]
+                    block = locator[0]
+                    CCDk = locator[1]
+
+                    G15P_mxs[tn][Ckey]['block'] = block
+                    G15P_mxs[tn][Ckey]['CCD'] = CCDk
+
+                    ixblock = np.where(PT['BLOCK'] == block)
+
+                    _bfkey = PT['BFCDP_KEY'][ixblock][0]
+                    _, session, srep = st.split(st.replace(_bfkey,'%s_' % tn,''),'_')
+
+                    rep = int(srep)
+
+                    bf = self.inventory[block][tn][rep-1]['dd'].products['BF']
+
+                    cols = bf['ulabels']
+
+
+                    for ic, colk in enumerate(cols):
+                        colk = 'col%03i' % (ic+1,)
+
+                        G15P_mxs[tn][Ckey][colk] = filldefault.copy()
+
+                        for Q in self.Quads:
+
+                            if len(bf[CCDk][Q][colk])>0:
+
+                                G15P_mxs[tn][Ckey][colk]['fluence'][Q] =\
+                                    float(bf[CCDk][Q][colk]['fluence'])
+                                
+                                G15P_mxs[tn][Ckey][colk]['psmooth'][Q] =\
+                                     bf[CCDk][Q][colk]['psmooth'][0].tolist()
+                                G15P_mxs[tn][Ckey][colk]['e_psmooth'][Q] =\
+                                     bf[CCDk][Q][colk]['psmooth'][1].tolist()
+                                G15P_mxs[tn][Ckey][colk]['Asol'][Q] =\
+                                     bf[CCDk][Q][colk]['Asol'].tolist()
+
+
+        return G15P_mxs                       
+
+
+
+    def _get_g15_gpsf_cdp(self, inCDP_header=None):
+        """ """
+        
+        CDP_header = OrderedDict()
+        if CDP_header is not None:
+            CDP_header.update(inCDP_header)
+
+        cdpname = self.outcdps['G15_GAUSS_PSF']
+        path = self.cdpspath
+
+        gpsf_cdp = cdp.FitsTables_CDP()
+        gpsf_cdp.rootname = os.path.splitext(cdpname)[0]
+        gpsf_cdp.path = path
+
+        gpsf_meta = OrderedDict()
+
+        gpsf_data = OrderedDict()
+
+        cols = ['col', 'CCD', 'Q', 'fluence', 'FWHMx', 'FWHMy', 'e']
+
+        for tn in self.testnames:
+
+            PT = self.ParsedTable[tn]
+
+            for block in self.flight_blocks:
+                ixblock = np.where(PT['BLOCK'] == block)
+                _bfkey = PT['BFCDP_KEY'][ixblock][0]
+
+                BFdf = self.products['BF'][_bfkey]['data']['BF'].copy()
+
+                rawd=BFdf.to_dict(orient='list')
+                dd = OrderedDict()
+                for col in cols: dd[col] = np.array(rawd[col]).copy()
+                
+
+                gpsf_data['%s_%s' % (tn, block)] = dd.copy()
+
+
+
+        CDP_header = self.FITSify_CDP_header(CDP_header)
+
+        gpsf_cdp.ingest_inputs(data=gpsf_data.copy(),
+            meta=gpsf_meta.copy(),
+            header=CDP_header.copy())
+        gpsf_cdp.init_HL_and_fillAll()
+
+        gpsf_cdp.hdulist[0].header.insert(CDP_header.keys()[0],
+            ('title','BF0X: GAUSS PSF EQUIVALENTS TO BFE-G+15'))
+
+        return gpsf_cdp
+
+
+
     def dump_aggregated_results(self):
         """ """
 
+        
         if self.report is not None:
             self.report.add_Section(keyword='dump', 
                 Title='Aggregated Results', level=0)
             
             self.add_DataAlbaran2Report()
 
+        doAll = True
+
+        doFWHMvWAVE = doAll
+        doFWHMvFLU = doAll
+        doFWHMvFLUalt = doAll
+        doTestMAPs = doAll
+        doELLMAP = doAll
+        doCDPs = doAll
+        
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+
+
 
         # FWHM? vs. WAVE
 
+        BLOCKcolors = cm.rainbow(np.linspace(0, 1, len(self.flight_blocks)))
 
-        for dim in ['x','y']:
-
-            figkey1 = 'FWHM%s_vs_WAVE' % dim.upper()
-            figname1 = self.figs[figkey1]
-
-            BLOCKcolors = cm.rainbow(np.linspace(0, 1, len(self.flight_blocks)))
-
-            FWHMzWAVEdict = self._get_FWHMZ_vs_WAVE(orientation=dim.upper())
-
-            FWHMzWAVEkwargs = dict(
-                title='FWHM-%s vs. Wavelength' % dim.upper(),
-                doLegend=False,
-                xlabel='Wavelength [nm]',
-                ylabel='FWHM%s [um]' % dim,
-                ylim=[7.5, 9.5],
-                figname=figname1)
-
-            corekwargs = dict()
-            for jblock, block in enumerate(self.flight_blocks):
-                jcolor = BLOCKcolors[jblock]
-                for iCCD in self.CCDs:
-                    for kQ in self.Quads:
-                        corekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(linestyle='-',
-                                                                             marker='.', color=jcolor)
-            corekwargs['Niemi'] = dict(linestyle='--', marker='o', color='k')
-
-            FWHMzWAVEkwargs['corekwargs'] = corekwargs
-
-            self.plot_XY(FWHMzWAVEdict, **FWHMzWAVEkwargs)
-
-            if self.report is not None:
-                self.addFigure2Report(figname1, 
-                    figkey=figkey1, 
-                    caption='FWHM%s vs. Wavelength' % dim, 
-                    texfraction=0.7)
+        comcorekwargs = dict()
+        for jblock, block in enumerate(self.flight_blocks):
+            jcolor = BLOCKcolors[jblock]
+            for iCCD in self.CCDs:
+                for kQ in self.Quads:
+                    comcorekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(linestyle='-',
+                        marker='.', color=jcolor)
+        comcorekwargs['Niemi'] = dict(linestyle='--', marker='o', color='k')
 
 
-        # FWHM? vs. FLUENCE
-
-        for dim in ['x','y']:
-
-            figkey2 = 'FWHM%s_vs_FLU' % dim.upper()
-            figname2 = self.figs[figkey2]
+        if doFWHMvWAVE:
 
 
-            FWHMzFLUdict = self._get_FWHMZ_vs_FLU('BF01', orientation=dim.upper())
+            for dim in ['x','y']:
 
-            FWHMzFLUkwargs = dict(
-                title='FWHM-%s (800nm) vs. Fluence' % dim.upper(),
-                doLegend=False,
-                xlabel='Fluence [ke-]',
-                ylabel='FWHM%s [um]' % dim,
-                ylim=[6., 10.],
-                figname=figname2)
+                figkey1 = 'FWHM%s_vs_WAVE' % dim.upper()
+                figname1 = self.figs[figkey1]
 
-            FWHMzFLUkwargs['corekwargs'] = corekwargs
 
-            self.plot_XY(FWHMzFLUdict, **FWHMzFLUkwargs)
+                FWHMzWAVEdict = self._get_FWHMZ_vs_WAVE(orientation=dim.upper())
 
-            if self.report is not None:
-                self.addFigure2Report(figname2, 
-                    figkey=figkey2, 
-                    caption='FWHM%s vs. Wavelength' % dim, 
-                    texfraction=0.7)
+                FWHMzWAVEkwargs = dict(
+                    title='FWHM-%s vs. Wavelength' % dim.upper(),
+                    doLegend=False,
+                    xlabel='Wavelength [nm]',
+                    ylabel='FWHM%s [um]' % dim,
+                    ylim=[7.5, 12.5],
+                    figname=figname1)
+
+
+                FWHMzWAVEkwargs['corekwargs'] = comcorekwargs
+
+                self.plot_XY(FWHMzWAVEdict, **FWHMzWAVEkwargs)
+
+                if self.report is not None:
+                    self.addFigure2Report(figname1, 
+                        figkey=figkey1, 
+                        caption='FWHM%s vs. Wavelength' % dim, 
+                        texfraction=0.7)
+
+        if doFWHMvFLU:
+
+            # FWHM? vs. FLUENCE
+
+            for dim in ['x','y']:
+
+                figkey2 = 'FWHM%s_vs_FLU' % dim.upper()
+                figname2 = self.figs[figkey2]
+
+
+                FWHMzFLUdict = self._get_FWHMZ_vs_FLU('BF01', orientation=dim.upper())
+
+                FWHMzFLUkwargs = dict(
+                    title='FWHM-%s (800nm) vs. Fluence' % dim.upper(),
+                    doLegend=False,
+                    xlabel='Fluence [ke-]',
+                    ylabel='FWHM%s [um]' % dim,
+                    ylim=[6., 12.5],
+                    figname=figname2)
+
+                FWHMzFLUkwargs['corekwargs'] = comcorekwargs
+
+                self.plot_XY(FWHMzFLUdict, **FWHMzFLUkwargs)
+
+                if self.report is not None:
+                    self.addFigure2Report(figname2, 
+                        figkey=figkey2, 
+                        caption='FWHM%s vs. Wavelength' % dim, 
+                        texfraction=0.7)
+
+
+        if doFWHMvFLUalt:
+
+            # FWHM? vs. FLUENCE
+            # Using a fixed-fluence kernel this time
+
+            for dim in ['x','y']:
+
+                figkey21 = 'FWHM%s_vs_FLU_fixkernel' % dim.upper()
+                figname21 = self.figs[figkey21]
+
+
+                FWHMzFLUFKdict = self._get_FWHMZ_vs_FLU('BF01', orientation=dim.upper(),
+                    fixFluKernel=True)
+
+                FWHMzFLUFKkwargs = dict(
+                    title='FWHM-%s (800nm) vs. Fluence, Fixed Kernel' % dim.upper(),
+                    doLegend=False,
+                    xlabel='Fluence [ke-]',
+                    ylabel='FWHM%s [um]' % dim,
+                    ylim=[6., 12.5],
+                    figname=figname21)
+
+                FWHMzFLUFKkwargs['corekwargs'] = comcorekwargs
+
+                self.plot_XY(FWHMzFLUFKdict, **FWHMzFLUFKkwargs)
+
+                if self.report is not None:
+                    self.addFigure2Report(figname21, 
+                        figkey=figkey21, 
+                        caption='FWHM%s vs. Wavelength, using the kernel at mid-fluence.' % dim, 
+                        texfraction=0.7)
 
 
         # MAPS
 
-        for testname in self.testnames:
+        if doTestMAPs:
 
-            stestname = st.replace(testname, '_', '\_')
-
-            for dim in ['x','y']:
-
-                # FWHMz CURVES MAP
-
-                figkey3 = 'FWHM%s_curves_MAP_%s' \
-                            % (dim.upper(),testname)
-
-                figname3 = self.figs[figkey3]
-
-                corekwargs_fwhmzmap = dict(E=dict(linestyle='', marker='.', color='r'),
-                                           Efit=dict(linestyle='--', marker='', color='r'),
-                                           F=dict(linestyle='', marker='.', color='g'),
-                                           Ffit=dict(linestyle='--', marker='', color='g'),
-                                           G=dict(linestyle='', marker='.', color='b'),
-                                           Gfit=dict(linestyle='--', marker='', color='b'),
-                                           H=dict(linestyle='', marker='.', color='m'),
-                                           Hfit=dict(linestyle='--', marker='', color='m'))
-
-                FWHMZ_fits_MAP = self._get_FWHMzfitsMAP_from_PT(testname, orientation=dim)
-
-                self.plot_XYMAP(FWHMZ_fits_MAP, **dict(
-                    suptitle='%s: FWHM%s Fits' % (stestname,dim),
-                    doLegend=True,
-                    xlabel='kADU',
-                    ylim=[6., 10.],
-                    ylabel='FWH%s [um]' % dim,
-                    corekwargs=corekwargs_fwhmzmap,
-                    figname=figname3
-                    #figname = ''
-                ))
-
-                if self.report is not None:
-                    self.addFigure2Report(figname3, 
-                        figkey=figkey3, 
-                        caption='%s' % stestname, 
-                        texfraction=0.7)
-
-
-                # SLOPEZ MAP
-
-                figkey4 = 'SLOPE%s_MAP_%s' % (dim.upper(),testname)
-                figname4 = self.figs[figkey4]
-
-                SLOPEz_MAP = self.get_FPAMAP_from_PT(
-                    self.ParsedTable[testname],
-                    extractor=self._get_GEN_extractor_fromPT('FWHM%s_SLOPE' % \
-                        dim.upper()))
-
-                self.plot_SimpleMAP(SLOPEz_MAP, **dict(
-                    suptitle='%s: Slope-%s, um/10kADU' % (stestname,dim),
-                    figname=figname4))
-
-                if self.report is not None:
-                    self.addFigure2Report(figname4, 
-                        figkey=figkey4, 
-                        caption='%s' % stestname, 
-                        texfraction=0.7)
-
-                # FWHMZ MAP
-
-                figkey5 = 'FWHM%s_MAP_%s' % (dim.upper(),testname)
-                figname5 = self.figs[figkey5]
-
-                FWHMZ_MAP = self.get_FPAMAP_from_PT(
-                    self.ParsedTable[testname],
-                    extractor=self._get_GEN_extractor_fromPT('FWHM%s_HWC' % \
-                        dim.upper()))
+            for testname in self.testnames:
 
                 stestname = st.replace(testname, '_', '\_')
-                self.plot_SimpleMAP(FWHMZ_MAP, **dict(
-                    suptitle='%s: FWHM-%s at HWC' % (stestname,dim.upper()),
-                    figname=figname5))
 
-                if self.report is not None:
-                    self.addFigure2Report(figname5, 
-                        figkey=figkey5, 
-                        caption='%s' % stestname, 
-                        texfraction=0.7)
+                for dim in ['x','y']:
+
+                    # FWHMz CURVES MAP
+
+                    figkey3 = 'FWHM%s_curves_MAP_%s' \
+                                % (dim.upper(),testname)
+
+                    figname3 = self.figs[figkey3]
+
+                    corekwargs_fwhmzmap = dict(E=dict(linestyle='', marker='.', color='r'),
+                                               Efit=dict(linestyle='--', marker='', color='r'),
+                                               F=dict(linestyle='', marker='.', color='g'),
+                                               Ffit=dict(linestyle='--', marker='', color='g'),
+                                               G=dict(linestyle='', marker='.', color='b'),
+                                               Gfit=dict(linestyle='--', marker='', color='b'),
+                                               H=dict(linestyle='', marker='.', color='m'),
+                                               Hfit=dict(linestyle='--', marker='', color='m'))
+
+                    FWHMZ_fits_MAP = self._get_FWHMzfitsMAP_from_PT(testname, orientation=dim)
+
+                    self.plot_XYMAP(FWHMZ_fits_MAP, **dict(
+                        suptitle='%s: FWHM%s Fits' % (stestname,dim),
+                        doLegend=True,
+                        xlabel='kADU',
+                        ylim=[6., 12.5],
+                        ylabel='FWH%s [um]' % dim,
+                        corekwargs=corekwargs_fwhmzmap,
+                        figname=figname3
+                        #figname = ''
+                    ))
+
+                    if self.report is not None:
+                        self.addFigure2Report(figname3, 
+                            figkey=figkey3, 
+                            caption='%s' % stestname, 
+                            texfraction=0.7)
+
+
+                    # SLOPEZ MAP
+
+                    figkey4 = 'SLOPE%s_MAP_%s' % (dim.upper(),testname)
+                    figname4 = self.figs[figkey4]
+
+                    SLOPEz_MAP = self.get_FPAMAP_from_PT(
+                        self.ParsedTable[testname],
+                        extractor=self._get_GEN_extractor_fromPT('FWHM%s_SLOPE' % \
+                            dim.upper()))
+
+                    self.plot_SimpleMAP(SLOPEz_MAP, **dict(
+                        suptitle='%s: Slope-%s, um/10kADU' % (stestname,dim),
+                        figname=figname4))
+
+                    if self.report is not None:
+                        self.addFigure2Report(figname4, 
+                            figkey=figkey4, 
+                            caption='%s' % stestname, 
+                            texfraction=0.7)
+
+                    # FWHMZ MAP
+
+                    figkey5 = 'FWHM%s_MAP_%s' % (dim.upper(),testname)
+                    figname5 = self.figs[figkey5]
+
+                    FWHMZ_MAP = self.get_FPAMAP_from_PT(
+                        self.ParsedTable[testname],
+                        extractor=self._get_GEN_extractor_fromPT('FWHM%s_HWC' % \
+                            dim.upper()))
+
+                    stestname = st.replace(testname, '_', '\_')
+                    self.plot_SimpleMAP(FWHMZ_MAP, **dict(
+                        suptitle='%s: FWHM-%s at HWC' % (stestname,dim.upper()),
+                        figname=figname5))
+
+                    if self.report is not None:
+                        self.addFigure2Report(figname5, 
+                            figkey=figkey5, 
+                            caption='%s' % stestname, 
+                            texfraction=0.7)
             
-
+        if doELLMAP:
 
             # ELL MAP
 
@@ -683,3 +1003,105 @@ class MetaBF(MetaCal):
                     figkey=figkey6,
                     caption='%s: Ellipticity of the Gaussian-equivalent kernel.' % stestname, 
                     texfraction=0.7)
+
+
+        # CDPs
+
+        if doCDPs:
+
+            # Covariance Matrices
+            # json
+
+            
+            COVs_mx = self._get_COV_mxs()
+
+            cov_header = OrderedDict()
+            cov_header['title'] = 'Covariance Matrices'
+            cov_header['test'] = 'BF0X'
+            cov_header.update(CDP_header)
+
+            cov_meta = OrderedDict()
+            cov_meta['structure'] = dict(
+                    TEST=dict(
+                        CCDID=dict(
+                            block="BLOCK ID",
+                            CCD="ROE CCD",
+                            colXXX=dict(
+                                Npairs="Nr. of pairs of images",
+                                mu="dict(Quad), median fluence, [ADU]",
+                                var="dict(Quad), variances [ADU^2]",
+                                corrmap="dict(Quad), correlations, [ADIM.]"
+                                )
+                            )
+                        )
+                    )
+
+
+            cov_cdp = cdp.Json_CDP(rootname=self.outcdps['COV'],
+                path=self.cdpspath)
+
+            cov_cdp.ingest_inputs(data=COVs_mx,
+                header=cov_header,
+                meta=cov_meta)
+            cov_cdp.savehardcopy()
+
+            
+
+            # G15 Parameters
+            # json
+
+            G15P_mx = self._get_G15P_mxs()
+
+            g15p_header = OrderedDict()
+            g15p_header['title'] = 'Guyonnet+15 Parameters'
+            g15p_header['test'] = 'BF0X'
+            g15p_header.update(CDP_header)
+
+            g15p_meta = OrderedDict()
+            g15p_meta['structure'] = dict(
+                    TEST=dict(
+                        CCDID=dict(
+                            block="BLOCK ID",
+                            CCD="ROE CCD",
+                            colXXX=dict(
+                                fluence="dict(Q), Fluence, [ADU]",
+                                psmooth="dict(Q), (p0, p1), [p0,p1]=[L, 1/L]",
+                                e_psmooth="dict(Q), (unc(p0), unc(p1))",
+                                Asol="dict(Q), matrix of a_{i,j}^X coefficients, [ADU^{-1}]."
+                                )
+                            )
+                        )
+                    )
+
+
+            g15p_cdp = cdp.Json_CDP(rootname=self.outcdps['G15_PARS'],
+                path=self.cdpspath)
+
+            g15p_cdp.ingest_inputs(data=G15P_mx,
+                header=g15p_header,
+                meta=g15p_meta)
+            g15p_cdp.savehardcopy()
+
+
+            # G15 G-PSF Equivalent Parameters
+            # FITS table
+
+            g15_gpsf_cdp = self._get_g15_gpsf_cdp(inCDP_header=CDP_header)
+
+            for i in range(2,len(g15_gpsf_cdp.hdulist)):
+                extname = g15_gpsf_cdp.hdulist[i].header['EXTNAME']
+                block = st.split(extname,'_')[-1]
+                tn = st.join(st.split(extname,'_')[:-1],'_')
+
+                g15_gpsf_cdp.hdulist[i].header['TEST'] = tn
+                g15_gpsf_cdp.hdulist[i].header['BLOCK'] = block
+
+                for CCD in self.CCDs:
+                    CCDk = 'CCD%i' % CCD
+                    CCDID = self.fpa.get_Ckey_from_BlockCCD(block, CCD)
+                    g15_gpsf_cdp.hdulist[i].header[CCDk] = CCDID
+
+                g15_gpsf_cdp.hdulist[0].header['EXT_%i' % (i+1,)] = extname
+
+            g15_gpsf_cdp.savehardcopy()
+

@@ -348,8 +348,8 @@ class GenPipe(object):
                 self.log.info('TASK "%s@%s" FAILED, QUITTING!' %
                               (taskname, self.Test_dict[strip_taskname].__module__))
             else:
-                print(('TASK "%s@%s" FAILED, QUITTING!' % (
-                    taskname, self.Test_dict[taskname].__module__)))
+                print('TASK "%s@%s" FAILED, QUITTING!' % (
+                    taskname, self.Test_dict[taskname].__module__))
 
         tend = datetime.datetime.now()
         dtm = ((tend - tini).seconds) / 60.

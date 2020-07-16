@@ -226,11 +226,7 @@ class MetaCal(object):
         try:
             dd = files.cPickleRead(DDfile)
         except BaseException:
-<<<<<<< HEAD
-            print(('Could not load %s' % DDfile))
-=======
             print('Could not load %s\n\n' % DDfile)
->>>>>>> master
             raise RuntimeError
 
         ii['dd'] = copy.deepcopy(dd)
@@ -475,7 +471,7 @@ class MetaCal(object):
                 try:
                     Nreps = len(self.inventory[block][testname])
                 except KeyError:
-                    print('block %s not found!' % block)
+                    print(('block %s not found!' % block))
                     continue
 
                 for jrep in range(Nreps):
@@ -571,6 +567,7 @@ class MetaCal(object):
             figname = _kwargs['figname']
         else:
             figname = ''
+
 
         with plfpa.FpaHeatMap(MAPdict, **_kwargs) as heatmap:
             heatmap.render(figname=figname)
@@ -754,5 +751,25 @@ class MetaCal(object):
         self.report.add_Figure(eps, texfraction=texfraction,
             caption=caption,
             label=figkey)
+
+    def FITSify_CDP_header(self, CDP_header):
+        """ """
+        
+        outCDP_header = CDP_header.copy()
+
+        if 'fpa_design' in outCDP_header:
+            fpa_design = outCDP_header.pop('fpa_design')
+            outCDP_header['fpadesi'] = fpa_design
+
+        if 'FPA' in outCDP_header:
+            rawFPA = outCDP_header.pop('FPA')
+            
+            for jY in range(self.NSLICES_FPA):
+                for iX in range(self.NCOLS_FPA):
+                    Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+                    outCDP_header[Ckey] = rawFPA[Ckey][-1]
+                    
+        return outCDP_header
+
 
 

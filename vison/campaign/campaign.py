@@ -4,7 +4,7 @@
 
 Description of the Ground Calibration Campaign.
 
-
+:History:
 Created on Wed Oct 11 11:43:54 2017
 
 :author: Ruyman Azzollini
@@ -34,8 +34,15 @@ from vison.support import utils
 
 def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                            CHAMBER=None, purpose='scripts'):
-    """Now supporting test repetitions."""
-    taskslist = list(toGen.keys())
+    """
+    | Function that generates a number of tests, as instances of their corresponding
+    task classes. 
+
+    | Aimed at the VGCC.
+
+    | Now supporting test repetitions."""
+    taskslist = toGen.keys()
+    
     test_sequence = OrderedDict()
     for taskname in taskslist:
         if not toGen[taskname]:
@@ -533,6 +540,10 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
             frames=frsBF01,
             wavelength=800,
             Npix=5,
+            clipsigma=4.,
+            covfunc='ver2',
+            doBiasCorr=True,
+            central='mean',
             surrogate='PTC01',
             diffvalues=diffBF01))
 
@@ -565,6 +576,11 @@ def _generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
                                           exptimes=exptsBF01w,
                                           frames=frsBF01w,
                                           wavelength=wave,
+                                          Npix=5,
+                                          clipsigma=4.,
+                                          covfunc='ver2',
+                                          doBiasCorr=True,
+                                          central='mean',
                                           surrogate=isurrogate,
                                           diffvalues=diffBF01w))
 

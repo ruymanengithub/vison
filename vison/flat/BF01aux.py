@@ -24,6 +24,8 @@ from vison.plot import trends
 
 from vison.datamodel import cdp
 
+from vison.point import spot as spotmod
+
 # END IMPORT
 
 
@@ -58,8 +60,8 @@ prof_COV_ver_dict = dict(
     meta=dict(doLegend=True,
               ylabel='COV/VAR, ADIM.',
               xlabel='Y',
-              # ylim=[-0.005,0.07],
-              corekwargs=dict(marker='.', linestyle='-'),
+              ylim=[-0.005,0.07],
+              corekwargs=dict(),
               suptitle='BF01: COV 1D Profile, Vertical/Parallel.')
 )
 
@@ -69,8 +71,8 @@ prof_COV_ser_dict = dict(
     meta=dict(doLegend=True,
               ylabel='COV/VAR, ADIM.',
               xlabel='X',
-              # ylim=[-0.005,0.07],
-              corekwargs=dict(marker='.', linestyle='-'),
+              ylim=[-0.005,0.07],
+              corekwargs=dict(),
               suptitle='BF01: COV 1D Profile, Serial.')
 )
 
@@ -78,10 +80,10 @@ prof_KER_ver_dict = dict(
     figname='BF01_KER_profs_ver.png',
     caption='BF01: KERNEL 1D profiles, vertical/parallel direction.',
     meta=dict(doLegend=True,
-              ylabel='ADIM.',
+              ylabel='log([ADU])',
               xlabel='Y [pix]',
-              ylim=[-0.03, 0.1],
-              corekwargs=dict(marker='.', linestyle='-'),
+              #ylim=[-0.03, 0.1],
+              corekwargs=dict(),
               suptitle='BF01: Kernels 1D Profile, Vertical/Parallel.')
 )
 
@@ -89,10 +91,10 @@ prof_KER_ser_dict = dict(
     figname='BF01_KER_profs_ser.png',
     caption='BF01: KERNEL 1D profiles, serial direction.',
     meta=dict(doLegend=True,
-              ylabel='ADIM.',
+              ylabel='log([ADU])',
               xlabel='X [pix]',
-              ylim=[-0.03, 0.1],
-              corekwargs=dict(marker='.', linestyle='-'),
+              #ylim=[-0.03, 0.1],
+              corekwargs=dict(),
               suptitle='BF01: Kernels 1D Profile, Serial.')
 )
 
@@ -102,6 +104,7 @@ FWHMx_v_flu_dict = dict(
     meta=dict(doLegend=True,
               ylabel='FWHM(x), [um]',
               xlabel='ADU',
+              ylim = [5.,15.],
               corekwargs=dict(
                   data=dict(marker='o', linestyle=''),
                   fit=dict(marker='', linestyle='--')),
@@ -114,11 +117,41 @@ FWHMy_v_flu_dict = dict(
     meta=dict(doLegend=True,
               ylabel='FWHM(y), [um]',
               xlabel='ADU',
+              ylim = [5.,15.],
               corekwargs=dict(
                   data=dict(marker='o', linestyle=''),
                   fit=dict(marker='', linestyle='--')),
               suptitle='BF01: FWHMy in microns vs. Fluence')
 )
+
+
+def gt_PTC_curves_dict(test, BFEcorr='no'):
+
+  nicetest = st.replace(test, '_', '\_')
+
+  if BFEcorr=='no':
+    BFEtag = 'wBFE'
+    BFEcap = 'BFE left in'
+  elif BFEcorr == 'fludep':
+    BFEtag = 'noBFE'
+    BFEcap = 'BFE removed'
+  elif BFEcorr == 'flufix':
+    BFEtag = 'noBFEfixflu'
+    BFEcap = 'BFE removed, mid-fluence Axij'
+
+  
+  return dict(
+      figname='%s_PTC_curves_%s.png' % (test,BFEtag),
+      caption='%s: PTC curves, %s. Theoretical line has a fixed gain of 3.5.' % (nicetest,BFEcap),
+      meta=dict(doLegend=True,
+              ylabel='VAR',
+              xlabel='MED',
+              xlim=[0., 2**16],
+              ylim=[0., 2.**16 / 3.],
+              suptitle='%s: PTC Curves.' % nicetest,
+              corekwargs=dict(data=dict(marker='.', linestyle='', color='b'),
+                      theo=dict(marker='', linestyle='-', color='r'))
+        ))
 
 
 def gt_BF01figs(test):
@@ -171,4 +204,16 @@ def gt_BF01figs(test):
     BF01figs['BF01_fwhmy_v_flu'] = [
         figclasses.Fig_Beam2DPlot, FWHMy_v_flu_dict]
 
+    BF01figs['BF01_PTC_BFE'] = [
+        figclasses.Fig_Beam2DPlot, gt_PTC_curves_dict(test, BFEcorr='no')]
+
+    BF01figs['BF01_PTC_NOBFE'] = [
+        figclasses.Fig_Beam2DPlot, gt_PTC_curves_dict(test, BFEcorr='fludep')]
+
+    BF01figs['BF01_PTC_NOBFEALT'] = [
+        figclasses.Fig_Beam2DPlot, gt_PTC_curves_dict(test, BFEcorr='flufix')]
+
+
+
     return BF01figs
+

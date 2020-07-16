@@ -10,10 +10,11 @@ This issue was brought to attention of VIS IDT by Ralf Kohley on
 Jan 10th 2019.
 
 
-
+:History:
 Created on Tue Feb  5 09:35:25 2019
 
-@author: raf
+:author: raf
+
 """
 
 # IMPORT STUFF
@@ -126,7 +127,7 @@ def batch_extract_histos(explog, respath, multithread=1):
         if os.path.exists(fits_name):
             arglist.append((fits_name, i, N))
         else:
-            print(('%s is MISSING' % fits_name))
+            print('%s is MISSING' % fits_name)
 
     pool = mp.Pool(processes=multithread)
     pool.map(_wrap_extract_histograms, arglist)

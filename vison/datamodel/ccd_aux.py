@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 """
 
-Auxiliary script to ccd.py
+Module auxiliary to ccd.py
 
+:History:
 Created on Mon Feb 19 13:14:02 2018
 
 :author: raf
@@ -309,20 +310,32 @@ def get_region2Dmodel(ccdobj, Q, area='img', kind='spline', splinemethod='cubic'
                       recoveredges=False,vstart=0, vend=2086, canonical=True, extension=-1):
     """ 
 
-    Args:
-        ccdobj (obj): ccd object
-        Q (char): Quadrant
-        kind (char): type of 
-        doFilter (bool):  
-        filtsize (int): 
-        doBin (bool):
-        binsize (int):
-        filtertype (char):
-        recoveredges (bool):
-        vstart (int): windowing parameter, start line (from 0) to consider in image area.
-        vend (int): windowing parameter, end line (+1) to consider in image area.
-        canonical (bool): 
-        extension (int): image extension to be used from ccdobj.
+        :param ccdobj: ccd object
+        :type ccdobj: object
+        :param Q: Quadrant
+        :type Q: char
+        :param kind: type of interpolation
+        :type kind: char
+        :param doFilter: boolean to control whether to apply image filtering or not
+        :type doFilter: bool 
+        :param filtsize: size of the filter to be applied (on a side)
+        :type filtsize: int 
+        :param doBin: apply binning?
+        :type doBin: bool
+        :param binsize: size of the binning window (on a side)
+        :type binsize: int
+        :param filtertype: type of the filter, if applied
+        :type filtertype: char
+        :param recoveredges: try to recover edges of array after binning / filtering?
+        :type recoveredges: bool
+        :param vstart: windowing parameter, start line (from 0) to consider in image area
+        :type vstart: int
+        :param vend: windowing parameter, end line (+1) to consider in image area
+        :type vend: int
+        :param canonical: [quadrant] orientation of the resulting model
+        :type canonical: bool
+        :param extension: image extension to be used from ccdobj
+        :type extension: int
 
     """
 

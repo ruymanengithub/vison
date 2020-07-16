@@ -3,6 +3,15 @@ Pipeline
 
 .. currentmodule:: vison.pipe
 
+genmaster.py
+------------
+
+.. automodule:: vison.pipe.genmaster
+        :members:
+
+.. autoclass:: GenPipe
+    :members:
+
 master.py
 ---------
 

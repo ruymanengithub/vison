@@ -96,9 +96,10 @@ class Photometer(SpotBase):
         #ycen0 = self.data.shape[0]/2
         medimg = nd.median_filter(self.data, [5, 5])
         ycen0, xcen0 = np.unravel_index(np.argmax(medimg), medimg.shape)
-        xcen, ycen, xcen2, ycen2, xcen3, ycen3 = poalg.fwcentroid(self.data, checkbox=1, maxiterations=10,
-                                                                  threshold=1e-3, halfwidth=6, verbose=False,
-                                                                  full=full, CEN0=(xcen0, ycen0))
+        xcen, ycen, xcen2, ycen2, xcen3, ycen3 = poalg.fwcentroid(self.data, checkbox=1, 
+                    maxiterations=10,
+                    threshold=1e-3, halfwidth=6, verbose=False,
+                    full=full, CEN0=(xcen0, ycen0))
         self.xcen = xcen
         self.ycen = ycen
 

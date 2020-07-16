@@ -13,6 +13,7 @@ import numpy as np
 from collections import OrderedDict
 import string as st
 import os
+import pandas as pd
 
 from vison.datamodel import cdp
 from vison.support import files
@@ -539,6 +540,11 @@ class MetaChinj01(MetaCal):
             os.system('mkdir %s' % self.cdpspath)
 
         self.outcdps['INJCURVES'] = 'CHINJ01_INJCURVES_PAR.json'
+        self.outcdps['INJPROF_XLSX_HOR'] = 'CHINJ01_INJPROFILES_HOR.xlsx'
+        self.outcdps['INJPROF_XLSX_VER'] = 'CHINJ01_INJPROFILES_VER.xlsx'
+        self.outcdps['INJPROF_FITS_HOR'] = 'CHINJ01_INJPROFILES_HOR.fits'
+        self.outcdps['INJPROF_FITS_VER'] = 'CHINJ01_INJPROFILES_VER.fits'
+
 
     def _extract_NUNHOR_fromPT(self, PT, block, CCDk, Q):
         """ """
@@ -561,6 +567,117 @@ class MetaChinj01(MetaCal):
 
         return np.nanstd(_y)/np.nanmean(_y)*100.
 
+    def _get_injprof_dfdict(self, direction, IG1=4.5, pandice=False):
+        """ """
+
+        injprofs = OrderedDict()
+
+        Quads = self.Quads
+        PT = self.ParsedTable['CHINJ01']
+        profcol = '%sPROFS_KEY' % direction.upper()
+        prodkey = '%sPROFILES' % direction.upper()
+
+
+        for block in self.flight_blocks:
+            injprofs[block] = OrderedDict()
+
+            ixsel = np.where(PT['BLOCK'] == block)
+            prof_key = PT[profcol][ixsel][0]
+
+            i_Prof = self.products[prodkey][prof_key].copy()
+            
+            IG1key = 'IG1_%.2fV' % IG1
+
+
+            for iCCD, CCD in enumerate(self.CCDs):
+                CCDk = 'CCD%i' % CCD
+
+                Ckey = self.fpa.get_Ckey_from_BlockCCD(block, CCD)
+
+                for kQ, Q in enumerate(Quads):
+
+                    _pcq = i_Prof['data'][CCDk][Q].copy()
+
+                    _x = _pcq['x'][IG1key].copy()
+                    _y = _pcq['y'][IG1key].copy()
+
+                    _y /= np.nanmedian(_y)
+
+
+                    if iCCD==0 and kQ==0:
+                        injprofs[block]['pixel'] = _x.copy()
+                    injprofs[block]['%s_%s' % (Ckey,Q)] = _y.copy() 
+
+        if pandice:
+            for block in self.flight_blocks:
+                injprofs[block] = pd.DataFrame.from_dict(injprofs[block])
+
+        return injprofs
+
+
+    def get_injprof_xlsx_cdp(self, direction, inCDP_header=None, IG1=4.5):
+        """ """
+
+        CDP_header = OrderedDict()
+        if CDP_header is not None:
+            CDP_header.update(inCDP_header)
+
+        cdpname = self.outcdps['INJPROF_XLSX_%s' % direction.upper()]
+        path = self.cdpspath
+
+        injprof_cdp = cdp.Tables_CDP()
+        injprof_cdp.rootname = os.path.splitext(cdpname)[0]
+        injprof_cdp.path = path
+
+        injprofs_meta = OrderedDict()
+
+        injprofs = self._get_injprof_dfdict(direction, IG1, pandice=True)        
+
+        injprofs_meta['IG1'] = IG1
+        injprofs_meta['norm'] = 'median'
+
+        injprof_cdp.ingest_inputs(data=injprofs.copy(),
+            meta=injprofs_meta.copy(),
+            header=CDP_header.copy())
+        injprof_cdp.init_wb_and_fillAll(
+            header_title='CHINJ01: INJPROFS-%s' % direction.upper())
+
+        return injprof_cdp
+
+    def get_injprof_fits_cdp(self, direction, inCDP_header=None, IG1=4.5):
+        """ """
+
+        CDP_header = OrderedDict()
+        if inCDP_header is not None:
+            CDP_header.update(inCDP_header)
+
+        cdpname = self.outcdps['INJPROF_FITS_%s' % direction.upper()]
+        path = self.cdpspath
+
+        injprof_cdp = cdp.FitsTables_CDP()
+        injprof_cdp.rootname = os.path.splitext(cdpname)[0]
+        injprof_cdp.path = path
+
+        injprofs_meta = OrderedDict()
+
+        injprofs = self._get_injprof_dfdict(direction, IG1, pandice=False)
+
+        injprofs_meta['IG1'] = IG1
+        injprofs_meta['norm'] = 'median'
+
+        CDP_header = self.FITSify_CDP_header(CDP_header)
+
+        injprof_cdp.ingest_inputs(data=injprofs.copy(),
+            meta=injprofs_meta.copy(),
+            header=CDP_header.copy())
+        
+        injprof_cdp.init_HL_and_fillAll()
+
+        injprof_cdp.hdulist[0].header.insert(CDP_header.keys()[0],
+            ('title', 'CHINJ01: INJPROFS-%s' % direction.upper()))
+
+        return injprof_cdp
+
 
     def dump_aggregated_results(self):
         """ """
@@ -574,6 +691,7 @@ class MetaChinj01(MetaCal):
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
 
         # Histogram of Slopes [ADU/electrons]
 
@@ -599,7 +717,6 @@ class MetaChinj01(MetaCal):
                                         H=dict(linestyle='-', marker='', color='m')),
                         figname=figname1
                         ))
-
 
 
         if self.report is not None:
@@ -833,6 +950,19 @@ class MetaChinj01(MetaCal):
                         figkey=figkey6, 
                         caption= captemp % (IG1profs, ccdhalf, _Quads[0],_Quads[1]),
                         texfraction=0.7)
+
+
+        # creating and saving INJ PROFILES CDPs.
+
+        for direction in ['hor','ver']:
+
+            _injprof_xlsx_cdp = self.get_injprof_xlsx_cdp(direction=direction,
+                inCDP_header=CDP_header)
+            _injprof_xlsx_cdp.savehardcopy()
+
+            _injprof_fits_cdp = self.get_injprof_fits_cdp(direction=direction,
+                inCDP_header=CDP_header)
+            _injprof_fits_cdp.savehardcopy()
 
 
         # reporting non-uniformity of injection lines to report

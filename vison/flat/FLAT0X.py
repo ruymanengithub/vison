@@ -253,7 +253,7 @@ class FLAT0X(FlatTask):
 
         indices = copy.deepcopy(self.dd.indices)
 
-        nObs, nCCD, nQuad = indices.shape
+        nObs, nCCD, nQuad = indices.shape[0:3]
 
         CCDs = indices.get_vals('CCD')
         Quads = indices.get_vals('Quad')

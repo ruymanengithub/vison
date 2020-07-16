@@ -14,12 +14,12 @@ Contents:
    source/includeme
 
 :Author: Ruyman Azzollini
-:Contact: r.azzollini_at_ucl.ac.uk
+:Contact: <e-mail Ruyman Azzollini at UCL>
 :issue: |release|
 :version: |version|
 :date: |today|
 
-This Python package "vison" is the pipeline that will be used at MSSL for ground calibration of the VIS detection chains (12 + 2 spares), including one ROE, one RPSU and three CCDs each.
+This Python package "vison" is the software pipeline that has been used at MSSL for ground calibration of the VIS detection chains (12 + 2 spares), including one ROE, one RPSU and three CCDs each.
 
 Installation
 ============
@@ -45,6 +45,27 @@ details. The only package that will not be installed by this means is SAO-DS9,
 which must be installed separetly, in order to be able to use some of the
 interactive inspection capabilities of Eyegore (data acquisition monitoring).
 
+How to Use it
+=============
+
+This is some kind of **"cook-book"**.  Written *a bit like when your grandmother tells you to put a pinch of sugar and heat it for a while... that kind of accuracy.*
+
+.. toctree::
+    :maxdepth: 4
+
+    cookbook
+
+
+Guide through the code
+======================
+
+In this section we provide an overall description of the capabilities and organisation of the code.
+
+.. toctree::
+    :maxdepth: 4
+    
+    guide
+
 
 Pipeline Core
 =============
@@ -60,7 +81,7 @@ Pipeline master classes.
 Data Model
 ==========
 
-Modules with classes to hold data model for inputs and outputs: exposure log,
+Modules with classes of data models for inputs and outputs: exposure log,
 HK files, FITS files, etc.
 
 .. toctree::
@@ -72,14 +93,31 @@ HK files, FITS files, etc.
 Analysis (Shared)
 =================
 
+Some shared analysis tools.
+
+
 .. toctree::
     :maxdepth: 4
 
     analysis
 
 
+Test Campaign Definitions
+=========================
+
+The tests usually have free parameters (e.g. the wavelength, or the number of frames of each fluence in a flat-field test). When executing a test campaign, one has to choose what specific values to use for each test, to generate scripts and do the corresponding, and consistent analysis. This is done through the main functions in the following modules.
+
+.. toctree::
+  :maxdepth: 4
+
+  campaign
+
+
+
 Charge Injection Tools
 ======================
+
+Tools for analysis of charge injection data.
 
 .. toctree::
     :maxdepth: 4
@@ -90,19 +128,45 @@ Charge Injection Tools
 "Flat" Acq. Analysis Tools
 ==========================
 
+Tools for analysis of flat-illumination tests.
+
 .. toctree::
     :maxdepth: 4
     
     flat
 
+
+FPA Tests
+=========
+
+Analysing FPA-level data.
+
+
+.. toctree::
+    :maxdepth: 4
+    
+    fpatests
+
 Image
 =====
+
+General purpose image analysis tools.
+
 
 .. toctree::
     :maxdepth: 4
 
     image
 
+Metatests
+=========
+
+Tests that ingest results from a test / type of test across a collection of block-calibrations. This is used to compare results across the "as-built" FM FPA, and produce CDPs at FPA level from the results of the calibrations of the individual blocks that make up the FPA.
+
+.. toctree::
+    :maxdepth: 4
+    
+    metatests
 
 Monitoring ("Eyegore")
 ======================
@@ -138,6 +202,8 @@ General use plotting facilities.
 Point-Source Analysis
 =====================
 
+General purpose tools for the analysis of point-source images.
+
 .. toctree::
     :maxdepth: 4
 
@@ -156,6 +222,8 @@ These are pipeline scripts, not the Test Scripts (for those keep scrolling down)
 
 Support Code
 ============
+
+Other support software.
 
 .. toctree::
    :maxdepth: 4
@@ -179,15 +247,11 @@ These are the scripts that hold the description, execution, data validation and
 analysis of the tests that make the campaign. They are served by the
 infrasctructure and tools provided by the pipeline.
 
-**WARNING**: Currently most of the test scripts are largely meta-code, with the
-exception of very basic functionality used to generate acqusition scripts and
-validate the acquisitions, as listed in the Exposure Log, against the
-description of the test. The metacode has been included in the doc-strings for
-ease of browsing.
-
 
 Charge Injection Scripts
 ------------------------
+
+Charge Injection
 
 .. toctree::
     :maxdepth: 4
@@ -198,6 +262,8 @@ Charge Injection Scripts
 Dark Scripts
 --------------
 
+Darks and Bias tests.
+
 .. toctree::
     :maxdepth: 4
     
@@ -207,6 +273,7 @@ Dark Scripts
 Flat-Illumination Scripts
 -------------------------
 
+Flat-fields, Non-Linearity, PTC, BFE.
 
 .. toctree::
     :maxdepth: 4
@@ -217,6 +284,8 @@ Flat-Illumination Scripts
 Point-Source Scripts
 --------------------
 
+Point-source imaging tests.
+
 .. toctree::
     :maxdepth: 4
 
@@ -224,6 +293,8 @@ Point-Source Scripts
 
 Trap-Pumping Scripts
 --------------------
+
+Trap-Pumping tests.
 
 .. toctree::
     :maxdepth: 4
@@ -234,6 +305,8 @@ Trap-Pumping Scripts
 
 Other Test Scripts
 ------------------
+
+Cosmetics, Persistence, etc.
 
 .. toctree::
 

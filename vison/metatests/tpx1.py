@@ -319,6 +319,12 @@ class MetaTPX1(MetaCal):
     def dump_aggregated_results(self):
         """ """
 
+        if self.report is not None:
+            self.report.add_Section(keyword='dump', 
+                Title='Aggregated Results', level=0)
+            
+            self.add_DataAlbaran2Report()
+
         # MAP with total numbers of dipoles measured
 
         NDIPMAP = self.get_FPAMAP_from_PT(self.ParsedTable['TPX1'],

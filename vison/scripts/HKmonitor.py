@@ -3,24 +3,23 @@
 # -*- coding: utf-8 -*-
 """
 :TODO:
-     find HK files in a folder
-     parse HK files
-     plot HK parameters vs. time
-     assemble all plots into a pdf file
+     * find HK files in a folder
+     * parse HK files
+     * plot HK parameters vs. time
+     * assemble all plots into a pdf file
 
-     DEBUG, calls nonexistent class LaTeX
 
 Script to produce HK reports out of HK files in a folder.
 Aimed at quick inspection of data from Characterization and Calibration Campaigns
 of Euclid-VIS.
 
 
-
-
 :History:
 Created on Tue Mar 15 10:35:43 2016
 
-@author: Ruyman Azzollini (MSSL)
+:author:
+Ruyman Azzollini (MSSL)
+
 """
 
 from optparse import OptionParser

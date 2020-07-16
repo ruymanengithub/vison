@@ -2,12 +2,17 @@
 # -*- coding: utf-8 -*-
 """
 
-Wrap-up of ds9 to quickly load a number of images, for inspection.
+Wrap-up of SAO DS9 to quickly load a number of images, for inspection.
+
+Core engine: pyds9 (http://hea-www.harvard.edu/RD/pyds9/)
+
 
 :History:
 Created on Thu Mar 17 13:18:10 2016
 
-@author: Ruyman Azzollini
+:author:
+Ruyman Azzollini
+
 """
 from pdb import set_trace as stop
 from optparse import OptionParser
@@ -86,4 +91,5 @@ if __name__ == '__main__':
         d.set("frame %i" % (ifits + 1,))
         d.set('file %s' % FITS)
         d.set('zoom to fit')
-        d.set('scale histequ zscale')
+        d.set('scale histequ')
+        d.set('scale zscale')

@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 """
 
-Some functions to present COMPLIANCE MATRICES.
+Some functions to produce COMPLIANCE MATRICES.
 
+:History:
 Created on Mon Apr  9 17:32:03 2018
 
 :author: raf

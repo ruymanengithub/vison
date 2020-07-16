@@ -1,3 +1,5 @@
+.. _datamodel:
+
 Data Model
 ==========
 
@@ -5,6 +7,8 @@ Data Model
 
 ccd.py
 ------
+..
+  .. _datamodel_ccd:
 
 .. automodule:: vison.datamodel.ccd
       :members:
@@ -14,6 +18,15 @@ ccd_aux.py
 
 .. automodule:: vison.datamodel.ccd_aux
       :members:
+
+cdp.py
+------
+..
+  .. _datamodel_cdp:
+
+.. automodule:: vison.datamodel.cdp
+      :members:
+
 
 ccdsim.py
 ---------
@@ -29,9 +42,19 @@ compliance.py
 
 core.py
 -------
+..
+  .. _datamodel_core:
 
 .. automodule:: vison.datamodel.core
       :members:
+
+elvis.py
+--------
+..
+  .. _datamodel_elvis:
+
+.. automodule:: vison.datamodel.elvis
+    :members:
 
 
 EXPLOGtools.py
@@ -39,6 +62,12 @@ EXPLOGtools.py
 
 .. automodule:: vison.datamodel.EXPLOGtools
       :members:
+
+fpa_dm.py
+---------
+
+.. automodule:: vison.datamodel.fpa_dm
+    :members:
 
 generator.py
 ------------
@@ -49,6 +78,9 @@ generator.py
 
 HKtools.py
 ----------
+
+..
+  .. _datamodel_hktools:
 
 .. automodule:: vison.datamodel.HKtools
       :members:
@@ -68,6 +100,7 @@ QLAtools.py
 
 scriptic.py
 -----------
+
 
 .. automodule:: vison.datamodel.scriptic
       :members:

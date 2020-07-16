@@ -121,7 +121,7 @@ class NL02(NL01.NL01):
         waveB = 880
         tFWCwB = self.ogse.profile['tFWC_flat']['nm%i' % waveB]
         ixHIFLUfirst = np.where(NL01.NL01_relfluences < self.FLUDIVIDE)[0][-1]
-        ixHIFLU = np.where(NL01.NL01_relfluences >= self.FLUDIVIDE)
+        #ixHIFLU = np.where(NL01.NL01_relfluences >= self.FLUDIVIDE)
         ixHIFLU = (np.arange(ixHIFLUfirst, len(NL01.NL01_relfluences)),)
         exptsB = (NL01.NL01_relfluences[ixHIFLU] / 100. *
                   tFWCwB).tolist()  # ms
@@ -238,10 +238,10 @@ class NL02(NL01.NL01):
             f.e. ObsID:
                 f.e.CCD:
                     f.e.Q:
+                        mask-out bad pixels
+                        mask-out detector cosmetics
                         subtract offset
-                    opt: [sub bias frame]
-                    opt: [divide by FF]
-                    opt: [mask-out defects]
+                        opt: [sub bias frame]
 
         """
 

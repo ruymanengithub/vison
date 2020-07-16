@@ -4,7 +4,7 @@
 
 Description of the CEA FPA Campaign.
 
-
+:History:
 Created on Wed Oct 02 17:26:00 2019
 
 :author: Ruyman Azzollini
@@ -30,8 +30,15 @@ from vison.fpatests.cea_dec19 import FPA_DARK
 
 
 def generate_test_sequence(toGen, elvis='FPA', FPAdesign='final'):
-    """Now supporting test repetitions."""
-    taskslist = list(toGen.keys())
+    """
+    | Function that generates a number of tests, as instances of their corresponding
+    task classes. 
+
+    | Aimed at the TVAC campaign of the FPA at CEA (december 2019).
+
+    """
+    taskslist = toGen.keys()
+
     test_sequence = OrderedDict()
     for taskname in taskslist:
         if not toGen[taskname]:

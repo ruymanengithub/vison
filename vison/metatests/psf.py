@@ -403,7 +403,78 @@ class MetaPsf(MetaCal):
                             dd[block][CCDsok][Qso][CCDvik][Qvi]=val
 
         return dd
+    
+    def verify_reqs(self, XTALKs):
+        """ 
+        for each victim channel, the maximum (dominant) coupling with any
+            other channel shall be abs(c) <= 6x10-4.
+        for each victim channel, only one other channel, the “dominant”, can
+            have a coupling factor abs(c)> 7.6x10-5.
+        """
+
+        xtalks_VI = OrderedDict() # reformating the crosstalk matrix for easy
+                                  # validadation
+        xtalks_VI['blocks'] = XTALKs['blocks']
+
+        for block in xtalks_VI['blocks']:  
+
+            xtalks_VI[block] = OrderedDict()
+
+            for CCDso in self.CCDs:
+                CCDsok = 'CCD%i' % CCDso
+                for Qso in self.Quads:
+                    for CCDvi in self.CCDs:
+                        CCDvik = 'CCD%i' % CCDvi
+                        for Qvi in self.Quads:
+
+                            _mx_elem = XTALKs[block][CCDsok][Qso][CCDvik][Qvi]
+
+                            if len(_mx_elem) > 0:
+
+                                ixtalk = _mx_elem['xtalk']
+
+                                sok = '%s\\_%s' % (CCDsok, Qso)
+                                vik = '%s\\_%s' % (CCDvik, Qvi)
+
+                            
+                                if vik not in xtalks_VI[block]:
+                                    xtalks_VI[block][vik] = OrderedDict()
+                                    xtalks_VI[block][vik]['xtalk'] = []
+                                    xtalks_VI[block][vik]['sok'] = []
+
+                                xtalks_VI[block][vik]['xtalk'].append(ixtalk)
+                                xtalks_VI[block][vik]['sok'].append(sok)
+
         
+        validation = []
+        req1 = 6.E-4
+        req2 = 7.6E-5
+
+        for block in xtalks_VI['blocks']:
+            viks = xtalks_VI[block].keys()
+            for vik in viks:
+                ixorder = np.argsort(np.abs(xtalks_VI[block][vik]['xtalk']))[::-1]
+
+                _xtalks = np.array(xtalks_VI[block][vik]['xtalk'])[ixorder]
+                _soks = np.array(xtalks_VI[block][vik]['sok'])[ixorder]
+
+                if np.abs(_xtalks[0]) > req1:
+                    validation.append('REQ1 viol.: $|%.2e| >$ %.2e %s; source:%s; victim:%s\n' %\
+                        (_xtalks[0], req1, block, _soks[0], vik))
+
+                NREQ2 = len([val for val in _xtalks[1:] if np.abs(val)>req2])
+                if NREQ2>1:
+                    for i in range(1,len(_xtalks)):
+                        if np.abs(_xtalks[i]) > req2:
+                            validation.append('REQ2 viol.: $|%.2e| >$ %.2e %s; source:%s; victim:%s\n' %\
+                                (_xtalks[i], req2, block, _soks[i], vik))
+                        else:
+                            break
+
+        
+        return validation
+
+
 
     def dump_aggregated_results(self):
         """ """
@@ -416,6 +487,7 @@ class MetaPsf(MetaCal):
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
 
         # XTALK MAP (ROE-TAB)
 
@@ -463,6 +535,20 @@ class MetaPsf(MetaCal):
                         figkey=figkey1, 
                         caption= captemp1 % stestname, 
                         texfraction=0.7)
+
+
+            if self.report is not None and testname =='PSF01_800':
+
+                req_ver_txt = [
+                '\nTEST: %s\n' % stestname,
+                'Req.:\n',
+                '    dominant coupling $|c1|<=$ 6E-4\n',
+                '    only 1 sub-dominant coupling 6E-4$>|c2|>$7.6E-5\n'
+                ]
+
+                req_ver_txt += self.verify_reqs(XTALKs)
+
+                self.report.add_Text(req_ver_txt)
 
             xt_header = OrderedDict()
             xt_header['title'] = 'XTALK_MATRIX:%s' % testname
@@ -595,6 +681,6 @@ class MetaPsf(MetaCal):
 
                 avg_std = np.nanmedian(std_comparisons)
 
-                self.report.add_Text('Avg. STD of comparison (%i vs. 800 nm): %.2e ADU' %\
+                self.report.add_Text('\nAvg. STD of comparison (%i vs. 800 nm): %.2e ADU' %\
                         (wave, avg_std))
 

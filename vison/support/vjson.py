@@ -11,6 +11,7 @@ Created on Tue Mar 27 14:25:43 2018
 """
 
 # IMPORT STUFF
+from __future__ import print_function
 from pdb import set_trace as stop
 import json
 #import ast
@@ -43,4 +44,4 @@ def save_jsonfile(pydict, jsonfile):
     """ """
     jsonstr = dumps_to_json(pydict)
     with open(jsonfile, 'wa') as f:
-        print(json, file=f)
+        print(jsonstr, file=f)

@@ -223,13 +223,15 @@ def forwardModel(Varr, Vrange, pixTx, Nlevels, burn=500, run=700, cores=8, figke
     pos, prob, state = sampler.run_mcmc(p0, burn)
     maxprob_index = np.argmax(prob)
     params_fit = pos[maxprob_index]
-    print(("Mean acceptance fraction:", np.mean(sampler.acceptance_fraction)))
-    print(('Estimate:', params_fit))
+
+    print("Mean acceptance fraction:", np.mean(sampler.acceptance_fraction))
+    print('Estimate:', params_fit)
+
     sampler.reset()
 
     print("Running MCMC...")
     pos, prob, state = sampler.run_mcmc(pos, run, rstate0=state)
-    print(("Mean acceptance fraction:", np.mean(sampler.acceptance_fraction)))
+    print("Mean acceptance fraction:", np.mean(sampler.acceptance_fraction))
 
     # Get the index with the highest probability
     maxprob_index = np.argmax(prob)

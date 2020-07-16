@@ -44,6 +44,9 @@ from sklearn import linear_model
 
 from vison.support import utils
 from vison.support.files import cPickleRead, cPickleDumpDictionary
+
+import matplotlib.cm as cm
+
 # END IMPORT
 
 isthere = os.path.exists
@@ -82,12 +85,63 @@ def process_one_fluence_covmaps(q, dd, dpath, CCDs, jCCD, ku, ulabels,
     print(('%s: column %i/%i; %i OBSIDs' % (CCDs[jCCD], ku + 1, len(ulabels), len(ccdobjNamesList))))
 
     ccdobjList = [cPickleRead(item) for item in ccdobjNamesList]
-
+    
     icovdict = covlib.get_cov_maps(
         ccdobjList, Npix=Npix, vstart=vstart, vend=vend, clipsigma=clipsigma,
         covfunc = covfunc, doBiasCorr=doBiasCorr,central=central,
         doTest=False, debug=False)
     q.put([jCCD, ku, icovdict])
+
+
+def correct_BFE_one_image(q, dd, inputs, iObs, nObs, CCDs, Quads, picklespath, Asol):
+    """ """
+    if Asol is None:
+        tempccdobj = '%s_proc_bfe'
+    else:
+        tempccdobj = '%s_proc_bfe_alt'
+
+    for jCCD, CCDkey in enumerate(CCDs):
+
+        inccdobj_name = '%s.pick' % dd.mx['ccdobj_name'][iObs, jCCD]
+        full_inccdobj_name = os.path.join(picklespath, inccdobj_name)
+                              
+
+        print(('Test %s, OBS %i/%i: correcting BFE in %s...' % (
+            inputs['test'], iObs + 1, nObs, inccdobj_name)))
+
+        # loading CCD Object
+        ccdobj = copy.deepcopy(cPickleRead(full_inccdobj_name))
+
+        ccdobj_bfe_name = tempccdobj % dd.mx['File_name'][iObs, jCCD]
+
+        fullccdobj_bfe_name = os.path.join(
+            picklespath, '%s.pick' % ccdobj_bfe_name)
+
+        colkey = dd.mx['label'][iObs,jCCD]
+
+        hasallAsols = True
+
+        for Q in Quads:
+
+            if Asol is None:
+                try:
+                    _Asol = dd.products['BF'][CCDkey][Q][colkey]['Asol'].copy()
+                except:
+                    _Asol = None
+                    hasallAsols = False
+            else:
+                _Asol = Asol[CCDkey][Q].copy()
+
+            if _Asol is not None:
+                Qimg = ccdobj.get_quad(Q, canonical=True, extension=-1)
+                Qimg = G15.correct_estatic(Qimg, _Asol)
+                ccdobj.set_quad(Qimg, Q, canonical=True, extension=-1)
+            
+        if hasallAsols:
+            cPickleDumpDictionary(ccdobj, fullccdobj_bfe_name)
+            q.put([iObs, jCCD, ccdobj_bfe_name])
+        else:
+            q.put([iObs, jCCD, 'None.pick'])
 
 
 class BF01_inputs(inputs.Inputs):
@@ -153,7 +207,10 @@ class BF01(PTC0X):
                          ('prep', self.prepare_images),
                          ('extract_COV', self.extract_COV),
                          ('extract_BF', self.extract_BF),
+                         ('correct_BFE_G15', self.correct_BFE_G15),
+                         ('extract_PTCs', self.extract_PTCs),
                          ('meta', self.meta_analysis)]
+                         #('debugtask', self.debugtask)]
         FlatTask.__init__(self, inputs=inputs, log=log, drill=drill, debug=debug,
                           cleanafter=cleanafter)
         #self.inputs['todo_flags'] = self.init_todo_flags()
@@ -171,6 +228,7 @@ class BF01(PTC0X):
                                        covariance='covariance',
                                        kernels='kernels',
                                        products='products')
+        self.window = dict(wpx=300, hpx=300)
 
     def set_inpdefaults(self, **kwargs):
         """ """
@@ -183,6 +241,9 @@ class BF01(PTC0X):
         self.inpdefaults['surrogate'] = kwargs['surrogate']
         self.inpdefaults['Npix'] = 5
         self.inpdefaults['clipsigma'] = 4.
+        self.inpdefaults['covfunc'] = 'ver2'
+        self.inpdefaults['doBiasCorr'] = True
+        self.inpdefaults['central'] = 'mean'
 
     def set_perfdefaults(self, **kwargs):
         # maskerading as PTC0X here...
@@ -256,7 +317,7 @@ class BF01(PTC0X):
         vend = min(self.dd.mx['vend'][0, 0], self.ccdcalc.NrowsCCD)
 
         indices = copy.deepcopy(self.dd.indices)
-        nObs, nC, nQ = indices.shape
+        nObs, nC, nQ = indices.shape[0:3]
         CCDs = indices.get_vals('CCD')
         Quads = indices.get_vals('Quad')
 
@@ -279,6 +340,7 @@ class BF01(PTC0X):
 
         for tag in ['hor', 'ver']:
             profscov_1D.data[tag] = OrderedDict()
+            profscov_1D.data[tag]['labelkeys'] = ulabels
             for CCDk in CCDs:
                 profscov_1D.data[tag][CCDk] = OrderedDict()
                 for Q in Quads:
@@ -322,7 +384,7 @@ class BF01(PTC0X):
 
                     arglist.append([queue, self.dd, dpath, CCDs, jCCD, ku, ulabels])
 
-            #process_one_fluence_covmaps(*arglist[-2],**kwargs) # TEST
+            #process_one_fluence_covmaps(*arglist[-3],**kwargs) # TEST
             #stop()
 
             pool = mp.Pool(processes=self.processes)
@@ -359,15 +421,16 @@ class BF01(PTC0X):
                     COV_dd['CORR_10'][jj] = icovdict['av_corrmap'][Q][1, 0]
                     COV_dd['CORR_11'][jj] = icovdict['av_corrmap'][Q][1, 1]
 
+
                     profscov_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
                         np.arange(Npix - 1)
                     profscov_1D.data['hor'][CCDk][Q]['y'][ulabel] = \
-                        icovdict['av_corrmap'][Q][0, 1:].copy()
+                        icovdict['av_corrmap'][Q][1:, 0].copy()
 
                     profscov_1D.data['ver'][CCDk][Q]['x'][ulabel] = \
                         np.arange(Npix - 1)
                     profscov_1D.data['ver'][CCDk][Q]['y'][ulabel] = \
-                        icovdict['av_corrmap'][Q][1:, 0].copy()
+                        icovdict['av_corrmap'][Q][0, 1:].copy()
 
         else:
 
@@ -391,14 +454,22 @@ class BF01(PTC0X):
 
         # PLOTS
 
-        for tag in ['hor', 'ver']:
-            profscov_1D.data[tag]['labelkeys'] = \
-                list(profscov_1D.data[tag][CCDs[0]][Quads[0]]['x'].keys())
+        #for tag in ['hor', 'ver']:
+        #    profscov_1D.data[tag]['labelkeys'] = \
+        #        profscov_1D.data[tag][CCDs[0]][Quads[0]]['x'].keys()
+
+        rbcolors = cm.rainbow(np.linspace(0, 1, len(ulabels)))
+
 
         for tag in ['ver', 'hor']:
 
             fdict_C = self.figdict['BF01_COV_%s' % tag][1]
             fdict_C['data'] = profscov_1D.data[tag].copy()
+
+            for ic, ulabel in enumerate(ulabels):
+                fdict_C['meta']['corekwargs'][ulabel]=\
+                    dict(marker='.', linestyle='-',color=rbcolors[ic])
+
             if self.report is not None:
                 self.addFigures_ST(figkeys=['BF01_COV_%s' % tag],
                                    dobuilddata=False)
@@ -461,7 +532,7 @@ class BF01(PTC0X):
         label = self.dd.mx['label'][:, 0].copy()
 
         indices = copy.deepcopy(self.dd.indices)
-        nObs, nC, nQ = indices.shape
+        nObs, nC, nQ = indices.shape[0:3]
         CCDs = np.array(indices.get_vals('CCD'))
         Quads = np.array(indices.get_vals('Quad'))
 
@@ -503,7 +574,7 @@ class BF01(PTC0X):
         profsker_1D.data['ver'] = OrderedDict()
 
         for tag in ['hor', 'ver']:
-            profsker_1D.data[tag] = OrderedDict()
+            profsker_1D.data[tag] = OrderedDict(labelkeys=ulabels)
             for CCDk in CCDs:
                 profsker_1D.data[tag][CCDk] = OrderedDict()
                 for Q in Quads:
@@ -541,20 +612,26 @@ class BF01(PTC0X):
                         BF_dd['CCD'][jj] = jCCD + 1
                         BF_dd['Q'][jj] = kQ + 1
                         BF_dd['col'][jj] = ulabel
-                        BF_dd['fluence'][jj] = COV_dict['av_mu'][Q].copy()
+                        fluence = COV_dict['av_mu'][Q]
+                        BF_dd['fluence'][jj] = fluence
 
                         try:
 
                             Asol_Q, psmooth_Q = G15.solve_for_A_linalg(
-                                CORR_mx, var=1., mu=1., returnAll=True, doplot=False,
+                                CORR_mx, var=1., mu=fluence, returnAll=True, doplot=False,
                                 verbose=False)
 
-                            kernel_Q = G15.degrade_estatic(singlepixmap, Asol_Q)
 
-                            cross_Q = kernel_Q[Npix / 2 - 1:Npix / 2 +
-                                               2, Npix / 2 - 1:Npix / 2 + 2].copy()
+                            kernel_Q = G15.degrade_estatic(singlepixmap*fluence, Asol_Q)
+
+                            cross_Q = kernel_Q[Npix / 2 - 1:Npix / 2 + 2, 
+                                               Npix / 2 - 1:Npix / 2 + 2].copy()
                             kerQshape = G15.get_cross_shape_rough(
                                 cross_Q, pitch=12.)
+
+
+                            #kerQshapealt = BF01aux.get_kernel_gauss_shape(kernel_Q,pitch=12)
+
 
                             self.dd.products['BF'][CCDk][Q][ulabel] = OrderedDict(
                                 Asol=Asol_Q.copy(),
@@ -571,14 +648,15 @@ class BF01(PTC0X):
 
                             profsker_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
                                 np.arange(Npixplot) - Npixplot / 2
-                            profsker_1D.data['hor'][CCDk][Q]['y'][ulabel] = kernel_Q[Npix / \
-                                2, Npix / 2 - Npixplot / 2:Npix / 2 + Npixplot / 2 + 1].copy()
+                            profsker_1D.data['hor'][CCDk][Q]['y'][ulabel] = np.log10(kernel_Q[Npix / \
+                                2 - Npixplot / 2:Npix / 2 + Npixplot / 2 + 1, Npix / 2].copy())
 
                             profsker_1D.data['ver'][CCDk][Q]['x'][ulabel] = \
                                 np.arange(Npixplot) - Npixplot / 2
 
-                            profsker_1D.data['ver'][CCDk][Q]['y'][ulabel] = kernel_Q[Npix / \
-                                2 - Npixplot / 2:Npix / 2 + Npixplot / 2 + 1, Npix / 2].copy()
+                            profsker_1D.data['ver'][CCDk][Q]['y'][ulabel] = np.log10(kernel_Q[Npix / \
+                                2, Npix / 2 - Npixplot / 2:Npix / 2 + Npixplot / 2 + 1].copy())
+
 
                             # BEWARE, PENDING: dispfig is saved but NOT REPORTED anywhere!
 
@@ -592,6 +670,7 @@ class BF01(PTC0X):
                                                   figname=dispfig)
 
                         except BaseException:
+
 
                             self.dd.products['BF'][CCDk][Q][ulabel] = OrderedDict()
 
@@ -625,14 +704,20 @@ class BF01(PTC0X):
 
         # Plots
 
-        for tag in ['hor', 'ver']:
-            profsker_1D.data[tag]['labelkeys'] = \
-                list(profsker_1D.data[tag][CCDs[0]][Quads[0]]['x'].keys())
+        #for tag in ['hor', 'ver']:
+        #    profsker_1D.data[tag]['labelkeys'] = \
+        #        profsker_1D.data[tag][CCDs[0]][Quads[0]]['x'].keys()
+
+        rbcolors = cm.rainbow(np.linspace(0, 1, len(ulabels)))
 
         for tag in ['ver', 'hor']:
 
             fdict_K = self.figdict['BF01_KER_%s' % tag][1]
             fdict_K['data'] = profsker_1D.data[tag].copy()
+
+            for ic, ulabel in enumerate(ulabels):
+                fdict_K['meta']['corekwargs'][ulabel]=\
+                    dict(marker='.', linestyle='-',color=rbcolors[ic])
 
             if self.report is not None:
                 self.addFigures_ST(figkeys=['BF01_KER_%s' % tag],
@@ -675,6 +760,134 @@ class BF01(PTC0X):
 
             self.report.add_Text(BFtex)
 
+    def f_correct_BFE_G15(self, ccdobjname, fixA=False):
+        """Applies BFE solutions from G+15 to images, to later test effectivity 
+        through PTC."""
+        
+
+        # Initialize new columns
+
+        Cindices = copy.deepcopy(self.dd.mx['File_name'].indices)
+        self.dd.initColumn(ccdobjname, Cindices,
+                           dtype='S100', valini='None')
+
+        DDindices = copy.deepcopy(self.dd.indices)
+
+        #nObs,nCCD,nQuad = DDindices.shape
+        #Quads = DDindices[2].vals
+
+        nObs = DDindices.get_len('ix')
+        # nObs = 3  # TESTS!
+        #print 'TESTS: task.prepare_images: LIMITTING TO 3 IMAGES!'
+
+        CCDs = DDindices.get_vals('CCD')
+        Quads = DDindices.get_vals('Quad')
+
+
+        if not self.drill:
+
+            picklespath = self.inputs['subpaths']['ccdpickles']
+
+            if fixA:
+                
+                fluences = self.dd.mx['flu_med_img'].array.mean(axis=(1,2))
+                minflu = np.nanmin(fluences)
+                maxflu = np.nanmax(fluences)
+                midflu = (minflu+maxflu)/2.
+                ixsel = np.argmin(np.abs(fluences-midflu))
+                colkey = self.dd.mx['label'][ixsel,0]
+
+
+                Asol = OrderedDict()
+                for CCDk in CCDs:
+                    Asol[CCDk] = OrderedDict()
+                    for Q in Quads:
+                        Asol[CCDk][Q] = self.dd.products['BF'][CCDk][Q][colkey]['Asol'].copy()
+
+            else: 
+                Asol =None
+
+            arglist = []
+
+            mgr = mp.Manager()
+            queue = mgr.Queue()
+
+            for iObs in range(nObs):
+                arglist.append([queue, self.dd, self.inputs,
+                                iObs, nObs, CCDs, Quads, picklespath, Asol])
+            
+            #correct_BFE_one_image(*arglist[0]) # TEST
+            #nobfe = 'results_atCALDATA/DTEST/BF01_730/ccdpickles/EUC_31074_300719D121603T_ROE1_CCD1_proc_bfe.pick'
+            #wbfe = 'results_atCALDATA/DTEST/BF01_730/ccdpickles/EUC_31074_300719D121603T_ROE1_CCD1_proc.pick'
+            #ccdobj_nobfe = cPickleRead(nobfe)
+            #ccdobj_wbfe = cPickleRead(wbfe)
+            #arglist = [arglist[0]]
+            
+
+            pool = mp.Pool(processes=self.processes)
+
+            for i in range(len(arglist)):
+                pool.apply_async(correct_BFE_one_image, args=arglist[i])
+            pool.close()
+            pool.join()
+
+            replies = []
+            while not queue.empty():
+                replies.append(queue.get())
+
+            for reply in replies:
+                iObs, jCCD, ccdobj_name = reply
+                self.dd.mx[ccdobjname][iObs, jCCD] = ccdobj_name
+            
+        return None
+
+    def correct_BFE_G15(self):
+        """ """
+
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='correct_BFE_G15', Title='Correcting BFE (G+15)', level=0)
+
+        self.f_correct_BFE_G15('ccdobj_bfe_fixA_name', fixA=True)
+        self.f_correct_BFE_G15('ccdobj_bfe_name', fixA=False)
+
+
+    def extract_PTCs(self):
+        """ """
+        # HARDWIRED VALUES
+        wpx = self.window['wpx']
+        hpx = self.window['hpx']
+
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='extract', Title='PTC Extraction', level=0)
+            self.report.add_Text('Segmenting on %i x %i windows...' % (wpx, hpx))
+
+        
+        medcol = 'sec_med'
+        varcol = 'sec_var'
+        ccdobjcol = 'ccdobj_name'
+
+        self.f_extract_PTC(ccdobjcol, medcol, varcol)
+
+
+        medcol_nobfe = 'sec_med_noBFE'
+        varcol_nobfe = 'sec_var_noBFE'
+        ccdobjcol_nobfe = 'ccdobj_bfe_name'
+
+
+        self.f_extract_PTC(ccdobjcol_nobfe, medcol_nobfe, varcol_nobfe)
+
+        
+        medcol_nobfealt = 'sec_med_noBFEalt'
+        varcol_nobfealt = 'sec_var_noBFEalt'
+        ccdobjcol_nobfealt = 'ccdobj_bfe_fixA_name'
+
+
+        self.f_extract_PTC(ccdobjcol_nobfealt, medcol_nobfealt, varcol_nobfealt)
+
+
+
     def meta_analysis(self):
         """
 
@@ -708,7 +921,7 @@ class BF01(PTC0X):
         # INITIALISATIONS
 
         indices = copy.deepcopy(self.dd.indices)
-        nObs, nC, nQ = indices.shape
+        nObs, nC, nQ = indices.shape[0:3]
         CCDs = np.array(indices.get_vals('CCD'))
         Quads = np.array(indices.get_vals('Quad'))
 
@@ -780,6 +993,90 @@ class BF01(PTC0X):
                 ell = np.abs((sigmax**2. - sigmay**2.) / (sigmax**2. + sigmay**2.))
                 BFfit_dd['ELL_HWC'][jj] = ell
 
+        hasPTCs = ('sec_var' in self.dd.colnames) and\
+         ('sec_var_noBFE' in self.dd.colnames)
+
+        if hasPTCs:
+
+            av_gain = 3.5 # just for display purposes
+
+            has_gain_cal = False
+            #try:
+            #    wave = self.inputs['wavelength']
+            #    gaincdp = self.inputs['inCDPs']['Gain']['nm%i' % wave]
+            #    df = cPickleRead(gaincdp)['data']['GAIN_TB']
+
+            #    gaindict = dict()
+            #    for iCCD, CCDk in enumerate(CCDs):
+            #        gaindict[CCDk] = dict()
+            #        for jQ, Q in enumerate(Quads):
+            #            _gain = df.loc[df['CCD']==iCCD+1].loc[df['Q']==jQ+1]['gain'].values[0]
+            #            gaindict[CCDk][Q] = _gain
+
+            #except:
+            #    has_gain_cal = False
+            #    if self.log is not None:
+            #        self.log.info('Gain matrix not found!')
+
+            medcols = dict(BFE='sec_med',
+                            NOBFE='sec_med_noBFE',
+                            NOBFEALT='sec_med_noBFEalt')
+            varcols = dict(BFE='sec_var',
+                            NOBFE='sec_var_noBFE',
+                            NOBFEALT='sec_var_noBFEalt')
+
+            labelkeysPTC = ['data','theo']
+            curves_cdp = OrderedDict(BFE=OrderedDict(labelkeys=labelkeysPTC),
+                NOBFE=OrderedDict(labelkeys=labelkeysPTC),
+                NOBFEALT=OrderedDict(labelkeys=labelkeysPTC))
+            
+            PTCkeys = ['BFE','NOBFE','NOBFEALT']
+
+            for key in PTCkeys:
+                for CCDk in CCDs:
+                    curves_cdp[key][CCDk] = OrderedDict()
+                    for Q in Quads:
+                        curves_cdp[key][CCDk][Q] = OrderedDict()
+                        curves_cdp[key][CCDk][Q]['x'] = OrderedDict()
+                        curves_cdp[key][CCDk][Q]['y'] = OrderedDict()
+
+            for iCCD, CCDk in enumerate(CCDs):
+                for jQ, Q in enumerate(Quads):
+                    ixsel = np.where(~np.isnan(self.dd.mx['ObsID_pair'][:]))
+
+                    for key in PTCkeys:
+                        medcol = medcols[key]
+                        varcol = varcols[key]
+
+                        raw_var = self.dd.mx[varcol][ixsel, iCCD, jQ, :]
+                        raw_med = self.dd.mx[medcol][ixsel, iCCD, jQ, :]
+                        ixnonan = np.where(~np.isnan(raw_var) & ~np.isnan(raw_med))
+                        var = raw_var[ixnonan]
+                        med = raw_med[ixnonan]
+
+                        curves_cdp[key][CCDk][Q]['x']['data'] = med.copy()
+                        curves_cdp[key][CCDk][Q]['y']['data'] = var.copy()
+
+                        if has_gain_cal:
+                            _gain = gaindict[CCDk][Q]
+                        else:
+                            _gain = av_gain
+
+
+                        curves_cdp[key][CCDk][Q]['x']['theo'] = med.copy()
+                        curves_cdp[key][CCDk][Q]['y']['theo'] = med.copy()/_gain
+
+            for key in PTCkeys:
+                
+                fdict_PTC = self.figdict['BF01_PTC_%s' % key][1]
+                fdict_PTC['data'] = curves_cdp[key].copy()
+
+            if self.report is not None:
+                self.addFigures_ST(figkeys=['BF01_PTC_BFE',
+                    'BF01_PTC_NOBFE',
+                    'BF01_PTC_NOBFEALT'],
+                    dobuilddata=False)
+
         for tag in ['fwhmx', 'fwhmy']:
 
             fdict_FF = self.figdict['BF01_%s_v_flu' % tag][1]
@@ -828,5 +1125,8 @@ class BF01(PTC0X):
                                                    formatters=cov_formatters)
 
             self.report.add_Text(BFfittex)
+
+
+
 
         self.canbecleaned = True

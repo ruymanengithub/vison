@@ -8,6 +8,7 @@ These functions can be used for logging information.
 
 :version: 0.3
 """
+from __future__ import print_function
 import logging
 import logging.handlers
 #import new

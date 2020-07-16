@@ -51,6 +51,7 @@ from vison.support.files import cPickleRead, cPickleDumpDictionary
 from vison.datamodel import ccd
 from vison.xtalk import opt_xtalk as oxt
 from vison.xtalk import xtalk as xt
+from vison.analysis import Guyonnet15 as G15
 # END IMPORT
 
 isthere = os.path.exists
@@ -171,7 +172,9 @@ class PSF0X(PT.PointTask):
                          ('relock', self.relock),
                          ('check', self.check_data),
                          ('prep', self.prep_data),
+                         ('corrBFE_G15', self.corrBFE_G15),
                          ('basic', self.basic_analysis),
+                         ('basic_nobfe', self.basic_analysis_noBFE),
                          ('bayes', self.bayes_analysis),
                          ('meta', self.meta_analysis),
                          ('xtalk_sex', self.opt_xtalk_sextract),
@@ -190,20 +193,20 @@ class PSF0X(PT.PointTask):
                                        products='products', spots='spots',
                                        xtalk='xtalk')
 
+        if 'inCDPs' in self.inputs:
+            if isinstance(self.inputs['inCDPs'],dict):
 
-        try:
-            selectFF = ('inCDPs'  in self.inputs) and\
-            isinstance(self.inputs['inCDPs'],dict) and\
-            ('wavelength' in self.inputs) and \
-            ('FF' in self.inputs['inCDPs'])
-        except TypeError:
-            selectFF = False
+                try:
+                    selectFF = ('wavelength' in self.inputs) and \
+                    ('FF' in self.inputs['inCDPs'])
+                except TypeError:
+                    selectFF = False
 
-        if selectFF:
-            wavelength = self.inputs['wavelength']
-            nmkey = 'nm%i' % wavelength
-            nmFFs = self.inputs['inCDPs']['FF'][nmkey]
-            self.inputs['inCDPs']['FF'] = nmFFs.copy()
+                if selectFF:
+                    wavelength = self.inputs['wavelength']
+                    nmkey = 'nm%i' % wavelength
+                    nmFFs = self.inputs['inCDPs']['FF'][nmkey]
+                    self.inputs['inCDPs']['FF'] = nmFFs.copy()
 
 
     def set_inpdefaults(self, **kwargs):
@@ -411,12 +414,12 @@ class PSF0X(PT.PointTask):
         
         dIndices = copy.deepcopy(self.dd.indices)
 
-        CCDs = dIndices[dIndices.names.index('CCD')].vals
+        CCDs = dIndices.get_vals('CCD')
         #nCCD = len(CCDs)
-        Quads = dIndices[dIndices.names.index('Quad')].vals
+        Quads = dIndices.get_vals('Quad')
         nQuads = len(Quads)
         nObs = dIndices[dIndices.names.index('ix')].len
-        SpotNames = dIndices[dIndices.names.index('Spot')].vals
+        SpotNames = dIndices.get_vals('Spot')
         nSpots = len(SpotNames)
 
         CIndices = copy.deepcopy(dIndices)
@@ -506,6 +509,281 @@ class PSF0X(PT.PointTask):
         if self.log is not None:
             self.log.info('Saved spot "bag" files to %s' % spotspath)
 
+    def _get_psCCDcoodicts(self):
+
+        CCDs = self.dd.indices.get_vals('CCD')
+        strackers = self.ogse.startrackers
+        stlabels = self.ogse.labels
+
+        psCCDcoodicts = OrderedDict(names=strackers['CCD1']['col001'].starnames,
+            CCDs=CCDs,
+            labels=stlabels)
+
+        for jCCD, CCDk in enumerate(CCDs):
+            psCCDcoodicts[CCDk] = OrderedDict()
+            for ilabel, label in enumerate(stlabels):
+                psCCDcoodicts[CCDk][label] = \
+                    strackers[CCDk][label].get_allCCDcoos(
+                    nested=True)
+
+        return psCCDcoodicts
+
+
+    def corrBFE_G15(self):
+        """Corrects BFE using the matrices from Guyonnet et al. 2015."""
+
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='corrG15', Title='Correction of BFE using G15', level=0)
+
+
+        if 'BFE' not in self.inputs['inCDPs'].keys():
+
+            if self.log is not None:
+                self.log.info('Cannot correct BFE without BFE CDP!')
+
+            if self.reports is not None:
+                self.report.add_Text('Cannot correct BFE without BFE CDP!')
+
+            return None
+
+        # Loading the BFE model
+
+
+        wavelength = self.inputs['wavelength']
+
+        BFEddpick = self.inputs['inCDPs']['BFE']['nm%i' % wavelength]
+        BFEall = files.cPickleRead(BFEddpick).products['BF'].copy()
+        ulabels = BFEall['ulabels']
+        midrangekey = ulabels[len(ulabels)/2]
+        inCCDs = BFEall['CCDs']
+        inQuads = BFEall['Quads']
+
+        Asols = dict()
+        for inCCD in inCCDs:
+            Asols[inCCD] = dict()
+            for Q in inQuads:
+                Asols[inCCD][Q] = BFEall[inCCD][Q][midrangekey]['Asol'].copy()
+
+
+        dIndices = copy.deepcopy(self.dd.indices)
+
+        CCDs = dIndices.get_vals('CCD')
+        #nCCD = len(CCDs)
+        Quads = dIndices.get_vals('Quad')
+        nQuads = len(Quads)
+        nObs = dIndices[dIndices.names.index('ix')].len
+        SpotNames = dIndices.get_vals('Spot')
+        nSpots = len(SpotNames)
+
+        CIndices = copy.deepcopy(dIndices)
+        CIndices.pop(CIndices.names.index('Quad'))
+        CIndices.pop(CIndices.names.index('Spot'))
+
+        # INITIALIZATIONS
+
+        outcol = 'spots_name_nobfe'
+        self.dd.initColumn(outcol, CIndices, dtype='S100', valini='None')
+
+        if not self.drill:
+
+            spotspath = self.inputs['subpaths']['spots']
+            #strackers = self.ogse.startrackers
+            #stlabels = self.ogse.labels
+            #psCCDcoodicts = self._get_psCCDcoodicts()
+
+            for iObs in range(nObs):
+            #for iObs in range(3): # TESTS
+            #for iObs in [20]: # TESTs
+
+                for jCCD, CCDk in enumerate(CCDs):
+
+                    fullINspots_name = os.path.join(
+                        spotspath, '%s.pick' % self.dd.mx['spots_name'][iObs, jCCD])
+
+                    spotsIN_array = files.cPickleRead(fullINspots_name)['spots']
+                    
+
+                    # Process individual "spots"
+
+                    spotsOUT_array = np.zeros((nQuads, nSpots), dtype=object)
+
+                    for kQ, Quad in enumerate(Quads):
+
+                        _Asol = Asols[CCDk][Quad]
+
+                        for lS, SpotName in enumerate(SpotNames):
+
+
+                            inSpot = copy.deepcopy(spotsIN_array[kQ, lS])
+                            img = inSpot.data.copy()
+                            try:
+                                oimg = G15.correct_estatic(img, _Asol)
+                                outSpot = copy.deepcopy(inSpot)
+                                outSpot.data = oimg.copy()
+                                spotsOUT_array[kQ, lS] = copy.deepcopy(outSpot)
+                            except:
+                                spotsOUT_array[kQ, lS] = None
+
+                    # save "spots" to a separate file and keep name in dd
+
+                    self.dd.mx[outcol][iObs,
+                        jCCD] = '%s_spots_nobfe' % self.dd.mx['File_name'][iObs, jCCD]
+
+                    fullspots_name = os.path.join(
+                        spotspath, '%s.pick' % self.dd.mx[outcol][iObs, jCCD])
+
+                    spotsdict = dict(spots=spotsOUT_array)
+
+                    files.cPickleDumpDictionary(spotsdict, fullspots_name)
+
+        if self.log is not None:
+            self.log.info('Saved BFE-corrected spot "bag" files to %s' % spotspath)
+
+    def _extract_basic(self, spotscol='spots_name', prefix=''):
+        """ """
+
+        CQSindices = copy.deepcopy(self.dd.indices)
+
+        assert 'Spot' in CQSindices.names
+
+        valini = 0.0
+        sig2fwhm = 2.355
+
+        colnames = ['bas_bgd', 'bas_peak', 'bas_fluence', 'bas_efluence',
+            'bas_x', 'bas_y', 'bas_x_ccd', 'bas_y_ccd',
+            'bas_fwhmx', 'bas_fwhmy',
+            'sh_x', 'sh_y', 'sh_e1', 'sh_e2',
+            'sh_ell', 'sh_R2', 'sh_R2arcsec',
+            'sh_a', 'sh_b', 
+            'gau_i00', 'gau_ei00',
+            'gau_xcen', 'gau_excen',
+            'gau_ycen', 'gau_eycen',
+            'gau_sigmax', 'gau_esigmax',
+            'gau_fwhmx', 'gau_efwhmx',
+            'gau_sigmay', 'gau_esigmay',
+            'gau_fwhmy', 'gau_efwhmy']
+
+        ncols = len(colnames)
+        for i in range(ncols):
+            colnames[i] = '%s%s' % (prefix, colnames[i])
+
+        for i in range(ncols):
+            self.dd.initColumn(colnames[i], CQSindices, dtype='float32',
+                 valini=valini)
+
+        nObs = CQSindices[0].len
+        CCDs = CQSindices.get_vals('CCD')
+        Quads = CQSindices.get_vals('Quad')
+        SpotNames = CQSindices.get_vals('Spot')
+
+        if self.drill:
+            return
+
+        spotspath = self.inputs['subpaths']['spots']
+
+        psCCDcoodicts = self._get_psCCDcoodicts()
+
+        bas_keys = ['bgd','peak','fluence','efluence',
+                        'x','y','x_ccd','y_ccd','fwhmx','fwhmy']
+        bas_res_def = dict(zip(bas_keys, np.zeros(
+                                    len(bas_keys), dtype='float32')))
+
+        for iObs in range(nObs):
+
+            for jCCD, CCDk in enumerate(CCDs):
+
+                fullINspots_name = os.path.join(
+                        spotspath, '%s.pick' % self.dd.mx[spotscol][iObs, jCCD])
+
+                spots_array = files.cPickleRead(fullINspots_name)['spots']
+
+                for kQ, Quad in enumerate(Quads):
+
+                    for lS, SpotName in enumerate(SpotNames):
+
+                        ixtup = (iObs, jCCD, kQ, lS)
+
+                        inSpot = copy.deepcopy(spots_array[kQ, lS])
+
+                        try: 
+                            bas_res = inSpot.measure_basic(rap=10, rin=15, rout=-1,
+                            gain=3.5, debug=False)
+                        except BaseException:
+                            continue
+                        # bas_res = dict(bgd=bgd, peak=peak, fluence=flu, efluence=eflu,
+                        #    x=x, y=y, x_ccd=x_ccd, y_ccd=y_ccd,
+                        #    fwhmx=fwhmx, fwhmy=fwhmy)
+
+                        self.dd.mx['%sbas_bgd' % prefix][ixtup] = bas_res['bgd']
+                        self.dd.mx['%sbas_peak' % prefix][ixtup] = bas_res['peak']
+                        self.dd.mx['%sbas_fluence' % prefix][ixtup] = bas_res['fluence']
+                        self.dd.mx['%sbas_efluence' % prefix][ixtup] = bas_res['efluence']
+                        self.dd.mx['%sbas_x' % prefix][ixtup] = bas_res['x']
+                        self.dd.mx['%sbas_y' % prefix][ixtup] = bas_res['y']
+                        self.dd.mx['%sbas_x_ccd' % prefix][ixtup] = bas_res['x_ccd']
+                        self.dd.mx['%sbas_y_ccd' % prefix][ixtup] = bas_res['y_ccd']
+                        self.dd.mx['%sbas_fwhmx' % prefix][ixtup] = bas_res['fwhmx']
+                        self.dd.mx['%sbas_fwhmy' % prefix][ixtup] = bas_res['fwhmy']
+
+
+                        #inSpot.data -= loc_bgd # UNNECESSARY? background subtraction
+
+                        inSpot.shsettings = dict(iterations=4,
+                               sampling=1.0,  # oversampling if > 1
+                               platescale = 120.0,  # microns / arcsecond
+                               pixelSize=12.0,  # um/pix
+                               sigma=0.75,  # arcseconds
+                               weighted=True,  # use weighted moments
+                               conservePeak=True,
+                               debug=False,
+                               fixedPosition=True,
+                               fixedX=bas_res['x'],
+                               fixedY=bas_res['y'])
+
+                        ref_quad_res = inSpot.measureRefinedEllipticity()
+
+                        #ref_quad_res = dict(centreX=quad['centreX'] + 1, 
+                        #    centreY=quad['centreY'] + 1,
+                        #    e1=quad['e1'], e2=quad['e2'],
+                        #    ellipticity=quad['ellipticity'],
+                        #    R2=R2,
+                        #    R2arcsec=R2arcsec,
+                        #    GaussianWeighted=GaussianWeighted,
+                        #    a=quad['a'], b=quad['b'])
+
+                        self.dd.mx['%ssh_x' % prefix][ixtup] = ref_quad_res['centreX']
+                        self.dd.mx['%ssh_y' % prefix][ixtup] = ref_quad_res['centreY']
+                        self.dd.mx['%ssh_e1' % prefix][ixtup] = ref_quad_res['e1']
+                        self.dd.mx['%ssh_e2' % prefix][ixtup] = ref_quad_res['e2']
+                        self.dd.mx['%ssh_ell' % prefix][ixtup] = ref_quad_res['ellipticity']
+                        self.dd.mx['%ssh_R2' % prefix][ixtup] = ref_quad_res['R2']
+                        self.dd.mx['%ssh_R2arcsec' % prefix][ixtup] = ref_quad_res['R2arcsec']
+                        self.dd.mx['%ssh_a' % prefix][ixtup] = ref_quad_res['a']
+                        self.dd.mx['%ssh_b' % prefix][ixtup] = ref_quad_res['b']
+
+
+                        gauss_res = inSpot.fit_Gauss()
+                        # tuple: (vals, evals)
+                        # i00, xcen, ycen, xsigma, ysigma
+
+                        self.dd.mx['%sgau_i00' % prefix][ixtup] = gauss_res[0][0]
+                        self.dd.mx['%sgau_ei00' % prefix][ixtup] = gauss_res[1][0]
+                        self.dd.mx['%sgau_xcen' % prefix][ixtup] = gauss_res[0][1]
+                        self.dd.mx['%sgau_xcen' % prefix][ixtup] = gauss_res[1][1]
+                        self.dd.mx['%sgau_ycen' % prefix][ixtup] = gauss_res[0][2]
+                        self.dd.mx['%sgau_eycen' % prefix][ixtup] = gauss_res[1][2]
+                        self.dd.mx['%sgau_sigmax' % prefix][ixtup] = gauss_res[0][3]
+                        self.dd.mx['%sgau_esigmax' % prefix][ixtup] = gauss_res[1][3]
+                        self.dd.mx['%sgau_fwhmx' % prefix][ixtup] = gauss_res[0][3] * sig2fwhm
+                        self.dd.mx['%sgau_efwhmx' % prefix][ixtup] = gauss_res[1][3] * sig2fwhm
+                        self.dd.mx['%sgau_sigmay' % prefix][ixtup] = gauss_res[0][4]
+                        self.dd.mx['%sgau_esigmay' % prefix][ixtup] = gauss_res[1][4]
+                        self.dd.mx['%sgau_fwhmy' % prefix][ixtup] = gauss_res[0][4] * sig2fwhm
+                        self.dd.mx['%sgau_efwhmy' % prefix][ixtup] = gauss_res[1][4] * sig2fwhm
+
+
+
     def basic_analysis(self):
         """Performs basic analysis on spots:
              - shape from moments
@@ -513,7 +791,75 @@ class PSF0X(PT.PointTask):
 
         """
 
-        raise NotImplementedError
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='basic', Title='Basic Extraction of Spots Shapes', level=0)
+
+        self._extract_basic(spotscol='spots_name', prefix='')
+
+    def basic_analysis_noBFE(self):
+        """Performs basic analysis on [BFE-corrected] spots:
+             - shape from moments
+             - Gaussian fitting: peak intensity, position, width_x, width_y
+
+        """
+
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='nobfe_basic', Title='BFE corrected: Basic Extraction of Spots Shapes', level=0)
+
+        self._extract_basic(spotscol='spots_name_nobfe', prefix='nobfe_')        
+
+    def _build_SpotsPoster(self, spotscol='spots_name'):
+        """ """
+
+        CQSindices = copy.deepcopy(self.dd.indices)
+
+        assert 'Spot' in CQSindices.names
+
+        nObs = CQSindices[0].len
+        CCDs = CQSindices.get_vals('CCD')
+        nCCDs = len(CCDs)
+        Quads = CQSindices.get_vals('Quad')
+        nQuads = len(Quads)
+        SpotNames = CQSindices.get_vals('Spot')
+        nSpots = len(SpotNames)
+
+        if self.drill:
+            return
+
+        spotspath = self.inputs['subpaths']['spots']
+
+        psCCDcoodicts = self._get_psCCDcoodicts()
+
+        NY = stampw * nObs
+        NX = stampw * nCCDs * nQuads * nSpots
+
+        SpotsPoster = np.zeros((NY,NX),dtype='float32')
+
+
+        for iObs in range(nObs):
+
+            for jCCD, CCDk in enumerate(CCDs):
+
+                fullINspots_name = os.path.join(
+                        spotspath, '%s.pick' % self.dd.mx[spotscol][iObs, jCCD])
+
+                spots_array = files.cPickleRead(fullINspots_name)['spots']
+
+                for kQ, Quad in enumerate(Quads):
+
+                    for lS, SpotName in enumerate(SpotNames):
+
+                        inSpot = copy.deepcopy(spots_array[kQ, lS])
+
+                        lly = stampw * iObs
+                        llx = stampw * (jCCD*(nQuads+nSpots)+kQ*(nSpots)+lS)
+
+                        SpotsPoster[lly:lly+stampw, llx:llx+stampw] = np.log10(inSpot.data.copy())
+
+
+        return SpotsPoster
 
     def bayes_analysis(self):
         """
@@ -529,12 +875,12 @@ class PSF0X(PT.PointTask):
 
         dIndices = copy.deepcopy(self.dd.indices)
 
-        CCDs = dIndices[dIndices.names.index('CCD')].vals
+        CCDs = dIndices.get_vals('CCD')
         #nCCD = len(CCDs)
-        Quads = dIndices[dIndices.names.index('Quad')].vals
+        Quads = dIndices.get_vals('Quad')
         nQuads = len(Quads)
         nObs = dIndices[dIndices.names.index('ix')].len
-        SpotNames = dIndices[dIndices.names.index('Spot')].vals
+        SpotNames = dIndices.get_vals('Spot')
         nSpots = len(SpotNames)
 
         jCCD = 0
@@ -583,7 +929,28 @@ class PSF0X(PT.PointTask):
         Analyzes the relation between detector PSF and fluence.
 
         """
-        raise NotImplementedError
+        
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='meta', Title='Meta Analysis: Shapes', level=0)
+
+
+        SpotsPoster = self._build_SpotsPoster(spotscol='spots_name')
+        SpotsPosterNOBFE = self._build_SpotsPoster(spotscol='spots_name_nobfe')
+        stop()
+
+
+        fdict = self.figdict['SpotsPoster'][1]
+        fdict['data'] = SpotsPoster.copy()
+
+        normfunction = Normalize(vmin=0.,vmax=np.log10(2.**16),clip=False)
+
+        fdict['meta']['corekwargs']['norm'] = normfunction
+
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['SpotsPoster'],
+                dobuilddata=False)
+
 
     def opt_xtalk_sextract(self):
         """Runs sextractor on images for optical-crosstalk measurements."""
@@ -600,7 +967,7 @@ class PSF0X(PT.PointTask):
 
             for iObs in range(nObs):
 
-                print(('\nopt_xtalk: sextracting ObsID %i/%i' % (iObs + 1, nObs)))
+                print('\nopt_xtalk: sextracting ObsID %i/%i' % (iObs + 1, nObs))
 
                 ObsID = self.dd.mx['ObsID'][iObs]
                 timestamp = self.dd.mx['date'][iObs, 0]

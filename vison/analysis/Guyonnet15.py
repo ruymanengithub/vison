@@ -186,7 +186,7 @@ def solve_for_psmooth(covij, var, mu, doplot=False):
     epopt = np.sqrt(np.diagonal(pcov))  # errors
 
     if doplot:
-        print(('popt = #', popt))
+        print('popt = #', popt)
 
         fig = plt.figure()
         ax = fig.add_subplot(111)
@@ -398,7 +398,7 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
                             Afull[ixx, jyy] = 1.
 
     if verbose:
-        print(('sum(A)=%.1f' % Afull.sum()))
+        print('sum(A)=%.1f' % Afull.sum())
 
     #  REDUCING THE COEFFICIENTS MATRIX
 
@@ -581,8 +581,8 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
     Nindep = len(indepBounds)
 
     if verbose:
-        print(('\n Independent Coeffs. = %i / %i' % (Nindep, Nraw)))
-        print(('\n A.shape = ', A.shape))
+        print('\n Independent Coeffs. = %i / %i' % (Nindep, Nraw))
+        print('\n A.shape = ', A.shape)
 
     Atrans = A.transpose()
 
@@ -600,9 +600,9 @@ def solve_for_A_linalg(covij, var=1., mu=1., doplot=False, psmooth=None, returnA
 
     if verbose:
 
-        print(('mean res = %.1e' % res[sel].mean()))
-        print(('max res = %.1e' % res[sel].max()))
-        print(('min res = %.1e' % res[sel].min()))
+        print('mean res = %.1e' % res[sel].mean())
+        print('max res = %.1e' % res[sel].max())
+        print('min res = %.1e' % res[sel].min())
 
     if returnAll:
         return aijb, psmooth
@@ -807,8 +807,10 @@ def correct_estatic(img, aijb):
 def get_cross_shape_rough(cross, pitch=pixpitch):
     """ """
 
-    Ixwing = np.mean([cross[0, 1], cross[2, 1]])
-    Iywing = np.mean([cross[1, 0], cross[1, 2]])
+    ncross = cross / cross.max()
+
+    Ixwing = np.mean([ncross[0, 1], ncross[2, 1]])
+    Iywing = np.mean([ncross[1, 0], ncross[1, 2]])
 
     sigmax = np.sqrt(-pixpitch**2 / (2. * np.log(Ixwing)))
     fwhmx = sigmax * 2.355
@@ -942,7 +944,7 @@ def show_disps_CCD273(aijb, stretch=5., peak=1.E5 / 3.5, N=25, sigma=1.6, title=
     gaussPSF = generate_GaussPSF(N, sigma)
     gaussPSF = gaussPSF / gaussPSF.max() * peak
 
-    Rdisp_Q = get_Rdisp(gaussPSF, aijb) / peak  # ??
+    Rdisp_Q = get_Rdisp(gaussPSF, aijb) #/ peak  # ??
 
     # stop()
 
@@ -967,10 +969,12 @@ def show_disps_CCD273(aijb, stretch=5., peak=1.E5 / 3.5, N=25, sigma=1.6, title=
 
             # ll, ul, ur, lr
             # displacements are inside-outside oriented
-            x = (i - (N - 1.) / 2.) * pixpitch + (np.array([-0.5, -0.5, 0.5, 0.5, -0.5])) * pixpitch +\
+            x = (i - (N - 1.) / 2.) * pixpitch + \
+                (np.array([-0.5, -0.5, 0.5, 0.5, -0.5])) * pixpitch +\
                 sign * np.array([-d[3], -d[3], d[1], d[1], -d[3]])
 
-            y = (j - (N - 1.) / 2.) * pixpitch + (np.array([-0.5, 0.5, 0.5, -0.5, -0.5])) * pixpitch +\
+            y = (j - (N - 1.) / 2.) * pixpitch +\
+                 (np.array([-0.5, 0.5, 0.5, -0.5, -0.5])) * pixpitch +\
                 sign * np.array([-d[2], d[0], d[0], -d[2], -d[2]])
 
             ax.plot(x, y, '%s-' % c)

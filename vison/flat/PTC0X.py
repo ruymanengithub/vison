@@ -328,42 +328,13 @@ class PTC0X(FlatTask):
         # super(PTC0X, self).prepare_images(doExtract=True, doMask=True,
         #                                  doOffset=True, doBias=False, doFF=False)
 
-    def extract_PTC(self):
-        """
 
-        Performs basic analysis of images:
-            - builds PTC curves: both on non-binned and binned images
-
-        **METACODE**
-
-        ::
-
-            create list of OBSID pairs
-
-            create segmentation map given grid parameters
-
-            f.e. OBSID pair:
-                CCD:
-                    Q:
-                        subtract CCD images
-                        f.e. segment:
-                            measure central value
-                            measure variance
-
-        """
+    def f_extract_PTC(self, ccdobjcol, medcol, varcol):
+        """ """
 
         # HARDWIRED VALUES
         wpx = self.window['wpx']
         hpx = self.window['hpx']
-
-        if self.report is not None:
-            self.report.add_Section(
-                keyword='extract', Title='PTC Extraction', level=0)
-            self.report.add_Text('Segmenting on %i x %i windows...' % (wpx, hpx))
-
-        # labels should be the same accross CCDs. PATCH.
-        label = self.dd.mx['label'][:, 0].copy()
-        ObsIDs = self.dd.mx['ObsID'][:].copy()
 
         indices = copy.deepcopy(self.dd.indices)
 
@@ -385,16 +356,20 @@ class PTC0X(FlatTask):
         # Initializing new columns
 
         valini = 0.
+        self.dd.initColumn(medcol, Sindices, dtype='float32', valini=valini)
+        self.dd.initColumn(varcol, Sindices, dtype='float32', valini=valini)
 
-        self.dd.initColumn('sec_med', Sindices, dtype='float32', valini=valini)
-        self.dd.initColumn('sec_var', Sindices, dtype='float32', valini=valini)
+
+        # labels should be the same accross CCDs. PATCH.
+        label = self.dd.mx['label'][:, 0].copy()
+        ulabels = np.unique(label)
+        ObsIDs = self.dd.mx['ObsID'][:].copy()
 
         # Pairing ObsIDs
 
         self.dd.initColumn(
             'ObsID_pair', self.dd.mx['ObsID'].indices, dtype='int64', valini=np.nan)
 
-        ulabels = np.unique(label)
 
         for ulabel in ulabels:
             six = np.where(label == ulabel)
@@ -429,8 +404,8 @@ class PTC0X(FlatTask):
 
                 if flus.std() / flus.mean() > 0.1:
 
-                    self.dd.mx['sec_med'][iObs, ...] = np.nan
-                    self.dd.mx['sec_var'][iObs, ...] = np.nan
+                    self.dd.mx[medcol][iObs, ...] = np.nan
+                    self.dd.mx[varcol][iObs, ...] = np.nan
 
                     misspairs.append((self.dd.mx['ObsID'][iObs], self.dd.mx['ObsID'][iObs_pair]))
 
@@ -439,9 +414,13 @@ class PTC0X(FlatTask):
                 for jCCD, CCDk in enumerate(CCDs):
 
                     ccdobj_odd_f = os.path.join(
-                        dpath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs, jCCD])
+                        dpath, '%s.pick' % self.dd.mx[ccdobjcol][iObs, jCCD])
                     ccdobj_eve_f = os.path.join(
-                        dpath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs_pair, jCCD])
+                        dpath, '%s.pick' % self.dd.mx[ccdobjcol][iObs_pair, jCCD])
+
+                    if ~os.path.exists(ccdobj_odd_f) or \
+                        ~os.path.exists(ccdobj_eve_f):
+                        continue
 
                     ccdobj_odd = copy.deepcopy(
                         cPickleRead(ccdobj_odd_f))
@@ -467,8 +446,50 @@ class PTC0X(FlatTask):
                         _vars = ccdobj_sub.get_tiles_stats(
                             Quad, _tile_coos, 'std', extension=-1)**2. / 2.
 
-                        self.dd.mx['sec_med'][iObs, jCCD, kQ, :] = _meds.copy()
-                        self.dd.mx['sec_var'][iObs, jCCD, kQ, :] = _vars.copy()
+                        self.dd.mx[medcol][iObs, jCCD, kQ, :] = _meds.copy()
+                        self.dd.mx[varcol][iObs, jCCD, kQ, :] = _vars.copy()
+
+
+    def extract_PTC(self):
+        """
+
+        Performs basic analysis of images:
+            - builds PTC curves: both on non-binned and binned images
+
+        **METACODE**
+
+        ::
+
+            create list of OBSID pairs
+
+            create segmentation map given grid parameters
+
+            f.e. OBSID pair:
+                CCD:
+                    Q:
+                        subtract CCD images
+                        f.e. segment:
+                            measure central value
+                            measure variance
+
+        """
+
+        # HARDWIRED VALUES
+        wpx = self.window['wpx']
+        hpx = self.window['hpx']
+
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='extract', Title='PTC Extraction', level=0)
+            self.report.add_Text('Segmenting on %i x %i windows...' % (wpx, hpx))
+
+        # Initializing new columns and computing PTC
+
+
+        medcol = 'sec_med'
+        varcol = 'sec_var'
+        ccdobjcol = 'ccdobj_name'
+        self.f_extract_PTC(ccdobjcol, medcol, varcol)
 
         # MISSING: any figure?
         # MISSING: any Table?
@@ -591,7 +612,6 @@ class PTC0X(FlatTask):
 
                 raw_var = self.dd.mx['sec_var'][ixsel, iCCD, jQ, :]
                 raw_med = self.dd.mx['sec_med'][ixsel, iCCD, jQ, :]
-
                 ixnonan = np.where(~np.isnan(raw_var) & ~np.isnan(raw_med))
                 var = raw_var[ixnonan]
                 med = raw_med[ixnonan]
@@ -721,7 +741,7 @@ class PTC0X(FlatTask):
 
         DDindices = copy.deepcopy(self.dd.indices)
 
-        nObs, nCCD, nQuad, nSec = DDindices.shape
+        nObs, nCCD, nQuad, nSec = DDindices.shape[0:4]
         Quads = DDindices.get_vals('Quad')
         CCDs = DDindices.get_vals('CCD')
 

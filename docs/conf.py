@@ -32,8 +32,9 @@ import vison
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.imgmath',
-    'sphinx.ext.githubpages',
+    'sphinx.ext.githubpages'
 ]
+#    'sphinx.ext.autosectionlabel'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -51,7 +52,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'vison'
-copyright = u'2017, Ruyman Azzollini'
+copyright = u'2020, Ruyman Azzollini'
 author = u'Ruyman Azzollini'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -108,6 +109,7 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
 
+#autosectionlabel_prefix_document = True
 
 # -- Options for HTML output ----------------------------------------------
 

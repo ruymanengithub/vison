@@ -355,7 +355,7 @@ def prepare_stamp(img, gain=3.5, size=10, spotx=100., spoty=100.):
     # spot and the peak pixel within the spot, this is also the CCD kernel position
     spot = data[y - size:y + size + 1, x - size:x + size + 1].copy()
     CCDy, CCDx = m.maximum_position(spot)
-    print(('CCD Kernel Position (within the postage stamp):', CCDx, CCDy))
+    print('CCD Kernel Position (within the postage stamp):', CCDx, CCDy)
 
     # bias estimate
 
@@ -372,7 +372,7 @@ def prepare_stamp(img, gain=3.5, size=10, spotx=100., spoty=100.):
     #print 'Readnoise (e):', rn
     # if rn < 2. or rn > 6.:
     #    print 'NOTE: suspicious readout noise estimate...'
-    print(('ADC offset (e):', bias))
+    print('ADC offset (e):', bias)
 
     # remove bias
     spot -= bias
@@ -397,8 +397,8 @@ def forwardModel(
 
     """
     print('\n\n\n')
-    print(('_' * 120))
-    print(('Processing: %s' % stampkey))
+    print('_' * 120)
+    print('Processing: %s' % stampkey)
     # get data and convert to electrons
 
     parnames = model_pars[modeltype]
@@ -447,9 +447,10 @@ def forwardModel(
     peakrange = (0.1 * maxs, 2. * maxs)
     sums = np.sum(spot)
 
-    print(('Maximum Value:', maxs))
-    print(('Sum of the values:', sums))
-    print(('Peak Range:', peakrange))
+    print('Maximum Value:', maxs)
+    print('Sum of the values:', sums)
+    print('Peak Range:', peakrange)
+
 
     # MCMC based fitting
     print('Bayesian Model Fitting...')
@@ -502,13 +503,14 @@ def forwardModel(
         pos, prob, state = sampler.run_mcmc(p0, burn)
         maxprob_index = np.argmax(prob)
         params_fit = pos[maxprob_index]
-        print(("Mean acceptance fraction:", np.mean(sampler.acceptance_fraction)))
-        print(('Estimate:', params_fit))
+
+        print("Mean acceptance fraction:", np.mean(sampler.acceptance_fraction))
+        print('Estimate:', params_fit)
         sampler.reset()
 
         print("Running MCMC...")
         pos, prob, state = sampler.run_mcmc(pos, run, rstate0=state)
-        print(("Mean acceptance fraction:", np.mean(sampler.acceptance_fraction)))
+        print("Mean acceptance fraction:", np.mean(sampler.acceptance_fraction))
 
         # Get the index with the highest probability
         maxprob_index = np.argmax(prob)
@@ -546,10 +548,11 @@ def forwardModel(
     gof = (1. / (np.size(spot) - ndim)) * \
         np.sum((model.flatten() - fdata)**2 / var.flatten())
     maxreldiff = np.max(np.abs(model.flatten() - fdata) / np.sqrt(var.flatten()))
-    print(('GoF:', gof, ' Maximum (abs(difference)/sigma) :', maxreldiff))
+
+    print('GoF:', gof, ' Maximum (abs(difference)/sigma) :', maxreldiff)
     if maxreldiff > 10 or gof > 4.:
         print('\nFIT UNLIKELY TO BE GOOD...\n')
-    print(('Amplitude estimate:', amplitude))
+    print('Amplitude estimate:', amplitude)
 
     # packing results
 
@@ -639,13 +642,14 @@ def _printFWHM(sigma_x, sigma_y, sigma_xerr, sigma_yerr, req=10.8):
     Print results and compare to the requirement at 800nm.
     """
     print(("=" * 60))
-    print(('FWHM (requirement %.1f microns):' % req))
-    print((round(np.sqrt(_FWHMGauss(sigma_x) * _FWHMGauss(sigma_y)), 2), ' +/- ', \
-        round(np.sqrt(_FWHMGauss(sigma_xerr) * _FWHMGauss(sigma_yerr)), 3), ' microns'))
-    print(('x:', round(_FWHMGauss(sigma_x),
-                      2), ' +/- ', round(_FWHMGauss(sigma_xerr), 3), ' microns'))
-    print(('y:', round(_FWHMGauss(sigma_y),
-                      2), ' +/- ', round(_FWHMGauss(sigma_yerr), 3), ' microns'))
+
+    print('FWHM (requirement %.1f microns):' % req)
+    print(round(np.sqrt(_FWHMGauss(sigma_x) * _FWHMGauss(sigma_y)), 2), ' +/- ', \
+        round(np.sqrt(_FWHMGauss(sigma_xerr) * _FWHMGauss(sigma_yerr)), 3), ' microns')
+    print('x:', round(_FWHMGauss(sigma_x),
+                      2), ' +/- ', round(_FWHMGauss(sigma_xerr), 3), ' microns')
+    print('y:', round(_FWHMGauss(sigma_y),
+                      2), ' +/- ', round(_FWHMGauss(sigma_yerr), 3), ' microns')
     print(("=" * 60))
 
 

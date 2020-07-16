@@ -58,7 +58,7 @@ def rsync_to_remote(path, broadcast):
     username = 'raf'
     command = "rsync -e 'ssh' -L -avzq %s %s@msslus:%s%s" % (
         path, username, broadcast, os.sep)
-    print(('syncing to MSSLUS: %s' % command))
+    print('syncing to MSSLUS: %s' % command)
     os.system(command)
 
 
@@ -66,7 +66,7 @@ def rsync_to_altlocalpath(path, altpath):
     """ """
     #_altpath = os.path.join(altpath, path)
     command = "rsync -avzq %s %s" % (path, altpath + os.sep)
-    print(('SYNCING TO ALTLOCAL: %s' % command))
+    print('SYNCING TO ALTLOCAL: %s' % command)
     os.system(command)
 
 
@@ -275,7 +275,7 @@ def Eexecuter():
              '#                                                       #\n' +\
              '#########################################################\n'
 
-    print((header % path))
+    print(header % path)
 
     app = Eyegore(path, broadcast=broadcast, elvis=elvis, blind=blind,
                   dolite=dolite, altpath=altpath, doWarnings=doWarnings,
