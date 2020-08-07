@@ -617,7 +617,7 @@ class Task(object):
     def addComplianceMatrix2Log(self, complidict, label=''):
         """ """
         #st_compl = complidict.__str__()
-        st_compl = st.split(complidict.get_compliance_txt(), '\n')
+        st_compl = complidict.get_compliance_txt().split('\n')
         self.log.info([label, st_compl])
 
     def addComplianceMatrix2Report(self, complidict, label='',

@@ -43,7 +43,7 @@ def get_function_module(level=1, reference='vison'):
     stackrow = stack[level]
     funcname = stackrow[3]
     mod_path = stackrow[1]
-    mod_path_split = st.split(mod_path, sep=os.path.sep)
+    mod_path_split = mod_path.split( sep=os.path.sep)
     try:
         ixref = mod_path_split.index(reference)
     except ValueError:

@@ -225,7 +225,7 @@ class Figure(Content):
         texjoint = texjoint.replace(r'__PLACEHOLDER__', r'%s')
         texjoint = texjoint % tuple(substitutes)
 
-        tex = st.split(texjoint, r'JOIN_LINES')
+        tex = texjoint.split( r'JOIN_LINES')
         tex += ['\n']  # just improves legigibility of .tex
 
         return tex

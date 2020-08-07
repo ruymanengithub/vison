@@ -369,7 +369,7 @@ def reportFITS(FITSfile, outpath=''):
 
         template_stats = st.join(latex_templates['table_stats'], '__^__')
         table_stats = template_stats % alignedstats
-        table_stats = st.split(table_stats, '__^__')
+        table_stats = table_stats.split('__^__')
 
         report.body += table_stats
 

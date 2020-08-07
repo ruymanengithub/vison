@@ -1090,8 +1090,8 @@ class MetaBF(MetaCal):
 
             for i in range(2,len(g15_gpsf_cdp.hdulist)):
                 extname = g15_gpsf_cdp.hdulist[i].header['EXTNAME']
-                block = st.split(extname,'_')[-1]
-                tn = st.join(st.split(extname,'_')[:-1],'_')
+                block = extname.split('_')[-1]
+                tn = st.join(extname.split('_')[:-1],'_')
 
                 g15_gpsf_cdp.hdulist[i].header['TEST'] = tn
                 g15_gpsf_cdp.hdulist[i].header['BLOCK'] = block

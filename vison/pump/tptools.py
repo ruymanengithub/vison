@@ -111,7 +111,7 @@ def _get_tex(df):
 
 
 def _get_txt(df):
-    fok = st.split(df.to_string(), '\n')
+    fok = df.to_string().split('\n')
     txt = ['\\begin{verbatim}'] + fok + ['\\end{verbatim}']
     return txt
 

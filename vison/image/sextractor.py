@@ -146,7 +146,7 @@ class VSExtractor(object):
     def cleanaftersex(self, config):
         if 'CHECKIMAGE_TYPE' in config:
             checkimage_name = config['CHECKIMAGE_NAME']
-            checkimages = st.split(checkimage_name, ',')
+            checkimages = checkimage_name.split( ',')
             for chimg in checkimages:
                 if os.path.exists(chimg):
                     os.system('rm %s' % chimg)

@@ -69,7 +69,7 @@ if __name__ == '__main__':
 
     nOBSIDs = len(FITSlist)
     firstFITS = os.path.split(FITSlist[0])[-1]
-    datetag = st.split(firstFITS, '_')[2]
+    datetag = firstFITS.split( '_')[2]
     datetag = datetag[0:datetag.index('D')]
 
     outpath = 'FITSmonitor_%s' % datetag
@@ -88,7 +88,7 @@ if __name__ == '__main__':
     for FITSfile in FITSlist:
 
         bareFITS = os.path.split(FITSfile)[-1]
-        OBSID = int(st.split(bareFITS, '_')[1])
+        OBSID = int(bareFITS.split( '_')[1])
         OBSIDs.append(OBSID)
 
         FITSpdf = QLAt.reportFITS(FITSfile, outpath=outpath)

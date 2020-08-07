@@ -652,7 +652,7 @@ def loadHK_preQM(filename, elvis='5.7.07'):
     data = {}
 
     for line in lines:
-        items = st.split(line)
+        items = line.split()
         key = items[0]
         values = np.array(items[1:]).astype('float32')
 
@@ -868,7 +868,7 @@ def parseHKfname(HKfname):
     stripHKfname = os.path.basename(HKfname)
     stripHKfname = os.path.splitext(stripHKfname)[0]
 
-    items = st.split(stripHKfname, '_')
+    items = stripHKfname.split( '_')
 
     assert items[0] == 'HK'  # just a basic check
 
@@ -896,8 +896,8 @@ def parseHKfiles(HKlist, elvis=context.elvis):
 
     nkeys = len(HK_keys)
 
-    ver = int(st.split(elvis, '.')[0])
-    subver = int(st.split(elvis, '.')[1])
+    ver = int(elvis.split('.')[0])
+    subver = int(elvis.split('.')[1])
 
     if ver == 5 and subver <= 7:
         HKloader = loadHK_preQM

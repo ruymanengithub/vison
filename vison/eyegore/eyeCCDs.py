@@ -105,7 +105,7 @@ class ImageDisplay(tk.Toplevel):
         FITSs = sorted(glob.glob(os.path.join(
             self.path, '*.fits')), key=os.path.getmtime)
         lastFITS = FITSs[-1]
-        lastObs = int(st.split(os.path.split(lastFITS)[-1], '_')[1])
+        lastObs = int(os.path.split(lastFITS)[-1].split('_')[1])
 
         for CCD in [1, 2, 3]:
             try:

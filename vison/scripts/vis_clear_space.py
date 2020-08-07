@@ -35,7 +35,7 @@ def find_and_erase(path, keyword):
     if ans1.lower() != 'y':
         sys.exit()
 
-    selpaths = st.split(os.popen(execline1).read(), '\n')
+    selpaths = os.popen(execline1).read().split( '\n')
     selpaths = [item for item in selpaths if len(item) > 0]
 
     print('\nPreparing to CLEAR OUT:\n')

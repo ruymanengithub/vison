@@ -121,7 +121,7 @@ def gen_compliance_tex(indict, escape=True, caption=''):
         tex = df.to_latex(multicolumn=True, multirow=True,
                           longtable=True, index=level > 1,
                           escape=escape)
-        tex = st.split(tex, '\n')
+        tex = tex.split('\n')
 
 #    if level == 1:
 #        tcomplidict = removescalars_from_dict(tcomplidict)
@@ -130,7 +130,7 @@ def gen_compliance_tex(indict, escape=True, caption=''):
 #        tex = df.to_latex(multicolumn=True, multirow=True,
 #                          longtable=True, index=level > 1,
 #                          escape=escape)
-#        tex = st.split(tex, '\n')
+#        tex = tex.split( '\n')
 
 #    elif level in [2,3]:
 #        keys = []
@@ -144,7 +144,7 @@ def gen_compliance_tex(indict, escape=True, caption=''):
 #        tex = series.to_latex(multicolumn=True, multirow=True,
 #                              longtable=True, index=True,
 #                              escape=escape)
-#        tex = st.split(tex, '\n')
+#        tex = tex.split('\n')
 #
 #        if level == 3:
 #            tex = ['\\tiny'] +tex + ['\\normalsize']
@@ -160,7 +160,7 @@ def gen_compliance_tex(indict, escape=True, caption=''):
         tex = series.to_latex(multicolumn=True, multirow=True,
                               longtable=True, index=True,
                               escape=escape)
-        tex = ['\\tiny'] + st.split(tex, '\n') + ['\\normalsize']
+        tex = ['\\tiny'] + tex.split( '\n') + ['\\normalsize']
     else:
         texList = convert_compl_to_nesteditemlist(tcomplidict)
         tex = ['\\tiny'] + texList + ['\\normalsize']

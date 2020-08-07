@@ -49,7 +49,7 @@ def f_write_script(struct, filename, outpath, elvis):
     script.write(filename)
 
     stdout = os.popen('md5sum %s' % filename).read()
-    xsum = st.split(stdout)[0]
+    xsum = stdout.split()[0]
 
     os.system('mv %s %s/' % (filename, outpath))
 

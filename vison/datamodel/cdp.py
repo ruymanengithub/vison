@@ -39,7 +39,7 @@ def loadCDPfromPickle(pickf):
 def wraptextable(tex, ncols=1, caption='', fitwidth=False, tiny=False, longtable=False):
     """Auxiliary function to Tables_CDP class"""
 
-    tex = st.split(tex, '\n')
+    tex = tex.split('\n')
 
     if fitwidth:
 

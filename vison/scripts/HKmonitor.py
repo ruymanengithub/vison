@@ -75,7 +75,7 @@ if __name__ == '__main__':
 
     if OBSID is not None:
 
-        allOBSIDS = [st.split(item, '_')[3] for item in HKlist]
+        allOBSIDS = [item.split( '_')[3] for item in HKlist]
         ixstart = allOBSIDS.index(OBSID)
 
         if Nobs > 0:
@@ -86,7 +86,7 @@ if __name__ == '__main__':
 
     nOBSIDs = len(HKlist)
     firstHK = os.path.split(HKlist[0])[-1]
-    datetag = st.split(firstHK, '_')[2]
+    datetag = firstHK.split( '_')[2]
     datetag = datetag[0:datetag.index('D')]
 
     outpath = 'HKmonitor_%s' % datetag

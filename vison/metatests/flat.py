@@ -241,7 +241,8 @@ class MetaFlat(MetaCal):
 
         productspath = os.path.join(inventoryitem['resroot'], 'products')
 
-        prnucdp_pick = os.path.join(productspath, os.path.split(sidd.products['PRNU_TB_CDP'])[-1])
+        prnucdp_pick = os.path.join(productspath, 
+            os.path.split(sidd.products['PRNU_TB_CDP'])[-1])
         prnucdp = files.cPickleRead(prnucdp_pick)
 
         for icol in range(1, Ncols + 1):
@@ -682,7 +683,7 @@ class MetaFlat(MetaCal):
                     _test = 'FLAT01'
                     _wave = 800
                 else:
-                    _test, _wave = st.split(testname, '_')
+                    _test, _wave = testname.split('_')
 
                 for colkey in self.colkeys[testname]:
 
@@ -756,7 +757,7 @@ class MetaFlat(MetaCal):
                         _test = 'FLAT01'
                         _wave = 800
                     else:
-                        _test, _wave = st.split(testname, '_')
+                        _test, _wave = testname.split( '_')
                     suptitle = '%s %s nm, Fluence %i' % (_test, _wave, colnum)
                     print(suptitle)
 

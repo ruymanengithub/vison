@@ -37,7 +37,7 @@ def replace_in_template(texf, values):
     tex = tex % values
     tex = tex.replace('%%', '%')
 
-    texList = st.split(tex, 'JOIN___LINES')
+    texList = tex.split('JOIN___LINES')
 
     return texList
 

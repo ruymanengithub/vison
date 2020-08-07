@@ -49,7 +49,7 @@ from vison.support import context
 
 def extract_date_explogf(explogf):
     """ """
-    items = st.split(explogf, '_')
+    items = explogf.split( '_')
     stdate = items[2]
     idate = datetime.datetime.strptime(stdate, '%d%m%y')
     return idate

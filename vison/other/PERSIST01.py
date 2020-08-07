@@ -833,7 +833,7 @@ class PERSIST01(Task):
                 'and average pixel value in the pre-saturation frames, in the same region, for each channel. ' +\
                 'If the differences are smaller or comparable to the uncertainties, there is basically no ' +\
                 'measurable detector persistence.'
-            persist_tex = st.split(str(persist_tex), '\n')
+            persist_tex = str(persist_tex).split( '\n')
 
             persist_tex = ['\\begin{table}[!htb]', '\center'] +\
                 ['\caption{Persistence - First Frame After Latent}'] +\
