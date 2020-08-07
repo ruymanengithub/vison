@@ -241,7 +241,7 @@ class MetaBias(MetaCal):
         self.products['MB_PROFILES'][profkey] = profs_dict.copy()
 
         profskeys_v = np.zeros((1),dtype='S50')
-        
+
         profskeys_v[0] = profkey
 
         for iCCD, CCDk in enumerate(CCDkeys):
@@ -255,7 +255,7 @@ class MetaBias(MetaCal):
                 ron_pre_v[0, iCCD, kQ] = roncdp['data']['RON_PRE'][CCDk][Q]
                 ron_img_v[0, iCCD, kQ] = roncdp['data']['RON_IMG'][CCDk][Q]
                 ron_ove_v[0, iCCD, kQ] = roncdp['data']['RON_OVE'][CCDk][Q]
-                
+
 
         sidd.addColumn(off_pre_v, 'OFF_PRE', IndexCQ)
         sidd.addColumn(off_img_v, 'OFF_IMG', IndexCQ)
@@ -271,7 +271,7 @@ class MetaBias(MetaCal):
         # ADDING REFERENCES TO MASTER BIAS
 
         tmp_v_C = np.zeros((1, NCCDs), dtype='S50')
-        
+
         mbkey_v = tmp_v_C.copy()
 
         for jCCD, CCDk in enumerate(CCDkeys):
@@ -296,14 +296,14 @@ class MetaBias(MetaCal):
         """ """
 
         def _extract_RON_fromPT(PT, block, CCDk, Q):
-            
+
             ixblock = self.get_ixblock(PT, block)
-            
+
             if units == 'ADU':
                 unitsConvFactor = 1
             elif units == 'E':
                 unitsConvFactor = self.cdps['GAIN'][block][CCDk][Q][0]
-            
+
             if reg != 'all':            
                 column = 'RON_%s_%s_Quad%s' % (reg.upper(),CCDk, Q)
                 RON = np.nanmedian(PT[column][ixblock]) * unitsConvFactor
@@ -312,18 +312,18 @@ class MetaBias(MetaCal):
                 for _reg in ['pre','img','ove']:
                     column = 'RON_%s_%s_Quad%s' % (_reg.upper(),CCDk, Q)
                     RON[_reg] = np.nanmedian(PT[column][ixblock]) * unitsConvFactor
-            
+
             return RON
 
         return _extract_RON_fromPT
-    
+
     def _get_extractor_OFFSET_fromPT(self, reg):
         """ """
-    
+
         def _extractor(PT, block, CCDk, Q):
             """ """
             ixblock = self.get_ixblock(PT, block)
-            
+
             if reg != 'all':            
                 column = 'OFF_%s_%s_Quad%s' % (reg.upper(),CCDk, Q)
                 OFF = np.nanmedian(PT[column][ixblock])
@@ -333,7 +333,7 @@ class MetaBias(MetaCal):
                     column = 'OFF_%s_%s_Quad%s' % (_reg.upper(),CCDk, Q)
                     OFF[_reg] = np.nanmedian(PT[column][ixblock])
             return OFF
-        
+
         return _extractor
 
     def init_fignames(self):
@@ -398,7 +398,7 @@ class MetaBias(MetaCal):
                 productspath = os.path.join(inventoryitem['resroot'], 'products')
 
                 ixblock = np.where(PT['BLOCK'] == block)
-                
+
 
                 cdpkey = PT['MASTERBIAS_%s' % CCDk][ixblock][0]
 
@@ -457,7 +457,7 @@ class MetaBias(MetaCal):
                 cdpkey = PT['MASTERBIAS_%s' % (CCDk,)][ixblock][0] # first instance of test
 
                 masterbias = os.path.join(productspath, self.products['MASTERBIAS'][cdpkey])
-                
+
                 cdpdict = files.cPickleRead(masterbias)
                 #ccdobj = ccdmod.CCD(infits=masterbias, getallextensions=True, withpover=True,
                 #                    overscan=20)
@@ -516,9 +516,9 @@ class MetaBias(MetaCal):
             datadict[col] = []
 
         rawptdf = self.ParsedTable[testname].to_pandas()
-            
+
         for block in self.blocks:
-            
+
             ixsel = np.where(rawptdf.BLOCK == block)
 
             for iix in ixsel[0]:
@@ -539,8 +539,8 @@ class MetaBias(MetaCal):
             datadict[col] = np.array(datadict[col])
 
         ptdf = pd.DataFrame(datadict)
-        
-        
+
+
         uCCDQIDs = np.unique(ptdf.CCDQID)
 
         # discriminating CCDs that were calibrated more than once and 
@@ -555,7 +555,7 @@ class MetaBias(MetaCal):
                 Lreps.append(uCCDQID)
             else:
                 Lnoreps.append(uCCDQID)
-    
+
         noreps = pd.DataFrame(dict(CCDQID=Lnoreps))
         reps = pd.DataFrame(dict(CCDQID=Lreps))
 
@@ -587,16 +587,16 @@ class MetaBias(MetaCal):
                     meanRON=meanRONrep,
                     stdRON=stdRONrep,
                     N=len(ptrep_df)))
-        
+
         return res
 
     def dump_aggregated_results(self):
         """ """
-        
+
         if self.report is not None:
             self.report.add_Section(keyword='dump', 
                 Title='Aggregated Results', level=0)
-            
+
             self.add_DataAlbaran2Report()
 
         function, module = utils.get_function_module()
@@ -604,8 +604,8 @@ class MetaBias(MetaCal):
         CDP_header.update(dict(function=function, module=module))
         CDP_header['DATE'] = self.get_time_tag()
 
-        
-        
+
+
         doAll = True
         doRONMaps = doAll
         doOffMaps = doAll
@@ -627,12 +627,12 @@ class MetaBias(MetaCal):
                     extractor=self._get_extractor_RON_fromPT(
                         units='ADU',
                         reg='all'))
-                
+
                 rn_header = OrderedDict()
                 rn_header['title'] = 'RON MAP'
                 rn_header['test'] = stestname
                 rn_header.update(CDP_header)
-                
+
                 rn_cdp = cdp.Json_CDP(rootname=self.outcdps['RON_ADU_%s' % testname],
                                   path=self.cdpspath)
                 rn_cdp.ingest_inputs(data=RONADUMAP,
@@ -640,7 +640,7 @@ class MetaBias(MetaCal):
                                  meta=dict(units='ADU',
                                  structure='CCDID:Q:RON'))
                 rn_cdp.savehardcopy()
-                
+
                 RON_OVE_ADUMAP = self.get_FPAMAP_from_PT(
                     self.ParsedTable[testname],
                     extractor=self._get_extractor_RON_fromPT(
@@ -667,7 +667,7 @@ class MetaBias(MetaCal):
                 rne_header['title'] = 'RON_ELE MAP'
                 rne_header['test'] = stestname
                 rne_header.update(CDP_header)
-                
+
                 rne_cdp = cdp.Json_CDP(rootname=self.outcdps['RON_ELE_%s' % testname],
                                   path=self.cdpspath)
                 rne_cdp.ingest_inputs(data=RONEMAP,
@@ -691,7 +691,7 @@ class MetaBias(MetaCal):
                             figkey=figkey1, 
                             caption='%s: RON in e- (rms).' % stestname, 
                             texfraction=0.7)
-                
+
                 # reporting tables of RON-e to report
 
                 if self.report is not None:
@@ -716,12 +716,12 @@ class MetaBias(MetaCal):
                 OFFMAP = self.get_FPAMAP_from_PT(
                     self.ParsedTable[testname],
                     extractor=self._get_extractor_OFFSET_fromPT(reg='all'))
-                
+
                 off_header = OrderedDict()
                 off_header['title'] = 'OFFSETS MAP'
                 off_header['test'] = stestname
                 off_header.update(CDP_header)
-                
+
                 off_cdp = cdp.Json_CDP(rootname=self.outcdps['OFFSETS_%s' % testname],
                                   path=self.cdpspath)
                 off_cdp.ingest_inputs(data=OFFMAP,
@@ -729,11 +729,11 @@ class MetaBias(MetaCal):
                                 meta=dict(units='ADU',
                                 structure='CCDID:Q:dict(pre,img,ove)'))
                 off_cdp.savehardcopy()
-                
+
                 OFF_OVE_MAP = self.get_FPAMAP_from_PT(
                     self.ParsedTable[testname],
                     extractor=self._get_extractor_OFFSET_fromPT(reg='ove'))
-                
+
                 figkey2 = 'OFFSETS_%s' % testname
                 figname2 = self.figs[figkey2]
 
@@ -754,7 +754,7 @@ class MetaBias(MetaCal):
                     offcdpdict = dict(
                         caption='%s: Offset levels [ADU].' % testname,
                         valformat='%.2f')
-                    
+
                     def _getOFF_val(Ckey, Q):
                         return OFFMAP[Ckey][Q]['ove']
 
@@ -909,7 +909,7 @@ class MetaBias(MetaCal):
                 self.report.add_Section(keyword='OFFtimestab',
                     Title='Offset Time Stability', level=2)           
 
-                
+
                 OffvsTimeText = [
                 '\\textbf{Non Repeated} Calibrations, \n',
                 'Nr. of measurements (quadrants x tests) = %i\n' % res_time['NOREPCAL']['N'],

@@ -75,14 +75,14 @@ class FWD_WARM(fpatask.FpaTask):
 
         reframps_incdp = cdpmod.Json_CDP()
         reframps_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references']['warm_ramps'])
-        
+
         def _get_ref_Rslopes_MAP(inData, Ckey, Q):
             return inData[Ckey][Q]['slope']
-        
-        
+
+
         RefRslopesMap = self.get_FPAMAP(reframps_incdp.data.copy(),
                                         extractor=_get_ref_Rslopes_MAP)
-        
+
         self.dd.products['REFRAMPslopes'] = RefRslopesMap.copy()
 
         # Reference offsets
@@ -91,12 +91,12 @@ class FWD_WARM(fpatask.FpaTask):
 
         refOFF_incdp = cdpmod.Json_CDP()
         refOFF_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refoffkey])
-        
+
 
         def _get_ref_OFFs_MAP(inData, Ckey, Q):
             return inData[Ckey][Q][offreg]
-        
-        
+
+
         RefOFFsMap = self.get_FPAMAP(refOFF_incdp.data.copy(),
                                         extractor=_get_ref_OFFs_MAP)
 
@@ -105,7 +105,7 @@ class FWD_WARM(fpatask.FpaTask):
 
     def _get_RAMPslope(self, vQ):
         """ """
-        
+
         rawy = vQ.data['y'].copy()
         rownum = np.arange(len(rawy))
         rowsat = np.where(rawy == 2.**16 - 1)[0][0]
@@ -116,7 +116,7 @@ class FWD_WARM(fpatask.FpaTask):
             slope, intercept = pol[0], pol[1]
         except:
             slope, intercept = np.nan, np.nan
-            
+
         return slope, intercept
 
     def _basic_onLE1(self, **kwargs):
@@ -134,7 +134,7 @@ class FWD_WARM(fpatask.FpaTask):
         HERprofs = MOT_FFaux.extract_overscan_profiles(kccdobj,
                                                        [1.E3, 4.E4],
                                                        direction='serial')
-        
+
         for Q in self.Quads:
 
             # HERprofile
@@ -341,14 +341,14 @@ class FWD_WARM(fpatask.FpaTask):
         XYdict_BIT = dict(x=dict(),
                           y=dict(),
                           labelkeys=[])
-        
+
         XYdict_BIT = self.iter_overCCDs(data, assigner, RetDict=XYdict_BIT)
 
         return XYdict_BIT
 
     def meta_analysis(self):
         """ """
-        
+
         if self.report is not None:
             self.report.add_Section(keyword='meta', Title='Meta-Analysis', level=0)
 
@@ -393,19 +393,19 @@ class FWD_WARM(fpatask.FpaTask):
         self.figdict['SLOPESMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
 
         # Display FPA-Map of ramp-slope differences with CALCAMP
-        
+
         def _get_Diff_Rslopes_MAP(inData, Ckey, Q):
             return inData[0][Ckey][Q]-inData[1][Ckey][Q]
 
         RefRslopesMap = self.dd.products['REFRAMPslopes'].copy()
 
-        
+
         DiffRslopesMap = self.get_FPAMAP((RslopesMap,RefRslopesMap),
                                         extractor=_get_Diff_Rslopes_MAP)
-        
+
         self.figdict['DIFFSLOPESMAP'][1]['data'] = DiffRslopesMap
         self.figdict['DIFFSLOPESMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
-        
+
         # Dispay HER profiles (single plot)
 
         XYdict_HER = self._get_XYdict_HER()
@@ -430,7 +430,7 @@ class FWD_WARM(fpatask.FpaTask):
         # PENDING?
 
         # Average BIT HISTOGRAM values Matrix
-        
+
         avbithist_tb_cdp = cdpmod.Tables_CDP()
         avbithistdict = dict(
             caption='Average Value of Bit Histogram for each quadrant in the FPA.',
@@ -463,29 +463,29 @@ class FWD_WARM(fpatask.FpaTask):
             self.report.add_Section(keyword='appendix', Title='Appendix', level=0)
 
         # TABLE: reference values of OFFSETS
-        
-        
+
+
         def _getRefOffs(self, Ckey, Q):
             return self.dd.products['REF_OFFs'][Ckey][Q]
-        
+
         cdpdictoff = dict(
             caption = 'Reference OFFSETs [ADU] in Over-scan. (from GRCALCAMP).',
             valformat = '%.1f')
-        
+
         self.add_StandardQuadsTable(extractor=_getRefOffs,
                                     cdp=None,
                                     cdpdict=cdpdictoff)
 
         # TABLE: reference values of SLOPES
-        
+
         def _getRefRSlope(self, Ckey, Q):
             return self.dd.products['REFRAMPslopes'][Ckey][Q]
-        
+
         cdpdict = dict(
             caption = 'Reference Slopes [ADU/row] of Dark Current Ramps in FWD-WARM test. Taken from MOT-WARM test'+\
                     ' results at det. chain level (GRCALCAMP).',
             valformat = '%.1f')
-        
+
         self.add_StandardQuadsTable(extractor=_getRefRSlope,
                                     cdp=None,
                                     cdpdict=cdpdict)

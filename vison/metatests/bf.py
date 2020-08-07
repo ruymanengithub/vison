@@ -305,7 +305,7 @@ class MetaBF(MetaCal):
         x = []
         y = []
 
-        
+
         fluences = _BFmx['fluence'].values[ixsel]
         maxflu = np.nanmax(fluences)
         ixflu = np.nanargmin(np.abs(fluences/maxflu-relflu))
@@ -317,7 +317,7 @@ class MetaBF(MetaCal):
         singlepixmap = np.zeros((Npix, Npix), dtype='float32') + 0.0
         singlepixmap[(Npix - 1) / 2, (Npix - 1) / 2] = 1.
 
-        
+
         Asol_Q, psmooth_Q = G15.solve_for_A_linalg(
             refcorrmap, var=1., mu=refmu, returnAll=True, 
             doplot=False,
@@ -337,7 +337,7 @@ class MetaBF(MetaCal):
             fwhm = kerQshape['fwhm%s' % orientation.lower()]
 
             y.append(fwhm)
-        
+
         x = np.array(x)
         y = np.array(y)
 
@@ -495,7 +495,7 @@ class MetaBF(MetaCal):
 
 
                 if fixFluKernel:
-                    
+
                     for iQ, Q in enumerate(self.Quads):
                         _xRAW, _yRAW = self._get_BFvalues_fromA(_BFmx, _BFraw, CCD, iQ+1,
                             orientation, relflu=0.5)
@@ -514,7 +514,7 @@ class MetaBF(MetaCal):
 
                 labelkeys.append(labelkey)
 
-                
+
 
         x['Niemi'] = np.linspace(1.5e1, 2.e2, 10)  # kilo-electrons
         if orientation == 'X':
@@ -589,7 +589,7 @@ class MetaBF(MetaCal):
         COV_mxs = OrderedDict()
 
         for tn in self.testnames:
- 
+
             COV_mxs[tn] = OrderedDict()
 
             PT = self.ParsedTable[tn]
@@ -643,7 +643,7 @@ class MetaBF(MetaCal):
         G15P_mxs = OrderedDict()
 
         for tn in self.testnames:
- 
+
             G15P_mxs[tn] = OrderedDict()
 
             PT = self.ParsedTable[tn]
@@ -696,7 +696,7 @@ class MetaBF(MetaCal):
 
                                 G15P_mxs[tn][Ckey][colk]['fluence'][Q] =\
                                     float(bf[CCDk][Q][colk]['fluence'])
-                                
+
                                 G15P_mxs[tn][Ckey][colk]['psmooth'][Q] =\
                                      bf[CCDk][Q][colk]['psmooth'][0].tolist()
                                 G15P_mxs[tn][Ckey][colk]['e_psmooth'][Q] =\
@@ -711,7 +711,7 @@ class MetaBF(MetaCal):
 
     def _get_g15_gpsf_cdp(self, inCDP_header=None):
         """ """
-        
+
         CDP_header = OrderedDict()
         if CDP_header is not None:
             CDP_header.update(inCDP_header)
@@ -742,7 +742,7 @@ class MetaBF(MetaCal):
                 rawd=BFdf.to_dict(orient='list')
                 dd = OrderedDict()
                 for col in cols: dd[col] = np.array(rawd[col]).copy()
-                
+
 
                 gpsf_data['%s_%s' % (tn, block)] = dd.copy()
 
@@ -765,11 +765,11 @@ class MetaBF(MetaCal):
     def dump_aggregated_results(self):
         """ """
 
-        
+
         if self.report is not None:
             self.report.add_Section(keyword='dump', 
                 Title='Aggregated Results', level=0)
-            
+
             self.add_DataAlbaran2Report()
 
         doAll = True
@@ -780,7 +780,7 @@ class MetaBF(MetaCal):
         doTestMAPs = doAll
         doELLMAP = doAll
         doCDPs = doAll
-        
+
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
@@ -982,7 +982,7 @@ class MetaBF(MetaCal):
                             figkey=figkey5, 
                             caption='%s' % stestname, 
                             texfraction=0.7)
-            
+
         if doELLMAP:
 
             # ELL MAP
@@ -1012,7 +1012,7 @@ class MetaBF(MetaCal):
             # Covariance Matrices
             # json
 
-            
+
             COVs_mx = self._get_COV_mxs()
 
             cov_header = OrderedDict()
@@ -1045,7 +1045,7 @@ class MetaBF(MetaCal):
                 meta=cov_meta)
             cov_cdp.savehardcopy()
 
-            
+
 
             # G15 Parameters
             # json

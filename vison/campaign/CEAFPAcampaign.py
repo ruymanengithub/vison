@@ -79,7 +79,7 @@ def _generate_test_sequence(toGen, elvis='FPA', FPAdesign='final'):
 
     commoninputs = dict(elvis=elvis,
                         FPAdesign=FPAdesign)
-    
+
     # DARK-CURRENT RAMP
 
     if _toGen['FWD_WARM']:
@@ -102,7 +102,7 @@ def _generate_test_sequence(toGen, elvis='FPA', FPAdesign='final'):
         chinj_inp.update(commoninputs)
 
         chinj = FPA_CHINJ.CHINJ(inputs=chinj_inp.copy())
-        
+
         test_sequence['CHINJ'] = copy.deepcopy(chinj)
 
     if _toGen['DARK']:
@@ -113,11 +113,11 @@ def _generate_test_sequence(toGen, elvis='FPA', FPAdesign='final'):
         dark_inp.update(commoninputs)
 
         dark = FPA_DARK.DARK(inputs=dark_inp.copy())
-        
+
         test_sequence['DARK'] = copy.deepcopy(dark)
 
     if _toGen['BIAS_RWDVS_WARM']:
-        
+
         rwdvs_warm_inp = dict(
             test='BIAS_RWDVS_WARM',
             temperature='WARM',
@@ -139,7 +139,7 @@ def _generate_test_sequence(toGen, elvis='FPA', FPAdesign='final'):
 
         rwdv_warm_inp.update(commoninputs)
 
-        
+
         rwdv_warm = FPA_BIAS.FPA_BIAS(inputs=rwdv_warm_inp.copy())     
 
         test_sequence['BIAS_RWDV_WARM'] = copy.deepcopy(rwdv_warm)
@@ -183,8 +183,8 @@ def _generate_test_sequence(toGen, elvis='FPA', FPAdesign='final'):
         fwd_cold = FPA_BIAS.FPA_BIAS(inputs=fwd_cold_inp.copy())     
 
         test_sequence['BIAS_FWD_COLD'] = copy.deepcopy(fwd_cold)    
-        
-    
+
+
 
 
     return test_sequence

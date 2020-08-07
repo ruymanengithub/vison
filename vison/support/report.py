@@ -412,7 +412,7 @@ class Report(Container):
 
     def generate_Header(self, author='Ruyman Azzollini'):
         """ """
-        
+
         headerList = lx.generate_header(
             test=self.TestName, model=self.Model, author=author, 
             reference=self.Reference, issue=self.Issue, doDraft=self.doDraft)

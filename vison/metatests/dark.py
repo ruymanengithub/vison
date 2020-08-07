@@ -191,7 +191,7 @@ class MetaDark(MetaCal):
                                      vcore.vIndex('Quad', vals=self.Quads)])
 
         #idd = copy.deepcopy(inventoryitem['dd'])
-        
+
         sidd = self.parse_single_test_gen(jrep, block, testname, inventoryitem)
 
         # TEST SCPECIFIC
@@ -250,7 +250,7 @@ class MetaDark(MetaCal):
                 dksignal_v[0, iCCD, kQ] = dktbcdp['data']['DARK']['AVSIGNAL'][kk]
                 hotpixels_v[0, iCCD, kQ] = dktbcdp['data']['DARK']['N_HOT'][kk]
 
-        
+
         sidd.addColumn(dksignal_v, 'DK_SIGNAL', IndexCQ)
         sidd.addColumn(hotpixels_v, 'DK_N_HOT', IndexCQ)
 
@@ -259,7 +259,7 @@ class MetaDark(MetaCal):
         # ADDING REFERENCES TO MASTER DARKS
 
         tmp_v_C = np.zeros((1, NCCDs), dtype='S50')
-        
+
         mdkey_v = tmp_v_C.copy()
 
         for jCCD, CCDk in enumerate(CCDkeys):
@@ -289,7 +289,7 @@ class MetaDark(MetaCal):
 
         return DKSIG
 
-    
+
 
 
     def init_fignames(self):
@@ -306,7 +306,7 @@ class MetaDark(MetaCal):
 
         self.figs['MD'] = os.path.join(self.figspath, \
             'MASTER_DARK.png')
-        
+
         profdirs = ['hor','ver']
 
         for profdir in profdirs:
@@ -426,7 +426,7 @@ class MetaDark(MetaCal):
         if self.report is not None:
             self.report.add_Section(keyword='dump',
                 Title='Aggregated Results', level=0)
-            
+
             self.add_DataAlbaran2Report()
 
         function, module = utils.get_function_module()
@@ -434,25 +434,25 @@ class MetaDark(MetaCal):
         CDP_header.update(dict(function=function, module=module))
 
         # Dark Signal map, ADUs
-        
+
         DKSIGMAP = self.get_FPAMAP_from_PT(
             self.ParsedTable['DARK01'],
             extractor=self._extract_DKSIG_fromPT)
-            
+
         dksig_header = OrderedDict()
         dksig_header['title'] = 'DARK SIGNAL MAP'
         dksig_header.update(CDP_header)
-            
+
         dksig_cdp = cdp.Json_CDP(rootname=self.outcdps['DK_SIGNAL'],
                               path=self.cdpspath)
         dksig_cdp.ingest_inputs(data=DKSIGMAP,
                              header = dksig_header,
                              meta=dict(units='ADU'))
         dksig_cdp.savehardcopy()
-        
+
         figkey1 = 'DK_SIGNAL_MAP'
         figname1 = self.figs[figkey1]
-        
+
         self.plot_SimpleMAP(DKSIGMAP, **dict(
                 suptitle="DARK01: 'DARK' SIGNAL [ADU]",
                 ColorbarText='ADU',
@@ -536,7 +536,7 @@ class MetaDark(MetaCal):
                     pointcorekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(
                         linestyle='', marker='.', color=jcolor, ms=0.8)
 
-        
+
         for proftype in proftypes:
 
             XY_profs = self._get_XYdict_PROFS(proftype=proftype)
@@ -571,7 +571,7 @@ class MetaDark(MetaCal):
                 ' different block (each with 3x4 quadrants).'
 
             if self.report is not None:
-                
+
                 self.addFigure2Report(self.figs[figkey4], 
                     figkey=figkey4, 
                     caption= captemp,

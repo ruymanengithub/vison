@@ -127,31 +127,31 @@ FWHMy_v_flu_dict = dict(
 
 def gt_PTC_curves_dict(test, BFEcorr='no'):
 
-  nicetest = st.replace(test, '_', '\_')
+    nicetest = st.replace(test, '_', '\_')
 
-  if BFEcorr=='no':
-    BFEtag = 'wBFE'
-    BFEcap = 'BFE left in'
-  elif BFEcorr == 'fludep':
-    BFEtag = 'noBFE'
-    BFEcap = 'BFE removed'
-  elif BFEcorr == 'flufix':
-    BFEtag = 'noBFEfixflu'
-    BFEcap = 'BFE removed, mid-fluence Axij'
+    if BFEcorr=='no':
+        BFEtag = 'wBFE'
+        BFEcap = 'BFE left in'
+    elif BFEcorr == 'fludep':
+        BFEtag = 'noBFE'
+        BFEcap = 'BFE removed'
+    elif BFEcorr == 'flufix':
+        BFEtag = 'noBFEfixflu'
+        BFEcap = 'BFE removed, mid-fluence Axij'
 
-  
-  return dict(
-      figname='%s_PTC_curves_%s.png' % (test,BFEtag),
-      caption='%s: PTC curves, %s. Theoretical line has a fixed gain of 3.5.' % (nicetest,BFEcap),
-      meta=dict(doLegend=True,
-              ylabel='VAR',
-              xlabel='MED',
-              xlim=[0., 2**16],
-              ylim=[0., 2.**16 / 3.],
-              suptitle='%s: PTC Curves.' % nicetest,
-              corekwargs=dict(data=dict(marker='.', linestyle='', color='b'),
-                      theo=dict(marker='', linestyle='-', color='r'))
-        ))
+
+    return dict(
+        figname='%s_PTC_curves_%s.png' % (test,BFEtag),
+        caption='%s: PTC curves, %s. Theoretical line has a fixed gain of 3.5.' % (nicetest,BFEcap),
+        meta=dict(doLegend=True,
+                ylabel='VAR',
+                xlabel='MED',
+                xlim=[0., 2**16],
+                ylim=[0., 2.**16 / 3.],
+                suptitle='%s: PTC Curves.' % nicetest,
+                corekwargs=dict(data=dict(marker='.', linestyle='', color='b'),
+                        theo=dict(marker='', linestyle='-', color='r'))
+          ))
 
 
 def gt_BF01figs(test):

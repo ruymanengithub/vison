@@ -303,7 +303,7 @@ class MetaPersist(MetaCal):
         self.figs['PERSIST_curves'] = os.path.join(self.figspath,
                         'PERSIST_curves.png')
 
-    
+
     def _get_XYdict_PER(self):
         """ """
 
@@ -387,15 +387,15 @@ class MetaPersist(MetaCal):
 
         return outdict
 
-    
+
     def dump_aggregated_results(self):
         """ """
-        
+
 
         if self.report is not None:
             self.report.add_Section(keyword='dump', 
                 Title='Aggregated Results', level=0)
-            
+
             self.add_DataAlbaran2Report()
 
         function, module = utils.get_function_module()

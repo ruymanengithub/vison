@@ -61,7 +61,7 @@ class CHINJ(fpatask.FpaTask):
         self.inputs['subpaths'] = dict(figs='figs',
                                        products='products')
 
-        
+
     def set_inpdefaults(self, **kwargs):
         self.inpdefaults = self.inputsclass(preprocessing=dict(
                                             offsetkwargs=dict(
@@ -77,15 +77,15 @@ class CHINJ(fpatask.FpaTask):
         """ """
 
         # REFERENCE OFFSETS
-        
+
         refoffkey, offreg = ('offsets_fwd_cold','ove')
 
         refOFF_incdp = cdpmod.Json_CDP()
         refOFF_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refoffkey])
-        
+
         def _get_ref_OFFs_MAP(inData, Ckey, Q):
             return inData[Ckey][Q][offreg]
-        
+
         RefOFFsMap = self.get_FPAMAP(refOFF_incdp.data.copy(),
                                         extractor=_get_ref_OFFs_MAP)
 
@@ -96,10 +96,10 @@ class CHINJ(fpatask.FpaTask):
 
         refINJ_incdp = cdpmod.Json_CDP()
         refINJ_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references']['injection_levels'])
-        
+
         def _get_ref_INJs_MAP(inData, Ckey, Q):
             return inData[Ckey][Q]
-        
+
         RefINJsMap = self.get_FPAMAP(refINJ_incdp.data.copy(),
                                         extractor=_get_ref_INJs_MAP)
 
@@ -129,7 +129,7 @@ class CHINJ(fpatask.FpaTask):
             non = self.inputs['non']
             noff = self.inputs['noff']
             nrep = (vend - vstart) / (non + noff) + 1
-            
+
             pattern = (non, noff, nrep)
 
             if not debug:
@@ -308,7 +308,7 @@ class CHINJ(fpatask.FpaTask):
 
                 PROFS['x'][Q].append(_x)
                 PROFS['y'][Q].append(_y)
-                
+
 
             return PROFS
 
@@ -327,12 +327,12 @@ class CHINJ(fpatask.FpaTask):
         XYdict_PROFS['labelkeys'] = Quads
 
         return XYdict_PROFS
- 
+
 
 
     def meta_analysis(self):
         """ """
-        
+
         if self.report is not None:
             self.report.add_Section(keyword='meta', Title='Meta-Analysis', level=0)
 
@@ -349,7 +349,7 @@ class CHINJ(fpatask.FpaTask):
 
         DiffInjMap = self.get_FPAMAP((INJsMap,RefINJsMap),
                                         extractor=_get_Diff_Inj_MAP)
-        
+
         self.figdict['DIFF_INJMAP'][1]['data'] = DiffInjMap
         self.figdict['DIFF_INJMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
 
@@ -374,7 +374,7 @@ class CHINJ(fpatask.FpaTask):
                                dobuilddata=False) 
 
 
- 
+
     def appendix(self):
         """Adds Appendices to Report."""
 
@@ -383,28 +383,28 @@ class CHINJ(fpatask.FpaTask):
 
 
         # TABLE: reference values of OFFSETS
-        
+
         def _getRefOffs(self, Ckey, Q):
             return self.dd.products['REF_OFFs'][Ckey][Q]
-        
+
         cdpdictoff = dict(
             caption = 'Reference OFFSETS [ADU] (GRCALCAMP).',
             valformat = '%.1f')
-        
+
         self.add_StandardQuadsTable(extractor=_getRefOffs,
                                     cdp=None,
                                     cdpdict=cdpdictoff)
 
 
         # TABLE: reference values of INJECTION
-        
+
         def _getRefINJs(self, Ckey, Q):
             return self.dd.products['REF_INJs'][Ckey][Q]
-        
+
         cdpdictinj = dict(
             caption = 'Reference charge injection levels [ADU] (GRCALCAMP).',
             valformat = '%.1f')
-        
+
         self.add_StandardQuadsTable(extractor=_getRefINJs,
                                     cdp=None,
                                     cdpdict=cdpdictinj)

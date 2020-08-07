@@ -530,7 +530,7 @@ def wrap_fitNL_SingleFilter(fluences, variances, exptimes, times=np.array([]),
     #ixboo_bgd = col_numbers == 1
     # ixboo_stab = (col_numbers % 2 == 0) & (col_numbers > 1)  # EVEN
     # ixboo_fluences = (col_numbers % 2 != 0)  & (col_numbers > 1)# ODD
-    
+
     if subBgd:
         bgd = np.nanmean(fluences[ixboo_bgd, :], axis=0)
         bgd = np.repeat(bgd.reshape(1, Nsecs), NObsIDs, axis=0).copy()

@@ -36,7 +36,7 @@ from vison.support import excel
 
 def f_write_script(struct, filename, outpath, elvis):
     """ 
-    
+
     Function that writes the test structure (as a dictionary) to an
     .xlsx file.
 

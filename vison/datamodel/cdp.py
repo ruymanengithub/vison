@@ -38,7 +38,7 @@ def loadCDPfromPickle(pickf):
 
 def wraptextable(tex, ncols=1, caption='', fitwidth=False, tiny=False, longtable=False):
     """Auxiliary function to Tables_CDP class"""
-    
+
     tex = st.split(tex, '\n')
 
     if fitwidth:
@@ -265,8 +265,8 @@ class FitsTables_CDP(CDP):
         self.hdulist = fts.HDUList()
         self.hdulist.append(fts.PrimaryHDU())
         self.hdulist.append(fts.TableHDU(name='META'))
-    
-        
+
+
     def fill_Header(self):
         """ """
         self.hdulist[0].header.update(self.header)
@@ -289,12 +289,12 @@ class FitsTables_CDP(CDP):
 
             else:
                 kformat = self.formatsdict[dtype]
-            
+
             columns.append(fts.Column(name=k,
                 format=kformat,
                 array=dd[k].copy()))
             if kformat=='A':stop()
-        
+
         self.hdulist.append(fts.BinTableHDU.from_columns(columns,
             name=sheet))
 
@@ -302,14 +302,14 @@ class FitsTables_CDP(CDP):
         """ """
         for sheet in self.data.keys():
             self.fill_Table(sheet)
-    
+
     def init_HL_and_fillAll(self, header_title=''):
-        
+
         self.init_HDUList()
         self.fill_Header()
         self.fill_Meta()
         self.fill_allTables()
-        
+
 
     def savehardcopy(self, filef=''):
         """ """
@@ -385,14 +385,14 @@ class LE1_CDP(CDP):
             header = OrderedDict()
 
         self.header.update(header)
-        
+
         self.fpaobj.fillval=fillval
         self.fpaobj.initialise_as_blank()
 
         self.fpaobj.set_extension(iext=0, data=None, header=None, headerdict=self.header, label=None)
 
         # Get the CCDs from data and fill up self.fpaobj
-        
+
         NCOLS_FPA = self.fpaobj.fpamodel.NCOLS
         NROWS_FPA = self.fpaobj.fpamodel.NSLICES
 
@@ -418,11 +418,11 @@ class LE1_CDP(CDP):
 
 class Json_CDP(CDP):
     """Generic Json Object CDP."""
-    
+
     def __init__(self,*args,**kwargs):
         """ """
         super(Json_CDP, self).__init__(*args, **kwargs)
-        
+
         self.data = OrderedDict()
 
     def ingest_inputs(self, data, meta=None, header=None):
@@ -435,33 +435,33 @@ class Json_CDP(CDP):
         self.header.update(header)
         self.meta.update(meta)
         self.data.update(data)
-        
-        
+
+
     def savehardcopy(self, filef=''):
         """ """
         if filef == '':
             filef = os.path.join(self.path, self.rootname)
         if os.path.exists(filef):
             os.system('rm %s' % filef)
-        
+
         outdict = OrderedDict()
         outdict['header'] = self.header.copy()
         outdict['meta'] = self.meta.copy()
         outdict['data'] = self.data.copy()
-        
+
         vjson.save_jsonfile(outdict, filef)
-    
+
     def loadhardcopy(self, filef=''):
         """ """
         if filef == '':
             filef = os.path.join(self.path, self.rootname)
-            
+
         outdict = vjson.load_jsonfile(filef, useyaml=True)
-        
+
         self.header = outdict['header'].copy()
         self.meta = outdict['meta'].copy()
         self.data = outdict['data'].copy()
-        
-        
-        
-        
+
+
+
+

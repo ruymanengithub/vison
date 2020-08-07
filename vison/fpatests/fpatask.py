@@ -210,7 +210,7 @@ class FpaTask(task.Task):
             # Initialising Report Object
 
             if todo_flags['report']:
-                
+
                 self.report = Report(TestName=testkey, Model=self.Model,
                                      Reference=self.TestReference,
                                      doDraft = self.inputs['doDraftReport'])
@@ -307,7 +307,7 @@ class FpaTask(task.Task):
         OBSID_lims = self.inputs['OBSID_lims']
         #structure = self.inputs['structure']
         explogf = self.inputs['explogf']
-        
+
         explog = pilib.loadexplogs(explogf, elvis=self.elvis, addpedigree=True,
                                    datapath=datapath)
 
@@ -536,7 +536,7 @@ class FpaTask(task.Task):
 
     def add_StandardQuadsTable(self, extractor, cdp=None, cdpdict=None):
         """ """
-        
+
         defcdpdict = dict(TBkey = 'TB',
             meta = dict(),
             CDP_header = dict(),
@@ -548,9 +548,9 @@ class FpaTask(task.Task):
         if cdpdict is not None:
 
             assert isinstance(cdpdict, dict)
-            
+
             defcdpdict.update(cdpdict)
-        
+
         TBkey = defcdpdict['TBkey']
         meta = defcdpdict['meta'].copy()
         CDP_header = defcdpdict['CDP_header'].copy()
@@ -558,7 +558,7 @@ class FpaTask(task.Task):
         CDP_KEY = defcdpdict['CDP_KEY']
         valformat = defcdpdict['valformat']
         caption = defcdpdict['caption']
-        
+
 
         NCCDs = len(self.CCDs)
         NBlocks = len(self.fpa.flight_blocks)

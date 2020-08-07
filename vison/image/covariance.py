@@ -38,7 +38,7 @@ def get_model2d(img, pdegree=5, doFilter=False, doBin=True,
     return regmodel
 
 def fclipsig(img, clipsigma=None):
-    
+
     if clipsigma is not None:
         return stats.sigmaclip(img, clipsigma, clipsigma).clipped
     else:
@@ -85,7 +85,7 @@ def f_get_corrmap(sq1, sq2, N, submodel=False, estimator='median', clipsigma=4.,
         festimator = np.nanmedian
     elif estimator == 'mean':
         festimator = np.nanmean
-    
+
 
     for i in range(N):
         for j in range(N):
@@ -131,7 +131,7 @@ def f_get_corrmap_v2(sq1, sq2, N, submodel=False, estimator='median', clipsigma=
 
     NAXIS1 = difimg.shape[0]
     NAXIS2 = difimg.shape[1]
-    
+
     ixnan = np.where(difimg.mask==True)
     msksq1 = sq1.data.copy()
     msksq1[ixnan] = np.nan
@@ -158,7 +158,7 @@ def f_get_corrmap_v2(sq1, sq2, N, submodel=False, estimator='median', clipsigma=
         festimator = np.nanmedian
     elif estimator == 'mean':
         festimator = np.nanmean
-    
+
     difimg0 = mskdifimg[x2d, y2d].copy()
     difimg0 -= np.nanmean(difimg0)
 
@@ -176,7 +176,7 @@ def f_get_corrmap_v2(sq1, sq2, N, submodel=False, estimator='median', clipsigma=
 
     if debug:
         stop()
-    
+
     return corrmap, mu, vardif
 
 
@@ -213,7 +213,7 @@ def f_get_corrmap_tests(sq1, sq2, N, submodel=False, estimator='median', clipsig
     mu = np.mean([flu1,flu2])
 
     difimg = ssq1 * mu/flu1 - ssq2 * (mu/flu2)
-    
+
     NAXIS1 = difimg.shape[0]
     NAXIS2 = difimg.shape[1]
 
@@ -240,7 +240,7 @@ def f_get_corrmap_tests(sq1, sq2, N, submodel=False, estimator='median', clipsig
         festimator = np.nanmedian
     elif estimator == 'mean':
         festimator = np.nanmean
-    
+
     difimg0 = mskdifimg[x2d, y2d].copy()
     difimg0 -= np.nanmean(difimg0)
 
@@ -276,7 +276,7 @@ def get_sigmaclipcorr(vardif, clipsigma, estimator, dims=None):
             loc=0.0, scale=vardif**0.5, 
             size=dims)
 
-    
+
     QDiffnoise -= np.nanmean(QDiffnoise)
 
     clipvar = festimator(fclipsig(QDiffnoise * QDiffnoise, 
@@ -366,7 +366,7 @@ def get_cov_maps(ccdobjList, Npix=4, vstart=0, vend=2066,
 
                         if doBiasCorr:
                             corrmap /= corrclip
-                        
+
                         corrmapv[Q][:, :, iP] = corrmap.copy()
                         muv[Q][iP] = mu
                         varv[Q][iP] = vardif / 2.

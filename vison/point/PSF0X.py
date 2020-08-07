@@ -345,7 +345,7 @@ class PSF0X(PT.PointTask):
 
         for iCCD,CCDk in enumerate(CCDs):
             for k, ulabel in enumerate(ulabels):
-                
+
                 jj = np.where((lock_tb.CCD==iCCD+1) & (lock_tb.LABEL==k))[0][0]
 
                 if lock_tb.NMATCH[jj] < enough_stars:
@@ -403,7 +403,7 @@ class PSF0X(PT.PointTask):
 
         bypass = False
         if not bypass: #TEST
-        
+
             super(PSF0X, self).prepare_images(
                 doExtract=True, 
                 doBadPixels=True,
@@ -411,7 +411,7 @@ class PSF0X(PT.PointTask):
                 doOffset=True, 
                 doBias=False, 
                 doFF=True)
-        
+
         dIndices = copy.deepcopy(self.dd.indices)
 
         CCDs = dIndices.get_vals('CCD')
@@ -444,7 +444,7 @@ class PSF0X(PT.PointTask):
             for jCCD, CCDk in enumerate(CCDs):
                 psCCDcoodicts[CCDk] = OrderedDict()
                 for ilabel, label in enumerate(stlabels):
-                    
+
                     psCCDcoodicts[CCDk][label] = strackers[CCDk][label].get_allCCDcoos(
                         nested=True)
 
@@ -602,7 +602,7 @@ class PSF0X(PT.PointTask):
                         spotspath, '%s.pick' % self.dd.mx['spots_name'][iObs, jCCD])
 
                     spotsIN_array = files.cPickleRead(fullINspots_name)['spots']
-                    
+
 
                     # Process individual "spots"
 
@@ -929,7 +929,7 @@ class PSF0X(PT.PointTask):
         Analyzes the relation between detector PSF and fluence.
 
         """
-        
+
         if self.report is not None:
             self.report.add_Section(
                 keyword='meta', Title='Meta Analysis: Shapes', level=0)
@@ -937,7 +937,7 @@ class PSF0X(PT.PointTask):
 
         SpotsPoster = self._build_SpotsPoster(spotscol='spots_name')
         SpotsPosterNOBFE = self._build_SpotsPoster(spotscol='spots_name_nobfe')
-        
+
         stop()
 
 

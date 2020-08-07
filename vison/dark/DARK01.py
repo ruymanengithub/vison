@@ -346,7 +346,7 @@ class DARK01(DarkTask):
                         profs1D2plot['ver'][CCDk][Q], ver1Dprof)
 
                     # Number of Hot Pixels
-                    
+
                     N_HOT = DKMSK_cdp.ccdobj.get_stats(Q,sector='img',statkeys=['sum'],
                         ignore_pover=True,extension=-1)[0]
 
@@ -386,7 +386,7 @@ class DARK01(DarkTask):
             normfunction = False
 
         self.figdict['D01meta_MasterDark_2D'][1]['meta']['corekwargs']['norm'] = normfunction
-        
+
         if self.report is not None:
             self.addFigures_ST(figkeys=['D01meta_MasterDark_2D'],
                                dobuilddata=False)

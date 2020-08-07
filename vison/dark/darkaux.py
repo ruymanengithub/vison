@@ -47,7 +47,7 @@ def get_DarkDefectsMask_CDP(
 
         darkccdobj.sub_bias(bgdmodel, extension=extension)
 
-    
+
     darkdata = darkccdobj.extensions[extension].data.copy()
     mask = cosmetics.get_Thresholding_DefectsMask(darkdata, thresholds)
     mask = cosmetics.mask_badcolumns(mask,colthreshold=200)
@@ -120,7 +120,7 @@ def produce_MasterDark(outfits, infitsList=[], ccdpickList=[], mask=None, settin
 
     if mask is not None and len(mask.shape) > 0:
         mdk.get_mask(mask)
-    
+
     mdk.writeto(outfits, clobber=True, unsigned16bit=False)
 
 

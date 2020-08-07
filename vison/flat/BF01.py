@@ -85,7 +85,7 @@ def process_one_fluence_covmaps(q, dd, dpath, CCDs, jCCD, ku, ulabels,
     print(('%s: column %i/%i; %i OBSIDs' % (CCDs[jCCD], ku + 1, len(ulabels), len(ccdobjNamesList))))
 
     ccdobjList = [cPickleRead(item) for item in ccdobjNamesList]
-    
+
     icovdict = covlib.get_cov_maps(
         ccdobjList, Npix=Npix, vstart=vstart, vend=vend, clipsigma=clipsigma,
         covfunc = covfunc, doBiasCorr=doBiasCorr,central=central,
@@ -104,7 +104,7 @@ def correct_BFE_one_image(q, dd, inputs, iObs, nObs, CCDs, Quads, picklespath, A
 
         inccdobj_name = '%s.pick' % dd.mx['ccdobj_name'][iObs, jCCD]
         full_inccdobj_name = os.path.join(picklespath, inccdobj_name)
-                              
+
 
         print(('Test %s, OBS %i/%i: correcting BFE in %s...' % (
             inputs['test'], iObs + 1, nObs, inccdobj_name)))
@@ -136,7 +136,7 @@ def correct_BFE_one_image(q, dd, inputs, iObs, nObs, CCDs, Quads, picklespath, A
                 Qimg = ccdobj.get_quad(Q, canonical=True, extension=-1)
                 Qimg = G15.correct_estatic(Qimg, _Asol)
                 ccdobj.set_quad(Qimg, Q, canonical=True, extension=-1)
-            
+
         if hasallAsols:
             cPickleDumpDictionary(ccdobj, fullccdobj_bfe_name)
             q.put([iObs, jCCD, ccdobj_bfe_name])
@@ -763,7 +763,7 @@ class BF01(PTC0X):
     def f_correct_BFE_G15(self, ccdobjname, fixA=False):
         """Applies BFE solutions from G+15 to images, to later test effectivity 
         through PTC."""
-        
+
 
         # Initialize new columns
 
@@ -789,7 +789,7 @@ class BF01(PTC0X):
             picklespath = self.inputs['subpaths']['ccdpickles']
 
             if fixA:
-                
+
                 fluences = self.dd.mx['flu_med_img'].array.mean(axis=(1,2))
                 minflu = np.nanmin(fluences)
                 maxflu = np.nanmax(fluences)
@@ -815,14 +815,14 @@ class BF01(PTC0X):
             for iObs in range(nObs):
                 arglist.append([queue, self.dd, self.inputs,
                                 iObs, nObs, CCDs, Quads, picklespath, Asol])
-            
+
             #correct_BFE_one_image(*arglist[0]) # TEST
             #nobfe = 'results_atCALDATA/DTEST/BF01_730/ccdpickles/EUC_31074_300719D121603T_ROE1_CCD1_proc_bfe.pick'
             #wbfe = 'results_atCALDATA/DTEST/BF01_730/ccdpickles/EUC_31074_300719D121603T_ROE1_CCD1_proc.pick'
             #ccdobj_nobfe = cPickleRead(nobfe)
             #ccdobj_wbfe = cPickleRead(wbfe)
             #arglist = [arglist[0]]
-            
+
 
             pool = mp.Pool(processes=self.processes)
 
@@ -838,7 +838,7 @@ class BF01(PTC0X):
             for reply in replies:
                 iObs, jCCD, ccdobj_name = reply
                 self.dd.mx[ccdobjname][iObs, jCCD] = ccdobj_name
-            
+
         return None
 
     def correct_BFE_G15(self):
@@ -863,7 +863,7 @@ class BF01(PTC0X):
                 keyword='extract', Title='PTC Extraction', level=0)
             self.report.add_Text('Segmenting on %i x %i windows...' % (wpx, hpx))
 
-        
+
         medcol = 'sec_med'
         varcol = 'sec_var'
         ccdobjcol = 'ccdobj_name'
@@ -878,7 +878,7 @@ class BF01(PTC0X):
 
         self.f_extract_PTC(ccdobjcol_nobfe, medcol_nobfe, varcol_nobfe)
 
-        
+
         medcol_nobfealt = 'sec_med_noBFEalt'
         varcol_nobfealt = 'sec_var_noBFEalt'
         ccdobjcol_nobfealt = 'ccdobj_bfe_fixA_name'
@@ -1029,7 +1029,7 @@ class BF01(PTC0X):
             curves_cdp = OrderedDict(BFE=OrderedDict(labelkeys=labelkeysPTC),
                 NOBFE=OrderedDict(labelkeys=labelkeysPTC),
                 NOBFEALT=OrderedDict(labelkeys=labelkeysPTC))
-            
+
             PTCkeys = ['BFE','NOBFE','NOBFEALT']
 
             for key in PTCkeys:
@@ -1067,7 +1067,7 @@ class BF01(PTC0X):
                         curves_cdp[key][CCDk][Q]['y']['theo'] = med.copy()/_gain
 
             for key in PTCkeys:
-                
+
                 fdict_PTC = self.figdict['BF01_PTC_%s' % key][1]
                 fdict_PTC['data'] = curves_cdp[key].copy()
 

@@ -65,7 +65,7 @@ class DARK(fpatask.FpaTask):
                 allgains = files.cPickleRead(self.inputs['inCDPs']['gain'])
 
                 self.incdps['GAIN'] = OrderedDict()
-                
+
                 for block in self.fpa.flight_blocks:
                     self.incdps['GAIN'][block] = allgains[block]['PTC01'].copy()
 
@@ -85,17 +85,17 @@ class DARK(fpatask.FpaTask):
         """ """
 
         # Load Reference Offsets
-        
+
         refoffkey, offreg = ('offsets_fwd_cold','ove')
 
         refOFF_incdp = cdpmod.Json_CDP()
         refOFF_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refoffkey])
-        
+
 
         def _get_ref_OFFs_MAP(inData, Ckey, Q):
             return inData[Ckey][Q][offreg]
-        
-        
+
+
         RefOFFsMap = self.get_FPAMAP(refOFF_incdp.data.copy(),
                                         extractor=_get_ref_OFFs_MAP)
 
@@ -148,7 +148,7 @@ class DARK(fpatask.FpaTask):
                     _ver1Dprof = kccdobj.get_1Dprofile(
                                 Q=Q, orient='ver', area=reg, stacker='mean', 
                                 vstart=vstart, vend=vend)
-                    
+
                     vQdata = _ver1Dprof.data.copy()
                     vx = vQdata['x'].copy()
                     vy = vQdata['y'].copy()
@@ -181,7 +181,7 @@ class DARK(fpatask.FpaTask):
                     self.dd.products['STD_%s' % reg.upper()][CCDID][Q] = stats[1]
 
                 # DARK Measurement: PENDING
-                
+
                 dark_meas = []
 
                 for reg in ['img','ove']:
@@ -286,7 +286,7 @@ class DARK(fpatask.FpaTask):
             for Q in ccdobj.Quads:
                 ccdobj.sub_offset(Q, **kwargs)
             return ccdobj
-        
+
         suboffkwargs = dict(method='row', scan='ove', trimscan=[5, 5],
                    ignore_pover=True, extension=-1)
 
@@ -336,7 +336,7 @@ class DARK(fpatask.FpaTask):
 
     def _get_XYdict_VPROFS(self):
         """ """
-        
+
         data = dict(pre=self.dd.products['profiles_V_1D_pre'],
                     img=self.dd.products['profiles_V_1D_img'],
                     ove=self.dd.products['profiles_V_1D_ove'])
@@ -358,7 +358,7 @@ class DARK(fpatask.FpaTask):
                 cenY = []
 
                 for reg in regions:
-                
+
                     _x = data[reg][Ckey][Q]['x'].copy()
                     _y = data[reg][Ckey][Q]['y'].copy()
                     VPROFS['x'][reg].append(_x)
@@ -398,7 +398,7 @@ class DARK(fpatask.FpaTask):
 
         def assigner(HPROFS, data, Ckey):
 
-            
+
 
             for Q in self.Quads:
 
@@ -406,7 +406,7 @@ class DARK(fpatask.FpaTask):
                 _y = data[Ckey][Q]['y'].copy()
 
                 _y -= np.nanmean(_y[-29+5:-5+1]) # subtract ove-scan offset
-                
+
                 _ypre = _y[0:51+20]
                 _yove = _y[-(29+20):]
 
@@ -415,7 +415,7 @@ class DARK(fpatask.FpaTask):
 
                 HPROFS['x']['ove'].append(np.arange(len(_yove))+len(_ypre)+xgap)
                 HPROFS['y']['ove'].append(_yove)
-                
+
 
             return HPROFS
 
@@ -457,7 +457,7 @@ class DARK(fpatask.FpaTask):
         maxval = np.percentile(HistosDict['y'],95)
 
         bin_edges = np.linspace(minval,maxval,20)
-        
+
         HistosDict['x'] = bin_edges
 
         return HistosDict
@@ -465,7 +465,7 @@ class DARK(fpatask.FpaTask):
 
     def meta_analysis(self):
         """ """
-        
+
         if self.report is not None:
             self.report.add_Section(keyword='meta', Title='Meta-Analysis', level=0)
 
@@ -536,7 +536,7 @@ class DARK(fpatask.FpaTask):
 
         DKMap = self.get_FPAMAP(self.dd.products['DARK'],
                                         extractor=_get_FirstValue_MAP)
-        
+
         self.figdict['DKMAP'][1]['data'] = DKMap
         self.figdict['DKMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
 
@@ -555,15 +555,15 @@ class DARK(fpatask.FpaTask):
             self.report.add_Section(keyword='appendix', Title='Appendix', level=0)
 
         # TABLE: reference values of OFFSETS
-        
+
         def _getRefOffs(self, Ckey, Q):
             return self.dd.products['REF_OFFs'][Ckey][Q]
-        
+
         cdpdictoff = dict(
             caption = 'Reference OFFSETS [ADU] (GRCALCAMP).',
             valformat = '%.1f')
-        
+
         self.add_StandardQuadsTable(extractor=_getRefOffs,
                                     cdp=None,
                                     cdpdict=cdpdictoff)
-        
+

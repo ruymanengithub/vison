@@ -111,7 +111,7 @@ def prepare_one_image(q, dd, ogse, inputs, iObs,
                 FF = FFData[CCDkey]
             ccdobj.divide_by_flatfield(FF.extensions[FF.extnames.index('FLAT')].data,
                                        extension=-1)
-            
+
 
         # cPickleDumpDictionary(dict(ccdobj=ccdobj),fullccdobj_name)
         cPickleDumpDictionary(ccdobj, fullccdobj_name)
@@ -920,7 +920,7 @@ class Task(object):
                                 doBias, BiasData,
                                 doFF, FFData])
 
-            
+
             #prepare_one_image(*arglist[0]) # TEST
             #stop()
 

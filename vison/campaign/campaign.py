@@ -42,7 +42,7 @@ def generate_test_sequence(diffvalues, toGen, elvis=context.elvis,
 
     | Now supporting test repetitions."""
     taskslist = toGen.keys()
-    
+
     test_sequence = OrderedDict()
     for taskname in taskslist:
         if not toGen[taskname]:

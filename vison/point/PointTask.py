@@ -569,7 +569,7 @@ class PointTask(Task):
         maxSTDpix = meta['maxSTDpix']
 
         # Reloading Patterns without displacement
-        
+
         self.ogse.load_startrackers(withpover=True)
 
         # CHECK COMPLIANCE of transformations against allowed changes in
@@ -652,7 +652,7 @@ class PointTask(Task):
                 self.log.info('Relocating Point Sources!')
                 if not all_ok:
                     self.log.info('Beware of some problematic locations!')
-            
+
 
     def lock_on_stars(self, iObs=0, labels=None, sexconfig=None):
         """ """

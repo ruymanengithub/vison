@@ -230,7 +230,7 @@ class MetaNL(MetaCal):
         nlcdpkey = '%s_%s_%s_%i' % (testname, block, session, jrep + 1)
 
         for iCCD, CCDk in enumerate(CCDkeys):
-            
+
 
             for kQ, Q in enumerate(self.Quads):
 
@@ -547,7 +547,7 @@ class MetaNL(MetaCal):
             qNP = len(_nl_XY_fit['x'][_lk])
             if qNP>bfNPs:
                 bfNPs = qNP
-        
+
         for _lk in bflkeys:
 
             xlk = 'X_%s' % _lk
@@ -584,7 +584,7 @@ class MetaNL(MetaCal):
         if self.report is not None:
             self.report.add_Section(keyword='dump',\
             Title='Aggregated Results', level=0)
-            
+
             self.add_DataAlbaran2Report()
 
         function, module = utils.get_function_module()

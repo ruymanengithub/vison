@@ -172,7 +172,7 @@ class MetaCosmetics(MetaCal):
             img = ccdobj.extensions[-1].data.T.copy()
 
             flipimg = self.fpa.flip_img(img, flip)
-            
+
             y, x = np.where(flipimg > 0)
 
             if debug:
@@ -392,12 +392,12 @@ class MetaCosmetics(MetaCal):
 
     def dump_aggregated_results(self):
         """ """
-        
+
 
         if self.report is not None:
             self.report.add_Section(keyword='dump', 
                 Title='Aggregated Results', level=0)
-            
+
             self.add_DataAlbaran2Report()
 
         skip = True
@@ -529,4 +529,4 @@ class MetaCosmetics(MetaCal):
                                 Matrix = NBADCOLSMAP,
                                 cdpdict = nbadcols_cdpdict)
 
-        
+

@@ -36,7 +36,7 @@ def load_jsonfile(jsonfile, useyaml=False):
 
 def dumps_to_json(pydict):
     """ """
-    
+
     return json.dumps(pydict, indent=4)
 
 

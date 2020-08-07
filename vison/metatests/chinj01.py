@@ -223,7 +223,7 @@ class MetaChinj01(MetaCal):
         metacdp = files.cPickleRead(metacdp_pick)
         meta = metacdp['data']['ANALYSIS']  # this is a pandas DataFrame
 
-        
+
         tmp_v_CQ = np.zeros((1, NCCDs, NQuads))
 
         bgd_adu_v = tmp_v_CQ.copy()
@@ -260,7 +260,7 @@ class MetaChinj01(MetaCal):
         self.products['VERPROFILES'][vprofkey] = verprofs.copy()
 
         vprofskeys_v = np.zeros((1),dtype='S50')
-        
+
         vprofskeys_v[0] = vprofkey
 
         sidd.addColumn(vprofskeys_v, 'VERPROFS_KEY', IndexS)
@@ -274,7 +274,7 @@ class MetaChinj01(MetaCal):
         self.products['HORPROFILES'][hprofkey] = horprofs.copy()
 
         hprofskeys_v = np.zeros((1),dtype='S50')
-        
+
         hprofskeys_v[0] = hprofkey
 
         sidd.addColumn(hprofskeys_v, 'HORPROFS_KEY', IndexS)
@@ -482,7 +482,7 @@ class MetaChinj01(MetaCal):
             prof_key = PT[profcol][ixsel][0]
 
             i_Prof = self.products[prodkey][prof_key].copy()
-            
+
             IG1key = 'IG1_%.2fV' % IG1
 
             for iCCD, CCD in enumerate(self.CCDs):
@@ -559,7 +559,7 @@ class MetaChinj01(MetaCal):
         prof_key = PT[profcol][ixblock][0]
 
         i_Prof = self.products[prodkey][prof_key].copy()
-            
+
         IG1key = 'IG1_%.2fV' % IG1
 
         _pcq = i_Prof['data'][CCDk][Q].copy()
@@ -585,7 +585,7 @@ class MetaChinj01(MetaCal):
             prof_key = PT[profcol][ixsel][0]
 
             i_Prof = self.products[prodkey][prof_key].copy()
-            
+
             IG1key = 'IG1_%.2fV' % IG1
 
 
@@ -670,7 +670,7 @@ class MetaChinj01(MetaCal):
         injprof_cdp.ingest_inputs(data=injprofs.copy(),
             meta=injprofs_meta.copy(),
             header=CDP_header.copy())
-        
+
         injprof_cdp.init_HL_and_fillAll()
 
         injprof_cdp.hdulist[0].header.insert(CDP_header.keys()[0],
@@ -685,7 +685,7 @@ class MetaChinj01(MetaCal):
         if self.report is not None:
             self.report.add_Section(keyword='dump', 
                 Title='Aggregated Results', level=0)
-            
+
             self.add_DataAlbaran2Report()
 
         function, module = utils.get_function_module()
@@ -736,7 +736,7 @@ class MetaChinj01(MetaCal):
         ic_header['title'] = 'Injection Curves Parameters'
         ic_header['test'] = 'CHINJ01'
         ic_header.update(CDP_header)
-        
+
         ic_meta = OrderedDict()
         ic_meta['units'] ='/2^16 ADU',
         ic_meta['model'] = 'I=b+1/(1+exp(-K(IG1-XT))) * (-A*(IG1-XN)[IG1<XN] + N)'
@@ -969,14 +969,14 @@ class MetaChinj01(MetaCal):
 
         if self.report is not None:
 
-                NUN_HOR = self.get_FPAMAP_from_PT(self.ParsedTable['CHINJ01'],
-                            extractor=self._extract_NUNHOR_fromPT)
+            NUN_HOR = self.get_FPAMAP_from_PT(self.ParsedTable['CHINJ01'],
+                        extractor=self._extract_NUNHOR_fromPT)
 
-                nun_cdpdict = dict(
-                    caption='CHINJ01: Non-Uniformity of the injection lines, rms, as percentage.',
-                    valformat='%.2f')
-                
-                ignore = self.add_StdQuadsTable2Report( 
-                                Matrix = NUN_HOR,
-                                cdpdict = nun_cdpdict)
+            nun_cdpdict = dict(
+                caption='CHINJ01: Non-Uniformity of the injection lines, rms, as percentage.',
+                valformat='%.2f')
+
+            ignore = self.add_StdQuadsTable2Report( 
+                            Matrix = NUN_HOR,
+                            cdpdict = nun_cdpdict)
 

@@ -572,7 +572,7 @@ class CCD(object):
 
         :param extension: Extension index, last is -1
         :type extension: int
-        
+
 
         :return: A 1D numpy array with the stat values for the tiles. 
 

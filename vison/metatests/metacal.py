@@ -106,7 +106,7 @@ class MetaCal(object):
 
     def init_fignames(self):
         raise NotImplementedError("Subclass must implement abstract method")
-    
+
     def init_outcdpnames(self):
         raise NotImplementedError("Subclass must implement abstract method")
 
@@ -475,12 +475,12 @@ class MetaCal(object):
                     continue
 
                 for jrep in range(Nreps):
-                    
+
                     iitem = self.inventory[block][testname][jrep]
 
                     dayfolder = os.path.split(iitem['dd'].meta['inputs']['datapath'])[-1]
                     sdayfolder = st.replace(dayfolder,'_','\\_')
-                    
+
 
                     OBSID_min = iitem['dd'].meta['data_inventory']['ObsID'].min()
                     OBSID_max = iitem['dd'].meta['data_inventory']['ObsID'].max()
@@ -494,9 +494,9 @@ class MetaCal(object):
                     albaran_dict['OBSIDS'].append(OBSID_lims)
 
         albaran_df = pd.DataFrame(albaran_dict)
-        
+
         kwargs = dict(multicolumn=True, multirow=True, longtable=True, index=False)
-        
+
         tex = albaran_df.to_latex(**kwargs)
 
         ncols = len(cols)
@@ -509,10 +509,10 @@ class MetaCal(object):
 
 
 
-    
+
     def get_ixblock(self, PT, block):
         return np.where(PT['BLOCK'].data==block)
-    
+
     def get_stat_from_FPAMAP(self, M, numpystat):
         """ """
 
@@ -600,7 +600,7 @@ class MetaCal(object):
         """ """
         plotobj = self._get_plot_gen(basepl.XYPlot)
         plotobj(self, XYdict, **kwargs)
-        
+
 
     def plot_HISTO(self, Hdict, **kwargs):
         """ """
@@ -630,14 +630,14 @@ class MetaCal(object):
         """ """
 
         assert (extractor is None) != (Matrix is None)
-        
+
         if extractor is not None:
             def _get_val(Ckey,Q):
                 return extractor(Ckey,Q)
         elif Matrix is not None:
             def _get_val(Ckey,Q):
                 return Matrix[Ckey][Q]
-        
+
 
         defcdpdict = dict(TBkey = 'TB',
             meta = dict(),
@@ -650,9 +650,9 @@ class MetaCal(object):
         if cdpdict is not None:
 
             assert isinstance(cdpdict, dict)
-            
+
             defcdpdict.update(cdpdict)
-        
+
         TBkey = defcdpdict['TBkey']
         meta = defcdpdict['meta'].copy()
         CDP_header = defcdpdict['CDP_header'].copy()
@@ -660,7 +660,7 @@ class MetaCal(object):
         CDP_KEY = defcdpdict['CDP_KEY']
         valformat = defcdpdict['valformat']
         caption = defcdpdict['caption']
-        
+
 
         NCCDs = len(self.CCDs)
         NBlocks = len(self.fpa.flight_blocks)
@@ -697,7 +697,7 @@ class MetaCal(object):
 
                 for iQ, Q in enumerate(self.Quads):
                     TB[Q][indx] = _get_val(Ckey, Q)
-        
+
         TB_ddf = OrderedDict()
         TB_ddf[TBkey] = pd.DataFrame.from_dict(TB)
 
@@ -754,7 +754,7 @@ class MetaCal(object):
 
     def FITSify_CDP_header(self, CDP_header):
         """ """
-        
+
         outCDP_header = CDP_header.copy()
 
         if 'fpa_design' in outCDP_header:
@@ -763,12 +763,12 @@ class MetaCal(object):
 
         if 'FPA' in outCDP_header:
             rawFPA = outCDP_header.pop('FPA')
-            
+
             for jY in range(self.NSLICES_FPA):
                 for iX in range(self.NCOLS_FPA):
                     Ckey = 'C_%i%i' % (jY + 1, iX + 1)
                     outCDP_header[Ckey] = rawFPA[Ckey][-1]
-                    
+
         return outCDP_header
 
 

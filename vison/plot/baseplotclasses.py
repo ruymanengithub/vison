@@ -109,7 +109,7 @@ class ShellPlot(BasicPlot):
 
 
 class XYPlot(BasicPlot):
-    
+
     def __init__(self, data, **kwargs):
 
         super(XYPlot, self).__init__(**kwargs)
@@ -136,7 +136,7 @@ class XYPlot(BasicPlot):
 
     def _ax_core_funct(self, key=''):
         """ """
-        
+
         ckwargs = self.corekwargs.copy()
 
         if key != '':
@@ -150,10 +150,10 @@ class XYPlot(BasicPlot):
             else:
                 kwargs.update(ckwargs)
             handle = self.ax.plot(xarr, yarr, **kwargs)
-            
+
             if len(handle)>1:
                 handle = [handle[-1]]
-            
+
             if self.meta['doYErrbars']:
                 eyarr = self.data['ey'][key]
                 self.ax.errorbar(xarr, yarr, yerr=eyarr, color='k', fmt='', linestyle='')
@@ -193,12 +193,12 @@ class XYPlot(BasicPlot):
             labelkeys = []
 
         if len(labelkeys) > 0:
-            
+
             for labelkey in labelkeys:
                 handle, label = self._ax_core_funct(labelkey)
                 self.handles += handle
                 self.labels.append(label)
-            
+
         else:
 
             _, _ = self._ax_core_funct()
@@ -225,7 +225,7 @@ class XYPlot(BasicPlot):
             self.ax.set_xlim(self.meta['xlim'])
 
     def plt_trimmer(self):
-        
+
         if self.meta['doLegend']:
 
             plt.figlegend(self.handles, self.labels, loc='center right')
@@ -253,7 +253,7 @@ class HistoPlot(XYPlot):
 
     def _ax_core_funct(self, key=''):
         """ """
-        
+
         ckwargs = self.corekwargs.copy()
 
         if key != '':
@@ -273,7 +273,7 @@ class HistoPlot(XYPlot):
 
             #if len(handle)>1:
             #    handle = [handle[-1]]
-            
+
             if self.meta['doYErrbars']:
                 eyarr = self.data['ey'][key]
                 self.ax.errorbar(bins, h, yerr=eyarr, color='k', fmt='', linestyle='')
@@ -283,7 +283,7 @@ class HistoPlot(XYPlot):
             kwargs = dict(weights=None, cumulative=False,
                     histtype='step', align='mid', orientation='vertical', log=False)
             kwargs.update(ckwargs)
-            
+
             self.ax.hist(h, bins=bins, **kwargs)
 
             handle, label = None, None

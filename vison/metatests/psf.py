@@ -370,7 +370,7 @@ class MetaPsf(MetaCal):
         """ """
         blocks = XTALKs['blocks']
         dd = OrderedDict(blocks=blocks)
-        
+
         for block in blocks:
 
             dd[block] = OrderedDict()
@@ -382,16 +382,16 @@ class MetaPsf(MetaCal):
                 dd[block][CCDsok] = OrderedDict()
 
                 for Qso in self.Quads:
-                    
+
                     dd[block][CCDsok][Qso] = OrderedDict()
 
                     for CCDvi in self.CCDs:
-                        
+
                         CCDvik = 'CCD%i' % CCDvi
                         dd[block][CCDsok][Qso][CCDvik]=OrderedDict()
 
                         for Qvi in self.Quads:
-                            
+
                             inval = XTALKs[block][CCDsok][Qso][CCDvik][Qvi]
 
                             if len(inval)==0:
@@ -403,7 +403,7 @@ class MetaPsf(MetaCal):
                             dd[block][CCDsok][Qso][CCDvik][Qvi]=val
 
         return dd
-    
+
     def verify_reqs(self, XTALKs):
         """ 
         for each victim channel, the maximum (dominant) coupling with any
@@ -436,7 +436,7 @@ class MetaPsf(MetaCal):
                                 sok = '%s\\_%s' % (CCDsok, Qso)
                                 vik = '%s\\_%s' % (CCDvik, Qvi)
 
-                            
+
                                 if vik not in xtalks_VI[block]:
                                     xtalks_VI[block][vik] = OrderedDict()
                                     xtalks_VI[block][vik]['xtalk'] = []
@@ -445,7 +445,7 @@ class MetaPsf(MetaCal):
                                 xtalks_VI[block][vik]['xtalk'].append(ixtalk)
                                 xtalks_VI[block][vik]['sok'].append(sok)
 
-        
+
         validation = []
         req1 = 6.E-4
         req2 = 7.6E-5
@@ -471,7 +471,7 @@ class MetaPsf(MetaCal):
                         else:
                             break
 
-        
+
         return validation
 
 
@@ -481,7 +481,7 @@ class MetaPsf(MetaCal):
 
         if self.report is not None:
             self.report.add_Section(keyword='dump', Title='Aggregated Results', level=0)
-            
+
             self.add_DataAlbaran2Report()
 
         function, module = utils.get_function_module()
@@ -567,7 +567,7 @@ class MetaPsf(MetaCal):
 
             xt_cdp.savehardcopy()
 
-            
+
 
         # XTALK: 800-optical vs. RT  (with SIGN)
 
@@ -602,7 +602,7 @@ class MetaPsf(MetaCal):
 
 
         if self.report is not None:
-            
+
             captemp2 = '%s: Cross-talk coupling factor measured using the ROE-TAB, vs. using '+\
             'optical stimulation (at 800 nm). Sign of coupling preserved.'
 
@@ -632,7 +632,7 @@ class MetaPsf(MetaCal):
         self.plot_XY(XT_RTvs800_abs, **XTABSkwargs)
 
         if self.report is not None:
-            
+
             captemp3 = '%s: Cross-talk coupling factor (in absolute value) measured '+\
             'using the ROE-TAB, vs. using optical stimulation (at 800 nm).'
 
@@ -664,7 +664,7 @@ class MetaPsf(MetaCal):
             self.plot_XY(XT_NMvs800, **XTNMvs800kwargs)
 
             if self.report is not None:
-            
+
                 captemp4 = 'Cross-talk coupling factor measured at %i nm '+\
                 'vs. 800 nm.'
 

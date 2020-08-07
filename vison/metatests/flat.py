@@ -455,13 +455,13 @@ class MetaFlat(MetaCal):
         MFstats['AVFLUADU'] = float(np.nanmean(fluadus))
         MFstats['AVFLUELE'] = float(np.nanmean(flueles))
         MFstats['AVEFLAT'] = float(np.nanmean(eflats))
-        
+
 
         return MFstats
 
 
 
-    
+
     def _get_MFccd_dict(self, testname, colkey):
         """ """
         PT = self.ParsedTable[testname]
@@ -612,7 +612,7 @@ class MetaFlat(MetaCal):
         for testname in self.testnames:
             for colkey in self.colkeys[testname]:
                 self.outcdps['MF_STATS_%s_%s' % (testname, colkey)] = \
-                 'MF_STATS_%s_%s.json' % (testname, colkey)
+                    'MF_STATS_%s_%s.json' % (testname, colkey)
 
 
 
@@ -622,20 +622,20 @@ class MetaFlat(MetaCal):
         if self.report is not None:
             self.report.add_Section(keyword='dump', 
                 Title='Aggregated Results', level=0)
-            
+
             self.add_DataAlbaran2Report()
 
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header.update(dict(function=function, module=module))
         CDP_header['DATE'] = self.get_time_tag()
-        
+
         doAll = True
         doPRNUvsWAVE = doAll
         doMF_STATS = doAll
         doMFs = doAll 
         doPRNUvsFLU = doAll
-        
+
         # PRNU vs. WAVELENGTH
 
 
@@ -665,7 +665,7 @@ class MetaFlat(MetaCal):
 
         # MASTER FLATS STATS
         # PRNU, FLUENCES, ERRORs
-        
+
         if doMF_STATS:
 
             MF_stats_sum = OrderedDict()
@@ -675,7 +675,7 @@ class MetaFlat(MetaCal):
 
 
             for testname in self.testnames:
-                
+
                 stestname = st.replace(testname, '_', '\_')
 
                 if testname == 'FLAT01':
@@ -685,7 +685,7 @@ class MetaFlat(MetaCal):
                     _test, _wave = st.split(testname, '_')
 
                 for colkey in self.colkeys[testname]:
-                    
+
                     MF_STATS_MX = self._get_MF_stats(testname, colkey)
 
 
@@ -714,13 +714,13 @@ class MetaFlat(MetaCal):
                     mfstats_cdp = cdpmod.Json_CDP(rootname=self.outcdps['MF_STATS_%s_%s' %\
                                 (testname, colkey)],
                                 path=self.cdpspath)
-                    
+
                     mfstats_cdp.ingest_inputs(data=MF_STATS_MX,
                         header=mfstats_header,
                         meta=mfstats_meta)
 
                     mfstats_cdp.savehardcopy()
-                    
+
 
 
             if self.report is not None:

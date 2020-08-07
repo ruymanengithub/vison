@@ -20,7 +20,7 @@ from vison.datamodel import cdp
 
 def get_bgd_model(ccdobj, extension=-1, margins=None, 
         reg2Dmodkwargs=None):
-    
+
     reg2Dmodkwargs_def = dict(area='img',
                         kind='poly2D', 
                         splinemethod='cubic',
@@ -93,7 +93,7 @@ def set_extrascans(mask, val=0):
             vstart=0, vend=ccdmod.NrowsCCD,
             Full=False, canonical=True,
             extension=-1)
-        
+
         Qmask = np.zeros(Qshape,dtype='int32')
 
         Qmask[prescan:prescan + Qmaskimg.shape[0],

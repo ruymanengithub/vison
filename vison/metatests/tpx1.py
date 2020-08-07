@@ -322,7 +322,7 @@ class MetaTPX1(MetaCal):
         if self.report is not None:
             self.report.add_Section(keyword='dump', 
                 Title='Aggregated Results', level=0)
-            
+
             self.add_DataAlbaran2Report()
 
         # MAP with total numbers of dipoles measured

@@ -66,7 +66,7 @@ class FPA_BIAS(fpatask.FpaTask):
                 allgains = files.cPickleRead(self.inputs['inCDPs']['gain'])
 
                 self.incdps['GAIN'] = OrderedDict()
-                
+
                 for block in self.fpa.flight_blocks:
                     self.incdps['GAIN'][block] = allgains[block]['PTC01'].copy()
 
@@ -89,7 +89,7 @@ class FPA_BIAS(fpatask.FpaTask):
 
         readmode = self.inputs['readmode']
         temperature = self.inputs['temperature']
-        
+
         testkey = '%s_%s' % (readmode.upper(),temperature.upper())
 
         lookup_OFF_refkeys = dict(
@@ -105,12 +105,12 @@ class FPA_BIAS(fpatask.FpaTask):
 
         refOFF_incdp = cdpmod.Json_CDP()
         refOFF_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refoffkey])
-        
+
 
         def _get_ref_OFFs_MAP(inData, Ckey, Q):
             return inData[Ckey][Q][offreg]
-        
-        
+
+
         RefOFFsMap = self.get_FPAMAP(refOFF_incdp.data.copy(),
                                         extractor=_get_ref_OFFs_MAP)
 
@@ -121,11 +121,11 @@ class FPA_BIAS(fpatask.FpaTask):
 
         refRON_incdp = cdpmod.Json_CDP()
         refRON_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refronkey])
-        
+
         def _get_ref_RONs_MAP(inData, Ckey, Q):
             return inData[Ckey][Q][ronreg]
-        
-        
+
+
         RefRONsMap = self.get_FPAMAP(refRON_incdp.data.copy(),
                                         extractor=_get_ref_RONs_MAP)
 
@@ -134,7 +134,7 @@ class FPA_BIAS(fpatask.FpaTask):
 
 
     def _basic_onLE1(self, **kwargs):
-    	""" """
+        """ """
 
         CCDID = kwargs['CCDID']
         LE1 = kwargs['LE1']
@@ -179,7 +179,7 @@ class FPA_BIAS(fpatask.FpaTask):
                     ver1Dprof = kccdobj.get_1Dprofile(
                                 Q=Q, orient='ver', area=reg, stacker='mean', 
                                 vstart=vstart, vend=vend)
-                    
+
                     vQdata = ver1Dprof.data.copy()
                     vx = vQdata['x'].copy()
                     vy = vQdata['y'].copy()
@@ -218,7 +218,7 @@ class FPA_BIAS(fpatask.FpaTask):
             Extract average profiles along columns
             Extract average profiles along rows 
             Extract STDs and MEDs in pre/img/ove
-            
+
         """
 
         if self.report is not None:
@@ -355,7 +355,7 @@ class FPA_BIAS(fpatask.FpaTask):
 
     def _get_XYdict_VPROFS(self):
         """ """
-        
+
         data = dict(pre=self.dd.products['profiles_V_1D_pre'],
                     img=self.dd.products['profiles_V_1D_img'],
                     ove=self.dd.products['profiles_V_1D_ove'])
@@ -377,7 +377,7 @@ class FPA_BIAS(fpatask.FpaTask):
                 cenY = []
 
                 for reg in regions:
-                
+
                     _x = data[reg][Ckey][Q]['x'].copy()
                     _y = data[reg][Ckey][Q]['y'].copy()
                     VPROFS['x'][reg].append(_x)
@@ -417,7 +417,7 @@ class FPA_BIAS(fpatask.FpaTask):
 
         def assigner(HPROFS, data, Ckey):
 
-            
+
 
             for Q in self.Quads:
 
@@ -425,7 +425,7 @@ class FPA_BIAS(fpatask.FpaTask):
                 _y = data[Ckey][Q]['y'].copy()
 
                 _y -= np.nanmean(_y[-29+5:-5+1]) # subtract ove-scan offset
-                
+
                 _ypre = _y[0:51+20]
                 _yove = _y[-(29+20):]
 
@@ -434,7 +434,7 @@ class FPA_BIAS(fpatask.FpaTask):
 
                 HPROFS['x']['ove'].append(np.arange(len(_yove))+len(_ypre)+xgap)
                 HPROFS['y']['ove'].append(_yove)
-                
+
 
             return HPROFS
 
@@ -491,7 +491,7 @@ class FPA_BIAS(fpatask.FpaTask):
             maxval = max((maxval,regmax))
 
         bin_edges = np.linspace(minval,maxval,min((20,int(maxval-minval))))
-        
+
         for reg in regions:
             HistosDict['x'][reg] = bin_edges
 
@@ -501,7 +501,7 @@ class FPA_BIAS(fpatask.FpaTask):
 
     def meta_analysis(self):
         """ """
-        
+
         if self.report is not None:
             self.report.add_Section(keyword='meta', Title='Meta-Analysis', level=0)
 
@@ -530,7 +530,7 @@ class FPA_BIAS(fpatask.FpaTask):
 
         DiffOffsetsMap = self.get_FPAMAP((OffsetsMap,RefOffsetsMap),
                                         extractor=_get_Diff_MAP)
-        
+
         self.figdict['DIFFOFFSETSMAP'][1]['data'] = DiffOffsetsMap
         self.figdict['DIFFOFFSETSMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
 
@@ -558,7 +558,7 @@ class FPA_BIAS(fpatask.FpaTask):
 
         RatioRonsMap = self.get_FPAMAP((RonsMap,RefRonsMap),
                                         extractor=_get_Ratio_MAP)
-        
+
         self.figdict['RATIORONSMAP'][1]['data'] = RatioRonsMap
         self.figdict['RATIORONSMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
 
@@ -597,7 +597,7 @@ class FPA_BIAS(fpatask.FpaTask):
             minronele = np.nanmin(RonEleList)
             maxronele = np.nanmax(RonEleList)
             Naboveronreq = len(np.where(RonEleList > 4.5)[0])
-            
+
             self.report.add_Text('Min Ron [electrons]: %.2f e-' % minronele)
             self.report.add_Text('Max Ron [electrons]: %.2f e-' % maxronele)
             self.report.add_Text('N(Ron$>$4.5 e- rms): %i' % Naboveronreq)
@@ -619,10 +619,10 @@ class FPA_BIAS(fpatask.FpaTask):
         self.figdict['VPROFS'][1]['meta']['plotter'] = self.metacal.plot_XY
 
 
-        
+
 
         # PLOTTING
-        
+
 
         if self.report is not None:
             self.addFigures_ST(figkeys=['OFFSETS_HISTO','DIFFOFFSETSMAP', 
@@ -639,30 +639,30 @@ class FPA_BIAS(fpatask.FpaTask):
 
 
         # TABLE: reference values of OFFSETS
-        
+
         def _getRefOffs(self, Ckey, Q):
             return self.dd.products['REF_OFFs'][Ckey][Q]
-        
+
         cdpdictoff = dict(
             caption = 'Reference OFFSETs [ADU] in Over-scan. (from GRCALCAMP).',
             valformat = '%.1f')
-        
+
         self.add_StandardQuadsTable(extractor=_getRefOffs,
                                     cdp=None,
                                     cdpdict=cdpdictoff)
 
 
         # TABLE: reference values of RONS
-        
-        
+
+
         def _getRefRons(self, Ckey, Q):
             return self.dd.products['REF_RONs'][Ckey][Q]
-        
+
         cdpdictron = dict(
             caption = 'Reference RONs (rms, [ADU]) (from GRCALCAMP).',
             valformat = '%.2f')
-        
+
         self.add_StandardQuadsTable(extractor=_getRefRons,
                                     cdp=None,
                                     cdpdict=cdpdictron)
-        
+
