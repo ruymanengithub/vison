@@ -676,7 +676,7 @@ class MetaBF(MetaCal):
                     ixblock = np.where(PT['BLOCK'] == block)
 
                     _bfkey = PT['BFCDP_KEY'][ixblock][0]
-                    _, session, srep = st.split(st.replace(_bfkey,'%s_' % tn,''),'_')
+                    _, session, srep = _bfkey.replace('%s_' % tn,'').split('_')
 
                     rep = int(srep)
 
@@ -902,7 +902,7 @@ class MetaBF(MetaCal):
 
             for testname in self.testnames:
 
-                stestname = st.replace(testname, '_', '\_')
+                stestname = testname.replace('_', '\_')
 
                 for dim in ['x','y']:
 
@@ -972,7 +972,7 @@ class MetaBF(MetaCal):
                         extractor=self._get_GEN_extractor_fromPT('FWHM%s_HWC' % \
                             dim.upper()))
 
-                    stestname = st.replace(testname, '_', '\_')
+                    stestname = testname.replace('_', '\_')
                     self.plot_SimpleMAP(FWHMZ_MAP, **dict(
                         suptitle='%s: FWHM-%s at HWC' % (stestname,dim.upper()),
                         figname=figname5))
@@ -993,7 +993,7 @@ class MetaBF(MetaCal):
             ELL_MAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname],
                             extractor=self._get_GEN_extractor_fromPT('ELL_HWC'))
 
-            stestname = st.replace(testname, '_', '\_')
+            stestname = testname.replace( '_', '\_')
             self.plot_SimpleMAP(ELL_MAP, **dict(
                 suptitle='%s: ellipticity at HWC' % stestname,
                 figname=figname6))

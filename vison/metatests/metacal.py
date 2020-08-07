@@ -479,7 +479,7 @@ class MetaCal(object):
                     iitem = self.inventory[block][testname][jrep]
 
                     dayfolder = os.path.split(iitem['dd'].meta['inputs']['datapath'])[-1]
-                    sdayfolder = st.replace(dayfolder,'_','\\_')
+                    sdayfolder = dayfolder.replace('_','\\_')
 
 
                     OBSID_min = iitem['dd'].meta['data_inventory']['ObsID'].min()
@@ -728,7 +728,7 @@ class MetaCal(object):
         for iQ, Q in enumerate(self.Quads):
             her_formatters.append(ff)
 
-        nicecaption = st.replace(caption, '_', '\_')
+        nicecaption = caption.replace('_', '\_')
         Ttex = cdp.get_textable(sheet=TBkey, caption=nicecaption,
                                 fitwidth=True,
                                 tiny=True,

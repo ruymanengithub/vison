@@ -627,7 +627,7 @@ class PERSIST01(Task):
             formatters = [fccd, fq, fe]
 
             caption = 'Saturation Areas in pixels for each CCD-Quadrant.'
-            nicecaption = st.replace(caption, '_', '\_')
+            nicecaption = caption.replace('_', '\_')
             Stex = sat_tb_cdp.get_textable(sheet='SATAREA',
                                            caption=nicecaption,
                                            fitwidth=True,
@@ -826,7 +826,7 @@ class PERSIST01(Task):
                                               longtable=False,
                                               formatters=formatters)
 
-            persist_tex = st.replace(persist_tex, '\\textbackslashpm', '$\pm$')
+            persist_tex = persist_tex.replace( '\\textbackslashpm', '$\pm$')
 
             captiontext = 'Best Estimate of the Persistence level in the first frame after the latent. ' +\
                 'Differences between average pixel value in saturated region of first post-saturation frame ' +\

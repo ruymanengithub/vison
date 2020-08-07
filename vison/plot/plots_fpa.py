@@ -126,7 +126,7 @@ class FpaPlot(BasicPlot):
                     _, _ = self._ax_core_funct(ax, CCdict)
 
                 if self.meta['labelCCDs']:
-                    rCkey = st.replace(Ckey, '_', '')
+                    rCkey = Ckey.replace('_', '')
                     ax.text(0.05, 0.85, rCkey, horizontalalignment='left',
                             transform=self.axs[Ckey].transAxes)
 
@@ -210,7 +210,7 @@ class FpaPlotYvsX(FpaPlot):
             xarr = Cdict['x'][key]
             yarr = Cdict['y'][key]
 
-            label = st.replace(key, '_', '\_')
+            label = key.replace( '_', '\_')
             kwargs = dict(label=label, marker='.', linestyle='')
             if key in ckwargs:
                 kwargs.update(ckwargs[key])

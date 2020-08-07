@@ -990,7 +990,7 @@ def format_date(x, pos=None):
 #     #ax1.plot(HKvals,'b')
 #     #ax1.set_xlabel(r'$Time$')
 #     ax1.set_ylabel(r'$%s$' % ylabel)
-#     ntitle = st.replace(key,'_','\_')
+#     ntitle = key.replace('_','\_')
 #     ax1.set_title(ntitle)
 #
 #     for item in [ax1.title, ax1.xaxis.label, ax1.yaxis.label]:

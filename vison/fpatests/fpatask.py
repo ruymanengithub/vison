@@ -326,26 +326,26 @@ class FpaTask(task.Task):
                 self.log.info(['_'] + checkreport['msgs'])
 
         if self.report is not None:
-            ntestkey = st.replace(testkey, '_', '\_')
+            ntestkey = testkey.replace('_', '\_')
             nchecksout = ['\\bf{%s}' % checkreport['checksout']]
-            nchecksout = [st.replace(
-                item, 'False', '$\\textcolor{red}{\\bf{False}}$') for item in nchecksout][0]
+            nchecksout = [item.replace(
+                    'False', '$\\textcolor{red}{\\bf{False}}$') for item in nchecksout][0]
             self.report.add_Text(
                 '%s acquisition consistent with expectations: %s\\newline' % (ntestkey, nchecksout))
 
             if (checkreport['failedcols']) > 0:
-                nfailedcols = st.replace(
-                    checkreport['failedcols'].__repr__(), '_', '\_')
+                nfailedcols = checkreport['failedcols'].__repr__().replace(
+                    '_', '\_')
                 self.report.add_Text('%s failed columns: %s' %
                                      (ntestkey, nfailedcols))
             if len(checkreport['failedkeys']) > 0:
-                nfailedkeys = st.replace(
-                    checkreport['failedkeys'].__repr__(), '_', '\_')
+                nfailedkeys = checkreport['failedkeys'].__repr__().replace(
+                    '_', '\_')
                 self.report.add_Text('%s failed keys: %s' %
                                      (ntestkey, nfailedkeys))
             if len(checkreport['msgs']) > 0:
                 for msg in checkreport['msgs']:
-                    nmsg = st.replace(msg, '_', '\_')
+                    nmsg = msg.replace('_', '\_')
                     self.report.add_Text(nmsg)
 
         # Adding Time Axis
@@ -628,7 +628,7 @@ class FpaTask(task.Task):
             for iQ, Q in enumerate(self.Quads):
                 her_formatters.append(ff)
 
-            nicecaption = st.replace(caption, '_', '\_')
+            nicecaption = caption.replace( '_', '\_')
             Ttex = cdp.get_textable(sheet=TBkey, caption=nicecaption,
                                     fitwidth=True,
                                     tiny=True,

@@ -143,7 +143,7 @@ class XYPlot(BasicPlot):
             xarr = self.data['x'][key]
             yarr = self.data['y'][key]
 
-            label = st.replace(key, '_', '\_')
+            label = key.replace('_', '\_')
             kwargs = dict(label=label, marker='.', linestyle='')
             if key in ckwargs:
                 kwargs.update(ckwargs[key])
@@ -260,7 +260,7 @@ class HistoPlot(XYPlot):
             bins = self.data['x'][key]
             h = self.data['y'][key]
 
-            label = st.replace(key, '_', '\_')
+            label = key.replace('_', '\_')
             kwargs = dict(label=label, weights=None, cumulative=False,
                     histtype='step', align='mid', orientation='vertical', log=False)
             if key in ckwargs:
@@ -453,7 +453,7 @@ class CCD2DPlotYvsX(CCD2DPlot):
             xarr = Qdict['x'][key]
             yarr = Qdict['y'][key]
 
-            label = st.replace(key, '_', '\_')
+            label = key.replace( '_', '\_')
             kwargs = dict(label=label, marker='.', linestyle='')
             if key in ckwargs:
                 kwargs.update(ckwargs[key])
@@ -653,7 +653,7 @@ class BeamPlotYvX(BeamPlot):
             xarr = CQdict['x'][key]
             yarr = CQdict['y'][key]
 
-            label = st.replace(key, '_', '\_')
+            label = key.replace('_', '\_')
             kwargs = dict(label=label, marker='.', linestyle='')
             if key in ckwargs:
                 kwargs.update(ckwargs[key])
@@ -701,7 +701,7 @@ class Beam1DHist(BeamPlot):
         #        hist_kwargs[mkey] = self.meta[mkey]
 
         if key != '':
-            label = st.replace(key, '_', '\_')
+            label = key.replace( '_', '\_')
             bins = CQdict['x'][key]
             h = CQdict['y'][key]
             hist_kwargs['label'] = label

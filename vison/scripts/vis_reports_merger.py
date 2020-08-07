@@ -41,7 +41,7 @@ def run_merger(infile):
         Issue = 0.0
 
     #indata = ascii.read(infile,data_start=0)
-    niceblock = st.replace(block, '_.', '\_')
+    niceblock = block.replace('_.', '\_')
     report = Report(TestName='Test Reports, %s' % niceblock, Model=programme,
                     Reference=reference, Issue=Issue)
 
@@ -56,8 +56,8 @@ def run_merger(infile):
 
         # TEMPORARY AD-HOC
         path, filename = os.path.split(ipick)
-        testname = st.replace(filename, '_Report.pick', '')
-        testname = st.replace(testname, '_', '\_')
+        testname = filename.replace('_Report.pick', '')
+        testname = testname.replace( '_', '\_')
         path = os.path.normpath(path)
         folders = path.split(os.sep)
         session = folders[1]
@@ -78,7 +78,7 @@ def run_merger_plus(infile, Issue=0.0):
     reference = indata['metadata']['reference']
 
     #indata = ascii.read(infile,data_start=0)
-    niceblock = st.replace(block, '_.', '\_')
+    niceblock = block.replace( '_.', '\_')
     report = Report(TestName='Test Reports, %s' % niceblock, Model=programme,
                     Reference=reference, Issue=Issue)
 
@@ -104,8 +104,8 @@ def run_merger_plus(infile, Issue=0.0):
 
             # TEMPORARY AD-HOC
             path, filename = os.path.split(ipick)
-            testname = st.replace(filename, '_Report.pick', '')
-            testname = st.replace(testname, '_', '\_')
+            testname = filename.replace( '_Report.pick', '')
+            testname = testname.replace('_', '\_')
             path = os.path.normpath(path)
             folders = path.split(os.sep)
             session = folders[1]

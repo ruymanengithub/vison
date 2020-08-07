@@ -232,7 +232,7 @@ class COSMETICS00(DarkTask):
                 self.dd.products[key][CCDk] = outputs[key]
 
         productsstr = self.dd.products.__str__()
-        productsstr = st.replace(productsstr, ',', '\n')
+        productsstr = productsstr.replace( ',', '\n')
 
         msg = 'Updated products:'
 
@@ -376,7 +376,7 @@ class COSMETICS00(DarkTask):
 
             caption = '%s: DEFECTS TABLE.' % \
                 (self.inputs['test'],)
-            nicecaption = st.replace(caption, '_', '\_')
+            nicecaption = caption.replace( '_', '\_')
             Ptex = def_tb_cdp.get_textable(sheet='DEFECTS',
                                            caption=nicecaption,
                                            fitwidth=True,

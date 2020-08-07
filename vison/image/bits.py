@@ -207,7 +207,7 @@ def test():
     ccdobj = ccdmod.CCD(fits)
     # Q=data['Q']
 
-    suptitle = '%s' % (st.replace(os.path.split(fits)[-1], '_', '\_'))
+    suptitle = '%s' % (os.path.split(fits)[-1].replace('_', '\_'))
     # show_histo_adus(qdata,title=title)
 
     show_histo_bits(ccdobj, suptitle=suptitle)

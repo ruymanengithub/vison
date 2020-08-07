@@ -740,7 +740,7 @@ class MetaPTC(MetaCal):
                     self.ParsedTable[testname],
                     extractor=self._extract_GAIN_fromPT)
 
-                stestname = st.replace(testname, '_', '\_')
+                stestname = testname.replace('_', '\_')
 
                 avgG = self.get_stat_from_FPAMAP(GMAP, np.nanmean)
 <<<<<<< HEAD
@@ -802,7 +802,7 @@ class MetaPTC(MetaCal):
                 BADU_MAP = self.get_FPAMAP_from_PT(
                     self.ParsedTable[testname], extractor=self._extract_BADU_fromPT)
 
-                stestname = st.replace(testname, '_', '\_')
+                stestname = testname.replace('_', '\_')
 
                 figkey2 = 'BLOOM_ADU_MAP_%s' % testname
                 figname2 = self.figs[figkey2]
@@ -842,7 +842,7 @@ class MetaPTC(MetaCal):
                 figkey3 = 'BLOOM_ELE_MAP_%s' % testname
                 figname3 = self.figs[figkey3]
 
-                stestname = st.replace(testname, '_', '\_')
+                stestname = testname.replace('_', '\_')
                 self.plot_SimpleMAP(BE_MAP, **dict(
                     suptitle='%s: BLOOM-ELECTRONS' % stestname,
                     ColorbarText='electrons',
@@ -879,7 +879,7 @@ class MetaPTC(MetaCal):
                     self.ParsedTable[testname],
                     extractor=self._extract_HER_fromPT)
 
-                stestname = st.replace(testname, '_', '\_')
+                stestname = testname.replace('_', '\_')
 
                 figkey4 = 'HER_MAP_%s' % testname
                 figname4 = self.figs[figkey4]
@@ -925,7 +925,7 @@ class MetaPTC(MetaCal):
 
                 HERSingledict = self._get_XYdict_HER(testname)
 
-                stestname = st.replace(testname, '_', '\_')
+                stestname = testname.replace('_', '\_')
 
                 figkey5 = 'HER_curves_%s' % testname
                 figname5 = self.figs[figkey5]

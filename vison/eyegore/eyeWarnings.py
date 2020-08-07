@@ -109,7 +109,8 @@ class EyeWarnings(object):
         """ """
         if self.iscritical(HKkey):
 
-            violation_key = st.replace('T%i' % violation_type, '-', 'm')
+            tvar = 'T%i' % violation_type
+            violation_key = tvar.replace('-', 'm')
             Kseveritydict = self.severitydict[HKkey]
 
             try:

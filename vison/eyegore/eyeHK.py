@@ -464,7 +464,7 @@ class HKDisplay(tk.Toplevel):
             return
 
         struct_date = time.strptime(os.path.split(
-            st.replace(self.path, '_', ''))[-1], '%d%b%y')
+            self.path.replace('_', ''))[-1], '%d%b%y')
         date_infile = time.strftime('%d-%m-%y', struct_date)
 
         self.date = date_infile

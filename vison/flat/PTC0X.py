@@ -707,7 +707,7 @@ class PTC0X(FlatTask):
                 'exceeds 5\% of the mean variance. A negative value indicates that blooming was not ' +\
                 'reached and thus a lower limit is provided.'
 
-            nicecaption = st.replace(caption, '_', '\_')
+            nicecaption = caption.replace('_', '\_')
             Gtex = gain_tb_cdp.get_textable(sheet='GAIN_TB', caption=nicecaption,
                                             fitwidth=True,
                                             tiny=True,

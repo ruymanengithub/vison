@@ -34,7 +34,7 @@ def get_CDP_lib():
 
 
 def gt_check_offsets_dict(test):
-    ntest = st.replace(test, '_', '\_')
+    ntest = test.replace('_', '\_')
     return dict(stats=['offset_pre', 'offset_ove'],
                 trendaxis='time',
                 figname='%s_offset_vs_time.png' % (test,),
@@ -46,7 +46,7 @@ def gt_check_offsets_dict(test):
 
 
 def gt_check_deltaoff_dict(test):
-    ntest = st.replace(test, '_', '\_')
+    ntest = test.replace('_', '\_')
     return dict(
         stats=[
             'deltaoff_pre', 'deltaoff_ove'], trendaxis='time', figname='%s_deltaoff_vs_time.png' %
@@ -58,7 +58,7 @@ def gt_check_deltaoff_dict(test):
 
 
 def gt_check_std_dict(test):
-    ntest = st.replace(test, '_', '\_')
+    ntest = test.replace('_', '\_')
     return dict(stats=['std_pre', 'std_ove'],
                 trendaxis='time',
                 figname='%s_std_vs_time.png' % test,
@@ -70,7 +70,7 @@ def gt_check_std_dict(test):
 
 
 def gt_check_img_flu_dict(test):
-    ntest = st.replace(test, '_', '\_')
+    ntest = test.replace('_', '\_')
     return dict(stats=['flu_med_img'],
                 figname='%s_flu_vs_time.png' % test,
                 caption='%s: Fluence vs. time.' % ntest,
@@ -81,7 +81,7 @@ def gt_check_img_flu_dict(test):
 
 
 def gt_check_img_std_dict(test):
-    ntest = st.replace(test, '_', '\_')
+    ntest = test.replace('_', '\_')
     return dict(stats=['flu_std_img'],
                 figname='%s_imgstd_vs_time.png' % test,
                 caption='%s: Image area STD vs. time.' % ntest,
@@ -92,7 +92,7 @@ def gt_check_img_std_dict(test):
 
 
 def gt_indiv_prof1Dhor_dict(test):
-    ntest = st.replace(test, '_', '\_')
+    ntest = test.replace('_', '\_')
     return dict(
         #figname='%s_profs1D_hor_allOBSIDs.png' % test,
         caption='%s: Average profiles across columns, PLACEHOLDER.' % ntest,
@@ -104,7 +104,7 @@ def gt_indiv_prof1Dhor_dict(test):
 
 
 def gt_indiv_prof1Dver_dict(test):
-    ntest = st.replace(test, '_', '\_')
+    ntest = test.replace('_', '\_')
     return dict(
         #figname='%s_profs1D_ver_allOBSIDs.png' % test,
         caption='%s: Average profiles across rows, PLACEHOLDER.' % ntest,
@@ -116,7 +116,7 @@ def gt_indiv_prof1Dver_dict(test):
 
 
 def gt_meta_MFF2D_dict(test):
-    ntest = st.replace(test, '_', '\_')
+    ntest = test.replace('_', '\_')
     return dict(
         figname='%s_MASTERFLATFIELD_2Dimgshow_PLACEHOLDER.png' % test,
         caption='%s: Master FlatField for the CCDs [PLACEHOLDER]. Smoothed with gaussian kernel and displayed using histogram equalization to highlight structure.' % ntest,

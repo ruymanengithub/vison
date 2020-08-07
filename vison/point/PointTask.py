@@ -814,7 +814,7 @@ class PointTask(Task):
                 cov_formatters = [fccd, fi, ff, fE, ff, ff]
 
             caption = '%s: Star Lock Table' % self.inputs['test']
-            nicecaption = st.replace(caption, '_', '\_')
+            nicecaption = caption.replace('_', '\_')
             Ltex = lock_tb_cdp.get_textable(sheet='LOCK_TB', caption=nicecaption,
                                             fitwidth=True,
                                             tiny=True,

@@ -28,7 +28,7 @@ from vison.plot import trends
 
 
 def gt_meta_MASK_dict(test, masktype):
-    ntest = st.replace(test, '_', '\_')
+    ntest = test.replace( '_', '\_')
     return dict(
         figname='%s_MASK_2Dimgshow_%s.png' %
         (test, masktype), caption='%s: Masks CCDs [%s]. Smoothed with gaussian kernel to highlight details.' %

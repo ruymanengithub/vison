@@ -72,7 +72,7 @@ def get_CDP_lib(test):
 
 def gt_PTC_curves_dict(test):
 
-    nicetest = st.replace(test, '_', '\_')
+    nicetest = test.replace('_', '\_')
 
     return dict(
         figname='%s_PTC_curves.png' % test,
@@ -90,7 +90,7 @@ def gt_PTC_curves_dict(test):
 
 
 def gt_check_offsets_dict(test):
-    ntest = st.replace(test, '_', '\_')
+    ntest = test.replace('_', '\_')
     return dict(stats=['offset_pre', 'offset_ove'],
                 trendaxis='time',
                 figname='%s_offset_vs_time.png' % (test,),
@@ -102,7 +102,7 @@ def gt_check_offsets_dict(test):
 
 
 def gt_check_deltaoff_dict(test):
-    ntest = st.replace(test, '_', '\_')
+    ntest = test.replace('_', '\_')
     return dict(
         stats=[
             'deltaoff_pre', 'deltaoff_ove'], trendaxis='time', figname='%s_deltaoff_vs_time.png' %
@@ -114,7 +114,7 @@ def gt_check_deltaoff_dict(test):
 
 
 def gt_check_std_dict(test):
-    ntest = st.replace(test, '_', '\_')
+    ntest = test.replace('_', '\_')
     return dict(stats=['std_pre', 'std_ove'],
                 trendaxis='time',
                 figname='%s_std_vs_time.png' % test,
@@ -126,7 +126,7 @@ def gt_check_std_dict(test):
 
 
 def gt_check_img_flu_dict(test):
-    ntest = st.replace(test, '_', '\_')
+    ntest = test.replace('_', '\_')
     return dict(stats=['flu_med_img'],
                 trendaxis='exptime',
                 figname='%s_flu_vs_exptime.png' % test,
@@ -139,7 +139,7 @@ def gt_check_img_flu_dict(test):
 
 
 def gt_check_img_std_dict(test):
-    ntest = st.replace(test, '_', '\_')
+    ntest = test.replace('_', '\_')
     return dict(stats=['flu_std_img'],
                 trendaxis='exptime',
                 figname='%s_imgstd_vs_exptime.png' % test,
@@ -152,7 +152,7 @@ def gt_check_img_std_dict(test):
 
 
 def gt_HER_dict(test):
-    ntest = st.replace(test, '_', '\_')
+    ntest = test.replace('_', '\_')
     return dict(
         figname='%s_profs_HER_ser.png' % test,
         caption='%s: HER profiles, serial direction.' % ntest,

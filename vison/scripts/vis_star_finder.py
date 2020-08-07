@@ -232,7 +232,7 @@ def run_starfinder(FITS, tag=''):
         proc1.terminate()
         proc2.terminate()
 
-    CCD = int(st.replace(CCDkey, 'CCD', ''))
+    CCD = int(CCDkey.replace('CCD', ''))
     stracker = StarTracker(CCD, withpover=withpover)
 
     Xc = pattern_ccd_table['X'].copy()

@@ -342,18 +342,18 @@ class Table(Content):
 
         tex += ['\n']  # just improves legigibility of .tex
 
-        tex = [st.replace(item, '_', '\_') for item in tex]
-        #tex = [st.replace(item,'_','\_') for item in tex]
+        tex = [item.replace( '_', '\_') for item in tex]
+        #tex = [item.replace('_','\_') for item in tex]
 
         # NASTY-HACKs
 
         if 'X' in col_align:
-            def foo_replacer1(line): return st.replace(
-                line, 'begin{tabular}', 'begin{tabularx}{1\\textwidth}')
+            def foo_replacer1(line): return line.replace(
+                 'begin{tabular}', 'begin{tabularx}{1\\textwidth}')
             tex = list(map(foo_replacer1, tex))
 
-            def foo_replacer2(line): return st.replace(
-                line, 'end{tabular}', 'end{tabularx}')
+            def foo_replacer2(line): return line.replace(
+                'end{tabular}', 'end{tabularx}')
             tex = list(map(foo_replacer2, tex))
 
         if self.longtable:
@@ -391,7 +391,7 @@ class Report(Container):
                  Texbody=None, Reference='7-XXX', Issue=0.0, doDraft=False):
         """ """
 
-        self.TestName = st.replace(TestName, '_', '\_')
+        self.TestName = TestName.replace( '_', '\_')
         self.Model = Model
         #self.timestamp = vistime.get_time_tag()
 

@@ -103,7 +103,7 @@ def gt_MOT_FF_figs(test):
 
     for key in list(BF01_figs.keys()):
         #        if 'BF01' in key:
-        #            nkey = st.replace(key,'BF01','MOT_FF')
+        #            nkey = key.replace('BF01','MOT_FF')
         #        else:
         #            nkey = key
         MOT_FF_figs[key] = copy.deepcopy(BF01_figs[key])

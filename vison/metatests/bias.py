@@ -403,7 +403,7 @@ class MetaBias(MetaCal):
                 cdpkey = PT['MASTERBIAS_%s' % CCDk][ixblock][0]
 
                 masterpick = os.path.join(productspath, self.products['MASTERBIAS'][cdpkey])
-                masterfits = st.replace(masterpick,'.pick','.fits')
+                masterfits = masterpick.replace('.pick','.fits')
 
                 ccdobj = ccdmod.CCD(infits=masterfits, getallextensions=True, withpover=True,
                                     overscan=20)
@@ -620,7 +620,7 @@ class MetaBias(MetaCal):
             # RON maps, ADUs
             for testname in self.testnames:
 
-                stestname = stestname = st.replace(testname, '_', '\_')
+                stestname = stestname = testname.replace('_', '\_')
 
                 RONADUMAP = self.get_FPAMAP_from_PT(
                     self.ParsedTable[testname],
@@ -657,7 +657,7 @@ class MetaBias(MetaCal):
             # RON maps, ELECTRONs
             for testname in self.testnames:
 
-                stestname = stestname = st.replace(testname, '_', '\_')
+                stestname = stestname = testname.replace('_', '\_')
 
                 RONEMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname],
                                                   extractor=self._get_extractor_RON_fromPT(units='E',
@@ -711,7 +711,7 @@ class MetaBias(MetaCal):
 
             for testname in self.testnames:
 
-                stestname = st.replace(testname, '_', '\_')
+                stestname = testname.replace('_', '\_')
 
                 OFFMAP = self.get_FPAMAP_from_PT(
                     self.ParsedTable[testname],
@@ -737,7 +737,7 @@ class MetaBias(MetaCal):
                 figkey2 = 'OFFSETS_%s' % testname
                 figname2 = self.figs[figkey2]
 
-                stestname = st.replace(testname, '_', '\_')
+                stestname = testname.replace('_', '\_')
                 self.plot_SimpleMAP(OFF_OVE_MAP, **dict(
                     suptitle='%s [OVERSCAN]: OFFSET' % stestname,
                     ColorbarText='ADU',
@@ -783,7 +783,7 @@ class MetaBias(MetaCal):
 
             for testname in self.testnames:
 
-                stestname = st.replace(testname, '_', '\_')
+                stestname = testname.replace('_', '\_')
 
                 for proftype in proftypes:
 

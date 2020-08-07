@@ -344,7 +344,7 @@ def reportFITS(FITSfile, outpath=''):
 
     report = latex.LaTeX(fontsize=10)
     figlist = []
-    niceFITSname = st.replace(bareimg, '_', '\\_')
+    niceFITSname = bareimg.repace('_', '\\_')
     report.body.append('%s\\\\' % niceFITSname)
 
     report.body.append('\n')
@@ -353,7 +353,7 @@ def reportFITS(FITSfile, outpath=''):
 
     report.body.append('\\begin{verbatim}')
     for line in dissection['subheader']:
-        #niceline = st.replace(line,'_','\_')
+        #niceline = line.replace('_','\_')
         #report.body.append('%s\\\\' % niceline)
         report.body.append(line)
     report.body.append('\\end{verbatim}')

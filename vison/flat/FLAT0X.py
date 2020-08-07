@@ -395,10 +395,10 @@ class FLAT0X(FlatTask):
                     self.figdict['FL0Xindiv_prof1D_%s_generic' % dire])
                 self.figdict[figkey][1]['figname'] = '%s_profs1D_%s_%s.png' % \
                     (self.inputs['test'], dire, ulabel)
-                self.figdict[figkey][1]['caption'] = st.replace(self.figdict[figkey][1]['caption'],
-                                                                'PLACEHOLDER', ulabel)
-                self.figdict[figkey][1]['meta']['suptitle'] = st.replace(
-                    self.figdict[figkey][1]['meta']['suptitle'], 'PLACEHOLDER', ulabel)
+                self.figdict[figkey][1]['caption'] = \
+                    self.figdict[figkey][1]['caption'].replace('PLACEHOLDER', ulabel)
+                self.figdict[figkey][1]['meta']['suptitle'] = \
+                    self.figdict[figkey][1]['meta']['suptitle'].replace('PLACEHOLDER', ulabel)
 
                 self.figdict[figkey][1]['data'] = profs_1D[dire][ulabel].copy()
                 labelkeys = list(profs_1D[dire][ulabel]['CCD1'][Q]['x'].keys())
@@ -598,7 +598,7 @@ class FLAT0X(FlatTask):
                 caption = '%s (%inm): PRNU TABLE [%s] ' % (self.inputs['test'] +
                                                            ' (image area pixels, clipped to +- 3 sigma).',
                                                            self.inputs['wavelength'], ulabel)
-                nicecaption = st.replace(caption, '_', '\_')
+                nicecaption = caption.replace('_', '\_')
                 Ptex = prnu_tb_cdp.get_textable(sheet='PRNU_%s' % ulabel,
                                                 caption=nicecaption,
                                                 fitwidth=True,
@@ -613,15 +613,15 @@ class FLAT0X(FlatTask):
             self.figdict['FL0Xmeta_MFF_2D_%s' %
                          ulabel] = copy.deepcopy(self.figdict['FL0Xmeta_MFF_2D'])
             self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['figname'] =\
-                st.replace(self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['figname'],
+                self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['figname'].replace(
                            'PLACEHOLDER',
                            ulabel)
             self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['caption'] =\
-                st.replace(self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['caption'],
+                self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['caption'].replace(
                            'PLACEHOLDER',
                            ulabel)
             self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['meta']['suptitle'] =\
-                st.replace(self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['meta']['suptitle'],
+                self.figdict['FL0Xmeta_MFF_2D_%s' % ulabel][1]['meta']['suptitle'].replace(
                            'PLACEHOLDER',
                            ulabel)
 

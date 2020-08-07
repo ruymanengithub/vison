@@ -127,7 +127,7 @@ FWHMy_v_flu_dict = dict(
 
 def gt_PTC_curves_dict(test, BFEcorr='no'):
 
-    nicetest = st.replace(test, '_', '\_')
+    nicetest = test.replace('_', '\_')
 
     if BFEcorr=='no':
         BFEtag = 'wBFE'
@@ -181,10 +181,10 @@ def gt_BF01figs(test):
             hasmeta = False
         for key in keys_to_rename:
             if key in _dict:
-                _dict[key] = st.replace(_dict[key], test, 'BF01')
+                _dict[key] = _dict[key].replace(test, 'BF01')
             if hasmeta:
                 if key in _mdict:
-                    _mdict[key] = st.replace(_mdict[key], test, 'BF01')
+                    _mdict[key] = _mdict[key].replace(test, 'BF01')
 
     BF01figs['BF01_COV_ver'] = [
         figclasses.Fig_Beam2DPlot, prof_COV_ver_dict]

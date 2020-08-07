@@ -467,26 +467,26 @@ class Task(object):
                 self.log.info(['_'] + checkreport['msgs'])
 
         if self.report is not None:
-            ntestkey = st.replace(testkey, '_', '\_')
+            ntestkey = testkey.replace( '_', '\_')
             nchecksout = ['\\bf{%s}' % checkreport['checksout']]
-            nchecksout = [st.replace(
-                item, 'False', '$\\textcolor{red}{\\bf{False}}$') for item in nchecksout][0]
+            nchecksout = [item.replace(
+                'False', '$\\textcolor{red}{\\bf{False}}$') for item in nchecksout][0]
             self.report.add_Text(
                 '%s acquisition consistent with expectations: %s\\newline' % (ntestkey, nchecksout))
 
             if (checkreport['failedcols']) > 0:
-                nfailedcols = st.replace(
-                    checkreport['failedcols'].__repr__(), '_', '\_')
+                nfailedcols = checkreport['failedcols'].__repr__().replace(
+                    '_', '\_')
                 self.report.add_Text('%s failed columns: %s' %
                                      (ntestkey, nfailedcols))
             if len(checkreport['failedkeys']) > 0:
-                nfailedkeys = st.replace(
-                    checkreport['failedkeys'].__repr__(), '_', '\_')
+                nfailedkeys = checkreport['failedkeys'].__repr__().replace(
+                    '_', '\_')
                 self.report.add_Text('%s failed keys: %s' %
                                      (ntestkey, nfailedkeys))
             if len(checkreport['msgs']) > 0:
                 for msg in checkreport['msgs']:
-                    nmsg = st.replace(msg, '_', '\_')
+                    nmsg = msg.replace('_', '\_')
                     self.report.add_Text(nmsg)
 
         # Adding Time Axis
@@ -514,7 +514,7 @@ class Task(object):
         """Saves self.dd and self.report to hardcopy files to save progress."""
         files.cPickleDumpDictionary(self.dd, DataDictFile)
         files.cPickleDump(self.report, reportobjFile)
-        csvFile = st.replace(DataDictFile, '.pick', '.csv')
+        csvFile = DataDictFile.replace('.pick', '.csv')
         self.dd.saveToFile(csvFile)
 
     def recover_progress(self, DataDictFile, reportobjFile):
@@ -623,14 +623,14 @@ class Task(object):
     def addComplianceMatrix2Report(self, complidict, label='',
                                    caption=''):
         """ """
-        nicelabel = st.replace(label, ' ', '\ ')
+        nicelabel = label.replace(' ', '\ ')
         #st_compl = complidict.__str__()
 
         complitex = ['$\\bf{%s}$' % nicelabel]
         #complitex += complimod.gen_compliance_tex(complidict)
         complitex += complidict.get_compliance_tex(caption)
-        # complitex = [st.replace(
-        #    item, 'False', '$\\textcolor{red}{\\bf{False}}$') for item in complitex]
+        # complitex = [item.replace(
+        #    'False', '$\\textcolor{red}{\\bf{False}}$') for item in complitex]
 
         self.report.add_Text(complitex)
 
@@ -660,7 +660,7 @@ class Task(object):
 
     def addFlagsToReport(self):
         """ """
-        niceflagnames = [st.replace(item, '_', '\_')
+        niceflagnames = [item.replace('_', '\_')
                          for item in self.dd.flags.getFlagsOnList()]
         flagstxt = st.join(niceflagnames, ', ')
         msgList = ['$\\bf{FLAGS\ ON}$: ', flagstxt]
@@ -669,7 +669,7 @@ class Task(object):
     def skipMissingPlot(self, key, ref):
         """ """
         self.figdict[key] = copy.deepcopy(self.figdict['BlueScreen'])
-        niceref = st.replace(ref, '_', '\_')
+        niceref = ref.replace('_', '\_')
         figspath = self.inputs['subpaths']['figs']
         pmeta = dict(path=figspath,
                      caption='$\\bf{MISSING}:$ %s' % niceref,
@@ -752,7 +752,7 @@ class Task(object):
         HKKeys = self.HKKeys
         if self.report is not None:
             self.report.add_Section(keyword='check_HK', Title='HK', level=1)
-            HKKeys_tex = st.replace(HKKeys.__repr__(), '_', '\_')
+            HKKeys_tex = HKKeys.__repr__().replace('_', '\_')
             self.report.add_Text(['Selected HK Keys: %s' % HKKeys_tex, '\\newline'])
 
         report_HK_perf = self.check_HK(HKKeys, reference='command', limits='P', tag='Performance',
@@ -819,7 +819,7 @@ class Task(object):
                 getallextensions=True,
                 withpover=self.ccdcalc.withpover)
             cdpstr = self.inputs['inCDPs'][cdpkey].__str__()
-            cdpstr = st.replace(cdpstr, ',', ',\n')
+            cdpstr = cdpstr.replace(',', ',\n')
             if self.log is not None:
                 self.log.info(msg)
                 self.log.info(cdpstr)
@@ -948,7 +948,7 @@ class Task(object):
 
         caption = 'Inputs of Task %s , Test $%s$' % (
             self.name, self.inputs['test'])
-        #ncaption = st.replace(caption,'_','\\_')
+        #ncaption = caption.replace('_','\\_')
 
         names = ['Parameter', 'Value']
 
@@ -962,8 +962,8 @@ class Task(object):
                 values.append('Too long dict()')
             else:
                 _val = _val.__repr__()
-                #n_val = st.replace(_val,'_','\\_')
-                n_val = st.replace(_val, '&', '\\&')
+                #n_val = _val.replace('_','\\_')
+                n_val = _val.replace( '&', '\\&')
                 values.append(n_val)
 
         tDict = OrderedDict(Parameter=keys, Value=values)
@@ -992,7 +992,7 @@ class Task(object):
 
         caption = 'Data Used by Task %s , Test $%s$. Datapath = "%s"' % (
             self.name, self.inputs['test'], self.inputs['datapath'])
-        #ncaption = st.replace(caption,'_','\\_')
+        #ncaption = caption.replace('_','\\_')
 
         names = list(tDict.keys())
 

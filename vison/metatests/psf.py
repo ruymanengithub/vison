@@ -520,7 +520,7 @@ class MetaPsf(MetaCal):
             figkey1 = 'XTALK_MAP_%s' % testname
             figname1 = self.figs[figkey1]
 
-            stestname = st.replace(testname, '_', '\_')
+            stestname = testname.replace('_', '\_')
             self.plot_XtalkMAP(XTALKs, **dict(
                 scale='ADU',
                 showvalues=False,

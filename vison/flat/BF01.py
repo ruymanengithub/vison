@@ -413,7 +413,7 @@ class BF01(PTC0X):
 
                     COV_dd['CCD'][jj] = jCCD + 1
                     COV_dd['Q'][jj] = lQ + 1
-                    COV_dd['col'][jj] = int(st.replace(ulabel, 'col', ''))
+                    COV_dd['col'][jj] = int(ulabel.replace('col', ''))
                     COV_dd['av_mu'][jj] = icovdict['av_mu'][Q]
                     COV_dd['av_var'][jj] = icovdict['av_var'][Q]
                     COV_dd['CORR_00'][jj] = icovdict['av_corrmap'][Q][0, 0]

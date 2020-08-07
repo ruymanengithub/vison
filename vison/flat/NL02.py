@@ -283,7 +283,7 @@ class NL02(NL01.NL01):
                 keyword='NL', Title='Non-Linearity Analysis', level=0)
 
         if doExptimeCalib:
-            niceshutterprofname = st.replace(self.ogse.profile['SHUTTER_CALIB'], '_', '\_')
+            niceshutterprofname = self.ogse.profile['SHUTTER_CALIB'].replace('_', '\_')
 
             if self.report is not None:
                 self.report.add_Text('Exposure times corrected using: %s' %
@@ -465,9 +465,9 @@ class NL02(NL01.NL01):
 
         fdict_NL = self.figdict['NL01_fit_curves'][1]
         fdict_NL['data'] = curves_cdp.data.copy()
-        fdict_NL['caption'] = st.replace(fdict_NL['caption'], 'NL01', 'NL02')
-        fdict_NL['meta']['suptitle'] = st.replace(fdict_NL['meta']['suptitle'], 'NL01', 'NL02')
-        fdict_NL['figname'] = st.replace(fdict_NL['figname'], 'NL01', 'NL02')
+        fdict_NL['caption'] = fdict_NL['caption'].replace('NL01', 'NL02')
+        fdict_NL['meta']['suptitle'] = fdict_NL['meta']['suptitle'].replace('NL01', 'NL02')
+        fdict_NL['figname'] = fdict_NL['figname'].replace( 'NL01', 'NL02')
 
         if self.report is not None:
             self.addFigures_ST(figkeys=['NL01_fit_curves'],

@@ -676,7 +676,7 @@ class MetaFlat(MetaCal):
 
             for testname in self.testnames:
 
-                stestname = st.replace(testname, '_', '\_')
+                stestname = testname.replace( '_', '\_')
 
                 if testname == 'FLAT01':
                     _test = 'FLAT01'
@@ -743,7 +743,7 @@ class MetaFlat(MetaCal):
 
             for testname in self.testnames:
 
-                stestname = st.replace(testname, '_', '\_')
+                stestname = testname.replace('_', '\_')
 
                 for colkey in self.colkeys[testname]:
                     # for colkey in [self.colkeys[testname][2]]:
@@ -832,7 +832,7 @@ class MetaFlat(MetaCal):
             for testname in self.testnames:
 
                 NFluCols = len(self.colkeys[testname])
-                stestname = st.replace(testname, '_', '\_')
+                stestname = testname.replace('_', '\_')
 
                 XYdict = self._get_XYdict_PRNUFLU(self.ParsedTable[testname], NFluCols)
 
@@ -857,7 +857,7 @@ class MetaFlat(MetaCal):
 
         for testname in self.testnames:
 
-            stestname = st.replace(testname, '_', '\_')
+            stestname = testname.replace('_', '\_')
 
             for icol, colkey in enumerate(self.colkeys[testname]):
 

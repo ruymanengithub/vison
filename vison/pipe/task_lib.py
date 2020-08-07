@@ -36,9 +36,9 @@ def check_HK(self, HKKeys, reference='command', limits='P', tag='', doReport=Fal
         HKKeys, self.dd, limits=limits, elvis=self.elvis)
 
     if doReport and self.report is not None:
-        nicetag = st.replace(tag, ' ', '\ ')
+        nicetag = tag.replace(' ', '\ ')
         msg_HK = ['$\\bf{HK-%s}$, Parameters not passing Tests:\n' % nicetag]
-        msg_HK += [st.join(['$\\bf{\\textcolor{red}{%s}}$' % (st.replace(key, '_', '\_'),)
+        msg_HK += [st.join(['$\\bf{\\textcolor{red}{%s}}$' % (key.replace( '_', '\_'),)
                             for key in report_HK if not report_HK[key]], ', ')]
         if len(msg_HK[-1]) == 0:
             msg_HK += ['$\\bf{ALL\ PASSED}$\n']
@@ -58,7 +58,7 @@ def check_HK(self, HKKeys, reference='command', limits='P', tag='', doReport=Fal
 def add_checkHK_report(self, report_HK, tag):
 
     msg_HK = ['$\\bf{HK-%s}$, Listing parameters not passing Tests:\n' % tag]
-    msg_HK += [st.join(['\\bf{%s}' % (st.replace(key, '_', '\_'),)
+    msg_HK += [st.join(['\\bf{%s}' % (key.replace('_', '\_'),)
                         for key in report_HK if not report_HK[key]], ', ')]
     if len(msg_HK[-1]) == 0:
         msg_HK += ['$\\bf{ALL\ PASSED}$\n']
