@@ -136,7 +136,7 @@ class FPA_BIAS(fpatask.FpaTask):
     def _basic_onLE1(self, **kwargs):
     	""" """
 
-    	CCDID = kwargs['CCDID']
+        CCDID = kwargs['CCDID']
         LE1 = kwargs['LE1']
         vstart = kwargs['vstart']
         vend = kwargs['vend']
