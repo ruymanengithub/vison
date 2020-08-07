@@ -16,6 +16,7 @@ import numpy as np
 import os
 from collections import OrderedDict
 import string as st
+import copy
 
 from vison.datamodel import cdp
 from vison.plot import figclasses
@@ -25,7 +26,8 @@ from vison.point import Paux
 
 
 def get_check_offsets_dict(test):
-    ntest = st.replace(test, '_', '\_')
+    ntest = copy.deepcopy(test)
+    ntest.replace('_', '\_')
     return dict(stats=['offset_pre', 'offset_ove'],
                 trendaxis='time',
                 figname='%s_offset_vs_time.png' % (test,),
