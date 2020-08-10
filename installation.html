@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Installation &#8212; vison 1.0+15.g319caff documentation</title>
+    <title>Installation &#8212; vison 1.0+18.g8a1eef5 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="source/includeme.html" title="README"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+15.g319caff documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+18.g8a1eef5 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Installation</a></li> 
       </ul>
     </div>  
@@ -82,8 +82,7 @@ follow the instructions in this <a class="reference external" href="https://docs
 <div class="section" id="installing-conda-and-creating-vison-environment">
 <h3>Installing conda and creating <cite>vison</cite> environment<a class="headerlink" href="#installing-conda-and-creating-vison-environment" title="Permalink to this headline">¶</a></h3>
 <p>Once you have succesfully installed conda, we will create an environment that will
-allow you to install the pipeline and meet all its dependencies (save for SAO DS9, which
-is only used in real-time monitoring, optionally).</p>
+allow you to install the pipeline and meet all its dependencies (save for SAO DS9, which is only used in real-time monitoring, optionally).</p>
 <p>Step-by-Step:</p>
 <ul>
 <li><p>change directory to your copy of the vison repository:</p>
@@ -91,10 +90,10 @@ is only used in real-time monitoring, optionally).</p>
 </pre></div>
 </div>
 </li>
-<li><p>Under the ‘conda’ sub-folder, you will find several text files:</p>
+<li><p>Under the ‘conda’ sub-folder, you will find a yaml file with the description of the environment:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~$ cd conda
 ~$ ls
-env-conda_vison_linux.txt  env-pip_vison.txt
+vison_36.yml
 </pre></div>
 </div>
 </li>
@@ -102,7 +101,7 @@ env-conda_vison_linux.txt  env-pip_vison.txt
 </ul>
 <dl class="simple">
 <dt>Use the OS version that may correspond in your case (by now, only linux-64 bits version available).</dt><dd><dl class="simple">
-<dt>::</dt><dd><p>~$ conda create -n vison –file env-conda_[OS].txt</p>
+<dt>::</dt><dd><p>~$ conda env create -f vison_36.yml</p>
 </dd>
 </dl>
 </dd>
@@ -111,16 +110,6 @@ env-conda_vison_linux.txt  env-pip_vison.txt
 <li><p>When prompted, type “y” and return to install the listed packages.</p></li>
 <li><p>Activate the new environment</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~$ conda activate vison
-</pre></div>
-</div>
-</li>
-<li><p>Update pipe</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~$ pip install --upgrade pip
-</pre></div>
-</div>
-</li>
-<li><p>Install the packages that are accessed via <cite>pip</cite>, within the conda environment:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~$ pip install -r env-pip_vison.txt
 </pre></div>
 </div>
 </li>
@@ -258,7 +247,7 @@ conda  docs  LICENSE  manual_vison.pdf  README.md  setup.cfg  setup_distutils.py
         <li class="right" >
           <a href="source/includeme.html" title="README"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+15.g319caff documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+18.g8a1eef5 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Installation</a></li> 
       </ul>
     </div>
