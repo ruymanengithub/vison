@@ -16,7 +16,7 @@ In the main repo:
 
 Next, in the docs repo:
 
-* change to the docs repo (make sure you’re in the html dir)
+* change to the docs repo (make sure you are in the html dir)
 * check to make sure you are on the gh-pages branch
 * git commit -a -m "rebuilt docs"
 * git push origin gh-pages
