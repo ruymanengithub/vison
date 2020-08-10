@@ -743,15 +743,12 @@ class MetaPTC(MetaCal):
                 stestname = testname.replace('_', '\_')
 
                 avgG = self.get_stat_from_FPAMAP(GMAP, np.nanmean)
-<<<<<<< HEAD
-                print(('Average G [%s]: %.2f' % (testname, avgG)))
-=======
+
                 avgGtext = 'Average G [%s]: %.2f' % (stestname, avgG)
                 if self.report is not None:
                     self.report.add_Text(avgGtext)
                 else:
                     print(avgGtext)
->>>>>>> master
 
                 def _count_within_REQ(vals):
                     req = [3.0,3.5]
