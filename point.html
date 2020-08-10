@@ -1,35 +1,25 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Point-Source Analysis &#8212; vison 0.9+404.g5ace8e4 documentation</title>
-    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Point-Source Analysis &#8212; vison 1.0+12.g95d2b7a documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.9+404.g5ace8e4',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Scripts" href="scripts.html" />
     <link rel="prev" title="Plotting" href="plot.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -45,7 +35,8 @@
         <li class="right" >
           <a href="plot.html" title="Plotting"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+404.g5ace8e4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+12.g95d2b7a documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Point-Source Analysis</a></li> 
       </ul>
     </div>  
 
@@ -58,18 +49,15 @@
 <h1>Point-Source Analysis<a class="headerlink" href="#point-source-analysis" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-vison.point.basis">
 <span id="basis-py"></span><h2>basis.py<a class="headerlink" href="#module-vison.point.basis" title="Permalink to this headline">¶</a></h2>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
 <p>Created on Thu Apr 20 18:56:40 2017</p>
-<dl class="class">
+<dl class="py class">
 <dt id="vison.point.basis.SpotBase">
-<em class="property">class </em><code class="descclassname">vison.point.basis.</code><code class="descname">SpotBase</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.basis.SpotBase" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vison.point.basis.</code><code class="sig-name descname">SpotBase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.basis.SpotBase" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -78,19 +66,17 @@
 <div class="section" id="display-library-for-point-source-analysis">
 <h3>Display Library for Point-Source Analysis<a class="headerlink" href="#display-library-for-point-source-analysis" title="Permalink to this headline">¶</a></h3>
 <p>Created on Fri Apr 21 14:02:57 2017</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">requires:</th><td class="field-body">matplotlib</td>
-</tr>
-<tr class="field-even field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
-<dl class="function">
+<dl class="field-list simple">
+<dt class="field-odd">requires</dt>
+<dd class="field-odd"><p>matplotlib</p>
+</dd>
+<dt class="field-even">author</dt>
+<dd class="field-even"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
+<dl class="py function">
 <dt id="vison.point.display.show_spots_allCCDs">
-<code class="descclassname">vison.point.display.</code><code class="descname">show_spots_allCCDs</code><span class="sig-paren">(</span><em>spots_bag</em>, <em>title=''</em>, <em>filename=''</em>, <em>dobar=True</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.display.show_spots_allCCDs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.point.display.</code><code class="sig-name descname">show_spots_allCCDs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spots_bag</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">dobar</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.display.show_spots_allCCDs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -100,46 +86,36 @@
 <div class="section" id="gaussian-model-of-point-like-sources">
 <h3>Gaussian Model of Point-like Sources<a class="headerlink" href="#gaussian-model-of-point-like-sources" title="Permalink to this headline">¶</a></h3>
 <p>Simple class to do Gaussian Fitting to a spot.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">requires:</th><td class="field-body">NumPy, astropy</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">requires</dt>
+<dd class="field-odd"><p>NumPy, astropy</p>
+</dd>
+</dl>
 <p>Created on Thu Apr 20 16:42:47 2017</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
 </div>
-<dl class="class">
+<dl class="py class">
 <dt id="vison.point.gauss.Gaussmeter">
-<em class="property">class </em><code class="descclassname">vison.point.gauss.</code><code class="descname">Gaussmeter</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em>, <em>verbose=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.gauss.Gaussmeter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vison.point.gauss.</code><code class="sig-name descname">Gaussmeter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.gauss.Gaussmeter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides methods to measure the shape of an object using
 a 2D Gaussian Model.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data</strong> (<em>np.ndarray</em>) &#8211; stamp to be analysed.</li>
-<li><strong>log</strong> (<em>instance</em>) &#8211; logger</li>
-<li><strong>kwargs</strong> (<em>dict</em>) &#8211; additional keyword arguments</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>np.ndarray</em>) – stamp to be analysed.</p></li>
+<li><p><strong>log</strong> (<em>instance</em>) – logger</p></li>
+<li><p><strong>kwargs</strong> (<em>dict</em>) – additional keyword arguments</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p>Settings dictionary contains all parameter values needed.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="vison.point.gauss.Gaussmeter.fit_Gauss">
-<code class="descname">fit_Gauss</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.gauss.Gaussmeter.fit_Gauss" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">fit_Gauss</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.gauss.Gaussmeter.fit_Gauss" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -150,28 +126,26 @@ a 2D Gaussian Model.</p>
 <div class="section" id="models-point-like-sources">
 <h3>Models (Point-Like Sources)<a class="headerlink" href="#models-point-like-sources" title="Permalink to this headline">¶</a></h3>
 <p>Library module with models for processing of point-source imaging data.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">requires:</th><td class="field-body">NumPy</td>
-</tr>
-<tr class="field-even field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">requires</dt>
+<dd class="field-odd"><p>NumPy</p>
+</dd>
+<dt class="field-even">author</dt>
+<dd class="field-even"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
 <p>Created on Wed Apr 19 11:47:00 2017</p>
-<dl class="function">
+<dl class="py function">
 <dt id="vison.point.models.fgauss2D">
-<code class="descclassname">vison.point.models.</code><code class="descname">fgauss2D</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.models.fgauss2D" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>A gaussian fitting function where</dt>
-<dd>p[0] = amplitude
+<code class="sig-prename descclassname">vison.point.models.</code><code class="sig-name descname">fgauss2D</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.models.fgauss2D" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>A gaussian fitting function where</dt><dd><p>p[0] = amplitude
 p[1] = x0
 p[2] = y0
 p[3] = sigmax
 p[4] = sigmay
-p[5] = floor</dd>
+p[5] = floor</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -182,64 +156,54 @@ p[5] = floor</dd>
 <div class="section" id="aperture-photometry-of-point-like-objects">
 <h3>Aperture Photometry of point-like objects<a class="headerlink" href="#aperture-photometry-of-point-like-objects" title="Permalink to this headline">¶</a></h3>
 <p>Simple class to do aperture photometry on a stamp of a point-source.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">requires:</th><td class="field-body">NumPy</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">requires</dt>
+<dd class="field-odd"><p>NumPy</p>
+</dd>
+</dl>
 <p>Created on Thu Apr 20 14:37:46 2017</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
 </div>
-<dl class="class">
+<dl class="py class">
 <dt id="vison.point.photom.Photometer">
-<em class="property">class </em><code class="descclassname">vison.point.photom.</code><code class="descname">Photometer</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em>, <em>verbose=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.photom.Photometer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vison.point.photom.</code><code class="sig-name descname">Photometer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.photom.Photometer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides methods to measure the shape of an object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data</strong> (<em>np.ndarray</em>) &#8211; stamp to be analysed.</li>
-<li><strong>log</strong> (<em>instance</em>) &#8211; logger</li>
-<li><strong>kwargs</strong> (<em>dict</em>) &#8211; additional keyword arguments</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>np.ndarray</em>) – stamp to be analysed.</p></li>
+<li><p><strong>log</strong> (<em>instance</em>) – logger</p></li>
+<li><p><strong>kwargs</strong> (<em>dict</em>) – additional keyword arguments</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p>Settings dictionary contains all parameter values needed.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="vison.point.photom.Photometer.doap_photom">
-<code class="descname">doap_photom</code><span class="sig-paren">(</span><em>centre</em>, <em>rap</em>, <em>rin=-1.0</em>, <em>rout=-1.0</em>, <em>gain=3.5</em>, <em>doErrors=True</em>, <em>subbgd=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.photom.Photometer.doap_photom" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">doap_photom</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">centre</span></em>, <em class="sig-param"><span class="n">rap</span></em>, <em class="sig-param"><span class="n">rin</span><span class="o">=</span><span class="default_value">- 1.0</span></em>, <em class="sig-param"><span class="n">rout</span><span class="o">=</span><span class="default_value">- 1.0</span></em>, <em class="sig-param"><span class="n">gain</span><span class="o">=</span><span class="default_value">3.5</span></em>, <em class="sig-param"><span class="n">doErrors</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">subbgd</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.photom.Photometer.doap_photom" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.point.photom.Photometer.get_centroid">
-<code class="descname">get_centroid</code><span class="sig-paren">(</span><em>rap=None</em>, <em>full=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.photom.Photometer.get_centroid" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>TODO:</dt>
-<dd>add aperture masking</dd>
+<code class="sig-name descname">get_centroid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rap</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">full</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.photom.Photometer.get_centroid" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>TODO:</dt><dd><p>add aperture masking</p>
+</dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.point.photom.Photometer.measure_bgd">
-<code class="descname">measure_bgd</code><span class="sig-paren">(</span><em>rin</em>, <em>rout</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.photom.Photometer.measure_bgd" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">measure_bgd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rin</span></em>, <em class="sig-param"><span class="n">rout</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.photom.Photometer.measure_bgd" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.point.photom.Photometer.sub_bgd">
-<code class="descname">sub_bgd</code><span class="sig-paren">(</span><em>rin</em>, <em>rout</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.photom.Photometer.sub_bgd" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sub_bgd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rin</span></em>, <em class="sig-param"><span class="n">rout</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.photom.Photometer.sub_bgd" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -250,142 +214,121 @@ p[5] = floor</dd>
 <div class="section" id="quadrupole-moments-shape-measurement">
 <h3>Quadrupole Moments Shape Measurement<a class="headerlink" href="#quadrupole-moments-shape-measurement" title="Permalink to this headline">¶</a></h3>
 <p>Simple class to measure quadrupole moments and ellipticity of an object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">requires:</th><td class="field-body">NumPy, PyFITS</td>
-</tr>
-<tr class="field-even field"><th class="field-name">author:</th><td class="field-body">Sami-Matias Niemi, Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">requires</dt>
+<dd class="field-odd"><p>NumPy, PyFITS</p>
+</dd>
+<dt class="field-even">author</dt>
+<dd class="field-even"><p>Sami-Matias Niemi, Ruyman Azzollini</p>
+</dd>
+</dl>
 </div>
-<dl class="class">
+<dl class="py class">
 <dt id="vison.point.shape.Shapemeter">
-<em class="property">class </em><code class="descclassname">vison.point.shape.</code><code class="descname">Shapemeter</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em>, <em>verbose=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.shape.Shapemeter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vison.point.shape.</code><code class="sig-name descname">Shapemeter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.shape.Shapemeter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides methods to measure the shape of an object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data</strong> (<em>np.ndarray</em>) &#8211; stamp to be analysed.</li>
-<li><strong>log</strong> (<em>instance</em>) &#8211; logger</li>
-<li><strong>kwargs</strong> (<em>dict</em>) &#8211; additional keyword arguments</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>np.ndarray</em>) – stamp to be analysed.</p></li>
+<li><p><strong>log</strong> (<em>instance</em>) – logger</p></li>
+<li><p><strong>kwargs</strong> (<em>dict</em>) – additional keyword arguments</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p>Settings dictionary contains all parameter values needed.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="vison.point.shape.Shapemeter.circular2DGaussian">
-<code class="descname">circular2DGaussian</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>sigma</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.shape.Shapemeter.circular2DGaussian" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">circular2DGaussian</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.shape.Shapemeter.circular2DGaussian" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a circular symmetric Gaussian centered on x, y.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>x</strong> (<em>float</em>) &#8211; x coordinate of the centre</li>
-<li><strong>y</strong> (<em>float</em>) &#8211; y coordinate of the centre</li>
-<li><strong>sigma</strong> (<em>float</em>) &#8211; standard deviation of the Gaussian, note that sigma_x = sigma_y = sigma</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – x coordinate of the centre</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – y coordinate of the centre</p></li>
+<li><p><strong>sigma</strong> (<em>float</em>) – standard deviation of the Gaussian, note that sigma_x = sigma_y = sigma</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">circular Gaussian 2D profile and x and y mesh grid</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>circular Gaussian 2D profile and x and y mesh grid</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.point.shape.Shapemeter.ellip2DGaussian">
-<code class="descname">ellip2DGaussian</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>sigmax</em>, <em>sigmay</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.shape.Shapemeter.ellip2DGaussian" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ellip2DGaussian</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">sigmax</span></em>, <em class="sig-param"><span class="n">sigmay</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.shape.Shapemeter.ellip2DGaussian" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a two-dimensional Gaussian centered on x, y.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>x</strong> (<em>float</em>) &#8211; x coordinate of the centre</li>
-<li><strong>y</strong> (<em>float</em>) &#8211; y coordinate of the centre</li>
-<li><strong>sigmax</strong> (<em>float</em>) &#8211; standard deviation of the Gaussian in x-direction</li>
-<li><strong>sigmay</strong> (<em>float</em>) &#8211; standard deviation of the Gaussian in y-direction</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – x coordinate of the centre</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – y coordinate of the centre</p></li>
+<li><p><strong>sigmax</strong> (<em>float</em>) – standard deviation of the Gaussian in x-direction</p></li>
+<li><p><strong>sigmay</strong> (<em>float</em>) – standard deviation of the Gaussian in y-direction</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">circular Gaussian 2D profile and x and y mesh grid</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>circular Gaussian 2D profile and x and y mesh grid</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.point.shape.Shapemeter.measureRefinedEllipticity">
-<code class="descname">measureRefinedEllipticity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.shape.Shapemeter.measureRefinedEllipticity" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">measureRefinedEllipticity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.shape.Shapemeter.measureRefinedEllipticity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Derive a refined iterated polarisability/ellipticity measurement for a given object.</p>
 <p>By default polarisability/ellipticity is defined in terms of the Gaussian weighted quadrupole moments.
-If self.shsettings[&#8216;weighted&#8217;] is False then no weighting scheme is used.</p>
-<p>The number of iterations is defined in self.shsettings[&#8216;iterations&#8217;].</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">centroids [indexing stars from 1], ellipticity (including projected e1 and e2), and R2</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
-</tr>
-</tbody>
-</table>
+If self.shsettings[‘weighted’] is False then no weighting scheme is used.</p>
+<p>The number of iterations is defined in self.shsettings[‘iterations’].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>centroids [indexing stars from 1], ellipticity (including projected e1 and e2), and R2</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.point.shape.Shapemeter.quadrupoles">
-<code class="descname">quadrupoles</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.shape.Shapemeter.quadrupoles" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">quadrupoles</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">image</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.shape.Shapemeter.quadrupoles" title="Permalink to this definition">¶</a></dt>
 <dd><p>Derive quadrupole moments and ellipticity from the input image.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>img</strong> (<em>ndarray</em>) &#8211; input image data</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">quadrupoles, centroid, and ellipticity (also the projected components e1, e2)</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>img</strong> (<em>ndarray</em>) – input image data</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>quadrupoles, centroid, and ellipticity (also the projected components e1, e2)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.point.shape.Shapemeter.writeFITS">
-<code class="descname">writeFITS</code><span class="sig-paren">(</span><em>data</em>, <em>output</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.shape.Shapemeter.writeFITS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">writeFITS</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">output</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.shape.Shapemeter.writeFITS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write out a FITS file using PyFITS.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> (<em>ndarray</em>) &#8211; data to write to a FITS file</li>
-<li><strong>output</strong> (<em>string</em>) &#8211; name of the output file</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>ndarray</em>) – data to write to a FITS file</p></li>
+<li><p><strong>output</strong> (<em>string</em>) – name of the output file</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -395,103 +338,86 @@ If self.shsettings[&#8216;weighted&#8217;] is False then no weighting scheme is 
 <span id="spot-py"></span><h2>spot.py<a class="headerlink" href="#module-vison.point.spot" title="Permalink to this headline">¶</a></h2>
 <p>Spot Stamp Class.</p>
 <p>Created on Thu Apr 20 15:35:08 2017</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
-<dl class="class">
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
+<dl class="py class">
 <dt id="vison.point.spot.Spot">
-<em class="property">class </em><code class="descclassname">vison.point.spot.</code><code class="descname">Spot</code><span class="sig-paren">(</span><em>data</em>, <em>log=None</em>, <em>verbose=False</em>, <em>lowerleft=(None</em>, <em>)</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vison.point.spot.</code><code class="sig-name descname">Spot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">lowerleft</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides methods to do point-source analysis on a stamp.
 Aimed at basic analysis:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Photometry</li>
-<li>Quadrupole Moments</li>
-<li>Gaussian Fit</li>
+<li><p>Photometry</p></li>
+<li><p>Quadrupole Moments</p></li>
+<li><p>Gaussian Fit</p></li>
 </ul>
 </div></blockquote>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data</strong> (<em>np.ndarray</em>) &#8211; stamp to be analysed.</li>
-<li><strong>log</strong> (<em>instance</em>) &#8211; logger</li>
-<li><strong>kwargs</strong> (<em>dict</em>) &#8211; additional keyword arguments</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>np.ndarray</em>) – stamp to be analysed.</p></li>
+<li><p><strong>log</strong> (<em>instance</em>) – logger</p></li>
+<li><p><strong>kwargs</strong> (<em>dict</em>) – additional keyword arguments</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p>Settings dictionary contains all parameter values needed.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="vison.point.spot.Spot.get_photom">
-<code class="descname">get_photom</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot.get_photom" title="Permalink to this definition">¶</a></dt>
-<dd><p>measurements:&#8217;apflu&#8217;,&#8217;eapflu&#8217;,&#8217;bgd&#8217;,&#8217;ebgd&#8217;</p>
+<code class="sig-name descname">get_photom</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot.get_photom" title="Permalink to this definition">¶</a></dt>
+<dd><p>measurements:’apflu’,’eapflu’,’bgd’,’ebgd’</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.point.spot.Spot.get_shape_Gauss">
-<code class="descname">get_shape_Gauss</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot.get_shape_Gauss" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">res = dict(i0,ei0,x,ex,y,ey,
+<code class="sig-name descname">get_shape_Gauss</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot.get_shape_Gauss" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>res = dict(i0,ei0,x,ex,y,ey,
 sigma_x,esigma_x,sigmay,esigma_y,
 fwhm_x,efwhm_x,
 fwhm_y,efwhm_y,
-fluence,efluence)</td>
-</tr>
-</tbody>
-</table>
+fluence,efluence)</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.point.spot.Spot.get_shape_Moments">
-<code class="descname">get_shape_Moments</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot.get_shape_Moments" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">res = dict(x,y,ellip,e1,e2,a,b)</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_shape_Moments</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot.get_shape_Moments" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>res = dict(x,y,ellip,e1,e2,a,b)</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.point.spot.Spot.get_shape_easy">
-<code class="descname">get_shape_easy</code><span class="sig-paren">(</span><em>method='G'</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot.get_shape_easy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_shape_easy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'G'</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot.get_shape_easy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.point.spot.Spot.measure_basic">
-<code class="descname">measure_basic</code><span class="sig-paren">(</span><em>rap=10</em>, <em>rin=15</em>, <em>rout=-1</em>, <em>gain=3.1</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot.measure_basic" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">measure_basic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rap</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">rin</span><span class="o">=</span><span class="default_value">15</span></em>, <em class="sig-param"><span class="n">rout</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">gain</span><span class="o">=</span><span class="default_value">3.1</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.spot.Spot.measure_basic" title="Permalink to this definition">¶</a></dt>
 <dd><p># TODO:
 #   get basic statistics, measure and subtract background
 #   update centroid
 #   do aperture photometry
 #   pack-up results and return</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>rap</strong> &#8211; source extraction aperture radius.</li>
-<li><strong>rin</strong> &#8211; inner radius of background annulus.</li>
-<li><strong>rout</strong> &#8211; outer radius of background annulus (-1 to set bound by image area).</li>
-<li><strong>gain</strong> &#8211; image gain (e-/ADU).</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rap</strong> – source extraction aperture radius.</p></li>
+<li><p><strong>rin</strong> – inner radius of background annulus.</p></li>
+<li><p><strong>rout</strong> – outer radius of background annulus (-1 to set bound by image area).</p></li>
+<li><p><strong>gain</strong> – image gain (e-/ADU).</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -502,28 +428,26 @@ fluence,efluence)</td>
 <p>Library module with useful data and functions for processing of point-source
 imaging data.</p>
 <p>Created on Wed Apr  5 10:21:05 2017</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini (except where indicated)</td>
-</tr>
-</tbody>
-</table>
-<dl class="function">
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini (except where indicated)</p>
+</dd>
+</dl>
+<dl class="py function">
 <dt id="vison.point.lib.extract_spot">
-<code class="descclassname">vison.point.lib.</code><code class="descname">extract_spot</code><span class="sig-paren">(</span><em>ccdobj</em>, <em>coo</em>, <em>Quad</em>, <em>log=None</em>, <em>stampw=25</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.lib.extract_spot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.point.lib.</code><code class="sig-name descname">extract_spot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ccdobj</span></em>, <em class="sig-param"><span class="n">coo</span></em>, <em class="sig-param"><span class="n">Quad</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">stampw</span><span class="o">=</span><span class="default_value">25</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.lib.extract_spot" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.point.lib.gen_point_mask">
-<code class="descclassname">vison.point.lib.</code><code class="descname">gen_point_mask</code><span class="sig-paren">(</span><em>Quad</em>, <em>width=75</em>, <em>sources='all'</em>, <em>coodict={'CCD2': OrderedDict([('H'</em>, <em>OrderedDict([('BRAVO'</em>, <em>(1725.0</em>, <em>1606.0))</em>, <em>('CHARLIE'</em>, <em>(1131.0</em>, <em>1029.0))</em>, <em>('ALPHA'</em>, <em>(554.0</em>, <em>1626.0))</em>, <em>('ECHO'</em>, <em>(1706.0</em>, <em>435.0))</em>, <em>('DELTA'</em>, <em>(531.0</em>, <em>446.0))]))</em>, <em>('E'</em>, <em>OrderedDict([('BRAVO'</em>, <em>(1716.0</em>, <em>1700.0))</em>, <em>('CHARLIE'</em>, <em>(1126.0</em>, <em>1124.0))</em>, <em>('ALPHA'</em>, <em>(542.0</em>, <em>1725.0))</em>, <em>('ECHO'</em>, <em>(1695.0</em>, <em>537.0))</em>, <em>('DELTA'</em>, <em>(521.0</em>, <em>551.0))]))</em>, <em>('G'</em>, <em>OrderedDict([('BRAVO'</em>, <em>(1702.0</em>, <em>1571.0))</em>, <em>('CHARLIE'</em>, <em>(1139.0</em>, <em>1033.0))</em>, <em>('ALPHA'</em>, <em>(534.0</em>, <em>1590.0))</em>, <em>('ECHO'</em>, <em>(1685.0</em>, <em>394.0))</em>, <em>('DELTA'</em>, <em>(515.0</em>, <em>415.0))]))</em>, <em>('F'</em>, <em>OrderedDict([('BRAVO'</em>, <em>(1745.0</em>, <em>1668.0))</em>, <em>('CHARLIE'</em>, <em>(1141.0</em>, <em>1144.0))</em>, <em>('ALPHA'</em>, <em>(578.0</em>, <em>1686.0))</em>, <em>('ECHO'</em>, <em>(1723.0</em>, <em>496.0))</em>, <em>('DELTA'</em>, <em>(553.0</em>, <em>522.0))]))])</em>, <em>'CCD3': {'H': {'BRAVO': (1689.4</em>, <em>1668.8000000000002)</em>, <em>'ALPHA': (460.6</em>, <em>1668.8000000000002)</em>, <em>'DELTA': (460.6</em>, <em>417.20000000000005)</em>, <em>'ECHO': (1689.4</em>, <em>417.20000000000005)</em>, <em>'CHARLIE': (1075.0</em>, <em>1043.0)}</em>, <em>'E': {'BRAVO': (1689.4</em>, <em>3754.8)</em>, <em>'ALPHA': (460.6</em>, <em>3754.8)</em>, <em>'DELTA': (460.6</em>, <em>2503.2)</em>, <em>'ECHO': (1689.4</em>, <em>2503.2)</em>, <em>'CHARLIE': (1075.0</em>, <em>3129.0)}</em>, <em>'G': {'BRAVO': (3808.4</em>, <em>1668.8000000000002)</em>, <em>'ALPHA': (2579.6</em>, <em>1668.8000000000002)</em>, <em>'DELTA': (2579.6</em>, <em>417.20000000000005)</em>, <em>'ECHO': (3808.4</em>, <em>417.20000000000005)</em>, <em>'CHARLIE': (3194.0</em>, <em>1043.0)}</em>, <em>'F': {'BRAVO': (3808.4</em>, <em>3754.8)</em>, <em>'ALPHA': (2579.6</em>, <em>3754.8)</em>, <em>'DELTA': (2579.6</em>, <em>2503.2)</em>, <em>'ECHO': (3808.4</em>, <em>2503.2)</em>, <em>'CHARLIE': (3194.0</em>, <em>3129.0)}}</em>, <em>'CCD1': {'H': {'ALPHA': (460.6</em>, <em>1668.8000000000002)</em>, <em>'CHARLIE': (1075.0</em>, <em>1043.0)</em>, <em>'DELTA': (460.6</em>, <em>417.20000000000005)</em>, <em>'ECHO': (1689.4</em>, <em>417.20000000000005)</em>, <em>'BRAVO': (1689.4</em>, <em>1668.8000000000002)}</em>, <em>'E': {'ALPHA': (460.6</em>, <em>3754.8)</em>, <em>'CHARLIE': (1075.0</em>, <em>3129.0)</em>, <em>'DELTA': (460.6</em>, <em>2503.2)</em>, <em>'ECHO': (1689.4</em>, <em>2503.2)</em>, <em>'BRAVO': (1689.4</em>, <em>3754.8)}</em>, <em>'G': {'ALPHA': (2579.6</em>, <em>1668.8000000000002)</em>, <em>'CHARLIE': (3194.0</em>, <em>1043.0)</em>, <em>'DELTA': (2579.6</em>, <em>417.20000000000005)</em>, <em>'ECHO': (3808.4</em>, <em>417.20000000000005)</em>, <em>'BRAVO': (3808.4</em>, <em>1668.8000000000002)}</em>, <em>'F': {'ALPHA': (2579.6</em>, <em>3754.8)</em>, <em>'CHARLIE': (3194.0</em>, <em>3129.0)</em>, <em>'DELTA': (2579.6</em>, <em>2503.2)</em>, <em>'ECHO': (3808.4</em>, <em>2503.2)</em>, <em>'BRAVO': (3808.4</em>, <em>3754.8)}}</em>, <em>'names': ['ALPHA'</em>, <em>'BRAVO'</em>, <em>'CHARLIE'</em>, <em>'DELTA'</em>, <em>'ECHO']}</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.lib.gen_point_mask" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.point.lib.</code><code class="sig-name descname">gen_point_mask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Quad</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">75</span></em>, <em class="sig-param"><span class="n">sources</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">coodict</span><span class="o">=</span><span class="default_value">{'CCD1': {'E': {'ALPHA': 460.6, 3754.8, 'BRAVO': 1689.4, 3754.8, 'CHARLIE': 1075.0, 3129.0, 'DELTA': 460.6, 2503.2, 'ECHO': 1689.4, 2503.2}, 'F': {'ALPHA': 2579.6, 3754.8, 'BRAVO': 3808.4, 3754.8, 'CHARLIE': 3194.0, 3129.0, 'DELTA': 2579.6, 2503.2, 'ECHO': 3808.4, 2503.2}, 'G': {'ALPHA': 2579.6, 1668.8000000000002, 'BRAVO': 3808.4, 1668.8000000000002, 'CHARLIE': 3194.0, 1043.0, 'DELTA': 2579.6, 417.20000000000005, 'ECHO': 3808.4, 417.20000000000005}, 'H': {'ALPHA': 460.6, 1668.8000000000002, 'BRAVO': 1689.4, 1668.8000000000002, 'CHARLIE': 1075.0, 1043.0, 'DELTA': 460.6, 417.20000000000005, 'ECHO': 1689.4, 417.20000000000005}}, 'CCD2': {'E': {'ALPHA': 542.0, 1725.0, 'BRAVO': 1716.0, 1700.0, 'CHARLIE': 1126.0, 1124.0, 'DELTA': 521.0, 551.0, 'ECHO': 1695.0, 537.0}, 'F': {'ALPHA': 578.0, 1686.0, 'BRAVO': 1745.0, 1668.0, 'CHARLIE': 1141.0, 1144.0, 'DELTA': 553.0, 522.0, 'ECHO': 1723.0, 496.0}, 'G': {'ALPHA': 534.0, 1590.0, 'BRAVO': 1702.0, 1571.0, 'CHARLIE': 1139.0, 1033.0, 'DELTA': 515.0, 415.0, 'ECHO': 1685.0, 394.0}, 'H': {'ALPHA': 554.0, 1626.0, 'BRAVO': 1725.0, 1606.0, 'CHARLIE': 1131.0, 1029.0, 'DELTA': 531.0, 446.0, 'ECHO': 1706.0, 435.0}}, 'CCD3': {'E': {'ALPHA': 460.6, 3754.8, 'BRAVO': 1689.4, 3754.8, 'CHARLIE': 1075.0, 3129.0, 'DELTA': 460.6, 2503.2, 'ECHO': 1689.4, 2503.2}, 'F': {'ALPHA': 2579.6, 3754.8, 'BRAVO': 3808.4, 3754.8, 'CHARLIE': 3194.0, 3129.0, 'DELTA': 2579.6, 2503.2, 'ECHO': 3808.4, 2503.2}, 'G': {'ALPHA': 2579.6, 1668.8000000000002, 'BRAVO': 3808.4, 1668.8000000000002, 'CHARLIE': 3194.0, 1043.0, 'DELTA': 2579.6, 417.20000000000005, 'ECHO': 3808.4, 417.20000000000005}, 'H': {'ALPHA': 460.6, 1668.8000000000002, 'BRAVO': 1689.4, 1668.8000000000002, 'CHARLIE': 1075.0, 1043.0, 'DELTA': 460.6, 417.20000000000005, 'ECHO': 1689.4, 417.20000000000005}}, 'names': ['ALPHA', 'BRAVO', 'CHARLIE', 'DELTA', 'ECHO']}</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.lib.gen_point_mask" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -532,7 +456,7 @@ imaging data.</p>
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/vison_logo.png" alt="Logo"/>
             </a></p>
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Point-Source Analysis</a><ul>
 <li><a class="reference internal" href="#module-vison.point.basis">basis.py</a></li>
@@ -576,15 +500,15 @@ imaging data.</p>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -604,12 +528,13 @@ imaging data.</p>
         <li class="right" >
           <a href="plot.html" title="Plotting"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+404.g5ace8e4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+12.g95d2b7a documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Point-Source Analysis</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, Ruyman Azzollini.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
     </div>
   </body>
 </html>

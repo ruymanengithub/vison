@@ -1,35 +1,25 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Plotting &#8212; vison 0.9+404.g5ace8e4 documentation</title>
-    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plotting &#8212; vison 1.0+12.g95d2b7a documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.9+404.g5ace8e4',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Point-Source Analysis" href="point.html" />
     <link rel="prev" title="OGSE Tools" href="ogse.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -45,7 +35,8 @@
         <li class="right" >
           <a href="ogse.html" title="OGSE Tools"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+404.g5ace8e4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+12.g95d2b7a documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Plotting</a></li> 
       </ul>
     </div>  
 
@@ -60,85 +51,82 @@
 <span id="baseplotclasses-py"></span><h2>baseplotclasses.py<a class="headerlink" href="#module-vison.plot.baseplotclasses" title="Permalink to this headline">¶</a></h2>
 <p>vison pipeline: Classes to do plots.</p>
 <p>Created on Mon Nov 13 17:54:08 2017</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
-<dl class="class">
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
+<dl class="py class">
 <dt id="vison.plot.baseplotclasses.Beam1DHist">
-<em class="property">class </em><code class="descclassname">vison.plot.baseplotclasses.</code><code class="descname">Beam1DHist</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.Beam1DHist" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vison.plot.baseplotclasses.</code><code class="sig-name descname">Beam1DHist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.Beam1DHist" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="vison.plot.baseplotclasses.BeamPlot">
-<em class="property">class </em><code class="descclassname">vison.plot.baseplotclasses.</code><code class="descname">BeamPlot</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.BeamPlot" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">vison.plot.baseplotclasses.</code><code class="sig-name descname">BeamPlot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.BeamPlot" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="vison.plot.baseplotclasses.BeamPlot.populate_axes">
-<code class="descname">populate_axes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.BeamPlot.populate_axes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">populate_axes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.BeamPlot.populate_axes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="vison.plot.baseplotclasses.ShellPlot">
-<em class="property">class </em><code class="descclassname">vison.plot.baseplotclasses.</code><code class="descname">ShellPlot</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.ShellPlot" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vison.plot.baseplotclasses.</code><code class="sig-name descname">ShellPlot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.ShellPlot" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.plot.baseplotclasses.testBeam2ImgShow">
-<code class="descclassname">vison.plot.baseplotclasses.</code><code class="descname">testBeam2ImgShow</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.testBeam2ImgShow" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.plot.baseplotclasses.</code><code class="sig-name descname">testBeam2ImgShow</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.testBeam2ImgShow" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="vison.plot.baseplotclasses.BasicPlot">
-<em class="property">class </em><code class="descclassname">vison.plot.baseplotclasses.</code><code class="descname">BasicPlot</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.BasicPlot" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vison.plot.baseplotclasses.</code><code class="sig-name descname">BasicPlot</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.BasicPlot" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="class">
-<dt>
-<em class="property">class </em><code class="descclassname">vison.plot.baseplotclasses.</code><code class="descname">Beam1DHist</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dl class="py class">
+<dt id="id0">
+<em class="property">class </em><code class="sig-prename descclassname">vison.plot.baseplotclasses.</code><code class="sig-name descname">Beam1DHist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="vison.plot.baseplotclasses.BeamImgShow">
-<em class="property">class </em><code class="descclassname">vison.plot.baseplotclasses.</code><code class="descname">BeamImgShow</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.BeamImgShow" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vison.plot.baseplotclasses.</code><code class="sig-name descname">BeamImgShow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.BeamImgShow" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="class">
-<dt>
-<em class="property">class </em><code class="descclassname">vison.plot.baseplotclasses.</code><code class="descname">BeamPlot</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span></dt>
-<dd><dl class="method">
-<dt>
-<code class="descname">populate_axes</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dl class="py class">
+<dt id="id1">
+<em class="property">class </em><code class="sig-prename descclassname">vison.plot.baseplotclasses.</code><code class="sig-name descname">BeamPlot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="id2">
+<code class="sig-name descname">populate_axes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="vison.plot.baseplotclasses.BeamPlotYvX">
-<em class="property">class </em><code class="descclassname">vison.plot.baseplotclasses.</code><code class="descname">BeamPlotYvX</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.BeamPlotYvX" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vison.plot.baseplotclasses.</code><code class="sig-name descname">BeamPlotYvX</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.BeamPlotYvX" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="vison.plot.baseplotclasses.CCD2DPlot">
-<em class="property">class </em><code class="descclassname">vison.plot.baseplotclasses.</code><code class="descname">CCD2DPlot</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.CCD2DPlot" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vison.plot.baseplotclasses.</code><code class="sig-name descname">CCD2DPlot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.CCD2DPlot" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="vison.plot.baseplotclasses.ImgShow">
-<em class="property">class </em><code class="descclassname">vison.plot.baseplotclasses.</code><code class="descname">ImgShow</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.ImgShow" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">vison.plot.baseplotclasses.</code><code class="sig-name descname">ImgShow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.ImgShow" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="vison.plot.baseplotclasses.ImgShow.plt_trimmer">
-<code class="descname">plt_trimmer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.ImgShow.plt_trimmer" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">plt_trimmer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.ImgShow.plt_trimmer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.plot.baseplotclasses.ImgShow.populate_axes">
-<code class="descname">populate_axes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.ImgShow.populate_axes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">populate_axes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.baseplotclasses.ImgShow.populate_axes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -147,43 +135,40 @@
 <div class="section" id="module-vison.plot.figclasses">
 <span id="figclasses-py"></span><h2>figclasses.py<a class="headerlink" href="#module-vison.plot.figclasses" title="Permalink to this headline">¶</a></h2>
 <p>Created on Mon Apr 16 16:17:13 2018</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
-<dl class="class">
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
+<dl class="py class">
 <dt id="vison.plot.figclasses.BlueScreen">
-<em class="property">class </em><code class="descclassname">vison.plot.figclasses.</code><code class="descname">BlueScreen</code><a class="headerlink" href="#vison.plot.figclasses.BlueScreen" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">vison.plot.figclasses.</code><code class="sig-name descname">BlueScreen</code><a class="headerlink" href="#vison.plot.figclasses.BlueScreen" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="vison.plot.figclasses.BlueScreen.build_data">
-<code class="descname">build_data</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.figclasses.BlueScreen.build_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">build_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.figclasses.BlueScreen.build_data" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.plot.figclasses.BlueScreen.configure">
-<code class="descname">configure</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.figclasses.BlueScreen.configure" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">configure</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.figclasses.BlueScreen.configure" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="vison.plot.figclasses.Fig_Dynamic">
-<em class="property">class </em><code class="descclassname">vison.plot.figclasses.</code><code class="descname">Fig_Dynamic</code><span class="sig-paren">(</span><em>figname=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.figclasses.Fig_Dynamic" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="attribute">
+<em class="property">class </em><code class="sig-prename descclassname">vison.plot.figclasses.</code><code class="sig-name descname">Fig_Dynamic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">figname</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.figclasses.Fig_Dynamic" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py attribute">
 <dt id="vison.plot.figclasses.Fig_Dynamic.plotclass">
-<code class="descname">plotclass</code><a class="headerlink" href="#vison.plot.figclasses.Fig_Dynamic.plotclass" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">ShellPlot</span></code></p>
+<code class="sig-name descname">plotclass</code><a class="headerlink" href="#vison.plot.figclasses.Fig_Dynamic.plotclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#vison.plot.baseplotclasses.ShellPlot" title="vison.plot.baseplotclasses.ShellPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">vison.plot.baseplotclasses.ShellPlot</span></code></a></p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="vison.plot.figclasses.Fig_Husk">
-<em class="property">class </em><code class="descclassname">vison.plot.figclasses.</code><code class="descname">Fig_Husk</code><span class="sig-paren">(</span><em>figname=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.figclasses.Fig_Husk" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vison.plot.figclasses.</code><code class="sig-name descname">Fig_Husk</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">figname</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.figclasses.Fig_Husk" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -192,32 +177,32 @@
 <p>Classes to handle FPA-level plots</p>
 <p>Created on Fri Jul  5 16:16:20 2019</p>
 <p>&#64;author: raf</p>
-<dl class="class">
+<dl class="py class">
 <dt id="vison.plot.plots_fpa.FpaFindingChart">
-<em class="property">class </em><code class="descclassname">vison.plot.plots_fpa.</code><code class="descname">FpaFindingChart</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.plots_fpa.FpaFindingChart" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">vison.plot.plots_fpa.</code><code class="sig-name descname">FpaFindingChart</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.plots_fpa.FpaFindingChart" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="vison.plot.plots_fpa.FpaFindingChart.populate_axes">
-<code class="descname">populate_axes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.plots_fpa.FpaFindingChart.populate_axes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">populate_axes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.plots_fpa.FpaFindingChart.populate_axes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="vison.plot.plots_fpa.FpaHeatMap">
-<em class="property">class </em><code class="descclassname">vison.plot.plots_fpa.</code><code class="descname">FpaHeatMap</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.plots_fpa.FpaHeatMap" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">vison.plot.plots_fpa.</code><code class="sig-name descname">FpaHeatMap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.plots_fpa.FpaHeatMap" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="vison.plot.plots_fpa.FpaHeatMap.populate_axes">
-<code class="descname">populate_axes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.plots_fpa.FpaHeatMap.populate_axes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">populate_axes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.plots_fpa.FpaHeatMap.populate_axes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="vison.plot.plots_fpa.FpaPlot">
-<em class="property">class </em><code class="descclassname">vison.plot.plots_fpa.</code><code class="descname">FpaPlot</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.plots_fpa.FpaPlot" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">vison.plot.plots_fpa.</code><code class="sig-name descname">FpaPlot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.plots_fpa.FpaPlot" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="vison.plot.plots_fpa.FpaPlot.populate_axes">
-<code class="descname">populate_axes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.plots_fpa.FpaPlot.populate_axes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">populate_axes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.plot.plots_fpa.FpaPlot.populate_axes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -228,18 +213,16 @@
 <p>Plotting classes shared across tasks/sub-tasks and derived from plots.baseclasses.
 They have in common that they show trends with time of some variables / stats.</p>
 <p>Created on Fri Jan 26 16:18:43 2018</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">raf</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>raf</p>
+</dd>
+</dl>
 </div>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -248,7 +231,7 @@ They have in common that they show trends with time of some variables / stats.</
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/vison_logo.png" alt="Logo"/>
             </a></p>
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Plotting</a><ul>
 <li><a class="reference internal" href="#module-vison.plot.baseplotclasses">baseplotclasses.py</a></li>
@@ -273,15 +256,15 @@ They have in common that they show trends with time of some variables / stats.</
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -301,12 +284,13 @@ They have in common that they show trends with time of some variables / stats.</
         <li class="right" >
           <a href="ogse.html" title="OGSE Tools"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+404.g5ace8e4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+12.g95d2b7a documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Plotting</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, Ruyman Azzollini.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
     </div>
   </body>
 </html>

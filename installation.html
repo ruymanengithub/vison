@@ -1,35 +1,25 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Installation &#8212; vison 0.9+404.g5ace8e4 documentation</title>
-    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Installation &#8212; vison 1.0+12.g95d2b7a documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.9+404.g5ace8e4',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="vison cook-book" href="cookbook.html" />
     <link rel="prev" title="README" href="source/includeme.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -45,7 +35,8 @@
         <li class="right" >
           <a href="source/includeme.html" title="README"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+404.g5ace8e4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+12.g95d2b7a documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Installation</a></li> 
       </ul>
     </div>  
 
@@ -58,30 +49,24 @@
 <span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="cloning-vison-from-the-repository-using-git">
 <h2>Cloning <em>vison</em> from the repository using <em>git</em><a class="headerlink" href="#cloning-vison-from-the-repository-using-git" title="Permalink to this headline">¶</a></h2>
-<p>If you don&#8217;t have <em>git</em> installed in your system, please follow this
+<p>If you don’t have <em>git</em> installed in your system, please follow this
 <a class="reference external" href="https://www.atlassian.com/git/tutorials/install-git">link</a> first.</p>
 <p>Here we will follow these <a class="reference external" href="https://help.github.com/articles/cloning-a-repository/foralinuxsystem">instructions</a>
 to clone the repository to your own computer. Follow the link for instructions in other operative systems.</p>
 <p>Step-by-step:</p>
 <ul>
-<li><p class="first">Go to <a class="reference external" href="https://github.com/ruymanengithub/vison">https://github.com/ruymanengithub/vison</a>.</p>
-</li>
-<li><p class="first">Click on the green &#8220;Clone or download&#8221; button.</p>
-</li>
-<li><p class="first">In the Clone with HTTPs section, click  to copy the clone URL for the repository.</p>
-</li>
-<li><p class="first">Open a Terminal.</p>
-</li>
-<li><p class="first">Change the current working directory to the location where you want the cloned directory
-to be made.</p>
-</li>
-<li><p class="first">Type <code class="docutils literal"><span class="pre">git</span> <span class="pre">clone</span></code>, and then paste the URL you copied in Step 1.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>~$ git clone https://github.com/ruymanengithub/vison
+<li><p>Go to <a class="reference external" href="https://github.com/ruymanengithub/vison">https://github.com/ruymanengithub/vison</a>.</p></li>
+<li><p>Click on the green “Clone or download” button.</p></li>
+<li><p>In the Clone with HTTPs section, click  to copy the clone URL for the repository.</p></li>
+<li><p>Open a Terminal.</p></li>
+<li><p>Change the current working directory to the location where you want the cloned directory
+to be made.</p></li>
+<li><p>Type <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span></code>, and then paste the URL you copied in Step 1.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~$ git clone https://github.com/ruymanengithub/vison
 </pre></div>
 </div>
 </li>
-<li><p class="first">Press Enter. Your local clone will be created.</p>
-</li>
+<li><p>Press Enter. Your local clone will be created.</p></li>
 </ul>
 <div class="figure align-center">
 <img alt="_images/repo_screenshot.png" src="_images/repo_screenshot.png" />
@@ -92,7 +77,7 @@ to be made.</p>
 <p>We recommend installing the code through a <cite>conda</cite> environment, with a specific list
 of packages, so you can be sure you have all the needed dependencies.</p>
 <p><strong>Note</strong>: as of version 1.0 of vison, make sure you use the Python 3.X installer of Anaconda.</p>
-<p>First, if you don&#8217;t have <cite>conda</cite> already installed in your system already,
+<p>First, if you don’t have <cite>conda</cite> already installed in your system already,
 follow the instructions in this <a class="reference external" href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html#regular-installation">link</a>.</p>
 <div class="section" id="installing-conda-and-creating-vison-environment">
 <h3>Installing conda and creating <cite>vison</cite> environment<a class="headerlink" href="#installing-conda-and-creating-vison-environment" title="Permalink to this headline">¶</a></h3>
@@ -101,43 +86,41 @@ allow you to install the pipeline and meet all its dependencies (save for SAO DS
 is only used in real-time monitoring, optionally).</p>
 <p>Step-by-Step:</p>
 <ul>
-<li><p class="first">change directory to your copy of the vison repository:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>~$ cd vison
+<li><p>change directory to your copy of the vison repository:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~$ cd vison
 </pre></div>
 </div>
 </li>
-<li><p class="first">Under the &#8216;conda&#8217; sub-folder, you will find several text files:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>~$ cd conda
+<li><p>Under the ‘conda’ sub-folder, you will find several text files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~$ cd conda
 ~$ ls
 env-conda_vison_linux.txt  env-pip_vison.txt
 </pre></div>
 </div>
 </li>
-<li><p class="first">Then execute the following command to create a new conda environment, <cite>vison</cite>.</p>
-</li>
+<li><p>Then execute the following command to create a new conda environment, <cite>vison</cite>.</p></li>
 </ul>
 <p>Use the OS version that may correspond in your case (by now, only linux-64 bits version available).</p>
 <blockquote>
-<div><dl class="docutils">
-<dt>::</dt>
-<dd>~$ conda create -n vison &#8211;file env-conda_[OS].txt</dd>
+<div><dl class="simple">
+<dt>::</dt><dd><p>~$ conda create -n vison –file env-conda_[OS].txt</p>
+</dd>
 </dl>
 </div></blockquote>
 <ul>
-<li><p class="first">When prompted, type &#8220;y&#8221; and return to install the listed packages.</p>
-</li>
-<li><p class="first">Activate the new environment</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>~$ conda activate vison
+<li><p>When prompted, type “y” and return to install the listed packages.</p></li>
+<li><p>Activate the new environment</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~$ conda activate vison
 </pre></div>
 </div>
 </li>
-<li><p class="first">Update pipe</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>~$ pip install --upgrade pip
+<li><p>Update pipe</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~$ pip install --upgrade pip
 </pre></div>
 </div>
 </li>
-<li><p class="first">Install the packages that are accessed via <cite>pip</cite>, within the conda environment:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>~$ pip install -r env-pip_vison.txt
+<li><p>Install the packages that are accessed via <cite>pip</cite>, within the conda environment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~$ pip install -r env-pip_vison.txt
 </pre></div>
 </div>
 </li>
@@ -145,28 +128,27 @@ env-conda_vison_linux.txt  env-pip_vison.txt
 </div>
 <div class="section" id="hackity-hack-installing-astromatic-wrapper">
 <h3>Hackity-Hack: installing astromatic_wrapper<a class="headerlink" href="#hackity-hack-installing-astromatic-wrapper" title="Permalink to this headline">¶</a></h3>
-<p>One dependency of vison not covered by conda, or pip, (in Python &gt; 3.5) is &#8220;astromatic_wrapper&#8221;, an apparently no longer-maintained Python wrapper for the tools of astromatic.net. In vison, this package is used to interface with SExtractor (source detection in images). I&#8217;ve had to do a little patch (literally one line change) to the code so that it can actually be installed in the Python 3.6 environment used for vison. But you&#8217;ll have to install this version of mine manually. It&#8217;s not hard, though:</p>
+<p>One dependency of vison not covered by conda, or pip, (in Python &gt; 3.5) is “astromatic_wrapper”, an apparently no longer-maintained Python wrapper for the tools of astromatic.net. In vison, this package is used to interface with SExtractor (source detection in images). I’ve had to do a little patch (literally one line change) to the code so that it can actually be installed in the Python 3.6 environment used for vison. But you’ll have to install this version of mine manually. It’s not hard, though:</p>
 <ul>
-<li><p class="first">Without deactivating the &#8216;vison&#8217; conda environment, go to the folder in your system where you install software and do the following to clone the repository of this hacked version of astromatic_wrapper:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>~$ git clone git://github.com/ruymanengithub/astromatic_wrapper.git
+<li><p>Without deactivating the ‘vison’ conda environment, go to the folder in your system where you install software and do the following to clone the repository of this hacked version of astromatic_wrapper:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~$ git clone git://github.com/ruymanengithub/astromatic_wrapper.git
 </pre></div>
 </div>
 </li>
-<li><p class="first">once done, you&#8217;ll have a new folder created under where you executed this last command, named &#8220;astromatic_wrapper&#8221;. Now:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>~$ cd astromatic_wrapper
+<li><p>once done, you’ll have a new folder created under where you executed this last command, named “astromatic_wrapper”. Now:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~$ cd astromatic_wrapper
 ~$ python setup.py install
 </pre></div>
 </div>
 </li>
 </ul>
-<dl class="docutils">
-<dt>And that should be it. You can check it is installed by trying to import it from the python interpreter:</dt>
-<dd><dl class="first last docutils">
-<dt>::</dt>
-<dd>~$ python
+<dl class="simple">
+<dt>And that should be it. You can check it is installed by trying to import it from the python interpreter:</dt><dd><dl class="simple">
+<dt>::</dt><dd><p>~$ python
 &gt;&gt;&gt; import astromatic_wrapper
 &gt;&gt;&gt; print(astromatic_wrapper.__version__)
-0.0.dev260</dd>
+0.0.dev260</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -175,7 +157,7 @@ env-conda_vison_linux.txt  env-pip_vison.txt
 <h3>Installing <cite>vison</cite><a class="headerlink" href="#installing-vison" title="Permalink to this headline">¶</a></h3>
 <p>Finally, to install the <cite>vison</cite> pipeline itself, we will go back to the folder we downloaded
 from the github repository:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>~$ cd [wherever you pulled vison to...]
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~$ cd [wherever you pulled vison to...]
 ~$ ls
 conda  docs  LICENSE  manual_vison.pdf  README.md  setup.cfg  setup_distutils.py  setup.py  vison
 </pre></div>
@@ -184,18 +166,18 @@ conda  docs  LICENSE  manual_vison.pdf  README.md  setup.cfg  setup_distutils.py
 <p>~$ python setup.py install</p>
 <p>Now the vison package will be accessible from anywhere in your system, whenever you start python from  within the <cite>vison</cite> conda environment. For example:</p>
 <ul>
-<li><p class="first">open a new terminal and go to your home directory</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>~$ cd
+<li><p>open a new terminal and go to your home directory</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~$ cd
 </pre></div>
 </div>
 </li>
-<li><p class="first">activate the vison environment:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>~$ conda activate vison
+<li><p>activate the vison environment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~$ conda activate vison
 </pre></div>
 </div>
 </li>
-<li><p class="first">start the python interpreter and import vison:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>~$ python
+<li><p>start the python interpreter and import vison:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~$ python
 &gt;&gt;&gt; import vison
 &gt;&gt;&gt; dir(vison)
 [&#39;Eyegore&#39;, &#39;FlatFielding&#39;, &#39;Pipe&#39;, &#39;Report&#39;, &#39;__all__&#39;, &#39;__builtins__&#39;, &#39;__doc__&#39;, &#39;__file__&#39;,
@@ -211,6 +193,7 @@ conda  docs  LICENSE  manual_vison.pdf  README.md  setup.cfg  setup_distutils.py
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -219,7 +202,7 @@ conda  docs  LICENSE  manual_vison.pdf  README.md  setup.cfg  setup_distutils.py
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/vison_logo.png" alt="Logo"/>
             </a></p>
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Installation</a><ul>
 <li><a class="reference internal" href="#cloning-vison-from-the-repository-using-git">Cloning <em>vison</em> from the repository using <em>git</em></a></li>
@@ -247,15 +230,15 @@ conda  docs  LICENSE  manual_vison.pdf  README.md  setup.cfg  setup_distutils.py
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -275,12 +258,13 @@ conda  docs  LICENSE  manual_vison.pdf  README.md  setup.cfg  setup_distutils.py
         <li class="right" >
           <a href="source/includeme.html" title="README"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+404.g5ace8e4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+12.g95d2b7a documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Installation</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, Ruyman Azzollini.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
     </div>
   </body>
 </html>

@@ -1,34 +1,24 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Welcome to vison’s documentation! &#8212; vison 0.9+404.g5ace8e4 documentation</title>
-    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to vison’s documentation! &#8212; vison 1.0+12.g95d2b7a documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.9+404.g5ace8e4',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="README" href="source/includeme.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -41,7 +31,8 @@
         <li class="right" >
           <a href="source/includeme.html" title="README"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">vison 0.9+404.g5ace8e4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">vison 1.0+12.g95d2b7a documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Welcome to vison’s documentation!</a></li> 
       </ul>
     </div>  
 
@@ -51,30 +42,31 @@
           <div class="body" role="main">
             
   <div class="section" id="welcome-to-vison-s-documentation">
-<h1>Welcome to vison&#8217;s documentation!<a class="headerlink" href="#welcome-to-vison-s-documentation" title="Permalink to this headline">¶</a></h1>
+<h1>Welcome to vison’s documentation!<a class="headerlink" href="#welcome-to-vison-s-documentation" title="Permalink to this headline">¶</a></h1>
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="source/includeme.html">README</a></li>
 </ul>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Contact:</th><td class="field-body">&lt;e-mail Ruyman Azzollini at UCL&gt;</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">issue:</th><td class="field-body">0.9+404.g5ace8e4</td>
-</tr>
-<tr class="field-even field"><th class="field-name">version:</th><td class="field-body">0.9+404.g5ace8e4</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">date:</th><td class="field-body">Jul 16, 2020</td>
-</tr>
-</tbody>
-</table>
-<p>This Python package &#8220;vison&#8221; is the software pipeline that has been used at MSSL for ground calibration of the VIS detection chains (12 + 2 spares), including one ROE, one RPSU and three CCDs each.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+<dt class="field-even">Contact</dt>
+<dd class="field-even"><p>&lt;e-mail Ruyman Azzollini at UCL&gt;</p>
+</dd>
+<dt class="field-odd">issue</dt>
+<dd class="field-odd"><p>1.0+12.g95d2b7a</p>
+</dd>
+<dt class="field-even">version</dt>
+<dd class="field-even"><p>1.0+12.g95d2b7a</p>
+</dd>
+<dt class="field-odd">date</dt>
+<dd class="field-odd"><p>Aug 10, 2020</p>
+</dd>
+</dl>
+<p>This Python package “vison” is the software pipeline that has been used at MSSL for ground calibration of the VIS detection chains (12 + 2 spares), including one ROE, one RPSU and three CCDs each.</p>
 </div>
 <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
@@ -97,16 +89,13 @@
 </div>
 <div class="section" id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
-<p>Instructions to acquire a copy of the &#8220;conda&#8221; environment that provides almost all
-dependencies is included in the package. See <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a> instructions for
-details. The only package that will not be installed by this means is SAO-DS9,
-which must be installed separetly, in order to be able to use some of the
-interactive inspection capabilities of Eyegore (data acquisition monitoring).</p>
+<p><strong>*WARNING</strong>: Adapting to Python 3.6. WiP.</p>
+<p>Instructions to acquire a copy of the “conda” environment that provides almost all dependencies is included in the package. See <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a> instructions for details. The only package that will not be installed by this means is SAO-DS9, which must be installed separetly, in order to be able to use some of the interactive inspection capabilities of Eyegore (data acquisition monitoring).</p>
 </div>
 </div>
 <div class="section" id="how-to-use-it">
 <h1>How to Use it<a class="headerlink" href="#how-to-use-it" title="Permalink to this headline">¶</a></h1>
-<p>This is some kind of <strong>&#8220;cook-book&#8221;</strong>.  Written <em>a bit like when your grandmother tells you to put a pinch of sugar and heat it for a while... that kind of accuracy.</em></p>
+<p>This is some kind of <strong>“cook-book”</strong>.  Written <em>a bit like when your grandmother tells you to put a pinch of sugar and heat it for a while… that kind of accuracy.</em></p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="cookbook.html">vison cook-book</a><ul>
@@ -159,7 +148,7 @@ interactive inspection capabilities of Eyegore (data acquisition monitoring).</p
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cookbook.html#quickds9-quick-loading-many-images-into-ds9">Quickds9: quick-loading many images into ds9</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cookbook.html#practical-case-nostromo">PRACTICAL CASE: “NOSTROMO&#8221;</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cookbook.html#practical-case-nostromo">PRACTICAL CASE: “NOSTROMO”</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="cookbook.html#environment-setup">ENVIRONMENT SETUP</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cookbook.html#writing-acquisition-scripts-for-nostromo">Writing Acquisition Scripts for NOSTROMO</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cookbook.html#updates-to-the-scripts">UPDATES to the Scripts</a></li>
@@ -283,13 +272,13 @@ HK files, FITS files, etc.</p>
 </div>
 </div>
 <div class="section" id="flat-acq-analysis-tools">
-<h1>&#8220;Flat&#8221; Acq. Analysis Tools<a class="headerlink" href="#flat-acq-analysis-tools" title="Permalink to this headline">¶</a></h1>
+<h1>“Flat” Acq. Analysis Tools<a class="headerlink" href="#flat-acq-analysis-tools" title="Permalink to this headline">¶</a></h1>
 <p>Tools for analysis of flat-illumination tests.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="flat.html">&#8220;Flat&#8221; Acq. Analysis Tools</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="flat.html">“Flat” Acq. Analysis Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="flat.html#module-vison.flat.FlatTask">FlatTask.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="flat.html#module-vison.pipe.FlatFielding">FlatFielding.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flat.html#flatfielding-py">FlatFielding.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="flat.html#module-vison.flat.nl">nl.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="flat.html#module-vison.flat.ptc">ptc.py</a></li>
 </ul>
@@ -331,7 +320,7 @@ HK files, FITS files, etc.</p>
 </div>
 <div class="section" id="metatests">
 <h1>Metatests<a class="headerlink" href="#metatests" title="Permalink to this headline">¶</a></h1>
-<p>Tests that ingest results from a test / type of test across a collection of block-calibrations. This is used to compare results across the &#8220;as-built&#8221; FM FPA, and produce CDPs at FPA level from the results of the calibrations of the individual blocks that make up the FPA.</p>
+<p>Tests that ingest results from a test / type of test across a collection of block-calibrations. This is used to compare results across the “as-built” FM FPA, and produce CDPs at FPA level from the results of the calibrations of the individual blocks that make up the FPA.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="metatests.html">Metatests</a><ul>
@@ -347,7 +336,7 @@ HK files, FITS files, etc.</p>
 <li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.nl">nl.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.persistence">persistence.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.psf">psf.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.ptc">ptc.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatests.html#ptc-py">ptc.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.tpx1">tpx1.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metatests.html#module-vison.metatests.tpx2">tpx2.py</a></li>
 </ul>
@@ -356,15 +345,15 @@ HK files, FITS files, etc.</p>
 </div>
 </div>
 <div class="section" id="monitoring-eyegore">
-<h1>Monitoring (&#8220;Eyegore&#8221;)<a class="headerlink" href="#monitoring-eyegore" title="Permalink to this headline">¶</a></h1>
+<h1>Monitoring (“Eyegore”)<a class="headerlink" href="#monitoring-eyegore" title="Permalink to this headline">¶</a></h1>
 <p>Tools to monitor data acquisition on real time: plots of HK, auto-updating of
 visual display of Exposure Log with some interactive capabilities, and display of latest images.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="eyegore.html">Monitoring (&#8220;Eyegore&#8221;)</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="eyegore.html">Monitoring (“Eyegore”)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="eyegore.html#eyegore-py">eyegore.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="eyegore.html#module-vison.eyegore.eyeCCDs">eyeCCDs.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="eyegore.html#module-vison.eyegore.eyeHK">eyeHK.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eyegore.html#eyeccds-py">eyeCCDs.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eyegore.html#eyehk-py">eyeHK.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eyegore.html#module-vison.eyegore.eyeObs">eyeObs.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eyegore.html#eyewarnings-py">eyeWarnings.py</a></li>
 </ul>
@@ -518,7 +507,7 @@ infrasctructure and tools provided by the pipeline.</p>
 <p>Darks and Bias tests.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="dark_scripts.html">&#8220;Dark Acquisitions&#8221; Scripts</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="dark_scripts.html">“Dark Acquisitions” Scripts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dark_scripts.html#module-vison.dark.BIAS0X">BIAS01</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dark_scripts.html#module-vison.dark.DARK01">DARK01</a></li>
 </ul>
@@ -589,13 +578,14 @@ infrasctructure and tools provided by the pipeline.</p>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -604,9 +594,9 @@ infrasctructure and tools provided by the pipeline.</p>
             <p class="logo"><a href="#">
               <img class="logo" src="_static/vison_logo.png" alt="Logo"/>
             </a></p>
-  <h3><a href="#">Table Of Contents</a></h3>
+  <h3><a href="#">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Welcome to vison&#8217;s documentation!</a></li>
+<li><a class="reference internal" href="#">Welcome to vison’s documentation!</a></li>
 <li><a class="reference internal" href="#installation">Installation</a><ul>
 <li><a class="reference internal" href="#dependencies">Dependencies</a></li>
 </ul>
@@ -618,11 +608,11 @@ infrasctructure and tools provided by the pipeline.</p>
 <li><a class="reference internal" href="#analysis-shared">Analysis (Shared)</a></li>
 <li><a class="reference internal" href="#test-campaign-definitions">Test Campaign Definitions</a></li>
 <li><a class="reference internal" href="#charge-injection-tools">Charge Injection Tools</a></li>
-<li><a class="reference internal" href="#flat-acq-analysis-tools">&#8220;Flat&#8221; Acq. Analysis Tools</a></li>
+<li><a class="reference internal" href="#flat-acq-analysis-tools">“Flat” Acq. Analysis Tools</a></li>
 <li><a class="reference internal" href="#fpa-tests">FPA Tests</a></li>
 <li><a class="reference internal" href="#image">Image</a></li>
 <li><a class="reference internal" href="#metatests">Metatests</a></li>
-<li><a class="reference internal" href="#monitoring-eyegore">Monitoring (&#8220;Eyegore&#8221;)</a></li>
+<li><a class="reference internal" href="#monitoring-eyegore">Monitoring (“Eyegore”)</a></li>
 <li><a class="reference internal" href="#ogse">OGSE</a></li>
 <li><a class="reference internal" href="#plotting">Plotting</a></li>
 <li><a class="reference internal" href="#point-source-analysis">Point-Source Analysis</a></li>
@@ -652,15 +642,15 @@ infrasctructure and tools provided by the pipeline.</p>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -677,12 +667,13 @@ infrasctructure and tools provided by the pipeline.</p>
         <li class="right" >
           <a href="source/includeme.html" title="README"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">vison 0.9+404.g5ace8e4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">vison 1.0+12.g95d2b7a documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Welcome to vison’s documentation!</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, Ruyman Azzollini.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
     </div>
   </body>
 </html>

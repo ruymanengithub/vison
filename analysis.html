@@ -1,35 +1,25 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Analysis (Shared) &#8212; vison 0.9+404.g5ace8e4 documentation</title>
-    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis (Shared) &#8212; vison 1.0+12.g95d2b7a documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.9+404.g5ace8e4',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Test Campaign Descriptions" href="campaign.html" />
     <link rel="prev" title="Data Model" href="datamodel.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -45,7 +35,8 @@
         <li class="right" >
           <a href="datamodel.html" title="Data Model"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+404.g5ace8e4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+12.g95d2b7a documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Analysis (Shared)</a></li> 
       </ul>
     </div>  
 
@@ -59,59 +50,58 @@
 <div class="section" id="module-vison.analysis.ellipse">
 <span id="ellipse-py"></span><h2>ellipse.py<a class="headerlink" href="#module-vison.analysis.ellipse" title="Permalink to this headline">¶</a></h2>
 <p>Auxiliary module with functions to generate generalized ellipse masks.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
-<dl class="class">
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
+<dl class="py class">
 <dt id="vison.analysis.ellipse.TestEllipse">
-<em class="property">class </em><code class="descclassname">vison.analysis.ellipse.</code><code class="descname">TestEllipse</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.ellipse.TestEllipse" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vison.analysis.ellipse.</code><code class="sig-name descname">TestEllipse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.ellipse.TestEllipse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Unit tests for the ellipse module.</p>
+<dl class="py method">
+<dt id="vison.analysis.ellipse.TestEllipse.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.ellipse.TestEllipse.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
 </dd></dl>
 
-<dl class="function">
+</dd></dl>
+
+<dl class="py function">
 <dt id="vison.analysis.ellipse.area_superellip">
-<code class="descclassname">vison.analysis.ellipse.</code><code class="descname">area_superellip</code><span class="sig-paren">(</span><em>r</em>, <em>q</em>, <em>c=0</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.ellipse.area_superellip" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.analysis.ellipse.</code><code class="sig-name descname">area_superellip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">q</span></em>, <em class="sig-param"><span class="n">c</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.ellipse.area_superellip" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns area of superellipse, given the semi-major axis length</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.ellipse.dist_superellipse">
-<code class="descclassname">vison.analysis.ellipse.</code><code class="descname">dist_superellipse</code><span class="sig-paren">(</span><em>n</em>, <em>center</em>, <em>q=1.0</em>, <em>pos_ang=0.0</em>, <em>c=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.ellipse.dist_superellipse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.analysis.ellipse.</code><code class="sig-name descname">dist_superellipse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">center</span></em>, <em class="sig-param"><span class="n">q</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">pos_ang</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">c</span><span class="o">=</span><span class="default_value">0.0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.ellipse.dist_superellipse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Form an array in which the value of each element is equal to the
 semi-major axis of the superellipse of specified center, axial ratio,
 position  angle, and c parameter which passes through that element.
 Useful for super-elliptical aperture photometry.</p>
 <p>Inspired on dist_ellipse.pro from AstroLib (IDL).</p>
-<p>Note: this program doesn&#8217;t take into account the change in the order of axes
-from IDL to Python. That means, that in &#8216;n&#8217; and in &#8216;center&#8217;, the order of the
+<p>Note: this program doesn’t take into account the change in the order of axes
+from IDL to Python. That means, that in ‘n’ and in ‘center’, the order of the
 coordinates must be reversed with respect to the case for dist_ellipse.pro, in
 order to get expected results. Nonetheless, the polar angle means the
-counter-clock wise angle with respect to the &#8216;y&#8217; axis.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>n</strong> &#8211; shape of array (N1,N2), it can be an integer (squared shape NxN)</li>
-<li><strong>center</strong> &#8211; center of superellipse radii: (c1,c2)</li>
-<li><strong>q</strong> &#8211; axis ratio r2/r1</li>
-<li><strong>pos_ang</strong> &#8211; position angle of isophotes, in degrees, CCW from axis 1</li>
-<li><strong>c</strong> &#8211; boxyness (c&gt;0) /diskyness (c&lt;0)</li>
+counter-clock wise angle with respect to the ‘y’ axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – shape of array (N1,N2), it can be an integer (squared shape NxN)</p></li>
+<li><p><strong>center</strong> – center of superellipse radii: (c1,c2)</p></li>
+<li><p><strong>q</strong> – axis ratio r2/r1</p></li>
+<li><p><strong>pos_ang</strong> – position angle of isophotes, in degrees, CCW from axis 1</p></li>
+<li><p><strong>c</strong> – boxyness (c&gt;0) /diskyness (c&lt;0)</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.ellipse.effective_radius">
-<code class="descclassname">vison.analysis.ellipse.</code><code class="descname">effective_radius</code><span class="sig-paren">(</span><em>area</em>, <em>q=1.0</em>, <em>c=0.0</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.ellipse.effective_radius" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.analysis.ellipse.</code><code class="sig-name descname">effective_radius</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">area</span></em>, <em class="sig-param"><span class="n">q</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">c</span><span class="o">=</span><span class="default_value">0.0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.ellipse.effective_radius" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns semi-major axis length of superellipse, given the area</p>
 </dd></dl>
 
@@ -119,317 +109,278 @@ counter-clock wise angle with respect to the &#8216;y&#8217; axis.</p>
 <div class="section" id="module-vison.analysis.Guyonnet15">
 <span id="guyonnet15-py"></span><h2>Guyonnet15.py<a class="headerlink" href="#module-vison.analysis.Guyonnet15" title="Permalink to this headline">¶</a></h2>
 <p>Library with functions that implement the algorithms described in Guyonnet+15.
-&#8220;Evidence for self-interaction of charge distribution in CCDs&#8221;
+“Evidence for self-interaction of charge distribution in CCDs”
 Guyonnet, Astier, Antilogus, Regnault and Doherty 2015</p>
 <p>Notes:</p>
 <ul class="simple">
-<li>I renamed &#8220;x&#8221; (pixel boundary index) to &#8220;b&#8221;, to avoid confusion with
-cartesian &#8220;x&#8221;.</li>
-<li>In paper, X belongsto [(0,1),(1,0),(0,-1),(-1,0)]. Here
-b is referred to as cardinal points &#8220;N&#8221;,&#8221;E&#8221;,&#8221;S&#8221;,&#8221;W&#8221;.
-It is linked to matrix index ib, running between 0 and 3.</li>
+<li><p>I renamed “x” (pixel boundary index) to “b”, to avoid confusion with
+cartesian “x”.</p></li>
+<li><p>In paper, X belongsto [(0,1),(1,0),(0,-1),(-1,0)]. Here
+b is referred to as cardinal points “N”,”E”,”S”,”W”.
+It is linked to matrix index ib, running between 0 and 3.</p></li>
 </ul>
 <p>Created on Thu Sep 22 11:38:24 2016</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
-<dl class="function">
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.correct_estatic">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">correct_estatic</code><span class="sig-paren">(</span><em>img</em>, <em>aijb</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.correct_estatic" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">correct_estatic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">img</span></em>, <em class="sig-param"><span class="n">aijb</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.correct_estatic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Corrects an image from pixel-boundaries deformation due to
 electrostatic forces. Subtracts delta-Q.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>img</strong> &#8211; image, 2D array</li>
-<li><strong>aijb</strong> &#8211; Aijb matrix, 3D array</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>img</strong> – image, 2D array</p></li>
+<li><p><strong>aijb</strong> – Aijb matrix, 3D array</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array, img - delta-Q</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array, img - delta-Q</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.degrade_estatic">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">degrade_estatic</code><span class="sig-paren">(</span><em>img</em>, <em>aijb</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.degrade_estatic" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">degrade_estatic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">img</span></em>, <em class="sig-param"><span class="n">aijb</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.degrade_estatic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Degrades an image according to matrix of pixel-boundaries deformations.
 Follows on Eq. 11 of G15. Adds delta-Q.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>img</strong> &#8211; image, 2D array</li>
-<li><strong>aijb</strong> &#8211; Aijb matrix, 3D array</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>img</strong> – image, 2D array</p></li>
+<li><p><strong>aijb</strong> – Aijb matrix, 3D array</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array, img + delta-Q</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array, img + delta-Q</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.fpred_aijb">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">fpred_aijb</code><span class="sig-paren">(</span><em>p</em>, <em>i</em>, <em>j</em>, <em>ib</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.fpred_aijb" title="Permalink to this definition">¶</a></dt>
-<dd><p>&#8216;The smoothing model assumes that a_{ij}^x coefficients are the
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">fpred_aijb</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">i</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">ib</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.fpred_aijb" title="Permalink to this definition">¶</a></dt>
+<dd><p>‘The smoothing model assumes that a_{ij}^x coefficients are the
 product of a function of distance from the source charge to the
 considered boundary (r_{ij}) and that it also trivially depends on
 the angle between the source-boundary vector and the normal to
-the boundary (theta_{i,j}^x)&#8217;</p>
+the boundary (theta_{i,j}^x)’</p>
 <p>Eq. 18</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>p</strong> &#8211; parameters of the radial function (list of 2)</li>
-<li><strong>i</strong> &#8211; pixel coordinate i</li>
-<li><strong>j</strong> &#8211; pixel coordinate j</li>
-<li><strong>ib</strong> &#8211; boundary index [0, 1, 2, 3]</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> – parameters of the radial function (list of 2)</p></li>
+<li><p><strong>i</strong> – pixel coordinate i</p></li>
+<li><p><strong>j</strong> – pixel coordinate j</p></li>
+<li><p><strong>ib</strong> – boundary index [0, 1, 2, 3]</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">f(rij)cos(theta_ij^x)</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>f(rij)cos(theta_ij^x)</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.frdist">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">frdist</code><span class="sig-paren">(</span><em>i</em>, <em>j</em>, <em>ib</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.frdist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Distance from the source charge to considered boundary &#8220;b&#8221;</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>i</strong> &#8211; pixel coordinate i</li>
-<li><strong>j</strong> &#8211; pixel coordinate j</li>
-<li><strong>ib</strong> &#8211; boundary index [0, 1, 2, 3]</li>
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">frdist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">i</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">ib</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.frdist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distance from the source charge to considered boundary “b”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> – pixel coordinate i</p></li>
+<li><p><strong>j</strong> – pixel coordinate j</p></li>
+<li><p><strong>ib</strong> – boundary index [0, 1, 2, 3]</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">distance r(ijb)</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>distance r(ijb)</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.ftheta_bound">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">ftheta_bound</code><span class="sig-paren">(</span><em>i</em>, <em>j</em>, <em>ib</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.ftheta_bound" title="Permalink to this definition">¶</a></dt>
-<dd><p>&#8220;[theta_i,j^X is] the angle between the source-boundary vector and the
-normal to the boundary&#8221;.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>i</strong> &#8211; pixel coordinate i</li>
-<li><strong>j</strong> &#8211; pixel coordinate j</li>
-<li><strong>ib</strong> &#8211; boundary index [0, 1, 2, 3]</li>
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">ftheta_bound</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">i</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">ib</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.ftheta_bound" title="Permalink to this definition">¶</a></dt>
+<dd><p>“[theta_i,j^X is] the angle between the source-boundary vector and the
+normal to the boundary”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> – pixel coordinate i</p></li>
+<li><p><strong>j</strong> – pixel coordinate j</p></li>
+<li><p><strong>ib</strong> – boundary index [0, 1, 2, 3]</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">theta_i,j^x</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>theta_i,j^x</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.fun_p">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">fun_p</code><span class="sig-paren">(</span><em>x</em>, <em>*p</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.fun_p" title="Permalink to this definition">¶</a></dt>
-<dd><p>auxiliary function to &#8216;solve_for_psmooth&#8217;</p>
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">fun_p</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">p</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.fun_p" title="Permalink to this definition">¶</a></dt>
+<dd><p>auxiliary function to ‘solve_for_psmooth’</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.generate_GaussPSF">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">generate_GaussPSF</code><span class="sig-paren">(</span><em>N</em>, <em>sigma</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.generate_GaussPSF" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">generate_GaussPSF</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">N</span></em>, <em class="sig-param"><span class="n">sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.generate_GaussPSF" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a circular symmetric Gaussian centered on the centre of
 a NxN matrix/image.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.get_Rdisp">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">get_Rdisp</code><span class="sig-paren">(</span><em>img</em>, <em>aijb</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.get_Rdisp" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">get_Rdisp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">img</span></em>, <em class="sig-param"><span class="n">aijb</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.get_Rdisp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieves map of relative displacements of pixel boundaries,
 for input img and Aijb matrix.</p>
 <blockquote>
-<div>See G15 - Eq. 6</div></blockquote>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>img</strong> &#8211; image, 2D array</li>
-<li><strong>aijb</strong> &#8211; aijb matrix, 3D array NxNx4</li>
+<div><p>See G15 - Eq. 6</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>img</strong> – image, 2D array</p></li>
+<li><p><strong>aijb</strong> – aijb matrix, 3D array NxNx4</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array, relative displacements all boundaries of pixels in img</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array, relative displacements all boundaries of pixels in img</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.get_cross_shape_rough">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">get_cross_shape_rough</code><span class="sig-paren">(</span><em>cross</em>, <em>pitch=12.0</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.get_cross_shape_rough" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">get_cross_shape_rough</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cross</span></em>, <em class="sig-param"><span class="n">pitch</span><span class="o">=</span><span class="default_value">12.0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.get_cross_shape_rough" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.get_deltaQ">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">get_deltaQ</code><span class="sig-paren">(</span><em>img</em>, <em>aijb</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.get_deltaQ" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">get_deltaQ</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">img</span></em>, <em class="sig-param"><span class="n">aijb</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.get_deltaQ" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieves deltaQ map for input image and aijb matrix.</p>
 <p>See G15 - Eq. 11</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>img</strong> &#8211; image, 2D array</li>
-<li><strong>aijb</strong> &#8211; Aijb matrix, 3D array</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>img</strong> – image, 2D array</p></li>
+<li><p><strong>aijb</strong> – Aijb matrix, 3D array</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array, matrix with delta-Q for each pixel in img, given aijb</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array, matrix with delta-Q for each pixel in img, given aijb</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.get_kernel">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">get_kernel</code><span class="sig-paren">(</span><em>aijb</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.get_kernel" title="Permalink to this definition">¶</a></dt>
-<dd><p>&#8216;kernel&#8217; is an array (2N-1)x(2N-1)x4. Each plane kernel[:,:,b] is
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">get_kernel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">aijb</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.get_kernel" title="Permalink to this definition">¶</a></dt>
+<dd><p>‘kernel’ is an array (2N-1)x(2N-1)x4. Each plane kernel[:,:,b] is
 a 2D array with the displacement coefficients aijb, in all
 directions around a pixel at (0,0).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>aijb</strong> &#8211; array, matrix with displacements in 1st quadrant</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">kernel matrix, (2N-1)x(2N-1)x4</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>aijb</strong> – array, matrix with displacements in 1st quadrant</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>kernel matrix, (2N-1)x(2N-1)x4</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.plot_map">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">plot_map</code><span class="sig-paren">(</span><em>z</em>, <em>ii</em>, <em>jj</em>, <em>title=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.plot_map" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">plot_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">z</span></em>, <em class="sig-param"><span class="n">ii</span></em>, <em class="sig-param"><span class="n">jj</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.plot_map" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.plot_maps_ftheta">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">plot_maps_ftheta</code><span class="sig-paren">(</span><em>f</em>, <em>ii</em>, <em>jj</em>, <em>suptitle=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.plot_maps_ftheta" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">plot_maps_ftheta</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em>, <em class="sig-param"><span class="n">ii</span></em>, <em class="sig-param"><span class="n">jj</span></em>, <em class="sig-param"><span class="n">suptitle</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.plot_maps_ftheta" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.show_disps_CCD273">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">show_disps_CCD273</code><span class="sig-paren">(</span><em>aijb</em>, <em>stretch=5.0</em>, <em>peak=28571.428571428572</em>, <em>N=25</em>, <em>sigma=1.6</em>, <em>title=''</em>, <em>figname=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.show_disps_CCD273" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">show_disps_CCD273</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">aijb</span></em>, <em class="sig-param"><span class="n">stretch</span><span class="o">=</span><span class="default_value">5.0</span></em>, <em class="sig-param"><span class="n">peak</span><span class="o">=</span><span class="default_value">28571.428571428572</span></em>, <em class="sig-param"><span class="n">N</span><span class="o">=</span><span class="default_value">25</span></em>, <em class="sig-param"><span class="n">sigma</span><span class="o">=</span><span class="default_value">1.6</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">figname</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.show_disps_CCD273" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.solve_for_A_linalg">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">solve_for_A_linalg</code><span class="sig-paren">(</span><em>covij</em>, <em>var=1.0</em>, <em>mu=1.0</em>, <em>doplot=False</em>, <em>psmooth=None</em>, <em>returnAll=False</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.solve_for_A_linalg" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">solve_for_A_linalg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">covij</span></em>, <em class="sig-param"><span class="n">var</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">mu</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">doplot</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">psmooth</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">returnAll</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.solve_for_A_linalg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to retrieve the A matrix of pixel boundaries
 displacements, given a matrix of pixel covariances, variance, and mu.</p>
 <p>if var==1 and mu==1, it is understood that covij is
 the correlation matrix.</p>
 <p>See section 6.1 of G15.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>covij</strong> &#8211; array, squared matrix with pixel covariances.</li>
-<li><strong>var</strong> &#8211; float, variance of the flat-field.</li>
-<li><strong>mu</strong> &#8211; float, mean value of the flat-field.</li>
-<li><strong>doplot</strong> &#8211; if True, plot the fit of the fpred(ijb) function</li>
-<li><strong>psmooth</strong> &#8211; coefficients of the fpred(aijb) function (Eq. 18)</li>
-<li><strong>returnAll</strong> &#8211; bool, controls return values</li>
-<li><strong>verbose</strong> &#8211; bool, be verbose or not.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>covij</strong> – array, squared matrix with pixel covariances.</p></li>
+<li><p><strong>var</strong> – float, variance of the flat-field.</p></li>
+<li><p><strong>mu</strong> – float, mean value of the flat-field.</p></li>
+<li><p><strong>doplot</strong> – if True, plot the fit of the fpred(ijb) function</p></li>
+<li><p><strong>psmooth</strong> – coefficients of the fpred(aijb) function (Eq. 18)</p></li>
+<li><p><strong>returnAll</strong> – bool, controls return values</p></li>
+<li><p><strong>verbose</strong> – bool, be verbose or not.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">if returnAll == True, return (aijb, psmooth), otherwise return aijb only</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>if returnAll == True, return (aijb, psmooth), otherwise return aijb only</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.solve_for_psmooth">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">solve_for_psmooth</code><span class="sig-paren">(</span><em>covij</em>, <em>var</em>, <em>mu</em>, <em>doplot=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.solve_for_psmooth" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">solve_for_psmooth</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">covij</span></em>, <em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">mu</span></em>, <em class="sig-param"><span class="n">doplot</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.solve_for_psmooth" title="Permalink to this definition">¶</a></dt>
 <dd><p>Solving (p0,p1) parameters in Eq. 18 using covariance matrix and
 measured covariance  matrix.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>covij</strong> &#8211; array, covariance matrix</li>
-<li><strong>var</strong> &#8211; float, variance</li>
-<li><strong>mu</strong> &#8211; float, expected value of pixel values (&#8220;mean&#8221; of flat-field)</li>
-<li><strong>doplot</strong> &#8211; bool, if True, plot data and best fit model</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>covij</strong> – array, covariance matrix</p></li>
+<li><p><strong>var</strong> – float, variance</p></li>
+<li><p><strong>mu</strong> – float, expected value of pixel values (“mean” of flat-field)</p></li>
+<li><p><strong>doplot</strong> – bool, if True, plot data and best fit model</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">best-fit parameters, and errors: 2 tuples of 2 elements each</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>best-fit parameters, and errors: 2 tuples of 2 elements each</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.test0">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">test0</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.test0" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">test0</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.test0" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.test_getkernel">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">test_getkernel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.test_getkernel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">test_getkernel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.test_getkernel" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.test_selfconsist">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">test_selfconsist</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.test_selfconsist" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">test_selfconsist</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.test_selfconsist" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.analysis.Guyonnet15.test_solve">
-<code class="descclassname">vison.analysis.Guyonnet15.</code><code class="descname">test_solve</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.test_solve" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.analysis.Guyonnet15.</code><code class="sig-name descname">test_solve</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.analysis.Guyonnet15.test_solve" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -438,7 +389,7 @@ measured covariance  matrix.</p>
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/vison_logo.png" alt="Logo"/>
             </a></p>
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Analysis (Shared)</a><ul>
 <li><a class="reference internal" href="#module-vison.analysis.ellipse">ellipse.py</a></li>
@@ -461,15 +412,15 @@ measured covariance  matrix.</p>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -489,12 +440,13 @@ measured covariance  matrix.</p>
         <li class="right" >
           <a href="datamodel.html" title="Data Model"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+404.g5ace8e4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+12.g95d2b7a documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Analysis (Shared)</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, Ruyman Azzollini.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
     </div>
   </body>
 </html>

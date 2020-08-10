@@ -1,35 +1,25 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Support Code &#8212; vison 0.9+404.g5ace8e4 documentation</title>
-    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Code &#8212; vison 1.0+12.g95d2b7a documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.9+404.g5ace8e4',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Unit Testing" href="utests.html" />
     <link rel="prev" title="Scripts" href="scripts.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -45,7 +35,8 @@
         <li class="right" >
           <a href="scripts.html" title="Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+404.g5ace8e4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+12.g95d2b7a documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Support Code</a></li> 
       </ul>
     </div>  
 
@@ -60,59 +51,50 @@
 <span id="context-py"></span><h2>context.py<a class="headerlink" href="#module-vison.support.context" title="Permalink to this headline">¶</a></h2>
 <p>Common Values which are used by functions and classes throughout pipeline.</p>
 <p>Created on Tue Jan 16 10:53:40 2018</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
 </div>
 <div class="section" id="module-vison.support.ET">
 <span id="et-py"></span><h2>ET.py<a class="headerlink" href="#module-vison.support.ET" title="Permalink to this headline">¶</a></h2>
 <p>Module to issue WARNING / ALERT phone calls to designated phone numbers.
 Uses Twilio.</p>
-<p>&#8216;... E.T. phone home...&#8217;</p>
+<p>‘… E.T. phone home…’</p>
 <p>Created on Thu Sep 14 10:13:12 2017</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">raf</td>
-</tr>
-</tbody>
-</table>
-<dl class="class">
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>raf</p>
+</dd>
+</dl>
+<dl class="py class">
 <dt id="vison.support.ET.ET">
-<em class="property">class </em><code class="descclassname">vison.support.ET.</code><code class="descname">ET</code><a class="headerlink" href="#vison.support.ET.ET" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vison.support.ET.</code><code class="sig-name descname">ET</code><a class="headerlink" href="#vison.support.ET.ET" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to do phone calls.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="vison.support.ET.ET.dial_numbers">
-<code class="descname">dial_numbers</code><span class="sig-paren">(</span><em>url</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.ET.ET.dial_numbers" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">dial_numbers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.ET.ET.dial_numbers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dials one or more phone numbers from a Twilio phone number.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>url</strong> &#8211; char, URL with the TwiML code that Twilio uses as instructions
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>url</strong> – char, URL with the TwiML code that Twilio uses as instructions
 on call. Basically, it provides a message to be voiced,
-as intended.</td>
-</tr>
-</tbody>
-</table>
+as intended.</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.support.ET.ET.send_sms">
-<code class="descname">send_sms</code><span class="sig-paren">(</span><em>body</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.ET.ET.send_sms" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_sms</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">body</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.ET.ET.send_sms" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.support.ET.grab_numbers_and_codes">
-<code class="descclassname">vison.support.ET.</code><code class="descname">grab_numbers_and_codes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.ET.grab_numbers_and_codes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.support.ET.</code><code class="sig-name descname">grab_numbers_and_codes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.ET.grab_numbers_and_codes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieves phone numbers and access codes necessary to make the phone calls.</p>
 </dd></dl>
 
@@ -121,17 +103,14 @@ as intended.</td>
 <span id="excel-py"></span><h2>excel.py<a class="headerlink" href="#module-vison.support.excel" title="Permalink to this headline">¶</a></h2>
 <p>Excel Files Interfaces.</p>
 <p>Created on Mon Mar 26 12:07:54 2018</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
-<dl class="function">
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
+<dl class="py function">
 <dt id="vison.support.excel.test0">
-<code class="descclassname">vison.support.excel.</code><code class="descname">test0</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.excel.test0" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.support.excel.</code><code class="sig-name descname">test0</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.excel.test0" title="Permalink to this definition">¶</a></dt>
 <dd><p>Just a dummy test to show we can use openpyxl</p>
 </dd></dl>
 
@@ -139,69 +118,60 @@ as intended.</td>
 <div class="section" id="module-vison.support.files">
 <span id="files-py"></span><h2>files.py<a class="headerlink" href="#module-vison.support.files" title="Permalink to this headline">¶</a></h2>
 <p>IO related functions.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">requires:</th><td class="field-body">PyFITS</td>
-</tr>
-<tr class="field-even field"><th class="field-name">requires:</th><td class="field-body">NumPy</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Sami-Matias Niemi</td>
-</tr>
-</tbody>
-</table>
-<dl class="function">
+<dl class="field-list simple">
+<dt class="field-odd">requires</dt>
+<dd class="field-odd"><p>PyFITS</p>
+</dd>
+<dt class="field-even">requires</dt>
+<dd class="field-even"><p>NumPy</p>
+</dd>
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Sami-Matias Niemi</p>
+</dd>
+</dl>
+<dl class="py function">
 <dt id="vison.support.files.cPickleDump">
-<code class="descclassname">vison.support.files.</code><code class="descname">cPickleDump</code><span class="sig-paren">(</span><em>data</em>, <em>output</em>, <em>protocol=2</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.files.cPickleDump" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.support.files.</code><code class="sig-name descname">cPickleDump</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">protocol</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.files.cPickleDump" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dumps data to a cPickled file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> &#8211; a Python data container</li>
-<li><strong>output</strong> &#8211; name of the output file</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – a Python data container</p></li>
+<li><p><strong>output</strong> – name of the output file</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.support.files.cPickleDumpDictionary">
-<code class="descclassname">vison.support.files.</code><code class="descname">cPickleDumpDictionary</code><span class="sig-paren">(</span><em>dictionary</em>, <em>output</em>, <em>protocol=2</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.files.cPickleDumpDictionary" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.support.files.</code><code class="sig-name descname">cPickleDumpDictionary</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dictionary</span></em>, <em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">protocol</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.files.cPickleDumpDictionary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dumps a dictionary of data to a cPickled file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>dictionary</strong> &#8211; a Python data container does not have to be a dictionary</li>
-<li><strong>output</strong> &#8211; name of the output file</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dictionary</strong> – a Python data container does not have to be a dictionary</p></li>
+<li><p><strong>output</strong> – name of the output file</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.support.files.cPickleRead">
-<code class="descclassname">vison.support.files.</code><code class="descname">cPickleRead</code><span class="sig-paren">(</span><em>ffile</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.files.cPickleRead" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.support.files.</code><code class="sig-name descname">cPickleRead</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ffile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.files.cPickleRead" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads data from a pickled file.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.support.files.convert_fig_to_eps">
-<code class="descclassname">vison.support.files.</code><code class="descname">convert_fig_to_eps</code><span class="sig-paren">(</span><em>figname</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.files.convert_fig_to_eps" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.support.files.</code><code class="sig-name descname">convert_fig_to_eps</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">figname</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.files.convert_fig_to_eps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a figure to .eps. Returns new file name.</p>
 </dd></dl>
 
@@ -210,48 +180,38 @@ as intended.</td>
 <span id="flags-py"></span><h2>flags.py<a class="headerlink" href="#module-vison.support.flags" title="Permalink to this headline">¶</a></h2>
 <p>Functions and variables related to flags for vison.</p>
 <p>Created on Wed Sep 20 17:05:00 2017</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
-<dl class="class">
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
+<dl class="py class">
 <dt id="vison.support.flags.Flags">
-<em class="property">class </em><code class="descclassname">vison.support.flags.</code><code class="descname">Flags</code><span class="sig-paren">(</span><em>indict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.flags.Flags" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vison.support.flags.</code><code class="sig-name descname">Flags</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">indict</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.flags.Flags" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
 <div class="section" id="module-vison.support.latex">
 <span id="latex-py"></span><h2>latex.py<a class="headerlink" href="#module-vison.support.latex" title="Permalink to this headline">¶</a></h2>
 <p>Just a collection of LaTeX-generating functions for use in report.py</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">History:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">History</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
 <p>Created on Mon Jan 30 2017</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
-<dl class="function">
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
+<dl class="py function">
 <dt id="vison.support.latex.generate_header">
-<code class="descclassname">vison.support.latex.</code><code class="descname">generate_header</code><span class="sig-paren">(</span><em>test</em>, <em>model</em>, <em>author</em>, <em>reference='7-XXX'</em>, <em>issue=0.0</em>, <em>doDraft=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.latex.generate_header" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.support.latex.</code><code class="sig-name descname">generate_header</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">test</span></em>, <em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">author</span></em>, <em class="sig-param"><span class="n">reference</span><span class="o">=</span><span class="default_value">'7-XXX'</span></em>, <em class="sig-param"><span class="n">issue</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">doDraft</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.latex.generate_header" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.support.latex.replace_in_template">
-<code class="descclassname">vison.support.latex.</code><code class="descname">replace_in_template</code><span class="sig-paren">(</span><em>texf</em>, <em>values</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.latex.replace_in_template" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.support.latex.</code><code class="sig-name descname">replace_in_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">texf</span></em>, <em class="sig-param"><span class="n">values</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.latex.replace_in_template" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -259,179 +219,168 @@ as intended.</td>
 <span id="logger-py"></span><h2>logger.py<a class="headerlink" href="#module-vison.support.logger" title="Permalink to this headline">¶</a></h2>
 <p>These functions can be used for logging information.</p>
 <div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">logger is not multiprocessing safe.</p>
+<p class="admonition-title">Warning</p>
+<p>logger is not multiprocessing safe.</p>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Sami-Matias Niemi</td>
-</tr>
-<tr class="field-even field"><th class="field-name">version:</th><td class="field-body">0.3</td>
-</tr>
-</tbody>
-</table>
-<dl class="class">
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Sami-Matias Niemi</p>
+</dd>
+<dt class="field-even">version</dt>
+<dd class="field-even"><p>0.3</p>
+</dd>
+</dl>
+<dl class="py class">
 <dt id="vison.support.logger.SimpleLogger">
-<em class="property">class </em><code class="descclassname">vison.support.logger.</code><code class="descname">SimpleLogger</code><span class="sig-paren">(</span><em>filename</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.logger.SimpleLogger" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vison.support.logger.</code><code class="sig-name descname">SimpleLogger</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.logger.SimpleLogger" title="Permalink to this definition">¶</a></dt>
 <dd><p>A simple class to create a log file or print the information on screen.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="vison.support.logger.SimpleLogger.write">
-<code class="descname">write</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.logger.SimpleLogger.write" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.logger.SimpleLogger.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes text either to file or screen.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.support.logger.f_text_wrapper">
-<code class="descclassname">vison.support.logger.</code><code class="descname">f_text_wrapper</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.logger.f_text_wrapper" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.support.logger.</code><code class="sig-name descname">f_text_wrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.logger.f_text_wrapper" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.support.logger.setUpLogger">
-<code class="descclassname">vison.support.logger.</code><code class="descname">setUpLogger</code><span class="sig-paren">(</span><em>log_filename</em>, <em>loggername='logger'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.logger.setUpLogger" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.support.logger.</code><code class="sig-name descname">setUpLogger</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">log_filename</span></em>, <em class="sig-param"><span class="n">loggername</span><span class="o">=</span><span class="default_value">'logger'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.logger.setUpLogger" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets up a logger.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body">log_filename: name of the file to save the log.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Param:</th><td class="field-body">loggername: name of the logger</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">logger instance</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Param</dt>
+<dd class="field-odd"><p>log_filename: name of the file to save the log.</p>
+</dd>
+<dt class="field-even">Param</dt>
+<dd class="field-even"><p>loggername: name of the logger</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>logger instance</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
 <div class="section" id="module-vison.support.report">
 <span id="report-py"></span><h2>report.py<a class="headerlink" href="#module-vison.support.report" title="Permalink to this headline">¶</a></h2>
 <p>LaTEx - PDF Reporting Utilities.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">History:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">History</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
 <p>Created on Wed Jan 25 16:58:33 2017</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
-<dl class="class">
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
+<dl class="py class">
 <dt id="vison.support.report.Chapter">
-<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Chapter</code><span class="sig-paren">(</span><em>Title=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Chapter" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">vison.support.report.</code><code class="sig-name descname">Chapter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Title</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Chapter" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="vison.support.report.Chapter.generate_Latex">
-<code class="descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Chapter.generate_Latex" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Chapter.generate_Latex" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="vison.support.report.Container">
-<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Container</code><a class="headerlink" href="#vison.support.report.Container" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">vison.support.report.</code><code class="sig-name descname">Container</code><a class="headerlink" href="#vison.support.report.Container" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="vison.support.report.Container.add_to_Contents">
-<code class="descname">add_to_Contents</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Container.add_to_Contents" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_to_Contents</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Container.add_to_Contents" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="vison.support.report.Content">
-<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Content</code><span class="sig-paren">(</span><em>contenttype=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Content" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vison.support.report.</code><code class="sig-name descname">Content</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">contenttype</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Content" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="vison.support.report.FigsTable">
-<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">FigsTable</code><span class="sig-paren">(</span><em>FigsList</em>, <em>Ncols</em>, <em>figswidth</em>, <em>caption=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.FigsTable" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vison.support.report.</code><code class="sig-name descname">FigsTable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">FigsList</span></em>, <em class="sig-param"><span class="n">Ncols</span></em>, <em class="sig-param"><span class="n">figswidth</span></em>, <em class="sig-param"><span class="n">caption</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.FigsTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to generate table of figures</p>
-<dl class="method">
+<dl class="py method">
 <dt id="vison.support.report.FigsTable.generate_Latex">
-<code class="descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.FigsTable.generate_Latex" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.FigsTable.generate_Latex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates LaTeX as list of strings</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="vison.support.report.Figure">
-<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Figure</code><span class="sig-paren">(</span><em>figpath</em>, <em>textfraction=0.7</em>, <em>caption=None</em>, <em>label=None</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Figure" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">vison.support.report.</code><code class="sig-name descname">Figure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">figpath</span></em>, <em class="sig-param"><span class="n">textfraction</span><span class="o">=</span><span class="default_value">0.7</span></em>, <em class="sig-param"><span class="n">caption</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">label</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Figure" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="vison.support.report.Figure.generate_Latex">
-<code class="descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Figure.generate_Latex" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Figure.generate_Latex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates LaTeX as list of strings.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="vison.support.report.Part">
-<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Part</code><span class="sig-paren">(</span><em>Title=''</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Part" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">vison.support.report.</code><code class="sig-name descname">Part</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Title</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Part" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="vison.support.report.Part.generate_Latex">
-<code class="descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Part.generate_Latex" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Part.generate_Latex" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="vison.support.report.Section">
-<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Section</code><span class="sig-paren">(</span><em>keyword</em>, <em>Title=''</em>, <em>level=0</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Section" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">vison.support.report.</code><code class="sig-name descname">Section</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">keyword</span></em>, <em class="sig-param"><span class="n">Title</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Section" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="vison.support.report.Section.generate_Latex">
-<code class="descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Section.generate_Latex" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Section.generate_Latex" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="vison.support.report.Table">
-<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Table</code><span class="sig-paren">(</span><em>tableDict</em>, <em>formats=None</em>, <em>names=None</em>, <em>caption=None</em>, <em>col_align=None</em>, <em>longtable=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Table" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vison.support.report.</code><code class="sig-name descname">Table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tableDict</span></em>, <em class="sig-param"><span class="n">formats</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">names</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">caption</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">col_align</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">longtable</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Table" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
-<div><dl class="docutils">
-<dt>PENDING:</dt>
-<dd><ul class="first last simple">
-<li>adjust width of table to texwidth:</li>
+<div><dl class="simple">
+<dt>PENDING:</dt><dd><ul class="simple">
+<li><p>adjust width of table to texwidth:</p></li>
 </ul>
 </dd>
 </dl>
 </div></blockquote>
-<dl class="docutils">
-<dt>esizebox{       extwidth}{!}{</dt>
-<dd><blockquote class="first">
-<div>...
-end{tabular}}</div></blockquote>
-<ul class="last simple">
-<li>include option to rotate table to show in landscape</li>
+<dl>
+<dt>esizebox{       extwidth}{!}{</dt><dd><blockquote>
+<div><p>…
+end{tabular}}</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>include option to rotate table to show in landscape</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="vison.support.report.Table.generate_Latex">
-<code class="descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Table.generate_Latex" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Table.generate_Latex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates LaTeX as list of strings.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="vison.support.report.Text">
-<em class="property">class </em><code class="descclassname">vison.support.report.</code><code class="descname">Text</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Text" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">vison.support.report.</code><code class="sig-name descname">Text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Text" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="vison.support.report.Text.generate_Latex">
-<code class="descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Text.generate_Latex" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">generate_Latex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.report.Text.generate_Latex" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -441,35 +390,29 @@ end{tabular}}</div></blockquote>
 <span id="utils-py"></span><h2>utils.py<a class="headerlink" href="#module-vison.support.utils" title="Permalink to this headline">¶</a></h2>
 <p>General Purpose Utilities</p>
 <p>Created on Tue Apr 10 15:18:07 2018</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
 </div>
 <div class="section" id="module-vison.support.vistime">
 <span id="vistime-py"></span><h2>vistime.py<a class="headerlink" href="#module-vison.support.vistime" title="Permalink to this headline">¶</a></h2>
 <p>Accesory library: time related operations</p>
 <p>Created on Tue Oct 10 15:08:28 2017</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
-<dl class="function">
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
+<dl class="py function">
 <dt id="vison.support.vistime.get_dtobj">
-<code class="descclassname">vison.support.vistime.</code><code class="descname">get_dtobj</code><span class="sig-paren">(</span><em>DT</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.vistime.get_dtobj" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.support.vistime.</code><code class="sig-name descname">get_dtobj</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DT</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.vistime.get_dtobj" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.support.vistime.get_time_tag">
-<code class="descclassname">vison.support.vistime.</code><code class="descname">get_time_tag</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.vistime.get_time_tag" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.support.vistime.</code><code class="sig-name descname">get_time_tag</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.vistime.get_time_tag" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -477,33 +420,31 @@ end{tabular}}</div></blockquote>
 <span id="vjson-py"></span><h2>vjson.py<a class="headerlink" href="#module-vison.support.vjson" title="Permalink to this headline">¶</a></h2>
 <p>json files handling utilities.</p>
 <p>Created on Tue Mar 27 14:25:43 2018</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
-<dl class="function">
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
+<dl class="py function">
 <dt id="vison.support.vjson.dumps_to_json">
-<code class="descclassname">vison.support.vjson.</code><code class="descname">dumps_to_json</code><span class="sig-paren">(</span><em>pydict</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.vjson.dumps_to_json" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.support.vjson.</code><code class="sig-name descname">dumps_to_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pydict</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.vjson.dumps_to_json" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.support.vjson.load_jsonfile">
-<code class="descclassname">vison.support.vjson.</code><code class="descname">load_jsonfile</code><span class="sig-paren">(</span><em>jsonfile</em>, <em>useyaml=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.vjson.load_jsonfile" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.support.vjson.</code><code class="sig-name descname">load_jsonfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">jsonfile</span></em>, <em class="sig-param"><span class="n">useyaml</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.vjson.load_jsonfile" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.support.vjson.save_jsonfile">
-<code class="descclassname">vison.support.vjson.</code><code class="descname">save_jsonfile</code><span class="sig-paren">(</span><em>pydict</em>, <em>jsonfile</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.vjson.save_jsonfile" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.support.vjson.</code><code class="sig-name descname">save_jsonfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pydict</span></em>, <em class="sig-param"><span class="n">jsonfile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.support.vjson.save_jsonfile" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -512,7 +453,7 @@ end{tabular}}</div></blockquote>
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/vison_logo.png" alt="Logo"/>
             </a></p>
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Support Code</a><ul>
 <li><a class="reference internal" href="#module-vison.support.context">context.py</a></li>
@@ -544,15 +485,15 @@ end{tabular}}</div></blockquote>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -572,12 +513,13 @@ end{tabular}}</div></blockquote>
         <li class="right" >
           <a href="scripts.html" title="Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+404.g5ace8e4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+12.g95d2b7a documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Support Code</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, Ruyman Azzollini.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
     </div>
   </body>
 </html>

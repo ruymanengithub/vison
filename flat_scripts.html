@@ -1,35 +1,25 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Flat-Illumination Scripts &#8212; vison 0.9+404.g5ace8e4 documentation</title>
-    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flat-Illumination Scripts &#8212; vison 1.0+12.g95d2b7a documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.9+404.g5ace8e4',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Point-Source Scripts" href="point_scripts.html" />
     <link rel="prev" title="“Dark Acquisitions” Scripts" href="dark_scripts.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -45,7 +35,8 @@
         <li class="right" >
           <a href="dark_scripts.html" title="“Dark Acquisitions” Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+404.g5ace8e4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+12.g95d2b7a documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Flat-Illumination Scripts</a></li> 
       </ul>
     </div>  
 
@@ -63,36 +54,30 @@
 TEST: FLAT0X</p>
 <p>Flat-fields acquisition / analysis script</p>
 <p>Created on Tue Aug 29 17:32:52 2017</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
-<dl class="class">
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
+<dl class="py class">
 <dt id="vison.flat.FLAT0X.FLAT0X">
-<em class="property">class </em><code class="descclassname">vison.flat.FLAT0X.</code><code class="descname">FLAT0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">vison.flat.FLAT0X.</code><code class="sig-name descname">FLAT0X</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="vison.flat.FLAT0X.FLAT0X.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds FLAT0X script structure dictionary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>diffvalues</strong> &#8211; dict, opt, differential values.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>diffvalues</strong> – dict, opt, differential values.</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.flat.FLAT0X.FLAT0X.do_indiv_flats">
-<code class="descname">do_indiv_flats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.do_indiv_flats" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">do_indiv_flats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.do_indiv_flats" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>Preparation of data for further analysis and
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Preparation of data for further analysis and
 produce flat-field for each OBSID.
 
 f.e. ObsID:
@@ -115,11 +100,11 @@ plot average profiles f. each CCD and Q (color coded by time)
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.flat.FLAT0X.FLAT0X.do_master_flat">
-<code class="descname">do_master_flat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.do_master_flat" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">do_master_flat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.do_master_flat" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Produces</span> <span class="n">Master</span> <span class="n">Flat</span><span class="o">-</span><span class="n">Field</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Produces</span> <span class="n">Master</span> <span class="n">Flat</span><span class="o">-</span><span class="n">Field</span>
 
 <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
@@ -131,11 +116,11 @@ plot average profiles f. each CCD and Q (color coded by time)
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.flat.FLAT0X.FLAT0X.do_prdef_mask">
-<code class="descname">do_prdef_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.do_prdef_mask" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">do_prdef_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.do_prdef_mask" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Produces</span> <span class="n">mask</span> <span class="n">of</span> <span class="n">defects</span> <span class="ow">in</span> <span class="n">Photo</span><span class="o">-</span><span class="n">Response</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Produces</span> <span class="n">mask</span> <span class="n">of</span> <span class="n">defects</span> <span class="ow">in</span> <span class="n">Photo</span><span class="o">-</span><span class="n">Response</span>
 <span class="n">Could</span> <span class="n">use</span> <span class="n">master</span> <span class="n">FF</span><span class="p">,</span> <span class="ow">or</span> <span class="n">a</span> <span class="n">stack</span> <span class="n">of</span> <span class="n">a</span> <span class="n">subset</span> <span class="n">of</span> <span class="n">images</span> <span class="p">(</span><span class="ow">in</span> <span class="n">order</span>
 <span class="n">to</span> <span class="n">produce</span> <span class="n">mask</span><span class="p">,</span> <span class="n">needed</span> <span class="n">by</span> <span class="n">other</span> <span class="n">tasks</span><span class="p">,</span> <span class="n">quicker</span><span class="p">)</span><span class="o">.</span>
 
@@ -150,30 +135,41 @@ plot average profiles f. each CCD and Q (color coded by time)
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.flat.FLAT0X.FLAT0X.filterexposures">
-<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.filterexposures" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py attribute">
+<dt id="vison.flat.FLAT0X.FLAT0X.inputsclass">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.inputsclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#vison.flat.FLAT0X.FLATS0X_inputs" title="vison.flat.FLAT0X.FLATS0X_inputs"><code class="xref py py-class docutils literal notranslate"><span class="pre">FLATS0X_inputs</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="vison.flat.FLAT0X.FLAT0X.prepare_images">
-<code class="descname">prepare_images</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.prepare_images" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">prepare_images</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.prepare_images" title="Permalink to this definition">¶</a></dt>
 <dd><p>FLAT0X: Preparation of data for further analysis.
 Calls task.prepare_images().</p>
-<dl class="docutils">
-<dt>Applies:</dt>
-<dd>offset subtraction
+<dl class="simple">
+<dt>Applies:</dt><dd><p>offset subtraction
 [bias structure subtraction, if available]
-cosmetics masking</dd>
+cosmetics masking</p>
+</dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.flat.FLAT0X.FLAT0X.set_inpdefaults">
-<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLAT0X.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
+
+<dl class="py class">
+<dt id="vison.flat.FLAT0X.FLATS0X_inputs">
+<em class="property">class </em><code class="sig-prename descclassname">vison.flat.FLAT0X.</code><code class="sig-name descname">FLATS0X_inputs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.FLAT0X.FLATS0X_inputs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="nl02">
@@ -181,12 +177,11 @@ cosmetics masking</dd>
 <p>Non-linearity</p>
 <span class="target" id="module-vison.flat.NL02"></span><p>VIS Ground Calibration
 TEST: NL02</p>
-<dl class="docutils">
-<dt>Similar to NL01, but using 2 wavelengths:</dt>
-<dd><ul class="first last simple">
-<li>ND4 for low fluences</li>
-<li>880 nm for high fluences</li>
-<li>Also possible to use with different values of RD (stability tests)</li>
+<dl class="simple">
+<dt>Similar to NL01, but using 2 wavelengths:</dt><dd><ul class="simple">
+<li><p>ND4 for low fluences</p></li>
+<li><p>880 nm for high fluences</p></li>
+<li><p>Also possible to use with different values of RD (stability tests)</p></li>
 </ul>
 </dd>
 </dl>
@@ -194,44 +189,41 @@ TEST: NL02</p>
 <p>Tasks:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Select exposures, get file names, get metadata (commandig, HK).</li>
-<li>Check exposure time pattern matches test design.</li>
-<li>Check quality of data (rough scaling of fluences with Exposure times).</li>
-<li>Subtract offset level.</li>
-<li>Divide by Flat-field.</li>
-<li><dl class="first docutils">
-<dt>Synoptic analysis:</dt>
-<dd>fluence ratios vs. extime ratios &gt;&gt; non-linearity curve</dd>
+<li><p>Select exposures, get file names, get metadata (commandig, HK).</p></li>
+<li><p>Check exposure time pattern matches test design.</p></li>
+<li><p>Check quality of data (rough scaling of fluences with Exposure times).</p></li>
+<li><p>Subtract offset level.</p></li>
+<li><p>Divide by Flat-field.</p></li>
+<li><dl class="simple">
+<dt>Synoptic analysis:</dt><dd><p>fluence ratios vs. extime ratios &gt;&gt; non-linearity curve</p>
+</dd>
 </dl>
 </li>
-<li>extract: Non-Linearity curve for each CCD and quadrant</li>
-<li>produce synoptic figures</li>
-<li>Save results.</li>
+<li><p>extract: Non-Linearity curve for each CCD and quadrant</p></li>
+<li><p>produce synoptic figures</p></li>
+<li><p>Save results.</p></li>
 </ul>
 </div></blockquote>
 <p>Created on Tue Oct 23 15:22:00 2018</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">raf</td>
-</tr>
-</tbody>
-</table>
-<dl class="class">
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>raf</p>
+</dd>
+</dl>
+<dl class="py class">
 <dt id="vison.flat.NL02.NL02">
-<em class="property">class </em><code class="descclassname">vison.flat.NL02.</code><code class="descname">NL02</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL02.NL02" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">vison.flat.NL02.</code><code class="sig-name descname">NL02</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL02.NL02" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="vison.flat.NL02.NL02.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL02.NL02.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL02.NL02.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds NL02 script structure dictionary.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.flat.NL02.NL02.do_satCTE">
-<code class="descname">do_satCTE</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL02.NL02.do_satCTE" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">do_satCTE</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL02.NL02.do_satCTE" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">select</span> <span class="n">ObsIDs</span> <span class="k">with</span> <span class="n">fluence</span><span class="p">(</span><span class="n">exptime</span><span class="p">)</span> <span class="o">&gt;~</span> <span class="mf">0.5</span> <span class="n">FWC</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">select</span> <span class="n">ObsIDs</span> <span class="k">with</span> <span class="n">fluence</span><span class="p">(</span><span class="n">exptime</span><span class="p">)</span> <span class="o">&gt;~</span> <span class="mf">0.5</span> <span class="n">FWC</span>
 
 <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
     <span class="n">CCD</span><span class="p">:</span>
@@ -248,12 +240,18 @@ TEST: NL02</p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py attribute">
+<dt id="vison.flat.NL02.NL02.inputsclass">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#vison.flat.NL02.NL02.inputsclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#vison.flat.NL02.NL02_inputs" title="vison.flat.NL02.NL02_inputs"><code class="xref py py-class docutils literal notranslate"><span class="pre">NL02_inputs</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="vison.flat.NL02.NL02.prep_data">
-<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL02.NL02.prep_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL02.NL02.prep_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes Raw Data and prepares it for further analysis.</p>
 <p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">Q</span><span class="p">:</span>
             <span class="n">mask</span><span class="o">-</span><span class="n">out</span> <span class="n">bad</span> <span class="n">pixels</span>
@@ -264,11 +262,11 @@ TEST: NL02</p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.flat.NL02.NL02.produce_NLCs">
-<code class="descname">produce_NLCs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL02.NL02.produce_NLCs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">produce_NLCs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL02.NL02.produce_NLCs" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Obtains</span> <span class="n">Best</span><span class="o">-</span><span class="n">Fit</span> <span class="n">Non</span><span class="o">-</span><span class="n">Linearity</span> <span class="n">Curve</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Obtains</span> <span class="n">Best</span><span class="o">-</span><span class="n">Fit</span> <span class="n">Non</span><span class="o">-</span><span class="n">Linearity</span> <span class="n">Curve</span>
 
 <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">Q</span><span class="p">:</span>
@@ -286,50 +284,52 @@ TEST: NL02</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt id="vison.flat.NL02.NL02_inputs">
+<em class="property">class </em><code class="sig-prename descclassname">vison.flat.NL02.</code><code class="sig-name descname">NL02_inputs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL02.NL02_inputs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="ptc0x">
 <h2>PTC0X<a class="headerlink" href="#ptc0x" title="Permalink to this headline">¶</a></h2>
 <p>Photon-Transfer Curves</p>
 <span class="target" id="module-vison.flat.PTC0X"></span><p>VIS Ground Calibration
 TEST: PTC0X</p>
-<dl class="docutils">
-<dt>Photon-Transfer-Curve Analysis</dt>
-<dd>PTC01 - nominal temperature and wavelength
-PTC02 - alternative temperatures / wavelengths / RD</dd>
+<dl class="simple">
+<dt>Photon-Transfer-Curve Analysis</dt><dd><p>PTC01 - nominal temperature and wavelength
+PTC02 - alternative temperatures / wavelengths / RD</p>
+</dd>
 </dl>
 <p>Tasks:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Select exposures, get file names, get metadata (commandig, HK).</li>
-<li>Check exposure time pattern matches test design.</li>
-<li>Check quality of data (rough scaling of fluences with Exposure times).</li>
-<li>Subtract pairs of exposures with equal fluence</li>
-<li><dl class="first docutils">
-<dt>Synoptic analysis:</dt>
-<dd>variance vs. fluence
-variance(binned difference-frames) vs. fluence</dd>
+<li><p>Select exposures, get file names, get metadata (commandig, HK).</p></li>
+<li><p>Check exposure time pattern matches test design.</p></li>
+<li><p>Check quality of data (rough scaling of fluences with Exposure times).</p></li>
+<li><p>Subtract pairs of exposures with equal fluence</p></li>
+<li><dl class="simple">
+<dt>Synoptic analysis:</dt><dd><p>variance vs. fluence
+variance(binned difference-frames) vs. fluence</p>
+</dd>
 </dl>
 </li>
-<li>extract: RON, gain, gain(fluence)</li>
-<li>produce synoptic figures</li>
-<li>Save results.</li>
+<li><p>extract: RON, gain, gain(fluence)</p></li>
+<li><p>produce synoptic figures</p></li>
+<li><p>Save results.</p></li>
 </ul>
 </div></blockquote>
 <p>Created on Mon Apr  3 17:00:24 2017</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">raf</td>
-</tr>
-</tbody>
-</table>
-<dl class="class">
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>raf</p>
+</dd>
+</dl>
+<dl class="py class">
 <dt id="vison.flat.PTC0X.PTC0X">
-<em class="property">class </em><code class="descclassname">vison.flat.PTC0X.</code><code class="descname">PTC0X</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">vison.flat.PTC0X.</code><code class="sig-name descname">PTC0X</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="vison.flat.PTC0X.PTC0X.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds PTC0X script structure dictionary.</p>
 <p>#:param exptimes: list of ints [ms], exposure times.
 #:param frames: list of ints, number of frames for each exposure time.
@@ -337,24 +337,23 @@ variance(binned difference-frames) vs. fluence</dd>
 :param diffvalues: dict, opt, differential values.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.flat.PTC0X.PTC0X.extract_HER">
-<code class="descname">extract_HER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.extract_HER" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">extract_HER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.extract_HER" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hard Edge Response Analysis</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.flat.PTC0X.PTC0X.extract_PTC">
-<code class="descname">extract_PTC</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.extract_PTC" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Performs basic analysis of images:</dt>
-<dd><ul class="first last simple">
-<li>builds PTC curves: both on non-binned and binned images</li>
+<code class="sig-name descname">extract_PTC</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.extract_PTC" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Performs basic analysis of images:</dt><dd><ul class="simple">
+<li><p>builds PTC curves: both on non-binned and binned images</p></li>
 </ul>
 </dd>
 </dl>
 <p><strong>METACODE</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">create</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">OBSID</span> <span class="n">pairs</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">create</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">OBSID</span> <span class="n">pairs</span>
 
 <span class="n">create</span> <span class="n">segmentation</span> <span class="nb">map</span> <span class="n">given</span> <span class="n">grid</span> <span class="n">parameters</span>
 
@@ -369,23 +368,29 @@ variance(binned difference-frames) vs. fluence</dd>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.flat.PTC0X.PTC0X.f_extract_PTC">
-<code class="descname">f_extract_PTC</code><span class="sig-paren">(</span><em>ccdobjcol</em>, <em>medcol</em>, <em>varcol</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.f_extract_PTC" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">f_extract_PTC</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ccdobjcol</span></em>, <em class="sig-param"><span class="n">medcol</span></em>, <em class="sig-param"><span class="n">varcol</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.f_extract_PTC" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.flat.PTC0X.PTC0X.filterexposures">
-<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.filterexposures" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py attribute">
+<dt id="vison.flat.PTC0X.PTC0X.inputsclass">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.inputsclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#vison.flat.PTC0X.PTC0X_inputs" title="vison.flat.PTC0X.PTC0X_inputs"><code class="xref py py-class docutils literal notranslate"><span class="pre">PTC0X_inputs</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="vison.flat.PTC0X.PTC0X.meta_analysis">
-<code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.meta_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Analyzes the variance and fluence:
 gain, and gain(fluence)</p>
 <p>METACODE</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">:</span>
     <span class="n">Q</span><span class="p">:</span>
         <span class="p">(</span><span class="n">using</span> <span class="n">stats</span> <span class="n">across</span> <span class="n">segments</span><span class="p">:)</span>
         <span class="n">fit</span> <span class="n">PTC</span> <span class="n">to</span> <span class="n">quadratic</span> <span class="n">model</span>
@@ -401,12 +406,17 @@ gain, and gain(fluence)</p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.flat.PTC0X.PTC0X.set_inpdefaults">
-<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
+
+<dl class="py class">
+<dt id="vison.flat.PTC0X.PTC0X_inputs">
+<em class="property">class </em><code class="sig-prename descclassname">vison.flat.PTC0X.</code><code class="sig-name descname">PTC0X_inputs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X_inputs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="bf01">
@@ -414,25 +424,22 @@ gain, and gain(fluence)</p>
 <p>Brighter-Fatter (using data from PTC0X tests)</p>
 <span class="target" id="module-vison.flat.BF01"></span><p>VIS Ground Calibration
 TEST: BF01</p>
-<dl class="docutils">
-<dt>Brighter-Fatter Analysis</dt>
-<dd>Using data from test PTC01 or PTC02</dd>
+<dl class="simple">
+<dt>Brighter-Fatter Analysis</dt><dd><p>Using data from test PTC01 or PTC02</p>
+</dd>
 </dl>
 <p>Created on Wed Mar 7 10:57:00 2018</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">raf</td>
-</tr>
-</tbody>
-</table>
-<dl class="class">
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>raf</p>
+</dd>
+</dl>
+<dl class="py class">
 <dt id="vison.flat.BF01.BF01">
-<em class="property">class </em><code class="descclassname">vison.flat.BF01.</code><code class="descname">BF01</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">vison.flat.BF01.</code><code class="sig-name descname">BF01</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="vison.flat.BF01.BF01.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds PTC0X script structure dictionary.</p>
 <p>#:param exptimes: list of ints [ms], exposure times.
 #:param frames: list of ints, number of frames for each exposure time.
@@ -440,84 +447,94 @@ TEST: BF01</p>
 :param diffvalues: dict, opt, differential values.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.flat.BF01.BF01.correct_BFE_G15">
-<code class="descname">correct_BFE_G15</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01.correct_BFE_G15" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">correct_BFE_G15</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01.correct_BFE_G15" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.flat.BF01.BF01.extract_BF">
-<code class="descname">extract_BF</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01.extract_BF" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Performs basic analysis of images:</dt>
-<dd><ul class="first last simple">
-<li>extracts BF matrix for each COV matrix</li>
+<code class="sig-name descname">extract_BF</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01.extract_BF" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Performs basic analysis of images:</dt><dd><ul class="simple">
+<li><p>extracts BF matrix for each COV matrix</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.flat.BF01.BF01.extract_COV">
-<code class="descname">extract_COV</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01.extract_COV" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Performs basic analysis of images:</dt>
-<dd><ul class="first last simple">
-<li>extracts COVARIANCE matrix for each fluence</li>
+<code class="sig-name descname">extract_COV</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01.extract_COV" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Performs basic analysis of images:</dt><dd><ul class="simple">
+<li><p>extracts COVARIANCE matrix for each fluence</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.flat.BF01.BF01.extract_PTCs">
-<code class="descname">extract_PTCs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01.extract_PTCs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">extract_PTCs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01.extract_PTCs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.flat.BF01.BF01.f_correct_BFE_G15">
-<code class="descname">f_correct_BFE_G15</code><span class="sig-paren">(</span><em>ccdobjname</em>, <em>fixA=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01.f_correct_BFE_G15" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">f_correct_BFE_G15</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ccdobjname</span></em>, <em class="sig-param"><span class="n">fixA</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01.f_correct_BFE_G15" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies BFE solutions from G+15 to images, to later test effectivity 
 through PTC.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.flat.BF01.BF01.filterexposures">
-<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01.filterexposures" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py attribute">
+<dt id="vison.flat.BF01.BF01.inputsclass">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#vison.flat.BF01.BF01.inputsclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#vison.flat.BF01.BF01_inputs" title="vison.flat.BF01.BF01_inputs"><code class="xref py py-class docutils literal notranslate"><span class="pre">BF01_inputs</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="vison.flat.BF01.BF01.meta_analysis">
-<code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01.meta_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Analyzes the BF results across fluences.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.flat.BF01.BF01.set_inpdefaults">
-<code class="descname">set_inpdefaults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01.set_inpdefaults" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py class">
+<dt id="vison.flat.BF01.BF01_inputs">
+<em class="property">class </em><code class="sig-prename descclassname">vison.flat.BF01.</code><code class="sig-name descname">BF01_inputs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.BF01_inputs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt id="vison.flat.BF01.correct_BFE_one_image">
-<code class="descclassname">vison.flat.BF01.</code><code class="descname">correct_BFE_one_image</code><span class="sig-paren">(</span><em>q</em>, <em>dd</em>, <em>inputs</em>, <em>iObs</em>, <em>nObs</em>, <em>CCDs</em>, <em>Quads</em>, <em>picklespath</em>, <em>Asol</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.correct_BFE_one_image" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.flat.BF01.</code><code class="sig-name descname">correct_BFE_one_image</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">q</span></em>, <em class="sig-param"><span class="n">dd</span></em>, <em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">iObs</span></em>, <em class="sig-param"><span class="n">nObs</span></em>, <em class="sig-param"><span class="n">CCDs</span></em>, <em class="sig-param"><span class="n">Quads</span></em>, <em class="sig-param"><span class="n">picklespath</span></em>, <em class="sig-param"><span class="n">Asol</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.correct_BFE_one_image" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.flat.BF01.fit_BF">
-<code class="descclassname">vison.flat.BF01.</code><code class="descname">fit_BF</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.fit_BF" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.flat.BF01.</code><code class="sig-name descname">fit_BF</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.fit_BF" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vison.flat.BF01.process_one_fluence_covmaps">
-<code class="descclassname">vison.flat.BF01.</code><code class="descname">process_one_fluence_covmaps</code><span class="sig-paren">(</span><em>q</em>, <em>dd</em>, <em>dpath</em>, <em>CCDs</em>, <em>jCCD</em>, <em>ku</em>, <em>ulabels</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.process_one_fluence_covmaps" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vison.flat.BF01.</code><code class="sig-name descname">process_one_fluence_covmaps</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">q</span></em>, <em class="sig-param"><span class="n">dd</span></em>, <em class="sig-param"><span class="n">dpath</span></em>, <em class="sig-param"><span class="n">CCDs</span></em>, <em class="sig-param"><span class="n">jCCD</span></em>, <em class="sig-param"><span class="n">ku</span></em>, <em class="sig-param"><span class="n">ulabels</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.BF01.process_one_fluence_covmaps" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -526,7 +543,7 @@ through PTC.</p>
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/vison_logo.png" alt="Logo"/>
             </a></p>
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Flat-Illumination Scripts</a><ul>
 <li><a class="reference internal" href="#flat0x">FLAT0X</a></li>
@@ -539,7 +556,7 @@ through PTC.</p>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="dark_scripts.html"
-                        title="previous chapter">&#8220;Dark Acquisitions&#8221; Scripts</a></p>
+                        title="previous chapter">“Dark Acquisitions” Scripts</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="point_scripts.html"
                         title="next chapter">Point-Source Scripts</a></p>
@@ -551,15 +568,15 @@ through PTC.</p>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -579,12 +596,13 @@ through PTC.</p>
         <li class="right" >
           <a href="dark_scripts.html" title="“Dark Acquisitions” Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+404.g5ace8e4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+12.g95d2b7a documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Flat-Illumination Scripts</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, Ruyman Azzollini.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
     </div>
   </body>
 </html>

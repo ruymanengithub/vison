@@ -1,35 +1,25 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Point-Source Scripts &#8212; vison 0.9+404.g5ace8e4 documentation</title>
-    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Point-Source Scripts &#8212; vison 1.0+12.g95d2b7a documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.9+404.g5ace8e4',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Trap-Pumping Scripts" href="tp_scripts.html" />
     <link rel="prev" title="Flat-Illumination Scripts" href="flat_scripts.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -45,7 +35,8 @@
         <li class="right" >
           <a href="flat_scripts.html" title="Flat-Illumination Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+404.g5ace8e4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+12.g95d2b7a documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Point-Source Scripts</a></li> 
       </ul>
     </div>  
 
@@ -63,136 +54,143 @@
 <p>Tasks:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Select exposures, get file names, get metadata (commandig, HK).</li>
-<li>Check quality of data (integrated fluxes are roughly constant, matching expected level).</li>
-<li>Subtract offset level.</li>
-<li>Divide by Flat-field.</li>
-<li><dl class="first docutils">
-<dt>Crop stamps of the sources on each CCD/Quadrant.</dt>
-<dd><ul class="first last">
-<li>save snapshot figures of sources.</li>
+<li><p>Select exposures, get file names, get metadata (commandig, HK).</p></li>
+<li><p>Check quality of data (integrated fluxes are roughly constant, matching expected level).</p></li>
+<li><p>Subtract offset level.</p></li>
+<li><p>Divide by Flat-field.</p></li>
+<li><dl class="simple">
+<dt>Crop stamps of the sources on each CCD/Quadrant.</dt><dd><ul>
+<li><p>save snapshot figures of sources.</p></li>
 </ul>
 </dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt>for each source (5 x Nquadrants):</dt>
-<dd><ul class="first last">
-<li>measure shape using Gaussian Fit</li>
+<li><dl class="simple">
+<dt>for each source (5 x Nquadrants):</dt><dd><ul>
+<li><p>measure shape using Gaussian Fit</p></li>
 </ul>
 </dd>
 </dl>
 </li>
-<li>Find position of mirror that minimizes PSF sizes</li>
-<li><dl class="first docutils">
-<dt>Produce synoptic figures:</dt>
-<dd>source size and ellipticity across combined FOV (of 3 CCDs)</dd>
+<li><p>Find position of mirror that minimizes PSF sizes</p></li>
+<li><dl class="simple">
+<dt>Produce synoptic figures:</dt><dd><p>source size and ellipticity across combined FOV (of 3 CCDs)</p>
+</dd>
 </dl>
 </li>
-<li>Save results.</li>
+<li><p>Save results.</p></li>
 </ul>
 </div></blockquote>
 <p>Created on Mon Apr 03 16:21:00 2017</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
-<dl class="class">
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
+<dl class="py class">
 <dt id="vison.point.FOCUS00.FOCUS00">
-<em class="property">class </em><code class="descclassname">vison.point.FOCUS00.</code><code class="descname">FOCUS00</code><span class="sig-paren">(</span><em>inputs</em>, <em>log=None</em>, <em>drill=False</em>, <em>debug=False</em>, <em>cleanafter=False</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">vison.point.FOCUS00.</code><code class="sig-name descname">FOCUS00</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="vison.point.FOCUS00.FOCUS00.basic_analysis">
-<code class="descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00.basic_analysis" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00.basic_analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is just an assignation of values measured in check_data.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.point.FOCUS00.FOCUS00.build_scriptdict">
-<code class="descname">build_scriptdict</code><span class="sig-paren">(</span><em>diffvalues={}</em>, <em>elvis='7.5.X'</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00.build_scriptdict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00.build_scriptdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds FOCUS00 script structure dictionary.</p>
 <p>#:param wavelength: int, [nm], wavelength.
 #:param exptime: int, [ms], exposure time.
 :param diffvalues: dict, opt, differential values.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.point.FOCUS00.FOCUS00.filterexposures">
-<code class="descname">filterexposures</code><span class="sig-paren">(</span><em>structure</em>, <em>explog</em>, <em>OBSID_lims</em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00.filterexposures" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00.filterexposures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py attribute">
+<dt id="vison.point.FOCUS00.FOCUS00.inputsclass">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00.inputsclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#vison.point.FOCUS00.FOCUS00_inputs" title="vison.point.FOCUS00.FOCUS00_inputs"><code class="xref py py-class docutils literal notranslate"><span class="pre">FOCUS00_inputs</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="vison.point.FOCUS00.FOCUS00.lock_on_stars">
-<code class="descname">lock_on_stars</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00.lock_on_stars" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">lock_on_stars</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00.lock_on_stars" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.point.FOCUS00.FOCUS00.meta_analysis">
-<code class="descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00.meta_analysis" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00.meta_analysis" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vison.point.FOCUS00.FOCUS00.prep_data">
-<code class="descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00.prep_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00.prep_data" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
+
+<dl class="py class">
+<dt id="vison.point.FOCUS00.FOCUS00_inputs">
+<em class="property">class </em><code class="sig-prename descclassname">vison.point.FOCUS00.</code><code class="sig-name descname">FOCUS00_inputs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.FOCUS00.FOCUS00_inputs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="module-vison.point.PSF0X">
 <span id="psf0x"></span><h2>PSF0X<a class="headerlink" href="#module-vison.point.PSF0X" title="Permalink to this headline">¶</a></h2>
 <p>TEST: PSF0X</p>
-<dl class="docutils">
-<dt>PSF vs. Fluence, and Wavelength</dt>
-<dd>PSF01 - nominal temperature
-PSF02 - alternative temperatures</dd>
+<dl class="simple">
+<dt>PSF vs. Fluence, and Wavelength</dt><dd><p>PSF01 - nominal temperature
+PSF02 - alternative temperatures</p>
+</dd>
 </dl>
 <p>Tasks:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Select exposures, get file names, get metadata (commandig, HK).</li>
-<li>Check exposure time pattern matches test design.</li>
-<li>Check quality of data (rough scaling of fluences with Exposure times).</li>
-<li>Subtract offset level.</li>
-<li>Divide by Flat-field.</li>
-<li><dl class="first docutils">
-<dt>Crop stamps of the sources on each CCD/Quadrant.</dt>
-<dd><ul class="first last">
-<li>save snapshot figures of sources.</li>
+<li><p>Select exposures, get file names, get metadata (commandig, HK).</p></li>
+<li><p>Check exposure time pattern matches test design.</p></li>
+<li><p>Check quality of data (rough scaling of fluences with Exposure times).</p></li>
+<li><p>Subtract offset level.</p></li>
+<li><p>Divide by Flat-field.</p></li>
+<li><dl class="simple">
+<dt>Crop stamps of the sources on each CCD/Quadrant.</dt><dd><ul>
+<li><p>save snapshot figures of sources.</p></li>
 </ul>
 </dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt>for each source:</dt>
-<dd><ul class="first last">
-<li>measure shape using weighted moments</li>
-<li>measure shape using Gaussian Fit</li>
-<li>Bayesian Forward Modelling the optomechanic+detector PSF</li>
+<li><dl class="simple">
+<dt>for each source:</dt><dd><ul>
+<li><p>measure shape using weighted moments</p></li>
+<li><p>measure shape using Gaussian Fit</p></li>
+<li><p>Bayesian Forward Modelling the optomechanic+detector PSF</p></li>
 </ul>
 </dd>
 </dl>
 </li>
-<li>Produce synoptic figures.</li>
-<li>Save results.</li>
+<li><p>Produce synoptic figures.</p></li>
+<li><p>Save results.</p></li>
 </ul>
 </div></blockquote>
 <p>Created on Thu Dec 29 15:01:07 2016</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Ruyman Azzollini</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Ruyman Azzollini</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt id="vison.point.PSF0X.PSF0X_inputs">
+<em class="property">class </em><code class="sig-prename descclassname">vison.point.PSF0X.</code><code class="sig-name descname">PSF0X_inputs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.point.PSF0X.PSF0X_inputs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -201,7 +199,7 @@ PSF02 - alternative temperatures</dd>
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/vison_logo.png" alt="Logo"/>
             </a></p>
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Point-Source Scripts</a><ul>
 <li><a class="reference internal" href="#module-vison.point.FOCUS00">FOCUS00</a></li>
@@ -224,15 +222,15 @@ PSF02 - alternative temperatures</dd>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -252,12 +250,13 @@ PSF02 - alternative temperatures</dd>
         <li class="right" >
           <a href="flat_scripts.html" title="Flat-Illumination Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 0.9+404.g5ace8e4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+12.g95d2b7a documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Point-Source Scripts</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, Ruyman Azzollini.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
     </div>
   </body>
 </html>
