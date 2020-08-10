@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitoring (“Eyegore”) &#8212; vison 1.0+12.g95d2b7a documentation</title>
+    <title>Monitoring (“Eyegore”) &#8212; vison 1.0+15.g319caff documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="metatests.html" title="Metatests"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+12.g95d2b7a documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+15.g319caff documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Monitoring (“Eyegore”)</a></li> 
       </ul>
     </div>  
@@ -54,11 +54,144 @@
 <div class="section" id="eyegore-py">
 <h2>eyegore.py<a class="headerlink" href="#eyegore-py" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="eyeccds-py">
-<h2>eyeCCDs.py<a class="headerlink" href="#eyeccds-py" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-vison.eyegore.eyeCCDs">
+<span id="eyeccds-py"></span><h2>eyeCCDs.py<a class="headerlink" href="#module-vison.eyegore.eyeCCDs" title="Permalink to this headline">¶</a></h2>
+<p>Eyegore: CCDs display.</p>
+<p>Created on Fri Oct 13 16:16:08 2017</p>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>raf</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt id="vison.eyegore.eyeCCDs.ImageDisplay">
+<em class="property">class </em><code class="sig-prename descclassname">vison.eyegore.eyeCCDs.</code><code class="sig-name descname">ImageDisplay</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span></em>, <em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em>, <em class="sig-param"><span class="n">tag</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeCCDs.ImageDisplay" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="vison.eyegore.eyeCCDs.ImageDisplay.gen_render">
+<code class="sig-name descname">gen_render</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeCCDs.ImageDisplay.gen_render" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vison.eyegore.eyeCCDs.ImageDisplay.setup_fig">
+<code class="sig-name descname">setup_fig</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeCCDs.ImageDisplay.setup_fig" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="eyehk-py">
-<h2>eyeHK.py<a class="headerlink" href="#eyehk-py" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-vison.eyegore.eyeHK">
+<span id="eyehk-py"></span><h2>eyeHK.py<a class="headerlink" href="#module-vison.eyegore.eyeHK" title="Permalink to this headline">¶</a></h2>
+<p>Eyegore: House Keeping Monitoring.</p>
+<p>Created on Fri Oct 13 14:11:41 2017</p>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>raf</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt id="vison.eyegore.eyeHK.HKButton">
+<em class="property">class </em><code class="sig-prename descclassname">vison.eyegore.eyeHK.</code><code class="sig-name descname">HKButton</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">master</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKButton" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="vison.eyegore.eyeHK.HKDisplay">
+<em class="property">class </em><code class="sig-prename descclassname">vison.eyegore.eyeHK.</code><code class="sig-name descname">HKDisplay</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">interval</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em>, <em class="sig-param"><span class="n">dolite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">tag</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKDisplay" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="vison.eyegore.eyeHK.HKDisplay.get_data">
+<code class="sig-name descname">get_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKDisplay.get_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vison.eyegore.eyeHK.HKDisplay.search_HKfiles">
+<code class="sig-name descname">search_HKfiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKDisplay.search_HKfiles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vison.eyegore.eyeHK.HKDisplay.select_HKkeys">
+<code class="sig-name descname">select_HKkeys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKDisplay.select_HKkeys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vison.eyegore.eyeHK.HKDisplay.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKDisplay.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enter event loop until all pending events have been processed by Tcl.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vison.eyegore.eyeHK.HKFlags">
+<em class="property">class </em><code class="sig-prename descclassname">vison.eyegore.eyeHK.</code><code class="sig-name descname">HKFlags</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">parent</span></em>, <em class="sig-param"><span class="n">interval</span><span class="o">=</span><span class="default_value">5000</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em>, <em class="sig-param"><span class="n">tag</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKFlags" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="vison.eyegore.eyeHK.HKFlags.MuteFlag">
+<code class="sig-name descname">MuteFlag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKFlags.MuteFlag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vison.eyegore.eyeHK.HKFlags.ResetFlag">
+<code class="sig-name descname">ResetFlag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKFlags.ResetFlag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vison.eyegore.eyeHK.HKFlags.UnmuteFlag">
+<code class="sig-name descname">UnmuteFlag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKFlags.UnmuteFlag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vison.eyegore.eyeHK.HKFlags.bind_buttons_to_methods">
+<code class="sig-name descname">bind_buttons_to_methods</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKFlags.bind_buttons_to_methods" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vison.eyegore.eyeHK.HKFlags.changeColor">
+<code class="sig-name descname">changeColor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ix</span></em>, <em class="sig-param"><span class="n">color</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKFlags.changeColor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vison.eyegore.eyeHK.HKFlags.isflagraised">
+<code class="sig-name descname">isflagraised</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKFlags.isflagraised" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vison.eyegore.eyeHK.HKFlags.lowerflag">
+<code class="sig-name descname">lowerflag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKFlags.lowerflag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vison.eyegore.eyeHK.HKFlags.raiseflag">
+<code class="sig-name descname">raiseflag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKFlags.raiseflag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vison.eyegore.eyeHK.HKFlags.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.HKFlags.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enter event loop until all pending events have been processed by Tcl.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="vison.eyegore.eyeHK.SingleHKplot">
+<em class="property">class </em><code class="sig-prename descclassname">vison.eyegore.eyeHK.</code><code class="sig-name descname">SingleHKplot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.SingleHKplot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="vison.eyegore.eyeHK.sort_HKfiles">
+<code class="sig-prename descclassname">vison.eyegore.eyeHK.</code><code class="sig-name descname">sort_HKfiles</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">HKfiles</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.sort_HKfiles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="vison.eyegore.eyeHK.validate_within_HKlim">
+<code class="sig-prename descclassname">vison.eyegore.eyeHK.</code><code class="sig-name descname">validate_within_HKlim</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em>, <em class="sig-param"><span class="n">HKlim</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.eyegore.eyeHK.validate_within_HKlim" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>violation:</dt><dd><p>0: None
+-1: below lower limit
+1: above upper limit
+2: different from limit, if limit is a single value</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="section" id="module-vison.eyegore.eyeObs">
 <span id="eyeobs-py"></span><h2>eyeObs.py<a class="headerlink" href="#module-vison.eyegore.eyeObs" title="Permalink to this headline">¶</a></h2>
@@ -138,8 +271,8 @@
   <ul>
 <li><a class="reference internal" href="#">Monitoring (“Eyegore”)</a><ul>
 <li><a class="reference internal" href="#eyegore-py">eyegore.py</a></li>
-<li><a class="reference internal" href="#eyeccds-py">eyeCCDs.py</a></li>
-<li><a class="reference internal" href="#eyehk-py">eyeHK.py</a></li>
+<li><a class="reference internal" href="#module-vison.eyegore.eyeCCDs">eyeCCDs.py</a></li>
+<li><a class="reference internal" href="#module-vison.eyegore.eyeHK">eyeHK.py</a></li>
 <li><a class="reference internal" href="#module-vison.eyegore.eyeObs">eyeObs.py</a></li>
 <li><a class="reference internal" href="#eyewarnings-py">eyeWarnings.py</a></li>
 </ul>
@@ -188,7 +321,7 @@
         <li class="right" >
           <a href="metatests.html" title="Metatests"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+12.g95d2b7a documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+15.g319caff documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Monitoring (“Eyegore”)</a></li> 
       </ul>
     </div>
