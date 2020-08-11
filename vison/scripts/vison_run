@@ -163,7 +163,7 @@ if __name__ == '__main__':
         #inputdictgetter = loadpyconfig(pyconfig)
     # elif len(json)>=0:
     #    inputdict = parse_jsonconfig(json)
-    stop()
+    
     if docheck or dotest:
         inputdict = broadcast_todo_flags(inputdict, docheck=docheck, dotest=dotest)
 
