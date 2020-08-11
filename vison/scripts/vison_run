@@ -41,29 +41,29 @@ from vison.support import vjson
 # END IMPORT
 
 
-#def openpyconfigf(configf, RUN, wait):
-#    inputdict = dict()
-#    with open(configf) as f:
-#        # execfile(configf,dict(RUNs=['D21']))
-#        RUNs = [RUN]
-#        doWait = wait
-#        #print(type(f))
-#        exec(f.read())
-#        f.close()
-#    
-#    return inputdict
-
 def openpyconfigf(configf, RUN, wait):
-    import importlib
-    import os
-    print(os.getcwd())
-    RUNs = [RUN]
-    doWait = wait
-    
-    i = importlib.import_module(os.path.splitext(configf)[0])
-    inputdict = i.master(RUNs, doWait)
+    inputdict = dict()
+    with open(configf) as f:
+        # execfile(configf,dict(RUNs=['D21']))
+        RUNs = [RUN]
+        doWait = wait
+        #print(type(f))
+        exec(f.read())
+        f.close()
     
     return inputdict
+
+#def openpyconfigf(configf, RUN, wait):
+#    import importlib
+#    import os
+#    print(os.getcwd())
+#    RUNs = [RUN]
+#    doWait = wait
+#    
+#    i = importlib.import_module(os.path.splitext(configf)[0])
+#    inputdict = i.master(RUNs, doWait)
+    
+#    return inputdict
 
 # def loadpyconfig(configf):
 #
