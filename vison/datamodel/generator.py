@@ -69,8 +69,8 @@ def _update_fromscript(rowdict, scriptcol):
 
     phkeys = ['IPHI1', 'IPHI2', 'IPHI3', 'IPHI4']
 
-    IPHI = st.join(['I%i' % (i + 1,)
-                    for i in range(4) if scriptcol[phkeys[i]]], '')
+    IPHI = ''.join(['I%i' % (i + 1,)
+                    for i in range(4) if scriptcol[phkeys[i]]])
     rowdict['IPHI'] = IPHI
 
     #Trappump = '%i-%s' % (scriptcol['tpump'],scriptcol['tpump_mode'])
