@@ -50,7 +50,7 @@ def openpyconfigf(configf, RUN, wait):
         #print(type(f))
         exec(f.read())
         f.close()
-
+    stop()
     return inputdict
 
 # def loadpyconfig(configf):
