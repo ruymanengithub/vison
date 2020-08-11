@@ -32,7 +32,7 @@ from optparse import OptionParser
 import sys
 #import imp
 import multiprocessing
-#import importlib
+import importlib
 
 from vison import Pipe
 from vison.fpatests import fpamaster
@@ -54,9 +54,7 @@ from vison.support import vjson
 #    return inputdict
 
 def openpyconfigf(configf, RUN, wait):
-    import importlib
-    import os
-    print(os.getcwd())
+    
     RUNs = [RUN]
     doWait = wait
     stop()
