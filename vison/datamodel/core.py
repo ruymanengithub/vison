@@ -357,12 +357,13 @@ class DataDict(object):
             if len(cindex) == 1:
                 t[col] = ast.table.Column(carray)
             elif len(cindex) > 1:
-                _names = cindex[1:].names
+                try: _names = cindex[1:].names
+                except: stop()
                 _vals = [item.vals for item in cindex[1:]]
                 _ixix = [list(range(item.len)) for item in cindex[1:]]
                 prod_vals = list(itertools.product(*_vals))
                 prod_ixix = list(itertools.product(*_ixix))
-                tmp_suf = st.join([('_%s' % item) + '%s' for item in _names], '')
+                tmp_suf = ''.join([('_%s' % item) + '%s' for item in _names])
 
                 nix0 = cindex[0].len
 
