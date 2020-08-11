@@ -56,12 +56,18 @@ from vison.support import vjson
 def openpyconfigf(configf, RUN, wait):
 
     cwd = os.getcwd()
-    sys.path.append(cwd)
+    if cwd not in sys.path:
+        sys.path.append(cwd)
 
     RUNs = [RUN]
     doWait = wait
-    i = importlib.import_module(os.path.splitext(configf)[0])
-    inputdict = i.master(RUNs, doWait)
+    try: 
+        i = importlib.import_module(os.path.splitext(configf)[0])
+        inputdict = i.master(RUNs, doWait)
+    except:
+        inputdict = None
+
+    sys.path.remove(cwd)
     
     return inputdict
 
