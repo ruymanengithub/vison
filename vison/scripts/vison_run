@@ -54,11 +54,14 @@ from vison.support import vjson
 #    return inputdict
 
 def openpyconfigf(configf, RUN, wait):
-    
+
+    cwd = os.getcwd()
+    sys.path.append(cwd)
+
     RUNs = [RUN]
     doWait = wait
-    master = importlib.import_module(os.path.splitext(configf)[0]+'.master')
-    inputdict = master(RUNs, doWait)
+    i = importlib.import_module(os.path.splitext(configf)[0])
+    inputdict = i.master(RUNs, doWait)
     
     return inputdict
 
