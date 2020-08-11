@@ -473,7 +473,7 @@ class Task(object):
                 'False', '$\\textcolor{red}{\\bf{False}}$') for item in nchecksout][0]
             self.report.add_Text(
                 '%s acquisition consistent with expectations: %s\\newline' % (ntestkey, nchecksout))
-
+            stop()
             if (checkreport['failedcols']) > 0:
                 nfailedcols = checkreport['failedcols'].__repr__().replace(
                     '_', '\_')
