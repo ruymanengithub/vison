@@ -102,10 +102,10 @@ class VSExtractor(object):
 
             checks = [item.upper() for item in checks]
 
-            checkimage_name = st.join(['%s_%s.fits' %
-                                       (catroot, check[0:4]) for check in checks], ',')
+            checkimage_name = ','.join(['%s_%s.fits' %
+                                       (catroot, check[0:4]) for check in checks])
 
-            checkimage_type = st.join(checks, ',')
+            checkimage_type = ','.join(checks)
 
             configdefaults.update(dict(
                 CHECKIMAGE_TYPE=checkimage_type,

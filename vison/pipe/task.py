@@ -655,14 +655,14 @@ class Task(object):
 
     def addFlagsToLog(self):
         """ """
-        flagstxt = st.join(self.dd.flags.getFlagsOnList(), ', ')
+        flagstxt = ', '.join(self.dd.flags.getFlagsOnList())
         self.log.info('FLAGS ON}:\n%s' % flagstxt)
 
     def addFlagsToReport(self):
         """ """
         niceflagnames = [item.replace('_', '\_')
                          for item in self.dd.flags.getFlagsOnList()]
-        flagstxt = st.join(niceflagnames, ', ')
+        flagstxt = ', '.join(niceflagnames)
         msgList = ['$\\bf{FLAGS\ ON}$: ', flagstxt]
         self.report.add_Text(msgList)
 

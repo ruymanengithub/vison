@@ -100,7 +100,7 @@ if __name__ == '__main__':
     pdfFile = 'FITSmonitor_%s_ROE%s_CCD%s.pdf' % (datetag, roe, ccd)
 
     tempcommand = 'ghostscript -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=%s %s'
-    PDFlistLine = st.join(PDFlist, ' ')
+    PDFlistLine = ' '.join(PDFlist)
     os.system(tempcommand % (pdfFile, PDFlistLine))
 
     for PDFfile in PDFlist:

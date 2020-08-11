@@ -367,7 +367,7 @@ def reportFITS(FITSfile, outpath=''):
 
         alignedstats = tuple([QUAD] + prestats + imgstats + overstats)
 
-        template_stats = st.join(latex_templates['table_stats'], '__^__')
+        template_stats = '__^__'.join(latex_templates['table_stats'])
         table_stats = template_stats % alignedstats
         table_stats = table_stats.split('__^__')
 

@@ -64,5 +64,5 @@ class HelpButton(tk.Button, object):
         newwin = tk.Toplevel(self.master)
         #newwin = tk.Toplevel()
         newwin.wm_title(self.label)
-        display = tk.Label(newwin, text=st.join(self.helplist, '\n'))
+        display = tk.Label(newwin, text='\n'.join(self.helplist))
         display.pack()

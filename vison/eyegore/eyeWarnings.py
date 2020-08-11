@@ -211,7 +211,7 @@ class EyeWarnings(object):
             if self.log is not None:
                 self.log.info('SMS WARNING not sent! ET not available.')
 
-        body = st.join(['HK OOL WARNING: %s. ' % HKkey,
+        body = ''.join(['HK OOL WARNING: %s. ' % HKkey,
                         'value = %s, limits = %s. ' % (value, HKlim),
                         'at %s' % timestamp])
 

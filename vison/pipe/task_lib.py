@@ -38,16 +38,16 @@ def check_HK(self, HKKeys, reference='command', limits='P', tag='', doReport=Fal
     if doReport and self.report is not None:
         nicetag = tag.replace(' ', '\ ')
         msg_HK = ['$\\bf{HK-%s}$, Parameters not passing Tests:\n' % nicetag]
-        msg_HK += [st.join(['$\\bf{\\textcolor{red}{%s}}$' % (key.replace( '_', '\_'),)
+        msg_HK += [''.join(['$\\bf{\\textcolor{red}{%s}}$' % (key.replace( '_', '\_'),)
                             for key in report_HK if not report_HK[key]], ', ')]
         if len(msg_HK[-1]) == 0:
             msg_HK += ['$\\bf{ALL\ PASSED}$\n']
-        self.report.add_Text(st.join(msg_HK, '\n'))
+        self.report.add_Text('\n'.join(msg_HK))
         self.report.add_Text('\\')
 
     if doLog and self.log is not None:
         msg_HK = ['HK-%s, Parameters not passing Tests:\n' % tag]
-        msg_HK += [st.join([key for key in report_HK if not report_HK[key]], ', ')]
+        msg_HK += [', '.join([key for key in report_HK if not report_HK[key]])]
         if len(msg_HK[-1]) == 0:
             msg_HK += ['ALL PASSED']
         self.log.info(msg_HK)
@@ -58,13 +58,13 @@ def check_HK(self, HKKeys, reference='command', limits='P', tag='', doReport=Fal
 def add_checkHK_report(self, report_HK, tag):
 
     msg_HK = ['$\\bf{HK-%s}$, Listing parameters not passing Tests:\n' % tag]
-    msg_HK += [st.join(['\\bf{%s}' % (key.replace('_', '\_'),)
-                        for key in report_HK if not report_HK[key]], ', ')]
+    msg_HK += [', '.join(['\\bf{%s}' % (key.replace('_', '\_'),)
+                        for key in report_HK if not report_HK[key]])]
     if len(msg_HK[-1]) == 0:
         msg_HK += ['$\\bf{ALL\ PASSED}$\n']
 
     if self.report is not None:
-        self.report.add_Text(st.join(msg_HK, '\n'))
+        self.report.add_Text('\n'.join(msg_HK))
         self.report.add_Text('\\')
 
     return msg_HK

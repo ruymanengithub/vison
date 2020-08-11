@@ -221,7 +221,7 @@ class Figure(Content):
             tex_raw.insert(-1, r'\label{__PLACEHOLDER__}')
             substitutes.append(self.label)
 
-        texjoint = st.join(tex_raw, r'JOIN_LINES')
+        texjoint = r'JOIN_LINES'.join(tex_raw)
         texjoint = texjoint.replace(r'__PLACEHOLDER__', r'%s')
         texjoint = texjoint % tuple(substitutes)
 

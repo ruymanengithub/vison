@@ -31,7 +31,7 @@ def replace_in_template(texf, values):
 
     texlines = [item[0:-1] for item in texlines]  # removes end \n
 
-    tex = st.join(texlines, 'JOIN___LINES')
+    tex = 'JOIN___LINES'.join(texlines)
     tex = tex.replace('%', '%%')
     tex = tex.replace('__PLACEHOLDER__', '%s')
     tex = tex % values
