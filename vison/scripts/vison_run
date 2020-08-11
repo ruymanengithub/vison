@@ -57,7 +57,7 @@ def openpyconfigf(configf, RUN, wait):
     
     RUNs = [RUN]
     doWait = wait
-    master = importlib.import_module('.'+os.path.splitext(configf)[0]+'.master')
+    master = importlib.import_module(os.path.splitext(configf)[0]+'.master')
     inputdict = master(RUNs, doWait)
     
     return inputdict
