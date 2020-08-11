@@ -56,7 +56,7 @@ from vison.support import vjson
 def openpyconfigf(configf, RUN, wait):
     import importlib
     import os
-    print(os.cwd())
+    print(os.getcwd())
     RUNs = [RUN]
     doWait = wait
     
