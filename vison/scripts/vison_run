@@ -48,7 +48,6 @@ def openpyconfigf(configf, RUN, wait):
         RUNs = [RUN]
         doWait = wait
         #print(type(f))
-        stop()
         exec(f.read())
         f.close()
 
