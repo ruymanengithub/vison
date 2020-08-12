@@ -292,8 +292,8 @@ class Table(Content):
     def __init__(self, tableDict, formats=None, names=None, caption=None, col_align=None,
                  longtable=False):
 
-        if names is None:
-            names = []
+        #if names is None:
+        #    names = []
         table = astable.Table(data=tableDict, names=names)
 
         self.type = 'table'
@@ -317,8 +317,6 @@ class Table(Content):
         table = self.table
         formats = self.formatDict
 
-        tf = tempfile.TemporaryFile()
-
         latexdict = ascii.latex.latexdicts['doublelines']
 
         latexdict.update(dict(tablealign='!ht'))
@@ -327,18 +325,27 @@ class Table(Content):
         if self.longtable:
             latexdict['tabletype'] = 'longtable'
 
-        ascii.write(table, output=tf, formats=formats, Writer=ascii.Latex,
-                    latexdict=latexdict, col_align=col_align)
+        #tf = tempfile.TemporaryFile(mode='w')
 
-        tf.seek(0)
-        tex = tf.readlines()
-        tf.close()
+        #with tempfile.NamedTemporaryFile(mode='w', delete=False) as tf:
+        #
+        #    ascii.write(table, output=tf, formats=formats, Writer=ascii.Latex,
+        #            latexdict=latexdict, col_align=col_align)
+        #    tf.seek(0)
+        #    tex = tf.readlines()
+        #    tf.close()
+        #os.unlink(f.name)
+        from astropy.io.ascii import ui
+        Writer = ui._get_format_class(format=None, ReaderWriter=ascii.Latex, label='Writer')
+        writer = ui.get_writer(Writer=Writer, fast_writer=False, latexdict=latexdict,
+            col_align=col_align,formats=formats)
+        tex = writer.write(table)+[os.linesep]
 
         if self.caption is not None:
             captiontex = r'\caption{%s}\n' % self.caption
             tex.insert(-1, captiontex)
 
-        tex = [item[0:-1] for item in tex]  # removes ending \n
+        #tex = [item[0:-1] for item in tex]  # removes ending \n
 
         tex += ['\n']  # just improves legigibility of .tex
 
