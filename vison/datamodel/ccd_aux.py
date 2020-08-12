@@ -48,7 +48,7 @@ def extract_region(ccdobj, Q, area='img', vstart=0, vend=2086,
     """ """
     prescan = ccdobj.prescan
     overscan = ccdobj.overscan
-    imgx = ccdobj.NAXIS1 / 2 - prescan - overscan
+    imgx = ccdobj.NAXIS1 // 2 - prescan - overscan
 
     # the quadrant is "extracted" always in canonical orientation,
     # to ease extraction of sub-area (pre-scan, over-scan, image-area)
@@ -121,14 +121,14 @@ class Model2D():
         """Bins down image in self."""
 
         ishape = self.img.shape
-        _nshape = (ishape[0] / boxsize, ishape[1] / boxsize)
+        _nshape = (ishape[0] // boxsize, ishape[1] // boxsize)
         trimshape = _nshape[0] * boxsize, _nshape[1] * boxsize
         _img = self.img[0:trimshape[0], 0:trimshape[1]].copy()
 
         rebinned = rebin(_img, _nshape, stat=stat)
 
-        sx = np.arange(boxsize / 2, rebinned.shape[0] * boxsize + boxsize / 2, boxsize)
-        sy = np.arange(boxsize / 2, rebinned.shape[1] * boxsize + boxsize / 2, boxsize)
+        sx = np.arange(boxsize // 2, rebinned.shape[0] * boxsize + boxsize // 2, boxsize)
+        sy = np.arange(boxsize // 2, rebinned.shape[1] * boxsize + boxsize // 2, boxsize)
 
         sxx, syy = np.meshgrid(sx, sy, indexing='ij')
 
@@ -171,13 +171,13 @@ class Model2D():
 
         else:
 
-            nX = NX / sampling
-            nY = NY / sampling
+            nX = NX // sampling
+            nY = NY // sampling
 
             #samplebin = 10
 
-            sx = np.arange(sampling / 2, nX * sampling + sampling / 2, sampling)
-            sy = np.arange(sampling / 2, nY * sampling + sampling / 2, sampling)
+            sx = np.arange(sampling // 2, nX * sampling + sampling // 2, sampling)
+            sy = np.arange(sampling // 2, nY * sampling + sampling // 2, sampling)
 
             sxx, syy = np.meshgrid(sx, sy, indexing='ij')
 
@@ -277,11 +277,11 @@ class Model2D():
 
         else:
 
-            nX = NX / sampling
-            nY = NY / sampling
+            nX = NX // sampling
+            nY = NY // sampling
 
-            x = np.arange(sampling / 2, nX * sampling + sampling / 2, sampling)
-            y = np.arange(sampling / 2, nY * sampling + sampling / 2, sampling)
+            x = np.arange(sampling // 2, nX * sampling + sampling // 2, sampling)
+            y = np.arange(sampling // 2, nY * sampling + sampling // 2, sampling)
 
             xx, yy = np.meshgrid(x, y, indexing='ij')
 
@@ -389,7 +389,7 @@ def get_1Dprofile(ccdobj, Q, orient='hor', area='img', stacker='mean', vstart=0,
 
     prescan = ccdobj.prescan
     overscan = ccdobj.overscan
-    imgx = ccdobj.NAXIS1 / 2 - prescan - overscan
+    imgx = ccdobj.NAXIS1 // 2 - prescan - overscan
 
     subregion, BB = ccdobj.extract_region(Q, area=area, vstart=vstart,
                                           vend=vend,
@@ -420,7 +420,7 @@ def get_1Dprofile(ccdobj, Q, orient='hor', area='img', stacker='mean', vstart=0,
         if Q in ['G', 'H']:
             x = np.arange(BB[2], BB[3])
         elif Q in ['E', 'F']:
-            x = np.arange(BB[3], BB[2], -1) + ccdobj.NAXIS2 / 2
+            x = np.arange(BB[3], BB[2], -1) + ccdobj.NAXIS2 // 2
     v1d = Profile1D(x, y)
 
     return v1d

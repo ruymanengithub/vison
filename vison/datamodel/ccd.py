@@ -47,17 +47,17 @@ RON = 1.4
 gain = 3.1  # e/adu
 
 
-QuadBound = dict(E=[0, NAXIS1 / 2, NAXIS2 / 2, NAXIS2],
-                 F=[NAXIS1 / 2, NAXIS1, NAXIS2 / 2, NAXIS2],
-                 G=[NAXIS1 / 2, NAXIS1, 0, NAXIS2 / 2],
-                 H=[0, NAXIS1 / 2, 0, NAXIS2 / 2])
+QuadBound = dict(E=[0, NAXIS1 // 2, NAXIS2 // 2, NAXIS2],
+                 F=[NAXIS1 // 2, NAXIS1, NAXIS2 // 2, NAXIS2],
+                 G=[NAXIS1 // 2, NAXIS1, 0, NAXIS2 // 2],
+                 H=[0, NAXIS1 // 2, 0, NAXIS2 // 2])
 
 
 def f_get_QuadBound(NAXIS1, NAXIS2):
-    return dict(E=[0, NAXIS1 / 2, NAXIS2 / 2, NAXIS2],
-                F=[NAXIS1 / 2, NAXIS1, NAXIS2 / 2, NAXIS2],
-                G=[NAXIS1 / 2, NAXIS1, 0, NAXIS2 / 2],
-                H=[0, NAXIS1 / 2, 0, NAXIS2 / 2])
+    return dict(E=[0, NAXIS1 // 2, NAXIS2 // 2, NAXIS2],
+                F=[NAXIS1 // 2, NAXIS1, NAXIS2 // 2, NAXIS2],
+                G=[NAXIS1 // 2, NAXIS1, 0, NAXIS2 // 2],
+                H=[0, NAXIS1 // 2, 0, NAXIS2 // 2])
 
 
 Quads = ['E', 'F', 'G', 'H']
@@ -240,8 +240,8 @@ class CCD(object):
 
         self.QuadBound = f_get_QuadBound(self.NAXIS1, self.NAXIS2)
 
-        self.wQphys = self.NAXIS1 / 2 - self.prescan - self.overscan
-        self.hQphys = self.NAXIS2 / 2 - self.voverscan + self.chinjlines
+        self.wQphys = self.NAXIS1 // 2 - self.prescan - self.overscan
+        self.hQphys = self.NAXIS2 // 2 - self.voverscan + self.chinjlines
         self.QuadBoundPhys = f_get_QuadBound(2 * self.wQphys, 2 * self.hQphys)
 
         self.masked = False
@@ -294,8 +294,8 @@ class CCD(object):
     # @cooconv_arrays_decorate
     def get_Q(self, x, y, w, h):
         """ """
-        xix = int(x >= w / 2)
-        yix = int(y >= h / 2)
+        xix = int(x >= w // 2)
+        yix = int(y >= h // 2)
         return self.Qmatrix[yix, xix]
 
     @cooconv_arrays_decorate
@@ -522,7 +522,7 @@ class CCD(object):
         # Number of samples-tiles
         Nsamps = len(llpix)
         # centre-pixels of tiles
-        ccpix = [(llpix[i][0] + wpx / 2., llpix[i][1] + hpx / 2.)
+        ccpix = [(llpix[i][0] + wpx // 2., llpix[i][1] + hpx // 2.)
                  for i in range(Nsamps)]
         # dictionary with results
         tiles_dict = dict(wpx=wpx, hpx=hpx, llpix=llpix,
@@ -551,7 +551,7 @@ class CCD(object):
         for i in range(Nsamps):
             llx = tile_coos['llpix'][i][0]
             lly = tile_coos['llpix'][i][1]
-            cc = [llx, llx + wpx + 1, lly, lly + hpx + 1]
+            cc = [int(llx), int(llx + wpx + 1), int(lly), int(lly + hpx + 1)]
 
             tiles.append(self.get_cutout(
                 cc, Quadrant, canonical=False, extension=extension))
@@ -618,7 +618,9 @@ class CCD(object):
 
         """
         Qdata = self.get_quad(Quadrant, canonical, extension)
+        corners = [int(item) for item in corners]
         cutout = Qdata[corners[0]:corners[1], corners[2]:corners[3]].copy()
+        
         return cutout
 
     def set_quad(self, inQdata, Quadrant, canonical=False, extension=-1):
@@ -639,6 +641,7 @@ class CCD(object):
             Qdata = inQdata.copy()
 
         self.extensions[extension].data[edges[0]:edges[1], edges[2]:edges[3]] = Qdata.copy()
+        
 
         return None
 
@@ -726,9 +729,9 @@ class CCD(object):
         if sector == 'pre':
             hlims = [0, self.prescan]
         elif sector == 'ove':
-            hlims = [self.NAXIS1 / 2 - self.overscan, self.NAXIS1 / 2]
+            hlims = [self.NAXIS1 // 2 - self.overscan, self.NAXIS1 // 2]
         elif sector == 'img':
-            hlims = [self.prescan, self.NAXIS1 / 2 - self.overscan]
+            hlims = [self.prescan, self.NAXIS1 // 2 - self.overscan]
         elif sector == 'all':
             hlims = [0, None]
 
@@ -767,7 +770,7 @@ class CCD(object):
         if scan == 'pre':
             hlims = [0, self.prescan]
         elif scan == 'ove':
-            hlims = [self.NAXIS1 / 2 - self.overscan, self.NAXIS1 / 2]
+            hlims = [self.NAXIS1 // 2 - self.overscan, self.NAXIS1 // 2]
         else:
             sys.exit('ccd.sub_offset: scan=%s unkonwn' % scan)
 
@@ -781,7 +784,7 @@ class CCD(object):
 
         if method == 'row':
             offsets = []
-            for ix in range(self.NAXIS2 / 2):
+            for ix in range(self.NAXIS2 // 2):
                 offset = median(quaddata[hlims[0]:hlims[1], ix])
                 quaddata[:, ix] = quaddata[:, ix] - offset
                 offsets.append(offset)
