@@ -360,8 +360,7 @@ class DataDict(object):
             if len(cindex) == 1:
                 t[col] = ast.table.Column(carray)
             elif len(cindex) > 1:
-                try: _names = cindex[1:].name
-                except: stop()
+                _names = cindex[1:].names
                 _vals = [item.vals for item in cindex[1:]]
                 _ixix = [list(range(item.len)) for item in cindex[1:]]
                 prod_vals = list(itertools.product(*_vals))
