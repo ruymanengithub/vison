@@ -38,8 +38,8 @@ def check_HK(self, HKKeys, reference='command', limits='P', tag='', doReport=Fal
     if doReport and self.report is not None:
         nicetag = tag.replace(' ', '\ ')
         msg_HK = ['$\\bf{HK-%s}$, Parameters not passing Tests:\n' % nicetag]
-        msg_HK += [''.join(['$\\bf{\\textcolor{red}{%s}}$' % (key.replace( '_', '\_'),)
-                            for key in report_HK if not report_HK[key]], ', ')]
+        msg_HK += [', '.join(['$\\bf{\\textcolor{red}{%s}}$' % (key.replace( '_', '\_'),)
+                            for key in report_HK if not report_HK[key]])]
         if len(msg_HK[-1]) == 0:
             msg_HK += ['$\\bf{ALL\ PASSED}$\n']
         self.report.add_Text('\n'.join(msg_HK))
