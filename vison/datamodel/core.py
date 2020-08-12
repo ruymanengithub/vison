@@ -138,7 +138,10 @@ class vMultiIndex(list, object):
     #    return vMultiIndex(super(vMultiIndex, self)[i:j])
     def __getitem__(self, index):
         """ """
-        return vMultiIndex(super().__getitem__(index))
+        if isinstance(index,slice):
+            return vMultiIndex(super().__getitem__(index))
+        else:
+            return super().__getitem__(index)
 
     def __str__(self):
         """String representation method"""
