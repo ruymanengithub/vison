@@ -74,7 +74,6 @@ class vMultiIndex(list, object):
 
         assert (isinstance(IndexList, list) or isinstance(IndexList, vMultiIndex) or
                 (isinstance(IndexList, vIndex)))
-
         try:
             self += IndexList
         except TypeError:
@@ -133,13 +132,17 @@ class vMultiIndex(list, object):
         self.update_names()
         self.update_shape()
 
-    def __getslice__(self, i, j):
-        """slicing method"""
-        return vMultiIndex(super(vMultiIndex, self).__getslice__(i, j))
+    #def __getslice__(self, i, j):
+    #    """slicing method"""
+    #    #return vMultiIndex(super(vMultiIndex, self).__getslice__(i, j))
+    #    return vMultiIndex(super(vMultiIndex, self)[i:j])
+    def __getitem__(self, index):
+        """ """
+        return vMultiIndex(super().__getitem__(index))
 
     def __str__(self):
         """String representation method"""
-        inside = st.join(['%s' % item.__str__() for item in self], ',')
+        inside = ','.join(['%s' % item.__str__() for item in self])
         return '[%s]' % inside
 
 
@@ -357,7 +360,7 @@ class DataDict(object):
             if len(cindex) == 1:
                 t[col] = ast.table.Column(carray)
             elif len(cindex) > 1:
-                try: _names = cindex[1:].names
+                try: _names = cindex[1:].name
                 except: stop()
                 _vals = [item.vals for item in cindex[1:]]
                 _ixix = [list(range(item.len)) for item in cindex[1:]]
