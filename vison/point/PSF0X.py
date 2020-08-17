@@ -192,7 +192,7 @@ class PSF0X(PT.PointTask):
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        products='products', spots='spots',
                                        xtalk='xtalk')
-        stop()
+        
         if 'inCDPs' in self.inputs:
             if isinstance(self.inputs['inCDPs'],dict):
 
