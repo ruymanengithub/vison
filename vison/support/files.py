@@ -33,7 +33,10 @@ def cPickleRead(ffile):
     Loads data from a pickled file.
     """
     with open(ffile, 'rb') as f:
-        inpick = pickle.load(f)
+        try: 
+            inpick = pickle.load(f)
+        except UnicodeDecodeError:
+            inpick = pickle.load(f, encoding='latin1')
     f.close()
     return inpick
 
