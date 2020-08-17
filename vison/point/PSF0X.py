@@ -514,7 +514,7 @@ class PSF0X(PT.PointTask):
         CCDs = self.dd.indices.get_vals('CCD')
         strackers = self.ogse.startrackers
         stlabels = self.ogse.labels
-
+        stop()
         psCCDcoodicts = OrderedDict(names=strackers['CCD1']['col001'].starnames,
             CCDs=CCDs,
             labels=stlabels)
