@@ -192,7 +192,7 @@ class PSF0X(PT.PointTask):
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        products='products', spots='spots',
                                        xtalk='xtalk')
-
+        stop()
         if 'inCDPs' in self.inputs:
             if isinstance(self.inputs['inCDPs'],dict):
 
@@ -514,7 +514,7 @@ class PSF0X(PT.PointTask):
         CCDs = self.dd.indices.get_vals('CCD')
         strackers = self.ogse.startrackers
         stlabels = self.ogse.labels
-        stop()
+
         psCCDcoodicts = OrderedDict(names=strackers['CCD1']['col001'].starnames,
             CCDs=CCDs,
             labels=stlabels)
