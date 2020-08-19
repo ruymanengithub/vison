@@ -26,6 +26,30 @@ from vison.support import files
 
 # END IMPORT
 
+def decodeDD(dd):
+    """ """
+    
+    decoder = lambda item: str(item.decode('utf8'))
+    
+    for colname in dd.colnames:
+        if dd.mx[colname].array.dtype.char == 'S':
+            dd.mx[colname].array = np.array(list(map(decoder,
+                dd.mx[colname][:].flatten()))).reshape(
+                dd.mx[colname][:].shape)
+    return dd
+
+
+def upgradeDDs(allDataDicts):
+    """ """
+
+    for ddname in allDataDicts:
+        outddname = os.path.split(ddname)[-1]
+        stop()
+        dd = files.cPickleRead(ddname)
+        ndd = decodeDD(dd)
+        files.cPickleDumpDictionary(ndd, outddname)
+
+
 
 if __name__ == '__main__':
 
@@ -54,6 +78,7 @@ if __name__ == '__main__':
     ans = input('Want to update these files? y/n ').lower()
 
     if ans == 'y':
-        print('Hey!')
+        upgradeDDs(allDataDicts)
+        print('All done!\n')
 
 
