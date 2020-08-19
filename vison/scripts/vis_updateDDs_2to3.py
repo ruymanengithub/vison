@@ -18,12 +18,10 @@ Created on Thu Aug 19 12:51:00 2020
 from pdb import set_trace as stop
 import sys
 from optparse import OptionParser
-
-from pylab import plot, show
+from glob import glob
+import os
 
 from vison.support import files
-
-from glob import glob
 
 
 # END IMPORT
