@@ -41,6 +41,6 @@ if __name__ == '__main__':
     directory = options.directory
 
 
-    allDataDicts = glob(os.path.join(directory,'*_DataDict.pick', recursive=True))
+    allDataDicts = glob(os.path.join(directory,'*_DataDict.pick'), recursive=True)
 
     stop()
