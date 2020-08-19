@@ -46,7 +46,6 @@ if __name__ == '__main__':
     print('DataDicts found:\n')
     for ddname in allDataDicts: print(ddname)
     print('\n')
-    stop()
 
     if not doChange:
         sys.exit()
