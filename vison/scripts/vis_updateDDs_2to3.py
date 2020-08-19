@@ -20,6 +20,7 @@ import sys
 from optparse import OptionParser
 from glob import glob
 import os
+import numpy as np
 
 from vison.support import files
 
@@ -44,7 +45,6 @@ def upgradeDDs(allDataDicts):
 
     for ddname in allDataDicts:
         outddname = os.path.split(ddname)[-1]
-        stop()
         dd = files.cPickleRead(ddname)
         ndd = decodeDD(dd)
         files.cPickleDumpDictionary(ndd, outddname)
