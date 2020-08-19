@@ -43,11 +43,12 @@ if __name__ == '__main__':
     subfolders = '%s**%s' % (os.path.sep,os.path.sep)
     allDataDicts = glob(os.path.join(directory+subfolders,'*_DataDict.pick'), recursive=True)
 
-    print('DataDicts found:\n')
+    print('\nDataDicts found:\n')
     for ddname in allDataDicts: print(ddname)
     print('\n')
 
     if not doChange:
+        print('Not doing anything!\n')
         sys.exit()
 
     ans = input('Want to update these files? y/n ').lower()
