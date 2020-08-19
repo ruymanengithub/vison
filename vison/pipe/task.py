@@ -889,7 +889,7 @@ class Task(object):
 
         Cindices = copy.deepcopy(self.dd.mx['File_name'].indices)
         self.dd.initColumn('ccdobj_name', Cindices,
-                           dtype='S100', valini='None')
+                           dtype='U100', valini='None')
 
         DDindices = copy.deepcopy(self.dd.indices)
 
