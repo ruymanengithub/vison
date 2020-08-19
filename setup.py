@@ -76,6 +76,7 @@ def configuration():
                         'vison/scripts/vis_reports_merger.py',
                         'vison/scripts/vis_mksession.py',
                         'vison/scripts/vis_dnl_extract.py',
+                        'vison/scripts/vis_updateDDs_2to3.py',
                         'vison/scripts/vison'
                         ])
 
