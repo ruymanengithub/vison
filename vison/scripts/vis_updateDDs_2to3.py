@@ -43,4 +43,8 @@ if __name__ == '__main__':
     subfolders = '%s**%s' % (os.path.sep,os.path.sep)
     allDataDicts = glob(os.path.join(directory+subfolders,'*_DataDict.pick'), recursive=True)
 
-    stop()
+    print('DataDicts found:\n')
+
+    for ddname in allDataDicts: print(ddname)
+
+    
