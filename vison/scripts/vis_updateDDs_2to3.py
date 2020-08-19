@@ -44,7 +44,15 @@ if __name__ == '__main__':
     allDataDicts = glob(os.path.join(directory+subfolders,'*_DataDict.pick'), recursive=True)
 
     print('DataDicts found:\n')
-
     for ddname in allDataDicts: print(ddname)
+    print('\n')
 
+    if not doChange:
+        sys.exit()
+
+    ans = input('Want to update these files? y/n ').lower()
+
+    if ans == 'y':
+        print('Hey!')
     
+
