@@ -96,8 +96,8 @@ def extract_spot(ccdobj, coo, Quad, log=None, stampw=25):
     x0Q -= B[0]
     y0Q -= B[2]
 
-    corners = [x0Q - stampw / 2, x0Q - stampw / 2 + stampw,
-               y0Q - stampw / 2, y0Q - stampw / 2 + stampw]
+    corners = [x0Q - stampw // 2, x0Q - stampw // 2 + stampw,
+               y0Q - stampw // 2, y0Q - stampw // 2 + stampw]
 
     # Cut-out stamp of the spot
     stamp = ccdobj.get_cutout(corners, Quad, canonical=False)
@@ -128,8 +128,8 @@ def gen_point_mask(Quad, width=stampw, sources='all', coodict=Point_CooNom):
 
         x0Q, y0Q = tuple([int(np.round(item)) for item in coo])
 
-        corners = [x0Q - stampw / 2, x0Q - stampw / 2 + stampw,
-                   y0Q - stampw / 2, y0Q - stampw / 2 + stampw]
+        corners = [x0Q - stampw // 2, x0Q - stampw // 2 + stampw,
+                   y0Q - stampw // 2, y0Q - stampw // 2 + stampw]
 
         msk[corners[0]:corners[1], corners[2]:corners[3]] = 1
 

@@ -561,7 +561,7 @@ class PointTask(Task):
         if 'LABEL' in lock_tb.columns:
             doMulti = True
             ulabels = np.unique(self.dd.mx['label'][:, 0]).tolist()
-        stop()
+        
         meta = lock_tb_cdp['meta']
         scale_lims = meta['scale_lims']
         rot_lims = meta['rot_lims']
