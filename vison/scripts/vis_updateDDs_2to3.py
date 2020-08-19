@@ -40,7 +40,7 @@ if __name__ == '__main__':
     doChange = options.doChange
     directory = options.directory
 
-
-    allDataDicts = glob(os.path.join(directory,'*_DataDict.pick'), recursive=True)
+    subfolders = '%s**%s' % (os.path.sep,os.path.sep)
+    allDataDicts = glob(os.path.join(directory+subfolders,'*_DataDict.pick'), recursive=True)
 
     stop()
