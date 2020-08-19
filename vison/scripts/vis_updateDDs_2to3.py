@@ -47,12 +47,12 @@ if __name__ == '__main__':
     for ddname in allDataDicts: print(ddname)
     print('\n')
 
-    if not doChange:
+    if ~doChange:
         sys.exit()
 
     ans = input('Want to update these files? y/n ').lower()
 
     if ans == 'y':
         print('Hey!')
-    
+
 
