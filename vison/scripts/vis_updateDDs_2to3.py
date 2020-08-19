@@ -36,7 +36,6 @@ if __name__ == '__main__':
         default = './', help = 'directory where it will search for DataDict pick files.')
     parser.add_option("-C", "--change", dest="dochange", action="store_true",
         default=False, help="effect Changes. If not set, program will just list DataDict pick files.")
-        )
 
     (options, args) = parser.parse_args()
 
