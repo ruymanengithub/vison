@@ -23,8 +23,8 @@ Quads = ['E', 'F', 'G', 'H']
 ccdobj = CCD()
 prescan = ccdobj.prescan
 overscan = ccdobj.overscan
-imgheight = ccdobj.NAXIS2 / 2
-quad_width = ccdobj.NAXIS1 / 2
+imgheight = ccdobj.NAXIS2 // 2
+quad_width = ccdobj.NAXIS1 // 2
 imgwidth = quad_width - prescan - overscan
 
 # sumwell = dict(fwd_bas=[9.3, 4.725], fwd_e2v=[7.95, 5.825],

@@ -135,7 +135,7 @@ def get_injprofile_tpnorm(ccdobj, vstart, vend):
         qimgmod = qimg.mean(axis=1).reshape(
             qimg.shape[0], 1).repeat(qimg.shape[1], axis=1)
 
-        qmod = np.ones((NAXIS1 / 2, NAXIS2 / 2), dtype='float32')
+        qmod = np.ones((NAXIS1 // 2, NAXIS2 // 2), dtype='float32')
 
         qmod[prescan:-overscan, vstart:vend] = qimgmod.copy()
 

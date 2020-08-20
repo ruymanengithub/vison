@@ -70,8 +70,8 @@ class Spot(Shapemeter, Photometer, Gaussmeter):
         self.NX = NX
         self.NY = NY
 
-        self.xcen = NX / 2
-        self.ycen = NY / 2
+        self.xcen = NX // 2
+        self.ycen = NY // 2
 
         if lowerleft[0] is not None:
             self.x0 = lowerleft[0]

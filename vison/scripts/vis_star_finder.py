@@ -127,7 +127,7 @@ def run_starfinder(FITS, tag=''):
         assert NAXIS1 == 4238
         assert NAXIS2 in (4132, 4172)
 
-        if NAXIS2 / 2 == 2086:
+        if NAXIS2 // 2 == 2086:
             withpover = True
         else:
             withpover = False

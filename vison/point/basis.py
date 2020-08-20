@@ -33,5 +33,5 @@ class SpotBase(object):
         self.NX = NX
         self.NY = NY
 
-        self.xcen = NX / 2
-        self.ycen = NY / 2
+        self.xcen = NX // 2
+        self.ycen = NY // 2

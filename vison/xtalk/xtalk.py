@@ -662,8 +662,8 @@ class ReportXL_Xtalk(ReportXL):
                 min_row=1, max_row=1, min_col=2, max_col=(
                 len(colnames) - 1) * 3 + 1)):
             if (i % 3) == 1:
-                col[0].value = colnames[1 + i / 3]
-            Q = colnames[1 + i / 3][-1]
+                col[0].value = colnames[1 + i // 3]
+            Q = colnames[1 + i // 3][-1]
             if Q in ['E', 'G']:
                 col[0].fill = self.color_fills['blue']
             elif Q in ['F', 'H']:
@@ -736,10 +736,10 @@ class ReportXL_Xtalk(ReportXL):
                 len(colnames) - 1) * 2 + 1)):
             if (i % 2) == 0:
                 try:
-                    col[0].value = colnames[1 + i / 2]
+                    col[0].value = colnames[1 + i // 2]
                 except BaseException:
                     stop()
-            Q = colnames[1 + i / 2][-1]
+            Q = colnames[1 + i // 2][-1]
             if Q in ['E', 'G']:
                 col[0].fill = self.color_fills['blue']
             elif Q in ['F', 'H']:

@@ -22,9 +22,9 @@ class TestCCDPileClass(unittest.TestCase):
 
     def setUp(self):
         self.NAXIS1 = 4238
-        #self.wQ = self.NAXIS1/2
+        #self.wQ = self.NAXIS1//2
         self.NAXIS2 = 4172
-        #self.hQ = self.NAXIS2/2
+        #self.hQ = self.NAXIS2//2
         self.offset = 1000.
         # bad pixel on each Quad, canonical orientation
         #self.badpixel = (100, 100)

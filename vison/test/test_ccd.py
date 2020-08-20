@@ -22,9 +22,9 @@ class TestCCDClass(unittest.TestCase):
 
     def setUp(self):
         self.NAXIS1 = 4238
-        self.wQ = self.NAXIS1 / 2
+        self.wQ = self.NAXIS1 // 2
         self.NAXIS2 = 4172
-        self.hQ = self.NAXIS2 / 2
+        self.hQ = self.NAXIS2 // 2
         self.offset = 1000.
         # bad pixel on each Quad, canonical orientation
         self.badpixel = (100, 100)
@@ -42,8 +42,8 @@ class TestCCDClass(unittest.TestCase):
         self.ccdobj.add_extension(data=img, label='IMAGE')
         self.ccdobj.add_extension(data=eimg, label='UNCERTAINTY')
 
-        NX = self.NAXIS1 / 2
-        NY = self.NAXIS2 / 2
+        NX = self.NAXIS1 // 2
+        NY = self.NAXIS2 // 2
 
         for Q in self.ccdobj.Quads:
 
@@ -109,8 +109,8 @@ class TestCCDClass(unittest.TestCase):
     # @unittest.skip("REDTAG")  # REDTAG
     def test_cooconv_Qcan_2_CCD(self):
 
-        hQ = self.NAXIS2 / 2
-        wQ = self.NAXIS1 / 2
+        hQ = self.NAXIS2 // 2
+        wQ = self.NAXIS1 // 2
 
         incoos = [(100, 100, 'E'),
                   (100, 100, 'F'),
@@ -127,8 +127,8 @@ class TestCCDClass(unittest.TestCase):
     # @unittest.skip("REDTAG")  # REDTAG
     def test_cooconv_CCD_2_Qrel(self):
 
-        hQ = self.NAXIS2 / 2
-        wQ = self.NAXIS1 / 2
+        hQ = self.NAXIS2 // 2
+        wQ = self.NAXIS1 // 2
 
         incoos = [(100, 100 + hQ, 'E'),
                   (100 + wQ, 100 + hQ, 'F'),
@@ -146,8 +146,8 @@ class TestCCDClass(unittest.TestCase):
     # @unittest.skip("REDTAG")  # REDTAG
     def test_cooconv_CCD_2_Qcan(self):
 
-        hQ = self.NAXIS2 / 2
-        wQ = self.NAXIS1 / 2
+        hQ = self.NAXIS2 // 2
+        wQ = self.NAXIS1 // 2
 
         incoos = [(100, 2 * hQ - 100 - 1., 'E'),
                   (2 * wQ - 100. - 1., 2. * hQ - 100 - 1., 'F'),
@@ -165,8 +165,8 @@ class TestCCDClass(unittest.TestCase):
     # @unittest.skip("REDTAG")  # REDTAG
     def test_cooconv_Qrel_2_Qcan(self):
 
-        hQ = self.NAXIS2 / 2
-        wQ = self.NAXIS1 / 2
+        hQ = self.NAXIS2 // 2
+        wQ = self.NAXIS1 // 2
 
         incoos = [(100, hQ - 100 - 1., 'E'),
                   (wQ - 100. - 1., hQ - 100 - 1., 'F'),
@@ -183,8 +183,8 @@ class TestCCDClass(unittest.TestCase):
 
     # @unittest.skip("REDTAG")  # REDTAG
     def test_cooconv_Qcan_2_Qrel(self):
-        hQ = self.NAXIS2 / 2
-        wQ = self.NAXIS1 / 2
+        hQ = self.NAXIS2 // 2
+        wQ = self.NAXIS1 // 2
 
         incoos = [(100., 100., 'E'),
                   (100., 100., 'F'),
@@ -369,8 +369,8 @@ class TestCCDClass(unittest.TestCase):
         offset = self.offset
         pre = self.ccdobj.prescan
         over = self.ccdobj.overscan
-        NY = self.NAXIS2 / 2
-        NX = self.NAXIS1 / 2
+        NY = self.NAXIS2 // 2
+        NX = self.NAXIS1 // 2
         Y, _ = np.meshgrid(np.arange(NY, dtype='float32'),
                            np.arange(NX, dtype='float32'), indexing='xy')
         Y = Y.astype('float32') + offset
