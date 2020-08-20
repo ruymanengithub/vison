@@ -302,7 +302,7 @@ def get_cov_maps(ccdobjList, Npix=4, vstart=0, vend=2066,
 
 
     Nframes = len(ccdobjList)
-    Npairs = Nframes / 2
+    Npairs = Nframes // 2
 
     tcorrmapv = np.zeros((Npix, Npix, Npairs), dtype='float32') + np.nan
     tmuv = np.zeros(Npairs, dtype='float32') + np.nan
