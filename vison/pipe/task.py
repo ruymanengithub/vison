@@ -437,7 +437,7 @@ class Task(object):
         OBSID_lims = self.inputs['OBSID_lims']
         structure = self.inputs['structure']
         explogf = self.inputs['explogf']
-        stop()
+
         #elvis = self.inputs['elvis']
 
         if self.drill:
@@ -449,7 +449,7 @@ class Task(object):
         else:
             explog = pilib.loadexplogs(explogf, elvis=self.elvis, addpedigree=True,
                                        datapath=datapath)
-
+        stop()
         # META-DATA WORK
         explog, checkreport = self.filterexposures(
             structure, explog, OBSID_lims)
