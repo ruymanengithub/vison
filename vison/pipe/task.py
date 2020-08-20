@@ -437,7 +437,7 @@ class Task(object):
         OBSID_lims = self.inputs['OBSID_lims']
         structure = self.inputs['structure']
         explogf = self.inputs['explogf']
-
+        stop()
         #elvis = self.inputs['elvis']
 
         if self.drill:

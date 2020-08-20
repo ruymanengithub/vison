@@ -257,8 +257,7 @@ class DataDict(object):
 
         ccdcol = explog['CCD']
 
-        try: ObsIndex = vIndex('ix', N=Nobs)
-        except: stop()
+        ObsIndex = vIndex('ix', N=Nobs)
         commIndices = vMultiIndex([ObsIndex, vIndex('CCD', CCDs)])
 
         self.addColumn(uObsID, 'ObsID', [ObsIndex])
