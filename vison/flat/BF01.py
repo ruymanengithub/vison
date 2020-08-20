@@ -365,7 +365,7 @@ class BF01(PTC0X):
         for CCDk in CCDs:
             self.dd.products['COV'][CCDk] = OrderedDict()
 
-        stop()
+
 
         if not self.drill:
 
@@ -400,7 +400,7 @@ class BF01(PTC0X):
             replies = []
             while not queue.empty():
                 replies.append(queue.get())
-
+            stop()
             for reply in replies:
 
                 jCCD, ku, icovdict = reply
@@ -409,6 +409,7 @@ class BF01(PTC0X):
 
                 self.dd.products['COV'][CCDk][ulabel] = copy.deepcopy(
                     icovdict)
+                stop()
 
                 for lQ, Q in enumerate(Quads):
                     jj = jCCD * (nQ * nL) + ku * nQ + lQ
