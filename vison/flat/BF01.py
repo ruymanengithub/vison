@@ -595,7 +595,7 @@ class BF01(PTC0X):
         if not self.drill:
 
             singlepixmap = np.zeros((Npix, Npix), dtype='float32') + 0.0
-            singlepixmap[(Npix - 1) / 2, (Npix - 1) / 2] = 1.
+            singlepixmap[(Npix - 1) // 2, (Npix - 1) // 2] = 1.
 
             for jCCD, CCDk in enumerate(CCDs):
 
@@ -624,8 +624,8 @@ class BF01(PTC0X):
 
                             kernel_Q = G15.degrade_estatic(singlepixmap*fluence, Asol_Q)
 
-                            cross_Q = kernel_Q[Npix / 2 - 1:Npix / 2 + 2, 
-                                               Npix / 2 - 1:Npix / 2 + 2].copy()
+                            cross_Q = kernel_Q[Npix // 2 - 1:Npix // 2 + 2, 
+                                               Npix // 2 - 1:Npix // 2 + 2].copy()
                             kerQshape = G15.get_cross_shape_rough(
                                 cross_Q, pitch=12.)
 
@@ -648,14 +648,14 @@ class BF01(PTC0X):
 
                             profsker_1D.data['hor'][CCDk][Q]['x'][ulabel] = \
                                 np.arange(Npixplot) - Npixplot / 2
-                            profsker_1D.data['hor'][CCDk][Q]['y'][ulabel] = np.log10(kernel_Q[Npix / \
-                                2 - Npixplot / 2:Npix / 2 + Npixplot / 2 + 1, Npix / 2].copy())
+                            profsker_1D.data['hor'][CCDk][Q]['y'][ulabel] = np.log10(kernel_Q[Npix // \
+                                2 - Npixplot // 2:Npix // 2 + Npixplot // 2 + 1, Npix // 2].copy())
 
                             profsker_1D.data['ver'][CCDk][Q]['x'][ulabel] = \
                                 np.arange(Npixplot) - Npixplot / 2
 
-                            profsker_1D.data['ver'][CCDk][Q]['y'][ulabel] = np.log10(kernel_Q[Npix / \
-                                2, Npix / 2 - Npixplot / 2:Npix / 2 + Npixplot / 2 + 1].copy())
+                            profsker_1D.data['ver'][CCDk][Q]['y'][ulabel] = np.log10(kernel_Q[Npix // \
+                                2, Npix // 2 - Npixplot // 2:Npix // 2 + Npixplot // 2 + 1].copy())
 
 
                             # BEWARE, PENDING: dispfig is saved but NOT REPORTED anywhere!
