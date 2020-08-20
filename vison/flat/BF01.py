@@ -386,8 +386,8 @@ class BF01(PTC0X):
 
                     arglist.append([queue, self.dd, dpath, CCDs, jCCD, ku, ulabels])
 
-            #process_one_fluence_covmaps(*arglist[-3],**kwargs) # TEST
-            #stop()
+            process_one_fluence_covmaps(*arglist[-3],**kwargs) # TEST
+            stop()
 
             pool = mp.Pool(processes=self.processes)
 
@@ -400,7 +400,7 @@ class BF01(PTC0X):
             replies = []
             while not queue.empty():
                 replies.append(queue.get())
-            stop()
+
             for reply in replies:
 
                 jCCD, ku, icovdict = reply
@@ -409,7 +409,7 @@ class BF01(PTC0X):
 
                 self.dd.products['COV'][CCDk][ulabel] = copy.deepcopy(
                     icovdict)
-                stop()
+                
 
                 for lQ, Q in enumerate(Quads):
                     jj = jCCD * (nQ * nL) + ku * nQ + lQ
