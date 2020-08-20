@@ -387,7 +387,7 @@ class PSF0X(PT.PointTask):
 
         """
 
-        
+
 
         onTests = False
 
@@ -557,7 +557,7 @@ class PSF0X(PT.PointTask):
         BFEddpick = self.inputs['inCDPs']['BFE']['nm%i' % wavelength]
         BFEall = files.cPickleRead(BFEddpick).products['BF'].copy()
         ulabels = BFEall['ulabels']
-        midrangekey = ulabels[len(ulabels)/2]
+        midrangekey = ulabels[len(ulabels)//2]
         inCCDs = BFEall['CCDs']
         inQuads = BFEall['Quads']
 
