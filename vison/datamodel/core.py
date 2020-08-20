@@ -282,11 +282,14 @@ class DataDict(object):
         assert isinstance(indices, vMultiIndex)
 
         shape = indices.shape
-        if dtype[0] != 'S':
-            array = np.zeros(shape, dtype=dtype) + valini
-        else:
-            array = np.zeros(shape, dtype=dtype)
-            array[:] = valini
+        #if ('S' in dtype):
+        #    array = np.zeros(shape, dtype=dtype) + valini
+        #else:
+        #    array = np.zeros(shape, dtype=dtype)
+        #    array[:] = valini
+
+        array = np.zeros(shape, dtype=dtype)
+        array[:] = valini
 
         if name in self.colnames:
             self.dropColumn(name)
