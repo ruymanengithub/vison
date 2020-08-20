@@ -560,6 +560,7 @@ class PSF0X(PT.PointTask):
         midrangekey = ulabels[len(ulabels)//2]
         inCCDs = BFEall['CCDs']
         inQuads = BFEall['Quads']
+        stop()
 
         Asols = dict()
         for inCCD in inCCDs:
