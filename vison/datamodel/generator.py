@@ -329,7 +329,7 @@ def IMG_bias_gen(ccdobj, ELdict, ogse=None):
     ccdobj.extensions[-1].data = np.round(
         ccdobj.extensions[-1].data).astype('int32')
 
-    if vstart != 1 or vend != ccd.NAXIS2 / 2:
+    if vstart != 1 or vend != ccd.NAXIS2 // 2:
         ccdobj.sim_window(vstart, vend)
 
     return ccdobj
@@ -370,7 +370,7 @@ def IMG_flat_gen(ccdobj, ELdict, ogse=None):
     ccdobj.extensions[-1].data = np.round(
         ccdobj.extensions[-1].data).astype('int32')
 
-    if vstart != 0 or vend != ccd.NAXIS2 / 2:
+    if vstart != 0 or vend != ccd.NAXIS2 // 2:
         ccdobj.sim_window(vstart, vend)
 
     return ccdobj
@@ -414,7 +414,7 @@ def IMG_chinj_gen(ccdobj, ELdict, ogse=None):
     ccdobj.extensions[-1].data = np.round(
         ccdobj.extensions[-1].data).astype('int32')
 
-    if vstart != 1 or vend != ccd.NAXIS2 / 2:
+    if vstart != 1 or vend != ccd.NAXIS2 // 2:
         ccdobj.sim_window(vstart, vend)
 
     ccdobj.extensions[-1].data = np.round(
@@ -473,7 +473,7 @@ def IMG_chinj_gen_v2(ccdobj, ELdict, ogse=None):
     ccdobj.extensions[-1].data = np.round(
         ccdobj.extensions[-1].data).astype('int32')
 
-    if vstart != 1 or vend != ccd.NAXIS2 / 2:
+    if vstart != 1 or vend != ccd.NAXIS2 // 2:
         ccdobj.sim_window(vstart, vend)
 
     ccdobj.extensions[-1].data = np.round(
@@ -521,7 +521,7 @@ def IMG_point_gen(ccdobj, ELdict, ogse=None):
     ccdobj.extensions[-1].data = np.round(
         ccdobj.extensions[-1].data).astype('int32')
 
-    if vstart != 1 or vend != ccd.NAXIS2 / 2:
+    if vstart != 1 or vend != ccd.NAXIS2 // 2:
         ccdobj.sim_window(vstart, vend)
 
     return ccdobj

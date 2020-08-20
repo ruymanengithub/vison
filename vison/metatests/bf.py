@@ -315,7 +315,7 @@ class MetaBF(MetaCal):
         refmu = _BFraw['CCD%i' % CCD][refcol]['av_mu'][Q]
 
         singlepixmap = np.zeros((Npix, Npix), dtype='float32') + 0.0
-        singlepixmap[(Npix - 1) / 2, (Npix - 1) / 2] = 1.
+        singlepixmap[(Npix - 1) // 2, (Npix - 1) // 2] = 1.
 
 
         Asol_Q, psmooth_Q = G15.solve_for_A_linalg(
@@ -329,8 +329,8 @@ class MetaBF(MetaCal):
 
             kernel_Q = G15.degrade_estatic(singlepixmap*imu, Asol_Q)
 
-            cross_Q = kernel_Q[Npix / 2 - 1:Npix / 2 + 2, 
-                    Npix / 2 - 1:Npix / 2 + 2].copy()
+            cross_Q = kernel_Q[Npix // 2 - 1:Npix // 2 + 2, 
+                    Npix // 2 - 1:Npix // 2 + 2].copy()
             kerQshape = G15.get_cross_shape_rough(
                 cross_Q, pitch=12.)
 

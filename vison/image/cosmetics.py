@@ -77,13 +77,13 @@ def set_extrascans(mask, val=0):
 
     assert isinstance(mask,np.ndarray)
 
-    soverscan = mask.shape[0]/2-ccdmod.prescan-ccdmod.NcolsCCD
-    withpover = mask.shape[1]/2==(ccdmod.NrowsCCD+ccdmod.voverscan)
+    soverscan = mask.shape[0]//2-ccdmod.prescan-ccdmod.NcolsCCD
+    withpover = mask.shape[1]//2==(ccdmod.NrowsCCD+ccdmod.voverscan)
 
     mskccd = ccdmod.CCD(withpover=withpover,overscan=soverscan)
     mskccd.add_extension(data=mask)
 
-    Qshape = mskccd.shape[0]/2, mskccd.shape[1]/2
+    Qshape = mskccd.shape[0]//2, mskccd.shape[1]//2
 
     prescan = mskccd.prescan
 
@@ -110,8 +110,8 @@ def mask_badcolumns(mask,colthreshold=200):
 
     assert isinstance(mask,np.ndarray)
 
-    soverscan = mask.shape[0]/2-ccdmod.prescan-ccdmod.NcolsCCD
-    withpover = mask.shape[1]/2==(ccdmod.NrowsCCD+ccdmod.voverscan)
+    soverscan = mask.shape[0]//2-ccdmod.prescan-ccdmod.NcolsCCD
+    withpover = mask.shape[1]//2==(ccdmod.NrowsCCD+ccdmod.voverscan)
 
     mskccd = ccdmod.CCD(withpover=withpover,overscan=soverscan)
     mskccd.add_extension(data=mask)

@@ -234,7 +234,7 @@ class FPA_LE1(object):
             Qdata = self.extensions[extix].data.copy()
             Qdata = self.fpamodel.flip_img(Qdata, flip)
 
-            padQdata = np.zeros((ccdobj.NAXIS1 / 2, ccdobj.NAXIS2 / 2), dtype='float32')
+            padQdata = np.zeros((ccdobj.NAXIS1 // 2, ccdobj.NAXIS2 // 2), dtype='float32')
             padQdata[:, :] = Qdata.copy()
             ccdobj.set_quad(padQdata, Q, canonical=True, extension=-1)
 

@@ -32,9 +32,9 @@ def extract_overscan_profiles(ccdobj, thresholds, direction='serial'):
     Qs = ['E', 'F', 'G', 'H']
 
     if direction == 'serial':
-        detedge = ccdobj.NAXIS1 / 2 - ccdobj.overscan
+        detedge = ccdobj.NAXIS1 // 2 - ccdobj.overscan
     elif direction == 'parallel':
-        detedge = ccdobj.NAXIS2 / 2 - ccdobj.voverscan
+        detedge = ccdobj.NAXIS2 // 2 - ccdobj.voverscan
 
     x = np.arange(25) + detedge - ixjump + 1
 

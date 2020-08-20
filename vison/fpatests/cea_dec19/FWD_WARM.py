@@ -167,7 +167,7 @@ class FWD_WARM(fpatask.FpaTask):
                 vy = vQdata['y'].copy()
                 vx -= vx.min()
                 if Q in ['E','F']:
-                    vx = kccdobj.NAXIS2/2-vx
+                    vx = kccdobj.NAXIS2//2-vx
 
                 ixsort = np.argsort(vx)
                 vx = vx[ixsort]

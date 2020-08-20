@@ -299,7 +299,7 @@ class FpaHeatMap(BasicPlot):
         NY = self.NSlices
         NQ = len(self.Quads)
 
-        HM = np.zeros((NX * NQ / 2, NY * NQ / 2))
+        HM = np.zeros((NX * NQ // 2, NY * NQ // 2))
 
         for jY in range(NY):
             for iX in range(NX):
@@ -307,8 +307,8 @@ class FpaHeatMap(BasicPlot):
 
                 CCdict = self.data[Ckey]
 
-                ix = iX * NQ / 2
-                jy = jY * NQ / 2
+                ix = iX * NQ // 2
+                jy = jY * NQ // 2
 
                 if iX <= 2:
                     HM[jy + 0, ix + 0] = CCdict['E']
@@ -388,8 +388,8 @@ class FpaFindingChart(FpaHeatMap):
         for jY in range(NY):
             for iX in range(NX):
 
-                ix = iX * NQ / 2
-                jy = jY * NQ / 2
+                ix = iX * NQ // 2
+                jy = jY * NQ // 2
 
                 if iX <= 2:
                     items = [[jy + 0, ix + 0, 'E'],

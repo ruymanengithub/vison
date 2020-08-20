@@ -128,7 +128,7 @@ class CHINJ(fpatask.FpaTask):
 
             non = self.inputs['non']
             noff = self.inputs['noff']
-            nrep = (vend - vstart) / (non + noff) + 1
+            nrep = (vend - vstart) // (non + noff) + 1
 
             pattern = (non, noff, nrep)
 

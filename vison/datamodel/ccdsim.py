@@ -56,9 +56,9 @@ def simadd_points(ccdobj, flux, fwhm, CCDID='CCD1', dx=0, dy=0, extension=-1):
             x0 = xp - B[0] + dx
             y0 = yp - B[2] + dy
 
-            xmin = int(np.round(x0)) - nx / 2
+            xmin = int(np.round(x0)) - nx // 2
             xmax = xmin + nx
-            ymin = int(np.round(y0)) - ny / 2
+            ymin = int(np.round(y0)) - ny // 2
             ymax = ymin + ny
 
             x = np.arange(xmin, xmax)
@@ -118,7 +118,7 @@ def simadd_poisson(ccdobj, extension=-1):
 def sim_window(ccdobj, vstart, vend, extension=-1):
     """ """
 
-    mask = np.ones((ccdobj.NAXIS1 / 2, ccdobj.NAXIS2 / 2), dtype='int8')
+    mask = np.ones((ccdobj.NAXIS1 // 2, ccdobj.NAXIS2 // 2), dtype='int8')
     mask[:, vstart:vend] = 0
 
     for Q in ccdobj.Quads:
@@ -135,7 +135,7 @@ def simadd_injection(ccdobj, levels, on=1E6, off=0, extension=-1):
 
     # ON/OFF masking
 
-    NX, NY = ccdobj.NAXIS1 / 2, ccdobj.NAXIS2 / 2
+    NX, NY = ccdobj.NAXIS1 // 2, ccdobj.NAXIS2 // 2
 
     mask_onoff = np.zeros((NX, NY), dtype='int8')
 

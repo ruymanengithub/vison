@@ -219,8 +219,8 @@ class CCD(object):
             self.NAXIS2 = NAXIS2 - voverscan * 2
 
         self.shape = (self.NAXIS1, self.NAXIS2)
-        self.wQ = self.NAXIS1 / 2
-        self.hQ = self.NAXIS2 / 2
+        self.wQ = self.NAXIS1 // 2
+        self.hQ = self.NAXIS2 // 2
 
         for iext in range(self.nextensions):
             if self.extensions[iext].data is not None:

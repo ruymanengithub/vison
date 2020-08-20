@@ -48,7 +48,7 @@ def get_pixbounce_from_overscan(ccdobj, thresholds=None):
 
 def get_pixbounce_Quad(ccdobj, Q, Npix_prof, ixjump, thresholds):
 
-    NAXIS1_Q = ccdobj.NAXIS1 / 2
+    NAXIS1_Q = ccdobj.NAXIS1 // 2
 
     if ccdobj.voverscan > 0:
         endcol = -ccdobj.voverscan

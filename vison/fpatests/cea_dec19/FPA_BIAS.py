@@ -162,7 +162,7 @@ class FPA_BIAS(fpatask.FpaTask):
                 hy = hQdata['y'].copy()
                 hx -= hx.min()
                 if Q in ['F','G']:
-                    hx = kccdobj.NAXIS1/2-hx
+                    hx = kccdobj.NAXIS1//2-hx
 
                 ixsort = np.argsort(hx)
                 hx = hx[ixsort]
@@ -185,7 +185,7 @@ class FPA_BIAS(fpatask.FpaTask):
                     vy = vQdata['y'].copy()
                     vx -= vx.min()
                     if Q in ['E','F']:
-                        vx = kccdobj.NAXIS2/2-vx
+                        vx = kccdobj.NAXIS2//2-vx
 
                     ixsort = np.argsort(vx)
                     vx = vx[ixsort]

@@ -209,7 +209,7 @@ class InjTask(Task):
                     if 'pattern' not in locals():
                         non = self.dd.mx['chinj_on'][iObs][jCCD]
                         noff = self.dd.mx['chinj_of'][iObs][jCCD]
-                        nrep = (vend - vstart) / (non + noff) + 1
+                        nrep = (vend - vstart) // (non + noff) + 1
                         pattern = (non, noff, nrep)
 
                     for kQ, Quad in enumerate(Quads):
@@ -560,7 +560,7 @@ class InjTask(Task):
                     dochinj = self.dd.mx['chinj'][iObs, jCCD]
                     non = self.dd.mx['chinj_on'][iObs, jCCD]
                     noff = self.dd.mx['chinj_of'][iObs, jCCD]
-                    nrep = (vend - vstart) / (non + noff) + 1
+                    nrep = (vend - vstart) // (non + noff) + 1
                     pattern = (non, noff, nrep)
 
                     for kQ, Q in enumerate(Quads):
