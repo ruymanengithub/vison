@@ -365,6 +365,8 @@ class BF01(PTC0X):
         for CCDk in CCDs:
             self.dd.products['COV'][CCDk] = OrderedDict()
 
+        stop()
+
         if not self.drill:
 
             # doTest=False
@@ -524,7 +526,6 @@ class BF01(PTC0X):
 
         """
 
-        stop()
 
         if self.report is not None:
             self.report.add_Section(
