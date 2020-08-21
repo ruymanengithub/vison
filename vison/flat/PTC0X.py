@@ -395,7 +395,8 @@ class PTC0X(FlatTask):
                 _ObsID_pair = self.dd.mx['ObsID_pair'][iObs]
                 if np.isnan(_ObsID_pair):
                     continue
-                iObs_pair = np.where(ObsIDs == _ObsID_pair)[0][0]
+                try: iObs_pair = np.where(ObsIDs == _ObsID_pair)[0][0]
+                except: stop()
 
                 flu_i = self.dd.mx['flu_med_img'][iObs, ...].mean()
                 flu_p = self.dd.mx['flu_med_img'][iObs_pair, ...].mean()
