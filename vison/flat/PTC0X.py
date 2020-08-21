@@ -449,7 +449,7 @@ class PTC0X(FlatTask):
 
                         self.dd.mx[medcol][iObs, jCCD, kQ, :] = _meds.copy()
                         self.dd.mx[varcol][iObs, jCCD, kQ, :] = _vars.copy()
-        stop()
+        
 
 
     def extract_PTC(self):
