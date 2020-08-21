@@ -254,7 +254,7 @@ class TP01(PumpTask):
         # Initialisations
 
         self.dd.initColumn('dipoles_raw', self.dd.mx['ccdobj_name'].indices,
-                           dtype='S100', valini='None')
+                           dtype='U100', valini='None')
 
         id_dlys = np.unique(self.dd.mx['id_dly'][:, 0])
 

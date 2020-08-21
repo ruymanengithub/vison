@@ -189,9 +189,9 @@ class BIAS0X(DarkTask):
 
         Cindices = copy.deepcopy(self.dd.mx['File_name'].indices)
         self.dd.initColumn('profiles1D_name', Cindices,
-                           dtype='S100', valini='None')
+                           dtype='U100', valini='None')
         self.dd.initColumn('mods2D_name', Cindices,
-                           dtype='S100', valini='None')
+                           dtype='U100', valini='None')
 
         DDindices = copy.deepcopy(self.dd.indices)
 

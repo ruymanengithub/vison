@@ -430,7 +430,7 @@ class PSF0X(PT.PointTask):
 
         # INITIALIZATIONS
 
-        self.dd.initColumn('spots_name', CIndices, dtype='S100', valini='None')
+        self.dd.initColumn('spots_name', CIndices, dtype='U100', valini='None')
 
         if not self.drill:
             #rpath = self.inputs['resultspath']
@@ -560,7 +560,7 @@ class PSF0X(PT.PointTask):
         midrangekey = ulabels[len(ulabels)//2]
         inCCDs = BFEall['CCDs']
         inQuads = BFEall['Quads']
-        
+
 
         Asols = dict()
         for inCCD in inCCDs:
@@ -586,7 +586,7 @@ class PSF0X(PT.PointTask):
         # INITIALIZATIONS
 
         outcol = 'spots_name_nobfe'
-        self.dd.initColumn(outcol, CIndices, dtype='S100', valini='None')
+        self.dd.initColumn(outcol, CIndices, dtype='U100', valini='None')
 
         if not self.drill:
 

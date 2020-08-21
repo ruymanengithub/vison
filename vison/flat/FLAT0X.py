@@ -261,7 +261,7 @@ class FLAT0X(FlatTask):
         ccdindices = copy.deepcopy(self.dd.mx['CCD'].indices)
 
         self.dd.initColumn('indiv_flats', ccdindices,
-                           dtype='S100', valini='None')
+                           dtype='U100', valini='None')
 
         vCCDs = self.dd.mx['CCD'][:].copy()
         vlabels = self.dd.mx['label'][:].copy()

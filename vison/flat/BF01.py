@@ -773,7 +773,7 @@ class BF01(PTC0X):
 
         Cindices = copy.deepcopy(self.dd.mx['File_name'].indices)
         self.dd.initColumn(ccdobjname, Cindices,
-                           dtype='S100', valini='None')
+                           dtype='U100', valini='None')
 
         DDindices = copy.deepcopy(self.dd.indices)
 
@@ -891,7 +891,6 @@ class BF01(PTC0X):
 
         self.f_extract_PTC(ccdobjcol_nobfealt, medcol_nobfealt, varcol_nobfealt)
 
-        stop()
 
 
 
