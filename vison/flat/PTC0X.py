@@ -418,7 +418,7 @@ class PTC0X(FlatTask):
                         dpath, '%s.pick' % self.dd.mx[ccdobjcol][iObs, jCCD])
                     ccdobj_eve_f = os.path.join(
                         dpath, '%s.pick' % self.dd.mx[ccdobjcol][iObs_pair, jCCD])
-                    stop()
+                    
                     if (not os.path.exists(ccdobj_odd_f)) or \
                         (not os.path.exists(ccdobj_eve_f)):
                         continue
