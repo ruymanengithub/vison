@@ -386,8 +386,8 @@ class BF01(PTC0X):
 
                     arglist.append([queue, self.dd, dpath, CCDs, jCCD, ku, ulabels])
 
-            process_one_fluence_covmaps(*arglist[-3],**kwargs) # TEST
-            stop()
+            #process_one_fluence_covmaps(*arglist[-3],**kwargs) # TEST
+            #stop()
 
             pool = mp.Pool(processes=self.processes)
 
