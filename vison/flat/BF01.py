@@ -891,6 +891,8 @@ class BF01(PTC0X):
 
         self.f_extract_PTC(ccdobjcol_nobfealt, medcol_nobfealt, varcol_nobfealt)
 
+        stop()
+
 
 
     def meta_analysis(self):
