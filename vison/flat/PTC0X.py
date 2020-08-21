@@ -368,7 +368,7 @@ class PTC0X(FlatTask):
         # Pairing ObsIDs
 
         self.dd.initColumn(
-            'ObsID_pair', self.dd.mx['ObsID'].indices, dtype='int64', valini=np.nan)
+            'ObsID_pair', self.dd.mx['ObsID'].indices, dtype='int64', valini=0)
 
 
         for ulabel in ulabels:
@@ -393,10 +393,10 @@ class PTC0X(FlatTask):
             for iObs in range(nObs):
 
                 _ObsID_pair = self.dd.mx['ObsID_pair'][iObs]
-                if np.isnan(_ObsID_pair):
+                if _ObsID_pair == 0:
                     continue
-                try: iObs_pair = np.where(ObsIDs == _ObsID_pair)[0][0]
-                except: stop()
+                iObs_pair = np.where(ObsIDs == _ObsID_pair)[0][0]
+                
 
                 flu_i = self.dd.mx['flu_med_img'][iObs, ...].mean()
                 flu_p = self.dd.mx['flu_med_img'][iObs_pair, ...].mean()
