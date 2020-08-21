@@ -872,6 +872,8 @@ class BF01(PTC0X):
         varcol = 'sec_var'
         ccdobjcol = 'ccdobj_name'
 
+        stop()
+
         self.f_extract_PTC(ccdobjcol, medcol, varcol)
 
 
