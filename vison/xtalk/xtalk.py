@@ -185,7 +185,7 @@ def find_levels(img, colstart=1, colend=1600, rowstart=1, rowend=2086):
         ixsel = np.where((img >= lowbound) & (img <= hibound))
         val = np.nanmedian(img[ixsel])
 
-        if ~np.isnan(val):
+        if not np.isnan(val):
             levels.append(val)
         else:
             stop()

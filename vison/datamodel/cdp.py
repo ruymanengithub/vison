@@ -64,7 +64,7 @@ def wraptextable(tex, ncols=1, caption='', fitwidth=False, tiny=False, longtable
         elif not fitwidth and longtable:
             ixendlongtable = np.where(['\end{longtable}' in item for item in tex])
             tex.insert(ixendlongtable[0][-1], r'\caption{%s}' % caption)
-        elif not fitwidth and ~longtable:
+        elif not fitwidth and not longtable:
             ixendtable = np.where(['\end{table}' in item for item in tex])
             tex.insert(ixendtable[0][-1], r'\caption{%s}' % caption)
 

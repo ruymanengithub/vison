@@ -550,7 +550,7 @@ def merge_2dcats_generic(catsdict, catkeys, parentkey, columns, opcolumns, fcomp
             merged.loc[ixnonmerged[0], 'u%s' %
                        ocol] = merged.loc[ixnonmerged[0], '%s_%s' % (ocol, mkey)]
 
-        if (Nnonmerged > 0) and ~np.isnan(maxmix):
+        if (Nnonmerged > 0) and not np.isnan(maxmix):
 
             merged.loc[ixnonmerged[0], 'mix'] = np.linspace(
                 maxmix + 1, maxmix + Nnonmerged + 1, Nnonmerged, dtype='int32')

@@ -599,7 +599,7 @@ class PointTask(Task):
 
         # Applying Transformations to the Pattern
 
-        if all_ok or ~check_ok:
+        if all_ok or not check_ok:
 
             strackers = self.ogse.startrackers
 

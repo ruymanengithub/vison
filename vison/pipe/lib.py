@@ -188,7 +188,7 @@ def check_test_structure(explog, structure, CCDs=[1, 2, 3], selbool=True, wavedk
                 except TypeError:
                     checksout = np.all(explog[key][ixsubsel] == val)
                 isconsistent &= checksout
-                if ~checksout:
+                if not checksout:
                     failedkeys.append(key)
 
                     msgs.append('%s: "%s" NE "%s"' % (
