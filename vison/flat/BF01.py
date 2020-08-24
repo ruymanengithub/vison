@@ -976,8 +976,10 @@ class BF01(PTC0X):
 
                 # res = dict(xfit=xfit.copy(),yfit=yfit.copy(),intercept=intercept,
                 # slope=slope*1.e4)
-
-                resX = fit_BF(iflu, ifwhmx)
+                try:
+                    resX = fit_BF(iflu, ifwhmx)
+                except:
+                    stop()
 
                 plot_FWHM_dict['fwhmx'][CCDk][Q]['x']['fit'] = resX['xfit'].copy()
                 plot_FWHM_dict['fwhmx'][CCDk][Q]['y']['fit'] = resX['yfit'].copy()
