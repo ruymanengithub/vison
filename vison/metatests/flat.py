@@ -273,7 +273,7 @@ class MetaFlat(MetaCal):
 
         # ADDING REFERENCES TO MASTER FLAT-FIELDS
 
-        tmp_v_C = np.zeros((1, NCCDs), dtype='S50')
+        tmp_v_C = np.zeros((1, NCCDs), dtype='U50')
 
         for icol in range(1, Ncols + 1):
             colkey = 'col%03i' % icol

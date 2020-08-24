@@ -565,13 +565,13 @@ class FpaTask(task.Task):
         NP = NBlocks * NCCDs
 
         TB = OrderedDict()
-        TB['CCDID'] = np.zeros(NP, dtype='S4')
-        TB['BLOCK'] = np.zeros(NP, dtype='S4')
-        TB['CCD'] = np.zeros(NP, dtype='S4')
+        TB['CCDID'] = np.zeros(NP, dtype='U4')
+        TB['BLOCK'] = np.zeros(NP, dtype='U4')
+        TB['CCD'] = np.zeros(NP, dtype='U4')
 
         _dtype = np.array(extractor(self, 'C_11', 'E')).dtype
         if 'S' in _dtype.str:
-            Qdtype = 'S30'
+            Qdtype = 'U30'
         else:
             Qdtype = 'float32'
 

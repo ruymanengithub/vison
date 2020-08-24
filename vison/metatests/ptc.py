@@ -254,7 +254,7 @@ class MetaPTC(MetaCal):
         her_pick = os.path.join(productspath, os.path.split(sidd.products['HER_PROFILES'])[-1])
         her_profs = files.cPickleRead(her_pick)['data'].copy()
 
-        herprofkeys_v = np.zeros((1,NCCDs), dtype='S50')
+        herprofkeys_v = np.zeros((1,NCCDs), dtype='U50')
 
         for iCCD, CCDk in enumerate(CCDkeys):
 

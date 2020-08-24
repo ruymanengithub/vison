@@ -235,7 +235,7 @@ class MetaDark(MetaCal):
 
         self.products['MD_PROFILES'][profkey] = profs_dict.copy()
 
-        profskeys_v = np.zeros((1), dtype='S50')
+        profskeys_v = np.zeros((1), dtype='U50')
 
         profskeys_v[0] = profkey
 
@@ -258,7 +258,7 @@ class MetaDark(MetaCal):
 
         # ADDING REFERENCES TO MASTER DARKS
 
-        tmp_v_C = np.zeros((1, NCCDs), dtype='S50')
+        tmp_v_C = np.zeros((1, NCCDs), dtype='U50')
 
         mdkey_v = tmp_v_C.copy()
 

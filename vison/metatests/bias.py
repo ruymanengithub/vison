@@ -240,7 +240,7 @@ class MetaBias(MetaCal):
 
         self.products['MB_PROFILES'][profkey] = profs_dict.copy()
 
-        profskeys_v = np.zeros((1),dtype='S50')
+        profskeys_v = np.zeros((1),dtype='U50')
 
         profskeys_v[0] = profkey
 
@@ -270,7 +270,7 @@ class MetaBias(MetaCal):
 
         # ADDING REFERENCES TO MASTER BIAS
 
-        tmp_v_C = np.zeros((1, NCCDs), dtype='S50')
+        tmp_v_C = np.zeros((1, NCCDs), dtype='U50')
 
         mbkey_v = tmp_v_C.copy()
 

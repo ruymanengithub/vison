@@ -197,9 +197,9 @@ class MetaBF(MetaCal):
 
         BFCDP = files.cPickleRead(BFCDP_pick)
 
-        bfcdpkeys_v = np.zeros((1), dtype='S50')
-        bffitcdpkeys_v = np.zeros((1), dtype='S50')
-        bfcovkeys_v = np.zeros((1), dtype='S50')
+        bfcdpkeys_v = np.zeros((1), dtype='U50')
+        bffitcdpkeys_v = np.zeros((1), dtype='U50')
+        bfcovkeys_v = np.zeros((1), dtype='U50')
 
         BFCOV = sidd.products['COV'].copy()
 

@@ -225,7 +225,7 @@ class MetaNL(MetaCal):
         fluELE_maxNLpc_v = tmp_v_CQ.copy()
         stabilitypc_v = tmp_v_CQ.copy()
 
-        nlcdpkeys_v = np.zeros((1), dtype='S50')
+        nlcdpkeys_v = np.zeros((1), dtype='U50')
 
         nlcdpkey = '%s_%s_%s_%i' % (testname, block, session, jrep + 1)
 

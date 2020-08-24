@@ -256,7 +256,7 @@ class MetaMOT(MetaCal):
 
         sidd.addColumn(injection_v, 'INJECTION', IndexCQ)
 
-        rampkeys_v = np.zeros((1, NCCDs), dtype='S50')
+        rampkeys_v = np.zeros((1, NCCDs), dtype='U50')
 
         for iCCD, CCDk in enumerate(CCDkeys):
 

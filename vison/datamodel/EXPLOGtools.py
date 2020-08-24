@@ -363,7 +363,7 @@ def mergeExpLogs(explogList, addpedigree=False, verbose=False):
             if iexplog[colname].dtype.kind == 'S':
                 Smax = max([int(str(iexplog[colname].dtype)[2:]),
                             int(str(explog[colname].dtype)[2:])])
-                explog[colname] = explog[colname].astype('S%i' % Smax)
+                explog[colname] = explog[colname].astype('U%i' % Smax)
 
         if addpedigree:
             iexplog['explognumber'] = np.ones(

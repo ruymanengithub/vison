@@ -257,7 +257,7 @@ class MetaCosmetics(MetaCal):
 
         # Maps of bad pixels
 
-        tmp_v_str = np.zeros((1), dtype='S50')
+        tmp_v_str = np.zeros((1), dtype='U50')
 
         for maskkey in self.maskkeys:
 

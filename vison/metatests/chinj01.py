@@ -259,7 +259,7 @@ class MetaChinj01(MetaCal):
 
         self.products['VERPROFILES'][vprofkey] = verprofs.copy()
 
-        vprofskeys_v = np.zeros((1),dtype='S50')
+        vprofskeys_v = np.zeros((1),dtype='U50')
 
         vprofskeys_v[0] = vprofkey
 
@@ -273,7 +273,7 @@ class MetaChinj01(MetaCal):
 
         self.products['HORPROFILES'][hprofkey] = horprofs.copy()
 
-        hprofskeys_v = np.zeros((1),dtype='S50')
+        hprofskeys_v = np.zeros((1),dtype='U50')
 
         hprofskeys_v[0] = hprofkey
 

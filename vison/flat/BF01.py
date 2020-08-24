@@ -564,7 +564,7 @@ class BF01(PTC0X):
         BF_dd = OrderedDict()
         BF_dd['CCD'] = np.zeros(NP, dtype='int32')
         BF_dd['Q'] = np.zeros(NP, dtype='int32')
-        BF_dd['col'] = np.zeros(NP, dtype='S6')
+        BF_dd['col'] = np.zeros(NP, dtype='U6')
         BF_dd['FWHMx'] = np.zeros(NP, dtype='float32') + np.nan
         BF_dd['FWHMy'] = np.zeros(NP, dtype='float32') + np.nan
         BF_dd['e'] = np.zeros(NP, dtype='float32') + np.nan

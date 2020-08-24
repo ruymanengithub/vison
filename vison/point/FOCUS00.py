@@ -394,7 +394,7 @@ class FOCUS00(PT.PointTask):
 
                 ixsel = (np.arange(nS) + iCCD * (nQ * nS) + jQ * nS,)
 
-                Qsel = np.zeros_like(x_ccd[ixsel], dtype='S1')
+                Qsel = np.zeros_like(x_ccd[ixsel], dtype='U1')
                 Qsel[:] = Q
                 xQ, yQ = self.ccdcalc.cooconv_CCD_2_Qrel(x_ccd[ixsel],
                                                          y_ccd[ixsel],

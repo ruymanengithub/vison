@@ -93,7 +93,7 @@ def loadexplogs(explogfs, elvis=context.elvis, addpedigree=False, datapath=None)
 
             longestdatapathname = max([len(item) for item in datapath])
             explog['datapath'] = np.zeros(
-                len(explog), dtype='S%i' % longestdatapathname)
+                len(explog), dtype='U%i' % longestdatapathname)
             explognumber = explog['explognumber']
             for idata in range(len(datapath)):
                 explog['datapath'][explognumber == idata] = datapath[idata]
