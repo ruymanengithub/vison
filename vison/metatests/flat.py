@@ -255,11 +255,11 @@ class MetaFlat(MetaCal):
                 for kQ, Q in enumerate(self.Quads):
 
                     ixsel = np.where((prnutb['CCD'] == (jCCD + 1)) & (prnutb['Q'] == (kQ + 1)))
-                    prnu_pc_vs[colkey][0, jCCD, kQ] = prnutb['PRNU_PC'].as_matrix()[ixsel][0]
+                    prnu_pc_vs[colkey][0, jCCD, kQ] = prnutb['PRNU_PC'].values[ixsel][0]
 
                     G = self.cdps['GAIN'][block][CCDk][Q][0]
 
-                    prnu_fluadu_vs[colkey][0, jCCD, kQ] = prnutb['AVFLUENCE'].as_matrix()[ixsel][0]
+                    prnu_fluadu_vs[colkey][0, jCCD, kQ] = prnutb['AVFLUENCE'].values[ixsel][0]
 
                     prnu_fluele_vs[colkey][0, jCCD, kQ] = G * prnu_fluadu_vs[colkey][0, jCCD, kQ]
 

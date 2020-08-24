@@ -245,10 +245,10 @@ class MetaCosmetics(MetaCal):
 
                 ixsel = np.where((NPIX_dict['CCD'] == (iCCD + 1)) & (NPIX_dict['Q'] == (kQ + 1)))
 
-                Ndark_v[0, iCCD, kQ] = NPIX_dict['N_DARK'].as_matrix()[ixsel][0]
-                Nflat_v[0, iCCD, kQ] = NPIX_dict['N_FLAT'].as_matrix()[ixsel][0]
-                Nmerge_v[0, iCCD, kQ] = NPIX_dict['N_MERGE'].as_matrix()[ixsel][0]
-                Ncols_v[0, iCCD, kQ] = NPIX_dict['NCOLS_MERGE'].as_matrix()[ixsel][0]
+                Ndark_v[0, iCCD, kQ] = NPIX_dict['N_DARK'].values[ixsel][0]
+                Nflat_v[0, iCCD, kQ] = NPIX_dict['N_FLAT'].values[ixsel][0]
+                Nmerge_v[0, iCCD, kQ] = NPIX_dict['N_MERGE'].values[ixsel][0]
+                Ncols_v[0, iCCD, kQ] = NPIX_dict['NCOLS_MERGE'].values[ixsel][0]
 
         sidd.addColumn(Ndark_v, 'NDARK', IndexCQ)
         sidd.addColumn(Nflat_v, 'NFLAT', IndexCQ)

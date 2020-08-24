@@ -169,13 +169,13 @@ def run_ROE_LinCalib(inputsfile, incatfile, datapath='', respath='', doExtractFi
 
             RT_pol_DN2mV = np.zeros(degRT + 1)
             for ip in range(degRT + 1):
-                RT_pol_DN2mV[ip] = InjectorCal['data']['RT_ADU_2_mV']['P%i' % ip].as_matrix()[
+                RT_pol_DN2mV[ip] = InjectorCal['data']['RT_ADU_2_mV']['P%i' % ip].values[
                     ixRT][0]
             mVfitlevels = np.polyval(RT_pol_DN2mV, RTlevels)
 
         else:
-            assert np.all(RTlevels == InjectorCal['data'][CHAN]['RT_DN'].as_matrix())
-            mVfitlevels = InjectorCal['data'][CHAN]['RT_mV'].as_matrix()
+            assert np.all(RTlevels == InjectorCal['data'][CHAN]['RT_DN'].values)
+            mVfitlevels = InjectorCal['data'][CHAN]['RT_mV'].values.copy()
             if debug:
                 #mVfitlevels = np.array([0.,120.,240.,350.,460.,580.,680.,780.,880.,1000.,1120.,1220.,1360.,1440.,1540.,1660.,1750.])
                 # mVfitlevels = InjectorCal['data'][CHAN]['RT_DN'].as_matrix() # TESTS

@@ -236,13 +236,13 @@ class MetaBF(MetaCal):
 
                 ixsel = np.where((BFfit_df['CCD'] == iCCD + 1) & (BFfit_df['Q'] == kQ + 1))
 
-                fwhmx_hwc_v[0, iCCD, kQ] = BFfit_df['FWHMx_HWC'].as_matrix()[ixsel][0]
-                fwhmy_hwc_v[0, iCCD, kQ] = BFfit_df['FWHMy_HWC'].as_matrix()[ixsel][0]
+                fwhmx_hwc_v[0, iCCD, kQ] = BFfit_df['FWHMx_HWC'].values[ixsel][0]
+                fwhmy_hwc_v[0, iCCD, kQ] = BFfit_df['FWHMy_HWC'].values[ixsel][0]
 
-                fwhmx_slope_v[0, iCCD, kQ] = BFfit_df['FWHMx_Slope'].as_matrix()[ixsel][0]
-                fwhmy_slope_v[0, iCCD, kQ] = BFfit_df['FWHMy_Slope'].as_matrix()[ixsel][0]
+                fwhmx_slope_v[0, iCCD, kQ] = BFfit_df['FWHMx_Slope'].values[ixsel][0]
+                fwhmy_slope_v[0, iCCD, kQ] = BFfit_df['FWHMy_Slope'].values[ixsel][0]
 
-                ell_v[0, iCCD, kQ] = BFfit_df['ELL_HWC'].as_matrix()[ixsel][0]
+                ell_v[0, iCCD, kQ] = BFfit_df['ELL_HWC'].values[ixsel][0]
 
         sidd.addColumn(fwhmx_hwc_v, 'FWHMX_HWC', IndexCQ)
         sidd.addColumn(fwhmy_hwc_v, 'FWHMY_HWC', IndexCQ)
@@ -357,9 +357,9 @@ class MetaBF(MetaCal):
         x = np.array([0., 2.**16])
 
         slope = data['FWHM%s_Slope' %
-                     orientation.lower()][ixsel[0]].as_matrix()[0]
+                     orientation.lower()][ixsel[0]].values[0]
         y_hwc = data['FWHM%s_HWC' %
-                     orientation.lower()][ixsel[0]].as_matrix()[0]
+                     orientation.lower()][ixsel[0]].values[0]
 
         y = (x - 2.**16 / 2.) * slope * 1.E-4 + y_hwc
 

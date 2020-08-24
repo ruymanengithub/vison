@@ -313,7 +313,7 @@ class MetaChinj01(MetaCal):
 
         parsdict = dict()
         for par in pars:
-            parsdict[trans[par]] = _chfitdf[par].as_matrix()[ixsel][0]
+            parsdict[trans[par]] = _chfitdf[par].values[ixsel][0]
 
         parsdict['IG1'] = IG1raw.copy()
 
@@ -456,7 +456,7 @@ class MetaChinj01(MetaCal):
 
         parsdict = dict()
         for par in pars:
-            parsdict[trans[par]] = '%.3e' % chfitdf[par].as_matrix()[ixsel][0]
+            parsdict[trans[par]] = '%.3e' % chfitdf[par].values[ixsel][0]
 
         return parsdict
 

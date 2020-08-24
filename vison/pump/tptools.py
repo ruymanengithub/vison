@@ -472,9 +472,9 @@ def save_dipcat2D_as_ds9regs(df, regfilename, clobber=True):
 def fcomp_distamp_dipoles_2D(merged, mcat):
     """ """
 
-    _X = mcat['X'].as_matrix()
-    _Y = mcat['Y'].as_matrix()
-    _S = mcat['S'].as_matrix()
+    _X = mcat['X'].values.copy()
+    _Y = mcat['Y'].values.copy()
+    _S = mcat['S'].values.copy()
 
     _mix = np.zeros_like(_X, dtype='int32') - 1
 
@@ -495,8 +495,8 @@ def fcomp_distamp_dipoles_2D(merged, mcat):
 def fcomp_distamp_dipoles_1D(merged, mcat):
     """ """
 
-    _X = mcat['X'].as_matrix()
-    _S = mcat['S'].as_matrix()
+    _X = mcat['X'].values.copy()
+    _S = mcat['S'].values.copy()
 
     _mix = np.zeros_like(_X, dtype='int32') - 1
 
@@ -521,7 +521,7 @@ def merge_2dcats_generic(catsdict, catkeys, parentkey, columns, opcolumns, fcomp
 
     for col in opcolumns:
         merged['u%s' % col] = pd.Series(
-            merged[col].as_matrix(), index=merged.index)
+            merged[col].values.copy(), index=merged.index)
 
     pix = merged.index.values.copy()
 
@@ -630,7 +630,7 @@ def fit_PcTau_vtp(A, tois, Nshuffles=5000):
 def batch_fit_PcTau_vtp(Amplitudes, tois, Nshuffles=5000):
     """ """
 
-    Amp_mx = Amplitudes.as_matrix()
+    Amp_mx = Amplitudes.values.copy()
 
     Np = Amp_mx.shape[0]
 
@@ -683,7 +683,7 @@ def batch_fit_PcTau_stp(Amplitudes, dwells, Nshuffles=5000):
 
     stoi = 4.75  # us, serial TOI
 
-    Amp_mx = Amplitudes.as_matrix()
+    Amp_mx = Amplitudes.values.copy()
 
     Np = Amp_mx.shape[0]
 

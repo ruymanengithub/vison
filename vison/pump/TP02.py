@@ -599,7 +599,7 @@ class TP02(PumpTask):
 
             for Q in allQuads:
                 for modkey in modkeys:
-                    kmergedata[Q][modkey] = kmergedata[Q][modkey].as_matrix()
+                    kmergedata[Q][modkey] = kmergedata[Q][modkey].values.copy()
 
             kmergecat = self.CDP_lib['MERGEDCAT_%s' % CCDk]
             kmergecat.header = CDP_header.copy()

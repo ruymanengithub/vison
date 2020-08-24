@@ -915,12 +915,12 @@ class BF01(PTC0X):
 
         BF_df = BFTABLE_CDP['data']['BF']
 
-        CCDv = np.array(BF_df['CCD'].array)
-        Qv = np.array(BF_df['Q'].array)
-        FWHMx = np.array(BF_df['FWHMx'].array)
-        FWHMy = np.array(BF_df['FWHMy'].array)
-        #ell = BF_df['e'].as_matrix()
-        flu = np.array(BF_df['fluence'].array)
+        CCDv = BF_df['CCD'].values.copy()
+        Qv = BF_df['Q'].values.copy()
+        FWHMx = BF_df['FWHMx'].values.copy()
+        FWHMy = BF_df['FWHMy'].values.copy()
+        #ell = BF_df['e'].values.copy()
+        flu = BF_df['fluence'].values.copy()
 
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
