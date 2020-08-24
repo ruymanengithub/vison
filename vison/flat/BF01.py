@@ -901,7 +901,8 @@ class BF01(PTC0X):
 
 
         """
-
+        stop()
+        
         if self.report is not None:
             self.report.add_Section(
                 keyword='meta', Title='Meta-Analysis', level=0)
