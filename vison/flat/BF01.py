@@ -913,6 +913,7 @@ class BF01(PTC0X):
         BFTABLE_CDP = cPickleRead(BFTABLE_CDP_pick)
 
         BF_df = BFTABLE_CDP['data']['BF']
+        stop()
         CCDv = BF_df['CCD'].as_matrix()
         Qv = BF_df['Q'].as_matrix()
         FWHMx = BF_df['FWHMx'].as_matrix()
