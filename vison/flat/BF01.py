@@ -161,7 +161,7 @@ class BF01_inputs(inputs.Inputs):
 
 def fit_BF(X, Y):
     """ """
-
+    stop()
     xfit = np.linspace(0, 2**16, 2)
 
     ixval = np.where(np.isfinite(X) & np.isfinite(Y))
@@ -976,11 +976,8 @@ class BF01(PTC0X):
 
                 # res = dict(xfit=xfit.copy(),yfit=yfit.copy(),intercept=intercept,
                 # slope=slope*1.e4)
-                try:
-                    resX = fit_BF(iflu, ifwhmx)
-                except:
-                    stop()
-
+                resX = fit_BF(iflu, ifwhmx)
+                
                 plot_FWHM_dict['fwhmx'][CCDk][Q]['x']['fit'] = resX['xfit'].copy()
                 plot_FWHM_dict['fwhmx'][CCDk][Q]['y']['fit'] = resX['yfit'].copy()
 
