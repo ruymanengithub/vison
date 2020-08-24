@@ -35,7 +35,11 @@ NLdeg = 4
 def get_RANSAC_linear_model(X, Y):
     ransac = linear_model.RANSACRegressor()
     ransac.fit(np.expand_dims(X, 1), np.expand_dims(Y, 1))
-    predictor = ransac.predict
+    rpredictor = ransac.predict
+
+    def predictor(scalar):
+        return rpredictor(np.array([scalar]).reshape((1,1)))
+
     return predictor
 
 

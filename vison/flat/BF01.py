@@ -184,7 +184,8 @@ def fit_BF(X, Y):
 
     slope = ransac.estimator_.coef_[0][0]
     intercept = ransac.estimator_.intercept_[0]
-    fwhm_hwc = ransac.predict(2.**16 / 2.)[0][0]
+    #fwhm_hwc = ransac.predict(2.**16 / 2.)[0][0]
+    fwhm_hwc = ransac.predict(np.array([2.**16/2.]).reshape((1,1)))[0][0]
 
     yfit = np.squeeze(ransac.predict(np.expand_dims(xfit, 1)))
 
