@@ -161,7 +161,7 @@ class BF01_inputs(inputs.Inputs):
 
 def fit_BF(X, Y):
     """ """
-    stop()
+    
     xfit = np.linspace(0, 2**16, 2)
 
     ixval = np.where(np.isfinite(X) & np.isfinite(Y))
