@@ -913,13 +913,13 @@ class BF01(PTC0X):
         BFTABLE_CDP = cPickleRead(BFTABLE_CDP_pick)
 
         BF_df = BFTABLE_CDP['data']['BF']
-        stop()
-        CCDv = BF_df['CCD'].as_matrix()
-        Qv = BF_df['Q'].as_matrix()
-        FWHMx = BF_df['FWHMx'].as_matrix()
-        FWHMy = BF_df['FWHMy'].as_matrix()
+
+        CCDv = np.array(BF_df['CCD'].array)
+        Qv = np.array(BF_df['Q'].array)
+        FWHMx = np.array(BF_df['FWHMx'].array)
+        FWHMy = np.array(BF_df['FWHMy'].array)
         #ell = BF_df['e'].as_matrix()
-        flu = BF_df['fluence'].as_matrix()
+        flu = np.array(BF_df['fluence'].array)
 
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
