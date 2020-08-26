@@ -210,7 +210,7 @@ class BF01(PTC0X):
                          ('extract_BF', self.extract_BF),
                          ('correct_BFE_G15', self.correct_BFE_G15),
                          ('extract_PTCs', self.extract_PTCs),
-                         ('meta', self.meta_analysis)]
+                         ('meta', self.meta_analysis),
                          ('debugtask', self.debugtask)]
         FlatTask.__init__(self, inputs=inputs, log=log, drill=drill, debug=debug,
                           cleanafter=cleanafter)
