@@ -986,6 +986,7 @@ def show_disps_CCD273(aijb, stretch=5., peak=1.E5 / 3.5, N=25, sigma=1.6, title=
         plt.savefig(figname)
     else:
         plt.show()
+    plt.close()
 
 
 def test0():
