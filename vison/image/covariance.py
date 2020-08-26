@@ -120,7 +120,10 @@ def f_get_corrmap_v2(sq1, sq2, N, submodel=False, estimator='median', clipsigma=
 
     difimg = sq1 - sq2
 
-    difimg -= np.nanmedian(difimg)  # ?
+    if isinstance(difimg,np.ma.MaskedArray):
+        difimg -= np.ma.median(difimg)
+    else:
+        difimg -= np.nanmedian(difimg)  # ?
 
     if submodel:
         #t1 = time()
