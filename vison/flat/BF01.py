@@ -85,7 +85,7 @@ def process_one_fluence_covmaps(q, dd, dpath, CCDs, jCCD, ku, ulabels,
     print(('%s: column %i/%i; %i OBSIDs' % (CCDs[jCCD], ku + 1, len(ulabels), len(ccdobjNamesList))))
 
     ccdobjList = [cPickleRead(item) for item in ccdobjNamesList]
-
+    stop()
     icovdict = covlib.get_cov_maps(
         ccdobjList, Npix=Npix, vstart=vstart, vend=vend, clipsigma=clipsigma,
         covfunc = covfunc, doBiasCorr=doBiasCorr,central=central,
@@ -385,8 +385,13 @@ class BF01(PTC0X):
 
                     arglist.append([queue, self.dd, dpath, CCDs, jCCD, ku, ulabels])
 
-            stop()
+            
             process_one_fluence_covmaps(*arglist[-3],**kwargs) # TEST
+            
+            replies = []
+            while not queue.empty():
+                replies.append(queue.get())
+
             stop()
 
     def extract_COV(self):
