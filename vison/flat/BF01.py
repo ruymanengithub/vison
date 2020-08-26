@@ -211,7 +211,7 @@ class BF01(PTC0X):
                          ('correct_BFE_G15', self.correct_BFE_G15),
                          ('extract_PTCs', self.extract_PTCs),
                          ('meta', self.meta_analysis)]
-                         #('debugtask', self.debugtask)]
+                         ('debugtask', self.debugtask)]
         FlatTask.__init__(self, inputs=inputs, log=log, drill=drill, debug=debug,
                           cleanafter=cleanafter)
         #self.inputs['todo_flags'] = self.init_todo_flags()
@@ -288,6 +288,106 @@ class BF01(PTC0X):
     def prepare_images(self):
         Task.prepare_images(self, doExtract=True, doBadPixels=True,
                             doMask=True, doOffset=True, doBias=False, doFF=False)
+
+    def debugtask(self):
+        """
+
+        Performs basic analysis of images:
+            - extracts COVARIANCE matrix for each fluence
+
+        """
+
+
+        Npix = self.inputs['Npix']
+        clipsigma = self.inputs['clipsigma']
+        covfunc = self.inputs['covfunc']
+        doBiasCorr = self.inputs['doBiasCorr']
+        central = self.inputs['central']
+
+        # labels should be the same accross CCDs. PATCH.
+        labels = self.dd.mx['label'][:, 0].copy()
+        ulabels = np.unique(labels)
+        #ulabels = ['col003'] # TEST
+        nL = len(ulabels)
+
+        # vstart and vend should be the same for all OBSIDs in test
+        vstart = self.dd.mx['vstart'][0, 0]
+        vend = min(self.dd.mx['vend'][0, 0], self.ccdcalc.NrowsCCD)
+
+        indices = copy.deepcopy(self.dd.indices)
+        nObs, nC, nQ = indices.shape[0:3]
+        CCDs = indices.get_vals('CCD')
+        Quads = indices.get_vals('Quad')
+
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+
+        dpath = self.inputs['subpaths']['ccdpickles']
+        #covpath = self.inputs['subpaths']['covariance']
+        covpath = 'tests_COV'
+        #prodspath = self.inputs['subpaths']['products']
+
+        profscov_1D = self.CDP_lib['PROFSCOV1D']
+        profscov_1D.header = CDP_header.copy()
+        profscov_1D.path = covpath
+        profscov_1D.data = OrderedDict()
+
+        profscov_1D.data['hor'] = OrderedDict()
+        profscov_1D.data['ver'] = OrderedDict()
+
+        for tag in ['hor', 'ver']:
+            profscov_1D.data[tag] = OrderedDict()
+            profscov_1D.data[tag]['labelkeys'] = ulabels
+            for CCDk in CCDs:
+                profscov_1D.data[tag][CCDk] = OrderedDict()
+                for Q in Quads:
+                    profscov_1D.data[tag][CCDk][Q] = OrderedDict()
+                    profscov_1D.data[tag][CCDk][Q]['x'] = OrderedDict()
+                    profscov_1D.data[tag][CCDk][Q]['y'] = OrderedDict()
+
+        NP = nC * nQ * nL
+
+        COV_dd = OrderedDict()
+        COV_dd['CCD'] = np.zeros(NP, dtype='int32')
+        COV_dd['Q'] = np.zeros(NP, dtype='int32')
+        COV_dd['col'] = np.zeros(NP, dtype='int32')
+        COV_dd['av_mu'] = np.zeros(NP, dtype='float32')
+        COV_dd['av_var'] = np.zeros(NP, dtype='float32')
+        COV_dd['CORR_00'] = np.zeros(NP, dtype='float32')
+        COV_dd['CORR_01'] = np.zeros(NP, dtype='float32')
+        COV_dd['CORR_10'] = np.zeros(NP, dtype='float32')
+        COV_dd['CORR_11'] = np.zeros(NP, dtype='float32')
+
+        #self.dd.products['COV'] = OrderedDict()
+        #for CCDk in CCDs:
+        #    self.dd.products['COV'][CCDk] = OrderedDict()
+
+
+
+        if not self.drill:
+
+            # doTest=False
+
+            kwargs = dict(Npix=Npix, vstart=vstart, vend=vend, 
+                clipsigma=clipsigma, covfunc=covfunc,
+                doBiasCorr=doBiasCorr,central=central)
+
+            arglist = []
+
+            mgr = mp.Manager()
+            queue = mgr.Queue()
+
+            for jCCD, CCDk in enumerate(CCDs):
+
+                for ku, ulabel in enumerate(ulabels):
+
+                    arglist.append([queue, self.dd, dpath, CCDs, jCCD, ku, ulabels])
+
+            stop()
+            process_one_fluence_covmaps(*arglist[-3],**kwargs) # TEST
+            stop()
 
     def extract_COV(self):
         """
