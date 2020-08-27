@@ -12,6 +12,7 @@ Created on Thu Aug 27 17:01:00 2020
 
 # IMPORT STUFF
 import numpy as np
+from collections import namedtuple
 # END IMPORT
 
 
