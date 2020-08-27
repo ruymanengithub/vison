@@ -17,6 +17,7 @@ import numpy as np
 from scipy import stats
 from vison.datamodel.ccd_aux import Model2D
 from vison.datamodel import ccd as ccdmod
+from vison.support import maths
 # END IMPORT
 
 
@@ -40,7 +41,8 @@ def get_model2d(img, pdegree=5, doFilter=False, doBin=True,
 def fclipsig(img, clipsigma=None):
 
     if clipsigma is not None:
-        return stats.sigmaclip(img, clipsigma, clipsigma).clipped
+        #return stats.sigmaclip(img, clipsigma, clipsigma).clipped
+        return maths.sigmaclip(img, clipsigma, clipsigma).clipped
     else:
         return img.flatten().copy()
 
@@ -143,10 +145,11 @@ def f_get_corrmap_v2(sq1, sq2, N, submodel=False, estimator='median', clipsigma=
     mskdifimg = difimg.data.copy()
     mskdifimg[ixnan] = np.nan
 
-    _mskdifimg = mskdifimg.copy()
-    _mskdifimg[ixnan] = clipsigma * 10 * np.nanstd(mskdifimg)
+    #_mskdifimg = mskdifimg.copy()
+    #_mskdifimg[ixnan] = clipsigma * 10 * np.nanstd(mskdifimg)
 
-    vardif = np.nanvar(fclipsig(_mskdifimg, clipsigma))
+    #vardif = np.nanvar(fclipsig(_mskdifimg, clipsigma))
+    vardif = np.nanvar(fclipsig(mskdifimg, clipsigma))
     mu = np.nanmean([np.nanmedian(msksq1),np.nanmedian(msksq2)])
 
     corrmap = np.zeros((N, N), dtype='float32')
@@ -172,7 +175,7 @@ def f_get_corrmap_v2(sq1, sq2, N, submodel=False, estimator='median', clipsigma=
             difimgij -= np.nanmean(difimgij)
 
             product = difimg0 * difimgij
-            product[np.where(np.isnan(product))] = clipsigma*10.*vardif
+            #product[np.where(np.isnan(product))] = clipsigma*10.*vardif
 
             corrmap[i,j] = festimator(fclipsig(product, 
                     clipsigma)) / vardif
