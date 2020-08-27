@@ -83,6 +83,7 @@ def sigmaclip(a, low=4., high=4.):
         size = c.size
         critlower = c_mean - c_std * low
         critupper = c_mean + c_std * high
+        c = c[~np.isnan(c)]
         c = c[(c >= critlower) & (c <= critupper)]
         delta = size - c.size
 
