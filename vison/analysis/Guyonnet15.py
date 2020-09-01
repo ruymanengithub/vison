@@ -821,6 +821,8 @@ def get_cross_shape_rough(cross, pitch=pixpitch):
 
     shape = dict(fwhmx=fwhmx, fwhmy=fwhmy, e=e)
 
+    stop()
+
     return shape
 
 
