@@ -738,7 +738,7 @@ class BF01(PTC0X):
                             kerQshape = G15.get_cross_shape_rough(
                                 cross_Q, pitch=12.)
 
-                            if (jCCD==1) and (kQ==0):
+                            if (jCCD==0) and (kQ==3):
                                 print(kerQshape)
                                 stop()
 
