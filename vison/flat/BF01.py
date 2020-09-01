@@ -633,7 +633,6 @@ class BF01(PTC0X):
 
         """
 
-
         if self.report is not None:
             self.report.add_Section(
                 keyword='extractBF', Title='BF-Matrices Extraction', level=0)
@@ -738,7 +737,7 @@ class BF01(PTC0X):
                                                Npix // 2 - 1:Npix // 2 + 2].copy()
                             kerQshape = G15.get_cross_shape_rough(
                                 cross_Q, pitch=12.)
-
+                            stop()
 
                             #kerQshapealt = BF01aux.get_kernel_gauss_shape(kernel_Q,pitch=12)
 
