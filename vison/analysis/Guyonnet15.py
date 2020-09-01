@@ -134,6 +134,22 @@ def fun_p(x, *p):
 
     return model
 
+def plot_pfit(popt, r, ydata, xdata, p0, popt):
+    #print('popt = ', popt)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(r, ydata, 'ko:', label='data')
+    ax.plot(r, fun_p(xdata, *p0), 'r--', label='initial guess')
+    ax.plot(r, fun_p(xdata, *popt), 'b--', label='solution')
+    ax.set_xlabel('Distance (um)')
+    ax.set_ylabel('covij/(var*mu)')
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles, labels, loc='upper right')
+    plt.tight_layout()
+    plt.show()
+
+
 
 def solve_for_psmooth(covij, var, mu, doplot=False):
     """Solving (p0,p1) parameters in Eq. 18 using covariance matrix and
@@ -150,7 +166,7 @@ def solve_for_psmooth(covij, var, mu, doplot=False):
 
     ni, nj = covij.shape  # shape of covariance matrix
 
-    assert ni == nj  # only squared covariance matrices allowed in this  bar
+    assert ni == nj  # only squared covariance matrices allowed in this bar
     N = ni
 
     i = np.arange(N)
@@ -179,27 +195,14 @@ def solve_for_psmooth(covij, var, mu, doplot=False):
     xdata[0, :] = xdata[0, order].copy()
     xdata[1, :] = xdata[1, order].copy()
 
-    p0 = (1.E-3, -1.)  # initial values
+    p0 = (1.E-3 / mu, -1.)  # initial values
 
     popt, pcov = optimize.curve_fit(
         fun_p, xdata, ydata, p0=p0, sigma=None, absolute_sigma=False)
     epopt = np.sqrt(np.diagonal(pcov))  # errors
 
     if doplot:
-        print('popt = #', popt)
-
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax.plot(r, ydata, 'ko:', label='data')
-        ax.plot(r, fun_p(xdata, *p0), 'r--', label='initial guess')
-        ax.plot(r, fun_p(xdata, *popt), 'b--', label='solution')
-        ax.set_xlabel('Distance (um)')
-        ax.set_ylabel('covij/(var*mu)')
-        handles, labels = ax.get_legend_handles_labels()
-        ax.legend(handles, labels, loc='upper right')
-        plt.tight_layout()
-        plt.show()
-
+        plot_pfit()
         stop()
 
     return popt, epopt
