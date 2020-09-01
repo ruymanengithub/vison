@@ -701,6 +701,8 @@ class BF01(PTC0X):
         Npix = 51
         Npixplot = 11
 
+        stop()
+
         if not self.drill:
 
             singlepixmap = np.zeros((Npix, Npix), dtype='float32') + 0.0
