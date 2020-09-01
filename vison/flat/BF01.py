@@ -737,7 +737,10 @@ class BF01(PTC0X):
                                                Npix // 2 - 1:Npix // 2 + 2].copy()
                             kerQshape = G15.get_cross_shape_rough(
                                 cross_Q, pitch=12.)
-                            stop()
+
+                            if (jCCD==1) and (kQ==0):
+                                print(kerQshape)
+                                stop()
 
                             #kerQshapealt = BF01aux.get_kernel_gauss_shape(kernel_Q,pitch=12)
 
