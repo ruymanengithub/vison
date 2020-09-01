@@ -708,7 +708,7 @@ class BF01(PTC0X):
         Npix = 51
         Npixplot = 11
 
-        stop()
+        
 
         if not self.drill:
 
@@ -732,6 +732,8 @@ class BF01(PTC0X):
                         BF_dd['col'][jj] = ulabel
                         fluence = COV_dict['av_mu'][Q]
                         BF_dd['fluence'][jj] = fluence
+
+                        stop()
 
                         try:
 
