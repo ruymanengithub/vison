@@ -735,8 +735,16 @@ class BF01(PTC0X):
 
                         try:
 
+                            doplot=False
+                            dostop=False
+                            if (jCCD==0) and (kQ==3):
+                                print(kerQshape)
+                                doplot=True
+                                dostop=True
+
+
                             Asol_Q, psmooth_Q = G15.solve_for_A_linalg(
-                                CORR_mx, var=1., mu=fluence, returnAll=True, doplot=False,
+                                CORR_mx, var=1., mu=fluence, returnAll=True, doplot=plot,
                                 verbose=False)
 
 
@@ -749,7 +757,8 @@ class BF01(PTC0X):
 
                             #if (jCCD==0) and (kQ==3):
                             #    print(kerQshape)
-                            #    stop()
+                            if dostop:
+                                stop()
 
                             #kerQshapealt = BF01aux.get_kernel_gauss_shape(kernel_Q,pitch=12)
 
