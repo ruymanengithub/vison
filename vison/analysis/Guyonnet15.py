@@ -134,7 +134,7 @@ def fun_p(x, *p):
 
     return model
 
-def plot_pfit(popt, r, ydata, xdata, p0, popt):
+def plot_pfit(popt, p0, r, ydata, xdata):
     #print('popt = ', popt)
 
     fig = plt.figure()
@@ -202,7 +202,7 @@ def solve_for_psmooth(covij, var, mu, doplot=False):
     epopt = np.sqrt(np.diagonal(pcov))  # errors
 
     if doplot:
-        plot_pfit()
+        plot_pfit(popt, p0, r, ydata, xdata)
         stop()
 
     return popt, epopt
