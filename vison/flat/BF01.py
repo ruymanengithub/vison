@@ -71,6 +71,10 @@ def process_one_fluence_covmaps(q, dd, dpath, CCDs, jCCD, ku, ulabels,
     vstart = kwargs['vstart']
     vend = kwargs['vend']
     clipsigma = kwargs['clipsigma']
+    if 'debug' in kwargs.keys():
+        debug = kwargs['debug']
+    else:
+        debug=False
 
     vfullinpath_adder = utils.get_path_decorator(dpath)
 
@@ -89,7 +93,7 @@ def process_one_fluence_covmaps(q, dd, dpath, CCDs, jCCD, ku, ulabels,
     icovdict = covlib.get_cov_maps(
         ccdobjList, Npix=Npix, vstart=vstart, vend=vend, clipsigma=clipsigma,
         covfunc = covfunc, doBiasCorr=doBiasCorr,central=central,
-        doTest=False, debug=False)
+        doTest=False, debug=debug)
     q.put([jCCD, ku, icovdict])
 
 
@@ -372,7 +376,8 @@ class BF01(PTC0X):
 
             kwargs = dict(Npix=Npix, vstart=vstart, vend=vend, 
                 clipsigma=clipsigma, covfunc=covfunc,
-                doBiasCorr=doBiasCorr,central=central)
+                doBiasCorr=doBiasCorr,central=central,
+                debug=True)
 
             arglist = []
 
@@ -701,7 +706,6 @@ class BF01(PTC0X):
         Npix = 51
         Npixplot = 11
 
-        stop()
 
         if not self.drill:
 
@@ -740,9 +744,9 @@ class BF01(PTC0X):
                             kerQshape = G15.get_cross_shape_rough(
                                 cross_Q, pitch=12.)
 
-                            if (jCCD==0) and (kQ==3):
-                                print(kerQshape)
-                                stop()
+                            #if (jCCD==0) and (kQ==3):
+                            #    print(kerQshape)
+                            #    stop()
 
                             #kerQshapealt = BF01aux.get_kernel_gauss_shape(kernel_Q,pitch=12)
 
