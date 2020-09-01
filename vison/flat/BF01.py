@@ -496,9 +496,7 @@ class BF01(PTC0X):
             queue = mgr.Queue()
 
             for jCCD, CCDk in enumerate(CCDs):
-
                 for ku, ulabel in enumerate(ulabels):
-
                     arglist.append([queue, self.dd, dpath, CCDs, jCCD, ku, ulabels])
 
             #process_one_fluence_covmaps(*arglist[-3],**kwargs) # TEST
@@ -710,6 +708,7 @@ class BF01(PTC0X):
         Npix = 51
         Npixplot = 11
 
+        stop()
 
         if not self.drill:
 
