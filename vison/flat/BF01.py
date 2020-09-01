@@ -733,7 +733,6 @@ class BF01(PTC0X):
                         fluence = COV_dict['av_mu'][Q]
                         BF_dd['fluence'][jj] = fluence
 
-                        stop()
 
                         try:
 
@@ -746,7 +745,7 @@ class BF01(PTC0X):
 
 
                             Asol_Q, psmooth_Q = G15.solve_for_A_linalg(
-                                CORR_mx, var=1., mu=fluence, returnAll=True, doplot=plot,
+                                CORR_mx, var=1., mu=fluence, returnAll=True, doplot=doplot,
                                 verbose=False)
 
 
