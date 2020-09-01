@@ -200,6 +200,8 @@ def solve_for_psmooth(covij, var, mu, doplot=False):
         plt.tight_layout()
         plt.show()
 
+        stop()
+
     return popt, epopt
 
 
