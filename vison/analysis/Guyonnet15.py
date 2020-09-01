@@ -1071,14 +1071,14 @@ def test_selfconsist():
 
     covij = covij.sum(axis=2)
 
-    showcovij = False
+    showcovij = True
 
     if showcovij:
 
         fig = plt.figure()
         ax = fig.add_subplot(111)
         cax = ax.imshow(covij, origin='lower left')
-        cax.set_cmap('spectral')
+        cax.set_cmap('rainbow')
         cbar = fig.colorbar(cax, orientation='vertical')
         ax.set_title('Cov_ij')
         ax.set_xlabel('i')
@@ -1090,25 +1090,26 @@ def test_selfconsist():
     Abest = solve_for_A_linalg(
         covij, var=var, mu=mu, doplot=False)  # ,psmooth=[pin])
 
-    show_disps_CCD273(Asynth, stretch=30., peak=1.E5 /
-                      3.5, N=25, sigma=1.6, title='Input')
-    show_disps_CCD273(Abest, stretch=30., peak=1.E5 / 3.5,
-                      N=25, sigma=1.6, title='Output')
+    show_disps_CCD273(Asynth, stretch=30., peak=1., N=25, sigma=1.6, title='Input')
+    show_disps_CCD273(Abest, stretch=30., peak=1., N=25, sigma=1.6, title='Output')
 
-    singlepixmap = np.zeros((101, 101), dtype='float32') + 0.01
-    singlepixmap[50, 50] = 1.
+    singlepixmap = np.zeros((11, 11), dtype='float32') + 0.01
+    singlepixmap[5, 5] = 1.
 
     kernel = degrade_estatic(singlepixmap, Abest)
     deltaQ = get_deltaQ(singlepixmap, Abest)
     kernelsynth = degrade_estatic(singlepixmap, Asynth)
 
     fig = plt.figure()
-    ax1 = fig.add_subplot(121)
+    ax1 = fig.add_subplot(131)
     ax1.imshow(kernel)
-    ax1.set_title('KERNEL')
-    ax2 = fig.add_subplot(122)
+    ax1.set_title('KERNEL-BEST')
+    ax2 = fig.add_subplot(132)
     ax2.imshow(kernelsynth)
     ax2.set_title('KERNEL-SYNTH')
+    ax3 = fig.add_subplot(133)
+    ax3.imshow(kernel-kernelsynth)
+    ax3.set_title('BEST-SYNTH')
     plt.show()
 
     fts.writeto('kernel_selfconsist.fits', kernel.transpose(), clobber=True)
