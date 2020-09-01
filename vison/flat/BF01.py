@@ -393,15 +393,15 @@ class BF01(PTC0X):
 
                     arglist.append([queue, self.dd, dpath, CCDs, jCCD, ku, ulabels])
 
-            stop()
-            
-            process_one_fluence_covmaps(*arglist[-3],**kwargs) # TEST
-            
-            replies = []
-            while not queue.empty():
-                replies.append(queue.get())
 
-            stop()
+            for i in range(len(arglist)):
+                process_one_fluence_covmaps(*arglist[i],**kwargs) # TEST
+            
+                replies = []
+                while not queue.empty():
+                    replies.append(queue.get())
+
+                stop()
 
     def extract_COV(self):
         """
