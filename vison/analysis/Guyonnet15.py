@@ -140,8 +140,8 @@ def plot_pfit(popt, p0, r, ydata, xdata):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.plot(r, ydata, 'ko:', label='data')
-    ax.plot(r, fun_p(xdata, *p0), 'r--', label='initial guess')
-    ax.plot(r, fun_p(xdata, *popt), 'b--', label='solution')
+    ax.plot(r, fun_p(xdata, *p0), 'r:', label='initial guess')
+    ax.plot(r, fun_p(xdata, *popt), 'b+-', label='solution')
     ax.set_xlabel('Distance (um)')
     ax.set_ylabel('covij/(var*mu)')
     handles, labels = ax.get_legend_handles_labels()
@@ -195,10 +195,17 @@ def solve_for_psmooth(covij, var, mu, doplot=False):
     xdata[0, :] = xdata[0, order].copy()
     xdata[1, :] = xdata[1, order].copy()
 
-    p0 = (1.E-3 / mu, -1.)  # initial values
+    p00_guess = ydata[0] / fun_p(xdata[:,0].reshape((2,1)),*(1.,-1.))
+
+    p0 = (p00_guess[0], -1.)  # initial values
+    
+    ysigma = np.ones_like(ydata) * ydata.mean()
 
     popt, pcov = optimize.curve_fit(
-        fun_p, xdata, ydata, p0=p0, sigma=None, absolute_sigma=False)
+        fun_p, xdata, ydata, p0=p0, sigma=ysigma, 
+        method='lm',
+        absolute_sigma=False)
+        #bounds=[[ydata.max()*1.e-4,-3.],[ydata.max()*1.e2, 0.]])
     epopt = np.sqrt(np.diagonal(pcov))  # errors
 
     if doplot:

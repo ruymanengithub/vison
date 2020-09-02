@@ -300,7 +300,7 @@ class BF01(PTC0X):
             - extracts COVARIANCE matrix for each fluence
 
         """
-
+        stop()
 
         Npix = self.inputs['Npix']
         clipsigma = self.inputs['clipsigma']
