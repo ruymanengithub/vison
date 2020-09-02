@@ -738,10 +738,10 @@ class BF01(PTC0X):
 
                             doplot=False
                             dostop=False
-                            if (jCCD==0) and (kQ==0):
-                                print(kerQshape)
-                                doplot=True
-                                dostop=True
+                            #if (jCCD==0) and (kQ==0):
+                            #    print(kerQshape)
+                            #    doplot=True
+                            #    dostop=True
 
 
                             Asol_Q, psmooth_Q = G15.solve_for_A_linalg(
