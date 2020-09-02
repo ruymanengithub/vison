@@ -300,7 +300,7 @@ class BF01(PTC0X):
             - extracts COVARIANCE matrix for each fluence
 
         """
-        stop()
+
 
         Npix = self.inputs['Npix']
         clipsigma = self.inputs['clipsigma']
@@ -736,12 +736,12 @@ class BF01(PTC0X):
 
                         try:
 
-                            doplot=False
-                            dostop=False
-                            if (jCCD==0) and (kQ==3):
-                                print(kerQshape)
-                                doplot=True
-                                dostop=True
+                            #doplot=False
+                            #dostop=False
+                            #if (jCCD==0) and (kQ==3):
+                            #    print(kerQshape)
+                            #    doplot=True
+                            #    dostop=True
 
 
                             Asol_Q, psmooth_Q = G15.solve_for_A_linalg(
