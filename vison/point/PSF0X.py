@@ -179,7 +179,8 @@ class PSF0X(PT.PointTask):
                          ('meta', self.meta_analysis),
                          ('xtalk_sex', self.opt_xtalk_sextract),
                          ('xtalk_build', self.opt_xtalk_build),
-                         ('xtalk_meta', self.opt_xtalk_meta)]
+                         ('xtalk_meta', self.opt_xtalk_meta),
+                         ('debugtask', self.debugtask)]
 
         super(PSF0X, self).__init__(inputs=inputs, log=log, drill=drill,
                                     debug=debug, cleanafter=cleanafter)
@@ -367,7 +368,14 @@ class PSF0X(PT.PointTask):
                 else:
                     pass
 
+    def debugtask(self):
+        """ """
 
+        SpotsPoster = self._build_SpotsPoster(spotscol='spots_name')
+        SpotsPosterNOBFE = self._build_SpotsPoster(spotscol='spots_name_nobfe')
+
+        
+        stop()
 
     def prep_data(self):
         """

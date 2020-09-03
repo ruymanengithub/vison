@@ -760,7 +760,7 @@ class BF01(PTC0X):
                             #    print(kerQshape)
                             if dostop:
                                 stop()
-
+                            
                             #kerQshapealt = BF01aux.get_kernel_gauss_shape(kernel_Q,pitch=12)
 
 
