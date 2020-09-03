@@ -22,6 +22,8 @@ from vison.datamodel.ccd import gain
 # END IMPORT
 
 
+sig2fwhm = 2.355
+
 class Spot(Shapemeter, Photometer, Gaussmeter):
     """
     Provides methods to do point-source analysis on a stamp.
@@ -104,10 +106,10 @@ class Spot(Shapemeter, Photometer, Gaussmeter):
                    x=Gpars[1], ex=eGpars[1], y=Gpars[2], ey=eGpars[2],
                    sigma_x=Gpars[3], esigma_x=eGpars[3],
                    sigma_y=Gpars[4], esigma_y=eGpars[4])
-        res['fwhm_x'] = res['sigma_x'] * 2.355
-        res['efwhm_x'] = res['esigma_x'] * 2.355
-        res['fwhm_y'] = res['sigma_y'] * 2.355
-        res['efwhm_y'] = res['esigma_y'] * 2.355
+        res['fwhm_x'] = res['sigma_x'] * sig2fwhm
+        res['efwhm_x'] = res['esigma_x'] * sig2fwhm
+        res['fwhm_y'] = res['sigma_y'] * sig2fwhm
+        res['efwhm_y'] = res['esigma_y'] * sig2fwhm
         sigma_maj = np.max([res['sigma_x'], res['sigma_y']])
         sigma_min = np.min([res['sigma_x'], res['sigma_y']])
         q = sigma_min / sigma_maj

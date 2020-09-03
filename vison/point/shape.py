@@ -127,6 +127,7 @@ class Shapemeter(SpotBase):
         # also a and b
         a = np.sqrt(.5 * (Qxx + Qyy + np.sqrt((Qxx - Qyy)**2 + 4. * Qxy * Qxy)))
         b = np.sqrt(.5 * (Qxx + Qyy - np.sqrt((Qxx - Qyy)**2 + 4. * Qxy * Qxy)))
+        
 
         # check that ellipticity is reasonable
         if ellipticity > 1.0:

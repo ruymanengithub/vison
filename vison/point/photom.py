@@ -75,9 +75,23 @@ class Photometer(SpotBase):
 
     def measure_bgd(self, rin, rout):
         """ """
+
+        _statops = dict(masked=dict(
+            median=np.ma.median,
+            std=np.ma.std),
+            nonmasked=dict(
+                median=np.nanmedian,
+                std=np.nanstd))
+
         bgd_mask = ((self.radmask >= rin) & (self.radmask <= rout))
-        bgd = np.median(self.data[bgd_mask])
-        sbgd = np.std(self.data[bgd_mask])
+
+        if np.ma.isMaskedArray(self.data):
+            _oper = _statops['masked']
+        else:
+            _oper = _statops['nonmasked']
+
+        bgd = _oper['median'](self.data[bgd_mask])
+        sbgd = _oper['std'](self.data[bgd_mask])
 
         return bgd, sbgd
 

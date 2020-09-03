@@ -693,7 +693,7 @@ class PSF0X(PT.PointTask):
 
         spotspath = self.inputs['subpaths']['spots']
 
-        psCCDcoodicts = self._get_psCCDcoodicts()
+        #psCCDcoodicts = self._get_psCCDcoodicts()
 
         bas_keys = ['bgd','peak','fluence','efluence',
                         'x','y','x_ccd','y_ccd','fwhmx','fwhmy']
@@ -774,24 +774,26 @@ class PSF0X(PT.PointTask):
                         self.dd.mx['%ssh_b' % prefix][ixtup] = ref_quad_res['b']
 
 
-                        gauss_res = inSpot.fit_Gauss()
+                        #gauss_res = inSpot.fit_Gauss()
                         # tuple: (vals, evals)
                         # i00, xcen, ycen, xsigma, ysigma
 
-                        self.dd.mx['%sgau_i00' % prefix][ixtup] = gauss_res[0][0]
-                        self.dd.mx['%sgau_ei00' % prefix][ixtup] = gauss_res[1][0]
-                        self.dd.mx['%sgau_xcen' % prefix][ixtup] = gauss_res[0][1]
-                        self.dd.mx['%sgau_xcen' % prefix][ixtup] = gauss_res[1][1]
-                        self.dd.mx['%sgau_ycen' % prefix][ixtup] = gauss_res[0][2]
-                        self.dd.mx['%sgau_eycen' % prefix][ixtup] = gauss_res[1][2]
-                        self.dd.mx['%sgau_sigmax' % prefix][ixtup] = gauss_res[0][3]
-                        self.dd.mx['%sgau_esigmax' % prefix][ixtup] = gauss_res[1][3]
-                        self.dd.mx['%sgau_fwhmx' % prefix][ixtup] = gauss_res[0][3] * sig2fwhm
-                        self.dd.mx['%sgau_efwhmx' % prefix][ixtup] = gauss_res[1][3] * sig2fwhm
-                        self.dd.mx['%sgau_sigmay' % prefix][ixtup] = gauss_res[0][4]
-                        self.dd.mx['%sgau_esigmay' % prefix][ixtup] = gauss_res[1][4]
-                        self.dd.mx['%sgau_fwhmy' % prefix][ixtup] = gauss_res[0][4] * sig2fwhm
-                        self.dd.mx['%sgau_efwhmy' % prefix][ixtup] = gauss_res[1][4] * sig2fwhm
+                        gauss_res = inSpot.get_shape_Gauss()
+
+                        self.dd.mx['%sgau_i00' % prefix][ixtup] = gauss_res['i0']
+                        self.dd.mx['%sgau_ei00' % prefix][ixtup] = gauss_res['ei0']
+                        self.dd.mx['%sgau_xcen' % prefix][ixtup] = gauss_res['x']
+                        self.dd.mx['%sgau_xcen' % prefix][ixtup] = gauss_res['ex']
+                        self.dd.mx['%sgau_ycen' % prefix][ixtup] = gauss_res['y']
+                        self.dd.mx['%sgau_eycen' % prefix][ixtup] = gauss_res['ey']
+                        self.dd.mx['%sgau_sigmax' % prefix][ixtup] = gauss_res['sigma_x']
+                        self.dd.mx['%sgau_esigmax' % prefix][ixtup] = gauss_res['esigma_x']
+                        self.dd.mx['%sgau_fwhmx' % prefix][ixtup] = gauss_res['fwhm_x']
+                        self.dd.mx['%sgau_efwhmx' % prefix][ixtup] = gauss_res['efwhm_x']
+                        self.dd.mx['%sgau_sigmay' % prefix][ixtup] = gauss_res['sigma_y']
+                        self.dd.mx['%sgau_esigmay' % prefix][ixtup] = gauss_res['esigma_y']
+                        self.dd.mx['%sgau_fwhmy' % prefix][ixtup] = gauss_res['fwhm_y']
+                        self.dd.mx['%sgau_efwhmy' % prefix][ixtup] = gauss_res['efwhm_y']
 
 
 

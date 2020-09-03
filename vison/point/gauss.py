@@ -76,9 +76,9 @@ class Gaussmeter(SpotBase):
         fit_p = fitting.LevMarLSQFitter()
 
         XX, YY = np.meshgrid(np.arange(self.NX),
-                             np.arange(self.NY), indexing='xy')
+                             np.arange(self.NY), indexing='ij')
         rawres = fit_p(p_init, XX, YY, self.data)
-
+        stop()
         params = rawres.parameters[0:-1]  # theta is fixed
         try:
             eparams = np.diag(fit_p.fit_info['param_cov'])**0.5
