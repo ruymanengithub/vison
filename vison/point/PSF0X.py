@@ -959,12 +959,12 @@ class PSF0X(PT.PointTask):
 
 
         SpotsPoster = self._build_SpotsPoster(spotscol='spots_name', 
-            histequ=True)
+            histequ=False)
         fdict = self.figdict['SpotsPoster'][1]
         fdict['data'] = SpotsPoster.copy()
 
         SpotsPosterNOBFE = self._build_SpotsPoster(spotscol='spots_name_nobfe',
-            histequ=True)
+            histequ=False)
         fdictNOBFE = self.figdict['SpotsPosterNOBFE'][1]
         fdictNOBFE['data'] = SpotsPosterNOBFE.copy()        
 
@@ -976,7 +976,7 @@ class PSF0X(PT.PointTask):
             self.addFigures_ST(figkeys=['SpotsPoster',
                 'SpotsPosterNOBFE'],
                 dobuilddata=False)
-
+        stop()
 
     def opt_xtalk_sextract(self):
         """Runs sextractor on images for optical-crosstalk measurements."""
