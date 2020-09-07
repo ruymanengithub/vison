@@ -1045,7 +1045,7 @@ class PSF0X(PT.PointTask):
         plot_FWHM_dict = OrderedDict()
 
         for tag in ['fwhmx', 'fwhmy']:
-            plot_FWHM_dict[tag] = OrderedDict(labelkeys=['data', 'fit'])
+            plot_FWHM_dict[tag] = OrderedDict(labelkeys=['BFE', 'noBFE'])
             for CCDk in CCDs:
                 plot_FWHM_dict[tag][CCDk] = OrderedDict()
                 for Q in Quads:
