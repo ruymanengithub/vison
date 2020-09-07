@@ -38,6 +38,7 @@ import warnings
 import copy
 from collections import OrderedDict
 from skimage import exposure
+from sklearn import linear_model
 
 from vison.support import utils
 from vison.pipe.task import HKKeys
@@ -948,6 +949,50 @@ class PSF0X(PT.PointTask):
 
         stop()
 
+    def _get_fwhm_flu_bfit(self, iCCD, kQ, fwhmkey, bfecorr):
+        """ """
+
+        xkey = 'gau_i00'
+        ykey = 'gau_%s' % fwhmkey
+        fitkey = 'gau_didfit'
+        if bfecorr:
+            xkey = 'nobfe_%s' % xkey
+            ykey = 'nobfe_%s' % ykey
+            fitkey 'nobfe_%s' % fitkey
+
+        xdata = self.dd.mx[xkey][:,iCCD,kQ,:].copy()
+        ydata = self.dd.mx[ykey][:,iCCD,kQ,:].copy()
+        didfit = self.dd.mx[fitkey][:,iCCD,kQ,:].copy()
+
+        nSpots = xdata.shape[1]
+
+        xfit = np.arange(1.,2.**16,5)
+
+        xbest = []
+        ybest = []
+
+        for i in range(nSpots):
+            stop()
+            _x = xdata[:,i]
+            _y = ydata[:,i]
+            _df = didfit[:,i]
+
+            ixsel = np.where((_x>1.e3) & (_df))
+
+            if len(ixsel[0])>5:
+                _x[ixsel]
+                _y[ixsel]
+                ransac = linear_model.RANSACRegressor()
+                ransac.fit(np.expand_dims(X[ixval], 1), np.expand_dims(Y[ixval], 1))
+
+                yfit = ransac.predict(np.expand_dims(xfit,1))[0]
+
+                xbest.append(xfit)
+                ybest.append(yfit)
+
+        return xbest, ybest
+
+
     def meta_analysis(self):
         """
 
@@ -1011,16 +1056,7 @@ class PSF0X(PT.PointTask):
                     plot_FWHM_dict[tag][CCDk][Q]['x'] = OrderedDict()
                     plot_FWHM_dict[tag][CCDk][Q]['y'] = OrderedDict()
 
-        def _get_psf_fits(dd,iCCD, kQ, fwhmkey,bfecorr):
-            xkey = 'gau_i00'
-            ykey = 'gau_%s' % fwhmkey
-            if bfecorr:
-                xkey = 'nobfe_%s' % xkey
-                ykey = 'nobfe_%s' % ykey
 
-            xdata = dd.mx[xkey][:,iCCD,kQ,:].copy()
-            ydata = dd.mx[ykey][:,iCCD,kQ,:].copy()
-            stop()
 
         for iCCD, CCDk in enumerate(CCDs):
 
@@ -1033,7 +1069,7 @@ class PSF0X(PT.PointTask):
                     else:
                         BFEtag = 'BFE'
 
-                    x_fwhmx,y_fwhmx = _get_psf_fits(self.dd,iCCD, kQ, 
+                    x_fwhmx,y_fwhmx = self._get_fwhm_flu_bfit(iCCD, kQ, 
                             'fwhmx',bfecorr=bfecorr)
 
 
