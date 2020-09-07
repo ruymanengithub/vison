@@ -136,15 +136,16 @@ def get_spotsposter_dict(test, BFE=True):
     """ """
     if BFE:
         figtype ='noBFE'
+        tcaption = '%s: Spots Poster, BFE not corrected. Log scale.'
     else:
         figtype = 'withBFE'
+        tcaption = '%s: Spots Poster, BFE corrected using G+15. Log scale.'
 
-    tcaption = '%s: Spots Poster [%s].'
     ntest = copy.deepcopy(test)
-    ntest.replace('_', '\_')
+    ntest.replace('_', '\\_')
     sp_dict = dict(
         figname='%s_spotsposter_%s.png' % (test, figtype),
-        caption=tcaption % (ntest, figtype),
+        caption=tcaption % (ntest,),
         meta=dict(doColorbar=True,
             corekwargs=dict(cmap=cm.gray, 
                             aspect='auto',  

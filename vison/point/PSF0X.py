@@ -877,10 +877,12 @@ class PSF0X(PT.PointTask):
                         lly = stampw * iObs
                         llx = stampw * (jCCD*(nQuads+nSpots)+kQ*(nSpots)+lS)
 
-                        SpotsPoster[lly:lly+stampw, llx:llx+stampw] = np.log10(inSpot.data.copy())
+                        SpotsPoster[lly:lly+stampw, llx:llx+stampw] = inSpot.data.copy()
+
+        SpotsPoster[SpotsPoster<=0.] = 1.
+        SpotsPoster = np.log10(SpotsPoster)
 
         if histequ:
-
             SpotsPoster = exposure.equalize_hist(SpotsPoster, nbins=256)
 
         return SpotsPoster
@@ -976,7 +978,14 @@ class PSF0X(PT.PointTask):
             self.addFigures_ST(figkeys=['SpotsPoster',
                 'SpotsPosterNOBFE'],
                 dobuilddata=False)
-        stop()
+
+        # PLOT OF FWHMX vs. peak fluence (w/w-o BFE corr)
+
+
+        # PLOT OF FWHMY vs. peak fluence (w/w-o BFE corr)
+
+
+
 
     def opt_xtalk_sextract(self):
         """Runs sextractor on images for optical-crosstalk measurements."""
