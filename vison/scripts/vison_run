@@ -63,7 +63,6 @@ def openpyconfigf(configf, RUN, wait):
     doWait = wait
     try: 
         i = importlib.import_module(os.path.splitext(configf)[0])
-        stop()
         inputdict = i.master(RUNs, doWait)
     except:
         inputdict = None
