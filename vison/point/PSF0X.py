@@ -958,7 +958,7 @@ class PSF0X(PT.PointTask):
         if bfecorr:
             xkey = 'nobfe_%s' % xkey
             ykey = 'nobfe_%s' % ykey
-            fitkey 'nobfe_%s' % fitkey
+            fitkey = 'nobfe_%s' % fitkey
 
         xdata = self.dd.mx[xkey][:,iCCD,kQ,:].copy()
         ydata = self.dd.mx[ykey][:,iCCD,kQ,:].copy()
