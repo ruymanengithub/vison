@@ -1011,15 +1011,43 @@ class PSF0X(PT.PointTask):
                     plot_FWHM_dict[tag][CCDk][Q]['x'] = OrderedDict()
                     plot_FWHM_dict[tag][CCDk][Q]['y'] = OrderedDict()
 
+        def _get_psf_fits(dd,iCCD, kQ, fwhmkey,bfecorr):
+            xkey = 'gau_i00'
+            ykey = 'gau_%s' % fwhmkey
+            if bfecorr:
+                xkey = 'nobfe_%s' % xkey
+                ykey = 'nobfe_%s' % ykey
+
+            xdata = dd.mx[xkey][:,iCCD,kQ,:].copy()
+            ydata = dd.mx[ykey][:,iCCD,kQ,:].copy()
+            stop()
+
         for iCCD, CCDk in enumerate(CCDs):
 
             for kQ, Q in enumerate(Quads):
 
-                stop()
-                
+                for bfecorr in [True, False]:
 
-                plot_FWHM_dict['fwhmx'][CCDk][Q]['x']['BFE'] 
-                plot_FWHM_dict['fwhmx'][CCDk][Q]['y']['BFE']
+                    if bfecorr:
+                        BFEtag = 'noBFE'
+                    else:
+                        BFEtag = 'BFE'
+
+                    x_fwhmx,y_fwhmx = _get_psf_fits(self.dd,iCCD, kQ, 
+                            'fwhmx',bfecorr=bfecorr)
+
+
+                    plot_FWHM_dict['fwhmx'][CCDk][Q]['x'][BFEtag] = x_fwhmx
+                    plot_FWHM_dict['fwhmx'][CCDk][Q]['y'][BFEtag] = y_fwhmx
+
+                    x_fwhmy,y_fwhmy = _get_psf_fits(self.dd,iCCD, kQ, 
+                            'fwhmy',bfecorr=bfecorr)
+
+                    plot_FWHM_dict['fwhmy'][CCDk][Q]['x'][BFEtag] = x_fwhmy
+                    plot_FWHM_dict['fwhmy'][CCDk][Q]['y'][BFEtag] = y_fwhmy
+
+
+
 
 
 
