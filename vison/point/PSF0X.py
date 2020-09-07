@@ -992,7 +992,7 @@ class PSF0X(PT.PointTask):
         # INITIALISATIONS
 
         indices = copy.deepcopy(self.dd.indices)
-        nObs, nC, nQ, nSpots = indices.shape[0:3]
+        nObs, nC, nQ, nSpots = indices.shape
         CCDs = np.array(indices.get_vals('CCD'))
         Quads = np.array(indices.get_vals('Quad'))
         SpotNames = np.array(indices.get_vals('Spot'))
