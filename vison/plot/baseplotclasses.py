@@ -730,6 +730,11 @@ class ImgShow(BasicPlot):
         self.meta.update(defaults)
         self.meta.update(kwargs)
 
+        self.corekwargs = dict()
+        if 'corekwargs' in kwargs:
+            self.corekwargs.update(kwargs['corekwargs'])
+        
+
     def populate_axes(self):
         """ """
         internals = dict(origin='lower left')
