@@ -63,6 +63,7 @@ def openpyconfigf(configf, RUN, wait):
     doWait = wait
     try: 
         i = importlib.import_module(os.path.splitext(configf)[0])
+        stop()
         inputdict = i.master(RUNs, doWait)
     except:
         inputdict = None
@@ -193,7 +194,7 @@ if __name__ == '__main__':
     if interactive:
         import matplotlib.pyplot as plt
         plt.switch_backend('TkAgg')
-    
+
     if doFPA:
         pipe = fpamaster.FpaPipe(inputdict, dolog=dolog, drill=drill,
                                  debug=debug, startobsid=startobsid,
