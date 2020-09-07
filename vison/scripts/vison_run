@@ -193,7 +193,7 @@ if __name__ == '__main__':
     if interactive:
         import matplotlib.pyplot as plt
         plt.switch_backend('TkAgg')
-    stop()
+    
     if doFPA:
         pipe = fpamaster.FpaPipe(inputdict, dolog=dolog, drill=drill,
                                  debug=debug, startobsid=startobsid,
