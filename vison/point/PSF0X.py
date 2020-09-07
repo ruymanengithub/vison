@@ -966,26 +966,23 @@ class PSF0X(PT.PointTask):
 
         nSpots = xdata.shape[1]
 
-        xfit = np.arange(1.,2.**16,5)
+        xfit = np.linspace(1.,2.**16,5)
 
         xbest = []
         ybest = []
 
         for i in range(nSpots):
-            stop()
             _x = xdata[:,i]
             _y = ydata[:,i]
             _df = didfit[:,i]
 
-            ixsel = np.where((_x>1.e3) & (_df))
+            ixsel = np.where((_x>1.e3) & (_df==1))
 
             if len(ixsel[0])>5:
-                _x[ixsel]
-                _y[ixsel]
                 ransac = linear_model.RANSACRegressor()
-                ransac.fit(np.expand_dims(X[ixval], 1), np.expand_dims(Y[ixval], 1))
+                ransac.fit(np.expand_dims(_x[ixsel], 1), np.expand_dims(_y[ixsel], 1))
 
-                yfit = ransac.predict(np.expand_dims(xfit,1))[0]
+                yfit = np.squeeze(ransac.predict(np.expand_dims(xfit,1)))
 
                 xbest.append(xfit)
                 ybest.append(yfit)
@@ -1083,9 +1080,16 @@ class PSF0X(PT.PointTask):
                     plot_FWHM_dict['fwhmy'][CCDk][Q]['y'][BFEtag] = y_fwhmy
 
 
+        for tag in ['fwhmx', 'fwhmy']:
 
+            fdict_fwhm = self.figdict['PSF0X_%s_v_flu' % tag][1]
+            fdict_fwhm['data'] = plot_FWHM_dict[tag].copy()
 
+            if self.report is not None:
+                self.addFigures_ST(figkeys=['PSF0X_%s_v_flu' % tag],
+                                   dobuilddata=False)
 
+        
 
     def opt_xtalk_sextract(self):
         """Runs sextractor on images for optical-crosstalk measurements."""

@@ -155,6 +155,24 @@ def get_spotsposter_dict(test, BFE=True):
         )
     return sp_dict
 
+def get_FWHM_v_flu_dict(test, fwhmkey):
+    """ """
+    ntest = test.replace('_', '\_')
+    fdict = dict(
+    figname='%s_%s_v_flu.png' % (test, fwhmkey),
+    caption='%s: FWHM(x) vs. Peak Fluence.' % ntest,
+    meta=dict(doLegend=True,
+              ylabel='%s, [um]' % fwhmkey,
+              xlabel='I00 [ADU]',
+              ylim = [5.,15.],
+              corekwargs=dict(
+                  noBFE=dict(marker='', linestyle='--', color='b'),
+                  BFE=dict(marker='', linestyle='-', color='r')),
+              suptitle='%s: %s in microns vs. Fluence' %\
+                    (ntest, fwhmkey))
+        )
+    return fdict
+
 def get_PSF0Xfigs(test):
     PSF0Xfigs = dict()
     PSF0Xfigs['PSF0Xchecks_offsets'] = [
@@ -179,6 +197,11 @@ def get_PSF0Xfigs(test):
         figclasses.Fig_ImgShow, get_spotsposter_dict(test, BFE=False)]
     PSF0Xfigs['SpotsPosterNOBFE'] = [
         figclasses.Fig_ImgShow, get_spotsposter_dict(test, BFE=True)]
+    PSF0Xfigs['PSF0X_fwhmx_v_flu'] = [
+        figclasses.Fig_Beam2DPlot, get_FWHM_v_flu_dict(test, fwhmkey='fwhmx')]
+    PSF0Xfigs['PSF0X_fwhmy_v_flu'] = [
+        figclasses.Fig_Beam2DPlot, get_FWHM_v_flu_dict(test, fwhmkey='fwhmy')]
+
     PSF0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return PSF0Xfigs
 
