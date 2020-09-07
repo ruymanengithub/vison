@@ -1073,7 +1073,7 @@ class PSF0X(PT.PointTask):
                     plot_FWHM_dict['fwhmx'][CCDk][Q]['x'][BFEtag] = x_fwhmx
                     plot_FWHM_dict['fwhmx'][CCDk][Q]['y'][BFEtag] = y_fwhmx
 
-                    x_fwhmy,y_fwhmy = _get_psf_fits(self.dd,iCCD, kQ, 
+                    x_fwhmy,y_fwhmy = self._get_psf_fits(iCCD, kQ, 
                             'fwhmy',bfecorr=bfecorr)
 
                     plot_FWHM_dict['fwhmy'][CCDk][Q]['x'][BFEtag] = x_fwhmy
@@ -1089,7 +1089,7 @@ class PSF0X(PT.PointTask):
                 self.addFigures_ST(figkeys=['PSF0X_%s_v_flu' % tag],
                                    dobuilddata=False)
 
-        
+
 
     def opt_xtalk_sextract(self):
         """Runs sextractor on images for optical-crosstalk measurements."""
