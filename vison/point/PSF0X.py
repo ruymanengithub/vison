@@ -966,7 +966,7 @@ class PSF0X(PT.PointTask):
         SpotsPosterNOBFE = self._build_SpotsPoster(spotscol='spots_name_nobfe',
             histequ=True)
         fdictNOBFE = self.figdict['SpotsPosterNOBFE'][1]
-        fdictNOBFE['data'] = SpotsPosterNOBFRE.copy()        
+        fdictNOBFE['data'] = SpotsPosterNOBFE.copy()        
 
 
         #normfunction = Normalize(vmin=0.,vmax=np.log10(2.**16),clip=False)
