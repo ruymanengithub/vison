@@ -718,6 +718,8 @@ class Beam1DHist(BeamPlot):
 
 class ImgShow(BasicPlot):
 
+    mappables = []
+
     def __init__(self, data, **kwargs):
 
         super(ImgShow, self).__init__(**kwargs)
@@ -741,7 +743,7 @@ class ImgShow(BasicPlot):
         ckwargs = self.corekwargs.copy()
         internals.update(ckwargs)
         self.axs = [self.fig.add_subplot(111)]
-        self.axs[0].imshow(self.data, **internals)
+        self.mappables.append(self.axs[0].imshow(self.data, **internals))
         self.axs[0].set_title(self.meta['title'])
 
     
@@ -750,8 +752,8 @@ class ImgShow(BasicPlot):
         if self.meta['doColorbar']:
             #cbar_ax = self.fig.add_axes([0.85, 0.15, 0.05, 0.7])
             #plt.colorbar(cax=cbar_ax, mappable=self.mappables[0],orientation='vertical')
-            self.fig.colorbar(self.axs[0], 
-                ax=self.axs,
+            self.fig.colorbar(self.mappables[0], 
+                ax=self.axs[0],
                 orientation='vertical', fraction=.1)
 
 
