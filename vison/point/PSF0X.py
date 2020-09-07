@@ -954,7 +954,7 @@ class PSF0X(PT.PointTask):
         Analyzes the relation between detector PSF and fluence.
 
         """
-        stop()
+
         if self.report is not None:
             self.report.add_Section(
                 keyword='meta', Title='Meta Analysis: Shapes', level=0)
@@ -964,30 +964,30 @@ class PSF0X(PT.PointTask):
         CDP_header.update(dict(function=function, module=module))
         CDP_header['DATE'] = self.get_time_tag()
 
+        doBuildPosters = False
 
-        SpotsPoster = self._build_SpotsPoster(spotscol='spots_name', 
-            histequ=False)
-        fdict = self.figdict['SpotsPoster'][1]
-        fdict['data'] = SpotsPoster.copy()
+        if doBuildPosters:
 
-        SpotsPosterNOBFE = self._build_SpotsPoster(spotscol='spots_name_nobfe',
-            histequ=False)
-        fdictNOBFE = self.figdict['SpotsPosterNOBFE'][1]
-        fdictNOBFE['data'] = SpotsPosterNOBFE.copy()        
+            SpotsPoster = self._build_SpotsPoster(spotscol='spots_name', 
+                histequ=False)
+            fdict = self.figdict['SpotsPoster'][1]
+            fdict['data'] = SpotsPoster.copy()
+
+            SpotsPosterNOBFE = self._build_SpotsPoster(spotscol='spots_name_nobfe',
+                histequ=False)
+            fdictNOBFE = self.figdict['SpotsPosterNOBFE'][1]
+            fdictNOBFE['data'] = SpotsPosterNOBFE.copy()        
 
 
-        #normfunction = Normalize(vmin=0.,vmax=np.log10(2.**16),clip=False)
-        #fdict['meta']['corekwargs']['norm'] = normfunction
+            #normfunction = Normalize(vmin=0.,vmax=np.log10(2.**16),clip=False)
+            #fdict['meta']['corekwargs']['norm'] = normfunction
 
-        if self.report is not None:
-            self.addFigures_ST(figkeys=['SpotsPoster',
-                'SpotsPosterNOBFE'],
-                dobuilddata=False)
+            if self.report is not None:
+                self.addFigures_ST(figkeys=['SpotsPoster',
+                    'SpotsPosterNOBFE'],
+                    dobuilddata=False)
 
-        function, module = utils.get_function_module()
-        CDP_header = self.CDP_header.copy()
-        CDP_header.update(dict(function=function, module=module))
-        CDP_header['DATE'] = self.get_time_tag()
+        
 
         # INITIALISATIONS
 
@@ -1015,20 +1015,11 @@ class PSF0X(PT.PointTask):
 
             for kQ, Q in enumerate(Quads):
 
-                jj = iCCD * nQ + kQ
+                stop()
+                
 
-                ixsel = np.where((iCCD + 1 == CCDv) & (kQ + 1 == Qv))
-
-                iflu = flu[ixsel]
-                ifwhmx = FWHMx[ixsel]
-                ifwhmy = FWHMy[ixsel]
-                ixorder = iflu.argsort()
-                iflu = iflu[ixorder]
-                ifwhmx = ifwhmx[ixorder]
-                ifwhmy = ifwhmy[ixorder]
-
-                plot_FWHM_dict['fwhmx'][CCDk][Q]['x']['data'] = iflu.copy()
-                plot_FWHM_dict['fwhmx'][CCDk][Q]['y']['data'] = ifwhmx.copy()
+                plot_FWHM_dict['fwhmx'][CCDk][Q]['x']['BFE'] 
+                plot_FWHM_dict['fwhmx'][CCDk][Q]['y']['BFE']
 
 
 
