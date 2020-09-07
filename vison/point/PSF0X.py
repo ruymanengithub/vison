@@ -984,7 +984,9 @@ class PSF0X(PT.PointTask):
 
                 yfit = np.squeeze(ransac.predict(np.expand_dims(xfit,1)))
 
-                xbest.append(xfit)
+                stop()
+
+                xbest.append(xfit/1.e4)
                 ybest.append(yfit)
 
         return xbest, ybest
@@ -1070,13 +1072,13 @@ class PSF0X(PT.PointTask):
                             'fwhmx',bfecorr=bfecorr)
 
 
-                    plot_FWHM_dict['fwhmx'][CCDk][Q]['x'][BFEtag] = x_fwhmx
+                    plot_FWHM_dict['fwhmx'][CCDk][Q]['x'][BFEtag] = x_fwhmx 
                     plot_FWHM_dict['fwhmx'][CCDk][Q]['y'][BFEtag] = y_fwhmx
 
                     x_fwhmy,y_fwhmy = self._get_fwhm_flu_bfit(iCCD, kQ, 
                             'fwhmy',bfecorr=bfecorr)
 
-                    plot_FWHM_dict['fwhmy'][CCDk][Q]['x'][BFEtag] = x_fwhmy
+                    plot_FWHM_dict['fwhmy'][CCDk][Q]['x'][BFEtag] = x_fwhmy 
                     plot_FWHM_dict['fwhmy'][CCDk][Q]['y'][BFEtag] = y_fwhmy
 
 

@@ -163,7 +163,7 @@ def get_FWHM_v_flu_dict(test, fwhmkey):
     caption='%s: FWHM(x) vs. Peak Fluence.' % ntest,
     meta=dict(doLegend=True,
               ylabel='%s, [um]' % fwhmkey,
-              xlabel='I00 [ADU]',
+              xlabel=r'$I_{0} [10 kADU]$',
               ylim = [5.,15.],
               corekwargs=dict(
                   noBFE=dict(marker='', linestyle='--', color='b'),
