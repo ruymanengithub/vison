@@ -27,8 +27,8 @@ from vison.point import Paux
 
 
 def get_check_offsets_dict(test):
-    ntest = copy.deepcopy(test)
-    ntest.replace('_', '\_')
+    
+    ntest = test.replace('_', '\_')
     return dict(stats=['offset_pre', 'offset_ove'],
                 trendaxis='time',
                 figname='%s_offset_vs_time.png' % (test,),
@@ -40,8 +40,8 @@ def get_check_offsets_dict(test):
 
 
 def get_check_deltaoff_dict(test):
-    ntest = copy.deepcopy(test)
-    ntest.replace('_', '\_')
+    
+    ntest = test.replace('_', '\_')
     return dict(
         stats=[
             'deltaoff_pre', 'deltaoff_ove'], trendaxis='time', figname='%s_deltaoff_vs_time.png' %
@@ -53,8 +53,8 @@ def get_check_deltaoff_dict(test):
 
 
 def get_check_std_dict(test):
-    ntest = copy.deepcopy(test)
-    ntest.replace('_', '\_')
+    
+    ntest = test.replace('_', '\_')
     return dict(stats=['std_pre', 'std_ove'],
                 trendaxis='time',
                 figname='%s_std_vs_time.png' % test,
@@ -66,8 +66,8 @@ def get_check_std_dict(test):
 
 
 def get_check_bgd_dict(test):
-    ntest = copy.deepcopy(test)
-    ntest.replace('_', '\_')
+    
+    ntest = test.replace('_', '\_')
     return dict(stats=['bgd_img'],
                 trendaxis='time',
                 figname='%s_bgd_vs_time.png' % test,
@@ -78,8 +78,8 @@ def get_check_bgd_dict(test):
 
 
 def get_check_flu_dict(test):
-    ntest = copy.deepcopy(test)
-    ntest.replace('_', '\_')
+    
+    ntest = test.replace('_', '\_')
     return dict(stats=['chk_fluence'],
                 trendaxis='exptime',
                 figname='%s_flu_vs_exptime.png' % test,
@@ -92,8 +92,8 @@ def get_check_flu_dict(test):
 
 
 def get_check_fwhmx_dict(test):
-    ntest = copy.deepcopy(test)
-    ntest.replace('_', '\_')
+    
+    ntest = test.replace('_', '\_')
     return dict(stats=['chk_fwhmx'],
                 trendaxis='exptime',
                 figname='%s_fwhmx_vs_exptime.png' % test,
@@ -106,8 +106,8 @@ def get_check_fwhmx_dict(test):
 
 
 def get_check_fwhmy_dict(test):
-    ntest = copy.deepcopy(test)
-    ntest.replace('_', '\_')
+    
+    ntest = test.replace('_', '\_')
     return dict(stats=['chk_fwhmy'],
                 trendaxis='exptime',
                 figname='%s_fwhmy_vs_exptime.png' % test,
@@ -122,8 +122,8 @@ def get_check_fwhmy_dict(test):
 def get_crosstalk_dict(test, figtype):
     tcaption = '%s: Cross-Talk [%s]. Green means positive cross-talk, red means negative cross-talk' +\
         ' (does not mean compliance/non-compliance). Pale colours mean less accurate results.'
-    ntest = copy.deepcopy(test)
-    ntest.replace('_', '\_')
+    
+    ntest = test.replace('_', '\_')
     crosstalk_dict = dict(
         figname='%s_crosstalk_%s.png' % (test, figtype),
         caption=tcaption % (ntest, figtype),
@@ -141,9 +141,8 @@ def get_spotsposter_dict(test, BFE=True):
         figtype = 'withBFE'
         tcaption = '%s: Spots Poster, BFE corrected using G+15. Log scale.'
 
-    ntest = copy.deepcopy(test)
-    stop()
-    ntest.replace('_', '\_')
+    
+    ntest = test.replace('_', '\_')
     sp_dict = dict(
         figname='%s_spotsposter_%s.png' % (test, figtype),
         caption=tcaption % (ntest,),

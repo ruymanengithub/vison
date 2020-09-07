@@ -620,7 +620,7 @@ class MetaBias(MetaCal):
             # RON maps, ADUs
             for testname in self.testnames:
 
-                stestname = stestname = testname.replace('_', '\_')
+                stestname = testname.replace('_', '\_')
 
                 RONADUMAP = self.get_FPAMAP_from_PT(
                     self.ParsedTable[testname],
@@ -657,7 +657,7 @@ class MetaBias(MetaCal):
             # RON maps, ELECTRONs
             for testname in self.testnames:
 
-                stestname = stestname = testname.replace('_', '\_')
+                stestname = testname.replace('_', '\_')
 
                 RONEMAP = self.get_FPAMAP_from_PT(self.ParsedTable[testname],
                                                   extractor=self._get_extractor_RON_fromPT(units='E',
