@@ -64,7 +64,7 @@ class Gaussmeter(SpotBase):
             if self.log is not None:
                 self.log.info('%s = %s' % (key, value))
 
-    def fit_Gauss(self):
+    def fit_Gauss(self, verbose=False):
         """ """
 
         i00 = self.data.max()
@@ -78,7 +78,8 @@ class Gaussmeter(SpotBase):
         XX, YY = np.meshgrid(np.arange(self.NX),
                              np.arange(self.NY), indexing='ij')
         rawres = fit_p(p_init, XX, YY, self.data)
-        stop()
+
+        didFit = True
         params = rawres.parameters[0:-1]  # theta is fixed
         try:
             eparams = np.diag(fit_p.fit_info['param_cov'])**0.5
@@ -89,5 +90,8 @@ class Gaussmeter(SpotBase):
             else:
                 print(Emsg)
             eparams = np.zeros_like(params) + np.nan
-
-        return params, eparams
+            didFit = False
+        if verbose:
+            return params, eparams, didFit
+        else:
+            return params, eparams

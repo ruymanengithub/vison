@@ -732,13 +732,22 @@ class ImgShow(BasicPlot):
 
     def populate_axes(self):
         """ """
+        internals = dict(origin='lower left')
+        ckwargs = self.corekwargs.copy()
+        internals.update(ckwargs)
         self.axs = [self.fig.add_subplot(111)]
-        self.axs[0].imshow(self.data)
+        self.axs[0].imshow(self.data, **internals)
         self.axs[0].set_title(self.meta['title'])
 
+    
     def plt_trimmer(self):
-        """ """
-        return
+
+        if self.meta['doColorbar']:
+            #cbar_ax = self.fig.add_axes([0.85, 0.15, 0.05, 0.7])
+            #plt.colorbar(cax=cbar_ax, mappable=self.mappables[0],orientation='vertical')
+            self.fig.colorbar(self.axs[0], 
+                ax=self.axs,
+                orientation='vertical', fraction=.1)
 
 
 def testBeam2DPlot():

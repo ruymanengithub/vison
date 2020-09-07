@@ -131,6 +131,27 @@ def get_crosstalk_dict(test, figtype):
     )
     return crosstalk_dict
 
+def get_spotsposter_dict(test, BFE=True):
+    """ """
+    if BFE:
+        figtype ='noBFE'
+    else:
+        figtype = 'withBFE'
+
+    tcaption = '%s: Spots Poster [%s].'
+    ntest = copy.deepcopy(test)
+    ntest.replace('_', '\_')
+    sp_dict = dict(
+        figname='%s_spotsposter_%s.png' % (test, figtype),
+        caption=tcaption % (ntest, figtype),
+        meta=dict(doColorbar=True,
+            corekwargs=dict(cmap=cm.gray, 
+                            aspect='auto',  
+                            # norm=None,
+                            origin='lower left')),
+        data=None
+        )
+    return sp_dict
 
 def get_PSF0Xfigs(test):
     PSF0Xfigs = dict()
@@ -152,6 +173,10 @@ def get_PSF0Xfigs(test):
         figclasses.Fig_Husk, get_crosstalk_dict(test, 'ADU')]
     PSF0Xfigs['PSF0X_crosstalk_RATIO'] = [
         figclasses.Fig_Husk, get_crosstalk_dict(test, 'RATIO')]
+    PSFOXfigs['SpotsPoster'] = [
+        figclasses.Fig_ImgShow, get_spotsposter_dict(test, BFE=False)]
+    PSFOXfigs['SpotsPosterNOBFE'] = [
+        figclasses.Fig_ImgShow, get_spotsposter_dict(test, BFE=True)]
     PSF0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return PSF0Xfigs
 

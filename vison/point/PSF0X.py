@@ -37,6 +37,7 @@ import string as st
 import warnings
 import copy
 from collections import OrderedDict
+from skimage import exposure
 
 from vison.support import utils
 from vison.pipe.task import HKKeys
@@ -658,9 +659,6 @@ class PSF0X(PT.PointTask):
 
         assert 'Spot' in CQSindices.names
 
-        valini = 0.0
-        sig2fwhm = 2.355
-
         colnames = ['bas_bgd', 'bas_peak', 'bas_fluence', 'bas_efluence',
             'bas_x', 'bas_y', 'bas_x_ccd', 'bas_y_ccd',
             'bas_fwhmx', 'bas_fwhmy',
@@ -673,15 +671,24 @@ class PSF0X(PT.PointTask):
             'gau_sigmax', 'gau_esigmax',
             'gau_fwhmx', 'gau_efwhmx',
             'gau_sigmay', 'gau_esigmay',
-            'gau_fwhmy', 'gau_efwhmy']
+            'gau_fwhmy', 'gau_efwhmy', 
+            'gau_didfit']
 
         ncols = len(colnames)
         for i in range(ncols):
             colnames[i] = '%s%s' % (prefix, colnames[i])
 
         for i in range(ncols):
-            self.dd.initColumn(colnames[i], CQSindices, dtype='float32',
+            colname = colnames[i]
+            if 'didfit' in colname:
+                idtype = 'int32'
+                valini = 0
+            else:
+                idtype = 'float32'
+                valini = 0.0
+            self.dd.initColumn(colname, CQSindices, dtype=idtype,
                  valini=valini)
+            
 
         nObs = CQSindices[0].len
         CCDs = CQSindices.get_vals('CCD')
@@ -794,6 +801,7 @@ class PSF0X(PT.PointTask):
                         self.dd.mx['%sgau_esigmay' % prefix][ixtup] = gauss_res['esigma_y']
                         self.dd.mx['%sgau_fwhmy' % prefix][ixtup] = gauss_res['fwhm_y']
                         self.dd.mx['%sgau_efwhmy' % prefix][ixtup] = gauss_res['efwhm_y']
+                        self.dd.mx['%sgau_didfit' % prefix][ixtup] = gauss_res['didFit']
 
 
 
@@ -823,7 +831,7 @@ class PSF0X(PT.PointTask):
 
         self._extract_basic(spotscol='spots_name_nobfe', prefix='nobfe_')        
 
-    def _build_SpotsPoster(self, spotscol='spots_name'):
+    def _build_SpotsPoster(self, spotscol='spots_name', histequ=True):
         """ """
 
         CQSindices = copy.deepcopy(self.dd.indices)
@@ -871,6 +879,9 @@ class PSF0X(PT.PointTask):
 
                         SpotsPoster[lly:lly+stampw, llx:llx+stampw] = np.log10(inSpot.data.copy())
 
+        if histequ:
+
+            SpotsPoster = exposure.equalize_hist(SpotsPoster, nbins=256)
 
         return SpotsPoster
 
@@ -935,7 +946,6 @@ class PSF0X(PT.PointTask):
 
         stop()
 
-    # def meta_analysis(dd,report,inputs,log=None):
     def meta_analysis(self):
         """
 
@@ -948,21 +958,23 @@ class PSF0X(PT.PointTask):
                 keyword='meta', Title='Meta Analysis: Shapes', level=0)
 
 
-        SpotsPoster = self._build_SpotsPoster(spotscol='spots_name')
-        SpotsPosterNOBFE = self._build_SpotsPoster(spotscol='spots_name_nobfe')
-
-        stop()
-
-
+        SpotsPoster = self._build_SpotsPoster(spotscol='spots_name', 
+            histequ=True)
         fdict = self.figdict['SpotsPoster'][1]
         fdict['data'] = SpotsPoster.copy()
 
-        normfunction = Normalize(vmin=0.,vmax=np.log10(2.**16),clip=False)
+        SpotsPosterNOBFE = self._build_SpotsPoster(spotscol='spots_name_nobfe',
+            histequ=True)
+        fdictNOBFE = self.figdict['SpotsPosterNOBFE'][1]
+        fdictNOBFE['data'] = SpotsPosterNOBFRE.copy()        
 
-        fdict['meta']['corekwargs']['norm'] = normfunction
+
+        #normfunction = Normalize(vmin=0.,vmax=np.log10(2.**16),clip=False)
+        #fdict['meta']['corekwargs']['norm'] = normfunction
 
         if self.report is not None:
-            self.addFigures_ST(figkeys=['SpotsPoster'],
+            self.addFigures_ST(figkeys=['SpotsPoster',
+                'SpotsPosterNOBFE'],
                 dobuilddata=False)
 
 
