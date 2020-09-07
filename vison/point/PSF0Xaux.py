@@ -17,6 +17,7 @@ import os
 from collections import OrderedDict
 import string as st
 import copy
+from matplotlib import cm
 
 from vison.datamodel import cdp
 from vison.plot import figclasses
