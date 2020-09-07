@@ -142,7 +142,8 @@ def get_spotsposter_dict(test, BFE=True):
         tcaption = '%s: Spots Poster, BFE corrected using G+15. Log scale.'
 
     ntest = copy.deepcopy(test)
-    ntest.replace('_', '\\_')
+    stop()
+    ntest.replace('_', '\_')
     sp_dict = dict(
         figname='%s_spotsposter_%s.png' % (test, figtype),
         caption=tcaption % (ntest,),
