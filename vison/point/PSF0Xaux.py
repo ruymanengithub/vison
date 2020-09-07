@@ -174,9 +174,9 @@ def get_PSF0Xfigs(test):
         figclasses.Fig_Husk, get_crosstalk_dict(test, 'ADU')]
     PSF0Xfigs['PSF0X_crosstalk_RATIO'] = [
         figclasses.Fig_Husk, get_crosstalk_dict(test, 'RATIO')]
-    PSFOXfigs['SpotsPoster'] = [
+    PSF0Xfigs['SpotsPoster'] = [
         figclasses.Fig_ImgShow, get_spotsposter_dict(test, BFE=False)]
-    PSFOXfigs['SpotsPosterNOBFE'] = [
+    PSF0Xfigs['SpotsPosterNOBFE'] = [
         figclasses.Fig_ImgShow, get_spotsposter_dict(test, BFE=True)]
     PSF0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return PSF0Xfigs
