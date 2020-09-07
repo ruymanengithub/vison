@@ -954,10 +954,15 @@ class PSF0X(PT.PointTask):
         Analyzes the relation between detector PSF and fluence.
 
         """
-
+        stop()
         if self.report is not None:
             self.report.add_Section(
                 keyword='meta', Title='Meta Analysis: Shapes', level=0)
+
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
 
 
         SpotsPoster = self._build_SpotsPoster(spotscol='spots_name', 
@@ -979,11 +984,51 @@ class PSF0X(PT.PointTask):
                 'SpotsPosterNOBFE'],
                 dobuilddata=False)
 
-        # PLOT OF FWHMX vs. peak fluence (w/w-o BFE corr)
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+
+        # INITIALISATIONS
+
+        indices = copy.deepcopy(self.dd.indices)
+        nObs, nC, nQ, nSpots = indices.shape[0:3]
+        CCDs = np.array(indices.get_vals('CCD'))
+        Quads = np.array(indices.get_vals('Quad'))
+        SpotNames = np.array(indices.get_vals('Spot'))
 
 
-        # PLOT OF FWHMY vs. peak fluence (w/w-o BFE corr)
+        # PLOT OF FWHMj vs. peak fluence (w/w-o BFE corr)
 
+        plot_FWHM_dict = OrderedDict()
+
+        for tag in ['fwhmx', 'fwhmy']:
+            plot_FWHM_dict[tag] = OrderedDict(labelkeys=['data', 'fit'])
+            for CCDk in CCDs:
+                plot_FWHM_dict[tag][CCDk] = OrderedDict()
+                for Q in Quads:
+                    plot_FWHM_dict[tag][CCDk][Q] = OrderedDict()
+                    plot_FWHM_dict[tag][CCDk][Q]['x'] = OrderedDict()
+                    plot_FWHM_dict[tag][CCDk][Q]['y'] = OrderedDict()
+
+        for iCCD, CCDk in enumerate(CCDs):
+
+            for kQ, Q in enumerate(Quads):
+
+                jj = iCCD * nQ + kQ
+
+                ixsel = np.where((iCCD + 1 == CCDv) & (kQ + 1 == Qv))
+
+                iflu = flu[ixsel]
+                ifwhmx = FWHMx[ixsel]
+                ifwhmy = FWHMy[ixsel]
+                ixorder = iflu.argsort()
+                iflu = iflu[ixorder]
+                ifwhmx = ifwhmx[ixorder]
+                ifwhmy = ifwhmy[ixorder]
+
+                plot_FWHM_dict['fwhmx'][CCDk][Q]['x']['data'] = iflu.copy()
+                plot_FWHM_dict['fwhmx'][CCDk][Q]['y']['data'] = ifwhmx.copy()
 
 
 
