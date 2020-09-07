@@ -164,7 +164,7 @@ def get_FWHM_v_flu_dict(test, fwhmkey):
     meta=dict(doLegend=True,
               ylabel='%s, [um]' % fwhmkey,
               xlabel=r'$I_{0} [10 kADU]$',
-              ylim = [5.,15.],
+              ylim = [0.,2.],
               corekwargs=dict(
                   noBFE=dict(marker='', linestyle='--', color='b'),
                   BFE=dict(marker='', linestyle='-', color='r')),

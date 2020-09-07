@@ -984,8 +984,6 @@ class PSF0X(PT.PointTask):
 
                 yfit = np.squeeze(ransac.predict(np.expand_dims(xfit,1)))
 
-                stop()
-
                 xbest.append(xfit/1.e4)
                 ybest.append(yfit)
 
