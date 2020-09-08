@@ -160,17 +160,17 @@ def get_FWHM_v_flu_dict(test, fwhmkey):
     ntest = test.replace('_', '\_')
     fdict = dict(
     figname='%s_%s_v_flu.png' % (test, fwhmkey),
-    caption='%s: FWHM(x) vs. Peak Fluence.' % ntest,
+    caption='%s: Gaussian-fit FWHM(x) vs. Peak Fluence.' % ntest,
     meta=dict(doLegend=True,
-              ylabel='%s, [um]' % fwhmkey,
-              xlabel=r'$I_{0} [10 kADU]$',
-              ylim = [0.75,3.],
+              ylabel='%s, [pix]' % fwhmkey,
+              xlabel=r'$I_{0}\ [10\ kADU]$',
+              ylim = [0.75,2.5],
               xlim = [0.,6.5],
               corekwargs=dict(
                   noBFE=dict(marker='', linestyle='--', color='b'),
                   BFE=dict(marker='', linestyle='-', color='r'),
                   ideal=dict(marker='',linestyle=':',color='k')),
-              suptitle='%s: %s in microns vs. Fluence' %\
+              suptitle='%s: gaussian-fit %s in pixels vs. Fluence' %\
                     (ntest, fwhmkey))
         )
     return fdict
