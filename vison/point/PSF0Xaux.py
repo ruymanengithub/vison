@@ -158,9 +158,11 @@ def get_spotsposter_dict(test, BFE=True):
 def get_FWHM_v_flu_dict(test, fwhmkey):
     """ """
     ntest = test.replace('_', '\_')
+
     fdict = dict(
     figname='%s_%s_v_flu.png' % (test, fwhmkey),
-    caption='%s: Gaussian-fit FWHM(x) vs. Peak Fluence.' % ntest,
+    caption='%s: Gaussian-fit %s vs. Peak Fluence.' % 
+        (ntest,fwhmkey.upper()),
     meta=dict(doLegend=True,
               ylabel='%s, [pix]' % fwhmkey,
               xlabel=r'$I_{0}\ [10\ kADU]$',
