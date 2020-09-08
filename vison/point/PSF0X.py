@@ -991,7 +991,7 @@ class PSF0X(PT.PointTask):
         p = np.poly1d([slope,intercept])
         ybest = np.polyval(p,xfit)
 
-        xbest.append(xfit/1.e4)
+        xbest = xfit/1.e4
         
 
         return xbest, ybest
