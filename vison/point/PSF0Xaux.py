@@ -164,10 +164,12 @@ def get_FWHM_v_flu_dict(test, fwhmkey):
     meta=dict(doLegend=True,
               ylabel='%s, [um]' % fwhmkey,
               xlabel=r'$I_{0} [10 kADU]$',
-              ylim = [0.,2.],
+              ylim = [0.75,3.],
+              xlim = [0.,6.5],
               corekwargs=dict(
                   noBFE=dict(marker='', linestyle='--', color='b'),
-                  BFE=dict(marker='', linestyle='-', color='r')),
+                  BFE=dict(marker='', linestyle='-', color='r'),
+                  ideal=dict(marker='',linestyle=':',color='k')),
               suptitle='%s: %s in microns vs. Fluence' %\
                     (ntest, fwhmkey))
         )

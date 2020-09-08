@@ -966,8 +966,6 @@ class PSF0X(PT.PointTask):
 
         nSpots = xdata.shape[1]
 
-        xfit = np.linspace(1.,2.**16,5)
-
         slopes = []
         intercepts = []
 
@@ -980,21 +978,27 @@ class PSF0X(PT.PointTask):
 
             if len(ixsel[0])>5:
                 ransac = linear_model.RANSACRegressor()
-                ransac.fit(np.expand_dims(_x[ixsel], 1), np.expand_dims(_y[ixsel], 1))
+
+                x2fit = (_x[ixsel]-2.**15)/1.e4
+
+                x2fit = np.expand_dims(x2fit, 1)
+
+                ransac.fit(, np.expand_dims(_y[ixsel], 1))
 
                 slopes.append(ransac.estimator_.coef_[0][0])
                 intercepts.append(ransac.estimator_.intercept_[0])
 
         slope = np.nanmean(slopes)
         intercept = np.nanmean(intercepts)
+        coeffs = [slope,intercept]
 
-        p = np.poly1d([slope,intercept])
+        p = np.poly1d(coeffs)
+        xfit = (np.linspace(1.,2.**16,5)-2.**15)/1.e4
         ybest = np.polyval(p,xfit)
 
-        xbest = xfit/1.e4
-        
+        xbest = xfit+2.**15/1.e4
 
-        return xbest, ybest
+        return xbest, ybest, coeffs
 
 
     def meta_analysis(self):
@@ -1052,7 +1056,7 @@ class PSF0X(PT.PointTask):
         plot_FWHM_dict = OrderedDict()
 
         for tag in ['fwhmx', 'fwhmy']:
-            plot_FWHM_dict[tag] = OrderedDict(labelkeys=['BFE', 'noBFE'])
+            plot_FWHM_dict[tag] = OrderedDict(labelkeys=['BFE', 'noBFE', 'ideal'])
             for CCDk in CCDs:
                 plot_FWHM_dict[tag][CCDk] = OrderedDict()
                 for Q in Quads:
@@ -1073,18 +1077,32 @@ class PSF0X(PT.PointTask):
                     else:
                         BFEtag = 'BFE'
 
-                    x_fwhmx,y_fwhmx = self._get_fwhm_flu_bfit(iCCD, kQ, 
+                    x_fwhmx,y_fwhmx, px = self._get_fwhm_flu_bfit(iCCD, kQ, 
                             'fwhmx',bfecorr=bfecorr)
 
 
-                    plot_FWHM_dict['fwhmx'][CCDk][Q]['x'][BFEtag] = x_fwhmx 
+                    plot_FWHM_dict['fwhmx'][CCDk][Q]['x'][BFEtag] = x_fwhmx
                     plot_FWHM_dict['fwhmx'][CCDk][Q]['y'][BFEtag] = y_fwhmx
 
-                    x_fwhmy,y_fwhmy = self._get_fwhm_flu_bfit(iCCD, kQ, 
+                    if not bfecorr:
+                        xideal = np.array([1.,2.**16])
+                        pideal = np.poly1d([0.,px[1]])
+                        yideal = np.polyval(pideal,xideal)
+                        plot_FWHM_dict['fwhmx'][CCDk][Q]['y']['ideal'] = yideal
+                        plot_FWHM_dict['fwhmx'][CCDk][Q]['x']['ideal'] = xideal-2.**15/1.e4
+
+                    x_fwhmy,y_fwhmy, py = self._get_fwhm_flu_bfit(iCCD, kQ, 
                             'fwhmy',bfecorr=bfecorr)
 
                     plot_FWHM_dict['fwhmy'][CCDk][Q]['x'][BFEtag] = x_fwhmy 
                     plot_FWHM_dict['fwhmy'][CCDk][Q]['y'][BFEtag] = y_fwhmy
+
+                    if not bfecorr:
+                        xideal = np.array([1.,2.**16])
+                        pideal = np.poly1d([0.,py[1]])
+                        yideal = np.polyval(pideal,xideal)
+                        plot_FWHM_dict['fwhmy'][CCDk][Q]['y']['ideal'] = yideal
+                        plot_FWHM_dict['fwhmy'][CCDk][Q]['x']['ideal'] = xideal-2.**15/1.e4
 
 
         for tag in ['fwhmx', 'fwhmy']:
