@@ -983,7 +983,7 @@ class PSF0X(PT.PointTask):
 
                 x2fit = np.expand_dims(x2fit, 1)
 
-                ransac.fit(, np.expand_dims(_y[ixsel], 1))
+                ransac.fit(x2fit, np.expand_dims(_y[ixsel], 1))
 
                 slopes.append(ransac.estimator_.coef_[0][0])
                 intercepts.append(ransac.estimator_.intercept_[0])
