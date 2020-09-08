@@ -968,8 +968,8 @@ class PSF0X(PT.PointTask):
 
         xfit = np.linspace(1.,2.**16,5)
 
-        xbest = []
-        ybest = []
+        slopes = []
+        intercepts = []
 
         for i in range(nSpots):
             _x = xdata[:,i]
@@ -982,10 +982,17 @@ class PSF0X(PT.PointTask):
                 ransac = linear_model.RANSACRegressor()
                 ransac.fit(np.expand_dims(_x[ixsel], 1), np.expand_dims(_y[ixsel], 1))
 
-                yfit = np.squeeze(ransac.predict(np.expand_dims(xfit,1)))
+                slopes.append(ransac.estimator_.coef_[0][0])
+                intercepts.append(ransac.estimator_.intercept_[0])
 
-                xbest.append(xfit/1.e4)
-                ybest.append(yfit)
+        slope = np.nanmean(slopes)
+        intercept = np.nanmean(intercepts)
+
+        p = np.poly1d([slope,intercept])
+        ybest = np.polyval(p,xfit)
+
+        xbest.append(xfit/1.e4)
+        
 
         return xbest, ybest
 
