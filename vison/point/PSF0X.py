@@ -1084,7 +1084,7 @@ class PSF0X(PT.PointTask):
                     plot_FWHM_dict['fwhmx'][CCDk][Q]['x'][BFEtag] = x_fwhmx
                     plot_FWHM_dict['fwhmx'][CCDk][Q]['y'][BFEtag] = y_fwhmx
 
-                    if not bfecorr:
+                    if bfecorr:
                         xideal = np.array([1.,2.**16])
                         pideal = np.poly1d([0.,px[1]])
                         yideal = np.polyval(pideal,xideal)
@@ -1097,7 +1097,7 @@ class PSF0X(PT.PointTask):
                     plot_FWHM_dict['fwhmy'][CCDk][Q]['x'][BFEtag] = x_fwhmy 
                     plot_FWHM_dict['fwhmy'][CCDk][Q]['y'][BFEtag] = y_fwhmy
 
-                    if not bfecorr:
+                    if bfecorr:
                         xideal = np.array([1.,2.**16])
                         pideal = np.poly1d([0.,py[1]])
                         yideal = np.polyval(pideal,xideal)
