@@ -590,14 +590,14 @@ class Report(Container):
         os.system(execline2)  # twice to get all references
 
         if cleanafter:
-            os.system('rm %s.dvi %s.aux %s.log %s.tex %s.out %s.soc %s.toc' %
-                      tuple([fileroot] * 7))
+            os.system('rm %s.dvi %s.aux %s.log %s.tex %s.out %s.soc %s.toc %s.xwm' %
+                      tuple([fileroot] * 8))
             outfiles = [item % fileroot for item in
                         ['%s.pdf']]
         else:
             outfiles = [item % fileroot for item in
                         ['%s.pdf', '%s.dvi', '%s.aux', '%s.log', '%s.tex', '%s.out', '%s.soc',
-                         '%s.toc']]
+                         '%s.toc %s.xwm']]
 
         #os.system('rm %s' % EuclidViscls)
         #os.system('rm %s' % logo)
