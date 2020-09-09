@@ -1248,3 +1248,6 @@ class PSF0X(PT.PointTask):
                 crosstalkfigs = ['PSF0X_crosstalk_RATIO',
                                  'PSF0X_crosstalk_ADU']
                 self.addFigures_ST(figkeys=crosstalkfigs, dobuilddata=False)
+
+        self.canbecleaned = True 
+        
