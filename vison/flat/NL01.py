@@ -122,7 +122,8 @@ class NL01(FlatTask):
         self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
                          ('extract', self.extract_stats),
                          ('NL', self.produce_NLCs),
-                         ('satCTE', self.do_satCTE)]
+                         ('satCTE', self.do_satCTE),
+                         ('debugtask', self.debugtask)]
         super(NL01, self).__init__(inputs=inputs, log=log, drill=drill, debug=debug,
                                    cleanafter=cleanafter)
         self.name = 'NL01'

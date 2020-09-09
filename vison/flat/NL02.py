@@ -252,6 +252,11 @@ class NL02(NL01.NL01):
                                          doBias=False,
                                          doFF=False)
 
+
+    def debugtask(self):
+
+        stop()
+
     def produce_NLCs(self):
         """
 
