@@ -406,7 +406,7 @@ def _display_NLcurves(X,Y, selix, Xfit, Yfit, labels, title=''):
     plt.show()
 
 def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False,
-                   addExp=False, Xcoo=None, Ycoo=None):
+                   addExp=False, Rcoo=None):
     """ """
 
     ixnonan = np.where(~np.isnan(X))
@@ -484,8 +484,9 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False,
     if display:
 
 
-        _display_NLcurves(X,Y,selix,fkfluencesNL,Y_bestfit, Exptimes, title='colorcode: exptimes')
-        _display_NLcurves(X,Y,selix,fkfluencesNL,Y_bestfit, Xcoo, title='colorcode: exptimes')
+        _display_NLcurves(X,Y,selix,fkfluencesNL,Y_bestfit, labels=Exptimes, title='colorcode: exptimes')
+        if Rcoo is not None:
+            _display_NLcurves(X,Y,selix,fkfluencesNL,Y_bestfit, labels=Rcoo, title='colorcode: region')
 
 
     fitresults = OrderedDict(
@@ -893,10 +894,11 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
     Xcoo = np.concatenate((XX[e_A, r_A], XX[e_B, r_B]))
     Ycoo = np.concatenate((YY[e_A, r_A], YY[e_B, r_B]))
+    Rcoo = (Xcoo**2.+Ycoo*2.)**0.5
 
     fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug,
                                 addExp=True,
-                                Xcoo=Xcoo,Ycoo=Ycoo)
+                                Rcoo=Rcoo)
     fitresults['Xcoo'] = Xcoo.copy()
     fitresults['Ycoo'] = Ycoo.copy()
 
