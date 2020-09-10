@@ -218,7 +218,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None):
 
             print('sec:%i' % isec)
             fig  = plt.figure()
-            ax = fig.ad_subplot()
+            ax = fig.add_subplot()
             ax.plot(xp,yp,'k.')
             ax.plot(exptimes,YpredL,'r-')
             plt.show()
