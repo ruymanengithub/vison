@@ -370,7 +370,7 @@ class NL02(NL01.NL01):
             for jQ, Q in enumerate(Quads):
 
                 kk = iCCD * nQ + jQ
-
+                stop()
                 raw_med = self.dd.mx['sec_med'][:, iCCD, jQ, :].copy()
                 raw_var = self.dd.mx['sec_var'][:, iCCD, jQ, :].copy()
                 raw_X = self.dd.mx['sec_X'][:, iCCD, jQ, :].copy()
@@ -390,9 +390,7 @@ class NL02(NL01.NL01):
                     nexptimes = copy.deepcopy(exptimes)
                 
 
-                nexptimes[nexptimes>0] -= .2 # ADHOC TESTS
-
-
+                #nexptimes[nexptimes>0] -= .2 # ADHOC TESTS
 
                 # fitresults = OrderedDict(coeffs, NLdeg, maxNLpc,flu_maxNLpc, bgd)
                 if debug:
