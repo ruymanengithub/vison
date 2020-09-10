@@ -871,6 +871,8 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     else:
         trackstab = 0.
 
+    stop()
+
     ixfitA = ixboo_fluA | ixboo_bgd | ixboo_stab
     X_A, Y_A, W_A, e_A, r_A = getXYW_NL02(fluences[ixfitA, :],
                                           exptimes[ixfitA], nomG,
