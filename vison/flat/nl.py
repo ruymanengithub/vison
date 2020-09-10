@@ -824,7 +824,8 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     ixboo_fluA = (exptimes != 0.) & (exptimes != exptimestab) & (wave == uwaves[0])
     ixboo_fluB = (exptimes != 0.) & (exptimes != exptimestab) & (wave == uwaves[1])
 
-    stop()
+
+    fluences = fluences-np.expand_dims(offset,1) # subtracting offsets before flux tracking
 
 
     if TrackFlux and len(times) == NObsIDs:
