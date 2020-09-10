@@ -555,6 +555,7 @@ class CCD(object):
 
             tiles.append(self.get_cutout(
                 cc, Quadrant, canonical=False, extension=extension))
+        
         return tiles
 
     def get_tiles_stats(self, Quad, tile_coos, statkey, extension=-1):
