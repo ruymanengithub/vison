@@ -217,11 +217,13 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None):
             YL[:, isec] = YpredL.copy()
 
             print('sec:%i' % isec)
-            fig  = plt.figure()
-            ax = fig.add_subplot()
-            ax.plot(xp,yp,'k.')
-            ax.plot(exptimes,YpredL,'r-')
-            plt.show()
+            #fig  = plt.figure()
+            #ax = fig.add_subplot()
+            #ax.plot(xp,yp,'k.')
+            #ax.plot(exptimes,YpredL,'r-')
+            #plt.show()
+
+            stop()
 
             # plot(YpredL[3:],fluencesNL[3:,isec]/YpredL[3:]-1.,marker='.',ls='')
         #plt.show()
