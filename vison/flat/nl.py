@@ -194,6 +194,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None):
 
         Nsec = fluencesNL.shape[1]
         #_exptimes = np.repeat(exptimes.reshape(Nexp,1),Nsec,axis=1)
+        intersect = np.zeros(Nsec,dtype='float32')
 
         for isec in range(Nsec):
             #predictor = get_RANSAC_linear_model(exptimes[:],fluencesNL[:,isec])
@@ -210,7 +211,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None):
             yp = np.squeeze(fluencesNL[ixsel, isec])
             predictor = get_POLY_linear_model(xp, yp)
             #predictor.coef[1] = 0.
-            intersect = predictor.coef[1]
+            intersect[isec] = predictor.coef[1]
             YpredL = predictor(exptimes)
             YL[:, isec] = YpredL.copy()
 
@@ -221,6 +222,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None):
 
             # plot(YpredL[3:],fluencesNL[3:,isec]/YpredL[3:]-1.,marker='.',ls='')
         # show()
+        stop()
 
     elif fluencesNL.ndim == 1:
 
