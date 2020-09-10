@@ -390,7 +390,7 @@ class NL02(NL01.NL01):
                     nexptimes = copy.deepcopy(exptimes)
                 
 
-                nexptimes[nexptimes>0] += 5. # ADHOC TESTS
+                nexptimes[nexptimes>0] -= .2 # ADHOC TESTS
 
 
 
