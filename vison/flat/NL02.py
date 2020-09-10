@@ -370,7 +370,7 @@ class NL02(NL01.NL01):
             for jQ, Q in enumerate(Quads):
 
                 kk = iCCD * nQ + jQ
-                stop()
+
                 raw_med = self.dd.mx['sec_med'][:, iCCD, jQ, :].copy()
                 raw_var = self.dd.mx['sec_var'][:, iCCD, jQ, :].copy()
                 raw_X = self.dd.mx['sec_X'][:, iCCD, jQ, :].copy()
@@ -396,7 +396,7 @@ class NL02(NL01.NL01):
                 if debug:
                     print(('\n%s%s\n' % (CCDkey, Q)))
                 #print('WITH shutter nl correction...')
-                #stop()
+                stop()
                 _fitresults = nllib.wrap_fitNL_TwoFilters_Tests(raw_med, raw_var, 
                                                               nexptimes, 
                                                               wave,
