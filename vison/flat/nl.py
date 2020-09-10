@@ -216,14 +216,14 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None):
             YpredL = predictor(exptimes)
             YL[:, isec] = YpredL.copy()
 
-            print('sec:%i' % isec)
+            #print('sec:%i' % isec)
             #fig  = plt.figure()
             #ax = fig.add_subplot()
             #ax.plot(xp,yp,'k.')
             #ax.plot(exptimes,YpredL,'r-')
             #plt.show()
 
-            stop()
+            #stop()
 
             # plot(YpredL[3:],fluencesNL[3:,isec]/YpredL[3:]-1.,marker='.',ls='')
         #plt.show()
@@ -880,7 +880,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
         trackstab = 0.
 
 
-
+    stop()
     ixfitA = ixboo_fluA | ixboo_bgd | ixboo_stab
     X_A, Y_A, W_A, e_A, r_A = getXYW_NL02(fluences[ixfitA, :],
                                           exptimes[ixfitA], nomG,
