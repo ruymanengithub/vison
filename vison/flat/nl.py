@@ -809,8 +809,8 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     minfitFl = 250.  # ADU
     maxfitFl = FullDynRange - 10000.  # ADU
     #pivotfrac = 0.2
-    minrelflu = 0.10
-    maxrelflu = 0.30
+    minrelflu = 0.05
+    maxrelflu = 0.40
 
     NObsIDs, Nsecs = fluences.shape
 
@@ -880,7 +880,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
         trackstab = 0.
 
 
-    stop()
+
     ixfitA = ixboo_fluA | ixboo_bgd | ixboo_stab
     X_A, Y_A, W_A, e_A, r_A = getXYW_NL02(fluences[ixfitA, :],
                                           exptimes[ixfitA], nomG,
