@@ -388,14 +388,17 @@ class NL02(NL01.NL01):
                     nexptimes = self.recalibrate_exptimes(exptimes)
                 else:
                     nexptimes = copy.deepcopy(exptimes)
+                stop()
+                
+                nexptimes[nexptimes>0] += 0.5 # ADHOC TESTS
 
-                nexptimes[nexptimes>0] += 0.5 +0.5 # ADHOC TESTS
+
 
                 # fitresults = OrderedDict(coeffs, NLdeg, maxNLpc,flu_maxNLpc, bgd)
                 if debug:
                     print(('\n%s%s\n' % (CCDkey, Q)))
                 #print('WITH shutter nl correction...')
-                stop()
+                #stop()
                 _fitresults = nllib.wrap_fitNL_TwoFilters_Tests(raw_med, raw_var, 
                                                               nexptimes, 
                                                               wave,
