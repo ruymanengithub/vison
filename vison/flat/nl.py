@@ -886,7 +886,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
     Xcoo = np.concatenate((XX[e_A, r_A], XX[e_B, r_B]))
     Ycoo = np.concatenate((YY[e_A, r_A], YY[e_B, r_B]))
-
+    stop()
     fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug,
                                 addExp=True)
     fitresults['Xcoo'] = Xcoo.copy()
