@@ -381,9 +381,32 @@ def fNL(x, *p):
     """ """
     return np.poly1d(p)(x)
 
+def _display_NLcurves(X,Y, selix, Xfit, Yfit, labels, title=''):
+
+    from matplotlib import pyplot as plt
+    import matplotlib.cm as cm
+
+    uexptimes, ixuexptimes = np.unique(Exptimes, return_index=True)
+
+    ecolors = cm.rainbow(np.linspace(0, 1, len(uexptimes)))
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(X, Y, 'k.')
+
+    for i in selix[0]:
+        ixcolor = np.where(np.isclose(uexptimes, Exptimes[i]))[0][0]
+        ax.plot(X[i], Y[i], '.', color=ecolors[ixcolor, :])
+
+    ax.plot(fkfluencesNL, Y_bestfit, 'r--')
+    ax.set_xlabel('NL Fluence')
+    ax.set_ylabel('NLpc')
+    ax.set_title(title)
+    # ax.set_ylim([-10.,10.])
+    plt.show()
 
 def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False,
-                   addExp=False):
+                   addExp=False, Xcoo=None, Ycoo=None):
     """ """
 
     ixnonan = np.where(~np.isnan(X))
@@ -460,26 +483,10 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False,
 
     if display:
 
-        from matplotlib import pyplot as plt
-        import matplotlib.cm as cm
 
-        uexptimes, ixuexptimes = np.unique(Exptimes, return_index=True)
+        _display_NLcurves(X,Y,selix,fkfluencesNL,Y_bestfit, Exptimes, title='colorcode: exptimes')
+        _display_NLcurves(X,Y,selix,fkfluencesNL,Y_bestfit, Xcoo, title='colorcode: exptimes')
 
-        ecolors = cm.rainbow(np.linspace(0, 1, len(uexptimes)))
-
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax.plot(X, Y, 'k.')
-
-        for i in selix[0]:
-            ixcolor = np.where(np.isclose(uexptimes, Exptimes[i]))[0][0]
-            ax.plot(X[i], Y[i], '.', color=ecolors[ixcolor, :])
-
-        ax.plot(fkfluencesNL, Y_bestfit, 'r--')
-        ax.set_xlabel('NL Fluence')
-        ax.set_ylabel('NLpc')
-        # ax.set_ylim([-10.,10.])
-        plt.show()
 
     fitresults = OrderedDict(
         coeffs=popt,
