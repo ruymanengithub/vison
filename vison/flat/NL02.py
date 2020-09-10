@@ -388,9 +388,9 @@ class NL02(NL01.NL01):
                     nexptimes = self.recalibrate_exptimes(exptimes)
                 else:
                     nexptimes = copy.deepcopy(exptimes)
-                stop()
                 
-                nexptimes[nexptimes>0] += 0.5 # ADHOC TESTS
+
+                nexptimes[nexptimes>0] += 5. # ADHOC TESTS
 
 
 
