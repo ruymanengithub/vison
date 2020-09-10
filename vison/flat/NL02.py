@@ -281,7 +281,7 @@ class NL02(NL01.NL01):
 
         doExptimeCalib = True
         NLdeg = 4
-        debug = False  # TESTS
+        debug = True  # TESTS
 
         if self.report is not None:
             self.report.add_Section(
@@ -381,7 +381,8 @@ class NL02(NL01.NL01):
                 dtobjs = self.dd.mx['time'][:, iCCD].copy()
                 ObsIDs = self.dd.mx['ObsID'][:].copy()
 
-                ijoffset = np.median(self.dd.mx['offset_pre'][:, iCCD, jQ])
+                #ijoffset = np.median(self.dd.mx['offset_pre'][:, iCCD, jQ])
+                ijoffset = self.dd.mx['offset_pre'][:, iCCD, jQ]
 
                 if doExptimeCalib:
                     nexptimes = self.recalibrate_exptimes(exptimes)
@@ -391,7 +392,7 @@ class NL02(NL01.NL01):
                     print(('\n%s%s\n' % (CCDkey, Q)))
                 #print('WITH shutter nl correction...')
 
-                _fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, nexptimes, wave,
+                _fitresults = nllib.wrap_fitNL_TwoFilters_Tests(raw_med, raw_var, nexptimes, wave,
                                                               dtobjs,
                                                               TrackFlux=True,
                                                               debug=debug,
