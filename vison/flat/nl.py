@@ -386,19 +386,19 @@ def _display_NLcurves(X,Y, selix, Xfit, Yfit, labels, title=''):
     from matplotlib import pyplot as plt
     import matplotlib.cm as cm
 
-    uexptimes, ixuexptimes = np.unique(Exptimes, return_index=True)
+    ulabels, ixulabels = np.unique(labels, return_index=True)
 
-    ecolors = cm.rainbow(np.linspace(0, 1, len(uexptimes)))
+    ecolors = cm.rainbow(np.linspace(0, 1, len(ulabels)))
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.plot(X, Y, 'k.')
 
     for i in selix[0]:
-        ixcolor = np.where(np.isclose(uexptimes, Exptimes[i]))[0][0]
+        ixcolor = np.where(np.isclose(ulabels, labels[i]))[0][0]
         ax.plot(X[i], Y[i], '.', color=ecolors[ixcolor, :])
 
-    ax.plot(fkfluencesNL, Y_bestfit, 'r--')
+    ax.plot(Xfit, Yfit, 'r--')
     ax.set_xlabel('NL Fluence')
     ax.set_ylabel('NLpc')
     ax.set_title(title)
@@ -893,9 +893,10 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
     Xcoo = np.concatenate((XX[e_A, r_A], XX[e_B, r_B]))
     Ycoo = np.concatenate((YY[e_A, r_A], YY[e_B, r_B]))
-    stop()
+
     fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug,
-                                addExp=True)
+                                addExp=True,
+                                Xcoo=Xcoo,Ycoo=Ycoo)
     fitresults['Xcoo'] = Xcoo.copy()
     fitresults['Ycoo'] = Ycoo.copy()
 
