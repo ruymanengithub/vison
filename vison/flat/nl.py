@@ -17,7 +17,7 @@ from pdb import set_trace as stop
 import numpy as np
 import datetime
 from collections import OrderedDict
-from pylab import plot, show  # TESTS
+from matplotlib import pyplot as plt
 from sklearn import linear_model
 from astropy.io import ascii
 from sklearn.preprocessing import PolynomialFeatures
@@ -196,6 +196,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None):
         #_exptimes = np.repeat(exptimes.reshape(Nexp,1),Nsec,axis=1)
         intersect = np.zeros(Nsec,dtype='float32')
 
+
         for isec in range(Nsec):
             #predictor = get_RANSAC_linear_model(exptimes[:],fluencesNL[:,isec])
             #Ypred = np.squeeze(predictor(np.expand_dims(exptimes,1)))
@@ -215,13 +216,15 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None):
             YpredL = predictor(exptimes)
             YL[:, isec] = YpredL.copy()
 
-            #print('sec:%i' % isec)
-            # plot(exptimes[:],fluencesNL[:,isec]-YpredL,'k.')
-            # plot(exptimes[:],fluencesNL[:,isec]-YpredL,'r-')
-            # show()
+            print('sec:%i' % isec)
+            fig  = plt.figure()
+            ax = fig.ad_subplot()
+            ax.plot(xp,yp,'k.')
+            ax.plot(exptimes,YpredL,'r-')
+            plt.show()
 
             # plot(YpredL[3:],fluencesNL[3:,isec]/YpredL[3:]-1.,marker='.',ls='')
-        # show()
+        #plt.show()
         intersect = np.expand_dims(intersect,0)
 
     elif fluencesNL.ndim == 1:
@@ -874,7 +877,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     else:
         trackstab = 0.
 
-    
+
 
     ixfitA = ixboo_fluA | ixboo_bgd | ixboo_stab
     X_A, Y_A, W_A, e_A, r_A = getXYW_NL02(fluences[ixfitA, :],
