@@ -222,7 +222,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None):
 
             # plot(YpredL[3:],fluencesNL[3:,isec]/YpredL[3:]-1.,marker='.',ls='')
         # show()
-        stop()
+        intersect = np.expand_dims(intersect,0)
 
     elif fluencesNL.ndim == 1:
 
@@ -248,7 +248,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None):
 
         # plot(yp,yp/predictor(exptimes[ixsel])-1.,'k.')
         # show()
-    stop()
+    
     Z = 100. * (fluencesNL - YL) / (YL - intersect)
 
     efNL = np.sqrt((fluencesNL - intersect) * nomG) / nomG
