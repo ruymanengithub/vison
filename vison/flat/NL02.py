@@ -385,7 +385,11 @@ class NL02(NL01.NL01):
                 ijoffset = self.dd.mx['offset_pre'][:, iCCD, jQ]
 
                 if doExptimeCalib:
-                    nexptimes = self.recalibrate_exptimes(exptimes)+0.5 # TESTS
+                    nexptimes = self.recalibrate_exptimes(exptimes)
+                else:
+                    nexptimes = copy.deepcopy(exptimes)
+
+                nexptimes[nexptimes>0] += 0.5 +0.5 # ADHOC TESTS
 
                 # fitresults = OrderedDict(coeffs, NLdeg, maxNLpc,flu_maxNLpc, bgd)
                 if debug:
