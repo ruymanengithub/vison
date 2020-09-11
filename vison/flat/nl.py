@@ -154,7 +154,8 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5, maxrelflu=None, method=
     return X, Y, W
 
 
-def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None):
+def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None, 
+        ixLinFit=None):
     """ """
 
     assert fluencesNL.shape[0] == exptimes.shape[0]
@@ -201,12 +202,15 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None):
             #predictor = get_RANSAC_linear_model(exptimes[:],fluencesNL[:,isec])
             #Ypred = np.squeeze(predictor(np.expand_dims(exptimes,1)))
 
-            ixnonan = np.where(~np.isnan(fluencesNL[:, 0]))
+            ixnonan = np.where(~np.isnan(fluencesNL[:, isec]))
 
-            _ixsel = np.where((fluencesNL[ixnonan, isec] >= 2.**16 * minrelflu) &
+            if ixLinFit is not None:
+                ixsel = (np.array(ixLinFit)[ixnonan],)
+            else:
+                _ixsel = np.where((fluencesNL[ixnonan, isec] >= 2.**16 * minrelflu) &
                               (fluencesNL[ixnonan, isec] <= 2.**16 * maxrelflu))
-
-            ixsel = (ixnonan[0][_ixsel[1]],)
+                ixsel = (ixnonan[0][_ixsel[1]],)
+            stop()
 
             xp = exptimes[ixsel]
             yp = np.squeeze(fluencesNL[ixsel, isec])
@@ -846,9 +850,13 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     if fluxes[0]>fluxes[1]:
         ixboo_fluHI = ixboo_fluA
         ixboo_fluLO = ixboo_fluB
+        waveHI = uwaves[0]
+        waveLO = uwaves[1]
     else:
         ixboo_fluLO = ixboo_fluA
         ixboo_fluHI = ixboo_fluB
+        waveHI = uwaves[1]
+        waveLO = uwaves[0]
 
 
     fluences = fluences-np.expand_dims(offset,1) # subtracting offsets before flux tracking
@@ -896,19 +904,28 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     else:
         trackstab = 0.
 
-    stop()
+
+    overlapExpTimesLO = np.unique(exptimes[ixfitLO & (exptimes>0)])[-4:]
+    _ixrangeLO = np.arange(len(ixfitLO))
+    ixoverlapLO = [ix for ix in _ixrangeLO if (exptimes[ixfitLO][ix] in overlapExpTimesLO)]
+
+    overlapExpTimesHI = np.unique(exptimes[ixfitHI & (exptimes>0)])[0:4]
+    _ixrangeHI = np.arange(len(ixfitHI))
+    ixoverlapHI = [ix for ix in _ixrangeHI if (exptimes[ixfitHI][ix] in overlapExpTimesHI)]
 
     ixfitHI = ixboo_fluHI | ixboo_bgd | ixboo_stab
     X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL02(fluences[ixfitHI, :],
                                           exptimes[ixfitHI], nomG,
-                                          minrelflu=minrelflu,
-                                          maxrelflu=maxrelflu)
+                                          ixLinFit=ixoverlapHI)
+                                          #minrelflu=minrelflu,
+                                          #maxrelflu=maxrelflu)
 
     ixfitLO = ixboo_fluLO | ixboo_bgd
     X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL02(fluences[ixfitLO, :],
                                           exptimes[ixfitLO], nomG,
-                                          minrelflu=minrelflu,
-                                          maxrelflu=maxrelflu)
+                                          ixLinFit=ixoverlapLO)
+                                          #minrelflu=minrelflu,
+                                          #maxrelflu=maxrelflu)
 
     #bgdnoff = np.median(fluences[ixboo_bgd,:])
 
