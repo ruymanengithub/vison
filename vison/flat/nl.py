@@ -835,6 +835,8 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
     uwaves = np.unique(wave)
 
+    stop()
+
     ixboo_bgd = exptimes == 0.
     ixboo_stab = exptimes == exptimestab
     ixboo_fluA = (exptimes != 0.) & (exptimes != exptimestab) & (wave == uwaves[0])
