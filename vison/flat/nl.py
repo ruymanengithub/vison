@@ -212,8 +212,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
                 ixnonan = np.where(arenonan)
                 _ixsel = np.where((fluencesNL[ixnonan, isec] >= 2.**16 * minrelflu) &
                               (fluencesNL[ixnonan, isec] <= 2.**16 * maxrelflu))
-                stop()
-                ixsel = (ixnonan[0][_ixsel],)
+                ixsel = (ixnonan[0][_ixsel[1]],)
 
 
             xp = exptimes[ixsel]
