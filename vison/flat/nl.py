@@ -835,12 +835,20 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
     uwaves = np.unique(wave)
 
-    stop()
-
     ixboo_bgd = exptimes == 0.
     ixboo_stab = exptimes == exptimestab
     ixboo_fluA = (exptimes != 0.) & (exptimes != exptimestab) & (wave == uwaves[0])
     ixboo_fluB = (exptimes != 0.) & (exptimes != exptimestab) & (wave == uwaves[1])
+
+    fluxes = [np.nanmean((np.nanmean(fluences[ixboo_fluA,:],axis=1)/exptimes[ixboo_fluA])),
+            np.nanmean((np.nanmean(fluences[ixboo_fluB,:],axis=1)/exptimes[ixboo_fluB]))]
+
+    if fluxes[0]>fluxes[1]:
+        ixboo_fluA = ixboo_fluHI
+        ixboo_fluB = ixboo_fluLO
+    else:
+        ixboo_fluA = ixboo_fluLO
+        ixboo_fluB = ixboo_fluHI
 
 
     fluences = fluences-np.expand_dims(offset,1) # subtracting offsets before flux tracking
@@ -868,44 +876,52 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
         track_pol = np.poly1d(track_fit)
 
-        trackA = track_pol(dtimes[ixboo_fluA])
-        trackA /= np.median(trackA)
+        trackST = track_pol(dtimes[ixboo_stab])
+        trackHI = track_pol(dtimes[ixboo_fluHI])
 
-        trackB = track_pol(dtimes[ixboo_fluB])
-        trackB /= np.median(trackB)
+        normHI = np.mean([np.median(trackST),np.median(trackHI)])
+
+        trackST /= normHI
+        trackHI /= normHI
+
+        trackLO = track_pol(dtimes[ixboo_fluLO])
+        trackLO /= np.median(trackLO)
+
 
         #track_bc = np.repeat(track.reshape(len(track), 1), Nsecs, axis=1)
-        fluences[ixboo_fluA, :] /= trackA.reshape(trackA.shape[0], -1)
-        fluences[ixboo_fluB, :] /= trackB.reshape(trackB.shape[0], -1)
-        trackstab = np.mean([trackA.std(), trackB.std()]) * 100.
+        fluences[ixboo_fluHI, :] /= trackHI.reshape(trackHI.shape[0], -1)
+        fluences[ixboo_fluLO, :] /= trackLO.reshape(trackLO.shape[0], -1)
+        fluences[ixboo_stab, :] /= trackST.reshape(trackST.shape[0], -1)
+        trackstab = np.mean([trackHI.std(), trackLO.std()]) * 100.
     else:
         trackstab = 0.
 
+    stop()
 
-
-    ixfitA = ixboo_fluA | ixboo_bgd | ixboo_stab
-    X_A, Y_A, W_A, e_A, r_A = getXYW_NL02(fluences[ixfitA, :],
-                                          exptimes[ixfitA], nomG,
+    ixfitHI = ixboo_fluHI | ixboo_bgd | ixboo_stab
+    X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL02(fluences[ixfitHI, :],
+                                          exptimes[ixfitHI], nomG,
                                           minrelflu=minrelflu,
                                           maxrelflu=maxrelflu)
-    ixfitB = ixboo_fluB | ixboo_bgd
-    X_B, Y_B, W_B, e_B, r_B = getXYW_NL02(fluences[ixfitB, :],
-                                          exptimes[ixfitB], nomG,
+
+    ixfitLO = ixboo_fluLO | ixboo_bgd
+    X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL02(fluences[ixfitLO, :],
+                                          exptimes[ixfitLO], nomG,
                                           minrelflu=minrelflu,
                                           maxrelflu=maxrelflu)
 
     #bgdnoff = np.median(fluences[ixboo_bgd,:])
 
-    X = np.concatenate((X_A, X_B)) # notice the small back-ground is left in!
-    Y = np.concatenate((Y_A, Y_B))
-    W = np.concatenate((W_A, W_B))
+    X = np.concatenate((X_HI, X_LO)) # notice the small back-ground is left in!
+    Y = np.concatenate((Y_HI, Y_LO))
+    W = np.concatenate((W_HI, W_LO))
     #exps = np.concatenate((e_A,e_B))
     #regs = np.concatenate((r_A,r_B))
 
-    Exptimes = np.concatenate((exptimes[ixfitA][e_A], exptimes[ixfitB][e_B]))
+    Exptimes = np.concatenate((exptimes[ixfitHI][e_HI], exptimes[ixfitLO][e_LO]))
 
-    Xcoo = np.concatenate((XX[e_A, r_A], XX[e_B, r_B]))
-    Ycoo = np.concatenate((YY[e_A, r_A], YY[e_B, r_B]))
+    Xcoo = np.concatenate((XX[e_HI, r_HI], XX[e_LO, r_LO]))
+    Ycoo = np.concatenate((YY[e_HI, r_HI], YY[e_LO, r_LO]))
     Rcoo = (Xcoo**2.+Ycoo*2.)**0.5
 
     fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug,
