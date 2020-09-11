@@ -844,11 +844,11 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
             np.nanmean((np.nanmean(fluences[ixboo_fluB,:],axis=1)/exptimes[ixboo_fluB]))]
 
     if fluxes[0]>fluxes[1]:
-        ixboo_fluA = ixboo_fluHI
-        ixboo_fluB = ixboo_fluLO
+        ixboo_fluHI = ixboo_fluA
+        ixboo_fluLO = ixboo_fluB
     else:
-        ixboo_fluA = ixboo_fluLO
-        ixboo_fluB = ixboo_fluHI
+        ixboo_fluLO = ixboo_fluA
+        ixboo_fluHI = ixboo_fluB
 
 
     fluences = fluences-np.expand_dims(offset,1) # subtracting offsets before flux tracking
