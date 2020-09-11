@@ -235,6 +235,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
             # plot(YpredL[3:],fluencesNL[3:,isec]/YpredL[3:]-1.,marker='.',ls='')
         #plt.show()
         intersect = np.expand_dims(intersect,0)
+        stop()
 
     elif fluencesNL.ndim == 1:
 
@@ -920,6 +921,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     _ixrangeHI = np.arange(ixfitHI.sum())
     ixoverlapHI = [ix for ix in _ixrangeHI if (exptimes[ixfitHI][ix] in overlapExpTimesHI)]
 
+    print('HI flux filter...')
     X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL02(fluences[ixfitHI, :],
                                           exptimes[ixfitHI], nomG,
                                           ixLinFit=ixoverlapHI)
@@ -931,6 +933,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     _ixrangeLO = np.arange(ixfitLO.sum())
     ixoverlapLO = [ix for ix in _ixrangeLO if (exptimes[ixfitLO][ix] in overlapExpTimesLO)]
 
+    print('LO flux filter...')
     X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL02(fluences[ixfitLO, :],
                                           exptimes[ixfitLO], nomG,
                                           ixLinFit=ixoverlapLO)
