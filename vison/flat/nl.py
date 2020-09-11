@@ -205,12 +205,13 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
             ixnonan = np.where(~np.isnan(fluencesNL[:, isec]))
 
             if ixLinFit is not None:
+                stop()
                 ixsel = (np.array(ixLinFit)[ixnonan],)
             else:
                 _ixsel = np.where((fluencesNL[ixnonan, isec] >= 2.**16 * minrelflu) &
                               (fluencesNL[ixnonan, isec] <= 2.**16 * maxrelflu))
                 ixsel = (ixnonan[0][_ixsel[1]],)
-            
+
 
             xp = exptimes[ixsel]
             yp = np.squeeze(fluencesNL[ixsel, isec])
