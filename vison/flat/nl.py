@@ -202,12 +202,14 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
             #predictor = get_RANSAC_linear_model(exptimes[:],fluencesNL[:,isec])
             #Ypred = np.squeeze(predictor(np.expand_dims(exptimes,1)))
 
-            ixnonan = np.where(~np.isnan(fluencesNL[:, isec]))
+            arenonan = ~np.isnan(fluencesNL[:, isec])
 
             if ixLinFit is not None:
-                stop()
-                ixsel = (np.array(ixLinFit)[ixnonan],)
+                presel = np.zeros_like(exptimes,dtype='bool')
+                presel[(ixLinFit,)] = True
+                ixsel = np.where(arenonan & presel)
             else:
+                ixnonan = np.where(arenonan)
                 _ixsel = np.where((fluencesNL[ixnonan, isec] >= 2.**16 * minrelflu) &
                               (fluencesNL[ixnonan, isec] <= 2.**16 * maxrelflu))
                 ixsel = (ixnonan[0][_ixsel[1]],)
