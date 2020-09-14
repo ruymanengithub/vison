@@ -919,7 +919,8 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
 
 
-    ixfitHI = ixboo_fluHI | ixboo_bgd | ixboo_stab
+    #ixfitHI = ixboo_fluHI | ixboo_bgd | ixboo_stab
+    ixfitHI = ixboo_fluHI | ixboo_stab
     overlapExpTimesHI = np.unique(exptimes[ixfitHI & (exptimes>0)])[0:3]
     _ixrangeHI = np.arange(ixfitHI.sum())
     ixoverlapHI = [ix for ix in _ixrangeHI if (exptimes[ixfitHI][ix] in overlapExpTimesHI)]
@@ -931,7 +932,8 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
                                           #minrelflu=minrelflu,
                                           #maxrelflu=maxrelflu)
 
-    ixfitLO = ixboo_fluLO | ixboo_bgd
+    #ixfitLO = ixboo_fluLO | ixboo_bgd
+    ixfitLO = ixboo_fluLO
     overlapExpTimesLO = np.unique(exptimes[ixfitLO & (exptimes>0)])[-3:]
     _ixrangeLO = np.arange(ixfitLO.sum())
     ixoverlapLO = [ix for ix in _ixrangeLO if (exptimes[ixfitLO][ix] in overlapExpTimesLO)]
