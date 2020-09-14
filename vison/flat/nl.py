@@ -957,7 +957,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     Ycoo = np.concatenate((YY[e_HI, r_HI], YY[e_LO, r_LO]))
     Rcoo = (Xcoo**2.+Ycoo*2.)**0.5
 
-    fObsIDs = np.concatenate((ObsIDs[ixfitLo][e_LO], ObsIDs[ixfitHI][e_HI]))
+    fObsIDs = np.concatenate((ObsIDs[ixfitHI][e_HI], ObsIDs[ixfitLO][e_LO]))
 
     fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug,
                                 addExp=True,
