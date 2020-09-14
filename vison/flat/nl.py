@@ -235,7 +235,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
             # plot(YpredL[3:],fluencesNL[3:,isec]/YpredL[3:]-1.,marker='.',ls='')
         #plt.show()
         intersect = np.expand_dims(intersect,0)
-        stop()
+        
 
     elif fluencesNL.ndim == 1:
 
