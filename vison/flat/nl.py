@@ -427,7 +427,7 @@ def _display_NLcurves(X,Y, selix, Xfit, Yfit, labels, title=''):
     plt.show()
 
 def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False,
-                   addExp=False, Rcoo=None):
+                   addExp=False, Rcoo=None, ObsIDs=None):
     """ """
 
     ixnonan = np.where(~np.isnan(X))
@@ -508,6 +508,8 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False,
         _display_NLcurves(X,Y,selix,fkfluencesNL,Y_bestfit, labels=Exptimes, title='colorcode: exptimes')
         if Rcoo is not None:
             _display_NLcurves(X,Y,selix,fkfluencesNL,Y_bestfit, labels=Rcoo, title='colorcode: region')
+        if ObsIDs is not None:
+            _display_NLcurves(X,Y,selix,fkfluencesNL,Y_bestfit, labels=ObsIDs, title='colorcode: OBSID')
 
     stop()
 
@@ -793,8 +795,9 @@ def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.arra
     Xcoo = np.concatenate((XX[e_A, r_A], XX[e_B, r_B]))
     Ycoo = np.concatenate((YY[e_A, r_A], YY[e_B, r_B]))
 
-    fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug,
-                                addExp=True)
+    fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, 
+        display=debug,
+        addExp=True)
     fitresults['Xcoo'] = Xcoo.copy()
     fitresults['Ycoo'] = Ycoo.copy()
 
@@ -954,9 +957,12 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     Ycoo = np.concatenate((YY[e_HI, r_HI], YY[e_LO, r_LO]))
     Rcoo = (Xcoo**2.+Ycoo*2.)**0.5
 
+    fObsIDs = np.concatenate((ObsIDs[ixfitLo][e_LO], ObsIDs[ixfitHI][e_HI]))
+
     fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug,
                                 addExp=True,
-                                Rcoo=Rcoo)
+                                Rcoo=Rcoo,
+                                ObsIDs=fObsIDs)
     fitresults['Xcoo'] = Xcoo.copy()
     fitresults['Ycoo'] = Ycoo.copy()
 
