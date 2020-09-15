@@ -874,7 +874,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
     fluences = fluences-np.expand_dims(offset,1) # subtracting offsets before flux tracking
 
-    dumpCubes=False
+    dumpCubes=True
     if dumpCubes:
         from astropy.io import fits as fts
 
