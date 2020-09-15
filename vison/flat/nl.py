@@ -874,7 +874,24 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
     fluences = fluences-np.expand_dims(offset,1) # subtracting offsets before flux tracking
 
-    stop()
+    if debug:
+        from astropy.io import fits as fts
+
+        def cubify(fluences,selix,NX=4,NY=4):
+            Nexp = len(selix[0])
+            cube = fluences[selix,:].reshape(Nexp,NX,NY)
+
+            hdu = fts.PrimaryHDU()
+            hducube = fts.ImageHDU(cube)
+            hdulist = fts.HDUList([hdu, hducube])
+            return hdulist
+        
+        cube_BGD = cubfiy(fluences, np.where(ixboo_bgd))
+        stop()
+
+        
+
+
 
     if TrackFlux and len(times) == NObsIDs:
 
