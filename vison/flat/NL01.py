@@ -330,12 +330,12 @@ class NL01(FlatTask):
         # Initializing new columns
 
         valini = 0.
-
+        stop()
         self.dd.initColumn('sec_med', Sindices, dtype='float32', valini=valini)
         self.dd.initColumn('sec_var', Sindices, dtype='float32', valini=valini)
         self.dd.initColumn('sec_X', Sindices, dtype='float32', valini=valini)
         self.dd.initColumn('sec_Y', Sindices, dtype='float32', valini=valini)
-        stop()
+        
 
         if not self.drill:
 
