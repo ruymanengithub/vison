@@ -886,9 +886,9 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
             hdulist = fts.HDUList([hdu, hducube])
             return hdulist
         
-        cube_BGD = cubifiy(fluences, np.where(ixboo_bgd))
-        cube_LO = cubifiy(fluences, np.where(ixboo_fluLO))
-        cube_HI = cubifiy(fluences, np.where(ixboo_fluHI))
+        cube_BGD = cubify(fluences, np.where(ixboo_bgd))
+        cube_LO = cubify(fluences, np.where(ixboo_fluLO))
+        cube_HI = cubify(fluences, np.where(ixboo_fluHI))
         stop()
 
         
