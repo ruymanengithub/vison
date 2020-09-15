@@ -877,6 +877,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     dumpCubes=True # True on TESTS
     if dumpCubes:
         from astropy.io import fits as fts
+        import copy
 
         def cubify(fluences,selix,renorm=False, NX=4,NY=4, increases=False):
             Nexp = len(selix[0])
@@ -893,7 +894,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
                 for i in range(1,Nexp):
                     dcube[i,:] = cube[i,:]-cube[i-1,:]
                 cube = copy.deepcopy(dcube)
-            
+
 
             hdu = fts.PrimaryHDU()
             hducube = fts.ImageHDU(cube)
