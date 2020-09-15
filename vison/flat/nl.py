@@ -880,7 +880,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
         def cubify(fluences,selix,renorm=False, NX=4,NY=4):
             Nexp = len(selix[0])
-            cube = fluences[selix,:].reshape(Nexp,NX,NY)
+            cube = fluences[selix,:].reshape(Nexp,NX,NY,order='C')
 
             if renorm:
                 cube /= cube[0,...]
@@ -893,8 +893,6 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
         
         NN = fluences.shape[1]
         cN = int(NN**0.5)
-
-        stop()
 
         cube_BGD = cubify(fluences, np.where(ixboo_bgd),NX=cN,NY=cN)
         cube_BGD.writeto('cube_BGD.fits',overwrite=True)
