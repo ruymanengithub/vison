@@ -317,7 +317,7 @@ class NL01(FlatTask):
 
         tile_coos = dict()
         for Q in Quads:
-            tile_coos[Q] = self.ccdcalc.get_tile_coos(Q, wpx, hpx, noedges=True)
+            tile_coos[Q] = self.ccdcalc.get_tile_coos(Q, wpx, hpx, noedges=False)
 
         Nsectors = tile_coos[Quads[0]]['Nsamps']
         sectornames = np.arange(Nsectors)
