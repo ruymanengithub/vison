@@ -877,12 +877,14 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     if debug:
         from astropy.io import fits as fts
 
-        def cubify(fluences,selix,NX=4,NY=4):
+        def cubify(fluences,selix,renorm=False, NX=4,NY=4):
             Nexp = len(selix[0])
             cube = fluences[selix,:].reshape(Nexp,NX,NY)
 
-            cube /= cube[0,:]
-            cube /= np.mean(cube,axis=0)
+            if renorm:
+                stop()
+                cube /= cube[0,:]
+                cube /= np.mean(cube,axis=0)
 
             hdu = fts.PrimaryHDU()
             hducube = fts.ImageHDU(cube)
@@ -890,8 +892,11 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
             return hdulist
         
         cube_BGD = cubify(fluences, np.where(ixboo_bgd))
-        cube_LO = cubify(fluences, np.where(ixboo_fluLO))
-        cube_HI = cubify(fluences, np.where(ixboo_fluHI))
+        cube_BGD.writeto('cube_BGD.fits',overwrite=True)
+        cube_LO = cubify(fluences, np.where(ixboo_fluLO), renorm=True)
+        cube_LO.writeto('cube_LO.fits', overwrite=True)
+        cube_HI = cubify(fluences, np.where(ixboo_fluHI), renorm=True)
+        cube_HI.writeto('cube_HI.fits', overwrite=True)
         stop()
 
         
