@@ -324,9 +324,10 @@ class NL01(FlatTask):
 
         Sindices = copy.deepcopy(self.dd.indices)
         if 'Sector' in Sindices.names:
+            stop()
             Sindices.pop(Sindices.find('Sector'))
             Sindices.append(core.vIndex('Sector', vals=sectornames))
-        
+
         # Initializing new columns
 
         valini = 0.
