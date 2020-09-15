@@ -323,9 +323,10 @@ class NL01(FlatTask):
         sectornames = np.arange(Nsectors)
 
         Sindices = copy.deepcopy(self.dd.indices)
-        if 'Sector' not in Sindices.names:
+        if 'Sector' in Sindices.names:
+            Sindices.pop(Sindices.find('Sector'))
             Sindices.append(core.vIndex('Sector', vals=sectornames))
-
+        
         # Initializing new columns
 
         valini = 0.
