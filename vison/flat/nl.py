@@ -878,13 +878,22 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     if dumpCubes:
         from astropy.io import fits as fts
 
-        def cubify(fluences,selix,renorm=False, NX=4,NY=4):
+        def cubify(fluences,selix,renorm=False, NX=4,NY=4, increases=False):
             Nexp = len(selix[0])
             cube = fluences[selix,:].reshape(Nexp,NX,NY,order='C')
 
             if renorm:
                 cube /= cube[0,...]
                 cube /= np.expand_dims(np.mean(cube,axis=(1,2)),(1,2))
+
+            if increases:
+
+                dcube = np.zeros_like(cube)
+
+                for i in range(1,Nexp):
+                    dcube[i,:] = cube[i,:]-cube[i-1,:]
+                cube = copy.deepcopy(dcube)
+            
 
             hdu = fts.PrimaryHDU()
             hducube = fts.ImageHDU(cube)
@@ -904,6 +913,13 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
             NX=cN, NY=cN)
         cube_n.writeto('cube_all_norm.fits', overwrite=True)
 
+        cube_d = cubify(fluences,np.where(ixboo_fluLO | ixboo_fluHI),renorm=False,
+            increases=True,
+            NX=cN, NY=cN)
+
+        cube_d.writeto('cube_all_diffs.fits', overwrite=True)
+
+
         cube_LO_n = cubify(fluences, np.where(ixboo_fluLO), renorm=True, 
             NX=cN,NY=cN)
         cube_LO_n.writeto('cube_LO_norm.fits', overwrite=True)
@@ -916,10 +932,10 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
         cube_HI = cubify(fluences, np.where(ixboo_fluHI), renorm=False,
             NX=cN,NY=cN)
         cube_HI.writeto('cube_HI.fits', overwrite=True)
-        stop()
-        img = np.mean(cube/np.mean(cube,axis=(1,2)),axis=0)
-        imgLO = np.mean(cube_LO/np.mean(cube_LO,axis=(1,2)),axis=0)
-        imgHI = np.mean(cube_HI/np.mean(cube_HI,axis=(1,2)),axis=0)
+        
+        img = np.mean(cube[1].data/np.expand_dims(np.mean(cube[1].data,axis=(1,2)),(1,2)),axis=0)
+        imgLO = np.mean(cube_LO[1].data/np.expand_dims(np.mean(cube_LO[1].data,axis=(1,2)),(1,2)),axis=0)
+        imgHI = np.mean(cube_HI[1].data/np.expand_dims(np.mean(cube_HI[1].data,axis=(1,2)),(1,2)),axis=0)
 
         stop()
 
