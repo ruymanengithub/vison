@@ -883,8 +883,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
             if renorm:
                 cube /= cube[0,...]
-                stop()
-                cube /= np.expand_dims(np.mean(cube,axis=(1,2)),1,1)
+                cube /= np.expand_dims(np.mean(cube,axis=(1,2)),(1,2))
 
             hdu = fts.PrimaryHDU()
             hducube = fts.ImageHDU(cube)
