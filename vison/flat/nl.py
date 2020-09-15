@@ -891,21 +891,22 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
             hdulist = fts.HDUList([hdu, hducube])
             return hdulist
         
-        cNX, cNY = fluences[0,...].shape
+        NN = fluences[0,...].shape
+        cN = int(NN**0.5)
 
-        cube_BGD = cubify(fluences, np.where(ixboo_bgd),NX=cNX,NY=cNY)
+        cube_BGD = cubify(fluences, np.where(ixboo_bgd),NX=cN,NY=cN)
         cube_BGD.writeto('cube_BGD.fits',overwrite=True)
         cube_LO_n = cubify(fluences, np.where(ixboo_fluLO), renorm=True, 
-            NX=cNX,NY=cNY)
+            NX=cN,NY=cN)
         cube_LO_n.writeto('cube_LO_norm.fits', overwrite=True)
         cube_LO = cubify(fluences, np.where(ixboo_fluLO), renorm=False,
-            NX=cNX,NY=cNY)
+            NX=cN,NY=cN)
         cube_LO.writeto('cube_LO.fits', overwrite=True)
         cube_HI_n = cubify(fluences, np.where(ixboo_fluHI), renorm=True,
-            NX=cNX,NY=cNY)
+            NX=cN,NY=cN)
         cube_HI_n.writeto('cube_HI_norm.fits', overwrite=True)
         cube_HI = cubify(fluences, np.where(ixboo_fluHI), renorm=False,
-            NX=cNX,NY=cNY)
+            NX=cN,NY=cN)
         cube_HI.writeto('cube_HI.fits', overwrite=True)
         #stop()
 
