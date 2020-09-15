@@ -917,6 +917,9 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
             NX=cN,NY=cN)
         cube_HI.writeto('cube_HI.fits', overwrite=True)
 
+        img = np.mean(cube/np.mean(cube,axis=(1,2)),axis=(1,2))
+        imgLO = np.mean(cube_LO/np.mean(cube_LO,axis=(1,2)),axis=(1,2))
+        imgHI = np.mean(cube_HI/np.mean(cube_HI,axis=(1,2)),axis=(1,2))
 
         stop()
 
