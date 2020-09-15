@@ -891,7 +891,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
             hdulist = fts.HDUList([hdu, hducube])
             return hdulist
         
-        NN = fluences[0,...].shape
+        NN = fluences.shape[1]
         cN = int(NN**0.5)
 
         cube_BGD = cubify(fluences, np.where(ixboo_bgd),NX=cN,NY=cN)
