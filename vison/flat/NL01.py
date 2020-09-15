@@ -325,12 +325,13 @@ class NL01(FlatTask):
         Sindices = copy.deepcopy(self.dd.indices)
         if 'Sector' in Sindices.names:
             Sindices.pop(Sindices.find('Sector'))
+            self.dd.indices.pop(self.dd.indices.find('Sector'))
         Sindices.append(core.vIndex('Sector', vals=sectornames))
 
         # Initializing new columns
 
         valini = 0.
-        stop()
+        
         self.dd.initColumn('sec_med', Sindices, dtype='float32', valini=valini)
         self.dd.initColumn('sec_var', Sindices, dtype='float32', valini=valini)
         self.dd.initColumn('sec_X', Sindices, dtype='float32', valini=valini)
