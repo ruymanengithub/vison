@@ -916,7 +916,9 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
         cube_HI = cubify(fluences, np.where(ixboo_fluHI), renorm=False,
             NX=cN,NY=cN)
         cube_HI.writeto('cube_HI.fits', overwrite=True)
-        #stop()
+
+
+        stop()
 
         
 
