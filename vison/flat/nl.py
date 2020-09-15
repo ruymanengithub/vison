@@ -896,6 +896,14 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
         cube_BGD = cubify(fluences, np.where(ixboo_bgd),NX=cN,NY=cN)
         cube_BGD.writeto('cube_BGD.fits',overwrite=True)
+
+        cube = cubify(fluences,np.where(ixboo_fluLO | ixboo_fluHI),renorm=False,
+            NX=cN, NY=cN)
+        cube.writeto('cube_all.fits', overwrite=True)
+        cube_n = cubify(fluences,np.where(ixboo_fluLO | ixboo_fluHI),renorm=True,
+            NX=cN, NY=cN)
+        cube_n.writeto('cube_all_norm.fits', overwrite=True)
+
         cube_LO_n = cubify(fluences, np.where(ixboo_fluLO), renorm=True, 
             NX=cN,NY=cN)
         cube_LO_n.writeto('cube_LO_norm.fits', overwrite=True)
