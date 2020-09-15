@@ -874,7 +874,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
     fluences = fluences-np.expand_dims(offset,1) # subtracting offsets before flux tracking
 
-    dumpCubes=True
+    dumpCubes=True # True on TESTS
     if dumpCubes:
         from astropy.io import fits as fts
 
@@ -893,6 +893,8 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
         
         NN = fluences.shape[1]
         cN = int(NN**0.5)
+
+        stop()
 
         cube_BGD = cubify(fluences, np.where(ixboo_bgd),NX=cN,NY=cN)
         cube_BGD.writeto('cube_BGD.fits',overwrite=True)

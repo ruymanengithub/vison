@@ -397,17 +397,18 @@ class NL02(NL01.NL01):
                     print(('\n%s%s\n' % (CCDkey, Q)))
                 #print('WITH shutter nl correction...')
                 #stop()
-                _fitresults = nllib.wrap_fitNL_TwoFilters_Tests(raw_med, raw_var, 
-                                                              nexptimes, 
-                                                              wave,
-                                                              dtobjs,
-                                                              TrackFlux=True,
-                                                              debug=debug,
-                                                              ObsIDs=ObsIDs,
-                                                              NLdeg=NLdeg,
-                                                              # offset=0.)
-                                                              offset=ijoffset,
-                                                              XX=raw_X, YY=raw_Y)
+                _fitresults = nllib.wrap_fitNL_TwoFilters_Tests(raw_med, 
+                        raw_var, 
+                        nexptimes, 
+                        wave,
+                        dtobjs,
+                        TrackFlux=True,
+                        debug=debug,
+                        ObsIDs=ObsIDs,
+                        NLdeg=NLdeg,
+                        # offset=0.)
+                        offset=ijoffset,
+                        XX=raw_X, YY=raw_Y)
 #                print('WITHOUT shutter nl correction...')
 #                __fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, exptimes, wave,
 #                                            dtobjs,
