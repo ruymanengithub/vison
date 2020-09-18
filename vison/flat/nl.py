@@ -306,7 +306,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
         ax1 = fig1.add_subplot()
         ax1.imshow(intersectmap,origin='lower left')
         ax1.set_title('Intersect Map')
-        plt.close()
+        plt.show()
         fig1.close()
 
         fig2 = plt.figure()
