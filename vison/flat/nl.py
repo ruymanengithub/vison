@@ -275,7 +275,8 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
         # show()
     
 
-    Z = 100. * (fluencesNL - YL) / (YL - intersect)
+    #Z = 100. * (fluencesNL - YL) / (YL - intersect)
+    Z = 100. * (fluencesNL - YL) / YL
 
     efNL = np.sqrt((fluencesNL) * nomG) / nomG
 
