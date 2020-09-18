@@ -155,8 +155,11 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5, maxrelflu=None, method=
 
 
 def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None, 
-        ixLinFit=None):
+        ixLinFit=None, debug=False):
     """ """
+    #from pylab import imshow,show,plot
+    if debug:
+        from matplotlib import pyplot as plt
 
     assert fluencesNL.shape[0] == exptimes.shape[0]
     assert fluencesNL.ndim <= 2
@@ -293,8 +296,26 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
     W = W[ixsort].copy()
     expix = expix[ixsort].copy()
     regix = regix[ixsort].copy()
-    stop()
     
+    if debug:
+        Nside = int(fluencesNL.shape[1]**0.5)
+        intersectmap = intersect.reshape((Nside,Nside))
+        avfluxes = np.nanmean(fluencesNL/np.expand_dims(exptimes,1),axis=0).reshape(Nside,Nside)
+
+        fig1 = plt.figure()
+        ax1 = fig1.add_subplot()
+        ax1.imshow(intersectmap,origin='lower left')
+        ax1.set_title('Intersect Map')
+        plt.close()
+        fig1.close()
+
+        fig2 = plt.figure()
+        ax2 = fig2.add_subplot()
+        ax2.imshow(avfluxes,origin='lower left')
+        ax2.set_title('Flux Map')        
+        plt.show()
+        fig2.close()
+
     return X, Y, W, expix, regix
 
 
@@ -1003,10 +1024,12 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     ixoverlapHI = [ix for ix in _ixrangeHI if (exptimes[ixfitHI][ix] in overlapExpTimesHI)]
 
     # get the X-Y of the NL fit for HI flux filter
+    doDebug = True
     print('HI flux filter...')
     X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL02(fluences[ixfitHI, :],
                                           exptimes[ixfitHI], nomG,
-                                          ixLinFit=ixoverlapHI)
+                                          ixLinFit=ixoverlapHI,
+                                          debug=doDebug)
                                           #minrelflu=minrelflu,
                                           #maxrelflu=maxrelflu)
 
@@ -1019,7 +1042,8 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     print('LO flux filter...')
     X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL02(fluences[ixfitLO, :],
                                           exptimes[ixfitLO], nomG,
-                                          ixLinFit=ixoverlapLO)
+                                          ixLinFit=ixoverlapLO,
+                                          debug=doDebug)
                                           #minrelflu=minrelflu,
                                           #maxrelflu=maxrelflu)
 
