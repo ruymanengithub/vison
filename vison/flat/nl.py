@@ -52,16 +52,17 @@ def get_POLY_linear_model(X, Y):
 
 
 def get_exptime_atfracdynrange(flu1D, exp1D, frac=0.5, method='spline',
+                               minrelflu=None,
                                maxrelflu=None,
                                debug=False):
     """ """
 
     X = flu1D / FullDynRange
     Y = exp1D.copy()
-    if maxrelflu is None:
+    if maxrelflu is None or minrelflu is None:
         ixvalid = np.where(~np.isnan(X))
     else:
-        ixvalid = np.where(~np.isnan(X) & (X < maxrelflu))
+        ixvalid = np.where(~np.isnan(X) & (X >= minrelflu) & (X <= maxrelflu))
 
     X = X[ixvalid].copy()
     Y = Y[ixvalid].copy()
@@ -103,7 +104,8 @@ def get_exptime_atfracdynrange(flu1D, exp1D, frac=0.5, method='spline',
     return tfrac
 
 
-def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5, maxrelflu=None, method='spline',
+def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5, 
+    minrelflu=None, maxrelflu=None, method='spline',
     Full=False):
     """ """
 
