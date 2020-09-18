@@ -203,8 +203,8 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
         intersect = np.zeros(Nsec,dtype='float32') # 
 
         for isec in range(Nsec):
-            #predictor = get_RANSAC_linear_model(exptimes[:],fluencesNL[:,isec])
-            #Ypred = np.squeeze(predictor(np.expand_dims(exptimes,1)))
+            # each section is treated INDEPENDENTLY, because each section
+            # has a slightly different flux (because of flat-source anisotropy)
 
             arenonan = ~np.isnan(fluencesNL[:, isec])
 
@@ -222,7 +222,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
             xp = exptimes[ixsel]
             yp = np.squeeze(fluencesNL[ixsel, isec])
             # fitting fluence vs. exptime linearly within the selected pseudo-linear region
-            # fluences (may be selected by exposure time)
+            # fluences may be selected by exposure time
             predictor = get_POLY_linear_model(xp, yp) 
             #predictor.coef[1] = 0.
             intersect[isec] = predictor.coef[1]
