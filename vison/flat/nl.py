@@ -1205,6 +1205,15 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     _ixrangeHI = np.arange(ixfitHI.sum())
     ixoverlapHI = [ix for ix in _ixrangeHI if (exptimes[ixfitHI][ix] in overlapExpTimesHI)]
 
+
+    #ixfitLO = ixboo_fluLO | ixboo_bgd
+    ixfitLO = ixboo_fluLO
+    overlapExpTimesLO = np.unique(exptimes[ixfitLO & (exptimes>0)])[-3:]
+    _ixrangeLO = np.arange(ixfitLO.sum())
+    ixoverlapLO = [ix for ix in _ixrangeLO if (exptimes[ixfitLO][ix] in overlapExpTimesLO)]
+
+    stop()
+
     # get the X-Y of the NL fit for HI flux filter
     doDebug = True
     print('HI flux filter...')
@@ -1214,12 +1223,6 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
                                           debug=doDebug)
                                           #minrelflu=minrelflu,
                                           #maxrelflu=maxrelflu)
-
-    #ixfitLO = ixboo_fluLO | ixboo_bgd
-    ixfitLO = ixboo_fluLO
-    overlapExpTimesLO = np.unique(exptimes[ixfitLO & (exptimes>0)])[-3:]
-    _ixrangeLO = np.arange(ixfitLO.sum())
-    ixoverlapLO = [ix for ix in _ixrangeLO if (exptimes[ixfitLO][ix] in overlapExpTimesLO)]
 
     print('LO flux filter...')
     X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL02_tests(fluences[ixfitLO, :],
