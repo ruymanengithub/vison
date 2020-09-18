@@ -173,6 +173,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
             np.arange(
                 fluencesNL.shape[0]), np.arange(
                 fluencesNL.shape[1]), indexing='ij')
+        stop()
     else:
         expix = np.arange(fluencesNL.shape[0])
         regix = np.ones(fluencesNL.shape[0])
@@ -820,28 +821,32 @@ def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.arra
 def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.array([]),
                               TrackFlux=True, debug=False, ObsIDs=None, NLdeg=NLdeg,
                               offset=0., XX=None, YY=None):
-    """ """
+    """returns NL modelling results."""
 
     nomG = 3.5  # e/ADU, used for noise estimates
-    minfitFl = 250.  # ADU
-    maxfitFl = FullDynRange - 10000.  # ADU
+    minfitFl = 250.  # ADU, minimum fluence to consider in fit
+    maxfitFl = FullDynRange - 10000.  # ADU, maximum fluence to consider in fit
     #pivotfrac = 0.2
-    minrelflu = 0.05
-    maxrelflu = 0.40
+    #minrelflu = 0.05 # lower limit in relative (to saturation) fluence considered in linear trend
+    #maxrelflu = 0.40 # upper limit in relative (to sat.) fluence considered in linear trend
 
-    NObsIDs, Nsecs = fluences.shape
+    NObsIDs, Nsecs = fluences.shape # fluences is a 2D array, number of observations x segments
+    # the fluences are measured in segments over each quadrant to deal with gradients in flux
+    # across the FOV/quadrants (because of light source non-homogeneities). The smaller the regions,
+    # the more homogenious the flux/fluence in it, but also the larger the shot noise photom. error.
 
-    if TrackFlux:
+    # tracking the flux along the test using interspersed exposures with a constant exposure time
+    if TrackFlux: 
 
-        assert len(times) == len(exptimes)
+        assert len(times) == len(exptimes) # if times is empty this will raise an exception
 
         dtimes = np.array(
-            [(times[i] - times[0]).seconds for i in range(NObsIDs)], dtype='float32')
+            [(times[i] - times[0]).seconds for i in range(NObsIDs)], dtype='float32') # delta-times
 
     #col_numbers = np.array([int(item[3:]) for item in col_labels])
 
     nonzeroexptimes = exptimes[exptimes > 0.]
-    unonzeroexptimes = np.unique(nonzeroexptimes)
+    unonzeroexptimes = np.unique(nonzeroexptimes) # unique non-zero exposure times
 
     # hacky but effective way to identify stability exposures: the stability
     # exposure time repeats the most
@@ -850,7 +855,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
     # boolean indices of the different types of exposures
 
-    uwaves = np.unique(wave)
+    uwaves = np.unique(wave) # unique wavelengths used (2)
 
     ixboo_bgd = exptimes == 0.
     ixboo_stab = exptimes == exptimestab
@@ -859,6 +864,8 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
     fluxes = [np.nanmean((np.nanmean(fluences[ixboo_fluA,:],axis=1)/exptimes[ixboo_fluA])),
             np.nanmean((np.nanmean(fluences[ixboo_fluB,:],axis=1)/exptimes[ixboo_fluB]))]
+
+    # identifying which is the high-flux wavelength / set, and which one is the low-flux
 
     if fluxes[0]>fluxes[1]:
         ixboo_fluHI = ixboo_fluA
@@ -871,15 +878,17 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
         waveHI = uwaves[1]
         waveLO = uwaves[0]
 
+    # subtracting offsets (bias) before flux tracking
+    # the same offset is subtracted for all regions in an frame/quadrant.
+    fluences = fluences - np.expand_dims(offset,1) 
 
-    fluences = fluences-np.expand_dims(offset,1) # subtracting offsets before flux tracking
-
-    dumpCubes=True # True on TESTS
+    dumpCubes=False # True on TESTS
     if dumpCubes:
         from astropy.io import fits as fts
         import copy
 
         def cubify(fluences,selix,renorm=False, NX=4,NY=4, increases=False):
+            """rearranging the fluences as a 3D cube: exposure - X - Y"""
             Nexp = len(selix[0])
             cube = fluences[selix,:].reshape(Nexp,NX,NY,order='C')
 
@@ -938,18 +947,14 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
         imgLO = np.mean(cube_LO[1].data/np.expand_dims(np.mean(cube_LO[1].data,axis=(1,2)),(1,2)),axis=0)
         imgHI = np.mean(cube_HI[1].data/np.expand_dims(np.mean(cube_HI[1].data,axis=(1,2)),(1,2)),axis=0)
 
-        stop()
-
         
-
-
-
     if TrackFlux and len(times) == NObsIDs:
 
+        # stability observations times and fluences (average over quadrants)
         st_dtimes = dtimes[ixboo_stab].copy()
         st_fluences = np.nanmean(fluences[ixboo_stab, :], axis=1).copy()
 
-        ans = sigma_clip(st_fluences, sigma=3)
+        ans = sigma_clip(st_fluences, sigma=3) 
         ixgood = np.where(~ans.mask)
 
         # tmodel = make_pipeline(PolynomialFeatures(2),
@@ -962,27 +967,26 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
         #track_fit[-1] = tmodel._final_estimator.intercept_[0]
 
         track_fit = np.polyfit(st_dtimes[ixgood], st_fluences[ixgood], 2, 
-            full=False, cov=False)
+            full=False, cov=False) 
 
-        track_pol = np.poly1d(track_fit)
+        track_pol = np.poly1d(track_fit) # 2deg pol fit to the flux tracking dataset (flux vs. time)
 
-        trackST = track_pol(dtimes[ixboo_stab])
-        trackHI = track_pol(dtimes[ixboo_fluHI])
+        trackST = track_pol(dtimes[ixboo_stab]) # evaluated for the stability data-set
+        trackHI = track_pol(dtimes[ixboo_fluHI]) # evaluated for the HI flux data-set
 
-        normHI = np.mean([np.median(trackST),np.median(trackHI)])
+        normHI = np.mean([np.median(trackST),np.median(trackHI)]) # normalisation
 
         trackST /= normHI
         trackHI /= normHI
 
-        trackLO = track_pol(dtimes[ixboo_fluLO])
+        trackLO = track_pol(dtimes[ixboo_fluLO]) # evaluated for the LO flux data-set
         trackLO /= np.median(trackLO)
-
 
         #track_bc = np.repeat(track.reshape(len(track), 1), Nsecs, axis=1)
         fluences[ixboo_fluHI, :] /= trackHI.reshape(trackHI.shape[0], -1)
         fluences[ixboo_fluLO, :] /= trackLO.reshape(trackLO.shape[0], -1)
         fluences[ixboo_stab, :] /= trackST.reshape(trackST.shape[0], -1)
-        trackstab = np.mean([trackHI.std(), trackLO.std()]) * 100.
+        trackstab = np.mean([trackHI.std(), trackLO.std()]) * 100. # stability of flux as percentage rms
     else:
         trackstab = 0.
 
@@ -994,6 +998,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     _ixrangeHI = np.arange(ixfitHI.sum())
     ixoverlapHI = [ix for ix in _ixrangeHI if (exptimes[ixfitHI][ix] in overlapExpTimesHI)]
 
+    # get the X-Y of the NL fit for HI flux filter
     print('HI flux filter...')
     X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL02(fluences[ixfitHI, :],
                                           exptimes[ixfitHI], nomG,
