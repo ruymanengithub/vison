@@ -379,7 +379,7 @@ def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None
 
         stop()
 
-        for isec in range(Nsec)
+        for isec in range(Nsec):
            YL[:, isec] = YpredL.copy()
 
 
