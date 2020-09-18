@@ -377,10 +377,10 @@ def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None
         intersect[0,:] = predictor.coef[1]
         YpredL = predictor(exptimes)
 
-        stop()
+        YL = np.outer(YpredL,avfluxes)
 
-        for isec in range(Nsec):
-           YL[:, isec] = YpredL.copy()
+        #for isec in range(Nsec):
+        #   YL[:, isec] = YpredL.copy()
 
 
         # for isec in range(Nsec):
@@ -456,8 +456,8 @@ def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None
         # show()
     
 
-    #Z = 100. * (fluencesNL - YL) / (YL - intersect) # commented on TESTS ONLY
-    Z = 100. * (fluencesNL - YL) / YL
+    Z = 100. * (fluencesNL - YL) / (YL - intersect) # commented on TESTS ONLY
+    #Z = 100. * (fluencesNL - YL) / YL
 
     efNL = np.sqrt((fluencesNL) * nomG) / nomG
 
