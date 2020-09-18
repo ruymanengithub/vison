@@ -271,22 +271,21 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
         # plot(yp,yp/predictor(exptimes[ixsel])-1.,'k.')
         # show()
     
-    stop()
 
     Z = 100. * (fluencesNL - YL) / (YL - intersect)
 
-    efNL = np.sqrt((fluencesNL - intersect) * nomG) / nomG
+    efNL = np.sqrt((fluencesNL) * nomG) / nomG
 
     W = 100. * (efNL / YL)
 
     ixsel = np.where((exptimes > 0.))
 
     # X = fluencesNL[ixsel].flatten().copy()
-    X = fluencesNL[ixsel].flatten().copy()
-    Y = Z[ixsel].flatten().copy()
-    W = W[ixsel].flatten().copy()
-    expix = expix[ixsel].flatten().copy()
-    regix = regix[ixsel].flatten().copy()
+    X = fluencesNL[ixsel,...].flatten().copy()
+    Y = Z[ixsel,...].flatten().copy()
+    W = W[ixsel,...].flatten().copy()
+    expix = expix[ixsel,...].flatten().copy()
+    regix = regix[ixsel,...].flatten().copy()
 
     ixsort = np.argsort(X)
     X = X[ixsort].copy()
