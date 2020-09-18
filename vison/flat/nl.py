@@ -275,7 +275,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
         # show()
     
 
-    #Z = 100. * (fluencesNL - YL) / (YL - intersect)
+    #Z = 100. * (fluencesNL - YL) / (YL - intersect) # commented on TESTS ONLY
     Z = 100. * (fluencesNL - YL) / YL
 
     efNL = np.sqrt((fluencesNL) * nomG) / nomG
@@ -320,6 +320,186 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
 
     return X, Y, W, expix, regix
 
+def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None, 
+        ixLinFit=None, debug=False):
+    """ """
+    #from pylab import imshow,show,plot
+    if debug:
+        from matplotlib import pyplot as plt
+
+    assert fluencesNL.shape[0] == exptimes.shape[0]
+    assert fluencesNL.ndim <= 2
+    assert exptimes.ndim == 1
+
+    if maxrelflu is None:
+        maxrelflu = 0.7
+    if minrelflu is None:
+        minrelflu = 0.02
+
+    YL = np.zeros_like(fluencesNL, dtype='float32')
+    if fluencesNL.ndim == 2:
+        expix, regix = np.meshgrid(
+            np.arange(
+                fluencesNL.shape[0]), np.arange(
+                fluencesNL.shape[1]), indexing='ij')
+        # expix: exposure index (2D)
+        # regix: region index (2D)
+    else:
+        expix = np.arange(fluencesNL.shape[0])
+        regix = np.ones(fluencesNL.shape[0])
+
+    uexptimes = np.unique(exptimes)
+
+    for iu, uexp in enumerate(uexptimes):
+        ix = np.where(exptimes == uexp)
+
+        if fluencesNL.ndim == 2:
+            iflu = fluencesNL[ix[0], ...].mean(axis=1)
+        else:
+            iflu = fluencesNL[ix[0]].copy()
+        ixdeviants = np.where(sigma_clip(iflu, sigma=3).mask)
+        if len(ixdeviants[0]) > 0:
+            ixNaN = (ix[0][ixdeviants],)
+            fluencesNL[ixNaN, ...] = np.nan # masking fluences affected by transients (e.g. cosmics)
+
+    if fluencesNL.ndim == 2:
+
+        Nsec = fluencesNL.shape[1]
+        #_exptimes = np.repeat(exptimes.reshape(Nexp,1),Nsec,axis=1)
+        intersect = np.zeros((1,Nsec),dtype='float32') # 
+        avfluxes = np.nanmean(fluencesNL/np.expand_dims(exptimes,1),axis=0)
+        avfluxes /= avfluxes.mean()
+
+        xp = exptimes[ixsel]
+        yp = np.nanmean(fluencesNL[ixsel, :], axis=1)
+
+        predictor = get_POLY_linear_model(xp, yp)
+        intersect[0,:] = predictor.coef[1]
+        YpredL = predictor(exptimes)
+
+        stop()
+
+        for isec in range(Nsec)
+           YL[:, isec] = YpredL.copy()
+
+
+        # for isec in range(Nsec):
+        #     # each section is treated INDEPENDENTLY, because each section
+        #     # has a slightly different flux (because of flat-source anisotropy)
+
+        #     arenonan = ~np.isnan(fluencesNL[:, isec])
+
+        #     if ixLinFit is not None:
+        #         presel = np.zeros_like(exptimes,dtype='bool')
+        #         presel[(ixLinFit,)] = True
+        #         ixsel = np.where(arenonan & presel)
+        #     else:
+        #         ixnonan = np.where(arenonan)
+        #         _ixsel = np.where((fluencesNL[ixnonan, isec] >= 2.**16 * minrelflu) &
+        #                       (fluencesNL[ixnonan, isec] <= 2.**16 * maxrelflu))
+        #         ixsel = (ixnonan[0][_ixsel[1]],)
+
+
+        #     xp = exptimes[ixsel]
+        #     yp = np.squeeze(fluencesNL[ixsel, isec])
+        #     # fitting fluence vs. exptime linearly within the selected pseudo-linear region
+        #     # fluences may be selected by exposure time
+        #     predictor = get_POLY_linear_model(xp, yp) 
+        #     #predictor.coef[1] = 0.
+        #     intersect[0,isec] = predictor.coef[1]
+        #     YpredL = predictor(exptimes)
+        #     YL[:, isec] = YpredL.copy()
+
+            #print('sec:%i' % isec)
+            #fig  = plt.figure()
+            #ax = fig.add_subplot()
+            #ax.plot(xp,yp,'k.')
+            #ax.plot(exptimes,YpredL,'r-')
+            #plt.show()
+
+            #stop()
+
+            # plot(YpredL[3:],fluencesNL[3:,isec]/YpredL[3:]-1.,marker='.',ls='')
+        #plt.show()
+        
+        
+
+    elif fluencesNL.ndim == 1:
+
+        #predictor = get_RANSAC_linear_model(exptimes,fluencesNL)
+        #YL[:] = np.squeeze(predictor(np.expand_dims(exptimes,1)))
+
+        arenonan = ~np.isnan(fluencesNL)
+
+        if ixLinFit is not None:
+            presel = np.zeros_like(exptimes,dtype='bool')
+            presel[(ixLinFit,)] = True
+            ixsel = np.where(arenonan & presel)
+        else:
+            ixnonan = np.where(arenonan)
+            _ixsel = np.where((fluencesNL[ixnonan] >= 2.**16 * minrelflu) &
+                    (fluencesNL[ixnonan] <= 2.**16 * maxrelflu))
+            
+            ixsel = (ixnonan[0][_ixsel],)
+
+        #ixsel=np.where((fluencesNL>=2.**16*minrelflu) & (fluencesNL<=2.**16*maxrelflu))
+        xp = exptimes[ixsel].copy()
+        yp = np.squeeze(fluencesNL[ixsel]).copy()
+        predictor = get_POLY_linear_model(xp, yp)
+
+        #predictor.coef[1] = 0.
+        intersect = predictor.coef[1]
+        YpredL = predictor(exptimes)
+        YL[:] = YpredL.copy()
+
+        # plot(yp,yp/predictor(exptimes[ixsel])-1.,'k.')
+        # show()
+    
+
+    #Z = 100. * (fluencesNL - YL) / (YL - intersect) # commented on TESTS ONLY
+    Z = 100. * (fluencesNL - YL) / YL
+
+    efNL = np.sqrt((fluencesNL) * nomG) / nomG
+
+    W = 100. * (efNL / YL)
+
+    ixsel = np.where((exptimes > 0.))
+
+    # X = fluencesNL[ixsel].flatten().copy()
+    X = fluencesNL[ixsel,...].flatten().copy()
+    Y = Z[ixsel,...].flatten().copy()
+    W = W[ixsel,...].flatten().copy()
+    expix = expix[ixsel,...].flatten().copy()
+    regix = regix[ixsel,...].flatten().copy()
+
+    ixsort = np.argsort(X)
+    X = X[ixsort].copy()
+    Y = Y[ixsort].copy()
+    W = W[ixsort].copy()
+    expix = expix[ixsort].copy()
+    regix = regix[ixsort].copy()
+    
+    if debug:
+        Nside = int(fluencesNL.shape[1]**0.5)
+        intersectmap = intersect.reshape((Nside,Nside))
+        avfluxes = np.nanmean(fluencesNL/np.expand_dims(exptimes,1),axis=0).reshape(Nside,Nside)
+
+        fig1 = plt.figure()
+        ax1 = fig1.add_subplot()
+        ax1.imshow(intersectmap,origin='lower left')
+        ax1.set_title('Intersect Map')
+        plt.show()
+        #fig1.close()
+
+        fig2 = plt.figure()
+        ax2 = fig2.add_subplot()
+        ax2.imshow(avfluxes,origin='lower left')
+        ax2.set_title('Flux Map')        
+        plt.show()
+        #fig2.close()
+        plt.close('all')
+
+    return X, Y, W, expix, regix
 
 def fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False):
     """ """
@@ -1028,7 +1208,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     # get the X-Y of the NL fit for HI flux filter
     doDebug = True
     print('HI flux filter...')
-    X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL02(fluences[ixfitHI, :],
+    X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL02_tests(fluences[ixfitHI, :],
                                           exptimes[ixfitHI], nomG,
                                           ixLinFit=ixoverlapHI,
                                           debug=doDebug)
@@ -1042,7 +1222,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     ixoverlapLO = [ix for ix in _ixrangeLO if (exptimes[ixfitLO][ix] in overlapExpTimesLO)]
 
     print('LO flux filter...')
-    X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL02(fluences[ixfitLO, :],
+    X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL02_tests(fluences[ixfitLO, :],
                                           exptimes[ixfitLO], nomG,
                                           ixLinFit=ixoverlapLO,
                                           debug=doDebug)
