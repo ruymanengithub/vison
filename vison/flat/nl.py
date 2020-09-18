@@ -154,8 +154,6 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5,
     YL = exptimes_bc / tpivot * FullDynRange * pivotfrac
     Z = 100. * (fluencesNL / YL - 1.)
 
-    stop()
-
 
     efNL = np.sqrt(fluencesNL * nomG) / nomG
 
