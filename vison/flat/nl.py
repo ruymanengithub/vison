@@ -307,14 +307,15 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
         ax1.imshow(intersectmap,origin='lower left')
         ax1.set_title('Intersect Map')
         plt.show()
-        fig1.close()
+        #fig1.close()
 
         fig2 = plt.figure()
         ax2 = fig2.add_subplot()
         ax2.imshow(avfluxes,origin='lower left')
         ax2.set_title('Flux Map')        
         plt.show()
-        fig2.close()
+        #fig2.close()
+        plt.close('all')
 
     return X, Y, W, expix, regix
 
