@@ -1286,15 +1286,15 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
     Exptimes = np.concatenate((exptimes[ixfitHI][e_HI], exptimes[ixfitLO][e_LO]))
 
-    Xcoo = np.concatenate((XX[e_HI, r_HI], XX[e_LO, r_LO]))
-    Ycoo = np.concatenate((YY[e_HI, r_HI], YY[e_LO, r_LO]))
-    Rcoo = (Xcoo**2.+Ycoo*2.)**0.5
+    #Xcoo = np.concatenate((XX[e_HI, r_HI], XX[e_LO, r_LO]))
+    #Ycoo = np.concatenate((YY[e_HI, r_HI], YY[e_LO, r_LO]))
+    #Rcoo = (Xcoo**2.+Ycoo*2.)**0.5
 
     fObsIDs = np.concatenate((ObsIDs[ixfitHI][e_HI], ObsIDs[ixfitLO][e_LO]))
 
     fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug,
                                 addExp=True,
-                                Rcoo=Rcoo,
+                                Rcoo=None,
                                 ObsIDs=fObsIDs)
     fitresults['Xcoo'] = Xcoo.copy()
     fitresults['Ycoo'] = Ycoo.copy()
