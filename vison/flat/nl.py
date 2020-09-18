@@ -1233,7 +1233,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     _ixrangeLO = np.arange(ixfitLO.sum())
     ixoverlapLO = [ix for ix in _ixrangeLO if (exptimes[ixfitLO][ix] in overlapExpTimesLO)]
 
-    pivotFLu = np.nanmean([np.nanmean(fluences[ixfitHI,:][ixoverlapHI]), np.nanmean(fluences[ixfitLO,0][ixoverlapLO])])
+    pivotFlu = np.nanmean([np.nanmean(fluences[ixfitHI,:][ixoverlapHI]), np.nanmean(fluences[ixfitLO,0][ixoverlapLO])])
     pivotfrac = pivotFlu / FullDynRange
 
     # get the X-Y of the NL fit for HI flux filter
