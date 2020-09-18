@@ -103,7 +103,8 @@ def get_exptime_atfracdynrange(flu1D, exp1D, frac=0.5, method='spline',
     return tfrac
 
 
-def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5, maxrelflu=None, method='spline'):
+def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5, maxrelflu=None, method='spline',
+    Full=False):
     """ """
 
     assert fluencesNL.shape[0] == exptimes.shape[0]
@@ -113,6 +114,13 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5, maxrelflu=None, method=
     Nexp = len(exptimes)
 
     if fluencesNL.ndim == 2:
+
+        expix, regix = np.meshgrid(
+            np.arange(
+                fluencesNL.shape[0]), np.arange(
+                fluencesNL.shape[1]), indexing='ij')
+        # expix: exposure index (2D)
+        # regix: region index (2D)
 
         Nsec = fluencesNL.shape[1]
         #_exptimes = np.repeat(exptimes.reshape(Nexp,1),Nsec,axis=1)
@@ -128,6 +136,9 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5, maxrelflu=None, method=
 
     else:
 
+        expix = np.arange(fluencesNL.shape[0])
+        regix = np.ones(fluencesNL.shape[0])
+
         tpivot = get_exptime_atfracdynrange(fluencesNL, exptimes,
                                             frac=pivotfrac,
                                             maxrelflu=maxrelflu,
@@ -142,16 +153,26 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5, maxrelflu=None, method=
 
     W = 100. * (efNL / YL)
 
-    X = fluencesNL.flatten().copy()
-    Y = Z.flatten().copy()
+    ixsel = np.where((exptimes > 0.))
+
+    X = fluencesNL[ixsel, ...].flatten().copy()
+    Y = Z[ixsel, ...].flatten().copy()
+    W = W[ixsel,...].flatten().copy()
+    expix = expix[ixsel,...].flatten().copy()
+    regix = regix[ixsel,...].flatten().copy()
+
+
     ixsort = np.argsort(X)
     X = X[ixsort].copy()
     Y = Y[ixsort].copy()
-    W = W.flatten()[ixsort].copy()
-
+    W = W[ixsort].copy()
+    expix = expix[ixsort].copy()
+    regix = regix[ixsort].copy()
     # if len(np.where(np.abs(Y)>5.)[0])>10: stop()# TESTS
-
-    return X, Y, W
+    if Full:
+        return X, Y, W, expix, regix
+    else:
+        return X, Y, W
 
 
 def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None, 
@@ -1212,25 +1233,36 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     _ixrangeLO = np.arange(ixfitLO.sum())
     ixoverlapLO = [ix for ix in _ixrangeLO if (exptimes[ixfitLO][ix] in overlapExpTimesLO)]
 
-    stop()
+    pivotFLu = np.nanmean([np.nanmean(fluences[ixfitHI,:][ixoverlapHI]), np.nanmean(fluences[ixfitLO,0][ixoverlapLO])])
+    pivotfrac = pivotFlu / FullDynRange
 
     # get the X-Y of the NL fit for HI flux filter
     doDebug = True
     print('HI flux filter...')
-    X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL02_tests(fluences[ixfitHI, :],
-                                          exptimes[ixfitHI], nomG,
-                                          ixLinFit=ixoverlapHI,
-                                          debug=doDebug)
-                                          #minrelflu=minrelflu,
-                                          #maxrelflu=maxrelflu)
 
-    print('LO flux filter...')
-    X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL02_tests(fluences[ixfitLO, :],
-                                          exptimes[ixfitLO], nomG,
-                                          ixLinFit=ixoverlapLO,
-                                          debug=doDebug)
-                                          #minrelflu=minrelflu,
-                                          #maxrelflu=maxrelflu)
+    X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL(fluences[ixfitHI, :], exptimes[ixfitHI], nomG, 
+        pivotfrac=pivotfrac, maxrelflu=None, method='poly',
+        Full=True)
+
+    #X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL02_tests(fluences[ixfitHI, :],
+    #                                      exptimes[ixfitHI], nomG,
+    #                                      ixLinFit=ixoverlapHI,
+    #                                      debug=doDebug)
+    #                                      #minrelflu=minrelflu,
+    #                                      #maxrelflu=maxrelflu)
+
+    X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL(fluences[ixfitLO, :], exptimes[ixfitLO], nomG, 
+        pivotfrac=pivotfrac, maxrelflu=None, method='poly',
+        Full=True)
+
+
+    #print('LO flux filter...')
+    #X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL02_tests(fluences[ixfitLO, :],
+    #                                      exptimes[ixfitLO], nomG,
+    #                                      ixLinFit=ixoverlapLO,
+    #                                      debug=doDebug)
+    #                                      #minrelflu=minrelflu,
+    #                                      #maxrelflu=maxrelflu)
 
     #bgdnoff = np.median(fluences[ixboo_bgd,:])
 
