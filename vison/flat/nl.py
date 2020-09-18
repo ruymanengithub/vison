@@ -129,7 +129,10 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5, maxrelflu=None, method=
 
         for i in range(Nsec):
             tpivot[i] = get_exptime_atfracdynrange(
-                fluencesNL[:, i], exptimes, frac=pivotfrac, method=method, maxrelflu=maxrelflu, debug=False)
+                fluencesNL[:, i], exptimes, frac=pivotfrac, method=method, 
+                minrelflu=minrelflu,
+                maxrelflu=maxrelflu, 
+                debug=False)
         tpivot = np.repeat(tpivot.reshape(1, Nsec), Nexp, axis=0)
 
         exptimes_bc = np.repeat(exptimes.reshape(Nexp, 1), Nsec, axis=1)
@@ -148,6 +151,9 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5, maxrelflu=None, method=
 
     YL = exptimes_bc / tpivot * FullDynRange * pivotfrac
     Z = 100. * (fluencesNL / YL - 1.)
+
+    stop()
+
 
     efNL = np.sqrt(fluencesNL * nomG) / nomG
 
@@ -1055,8 +1061,8 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     minfitFl = 250.  # ADU, minimum fluence to consider in fit
     maxfitFl = FullDynRange - 10000.  # ADU, maximum fluence to consider in fit
     #pivotfrac = 0.2
-    #minrelflu = 0.05 # lower limit in relative (to saturation) fluence considered in linear trend
-    #maxrelflu = 0.40 # upper limit in relative (to sat.) fluence considered in linear trend
+    minrelflu = 0.05 # lower limit in relative (to saturation) fluence considered in linear trend
+    maxrelflu = 0.50 # upper limit in relative (to sat.) fluence considered in linear trend
 
     NObsIDs, Nsecs = fluences.shape # fluences is a 2D array, number of observations x segments
     # the fluences are measured in segments over each quadrant to deal with gradients in flux
@@ -1241,7 +1247,10 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     print('HI flux filter...')
 
     X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL(fluences[ixfitHI, :], exptimes[ixfitHI], nomG, 
-        pivotfrac=pivotfrac, maxrelflu=None, method='spline',
+        pivotfrac=pivotfrac, 
+        minrelflu=minrelflu,
+        maxrelflu=maxrelflu, 
+        method='spline',
         Full=True)
 
     #X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL02_tests(fluences[ixfitHI, :],
@@ -1252,7 +1261,10 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     #                                      #maxrelflu=maxrelflu)
 
     X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL(fluences[ixfitLO, :], exptimes[ixfitLO], nomG, 
-        pivotfrac=pivotfrac, maxrelflu=None, method='spline',
+        pivotfrac=pivotfrac, 
+        minrelflu=minrelflu,
+        maxrelflu=maxrelflu, 
+        method='spline',
         Full=True)
 
 
