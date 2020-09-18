@@ -173,7 +173,8 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
             np.arange(
                 fluencesNL.shape[0]), np.arange(
                 fluencesNL.shape[1]), indexing='ij')
-        stop()
+        # expix: exposure index (2D)
+        # regix: region index (2D)
     else:
         expix = np.arange(fluencesNL.shape[0])
         regix = np.ones(fluencesNL.shape[0])
@@ -190,14 +191,13 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
         ixdeviants = np.where(sigma_clip(iflu, sigma=3).mask)
         if len(ixdeviants[0]) > 0:
             ixNaN = (ix[0][ixdeviants],)
-            fluencesNL[ixNaN, ...] = np.nan
+            fluencesNL[ixNaN, ...] = np.nan # masking fluences affected by transients (e.g. cosmics)
 
     if fluencesNL.ndim == 2:
 
         Nsec = fluencesNL.shape[1]
         #_exptimes = np.repeat(exptimes.reshape(Nexp,1),Nsec,axis=1)
-        intersect = np.zeros(Nsec,dtype='float32')
-
+        intersect = np.zeros(Nsec,dtype='float32') # 
 
         for isec in range(Nsec):
             #predictor = get_RANSAC_linear_model(exptimes[:],fluencesNL[:,isec])
@@ -218,7 +218,9 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
 
             xp = exptimes[ixsel]
             yp = np.squeeze(fluencesNL[ixsel, isec])
-            predictor = get_POLY_linear_model(xp, yp)
+            # fitting fluence vs. exptime linearly within the selected pseudo-linear region
+            # fluences (may be selected by exposure time)
+            predictor = get_POLY_linear_model(xp, yp) 
             #predictor.coef[1] = 0.
             intersect[isec] = predictor.coef[1]
             YpredL = predictor(exptimes)
@@ -269,6 +271,8 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
         # plot(yp,yp/predictor(exptimes[ixsel])-1.,'k.')
         # show()
     
+    stop()
+
     Z = 100. * (fluencesNL - YL) / (YL - intersect)
 
     efNL = np.sqrt((fluencesNL - intersect) * nomG) / nomG
