@@ -370,8 +370,8 @@ def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None
         avfluxes = np.nanmean(fluencesNL/np.expand_dims(exptimes,1),axis=0)
         avfluxes /= avfluxes.mean()
 
-        xp = exptimes[ixsel]
-        yp = np.nanmean(fluencesNL[ixsel, :], axis=1)
+        xp = exptimes[ixLinFit]
+        yp = np.nanmean(fluencesNL[ixLinFit, :], axis=1)
 
         predictor = get_POLY_linear_model(xp, yp)
         intersect[0,:] = predictor.coef[1]
