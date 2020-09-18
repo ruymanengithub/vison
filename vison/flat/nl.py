@@ -1292,10 +1292,13 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
     fObsIDs = np.concatenate((ObsIDs[ixfitHI][e_HI], ObsIDs[ixfitLO][e_LO]))
 
-    fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug,
-                                addExp=True,
-                                Rcoo=None,
-                                ObsIDs=fObsIDs)
+    #fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug,
+    #                            addExp=True,
+    #                            Rcoo=None,
+    #                            ObsIDs=fObsIDs)
+
+    fitresults = fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug)
+    stop()
     fitresults['Xcoo'] = Xcoo.copy()
     fitresults['Ycoo'] = Ycoo.copy()
 
