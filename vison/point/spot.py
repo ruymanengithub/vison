@@ -102,10 +102,12 @@ class Spot(Shapemeter, Photometer, Gaussmeter):
 
         Gpars, eGpars, didFit = self.fit_Gauss(verbose=True)
 
-        res = dict(i0=Gpars[0], ei0=eGpars[0],
-                   x=Gpars[1], ex=eGpars[1], y=Gpars[2], ey=eGpars[2],
-                   sigma_x=Gpars[3], esigma_x=eGpars[3],
-                   sigma_y=Gpars[4], esigma_y=eGpars[4],
+        res = dict(bgd=Gpars[0], ebgd=eGpars[0],
+                    i0=Gpars[1], ei0=eGpars[1],
+                   x=Gpars[2], ex=eGpars[2], 
+                   y=Gpars[3], ey=eGpars[3],
+                   sigma_x=Gpars[4], esigma_x=eGpars[4],
+                   sigma_y=Gpars[5], esigma_y=eGpars[5],
                    didFit=didFit)
         res['fwhm_x'] = res['sigma_x'] * sig2fwhm
         res['efwhm_x'] = res['esigma_x'] * sig2fwhm

@@ -666,6 +666,7 @@ class PSF0X(PT.PointTask):
             'sh_x', 'sh_y', 'sh_e1', 'sh_e2',
             'sh_ell', 'sh_R2', 'sh_R2arcsec',
             'sh_a', 'sh_b', 
+            'gau_bgd', 'gau_ebgd',
             'gau_i00', 'gau_ei00',
             'gau_xcen', 'gau_excen',
             'gau_ycen', 'gau_eycen',
@@ -788,6 +789,8 @@ class PSF0X(PT.PointTask):
 
                         gauss_res = inSpot.get_shape_Gauss()
 
+                        self.dd.mx['%sgau_bgd' % prefix][ixtup] = gauss_res['bgd']
+                        self.dd.mx['%sgau_ebgd' % prefix][ixtup] = gauss_res['ebgd']
                         self.dd.mx['%sgau_i00' % prefix][ixtup] = gauss_res['i0']
                         self.dd.mx['%sgau_ei00' % prefix][ixtup] = gauss_res['ei0']
                         self.dd.mx['%sgau_xcen' % prefix][ixtup] = gauss_res['x']

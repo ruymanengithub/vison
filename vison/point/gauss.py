@@ -72,12 +72,16 @@ class Gaussmeter(SpotBase):
         gaus = models.Gaussian2D(
             i00, self.xcen, self.ycen, x_stddev=0.5, y_stddev=0.5)
         gaus.theta.fixed = True  # fix angle
-        p_init = gaus
+
+        bgd = models.Const2D(amplitude=0.0) # adding background!
+
+        p_init = bgd + gaus
         fit_p = fitting.LevMarLSQFitter()
 
         XX, YY = np.meshgrid(np.arange(self.NX),
                              np.arange(self.NY), indexing='ij')
         rawres = fit_p(p_init, XX, YY, self.data)
+
 
         didFit = True
         params = rawres.parameters[0:-1]  # theta is fixed
