@@ -81,7 +81,7 @@ One dependency of vison not covered by conda, or pip, (in Python > 3.5) is "astr
 
 * Without deactivating the 'vison' conda environment, go to the folder in your system where you install software and do the following to clone the repository of this hacked version of astromatic_wrapper:
   ::
-    ~$ git clone git://github.com/ruymanengithub/astromatic_wrapper.git
+    ~$ git clone https://github.com/ruymanengithub/astromatic_wrapper.git
 
 * once done, you'll have a new folder created under where you executed this last command, named "astromatic_wrapper". Now:
   ::
