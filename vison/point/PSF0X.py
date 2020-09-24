@@ -397,8 +397,7 @@ class PSF0X(PT.PointTask):
 
         """
 
-
-
+        
         onTests = False
 
         if onTests:
