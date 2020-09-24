@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pipeline &#8212; vison 1.0+18.g8a1eef5 documentation</title>
+    <title>Pipeline &#8212; vison 1.0+283.gd3acf3e.dirty documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="reuse.html" title="Repurposing the vison package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+18.g8a1eef5 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+283.gd3acf3e.dirty documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Pipeline</a></li> 
       </ul>
     </div>  
@@ -231,6 +231,17 @@ with subdirectories for each TASK run.</p></li>
 <dt id="vison.pipe.master.Pipe.BF01.correct_BFE_G15">
 <code class="sig-name descname">correct_BFE_G15</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BF01.correct_BFE_G15" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="vison.pipe.master.Pipe.BF01.debugtask">
+<code class="sig-name descname">debugtask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.pipe.master.Pipe.BF01.debugtask" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Performs basic analysis of images:</dt><dd><ul class="simple">
+<li><p>extracts COVARIANCE matrix for each fluence</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="vison.pipe.master.Pipe.BF01.extract_BF">
@@ -1586,18 +1597,7 @@ cosmetics masking</p>
 
 <dl class="py method">
 <dt id="id12">
-<code class="sig-name descname">extract_BF</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id12" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Performs basic analysis of images:</dt><dd><ul class="simple">
-<li><p>extracts BF matrix for each COV matrix</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="id13">
-<code class="sig-name descname">extract_COV</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id13" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">debugtask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id12" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Performs basic analysis of images:</dt><dd><ul class="simple">
 <li><p>extracts COVARIANCE matrix for each fluence</p></li>
@@ -1607,47 +1607,69 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="id13">
+<code class="sig-name descname">extract_BF</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id13" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Performs basic analysis of images:</dt><dd><ul class="simple">
+<li><p>extracts BF matrix for each COV matrix</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="id14">
-<code class="sig-name descname">extract_PTCs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id14" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">extract_COV</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id14" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Performs basic analysis of images:</dt><dd><ul class="simple">
+<li><p>extracts COVARIANCE matrix for each fluence</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="id15">
-<code class="sig-name descname">f_correct_BFE_G15</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ccdobjname</span></em>, <em class="sig-param"><span class="n">fixA</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id15" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">extract_PTCs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id15" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id16">
+<code class="sig-name descname">f_correct_BFE_G15</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ccdobjname</span></em>, <em class="sig-param"><span class="n">fixA</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id16" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies BFE solutions from G+15 to images, to later test effectivity 
 through PTC.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id16">
-<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id16" title="Permalink to this definition">¶</a></dt>
+<dt id="id17">
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id17" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="id17">
-<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id17" title="Permalink to this definition">¶</a></dt>
+<dt id="id18">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id18" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">BF01_inputs</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id18">
-<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id18" title="Permalink to this definition">¶</a></dt>
+<dt id="id19">
+<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id19" title="Permalink to this definition">¶</a></dt>
 <dd><p>Analyzes the BF results across fluences.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id19">
-<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id19" title="Permalink to this definition">¶</a></dt>
+<dt id="id20">
+<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id20" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="id20">
-<em class="property">class </em><code class="sig-name descname">BIAS0X</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id20" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
 <dt id="id21">
-<code class="sig-name descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id21" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">BIAS0X</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id21" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="id22">
+<code class="sig-name descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id22" title="Permalink to this definition">¶</a></dt>
 <dd><p>BIAS0X: Basic analysis of data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
@@ -1669,8 +1691,8 @@ through PTC.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id22">
-<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id22" title="Permalink to this definition">¶</a></dt>
+<dt id="id23">
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id23" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds BIAS0X script structure dictionary.</p>
 <p>###:param N: integer, number of frames to acquire.
 :param diffvalues: dict, opt, differential values.
@@ -1678,19 +1700,19 @@ through PTC.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id23">
-<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id23" title="Permalink to this definition">¶</a></dt>
+<dt id="id24">
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id24" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="id24">
-<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id24" title="Permalink to this definition">¶</a></dt>
+<dt id="id25">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id25" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">BIAS0X_inputs</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id25">
-<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id25" title="Permalink to this definition">¶</a></dt>
+<dt id="id26">
+<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id26" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">:</span>
    <span class="n">stack</span> <span class="nb">all</span> <span class="n">ObsIDs</span> <span class="n">to</span> <span class="n">produce</span> <span class="n">Master</span> <span class="n">Bias</span>
@@ -1707,8 +1729,8 @@ through PTC.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id26">
-<code class="sig-name descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id26" title="Permalink to this definition">¶</a></dt>
+<dt id="id27">
+<code class="sig-name descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id27" title="Permalink to this definition">¶</a></dt>
 <dd><p>BIAS0X: Preparation of data for further analysis.
 Calls task.prepare_images().</p>
 <dl class="simple">
@@ -1721,11 +1743,11 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="id27">
-<em class="property">class </em><code class="sig-name descname">CHINJ00</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id27" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
 <dt id="id28">
-<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id28" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">CHINJ00</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id28" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="id29">
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id29" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds CHINJ00 script structure dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1735,29 +1757,29 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id29">
-<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id29" title="Permalink to this definition">¶</a></dt>
+<dt id="id30">
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id30" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="id30">
-<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id30" title="Permalink to this definition">¶</a></dt>
+<dt id="id31">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id31" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">CHINJ00_inputs</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id31">
-<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id31" title="Permalink to this definition">¶</a></dt>
+<dt id="id32">
+<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id32" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="id32">
-<em class="property">class </em><code class="sig-name descname">CHINJ01</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id32" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
 <dt id="id33">
-<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id33" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">CHINJ01</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id33" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="id34">
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id34" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds CHINJ01 script structure dictionary.</p>
 <p>#:param IDL: float, [V], value of IDL (Inject. Drain Low).
 #:param IDH: float, [V], Injection Drain High.
@@ -1769,27 +1791,27 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id34">
-<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id34" title="Permalink to this definition">¶</a></dt>
+<dt id="id35">
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id35" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="id35">
-<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id35" title="Permalink to this definition">¶</a></dt>
+<dt id="id36">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id36" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">CHINJ01_inputs</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id36">
-<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id36" title="Permalink to this definition">¶</a></dt>
+<dt id="id37">
+<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id37" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot and model charge injection vs. IG1
 Find injection threshold: Min IG1
 Find notch injection amount.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id37">
-<code class="sig-name descname">prepare_images</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id37" title="Permalink to this definition">¶</a></dt>
+<dt id="id38">
+<code class="sig-name descname">prepare_images</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id38" title="Permalink to this definition">¶</a></dt>
 <dd><p>InjTask: Preparation of data for further analysis.
 Calls task.prepare_images().</p>
 <dl class="simple">
@@ -1801,18 +1823,18 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id38">
-<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id38" title="Permalink to this definition">¶</a></dt>
+<dt id="id39">
+<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id39" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="id39">
-<em class="property">class </em><code class="sig-name descname">CHINJ02</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id39" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
 <dt id="id40">
-<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id40" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">CHINJ02</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id40" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="id41">
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id41" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds CHINJ02 script structure dictionary.</p>
 <p>#:param IDLs: list of 2 ints, [V], [min,max] values of IDL (Inject. Drain Low).
 #:param IDH: int, [V], Injection Drain High.
@@ -1822,19 +1844,19 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id41">
-<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id41" title="Permalink to this definition">¶</a></dt>
+<dt id="id42">
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id42" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="id42">
-<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id42" title="Permalink to this definition">¶</a></dt>
+<dt id="id43">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id43" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">CHINJ02_inputs</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id43">
-<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id43" title="Permalink to this definition">¶</a></dt>
+<dt id="id44">
+<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id44" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds the Injection Threshold for each CCD half.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
@@ -1848,8 +1870,8 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id44">
-<code class="sig-name descname">prepare_images</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id44" title="Permalink to this definition">¶</a></dt>
+<dt id="id45">
+<code class="sig-name descname">prepare_images</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id45" title="Permalink to this definition">¶</a></dt>
 <dd><p>InjTask: Preparation of data for further analysis.
 Calls task.prepare_images().</p>
 <dl class="simple">
@@ -1861,18 +1883,18 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id45">
-<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id45" title="Permalink to this definition">¶</a></dt>
+<dt id="id46">
+<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id46" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="id46">
-<em class="property">class </em><code class="sig-name descname">COSMETICS00</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id46" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
 <dt id="id47">
-<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id47" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">COSMETICS00</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id47" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="id48">
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id48" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds COSMETICS00 script structure dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1885,49 +1907,49 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id48">
-<code class="sig-name descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id48" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="id49">
-<code class="sig-name descname">check_metrics_ST</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id49" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id49" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id50">
-<code class="sig-name descname">do_masks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id50" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_metrics_ST</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id50" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id51">
-<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id51" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">do_masks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id51" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id52">
-<code class="sig-name descname">get_checkstats_ST</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id52" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id52" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id53">
+<code class="sig-name descname">get_checkstats_ST</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id53" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="id53">
-<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id53" title="Permalink to this definition">¶</a></dt>
+<dt id="id54">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id54" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">COS_inputs</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id54">
-<code class="sig-name descname">meta</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id54" title="Permalink to this definition">¶</a></dt>
+<dt id="id55">
+<code class="sig-name descname">meta</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id55" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="id55">
-<em class="property">class </em><code class="sig-name descname">DARK01</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id55" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
 <dt id="id56">
-<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id56" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">DARK01</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id56" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="id57">
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id57" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds DARK01 script structure dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1937,19 +1959,19 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id57">
-<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id57" title="Permalink to this definition">¶</a></dt>
+<dt id="id58">
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id58" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="id58">
-<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id58" title="Permalink to this definition">¶</a></dt>
+<dt id="id59">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id59" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">DARK01_inputs</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id59">
-<code class="sig-name descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id59" title="Permalink to this definition">¶</a></dt>
+<dt id="id60">
+<code class="sig-name descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id60" title="Permalink to this definition">¶</a></dt>
 <dd><p>DARK01: Preparation of data for further analysis.
 Calls task.prepare_images().</p>
 <dl class="simple">
@@ -1961,8 +1983,8 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id60">
-<code class="sig-name descname">stack_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id60" title="Permalink to this definition">¶</a></dt>
+<dt id="id61">
+<code class="sig-name descname">stack_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id61" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">each</span> <span class="n">CCD</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">Q</span><span class="p">:</span>
@@ -1984,11 +2006,11 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="id61">
-<em class="property">class </em><code class="sig-name descname">FLAT0X</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id61" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
 <dt id="id62">
-<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id62" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">FLAT0X</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id62" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="id63">
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id63" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds FLAT0X script structure dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1998,8 +2020,8 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id63">
-<code class="sig-name descname">do_indiv_flats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id63" title="Permalink to this definition">¶</a></dt>
+<dt id="id64">
+<code class="sig-name descname">do_indiv_flats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id64" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Preparation of data for further analysis and
 produce flat-field for each OBSID.
@@ -2025,8 +2047,8 @@ plot average profiles f. each CCD and Q (color coded by time)
 </dd></dl>
 
 <dl class="py method">
-<dt id="id64">
-<code class="sig-name descname">do_master_flat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id64" title="Permalink to this definition">¶</a></dt>
+<dt id="id65">
+<code class="sig-name descname">do_master_flat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id65" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Produces</span> <span class="n">Master</span> <span class="n">Flat</span><span class="o">-</span><span class="n">Field</span>
 
@@ -2041,8 +2063,8 @@ plot average profiles f. each CCD and Q (color coded by time)
 </dd></dl>
 
 <dl class="py method">
-<dt id="id65">
-<code class="sig-name descname">do_prdef_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id65" title="Permalink to this definition">¶</a></dt>
+<dt id="id66">
+<code class="sig-name descname">do_prdef_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id66" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Produces</span> <span class="n">mask</span> <span class="n">of</span> <span class="n">defects</span> <span class="ow">in</span> <span class="n">Photo</span><span class="o">-</span><span class="n">Response</span>
 <span class="n">Could</span> <span class="n">use</span> <span class="n">master</span> <span class="n">FF</span><span class="p">,</span> <span class="ow">or</span> <span class="n">a</span> <span class="n">stack</span> <span class="n">of</span> <span class="n">a</span> <span class="n">subset</span> <span class="n">of</span> <span class="n">images</span> <span class="p">(</span><span class="ow">in</span> <span class="n">order</span>
@@ -2060,19 +2082,19 @@ plot average profiles f. each CCD and Q (color coded by time)
 </dd></dl>
 
 <dl class="py method">
-<dt id="id66">
-<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id66" title="Permalink to this definition">¶</a></dt>
+<dt id="id67">
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id67" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="id67">
-<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id67" title="Permalink to this definition">¶</a></dt>
+<dt id="id68">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id68" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">FLATS0X_inputs</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id68">
-<code class="sig-name descname">prepare_images</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id68" title="Permalink to this definition">¶</a></dt>
+<dt id="id69">
+<code class="sig-name descname">prepare_images</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id69" title="Permalink to this definition">¶</a></dt>
 <dd><p>FLAT0X: Preparation of data for further analysis.
 Calls task.prepare_images().</p>
 <dl class="simple">
@@ -2084,24 +2106,24 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id69">
-<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id69" title="Permalink to this definition">¶</a></dt>
+<dt id="id70">
+<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id70" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="id70">
-<em class="property">class </em><code class="sig-name descname">FOCUS00</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id70" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
 <dt id="id71">
-<code class="sig-name descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id71" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">FOCUS00</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id71" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="id72">
+<code class="sig-name descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id72" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is just an assignation of values measured in check_data.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id72">
-<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id72" title="Permalink to this definition">¶</a></dt>
+<dt id="id73">
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id73" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds FOCUS00 script structure dictionary.</p>
 <p>#:param wavelength: int, [nm], wavelength.
 #:param exptime: int, [ms], exposure time.
@@ -2109,55 +2131,55 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id73">
-<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id73" title="Permalink to this definition">¶</a></dt>
+<dt id="id74">
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id74" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="id74">
-<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id74" title="Permalink to this definition">¶</a></dt>
+<dt id="id75">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id75" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">FOCUS00_inputs</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id75">
-<code class="sig-name descname">lock_on_stars</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id75" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="id76">
-<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id76" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">lock_on_stars</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id76" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id77">
-<code class="sig-name descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id77" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id77" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id78">
+<code class="sig-name descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id78" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="id78">
-<em class="property">class </em><code class="sig-name descname">MOT_FF</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id78" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
 <dt id="id79">
-<code class="sig-name descname">extract_HER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id79" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">MOT_FF</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id79" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="id80">
+<code class="sig-name descname">extract_HER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id80" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="id80">
-<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id80" title="Permalink to this definition">¶</a></dt>
+<dt id="id81">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id81" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">MOT_FF_inputs</span></code></p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="id81">
-<em class="property">class </em><code class="sig-name descname">MOT_WARM</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id81" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
 <dt id="id82">
-<code class="sig-name descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id82" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">MOT_WARM</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id82" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="id83">
+<code class="sig-name descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id83" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>EXPOSURES:</dt><dd><p>BIAS, RAMP, CHINJ, FLAT, POINT_w x waves_PNT</p>
 </dd>
@@ -2165,8 +2187,8 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id83">
-<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id83" title="Permalink to this definition">¶</a></dt>
+<dt id="id84">
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id84" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds MOT_WARM script structure dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -2179,44 +2201,44 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id84">
-<code class="sig-name descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id84" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="id85">
-<code class="sig-name descname">check_metrics_ST</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id85" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id85" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id86">
-<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id86" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_metrics_ST</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id86" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id87">
-<code class="sig-name descname">get_checkstats_ST</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id87" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id87" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id88">
+<code class="sig-name descname">get_checkstats_ST</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id88" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="id88">
-<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id88" title="Permalink to this definition">¶</a></dt>
+<dt id="id89">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id89" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">MOT_WARM_inputs</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id89">
-<code class="sig-name descname">lock_on_stars</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id89" title="Permalink to this definition">¶</a></dt>
+<dt id="id90">
+<code class="sig-name descname">lock_on_stars</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id90" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="id90">
-<em class="property">class </em><code class="sig-name descname">NL01</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id90" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
 <dt id="id91">
-<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id91" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">NL01</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id91" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="id92">
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id92" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds NL01 script structure dictionary.</p>
 <p>#:param expts: list of ints [ms], exposure times.
 #:param exptinter: int, ms, exposure time of interleaved source-stability exposures.
@@ -2226,8 +2248,8 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id92">
-<code class="sig-name descname">do_satCTE</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id92" title="Permalink to this definition">¶</a></dt>
+<dt id="id93">
+<code class="sig-name descname">do_satCTE</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id93" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">select</span> <span class="n">ObsIDs</span> <span class="k">with</span> <span class="n">fluence</span><span class="p">(</span><span class="n">exptime</span><span class="p">)</span> <span class="o">&gt;~</span> <span class="mf">0.5</span> <span class="n">FWC</span>
 
@@ -2247,8 +2269,8 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id93">
-<code class="sig-name descname">extract_stats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id93" title="Permalink to this definition">¶</a></dt>
+<dt id="id94">
+<code class="sig-name descname">extract_stats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id94" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs basic analysis: extracts statistics from
 image regions to later build NLC.</p>
 <p><strong>METACODE</strong></p>
@@ -2265,8 +2287,8 @@ image regions to later build NLC.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id94">
-<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id94" title="Permalink to this definition">¶</a></dt>
+<dt id="id95">
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id95" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a list of Exposure Logs and selects exposures from test NL01.</p>
 <p>The filtering takes into account an expected structure for the
 acquisition script.</p>
@@ -2276,14 +2298,14 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="id95">
-<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id95" title="Permalink to this definition">¶</a></dt>
+<dt id="id96">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id96" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">NL01_inputs</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id96">
-<code class="sig-name descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id96" title="Permalink to this definition">¶</a></dt>
+<dt id="id97">
+<code class="sig-name descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id97" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes Raw Data and prepares it for further analysis.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
@@ -2298,8 +2320,8 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id97">
-<code class="sig-name descname">produce_NLCs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id97" title="Permalink to this definition">¶</a></dt>
+<dt id="id98">
+<code class="sig-name descname">produce_NLCs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id98" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Obtains</span> <span class="n">Best</span><span class="o">-</span><span class="n">Fit</span> <span class="n">Non</span><span class="o">-</span><span class="n">Linearity</span> <span class="n">Curve</span>
 
@@ -2318,25 +2340,25 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id98">
-<code class="sig-name descname">recalibrate_exptimes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exptimes</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id98" title="Permalink to this definition">¶</a></dt>
+<dt id="id99">
+<code class="sig-name descname">recalibrate_exptimes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exptimes</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id99" title="Permalink to this definition">¶</a></dt>
 <dd><p>Corrects exposure times given independent calibration of the shutter.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="id99">
-<em class="property">class </em><code class="sig-name descname">NL02</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id99" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
 <dt id="id100">
-<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id100" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">NL02</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id100" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="id101">
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id101" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds NL02 script structure dictionary.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id101">
-<code class="sig-name descname">do_satCTE</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id101" title="Permalink to this definition">¶</a></dt>
+<dt id="id102">
+<code class="sig-name descname">do_satCTE</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id102" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">select</span> <span class="n">ObsIDs</span> <span class="k">with</span> <span class="n">fluence</span><span class="p">(</span><span class="n">exptime</span><span class="p">)</span> <span class="o">&gt;~</span> <span class="mf">0.5</span> <span class="n">FWC</span>
 
@@ -2356,14 +2378,14 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="id102">
-<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id102" title="Permalink to this definition">¶</a></dt>
+<dt id="id103">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id103" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">NL02_inputs</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id103">
-<code class="sig-name descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id103" title="Permalink to this definition">¶</a></dt>
+<dt id="id104">
+<code class="sig-name descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id104" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes Raw Data and prepares it for further analysis.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span><span class="p">:</span>
@@ -2378,8 +2400,8 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id104">
-<code class="sig-name descname">produce_NLCs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id104" title="Permalink to this definition">¶</a></dt>
+<dt id="id105">
+<code class="sig-name descname">produce_NLCs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id105" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Obtains</span> <span class="n">Best</span><span class="o">-</span><span class="n">Fit</span> <span class="n">Non</span><span class="o">-</span><span class="n">Linearity</span> <span class="n">Curve</span>
 
@@ -2400,11 +2422,11 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="id105">
-<em class="property">class </em><code class="sig-name descname">PERSIST01</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id105" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
 <dt id="id106">
-<code class="sig-name descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id106" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">PERSIST01</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id106" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="id107">
+<code class="sig-name descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id107" title="Permalink to this definition">¶</a></dt>
 <dd><p>Basic analysis of data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
@@ -2416,8 +2438,8 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id107">
-<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id107" title="Permalink to this definition">¶</a></dt>
+<dt id="id108">
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id108" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds PERSISTENCE01 script structure dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -2431,8 +2453,8 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id108">
-<code class="sig-name descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id108" title="Permalink to this definition">¶</a></dt>
+<dt id="id109">
+<code class="sig-name descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id109" title="Permalink to this definition">¶</a></dt>
 <dd><p>PERSIST01: Checks quality of ingested data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
@@ -2460,23 +2482,23 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id109">
-<code class="sig-name descname">check_metrics_ST</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id109" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="id110">
-<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id110" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_metrics_ST</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id110" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id111">
-<code class="sig-name descname">get_checkstats_ST</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id111" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id111" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id112">
-<code class="sig-name descname">get_satur_masks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id112" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_checkstats_ST</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id112" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id113">
+<code class="sig-name descname">get_satur_masks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id113" title="Permalink to this definition">¶</a></dt>
 <dd><p>Basic analysis of data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
@@ -2486,14 +2508,14 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="id113">
-<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id113" title="Permalink to this definition">¶</a></dt>
+<dt id="id114">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id114" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">PERSIST01_inputs</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id114">
-<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id114" title="Permalink to this definition">¶</a></dt>
+<dt id="id115">
+<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id115" title="Permalink to this definition">¶</a></dt>
 <dd><p>Meta-analysis of data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">CCD</span><span class="p">:</span>
@@ -2507,8 +2529,8 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id115">
-<code class="sig-name descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id115" title="Permalink to this definition">¶</a></dt>
+<dt id="id116">
+<code class="sig-name descname">prep_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id116" title="Permalink to this definition">¶</a></dt>
 <dd><p>PERSIST01: Preparation of data for further analysis.
 Calls task.prepare_images().</p>
 <dl class="simple">
@@ -2519,18 +2541,18 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id116">
-<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id116" title="Permalink to this definition">¶</a></dt>
+<dt id="id117">
+<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id117" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="id117">
-<em class="property">class </em><code class="sig-name descname">PTC0X</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id117" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
 <dt id="id118">
-<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id118" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">PTC0X</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id118" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="id119">
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id119" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds PTC0X script structure dictionary.</p>
 <p>#:param exptimes: list of ints [ms], exposure times.
 #:param frames: list of ints, number of frames for each exposure time.
@@ -2539,14 +2561,14 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id119">
-<code class="sig-name descname">extract_HER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id119" title="Permalink to this definition">¶</a></dt>
+<dt id="id120">
+<code class="sig-name descname">extract_HER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id120" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hard Edge Response Analysis</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id120">
-<code class="sig-name descname">extract_PTC</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id120" title="Permalink to this definition">¶</a></dt>
+<dt id="id121">
+<code class="sig-name descname">extract_PTC</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id121" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Performs basic analysis of images:</dt><dd><ul class="simple">
 <li><p>builds PTC curves: both on non-binned and binned images</p></li>
@@ -2570,24 +2592,24 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id121">
-<code class="sig-name descname">f_extract_PTC</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ccdobjcol</span></em>, <em class="sig-param"><span class="n">medcol</span></em>, <em class="sig-param"><span class="n">varcol</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id121" title="Permalink to this definition">¶</a></dt>
+<dt id="id122">
+<code class="sig-name descname">f_extract_PTC</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ccdobjcol</span></em>, <em class="sig-param"><span class="n">medcol</span></em>, <em class="sig-param"><span class="n">varcol</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id122" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="id122">
-<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id122" title="Permalink to this definition">¶</a></dt>
+<dt id="id123">
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id123" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="id123">
-<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id123" title="Permalink to this definition">¶</a></dt>
+<dt id="id124">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id124" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">PTC0X_inputs</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id124">
-<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id124" title="Permalink to this definition">¶</a></dt>
+<dt id="id125">
+<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id125" title="Permalink to this definition">¶</a></dt>
 <dd><p>Analyzes the variance and fluence:
 gain, and gain(fluence)</p>
 <p>METACODE</p>
@@ -2608,51 +2630,51 @@ gain, and gain(fluence)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id125">
-<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id125" title="Permalink to this definition">¶</a></dt>
+<dt id="id126">
+<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id126" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="id126">
-<em class="property">class </em><code class="sig-name descname">STRAY00</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id126" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
 <dt id="id127">
-<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id127" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">STRAY00</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id127" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="id128">
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id128" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds STRAY00 script structure dictionary.
 :param diffvalues: dict, opt, differential values.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id128">
-<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id128" title="Permalink to this definition">¶</a></dt>
+<dt id="id129">
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id129" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="id129">
-<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id129" title="Permalink to this definition">¶</a></dt>
+<dt id="id130">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id130" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">STRAY00_inputs</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id130">
-<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id130" title="Permalink to this definition">¶</a></dt>
+<dt id="id131">
+<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id131" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="id131">
-<em class="property">class </em><code class="sig-name descname">TP00</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id131" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
 <dt id="id132">
-<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id132" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">TP00</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id132" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="id133">
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id133" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="id133">
-<code class="sig-name descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id133" title="Permalink to this definition">¶</a></dt>
+<dt id="id134">
+<code class="sig-name descname">check_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id134" title="Permalink to this definition">¶</a></dt>
 <dd><p>TP01: Checks quality of ingested data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">check</span> <span class="n">common</span> <span class="n">HK</span> <span class="n">values</span> <span class="n">are</span> <span class="n">within</span> <span class="n">safe</span> <span class="o">/</span> <span class="n">nominal</span> <span class="n">margins</span>
@@ -2680,29 +2702,29 @@ gain, and gain(fluence)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id134">
-<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id134" title="Permalink to this definition">¶</a></dt>
+<dt id="id135">
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id135" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="id135">
-<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id135" title="Permalink to this definition">¶</a></dt>
+<dt id="id136">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id136" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">TP00_inputs</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id136">
-<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id136" title="Permalink to this definition">¶</a></dt>
+<dt id="id137">
+<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id137" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="id137">
-<em class="property">class </em><code class="sig-name descname">TP01</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id137" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
 <dt id="id138">
-<code class="sig-name descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id138" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">TP01</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id138" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="id139">
+<code class="sig-name descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id139" title="Permalink to this definition">¶</a></dt>
 <dd><p>Basic analysis of data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span> <span class="p">[</span><span class="n">there</span> <span class="n">are</span> <span class="n">different</span> <span class="n">TOI_TP</span> <span class="ow">and</span> <span class="n">TP</span><span class="o">-</span><span class="n">patterns</span><span class="p">]:</span>
@@ -2721,13 +2743,13 @@ gain, and gain(fluence)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id139">
-<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id139" title="Permalink to this definition">¶</a></dt>
+<dt id="id140">
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id140" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="id140">
-<code class="sig-name descname">extract</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id140" title="Permalink to this definition">¶</a></dt>
+<dt id="id141">
+<code class="sig-name descname">extract</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id141" title="Permalink to this definition">¶</a></dt>
 <dd><p>Obtain maps of dipoles.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">id_delay</span> <span class="p">(</span><span class="n">there</span> <span class="n">are</span> <span class="mi">2</span><span class="p">):</span>
@@ -2748,19 +2770,19 @@ gain, and gain(fluence)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id141">
-<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id141" title="Permalink to this definition">¶</a></dt>
+<dt id="id142">
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id142" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="id142">
-<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id142" title="Permalink to this definition">¶</a></dt>
+<dt id="id143">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id143" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">TP01_inputs</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id143">
-<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id143" title="Permalink to this definition">¶</a></dt>
+<dt id="id144">
+<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id144" title="Permalink to this definition">¶</a></dt>
 <dd><p>Meta-analysis of data:</p>
 <blockquote>
 <div><p>Try to identify tau and pixel-phase location for each trap.
@@ -2784,8 +2806,8 @@ Need to associate dipoles across TOI_TPs and TP-patterns</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id144">
-<code class="sig-name descname">prepare_images</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id144" title="Permalink to this definition">¶</a></dt>
+<dt id="id145">
+<code class="sig-name descname">prepare_images</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id145" title="Permalink to this definition">¶</a></dt>
 <dd><p>InjTask: Preparation of data for further analysis.
 Calls task.prepare_images().</p>
 <dl class="simple">
@@ -2797,18 +2819,18 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id145">
-<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id145" title="Permalink to this definition">¶</a></dt>
+<dt id="id146">
+<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id146" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="id146">
-<em class="property">class </em><code class="sig-name descname">TP02</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id146" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
 <dt id="id147">
-<code class="sig-name descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id147" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">TP02</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id147" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="id148">
+<code class="sig-name descname">basic_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id148" title="Permalink to this definition">¶</a></dt>
 <dd><p>Basic analysis of data.</p>
 <p><strong>METACODE</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span> <span class="n">e</span><span class="o">.</span> <span class="n">ObsID</span> <span class="p">[</span><span class="n">there</span> <span class="n">are</span> <span class="n">different</span> <span class="n">TOI_TP</span> <span class="ow">and</span> <span class="n">TP</span><span class="o">-</span><span class="n">patterns</span><span class="p">]:</span>
@@ -2827,30 +2849,30 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id148">
-<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id148" title="Permalink to this definition">¶</a></dt>
+<dt id="id149">
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id149" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="id149">
-<code class="sig-name descname">extract</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id149" title="Permalink to this definition">¶</a></dt>
+<dt id="id150">
+<code class="sig-name descname">extract</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id150" title="Permalink to this definition">¶</a></dt>
 <dd><p>Obtain Maps of Serial Dipoles.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id150">
-<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id150" title="Permalink to this definition">¶</a></dt>
+<dt id="id151">
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id151" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="id151">
-<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id151" title="Permalink to this definition">¶</a></dt>
+<dt id="id152">
+<code class="sig-name descname">inputsclass</code><a class="headerlink" href="#id152" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">TP02_inputs</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id152">
-<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id152" title="Permalink to this definition">¶</a></dt>
+<dt id="id153">
+<code class="sig-name descname">meta_analysis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id153" title="Permalink to this definition">¶</a></dt>
 <dd><p>Meta-analysis of data:</p>
 <blockquote>
 <div><p>Try to identify tau and pixel-phase location for each trap.
@@ -2872,8 +2894,8 @@ Need to associate dipoles across TOI_TPs and TP-patterns</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id153">
-<code class="sig-name descname">prepare_images</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id153" title="Permalink to this definition">¶</a></dt>
+<dt id="id154">
+<code class="sig-name descname">prepare_images</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id154" title="Permalink to this definition">¶</a></dt>
 <dd><p>InjTask: Preparation of data for further analysis.
 Calls task.prepare_images().</p>
 <dl class="simple">
@@ -2885,31 +2907,31 @@ cosmetics masking</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id154">
-<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id154" title="Permalink to this definition">¶</a></dt>
+<dt id="id155">
+<code class="sig-name descname">set_inpdefaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id155" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="id155">
-<em class="property">class </em><code class="sig-name descname">TP11</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id155" title="Permalink to this definition">¶</a></dt>
+<dt id="id156">
+<em class="property">class </em><code class="sig-name descname">TP11</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id156" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
-<dt id="id156">
-<em class="property">class </em><code class="sig-name descname">TP21</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id156" title="Permalink to this definition">¶</a></dt>
+<dt id="id157">
+<em class="property">class </em><code class="sig-name descname">TP21</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id157" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="id157">
-<code class="sig-name descname">dotask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">taskname</span></em>, <em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id157" title="Permalink to this definition">¶</a></dt>
+<dt id="id158">
+<code class="sig-name descname">dotask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">taskname</span></em>, <em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id158" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic test master function.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id158">
-<code class="sig-name descname">wait_and_run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dayfolder</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id158" title="Permalink to this definition">¶</a></dt>
+<dt id="id159">
+<code class="sig-name descname">wait_and_run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dayfolder</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id159" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -3108,26 +3130,26 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="id159">
-<em class="property">class </em><code class="sig-prename descclassname">vison.pipe.task.</code><code class="sig-name descname">Task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id159" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
 <dt id="id160">
-<code class="sig-name descname">IsComplianceMatrixOK</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">complidict</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id160" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
+<em class="property">class </em><code class="sig-prename descclassname">vison.pipe.task.</code><code class="sig-name descname">Task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">drill</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanafter</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id160" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="id161">
-<code class="sig-name descname">addComplianceMatrix2Log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">complidict</span></em>, <em class="sig-param"><span class="n">label</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id161" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">IsComplianceMatrixOK</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">complidict</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id161" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id162">
-<code class="sig-name descname">addComplianceMatrix2Report</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">complidict</span></em>, <em class="sig-param"><span class="n">label</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">caption</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id162" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">addComplianceMatrix2Log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">complidict</span></em>, <em class="sig-param"><span class="n">label</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id162" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id163">
-<code class="sig-name descname">addFigure2Report</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">figkey</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id163" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">addComplianceMatrix2Report</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">complidict</span></em>, <em class="sig-param"><span class="n">label</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">caption</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id163" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id164">
+<code class="sig-name descname">addFigure2Report</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">figkey</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id164" title="Permalink to this definition">¶</a></dt>
 <dd><div class="line-block">
 <div class="line">Adds a figure to the test report.</div>
 <div class="line">It serves as an interface to self.report.add_Figure()</div>
@@ -3135,8 +3157,8 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id164">
-<code class="sig-name descname">addFigures_ST</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dobuilddata</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id164" title="Permalink to this definition">¶</a></dt>
+<dt id="id165">
+<code class="sig-name descname">addFigures_ST</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dobuilddata</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id165" title="Permalink to this definition">¶</a></dt>
 <dd><div class="line-block">
 <div class="line">Makes plots (self.doPlot) and adds them to the test </div>
 <div class="line">report (self.addFigure2Report).</div>
@@ -3144,105 +3166,105 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id165">
-<code class="sig-name descname">addFlagsToLog</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id165" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="id166">
-<code class="sig-name descname">addFlagsToReport</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id166" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">addFlagsToLog</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id166" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id167">
-<code class="sig-name descname">addHKPlotsMatrix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id167" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">addFlagsToReport</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id167" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id168">
+<code class="sig-name descname">addHKPlotsMatrix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id168" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds to self.report a table-figure with HK [self.HKKeys] during test.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id168">
-<code class="sig-name descname">addHK_2_dd</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id168" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="id169">
-<code class="sig-name descname">add_data_inventory_to_report</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tDict</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id169" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">addHK_2_dd</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id169" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id170">
-<code class="sig-name descname">add_inputs_to_report</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id170" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_data_inventory_to_report</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tDict</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id170" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id171">
-<code class="sig-name descname">add_labels_to_explog</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">structure</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id171" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_inputs_to_report</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id171" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id172">
-<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id172" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_labels_to_explog</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">structure</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id172" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id173">
-<code class="sig-name descname">catchtraceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id173" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">build_scriptdict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diffvalues</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">elvis</span><span class="o">=</span><span class="default_value">'7.5.X'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id173" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id174">
-<code class="sig-name descname">check_HK</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">HKKeys</span></em>, <em class="sig-param"><span class="n">reference</span><span class="o">=</span><span class="default_value">'command'</span></em>, <em class="sig-param"><span class="n">limits</span><span class="o">=</span><span class="default_value">'P'</span></em>, <em class="sig-param"><span class="n">tag</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">doReport</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">doLog</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id174" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">catchtraceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id174" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id175">
-<code class="sig-name descname">check_HK_ST</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id175" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_HK</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">HKKeys</span></em>, <em class="sig-param"><span class="n">reference</span><span class="o">=</span><span class="default_value">'command'</span></em>, <em class="sig-param"><span class="n">limits</span><span class="o">=</span><span class="default_value">'P'</span></em>, <em class="sig-param"><span class="n">tag</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">doReport</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">doLog</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id175" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id176">
-<code class="sig-name descname">check_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id176" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_HK_ST</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id176" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id177">
+<code class="sig-name descname">check_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id177" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic check_data method</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id177">
-<code class="sig-name descname">check_metrics_T</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id177" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="id178">
-<code class="sig-name descname">check_stat_perCCD</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arr</span></em>, <em class="sig-param"><span class="n">CCDlims</span></em>, <em class="sig-param"><span class="n">CCDs</span><span class="o">=</span><span class="default_value">['CCD1', 'CCD2', 'CCD3']</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id178" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_metrics_T</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id178" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id179">
-<code class="sig-name descname">check_stat_perCCDQandCol</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arr</span></em>, <em class="sig-param"><span class="n">lims</span></em>, <em class="sig-param"><span class="n">CCDs</span><span class="o">=</span><span class="default_value">['CCD1', 'CCD2', 'CCD3']</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id179" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_stat_perCCD</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arr</span></em>, <em class="sig-param"><span class="n">CCDlims</span></em>, <em class="sig-param"><span class="n">CCDs</span><span class="o">=</span><span class="default_value">['CCD1', 'CCD2', 'CCD3']</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id179" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id180">
-<code class="sig-name descname">check_stat_perCCDandCol</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arr</span></em>, <em class="sig-param"><span class="n">lims</span></em>, <em class="sig-param"><span class="n">CCDs</span><span class="o">=</span><span class="default_value">['CCD1', 'CCD2', 'CCD3']</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id180" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_stat_perCCDQandCol</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arr</span></em>, <em class="sig-param"><span class="n">lims</span></em>, <em class="sig-param"><span class="n">CCDs</span><span class="o">=</span><span class="default_value">['CCD1', 'CCD2', 'CCD3']</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id180" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id181">
-<code class="sig-name descname">check_stat_perCCDandQ</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arr</span></em>, <em class="sig-param"><span class="n">CCDQlims</span></em>, <em class="sig-param"><span class="n">CCDs</span><span class="o">=</span><span class="default_value">['CCD1', 'CCD2', 'CCD3']</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id181" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_stat_perCCDandCol</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arr</span></em>, <em class="sig-param"><span class="n">lims</span></em>, <em class="sig-param"><span class="n">CCDs</span><span class="o">=</span><span class="default_value">['CCD1', 'CCD2', 'CCD3']</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id181" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id182">
-<code class="sig-name descname">cleanaux</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id182" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_stat_perCCDandQ</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arr</span></em>, <em class="sig-param"><span class="n">CCDQlims</span></em>, <em class="sig-param"><span class="n">CCDs</span><span class="o">=</span><span class="default_value">['CCD1', 'CCD2', 'CCD3']</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id182" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id183">
-<code class="sig-name descname">create_mockexplog</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">OBSID0</span><span class="o">=</span><span class="default_value">1000</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id183" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">cleanaux</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id183" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="id184">
-<code class="sig-name descname">doPlot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">figkey</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id184" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">create_mockexplog</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">OBSID0</span><span class="o">=</span><span class="default_value">1000</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id184" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="id185">
+<code class="sig-name descname">doPlot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">figkey</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id185" title="Permalink to this definition">¶</a></dt>
 <dd><div class="line-block">
 <div class="line">instantiates a figure object, configures it, and makes it </div>
 <div class="line">render to a hardcopy file.</div>
@@ -3250,8 +3272,8 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id185">
-<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em>, <em class="sig-param"><span class="n">colorblind</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">wavedkeys</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">surrogate</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id185" title="Permalink to this definition">¶</a></dt>
+<dt id="id186">
+<code class="sig-name descname">filterexposures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">explog</span></em>, <em class="sig-param"><span class="n">OBSID_lims</span></em>, <em class="sig-param"><span class="n">colorblind</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">wavedkeys</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">surrogate</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id186" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a list of Exposure Logs and selects exposures from test ‘test’.</p>
 <p>The filtering takes into account an expected structure for the
 acquisition script.</p>
@@ -3261,31 +3283,31 @@ date-folders.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id186">
-<code class="sig-name descname">get_checkstats_T</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id186" title="Permalink to this definition">¶</a></dt>
+<dt id="id187">
+<code class="sig-name descname">get_checkstats_T</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id187" title="Permalink to this definition">¶</a></dt>
 <dd><p>“</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id187">
-<code class="sig-name descname">prepare_images</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">doExtract</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">doBadPixels</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">doMask</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">doOffset</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">doBias</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">doFF</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id187" title="Permalink to this definition">¶</a></dt>
+<dt id="id188">
+<code class="sig-name descname">prepare_images</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">doExtract</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">doBadPixels</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">doMask</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">doOffset</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">doBias</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">doFF</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id188" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="id188">
-<code class="sig-name descname">recover_progress</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DataDictFile</span></em>, <em class="sig-param"><span class="n">reportobjFile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id188" title="Permalink to this definition">¶</a></dt>
+<dt id="id189">
+<code class="sig-name descname">recover_progress</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DataDictFile</span></em>, <em class="sig-param"><span class="n">reportobjFile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id189" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reloads dd and report from hardcopies generated by self.save_progress().</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id189">
-<code class="sig-name descname">save_progress</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DataDictFile</span></em>, <em class="sig-param"><span class="n">reportobjFile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id189" title="Permalink to this definition">¶</a></dt>
+<dt id="id190">
+<code class="sig-name descname">save_progress</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">DataDictFile</span></em>, <em class="sig-param"><span class="n">reportobjFile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id190" title="Permalink to this definition">¶</a></dt>
 <dd><p>Saves self.dd and self.report to hardcopy files to save progress.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id190">
-<code class="sig-name descname">skipMissingPlot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">ref</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id190" title="Permalink to this definition">¶</a></dt>
+<dt id="id191">
+<code class="sig-name descname">skipMissingPlot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">ref</span></em><span class="sig-paren">)</span><a class="headerlink" href="#id191" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -3355,7 +3377,7 @@ date-folders.</p>
         <li class="right" >
           <a href="reuse.html" title="Repurposing the vison package"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+18.g8a1eef5 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+283.gd3acf3e.dirty documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Pipeline</a></li> 
       </ul>
     </div>
