@@ -723,8 +723,8 @@ class PSF0X(PT.PointTask):
 
 
         if not self.drill:
-            stop()
-            spotsIN_array = files.cPickleRead(self.dd.products['SPOTS']).data['spots'].copy()
+            
+            spotsIN_array = files.cPickleRead(self.dd.products['SPOTS'])['data']['spots'].copy()
 
             for iObs in range(nObs):
 
