@@ -621,7 +621,7 @@ class PSF0X(PT.PointTask):
 
         self.save_CDP(spots_cdp)
         self.pack_CDP_to_dd(spots_cdp, 'SPOTS')
-        
+
 
         if self.log is not None:
             self.log.info('Saved spot "bag" files to %s' % spotspath)
@@ -700,31 +700,35 @@ class PSF0X(PT.PointTask):
 
         # INITIALIZATIONS
 
-        outcol = 'spots_name_nobfe'
-        self.dd.initColumn(outcol, CIndices, dtype='U100', valini='None')
+        spotspath = self.inputs['subpaths']['spots']
+        picklespath = self.inputs['subpaths']['ccdpickles']
+
+
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+
+        spotsOUT_cdp = self.CDP_lib['SPOTS_NOBFE']
+
+        spotsOUT_cdp.rootname = '{}_{}_{}'.format(spotsOUT_cdp.rootname,
+                self.inputs['test'],
+                self.inputs['BLOCKID'])
+
+        spotsOUT_cdp.path = spotspath
+
+        spotsOUT_cdp.header = CDP_header.copy()
+        spotsOUT_cdp.meta = dict()
+        spotsOUT_cdp.data = OrderedDict(spots=np.zeros((nObs, nCCDs, nQuads, nSpots), dtype=object))
+
 
         if not self.drill:
 
-            spotspath = self.inputs['subpaths']['spots']
-            #strackers = self.ogse.startrackers
-            #stlabels = self.ogse.labels
-            #psCCDcoodicts = self._get_psCCDcoodicts()
+            spotsIN_array = files.cPickleRead(self.dd.products['SPOTS'])['spots'].copy()
 
             for iObs in range(nObs):
-            #for iObs in range(3): # TESTS
-            #for iObs in [20]: # TESTs
 
                 for jCCD, CCDk in enumerate(CCDs):
-
-                    fullINspots_name = os.path.join(
-                        spotspath, '%s.pick' % self.dd.mx['spots_name'][iObs, jCCD])
-
-                    spotsIN_array = files.cPickleRead(fullINspots_name)['spots']
-
-
-                    # Process individual "spots"
-
-                    spotsOUT_array = np.zeros((nQuads, nSpots), dtype=object)
 
                     for kQ, Quad in enumerate(Quads):
 
@@ -733,30 +737,28 @@ class PSF0X(PT.PointTask):
                         for lS, SpotName in enumerate(SpotNames):
 
 
-                            inSpot = copy.deepcopy(spotsIN_array[kQ, lS])
+                            inSpot = copy.deepcopy(spotsIN_array[iObs, jCCD, kQ, lS])
                             img = inSpot.data.copy()
                             try:
                                 oimg = G15.correct_estatic(img, _Asol)
                                 outSpot = copy.deepcopy(inSpot)
                                 outSpot.data = oimg.copy()
-                                spotsOUT_array[kQ, lS] = copy.deepcopy(outSpot)
+                                spots_cdp.data['spots'][iObs, jCCD, kQ, lS] = copy.deepcopy(outSpot)
                             except:
-                                spotsOUT_array[kQ, lS] = None
+                                spots_cdp.data['spots'][iObs, jCCD, kQ, lS] = None
 
-                    # save "spots" to a separate file and keep name in dd
+        spotsOUT_cdp.meta.update(dict(nObs=nObs,
+            nCCDs=nCCDs,
+            nQuads=nQuads,
+            nSpots=nSpots,
+            SpotNames=SpotNames,
+            structure='spots:np.zeros((nObs, nCCDs, nQuads, nSpots), dtype=object)'))
 
-                    self.dd.mx[outcol][iObs,
-                        jCCD] = '%s_spots_nobfe' % self.dd.mx['File_name'][iObs, jCCD]
-
-                    fullspots_name = os.path.join(
-                        spotspath, '%s.pick' % self.dd.mx[outcol][iObs, jCCD])
-
-                    spotsdict = dict(spots=spotsOUT_array)
-
-                    files.cPickleDumpDictionary(spotsdict, fullspots_name)
+        self.save_CDP(spotsOUT_cdp)
+        self.pack_CDP_to_dd(spotsOUT_cdp, 'SPOTS_NOBFE')
 
         if self.log is not None:
-            self.log.info('Saved BFE-corrected spot "bag" files to %s' % spotspath)
+            self.log.info('Saved BFE-corrected spot "bag" file to %s' % spotspath)
 
     def _extract_basic(self, spotscol='spots_name', prefix=''):
         """ """
