@@ -377,7 +377,6 @@ class PSF0X(PT.PointTask):
             self.report.add_Section(
                 keyword='debug', Title='Debugging', level=0)
 
-        return
 
         dIndices = copy.deepcopy(self.dd.indices)
 
@@ -502,7 +501,7 @@ class PSF0X(PT.PointTask):
             self.dd.indices[0].len = 1
 
 
-        bypass = False
+        bypass = True
         if not bypass: #TEST
 
             super(PSF0X, self).prepare_images(
@@ -516,7 +515,7 @@ class PSF0X(PT.PointTask):
         dIndices = copy.deepcopy(self.dd.indices)
 
         CCDs = dIndices.get_vals('CCD')
-        #nCCD = len(CCDs)
+        nCCDs = len(CCDs)
         Quads = dIndices.get_vals('Quad')
         nQuads = len(Quads)
         nObs = dIndices[dIndices.names.index('ix')].len
@@ -529,12 +528,32 @@ class PSF0X(PT.PointTask):
 
         # INITIALIZATIONS
 
-        self.dd.initColumn('spots_name', CIndices, dtype='U100', valini='None')
+        #self.dd.initColumn('spots_name', CIndices, dtype='U100', valini='None')
 
         if not self.drill:
+
+            function, module = utils.get_function_module()
+            CDP_header = self.CDP_header.copy()
+            CDP_header.update(dict(function=function, module=module))
+            CDP_header['DATE'] = self.get_time_tag()
+
             #rpath = self.inputs['resultspath']
             picklespath = self.inputs['subpaths']['ccdpickles']
             spotspath = self.inputs['subpaths']['spots']
+
+            spots_cdp = self.CDP_lib['SPOTS']
+
+            spots_cdp.rootname = '{}_{}_{}'.format(spots_cdp.rootname,
+                self.inputs['test'],
+                self.inputs['BLOCKID'])
+
+            spots_cdp.path = spotspath
+
+            spots_cdp.header = CDP_header.copy()
+            spots_cdp.meta = dict()
+            spots_cdp.data = OrderedDict(spots=np.zeros((nObs, nCCDs, nQuads, nSpots), dtype=object))
+
+
             strackers = self.ogse.startrackers
             stlabels = self.ogse.labels
 
@@ -563,8 +582,6 @@ class PSF0X(PT.PointTask):
 
                     # Cut-out "spots"
 
-                    spots_array = np.zeros((nQuads, nSpots), dtype=object)
-
                     for kQ, Quad in enumerate(Quads):
 
                         for lS, SpotName in enumerate(SpotNames):
@@ -574,19 +591,8 @@ class PSF0X(PT.PointTask):
                             lSpot = polib.extract_spot(
                                 ccdobj, coo, Quad, stampw=stampw)
 
-                            spots_array[kQ, lS] = copy.deepcopy(lSpot)
+                            spots_cdp.data['spots'][iObs, jCCD, kQ, lS] = copy.deepcopy(lSpot)
 
-                    # save "spots" to a separate file and keep name in dd
-
-                    self.dd.mx['spots_name'][iObs,
-                                             jCCD] = '%s_spots' % self.dd.mx['File_name'][iObs, jCCD]
-
-                    fullspots_name = os.path.join(
-                        spotspath, '%s.pick' % self.dd.mx['spots_name'][iObs, jCCD])
-
-                    spotsdict = dict(spots=spots_array)
-
-                    files.cPickleDumpDictionary(spotsdict, fullspots_name)
 
                     if onTests:
                     #doPlot=True
@@ -598,7 +604,7 @@ class PSF0X(PT.PointTask):
 
                             for lS, SpotName in enumerate(SpotNames):
 
-                                img = spotsdict['spots'][kQ, lS].data
+                                img = spots_cdp.data['spots'][iObs, jCCD, kQ, lS].data
                                 fig = plt.figure()
                                 ax = fig.add_subplot(111)
                                 ax.imshow(img.T, origin='lower left')
@@ -606,6 +612,16 @@ class PSF0X(PT.PointTask):
                                     (iObs+1,CCDk,Quad,SpotName))
                                 plt.show()
 
+        spots_cdp.meta.update(dict(nObs=nObs,
+            nCCDs=nCCDs,
+            nQuads=nQuads,
+            nSpots=nSpots,
+            SpotNames=SpotNames,
+            structure='spots:np.zeros((nObs, nCCDs, nQuads, nSpots), dtype=object)'))
+
+        self.save_CDP(spots_cdp)
+        self.pack_CDP_to_dd(spots_cdp, 'SPOTS')
+        
 
         if self.log is not None:
             self.log.info('Saved spot "bag" files to %s' % spotspath)

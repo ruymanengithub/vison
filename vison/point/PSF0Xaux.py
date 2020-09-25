@@ -222,6 +222,9 @@ def get_CDP_lib(test):
     CDP_lib['SPOTS'] = cdp.CDP()
     CDP_lib['SPOTS'].rootname = 'Spots'
 
+    CDP_lib['SPOTS_NOBFE'] = cdp.CDP()
+    CDP_lib['SPOTS_NOBFE'].rootname = 'Spots_nobfe'
+
     CDP_lib['RAW_CTALK'] = cdp.CDP()
     CDP_lib['RAW_CTALK'].rootname = 'Raw_crosstalk'
 
