@@ -501,7 +501,7 @@ class PSF0X(PT.PointTask):
             self.dd.indices[0].len = 1
 
 
-        bypass = True
+        bypass = False
         if not bypass: #TEST
 
             super(PSF0X, self).prepare_images(
@@ -687,7 +687,7 @@ class PSF0X(PT.PointTask):
         dIndices = copy.deepcopy(self.dd.indices)
 
         CCDs = dIndices.get_vals('CCD')
-        #nCCD = len(CCDs)
+        nCCDs = len(CCDs)
         Quads = dIndices.get_vals('Quad')
         nQuads = len(Quads)
         nObs = dIndices[dIndices.names.index('ix')].len
