@@ -411,6 +411,18 @@ class PSF0X(PT.PointTask):
         spots_cdp.meta = dict()
         spots_cdp.data = OrderedDict(spots=np.zeros((nObs, nCCDs, nQuads, nSpots), dtype=object))
 
+        strackers = self.ogse.startrackers
+        stlabels = self.ogse.labels
+
+        psCCDcoodicts = OrderedDict(names=strackers['CCD1']['col001'].starnames,
+            CCDs=CCDs,
+            labels=stlabels)
+
+        for jCCD, CCDk in enumerate(CCDs):
+            psCCDcoodicts[CCDk] = OrderedDict()
+            for ilabel, label in enumerate(stlabels):
+                psCCDcoodicts[CCDk][label] = strackers[CCDk][label].get_allCCDcoos(
+                    nested=True)
 
         for iObs in range(nObs):
                 # for iObs in range(3): # TESTS
