@@ -761,7 +761,7 @@ class PSF0X(PT.PointTask):
         if self.log is not None:
             self.log.info('Saved BFE-corrected spot "bag" file to %s' % spotspath)
 
-    def _extract_basic(self, spotscol='spots_name', prefix=''):
+    def _extract_basic(self, spotsbag='SPOTS', prefix=''):
         """ """
 
         CQSindices = copy.deepcopy(self.dd.indices)
@@ -808,7 +808,7 @@ class PSF0X(PT.PointTask):
         if self.drill:
             return
 
-        spotspath = self.inputs['subpaths']['spots']
+        spots_array = files.cPickleRead(self.dd.products[spotsbag])['data']['spots'].copy()
 
         #psCCDcoodicts = self._get_psCCDcoodicts()
 
@@ -821,18 +821,13 @@ class PSF0X(PT.PointTask):
 
             for jCCD, CCDk in enumerate(CCDs):
 
-                fullINspots_name = os.path.join(
-                        spotspath, '%s.pick' % self.dd.mx[spotscol][iObs, jCCD])
-
-                spots_array = files.cPickleRead(fullINspots_name)['spots']
-
                 for kQ, Quad in enumerate(Quads):
 
                     for lS, SpotName in enumerate(SpotNames):
 
                         ixtup = (iObs, jCCD, kQ, lS)
 
-                        inSpot = copy.deepcopy(spots_array[kQ, lS])
+                        inSpot = copy.deepcopy(spots_array[ixtup])
 
                         try: 
                             bas_res = inSpot.measure_basic(rap=10, rin=15, rout=-1,
@@ -928,7 +923,7 @@ class PSF0X(PT.PointTask):
             self.report.add_Section(
                 keyword='basic', Title='Basic Extraction of Spots Shapes', level=0)
 
-        self._extract_basic(spotscol='spots_name', prefix='')
+        self._extract_basic(spotsbag='SPOTS', prefix='')
 
     def basic_analysis_noBFE(self):
         """Performs basic analysis on [BFE-corrected] spots:
@@ -941,9 +936,9 @@ class PSF0X(PT.PointTask):
             self.report.add_Section(
                 keyword='nobfe_basic', Title='BFE corrected: Basic Extraction of Spots Shapes', level=0)
 
-        self._extract_basic(spotscol='spots_name_nobfe', prefix='nobfe_')        
+        self._extract_basic(spotsbag='SPOTS_NOBFE', prefix='nobfe_')        
 
-    def _build_SpotsPoster(self, spotscol='spots_name', histequ=True):
+    def _build_SpotsPoster(self, spotsbag='SPOTS', histequ=True):
         """ """
 
         CQSindices = copy.deepcopy(self.dd.indices)
@@ -961,7 +956,7 @@ class PSF0X(PT.PointTask):
         if self.drill:
             return
 
-        spotspath = self.inputs['subpaths']['spots']
+        spots_array = files.cPickleRead(self.dd.products[spotsbag])['data']['spots'].copy()
 
         psCCDcoodicts = self._get_psCCDcoodicts()
 
@@ -975,16 +970,14 @@ class PSF0X(PT.PointTask):
 
             for jCCD, CCDk in enumerate(CCDs):
 
-                fullINspots_name = os.path.join(
-                        spotspath, '%s.pick' % self.dd.mx[spotscol][iObs, jCCD])
-
-                spots_array = files.cPickleRead(fullINspots_name)['spots']
 
                 for kQ, Quad in enumerate(Quads):
 
                     for lS, SpotName in enumerate(SpotNames):
 
-                        inSpot = copy.deepcopy(spots_array[kQ, lS])
+                        ixtup = (iObs, jCCD, kQ, lS)
+
+                        inSpot = copy.deepcopy(spots_array[ixtup])
 
                         lly = stampw * iObs
                         llx = stampw * (jCCD*(nQuads+nSpots)+kQ*(nSpots)+lS)
@@ -1132,12 +1125,12 @@ class PSF0X(PT.PointTask):
 
         if doBuildPosters:
 
-            SpotsPoster = self._build_SpotsPoster(spotscol='spots_name', 
+            SpotsPoster = self._build_SpotsPoster(spotscol='SPOTS', 
                 histequ=False)
             fdict = self.figdict['SpotsPoster'][1]
             fdict['data'] = SpotsPoster.copy()
 
-            SpotsPosterNOBFE = self._build_SpotsPoster(spotscol='spots_name_nobfe',
+            SpotsPosterNOBFE = self._build_SpotsPoster(spotscol='SPOTS_NOBFE',
                 histequ=False)
             fdictNOBFE = self.figdict['SpotsPosterNOBFE'][1]
             fdictNOBFE['data'] = SpotsPosterNOBFE.copy()        
