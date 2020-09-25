@@ -677,7 +677,6 @@ class PSF0X(PT.PointTask):
         inCCDs = BFEall['CCDs']
         inQuads = BFEall['Quads']
 
-        stop()
 
         Asols = dict()
         for inCCD in inCCDs:
@@ -745,9 +744,9 @@ class PSF0X(PT.PointTask):
                                 oimg = G15.correct_estatic(img, _Asol)
                                 outSpot = copy.deepcopy(inSpot)
                                 outSpot.data = oimg.copy()
-                                spots_cdp.data['spots'][iObs, jCCD, kQ, lS] = copy.deepcopy(outSpot)
+                                spotsOUT_cdp.data['spots'][iObs, jCCD, kQ, lS] = copy.deepcopy(outSpot)
                             except:
-                                spots_cdp.data['spots'][iObs, jCCD, kQ, lS] = None
+                                spotsOUT_cdp.data['spots'][iObs, jCCD, kQ, lS] = None
 
         spotsOUT_cdp.meta.update(dict(nObs=nObs,
             nCCDs=nCCDs,
