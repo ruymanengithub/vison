@@ -401,7 +401,7 @@ class PSF0X(PT.PointTask):
 
         spots_cdp = self.CDP_lib['SPOTS']
 
-        spots_cdp.rootname = '{}_{}_{}'.format(rawct_cdp.rootname,
+        spots_cdp.rootname = '{}_{}_{}'.format(spots_cdp.rootname,
                 self.inputs['test'],
                 self.inputs['BLOCKID'])
 
@@ -448,7 +448,7 @@ class PSF0X(PT.PointTask):
 
         self.save_CDP(spots_cdp)
         self.pack_CDP_to_dd(spots_cdp, 'SPOTS')
-        
+
 
         if self.log is not None:
             self.log.info('Saved spot "bag" files to %s' % spotspath)
