@@ -669,13 +669,15 @@ class PSF0X(PT.PointTask):
 
         wavelength = self.inputs['wavelength']
 
+
         BFEddpick = self.inputs['inCDPs']['BFE']['nm%i' % wavelength]
         BFEall = files.cPickleRead(BFEddpick).products['BF'].copy()
         ulabels = BFEall['ulabels']
-        midrangekey = ulabels[len(ulabels)//2]
+        midrangekey = ulabels[len(ulabels)//2-1]
         inCCDs = BFEall['CCDs']
         inQuads = BFEall['Quads']
 
+        stop()
 
         Asols = dict()
         for inCCD in inCCDs:
@@ -683,7 +685,7 @@ class PSF0X(PT.PointTask):
             for Q in inQuads:
                 Asols[inCCD][Q] = BFEall[inCCD][Q][midrangekey]['Asol'].copy()
 
-        stop()
+        
         dIndices = copy.deepcopy(self.dd.indices)
 
         CCDs = dIndices.get_vals('CCD')
