@@ -377,6 +377,8 @@ class PSF0X(PT.PointTask):
             self.report.add_Section(
                 keyword='debug', Title='Debugging', level=0)
 
+        return
+
         dIndices = copy.deepcopy(self.dd.indices)
 
         CCDs = dIndices.get_vals('CCD')
