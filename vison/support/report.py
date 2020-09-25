@@ -595,6 +595,7 @@ class Report(Container):
             outfiles = [item % fileroot for item in
                         ['%s.pdf']]
         else:
+            stop()
             outfiles = [item % fileroot for item in
                         ['%s.pdf', '%s.dvi', '%s.aux', '%s.log', '%s.tex', '%s.out', '%s.soc',
                          '%s.toc %s.xwm']]
