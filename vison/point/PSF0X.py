@@ -683,7 +683,7 @@ class PSF0X(PT.PointTask):
             for Q in inQuads:
                 Asols[inCCD][Q] = BFEall[inCCD][Q][midrangekey]['Asol'].copy()
 
-
+        stop()
         dIndices = copy.deepcopy(self.dd.indices)
 
         CCDs = dIndices.get_vals('CCD')
