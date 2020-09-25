@@ -218,6 +218,10 @@ def get_PSF01_PANCHRO_figs():
 def get_CDP_lib(test):
     """ """
     CDP_lib = OrderedDict()
+
+    CDP_lib['SPOTS'] = cdp.CDP()
+    CDP_lib['SPOTS'].rootname = 'Spots'
+
     CDP_lib['RAW_CTALK'] = cdp.CDP()
     CDP_lib['RAW_CTALK'].rootname = 'Raw_crosstalk'
 

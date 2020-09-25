@@ -373,11 +373,87 @@ class PSF0X(PT.PointTask):
     def debugtask(self):
         """ """
 
-        SpotsPoster = self._build_SpotsPoster(spotscol='spots_name')
-        SpotsPosterNOBFE = self._build_SpotsPoster(spotscol='spots_name_nobfe')
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='debug', Title='Debugging', level=0)
+
+        dIndices = copy.deepcopy(self.dd.indices)
+
+        CCDs = dIndices.get_vals('CCD')
+        nCCDs = len(CCDs)
+        Quads = dIndices.get_vals('Quad')
+        nQuads = len(Quads)
+        nObs = dIndices[dIndices.names.index('ix')].len
+        SpotNames = dIndices.get_vals('Spot')
+        nSpots = len(SpotNames)
+
+        CIndices = copy.deepcopy(dIndices)
+        CIndices.pop(CIndices.names.index('Quad'))
+        CIndices.pop(CIndices.names.index('Spot'))
+
+        spotspath = self.inputs['subpaths']['spots']
+        picklespath = self.inputs['subpaths']['ccdpickles']
+
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+
+        spots_cdp = self.CDP_lib['SPOTS']
+
+        spots_cdp.rootname = '{}_{}_{}'.format(rawct_cdp.rootname,
+                self.inputs['test'],
+                self.inputs['BLOCKID'])
+
+        spots_cdp.path = spotspath
+
+        spots_cdp.header = CDP_header.copy()
+        spots_cdp.meta = dict()
+        spots_cdp.data = OrderedDict(spots=np.zeros((nObs, nCCDs, nQuads, nSpots), dtype=object))
+
+
+        for iObs in range(nObs):
+                # for iObs in range(3): # TESTS
+
+                for jCCD, CCDk in enumerate(CCDs):
+
+                    ilabel = self.dd.mx['label'][iObs, jCCD]
+
+                    fullccdobj_name = os.path.join(
+                        picklespath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs, jCCD])
+
+                    ccdobj = copy.deepcopy(cPickleRead(fullccdobj_name))
+
+                    # Cut-out "spots"
+
+                
+                    for kQ, Quad in enumerate(Quads):
+
+                        for lS, SpotName in enumerate(SpotNames):
+
+                            #coo = polib.Point_CooNom[CCDk][Quad][SpotName]
+                            coo = psCCDcoodicts[CCDk][ilabel][Quad][SpotName]
+                            lSpot = polib.extract_spot(
+                                ccdobj, coo, Quad, stampw=stampw)
+
+                            spots_cdp.data['spots'][iObs, jCCD, kQ, lS] = copy.deepcopy(lSpot)
+
+
+        spots_cdp.meta.update(dict(nObs=nObs,
+            nCCDs=nCCDs,
+            nQuads=nQuads,
+            nSpots=nSpots,
+            SpotNames=SpotNames,
+            structure='spots:np.zeros((nObs, nCCDs, nQuads, nSpots), dtype=object)'))
+
+        self.save_CDP(spots_cdp)
+        self.pack_CDP_to_dd(spots_cdp, 'SPOTS')
+        
+
+        if self.log is not None:
+            self.log.info('Saved spot "bag" files to %s' % spotspath)
 
         
-        stop()
 
     def prep_data(self):
         """
