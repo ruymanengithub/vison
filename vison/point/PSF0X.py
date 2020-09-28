@@ -1250,71 +1250,71 @@ class PSF0X(PT.PointTask):
                 self.addFigures_ST(figkeys=['PSF0X_%s_v_flu' % tag],
                                    dobuilddata=False)
 
-    # Plot of skweness of gauss-fit residuals vs. peak fluence and x/y directions 
-    plot_skew_dict = OrderedDict()
+        # Plot of skweness of gauss-fit residuals vs. peak fluence and x/y directions 
+        plot_skew_dict = OrderedDict()
 
 
-    for tag1 in ['vspos', 'vsfluence']:
-        plot_skew_dict[tag1] = OrderedDict()
-        for tag2 in ['directionx', 'directiony']:
-            plot_skew_dict[tag1][tag2] = OrderedDict(labelkeys=['BFE', 'noBFE'])
-            for CCDk in CCDs:
-                plot_skew_dict[tag1][tag2][CCDk] = OrderedDict()
-                for Q in Quads:
-                    plot_skew_dict[tag1][tag2][CCDk][Q] = OrderedDict()
-                    plot_skew_dict[tag1][tag2][CCDk][Q]['x'] = OrderedDict()
-                    plot_skew_dict[tag1][tag2][CCDk][Q]['y'] = OrderedDict()
+        for tag1 in ['vspos', 'vsfluence']:
+            plot_skew_dict[tag1] = OrderedDict()
+            for tag2 in ['directionx', 'directiony']:
+                plot_skew_dict[tag1][tag2] = OrderedDict(labelkeys=['BFE', 'noBFE'])
+                for CCDk in CCDs:
+                    plot_skew_dict[tag1][tag2][CCDk] = OrderedDict()
+                    for Q in Quads:
+                        plot_skew_dict[tag1][tag2][CCDk][Q] = OrderedDict()
+                        plot_skew_dict[tag1][tag2][CCDk][Q]['x'] = OrderedDict()
+                        plot_skew_dict[tag1][tag2][CCDk][Q]['y'] = OrderedDict()
 
 
-    for iCCD, CCDk in enumerate(CCDs):
+        for iCCD, CCDk in enumerate(CCDs):
 
-        for kQ, Q in enumerate(Quads):
+            for kQ, Q in enumerate(Quads):
 
-            for bfecorr in [True, False]:
+                for bfecorr in [True, False]:
 
-                if bfecorr:
-                    BFEtag = 'noBFE'
-                else:
-                    BFEtag = 'BFE'
+                    if bfecorr:
+                        BFEtag = 'noBFE'
+                    else:
+                        BFEtag = 'BFE'
 
-                stop()
+                    stop()
 
-                x_fwhmx,y_fwhmx, px = self._get_fwhm_flu_bfit(iCCD, kQ, 
-                        'fwhmx',bfecorr=bfecorr)
-
-
-                plot_FWHM_dict['fwhmx'][CCDk][Q]['x'][BFEtag] = x_fwhmx
-                plot_FWHM_dict['fwhmx'][CCDk][Q]['y'][BFEtag] = y_fwhmx
-
-                if bfecorr:
-                    xideal = np.array([1.,2.**16])
-                    pideal = np.poly1d([0.,px[1]])
-                    yideal = np.polyval(pideal,xideal)
-                    plot_FWHM_dict['fwhmx'][CCDk][Q]['y']['ideal'] = yideal
-                    plot_FWHM_dict['fwhmx'][CCDk][Q]['x']['ideal'] = xideal-2.**15/1.e4
-
-                x_fwhmy,y_fwhmy, py = self._get_fwhm_flu_bfit(iCCD, kQ, 
-                        'fwhmy',bfecorr=bfecorr)
-
-                plot_FWHM_dict['fwhmy'][CCDk][Q]['x'][BFEtag] = x_fwhmy 
-                plot_FWHM_dict['fwhmy'][CCDk][Q]['y'][BFEtag] = y_fwhmy
-
-                if bfecorr:
-                    xideal = np.array([1.,2.**16])
-                    pideal = np.poly1d([0.,py[1]])
-                    yideal = np.polyval(pideal,xideal)
-                    plot_FWHM_dict['fwhmy'][CCDk][Q]['y']['ideal'] = yideal
-                    plot_FWHM_dict['fwhmy'][CCDk][Q]['x']['ideal'] = xideal-2.**15/1.e4
+                    x_fwhmx,y_fwhmx, px = self._get_fwhm_flu_bfit(iCCD, kQ, 
+                            'fwhmx',bfecorr=bfecorr)
 
 
-    for tag in ['fwhmx', 'fwhmy']:
+                    plot_FWHM_dict['fwhmx'][CCDk][Q]['x'][BFEtag] = x_fwhmx
+                    plot_FWHM_dict['fwhmx'][CCDk][Q]['y'][BFEtag] = y_fwhmx
 
-        fdict_fwhm = self.figdict['PSF0X_%s_v_flu' % tag][1]
-        fdict_fwhm['data'] = plot_FWHM_dict[tag].copy()
+                    if bfecorr:
+                        xideal = np.array([1.,2.**16])
+                        pideal = np.poly1d([0.,px[1]])
+                        yideal = np.polyval(pideal,xideal)
+                        plot_FWHM_dict['fwhmx'][CCDk][Q]['y']['ideal'] = yideal
+                        plot_FWHM_dict['fwhmx'][CCDk][Q]['x']['ideal'] = xideal-2.**15/1.e4
 
-        if self.report is not None:
-            self.addFigures_ST(figkeys=['PSF0X_%s_v_flu' % tag],
-                               dobuilddata=False)
+                    x_fwhmy,y_fwhmy, py = self._get_fwhm_flu_bfit(iCCD, kQ, 
+                            'fwhmy',bfecorr=bfecorr)
+
+                    plot_FWHM_dict['fwhmy'][CCDk][Q]['x'][BFEtag] = x_fwhmy 
+                    plot_FWHM_dict['fwhmy'][CCDk][Q]['y'][BFEtag] = y_fwhmy
+
+                    if bfecorr:
+                        xideal = np.array([1.,2.**16])
+                        pideal = np.poly1d([0.,py[1]])
+                        yideal = np.polyval(pideal,xideal)
+                        plot_FWHM_dict['fwhmy'][CCDk][Q]['y']['ideal'] = yideal
+                        plot_FWHM_dict['fwhmy'][CCDk][Q]['x']['ideal'] = xideal-2.**15/1.e4
+
+
+        for tag in ['fwhmx', 'fwhmy']:
+
+            fdict_fwhm = self.figdict['PSF0X_%s_v_flu' % tag][1]
+            fdict_fwhm['data'] = plot_FWHM_dict[tag].copy()
+
+            if self.report is not None:
+                self.addFigures_ST(figkeys=['PSF0X_%s_v_flu' % tag],
+                                   dobuilddata=False)
 
 
     def opt_xtalk_sextract(self):
