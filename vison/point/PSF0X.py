@@ -39,6 +39,8 @@ import copy
 from collections import OrderedDict
 from skimage import exposure
 from sklearn import linear_model
+from astropy.nddata import Cutout2D
+from scipy import stats
 
 from vison.support import utils
 from vison.pipe.task import HKKeys
@@ -765,6 +767,7 @@ class PSF0X(PT.PointTask):
         """ """
 
         CQSindices = copy.deepcopy(self.dd.indices)
+        Npxres = 10 # Npx of of residal image of gaussian fit (on a side)
 
         assert 'Spot' in CQSindices.names
 
@@ -782,7 +785,8 @@ class PSF0X(PT.PointTask):
             'gau_fwhmx', 'gau_efwhmx',
             'gau_sigmay', 'gau_esigmay',
             'gau_fwhmy', 'gau_efwhmy', 
-            'gau_didfit']
+            'gau_didfit',
+            'gau_res_xskew', 'gau_res_yskew']
 
         ncols = len(colnames)
         for i in range(ncols):
@@ -910,6 +914,34 @@ class PSF0X(PT.PointTask):
                         self.dd.mx['%sgau_efwhmy' % prefix][ixtup] = gauss_res['efwhm_y']
                         self.dd.mx['%sgau_didfit' % prefix][ixtup] = gauss_res['didFit']
 
+                        if gauss_res['didFit']:
+
+                            ibgd = gauss_res['bgd']
+                            i0 = gauss_res['i0']
+                            ixcen = gauss_res['x']
+                            iycen = gauss_res['y']
+                            ix_stddev = gauss_res['sigma_x']
+                            iy_stddev = gauss_res['sigma_y']
+
+                            gaussmod = models.Const2D(ibgd) + models.Gaussian2D(
+                                i0, ixcen, iycen, ix_stddev, iy_stddev, theta=0.)
+
+                            XX, YY = np.meshgrid(np.arange(inSpot.NX),
+                                 np.arange(inSpot.NY), indexing='xy')
+
+                            gaussEval = gaussmod(XX,YY)
+            
+                            iresiduals = inSpot.data - gaussEval
+
+                            ipos = (ixcen, iycen)
+                            isize = (Npxres, Npxres)     # pixels
+                            irescutout = Cutout2D(iresiduals, ipos, isize).data.copy()
+                            irescutout /= gauss_res['fluence'] # normalization
+
+                            self.dd.mx['%sgau_res_xskew' % prefix][ixtup] = \
+                                stats.skew(np.mean(irescutout,axis=1))
+                            self.dd.mx['%sgau_res_yskew' % prefix][ixtup] = \
+                                stats.skew(np.mean(irescutout,axis=0))
 
 
     def basic_analysis(self):
@@ -1108,7 +1140,7 @@ class PSF0X(PT.PointTask):
     def meta_analysis(self):
         """
 
-        Analyzes the relation between detector PSF and fluence.
+        Analyzes the relation between detector PSF and fluence, etc.
 
         """
 
@@ -1218,6 +1250,71 @@ class PSF0X(PT.PointTask):
                 self.addFigures_ST(figkeys=['PSF0X_%s_v_flu' % tag],
                                    dobuilddata=False)
 
+    # Plot of skweness of gauss-fit residuals vs. peak fluence and x/y directions 
+    plot_skew_dict = OrderedDict()
+
+
+    for tag1 in ['vspos', 'vsfluence']:
+        plot_skew_dict[tag1] = OrderedDict()
+        for tag2 in ['directionx', 'directiony']:
+            plot_skew_dict[tag1][tag2] = OrderedDict(labelkeys=['BFE', 'noBFE'])
+            for CCDk in CCDs:
+                plot_skew_dict[tag1][tag2][CCDk] = OrderedDict()
+                for Q in Quads:
+                    plot_skew_dict[tag1][tag2][CCDk][Q] = OrderedDict()
+                    plot_skew_dict[tag1][tag2][CCDk][Q]['x'] = OrderedDict()
+                    plot_skew_dict[tag1][tag2][CCDk][Q]['y'] = OrderedDict()
+
+
+    for iCCD, CCDk in enumerate(CCDs):
+
+        for kQ, Q in enumerate(Quads):
+
+            for bfecorr in [True, False]:
+
+                if bfecorr:
+                    BFEtag = 'noBFE'
+                else:
+                    BFEtag = 'BFE'
+
+                stop()
+
+                x_fwhmx,y_fwhmx, px = self._get_fwhm_flu_bfit(iCCD, kQ, 
+                        'fwhmx',bfecorr=bfecorr)
+
+
+                plot_FWHM_dict['fwhmx'][CCDk][Q]['x'][BFEtag] = x_fwhmx
+                plot_FWHM_dict['fwhmx'][CCDk][Q]['y'][BFEtag] = y_fwhmx
+
+                if bfecorr:
+                    xideal = np.array([1.,2.**16])
+                    pideal = np.poly1d([0.,px[1]])
+                    yideal = np.polyval(pideal,xideal)
+                    plot_FWHM_dict['fwhmx'][CCDk][Q]['y']['ideal'] = yideal
+                    plot_FWHM_dict['fwhmx'][CCDk][Q]['x']['ideal'] = xideal-2.**15/1.e4
+
+                x_fwhmy,y_fwhmy, py = self._get_fwhm_flu_bfit(iCCD, kQ, 
+                        'fwhmy',bfecorr=bfecorr)
+
+                plot_FWHM_dict['fwhmy'][CCDk][Q]['x'][BFEtag] = x_fwhmy 
+                plot_FWHM_dict['fwhmy'][CCDk][Q]['y'][BFEtag] = y_fwhmy
+
+                if bfecorr:
+                    xideal = np.array([1.,2.**16])
+                    pideal = np.poly1d([0.,py[1]])
+                    yideal = np.polyval(pideal,xideal)
+                    plot_FWHM_dict['fwhmy'][CCDk][Q]['y']['ideal'] = yideal
+                    plot_FWHM_dict['fwhmy'][CCDk][Q]['x']['ideal'] = xideal-2.**15/1.e4
+
+
+    for tag in ['fwhmx', 'fwhmy']:
+
+        fdict_fwhm = self.figdict['PSF0X_%s_v_flu' % tag][1]
+        fdict_fwhm['data'] = plot_FWHM_dict[tag].copy()
+
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['PSF0X_%s_v_flu' % tag],
+                               dobuilddata=False)
 
 
     def opt_xtalk_sextract(self):
