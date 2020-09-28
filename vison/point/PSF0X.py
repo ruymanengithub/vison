@@ -40,6 +40,7 @@ from collections import OrderedDict
 from skimage import exposure
 from sklearn import linear_model
 from astropy.nddata import Cutout2D
+from astropy.modeling import models
 from scipy import stats
 
 from vison.support import utils
