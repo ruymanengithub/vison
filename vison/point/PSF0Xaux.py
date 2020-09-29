@@ -186,7 +186,7 @@ def get_skew_dict(test, vswhat, direction):
     ntest = test.replace('_', '\_')
 
     if vswhat == 'position':
-        xlabel = 'Quadrant Position [pix]'
+        xlabel = 'CCD-Pos. [pix]'
     elif vswhat == 'fluence':
         xlabel = 'Fluence [kADU]'
 
