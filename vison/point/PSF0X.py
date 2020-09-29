@@ -1255,9 +1255,9 @@ class PSF0X(PT.PointTask):
         plot_skew_dict = OrderedDict()
 
 
-        for tag1 in ['vspos', 'vsfluence']:
+        for tag1 in ['vs_pos', 'vs_fluence']:
             plot_skew_dict[tag1] = OrderedDict()
-            for tag2 in ['directionx', 'directiony']:
+            for tag2 in ['dirx', 'diry']:
                 plot_skew_dict[tag1][tag2] = OrderedDict(labelkeys=['BFE', 'noBFE'])
                 for CCDk in CCDs:
                     plot_skew_dict[tag1][tag2][CCDk] = OrderedDict()
