@@ -1292,14 +1292,14 @@ class PSF0X(PT.PointTask):
                         self.dd.mx['{}gau_res_yskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
                     
 
-                    plot_skew_dict['vs_flu']['dirx'][CCDk][Q]['x'][BFEtag] = \
+                    plot_skew_dict['vs_fluence']['dirx'][CCDk][Q]['x'][BFEtag] = \
                         self.dd.mx['bas_fluence'][:,iCCD, kQ,:].flatten() / 1.e3
-                    plot_skew_dict['vs_flu']['dirx'][CCDk][Q]['y'][BFEtag] = \
+                    plot_skew_dict['vs_fluence']['dirx'][CCDk][Q]['y'][BFEtag] = \
                         self.dd.mx['{}gau_res_xskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
 
-                    plot_skew_dict['vs_flu']['diry'][CCDk][Q]['x'][BFEtag] = \
+                    plot_skew_dict['vs_fluence']['diry'][CCDk][Q]['x'][BFEtag] = \
                         self.dd.mx['bas_fluence'][:,iCCD, kQ,:].flatten() / 1.e3
-                    plot_skew_dict['vs_flu']['diry'][CCDk][Q]['y'][BFEtag] = \
+                    plot_skew_dict['vs_fluence']['diry'][CCDk][Q]['y'][BFEtag] = \
                         self.dd.mx['{}gau_res_yskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
 
         for tag1 in ['vs_pos', 'vs_fluence']:
