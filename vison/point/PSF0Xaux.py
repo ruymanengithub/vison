@@ -201,7 +201,7 @@ def get_skew_dict(test, vswhat, direction):
               #xlim = [0.,6.5],
               corekwargs=dict(
                   noBFE=dict(marker='.', linestyle='', color='b'),
-                  BFE=dict(marker='.', linestyle='', color='r'),
+                  BFE=dict(marker='.', linestyle='', color='r')),
               suptitle='%s: gaussian-fit res. %s-skew vs. %s' %\
                     (ntest, direction, vswhat))
         )
