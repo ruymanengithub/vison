@@ -1311,7 +1311,7 @@ class PSF0X(PT.PointTask):
                 fdict_skew['data'] = plot_skew_dict[tag1][tag2].copy()
 
                 if self.report is not None:
-                    self.addFigures_ST(figkeys=[figtag,
+                    self.addFigures_ST(figkeys=[figtag],
                                    dobuilddata=False)
 
 
