@@ -1275,46 +1275,43 @@ class PSF0X(PT.PointTask):
 
                     if bfecorr:
                         BFEtag = 'noBFE'
+                        colbfetag = 'nobfe_'
                     else:
                         BFEtag = 'BFE'
-
-                    stop()
-
-                    x_fwhmx,y_fwhmx, px = self._get_fwhm_flu_bfit(iCCD, kQ, 
-                            'fwhmx',bfecorr=bfecorr)
+                        colbfetag = ''
 
 
-                    plot_FWHM_dict['fwhmx'][CCDk][Q]['x'][BFEtag] = x_fwhmx
-                    plot_FWHM_dict['fwhmx'][CCDk][Q]['y'][BFEtag] = y_fwhmx
+                    plot_skew_dict['vs_pos']['dirx'][CCDk][Q]['x'][BFEtag] = \
+                        self.dd.mx['chk_x_ccd'][:,iCCD, kQ,:].flatten()
+                    plot_skew_dict['vs_pos']['dirx'][CCDk][Q]['y'][BFEtag] = \
+                        self.dd.mx['{}gau_res_xskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
 
-                    if bfecorr:
-                        xideal = np.array([1.,2.**16])
-                        pideal = np.poly1d([0.,px[1]])
-                        yideal = np.polyval(pideal,xideal)
-                        plot_FWHM_dict['fwhmx'][CCDk][Q]['y']['ideal'] = yideal
-                        plot_FWHM_dict['fwhmx'][CCDk][Q]['x']['ideal'] = xideal-2.**15/1.e4
+                    plot_skew_dict['vs_pos']['diry'][CCDk][Q]['x'][BFEtag] = \
+                        self.dd.mx['chk_y_ccd'][:,iCCD, kQ,:].flatten()
+                    plot_skew_dict['vs_pos']['diry'][CCDk][Q]['y'][BFEtag] = \
+                        self.dd.mx['{}gau_res_yskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
+                    
 
-                    x_fwhmy,y_fwhmy, py = self._get_fwhm_flu_bfit(iCCD, kQ, 
-                            'fwhmy',bfecorr=bfecorr)
+                    plot_skew_dict['vs_flu']['dirx'][CCDk][Q]['x'][BFEtag] = \
+                        self.dd.mx['bas_fluence'][:,iCCD, kQ,:].flatten() / 1.e3
+                    plot_skew_dict['vs_flu']['dirx'][CCDk][Q]['y'][BFEtag] = \
+                        self.dd.mx['{}gau_res_xskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
 
-                    plot_FWHM_dict['fwhmy'][CCDk][Q]['x'][BFEtag] = x_fwhmy 
-                    plot_FWHM_dict['fwhmy'][CCDk][Q]['y'][BFEtag] = y_fwhmy
+                    plot_skew_dict['vs_flu']['diry'][CCDk][Q]['x'][BFEtag] = \
+                        self.dd.mx['bas_fluence'][:,iCCD, kQ,:].flatten() / 1.e3
+                    plot_skew_dict['vs_flu']['diry'][CCDk][Q]['y'][BFEtag] = \
+                        self.dd.mx['{}gau_res_yskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
 
-                    if bfecorr:
-                        xideal = np.array([1.,2.**16])
-                        pideal = np.poly1d([0.,py[1]])
-                        yideal = np.polyval(pideal,xideal)
-                        plot_FWHM_dict['fwhmy'][CCDk][Q]['y']['ideal'] = yideal
-                        plot_FWHM_dict['fwhmy'][CCDk][Q]['x']['ideal'] = xideal-2.**15/1.e4
+        for tag1 in ['vs_pos', 'vs_fluence']:
+            for tag2 in ['dirx', 'diry']:
 
+                figtag = 'PSF0X_skew_%s_%s' % (tag2,tag1)
 
-        for tag in ['fwhmx', 'fwhmy']:
+                fdict_skew = self.figdict[figtag][1]
+                fdict_skew['data'] = plot_skew_dict[tag1][tag2].copy()
 
-            fdict_fwhm = self.figdict['PSF0X_%s_v_flu' % tag][1]
-            fdict_fwhm['data'] = plot_FWHM_dict[tag].copy()
-
-            if self.report is not None:
-                self.addFigures_ST(figkeys=['PSF0X_%s_v_flu' % tag],
+                if self.report is not None:
+                    self.addFigures_ST(figkeys=[figtag,
                                    dobuilddata=False)
 
 

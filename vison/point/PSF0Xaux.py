@@ -119,6 +119,7 @@ def get_check_fwhmy_dict(test):
                           ylabel='FWHMy [pix]'))
 
 
+
 def get_crosstalk_dict(test, figtype):
     tcaption = '%s: Cross-Talk [%s]. Green means positive cross-talk, red means negative cross-talk' +\
         ' (does not mean compliance/non-compliance). Pale colours mean less accurate results.'
@@ -177,6 +178,36 @@ def get_FWHM_v_flu_dict(test, fwhmkey):
         )
     return fdict
 
+
+def get_skew_dict(test, vswhat, direction):
+    """vswhat: 'position', 'fluence' 
+    direction: 'x', 'y' 
+    """
+    ntest = test.replace('_', '\_')
+
+    if vswhat == 'position':
+        xlabel = 'Quadrant Position [pix]'
+    elif vswhat == 'fluence':
+        xlabel = 'Fluence [kADU]'
+
+    fdict = dict(
+    figname='%s_skew_%s_vs_%s.png' % (test, direction, vswhat),
+    caption='%s: Gaussian-fit residuals %s-skewness vs. %s.' % 
+        (ntest, direction, vswhat),
+    meta=dict(doLegend=True,
+              ylabel='%s-skewness [adim.]' % direction,
+              xlabel=xlabel,
+              #ylim = [0.75,2.5],
+              #xlim = [0.,6.5],
+              corekwargs=dict(
+                  noBFE=dict(marker='.', linestyle='', color='b'),
+                  BFE=dict(marker='.', linestyle='', color='r'),
+              suptitle='%s: gaussian-fit res. %s-skew vs. %s' %\
+                    (ntest, direction, vswhat))
+        )
+    return fdict
+
+
 def get_PSF0Xfigs(test):
     PSF0Xfigs = dict()
     PSF0Xfigs['PSF0Xchecks_offsets'] = [
@@ -205,6 +236,18 @@ def get_PSF0Xfigs(test):
         figclasses.Fig_Beam2DPlot, get_FWHM_v_flu_dict(test, fwhmkey='fwhmx')]
     PSF0Xfigs['PSF0X_fwhmy_v_flu'] = [
         figclasses.Fig_Beam2DPlot, get_FWHM_v_flu_dict(test, fwhmkey='fwhmy')]
+
+
+    PSF0Xfigs['PSF0X_skew_dirx_vs_fluence'] = [
+        figclasses.Fig_Beam2DPlot, get_skew_dict(test, 'fluence', 'x')]
+    PSF0Xfigs['PSF0X_skew_diry_vs_fluence'] = [
+        figclasses.Fig_Beam2DPlot, get_skew_dict(test, 'fluence', 'y')]
+
+    PSF0Xfigs['PSF0X_skew_dirx_vs_pos'] = [
+        figclasses.Fig_Beam2DPlot, get_skew_dict(test, 'position', 'x')]
+    PSF0Xfigs['PSF0X_skew_diry_vs_pos'] = [
+        figclasses.Fig_Beam2DPlot, get_skew_dict(test, 'position', 'y')]    
+
 
     PSF0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return PSF0Xfigs
