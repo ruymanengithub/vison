@@ -25,8 +25,8 @@ from vison.plot import trends
 # END IMPORT
 
 
-def extract_overscan_profiles(ccdobj, thresholds, direction='serial'):
-    """ """
+def extract_transcan_profiles(ccdobj, thresholds, direction='serial'):
+    """Extract profiles across pre / over scan transitions to / from image area."""
 
     ixjump = 10
     Qs = ['E', 'F', 'G', 'H']

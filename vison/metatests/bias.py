@@ -604,8 +604,6 @@ class MetaBias(MetaCal):
         CDP_header.update(dict(function=function, module=module))
         CDP_header['DATE'] = self.get_time_tag()
 
-
-
         doAll = True
         doRONMaps = doAll
         doOffMaps = doAll

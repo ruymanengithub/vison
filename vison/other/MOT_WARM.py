@@ -631,7 +631,7 @@ class MOT_WARM(DarkTask):
 
                 # RAMP: HER analysis
 
-                HERprof = MOT_FFaux.extract_overscan_profiles(ccdobjRAMP,
+                HERprof = MOT_FFaux.extract_transcan_profiles(ccdobjRAMP,
                                                               [1.E3, 4.E4],
                                                               direction='serial')
                 ixjump = HERprof.pop('ixjump')

@@ -168,9 +168,9 @@ class MOT_FF(BF01):
                 ccdobj = copy.deepcopy(cPickleRead(ccdobj_f))
 
                 thresholds = [1.e4, 5e4]
-                jprofiles_ser = MOT_FFaux.extract_overscan_profiles(
+                jprofiles_ser = MOT_FFaux.extract_transcan_profiles(
                     ccdobj, thresholds, direction='serial')
-                jprofiles_ver = MOT_FFaux.extract_overscan_profiles(
+                jprofiles_ver = MOT_FFaux.extract_transcan_profiles(
                     ccdobj, thresholds, direction='parallel')
 
                 for kQ, Q in enumerate(Quads):

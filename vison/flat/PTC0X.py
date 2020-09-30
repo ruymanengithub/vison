@@ -781,7 +781,7 @@ class PTC0X(FlatTask):
                                       self.dd.mx['File_name'][ixsel, jCCD])
                 ccdobj = ccd.CCD(infits)
 
-                HERprof = MOT_FFaux.extract_overscan_profiles(ccdobj,
+                HERprof = MOT_FFaux.extract_transcan_profiles(ccdobj,
                                                               HERmeta['FLULIMS'],
                                                               direction='serial')
 

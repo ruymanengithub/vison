@@ -131,7 +131,7 @@ class FWD_WARM(fpatask.FpaTask):
         # print(CCDID)
         debug = kwargs['debug']
 
-        HERprofs = MOT_FFaux.extract_overscan_profiles(kccdobj,
+        HERprofs = MOT_FFaux.extract_transcan_profiles(kccdobj,
                                                        [1.E3, 4.E4],
                                                        direction='serial')
 
