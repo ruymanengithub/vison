@@ -75,9 +75,8 @@ def extract_overscan_profiles(ccdobj, thresholds, direction='serial'):
         ixgood = np.where((injection <= thresholds[1]) & (injection >= thresholds[0])) # fluence selection
         #print '%i rows averaged' % (len(ixgood[0]),)
 
-        strip = strip[:, ixgood[0]].copy()
 
-        nstrip = (strip - bias[ixgood]) / (injection[ixgood] - bias[ixgood]) # normalization
+        nstrip = (strip[:, ixgood[0]] - bias[ixgood]) / (injection[ixgood] - bias[ixgood]) # normalization
 
         profile = np.mean(nstrip, axis=1) # stacking
 
@@ -123,18 +122,17 @@ def extract_prescan_profiles(ccdobj, thresholds):
     for Q in Qs:
 
         imgdata = ccdobj.get_quad(Q, canonical=True)
-        stop()
+        
         strip = imgdata[ccdobj.prescan - ixjump:ccdobj.prescan + Npixprof-ixjump, :].copy()
 
-        injection = np.mean(strip[0:ixjump, :], axis=0)
-        bias = np.mean(strip[ixjump + 3:, :], axis=0)
+        injection = np.mean(strip[ixjump+3:, :], axis=0)
+        bias = np.mean(strip[0:ixjump-1, :], axis=0)
+        
 
-        ixgood = np.where((injection <= thresholds[1]) & (injection >= thresholds[0])) # fluence selection
+        ixgood = np.where((injection >= thresholds[0]) & (injection <= thresholds[1])) # fluence selection
         #print '%i rows averaged' % (len(ixgood[0]),)
 
-        strip = strip[:, ixgood[0]].copy()
-
-        nstrip = (strip - bias[ixgood]) / (injection[ixgood] - bias[ixgood]) # normalization
+        nstrip = (strip[:, ixgood[0]] - bias[ixgood]) / (injection[ixgood] - bias[ixgood]) # normalization
 
         profile = np.mean(nstrip, axis=1) # stacking
 
@@ -145,7 +143,7 @@ def extract_prescan_profiles(ccdobj, thresholds):
         else:
             profiles[Q] = dict(y=profile.copy(),
                                x=x.copy())
-
+    
     return profiles
 
 def extract_transcan_profiles(ccdobj, thresholds, direction='serial', scan='over'):

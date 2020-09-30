@@ -756,6 +756,11 @@ class PTC0X(FlatTask):
             direction='serial',
             scan='pre')
 
+        HERoveprof = MOT_FFaux.extract_transcan_profiles(ccdobj,
+            HERmeta['FLULIMS'],
+            direction='serial',
+            scan='over')
+
         stop()
 
 
