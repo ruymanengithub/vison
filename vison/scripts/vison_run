@@ -65,8 +65,10 @@ def openpyconfigf(configf, RUN, wait):
         i = importlib.import_module(os.path.splitext(configf)[0])
         inputdict = i.master(RUNs, doWait)
     except:
-        inputdict = None
-    
+        #inputdict = None
+        print("Unexpected error:", sys.exc_info()[0])
+        raise
+
     sys.path.remove(cwd)
     
     return inputdict
