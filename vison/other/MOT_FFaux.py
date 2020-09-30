@@ -134,7 +134,7 @@ def extract_prescan_profiles(ccdobj, thresholds):
 
         nstrip = (strip[:, ixgood[0]] - bias[ixgood]) / (injection[ixgood] - bias[ixgood]) # normalization
 
-        profile = np.mean(nstrip, axis=1) # stacking
+        profile = np.mean(nstrip, axis=1)-1. # stacking
 
         if isinstance(profile, np.ma.masked_array):
             ixgood2 = np.where(profile.mask == False)
@@ -143,7 +143,7 @@ def extract_prescan_profiles(ccdobj, thresholds):
         else:
             profiles[Q] = dict(y=profile.copy(),
                                x=x.copy())
-    
+
     return profiles
 
 def extract_transcan_profiles(ccdobj, thresholds, direction='serial', scan='over'):
