@@ -66,7 +66,7 @@ def openpyconfigf(configf, RUN, wait):
         inputdict = i.master(RUNs, doWait)
     except:
         inputdict = None
-
+    
     sys.path.remove(cwd)
     
     return inputdict
@@ -200,7 +200,6 @@ if __name__ == '__main__':
                                  processes=multithread, tag=tag,
                                  cleanafter=cleanafter)
     else:
-        stop()
         pipe = Pipe(inputdict, dolog=dolog, drill=drill,
                     debug=debug, startobsid=startobsid,
                     processes=multithread, tag=tag,
