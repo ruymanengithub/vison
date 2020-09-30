@@ -25,18 +25,36 @@ from vison.plot import trends
 # END IMPORT
 
 
-def extract_transcan_profiles(ccdobj, thresholds, direction='serial'):
-    """Extract profiles across pre / over scan transitions to / from image area."""
+def extract_overscan_profiles(ccdobj, thresholds, direction='serial'):
+    """Extract profiles across over scan transition from image area.
+    
 
-    ixjump = 10
-    Qs = ['E', 'F', 'G', 'H']
+    Parameters
+    ----------
+    
+    :param thresholds: thresholds in image fluence to extract the profiles. The profiles are
+                        relative to the image area fluence, and that's why these thresholds
+                        are important.
+    :type thresholds: list of 2 floats, min/max thresholds.
+    :param ccdobj: CCD object. The Data.
+    :type ccdobj: instance of vison.datamodel.ccd.CCD.
+
+    :param direction: one of {'serial', 'parallel'}
+    :type direction: str
+
+    """
+
+    ixjump = 10 
+    Npixprof = 25
+
+    Qs = ccdobj.Quads # Quadrants
 
     if direction == 'serial':
         detedge = ccdobj.NAXIS1 // 2 - ccdobj.overscan
     elif direction == 'parallel':
         detedge = ccdobj.NAXIS2 // 2 - ccdobj.voverscan
 
-    x = np.arange(25) + detedge - ixjump + 1
+    x = np.arange(Npixprof) + detedge - ixjump + 1
 
     profiles = dict()
     profiles['ixjump'] = ixjump
@@ -54,14 +72,14 @@ def extract_transcan_profiles(ccdobj, thresholds, direction='serial'):
         injection = np.mean(strip[0:ixjump, :], axis=0)
         bias = np.mean(strip[ixjump + 3:, :], axis=0)
 
-        ixgood = np.where((injection <= thresholds[1]) & (injection >= thresholds[0]))
+        ixgood = np.where((injection <= thresholds[1]) & (injection >= thresholds[0])) # fluence selection
         #print '%i rows averaged' % (len(ixgood[0]),)
 
         strip = strip[:, ixgood[0]].copy()
 
-        nstrip = (strip - bias[ixgood]) / (injection[ixgood] - bias[ixgood])
+        nstrip = (strip - bias[ixgood]) / (injection[ixgood] - bias[ixgood]) # normalization
 
-        profile = np.mean(nstrip, axis=1)
+        profile = np.mean(nstrip, axis=1) # stacking
 
         if isinstance(profile, np.ma.masked_array):
             ixgood2 = np.where(profile.mask == False)
@@ -73,6 +91,97 @@ def extract_transcan_profiles(ccdobj, thresholds, direction='serial'):
 
     return profiles
 
+
+def extract_prescan_profiles(ccdobj, thresholds):
+    """Extract profiles across prescan transition to image area (serial direction).
+    
+
+    Parameters
+    ----------
+    
+    :param thresholds: thresholds in image fluence to extract the profiles. The profiles are
+                        relative to the image area fluence, and that's why these thresholds
+                        are important.
+    :type thresholds: list of 2 floats, min/max thresholds.
+    :param ccdobj: CCD object. The Data.
+    :type ccdobj: instance of vison.datamodel.ccd.CCD.
+
+    """
+
+    ixjump = 10 
+    Npixprof = 25
+
+    Qs = ccdobj.Quads # Quadrants
+
+    if direction == 'serial':
+        detedge = ccdobj.NAXIS1 // 2 - ccdobj.overscan
+    elif direction == 'parallel':
+        detedge = ccdobj.NAXIS2 // 2 - ccdobj.voverscan
+
+    x = np.arange(Npixprof) + detedge - ixjump + 1
+
+    profiles = dict()
+    profiles['ixjump'] = ixjump
+
+    for Q in Qs:
+
+        imgdata = ccdobj.get_quad(Q, canonical=True)
+
+        if direction == 'serial':
+            strip = imgdata[-ccdobj.overscan - ixjump:-ccdobj.overscan + 15, :].copy()
+        elif direction == 'parallel':
+            strip = imgdata[ccdobj.prescan:-ccdobj.overscan,
+                            ccdobj.NrowsCCD - ixjump:ccdobj.NrowsCCD + 15].transpose().copy()
+
+        injection = np.mean(strip[0:ixjump, :], axis=0)
+        bias = np.mean(strip[ixjump + 3:, :], axis=0)
+
+        ixgood = np.where((injection <= thresholds[1]) & (injection >= thresholds[0])) # fluence selection
+        #print '%i rows averaged' % (len(ixgood[0]),)
+
+        strip = strip[:, ixgood[0]].copy()
+
+        nstrip = (strip - bias[ixgood]) / (injection[ixgood] - bias[ixgood]) # normalization
+
+        profile = np.mean(nstrip, axis=1) # stacking
+
+        if isinstance(profile, np.ma.masked_array):
+            ixgood2 = np.where(profile.mask == False)
+            profiles[Q] = dict(y=profile[ixgood2].data.copy(),
+                               x=x[ixgood2].copy())
+        else:
+            profiles[Q] = dict(y=profile.copy(),
+                               x=x.copy())
+
+    return profiles
+
+def extract_transcan_profiles(ccdobj, thresholds, direction='serial', scan='over'):
+    """Extract profiles across pre / over scan transitions to / from image area.
+    
+
+    Parameters
+    ----------
+    
+    :param thresholds: thresholds in image fluence to extract the profiles. The profiles are
+                        relative to the image area fluence, and that's why these thresholds
+                        are important.
+    :type thresholds: list of 2 floats, min/max thresholds.
+    :param ccdobj: CCD object. The Data.
+    :type ccdobj: instance of vison.datamodel.ccd.CCD.
+
+    :param direction: one of {'serial', 'parallel'}. 
+        If scan=='pre', direction can only be 'pre'.
+    :type direction: str
+    :param scan: one of {'over', 'pre'}
+    :type scan: str
+
+    """
+
+    if scan == 'over':
+        return extract_overscan_profiles(ccdobj, thresholds, direction)
+    elif scan == 'pre':
+        assert direction == 'serial'
+        return extract_prescan_profiles(ccdobj, thresholds)
 
 prof_HER_ser_dict = dict(
     figname='MOT_FF_profs_HER_ser_allOBSIDs.png',

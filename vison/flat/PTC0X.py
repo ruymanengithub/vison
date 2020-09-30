@@ -196,7 +196,8 @@ class PTC0X(FlatTask):
                          ('prep', self.prepare_images),
                          ('extract_PTC', self.extract_PTC),
                          ('meta', self.meta_analysis),
-                         ('extract_HER', self.extract_HER)]
+                         ('extract_HER', self.extract_HER),
+                         ('debugtask', self.debugtask)]
         FlatTask.__init__(self, inputs=inputs, log=log, drill=drill,
                           debug=debug, cleanafter=cleanafter)
         self.name = 'PTC0X'
@@ -730,6 +731,34 @@ class PTC0X(FlatTask):
 
         self.canbecleaned = True
 
+    def debugtask(self):
+        """ """
+
+        HERmeta = OrderedDict()
+        HERmeta['TARGETFLU'] = 2.**16 / 2.
+        HERmeta['FLULIMS'] = [1.E4, 5.E4]
+
+        jCCD = 0
+        CCDk = 'CCD1'
+
+        medfluences = np.mean(self.dd.mx['flu_med_img'][:, jCCD, :], axis=1)
+        ixsel = np.argmin(np.abs(medfluences - HERmeta['TARGETFLU']))
+        HERfluence = medfluences[ixsel]
+        HERmeta['FLU_%s' % CCDk] = HERfluence
+
+        dpath = self.dd.mx['datapath'][ixsel, jCCD]
+        infits = os.path.join(dpath, '%s.fits' %
+            self.dd.mx['File_name'][ixsel, jCCD])
+        ccdobj = ccd.CCD(infits)
+
+        HERpreprof = MOT_FFaux.extract_transcan_profiles(ccdobj,
+            HERmeta['FLULIMS'],
+            direction='serial',
+            scan='pre')
+
+        stop()
+
+
     def extract_HER(self):
         """Hard Edge Response Analysis"""
 
@@ -783,7 +812,8 @@ class PTC0X(FlatTask):
 
                 HERprof = MOT_FFaux.extract_transcan_profiles(ccdobj,
                                                               HERmeta['FLULIMS'],
-                                                              direction='serial')
+                                                              direction='serial',
+                                                              scan='over')
 
                 ixjump = HERprof.pop('ixjump')
 
