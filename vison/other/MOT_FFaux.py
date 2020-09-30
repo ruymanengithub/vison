@@ -64,10 +64,10 @@ def extract_overscan_profiles(ccdobj, thresholds, direction='serial'):
         imgdata = ccdobj.get_quad(Q, canonical=True)
 
         if direction == 'serial':
-            strip = imgdata[-ccdobj.overscan - ixjump:-ccdobj.overscan + 15, :].copy()
+            strip = imgdata[-ccdobj.overscan - ixjump:-ccdobj.overscan + Npixprof-ixjump, :].copy()
         elif direction == 'parallel':
             strip = imgdata[ccdobj.prescan:-ccdobj.overscan,
-                            ccdobj.NrowsCCD - ixjump:ccdobj.NrowsCCD + 15].transpose().copy()
+                            ccdobj.NrowsCCD - ixjump:ccdobj.NrowsCCD + Npixprof-ixjump].transpose().copy()
 
         injection = np.mean(strip[0:ixjump, :], axis=0)
         bias = np.mean(strip[ixjump + 3:, :], axis=0)
@@ -113,10 +113,7 @@ def extract_prescan_profiles(ccdobj, thresholds):
 
     Qs = ccdobj.Quads # Quadrants
 
-    if direction == 'serial':
-        detedge = ccdobj.NAXIS1 // 2 - ccdobj.overscan
-    elif direction == 'parallel':
-        detedge = ccdobj.NAXIS2 // 2 - ccdobj.voverscan
+    detedge = ccdobj.prescan
 
     x = np.arange(Npixprof) + detedge - ixjump + 1
 
@@ -126,12 +123,8 @@ def extract_prescan_profiles(ccdobj, thresholds):
     for Q in Qs:
 
         imgdata = ccdobj.get_quad(Q, canonical=True)
-
-        if direction == 'serial':
-            strip = imgdata[-ccdobj.overscan - ixjump:-ccdobj.overscan + 15, :].copy()
-        elif direction == 'parallel':
-            strip = imgdata[ccdobj.prescan:-ccdobj.overscan,
-                            ccdobj.NrowsCCD - ixjump:ccdobj.NrowsCCD + 15].transpose().copy()
+        stop()
+        strip = imgdata[ccdobj.prescan - ixjump:ccdobj.prescan + Npixprof-ixjump, :].copy()
 
         injection = np.mean(strip[0:ixjump, :], axis=0)
         bias = np.mean(strip[ixjump + 3:, :], axis=0)
