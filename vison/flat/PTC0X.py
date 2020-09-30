@@ -787,7 +787,7 @@ class PTC0X(FlatTask):
         ax4.plot(HERoveprof['H']['y'],'r--',label='over-scan')
         ax4.set_title('H')
         handles, labels = ax1.get_legend_handles_labels()
-        plt.figlegend(self.handles, self.labels, loc='center right')
+        plt.figlegend(handles, labels, loc='center right')
 
         plt.show()
         
