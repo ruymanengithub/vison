@@ -793,7 +793,7 @@ class PTC0X(FlatTask):
 
         plt.show()
         
-
+        stop()
 
     def extract_HER(self):
         """Hard Edge Response Analysis"""
