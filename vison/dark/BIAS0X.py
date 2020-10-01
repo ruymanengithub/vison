@@ -78,6 +78,7 @@ class BIAS0X(DarkTask):
         """ """
         self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
                          ('basic', self.basic_analysis),
+                         ('debugtask', self.debugtask),
                          ('meta', self.meta_analysis)]
 
         super(BIAS0X, self).__init__(inputs=inputs, log=log, drill=drill, debug=debug,
@@ -212,11 +213,11 @@ class BIAS0X(DarkTask):
         profs1D2plot['ver'] = OrderedDict()
         profs1D2plot['verstd'] = OrderedDict()
 
-        for CCDk in CCDs:
-            for tag in ['hor', 'ver', 'verstd']:
+        for tag in ['hor', 'ver', 'verstd']:
+            profs1D2plot[tag] = dict()
+            for CCDk in CCDs:
                 profs1D2plot[tag][CCDk] = OrderedDict()
-            for Q in Quads:
-                for tag in ['hor', 'ver', 'verstd']:
+                for Q in Quads:
                     profs1D2plot[tag][CCDk][Q] = OrderedDict()
                     profs1D2plot[tag][CCDk][Q]['x'] = OrderedDict()
                     profs1D2plot[tag][CCDk][Q]['y'] = OrderedDict()
@@ -310,13 +311,20 @@ class BIAS0X(DarkTask):
                         # produce average profile along cols of STD
 
                         ver1Dstdprof = ccdobj.get_1Dprofile(
-                            Q=Q, orient='ver', area='img', stacker='std', vstart=vstart, vend=vend)
+                            Q=Q, orient='ver', area='all', stacker='std', vstart=vstart, vend=vend)
+
+                        # produce average profile along cols of STD
+
+                        hor1Dstdprof = ccdobj.get_1Dprofile(
+                            Q=Q, orient='hor', area='all', stacker='std', vstart=vstart, vend=vend)
+
 
                         # save profiles in locally for plotting
 
                         iprofiles1D.data[Q]['hor'] = copy.deepcopy(hor1Dprof)
                         iprofiles1D.data[Q]['ver'] = copy.deepcopy(ver1Dprof)
                         iprofiles1D.data[Q]['verstd'] = copy.deepcopy(ver1Dstdprof)
+                        iprofiles1D.data[Q]['horstd'] = copy.deepcopy(hor1Dstdprof)
 
                         _profs = dict(hor=hor1Dprof, ver=ver1Dprof,
                                       verstd=ver1Dstdprof)
@@ -494,6 +502,61 @@ class BIAS0X(DarkTask):
                 sheet='OFF_OVE', caption='%s: Offsets, over-scan.' %
                 self.inputs['test'], longtable=False, fitwidth=True, index=True)
             self.report.add_Text(OVEOFFtex)
+
+
+    def debugtask(self):
+        """ """
+
+        from vison.plot import figclasses
+        from vison.support import files
+
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='debug',
+                Title='%s Debug' % self.inputs['test'],
+                level=0)
+
+        DDindices = copy.deepcopy(self.dd.indices)
+        nObs, nCCD, nQuad = DDindices.shape[0:3]
+        Quads = DDindices[2].vals
+        CCDs = DDindices.get_vals('CCD')
+
+        debug_fig_dict = dict(
+        figname='BIAS0X_std_vs_offset_prescan_allOBSIDs.png',
+        caption='PENDING',
+        meta=dict(doLegend=False,
+              ylabel='STD [ADU]',
+              xlabel='MEAN [ADU]',
+              #ylim=[-20., 20.],
+              suptitle='BIAS0X: STD vs. OFFSET, prescan')
+        )
+
+        self.figdict['debugFig'] = [
+        figclasses.Fig_Beam2DPlot, debug_fig_dict]
+
+        profs1D2plot = OrderedDict()
+
+        for CCDk in CCDs:
+            profs1D2plot[tag][CCDk] = OrderedDict()
+            for Q in Quads:
+                profs1D2plot[tag][CCDk][Q] = OrderedDict()
+                profs1D2plot[tag][CCDk][Q]['x'] = OrderedDict()
+                profs1D2plot[tag][CCDk][Q]['y'] = OrderedDict()
+
+        for iObs in range(nObs):
+
+            for jCCD, CCDk in enumerate(CCDs):
+
+                iprofsfile = '{}.pick'.format(self.dd.mx['profiles1D_name'][iObs,
+                                                  jCCD])
+                iprofs = files.cPickleRead(iprofsfile)
+
+        self.figdict['debugFig'][1]['data'] = profs1D2plot
+
+
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['debugFig'], dobuilddata=False)
+
 
     def meta_analysis(self):
         """
