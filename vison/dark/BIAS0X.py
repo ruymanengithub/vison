@@ -560,6 +560,7 @@ class BIAS0X(DarkTask):
                     _x = iprofs['data'][Q]['hor'].data['y'][0:self.ccdcalc.prescan].copy()
                     _y = iprofs['data'][Q]['horstd'].data['y'][0:self.ccdcalc.prescan].copy()
 
+                    stop()
                 
                     profs1D2plot[CCDk][Q]['x'][OBStag] = _x
                     profs1D2plot[CCDk][Q]['y'][OBStag] = _y
