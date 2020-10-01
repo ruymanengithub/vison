@@ -537,11 +537,11 @@ class BIAS0X(DarkTask):
         profs1D2plot = OrderedDict()
 
         for CCDk in CCDs:
-            profs1D2plot[tag][CCDk] = OrderedDict()
+            profs1D2plot[CCDk] = OrderedDict()
             for Q in Quads:
-                profs1D2plot[tag][CCDk][Q] = OrderedDict()
-                profs1D2plot[tag][CCDk][Q]['x'] = OrderedDict()
-                profs1D2plot[tag][CCDk][Q]['y'] = OrderedDict()
+                profs1D2plot[CCDk][Q] = OrderedDict()
+                profs1D2plot[CCDk][Q]['x'] = OrderedDict()
+                profs1D2plot[CCDk][Q]['y'] = OrderedDict()
 
         for iObs in range(nObs):
 
