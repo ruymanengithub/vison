@@ -535,6 +535,7 @@ class BIAS0X(DarkTask):
         figclasses.Fig_Beam2DPlot, debug_fig_dict]
 
         profs1D2plot = OrderedDict()
+        profilespath = self.inputs['subpaths']['profiles']
 
         for CCDk in CCDs:
             profs1D2plot[CCDk] = OrderedDict()
@@ -549,7 +550,7 @@ class BIAS0X(DarkTask):
 
                 iprofsfile = '{}.pick'.format(self.dd.mx['profiles1D_name'][iObs,
                                                   jCCD])
-                iprofs = files.cPickleRead(iprofsfile)
+                iprofs = files.cPickleRead(os.path.join(profilespath,iprofsfile))
 
         self.figdict['debugFig'][1]['data'] = profs1D2plot
 
