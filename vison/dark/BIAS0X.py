@@ -563,8 +563,10 @@ class BIAS0X(DarkTask):
                     profs1D2plot[CCDk][Q]['x'][OBStag] = _x
                     profs1D2plot[CCDk][Q]['y'][OBStag] = _y
 
+        profs1D2plot['labelkeys'] = \
+                list(profs1D2plot[CCDs[0]][Quads[0]]['x'].keys())
 
-        self.figdict['debugFig'][1]['data'] = profs1D2plot
+        self.figdict['debugFig'][1]['data'] = profs1D2plot.copy()
 
 
         if self.report is not None:
