@@ -547,23 +547,22 @@ class BIAS0X(DarkTask):
         for iObs in range(nObs):
 
             OBSID = self.dd.mx['ObsID'][iObs]
+            OBStag = 'OBS{}'.format(OBSID)
 
             for jCCD, CCDk in enumerate(CCDs):
 
                 iprofsfile = '{}.pick'.format(self.dd.mx['profiles1D_name'][iObs,
                                                   jCCD])
                 iprofs = files.cPickleRead(os.path.join(profilespath,iprofsfile))
-                stop()
-
-                _x = iprofs['hor'].data['y'][0:ccdobj.prescan].copy()
-                _y = iprofs['horstd'].data['y'][0:ccdobj.prescan].copy()
                 
-                OBStag = 'OBS{}'.format(OBSID)
+                for Q in Quads:
 
-                profs1D2plot[CCDk][Q]['x'][OBStag] = _x
-                profs1D2plot[CCDk][Q]['y'][OBStag] = _y
-
+                    _x = iprofs['data'][Q]['hor'].data['y'][0:self.ccdcalc.prescan].copy()
+                    _y = iprofs['data'][Q]['horstd'].data['y'][0:self.ccdcalc.prescan].copy()
                 
+                    profs1D2plot[CCDk][Q]['x'][OBStag] = _x
+                    profs1D2plot[CCDk][Q]['y'][OBStag] = _y
+
 
         self.figdict['debugFig'][1]['data'] = profs1D2plot
 
