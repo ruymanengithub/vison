@@ -733,6 +733,7 @@ class PTC0X(FlatTask):
 
     def debugtask(self):
         """ """
+        stop()
 
         from matplotlib import pyplot as plt
 
