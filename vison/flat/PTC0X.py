@@ -450,7 +450,15 @@ class PTC0X(FlatTask):
 
                         self.dd.mx[medcol][iObs, jCCD, kQ, :] = _meds.copy()
                         self.dd.mx[varcol][iObs, jCCD, kQ, :] = _vars.copy()
-        
+            
+            if len(misspairs) > 0:
+                if self.report is not None:
+                    self.report.add_Text(
+                        'Pairs with unequal fluence skipped: %s' %
+                        misspairs.__repr__())
+                if self.log is not None:
+                    self.log.info('Pairs with unequal fluence skipped: %s' % \
+                        misspairs.__repr__())    
         
 
     def extract_PTC(self):
@@ -496,14 +504,6 @@ class PTC0X(FlatTask):
 
         # MISSING: any figure?
         # MISSING: any Table?
-
-        if len(misspairs) > 0:
-            if self.report is not None:
-                self.report.add_Text(
-                    'Pairs with unequal fluence skipped: %s' %
-                    misspairs.__repr__())
-            if self.log is not None:
-                self.log.info('Pairs with unequal fluence skipped: %s' % misspairs.__repr__())
 
         return
 
@@ -733,7 +733,7 @@ class PTC0X(FlatTask):
 
     def debugtask(self):
         """ """
-        
+
 
         from matplotlib import pyplot as plt
 
