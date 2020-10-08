@@ -736,6 +736,39 @@ class PTC0X(FlatTask):
 
         from matplotlib import pyplot as plt
 
+        dIndices = copy.deepcopy(self.dd.indices)
+
+        CCDs = dIndices.get_vals('CCD')
+        nC = len(CCDs)
+        Quads = dIndices.get_vals('Quad')
+        nQ = len(Quads)
+
+        for iCCD, CCDk in enumerate(CCDs):
+
+            for jQ, Q in enumerate(Quads):
+
+                ixsel = np.where(~np.isnan(self.dd.mx['ObsID_pair'][:]))
+
+                raw_var = self.dd.mx['sec_var'][ixsel, iCCD, jQ, :]
+                raw_med = self.dd.mx['sec_med'][ixsel, iCCD, jQ, :]
+                ixnonan = np.where(~np.isnan(raw_var) & ~np.isnan(raw_med))
+                var = raw_var[ixnonan]
+                med = raw_med[ixnonan]
+
+                fig = plt.figure()
+                ax = fig.add_subplot(111)
+                ax.plot(med,var/med,'bo')
+                plt.show()
+
+        stop()
+
+
+
+    def debug_PRE_HER(self):
+        """ """
+
+        from matplotlib import pyplot as plt
+
         HERmeta = OrderedDict()
         HERmeta['TARGETFLU'] = 2.**16 / 2.
         HERmeta['FLULIMS'] = [1.E4, 5.E4]
