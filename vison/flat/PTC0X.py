@@ -793,7 +793,7 @@ class PTC0X(FlatTask):
         
         dpath = self.dd.mx['datapath'][iObs, jCCD]
         ccdobj_f = os.path.join(
-                        dpath, '%s.pick' % self.dd.mx['ccdobjname'][iObs, jCCD])
+                        dpath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs, jCCD])
 
         ccdobj = copy.deepcopy(cPickleRead(ccdobj_f))
 
@@ -805,7 +805,7 @@ class PTC0X(FlatTask):
 
         ccdclone.get_tiles_stats(Quad, tile_coos, statkey, extension=-1, binfactor=5)
 
-        
+
 
         stop()
 
