@@ -330,7 +330,7 @@ class PTC0X(FlatTask):
         #                                  doOffset=True, doBias=False, doFF=False)
 
 
-    def f_extract_PTC(self, ccdobjcol, medcol, varcol):
+    def f_extract_PTC(self, ccdobjcol, medcol, varcol, binfactor=1):
         """ """
 
         # HARDWIRED VALUES
@@ -441,12 +441,27 @@ class PTC0X(FlatTask):
 
                         _tile_coos = tile_coos[Quad]
 
-                        _meds = ccdobj_odd.get_tiles_stats(
-                            Quad, _tile_coos, 'median', extension=-1)
+                        if binfactor >1:
 
-                        # IT'S A SUBTRACTION, SO WE HAVE TO DIVIDE BY 2 THE VARIANCE!
-                        _vars = ccdobj_sub.get_tiles_stats(
-                            Quad, _tile_coos, 'std', extension=-1)**2. / 2.
+                            ccdobj_odd = PTC0Xaux.CCDclone(ccdobj_odd)
+
+                            _meds = ccdobj_odd.get_tiles_stats(
+                                Quad, _tile_coos, 'median', extension=-1, binfactor=binfactor)
+
+                            # IT'S A SUBTRACTION, SO WE HAVE TO DIVIDE BY 2 THE VARIANCE!
+
+                            ccdobj_sub = PTC0Xaux.CCDclone(ccdobj_sub)
+
+                            _vars = ccdobj_sub.get_tiles_stats(
+                                Quad, _tile_coos, 'std', extension=-1, binfactor=binfactor)**2. / 2.
+
+                        else:
+                            _meds = ccdobj_odd.get_tiles_stats(
+                                Quad, _tile_coos, 'median', extension=-1)
+
+                            # IT'S A SUBTRACTION, SO WE HAVE TO DIVIDE BY 2 THE VARIANCE!
+                            _vars = ccdobj_sub.get_tiles_stats(
+                                Quad, _tile_coos, 'std', extension=-1)**2. / 2.
 
                         self.dd.mx[medcol][iObs, jCCD, kQ, :] = _meds.copy()
                         self.dd.mx[varcol][iObs, jCCD, kQ, :] = _vars.copy()
@@ -496,62 +511,28 @@ class PTC0X(FlatTask):
 
         # Initializing new columns and computing PTC
 
+        # Non-binned extraction
 
         medcol = 'sec_med'
         varcol = 'sec_var'
         ccdobjcol = 'ccdobj_name'
-        self.f_extract_PTC(ccdobjcol, medcol, varcol)
+        self.f_extract_PTC(ccdobjcol, medcol, varcol, binfactor=1)
+
+
+        # Binned extraction
+
+        binfactor=5
+        medcol = 'sec_med_bin{:d}'.format(binfactor)
+        varcol = 'sec_var_bin{:d}'.format(binfactor)
+        ccdobjcol = 'ccdobj_name'
+        self.f_extract_PTC(ccdobjcol, medcol, varcol, binfactor=binfactor)        
 
         # MISSING: any figure?
         # MISSING: any Table?
 
         return
 
-    def extract_binnedPTC(self):
-        """
-
-        Performs basic analysis of images:
-            - builds PTC curves: both on non-binned and binned images
-
-        **METACODE**
-
-        ::
-
-            create list of OBSID pairs
-
-            create segmentation map given grid parameters
-
-            f.e. OBSID pair:
-                CCD:
-                    Q:
-                        subtract CCD images
-                        f.e. segment:
-                            measure central value
-                            measure variance
-
-        """
-
-        # HARDWIRED VALUES
-        wpx = self.window['wpx']
-        hpx = self.window['hpx']
-
-        if self.report is not None:
-            self.report.add_Section(
-                keyword='extract', Title='PTC Extraction', level=0)
-            self.report.add_Text('Segmenting on %i x %i windows...' % (wpx, hpx))
-
-        # Initializing new columns and computing PTC
-
-
-        medcol = 'sec_med'
-        varcol = 'sec_var'
-        ccdobjcol = 'ccdobj_name'
-        self.f_extract_PTC(ccdobjcol, medcol, varcol)
-
-        # MISSING: any figure?
-        # MISSING: any Table?
-
-        return
+    
 
     def meta_analysis(self):
         """
@@ -783,31 +764,33 @@ class PTC0X(FlatTask):
 
         from matplotlib import pyplot as plt
 
+        debugBinnedExtraction = False
 
-        iObs = 0
-        jCCD = 0
-        Quad = 'E'
-        statkey = 'std'
-        wpx = 300
-        hpx = 300
-        
-        dpath = self.inputs['subpaths']['ccdpickles']
-        ccdobj_f = os.path.join(
-                        dpath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs, jCCD])
+        if debugBinnedExtraction:
 
-        ccdobj = copy.deepcopy(cPickleRead(ccdobj_f))
+            iObs = 0
+            jCCD = 0
+            Quad = 'E'
+            statkey = 'std'
+            wpx = 300
+            hpx = 300
+            
+            dpath = self.inputs['subpaths']['ccdpickles']
+            ccdobj_f = os.path.join(
+                            dpath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs, jCCD])
 
-        ccdclone = PTC0Xaux.CCDclone(ccdobj)
+            ccdobj = copy.deepcopy(cPickleRead(ccdobj_f))
 
-        tile_coos = dict()
-        for kQuad in self.ccdcalc.Quads:
-            tile_coos[kQuad] = self.ccdcalc.get_tile_coos(kQuad, wpx, hpx) 
+            ccdclone = PTC0Xaux.CCDclone(ccdobj)
 
-        bin_stds = ccdclone.get_tiles_stats(Quad, tile_coos[Quad], statkey, extension=-1, binfactor=5)
-        stds = ccdobj.get_tiles_stats(Quad, tile_coos[Quad], statkey, extension=-1)
+            tile_coos = dict()
+            for kQuad in self.ccdcalc.Quads:
+                tile_coos[kQuad] = self.ccdcalc.get_tile_coos(kQuad, wpx, hpx) 
 
+            bin_stds = ccdclone.get_tiles_stats(Quad, tile_coos[Quad], statkey, extension=-1, binfactor=5)
+            stds = ccdobj.get_tiles_stats(Quad, tile_coos[Quad], statkey, extension=-1)
 
-        stop()
+            stop()
 
         dIndices = copy.deepcopy(self.dd.indices)
 
@@ -822,8 +805,8 @@ class PTC0X(FlatTask):
 
                 ixsel = np.where(~np.isnan(self.dd.mx['ObsID_pair'][:]))
 
-                raw_var = self.dd.mx['sec_var'][ixsel, iCCD, jQ, :]
-                raw_med = self.dd.mx['sec_med'][ixsel, iCCD, jQ, :]
+                raw_var = self.dd.mx['sec_var_bin5'][ixsel, iCCD, jQ, :]
+                raw_med = self.dd.mx['sec_med_bin5'][ixsel, iCCD, jQ, :]
                 ixnonan = np.where(~np.isnan(raw_var) & ~np.isnan(raw_med))
                 var = raw_var[ixnonan]
                 med = raw_med[ixnonan]
