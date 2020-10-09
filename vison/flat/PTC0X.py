@@ -791,7 +791,7 @@ class PTC0X(FlatTask):
         wpx = 300
         hpx = 300
         
-        dpath = self.dd.mx['datapath'][iObs, jCCD]
+        dpath = self.inputs['subpaths']['ccdpickles']
         ccdobj_f = os.path.join(
                         dpath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs, jCCD])
 
