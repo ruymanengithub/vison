@@ -787,7 +787,7 @@ class PTC0X(FlatTask):
         iObs = 0
         jCCD = 0
         Quad = 'E'
-        statkey = 'mean'
+        statkey = 'std'
         wpx = 300
         hpx = 300
         
@@ -803,9 +803,10 @@ class PTC0X(FlatTask):
         for kQuad in self.ccdcalc.Quads:
             tile_coos[kQuad] = self.ccdcalc.get_tile_coos(kQuad, wpx, hpx) 
 
-        ccdclone.get_tiles_stats(Quad, tile_coos[Quad], statkey, extension=-1, binfactor=5)
+        bin_stds = ccdclone.get_tiles_stats(Quad, tile_coos[Quad], statkey, extension=-1, binfactor=5)
+        stds = ccdobj.get_tiles_stats(Quad, tile_coos[Quad], statkey, extension=-1)
 
-        
+
         stop()
 
         dIndices = copy.deepcopy(self.dd.indices)
