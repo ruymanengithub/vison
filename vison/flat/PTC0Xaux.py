@@ -22,6 +22,7 @@ from vison.plot import figclasses
 from vison.plot import trends
 from vison.datamodel import cdp
 from vison.datamodel.ccd import CCD
+from vison.datamodel import ccd_aux
 # END IMPORT
 
 
@@ -74,7 +75,15 @@ class CCDclone(CCD):
         tiles = self.get_tiles(Quad, tile_coos, extension=extension)
 
         if binfactor > 1:
-          stop()
+
+          _tiles = copy.deepcopy(tiles)
+
+          newshape = tuple([item//binfactor for item in tiles[0].shape])
+          window = tuple([item*5 for item in newshape])
+
+          tiles = []
+          for i in range(len(_tiles)):
+            tiles.append(ccd_aux.rebin(_tiles[i][0:window[0],0:window[1]],newshape,stat='mean'))
 
 
         vals = np.array(list(map(estimator, tiles)))

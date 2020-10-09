@@ -805,8 +805,7 @@ class PTC0X(FlatTask):
 
         ccdclone.get_tiles_stats(Quad, tile_coos[Quad], statkey, extension=-1, binfactor=5)
 
-
-
+        
         stop()
 
         dIndices = copy.deepcopy(self.dd.indices)
