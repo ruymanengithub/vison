@@ -21,8 +21,66 @@ import pandas as pd
 from vison.plot import figclasses
 from vison.plot import trends
 from vison.datamodel import cdp
-
+from vison.datamodel.ccd import CCD
 # END IMPORT
+
+
+class CCDclone(CCD):
+
+  def __init__(self, ccd2clone):
+        """ """
+
+        attrs2clone = []
+
+        for attr in dir(ccd2clone): 
+            if (not callable(getattr(ccd2clone, attr)) and (attr[0:2] != '__')):
+                attrs2clone.append(attr)
+
+        for attr in attrs2clone:
+            setattr(self, attr, getattr(ccd2clone, attr))
+
+  def get_tiles_stats(self, Quad, tile_coos, statkey, extension=-1, binfactor=1):
+        """Returns statistics on a list of tiles.
+
+        :param Quad: Quadrant where to take the cutouts from.
+        :type Quad: str
+
+        :param tile_coos: A dictionary with tiles coordinates, as output by 
+            get_tile_coos.
+        :type tile_coos: dict()
+
+        :param statkey: stat to retrieve (one of mean, median, std)
+        :type statkey: str
+
+        :param extension: Extension index, last is -1
+        :type extension: int
+
+
+        :return: A 1D numpy array with the stat values for the tiles. 
+
+        """
+
+        if isinstance(self.extensions[extension].data, np.ma.masked_array):
+            stat_dict = dict(
+                mean=np.ma.mean, median=np.ma.median, std=np.ma.std)
+        else:
+            stat_dict = dict(mean=np.mean, median=np.median, std=np.std)
+
+        assert (binfactor>1)
+        assert isinstance(binfactor,int)
+
+        estimator = stat_dict[statkey]
+
+        tiles = self.get_tiles(Quad, tile_coos, extension=extension)
+
+        if binfactor > 1:
+          stop()
+
+
+        vals = np.array(list(map(estimator, tiles)))
+
+        return vals
+
 
 
 class HER_CDP(cdp.Tables_CDP):

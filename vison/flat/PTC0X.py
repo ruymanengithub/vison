@@ -507,6 +507,52 @@ class PTC0X(FlatTask):
 
         return
 
+    def extract_binnedPTC(self):
+        """
+
+        Performs basic analysis of images:
+            - builds PTC curves: both on non-binned and binned images
+
+        **METACODE**
+
+        ::
+
+            create list of OBSID pairs
+
+            create segmentation map given grid parameters
+
+            f.e. OBSID pair:
+                CCD:
+                    Q:
+                        subtract CCD images
+                        f.e. segment:
+                            measure central value
+                            measure variance
+
+        """
+
+        # HARDWIRED VALUES
+        wpx = self.window['wpx']
+        hpx = self.window['hpx']
+
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='extract', Title='PTC Extraction', level=0)
+            self.report.add_Text('Segmenting on %i x %i windows...' % (wpx, hpx))
+
+        # Initializing new columns and computing PTC
+
+
+        medcol = 'sec_med'
+        varcol = 'sec_var'
+        ccdobjcol = 'ccdobj_name'
+        self.f_extract_PTC(ccdobjcol, medcol, varcol)
+
+        # MISSING: any figure?
+        # MISSING: any Table?
+
+        return
+
     def meta_analysis(self):
         """
 
@@ -737,6 +783,32 @@ class PTC0X(FlatTask):
 
         from matplotlib import pyplot as plt
 
+
+        iObs = 0
+        jCCD = 0
+        Quad = 'E'
+        statkey = 'mean'
+        wpx = 300
+        hpx = 300
+        
+        dpath = self.dd.mx['datapath'][iObs, jCCD]
+        ccdobj_f = os.path.join(
+                        dpath, '%s.pick' % self.dd.mx['ccdobjname'][iObs, jCCD])
+
+        ccdobj = copy.deepcopy(cPickleRead(ccdobj_f))
+
+        ccdclone = PTC0Xaux.CCDclone(ccdobj)
+
+        tile_coos = dict()
+        for Quad in self.ccdcalc.Quads:
+            tile_coos[Quad] = self.ccdcalc.get_tile_coos(Quad, wpx, hpx) 
+
+        ccdclone.get_tiles_stats(Quad, tile_coos, statkey, extension=-1, binfactor=5)
+
+        
+
+        stop()
+
         dIndices = copy.deepcopy(self.dd.indices)
 
         CCDs = dIndices.get_vals('CCD')
@@ -759,6 +831,8 @@ class PTC0X(FlatTask):
                 fig = plt.figure()
                 ax = fig.add_subplot(111)
                 ax.plot(med,var/med,'bo')
+                ax.set_xlabel('median')
+                ax.set_ylabel('var/median')
                 plt.show()
 
         stop()
