@@ -800,10 +800,10 @@ class PTC0X(FlatTask):
         ccdclone = PTC0Xaux.CCDclone(ccdobj)
 
         tile_coos = dict()
-        for Quad in self.ccdcalc.Quads:
-            tile_coos[Quad] = self.ccdcalc.get_tile_coos(Quad, wpx, hpx) 
+        for kQuad in self.ccdcalc.Quads:
+            tile_coos[kQuad] = self.ccdcalc.get_tile_coos(kQuad, wpx, hpx) 
 
-        ccdclone.get_tiles_stats(Quad, tile_coos, statkey, extension=-1, binfactor=5)
+        ccdclone.get_tiles_stats(Quad, tile_coos[Quad], statkey, extension=-1, binfactor=5)
 
 
 
