@@ -1246,7 +1246,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     doDebug = True
     print('HI flux filter...')
 
-    X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL(fluences[ixfitHI, :].mean(axis=1), exptimes[ixfitHI], nomG, 
+    X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL(fluences[ixfitHI, :], exptimes[ixfitHI], nomG, 
         pivotfrac=pivotfrac, 
         minrelflu=minrelflu,
         maxrelflu=maxrelflu, 
@@ -1260,7 +1260,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     #                                      #minrelflu=minrelflu,
     #                                      #maxrelflu=maxrelflu)
 
-    X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL(fluences[ixfitLO, :].mean(axis=1), exptimes[ixfitLO], nomG, 
+    X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL(fluences[ixfitLO, :], exptimes[ixfitLO], nomG, 
         pivotfrac=pivotfrac, 
         minrelflu=minrelflu,
         maxrelflu=maxrelflu, 
