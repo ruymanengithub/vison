@@ -480,7 +480,7 @@ class PTC0X(FlatTask):
         """
 
         Performs basic analysis of images:
-            - builds PTC curves: both on non-binned and binned images
+            - builds PTC curves: both on non-binned [and binned images]
 
         **METACODE**
 
@@ -521,11 +521,15 @@ class PTC0X(FlatTask):
 
         # Binned extraction
 
-        binfactor=5
-        medcol = 'sec_med_bin{:d}'.format(binfactor)
-        varcol = 'sec_var_bin{:d}'.format(binfactor)
-        ccdobjcol = 'ccdobj_name'
-        self.f_extract_PTC(ccdobjcol, medcol, varcol, binfactor=binfactor)        
+        doBinned  = False
+
+        if doBinned:
+
+            binfactor=6
+            medcol = 'sec_med_bin{:d}'.format(binfactor)
+            varcol = 'sec_var_bin{:d}'.format(binfactor)
+            ccdobjcol = 'ccdobj_name'
+            self.f_extract_PTC(ccdobjcol, medcol, varcol, binfactor=binfactor)        
 
         # MISSING: any figure?
         # MISSING: any Table?
