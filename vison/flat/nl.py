@@ -1298,7 +1298,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     #                            ObsIDs=fObsIDs)
 
     fitresults = fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug)
-    stop()
+    
     fitresults['Xcoo'] = Xcoo.copy()
     fitresults['Ycoo'] = Ycoo.copy()
 
