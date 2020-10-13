@@ -1246,20 +1246,24 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     doDebug = True
     
 
-    doLinFit = True
+    doLinFit = False # if True, take linear trend from a linear fit over a range of exp-times
+                     # if false, take linear trend from the exptime at which the fluence is a 
+                     # fixed value across all sectors (and both filters)
 
     if doLinFit:
 
-        X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL02_tests(fluences[ixfitHI, :],
-                                              exptimes[ixfitHI], nomG,
+        X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL02(fluences[ixfitHI, :],
+                                              exptimes[ixfitHI], 
+                                              nomG,
                                               ixLinFit=ixoverlapHI,
                                               debug=doDebug)
                                               #minrelflu=minrelflu,
                                               #maxrelflu=maxrelflu)
 
         
-        X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL02_tests(fluences[ixfitLO, :],
-                                              exptimes[ixfitLO], nomG,
+        X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL02(fluences[ixfitLO, :],
+                                              exptimes[ixfitLO], 
+                                              nomG,
                                               ixLinFit=ixoverlapLO,
                                               debug=doDebug)
                                           #minrelflu=minrelflu,
