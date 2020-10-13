@@ -536,5 +536,8 @@ class NL02(NL01.NL01):
         medcol = 'sec_med_bin{:d}'.format(binfactor)
         varcol = 'sec_var_bin{:d}'.format(binfactor)
         ccdobjcol = 'ccdobj_name'
+
+        stop()
+
         PTC0X.f_extract_PTC(self, ccdobjcol, medcol, varcol, binfactor=binfactor)
 
