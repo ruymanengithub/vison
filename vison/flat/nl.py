@@ -524,7 +524,7 @@ def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None
     #     ax2.set_title('Flux Map')        
     #     plt.show()
     #     #fig2.close()
-        plt.close('all')
+    #    plt.close('all')
 
     return X, Y, W, expix, regix
 
