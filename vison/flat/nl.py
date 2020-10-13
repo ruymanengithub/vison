@@ -1246,7 +1246,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     doDebug = True
     
 
-    doLinFit = False # if True, take linear trend from a linear fit over a range of exp-times
+    doLinFit = True # if True, take linear trend from a linear fit over a range of exp-times
                      # if false, take linear trend from the exptime at which the fluence is a 
                      # fixed value across all sectors (and both filters)
 
