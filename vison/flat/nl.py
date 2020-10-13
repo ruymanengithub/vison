@@ -1058,7 +1058,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     """returns NL modelling results."""
 
     nomG = 3.5  # e/ADU, used for noise estimates
-    minfitFl = 250.  # ADU, minimum fluence to consider in fit
+    minfitFl = 0.  # ADU, minimum fluence to consider in fit
     maxfitFl = FullDynRange - 10000.  # ADU, maximum fluence to consider in fit
     #pivotfrac = 0.2
     minrelflu = 0.05 # lower limit in relative (to saturation) fluence considered in linear trend
@@ -1227,15 +1227,15 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
 
 
-    ixfitHI = ixboo_fluHI | ixboo_bgd | ixboo_stab
-    #ixfitHI = ixboo_fluHI | ixboo_stab
+    #ixfitHI = ixboo_fluHI | ixboo_bgd | ixboo_stab
+    ixfitHI = ixboo_fluHI | ixboo_stab
     overlapExpTimesHI = np.unique(exptimes[ixfitHI & (exptimes>0)])[0:3]
     _ixrangeHI = np.arange(ixfitHI.sum())
     ixoverlapHI = [ix for ix in _ixrangeHI if (exptimes[ixfitHI][ix] in overlapExpTimesHI)]
 
 
-    ixfitLO = ixboo_fluLO | ixboo_bgd
-    #ixfitLO = ixboo_fluLO
+    #ixfitLO = ixboo_fluLO | ixboo_bgd
+    ixfitLO = ixboo_fluLO
     overlapExpTimesLO = np.unique(exptimes[ixfitLO & (exptimes>0)])[-3:]
     _ixrangeLO = np.arange(ixfitLO.sum())
     ixoverlapLO = [ix for ix in _ixrangeLO if (exptimes[ixfitLO][ix] in overlapExpTimesLO)]
