@@ -528,7 +528,7 @@ def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None
 
     return X, Y, W, expix, regix
 
-def fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False):
+def fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg, display=False):
     """ """
 
     ixnonan = np.where(~np.isnan(X))
@@ -661,7 +661,8 @@ def _display_NLcurves(X,Y, selix, Xfit, Yfit, labels, title=''):
     # ax.set_ylim([-10.,10.])
     plt.show()
 
-def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False,
+def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg, 
+                    display=False,
                    addExp=False, Rcoo=None, ObsIDs=None):
     """ """
 
@@ -1029,7 +1030,7 @@ def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.arra
     Xcoo = np.concatenate((XX[e_A, r_A], XX[e_B, r_B]))
     Ycoo = np.concatenate((YY[e_A, r_A], YY[e_B, r_B]))
 
-    fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, 
+    fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg,
         display=debug,
         addExp=True)
     fitresults['Xcoo'] = Xcoo.copy()
@@ -1237,7 +1238,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     overlapExpTimesLO = np.unique(exptimes[ixfitLO & (exptimes>0)])[-3:]
     _ixrangeLO = np.arange(ixfitLO.sum())
     ixoverlapLO = [ix for ix in _ixrangeLO if (exptimes[ixfitLO][ix] in overlapExpTimesLO)]
-    stop()
+
     pivotFlu = np.nanmean([np.nanmean(fluences[ixfitHI,:][ixoverlapHI]), np.nanmean(fluences[ixfitLO,0][ixoverlapLO])])
     pivotfrac = pivotFlu / FullDynRange
 
@@ -1291,12 +1292,14 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
     fObsIDs = np.concatenate((ObsIDs[ixfitHI][e_HI], ObsIDs[ixfitLO][e_LO]))
 
-    fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug,
+    fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, 
+                                NLdeg=NLdeg,
+                                display=debug,
                                 addExp=True,
                                 Rcoo=None,
                                 ObsIDs=fObsIDs)
     stop()
-    #fitresults = fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug)
+    #fitresults = fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg, display=debug)
     
     fitresults['Xcoo'] = Xcoo.copy()
     fitresults['Ycoo'] = Ycoo.copy()
