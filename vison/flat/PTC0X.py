@@ -375,10 +375,11 @@ class PTC0X(FlatTask):
         for ulabel in ulabels:
             six = np.where(label == ulabel)
             nsix = len(six[0])
-            ixeven = np.arange(0, nsix, 2)
-            ixodd = np.arange(1, nsix, 2)
+            if nsix % 2 ==0:
+                ixeven = np.arange(0, nsix, 2)
+                ixodd = np.arange(1, nsix, 2)
 
-            self.dd.mx['ObsID_pair'][six[0][ixeven]] = ObsIDs[six[0][ixodd]]
+                self.dd.mx['ObsID_pair'][six[0][ixeven]] = ObsIDs[six[0][ixodd]]
 
         if not self.drill:
 
@@ -642,7 +643,7 @@ class PTC0X(FlatTask):
 
                 # print('%s%s' % (CCDk,Q)) # TESTS
 
-                ixsel = np.where(~np.isnan(self.dd.mx['ObsID_pair'][:]))
+                ixsel = np.where(self.dd.mx['ObsID_pair'][0]>0)
 
                 raw_var = self.dd.mx['sec_var'][ixsel, iCCD, jQ, :]
                 raw_med = self.dd.mx['sec_med'][ixsel, iCCD, jQ, :]
