@@ -1227,26 +1227,26 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
 
 
-    #ixfitHI = ixboo_fluHI | ixboo_bgd | ixboo_stab
-    ixfitHI = ixboo_fluHI | ixboo_stab
+    ixfitHI = ixboo_fluHI | ixboo_bgd | ixboo_stab
+    #ixfitHI = ixboo_fluHI | ixboo_stab
     overlapExpTimesHI = np.unique(exptimes[ixfitHI & (exptimes>0)])[0:3]
     _ixrangeHI = np.arange(ixfitHI.sum())
     ixoverlapHI = [ix for ix in _ixrangeHI if (exptimes[ixfitHI][ix] in overlapExpTimesHI)]
 
 
-    #ixfitLO = ixboo_fluLO | ixboo_bgd
-    ixfitLO = ixboo_fluLO
+    ixfitLO = ixboo_fluLO | ixboo_bgd
+    #ixfitLO = ixboo_fluLO
     overlapExpTimesLO = np.unique(exptimes[ixfitLO & (exptimes>0)])[-3:]
     _ixrangeLO = np.arange(ixfitLO.sum())
     ixoverlapLO = [ix for ix in _ixrangeLO if (exptimes[ixfitLO][ix] in overlapExpTimesLO)]
 
-    pivotFlu = np.nanmean([np.nanmean(fluences[ixfitHI,:][ixoverlapHI]), np.nanmean(fluences[ixfitLO,0][ixoverlapLO])])
+    pivotFlu = np.nanmean([np.nanmean(fluences[ixfitHI,:][ixoverlapHI]), np.nanmean(fluences[ixfitLO,:][ixoverlapLO])])
     pivotfrac = pivotFlu / FullDynRange
 
     # get the X-Y of the NL fit for HI flux filter
     doDebug = True
     
-    stop()
+    
     doLinFit = False # if True, take linear trend from a linear fit over a range of exp-times
                      # if false, take linear trend from the exptime at which the fluence is a 
                      # fixed value across all sectors (and both filters)
