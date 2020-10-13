@@ -302,8 +302,8 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
         # show()
     
 
-    #Z = 100. * (fluencesNL - YL) / (YL - intersect) # commented on TESTS ONLY
-    Z = 100. * (fluencesNL - YL) / YL
+    Z = 100. * (fluencesNL - YL) / (YL - intersect) # commented on TESTS ONLY
+    #Z = 100. * (fluencesNL - YL) / YL
 
     efNL = np.sqrt((fluencesNL) * nomG) / nomG
 
@@ -325,25 +325,25 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
     expix = expix[ixsort].copy()
     regix = regix[ixsort].copy()
     
-    if debug:
-        Nside = int(fluencesNL.shape[1]**0.5)
-        intersectmap = intersect.reshape((Nside,Nside))
-        avfluxes = np.nanmean(fluencesNL/np.expand_dims(exptimes,1),axis=0).reshape(Nside,Nside)
+    # if debug:
+    #     Nside = int(fluencesNL.shape[1]**0.5)
+    #     intersectmap = intersect.reshape((Nside,Nside))
+    #     avfluxes = np.nanmean(fluencesNL/np.expand_dims(exptimes,1),axis=0).reshape(Nside,Nside)
 
-        fig1 = plt.figure()
-        ax1 = fig1.add_subplot()
-        ax1.imshow(intersectmap,origin='lower left')
-        ax1.set_title('Intersect Map')
-        plt.show()
-        #fig1.close()
+    #     fig1 = plt.figure()
+    #     ax1 = fig1.add_subplot()
+    #     ax1.imshow(intersectmap,origin='lower left')
+    #     ax1.set_title('Intersect Map')
+    #     plt.show()
+    #     #fig1.close()
 
-        fig2 = plt.figure()
-        ax2 = fig2.add_subplot()
-        ax2.imshow(avfluxes,origin='lower left')
-        ax2.set_title('Flux Map')        
-        plt.show()
-        #fig2.close()
-        plt.close('all')
+    #     fig2 = plt.figure()
+    #     ax2 = fig2.add_subplot()
+    #     ax2.imshow(avfluxes,origin='lower left')
+    #     ax2.set_title('Flux Map')        
+    #     plt.show()
+    #     #fig2.close()
+    #     plt.close('all')
 
     return X, Y, W, expix, regix
 
