@@ -107,6 +107,9 @@ class NL02(NL01.NL01):
             cleanafter=cleanafter)
         self.name = 'NL02'
 
+        self.subtasks += [('extract_PTC', self.extract_PTC)]
+        
+
     def set_inpdefaults(self, **kwargs):
 
         waveA = 0
@@ -512,3 +515,26 @@ class NL02(NL01.NL01):
 
         """
         raise NotImplementedError
+
+
+    def extract_PTC(self):
+        """ """
+
+        from vison.flat.PTC0X import PTC0X
+
+        # HARDWIRED VALUES
+        wpx = self.window['wpx']
+        hpx = self.window['hpx']
+
+        if self.report is not None:
+            self.report.add_Section(
+                keyword='extract', Title='(binned) PTC Extraction', level=0)
+            self.report.add_Text('Segmenting on %i x %i windows...' % (wpx, hpx))
+
+
+        binfactor=6
+        medcol = 'sec_med_bin{:d}'.format(binfactor)
+        varcol = 'sec_var_bin{:d}'.format(binfactor)
+        ccdobjcol = 'ccdobj_name'
+        PTC0X.f_extract_PTC(self, ccdobjcol, medcol, varcol, binfactor=binfactor)
+
