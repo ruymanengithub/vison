@@ -304,7 +304,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
 
     Z = 100. * (fluencesNL - YL) / (YL - intersect) # commented on TESTS ONLY
     #Z = 100. * (fluencesNL - YL) / YL
-    stop()
+    
     efNL = np.sqrt((fluencesNL) * nomG) / nomG
 
     W = 100. * (efNL / YL)
@@ -1116,6 +1116,10 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     # the same offset is subtracted for all regions in a frame/quadrant.
     fluences = fluences - np.expand_dims(offset,1) 
 
+    # subtracting stray-light
+
+    stop()
+
     dumpCubes=False # True on TESTS
     if dumpCubes:
         from astropy.io import fits as fts
@@ -1246,7 +1250,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     doDebug = True
     
 
-    doLinFit = True # if True, take linear trend from a linear fit over a range of exp-times
+    doLinFit = False # if True, take linear trend from a linear fit over a range of exp-times
                      # if false, take linear trend from the exptime at which the fluence is a 
                      # fixed value across all sectors (and both filters)
 
