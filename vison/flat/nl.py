@@ -304,7 +304,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
 
     Z = 100. * (fluencesNL - YL) / (YL - intersect) # commented on TESTS ONLY
     #Z = 100. * (fluencesNL - YL) / YL
-    
+
     efNL = np.sqrt((fluencesNL) * nomG) / nomG
 
     W = 100. * (efNL / YL)
@@ -1309,7 +1309,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
                                 addExp=True,
                                 Rcoo=None,
                                 ObsIDs=fObsIDs)
-    stop()
+    #stop()
     #fitresults = fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg, display=debug)
     
     fitresults['Xcoo'] = Xcoo.copy()
