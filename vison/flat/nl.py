@@ -1058,7 +1058,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     """returns NL modelling results."""
 
     nomG = 3.5  # e/ADU, used for noise estimates
-    minfitFl = 0.  # ADU, minimum fluence to consider in fit
+    minfitFl = 250.  # ADU, minimum fluence to consider in fit
     maxfitFl = FullDynRange - 10000.  # ADU, maximum fluence to consider in fit
     #pivotfrac = 0.2
     minrelflu = 0.05 # lower limit in relative (to saturation) fluence considered in linear trend
