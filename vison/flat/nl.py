@@ -1116,9 +1116,6 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     # the same offset is subtracted for all regions in a frame/quadrant.
     fluences = fluences - np.expand_dims(offset,1) 
 
-    # subtracting stray-light
-
-    stop()
 
     dumpCubes=False # True on TESTS
     if dumpCubes:
@@ -1249,7 +1246,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     # get the X-Y of the NL fit for HI flux filter
     doDebug = True
     
-
+    stop()
     doLinFit = False # if True, take linear trend from a linear fit over a range of exp-times
                      # if false, take linear trend from the exptime at which the fluence is a 
                      # fixed value across all sectors (and both filters)
