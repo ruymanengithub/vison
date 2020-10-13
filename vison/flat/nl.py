@@ -1113,7 +1113,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
         waveLO = uwaves[0]
 
     # subtracting offsets (bias) before flux tracking
-    # the same offset is subtracted for all regions in an frame/quadrant.
+    # the same offset is subtracted for all regions in a frame/quadrant.
     fluences = fluences - np.expand_dims(offset,1) 
 
     dumpCubes=False # True on TESTS
@@ -1214,7 +1214,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
         trackHI /= normHI
 
         trackLO = track_pol(dtimes[ixboo_fluLO]) # evaluated for the LO flux data-set
-        trackLO /= np.median(trackLO)
+        trackLO /= np.mean(trackLO)
 
         #track_bc = np.repeat(track.reshape(len(track), 1), Nsecs, axis=1)
         fluences[ixboo_fluHI, :] /= trackHI.reshape(trackHI.shape[0], -1)
@@ -1246,35 +1246,35 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     doDebug = True
     print('HI flux filter...')
 
-    X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL(fluences[ixfitHI, :], exptimes[ixfitHI], nomG, 
-        pivotfrac=pivotfrac, 
-        minrelflu=minrelflu,
-        maxrelflu=maxrelflu, 
-        method='spline',
-        Full=True)
+    #X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL(fluences[ixfitHI, :], exptimes[ixfitHI], nomG, 
+    #    pivotfrac=pivotfrac, 
+    #    minrelflu=minrelflu,
+    #    maxrelflu=maxrelflu, 
+    #    method='spline',
+    #    Full=True)
 
-    #X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL02_tests(fluences[ixfitHI, :],
-    #                                      exptimes[ixfitHI], nomG,
-    #                                      ixLinFit=ixoverlapHI,
-    #                                      debug=doDebug)
-    #                                      #minrelflu=minrelflu,
-    #                                      #maxrelflu=maxrelflu)
+    X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL02_tests(fluences[ixfitHI, :],
+                                          exptimes[ixfitHI], nomG,
+                                          ixLinFit=ixoverlapHI,
+                                          debug=doDebug)
+                                          #minrelflu=minrelflu,
+                                          #maxrelflu=maxrelflu)
 
-    X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL(fluences[ixfitLO, :], exptimes[ixfitLO], nomG, 
-        pivotfrac=pivotfrac, 
-        minrelflu=minrelflu,
-        maxrelflu=maxrelflu, 
-        method='spline',
-        Full=True)
+    #X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL(fluences[ixfitLO, :], exptimes[ixfitLO], nomG, 
+    #    pivotfrac=pivotfrac, 
+    #    minrelflu=minrelflu,
+    #    maxrelflu=maxrelflu, 
+    #    method='spline',
+    #    Full=True)
 
 
     #print('LO flux filter...')
-    #X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL02_tests(fluences[ixfitLO, :],
-    #                                      exptimes[ixfitLO], nomG,
-    #                                      ixLinFit=ixoverlapLO,
-    #                                      debug=doDebug)
-    #                                      #minrelflu=minrelflu,
-    #                                      #maxrelflu=maxrelflu)
+    X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL02_tests(fluences[ixfitLO, :],
+                                          exptimes[ixfitLO], nomG,
+                                          ixLinFit=ixoverlapLO,
+                                          debug=doDebug)
+                                          #minrelflu=minrelflu,
+                                          #maxrelflu=maxrelflu)
 
     #bgdnoff = np.median(fluences[ixboo_bgd,:])
 
@@ -1292,18 +1292,18 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
     fObsIDs = np.concatenate((ObsIDs[ixfitHI][e_HI], ObsIDs[ixfitLO][e_LO]))
 
-    #fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug,
-    #                            addExp=True,
-    #                            Rcoo=None,
-    #                            ObsIDs=fObsIDs)
+    fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug,
+                                addExp=True,
+                                Rcoo=None,
+                                ObsIDs=fObsIDs)
     stop()
-    fitresults = fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug)
+    #fitresults = fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, display=debug)
     
     fitresults['Xcoo'] = Xcoo.copy()
     fitresults['Ycoo'] = Ycoo.copy()
 
     #fitresults['bgd'] = bgd
-    fitresults['stability_pc'] = trackstab
+    fitresults['stability_pc'] = trackstab # as a percentage
 
     # TESTS
     #import matplotlib.cm as cm
