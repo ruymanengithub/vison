@@ -301,7 +301,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
         # plot(yp,yp/predictor(exptimes[ixsel])-1.,'k.')
         # show()
     
-    
+
     Z = 100. * (fluencesNL - YL) / (YL - intersect) # commented on TESTS ONLY
     #Z = 100. * (fluencesNL - YL) / YL
 
@@ -483,8 +483,8 @@ def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None
         # show()
     
 
-    Z = 100. * (fluencesNL - YL) / (YL - intersect) # commented on TESTS ONLY
-    #Z = 100. * (fluencesNL - YL) / YL
+    #Z = 100. * (fluencesNL - YL) / (YL - intersect) # commented on TESTS ONLY
+    Z = 100. * (fluencesNL / YL - 1.)
 
     efNL = np.sqrt((fluencesNL) * nomG) / nomG
 
