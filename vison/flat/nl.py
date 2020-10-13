@@ -134,7 +134,7 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5,
                 fluencesNL[:, i], exptimes, frac=pivotfrac, method=method, 
                 minrelflu=minrelflu,
                 maxrelflu=maxrelflu, 
-                debug=True)
+                debug=False)
         tpivot = np.repeat(tpivot.reshape(1, Nsec), Nexp, axis=0)
 
         exptimes_bc = np.repeat(exptimes.reshape(Nexp, 1), Nsec, axis=1)
@@ -304,7 +304,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
 
     Z = 100. * (fluencesNL - YL) / (YL - intersect) # commented on TESTS ONLY
     #Z = 100. * (fluencesNL - YL) / YL
-
+    stop()
     efNL = np.sqrt((fluencesNL) * nomG) / nomG
 
     W = 100. * (efNL / YL)
