@@ -301,7 +301,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
         # plot(yp,yp/predictor(exptimes[ixsel])-1.,'k.')
         # show()
     
-
+    stop()
     Z = 100. * (fluencesNL - YL) / (YL - intersect) # commented on TESTS ONLY
     #Z = 100. * (fluencesNL - YL) / YL
 
@@ -1246,37 +1246,37 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     doDebug = True
     print('HI flux filter...')
 
-    #X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL(fluences[ixfitHI, :], exptimes[ixfitHI], nomG, 
-    #    pivotfrac=pivotfrac, 
-    #    minrelflu=minrelflu,
-    #    maxrelflu=maxrelflu, 
-    #    method='spline',
-    #    Full=True)
+    X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL(fluences[ixfitHI, :], exptimes[ixfitHI], nomG, 
+        pivotfrac=pivotfrac, 
+        minrelflu=minrelflu,
+        maxrelflu=maxrelflu, 
+        method='spline',
+        Full=True)
 
-    X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL02_tests(fluences[ixfitHI, :],
-                                          exptimes[ixfitHI], nomG,
-                                          ixLinFit=ixoverlapHI,
-                                          debug=doDebug)
+    #X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL02_tests(fluences[ixfitHI, :],
+    #                                      exptimes[ixfitHI], nomG,
+    #                                      ixLinFit=ixoverlapHI,
+    #                                      debug=doDebug)
                                           #minrelflu=minrelflu,
                                           #maxrelflu=maxrelflu)
 
-    #X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL(fluences[ixfitLO, :], exptimes[ixfitLO], nomG, 
-    #    pivotfrac=pivotfrac, 
-    #    minrelflu=minrelflu,
-    #    maxrelflu=maxrelflu, 
-    #    method='spline',
-    #    Full=True)
+    X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL(fluences[ixfitLO, :], exptimes[ixfitLO], nomG, 
+        pivotfrac=pivotfrac, 
+        minrelflu=minrelflu,
+        maxrelflu=maxrelflu, 
+        method='spline',
+        Full=True)
 
 
     #print('LO flux filter...')
-    X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL02_tests(fluences[ixfitLO, :],
-                                          exptimes[ixfitLO], nomG,
-                                          ixLinFit=ixoverlapLO,
-                                          debug=doDebug)
+    #X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL02_tests(fluences[ixfitLO, :],
+    #                                      exptimes[ixfitLO], nomG,
+    #                                      ixLinFit=ixoverlapLO,
+    #                                      debug=doDebug)
                                           #minrelflu=minrelflu,
                                           #maxrelflu=maxrelflu)
 
-    #bgdnoff = np.median(fluences[ixboo_bgd,:])
+    bgdnoff = np.median(fluences[ixboo_bgd,:])
 
     X = np.concatenate((X_HI, X_LO)) # notice the small back-ground is left in!
     Y = np.concatenate((Y_HI, Y_LO))
