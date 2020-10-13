@@ -1244,7 +1244,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
     # get the X-Y of the NL fit for HI flux filter
     doDebug = True
-    print('HI flux filter...')
+    
 
     doLinFit = True
 
@@ -1257,7 +1257,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
                                               #minrelflu=minrelflu,
                                               #maxrelflu=maxrelflu)
 
-        #print('LO flux filter...')
+        
         X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL02_tests(fluences[ixfitLO, :],
                                               exptimes[ixfitLO], nomG,
                                               ixLinFit=ixoverlapLO,
