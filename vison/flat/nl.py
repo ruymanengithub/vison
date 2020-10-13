@@ -1269,7 +1269,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
                                           #minrelflu=minrelflu,
                                           #maxrelflu=maxrelflu)
     else:
-        fitmethod = 'poly'
+        fitmethod = 'spline'
         X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL(fluences[ixfitHI, :], exptimes[ixfitHI], nomG, 
             pivotfrac=pivotfrac, 
             minrelflu=minrelflu,
