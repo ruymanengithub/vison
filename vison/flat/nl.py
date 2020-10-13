@@ -1246,35 +1246,41 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     doDebug = True
     print('HI flux filter...')
 
-    X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL(fluences[ixfitHI, :], exptimes[ixfitHI], nomG, 
-        pivotfrac=pivotfrac, 
-        minrelflu=minrelflu,
-        maxrelflu=maxrelflu, 
-        method='spline',
-        Full=True)
+    doLinFit = True
 
-    #X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL02_tests(fluences[ixfitHI, :],
-    #                                      exptimes[ixfitHI], nomG,
-    #                                      ixLinFit=ixoverlapHI,
-    #                                      debug=doDebug)
+    if doLinFit:
+
+        X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL02_tests(fluences[ixfitHI, :],
+                                              exptimes[ixfitHI], nomG,
+                                              ixLinFit=ixoverlapHI,
+                                              debug=doDebug)
+                                              #minrelflu=minrelflu,
+                                              #maxrelflu=maxrelflu)
+
+        #print('LO flux filter...')
+        X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL02_tests(fluences[ixfitLO, :],
+                                              exptimes[ixfitLO], nomG,
+                                              ixLinFit=ixoverlapLO,
+                                              debug=doDebug)
                                           #minrelflu=minrelflu,
                                           #maxrelflu=maxrelflu)
+    else:
 
-    X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL(fluences[ixfitLO, :], exptimes[ixfitLO], nomG, 
-        pivotfrac=pivotfrac, 
-        minrelflu=minrelflu,
-        maxrelflu=maxrelflu, 
-        method='spline',
-        Full=True)
+        X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL(fluences[ixfitHI, :], exptimes[ixfitHI], nomG, 
+            pivotfrac=pivotfrac, 
+            minrelflu=minrelflu,
+            maxrelflu=maxrelflu, 
+            method='spline',
+            Full=True)
+        X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL(fluences[ixfitLO, :], exptimes[ixfitLO], nomG, 
+            pivotfrac=pivotfrac, 
+            minrelflu=minrelflu,
+            maxrelflu=maxrelflu, 
+            method='spline',
+            Full=True)
 
 
-    #print('LO flux filter...')
-    #X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL02_tests(fluences[ixfitLO, :],
-    #                                      exptimes[ixfitLO], nomG,
-    #                                      ixLinFit=ixoverlapLO,
-    #                                      debug=doDebug)
-                                          #minrelflu=minrelflu,
-                                          #maxrelflu=maxrelflu)
+    
 
     bgdnoff = np.median(fluences[ixboo_bgd,:])
 
