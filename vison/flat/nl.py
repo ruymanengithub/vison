@@ -301,7 +301,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
         # plot(yp,yp/predictor(exptimes[ixsel])-1.,'k.')
         # show()
     
-    stop()
+    
     Z = 100. * (fluencesNL - YL) / (YL - intersect) # commented on TESTS ONLY
     #Z = 100. * (fluencesNL - YL) / YL
 
@@ -746,7 +746,6 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, display=False,
         if ObsIDs is not None:
             _display_NLcurves(X,Y,selix,fkfluencesNL,Y_bestfit, labels=ObsIDs, title='colorcode: OBSID')
 
-    stop()
 
     fitresults = OrderedDict(
         coeffs=popt,
@@ -1238,7 +1237,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     overlapExpTimesLO = np.unique(exptimes[ixfitLO & (exptimes>0)])[-3:]
     _ixrangeLO = np.arange(ixfitLO.sum())
     ixoverlapLO = [ix for ix in _ixrangeLO if (exptimes[ixfitLO][ix] in overlapExpTimesLO)]
-
+    stop()
     pivotFlu = np.nanmean([np.nanmean(fluences[ixfitHI,:][ixoverlapHI]), np.nanmean(fluences[ixfitLO,0][ixoverlapLO])])
     pivotfrac = pivotFlu / FullDynRange
 
