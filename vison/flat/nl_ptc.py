@@ -45,7 +45,7 @@ def get_mse_var(samples):
 
 
 def f_extract_PTC(self, ccdobjcol, medcol, varcol, evarcol, binfactor=1):
-        """ """
+    """ """
 
     # HARDWIRED VALUES
     wpx = self.window['wpx']
