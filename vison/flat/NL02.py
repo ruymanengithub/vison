@@ -51,6 +51,7 @@ from vison.support import utils
 from vison.flat import NL01
 from vison.flat import NL01aux
 from . import nl as nllib
+from . import nl_ptc
 
 from pylab import plot, show
 # END IMPORT
@@ -535,7 +536,9 @@ class NL02(NL01.NL01):
         binfactor=6
         medcol = 'sec_med_bin{:d}'.format(binfactor)
         varcol = 'sec_var_bin{:d}'.format(binfactor)
+        evarcol = 'sec_evar_bin{:d}'.format(binfactor)
         ccdobjcol = 'ccdobj_name'
 
-        PTC0X.f_extract_PTC(self, ccdobjcol, medcol, varcol, binfactor=binfactor)
-
+        nl_ptc.f_extract_PTC(self, ccdobjcol, medcol, varcol, evarcol,
+            binfactor=binfactor)
+        

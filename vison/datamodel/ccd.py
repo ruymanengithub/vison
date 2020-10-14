@@ -558,7 +558,8 @@ class CCD(object):
         
         return tiles
 
-    def get_tiles_stats(self, Quad, tile_coos, statkey, extension=-1):
+    def get_tiles_stats(self, Quad, tile_coos, statkey=None, estimator=None, 
+        extension=-1):
         """Returns statistics on a list of tiles.
 
         :param Quad: Quadrant where to take the cutouts from.
@@ -570,6 +571,9 @@ class CCD(object):
 
         :param statkey: stat to retrieve (one of mean, median, std)
         :type statkey: str
+
+        :param estimator: function to retrieve stat (alternative to statkey)
+        :type estimator: obj
 
         :param extension: Extension index, last is -1
         :type extension: int
@@ -585,8 +589,9 @@ class CCD(object):
         else:
             stat_dict = dict(mean=np.mean, median=np.median, std=np.std)
 
-        estimator = stat_dict[statkey]
-
+        if estimator is None and statkey is not None:
+            estimator = stat_dict[statkey]
+        
         tiles = self.get_tiles(Quad, tile_coos, extension=extension)
 
         vals = np.array(list(map(estimator, tiles)))

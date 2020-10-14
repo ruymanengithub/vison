@@ -41,7 +41,8 @@ class CCDclone(CCD):
         for attr in attrs2clone:
             setattr(self, attr, getattr(ccd2clone, attr))
 
-  def get_tiles_stats(self, Quad, tile_coos, statkey, extension=-1, binfactor=1):
+  def get_tiles_stats(self, Quad, tile_coos, statkey=None, estimator=None, 
+        extension=-1, binfactor=1):
         """Returns statistics on a list of tiles.
 
         :param Quad: Quadrant where to take the cutouts from.
@@ -54,9 +55,14 @@ class CCDclone(CCD):
         :param statkey: stat to retrieve (one of mean, median, std)
         :type statkey: str
 
+        :param estimator: function to retrieve stat (alternative to statkey)
+        :type estimator: obj
+
         :param extension: Extension index, last is -1
         :type extension: int
-
+  
+        :param binfactor: apply binning of binfactor x binfactor before extracting stat
+        :type binfactor: int
 
         :return: A 1D numpy array with the stat values for the tiles. 
 
@@ -68,10 +74,12 @@ class CCDclone(CCD):
         else:
             stat_dict = dict(mean=np.mean, median=np.median, std=np.std)
 
-        assert (binfactor>1)
+        if estimator is None and statkey is not None:
+            estimator = stat_dict[statkey]
+
+        assert (binfactor>1) # if not, what are you doing, you dummy?
         assert isinstance(binfactor,int)
 
-        estimator = stat_dict[statkey]
 
         tiles = self.get_tiles(Quad, tile_coos, extension=extension)
 
