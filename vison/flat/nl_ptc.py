@@ -15,7 +15,7 @@ Created on Wed Oct 14 16:40:00 2018
 from pdb import set_trace as stop
 import numpy as np
 from scipy import stats
-
+import copy
 # END IMPORT
 
 def get_mse_var(samples):
@@ -199,4 +199,4 @@ def f_extract_PTC(self, ccdobjcol, medcol, varcol, evarcol, binfactor=1):
                     misspairs.__repr__())
             if self.log is not None:
                 self.log.info('Pairs with unequal fluence skipped: %s' % \
-                    misspairs.__repr__())    
+                    misspairs.__repr__())

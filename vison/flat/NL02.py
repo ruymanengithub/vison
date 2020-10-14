@@ -108,7 +108,7 @@ class NL02(NL01.NL01):
             cleanafter=cleanafter)
         self.name = 'NL02'
 
-        self.subtasks += [('extract_PTC', self.extract_PTC)]
+        self.subtasks.insert(6,('extract_PTC', self.extract_PTC))
         
 
     def set_inpdefaults(self, **kwargs):
@@ -541,4 +541,4 @@ class NL02(NL01.NL01):
 
         nl_ptc.f_extract_PTC(self, ccdobjcol, medcol, varcol, evarcol,
             binfactor=binfactor)
-        
+
