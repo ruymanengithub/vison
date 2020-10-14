@@ -176,7 +176,7 @@ def f_extract_PTC(self, ccdobjcol, medcol, varcol, evarcol, binfactor=1):
 
                         _evars = ccdobj_sub.get_tiles_stats(
                             Quad, _tile_coos, statkey=None, 
-                            extractor=get_mse_var,
+                            estimator=get_mse_var,
                             extension=-1, binfactor=binfactor) / 2.**2.
 
                     else:
@@ -189,7 +189,7 @@ def f_extract_PTC(self, ccdobjcol, medcol, varcol, evarcol, binfactor=1):
 
                         _evars = ccdobj_sub.get_tiles_stats(
                             Quad, _tile_coos, statkey=None, 
-                            extractor=f_extract_mse_var,
+                            estimator=f_extract_mse_var,
                             extension=-1) / 2.**2.
 
                     self.dd.mx[medcol][iObs, jCCD, kQ, :] = _meds.copy()
