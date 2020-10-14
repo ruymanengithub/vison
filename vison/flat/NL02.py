@@ -109,7 +109,7 @@ class NL02(NL01.NL01):
         self.name = 'NL02'
 
         self.subtasks.insert(6,('extract_PTC', self.extract_PTC))
-        
+        stop()
 
     def set_inpdefaults(self, **kwargs):
 
