@@ -19,6 +19,7 @@ import copy
 import os
 
 from vison.support.files import cPickleRead
+from . import PTC0Xaux
 # END IMPORT
 
 def get_mse_var(samples):
