@@ -108,8 +108,12 @@ class NL02(NL01.NL01):
             cleanafter=cleanafter)
         self.name = 'NL02'
 
-        ixPTC = [item[0] for item in self.subtasks].index('NL')+1
-        self.subtasks.insert(ixPTC,('extract_PTC', self.extract_PTC))
+        self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
+                         ('extract', self.extract_stats),
+                         ('NL', self.produce_NLCs),
+                         ('satCTE', self.do_satCTE),
+                         ('extract_PTC', self.extract_PTC),
+                         ('debugtask', self.debugtask)]
         
 
     def set_inpdefaults(self, **kwargs):
