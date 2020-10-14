@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+##!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
 
@@ -16,6 +16,7 @@ from pdb import set_trace as stop
 import numpy as np
 from scipy import stats
 import copy
+import os
 # END IMPORT
 
 def get_mse_var(samples):
