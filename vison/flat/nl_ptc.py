@@ -17,6 +17,8 @@ import numpy as np
 from scipy import stats
 import copy
 import os
+
+from vison.support.files import cPickleRead
 # END IMPORT
 
 def get_mse_var(samples):

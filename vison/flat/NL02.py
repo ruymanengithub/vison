@@ -108,7 +108,8 @@ class NL02(NL01.NL01):
             cleanafter=cleanafter)
         self.name = 'NL02'
 
-        self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
+        self.subtasks = [('check', self.check_data), 
+                         ('prep', self.prep_data),
                          ('extract', self.extract_stats),
                          ('NL', self.produce_NLCs),
                          ('satCTE', self.do_satCTE),
