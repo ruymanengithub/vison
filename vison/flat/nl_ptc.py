@@ -45,8 +45,11 @@ def get_mse_var(samples):
 
     flsamples = samples.flatten()
     n = flsamples.size
-    sigma = np.nanstd(flsamples,ddof=1)
-    mu4 = stats.moment(flsamples,moment=4)
+    try:
+        sigma = np.nanstd(flsamples,ddof=1)
+        mu4 = stats.moment(flsamples,moment=4)
+    except:
+        stop()
     gamma2 = mu4 / sigma**4.-3. # excess kurtosis
     
     MSEvar = 1./n * (gamma2 + 2*n/(n-1) ) * sigma**4.
