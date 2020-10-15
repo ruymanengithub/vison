@@ -277,13 +277,16 @@ class NL02(NL01.NL01):
 
             for kQ, Q in enumerate(Quads):
 
+                jkoffset = self.dd.mx['offset_pre'][:, iCCD, jQ]
+
                 medsbin6 = self.dd.mx['sec_med_bin6'][:,jCCD,kQ,:].copy()
+                medsbin6suboff = medsbin6-np.expand_dims(jkoffset,-1)
                 varsbin6 = self.dd.mx['sec_var_bin6'][:,jCCD,kQ,:].copy()
                 evarsbin6 = self.dd.mx['sec_evar_bin6'][:,jCCD,kQ,:].copy()
 
                 ixsel = np.where((medsbin6>0) & (varsbin6>0) & (evarsbin6>0) & ~np.isnan(evarsbin6))
 
-                medsbin6 = medsbin6[ixsel]
+                medsbin6suboff = medsbin6suboff[ixsel]
                 varsbin6 = varsbin6[ixsel]
                 evarsbin6 = evarsbin6[ixsel]
 
