@@ -265,7 +265,36 @@ class NL02(NL01.NL01):
 
     def debugtask(self):
 
-        stop()
+        from pylab import plot,show
+        
+        indices = copy.deepcopy(self.dd.indices)
+
+        nObs, nCCD, nQuad = indices.shape[0:3]
+        CCDs = indices.get_vals('CCD')
+        Quads = indices.get_vals('Quad')
+
+        for jCCD, CCD in enumerate(CCDs):
+
+            for kQ, Q in enumerate(Quads):
+
+                medsbin6 = self.dd.mx['sec_med_bin6'][:,jCCD,kQ,:].copy()
+                varsbin6 = self.dd.mx['sec_var_bin6'][:,jCCD,kQ,:].copy()
+                evarsbin6 = self.dd.mx['sec_evar_bin6'][:,jCCD,kQ,:].copy()
+
+                ixsel = np.where((medsbin6>0) & (varsbin6>0) & (evarsbin6>0) & ~np.isnan(evarsbin6))
+
+                medsbin6 = medsbin6[ixsel]
+                varsbin6 = varsbin6[ixsel]
+                evarsbin6 = evarsbin6[ixsel]
+
+                stop()
+
+
+
+
+
+
+
 
     def produce_NLCs(self):
         """
