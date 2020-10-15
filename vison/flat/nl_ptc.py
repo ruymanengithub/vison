@@ -37,6 +37,7 @@ def get_mse_var(samples):
     MSE(S2_n-1) = 1/n (gamma_2 + 2n/(n-1)) sigma_4
      
     """
+    stop()
     fsamples = samples.flatten()
     n = fsamples.size
     sigma = np.nanstd(fsamples,ddof=1)
