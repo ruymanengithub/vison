@@ -277,7 +277,7 @@ class NL02(NL01.NL01):
 
             for kQ, Q in enumerate(Quads):
 
-                jkoffset = self.dd.mx['offset_pre'][:, iCCD, jQ]
+                jkoffset = self.dd.mx['offset_pre'][:, jCCD, kQ]
 
                 medsbin6 = self.dd.mx['sec_med_bin6'][:,jCCD,kQ,:].copy()
                 medsbin6suboff = medsbin6-np.expand_dims(jkoffset,-1)
