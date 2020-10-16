@@ -777,11 +777,15 @@ class PTC0X(FlatTask):
             nObs = self.dd.indices.shape[0]
             jCCD = 1
             iObs = nObs-1
-            Q = 'E'
+            Quads = ['E','F','G','H']
+            kQ = 0
+            Q = Quads[kQ]
 
             dpath = self.inputs['subpaths']['ccdpickles']
 
             allprofs = []
+            fluences = []
+            ctis = []
 
             for iObs in range(nObs):
 
@@ -793,22 +797,37 @@ class PTC0X(FlatTask):
 
                 thresholds = [0.,1.e6]
 
-                allprofs.append(MOT_FFaux.extract_transcan_profiles(ccdobj, thresholds,
-                    direction='parallel', scan='over')[Q])
-                stop()
+                iprof = MOT_FFaux.extract_transcan_profiles(ccdobj, thresholds,
+                    direction='parallel', scan='over')
+
+                allprofs.append(iprof[Q])
+                fluences.append(self.dd.mx['flu_med_img'][iObs,jCCD,kQ])
+                ctis.append(iprof[Q]['y'][iprof['ixjump']])
+                
 
 
             profcolors = cm.rainbow(np.linspace(0, 1, nObs))
-            fig = plt.figure()
-            ax = fig.add_subplot(111)
+            fig1 = plt.figure()
+            ax1 = fig1.add_subplot(111)
 
             for i in range(nObs):
 
                 x = allprofs['x']
                 y = allprofs['y']
-                ax.plot(x,y,'.', color=profcolors[i])
+                ax1.plot(x,y,'.', color=profcolors[i])
             
             plt.show()
+
+            fig2 = plt.figure()
+            ax2 = fig2.add_subplot(111)
+
+            for i in range(nObs):
+                ax2.plot(fluences,ctis,'.')
+            
+            plt.show()            
+
+
+            stop()
 
 
         debugBinnedExtraction = False
