@@ -311,7 +311,7 @@ def make_fitPTC_func(ron, binfactor=1,model='zero'):
     if model == 'zero':
         _fcorr_lin = fcorr_lin_zero
         _fder_non_lin = fder_non_lin_zero
-    elif model == 'nonzero':
+    elif model == 'pol':
         _fcorr_lin = fcorr_lin_pol
         _fder_non_lin = fder_non_lin_pol
 
@@ -324,8 +324,8 @@ def make_fitPTC_func(ron, binfactor=1,model='zero'):
             mu_le = _fcorr_lin(mu_nle,theta,scaled=False).copy()
         except Exception as inst:
             #print type(inst)
-            print(inst)
-            print(theta)
+            #print(inst)
+            #print(theta)
             return np.zeros_like(mu_nle)-np.inf
         
         corr_factor = _fder_non_lin(mu_le,theta,scaled=False)     
