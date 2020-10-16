@@ -403,7 +403,7 @@ def forward_PTC_LM(indata, npol=6):
     var_nle = var_nle[ixsort]
     evar_nle = evar_nle[ixsort]
 
-    model = 'zero'
+    model = 'pol'
 
 
     doPlot1 = False
