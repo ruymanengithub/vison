@@ -336,12 +336,6 @@ def make_fitPTC_func(ron, binfactor=1,model='zero'):
         var_nle /= binfactor**2.
         
         return var_nle
-        
-        #sig_le = np.sqrt(var_le)
-        #var_nle = (fnon_lin(sig_le,theta))**2.
-        #var_nle = var_nle + ron**2.
-        
-        #return var_nle
 
     return func
 

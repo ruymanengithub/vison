@@ -769,6 +769,24 @@ class PTC0X(FlatTask):
 
         from matplotlib import pyplot as plt
 
+
+        debugOverProfiles = True 
+
+        if debugOverProfiles:
+
+            jCCD = 0
+
+            stop()
+
+            dpath = self.inputs['subpaths']['ccdpickles']
+            ccdobj_f = os.path.join(
+                            dpath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs, jCCD])
+
+            ccdobj = copy.deepcopy(cPickleRead(ccdobj_f))
+
+
+            stop()
+
         debugBinnedExtraction = False
 
         if debugBinnedExtraction:
@@ -795,35 +813,34 @@ class PTC0X(FlatTask):
             bin_stds = ccdclone.get_tiles_stats(Quad, tile_coos[Quad], statkey, extension=-1, binfactor=5)
             stds = ccdobj.get_tiles_stats(Quad, tile_coos[Quad], statkey, extension=-1)
 
+
+            dIndices = copy.deepcopy(self.dd.indices)
+
+            CCDs = dIndices.get_vals('CCD')
+            nC = len(CCDs)
+            Quads = dIndices.get_vals('Quad')
+            nQ = len(Quads)
+
+            for iCCD, CCDk in enumerate(CCDs):
+
+                for jQ, Q in enumerate(Quads):
+
+                    ixsel = np.where(~np.isnan(self.dd.mx['ObsID_pair'][:]))
+
+                    raw_var = self.dd.mx['sec_var_bin5'][ixsel, iCCD, jQ, :]
+                    raw_med = self.dd.mx['sec_med_bin5'][ixsel, iCCD, jQ, :]
+                    ixnonan = np.where(~np.isnan(raw_var) & ~np.isnan(raw_med))
+                    var = raw_var[ixnonan]
+                    med = raw_med[ixnonan]
+
+                    fig = plt.figure()
+                    ax = fig.add_subplot(111)
+                    ax.plot(med,var/med,'bo')
+                    ax.set_xlabel('median')
+                    ax.set_ylabel('var/median')
+                    plt.show()
+
             stop()
-
-        dIndices = copy.deepcopy(self.dd.indices)
-
-        CCDs = dIndices.get_vals('CCD')
-        nC = len(CCDs)
-        Quads = dIndices.get_vals('Quad')
-        nQ = len(Quads)
-
-        for iCCD, CCDk in enumerate(CCDs):
-
-            for jQ, Q in enumerate(Quads):
-
-                ixsel = np.where(~np.isnan(self.dd.mx['ObsID_pair'][:]))
-
-                raw_var = self.dd.mx['sec_var_bin5'][ixsel, iCCD, jQ, :]
-                raw_med = self.dd.mx['sec_med_bin5'][ixsel, iCCD, jQ, :]
-                ixnonan = np.where(~np.isnan(raw_var) & ~np.isnan(raw_med))
-                var = raw_var[ixnonan]
-                med = raw_med[ixnonan]
-
-                fig = plt.figure()
-                ax = fig.add_subplot(111)
-                ax.plot(med,var/med,'bo')
-                ax.set_xlabel('median')
-                ax.set_ylabel('var/median')
-                plt.show()
-
-        stop()
 
 
 
@@ -892,7 +909,10 @@ class PTC0X(FlatTask):
         stop()
 
     def extract_HER(self):
-        """Hard Edge Response Analysis"""
+        """Hard Edge Response Analysis.
+
+        Extraction of overscan profiles (also parallel, for satCTE analysis).
+        """
 
         if self.report is not None:
             self.report.add_Section(
