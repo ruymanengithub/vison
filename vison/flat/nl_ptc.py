@@ -313,7 +313,7 @@ def forward_PTC_LM(indata, npol=6):
     fitfunc = make_fitPTC_func(ron, binfactor)
 
     stop()
-
+    
     popt,pcov = opt.curve_fit(fitfunc,mu_nle,var_nle,
         p0=p0,
         sigma=evar_nle,
