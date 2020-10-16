@@ -774,9 +774,9 @@ class PTC0X(FlatTask):
 
         if debugOverProfiles:
 
+            nObs = self.dd.indices.shape[0]
             jCCD = 0
-
-            stop()
+            iObs = nObs-1
 
             dpath = self.inputs['subpaths']['ccdpickles']
             ccdobj_f = os.path.join(
@@ -784,6 +784,10 @@ class PTC0X(FlatTask):
 
             ccdobj = copy.deepcopy(cPickleRead(ccdobj_f))
 
+            thresholds = [0.,1.e6]
+
+            profiles = MOT_FFaux.extract_transcan_profiles(ccdobj, thresholds,
+                direction='serial', scan='over')
 
             stop()
 
