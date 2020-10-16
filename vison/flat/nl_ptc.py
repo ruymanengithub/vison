@@ -312,12 +312,13 @@ def plot_NLcurve(params_fit):
     ax1.set_ylabel('Response [e]')
     ax1.set_title('abs. non-lin')
     ax1.ticklabel_format(style='sci',axis='x',scilimits=(0,0))
+    ax1.ticklabel_format(style='sci',axis='y',scilimits=(0,0))
     ax2 = fig.add_subplot(122)
     ax2.plot(x,(yout/youtlin-1.)*100.,'b-',label='NL-curve')
     handles, labels = ax2.get_legend_handles_labels()
     ax2.legend(handles,labels,loc='best')
     ax2.set_xlabel('Input [e]')
-    ax2.set_ylabel('Response [%]')
+    ax2.set_ylabel('Response [\%]')
     ax2.set_title('rel. non-lin')
     ax2.ticklabel_format(style='sci',axis='x',scilimits=(0,0))
 
@@ -340,6 +341,13 @@ def forward_PTC_LM(indata, npol=6):
     var_nle *= gain**2.
     evar_nle *= gain**2.
 
+    ixsort = mu_nle.argsort()
+
+    mu_nle = mu_nle[ixsort]
+    var_nle = var_nle[ixsort]
+    evar_nle = evar_nle[ixsort]
+    
+
     doPlot1 = False
     if doPlot1:
 
@@ -359,7 +367,6 @@ def forward_PTC_LM(indata, npol=6):
 
     fitfunc = make_fitPTC_func(ron, binfactor)
 
-
     popt,pcov = opt.curve_fit(fitfunc,mu_nle,var_nle,
         p0=p0,
         sigma=evar_nle,
@@ -370,7 +377,7 @@ def forward_PTC_LM(indata, npol=6):
     params_fit = popt
     errors_fit = np.sqrt(np.diagonal(pcov))
     print('Best Pars: ', params_fit)
-    
+    print('Error Pars: ', errors_fit)
     
     varle = fitfunc(mu_nle, *p0) # linear response
     varnle_best = fitfunc(mu_nle,*popt) # nl variances from mu_nle, given best fit model pars
