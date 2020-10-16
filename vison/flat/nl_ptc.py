@@ -272,7 +272,6 @@ def make_fitPTC_func(ron, binfactor=1):
             mu_le = fcorr_lin(mu_nle,theta,scaled=False).copy()
         except Exception as inst:
             #print type(inst)
-            stop()
             return np.zeros_like(mu_nle)-np.inf
         
         corr_factor = fder_non_lin(mu_le,theta,scaled=False)     
@@ -292,6 +291,38 @@ def make_fitPTC_func(ron, binfactor=1):
 
     return func
 
+def plot_NLcurve(params_fit):
+    """ """
+
+    x = np.linspace(1.,2.E5,500)
+
+    params_lin = copy.deepcopy(params_fit)
+    params_lin[1:]=0.
+
+    yout = fnon_lin(x,params_fit,scaled=False)
+    youtlin = fnon_lin(x,params_lin,scaled=False)
+
+    fig = plt.figure(figsize=(12,7))
+    ax1 = fig.add_subplot(121)
+    ax1.plot(x,yout,'b-',label='NL-curve')
+    handles, labels = ax1.get_legend_handles_labels()
+    ax1.legend(handles,labels,loc='best')
+    ax1.set_xlabel('Input [e]')
+    ax1.set_ylabel('Response [e]')
+    ax1.set_title('abs. non-lin')
+    ax1.ticklabel_format(style='sci',axis='x',scilimits=(0,0))
+    ax2 = fig.add_subplot(122)
+    ax2.plot(x,(yout/youtlin-1.)*100.,'b-',label='NL-curve')
+    handles, labels = ax2.get_legend_handles_labels()
+    ax2.legend(handles,labels,loc='best')
+    ax2.set_xlabel('Input [e]')
+    ax2.set_ylabel('Response [%]')
+    ax2.set_title('rel. non-lin')
+    ax2.ticklabel_format(style='sci',axis='x',scilimits=(0,0))
+
+    plt.tight_layout()
+    plt.show()
+    plt.close('all')
 
 def forward_PTC_LM(indata, npol=6):
     """ """
@@ -334,21 +365,38 @@ def forward_PTC_LM(indata, npol=6):
         absolute_sigma=True,
         method='lm')
     
+    #Get the best parameters and their respective errors and print best fits
+    params_fit = popt
+    errors_fit = np.sqrt(np.diagonal(pcov))
+    print('Best Pars: ', params_fit)
+    
     
     varle = fitfunc(mu_nle, *p0) # linear response
     varnle_best = fitfunc(mu_nle,*popt) # nl variances from mu_nle, given best fit model pars
 
-    fig2 = plt.figure()
-    ax1 = fig2.add_subplot(111)
-    ax1.plot(mu_nle, var_nle, 'k.', label='data')
-    ax1.plot(mu_nle, varnle_best, 'r--', label='best-fit')
-    ax1.plot(mu_nle, varle, 'g:', label='linear model')
-    handles, labels = ax1.get_legend_handles_labels()
-    ax1.legend(handles, labels, loc='best')
-    ax1.set_xlabel('mu\\_nle, [e]')
-    ax1.set_ylabel('var [e2]')
-    ax1.set_title('Fitting the var-mu relation')
-    plt.show()
+    doPlot2 = True
+
+    if doPlot2:
+
+        fig2 = plt.figure()
+        ax1 = fig2.add_subplot(111)
+        ax1.plot(mu_nle, var_nle, 'k.', label='data')
+        ax1.plot(mu_nle, varnle_best, 'r--', label='best-fit')
+        ax1.plot(mu_nle, varle, 'g:', label='linear model')
+        handles, labels = ax1.get_legend_handles_labels()
+        ax1.legend(handles, labels, loc='best')
+        ax1.set_xlabel('mu\\_nle, [e]')
+        ax1.set_ylabel('var [e2]')
+        ax1.set_title('Fitting the var-mu relation')
+        plt.show()
     plt.close()
+
+
+    doPlotNL = True
+
+    if doPlotNL:
+
+        plot_NLcurve(params_fit)
+
 
     stop()
