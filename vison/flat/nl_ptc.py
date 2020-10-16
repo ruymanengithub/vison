@@ -272,6 +272,7 @@ def make_fitPTC_func(ron, binfactor=1):
             mu_le = fcorr_lin(mu_nle,theta,scaled=False).copy()
         except Exception as inst:
             #print type(inst)
+            stop()
             return np.zeros_like(mu_nle)-np.inf
         
         corr_factor = fder_non_lin(mu_le,theta,scaled=False)     
@@ -326,7 +327,6 @@ def forward_PTC_LM(indata, npol=6):
 
     fitfunc = make_fitPTC_func(ron, binfactor)
 
-    stop()
 
     popt,pcov = opt.curve_fit(fitfunc,mu_nle,var_nle,
         p0=p0,
