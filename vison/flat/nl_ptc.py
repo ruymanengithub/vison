@@ -220,7 +220,7 @@ fscale = 1./2.E5
 def fnon_lin(x,theta,scaled=False):
     """non-linearity function: just a polynomial"""
         
-    if scaled: xp = copy(x)
+    if scaled: xp = copy.deepcopy(x)
     else: xp = x * fscale
     
     npar = len(theta)
@@ -236,7 +236,7 @@ def fcorr_lin(x,theta,scaled=False):
     and non-lin model parameters theta."""
 
     if not scaled: xp = x * fscale
-    else: xp = copy(x)
+    else: xp = copy.deepcopy(x)
 
     xx = np.linspace(0.,1.3,100)
     yy = fnon_lin(xx,theta,scaled=True)
