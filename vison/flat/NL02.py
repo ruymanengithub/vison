@@ -294,7 +294,8 @@ class NL02(NL01.NL01):
                     var_nle = varsbin6,
                     evar_nle=evarsbin6,
                     ron=1.2,
-                    gain=3.5)
+                    gain=3.5,
+                    binfactor=6)
 
                 NLres = nl_ptc.forward_PTC_LM(indata, npol=6)
 
