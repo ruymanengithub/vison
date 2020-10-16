@@ -290,13 +290,15 @@ class NL02(NL01.NL01):
                 varsbin6 = varsbin6[ixsel]
                 evarsbin6 = evarsbin6[ixsel]
 
+                indata = dict(mu_nle=medsbin6suboff,
+                    var_nle = varsbin6,
+                    evar_nle=evarsbin6,
+                    ron=1.2,
+                    gain=3.5)
+
+                NLres = nl_ptc.forward_PTC_LM(indata, npol=6)
+
                 stop()
-
-
-
-
-
-
 
 
     def produce_NLCs(self):

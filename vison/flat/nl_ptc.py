@@ -20,6 +20,7 @@ import os
 
 from vison.support.files import cPickleRead
 from . import PTC0Xaux
+from scipy import optimize as opt
 # END IMPORT
 
 def get_mse_var(samples):
@@ -213,3 +214,122 @@ def f_extract_PTC(self, ccdobjcol, medcol, varcol, evarcol, binfactor=1):
             if self.log is not None:
                 self.log.info('Pairs with unequal fluence skipped: %s' % \
                     misspairs.__repr__())
+
+
+def fcorr_lin(x,theta,scaled=False):
+    """Returns linear mu, for input array of non-lin mu, 
+    and non-lin model parameters theta."""
+
+    if not scaled: xp = x * fscale
+    else: xp = copy(x)
+
+    xx = np.linspace(0.,1.3,100)
+    yy = fnon_lin(xx,theta,scaled=True)
+
+    #print yy.min(),yy.max(),min(xp),max(xp)
+    xpl = interp.interp1d(yy,xx,kind='cubic')(xp).copy()
+
+    if scaled: return xpl
+    else: return xpl / fscale
+
+def fder_non_lin(x,theta,scaled=False):
+    """derivative of the non-linearity function"""
+        
+    if scaled: xp = copy(x)
+    else: xp = x * fscale
+    
+    npar = len(theta)
+    fval = np.zeros_like(xp)
+    for i in range(npar):
+        fval += (i+1)*theta[i] * xp**(i)
+    
+    return fval
+
+def make_fitPTC_func(ron, binfactor=1):
+    """Retrieves function that generates n-l variances, for a fixed value of RON,
+    and binning factor."""
+    
+    def func(mu_nle,*theta):
+        """Retrieves the non-lin variances for a set of input mu_nle,
+        given non-linearity parameters theta."""
+        
+        try:
+            mu_le = fcorr_lin(mu_nle,theta,scaled=False).copy()
+        except Exception as inst:
+            #print type(inst)
+            return np.zeros_like(mu_nle)-np.inf
+        
+        corr_factor = fder_non_lin(mu_le,theta,scaled=False)     
+        #corr_factor = fnon_lin(mu_le,theta,scaled=False)/mu_le
+        var_nle = corr_factor**2. * mu_le  + ron**2 # Poisson + gaussian_ro
+        #print '\n',var_nle,mu_le
+
+        var_nle /= binfactor**2.
+        
+        return var_nle
+        
+        #sig_le = np.sqrt(var_le)
+        #var_nle = (fnon_lin(sig_le,theta))**2.
+        #var_nle = var_nle + ron**2.
+        
+        #return var_nle
+
+    return func
+
+
+
+
+
+def forward_PTC_LM(indata, npol=6):
+    """ """
+
+    gain = indata['gain']
+    ron = indata['ron']
+    binfactor = indata['binfactor']
+    mu_nle = indata['mu_nle']
+    var_nle = indata['var_nle']
+    evar_nle = indata['evar_nle']
+
+    mu_nle *= gain
+    var_nle *= gain**2.
+    evar_nle *= gain**2.
+
+    fig1 = plt.figure()
+    ax = fig1.add_subplot(111)
+    ax.errorbar(mu_nle,var_nle/mu_nle,yerr=e_var_nle/mu_nle,fmt='-o')
+    ax.axhline(1.,ls='--',c='k')
+    ax.set_xlabel(r'$\mu_{NL,e}$')
+    ax.set_ylabel(r'$var_{NL,e}/\mu_{NL,e}$')
+    ax.ticklabel_format(axis='x', style='sci', scilimits=(-2,2))
+    plt.tight_layout()
+    plt.show()
+    plt.close()
+
+    p0 = np.zeros(npol,dtype='float32')
+    p0[0] = 1. # initial conditions: perfectly linear response
+
+    fitfunc = make_fitPTC_func(ron, binfactor)
+
+    popt,pcov = opt.curve_fit(fitfunc,mu_nle,var_nle,
+        p0=p0,
+        sigma=evar_nle,
+        absolute_sigma=True,
+        method='lm')
+    
+    
+    varle = fitfunc(mu_nle, *p0) # linear response
+    varnle_best = fitfunc(mu_nle,*popt) # nl variances from mu_nle, given best fit model pars
+
+    fig2 = plt.figure()
+    ax1 = fig2.add_subplot(111)
+    ax1.plot(mu_nle, var_nle, 'k.', label='data')
+    ax1.plot(mu_nle, varnle_best, 'r--', label='best-fit')
+    ax1.plot(mu_nle, varle, 'g:', label='linear model')
+    handles, labels = ax1.get_legend_handles_labels()
+    ax1.legend(handles, labels, loc='best')
+    ax1.set_xlabel('mu\\_nle, [e]')
+    ax1.set_ylabel('var [e2]')
+    ax1.set_title('Fitting the var-mu relation')
+    plt.show()
+    plt.close()
+
