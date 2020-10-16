@@ -775,7 +775,7 @@ class PTC0X(FlatTask):
         if debugOverProfiles:
 
             nObs = self.dd.indices.shape[0]
-            jCCD = 0
+            jCCD = 1
             iObs = nObs-1
             Q = 'E'
 
