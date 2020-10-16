@@ -273,29 +273,31 @@ class NL02(NL01.NL01):
         CCDs = indices.get_vals('CCD')
         Quads = indices.get_vals('Quad')
 
+        binfactor = 10
+
         for jCCD, CCD in enumerate(CCDs):
 
             for kQ, Q in enumerate(Quads):
 
                 jkoffset = self.dd.mx['offset_pre'][:, jCCD, kQ]
 
-                medsbin6 = self.dd.mx['sec_med_bin6'][:,jCCD,kQ,:].copy()
-                medsbin6suboff = medsbin6-np.expand_dims(jkoffset,-1)
-                varsbin6 = self.dd.mx['sec_var_bin6'][:,jCCD,kQ,:].copy()
-                evarsbin6 = self.dd.mx['sec_evar_bin6'][:,jCCD,kQ,:].copy()
+                medsbin = self.dd.mx['sec_med_bin{}'.format(binfactor)][:,jCCD,kQ,:].copy()
+                medsbinsuboff = medsbin6-np.expand_dims(jkoffset,-1)
+                varsbin = self.dd.mx['sec_var_bin{}'.format(binfactor)][:,jCCD,kQ,:].copy()
+                evarsbin = self.dd.mx['sec_evar_bin{}'.format(binfactor)][:,jCCD,kQ,:].copy()
 
-                ixsel = np.where((medsbin6>0) & (varsbin6>0) & (evarsbin6>0) & ~np.isnan(evarsbin6))
+                ixsel = np.where((medsbin>0) & (varsbin>0) & (evarsbin>0) & ~np.isnan(evarsbin))
 
-                medsbin6suboff = medsbin6suboff[ixsel]
-                varsbin6 = varsbin6[ixsel]
-                evarsbin6 = evarsbin6[ixsel]
+                medsbinsuboff = medsbinsuboff[ixsel]
+                varsbin = varsbin[ixsel]
+                evarsbin = evarsbin[ixsel]
 
-                indata = dict(mu_nle=medsbin6suboff,
-                    var_nle = varsbin6,
-                    evar_nle=evarsbin6,
+                indata = dict(mu_nle=medsbinsuboff,
+                    var_nle = varsbin,
+                    evar_nle=evarsbin,
                     ron=1.2,
                     gain=3.5,
-                    binfactor=6)
+                    binfactor=binfactor)
 
                 NLres = nl_ptc.forward_PTC_LM(indata, npol=6)
 
@@ -574,7 +576,7 @@ class NL02(NL01.NL01):
             self.report.add_Text('Segmenting on %i x %i windows...' % (wpx, hpx))
 
 
-        binfactor=6
+        binfactor=10
         medcol = 'sec_med_bin{:d}'.format(binfactor)
         varcol = 'sec_var_bin{:d}'.format(binfactor)
         evarcol = 'sec_evar_bin{:d}'.format(binfactor)
