@@ -265,8 +265,6 @@ def make_fitPTC_func(ron, binfactor=1):
         #print '\n',var_nle,mu_le
 
         var_nle /= binfactor**2.
-
-        stop()
         
         return var_nle
         
@@ -312,6 +310,8 @@ def forward_PTC_LM(indata, npol=6):
     p0[0] = 1. # initial conditions: perfectly linear response
 
     fitfunc = make_fitPTC_func(ron, binfactor)
+
+    stop()
 
     popt,pcov = opt.curve_fit(fitfunc,mu_nle,var_nle,
         p0=p0,
