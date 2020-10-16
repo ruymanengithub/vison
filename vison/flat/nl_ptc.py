@@ -277,9 +277,6 @@ def make_fitPTC_func(ron, binfactor=1):
     return func
 
 
-
-
-
 def forward_PTC_LM(indata, npol=6):
     """ """
     from matplotlib import pyplot as plt
@@ -295,16 +292,19 @@ def forward_PTC_LM(indata, npol=6):
     var_nle *= gain**2.
     evar_nle *= gain**2.
 
-    fig1 = plt.figure()
-    ax = fig1.add_subplot(111)
-    ax.errorbar(mu_nle,var_nle/mu_nle,yerr=evar_nle/mu_nle,fmt='-o')
-    ax.axhline(1.,ls='--',c='k')
-    ax.set_xlabel(r'$\mu_{NL,e}$')
-    ax.set_ylabel(r'$var_{NL,e}/\mu_{NL,e}$')
-    ax.ticklabel_format(axis='x', style='sci', scilimits=(-2,2))
-    plt.tight_layout()
-    plt.show()
-    plt.close()
+    doPlot1 = False
+    if doPlot1:
+
+        fig1 = plt.figure()
+        ax = fig1.add_subplot(111)
+        ax.errorbar(mu_nle,var_nle/mu_nle,yerr=evar_nle/mu_nle,fmt='-o')
+        ax.axhline(1.,ls='--',c='k')
+        ax.set_xlabel(r'$\mu_{NL,e}$')
+        ax.set_ylabel(r'$var_{NL,e}/\mu_{NL,e}$')
+        ax.ticklabel_format(axis='x', style='sci', scilimits=(-2,2))
+        plt.tight_layout()
+        plt.show()
+        plt.close()
 
     p0 = np.zeros(npol,dtype='float32')
     p0[0] = 1. # initial conditions: perfectly linear response
@@ -334,3 +334,4 @@ def forward_PTC_LM(indata, npol=6):
     plt.show()
     plt.close()
 
+    stop()
