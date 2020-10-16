@@ -17,6 +17,7 @@ import numpy as np
 from scipy import stats
 import copy
 import os
+from scipy import interpolate as interp
 
 from vison.support.files import cPickleRead
 from . import PTC0Xaux
