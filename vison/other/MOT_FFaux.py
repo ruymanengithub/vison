@@ -70,7 +70,7 @@ def extract_overscan_profiles(ccdobj, thresholds, direction='serial'):
                 ccdobj.NrowsCCD - ixjump:ccdobj.NrowsCCD - ixjump + Npixprof].transpose().copy()
 
         injection = np.mean(strip[0:ixjump, :], axis=0)
-        bias = np.mean(strip[ixjump + 5:, :], axis=0)
+        bias = np.mean(strip[-3:, :], axis=0)
 
         ixgood = np.where((injection <= thresholds[1]) & (injection >= thresholds[0])) # fluence selection
         #print '%i rows averaged' % (len(ixgood[0]),)
