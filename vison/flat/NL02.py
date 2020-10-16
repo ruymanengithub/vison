@@ -281,10 +281,10 @@ class NL02(NL01.NL01):
 
                 jkoffset = self.dd.mx['offset_pre'][:, jCCD, kQ]
 
-                medsbin = self.dd.mx['sec_med_bin{}'.format(binfactor)][:,jCCD,kQ,:].copy()
+                medsbin = self.dd.mx['sec_med_bin{:d}'.format(binfactor)][:,jCCD,kQ,:].copy()
                 medsbinsuboff = medsbin6-np.expand_dims(jkoffset,-1)
-                varsbin = self.dd.mx['sec_var_bin{}'.format(binfactor)][:,jCCD,kQ,:].copy()
-                evarsbin = self.dd.mx['sec_evar_bin{}'.format(binfactor)][:,jCCD,kQ,:].copy()
+                varsbin = self.dd.mx['sec_var_bin{:d}'.format(binfactor)][:,jCCD,kQ,:].copy()
+                evarsbin = self.dd.mx['sec_evar_bin{:d}'.format(binfactor)][:,jCCD,kQ,:].copy()
 
                 ixsel = np.where((medsbin>0) & (varsbin>0) & (evarsbin>0) & ~np.isnan(evarsbin))
 
