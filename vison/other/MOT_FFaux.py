@@ -80,7 +80,6 @@ def extract_overscan_profiles(ccdobj, thresholds, direction='serial'):
 
         profile = np.mean(nstrip, axis=1) # stacking
 
-        stop()
 
         if isinstance(profile, np.ma.masked_array):
             ixgood2 = np.where(profile.mask == False)

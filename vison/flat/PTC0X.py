@@ -787,7 +787,7 @@ class PTC0X(FlatTask):
             thresholds = [0.,1.e6]
 
             profiles = MOT_FFaux.extract_transcan_profiles(ccdobj, thresholds,
-                direction='serial', scan='over')
+                direction='parallel', scan='over')
 
             stop()
 
