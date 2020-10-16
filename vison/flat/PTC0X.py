@@ -765,7 +765,7 @@ class PTC0X(FlatTask):
 
     def debugtask(self):
         """ """
-
+        from matplotlib import cm
 
         from matplotlib import pyplot as plt
 
@@ -780,22 +780,34 @@ class PTC0X(FlatTask):
             Q = 'E'
 
             dpath = self.inputs['subpaths']['ccdpickles']
-            ccdobj_f = os.path.join(
-                            dpath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs, jCCD])
 
-            ccdobj = copy.deepcopy(cPickleRead(ccdobj_f))
+            allprofs = []
 
-            thresholds = [0.,1.e6]
+            for iObs in range(nObs):
 
-            profiles = MOT_FFaux.extract_transcan_profiles(ccdobj, thresholds,
-                direction='parallel', scan='over')
+            
+                ccdobj_f = os.path.join(
+                                dpath, '%s.pick' % self.dd.mx['ccdobj_name'][iObs, jCCD])
 
-            x = profiles[Q]['x']
-            y = profiles[Q]['y']
+                ccdobj = copy.deepcopy(cPickleRead(ccdobj_f))
 
+                thresholds = [0.,1.e6]
+
+                allprofs.append(MOT_FFaux.extract_transcan_profiles(ccdobj, thresholds,
+                    direction='parallel', scan='over')[Q])
+                stop()
+
+
+            profcolors = cm.rainbow(np.linspace(0, 1, nObs))
             fig = plt.figure()
             ax = fig.add_subplot(111)
-            ax.plot(x,y,'.')
+
+            for i in range(nObs):
+
+                x = allprofs['x']
+                y = allprofs['y']
+                ax.plot(x,y,'.', color=profcolors[i])
+            
             plt.show()
 
 
