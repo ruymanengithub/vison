@@ -282,6 +282,7 @@ def make_fitPTC_func(ron, binfactor=1):
 
 def forward_PTC_LM(indata, npol=6):
     """ """
+    from matplotlib import pyplot as plt
 
     gain = indata['gain']
     ron = indata['ron']
