@@ -17,6 +17,7 @@ from scipy import stats
 import copy
 import os
 from scipy import interpolate as interp
+from matplotlib import pyplot as plt
 
 from vison.support.files import cPickleRead
 from . import PTC0Xaux
