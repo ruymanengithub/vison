@@ -300,7 +300,7 @@ def fder_non_lin_pol(x,theta,scaled=False):
     npar = len(theta)
     fval = np.zeros_like(xp)
     for i in range(1,npar):
-        fval += i*theta[i] * xp**(i-1)
+        fval += i*theta[i] * xp**(i-1.)
     
     return fval
 
@@ -324,6 +324,8 @@ def make_fitPTC_func(ron, binfactor=1,model='zero'):
             mu_le = _fcorr_lin(mu_nle,theta,scaled=False).copy()
         except Exception as inst:
             #print type(inst)
+            print(inst)
+            print(theta)
             return np.zeros_like(mu_nle)-np.inf
         
         corr_factor = _fder_non_lin(mu_le,theta,scaled=False)     
