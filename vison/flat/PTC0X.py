@@ -812,8 +812,8 @@ class PTC0X(FlatTask):
 
             for i in range(nObs):
 
-                x = allprofs['x']
-                y = allprofs['y']
+                x = allprofs[i]['x']
+                y = allprofs[i]['y']
                 ax1.plot(x,y,'.', color=profcolors[i])
             
             plt.show()
