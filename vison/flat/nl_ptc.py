@@ -265,6 +265,8 @@ def make_fitPTC_func(ron, binfactor=1):
         #print '\n',var_nle,mu_le
 
         var_nle /= binfactor**2.
+
+        stop()
         
         return var_nle
         
