@@ -777,6 +777,7 @@ class PTC0X(FlatTask):
             nObs = self.dd.indices.shape[0]
             jCCD = 0
             iObs = nObs-1
+            Q = 'E'
 
             dpath = self.inputs['subpaths']['ccdpickles']
             ccdobj_f = os.path.join(
@@ -789,7 +790,14 @@ class PTC0X(FlatTask):
             profiles = MOT_FFaux.extract_transcan_profiles(ccdobj, thresholds,
                 direction='parallel', scan='over')
 
-            stop()
+            x = profiles[Q]['x']
+            y = profiles[Q]['y']
+
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            ax.plot(x,y,'.')
+            plt.show()
+
 
         debugBinnedExtraction = False
 
