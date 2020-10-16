@@ -351,11 +351,13 @@ def plot_NLcurve(params_fit, model='zero'):
     params_lin = copy.deepcopy(params_fit)
     if model == 'zero':
         params_lin[1:]=0. # null non-linear terms
+        _fnon_lin = f_non_lin_zero
     elif model == 'pol':
         params_lin[2:]=0. # null non-linear terms
+        _fnon_lin = f_non_lin_pol
 
-    yout = fnon_lin(x,params_fit,scaled=False)
-    youtlin = fnon_lin(x,params_lin,scaled=False)
+    yout = _fnon_lin(x,params_fit,scaled=False)
+    youtlin = _fnon_lin(x,params_lin,scaled=False)
 
     fig = plt.figure(figsize=(12,7))
     ax1 = fig.add_subplot(121)
