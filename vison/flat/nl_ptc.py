@@ -215,6 +215,7 @@ def f_extract_PTC(self, ccdobjcol, medcol, varcol, evarcol, binfactor=1):
                 self.log.info('Pairs with unequal fluence skipped: %s' % \
                     misspairs.__repr__())
 
+fscale = 1./2.E5
 
 def fcorr_lin(x,theta,scaled=False):
     """Returns linear mu, for input array of non-lin mu, 
