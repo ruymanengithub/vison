@@ -217,6 +217,20 @@ def f_extract_PTC(self, ccdobjcol, medcol, varcol, evarcol, binfactor=1):
 
 fscale = 1./2.E5
 
+def fnon_lin(x,theta,scaled=False):
+    """non-linearity function: just a polynomial"""
+        
+    if scaled: xp = copy(x)
+    else: xp = x * fscale
+    
+    npar = len(theta)
+    fval = np.zeros_like(xp)
+    for i in range(npar):
+        fval += theta[i] * xp**(i+1)
+    
+    if scaled: return fval
+    else: return fval / fscale
+
 def fcorr_lin(x,theta,scaled=False):
     """Returns linear mu, for input array of non-lin mu, 
     and non-lin model parameters theta."""
@@ -313,7 +327,7 @@ def forward_PTC_LM(indata, npol=6):
     fitfunc = make_fitPTC_func(ron, binfactor)
 
     stop()
-    
+
     popt,pcov = opt.curve_fit(fitfunc,mu_nle,var_nle,
         p0=p0,
         sigma=evar_nle,
