@@ -361,11 +361,11 @@ def plot_NLcurve(params_fit, model='zero'):
 
     fig = plt.figure(figsize=(12,7))
     ax1 = fig.add_subplot(121)
-    ax1.plot(x,yout,'b-',label='NL-curve')
+    ax1.plot(x,yout-youtlin,'b-',label='NL-curve')
     handles, labels = ax1.get_legend_handles_labels()
     ax1.legend(handles,labels,loc='best')
     ax1.set_xlabel('Input [e]')
-    ax1.set_ylabel('Response [e]')
+    ax1.set_ylabel('Delta-Response [e]')
     ax1.set_title('abs. non-lin')
     ax1.ticklabel_format(style='sci',axis='x',scilimits=(0,0))
     ax1.ticklabel_format(style='sci',axis='y',scilimits=(0,0))
