@@ -218,8 +218,8 @@ def f_extract_PTC(self, ccdobjcol, medcol, varcol, evarcol, binfactor=1):
 
 fscale = 1./2.E5
 
-def fnon_lin(x,theta,scaled=False):
-    """non-linearity function: just a polynomial"""
+def fnon_lin_zero(x,theta,scaled=False):
+    """non-linearity function: polynomial with zero intercept"""
         
     if scaled: xp = copy.deepcopy(x)
     else: xp = x * fscale
@@ -232,7 +232,21 @@ def fnon_lin(x,theta,scaled=False):
     if scaled: return fval
     else: return fval / fscale
 
-def fcorr_lin(x,theta,scaled=False):
+def fnon_lin_pol(x,theta,scaled=False):
+    """non-linearity function: just a polynomial"""
+        
+    if scaled: xp = copy.deepcopy(x)
+    else: xp = x * fscale
+    
+    npar = len(theta)
+    fval = np.zeros_like(xp)
+    for i in range(npar):
+        fval += theta[i] * xp**i
+    
+    if scaled: return fval
+    else: return fval / fscale
+
+def fcorr_lin_zero(x,theta,scaled=False):
     """Returns linear mu, for input array of non-lin mu, 
     and non-lin model parameters theta."""
 
@@ -240,7 +254,7 @@ def fcorr_lin(x,theta,scaled=False):
     else: xp = copy.deepcopy(x)
 
     xx = np.linspace(0.,1.3,100)
-    yy = fnon_lin(xx,theta,scaled=True)
+    yy = fnon_lin_zero(xx,theta,scaled=True)
 
     #print yy.min(),yy.max(),min(xp),max(xp)
     xpl = interp.interp1d(yy,xx,kind='cubic')(xp).copy()
@@ -248,7 +262,23 @@ def fcorr_lin(x,theta,scaled=False):
     if scaled: return xpl
     else: return xpl / fscale
 
-def fder_non_lin(x,theta,scaled=False):
+def fcorr_lin_pol(x,theta,scaled=False):
+    """Returns linear mu, for input array of non-lin mu, 
+    and non-lin model parameters theta."""
+
+    if not scaled: xp = x * fscale
+    else: xp = copy.deepcopy(x)
+
+    xx = np.linspace(0.,1.3,100)
+    yy = fnon_lin_pol(xx,theta,scaled=True)
+
+    #print yy.min(),yy.max(),min(xp),max(xp)
+    xpl = interp.interp1d(yy,xx,kind='cubic')(xp).copy()
+
+    if scaled: return xpl
+    else: return xpl / fscale
+
+def fder_non_lin_zero(x,theta,scaled=False):
     """derivative of the non-linearity function"""
         
     if scaled: xp = copy(x)
@@ -261,21 +291,42 @@ def fder_non_lin(x,theta,scaled=False):
     
     return fval
 
-def make_fitPTC_func(ron, binfactor=1):
+def fder_non_lin_pol(x,theta,scaled=False):
+    """derivative of the non-linearity function"""
+        
+    if scaled: xp = copy(x)
+    else: xp = x * fscale
+    
+    npar = len(theta)
+    fval = np.zeros_like(xp)
+    for i in range(1,npar):
+        fval += i*theta[i] * xp**(i-1)
+    
+    return fval
+
+def make_fitPTC_func(ron, binfactor=1,model='zero'):
     """Retrieves function that generates n-l variances, for a fixed value of RON,
     and binning factor."""
+
+    if model == 'zero':
+        _fcorr_lin = fcorr_lin_zero
+        _fder_non_lin = fder_non_lin_zero
+    elif model == 'nonzero':
+        _fcorr_lin = fcorr_lin_pol
+        _fder_non_lin = fder_non_lin_pol
+
     
     def func(mu_nle,*theta):
         """Retrieves the non-lin variances for a set of input mu_nle,
         given non-linearity parameters theta."""
         
         try:
-            mu_le = fcorr_lin(mu_nle,theta,scaled=False).copy()
+            mu_le = _fcorr_lin(mu_nle,theta,scaled=False).copy()
         except Exception as inst:
             #print type(inst)
             return np.zeros_like(mu_nle)-np.inf
         
-        corr_factor = fder_non_lin(mu_le,theta,scaled=False)     
+        corr_factor = _fder_non_lin(mu_le,theta,scaled=False)     
         #corr_factor = fnon_lin(mu_le,theta,scaled=False)/mu_le
         var_nle = corr_factor**2. * mu_le  + ron**2 # Poisson + gaussian_ro
         #print '\n',var_nle,mu_le
@@ -292,13 +343,16 @@ def make_fitPTC_func(ron, binfactor=1):
 
     return func
 
-def plot_NLcurve(params_fit):
+def plot_NLcurve(params_fit, model='zero'):
     """ """
 
     x = np.linspace(1.,2.E5,500)
 
     params_lin = copy.deepcopy(params_fit)
-    params_lin[1:]=0.
+    if model == 'zero':
+        params_lin[1:]=0. # null non-linear terms
+    elif model == 'pol':
+        params_lin[2:]=0. # null non-linear terms
 
     yout = fnon_lin(x,params_fit,scaled=False)
     youtlin = fnon_lin(x,params_lin,scaled=False)
@@ -341,12 +395,14 @@ def forward_PTC_LM(indata, npol=6):
     var_nle *= gain**2.
     evar_nle *= gain**2.
 
-    ixsort = mu_nle.argsort()
+    ixsort = mu_nle.argsort() # needed? should not harm, either
 
     mu_nle = mu_nle[ixsort]
     var_nle = var_nle[ixsort]
     evar_nle = evar_nle[ixsort]
-    
+
+    model = 'zero'
+
 
     doPlot1 = False
     if doPlot1:
@@ -363,9 +419,12 @@ def forward_PTC_LM(indata, npol=6):
         plt.close()
 
     p0 = np.zeros(npol,dtype='float32')
-    p0[0] = 1. # initial conditions: perfectly linear response
+    if model == 'zero':
+        p0[0] = 1. # initial conditions: perfectly linear response
+    elif model == 'pol':
+        p0[1] = 1.
 
-    fitfunc = make_fitPTC_func(ron, binfactor)
+    fitfunc = make_fitPTC_func(ron, binfactor, model)
 
     popt,pcov = opt.curve_fit(fitfunc,mu_nle,var_nle,
         p0=p0,
@@ -404,7 +463,7 @@ def forward_PTC_LM(indata, npol=6):
 
     if doPlotNL:
 
-        plot_NLcurve(params_fit)
+        plot_NLcurve(params_fit, model)
 
 
     stop()
