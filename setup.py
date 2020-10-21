@@ -77,7 +77,8 @@ def configuration():
                         'vison/scripts/vis_mksession.py',
                         'vison/scripts/vis_dnl_extract.py',
                         'vison/scripts/vis_updateDDs_2to3.py',
-                        'vison/scripts/vison'
+                        'vison/scripts/vison',
+                        'vison/scripts/vison_batch'
                         ])
 
     return config

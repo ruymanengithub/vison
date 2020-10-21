@@ -1,0 +1,212 @@
+#! $HOME/SOFTWARE/anaconda3/envs/vison/bin/ python
+# -*- coding: utf-8 -*-
+"""
+A script to re-run analysis and reporting on whole runs for a number of blocks.
+
+Created on Wed Apr 17 14:27:28 2019
+
+@author: raf
+"""
+
+# IMPORT STUFF
+import numpy as np
+from pdb import set_trace as stop
+import os
+from optparse import OptionParser
+import string as st
+import sys
+import copy
+import importlib
+
+from vison import Pipe
+from vison.support import vjson
+from vison.support import logger as lg
+from vison.support import vistime
+# END IMPORT
+
+def openpyconfigf(configf,RUN):
+    
+    cwd = os.getcwd()
+    if cwd not in sys.path:
+        sys.path.append(cwd)
+
+    RUNs = [RUN]
+    doWait = False
+    try: 
+        i = importlib.import_module(os.path.splitext(configf)[0])
+        inputdict = i.master(RUNs, doWait)
+    except:
+        #inputdict = None
+        print("Unexpected error:", sys.exc_info()[0])
+        raise
+
+    sys.path.remove(cwd)
+    
+    return inputdict
+
+def select_tasks(pipe_inputs, testIN):
+
+    initasks = copy.deepcopy(pipe_inputs['tasks'])
+
+    def _matches(task,testIN):
+        return np.any([len(task.replace(_t,''))<len(task) for _t in testIN])
+    
+    tasks = [task for task in initasks if _matches(task,testIN)]
+    
+    for _task in initasks:
+        if _task not in tasks:
+            pipe_inputs.pop(_task)
+    
+    pipe_inputs['tasks'] = copy.deepcopy(tasks)
+
+    return pipe_inputs
+
+
+def deselect_tasks(pipe_inputs, testOUT):
+
+    initasks = copy.deepcopy(pipe_inputs['tasks'])
+    
+    deseltasks = [task for task in initasks if \
+             len(task.replace(testOUT,''))<len(task)]
+    
+    seltasks = []
+    for _task in initasks:
+        if _task in deseltasks:
+            pipe_inputs.pop(_task)
+        else:
+            seltasks.append(_task)
+    
+    pipe_inputs['tasks'] = copy.deepcopy(seltasks)
+
+    return pipe_inputs
+
+def run_pipeline(jsonfile, dfolder=None, testIN=None, testOUT=None):
+    """ """
+    inputs = vjson.load_jsonfile(jsonfile)
+    
+    pyconfig = inputs['configfile']
+    sessions = [str(item) for item in inputs['sessions']]
+    multithread = inputs['multithread']
+    cleanafter = bool(inputs['cleanafter'])
+    
+    if dfolder is not None:
+        assert dfolder in sessions
+        sessions = [dfolder]
+    
+    
+    for session in sessions:
+        
+        pipe_inputs = openpyconfigf(pyconfig,session)
+        
+        tag = '_%s' % str(session)
+
+        if testIN is not None:
+
+            pipe_inputs = select_tasks(pipe_inputs, testIN)
+
+        if testOUT is not None:
+            for tO in testOUT:
+                pipe_inputs = deselect_tasks(pipe_inputs, tO)
+        
+        if len(pipe_inputs['tasks'])>0:
+        
+            pipe = Pipe(pipe_inputs, dolog=True, drill=False,
+                debug=False, startobsid=0,
+                processes=multithread,tag=tag, 
+                cleanafter = cleanafter)
+            
+            pipe.run()
+    
+    
+    
+
+def run_all(execute, report, seqfile, bloqsfile, dfolder=None, testIN=None,
+    testOUT=None):
+    
+    seqdata = vjson.load_jsonfile(seqfile, useyaml=True)
+    bloqsdata = vjson.load_jsonfile(bloqsfile, useyaml=True)
+    
+    blocks_sequence = seqdata['blocks_sequence']
+    blocks_inputs = bloqsdata['blocks_inputs']
+    
+    seqtag = os.path.splitext(seqfile)[0]
+    
+    logf = 'Log_%s_%s.log' % (seqtag,vistime.get_time_tag())
+
+    if os.path.exists(logf):
+        os.system('rm %s' % logf)
+
+    log = lg.setUpLogger(logf)
+    log.info(['_', 'Starting ElPadrino Batch Processing'])
+    
+    
+    cwd = os.getcwd()
+    print('\n')
+    
+    for block in blocks_sequence:
+        
+        log.info('Entering %s' % block)
+        print('Entering %s' % block)
+        
+        os.chdir(os.path.join(block,'ANALYSIS')) # TESTS ONLY
+        if execute:
+            run_pipeline(blocks_inputs[block]['executer'], dfolder, 
+                testIN=testIN,testOUT=testOUT)
+            log.info('Finished execution of analysis in %s' % block)
+            print('Finished execution of analysis in %s' % block)
+        if report:
+            os.system('vis_reports_merger.py -i %s -v %.1f' % \
+                (blocks_inputs[block]['binder'], blocks_inputs[block]['Issue'])) 
+            log.info('Finished report-binding in %s' % block)
+            print('Finished report-binding in %s' % block)
+            
+        os.chdir(cwd)
+    
+    log.info('\nAll Done!\n')
+    
+
+if __name__ == '__main__':
+    
+    parser = OptionParser()
+    
+    parser.add_option("-s", "--sequence", dest="seqfile",
+                      default='', help="Sequence of blocks, file.")
+    parser.add_option("-b", "--blocks", dest="bloqsfile",
+                      default='', help="Inputs file with blocks inputs.")
+    parser.add_option("-E", "--Execute", dest="execute",
+                        action="store_true",
+                    default=False, help="Execute pipeline to get results?")
+    parser.add_option("-R", "--Report", dest="report",
+                        action="store_true",
+                    default=False, help="Bind test reports?")
+    parser.add_option("-d", "--dfolder", dest="dfolder",
+                    default=None, help="Select a specific session folder?")                
+    parser.add_option("-t", "--testIN", dest="testIN",
+                    default=None, help="Select a specific test(-type)? "+\
+                    "If more than one, separate by a comma.")
+
+    parser.add_option("-o", "--testOUT", dest="testOUT",
+                    default=None, help="Skip a specific test(-type)? "+\
+                    "If more than one, separate by a comma.")
+
+    (options, args) = parser.parse_args()
+
+    seqfile = options.seqfile
+    bloqsfile = options.bloqsfile
+    execute = options.execute
+    report = options.report
+    dfolder = options.dfolder
+    testIN = options.testIN
+    if testIN is not None:
+        testIN = testIN.split(',')
+    testOUT = options.testOUT
+    if testOUT is not None:
+        testOUT = testOUT.split(',')
+
+    if seqfile =='' or bloqsfile =='':
+        parser.print_help()
+        sys.exit()
+        
+    
+    run_all(execute, report, seqfile, bloqsfile, dfolder=dfolder, testIN=testIN,
+        testOUT=testOUT)
