@@ -140,7 +140,8 @@ def run_all(execute, report, seqfile, bloqsfile, dfolder=None, testIN=None,
     log = lg.setUpLogger(logf)
     log.info(['_', 'Starting ElPadrino Batch Processing'])
     whereami = subprocess.check_output(['uname','-a'])
-    log.info(['_',whereami])
+    stop()
+    log.info(['_', whereami])
     stop()
     
     
