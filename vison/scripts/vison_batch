@@ -17,6 +17,7 @@ import string as st
 import sys
 import copy
 import importlib
+import subprocess
 
 from vison import Pipe
 from vison.support import vjson
