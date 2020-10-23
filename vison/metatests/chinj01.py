@@ -924,7 +924,7 @@ class MetaChinj01(MetaCal):
 
             for proftype in proftypes:
 
-                if proftype = 'hor':
+                if proftype == 'hor':
                     xrangeNorm = None
                 elif proftype == 'ver':
                     xrangeNorm = [10,20]
