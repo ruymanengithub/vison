@@ -460,7 +460,7 @@ class MetaChinj01(MetaCal):
 
         return parsdict
 
-    def _get_XYdict_PROFS(self,proftype, IG1=4.5, Quads=None):
+    def _get_XYdict_PROFS(self,proftype, IG1=4.5, Quads=None, doNorm=False, xrangeNorm=Norm):
         """ """
 
         if Quads is None:
@@ -498,7 +498,14 @@ class MetaChinj01(MetaCal):
                     _y = _pcq['y'][IG1key].copy()
 
                     x[pkey] = _x
-                    y[pkey] = _y / np.nanmedian(_y)
+                    if doNorm:
+
+                        if xrangeNorm is not None:
+                            norm = np.namedian(_y[xrangeNorm[0]:xrangeNorm[1]])
+                        else:
+                            norm = np.nanmedian(_y)
+
+                        y[pkey] = _y / norm
 
                     labelkeys.append(pkey)
 
@@ -533,6 +540,12 @@ class MetaChinj01(MetaCal):
                 self.figs[figkey] = os.path.join(self.figspath,
                         'CHINJ01_%s_%s_PROFILES.png' % \
                             (proftype.upper(),ccdhalf.upper()))
+
+        for ccdhalf in ['top','bot']:
+            figkey = 'PROFS_ver_%s_ZOOM' % (ccdhalf.upper(),)
+            self.figs[figkey] = os.path.join(self.figspath,
+                    'CHINJ01_ver_%s_ZOOM_PROFILES.png' % \
+                        (ccdhalf.upper()),)
 
     def init_outcdpnames(self):
 
@@ -911,8 +924,15 @@ class MetaChinj01(MetaCal):
 
             for proftype in proftypes:
 
+                if proftype = 'hor':
+                    xrangeNorm = None
+                elif proftype == 'ver':
+                    xrangeNorm = [10,20]
+
+
                 XY_profs = self._get_XYdict_PROFS(proftype=proftype,
-                    IG1=IG1profs,Quads=_Quads)
+                    IG1=IG1profs,Quads=_Quads, doNorm=True, 
+                    xrangeNorm=xrangeNorm)
 
                 figkey6 = 'PROFS_%s_%s' % (proftype.upper(),ccdhalf.upper())
                 figname6 = self.figs[figkey6]
@@ -956,6 +976,64 @@ class MetaChinj01(MetaCal):
                         caption= captemp % (IG1profs, ccdhalf, _Quads[0],_Quads[1]),
                         texfraction=0.7)
 
+
+        # Average injection vertical profiles, zoomed in to highlight
+        # non-perfect charge injection shut-down.
+
+        
+        pointcorekwargs = dict()
+        for jblock, block in enumerate(self.flight_blocks):
+            jcolor = BLOCKcolors[jblock]
+            for iCCD in self.CCDs:
+                for kQ in self.Quads:
+                    pointcorekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(
+                        linestyle='', marker='.', color=jcolor, ms=2.0)
+
+
+        for ccdhalf in ccdhalves:
+
+            if ccdhalf == 'top':
+                _Quads = ['G','H']
+            elif ccdhalf == 'bot':
+                _Quads = ['E','F']
+
+
+            XY_profs = self._get_XYdict_PROFS(proftype='ver',
+                IG1=IG1profs,Quads=_Quads, doNorm=True,
+                xrangeNorm=[10,20])
+
+            figkey7 = 'PROFS_ver_%s_ZOOM' % (ccdhalf.upper(),)
+            figname7 = self.figs[figkey7]
+
+            title = 'CHINJ01: Direction: ver, CCDHalf: %s, ZOOM-in' % \
+                (ccdhalf.upper(),),
+            
+            xlim=[25,50]
+            ylim=[0,1.e-2]
+            
+            profkwargs = dict(
+                title=title,
+                doLegend=False,
+                xlabel=xlabels_profs[proftype],
+                xlim=xlim,
+                ylim=ylim,
+                ylabel=ylabels_profs[proftype],
+                figname=figname7,
+                corekwargs=pointcorekwargs)
+
+            self.plot_XY(XY_profs, **profkwargs)
+
+            captemp = 'CHINJ01: Average injection profiles in vertical direction (along CCD columns) '+\
+                    'for IG1=%.2fV. Only the 2 channels in the CCD %s-half are shown '+\
+                    '(%s, %s). Each colour corresponds to a '+\
+                    'different block (2x3 quadrant-channels in each colour). Zoomed in '+\
+                    'to highlight injection shutdown profile.'
+            
+            if self.report is not None:
+                self.addFigure2Report(figname7, 
+                    figkey=figkey7, 
+                    caption= captemp % (IG1profs, ccdhalf, _Quads[0],_Quads[1]),
+                    texfraction=0.7)
 
         # creating and saving INJ PROFILES CDPs.
 
