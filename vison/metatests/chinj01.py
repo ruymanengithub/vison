@@ -460,7 +460,7 @@ class MetaChinj01(MetaCal):
 
         return parsdict
 
-    def _get_XYdict_PROFS(self,proftype, IG1=4.5, Quads=None, doNorm=False, xrangeNorm=Norm):
+    def _get_XYdict_PROFS(self,proftype, IG1=4.5, Quads=None, doNorm=False, xrangeNorm=None):
         """ """
 
         if Quads is None:
