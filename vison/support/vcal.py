@@ -133,7 +133,7 @@ def f_V2counts_EHK(EV, HKkey, version='7.5.X'):
 def load_VCal(calfile, ROE):
     """ """
 
-    dfVCAL = pd.read_excel(calfile, sheetname='TRANSFER_FM%i' % ROE)
+    dfVCAL = pd.read_excel(calfile, sheet_name='TRANSFER_FM%i' % ROE)
 
     if len(dfVCAL) == 0:
         return None
