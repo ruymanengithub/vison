@@ -162,7 +162,6 @@ def load_VCal(calfile, ROE):
             for convk in ['DAC', 'ADC']:
 
                 Vkey_OD = get_Vkey_OD(CCD, Q)
-                stop()
                 VCALdict[convk][CCDk][Q]['OD'] = _get_SlIn(dfVCAL, Vkey_OD, convk)
 
                 Vkey_RD = get_Vkey_RD(CCD, Q)
