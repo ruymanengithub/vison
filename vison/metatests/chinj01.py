@@ -567,18 +567,18 @@ class MetaChinj01(MetaCal):
 
         return np.nanstd(_y)/np.nanmean(_y)*100.
 
-    def _get_injprof_dfdict(self, direction, IG1=4.5, pandice=False):
+    def _get_injprof_dfdict(self, direction, pandice=False):
         """ """
 
         injprofs = OrderedDict()
 
         Quads = self.Quads
         PT = self.ParsedTable['CHINJ01']
-        profcol = '%sPROFS_KEY' % direction.upper()
-        prodkey = '%sPROFILES' % direction.upper()
+        profcol = '{}PROFS_KEY'.format(direction.upper())
+        prodkey = '{}PROFILES'.format(direction.upper())
 
 
-        for block in self.flight_blocks:
+        for ib, block in enumerate(self.flight_blocks):
             injprofs[block] = OrderedDict()
 
             ixsel = np.where(PT['BLOCK'] == block)
@@ -586,36 +586,41 @@ class MetaChinj01(MetaCal):
 
             i_Prof = self.products[prodkey][prof_key].copy()
 
-            IG1key = 'IG1_%.2fV' % IG1
+            if ib==0:
+                rawIG1keys = list(i_Prof['data']['CCD1']['E']['x'].keys())
+                IG1values = [float(item.replace('IG1_','').replace('V','')) for item in rawIG1keys]
+                _order = np.argsort(IG1values)
+                IG1keys = np.array(rawIG1keys)[_order].tolist()
+                IG1values = np.array(IG1values)[_order].tolist()
+            
+            for IG1key in IG1keys:
+            
+                for iCCD, CCD in enumerate(self.CCDs):
+                    CCDk = 'CCD%i' % CCD
 
+                    Ckey = self.fpa.get_Ckey_from_BlockCCD(block, CCD)
 
-            for iCCD, CCD in enumerate(self.CCDs):
-                CCDk = 'CCD%i' % CCD
+                    for kQ, Q in enumerate(Quads):
 
-                Ckey = self.fpa.get_Ckey_from_BlockCCD(block, CCD)
+                        _pcq = i_Prof['data'][CCDk][Q].copy()
 
-                for kQ, Q in enumerate(Quads):
+                        _x = _pcq['x'][IG1key].copy()
+                        _y = _pcq['y'][IG1key].copy()
 
-                    _pcq = i_Prof['data'][CCDk][Q].copy()
+                        #_y /= np.nanmedian(_y)
 
-                    _x = _pcq['x'][IG1key].copy()
-                    _y = _pcq['y'][IG1key].copy()
-
-                    _y /= np.nanmedian(_y)
-
-
-                    if iCCD==0 and kQ==0:
-                        injprofs[block]['pixel'] = _x.copy()
-                    injprofs[block]['%s_%s' % (Ckey,Q)] = _y.copy() 
+                        if iCCD==0 and kQ==0:
+                            injprofs[block]['pixel'] = _x.copy()
+                        injprofs[block]['%s_%s_%s' % (Ckey,Q,IG1key)] = _y.copy() 
 
         if pandice:
             for block in self.flight_blocks:
                 injprofs[block] = pd.DataFrame.from_dict(injprofs[block])
 
-        return injprofs
+        return injprofs, IG1values
 
 
-    def get_injprof_xlsx_cdp(self, direction, inCDP_header=None, IG1=4.5):
+    def get_injprof_xlsx_cdp(self, direction, inCDP_header=None):
         """ """
 
         CDP_header = OrderedDict()
@@ -631,10 +636,10 @@ class MetaChinj01(MetaCal):
 
         injprofs_meta = OrderedDict()
 
-        injprofs = self._get_injprof_dfdict(direction, IG1, pandice=True)        
+        injprofs, IG1values = self._get_injprof_dfdict(direction, pandice=True)        
 
-        injprofs_meta['IG1'] = IG1
-        injprofs_meta['norm'] = 'median'
+        injprofs_meta['IG1'] = IG1values.__repr__()
+        #injprofs_meta['norm'] = 'median'
 
         injprof_cdp.ingest_inputs(data=injprofs.copy(),
             meta=injprofs_meta.copy(),
@@ -644,7 +649,7 @@ class MetaChinj01(MetaCal):
 
         return injprof_cdp
 
-    def get_injprof_fits_cdp(self, direction, inCDP_header=None, IG1=4.5):
+    def get_injprof_fits_cdp(self, direction, inCDP_header=None):
         """ """
 
         CDP_header = OrderedDict()
@@ -660,10 +665,10 @@ class MetaChinj01(MetaCal):
 
         injprofs_meta = OrderedDict()
 
-        injprofs = self._get_injprof_dfdict(direction, IG1, pandice=False)
+        injprofs, IG1values = self._get_injprof_dfdict(direction, pandice=False)
 
-        injprofs_meta['IG1'] = IG1
-        injprofs_meta['norm'] = 'median'
+        injprofs_meta['IG1'] = IG1values.__repr__()
+        #injprofs_meta['norm'] = 'median'
 
         CDP_header = self.FITSify_CDP_header(CDP_header)
 
@@ -957,11 +962,11 @@ class MetaChinj01(MetaCal):
         for direction in ['hor','ver']:
 
             _injprof_xlsx_cdp = self.get_injprof_xlsx_cdp(direction=direction,
-                inCDP_header=CDP_header)
+                inCDP_header=CDP_header, IG1=4.5)
             _injprof_xlsx_cdp.savehardcopy()
 
             _injprof_fits_cdp = self.get_injprof_fits_cdp(direction=direction,
-                inCDP_header=CDP_header)
+                inCDP_header=CDP_header, IG1=4.5)
             _injprof_fits_cdp.savehardcopy()
 
 
