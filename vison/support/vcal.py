@@ -144,8 +144,7 @@ def load_VCal(calfile, ROE):
     VCALdict['ADC'] = OrderedDict()
 
     def _get_SlIn(df, Vkey, convk):
-        try: slope = float(df['%s Slope' % convk].loc[Vkey])
-        except: stop()
+        slope = float(df['%s Slope' % convk].loc[Vkey])
         icept = float(df['%s Intercept' % convk].loc[Vkey])
         return [slope, icept]
 
@@ -163,6 +162,7 @@ def load_VCal(calfile, ROE):
             for convk in ['DAC', 'ADC']:
 
                 Vkey_OD = get_Vkey_OD(CCD, Q)
+                stop()
                 VCALdict[convk][CCDk][Q]['OD'] = _get_SlIn(dfVCAL, Vkey_OD, convk)
 
                 Vkey_RD = get_Vkey_RD(CCD, Q)
