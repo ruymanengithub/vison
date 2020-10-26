@@ -333,7 +333,7 @@ class FpaTask(task.Task):
             self.report.add_Text(
                 '%s acquisition consistent with expectations: %s\\newline' % (ntestkey, nchecksout))
 
-            if (checkreport['failedcols']) > 0:
+            if len(checkreport['failedcols']) > 0:
                 nfailedcols = checkreport['failedcols'].__repr__().replace(
                     '_', '\_')
                 self.report.add_Text('%s failed columns: %s' %
