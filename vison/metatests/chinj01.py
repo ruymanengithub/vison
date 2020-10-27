@@ -960,7 +960,7 @@ class MetaChinj01(MetaCal):
                 self.plot_XY(XY_profs, **profkwargs)
 
                 if proftype == 'ver':
-                    captemp = 'CHINJ01: Average injection profiles in vertical direction (along CCD columns) '+\
+                    captemp = 'CHINJ01: Average (normalized) injection profiles in vertical direction (along CCD columns) '+\
                         'for IG1=%.2fV. Only the 2 channels in the CCD %s-half are shown '+\
                         '(%s, %s). Each colour corresponds to a '+\
                         'different block (2x3 quadrant-channels in each colour).'
@@ -1009,7 +1009,7 @@ class MetaChinj01(MetaCal):
                 (ccdhalf.upper(),),
             
             xlim=[25,50]
-            ylim=[0,1.e-2]
+            ylim=[0,4.e-3]
             
             profkwargs = dict(
                 title=title,
