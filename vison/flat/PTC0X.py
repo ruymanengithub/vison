@@ -208,6 +208,7 @@ class PTC0X(FlatTask):
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        products='products')
         self.window = dict(wpx=300, hpx=300)
+        self.tile_coos = dict()
 
     def set_inpdefaults(self, **kwargs):
         """ """
@@ -344,10 +345,10 @@ class PTC0X(FlatTask):
         Quads = indices.get_vals('Quad')
         CCDs = indices.get_vals('CCD')
 
-        tile_coos = dict()
         for Quad in Quads:
-            tile_coos[Quad] = self.ccdcalc.get_tile_coos(Quad, wpx, hpx)
-        Nsectors = tile_coos[Quads[0]]['Nsamps']
+            self.tile_coos[Quad] = self.ccdcalc.get_tile_coos(Quad, wpx, hpx)
+
+        Nsectors = self.tile_coos[Quads[0]]['Nsamps']
         sectornames = np.arange(Nsectors)
 
         Sindices = copy.deepcopy(self.dd.indices)
@@ -440,7 +441,7 @@ class PTC0X(FlatTask):
 
                         Quad = Quads[kQ]
 
-                        _tile_coos = tile_coos[Quad]
+                        _tile_coos = self.tile_coos[Quad].copy()
 
                         if binfactor >1:
 
@@ -763,6 +764,51 @@ class PTC0X(FlatTask):
 
         self.canbecleaned = True
 
+
+    def product_Bloom_Maps(self):
+        """ """
+
+        dIndices = copy.deepcopy(self.dd.indices)
+
+        CCDs = dIndices.get_vals('CCD')
+        nC = len(CCDs)
+        Quads = dIndices.get_vals('Quad')
+        nQ = len(Quads)
+
+        function, module = utils.get_function_module()
+        CDP_header = self.CDP_header.copy()
+        CDP_header.update(dict(function=function, module=module))
+        CDP_header['DATE'] = self.get_time_tag()
+
+        prodspath = self.inputs['subpaths']['products']
+
+        wpx = self.window['wpx']
+        hpx = self.window['hpx']
+
+        self.tile_coos = OrderedDict()
+        for Quad in Quads:
+            self.tile_coos[Quad] = self.ccdcalc.get_tile_coos(Quad, wpx, hpx)
+
+        Nsectors = self.tile_coos[Quads[0]]['Nsamps']
+        sectornames = np.arange(Nsectors)
+
+
+        for iCCD, CCDk in enumerate(CCDs):
+
+            for jQ, Q in enumerate(Quads):
+
+                # print('%s%s' % (CCDk,Q)) # TESTS
+
+                ixsel = np.where(self.dd.mx['ObsID_pair'][0]>0)
+
+                raw_var = self.dd.mx['sec_var'][ixsel, iCCD, jQ, :]
+                raw_med = self.dd.mx['sec_med'][ixsel, iCCD, jQ, :]
+
+                _tile_coos = self.tile_coos[Quad].copy()
+
+                stop()
+
+
     def debugtask(self):
         """ """
         from matplotlib import cm
@@ -770,7 +816,13 @@ class PTC0X(FlatTask):
         from matplotlib import pyplot as plt
 
 
-        debugOverProfiles = True 
+        debugBloomMaps = True 
+
+        if debugBloomMaps:
+
+            self.produce_Bloom_Maps()
+
+        debugOverProfiles = False
 
         if debugOverProfiles:
 
