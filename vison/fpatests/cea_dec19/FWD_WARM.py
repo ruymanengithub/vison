@@ -110,8 +110,8 @@ class FWD_WARM(fpatask.FpaTask):
         rownum = np.arange(len(rawy))
         try:
             rowsat = np.where(rawy == 2.**16 - 1)[0][0]
-        except:
-            stop()
+        except IndexError: # no saturation for whatever reason
+            rowsat = len(rawy)
         ixsel = np.where((rawy < 5.E4) & (rownum < rowsat))
 
         try:
@@ -187,7 +187,10 @@ class FWD_WARM(fpatask.FpaTask):
                 self.dd.products['RAMPfits'][CCDID][Q] = (rampslopeQ, rampinterQ)
 
                 # RAMP; bit-histograms extraction
-                ixsat = np.where(vy==2.**16-1)[0][0]
+                try:
+                    ixsat = np.where(vy==2.**16-1)[0][0]
+                except IndexError:
+                    ixsat = len(vy)
 
 
                 bitsmean = bits.get_histo_bits(kccdobj, Q, vstart=vstart, vend=ixsat)
