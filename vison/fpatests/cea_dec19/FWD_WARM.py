@@ -108,7 +108,10 @@ class FWD_WARM(fpatask.FpaTask):
 
         rawy = vQ.data['y'].copy()
         rownum = np.arange(len(rawy))
-        rowsat = np.where(rawy == 2.**16 - 1)[0][0]
+        try:
+            rowsat = np.where(rawy == 2.**16 - 1)[0][0]
+        except:
+            stop()
         ixsel = np.where((rawy < 5.E4) & (rownum < rowsat))
 
         try:
