@@ -644,7 +644,7 @@ class PTC0X(FlatTask):
 
                 # print('%s%s' % (CCDk,Q)) # TESTS
 
-                ixsel = np.where(self.dd.mx['ObsID_pair'][0]>0)
+                ixsel = np.where(self.dd.mx['ObsID_pair']>0)
 
                 raw_var = self.dd.mx['sec_var'][ixsel, iCCD, jQ, :]
                 raw_med = self.dd.mx['sec_med'][ixsel, iCCD, jQ, :]
@@ -799,12 +799,35 @@ class PTC0X(FlatTask):
 
                 # print('%s%s' % (CCDk,Q)) # TESTS
 
-                ixsel = np.where(self.dd.mx['ObsID_pair'][0]>0)
-
-                raw_var = self.dd.mx['sec_var'][ixsel, iCCD, jQ, :]
-                raw_med = self.dd.mx['sec_med'][ixsel, iCCD, jQ, :]
+                ixsel = np.where(self.dd.mx['ObsID_pair']>0)
 
                 _tile_coos = self.tile_coos[Quad].copy()
+
+                centres = _tile_coos['ccpix']
+
+                for ll in range(Nsectors):
+
+                    raw_var = self.dd.mx['sec_var'][ixsel, iCCD, jQ, ll]
+                    raw_med = self.dd.mx['sec_med'][ixsel, iCCD, jQ, ll]
+                    ixnonan = np.where(~np.isnan(raw_var) & ~np.isnan(raw_med))
+                    var = raw_var[ixnonan]
+                    med = raw_med[ixnonan]
+
+                    _fitresults = ptclib.fitPTC(med, var, debug=False)
+
+                    _bloom = ptclib.foo_bloom_advanced(med, var, _fitresults, debug=debugbloom)
+
+                    stop()
+
+
+
+
+
+
+
+                
+
+
 
                 stop()
 
