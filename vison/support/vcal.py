@@ -134,6 +134,7 @@ def load_VCal(calfile, ROE):
     """ """
 
     dfVCAL = pd.read_excel(calfile, sheet_name='TRANSFER_FM%i' % ROE)
+    stop()
 
     if len(dfVCAL) == 0:
         return None
@@ -144,10 +145,7 @@ def load_VCal(calfile, ROE):
     VCALdict['ADC'] = OrderedDict()
 
     def _get_SlIn(df, Vkey, convk):
-        try:
-            slope = float(df['%s Slope' % convk].loc[Vkey])
-        except:
-            stop()
+        slope = float(df['%s Slope' % convk].loc[Vkey])
         icept = float(df['%s Intercept' % convk].loc[Vkey])
         return [slope, icept]
 
