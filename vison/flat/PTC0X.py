@@ -813,9 +813,9 @@ class PTC0X(FlatTask):
                     var = raw_var[ixnonan]
                     med = raw_med[ixnonan]
 
-                    _fitresults = ptclib.fitPTC(med, var, debug=False)
+                    _fitresults = ptclib.fitPTC(med, var, debug=True)
 
-                    _bloom = ptclib.foo_bloom_advanced(med, var, _fitresults, debug=debugbloom)
+                    _bloom = ptclib.foo_bloom_advanced(med, var, _fitresults, debug=True)
 
                     stop()
 
