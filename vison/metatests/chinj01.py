@@ -501,7 +501,7 @@ class MetaChinj01(MetaCal):
                     if doNorm:
 
                         if xrangeNorm is not None:
-                            norm = np.namedian(_y[xrangeNorm[0]:xrangeNorm[1]])
+                            norm = np.nanmedian(_y[xrangeNorm[0]:xrangeNorm[1]])
                         else:
                             norm = np.nanmedian(_y)
 
