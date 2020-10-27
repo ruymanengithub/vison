@@ -691,7 +691,7 @@ class MetaChinj01(MetaCal):
 
         injprof_cdp.init_HL_and_fillAll()
 
-        injprof_cdp.hdulist[0].header.insert(CDP_header.keys()[0],
+        injprof_cdp.hdulist[0].header.insert(list(CDP_header.keys())[0],
             ('title', 'CHINJ01: INJPROFS-%s' % direction.upper()))
 
         return injprof_cdp

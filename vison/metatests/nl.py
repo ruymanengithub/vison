@@ -561,7 +561,7 @@ class MetaNL(MetaCal):
 
         nl_cdp.init_HL_and_fillAll()
 
-        nl_cdp.hdulist[0].header.insert(CDP_header.keys()[0],
+        nl_cdp.hdulist[0].header.insert(list(CDP_header.keys())[0],
             ('title', 'NL02: CURVES'))
 
         return nl_cdp

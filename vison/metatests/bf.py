@@ -755,7 +755,7 @@ class MetaBF(MetaCal):
             header=CDP_header.copy())
         gpsf_cdp.init_HL_and_fillAll()
 
-        gpsf_cdp.hdulist[0].header.insert(CDP_header.keys()[0],
+        gpsf_cdp.hdulist[0].header.insert(list(CDP_header.keys())[0],
             ('title','BF0X: GAUSS PSF EQUIVALENTS TO BFE-G+15'))
 
         return gpsf_cdp
