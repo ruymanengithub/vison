@@ -644,7 +644,7 @@ class PTC0X(FlatTask):
 
                 # print('%s%s' % (CCDk,Q)) # TESTS
 
-                ixsel = np.where(self.dd.mx['ObsID_pair']>0)
+                ixsel = np.where(self.dd.mx['ObsID_pair'][:]>0)
 
                 raw_var = self.dd.mx['sec_var'][ixsel, iCCD, jQ, :]
                 raw_med = self.dd.mx['sec_med'][ixsel, iCCD, jQ, :]
@@ -799,7 +799,7 @@ class PTC0X(FlatTask):
 
                 # print('%s%s' % (CCDk,Q)) # TESTS
 
-                ixsel = np.where(self.dd.mx['ObsID_pair']>0)
+                ixsel = np.where(self.dd.mx['ObsID_pair'][:]>0)
 
                 _tile_coos = self.tile_coos[Quad].copy()
 
