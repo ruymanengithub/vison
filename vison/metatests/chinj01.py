@@ -1040,11 +1040,11 @@ class MetaChinj01(MetaCal):
         for direction in ['hor','ver']:
 
             _injprof_xlsx_cdp = self.get_injprof_xlsx_cdp(direction=direction,
-                inCDP_header=CDP_header, IG1=4.5)
+                inCDP_header=CDP_header)
             _injprof_xlsx_cdp.savehardcopy()
 
             _injprof_fits_cdp = self.get_injprof_fits_cdp(direction=direction,
-                inCDP_header=CDP_header, IG1=4.5)
+                inCDP_header=CDP_header)
             _injprof_fits_cdp.savehardcopy()
 
 
