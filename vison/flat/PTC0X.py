@@ -765,7 +765,7 @@ class PTC0X(FlatTask):
         self.canbecleaned = True
 
 
-    def product_Bloom_Maps(self):
+    def produce_Bloom_Maps(self):
         """ """
 
         dIndices = copy.deepcopy(self.dd.indices)
