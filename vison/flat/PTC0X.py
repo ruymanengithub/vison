@@ -824,10 +824,9 @@ class PTC0X(FlatTask):
 
                     _bloom = ptclib.foo_bloom_advanced(med, var, _fitresults, debug=False)
 
-                    BloomCCDMaps[CCDk][Q]['x'].append(centres[ll][0])
-                    BloomCCDMaps[CCDk][Q]['y'].append(centres[ll][1])
-                    BloomCCDMaps[CCDk][Q]['bloom'].append(_bloom['bloom_ADU'])
-
+                    BloomCCDMaps[CCDk][Q]['x'][ll] = centres[ll][0]
+                    BloomCCDMaps[CCDk][Q]['y'][ll] = centres[ll][1]
+                    BloomCCDMaps[CCDk][Q]['bloom'][ll] = _bloom['bloom_ADU']
 
 
         stop()
