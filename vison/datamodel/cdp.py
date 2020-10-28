@@ -286,7 +286,6 @@ class FitsTables_CDP(CDP):
             if 'string' in dtype:
                 kformat = '%s%i' % (self.formatsdict['char'],
                     dd[k].dtype.itemsize)
-
             else:
                 kformat = self.formatsdict[dtype]
 

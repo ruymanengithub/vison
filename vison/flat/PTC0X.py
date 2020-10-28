@@ -792,10 +792,17 @@ class PTC0X(FlatTask):
         Nsectors = self.tile_coos[Quads[0]]['Nsamps']
         sectornames = np.arange(Nsectors)
 
+        BloomCCDMaps = OrderedDict()
+
 
         for iCCD, CCDk in enumerate(CCDs):
+            BloomCCDMaps[CCDk] = OrderedDict()
 
             for jQ, Q in enumerate(Quads):
+                BloomCCDMaps[CCDk][Q] = OrderedDict(
+                    x=list(),
+                    y=list(),
+                    bloom=list())
 
                 # print('%s%s' % (CCDk,Q)) # TESTS
 
@@ -817,7 +824,13 @@ class PTC0X(FlatTask):
 
                     _bloom = ptclib.foo_bloom_advanced(med, var, _fitresults, debug=False)
 
-                    stop()
+                    BloomCCDMaps[CCDk][Q]['x'].append(centres[ll][0])
+                    BloomCCDMaps[CCDk][Q]['y'].append(centres[ll][1])
+                    BloomCCDMaps[CCDk][Q]['Bloom'].append(_bloom['bloom_ADU'])
+
+        stop()
+
+
 
 
 
