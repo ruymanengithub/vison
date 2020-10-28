@@ -800,9 +800,9 @@ class PTC0X(FlatTask):
 
             for jQ, Q in enumerate(Quads):
                 BloomCCDMaps[CCDk][Q] = OrderedDict(
-                    x=list(),
-                    y=list(),
-                    bloom=list())
+                    x=np.zeros(Nsectors,dtype='float32'),
+                    y=np.zeros(Nsectors,dtype='float32'),
+                    bloom=np.zeros(Nsectors,dtype='float32'))
 
                 # print('%s%s' % (CCDk,Q)) # TESTS
 
@@ -826,7 +826,9 @@ class PTC0X(FlatTask):
 
                     BloomCCDMaps[CCDk][Q]['x'].append(centres[ll][0])
                     BloomCCDMaps[CCDk][Q]['y'].append(centres[ll][1])
-                    BloomCCDMaps[CCDk][Q]['Bloom'].append(_bloom['bloom_ADU'])
+                    BloomCCDMaps[CCDk][Q]['bloom'].append(_bloom['bloom_ADU'])
+
+
 
         stop()
 
