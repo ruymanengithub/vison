@@ -832,19 +832,6 @@ class PTC0X(FlatTask):
 
 
 
-
-
-
-
-
-
-                
-
-
-
-                stop()
-
-
     def debugtask(self):
         """ """
         from matplotlib import cm
