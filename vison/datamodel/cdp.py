@@ -302,7 +302,7 @@ class FitsTables_CDP(CDP):
         for sheet in self.data.keys():
             self.fill_Table(sheet)
 
-    def init_HL_and_fillAll(self, header_title=''):
+    def init_HL_and_fillAll(self, *args):
 
         self.init_HDUList()
         self.fill_Header()

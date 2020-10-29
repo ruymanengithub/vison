@@ -795,16 +795,16 @@ class PTC0X(FlatTask):
         sectornames = np.arange(Nsectors)
 
         BloomCCDMaps = OrderedDict()
+        BloomCCDMaps['x']=np.zeros(Nsectors,dtype='float32')
+        BloomCCDMaps['y']=np.zeros(Nsectors,dtype='float32')
+
+        quadcount = 0
 
         for iCCD, CCDk in enumerate(CCDs):
-            BloomCCDMaps[CCDk] = OrderedDict()
+            #BloomCCDMaps[CCDk] = OrderedDict()
 
             for jQ, Q in enumerate(Quads):
-                BloomCCDMaps[CCDk][Q] = OrderedDict(
-                    x=np.zeros(Nsectors,dtype='float32'),
-                    y=np.zeros(Nsectors,dtype='float32'),
-                    bloom=np.zeros(Nsectors,dtype='float32'))
-
+                
                 # print('%s%s' % (CCDk,Q)) # TESTS
 
                 ixsel = np.where(self.dd.mx['ObsID_pair'][:]>0)
@@ -812,6 +812,8 @@ class PTC0X(FlatTask):
                 _tile_coos = self.tile_coos[Quad].copy()
 
                 centres = _tile_coos['ccpix']
+
+                BloomCCDMaps['%s_%s' % (CCDk,Q)] = np.zeros(Nsectors,dtype='float32')
 
                 for ll in range(Nsectors):
 
@@ -828,17 +830,19 @@ class PTC0X(FlatTask):
                     if _bloom['bloom_ADU']>0:
                         print(CCDk,Q,ll,_bloom['bloom_ADU'])
 
-                    BloomCCDMaps[CCDk][Q]['x'][ll] = centres[ll][0]
-                    BloomCCDMaps[CCDk][Q]['y'][ll] = centres[ll][1]
+                    if quadcount == 0:
+                        BloomCCDMaps['x'][ll] = centres[ll][0]
+                        BloomCCDMaps['y'][ll] = centres[ll][1]
                     BloomCCDMaps[CCDk][Q]['bloom'][ll] = _bloom['bloom_ADU']
 
-        stop()
+                quadcount += 1
 
-        bmcdp = cdp.Json_CDP()
+
+        bmcdp = cdp.FitsTables_CDP()
         bmcdp.rootname = 'BloomMaps_%s' % self.inputs['test']
-        bmcdp.header = CDP_header.copy()
+        bmcdp.ingest_inputs(data=BloomCCDMaps,meta=None,header=CDP_header)
         bmcdp.path = './'
-        bmcdp.data = OrderedDict(BLOOM=BloomCCDMaps)
+        bmcdp.init_HL_and_fillAll()
 
         bmcdp.savehardcopy()
         stop()
