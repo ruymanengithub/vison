@@ -832,6 +832,7 @@ class PTC0X(FlatTask):
                     BloomCCDMaps[CCDk][Q]['y'][ll] = centres[ll][1]
                     BloomCCDMaps[CCDk][Q]['bloom'][ll] = _bloom['bloom_ADU']
 
+        stop()
 
         bmcdp = cdp.Json_CDP()
         bmcdp.rootname = 'BloomMaps_%s' % self.inputs['test']
