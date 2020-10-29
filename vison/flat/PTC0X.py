@@ -827,13 +827,15 @@ class PTC0X(FlatTask):
 
                     _bloom = ptclib.foo_bloom_advanced(med, var, _fitresults, debug=False)
 
-                    if _bloom['bloom_ADU']>0:
-                        print(CCDk,Q,ll,_bloom['bloom_ADU'])
+                    #if _bloom['bloom_ADU']>0:
+                    #    print(CCDk,Q,ll,_bloom['bloom_ADU'])
 
                     if quadcount == 0:
                         BloomCCDMaps['x'][ll] = centres[ll][0]
                         BloomCCDMaps['y'][ll] = centres[ll][1]
-                    BloomCCDMaps[CCDk][Q]['bloom'][ll] = _bloom['bloom_ADU']
+
+                    BloomCCDMaps['%s_%s' % (CCDk,Q)][ll] = _bloom['bloom_ADU']
+
 
                 quadcount += 1
 

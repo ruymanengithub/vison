@@ -309,7 +309,6 @@ class FitsTables_CDP(CDP):
         self.fill_Meta()
         self.fill_allTables()
 
-
     def savehardcopy(self, filef=''):
         """ """
         if filef == '':
