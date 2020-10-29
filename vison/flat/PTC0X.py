@@ -834,7 +834,7 @@ class PTC0X(FlatTask):
 
 
         bmcdp = cdp.Json_CDP()
-        bmcdp.rootname = 'BloomMaps_%s' self.inputs['test']
+        bmcdp.rootname = 'BloomMaps_%s' % self.inputs['test']
         bmcdp.header = CDP_header.copy()
         bmcdp.path = './'
         bmcdp.data = OrderedDict(BLOOM=pd.DataFrame.from_dict(BloomCCDMaps))
