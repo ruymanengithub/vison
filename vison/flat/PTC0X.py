@@ -839,7 +839,8 @@ class PTC0X(FlatTask):
 
                 quadcount += 1
 
-
+        stop()
+        
         bmcdp = cdp.FitsTables_CDP()
         bmcdp.rootname = 'BloomMaps_%s' % self.inputs['test']
         bmcdp.ingest_inputs(data=BloomCCDMaps,meta=None,header=CDP_header)
