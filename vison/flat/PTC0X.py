@@ -768,6 +768,8 @@ class PTC0X(FlatTask):
     def produce_Bloom_Maps(self):
         """ """
 
+        from vison.datamodel import cdp
+
         dIndices = copy.deepcopy(self.dd.indices)
 
         CCDs = dIndices.get_vals('CCD')
@@ -793,7 +795,6 @@ class PTC0X(FlatTask):
         sectornames = np.arange(Nsectors)
 
         BloomCCDMaps = OrderedDict()
-
 
         for iCCD, CCDk in enumerate(CCDs):
             BloomCCDMaps[CCDk] = OrderedDict()
@@ -832,7 +833,15 @@ class PTC0X(FlatTask):
                     BloomCCDMaps[CCDk][Q]['bloom'][ll] = _bloom['bloom_ADU']
 
 
+        bmcdp = cdp.Json_CDP()
+        bmcdp.rootname = 'BloomMaps_%s' self.inputs['test']
+        bmcdp.header = CDP_header.copy()
+        bmcdp.path = './'
+        bmcdp.data = OrderedDict(BLOOM=pd.DataFrame.from_dict(BloomCCDMaps))
+
+        bmcdp.savehardcopy()
         stop()
+
 
 
 
