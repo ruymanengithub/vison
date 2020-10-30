@@ -753,7 +753,11 @@ class PTC0X(FlatTask):
 
         # 2D Bloom Maps
 
-        self.produce_Bloom_Maps()
+        bmcdpkey = self.produce_Bloom_Maps()
+
+        bmcdp = self.CDP_lib['BLOOM_MAPS']
+        bmcdpf = self.dd.products['BLOOM_MAPS']
+        bmcdp.loadhardcopy(bmcdpf)
 
         # Do plots
 
@@ -850,10 +854,12 @@ class PTC0X(FlatTask):
         bmcdp.path = self.inputs['subpaths']['products']
         bmcdp.init_HL_and_fillAll()
 
+        CDPkey = 'BLOOM_MAPS'
+
         self.save_CDP(bmcdp)
-        self.pack_CDP_to_dd(bmcdp, 'BLOOM_MAPS')
+        self.pack_CDP_to_dd(bmcdp, CDPkey, extension='fits')
         
-        stop()
+        return CDPkey
 
 
 
