@@ -252,8 +252,7 @@ def gt_BM_dict(test):
                   doColorbar=True,
                   suptitle='%s: Blooming Map [ADU].' % ntest,
                   corekwargs=dict(cmap=cm.rainbow, aspect='auto',  # norm=None,
-                                  origin='lower left'))
-    )
+                                  origin='lower left')))
 
 def gt_PTC0Xfigs(test):
     PTC0Xfigs = dict()
