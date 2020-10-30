@@ -920,7 +920,7 @@ class PTC0X(FlatTask):
             bmcdp = self.CDP_lib['BLOOM_MAPS']
             bmcdp.loadhardcopy(bmcdpf)
 
-            bmplotdict = self.make_BM_dict(bmcdp)
+            bmplotdict = self.make_plotBM_dict(bmcdp)
 
             fdict_BM = self.figdict['BLOOM_MAPS'][1]
             fdict_BM['data'] = bmplotdict.copy()
