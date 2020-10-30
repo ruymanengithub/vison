@@ -243,6 +243,17 @@ def gt_HER_dict(test):
                   suptitle='%s: Serial HER.' % ntest,
                   corekwargs=dict(marker='.', linestyle='-')))
 
+def gt_BM_dict(test):
+  ntest = test.replace('_', '\_')
+    return dict(
+        figname='%s_BLOOMINGMAP_2D.png' % test,
+        caption='%s: Blooming Map of the CCDs. Regions that did not reach blooming are in grey.' % ntest,
+        meta=dict(doLegend=False,
+                  doColorbar=True,
+                  suptitle='%s: Blooming Map [ADU].' % ntest,
+                  corekwargs=dict(cmap=cm.rainbow, aspect='auto',  # norm=None,
+                                  origin='lower left'))
+    )
 
 def gt_PTC0Xfigs(test):
     PTC0Xfigs = dict()
@@ -259,5 +270,6 @@ def gt_PTC0Xfigs(test):
     PTC0Xfigs['PTC0X_PTC_curves'] = [
         figclasses.Fig_Beam2DPlot, gt_PTC_curves_dict(test)]
     PTC0Xfigs['PTC0X_HER'] = [figclasses.Fig_Beam2DPlot, gt_HER_dict(test)]
+    PTC0Xfigs['BLOOM_MAPS'] = [figclasses.Fig_BeamImgShow, gt_BM_dict(test)]
     PTC0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return PTC0Xfigs

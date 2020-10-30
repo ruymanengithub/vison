@@ -754,10 +754,15 @@ class PTC0X(FlatTask):
         # 2D Bloom Maps
 
         bmcdpkey = self.produce_Bloom_Maps()
+        bmcdpf = self.dd.products[bmcdpkey]
 
         bmcdp = self.CDP_lib['BLOOM_MAPS']
-        bmcdpf = self.dd.products['BLOOM_MAPS']
         bmcdp.loadhardcopy(bmcdpf)
+
+        bmplotdict = self.make_BM_dict(bmcdp)
+
+        fdict_BM = self.figdict['BLOOM_MAPS'][1]
+        fdict_BM['data'] = bmplotdict.copy()
 
         # Do plots
 
@@ -765,7 +770,7 @@ class PTC0X(FlatTask):
         fdict_PTC['data'] = curves_cdp.data.copy()
 
         if self.report is not None:
-            self.addFigures_ST(figkeys=['PTC0X_PTC_curves'],
+            self.addFigures_ST(figkeys=['PTC0X_PTC_curves', 'BLOOM_MAPS'],
                                dobuilddata=False)
         self.save_CDP(curves_cdp)
         self.pack_CDP_to_dd(curves_cdp, 'CURVES_CDP')
@@ -776,7 +781,7 @@ class PTC0X(FlatTask):
     def produce_Bloom_Maps(self):
         """ """
 
-        from vison.datamodel import cdp
+        #from vison.datamodel import cdp
 
         dIndices = copy.deepcopy(self.dd.indices)
 
@@ -862,6 +867,35 @@ class PTC0X(FlatTask):
         return CDPkey
 
 
+    def make_plotBM_dict(self, bmcdp):
+        """ """
+
+        dIndices = copy.deepcopy(self.dd.indices)
+
+        CCDs = dIndices.get_vals('CCD')
+        nC = len(CCDs)
+        Quads = dIndices.get_vals('Quad')
+        nQ = len(Quads)
+
+        Nsectors = self.tile_coos[Quads[0]]['Nsamps']
+
+        def _get_img(bmcdp, CCDk, Q, Nsectors):
+            """ """
+
+            stop()
+
+
+        plotBM_dict = OrderedDict()
+
+        for CCDk in CCDs:
+            plotBM_dict[CCDk] = OrderedDict()
+            for Q in Quads:
+                plotBM_dict[CCDk][Q] = OrderedDict()
+
+                plotBM_dict[CCDk][Q]['img'] = _get_img(bmcdp,CCDk,Q, Nsectors)
+
+
+
 
 
     def debugtask(self):
@@ -875,7 +909,29 @@ class PTC0X(FlatTask):
 
         if debugBloomMaps:
 
+            stop()
+
+            if self.report is not None:
+                self.report.add_Section(
+                    keyword='bloommaps', Title='Bloom Maps', level=0)
+
             self.produce_Bloom_Maps()
+            bmcdpf = self.dd.products[bmcdpkey]
+
+            bmcdp = self.CDP_lib['BLOOM_MAPS']
+            bmcdp.loadhardcopy(bmcdpf)
+
+            bmplotdict = self.make_BM_dict(bmcdp)
+
+            fdict_BM = self.figdict['BLOOM_MAPS'][1]
+            fdict_BM['data'] = bmplotdict.copy()
+
+
+            if self.report is not None:
+            self.addFigures_ST(figkeys=['BLOOM_MAPS'],
+                               dobuilddata=False)
+
+
 
         debugOverProfiles = False
 
