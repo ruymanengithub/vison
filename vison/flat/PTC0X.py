@@ -894,10 +894,8 @@ class PTC0X(FlatTask):
             for ll in range(Nsectors):
 
                 i = np.where(uxvalues == data['x'][ll])[0][0]
-                try: 
-                    j = np.where(uxvalues == data['y'][ll])[0][0]
-                except:
-                    stop()
+                j = np.where(uyvalues == data['y'][ll])[0][0]
+                
                 val = data['%s_%s' % (CCDk, Q)][ll]
                 if val >0:
                     img[i,j] = data['%s_%s' % (CCDk, Q)][ll]
