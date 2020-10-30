@@ -909,7 +909,6 @@ class PTC0X(FlatTask):
 
         if debugBloomMaps:
 
-            stop()
 
             if self.report is not None:
                 self.report.add_Section(
