@@ -927,7 +927,7 @@ class PTC0X(FlatTask):
 
 
             if self.report is not None:
-            self.addFigures_ST(figkeys=['BLOOM_MAPS'],
+                self.addFigures_ST(figkeys=['BLOOM_MAPS'],
                                dobuilddata=False)
 
 
