@@ -914,7 +914,7 @@ class PTC0X(FlatTask):
                 self.report.add_Section(
                     keyword='bloommaps', Title='Bloom Maps', level=0)
 
-            self.produce_Bloom_Maps()
+            bmcdpkey = self.produce_Bloom_Maps()
             bmcdpf = self.dd.products[bmcdpkey]
 
             bmcdp = self.CDP_lib['BLOOM_MAPS']
