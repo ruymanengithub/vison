@@ -881,8 +881,25 @@ class PTC0X(FlatTask):
 
         def _get_img(bmcdp, CCDk, Q, Nsectors):
             """ """
+            data = bmcdp.hdulist[2].data
 
-            stop()
+            NX = int(Nsectors**0.5)
+            NY = NX
+
+            img = np.zeros((NX,NY), dtype='float32') + np.nan
+
+            uxvalues = np.sort(np.unique(data['x']))
+            uyvalues = np.sort(np.unique(data['y']))
+
+            for ll in range(Nsectors):
+
+                i = np.where(uxvalues == data['x'][ll])[0][0]
+                j = np.where(uxvalues == data['y'][ll])[0][0]
+                val = data['%s_%s' % (CCDk, Q)][ll]
+                if val >0:
+                    img[i,j] = data['%s_%s' % (CCDk, Q)][ll]
+            
+            return img
 
 
         plotBM_dict = OrderedDict()
@@ -894,7 +911,7 @@ class PTC0X(FlatTask):
 
                 plotBM_dict[CCDk][Q]['img'] = _get_img(bmcdp,CCDk,Q, Nsectors)
 
-
+        return plotBM_dict
 
 
 
