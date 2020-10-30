@@ -315,10 +315,16 @@ class FitsTables_CDP(CDP):
             filef = os.path.join(self.path, '%s.fits' % self.rootname)
         self.hdulist.writeto(filef,overwrite=True)
 
+    def checkInputHardcopy(self, inhdulist):
+        """To be filled up by a child-class, if so desired."""
+        pass
+
     def loadhardcopy(self, filef):
         """ """
-        hdulist = fts.load(filef)
-        stop()
+        inhdulist = fts.open(filef)
+        self.checkInputHardcopy(inhdulist)
+        self.hdulist = inhdulist
+    
 
 
 

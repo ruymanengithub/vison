@@ -751,6 +751,10 @@ class PTC0X(FlatTask):
 
             self.report.add_Text(Gtex)
 
+        # 2D Bloom Maps
+
+        self.produce_Bloom_Maps()
+
         # Do plots
 
         fdict_PTC = self.figdict['PTC0X_PTC_curves'][1]
@@ -839,14 +843,15 @@ class PTC0X(FlatTask):
 
                 quadcount += 1
 
-        bmcdp = cdp.FitsTables_CDP()
-        bmcdp.rootname = 'BloomMaps_%s' % self.inputs['test']
+        bmcdp = self.CDP_lib['BLOOM_MAPS']
         bmcdp.ingest_inputs(data=dict(BLOOMTHR=BloomCCDMaps),
-            meta=None,header=CDP_header)
-        bmcdp.path = './'
+            meta=None,
+            header=CDP_header)
+        bmcdp.path = self.inputs['subpaths']['products']
         bmcdp.init_HL_and_fillAll()
 
-        bmcdp.savehardcopy()
+        self.save_CDP(bmcdp)
+        self.pack_CDP_to_dd(bmcdp, 'BLOOM_MAPS')
         
         stop()
 

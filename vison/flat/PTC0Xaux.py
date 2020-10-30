@@ -139,10 +139,14 @@ def get_CDP_lib(test):
     ptccurves_cdp = cdp.CDP()
     ptccurves_cdp.rootname = 'PTC_curves_%s' % test
 
+    bloomMaps_cdp = cdp.FitsTables_CDP()
+    bloomMaps_cdp.rootname = 'BloomMaps_%s' % test
+
     CDP_lib = dict(GAIN_TB=gain_tb_cdp,
                    CURVES_PTC=ptccurves_cdp,
                    HER=HER_cdp,
-                   HER_PROFILES=HER_profiles_cdp)
+                   HER_PROFILES=HER_profiles_cdp,
+                   BLOOM_MAPS=bloomMaps_cdp)
     return CDP_lib
 
 
