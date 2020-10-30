@@ -245,7 +245,7 @@ def gt_HER_dict(test):
 
 def gt_BM_dict(test):
   ntest = test.replace('_', '\_')
-    return dict(
+  return dict(
         figname='%s_BLOOMINGMAP_2D.png' % test,
         caption='%s: Blooming Map of the CCDs. Regions that did not reach blooming are in grey.' % ntest,
         meta=dict(doLegend=False,
