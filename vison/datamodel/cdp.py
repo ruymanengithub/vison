@@ -315,6 +315,12 @@ class FitsTables_CDP(CDP):
             filef = os.path.join(self.path, '%s.fits' % self.rootname)
         self.hdulist.writeto(filef,overwrite=True)
 
+    def loadhardcopy(self, filef):
+        """ """
+        hdulist = fts.load(filef)
+        stop()
+
+
 
 class CCD_CDP(CDP):
     """CCD Calibration Data Product"""

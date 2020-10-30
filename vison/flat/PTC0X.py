@@ -847,6 +847,7 @@ class PTC0X(FlatTask):
         bmcdp.init_HL_and_fillAll()
 
         bmcdp.savehardcopy()
+        
         stop()
 
 
