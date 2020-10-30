@@ -18,6 +18,7 @@ from collections import OrderedDict
 import string as st
 import pandas as pd
 import copy
+from matplotlib import cm
 
 from vison.plot import figclasses
 from vison.plot import trends
