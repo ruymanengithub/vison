@@ -914,11 +914,11 @@ class PTC0X(FlatTask):
                 _img = _get_img(bmcdp,CCDk,Q, Nsectors)
 
                 if Q == 'E':
-                    _img = _img[:, ::-1].copy()
+                    _img = _img[::-1, :].copy()
                 elif Q == 'F':
                     _img = _img[::-1, ::-1].copy()
                 elif Q == 'G':
-                    _img = _img[::-1, :].copy()
+                    _img = _img[:, ::-1].copy()
                 elif Q == 'H':
                     _img = _img[:, :].copy()
 
