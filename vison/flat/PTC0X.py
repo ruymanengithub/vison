@@ -759,7 +759,7 @@ class PTC0X(FlatTask):
         bmcdp = self.CDP_lib['BLOOM_MAPS']
         bmcdp.loadhardcopy(bmcdpf)
 
-        bmplotdict = self.make_BM_dict(bmcdp)
+        bmplotdict = self.make_plotBM_dict(bmcdp)
 
         fdict_BM = self.figdict['BLOOM_MAPS'][1]
         fdict_BM['data'] = bmplotdict.copy()
@@ -910,7 +910,18 @@ class PTC0X(FlatTask):
             for Q in Quads:
                 plotBM_dict[CCDk][Q] = OrderedDict()
 
-                plotBM_dict[CCDk][Q]['img'] = _get_img(bmcdp,CCDk,Q, Nsectors)
+                _img = _get_img(bmcdp,CCDk,Q, Nsectors)
+
+                if Q == 'E':
+                    _img = _img[:, ::-1].copy()
+                elif Q == 'F':
+                    _img = _img[::-1, ::-1].copy()
+                elif Q == 'G':
+                    _img = _img[::-1, :].copy()
+                elif Q == 'H':
+                    _img = _img[:, :].copy()
+
+                plotBM_dict[CCDk][Q]['img'] = _img
 
         return plotBM_dict
 
@@ -948,7 +959,7 @@ class PTC0X(FlatTask):
                 self.addFigures_ST(figkeys=['BLOOM_MAPS'],
                                dobuilddata=False)
 
-
+        
 
         debugOverProfiles = False
 
