@@ -765,6 +765,15 @@ class PTC0X(FlatTask):
         fdict_BM = self.figdict['BLOOM_MAPS'][1]
         fdict_BM['data'] = bmplotdict.copy()
 
+        foopdBM = pd.DataFrame.from_records(bmcdp.hdulist[2].data)
+
+        minBM = np.nanmin(foopdBM.iloc[:,2:][foopdBM.iloc[:,2:]>0])
+        maxBM = np.nanmax(foopdBM.iloc[:,2:][foopdBM.iloc[:,2:]>0])
+
+        normfuncBM = Normalize(vmin=minBM,vmax=maxBM,clip=True)
+
+        fdict_BM['meta']['corekwargs']['norm'] = normfuncBM 
+
         # Do plots
 
         fdict_PTC = self.figdict['PTC0X_PTC_curves'][1]
