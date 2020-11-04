@@ -836,6 +836,7 @@ class PTC0X(FlatTask):
                     ixnonan = np.where(~np.isnan(raw_var) & ~np.isnan(raw_med))
                     var = raw_var[ixnonan]
                     med = raw_med[ixnonan]
+                    stop()
 
                     if debug & CCDk=='CCD2' & Q=='E':
                         print('{},{},sector={}'.format(CCDk,Q,ll))
