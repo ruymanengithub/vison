@@ -837,10 +837,10 @@ class PTC0X(FlatTask):
                     var = raw_var[ixnonan]
                     med = raw_med[ixnonan]
 
-                    if debug:
+                    if debug & CCDk=='CCD2':
                         print('{},{},sector={}'.format(CCDk,Q,ll))
 
-                    _fitresults = ptclib.fitPTC(med, var, debug=debug)
+                    _fitresults = ptclib.fitPTC(med, var, debug=debug & CCDk=='CCD2')
 
                     _bloom = ptclib.foo_bloom_advanced(med, var, _fitresults, debug=debug)
 
