@@ -192,7 +192,7 @@ def foo_bloom_advanced_demoted(means, var, _fit, debug=False):
     return res
 
 
-def foo_bloom_advanced(means, var, _fit, debug=False):
+def foo_bloom_advanced(means, var, _fit, Ncount=5, debug=False):
     """
     Finds blooming limit (where variance drops, if it does...).
 
@@ -213,9 +213,9 @@ def foo_bloom_advanced(means, var, _fit, debug=False):
     mask = var_res < -thresholdfactor * var_mad
 
     bloom_ADU = -means[-1]
-    for i in range(len(means) - 5):
+    for i in range(len(means) - Ncount):
         #print('%i %s %s' % (means[i],mask[i:i+3].__repr__(),np.all(mask[i:i+4])))
-        if means[i] > thresholdval and np.all(mask[i:i + 5]):
+        if means[i] > thresholdval and np.all(mask[i:i + Ncount]):
             bloom_ADU = means[i]
             break
 
