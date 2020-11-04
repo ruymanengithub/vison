@@ -836,12 +836,12 @@ class PTC0X(FlatTask):
                     ixnonan = np.where(~np.isnan(raw_var) & ~np.isnan(raw_med))
                     var = raw_var[ixnonan]
                     med = raw_med[ixnonan]
-                    stop()
-
-                    if debug & CCDk=='CCD2' & Q=='E':
+                    
+                    indeedDebug = debug & (CCDk=='CCD2') & (Q=='E')
+                    if indeedDebug:
                         print('{},{},sector={}'.format(CCDk,Q,ll))
 
-                    _fitresults = ptclib.fitPTC(med, var, debug=debug & CCDk=='CCD2' & Q=='E')
+                    _fitresults = ptclib.fitPTC(med, var, debug=indeedDebug)
 
                     _bloom = ptclib.foo_bloom_advanced(med, var, _fitresults, debug=debug)
 
