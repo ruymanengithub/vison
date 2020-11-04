@@ -37,6 +37,7 @@ from collections import OrderedDict
 import pandas as pd
 import string as st
 from pdb import set_trace as stop
+from matplotlib.colors import Normalize
 
 from vison.datamodel import ccd
 from vison.pipe.task import HKKeys
@@ -954,6 +955,11 @@ class PTC0X(FlatTask):
 
             fdict_BM = self.figdict['BLOOM_MAPS'][1]
             fdict_BM['data'] = bmplotdict.copy()
+
+            stop()
+            normfunction = Normalize(vmin=minBM,vmax=maxBM,clip=True)
+
+            fdict_BM['meta']['corekwargs']['norm'] = normfunction            
 
 
             if self.report is not None:
