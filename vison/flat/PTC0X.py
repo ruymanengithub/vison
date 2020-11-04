@@ -843,7 +843,7 @@ class PTC0X(FlatTask):
 
                     _fitresults = ptclib.fitPTC(med, var, debug=indeedDebug)
 
-                    _bloom = ptclib.foo_bloom_advanced(med, var, _fitresults, debug=debug)
+                    _bloom = ptclib.foo_bloom_advanced(med, var, _fitresults, debug=indeedDebug)
 
                     #if _bloom['bloom_ADU']>0:
                     #    print(CCDk,Q,ll,_bloom['bloom_ADU'])

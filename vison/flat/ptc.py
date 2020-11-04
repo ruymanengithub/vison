@@ -234,7 +234,8 @@ def foo_bloom_advanced(means, var, _fit, debug=False):
         ax2.axhline(y=-thresholdfactor * var_mad, ls='--', color='r')
         ax2.axhline(y=thresholdfactor * var_mad, ls='--', color='b')
         ax2.axvline(x=bloom_ADU, ls='-', color='g')
+        plt.suptitle('Blooming')
         plt.show()
-        stop()
+        #stop()
 
     return res
