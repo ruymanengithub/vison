@@ -779,7 +779,7 @@ class PTC0X(FlatTask):
         self.canbecleaned = True
 
 
-    def produce_Bloom_Maps(self):
+    def produce_Bloom_Maps(self, debug=False):
         """ """
 
         #from vison.datamodel import cdp
@@ -837,9 +837,12 @@ class PTC0X(FlatTask):
                     var = raw_var[ixnonan]
                     med = raw_med[ixnonan]
 
-                    _fitresults = ptclib.fitPTC(med, var, debug=False)
+                    if debug:
+                        print('{},{},sector={}'.format(CCDk,Q,ll))
 
-                    _bloom = ptclib.foo_bloom_advanced(med, var, _fitresults, debug=False)
+                    _fitresults = ptclib.fitPTC(med, var, debug=debug)
+
+                    _bloom = ptclib.foo_bloom_advanced(med, var, _fitresults, debug=debug)
 
                     #if _bloom['bloom_ADU']>0:
                     #    print(CCDk,Q,ll,_bloom['bloom_ADU'])
@@ -945,7 +948,7 @@ class PTC0X(FlatTask):
                 self.report.add_Section(
                     keyword='bloommaps', Title='Bloom Maps', level=0)
 
-            bmcdpkey = self.produce_Bloom_Maps()
+            bmcdpkey = self.produce_Bloom_Maps(debug=True)
             bmcdpf = self.dd.products[bmcdpkey]
 
             bmcdp = self.CDP_lib['BLOOM_MAPS']
