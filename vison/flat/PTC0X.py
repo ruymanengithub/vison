@@ -956,7 +956,11 @@ class PTC0X(FlatTask):
             fdict_BM = self.figdict['BLOOM_MAPS'][1]
             fdict_BM['data'] = bmplotdict.copy()
 
-            stop()
+            foopd = pd.DataFrame.from_records(bmcdp.hdulist[2].data)
+
+            minBM = np.nanmin(foopd.iloc[:,2:][foopd.iloc[:,2:]>0])
+            maxBM = np.nanmax(foopd.iloc[:,2:][foopd.iloc[:,2:]>0])
+
             normfunction = Normalize(vmin=minBM,vmax=maxBM,clip=True)
 
             fdict_BM['meta']['corekwargs']['norm'] = normfunction            
