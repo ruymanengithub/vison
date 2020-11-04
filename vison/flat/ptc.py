@@ -118,7 +118,7 @@ def fitPTC(means, var, debug=False):
         ax2 = fig.add_subplot(122)
         ax2.plot(means, var - np.polyval(p, means), 'k.')
         plt.show()
-        stop()
+        #stop()
 
     return fitresults
 
@@ -187,7 +187,7 @@ def foo_bloom_advanced_demoted(means, var, _fit, debug=False):
         ax3.plot(means, var_res, 'b.')
         ax3.axvline(x=bloom_ADU, ls='-', color='g')
         plt.show()
-        stop()
+        #stop()
 
     return res
 
