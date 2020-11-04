@@ -248,7 +248,7 @@ def gt_BM_dict(test):
   ntest = test.replace('_', '\_')
   return dict(
         figname='%s_BLOOMINGMAP_2D.png' % test,
-        caption='%s: Blooming Map of the CCDs. Regions that did not reach blooming are in grey.' % ntest,
+        caption='%s: Blooming Map of the CCDs. Regions that did not reach blooming are in white.' % ntest,
         meta=dict(doLegend=False,
                   doColorbar=True,
                   suptitle='%s: Blooming Map [ADU].' % ntest,
