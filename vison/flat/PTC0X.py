@@ -847,8 +847,8 @@ class PTC0X(FlatTask):
                         BloomCCDMaps['x'][ll] = centres[ll][0]
                         BloomCCDMaps['y'][ll] = centres[ll][1]
 
-                    dist = (centres[ll][0]**2.+centres[ll][1]**2.)**0.5
-                    BloomCCDMaps['%s_%s' % (CCDk,Q)][ll] = dist #_bloom['bloom_ADU'] 
+                    #dist = (centres[ll][0]**2.+centres[ll][1]**2.)**0.5 # for TESTS
+                    BloomCCDMaps['%s_%s' % (CCDk,Q)][ll] = _bloom['bloom_ADU'] 
 
 
                 quadcount += 1
