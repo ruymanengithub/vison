@@ -810,10 +810,11 @@ class PTC0X(FlatTask):
         wpx = self.window['wpx']
         hpx = self.window['hpx']
 
-        self.tile_coos = OrderedDict()
-        for Quad in Quads:
-            self.tile_coos[Quad] = self.ccdcalc.get_tile_coos(Quad, wpx, hpx)
-
+        if len(self.tile_coos)==0:
+            self.tile_coos = OrderedDict()
+            for Quad in Quads:
+                self.tile_coos[Quad] = self.ccdcalc.get_tile_coos(Quad, wpx, hpx)
+        
         Nsectors = self.tile_coos[Quads[0]]['Nsamps']
         sectornames = np.arange(Nsectors)
 

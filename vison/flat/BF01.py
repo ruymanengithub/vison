@@ -234,6 +234,8 @@ class BF01(PTC0X):
                                        kernels='kernels',
                                        products='products')
         self.window = dict(wpx=300, hpx=300)
+        self.tile_coos = dict()
+        
 
     def set_inpdefaults(self, **kwargs):
         """ """
