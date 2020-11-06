@@ -164,6 +164,8 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None,
     if flagWholeColumns:
         mask = cosmetics.mask_badcolumns(mask,colthreshold=200)
 
+    stop()
+
     # SAVING to a CDP
 
     data = OrderedDict()
