@@ -323,9 +323,10 @@ class COSMETICS00(DarkTask):
 
                         kk = jCCD * nQ + jQ
 
-                        kQ_Ndefects = MSKccdobj.get_stats(Q, sector='img', statkeys=['sum'],
-                                                          ignore_pover=True,
-                                                          extension=iMext)[0]
+                        kQ_Ndefects = MSKccdobj.get_stats(Q, sector='img', 
+                                                        statkeys=['sum'],
+                                                        ignore_pover=True,
+                                                        extension=iMext)[0]
 
                         DEF_TB['N_%s' % maskkey][kk] = kQ_Ndefects
                         DEF_TB['PIXLOST'][kk] = kQ_Ndefects / NpixImgQuad * 100.

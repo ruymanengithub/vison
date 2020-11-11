@@ -164,13 +164,13 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None,
     if flagWholeColumns:
         mask = cosmetics.mask_badcolumns(mask,colthreshold=200)
 
-    stop()
-
+    
     # SAVING to a CDP
 
     data = OrderedDict()
     data['MASK'] = mask.copy()
-    data['labels'] = ['MASK']
+    data['DEFECTS'] = stacked.copy()
+    data['labels'] = ['MASK','DEFECTS']
     meta = OrderedDict()
     meta['MASKTYPE'] = masktype
     meta['SN'] = sn_ccd

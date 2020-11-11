@@ -707,7 +707,8 @@ class CCD(object):
         return (imgstart, imgend, ovstart, ovend)
 
     def get_stats(self, Quadrant, sector='img', statkeys=None, trimscan=None,
-                  ignore_pover=True, extension=-1, VSTART=0, VEND=NrowsCCD + voverscan,
+                  ignore_pover=True, extension=-1, 
+                  VSTART=0, VEND=NrowsCCD + voverscan,
                   clip=None):
         """ """
 
