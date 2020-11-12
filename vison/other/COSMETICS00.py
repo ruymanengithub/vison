@@ -249,7 +249,9 @@ class COSMETICS00(DarkTask):
         quaddata = maskccdobj.get_quad(Q, canonical=True, extension=iext)
         bX, bY = np.where(quaddata)
         uCol, uColcounts = np.unique(bX, return_counts=True)
-        Ncols = int(np.sum(uColcounts > 200))  # (minor) caveat: this also includes non-adjacent pixels
+        Ncols = int(np.sum(uColcounts > 200))  # (minor, in practice) caveat: 
+                                            # this also includes non-adjacent pixels
+        
 
         return Ncols
 

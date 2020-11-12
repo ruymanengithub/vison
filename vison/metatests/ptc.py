@@ -266,6 +266,8 @@ class MetaPTC(MetaCal):
 
         sidd.addColumn(herprofkeys_v, 'HERPROF_KEY', IndexC)
 
+        stop()
+
         # flatten sidd to table
 
         sit = sidd.flattentoTable()
@@ -481,6 +483,9 @@ class MetaPTC(MetaCal):
             self.figs['BLOOM_ADU_MAP_%s' % testname] = os.path.join(
                 self.figspath, 'BLOOM_ADU_MAP_%s.png' % testname)
 
+            self.figs['BLOOM_ADU_2DMAP_%s' % testname] = os.path.join(
+                self.figspath, 'BLOOM_ADU_2DMAP_%s.png' % testname)
+
             self.figs['BLOOM_ELE_MAP_%s' % testname] = os.path.join(
                 self.figspath, 'BLOOM_ELE_MAP_%s.png' % testname)
 
@@ -692,6 +697,22 @@ class MetaPTC(MetaCal):
 
         return HERdict
 
+    def _get_BLOOM2D_dict(self, testname):
+        """ """
+
+        BM2Ddict = dict()
+
+        for jY in range(self.NCOLS_FPA):
+            for iX in range(self.NSLICES_FPA):
+                Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+
+
+
+
+                MFdict[Ckey] = dict(img=img) # dict(img=self.fpa.flip_img(esimg, flip))
+
+
+        return BM2Ddict
 
     def dump_aggregated_results(self):
         """ """
@@ -710,10 +731,11 @@ class MetaPTC(MetaCal):
 
         outpathroot = self.outpathroot
 
-        doAll = True
+        doAll = False
 
         doGainMaps = doAll
         doBloomMaps = doAll
+        doBloom2DMaps = True
         doHERMaps = doAll
         doHERcurves = doAll
         doGvsWave = doAll
@@ -792,7 +814,7 @@ class MetaPTC(MetaCal):
 
         if doBloomMaps:
 
-            # BLOOM maps (ADU and e-, from PTC01)
+            # BLOOM maps (ADU and e-)
 
             for testname in self.testnames:
 
@@ -864,6 +886,48 @@ class MetaPTC(MetaCal):
                              meta=dict(units='electrons',
                                         structure='CCDID:Q:bloom threshold'))
                 be_cdp.savehardcopy()
+
+
+        # Blooming Maps with [some] spatial resolution
+
+        if doBloomMaps:
+
+            # BLOOM 2D maps (ADU)
+
+            for testname in self.testnames:
+
+                BADU_2DMAP_dict = self._get_BLOOM2D_dict(testname)
+
+                stestname = testname.replace('_', '\_')
+
+                figkey21 = 'BLOOM_ADU_2DMAP_%s' % testname
+                figname21 = self.figs[figkey21]
+
+                self.plot_ImgFPA(BADU_2DMAP_dict, **dict(
+                    suptitle='%s: BLOOM-ADU [DN]' % stestname,
+                    ColorbarText='ADU',
+                    figname=figname21))  # ,
+                # corekwargs=dict(norm = Normalize(vmin=3e4,vmax=2**16, clip=False))))
+
+                if self.report is not None:
+                    self.addFigure2Report(figname21, 
+                        figkey=figkey21, 
+                        caption='%s: Blooming (spat. resolved) threshold in ADU.' % stestname, 
+                        texfraction=0.9)
+
+
+                ba2d_header = OrderedDict()
+                ba2d_header['title'] = 'BLOOMING 2D MAP [ADU]'
+                ba2d_header['test'] = stestname
+                ba2d_header.update(CDP_header)
+            
+                #ba2d_cdp = cdp.Json_CDP(rootname=self.outcdps['BLOOM_ADU_%s' % testname],
+                #              path=self.cdpspath)
+                #ba2d_cdp.ingest_inputs(data=BADU_MAP_dict,
+                #             header = ba2d_header,
+                #             meta=dict(units='ADU',
+                #                        structure='CCDID:Q:bloom threshold'))
+                #ba2d_cdp.savehardcopy()
 
 
         # HER map
