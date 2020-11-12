@@ -272,6 +272,7 @@ class MetaPTC(MetaCal):
 
         bmaps_fits = os.path.join(productspath, os.path.split(sidd.products['BLOOM_MAPS'])[-1])
         bmcdp = cdp.FitsTables_CDP()
+        stop()
         bmcdp.loadhardcopy(bmaps_fits)
 
         bmkeys_v = np.zeros((1,NCCDs), dtype='U50')

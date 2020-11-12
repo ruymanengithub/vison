@@ -49,7 +49,7 @@ class MetaCal(object):
         self.fpa = fpamod.FPA(design)
         self.blocks = copy.deepcopy(self.fpa.all_blocks)
         self.flight_blocks = copy.deepcopy(self.fpa.flight_blocks)
-        self.blocks = ['BORN','CURIE','DIRAC'] # TESTS
+        # self.blocks = ['BORN','CURIE','DIRAC'] # TESTS
         # self.flight_blocks = ['BORN','CURIE','DIRAC','FOWLER','GUYE','KRAMERS'] # TESTS
         self.CCDs = [1, 2, 3]
         self.Quads = ['E', 'F', 'G', 'H']
