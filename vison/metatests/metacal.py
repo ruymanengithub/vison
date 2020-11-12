@@ -301,7 +301,7 @@ class MetaCal(object):
 
             # TRIMMING UNNECESSARY AXES
 
-            if idtype.char not in ['S', 'O']:
+            if idtype.char not in ['S', 'O', 'U']:
 
                 _ix2ax = [_ix for _ix, ix in enumerate(iindices) if
                           ix.name not in indices2keep]
