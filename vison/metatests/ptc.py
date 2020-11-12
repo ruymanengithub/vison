@@ -14,6 +14,7 @@ from collections import OrderedDict
 import string as st
 import os
 import pandas as pd
+#from astropy.io import fits as fts
 
 from vison.datamodel import cdp
 from vison.fpa import fpa as fpamod
@@ -265,6 +266,25 @@ class MetaPTC(MetaCal):
             herprofkeys_v[0, iCCD] = herkey
 
         sidd.addColumn(herprofkeys_v, 'HERPROF_KEY', IndexC)
+
+        
+        # bloom maps
+
+        bmaps_fits = os.path.join(productspath, os.path.split(sidd.products['BLOOM_MAPS'])[-1])
+        bmcdp = cdp.FitsTables_CDP()
+        bmcdp.loadhardcopy(bmaps_fits)
+
+        bmkeys_v = np.zeros((1,NCCDs), dtype='U50')
+
+        for iCCD, CCDk in enumerate(CCDkeys):
+
+            bmkey = '%s_%s_%s_%i_%s' % (testname, block, session, jrep + 1, CCDk)
+
+            self.products['BLOOM_MAPS'][bmkey] = copy.deepcopy(bmcdp)
+
+            bmkeys_v[0, iCCD] =bmkey
+
+        sidd.addColumn(bmkeys_v, 'BMAP_KEY', IndexC)
 
         stop()
 

@@ -348,13 +348,10 @@ class MetaCal(object):
 
         idd = copy.deepcopy(inventoryitem['dd'])
 
-        try:
-            sidd = self.stack_dd(idd, self.incols,
-                             indices2keep=['ix', 'CCD', 'Quad'],
-                             index2stack='ix',
-                             stacker='median')
-        except:
-            stop()
+        sidd = self.stack_dd(idd, self.incols,
+            indices2keep=['ix', 'CCD', 'Quad'],
+            index2stack='ix',
+            stacker='median')
 
         sidd.dropColumn('test')
 
