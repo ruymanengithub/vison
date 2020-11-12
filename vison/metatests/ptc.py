@@ -158,6 +158,7 @@ class MetaPTC(MetaCal):
         self.batches_highPRNU = ['14313', '14471']
 
         self.products['HER_CURVES'] = OrderedDict()
+        self.products['BLOOM_MAPS'] = OrderedDict()
 
         self.censored = []
 
@@ -272,7 +273,6 @@ class MetaPTC(MetaCal):
 
         bmaps_fits = os.path.join(productspath, os.path.split(sidd.products['BLOOM_MAPS'])[-1])
         bmcdp = cdp.FitsTables_CDP()
-        stop()
         bmcdp.loadhardcopy(bmaps_fits)
 
         bmkeys_v = np.zeros((1,NCCDs), dtype='U50')
@@ -283,7 +283,7 @@ class MetaPTC(MetaCal):
 
             self.products['BLOOM_MAPS'][bmkey] = copy.deepcopy(bmcdp)
 
-            bmkeys_v[0, iCCD] =bmkey
+            bmkeys_v[0, iCCD] = bmkey
 
         sidd.addColumn(bmkeys_v, 'BMAP_KEY', IndexC)
 
