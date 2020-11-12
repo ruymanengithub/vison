@@ -286,7 +286,7 @@ class MetaCal(object):
 
             _ix2stack = iindices.names.index(index2stack)
 
-            if idtype.char not in ['S', 'O']:
+            if idtype.char not in ['S', 'O', 'U']:
 
                 imx = fstacker(dd.mx[icol][:], axis=_ix2stack, keepdims=True)
 
