@@ -280,7 +280,7 @@ class MetaPTC(MetaCal):
         for iCCD, CCDk in enumerate(CCDkeys):
 
             bmkey = '%s_%s_%s_%i_%s' % (testname, block, session, jrep + 1, CCDk)
-
+            stop()
             self.products['BLOOM_MAPS'][bmkey] = copy.deepcopy(bmcdp)
 
             bmkeys_v[0, iCCD] = bmkey
