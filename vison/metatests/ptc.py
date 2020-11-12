@@ -274,20 +274,19 @@ class MetaPTC(MetaCal):
         bmaps_fits = os.path.join(productspath, os.path.split(sidd.products['BLOOM_MAPS'])[-1])
         bmcdp = cdp.FitsTables_CDP()
         bmcdp.loadhardcopy(bmaps_fits)
+        bmpd = pd.DataFrame.from_records(bmcdp.hdulist[2].data)
 
         bmkeys_v = np.zeros((1,NCCDs), dtype='U50')
 
         for iCCD, CCDk in enumerate(CCDkeys):
 
             bmkey = '%s_%s_%s_%i_%s' % (testname, block, session, jrep + 1, CCDk)
-            stop()
-            self.products['BLOOM_MAPS'][bmkey] = copy.deepcopy(bmcdp)
+            self.products['BLOOM_MAPS'][bmkey] = copy.deepcopy(bmpd)
 
             bmkeys_v[0, iCCD] = bmkey
 
         sidd.addColumn(bmkeys_v, 'BMAP_KEY', IndexC)
 
-        stop()
 
         # flatten sidd to table
 
@@ -476,8 +475,6 @@ class MetaPTC(MetaCal):
                     avgG=avG))
 
         return res
-
-
 
 
     def init_fignames(self):
@@ -726,9 +723,8 @@ class MetaPTC(MetaCal):
         for jY in range(self.NCOLS_FPA):
             for iX in range(self.NSLICES_FPA):
                 Ckey = 'C_%i%i' % (jY + 1, iX + 1)
-
-
-
+                stop()
+                img = self.get_foo()
 
                 MFdict[Ckey] = dict(img=img) # dict(img=self.fpa.flip_img(esimg, flip))
 
