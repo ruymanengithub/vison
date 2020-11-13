@@ -833,7 +833,7 @@ class PTC0X(FlatTask):
 
                 ixsel = np.where(self.dd.mx['ObsID_pair'][:]>0)
 
-                _tile_coos = self.tile_coos[Quad].copy()
+                _tile_coos = self.tile_coos[Q].copy()
 
                 centres = _tile_coos['ccpix']
 
