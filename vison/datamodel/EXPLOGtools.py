@@ -366,8 +366,6 @@ def mergeExpLogs(explogList, addpedigree=False, verbose=False):
                 Smax = max([int(str(iexplog[colname].dtype)[2:]),
                             int(str(explog[colname].dtype)[2:])])
                 explog[colname] = explog[colname].astype('U%i' % Smax)
-            if colname == 'fpga_ver':
-              stop()
 
         if addpedigree:
             iexplog['explognumber'] = np.ones(
