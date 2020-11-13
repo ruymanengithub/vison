@@ -353,14 +353,16 @@ def mergeExpLogs(explogList, addpedigree=False, verbose=False):
 
         # Check format compatibility of columns
 
+        sforms = ['S','U']
+
         for ic, colname in enumerate(colnames):
 
-            if iexplog[colname].dtype.kind == 'S' and not explog[colname].dtype.kind == 'S':
+            if iexplog[colname].dtype.kind in sforms and not explog[colname].dtype.kind in sforms:
                 explog[colname] = explog[colname].astype(str)
-            if explog[colname].dtype.kind == 'S' and not iexplog[colname].dtype.kind == 'S':
+            if explog[colname].dtype.kind in sforms and not iexplog[colname].dtype.kind in sforms:
                 iexplog[colname] = iexplog[colname].astype(str)
 
-            if iexplog[colname].dtype.kind == 'S':
+            if iexplog[colname].dtype.kind in sforms:
                 Smax = max([int(str(iexplog[colname].dtype)[2:]),
                             int(str(explog[colname].dtype)[2:])])
                 explog[colname] = explog[colname].astype('U%i' % Smax)
