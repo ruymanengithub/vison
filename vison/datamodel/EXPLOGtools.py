@@ -364,14 +364,14 @@ def mergeExpLogs(explogList, addpedigree=False, verbose=False):
                 Smax = max([int(str(iexplog[colname].dtype)[2:]),
                             int(str(explog[colname].dtype)[2:])])
                 explog[colname] = explog[colname].astype('U%i' % Smax)
+            if colname == 'fpga_ver':
+              stop()
 
         if addpedigree:
             iexplog['explognumber'] = np.ones(
                 len(iexplog), dtype='int32') * iexp
-        try:
-          explog = vstack([explog, iexplog])
-        except:
-          stop()
+        
+        explog = vstack([explog, iexplog])
 
         # Row-by-Row appending of the "iexp" added catalog
         # for iL in range(len(iexplog)):
