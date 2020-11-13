@@ -368,8 +368,10 @@ def mergeExpLogs(explogList, addpedigree=False, verbose=False):
         if addpedigree:
             iexplog['explognumber'] = np.ones(
                 len(iexplog), dtype='int32') * iexp
-
-        explog = vstack([explog, iexplog])
+        try:
+          explog = vstack([explog, iexplog])
+        except:
+          stop()
 
         # Row-by-Row appending of the "iexp" added catalog
         # for iL in range(len(iexplog)):
