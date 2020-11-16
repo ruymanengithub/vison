@@ -757,7 +757,7 @@ class MetaPTC(MetaCal):
 
         for Q in self.Quads:
             Qbloom = data['{}_{}'.format(CCDk,Q)]
-            qimg = _get_Qimg(x,y,Qbloom,Nqp)
+            qimg = _get_Qimg(x,y,Qbloom,Q,Nqp)
 
             if Q == 'E':
                 img[0:Nqp,Nqp:2*Nqp] = qimg[::-1, :].copy() + 0
