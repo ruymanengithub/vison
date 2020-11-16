@@ -768,7 +768,8 @@ class MetaPTC(MetaCal):
             elif Q == 'H':
                 img[0:Nqp,0:Nqp] = qimg[:, :].copy() + 3000
 
-
+        return img
+        
     def _get_BLOOM2D_dict(self, testname):
         """ """
 
