@@ -910,7 +910,7 @@ class MetaPTC(MetaCal):
 
         # Blooming Maps with [some] spatial resolution
 
-        if doBloomMaps:
+        if doBloom2DMaps:
 
             # BLOOM 2D maps (ADU)
 
