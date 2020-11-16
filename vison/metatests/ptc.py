@@ -728,7 +728,7 @@ class MetaPTC(MetaCal):
         data = self.products['BLOOM_MAPS'][BMmap_key]
 
         x = data['x'].to_numpy()
-        y = data['x'].to_numpy()
+        y = data['y'].to_numpy()
 
 
         def _get_Qimg(x, y, bloom, Q, Nqp):
@@ -747,7 +747,7 @@ class MetaPTC(MetaCal):
                 val = bloom[ll]
                 if  True: # val >0:
                     qimg[j,i] = (i**2+j**2)**0.5 # data['%s_%s' % (CCDk, Q)][ll]
-            stop()
+
             return qimg
 
         Np = len(x)
