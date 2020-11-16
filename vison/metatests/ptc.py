@@ -730,8 +730,6 @@ class MetaPTC(MetaCal):
         x = data['x'].to_numpy()
         y = data['x'].to_numpy()
 
-        Np = len(x)
-        Nqp = int(np.sqrt(Np))
 
         def _get_Qimg(x, y, bloom, Q, Nqp):
             """ """
@@ -752,12 +750,14 @@ class MetaPTC(MetaCal):
 
             return qimg
 
+        Np = len(x)
+        Nqp = int(np.sqrt(Np))
         imgshape = (2*Nqp,2*Nqp)
         img = np.zeros(imgshape,dtype='float32')
 
         for Q in self.Quads:
             Qbloom = data['{}_{}'.format(CCDk,Q)]
-            qimg = _get_Qimg(x,y,Qbloom)
+            qimg = _get_Qimg(x,y,Qbloom,Nqp)
 
             if Q == 'E':
                 img[0:Nqp,Nqp:2*Nqp] = qimg[::-1, :].copy() + 0
