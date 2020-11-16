@@ -978,7 +978,8 @@ class MetaPTC(MetaCal):
                     ColorbarText='ADU',
                     figname=figname21))  # ,
                 # corekwargs=dict(norm = Normalize(vmin=3e4,vmax=2**16, clip=False))))
-
+                stop()
+                
                 if self.report is not None:
                     self.addFigure2Report(figname21, 
                         figkey=figkey21, 
