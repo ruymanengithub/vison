@@ -715,7 +715,7 @@ class MetaPTC(MetaCal):
 
         return HERdict
 
-    def _get_BLOOM2D_CCD(Ckey):
+    def _get_BLOOM2D_CCD(self, Ckey):
         """ """
         stop()
 
