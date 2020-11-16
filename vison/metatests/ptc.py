@@ -745,7 +745,7 @@ class MetaPTC(MetaCal):
                 j = np.where(uyvalues == y[ll])[0][0]
                 
                 val = bloom[ll]
-                if val >0:
+                if  True: # val >0:
                     qimg[j,i] = (i**2+j**2)**0.5 # data['%s_%s' % (CCDk, Q)][ll]
 
             return qimg
@@ -769,7 +769,7 @@ class MetaPTC(MetaCal):
                 img[0:Nqp,0:Nqp] = qimg[:, :].copy() + 3000
 
         return img
-        
+
     def _get_BLOOM2D_dict(self, testname):
         """ """
 
@@ -979,8 +979,7 @@ class MetaPTC(MetaCal):
                     ColorbarText='ADU',
                     figname=figname21))  # ,
                 # corekwargs=dict(norm = Normalize(vmin=3e4,vmax=2**16, clip=False))))
-                stop()
-                
+
                 if self.report is not None:
                     self.addFigure2Report(figname21, 
                         figkey=figkey21, 
