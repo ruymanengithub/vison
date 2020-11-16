@@ -715,9 +715,60 @@ class MetaPTC(MetaCal):
 
         return HERdict
 
-    def _get_BLOOM2D_CCD(self, Ckey):
+    def _get_BLOOM2D_CCD(self, Ckey, testname):
         """ """
-        stop()
+        locator = self.fpa.FPA_MAP[Ckey]
+        block = locator[0]
+        CCDk = locator[1]
+        PT = self.ParsedTable[testname]
+        column = 'BMAP_KEY_{}'.format(CCDk)
+        ixblock = self.get_ixblock(PT, block)
+        BMmap_key = PT[column][ixblock][0]
+
+        data = self.products['BLOOM_MAPS'][BMmap_key]
+
+        x = data['x'].to_numpy()
+        y = data['x'].to_numpy()
+
+        Np = len(x)
+        Nqp = int(np.sqrt(Np))
+
+        def _get_Qimg(x, y, bloom, Q, Nqp):
+            """ """
+            
+            qimg = np.zeros((Nqp,Nqp), dtype='float32') + np.nan
+
+            uxvalues = np.sort(np.unique(x))
+            uyvalues = np.sort(np.unique(y))
+
+            for ll in range(Nqp**2):
+
+                i = np.where(uxvalues == x[ll])[0][0]
+                j = np.where(uyvalues == y[ll])[0][0]
+                
+                val = bloom[ll]
+                if val >0:
+                    qimg[j,i] = (i**2+j**2)**0.5 # data['%s_%s' % (CCDk, Q)][ll]
+
+            return qimg
+
+        imgshape = (2*Nqp,2*Nqp)
+        img = np.zeros(imgshape,dtype='float32')
+
+        for Q in self.Quads:
+            Qbloom = data['{}_{}'.format(CCDk,Q)]
+            qimg = _get_Qimg(x,y,Qbloom)
+
+            if Q == 'E':
+                img[0:Nqp,Nqp:2*Nqp] = qimg[::-1, :].copy() + 0
+            elif Q == 'F':
+                img[Nqp:2*Nqp,Nqp:2*Nqp] = qimg[::-1, ::-1].copy() + 1000
+            elif Q == 'G':
+                img[Nqp:2*Nqp,0:Nqp] = _img[:, ::-1].copy() + 2000
+            elif Q == 'H':
+                img[0:Nqp,0:Nqp] = _img[:, :].copy() + 3000
+
+
 
     def _get_BLOOM2D_dict(self, testname):
         """ """
@@ -727,7 +778,7 @@ class MetaPTC(MetaCal):
         for jY in range(self.NCOLS_FPA):
             for iX in range(self.NSLICES_FPA):
                 Ckey = 'C_%i%i' % (jY + 1, iX + 1)
-                img = self._get_BLOOM2D_CCD(Ckey)
+                img = self._get_BLOOM2D_CCD(Ckey, testname)
 
                 MFdict[Ckey] = dict(img=img) # dict(img=self.fpa.flip_img(esimg, flip))
 
