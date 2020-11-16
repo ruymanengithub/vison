@@ -769,7 +769,6 @@ class MetaPTC(MetaCal):
                 img[0:Nqp,0:Nqp] = qimg[:, :].copy() + 3000
 
 
-
     def _get_BLOOM2D_dict(self, testname):
         """ """
 
@@ -780,7 +779,7 @@ class MetaPTC(MetaCal):
                 Ckey = 'C_%i%i' % (jY + 1, iX + 1)
                 img = self._get_BLOOM2D_CCD(Ckey, testname)
 
-                MFdict[Ckey] = dict(img=img) # dict(img=self.fpa.flip_img(esimg, flip))
+                BM2Ddict[Ckey] = dict(img=img) # dict(img=self.fpa.flip_img(esimg, flip))
 
 
         return BM2Ddict
