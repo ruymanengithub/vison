@@ -747,7 +747,7 @@ class MetaPTC(MetaCal):
                 val = bloom[ll]
                 if  True: # val >0:
                     qimg[j,i] = (i**2+j**2)**0.5 # data['%s_%s' % (CCDk, Q)][ll]
-
+            stop()
             return qimg
 
         Np = len(x)
