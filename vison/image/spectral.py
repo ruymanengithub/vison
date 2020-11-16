@@ -17,12 +17,16 @@ from scipy.fftpack import fft, fftfreq, fftshift
 # END IMPORT
 
 
-def serialize_ccdquadrant(ccdobj, Q, extension=-1, blankfiller='median'):
+def serialize_ccdquadrant(ccdobj, Q, extension=-1, blankfiller='median',
+    vstart=None,vend=None):
     """ """
 
     hdr = ccdobj.extensions[extension].header
-    vstart = int(hdr['VSTART'])
-    vend = int(hdr['VEND'])
+    
+    if vstart is None:
+        vstart = int(hdr['VSTART'])
+    if vend is None:
+        vend = int(hdr['VEND'])
 
     toi_p = 1000.E-6
     tpix = 4.75E-6  # s

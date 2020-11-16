@@ -715,6 +715,10 @@ class MetaPTC(MetaCal):
 
         return HERdict
 
+    def _get_BLOOM2D_CCD(Ckey):
+        """ """
+        stop()
+
     def _get_BLOOM2D_dict(self, testname):
         """ """
 
@@ -723,8 +727,7 @@ class MetaPTC(MetaCal):
         for jY in range(self.NCOLS_FPA):
             for iX in range(self.NSLICES_FPA):
                 Ckey = 'C_%i%i' % (jY + 1, iX + 1)
-                stop()
-                img = self.get_foo()
+                img = self._get_BLOOM2D_CCD(Ckey)
 
                 MFdict[Ckey] = dict(img=img) # dict(img=self.fpa.flip_img(esimg, flip))
 
