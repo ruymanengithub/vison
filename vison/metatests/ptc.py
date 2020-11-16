@@ -764,9 +764,9 @@ class MetaPTC(MetaCal):
             elif Q == 'F':
                 img[Nqp:2*Nqp,Nqp:2*Nqp] = qimg[::-1, ::-1].copy() + 1000
             elif Q == 'G':
-                img[Nqp:2*Nqp,0:Nqp] = _img[:, ::-1].copy() + 2000
+                img[Nqp:2*Nqp,0:Nqp] = qimg[:, ::-1].copy() + 2000
             elif Q == 'H':
-                img[0:Nqp,0:Nqp] = _img[:, :].copy() + 3000
+                img[0:Nqp,0:Nqp] = qimg[:, :].copy() + 3000
 
 
 
