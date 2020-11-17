@@ -978,8 +978,9 @@ class MetaPTC(MetaCal):
                 figname21 = self.figs[figkey21]
 
                 self.plot_ImgFPA(BADU_2DMAP_dict, **dict(
-                    suptitle='%s: BLOOM-ADU [DN]' % stestname,
+                    suptitle='%s: BLOOM-ADU [DN], spatially resolved' % stestname,
                     ColorbarText='ADU',
+                    doColorbar=True,
                     figname=figname21))  # ,
                 # corekwargs=dict(norm = Normalize(vmin=3e4,vmax=2**16, clip=False))))
 
