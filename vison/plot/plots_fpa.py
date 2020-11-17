@@ -34,6 +34,7 @@ matplotlib.rcParams['ytick.major.size'] = 5
 matplotlib.rcParams['image.interpolation'] = 'none'
 import matplotlib.cm as cm
 from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import colors as mcolors
 
 from vison.plot.baseplotclasses import BasicPlot #, XYPlot, CCD2DPlotYvsX
 # END IMPORT
@@ -195,10 +196,13 @@ class FpaPlot(BasicPlot):
         if self.meta['doColorbar']:
             #cbar_ax = self.fig.add_axes([0.85, 0.15, 0.05, 0.7])
             #plt.colorbar(cax=cbar_ax, mappable=self.mappables[0],orientation='vertical')
-            allarrs = [item for item in self.mappables]
-            stop()
-            concat = np.concatenate(allarrs)
-            self.fig.colorbar(concat, ax=self.axsarr.flatten().tolist(),
+            allarrs = [item.get_array() for item in self.mappables]
+            vmin = np.min([np.nanmin(item) for item in allarrs])
+            vmax = np.max([np.nanmax(item) for item in allarrs])
+            
+            norm = mcolors.Normalize(vmin=vmin,vmax=vmax,clip=False)
+            scmap = cm.ScalarMappable(norm=norm, cmap='rainbow')
+            self.fig.colorbar(scmap, ax=self.axsarr.flatten().tolist(),
                               orientation='vertical', fraction=.1)
             #self.fig.colorbar(self.mappables[0], ax=self.axsarr.flatten().tolist(),
             #                  orientation='vertical', fraction=.1)
