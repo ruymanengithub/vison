@@ -981,7 +981,10 @@ class MetaPTC(MetaCal):
                     suptitle='%s: BLOOM-ADU [DN], spatially resolved' % stestname,
                     ColorbarText='ADU',
                     doColorbar=True,
-                    figname=figname21))  # ,
+                    figname=figname21,
+                        corekwargs=dict(
+                            vmin=4.e4,
+                            vmax=2**16)))  # ,
                 # corekwargs=dict(norm = Normalize(vmin=3e4,vmax=2**16, clip=False))))
 
                 if self.report is not None:
