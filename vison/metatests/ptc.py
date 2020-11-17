@@ -746,8 +746,8 @@ class MetaPTC(MetaCal):
                 j = np.where(uyvalues == y[ll])[0][0]
                 
                 val = bloom[ll]
-                if  True: # val >0:
-                    qimg[j,i] = (i**2+j**2)**0.5 # data['%s_%s' % (CCDk, Q)][ll]
+                if  val >0:
+                    qimg[j,i] = data['%s_%s' % (CCDk, Q)][ll] # (i**2+j**2)**0.5 #
 
             return qimg
 
@@ -761,13 +761,13 @@ class MetaPTC(MetaCal):
             qimg = _get_Qimg(x,y,Qbloom,Q,Nqp)
 
             if Q == 'E':
-                img[Nqp:2*Nqp,0:Nqp] = qimg[::-1, :].copy() + 0
+                img[Nqp:2*Nqp,0:Nqp] = qimg[::-1, :].copy() 
             elif Q == 'F':
-                img[Nqp:2*Nqp,Nqp:2*Nqp] = qimg[::-1, ::-1].copy() + 5
+                img[Nqp:2*Nqp,Nqp:2*Nqp] = qimg[::-1, ::-1].copy() 
             elif Q == 'G':
-                img[0:Nqp,Nqp:2*Nqp] = qimg[:, ::-1].copy() + 10
+                img[0:Nqp,Nqp:2*Nqp] = qimg[:, ::-1].copy() 
             elif Q == 'H':
-                img[0:Nqp,0:Nqp] = qimg[:, :].copy() + 15
+                img[0:Nqp,0:Nqp] = qimg[:, :].copy() 
 
         img = self.fpa.flip_img(img,flip)
 
