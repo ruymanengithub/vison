@@ -196,9 +196,8 @@ class FpaPlot(BasicPlot):
         if self.meta['doColorbar']:
             #cbar_ax = self.fig.add_axes([0.85, 0.15, 0.05, 0.7])
             #plt.colorbar(cax=cbar_ax, mappable=self.mappables[0],orientation='vertical')
-            allarrs = [item.get_array() for item in self.mappables]
-            vmin = np.min([np.nanmin(item) for item in allarrs])
-            vmax = np.max([np.nanmax(item) for item in allarrs])
+            vmin = np.min([np.nanmin(item.get_array()) for item in self.mappables])
+            vmax = np.max([np.nanmax(item.get_array()) for item in self.mappables])
             
             norm = mcolors.Normalize(vmin=vmin,vmax=vmax,clip=False)
             scmap = cm.ScalarMappable(norm=norm, cmap='rainbow')
