@@ -196,8 +196,8 @@ class FpaPlot(BasicPlot):
             #cbar_ax = self.fig.add_axes([0.85, 0.15, 0.05, 0.7])
             #plt.colorbar(cax=cbar_ax, mappable=self.mappables[0],orientation='vertical')
             allarrs = [item for item in self.mappables]
-            concat = np.concatenate(allarrs)
             stop()
+            concat = np.concatenate(allarrs)
             self.fig.colorbar(concat, ax=self.axsarr.flatten().tolist(),
                               orientation='vertical', fraction=.1)
             #self.fig.colorbar(self.mappables[0], ax=self.axsarr.flatten().tolist(),
