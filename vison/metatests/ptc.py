@@ -523,6 +523,7 @@ class MetaPTC(MetaCal):
             self.outcdps['HER_%s' % testname] = '%s_HER_profiles_MAP.json' % testname
             self.outcdps['BLOOM_ADU_%s' % testname] = '%s_BLOOM_ADU_MAP.json' % testname
             self.outcdps['BLOOM_ELE_%s' % testname] = '%s_BLOOM_ELE_MAP.json' % testname
+            self.outcdps['BLOOM_ADU2D_%s' % testname] = '%s_BLOOM_ADU_2DMAP.fits' % testname
 
     def _get_XYdict_GvsLAM(self):
         """ """
@@ -985,7 +986,7 @@ class MetaPTC(MetaCal):
                         corekwargs=dict(
                             vmin=4.e4,
                             vmax=2**16)))  # ,
-                # corekwargs=dict(norm = Normalize(vmin=3e4,vmax=2**16, clip=False))))
+                
 
                 if self.report is not None:
                     self.addFigure2Report(figname21, 
@@ -999,13 +1000,15 @@ class MetaPTC(MetaCal):
                 ba2d_header['test'] = stestname
                 ba2d_header.update(CDP_header)
             
-                #ba2d_cdp = cdp.Json_CDP(rootname=self.outcdps['BLOOM_ADU_%s' % testname],
-                #              path=self.cdpspath)
-                #ba2d_cdp.ingest_inputs(data=BADU_MAP_dict,
-                #             header = ba2d_header,
-                #             meta=dict(units='ADU',
-                #                        structure='CCDID:Q:bloom threshold'))
-                #ba2d_cdp.savehardcopy()
+                ba2d_cdp = cdp.FitsTables_CDP(rootname=self.outcdps['BLOOM_ADU2D_%s' % testname],
+                              path=self.cdpspath)
+                ba2d_cdp.ingest_inputs(data=BA2D_MAP,
+                             header = ba2d_header,
+                             meta=dict(units='ADU',
+                                       # structure='CCDID:Q:bloom threshold'))
+                                       )
+                ba2d_cdp.savehardcopy()
+
 
 
         # HER map
