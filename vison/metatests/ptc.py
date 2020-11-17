@@ -720,6 +720,7 @@ class MetaPTC(MetaCal):
         locator = self.fpa.FPA_MAP[Ckey]
         block = locator[0]
         CCDk = locator[1]
+        flip = locator[2]
         PT = self.ParsedTable[testname]
         column = 'BMAP_KEY_{}'.format(CCDk)
         ixblock = self.get_ixblock(PT, block)
@@ -760,13 +761,15 @@ class MetaPTC(MetaCal):
             qimg = _get_Qimg(x,y,Qbloom,Q,Nqp)
 
             if Q == 'E':
-                img[0:Nqp,Nqp:2*Nqp] = qimg[::-1, :].copy() + 0
+                img[Nqp:2*Nqp,0:Nqp] = qimg[::-1, :].copy() + 0
             elif Q == 'F':
-                img[Nqp:2*Nqp,Nqp:2*Nqp] = qimg[::-1, ::-1].copy() + 10
+                img[Nqp:2*Nqp,Nqp:2*Nqp] = qimg[::-1, ::-1].copy() + 5
             elif Q == 'G':
-                img[Nqp:2*Nqp,0:Nqp] = qimg[:, ::-1].copy() + 20
+                img[0:Nqp,Nqp:2*Nqp] = qimg[:, ::-1].copy() + 10
             elif Q == 'H':
-                img[0:Nqp,0:Nqp] = qimg[:, :].copy() + 30
+                img[0:Nqp,0:Nqp] = qimg[:, :].copy() + 15
+
+        img = self.fpa.flip_img(img,flip)
 
         return img
 
