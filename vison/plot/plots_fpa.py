@@ -197,6 +197,7 @@ class FpaPlot(BasicPlot):
             #plt.colorbar(cax=cbar_ax, mappable=self.mappables[0],orientation='vertical')
             self.fig.colorbar(self.mappables[0], ax=self.axsarr.flatten().tolist(),
                               orientation='vertical', fraction=.1)
+            stop()
 
 
 class FpaPlotYvsX(FpaPlot):
