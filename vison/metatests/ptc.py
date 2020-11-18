@@ -1043,6 +1043,7 @@ class MetaPTC(MetaCal):
                              meta=dict(units='ADU',
                                        # structure='CCDID:Q:bloom threshold'))
                                        ))
+                ba2d_cdp.init_HL_and_fillAll()
                 ba2d_cdp.savehardcopy()
 
 
