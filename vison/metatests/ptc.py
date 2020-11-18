@@ -837,11 +837,11 @@ class MetaPTC(MetaCal):
 
         outpathroot = self.outpathroot
 
-        doAll = False
+        doAll = True
 
         doGainMaps = doAll
         doBloomMaps = doAll
-        doBloom2DMaps = True
+        doBloom2DMaps = doAll
         doHERMaps = doAll
         doHERcurves = doAll
         doGvsWave = doAll
@@ -1009,24 +1009,24 @@ class MetaPTC(MetaCal):
                 figkey21 = 'BLOOM_ADU_2DMAP_%s' % testname
                 figname21 = self.figs[figkey21]
 
-                _doPlot = False
-                if _doPlot:
+                #_doPlot = False
+                #if _doPlot:
 
-                    self.plot_ImgFPA(BADU_2DMAP_dict, **dict(
-                        suptitle='%s: BLOOM-ADU [DN], spatially resolved' % stestname,
-                        ColorbarText='ADU',
-                        doColorbar=True,
-                        figname=figname21,
-                            corekwargs=dict(
-                                vmin=4.e4,
-                                vmax=2**16)))  # ,
-                
+                self.plot_ImgFPA(BADU_2DMAP_dict, **dict(
+                    suptitle='%s: BLOOM-ADU [DN], spatially resolved' % stestname,
+                    ColorbarText='ADU',
+                    doColorbar=True,
+                    figname=figname21,
+                        corekwargs=dict(
+                            vmin=4.e4,
+                            vmax=2**16)))  # ,
+            
 
-                    if self.report is not None:
-                        self.addFigure2Report(figname21, 
-                            figkey=figkey21, 
-                            caption='%s: Blooming (spat. resolved) threshold in ADU.' % stestname, 
-                            texfraction=0.9)
+                if self.report is not None:
+                    self.addFigure2Report(figname21, 
+                        figkey=figkey21, 
+                        caption='%s: Blooming (spat. resolved) threshold in ADU.' % stestname, 
+                        texfraction=0.9)
 
 
                 ba2d_header = OrderedDict()
