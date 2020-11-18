@@ -1043,8 +1043,8 @@ class MetaPTC(MetaCal):
                 for key in ba2d_header_keys:
                     if '_' in key:
                         ba2d_header[key.replace('_','')] = ba2d_header[key]
-                    _ = ba2d_header.pop(key)
-                stop()
+                        _ = ba2d_header.pop(key)
+                
                 ba2d_cdp.ingest_inputs(data=dict(BLOOMTHR=BA2D_MAP),
                              header = ba2d_header,
                              meta=dict(units='ADU',
