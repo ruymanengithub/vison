@@ -1039,11 +1039,12 @@ class MetaPTC(MetaCal):
                 ba2d_cdp = cdp.FitsTables_CDP(rootname=self.outcdps['BLOOM_ADU2D_%s' % testname],
                               path=self.cdpspath)
                 _ = ba2d_header.pop('FPA')
-                for key in ba2d_header:
+                ba2d_header_keys = list(ba2d_header.keys())
+                for key in ba2d_header_keys:
                     if '_' in key:
                         ba2d_header[key.replace('_','')] = ba2d_header[key]
-                        _ = ba2d_header.pop(key)
-                
+                    _ = ba2d_header.pop(key)
+
                 ba2d_cdp.ingest_inputs(data=dict(BLOOMTHR=BA2D_MAP),
                              header = ba2d_header,
                              meta=dict(units='ADU',
