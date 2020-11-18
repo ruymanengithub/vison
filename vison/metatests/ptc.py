@@ -1039,7 +1039,7 @@ class MetaPTC(MetaCal):
                 ba2d_cdp = cdp.FitsTables_CDP(rootname=self.outcdps['BLOOM_ADU2D_%s' % testname],
                               path=self.cdpspath)
                 _ = ba2d_header.pop('FPA')
-                ba2d_cdp.ingest_inputs(data=dict('BLOOMTHR'=BA2D_MAP),
+                ba2d_cdp.ingest_inputs(data=dict(BLOOMTHR=BA2D_MAP),
                              header = ba2d_header,
                              meta=dict(units='ADU',
                                        # structure='CCDID:Q:bloom threshold'))
