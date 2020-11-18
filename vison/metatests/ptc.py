@@ -523,7 +523,7 @@ class MetaPTC(MetaCal):
             self.outcdps['HER_%s' % testname] = '%s_HER_profiles_MAP.json' % testname
             self.outcdps['BLOOM_ADU_%s' % testname] = '%s_BLOOM_ADU_MAP.json' % testname
             self.outcdps['BLOOM_ELE_%s' % testname] = '%s_BLOOM_ELE_MAP.json' % testname
-            self.outcdps['BLOOM_ADU2D_%s' % testname] = '%s_BLOOM_ADU_2DMAP.fits' % testname
+            self.outcdps['BLOOM_ADU2D_%s' % testname] = '%s_BLOOM_ADU_2DMAP' % testname
 
     def _get_XYdict_GvsLAM(self):
         """ """

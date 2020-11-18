@@ -270,6 +270,7 @@ class FitsTables_CDP(CDP):
     def fill_Header(self):
         """ """
         self.hdulist[0].header.update(self.header)
+        stop()
 
     def fill_Meta(self):
         """ """
