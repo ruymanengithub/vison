@@ -789,6 +789,37 @@ class MetaPTC(MetaCal):
 
         return BM2Ddict
 
+    def _get_BLOOM2D_CDPdata(self, testname):
+
+        BM2Ddict = OrderedDict()
+        PT = self.ParsedTable[testname]
+
+        for jY in range(self.NCOLS_FPA):
+            for iX in range(self.NSLICES_FPA):
+
+                Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+
+                locator = self.fpa.FPA_MAP[Ckey]
+                block = locator[0]
+                CCDk = locator[1]
+                
+                column = 'BMAP_KEY_{}'.format(CCDk)
+                ixblock = self.get_ixblock(PT, block)
+                BMmap_key = PT[column][ixblock][0]
+
+                data = self.products['BLOOM_MAPS'][BMmap_key]
+
+                if (jY == 0) and (iX == 0):
+                    BM2Ddict['x'] = data['x'].to_numpy()
+                    BM2Ddict['y'] = data['y'].to_numpy()
+
+                for Q in self.Quads:
+                    Qbloom = data['{}_{}'.format(CCDk,Q)]
+                    BM2Ddict['{}_{}'.format(Ckey,Q)] = Qbloom
+
+        return BM2Ddict
+
+
     def dump_aggregated_results(self):
         """ """
 
@@ -978,27 +1009,32 @@ class MetaPTC(MetaCal):
                 figkey21 = 'BLOOM_ADU_2DMAP_%s' % testname
                 figname21 = self.figs[figkey21]
 
-                self.plot_ImgFPA(BADU_2DMAP_dict, **dict(
-                    suptitle='%s: BLOOM-ADU [DN], spatially resolved' % stestname,
-                    ColorbarText='ADU',
-                    doColorbar=True,
-                    figname=figname21,
-                        corekwargs=dict(
-                            vmin=4.e4,
-                            vmax=2**16)))  # ,
+                _doPlot = False
+                if _doPlot:
+
+                    self.plot_ImgFPA(BADU_2DMAP_dict, **dict(
+                        suptitle='%s: BLOOM-ADU [DN], spatially resolved' % stestname,
+                        ColorbarText='ADU',
+                        doColorbar=True,
+                        figname=figname21,
+                            corekwargs=dict(
+                                vmin=4.e4,
+                                vmax=2**16)))  # ,
                 
 
-                if self.report is not None:
-                    self.addFigure2Report(figname21, 
-                        figkey=figkey21, 
-                        caption='%s: Blooming (spat. resolved) threshold in ADU.' % stestname, 
-                        texfraction=0.9)
+                    if self.report is not None:
+                        self.addFigure2Report(figname21, 
+                            figkey=figkey21, 
+                            caption='%s: Blooming (spat. resolved) threshold in ADU.' % stestname, 
+                            texfraction=0.9)
 
 
                 ba2d_header = OrderedDict()
                 ba2d_header['title'] = 'BLOOMING 2D MAP [ADU]'
                 ba2d_header['test'] = stestname
                 ba2d_header.update(CDP_header)
+
+                BA2D_MAP = self._get_BLOOM2D_CDPdata(testname)
             
                 ba2d_cdp = cdp.FitsTables_CDP(rootname=self.outcdps['BLOOM_ADU2D_%s' % testname],
                               path=self.cdpspath)
