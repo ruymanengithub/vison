@@ -495,7 +495,8 @@ class BeamPlot(BasicPlot):
                     doLegend=False,
                     doColorbar=False,
                     doNiceXDate=False,
-                    doRotateXLabels=False)
+                    doRotateXLabels=False,
+                    doYErrbars=False)
         meta.update(kwargs)
 
         self.figsize = (15, 6)
@@ -684,6 +685,11 @@ class BeamPlotYvX(BeamPlot):
             else:
                 kwargs.update(ckwargs)
             handle = ax.plot(xarr, yarr, **kwargs)
+
+            if self.meta['doYErrbars']:
+                eyarr = CQdict['ey'][key]
+                self.ax.errorbar(xarr, yarr, yerr=eyarr, color='k', fmt='', linestyle='')
+
         else:
             xarr = CQdict['x']
             yarr = CQdict['y']
@@ -691,6 +697,10 @@ class BeamPlotYvX(BeamPlot):
             kwargs.update(ckwargs)
             ax.plot(xarr, yarr, **kwargs)
             handle, label = None, None
+            if self.meta['doYErrbars']:
+                eyarr = CQdict['ey']
+                self.ax.errorbar(xarr, yarr, yerr=eyarr, 
+                    color='k', fmt='', linestyle='')
 
         return handle, label
 
