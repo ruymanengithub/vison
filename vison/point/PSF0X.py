@@ -1303,8 +1303,11 @@ class PSF0X(PT.PointTask):
 
                     _x_vpos_ky = self.dd.mx['chk_y_ccd'][:,iCCD, kQ,:].flatten()
 
+                    stop()
+
                     if Q in ['E','F']:
                         _x_vpos_ky = self.ccdcalc.NAXIS2 - _x_vpos_ky
+
 
                     _y_vpos_ky = self.dd.mx['{}gau_res_yskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
 
