@@ -1282,7 +1282,14 @@ class PSF0X(PT.PointTask):
                         BFEtag = 'BFE'
                         colbfetag = ''
 
+
+                    # x-skew vs. x-ccd
+
                     _x_vpos_kx = self.dd.mx['chk_x_ccd'][:,iCCD, kQ,:].flatten()
+
+                    if Q in ['F','G']:
+                        _x_vpos_kx = self.ccdcalc.wQ - _x_vpos_kx
+
                     _y_vpos_kx = self.dd.mx['{}gau_res_xskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
 
                     bin_vpos_kx = PSF0Xaux._f_xy_bin(_x_vpos_kx,_y_vpos_kx,Nbins=3)
@@ -1292,7 +1299,13 @@ class PSF0X(PT.PointTask):
                     plot_skew_dict['vs_pos']['dirx'][CCDk][Q]['y'][BFEtag] = y_vpos_kx
                     plot_skew_dict['vs_pos']['dirx'][CCDk][Q]['ey'][BFEtag] = sigy_vpos_kx / n_vpos_kx**0.5
 
+                    # y-skew vs. y-ccd
+
                     _x_vpos_ky = self.dd.mx['chk_y_ccd'][:,iCCD, kQ,:].flatten()
+
+                    if Q in ['E','F']:
+                        _x_vpos_kx = self.ccdcalc.hQ - _x_vpos_kx
+
                     _y_vpos_ky = self.dd.mx['{}gau_res_yskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
 
                     bin_vpos_ky = PSF0Xaux._f_xy_bin(_x_vpos_ky,_y_vpos_ky,Nbins=3)
@@ -1302,6 +1315,7 @@ class PSF0X(PT.PointTask):
                     plot_skew_dict['vs_pos']['diry'][CCDk][Q]['y'][BFEtag] = y_vpos_ky
                     plot_skew_dict['vs_pos']['diry'][CCDk][Q]['ey'][BFEtag] = sigy_vpos_ky / n_vpos_ky**0.5
 
+                    # x-skew vs. fluence
 
                     _x_vflu_kx = self.dd.mx['bas_fluence'][:,iCCD, kQ,:].flatten() / 1.e3
                     _y_vflu_kx = self.dd.mx['{}gau_res_xskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
@@ -1314,6 +1328,8 @@ class PSF0X(PT.PointTask):
                     plot_skew_dict['vs_fluence']['dirx'][CCDk][Q]['x'][BFEtag] = x_vflu_kx
                     plot_skew_dict['vs_fluence']['dirx'][CCDk][Q]['y'][BFEtag] = y_vflu_kx
                     plot_skew_dict['vs_fluence']['dirx'][CCDk][Q]['ey'][BFEtag] = sigy_vflu_kx / n_vflu_kx**0.5
+
+                    # y-skew vs. fluence
 
                     _x_vflu_ky = self.dd.mx['bas_fluence'][:,iCCD, kQ,:].flatten() / 1.e3
                     _y_vflu_ky = self.dd.mx['{}gau_res_yskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
