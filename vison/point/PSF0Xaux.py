@@ -195,6 +195,7 @@ def get_skew_dict(test, vswhat, direction):
     caption='%s: Gaussian-fit residuals %s-skewness vs. %s.' % 
         (ntest, direction, vswhat),
     meta=dict(doLegend=True,
+              doYErrbars=True,
               ylabel='%s-skewness [adim.]' % direction,
               xlabel=xlabel,
               #ylim = [0.75,2.5],
