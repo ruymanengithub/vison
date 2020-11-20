@@ -1287,12 +1287,14 @@ class PSF0X(PT.PointTask):
 
                     _x_vpos_kx = self.dd.mx['chk_x_ccd'][:,iCCD, kQ,:].flatten()
 
+                    ixgood = np.where(_x_vpox_kx > 0)
+
                     if Q in ['F','G']:
                         _x_vpos_kx = self.ccdcalc.NAXIS1 - _x_vpos_kx
 
                     _y_vpos_kx = self.dd.mx['{}gau_res_xskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
 
-                    bin_vpos_kx = PSF0Xaux._f_xy_bin(_x_vpos_kx,_y_vpos_kx,Nbins=3)
+                    bin_vpos_kx = PSF0Xaux._f_xy_bin(_x_vpos_kx[ixgood],_y_vpos_kx[ixgood],Nbins=3)
                     x_vpos_kx, y_vpos_kx, sigy_vpos_kx, n_vpos_kx = bin_vpos_kx
 
                     plot_skew_dict['vs_pos']['dirx'][CCDk][Q]['x'][BFEtag] = x_vpos_kx  
@@ -1303,15 +1305,15 @@ class PSF0X(PT.PointTask):
 
                     _x_vpos_ky = self.dd.mx['chk_y_ccd'][:,iCCD, kQ,:].flatten()
 
-                    stop()
+                    ixgood = np.where(_x_vpox_ky > 0)
 
                     if Q in ['E','F']:
-                        _x_vpos_ky = self.ccdcalc.NAXIS2 - _x_vpos_ky
+                        _x_vpos_ky = _x_vpos_ky - self.ccdcalc.hQ
 
 
                     _y_vpos_ky = self.dd.mx['{}gau_res_yskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
 
-                    bin_vpos_ky = PSF0Xaux._f_xy_bin(_x_vpos_ky,_y_vpos_ky,Nbins=3)
+                    bin_vpos_ky = PSF0Xaux._f_xy_bin(_x_vpos_ky[ixgood],_y_vpos_ky[ixgood],Nbins=3)
                     x_vpos_ky, y_vpos_ky, sigy_vpos_ky, n_vpos_ky = bin_vpos_ky
 
                     plot_skew_dict['vs_pos']['diry'][CCDk][Q]['x'][BFEtag] = x_vpos_ky  
@@ -1323,9 +1325,11 @@ class PSF0X(PT.PointTask):
                     _x_vflu_kx = self.dd.mx['bas_fluence'][:,iCCD, kQ,:].flatten() / 1.e3
                     _y_vflu_kx = self.dd.mx['{}gau_res_xskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
 
+                    ixgood = np.where(_x_vflu_kx > 0.5)
+
                     Nbinsflu = len(self.inputs['exptimes'])
 
-                    bin_vflu_kx = PSF0Xaux._f_xy_bin(_x_vflu_kx,_y_vflu_kx,Nbins=Nbinsflu)
+                    bin_vflu_kx = PSF0Xaux._f_xy_bin(_x_vflu_kx[ixgood],_y_vflu_kx[ixgood],Nbins=Nbinsflu)
                     x_vflu_kx, y_vflu_kx, sigy_vflu_kx, n_vflu_kx = bin_vflu_kx
 
                     plot_skew_dict['vs_fluence']['dirx'][CCDk][Q]['x'][BFEtag] = x_vflu_kx
@@ -1337,7 +1341,9 @@ class PSF0X(PT.PointTask):
                     _x_vflu_ky = self.dd.mx['bas_fluence'][:,iCCD, kQ,:].flatten() / 1.e3
                     _y_vflu_ky = self.dd.mx['{}gau_res_yskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
 
-                    bin_vflu_ky = PSF0Xaux._f_xy_bin(_x_vflu_ky,_y_vflu_ky,Nbins=Nbinsflu)
+                    ixgood = np.where(_x_vflu_ky > 0.5)
+
+                    bin_vflu_ky = PSF0Xaux._f_xy_bin(_x_vflu_ky[ixgood],_y_vflu_ky[ixgood],Nbins=Nbinsflu)
                     x_vflu_ky, y_vflu_ky, sigy_vflu_ky, n_vflu_ky = bin_vflu_ky
 
                     plot_skew_dict['vs_fluence']['diry'][CCDk][Q]['x'][BFEtag] = x_vflu_ky
