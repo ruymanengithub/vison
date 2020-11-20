@@ -1288,7 +1288,7 @@ class PSF0X(PT.PointTask):
                     _x_vpos_kx = self.dd.mx['chk_x_ccd'][:,iCCD, kQ,:].flatten()
 
                     if Q in ['F','G']:
-                        _x_vpos_kx = self.ccdcalc.wQ - _x_vpos_kx
+                        _x_vpos_kx = self.ccdcalc.NAXIS1 - _x_vpos_kx
 
                     _y_vpos_kx = self.dd.mx['{}gau_res_xskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
 
@@ -1304,7 +1304,7 @@ class PSF0X(PT.PointTask):
                     _x_vpos_ky = self.dd.mx['chk_y_ccd'][:,iCCD, kQ,:].flatten()
 
                     if Q in ['E','F']:
-                        _x_vpos_kx = self.ccdcalc.hQ - _x_vpos_kx
+                        _x_vpos_kx = self.ccdcalc.NAXIS2 - _x_vpos_kx
 
                     _y_vpos_ky = self.dd.mx['{}gau_res_yskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
 
