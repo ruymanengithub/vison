@@ -688,7 +688,7 @@ class BeamPlotYvX(BeamPlot):
 
             if self.meta['doYErrbars']:
                 eyarr = CQdict['ey'][key]
-                self.ax.errorbar(xarr, yarr, yerr=eyarr, color='k', fmt='', linestyle='')
+                ax.errorbar(xarr, yarr, yerr=eyarr, color='k', fmt='', linestyle='')
 
         else:
             xarr = CQdict['x']
@@ -699,7 +699,7 @@ class BeamPlotYvX(BeamPlot):
             handle, label = None, None
             if self.meta['doYErrbars']:
                 eyarr = CQdict['ey']
-                self.ax.errorbar(xarr, yarr, yerr=eyarr, 
+                ax.errorbar(xarr, yarr, yerr=eyarr, 
                     color='k', fmt='', linestyle='')
 
         return handle, label
