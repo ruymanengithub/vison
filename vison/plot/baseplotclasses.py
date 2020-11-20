@@ -758,7 +758,8 @@ class ImgShow(BasicPlot):
 
         super(ImgShow, self).__init__(**kwargs)
 
-        defaults = dict(title='')
+        defaults = dict(title='',
+            doColorbar=False)
 
         self.figsize = (7, 7)
         self.data = data
