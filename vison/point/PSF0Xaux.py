@@ -186,9 +186,13 @@ def get_skew_dict(test, vswhat, direction):
     ntest = test.replace('_', '\_')
 
     if vswhat == 'position':
-        xlabel = 'CCD-Pos. [pix]'
+        xlabel = 'CCD-%s Pos. [pix]' % direction
+        suptitle = '%s: gaussian-fit res. %s-skew vs. %s-%s' %\
+                    (ntest, direction, direction, vswhat)
     elif vswhat == 'fluence':
         xlabel = 'Fluence [kADU]'
+        suptitle = '%s: gaussian-fit res. %s-skew vs. %s' %\
+                    (ntest, direction, vswhat)
 
     fdict = dict(
     figname='%s_skew_%s_vs_%s.png' % (test, direction, vswhat),
@@ -203,8 +207,7 @@ def get_skew_dict(test, vswhat, direction):
               corekwargs=dict(
                   noBFE=dict(marker='.', linestyle='', color='b'),
                   BFE=dict(marker='.', linestyle='', color='r')),
-              suptitle='%s: gaussian-fit res. %s-skew vs. %s' %\
-                    (ntest, direction, vswhat))
+              suptitle=suptitle)
         )
     return fdict
 
