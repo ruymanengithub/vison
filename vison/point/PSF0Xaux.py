@@ -189,13 +189,13 @@ def get_skew_dict(test, vswhat, direction):
         xlabel = 'CCD-%s Pos. [pix]' % direction
         suptitle = '%s: gaussian-fit res. %s-skew vs. %s-%s' %\
                     (ntest, direction, direction, vswhat)
-        caption = '%s: Gaussian-fit residuals %s-skewness vs. %s-%s.' % 
+        caption = '%s: Gaussian-fit residuals %s-skewness vs. %s-%s.' % \
         (ntest, direction, direction, vswhat)
     elif vswhat == 'fluence':
         xlabel = 'Fluence [kADU]'
         suptitle = '%s: gaussian-fit res. %s-skew vs. %s' %\
                     (ntest, direction, vswhat)
-        caption = '%s: Gaussian-fit residuals %s-skewness vs. %s.' % 
+        caption = '%s: Gaussian-fit residuals %s-skewness vs. %s.' % \
         (ntest, direction, vswhat)
 
     fdict = dict(
