@@ -306,5 +306,5 @@ def _f_xy_bin(x,y,Nbins=3):
     ybinsig = ybinsig[ixorder]
     vNbin = vNbin[ixorder]
 
-    stop()
+    return (xbin, ybin, ybinsig, vNbin)
     

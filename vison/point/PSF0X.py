@@ -1294,7 +1294,6 @@ class PSF0X(PT.PointTask):
                     _x_vpos_ky = self.dd.mx['chk_y_ccd'][:,iCCD, kQ,:].flatten()
                     _y_vpos_ky = self.dd.mx['{}gau_res_yskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
 
-
                     bin_vpos_ky = PSF0Xaux._f_xy_bin(_x_vpos_ky,_y_vpos_ky,Nbins=3)
                     x_vpos_ky, y_vpos_ky, sigy_vpos_ky, n_vpos_ky = bin_vpos_ky
 
