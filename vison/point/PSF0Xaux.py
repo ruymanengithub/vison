@@ -282,6 +282,29 @@ def get_CDP_lib(test):
 
 def _f_xy_bin(x,y,Nbins=3):
     """ """
+    from sklearn.cluster import KMeans
     
+    xresh = x.reshape(len(x),-1)
+    kmeansRes = KMeans(n_clusters=Nbins, verbose=0).fit(xresh)
+
+    xbin = np.zeros(Nbins,dtype='float32')
+    ybin = np.zeros(Nbins,dtype='float32')
+    ybinsig = np.zeros(Nbins,dtype='float32')
+    vNbin = np.zeros(Nbins,dtype='int32')
+
+    for i in range(Nbins):
+        ixsel = np.where(kmeansRes.labels_ == i)
+        xbin[i] = np.mean(x[ixsel])
+        ybin[i] = np.mean(y[ixsel])
+        ybinsig[i] = np.std(x[ixsel])
+        vNbin[i] = len(ixsel[0])
+
+    ixorder = np.argsort(xbin)
+
+    xbin = xbin[ixorder]
+    ybin = ybin[ixorder]
+    ybinsig = ybinsig[ixorder]
+    vNbin = vNbin[ixorder]
+
     stop()
     
