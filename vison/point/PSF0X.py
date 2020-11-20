@@ -1266,6 +1266,7 @@ class PSF0X(PT.PointTask):
                         plot_skew_dict[tag1][tag2][CCDk][Q] = OrderedDict()
                         plot_skew_dict[tag1][tag2][CCDk][Q]['x'] = OrderedDict()
                         plot_skew_dict[tag1][tag2][CCDk][Q]['y'] = OrderedDict()
+                        plot_skew_dict[tag1][tag2][CCDk][Q]['ey'] = OrderedDict()
 
 
         for iCCD, CCDk in enumerate(CCDs):
