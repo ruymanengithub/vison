@@ -684,3 +684,10 @@ class MetaPsf(MetaCal):
                 self.report.add_Text('\nAvg. STD of comparison (%i vs. 800 nm): %.2e ADU' %\
                         (wave, avg_std))
 
+    # PSF analysis
+
+
+    # Histogram of slopes of FWHWMx/y vs. fluence w/o BF correction
+
+    
+

@@ -77,7 +77,8 @@ PSF0X_commvalues = dict(program='CALCAMP',
                         chinj=0,
                         s_tpump=0,
                         v_tpump=0,
-                        shuttr=1, e_shuttr=0,
+                        shuttr=1, 
+                        e_shuttr=0,
                         mirr_on=1,
                         wave=4,
                         mirr_pos=ogsemod.mirror_nom['F4'],
@@ -1280,27 +1281,47 @@ class PSF0X(PT.PointTask):
                         BFEtag = 'BFE'
                         colbfetag = ''
 
+                    _x_vpos_kx = self.dd.mx['chk_x_ccd'][:,iCCD, kQ,:].flatten()
+                    _y_vpos_kx = self.dd.mx['{}gau_res_xskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
 
-                    plot_skew_dict['vs_pos']['dirx'][CCDk][Q]['x'][BFEtag] = \
-                        self.dd.mx['chk_x_ccd'][:,iCCD, kQ,:].flatten()
-                    plot_skew_dict['vs_pos']['dirx'][CCDk][Q]['y'][BFEtag] = \
-                        self.dd.mx['{}gau_res_xskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
+                    x_vpos_kx, y_vpos_kx, 
+                        sigy_vpos_kx, n_vpos_kx = PSF0Xaux._f_xy_bin(_x_vpos_kx,_y_vpos_kx,Nbins=3)
 
-                    plot_skew_dict['vs_pos']['diry'][CCDk][Q]['x'][BFEtag] = \
-                        self.dd.mx['chk_y_ccd'][:,iCCD, kQ,:].flatten()
-                    plot_skew_dict['vs_pos']['diry'][CCDk][Q]['y'][BFEtag] = \
-                        self.dd.mx['{}gau_res_yskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
-                    
+                    plot_skew_dict['vs_pos']['dirx'][CCDk][Q]['x'][BFEtag] = x_vpos_x  
+                    plot_skew_dict['vs_pos']['dirx'][CCDk][Q]['y'][BFEtag] = y_vpos_x
+                    plot_skew_dict['vs_pos']['dirx'][CCDk][Q]['ey'][BFEtag] = sigy_vpos_x
 
-                    plot_skew_dict['vs_fluence']['dirx'][CCDk][Q]['x'][BFEtag] = \
-                        self.dd.mx['bas_fluence'][:,iCCD, kQ,:].flatten() / 1.e3
-                    plot_skew_dict['vs_fluence']['dirx'][CCDk][Q]['y'][BFEtag] = \
-                        self.dd.mx['{}gau_res_xskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
+                    _x_vpos_ky = self.dd.mx['chk_y_ccd'][:,iCCD, kQ,:].flatten()
+                    _y_vpos_ky = self.dd.mx['{}gau_res_yskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
 
-                    plot_skew_dict['vs_fluence']['diry'][CCDk][Q]['x'][BFEtag] = \
-                        self.dd.mx['bas_fluence'][:,iCCD, kQ,:].flatten() / 1.e3
-                    plot_skew_dict['vs_fluence']['diry'][CCDk][Q]['y'][BFEtag] = \
-                        self.dd.mx['{}gau_res_yskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
+                    x_vpos_ky, y_vpos_ky, 
+                        sigy_vpos_ky, n_vpos_ky = PSF0Xaux._f_xy_bin(_x_vpos_ky,_y_vpos_ky,Nbins=3)
+
+                    plot_skew_dict['vs_pos']['diry'][CCDk][Q]['x'][BFEtag] = x_vpos_y  
+                    plot_skew_dict['vs_pos']['diry'][CCDk][Q]['y'][BFEtag] = y_vpos_y
+                    plot_skew_dict['vs_pos']['diry'][CCDk][Q]['ey'][BFEtag] = sigy_vpos_y
+
+
+                    _x_vflu_kx = self.dd.mx['bas_fluence'][:,iCCD, kQ,:].flatten() / 1.e3
+                    _y_vflu_kx = self.dd.mx['{}gau_res_xskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
+
+                    x_vflu_kx, y_vflu_kx, 
+                        sigy_vflu_kx, n_vflu_kx = PSF0Xaux._f_xy_bin(_x_vflu_kx,_y_vflu_kx,Nbins=5)
+
+                    plot_skew_dict['vs_fluence']['dirx'][CCDk][Q]['x'][BFEtag] = x_vflu_x
+                    plot_skew_dict['vs_fluence']['dirx'][CCDk][Q]['y'][BFEtag] = y_vflu_x
+                    plot_skew_dict['vs_fluence']['dirx'][CCDk][Q]['ey'][BFEtag] = sigy_vflu_x
+
+                    _x_vflu_ky = self.dd.mx['bas_fluence'][:,iCCD, kQ,:].flatten() / 1.e3
+                    _y_vflu_ky = self.dd.mx['{}gau_res_yskew'.format(colbfetag)][:,iCCD, kQ,:].flatten()
+
+                    x_vflu_ky, y_vflu_ky, 
+                        sigy_vflu_ky, n_vflu_ky = PSF0Xaux._f_xy_bin(_x_vflu_ky,_y_vflu_ky,Nbins=5)
+
+                    plot_skew_dict['vs_fluence']['diry'][CCDk][Q]['x'][BFEtag] = x_vflu_y
+                    plot_skew_dict['vs_fluence']['diry'][CCDk][Q]['y'][BFEtag] = y_vflu_y
+                    plot_skew_dict['vs_fluence']['diry'][CCDk][Q]['ey'][BFEtag] = sigy_vflu_y
+
 
         for tag1 in ['vs_pos', 'vs_fluence']:
             for tag2 in ['dirx', 'diry']:

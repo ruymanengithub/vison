@@ -277,3 +277,11 @@ def get_CDP_lib(test):
     CDP_lib.update(Paux.get_CDP_lib())
 
     return CDP_lib
+
+
+
+def _f_xy_bin(x,y,Nbins=3):
+    """ """
+    
+    stop()
+    
