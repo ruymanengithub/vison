@@ -5,6 +5,7 @@ import os
 import numpy as np
 
 from vison.metatests.pano import MetaPano
+from vison.metatests.bias import MetaBias
 from vison.support import cosmicrays as crs
 # END IMPORT
 
