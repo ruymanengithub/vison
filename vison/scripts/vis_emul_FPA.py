@@ -83,7 +83,10 @@ def run_BIAS02emul(addCRs=False):
 
 
     emulator = EmulFPA('BIAS02', **Binputs)
-    emulator.run()
+    emulator.run(doLoad=True, doParse=True, doEmul=False)
+
+    
+
 
 
 def run_FFemul():
