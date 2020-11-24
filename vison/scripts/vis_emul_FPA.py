@@ -85,7 +85,10 @@ class EmulFPA(MetaPano):
     def produce_emulation(self, **kwargs):
         """ """
 
-        ccd_dict = self.get_ccd_dict(self.testsnames[0])
+        testname = self.testnames[0]
+        irep = kwargs['rep']-1
+        iobs = kwargs['relObsid']
+        ccd_dict = self.get_ccd_dict(testname,irep,iobs)
 
 
         stop()
