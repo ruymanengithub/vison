@@ -2,7 +2,7 @@
 # IMPORT STUFF
 from pdb import set_trace as stop
 
-from vison.metacal.pano import MetaPano
+from vison.metatests.pano import MetaPano
 from vison.support import cosmicrays as crs
 # END IMPORT
 
