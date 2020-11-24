@@ -68,7 +68,7 @@ def run_TP11emul():
 def run_TP21emul():
     """ """
 
-def run_BIAS02emul():
+def run_BIAS02emul(addCRs=False):
     """ """
 
     Binputs = comminputs.copy()
