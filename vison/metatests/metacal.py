@@ -226,7 +226,6 @@ class MetaCal(object):
         try:
             dd = files.cPickleRead(DDfile)
         except BaseException:
-            stop()
             print('Could not load %s\n\n' % DDfile)
             raise RuntimeError
 
@@ -242,6 +241,7 @@ class MetaCal(object):
         if inventoryfile is None:
             inventoryfile = self.jsonf
         inventraw = vjson.load_jsonfile(inventoryfile, useyaml=True)
+        stop()
 
         for block in self.blocks:
             if block in list(inventraw['inventory'].keys()):
