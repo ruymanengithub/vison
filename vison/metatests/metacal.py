@@ -226,6 +226,7 @@ class MetaCal(object):
         try:
             dd = files.cPickleRead(DDfile)
         except BaseException:
+            stop()
             print('Could not load %s\n\n' % DDfile)
             raise RuntimeError
 
