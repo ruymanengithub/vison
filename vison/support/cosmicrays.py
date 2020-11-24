@@ -28,10 +28,16 @@ event or up to a covering fraction.
 
 from pdb import set_trace as stop
 
+from vison import data
+
 import numpy as np
 from scipy.interpolate import InterpolatedUnivariateSpline
 from scipy.interpolate import interp1d
+import os
 
+
+_path = os.path.abspath(data.__file__)
+dpath = os.path.dirname(_path)
 
 class cosmicrays():
     """
@@ -63,12 +69,12 @@ class cosmicrays():
         self.ysize, self.xsize = self.image.shape
 
         #set up the information dictionary, first with defaults and then overwrite with inputs if given
-        self.information = (dict(#cosmicraylengths='data/cdf_cr_length.dat',
-                                 cosmicraylength='data/TableauHistogLgTraj_CDF.txt',
-                                 cosmicraydistance='data/cdf_cr_total.dat',
+        self.information = (dict(cosmicraylength=os.path.join(dpath,'TableauHistogLgTraj_CDF.txt'),
+                                 cosmicraydistance=os.path.join(dpath,'cdf_cr_total.dat'),
                                  exptime=565.))
         if information is not None:
             self.information.update(information)
+
 
         if crInfo is not None:
             self.cr = crInfo
@@ -77,15 +83,17 @@ class cosmicrays():
 
 
     def _readCosmicrayInformation(self):
-        self.log.info('Reading in cosmic ray information from %s and %s' % (self.information['cosmicraylengths'],
+        self.log.info('Reading in cosmic ray information from %s and %s' % (self.information['cosmicraylength'],
                                                                             self.information['cosmicraydistance']))
         #read in the information from the files
-        crLengths = np.loadtxt(self.information['cosmicraylengths'])
+        crLengths = np.loadtxt(self.information['cosmicraylength'])
         crDists = np.loadtxt(self.information['cosmicraydistance'])
 
         #set up the cosmic ray information dictionary
         self.cr = dict(cr_u=crLengths[:, 0], cr_cdf=crLengths[:, 1], cr_cdfn=np.shape(crLengths)[0],
-                       cr_v=crDists[:, 0], cr_cde=crDists[:, 1], cr_cden=np.shape(crDists)[0])
+                       cr_v=crDists[:, 0], cr_cde=crDists[:, 1], cr_cden=np.shape(crDists)[0],
+                       pixel_pitch=12.,
+                       exptime=self.information['exptime'])
 
         return self.cr
 
@@ -157,7 +165,7 @@ class cosmicrays():
 
             #Compute X intercepts on the pixel grid
             if ilo[i] < ihi[i]:
-                for xcoord in xrange(ilo[i], ihi[i]):
+                for xcoord in range(ilo[i], ihi[i]):
                     ok = (xcoord - x0[i]) / dx[i]
                     if np.abs(ok) <= offending_delta:
                         n += 1
@@ -165,7 +173,7 @@ class cosmicrays():
                         x.append(xcoord)
                         y.append(y0[i] + ok * dy[i])
             else:
-                for xcoord in xrange(ihi[i], ilo[i]):
+                for xcoord in range(ihi[i], ilo[i]):
                     ok = (xcoord - x0[i]) / dx[i] # parametric representation of line
                     if np.abs(ok) <= offending_delta:
                         n += 1
@@ -175,7 +183,7 @@ class cosmicrays():
 
             #Compute Y intercepts on the pixel grid
             if jlo[i] < jhi[i]:
-                for ycoord in xrange(jlo[i], jhi[i]):
+                for ycoord in range(jlo[i], jhi[i]):
                     ok = (ycoord - y0[i]) / dy[i]
                     if np.abs(ok) <= offending_delta:
                         n += 1
@@ -183,7 +191,7 @@ class cosmicrays():
                         x.append(x0[i] + ok * dx[i])
                         y.append(ycoord)
             else:
-                for ycoord in xrange(jhi[i], jlo[i]):
+                for ycoord in range(jhi[i], jlo[i]):
                     ok = (ycoord - y0[i]) / dy[i]
                     if np.abs(ok) <= offending_delta:
                         n += 1
@@ -219,7 +227,7 @@ class cosmicrays():
             
             #Decide which cell each interval traverses, and the path length
             # AZZO: beware! index i was j before! Guessed it was a typo.
-            for j in xrange(1, n - 1):
+            for j in range(1, n - 1):
                 #w = u[j + 1] - u[j] # <3/Jul/2017
                 w = (u[j + 1] - u[j])/2. # >3/Jul/2017
                 cx = int(1 + np.floor((x[j + 1] + x[j]) / 2.))
@@ -382,7 +390,7 @@ class cosmicrays():
         
         #cr_n = 7689
         
-        coveringFraction = 0       
+        covering = 0       
         while covering < coveringFraction:
         #while True:
             #pseudo-random numbers taken from a uniform distribution between 0 and 1
@@ -570,26 +578,27 @@ if __name__ == "__main__":
     import astropy.io.fits as fts
     
     #set up logger
-    log = lg.setUpLogger('VISsim.log')
+    log = lg.setUpLogger('CRsim.log')
     
     #test section
     crImage = np.zeros((2066, 2048), dtype=np.float64)
     
     #cosmic ray instance
-    cosmics = cosmicrays(log, crImage)
+    cosmics = cosmicrays(log, crImage, information=dict(exptime=565))
     
     #add cosmic rays up to the covering fraction
-    CCD_cr = cosmics.addUpToFraction(1.4, limit=None, verbose=True)
+    CCD_cr = cosmics.addToFluxTime(5., limit=None, verbose=True)
     
     effected = np.count_nonzero(CCD_cr)
+    print('NpixCR', 'NpixCRpercent')
     print(effected, effected*100./(CCD_cr.shape[0]*CCD_cr.shape[1]))
     
     #save to FITS
-    fts.writeto(CCD_cr, 'cosmicrayTest.fits')
+    fts.writeto('cosmicrayTest.fits', CCD_cr, overwrite=True)
     
     #smooth with a charge diffusion kernel
     smooth = ndimage.filters.gaussian_filter(CCD_cr, (0.32, 0.32))
     
-    fts.writeto(smooth, 'cosmicrayTestSmoothed.fits')
+    fts.writeto('cosmicrayTestSmoothed.fits', smooth, overwrite=True)
     
     
