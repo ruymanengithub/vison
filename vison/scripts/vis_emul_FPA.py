@@ -54,8 +54,39 @@ class EmulFPA(MetaPano):
             self.products = parsedbundle['products'].copy()
 
 
+    def get_ccd_dict(self, testname, irep, iobs):
+        """ """
+
+        #PT = self.ParsedTable[testname]
+
+        ccd_dict = dict()
+        CCDs = ['CCD1','CCD2','CCD3']
+
+        for jY in range(self.NCOLS_FPA):
+            for iX in range(self.NSLICES_FPA):
+                Ckey = 'C_%i%i' % (jY + 1, iX + 1)
+
+                locator = self.fpa.FPA_MAP[Ckey]
+
+                block = locator[0]
+                CCDk = locator[1]
+                jCCD = CCDs.index(CCDk)
+
+                inventoryitem = self.inventory[block][testname][irep]
+
+                iFileName = inventoryitem['dd'].mx['File_name'][iobs,jCCD]
+                idatapath = inventoryitem['dd'].mx['datapath'][iobs,jCCD]
+
+                stop()
+
+                
+
+
     def produce_emulation(self, **kwargs):
         """ """
+
+        ccd_dict = self.get_ccd_dict(self.testsnames[0])
+
 
         stop()
 
