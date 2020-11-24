@@ -7,6 +7,7 @@ import numpy as np
 from vison.metatests.pano import MetaPano
 from vison.metatests.bias import MetaBias
 from vison.support import cosmicrays as crs
+from vison.support import files
 # END IMPORT
 
 class EmulFPA(MetaPano):
