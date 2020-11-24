@@ -18,7 +18,7 @@ class EmulFPA(MetaPano):
 
         self.testnames = [testname]
 
-    def run(self, doLoad=True, doParse=True, doEmul=True):
+    def prerun(self, doLoad=True, doParse=True, doEmul=True):
         """ """
 
         if not os.path.exists(self.outpathroot):
@@ -54,8 +54,10 @@ class EmulFPA(MetaPano):
             self.products = parsedbundle['products'].copy()
 
 
-        if doEmul:
-            self.produce_emulation()
+    def produce_emulation(self, **kwargs):
+        """ """
+
+        stop()
 
 
 outparent = 'FPA_SIMULS'
@@ -85,7 +87,13 @@ def run_BIAS02emul(addCRs=False):
 
 
     emulator = EmulFPA('BIAS02', **Binputs)
-    emulator.run(doLoad=True, doParse=True, doEmul=False)
+    emulator.prerun(doLoad=False, doParse=False)
+
+    simulkwargs = dict(addCRs=addCRs,
+        rep=1,
+        relObsid=5)
+
+    emulator.produce_emulation(**simulkwargs)
 
 
 
