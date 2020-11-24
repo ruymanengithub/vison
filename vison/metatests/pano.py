@@ -174,7 +174,7 @@ class MetaPano(MetaCal):
     def __init__(self, **kwargs):
         """ """
 
-        super(MetaBias, self).__init__(**kwargs)
+        super(MetaPano, self).__init__(**kwargs)
 
         self.testnames = testnames
         self.incols = cols2keep
