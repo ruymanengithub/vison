@@ -63,7 +63,7 @@ vcalpath = 'VOLT_CALIBS/ROE_VOLT_CALIBS'
 respathroot = 'FLIGHT'
 comminputs = dict(outparent=outparent,
     design=FPAdesign,
-    cdps=dict())
+    cdps=dict(gain=os.path.join(outparent, 'PTC_FPA','GAIN_MX_PTC0X.pick')))
 
 
 def run_TP11emul():
