@@ -62,7 +62,8 @@ FPAdesign='final'
 vcalpath = 'VOLT_CALIBS/ROE_VOLT_CALIBS'
 respathroot = 'FLIGHT'
 comminputs = dict(outparent=outparent,
-    design=FPAdesign)
+    design=FPAdesign,
+    cdps=dict())
 
 
 def run_TP11emul():
@@ -85,7 +86,7 @@ def run_BIAS02emul(addCRs=False):
     emulator = EmulFPA('BIAS02', **Binputs)
     emulator.run(doLoad=True, doParse=True, doEmul=False)
 
-    
+
 
 
 
