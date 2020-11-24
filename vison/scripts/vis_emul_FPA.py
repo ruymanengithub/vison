@@ -1,6 +1,8 @@
 
 # IMPORT STUFF
 from pdb import set_trace as stop
+import os
+import numpy as np
 
 from vison.metatests.pano import MetaPano
 from vison.support import cosmicrays as crs
