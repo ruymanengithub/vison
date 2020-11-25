@@ -121,7 +121,7 @@ class EmulFPA(MetaPano):
 
                     if CRs > 0:
 
-                        if ccounter == 0:
+                        if Qcounter == 0:
                             crImage = np.zeros_like(Qdata)
                             cosmics = cosmicrays(None, crImage, 
                                 information=dict(exptime=CRexptime))
@@ -136,7 +136,7 @@ class EmulFPA(MetaPano):
                         cosmics.image = np.zeros_like(Qdata) # reset
 
 
-                    ccounter += 1
+                    Qcounter += 1
 
                     kccdobj.set_quad(Qdata, Q,canonical=True, extension=-1)
 
