@@ -127,12 +127,12 @@ class EmulFPA(MetaPano):
                             cosmics = cosmicrays.Cosmicrays(None, crImage, 
                                 information=dict(exptime=CRexptime))
                         
-                        Q_cr = cosmics.addToFluxTime(CRs, limit=None, verbose=False) / gain
+                        Q_cr = cosmics.addToFluxTime(CRs, limit=None, verbose=False) / gain # ADU
 
-                        Qdata[kccdobj.prescan:kccdobj.overscan,vstart-1:vend] +=\
-                            Q_cr[kccdobj.prescan:kccdobj.overscan,vstart-1:vend]
+                        Qdata[kccdobj.prescan:-kccdobj.overscan,vstart-1:vend] +=\
+                            Q_cr[kccdobj.prescan:-kccdobj.overscan,vstart-1:vend]
 
-                        stop()
+                        
 
                         Qdata[np.where(Qdata > 2**16-1)] = 2**16-1
 
