@@ -16,11 +16,11 @@ from vison.support import cosmicrays
 
 class EmulFPA(MetaPano):
 
-    def __init__(self, testname, **kwargs):
+    def __init__(self, testnames, **kwargs):
 
         super(EmulFPA, self).__init__(**kwargs)
 
-        self.testnames = [testname]
+        self.testnames = testnames
 
     def prerun(self, doLoad=True, doParse=True, doEmul=True):
         """ """
@@ -30,7 +30,6 @@ class EmulFPA(MetaPano):
 
         dictiopick = os.path.join(self.outpathroot,
                                   '%s_dictionary.pick' % self.testkey.lower())
-
 
         if doLoad:
             print('Loading block(s) results...')
@@ -190,13 +189,42 @@ comminputs = dict(outparent=outparent,
     cdps=dict(gain=os.path.join('FPA_FINAL', 'PTC_FPA','GAIN_MX_PTC0X.pick')))
 ROtime = 72. # seconds
 
-def run_TP11emul():
+def run_TP11emul(CRs=0.,doLoad=False, doParse=False):
     """ """
 
-def run_TP21emul():
+    Tinputs = comminputs.copy()
+    Tinputs.update(dict(
+        testkey = 'TPX1',
+        jsonf='ALLTESTS.json',
+        inpathroot=inpathroot,
+        vcalfile = os.path.join(vcalpath,'CCD_CAL_CONVERSIONS_ALL_BLOCKS.xlsx')))
+
+
+    emulator = EmulFPA(['TP01','TP11', **Tinputs)
+    emulator.prerun(doLoad=doLoad, doParse=doParse)
+
+    stop()
+
+    if CRs>0.:
+        outfile = 'TPX1_emul_VGCCasFPA_CRs%.1f.fits' % CRs
+    else:
+        outfile = 'TPX1_emul_VGCCasFPA.fits'
+
+    simulkwargs = dict(CRs=CRs,
+        rep=1,
+        relObsid=5,
+        outfile=outfile,
+        CRexptime=ROtime/2.)
+
+    emulator.produce_emulation(**simulkwargs)
+
+def run_TP21emul(CRs=0.,doLoad=False, doParse=False):
     """ """
 
-def run_BIAS02emul(CRs=0.):
+def run_CHINJ01emul(CRs=0.,doLoad=False, doParse=False):
+    """ """
+
+def run_BIAS02emul(CRs=0.,doLoad=False, doParse=False):
     """ """
 
     Binputs = comminputs.copy()
@@ -207,8 +235,8 @@ def run_BIAS02emul(CRs=0.):
         vcalfile = os.path.join(vcalpath,'CCD_CAL_CONVERSIONS_ALL_BLOCKS.xlsx')))
 
 
-    emulator = EmulFPA('BIAS02', **Binputs)
-    emulator.prerun(doLoad=False, doParse=False)
+    emulator = EmulFPA(['BIAS02'], **Binputs)
+    emulator.prerun(doLoad=doLoad, doParse=doParse)
 
     if CRs>0.:
         outfile = 'BIAS02_emul_VGCCasFPA_CRs%.1f.fits' % CRs
@@ -225,16 +253,18 @@ def run_BIAS02emul(CRs=0.):
 
 
 
-
-
-def run_FFemul():
+def run_FFemul(CRs=0.,doLoad=False, doParse=False):
     """ """
 
 
 
 if __name__ == '__main__':
 
+    doLoad = True
+    doParse = True
 
-    run_BIAS02emul(CRs=0.)
-    #run_BIAS02emul(CRs=2.6)
+    run_TP11emul(CRs=0.,doLoad=doLoad, doParse=doParse)
+
+    #run_BIAS02emul(CRs=0.,doLoad=doLoad, doParse=doParse)
+    #run_BIAS02emul(CRs=2.6,doLoad=doLoad, doParse=doParse)
 
