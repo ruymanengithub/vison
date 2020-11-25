@@ -113,7 +113,7 @@ class EmulFPA(MetaPano):
 
                 for Q in self.Quads:
                     
-                    gain = self.cdps['GAIN'][block][CCDk][Q]
+                    gain = self.cdps['GAIN'][block][CCDk][Q][0]
 
                     Qdata = kccdobj.get_quad(Q, canonical=True, extension=-1)
 
@@ -126,7 +126,7 @@ class EmulFPA(MetaPano):
                             crImage = np.zeros_like(Qdata)
                             cosmics = cosmicrays.Cosmicrays(None, crImage, 
                                 information=dict(exptime=CRexptime))
-                        stop()
+                        
                         Q_cr = cosmics.addToFluxTime(CRs, limit=None, verbose=False) / gain
 
                         Qdata[kccdobj.prescan:kccdobj.overscan,vstart-1:vend] +=\
