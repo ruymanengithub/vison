@@ -159,7 +159,10 @@ class EmulFPA(MetaPano):
         CRs = kwargs['CRs']
         CRexptime = kwargs['CRexptime']
 
-        ccd_dict = self.get_ccd_dict(testname,irep,iobs)
+        try: 
+            ccd_dict = self.get_ccd_dict(testname,irep,iobs)
+        except:
+            stop()
 
         EMUheader = dict(COSMICRA=CRs)
 
@@ -284,8 +287,8 @@ def run_FFemul(CRs=0.,doLoad=False, doParse=False):
 
 if __name__ == '__main__':
 
-    doLoad = True
-    doParse = True
+    doLoad = False
+    doParse = False
 
     run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse)
 
