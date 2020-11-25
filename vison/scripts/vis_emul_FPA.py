@@ -124,7 +124,7 @@ class EmulFPA(MetaPano):
 
                         if Qcounter == 0:
                             crImage = np.zeros_like(Qdata)
-                            cosmics = cosmicrays.cosmicrays(None, crImage, 
+                            cosmics = cosmicrays.Cosmicrays(None, crImage, 
                                 information=dict(exptime=CRexptime))
 
                         Q_cr = cosmics.addToFluxTime(CRs, limit=None, verbose=False) / gain
