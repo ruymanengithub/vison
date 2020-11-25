@@ -200,7 +200,7 @@ def run_TP11emul(CRs=0.,doLoad=False, doParse=False):
         vcalfile = os.path.join(vcalpath,'CCD_CAL_CONVERSIONS_ALL_BLOCKS.xlsx')))
 
 
-    emulator = EmulFPA(['TP01','TP11', **Tinputs)
+    emulator = EmulFPA(['TP01','TP11'], **Tinputs)
     emulator.prerun(doLoad=doLoad, doParse=doParse)
 
     stop()
