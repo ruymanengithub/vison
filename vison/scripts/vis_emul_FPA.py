@@ -75,8 +75,13 @@ class EmulFPA(MetaPano):
                 inventoryitem = self.inventory[block][testname][irep]
 
                 iFileName = inventoryitem['dd'].mx['File_name'][iobs,jCCD]
-                idatapath = inventoryitem['dd'].mx['datapath'][iobs,jCCD]
+                ireldatapath = inventoryitem['dd'].mx['datapath'][iobs,jCCD]
 
+                idatapath = os.path.join('FLIGHT',block,\
+                    *ireldatapath.split(os.path.sep)[1:])
+
+                iFITS = os.path.join(idatapath,'{}.fits'.format(iFileName))
+                
                 stop()
 
                 
