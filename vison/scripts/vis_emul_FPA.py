@@ -203,7 +203,7 @@ def run_TP11emul(CRs=0.,doLoad=False, doParse=False):
     emulator = EmulFPA(['TP01','TP11'], **Tinputs)
     emulator.prerun(doLoad=doLoad, doParse=doParse)
 
-    stop()
+    stop() # how to deal with a test that changed named halfway through campaign?
 
     if CRs>0.:
         outfile = 'TPX1_emul_VGCCasFPA_CRs%.1f.fits' % CRs
@@ -223,6 +223,30 @@ def run_TP21emul(CRs=0.,doLoad=False, doParse=False):
 
 def run_CHINJ01emul(CRs=0.,doLoad=False, doParse=False):
     """ """
+
+    Cinputs = comminputs.copy()
+    Cinputs.update(dict(
+        testkey = 'CHINJ01',
+        jsonf='ALLTESTS.json',
+        respathroot=inpathroot,
+        vcalfile = os.path.join(vcalpath,'CCD_CAL_CONVERSIONS_ALL_BLOCKS.xlsx')))
+
+
+    emulator = EmulFPA(['CHINJ01'], **Tinputs)
+    emulator.prerun(doLoad=doLoad, doParse=doParse)
+
+    if CRs>0.:
+        outfile = 'CHINJ01_emul_VGCCasFPA_CRs%.1f.fits' % CRs
+    else:
+        outfile = 'CHNJ01_emul_VGCCasFPA.fits'
+
+    simulkwargs = dict(CRs=CRs,
+        rep=1,
+        relObsid=5,
+        outfile=outfile,
+        CRexptime=ROtime)
+
+    emulator.produce_emulation(**simulkwargs)
 
 def run_BIAS02emul(CRs=0.,doLoad=False, doParse=False):
     """ """
@@ -263,7 +287,9 @@ if __name__ == '__main__':
     doLoad = True
     doParse = True
 
-    run_TP11emul(CRs=0.,doLoad=doLoad, doParse=doParse)
+    run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse):
+
+    # run_TP11emul(CRs=0.,doLoad=doLoad, doParse=doParse)
 
     #run_BIAS02emul(CRs=0.,doLoad=doLoad, doParse=doParse)
     #run_BIAS02emul(CRs=2.6,doLoad=doLoad, doParse=doParse)
