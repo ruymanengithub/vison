@@ -83,7 +83,8 @@ class cosmicrays():
 
 
     def _readCosmicrayInformation(self):
-        self.log.info('Reading in cosmic ray information from %s and %s' % (self.information['cosmicraylength'],
+        if self.log is not None:
+            self.log.info('Reading in cosmic ray information from %s and %s' % (self.information['cosmicraylength'],
                                                                             self.information['cosmicraydistance']))
         #read in the information from the files
         crLengths = np.loadtxt(self.information['cosmicraylength'])
@@ -305,7 +306,8 @@ class cosmicrays():
         area_cr = np.count_nonzero(self.cosmicrayMap)
         text = 'The cosmic ray covering factor is %i pixels i.e. %.3f per cent' \
                % (area_cr, 100.*area_cr / (self.xsize*self.ysize))
-        self.log.info(text)
+        if self.log is not None:
+            self.log.info(text)
         
         print(text)
 
@@ -343,7 +345,8 @@ class cosmicrays():
         area_cr = np.count_nonzero(self.cosmicrayMap)
         text = 'The cosmic ray covering factor is %i pixels i.e. %.3f per cent' \
                % (area_cr, 100.*area_cr / (self.xsize*self.ysize))
-        self.log.info(text)
+        if self.log is not None:
+            self.log.info(text)
         print(text)
 
 
@@ -424,7 +427,8 @@ class cosmicrays():
             covering = 100.*area_cr / (self.xsize*self.ysize)
 
             text = 'The cosmic ray covering factor is %i pixels i.e. %.3f per cent' % (area_cr, covering)
-            self.log.info(text)
+            if self.log is not None:
+                self.log.info(text)
             #stop()
             cr_tot += cr_n
             
@@ -489,7 +493,8 @@ class cosmicrays():
         covering = 100.*area_cr / (self.xsize*self.ysize)
 
         text = 'The cosmic ray covering factor is %i pixels i.e. %.3f per cent' % (area_cr, covering)
-        self.log.info(text)
+        if self.log is not None:
+            self.log.info(text)
         #stop()
         
             

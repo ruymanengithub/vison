@@ -91,19 +91,19 @@ class EmulFPA(MetaPano):
         
         return ccd_dict
 
-    def tweak_quadrants(self, EMU, CRs=0., CRexptime=0.):
+    def tweak_quadrants(self, EMU, CRs=0., CRexptime=0., vstart=1,vend=2086):
         """
         Fixes additional serial overscan
         adds cosmic rays, if requested
         """
 
-        stop()
+        Qcounter = 0
 
         for jY in range(1, EMU.fpaobj.fpamodel.NSLICES + 1):
             for iX in range(1, EMU.fpaobj.fpamodel.NSLICES + 1):
                 CCDID = 'C_%i%i' % (jY, iX)
                 
-                locator = self.fpa.FPA_MAP[Ckey]
+                locator = self.fpa.FPA_MAP[CCDID]
 
                 block = locator[0]
                 CCDk = locator[1]
@@ -116,7 +116,34 @@ class EmulFPA(MetaPano):
 
                     Qdata = kccdobj.get_quad(Q, canonical=True, extension=-1)
 
-                    stop()
+
+                    Qdata[-9:,:] = Qdata[-18:-9,:].copy() # filling up extended serial overscan
+
+                    if CRs > 0:
+
+                        if ccounter == 0:
+                            crImage = np.zeros_like(Qdata)
+                            cosmics = cosmicrays(None, crImage, 
+                                information=dict(exptime=CRexptime))
+
+                        Q_cr = cosmics.addToFluxTime(CRs, limit=None, verbose=False) / gain
+
+                        Qdata[kccdobj.prescan:kccdobj.overscan,vstart-1:vend] +=\
+                            Q_cr[kccdobj.prescan:kccdobj.overscan,vstart-1:vend]
+
+                        Qdata[np.where(Qdata > 2**16-1)] = 2**16-1
+
+                        cosmics.image = np.zeros_like(Qdata) # reset
+
+
+                    ccounter += 1
+
+                    kccdobj.set_quad(Qdata, Q,canonical=True, extension=-1)
+
+
+                EMU.fpaobj.set_ccdobj(kccdobj, CCDID, inextension=-1)
+
+        return EMU
 
 
 
@@ -207,5 +234,5 @@ if __name__ == '__main__':
 
 
 
-    run_BIAS02emul(CRs=0.)
+    run_BIAS02emul(CRs=2.6)
 
