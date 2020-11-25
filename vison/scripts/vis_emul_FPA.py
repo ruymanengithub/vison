@@ -11,6 +11,7 @@ from vison.support import cosmicrays as crs
 from vison.support import files
 from vison.datamodel import ccd as ccdmod
 from vison.datamodel import cdp as cdpmod
+from vison.support import cosmicrays
 # END IMPORT
 
 class EmulFPA(MetaPano):
