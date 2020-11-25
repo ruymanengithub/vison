@@ -132,6 +132,8 @@ class EmulFPA(MetaPano):
                         Qdata[kccdobj.prescan:kccdobj.overscan,vstart-1:vend] +=\
                             Q_cr[kccdobj.prescan:kccdobj.overscan,vstart-1:vend]
 
+                        stop()
+
                         Qdata[np.where(Qdata > 2**16-1)] = 2**16-1
 
                         cosmics.image = np.zeros_like(Qdata) # reset
