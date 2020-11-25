@@ -132,7 +132,6 @@ class EmulFPA(MetaPano):
                         Qdata[kccdobj.prescan:-kccdobj.overscan,vstart-1:vend] +=\
                             Q_cr[kccdobj.prescan:-kccdobj.overscan,vstart-1:vend]
 
-                        
 
                         Qdata[np.where(Qdata > 2**16-1)] = 2**16-1
 
@@ -236,6 +235,6 @@ def run_FFemul():
 if __name__ == '__main__':
 
 
-
-    run_BIAS02emul(CRs=2.6)
+    run_BIAS02emul(CRs=0.)
+    #run_BIAS02emul(CRs=2.6)
 
