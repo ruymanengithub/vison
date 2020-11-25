@@ -126,7 +126,7 @@ class EmulFPA(MetaPano):
                             crImage = np.zeros_like(Qdata)
                             cosmics = cosmicrays.Cosmicrays(None, crImage, 
                                 information=dict(exptime=CRexptime))
-
+                        stop()
                         Q_cr = cosmics.addToFluxTime(CRs, limit=None, verbose=False) / gain
 
                         Qdata[kccdobj.prescan:kccdobj.overscan,vstart-1:vend] +=\
