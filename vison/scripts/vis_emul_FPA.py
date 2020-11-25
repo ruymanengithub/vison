@@ -97,7 +97,27 @@ class EmulFPA(MetaPano):
         adds cosmic rays, if requested
         """
 
-        stop()
+
+        for jY in range(1, self.fpamodel.NSLICES + 1):
+            for iX in range(1, self.fpamodel.NSLICES + 1):
+                CCDID = 'C_%i%i' % (jY, iX)
+                
+                locator = self.fpa.FPA_MAP[Ckey]
+
+                block = locator[0]
+                CCDk = locator[1]
+
+                kccdobj = EMU.fpaobj.get_ccdobj(CCDID)
+
+                for Q in self.Quads:
+                    
+                    gain = self.cdps['GAIN'][block][CCDk][Q]
+
+                    Qdata = kccdobj.get_quad(Q, canonical=True, extension=-1)
+
+                    stop()
+
+
 
 
     def produce_emulation(self, **kwargs):
