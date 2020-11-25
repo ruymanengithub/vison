@@ -111,14 +111,14 @@ class EmulFPA(MetaPano):
 
         EMUcdp = cdpmod.LE1_CDP()
 
-        EMUcdp.ingest_inputs(ccd_dict, header=EMUheader, inextension=1,
+        EMUcdp.ingest_inputs(ccd_dict, header=EMUheader, inextension=-1,
             fillval=0)
 
         EMUcdpname = outputname
 
         EMUcdp.savehardcopy(EMUcdpname, clobber=True, uint16=True)
         print('Emulation saved in: %s' % EMUcdpname)
-        
+
 
 
 
