@@ -97,9 +97,10 @@ class EmulFPA(MetaPano):
         adds cosmic rays, if requested
         """
 
+        stop()
 
-        for jY in range(1, self.fpamodel.NSLICES + 1):
-            for iX in range(1, self.fpamodel.NSLICES + 1):
+        for jY in range(1, EMU.fpaobj.fpamodel.NSLICES + 1):
+            for iX in range(1, EMU.fpaobj.fpamodel.NSLICES + 1):
                 CCDID = 'C_%i%i' % (jY, iX)
                 
                 locator = self.fpa.FPA_MAP[Ckey]
