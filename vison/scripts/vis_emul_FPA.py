@@ -287,7 +287,7 @@ if __name__ == '__main__':
     doLoad = True
     doParse = True
 
-    run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse):
+    run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse)
 
     # run_TP11emul(CRs=0.,doLoad=doLoad, doParse=doParse)
 
