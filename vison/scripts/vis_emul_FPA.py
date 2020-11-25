@@ -80,8 +80,11 @@ class EmulFPA(MetaPano):
                 iFileName = inventoryitem['dd'].mx['File_name'][iobs,jCCD]
                 ireldatapath = inventoryitem['dd'].mx['datapath'][iobs,jCCD]
 
-                idatapath = os.path.join('FLIGHT',block,\
+                try:
+                    idatapath = os.path.join('FLIGHT',block,\
                     *ireldatapath.split(os.path.sep)[1:])
+                except:
+                    stop()
 
                 iFITS = os.path.join(idatapath,'{}.fits'.format(iFileName))
 
@@ -159,10 +162,7 @@ class EmulFPA(MetaPano):
         CRs = kwargs['CRs']
         CRexptime = kwargs['CRexptime']
 
-        try: 
-            ccd_dict = self.get_ccd_dict(testname,irep,iobs)
-        except:
-            stop()
+        ccd_dict = self.get_ccd_dict(testname,irep,iobs)
 
         EMUheader = dict(COSMICRA=CRs)
 
