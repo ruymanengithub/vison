@@ -91,8 +91,13 @@ class EmulFPA(MetaPano):
         
         return ccd_dict
 
+    def tweak_quadrants(self, EMU, CRs=0., CRexptime=0.):
+        """
+        Fixes additional serial overscan
+        adds cosmic rays, if requested
+        """
 
-                
+        stop()
 
 
     def produce_emulation(self, **kwargs):
@@ -102,22 +107,24 @@ class EmulFPA(MetaPano):
         irep = kwargs['rep']-1
         iobs = kwargs['relObsid']
         outputname = kwargs['outfile']
-        
+        CRs = kwargs['CRs']
+        CRexptime = kwargs['CRexptime']
 
         ccd_dict = self.get_ccd_dict(testname,irep,iobs)
 
-        EMUheader = dict()
+        EMUheader = dict(COSMICRA=CRs)
 
+        EMU = cdpmod.LE1_CDP()
 
-        EMUcdp = cdpmod.LE1_CDP()
-
-        EMUcdp.ingest_inputs(ccd_dict, header=EMUheader, inextension=-1,
+        EMU.ingest_inputs(ccd_dict, header=EMUheader, inextension=-1,
             fillval=0)
 
-        EMUcdpname = outputname
+        EMU = self.tweak_quadrants(EMU, CRs, CRexptime)
 
-        EMUcdp.savehardcopy(EMUcdpname, clobber=True, uint16=True)
-        print('Emulation saved in: %s' % EMUcdpname)
+        EMUname = os.path.join(self.outpathroot, outputname)
+
+        EMU.savehardcopy(EMUname, clobber=True, uint16=True)
+        print('Emulation saved in: %s' % EMUname)
 
 
 
@@ -127,11 +134,11 @@ class EmulFPA(MetaPano):
 outparent = 'FPA_SIMULS'
 FPAdesign='final'
 vcalpath = 'VOLT_CALIBS/ROE_VOLT_CALIBS'
-respathroot = 'FLIGHT'
+inpathroot = 'FLIGHT'
 comminputs = dict(outparent=outparent,
     design=FPAdesign,
     cdps=dict(gain=os.path.join('FPA_FINAL', 'PTC_FPA','GAIN_MX_PTC0X.pick')))
-
+ROtime = 72. # seconds
 
 def run_TP11emul():
     """ """
@@ -139,24 +146,30 @@ def run_TP11emul():
 def run_TP21emul():
     """ """
 
-def run_BIAS02emul(addCRs=False):
+def run_BIAS02emul(CRs=0.):
     """ """
 
     Binputs = comminputs.copy()
     Binputs.update(dict(
         testkey = 'BIAS02',
         jsonf='ALLTESTS.json',
-        respathroot=respathroot,
+        inpathroot=inpathroot,
         vcalfile = os.path.join(vcalpath,'CCD_CAL_CONVERSIONS_ALL_BLOCKS.xlsx')))
 
 
     emulator = EmulFPA('BIAS02', **Binputs)
     emulator.prerun(doLoad=False, doParse=False)
 
-    simulkwargs = dict(addCRs=addCRs,
+    if CRs>0.:
+        outfile = 'BIAS02_emul_VGCCasFPA_CRs%.1f.fits' % CRs
+    else:
+        outfile = 'BIAS02_emul_VGCCasFPA.fits'
+
+    simulkwargs = dict(CRs=CRs,
         rep=1,
         relObsid=5,
-        outfile=os.path.join(respathroot,'BIAS02_emul_VGCCasFPA.fits'))
+        outfile=outfile,
+        CRexptime=ROtime/2.)
 
     emulator.produce_emulation(**simulkwargs)
 
@@ -173,5 +186,5 @@ if __name__ == '__main__':
 
 
 
-    run_BIAS02emul(addCRs=True)
+    run_BIAS02emul(CRs=0.)
 
