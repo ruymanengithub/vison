@@ -232,7 +232,7 @@ def run_CHINJ01emul(CRs=0.,doLoad=False, doParse=False):
         vcalfile = os.path.join(vcalpath,'CCD_CAL_CONVERSIONS_ALL_BLOCKS.xlsx')))
 
 
-    emulator = EmulFPA(['CHINJ01'], **Tinputs)
+    emulator = EmulFPA(['CHINJ01'], **Cinputs)
     emulator.prerun(doLoad=doLoad, doParse=doParse)
 
     if CRs>0.:
