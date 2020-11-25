@@ -39,7 +39,7 @@ import os
 _path = os.path.abspath(data.__file__)
 dpath = os.path.dirname(_path)
 
-class cosmicrays():
+class Cosmicrays():
     """
     Cosmic ray generation class. Can either draw events from distributions or
     set the energy of the events to a constant.
@@ -589,7 +589,7 @@ if __name__ == "__main__":
     crImage = np.zeros((2066, 2048), dtype=np.float64)
     
     #cosmic ray instance
-    cosmics = cosmicrays(log, crImage, information=dict(exptime=565))
+    cosmics = Cosmicrays(log, crImage, information=dict(exptime=565))
     
     #add cosmic rays up to the covering fraction
     CCD_cr = cosmics.addToFluxTime(5., limit=None, verbose=True)
