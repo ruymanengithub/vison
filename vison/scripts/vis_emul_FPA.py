@@ -196,7 +196,7 @@ def run_TP11emul(CRs=0.,doLoad=False, doParse=False):
     Tinputs.update(dict(
         testkey = 'TPX1',
         jsonf='ALLTESTS.json',
-        inpathroot=inpathroot,
+        respathroot=inpathroot,
         vcalfile = os.path.join(vcalpath,'CCD_CAL_CONVERSIONS_ALL_BLOCKS.xlsx')))
 
 
@@ -231,7 +231,7 @@ def run_BIAS02emul(CRs=0.,doLoad=False, doParse=False):
     Binputs.update(dict(
         testkey = 'BIAS02',
         jsonf='ALLTESTS.json',
-        inpathroot=inpathroot,
+        respathroot=inpathroot,
         vcalfile = os.path.join(vcalpath,'CCD_CAL_CONVERSIONS_ALL_BLOCKS.xlsx')))
 
 
