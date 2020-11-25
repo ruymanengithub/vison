@@ -3,11 +3,14 @@
 from pdb import set_trace as stop
 import os
 import numpy as np
+import copy
 
 from vison.metatests.pano import MetaPano
 from vison.metatests.bias import MetaBias
 from vison.support import cosmicrays as crs
 from vison.support import files
+from vison.datamodel import ccd as ccdmod
+from vison.datamodel import cdp as cdpmod
 # END IMPORT
 
 class EmulFPA(MetaPano):
@@ -81,8 +84,13 @@ class EmulFPA(MetaPano):
                     *ireldatapath.split(os.path.sep)[1:])
 
                 iFITS = os.path.join(idatapath,'{}.fits'.format(iFileName))
-                
-                stop()
+
+                iccdobj = ccdmod.CCD(iFITS)
+
+                ccd_dict[Ckey] = copy.deepcopy(iccdobj)
+        
+        return ccd_dict
+
 
                 
 
@@ -93,10 +101,27 @@ class EmulFPA(MetaPano):
         testname = self.testnames[0]
         irep = kwargs['rep']-1
         iobs = kwargs['relObsid']
+        outputname = kwargs['outfile']
+        
+
         ccd_dict = self.get_ccd_dict(testname,irep,iobs)
 
+        EMUheader = dict()
 
-        stop()
+
+        EMUcdp = cdpmod.LE1_CDP()
+
+        EMUcdp.ingest_inputs(ccd_dict, header=EMUheader, inextension=1,
+            fillval=0)
+
+        EMUcdpname = outputname
+
+        EMUcdp.savehardcopy(EMUcdpname, clobber=True, uint16=True)
+        print('Emulation saved in: %s' % EMUcdpname)
+        
+
+
+
 
 
 outparent = 'FPA_SIMULS'
@@ -130,7 +155,8 @@ def run_BIAS02emul(addCRs=False):
 
     simulkwargs = dict(addCRs=addCRs,
         rep=1,
-        relObsid=5)
+        relObsid=5,
+        outfile=os.path.join(respathroot,'BIAS02_emul_VGCCasFPA.fits'))
 
     emulator.produce_emulation(**simulkwargs)
 
