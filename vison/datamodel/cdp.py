@@ -208,7 +208,7 @@ class Tables_CDP(CDP):
         _kwargs = dict(multicolumn=True, multirow=True, longtable=True, index=False)
         _kwargs.update(kwargs)
         if 'columns' in _kwargs:
-            data = self.data[sheet][:,_kwargs['columns']].copy()
+            data = self.data[sheet].loc[:,_kwargs['columns']].copy()
         else:
             data = self.data[sheet].copy()
 
