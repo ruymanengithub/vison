@@ -434,7 +434,7 @@ class CHINJ01(InjTask):
 
             caption = 'CHINJ01: Model parameters. Notice that the model fits injection values divided by $2^{16}$. ' +\
                 'BGD [adim.], K [adim.], XT [V], XN [V], A[1/V], N [adim.].'
-            
+
             MFtex = MFCH01_cdp.get_textable(sheet='ANALYSIS',
                                             columns=selcolumns,
                                             caption=caption,
@@ -470,7 +470,7 @@ class CHINJ01(InjTask):
 
             selcolumns = ['CCD', 'Q', 'BGD_ADU', 'IG1_THRESH', 'IG1_NOTCH', 'S', 'N_ADU']
 
-            ext_formatters = [fccd, fq] + [ff, ff, ff, ff, ff, ff]
+            ext_formatters = [fccd, fq] + [ff, ff, ff, ff, ff]
 
             caption = 'CHINJ01: Model - derived values. ' +\
                 'BGD\_ADU: background level in ADUs; IG1\_THRESH: injection threshold voltage; ' +\
