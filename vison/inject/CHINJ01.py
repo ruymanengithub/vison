@@ -434,7 +434,7 @@ class CHINJ01(InjTask):
 
             caption = 'CHINJ01: Model parameters. Notice that the model fits injection values divided by $2^{16}$. ' +\
                 'BGD [adim.], K [adim.], XT [V], XN [V], A[1/V], N [adim.].'
-
+            stop()
             MFtex = MFCH01_cdp.get_textable(sheet='ANALYSIS',
                                             columns=selcolumns,
                                             caption=caption,
