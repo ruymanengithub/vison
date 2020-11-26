@@ -291,7 +291,7 @@ def run_FFemul(CRs=0.,doLoad=False, doParse=False):
         vcalfile = os.path.join(vcalpath,'CCD_CAL_CONVERSIONS_ALL_BLOCKS.xlsx')))
 
 
-    emulator = EmulFPA(['FLAT02_730'], **Binputs)
+    emulator = EmulFPA(['FLAT02_730'], **Finputs)
     emulator.prerun(doLoad=doLoad, doParse=doParse)
 
     if CRs>0.:
@@ -303,7 +303,7 @@ def run_FFemul(CRs=0.,doLoad=False, doParse=False):
         rep=1,
         relObsid=5,
         outfile=outfile,
-        CRexptime=ROtime/2.)
+        CRexptime=ROtime/2.+10.)
 
     emulator.produce_emulation(**simulkwargs)
 
