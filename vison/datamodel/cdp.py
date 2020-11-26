@@ -211,7 +211,7 @@ class Tables_CDP(CDP):
             data = self.data[sheet].loc[:,_kwargs['columns']].copy()
         else:
             data = self.data[sheet].copy()
-
+        stop()
         tex = data.to_latex(**_kwargs)
         
         #if 'columns' not in _kwargs:
