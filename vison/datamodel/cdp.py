@@ -207,14 +207,17 @@ class Tables_CDP(CDP):
         """ """
         _kwargs = dict(multicolumn=True, multirow=True, longtable=True, index=False)
         _kwargs.update(kwargs)
-        stop()
-        tex = self.data[sheet].to_latex(**_kwargs)
-        
-
-        if 'columns' not in _kwargs:
-            ncols = len(self.data[sheet].columns)
+        if 'columns' in _kwargs:
+            data = self.data[sheet][:,_kwargs['columns']].copy()
         else:
-            ncols = len(_kwargs['columns'])
+            data = self.data[sheet].copy()
+
+        tex = data.to_latex(**_kwargs)
+        
+        #if 'columns' not in _kwargs:
+        #    ncols = len(self.data[sheet].columns)
+        #else:
+        ncols = len(_kwargs['columns'])
 
         if _kwargs['index']:
             ncols += 1
