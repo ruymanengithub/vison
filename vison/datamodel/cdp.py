@@ -207,7 +207,10 @@ class Tables_CDP(CDP):
         """ """
         _kwargs = dict(multicolumn=True, multirow=True, longtable=True, index=False)
         _kwargs.update(kwargs)
-        tex = self.data[sheet].to_latex(**_kwargs)
+        try:
+            tex = self.data[sheet].to_latex(**_kwargs)
+        except:
+            stop()
 
         if 'columns' not in _kwargs:
             ncols = len(self.data[sheet].columns)
