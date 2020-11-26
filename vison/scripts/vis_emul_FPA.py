@@ -323,5 +323,5 @@ if __name__ == '__main__':
     #run_BIAS02emul(CRs=0.,doLoad=doLoad, doParse=doParse)
     #run_BIAS02emul(CRs=2.6,doLoad=doLoad, doParse=doParse)
 
-    run_FFemul(CRs=0.,doLoad=doLoad, doParse=doParse)
-    #run_FFemul(CRs=2.6,doLoad=doLoad, doParse=doParse)
+    #run_FFemul(CRs=0.,doLoad=doLoad, doParse=doParse)
+    run_FFemul(CRs=2.6,doLoad=doLoad, doParse=doParse)
