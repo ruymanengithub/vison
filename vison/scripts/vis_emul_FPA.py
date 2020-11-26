@@ -92,6 +92,11 @@ class EmulFPA(MetaPano):
         
         return ccd_dict
 
+    def _f_tweak_quadrant(self, Qdata):
+        """ """
+        Qdata[-9:,:] = Qdata[-18:-9,:].copy() # filling up extended serial overscan
+        return Qdata
+
     def tweak_quadrants(self, EMU, CRs=0., CRexptime=0., vstart=1,vend=2086):
         """
         Fixes additional serial overscan
@@ -117,8 +122,7 @@ class EmulFPA(MetaPano):
 
                     Qdata = kccdobj.get_quad(Q, canonical=True, extension=-1)
 
-
-                    Qdata[-9:,:] = Qdata[-18:-9,:].copy() # filling up extended serial overscan
+                    Qdata = self._f_tweak_quadrant(Qdata)
 
                     if CRs > 0:
 
@@ -137,10 +141,8 @@ class EmulFPA(MetaPano):
 
                         cosmics.image = np.zeros_like(Qdata) # reset
 
-
-                    Qcounter += 1
-
                     kccdobj.set_quad(Qdata, Q,canonical=True, extension=-1)
+                    Qcounter += 1
 
 
                 EMU.fpaobj.set_ccdobj(kccdobj, CCDID, inextension=-1)
@@ -281,17 +283,45 @@ def run_BIAS02emul(CRs=0.,doLoad=False, doParse=False):
 def run_FFemul(CRs=0.,doLoad=False, doParse=False):
     """ """
 
+    Finputs = comminputs.copy()
+    Finputs.update(dict(
+        testkey = 'FLAT02_730',
+        jsonf='ALLTESTS.json',
+        respathroot=inpathroot,
+        vcalfile = os.path.join(vcalpath,'CCD_CAL_CONVERSIONS_ALL_BLOCKS.xlsx')))
+
+
+    emulator = EmulFPA(['FLAT02_730'], **Binputs)
+    emulator.prerun(doLoad=doLoad, doParse=doParse)
+
+    if CRs>0.:
+        outfile = 'FLAT02_730_emul_VGCCasFPA_CRs%.1f.fits' % CRs
+    else:
+        outfile = 'FLAT02_730_emul_VGCCasFPA.fits'
+
+    simulkwargs = dict(CRs=CRs,
+        rep=1,
+        relObsid=5,
+        outfile=outfile,
+        CRexptime=ROtime/2.)
+
+    emulator.produce_emulation(**simulkwargs)
+
+
 
 
 if __name__ == '__main__':
 
-    doLoad = False
-    doParse = False
+    doLoad = True
+    doParse = True
 
-    run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse)
+    #run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse)
 
-    # run_TP11emul(CRs=0.,doLoad=doLoad, doParse=doParse)
+    #run_TP11emul(CRs=0.,doLoad=doLoad, doParse=doParse)
+    #run_TP21emul(CRs=0.,doLoad=doLoad, doParse=doParse)
 
     #run_BIAS02emul(CRs=0.,doLoad=doLoad, doParse=doParse)
     #run_BIAS02emul(CRs=2.6,doLoad=doLoad, doParse=doParse)
 
+    run_FFemul(CRs=0.,doLoad=doLoad, doParse=doParse)
+    #run_FFemul(CRs=2.6,doLoad=doLoad, doParse=doParse)
