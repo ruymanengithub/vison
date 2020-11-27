@@ -206,7 +206,7 @@ class Tables_CDP(CDP):
                      **kwargs):
         """ """
         _kwargs = dict(multicolumn=True, multirow=True, longtable=True, index=False)
-        stop()
+        
         _kwargs.update(kwargs)
         if 'columns' in _kwargs:
             data = self.data[sheet].loc[:,_kwargs['columns']].copy()
@@ -219,7 +219,7 @@ class Tables_CDP(CDP):
         #    ncols = len(self.data[sheet].columns)
         #else:
         #    ncols = len(_kwargs['columns'])
-        ncols = len(data[sheet].columns)
+        ncols = len(data.columns)
 
         if _kwargs['index']:
             ncols += 1
