@@ -164,7 +164,7 @@ class PumpTask(InjTask):
             def ff(x): return '%.1f' % x
 
             formatters = [ff, ff, ff]
-
+            stop()
             CHINJtex = chinj_cdp.get_textable(sheet='CHINJ',
                                               caption='%s: Charge Injection Levels (ADU).' %
                                               self.inputs['test'],

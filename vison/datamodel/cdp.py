@@ -206,6 +206,7 @@ class Tables_CDP(CDP):
                      **kwargs):
         """ """
         _kwargs = dict(multicolumn=True, multirow=True, longtable=True, index=False)
+        stop()
         _kwargs.update(kwargs)
         if 'columns' in _kwargs:
             data = self.data[sheet].loc[:,_kwargs['columns']].copy()
