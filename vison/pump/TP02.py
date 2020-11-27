@@ -595,7 +595,7 @@ class TP02(PumpTask):
         for CCDk in CCDs:
 
             kmergedata = mergecat[CCDk].copy()
-            colnames = list(kmergedata[allQuads[0]][modkeys[0]].keys()).tolist()
+            colnames = list(kmergedata[allQuads[0]][modkeys[0]].keys())
 
             for Q in allQuads:
                 for modkey in modkeys:
