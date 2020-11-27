@@ -217,7 +217,8 @@ class Tables_CDP(CDP):
         #if 'columns' not in _kwargs:
         #    ncols = len(self.data[sheet].columns)
         #else:
-        ncols = len(_kwargs['columns'])
+        #    ncols = len(_kwargs['columns'])
+        ncols = len(data[sheet].columns)
 
         if _kwargs['index']:
             ncols += 1
