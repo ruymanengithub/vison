@@ -319,14 +319,14 @@ if __name__ == '__main__':
     doParse = True
     doEmul = False
 
-    run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
     #run_CHINJ01emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
 
     #run_TP11emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
     #run_TP21emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
-    #run_BIAS02emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    run_BIAS02emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
     #run_BIAS02emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
     #run_FFemul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
