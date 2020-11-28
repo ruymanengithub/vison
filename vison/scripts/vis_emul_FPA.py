@@ -192,7 +192,7 @@ comminputs = dict(outparent=outparent,
     cdps=dict(gain=os.path.join('FPA_FINAL', 'PTC_FPA','GAIN_MX_PTC0X.pick')))
 ROtime = 72. # seconds
 
-def run_TP11emul(CRs=0.,doLoad=False, doParse=False):
+def run_TP11emul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
     """ """
 
     Tinputs = comminputs.copy()
@@ -218,13 +218,13 @@ def run_TP11emul(CRs=0.,doLoad=False, doParse=False):
         relObsid=5,
         outfile=outfile,
         CRexptime=ROtime/2.)
+    if doEmul:
+        emulator.produce_emulation(**simulkwargs)
 
-    emulator.produce_emulation(**simulkwargs)
-
-def run_TP21emul(CRs=0.,doLoad=False, doParse=False):
+def run_TP21emul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
     """ """
 
-def run_CHINJ01emul(CRs=0.,doLoad=False, doParse=False):
+def run_CHINJ01emul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
     """ """
 
     Cinputs = comminputs.copy()
@@ -249,9 +249,10 @@ def run_CHINJ01emul(CRs=0.,doLoad=False, doParse=False):
         outfile=outfile,
         CRexptime=ROtime)
 
-    emulator.produce_emulation(**simulkwargs)
+    if doEmul:
+        emulator.produce_emulation(**simulkwargs)
 
-def run_BIAS02emul(CRs=0.,doLoad=False, doParse=False):
+def run_BIAS02emul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
     """ """
 
     Binputs = comminputs.copy()
@@ -276,11 +277,12 @@ def run_BIAS02emul(CRs=0.,doLoad=False, doParse=False):
         outfile=outfile,
         CRexptime=ROtime/2.)
 
-    emulator.produce_emulation(**simulkwargs)
+    if doEmul:
+        emulator.produce_emulation(**simulkwargs)
 
 
 
-def run_FFemul(CRs=0.,doLoad=False, doParse=False):
+def run_FFemul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
     """ """
 
     Finputs = comminputs.copy()
@@ -305,7 +307,8 @@ def run_FFemul(CRs=0.,doLoad=False, doParse=False):
         outfile=outfile,
         CRexptime=ROtime/2.+10.)
 
-    emulator.produce_emulation(**simulkwargs)
+    if doEmul:
+        emulator.produce_emulation(**simulkwargs)
 
 
 
@@ -314,14 +317,17 @@ if __name__ == '__main__':
 
     doLoad = True
     doParse = True
+    doEmul = False
 
-    #run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse)
+    run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_CHINJ01emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
-    #run_TP11emul(CRs=0.,doLoad=doLoad, doParse=doParse)
-    #run_TP21emul(CRs=0.,doLoad=doLoad, doParse=doParse)
 
-    #run_BIAS02emul(CRs=0.,doLoad=doLoad, doParse=doParse)
-    #run_BIAS02emul(CRs=2.6,doLoad=doLoad, doParse=doParse)
+    #run_TP11emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_TP21emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
-    #run_FFemul(CRs=0.,doLoad=doLoad, doParse=doParse)
-    run_FFemul(CRs=2.6,doLoad=doLoad, doParse=doParse)
+    #run_BIAS02emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_BIAS02emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+
+    #run_FFemul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_FFemul(CRs=2.6,doLoad=doLoad, doParse=doParse), doEmul=doEmul
