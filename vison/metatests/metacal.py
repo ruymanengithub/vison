@@ -134,6 +134,7 @@ class MetaCal(object):
         if doParse:
             print('Parsing results')
             for testname in self.testnames:
+                stop()
                 self.parse_test_results(testname)
             parsedbundle = dict(PT=self.ParsedTable,
                                 products=self.products)
@@ -440,7 +441,6 @@ class MetaCal(object):
                 Nreps = len(self.inventory[block][testname])
             except KeyError:
                 print(('block %s not found!' % block))
-                stop()
                 continue
 
             for jrep in range(Nreps):
