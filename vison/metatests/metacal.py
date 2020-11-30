@@ -134,7 +134,6 @@ class MetaCal(object):
         if doParse:
             print('Parsing results')
             for testname in self.testnames:
-                stop()
                 self.parse_test_results(testname)
             parsedbundle = dict(PT=self.ParsedTable,
                                 products=self.products)
@@ -456,7 +455,10 @@ class MetaCal(object):
                 if (iblock == 0) and (jrep == 0):
                     pt = copy.deepcopy(sit)
                 else:
-                    pt = self.stackTables(pt, sit)
+                    try:
+                        pt = self.stackTables(pt, sit)
+                    except:
+                        stop()
 
         self.ParsedTable[testname] = pt
 
