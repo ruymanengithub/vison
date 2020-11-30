@@ -245,7 +245,7 @@ def run_TP21emul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
     emulator = EmulFPA(['TP02','TP21'], **Tinputs)
     emulator.prerun(doLoad=doLoad, doParse=doParse)
 
-    emulator.ParsedTable['TP01']['TEST'] = 'TP21' # hack
+    emulator.ParsedTable['TP02']['TEST'] = 'TP21' # hack
     emulator.ParsedTable['TP21'] = table.vstack([emulator.ParsedTable['TP02'],\
         emulator.ParsedTable['TP21']])
     _ = emulator.ParsedTable.pop('TP02')
