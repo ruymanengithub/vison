@@ -214,7 +214,7 @@ def run_TP11emul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
 
     for block in emulator.blocks:
         if 'TP01' in emulator.inventory[block]:
-            emulator.inventory[block]['TP11'] = copy.deepcopy(emulator.inventory['block']['TP01'])
+            emulator.inventory[block]['TP11'] = copy.deepcopy(emulator.inventory[block]['TP01'])
             _ = emulator.inventory[block]['TP01'].pop()
 
 
