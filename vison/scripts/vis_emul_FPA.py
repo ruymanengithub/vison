@@ -319,9 +319,9 @@ def run_FFemul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
 
 if __name__ == '__main__':
 
-    doLoad = True
-    doParse = True
-    doEmul = False
+    doLoad = False
+    doParse = False
+    doEmul = True
 
     #run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
     #run_CHINJ01emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
