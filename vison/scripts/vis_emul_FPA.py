@@ -179,7 +179,7 @@ class EmulFPA(MetaPano):
         print('Emulation saved in: %s' % EMUname)
 
 
-class EmulFPA_TPX2(MetaPano):
+class EmulFPA_TPX2(EmulFPA):
 
     def _f_tweak_quadrant(self, Qdata):
         """ """
@@ -373,7 +373,7 @@ if __name__ == '__main__':
     doParse = True
     doEmul = True
 
-    run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
     #run_CHINJ01emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
 
