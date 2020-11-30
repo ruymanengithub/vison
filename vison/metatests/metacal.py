@@ -452,13 +452,10 @@ class MetaCal(object):
 
                 # MERGING WITH PREVIOUS DDs
 
-                if (iblock == 0) and (jrep == 0):
+                try:
+                    pt = self.stackTables(pt, sit)
+                except NameError:
                     pt = copy.deepcopy(sit)
-                else:
-                    try:
-                        pt = self.stackTables(pt, sit)
-                    except:
-                        stop()
 
         self.ParsedTable[testname] = pt
 
