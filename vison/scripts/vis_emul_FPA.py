@@ -181,14 +181,14 @@ class EmulFPA(MetaPano):
 
         EMUnameMOS = EMUname.replace('.fits','_MOS.fits')
 
-        imgFPA = EMU.get_as_FPAmosaic().T.copy()
+        imgFPA = EMU.fpaobj.get_as_FPAmosaic().T.copy()
 
         hduFPA = fts.ImageHDU(data=imgFPA)
         hduFPA.scale('int16','',bzero=32768)
         hduFPA.writeto(EMUnameMOS,overwrite=True)
 
         print('...and also in: %s' % EMUnameMOS)
-        
+
 
 
 class EmulFPA_TPX2(EmulFPA):
