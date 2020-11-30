@@ -4,6 +4,7 @@ from pdb import set_trace as stop
 import os
 import numpy as np
 import copy
+from astropy import table
 
 from vison.metatests.pano import MetaPano
 from vison.metatests.bias import MetaBias
@@ -205,6 +206,13 @@ def run_TP11emul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
 
     emulator = EmulFPA(['TP01','TP11'], **Tinputs)
     emulator.prerun(doLoad=doLoad, doParse=doParse)
+
+    emulator.ParsedTable['TP01']['TEST'] = 'TP11' # hack
+    emulator.ParsedTable['TP11'] = table.vstack([emulator.ParsedTable['TP01'],\
+        emulator.ParsedTable['TP11']])
+    _ = emulator.ParsedTable.pop('TP01')
+
+    emulator.testnames = ['TP11']
 
     stop() # how to deal with a test that changed named halfway through campaign?
 
