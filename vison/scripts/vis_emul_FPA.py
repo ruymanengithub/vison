@@ -99,7 +99,7 @@ class EmulFPA(MetaPano):
         Qdata[-9:,:] = Qdata[-18:-9,:].copy() # filling up extended serial overscan
         return Qdata
 
-    def tweak_quadrants(self, EMU, CRs=0., CRexptime=0., vstart=1,vend=2086):
+    def tweak_quadrants(self, EMU, CRs=0., CRexptime=0.):
         """
         Fixes additional serial overscan
         adds cosmic rays, if requested
@@ -125,6 +125,10 @@ class EmulFPA(MetaPano):
                     Qdata = kccdobj.get_quad(Q, canonical=True, extension=-1)
 
                     Qdata = self._f_tweak_quadrant(Qdata)
+
+                    vstart=1
+                    vend = max(np.where(Qdata!=0)[1])+1
+                    stop()
 
                     if CRs > 0:
 
@@ -386,18 +390,18 @@ if __name__ == '__main__':
     doParse = False
     doEmul = True
 
-    run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
-    run_CHINJ01emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_CHINJ01emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
     #run_TP11emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
     #run_TP11emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
     #run_TP21emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
-    #run_TP21emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    run_TP21emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
     #run_BIAS02emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
     #run_BIAS02emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
-    run_FFemul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
-    run_FFemul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_FFemul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_FFemul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
