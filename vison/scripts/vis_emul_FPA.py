@@ -234,6 +234,43 @@ def run_TP11emul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
 def run_TP21emul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
     """ """
 
+    Tinputs = comminputs.copy()
+    Tinputs.update(dict(
+        testkey = 'TPX1',
+        jsonf='ALLTESTS.json',
+        respathroot=inpathroot,
+        vcalfile = os.path.join(vcalpath,'CCD_CAL_CONVERSIONS_ALL_BLOCKS.xlsx')))
+
+
+    emulator = EmulFPA(['TP02','TP21'], **Tinputs)
+    emulator.prerun(doLoad=doLoad, doParse=doParse)
+
+    emulator.ParsedTable['TP01']['TEST'] = 'TP21' # hack
+    emulator.ParsedTable['TP21'] = table.vstack([emulator.ParsedTable['TP02'],\
+        emulator.ParsedTable['TP21']])
+    _ = emulator.ParsedTable.pop('TP02')
+
+    emulator.testnames = ['TP21']
+
+    for block in emulator.blocks:
+        if 'TP02' in emulator.inventory[block]:
+            emulator.inventory[block]['TP21'] = copy.deepcopy(emulator.inventory[block]['TP02'])
+            _ = emulator.inventory[block]['TP02'].pop()
+
+
+    if CRs>0.:
+        outfile = 'TPX2_emul_VGCCasFPA_CRs%.1f.fits' % CRs
+    else:
+        outfile = 'TPX2_emul_VGCCasFPA.fits'
+
+    simulkwargs = dict(CRs=CRs,
+        rep=1,
+        relObsid=5,
+        outfile=outfile,
+        CRexptime=200.) # 100 seconds of ro+pumping.
+    if doEmul:
+        emulator.produce_emulation(**simulkwargs)
+
 def run_CHINJ01emul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
     """ """
 
@@ -325,18 +362,18 @@ def run_FFemul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
 
 if __name__ == '__main__':
 
-    doLoad = False
-    doParse = False
+    doLoad = True
+    doParse = True
     doEmul = True
 
     #run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
     #run_CHINJ01emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
 
-    run_TP11emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_TP11emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
     #run_TP11emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
-    #run_TP21emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    run_TP21emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
     #run_TP21emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
     #run_BIAS02emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
