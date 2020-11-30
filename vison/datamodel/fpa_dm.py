@@ -304,6 +304,43 @@ class FPA_LE1(object):
 
                 self.set_ccdobj(kccdobj, CCDID, inextension=-1)
 
+    def get_as_FPAmosaic(self):
+        """Returns a copy of self as an FPA mosaic"""
+
+        QNAXIS1 = self.QNAXIS1
+        QNAXIS2 = self.QNAXIS2
+        NSLICES = self.fpamodel.NSLICES
+        NCOLS = self.fpamodel.NCOLS
+
+        img = np.zeros((QNAXIS1*2*NCOLS,QNAXIS2*2*NSLICES))
+
+        for iext in range(1,self.NEXTENSIONS):
+            
+            extdata = self.extensions[iext].data.copy() # notice the y-inversion
+            extname = self.extensions[iext].header['EXTNAME']
+            islice = int(extname[0])
+            icol = int(extname[2])
+            Q = extname[4]
+
+            llx = (icol-1)*2*QNAXIS1
+            lly = (islice-1)*2*QNAXIS2
+
+            if icol<=3:
+                xdeltaQ = dict(E=0,F=1,G=1,H=0)
+                ydeltaQ = dict(E=0,F=0,G=1,H=1)
+            else:
+                xdeltaQ = dict(E=1,F=0,G=0,H=1)
+                ydeltaQ = dict(E=1,F=1,G=0,H=0)
+
+            llx += xdeltaQ[Q]*QNAXIS1
+            lly += ydeltaQ[Q]*QNAXIS2
+
+            img[llx:llx+QNAXIS1,lly:lly+QNAXIS2] = extdata.copy()
+
+        return img
+
+
+
 
 
 def test1():
@@ -323,5 +360,38 @@ def test1():
     stop()
 
 
+def test2():
+    """ """
+
+    class ThisFPA_LE1(FPA_LE1):
+
+        def _core_funct_simul(self, ccdobj, CCDID=None, simputs=None):
+
+            iCCDID  = int(CCDID[2:])
+            
+            for Q in self.Quads:
+
+                Qdata = ccdobj.get_quad(Q,canonical=True)
+                NX,NY = Qdata.shape
+                pNY = NY-ccdobj.voverscan
+                yvector = np.expand_dims(np.arange(pNY)/float(pNY) * 100.,0)
+                Qdata[ccdobj.prescan:-ccdobj.overscan,0:-ccdobj.voverscan] = yvector.copy()
+                Qdata[ccdobj.prescan:-ccdobj.overscan,0:-ccdobj.voverscan] += iCCDID * 500
+
+                ccdobj.set_quad(Qdata,Q,canonical=True)
+
+            return ccdobj
+
+    le1 = ThisFPA_LE1()
+    le1.initialise_as_blank(fillval=0)
+
+    le1.simul(zerofirst=True)
+
+    img = le1.get_as_FPAmosaic()
+
+    fts.writeto('imgFPA.fits', img.T, overwrite=True)
+
+    
+
 if __name__ == '__main__':
-    test1()
+    test2()
