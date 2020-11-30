@@ -212,6 +212,8 @@ def run_TP11emul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
 
     emulator.testnames = ['TP11']
 
+    stop()
+
     if CRs>0.:
         outfile = 'TPX1_emul_VGCCasFPA_CRs%.1f.fits' % CRs
     else:
