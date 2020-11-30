@@ -152,7 +152,6 @@ class EmulFPA(MetaPano):
 
 
 
-
     def produce_emulation(self, **kwargs):
         """ """
 
@@ -180,6 +179,14 @@ class EmulFPA(MetaPano):
         print('Emulation saved in: %s' % EMUname)
 
 
+class EmulFPA_TPX2(MetaPano):
+
+    def _f_tweak_quadrant(self, Qdata):
+        """ """
+        Qdata[-9:,:] = Qdata[-18:-9,:].copy() # filling up extended serial overscan
+        for i in range(3):
+            Qdata[:,(i+1)*100:(i+2)*100] = Qdata[:,0:100].copy() # dummy replication
+        return Qdata
 
 
 outparent = 'FPA_SIMULS'
@@ -236,13 +243,13 @@ def run_TP21emul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
 
     Tinputs = comminputs.copy()
     Tinputs.update(dict(
-        testkey = 'TPX1',
+        testkey = 'TPX2',
         jsonf='ALLTESTS.json',
         respathroot=inpathroot,
         vcalfile = os.path.join(vcalpath,'CCD_CAL_CONVERSIONS_ALL_BLOCKS.xlsx')))
 
 
-    emulator = EmulFPA(['TP02','TP21'], **Tinputs)
+    emulator = EmulFPA_TPX2(['TP02','TP21'], **Tinputs)
     emulator.prerun(doLoad=doLoad, doParse=doParse)
 
     emulator.ParsedTable['TP02']['TEST'] = 'TP21' # hack
@@ -366,11 +373,11 @@ if __name__ == '__main__':
     doParse = True
     doEmul = True
 
-    #run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
     #run_CHINJ01emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
 
-    #run_TP11emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    run_TP11emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
     #run_TP11emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
     run_TP21emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
