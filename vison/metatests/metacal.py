@@ -440,6 +440,7 @@ class MetaCal(object):
                 Nreps = len(self.inventory[block][testname])
             except KeyError:
                 print(('block %s not found!' % block))
+                stop()
                 continue
 
             for jrep in range(Nreps):
