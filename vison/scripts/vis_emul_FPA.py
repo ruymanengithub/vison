@@ -370,7 +370,7 @@ def run_FFemul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
 
     simulkwargs = dict(CRs=CRs,
         rep=1,
-        relObsid=5,
+        relObsid=8,
         outfile=outfile,
         CRexptime=ROtime/2.+10.)
 
@@ -389,15 +389,15 @@ if __name__ == '__main__':
     run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
     run_CHINJ01emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
-    run_TP11emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
-    run_TP11emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_TP11emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_TP11emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
-    run_TP21emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
-    run_TP21emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_TP21emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_TP21emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
-    run_BIAS02emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
-    run_BIAS02emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_BIAS02emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_BIAS02emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
-    run_FFemul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
-    run_FFemul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_FFemul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_FFemul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
