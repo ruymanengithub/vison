@@ -5,6 +5,7 @@ import os
 import numpy as np
 import copy
 from astropy import table
+from astropy.io import fits as fts
 
 from vison.metatests.pano import MetaPano
 from vison.metatests.bias import MetaBias
