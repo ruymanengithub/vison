@@ -212,7 +212,11 @@ def run_TP11emul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
 
     emulator.testnames = ['TP11']
 
-    stop()
+    for block in emulator.blocks:
+        if 'TP01' in emulator.inventory[block]:
+            emulator.inventory[block]['TP11'] = copy.deepcopy(emulator.inventory['block']['TP01'])
+            _ = emulator.inventory[block]['TP01'].pop()
+
 
     if CRs>0.:
         outfile = 'TPX1_emul_VGCCasFPA_CRs%.1f.fits' % CRs
