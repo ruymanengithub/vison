@@ -217,7 +217,7 @@ def run_TP11emul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
         rep=1,
         relObsid=5,
         outfile=outfile,
-        CRexptime=ROtime/2.)
+        CRexptime=ROtime/2.+100.) # 100 seconds of pumping.
     if doEmul:
         emulator.produce_emulation(**simulkwargs)
 
@@ -324,9 +324,12 @@ if __name__ == '__main__':
 
 
     #run_TP11emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
-    #run_TP21emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_TP11emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
-    run_BIAS02emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_TP21emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    #run_TP21emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+
+    #run_BIAS02emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
     #run_BIAS02emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
     #run_FFemul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
