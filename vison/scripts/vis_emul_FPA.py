@@ -182,8 +182,6 @@ class EmulFPA(MetaPano):
 
 
 
-
-
 outparent = 'FPA_SIMULS'
 FPAdesign='final'
 vcalpath = 'VOLT_CALIBS/ROE_VOLT_CALIBS'
@@ -213,8 +211,6 @@ def run_TP11emul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
     _ = emulator.ParsedTable.pop('TP01')
 
     emulator.testnames = ['TP11']
-
-    stop() # how to deal with a test that changed named halfway through campaign?
 
     if CRs>0.:
         outfile = 'TPX1_emul_VGCCasFPA_CRs%.1f.fits' % CRs
