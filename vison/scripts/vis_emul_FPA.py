@@ -126,9 +126,9 @@ class EmulFPA(MetaPano):
 
                     Qdata = self._f_tweak_quadrant(Qdata)
 
-                    vstart=1
+                    vstart= min(np.where(Qdata!=0)[1])+1
                     vend = max(np.where(Qdata!=0)[1])+1
-                    stop()
+                    
 
                     if CRs > 0:
 
@@ -249,7 +249,7 @@ def run_TP11emul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
 
     simulkwargs = dict(CRs=CRs,
         rep=1,
-        relObsid=5,
+        relObsid=29,
         outfile=outfile,
         CRexptime=ROtime/2.+100.) # 100 seconds of pumping.
     if doEmul:
@@ -289,7 +289,7 @@ def run_TP21emul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
 
     simulkwargs = dict(CRs=CRs,
         rep=1,
-        relObsid=5,
+        relObsid=13,
         outfile=outfile,
         CRexptime=200.) # 100 seconds of ro+pumping.
     if doEmul:
@@ -390,18 +390,18 @@ if __name__ == '__main__':
     doParse = False
     doEmul = True
 
-    #run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
-    #run_CHINJ01emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    run_CHINJ01emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    run_CHINJ01emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
-    #run_TP11emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
-    #run_TP11emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    run_TP11emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    run_TP11emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
-    #run_TP21emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    run_TP21emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
     run_TP21emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
-    #run_BIAS02emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
-    #run_BIAS02emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    run_BIAS02emul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    run_BIAS02emul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
-    #run_FFemul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
-    #run_FFemul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    run_FFemul(CRs=0.,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
+    run_FFemul(CRs=2.6,doLoad=doLoad, doParse=doParse, doEmul=doEmul)
 
