@@ -489,205 +489,215 @@ class MetaPsf(MetaCal):
         CDP_header.update(dict(function=function, module=module))
         CDP_header['DATE'] = self.get_time_tag()
 
-        # XTALK MAP (ROE-TAB)
+        doXtalk = False
+        doPsf = True
 
-        XTALKs_RT = self.products['XTALK_RT'].copy()
+        if doXtalk:
 
-        figkey0 = 'XTALK_MAP_RT'
-        figname0 = self.figs[figkey0]
+            # XTALK MAP (ROE-TAB)
 
-        self.plot_XtalkMAP(XTALKs_RT, **dict(
-            scale='ADU',
-            showvalues=False,
-            title='XTALK [ADU] - ROE-TAB',
-            figname=figname0))
+            XTALKs_RT = self.products['XTALK_RT'].copy()
 
-        captemp0 = 'ROE-TAB: Cross-Talk matrix [in ADU] obtained '+\
-            'using the ROE-TAB [electrical injection].'
+            figkey0 = 'XTALK_MAP_RT'
+            figname0 = self.figs[figkey0]
 
-        if self.report is not None:
-            self.addFigure2Report(figname0, 
-                figkey=figkey0, 
-                caption= captemp0, 
-                texfraction=0.7)
-
-        # XTALK MAPS (OPTICAL)
-
-        for testname in self.testnames:
-
-            XTALKs = self.get_XTALKDICT_from_PT(testname)
-
-            figkey1 = 'XTALK_MAP_%s' % testname
-            figname1 = self.figs[figkey1]
-
-            stestname = testname.replace('_', '\_')
-            self.plot_XtalkMAP(XTALKs, **dict(
+            self.plot_XtalkMAP(XTALKs_RT, **dict(
                 scale='ADU',
                 showvalues=False,
-                title='%s: XTALK [ADU]' % stestname,
-                figname=figname1))
+                title='XTALK [ADU] - ROE-TAB',
+                figname=figname0))
 
-            captemp1 = '%s: Cross-Talk as amplitude in ADU of ghost in victim channel,'+\
-            ' for a saturating signal in the source channel.'
+            captemp0 = 'ROE-TAB: Cross-Talk matrix [in ADU] obtained '+\
+                'using the ROE-TAB [electrical injection].'
 
             if self.report is not None:
-                self.addFigure2Report(figname1, 
-                        figkey=figkey1, 
-                        caption= captemp1 % stestname, 
-                        texfraction=0.7)
+                self.addFigure2Report(figname0, 
+                    figkey=figkey0, 
+                    caption= captemp0, 
+                    texfraction=0.7)
+
+            # XTALK MAPS (OPTICAL)
+
+            for testname in self.testnames:
+
+                XTALKs = self.get_XTALKDICT_from_PT(testname)
+
+                figkey1 = 'XTALK_MAP_%s' % testname
+                figname1 = self.figs[figkey1]
+
+                stestname = testname.replace('_', '\_')
+                self.plot_XtalkMAP(XTALKs, **dict(
+                    scale='ADU',
+                    showvalues=False,
+                    title='%s: XTALK [ADU]' % stestname,
+                    figname=figname1))
+
+                captemp1 = '%s: Cross-Talk as amplitude in ADU of ghost in victim channel,'+\
+                ' for a saturating signal in the source channel.'
+
+                if self.report is not None:
+                    self.addFigure2Report(figname1, 
+                            figkey=figkey1, 
+                            caption= captemp1 % stestname, 
+                            texfraction=0.7)
 
 
-            if self.report is not None and testname =='PSF01_800':
+                if self.report is not None and testname =='PSF01_800':
 
-                req_ver_txt = [
-                '\nTEST: %s\n' % stestname,
-                'Req.:\n',
-                '    dominant coupling $|c1|<=$ 6E-4\n',
-                '    only 1 sub-dominant coupling 6E-4$>|c2|>$7.6E-5\n'
-                ]
+                    req_ver_txt = [
+                    '\nTEST: %s\n' % stestname,
+                    'Req.:\n',
+                    '    dominant coupling $|c1|<=$ 6E-4\n',
+                    '    only 1 sub-dominant coupling 6E-4$>|c2|>$7.6E-5\n'
+                    ]
 
-                req_ver_txt += self.verify_reqs(XTALKs)
+                    req_ver_txt += self.verify_reqs(XTALKs)
 
-                self.report.add_Text(req_ver_txt)
+                    self.report.add_Text(req_ver_txt)
 
-            xt_header = OrderedDict()
-            xt_header['title'] = 'XTALK_MATRIX:%s' % testname
-            xt_header.update(CDP_header)
+                xt_header = OrderedDict()
+                xt_header['title'] = 'XTALK_MATRIX:%s' % testname
+                xt_header.update(CDP_header)
 
-            xt_cdp = cdp.Json_CDP(rootname=self.outcdps['XTALK_MX_%s' % testname],
-                path=self.cdpspath)
+                xt_cdp = cdp.Json_CDP(rootname=self.outcdps['XTALK_MX_%s' % testname],
+                    path=self.cdpspath)
 
-            XTALKs_CDP_MX = self._serialise_XTALKs(XTALKs)
+                XTALKs_CDP_MX = self._serialise_XTALKs(XTALKs)
 
-            xt_cdp.ingest_inputs(data=XTALKs_CDP_MX,
-                    header = xt_header,
-                    meta=dict(units='ADIM',
-                        structure='block:ccd_source:Q_source:'+\
-                        'ccd_victim:Q_victim:(xtalk,e_xtalk)'))
+                xt_cdp.ingest_inputs(data=XTALKs_CDP_MX,
+                        header = xt_header,
+                        meta=dict(units='ADIM',
+                            structure='block:ccd_source:Q_source:'+\
+                            'ccd_victim:Q_victim:(xtalk,e_xtalk)'))
 
-            xt_cdp.savehardcopy()
-
-
-
-        # XTALK: 800-optical vs. RT  (with SIGN)
-
-        XT_RTvs800 = self._get_XYdict_XT('PSF01_800', 'RT', mode='sign')
-
-        figkey2 = 'XTALK_RTvs800'
-        figname2 = self.figs[figkey2]
+                xt_cdp.savehardcopy()
 
 
-        XTkwargs = dict(
-            title='Cross-Talk Direct Comparison',
-            doLegend=False,
-            xlabel='Xtalk - Opt. 800nm',
-            ylabel='Xtalk - ROE-TAB',
-            xlim=[-20, 40],
-            ylim=[-20, 40],
-            figname=figname2)
 
-        BLOCKcolors = cm.rainbow(np.linspace(0, 1, len(self.flight_blocks)))
+            # XTALK: 800-optical vs. RT  (with SIGN)
 
-        xtcorekwargs = dict()
-        for jblock, block in enumerate(self.flight_blocks):
-            jcolor = BLOCKcolors[jblock]
-            xtcorekwargs['%s' % (block,)] = dict(linestyle='',
-                                                 marker='.', color=jcolor)
+            XT_RTvs800 = self._get_XYdict_XT('PSF01_800', 'RT', mode='sign')
 
-        xtcorekwargs['oneone'] = dict(linestyle='--', marker='', color='k')
-
-        XTkwargs['corekwargs'] = xtcorekwargs
-
-        self.plot_XY(XT_RTvs800, **XTkwargs)
+            figkey2 = 'XTALK_RTvs800'
+            figname2 = self.figs[figkey2]
 
 
-        if self.report is not None:
-
-            captemp2 = '%s: Cross-talk coupling factor measured using the ROE-TAB, vs. using '+\
-            'optical stimulation (at 800 nm). Sign of coupling preserved.'
-
-            self.addFigure2Report(figname2, 
-                        figkey=figkey2, 
-                        caption=captemp2 % stestname, 
-                        texfraction=0.7)
-
-        # XTALK: 800-optical vs. RT (ABS-VALUE)
-
-        XT_RTvs800_abs = self._get_XYdict_XT('PSF01_800', 'RT', mode='abs')
-
-        figkey3 = 'XTALK_RTvs800_ABS'
-        figname3 = self.figs[figkey3]
-
-        XTABSkwargs = dict(
-            title='Cross-Talk Comparison - ABS. Value',
-            doLegend=False,
-            xlabel='Abs(Xtalk - Opt. 800 nm)',
-            ylabel='Abs(Xtalk - ROE-TAB)',
-            xlim=[-20, 50],
-            ylim=[-20, 50],
-            figname=figname3)
-
-        XTABSkwargs['corekwargs'] = xtcorekwargs
-
-        self.plot_XY(XT_RTvs800_abs, **XTABSkwargs)
-
-        if self.report is not None:
-
-            captemp3 = '%s: Cross-talk coupling factor (in absolute value) measured '+\
-            'using the ROE-TAB, vs. using optical stimulation (at 800 nm).'
-
-            self.addFigure2Report(figname3, 
-                        figkey=figkey3, 
-                        caption=captemp3 % stestname, 
-                        texfraction=0.7)
-
-        # XTALK: 800-optical vs. OTHER-opt (with SIGN)
-
-        for wave in [590, 730, 880]:
-
-            XT_NMvs800 = self._get_XYdict_XT('PSF01_800', 'PSF01_%i' % wave, mode='sign')
-
-            figkey4 = 'XTALK_%ivs800' % wave
-            figname4 = self.figs[figkey4]
-
-            XTNMvs800kwargs = dict(
-                title='Cross-Talk Comparison - With Sign',
+            XTkwargs = dict(
+                title='Cross-Talk Direct Comparison',
                 doLegend=False,
-                xlabel='Xtalk - Opt. 800 nm',
-                ylabel='Xtalk - Opt. %i nm' % wave,
+                xlabel='Xtalk - Opt. 800nm',
+                ylabel='Xtalk - ROE-TAB',
+                xlim=[-20, 40],
+                ylim=[-20, 40],
+                figname=figname2)
+
+            BLOCKcolors = cm.rainbow(np.linspace(0, 1, len(self.flight_blocks)))
+
+            xtcorekwargs = dict()
+            for jblock, block in enumerate(self.flight_blocks):
+                jcolor = BLOCKcolors[jblock]
+                xtcorekwargs['%s' % (block,)] = dict(linestyle='',
+                                                     marker='.', color=jcolor)
+
+            xtcorekwargs['oneone'] = dict(linestyle='--', marker='', color='k')
+
+            XTkwargs['corekwargs'] = xtcorekwargs
+
+            self.plot_XY(XT_RTvs800, **XTkwargs)
+
+
+            if self.report is not None:
+
+                captemp2 = '%s: Cross-talk coupling factor measured using the ROE-TAB, vs. using '+\
+                'optical stimulation (at 800 nm). Sign of coupling preserved.'
+
+                self.addFigure2Report(figname2, 
+                            figkey=figkey2, 
+                            caption=captemp2 % stestname, 
+                            texfraction=0.7)
+
+            # XTALK: 800-optical vs. RT (ABS-VALUE)
+
+            XT_RTvs800_abs = self._get_XYdict_XT('PSF01_800', 'RT', mode='abs')
+
+            figkey3 = 'XTALK_RTvs800_ABS'
+            figname3 = self.figs[figkey3]
+
+            XTABSkwargs = dict(
+                title='Cross-Talk Comparison - ABS. Value',
+                doLegend=False,
+                xlabel='Abs(Xtalk - Opt. 800 nm)',
+                ylabel='Abs(Xtalk - ROE-TAB)',
                 xlim=[-20, 50],
                 ylim=[-20, 50],
-                figname=figname4)
+                figname=figname3)
 
-            XTNMvs800kwargs['corekwargs'] = xtcorekwargs
+            XTABSkwargs['corekwargs'] = xtcorekwargs
 
-            self.plot_XY(XT_NMvs800, **XTNMvs800kwargs)
+            self.plot_XY(XT_RTvs800_abs, **XTABSkwargs)
 
             if self.report is not None:
 
-                captemp4 = 'Cross-talk coupling factor measured at %i nm '+\
-                'vs. 800 nm.'
+                captemp3 = '%s: Cross-talk coupling factor (in absolute value) measured '+\
+                'using the ROE-TAB, vs. using optical stimulation (at 800 nm).'
 
-                self.addFigure2Report(figname4, 
-                        figkey=figkey4, 
-                        caption=captemp4 % wave,
-                        texfraction=0.7)
+                self.addFigure2Report(figname3, 
+                            figkey=figkey3, 
+                            caption=captemp3 % stestname, 
+                            texfraction=0.7)
 
-                std_comparisons = []
+            # XTALK: 800-optical vs. OTHER-opt (with SIGN)
 
-                for block in self.flight_blocks:
-                    std_comparisons.append(np.nanstd(XT_NMvs800['y'][block]-\
-                            XT_NMvs800['x'][block]))
+            for wave in [590, 730, 880]:
 
-                avg_std = np.nanmedian(std_comparisons)
+                XT_NMvs800 = self._get_XYdict_XT('PSF01_800', 'PSF01_%i' % wave, mode='sign')
 
-                self.report.add_Text('\nAvg. STD of comparison (%i vs. 800 nm): %.2e ADU' %\
-                        (wave, avg_std))
+                figkey4 = 'XTALK_%ivs800' % wave
+                figname4 = self.figs[figkey4]
+
+                XTNMvs800kwargs = dict(
+                    title='Cross-Talk Comparison - With Sign',
+                    doLegend=False,
+                    xlabel='Xtalk - Opt. 800 nm',
+                    ylabel='Xtalk - Opt. %i nm' % wave,
+                    xlim=[-20, 50],
+                    ylim=[-20, 50],
+                    figname=figname4)
+
+                XTNMvs800kwargs['corekwargs'] = xtcorekwargs
+
+                self.plot_XY(XT_NMvs800, **XTNMvs800kwargs)
+
+                if self.report is not None:
+
+                    captemp4 = 'Cross-talk coupling factor measured at %i nm '+\
+                    'vs. 800 nm.'
+
+                    self.addFigure2Report(figname4, 
+                            figkey=figkey4, 
+                            caption=captemp4 % wave,
+                            texfraction=0.7)
+
+                    std_comparisons = []
+
+                    for block in self.flight_blocks:
+                        std_comparisons.append(np.nanstd(XT_NMvs800['y'][block]-\
+                                XT_NMvs800['x'][block]))
+
+                    avg_std = np.nanmedian(std_comparisons)
+
+                    self.report.add_Text('\nAvg. STD of comparison (%i vs. 800 nm): %.2e ADU' %\
+                            (wave, avg_std))
 
     # PSF analysis
 
+    if doPsf:
 
-    # Histogram of slopes of FWHWMx/y vs. fluence w/o BF correction
+        stop()
+
+        # Histogram of slopes of FWHWMx/y vs. fluence w/o BF correction
+
+
 
     
 

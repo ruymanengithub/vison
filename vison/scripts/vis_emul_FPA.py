@@ -312,7 +312,7 @@ def run_CHINJ01emul(CRs=0.,doLoad=False, doParse=False, doEmul=False):
     if CRs>0.:
         outfile = 'CHINJ01_emul_VGCCasFPA_CRs%.1f.fits' % CRs
     else:
-        outfile = 'CHNJ01_emul_VGCCasFPA.fits'
+        outfile = 'CHINJ01_emul_VGCCasFPA.fits'
 
     simulkwargs = dict(CRs=CRs,
         rep=1,
