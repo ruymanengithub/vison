@@ -81,7 +81,7 @@ def deselect_tasks(pipe_inputs, testOUT):
 
     return pipe_inputs
 
-def run_pipeline(jsonfile, dfolder=None, testIN=None, testOUT=None):
+def run_pipeline(jsonfile, dfolder=None, testIN=None, testOUT=None, verbose=False):
     """ """
     inputs = vjson.load_jsonfile(jsonfile)
     
@@ -94,8 +94,11 @@ def run_pipeline(jsonfile, dfolder=None, testIN=None, testOUT=None):
         assert dfolder in sessions
         sessions = [dfolder]
     
+    summary = []
     
     for session in sessions:
+
+        summary.append(session)
         
         pipe_inputs = openpyconfigf(pyconfig,session)
         
@@ -117,12 +120,15 @@ def run_pipeline(jsonfile, dfolder=None, testIN=None, testOUT=None):
                 cleanafter = cleanafter)
             
             pipe.run()
+
+            if verbose:
+                summary.append(pipe.get_execution_summary())
     
-    
+    return summary
     
 
 def run_all(execute, report, seqfile, bloqsfile, dfolder=None, testIN=None,
-    testOUT=None):
+    testOUT=None, verbose=False):
     
     seqdata = vjson.load_jsonfile(seqfile, useyaml=True)
     bloqsdata = vjson.load_jsonfile(bloqsfile, useyaml=True)
@@ -153,8 +159,10 @@ def run_all(execute, report, seqfile, bloqsfile, dfolder=None, testIN=None,
         
         os.chdir(os.path.join(block,'ANALYSIS')) # TESTS ONLY
         if execute:
-            run_pipeline(blocks_inputs[block]['executer'], dfolder, 
-                testIN=testIN,testOUT=testOUT)
+            summary = run_pipeline(blocks_inputs[block]['executer'], dfolder, 
+                testIN=testIN, testOUT=testOUT, verbose=verbose)
+            if verbose:
+                log.info(summary)
             log.info('Finished execution of analysis in %s' % block)
             print('Finished execution of analysis in %s' % block)
         if report:
@@ -192,6 +200,10 @@ if __name__ == '__main__':
                     default=None, help="Skip a specific test(-type)? "+\
                     "If more than one, separate by a comma.")
 
+    parser.add_option("-v", "--verbose", dest="verbose",
+                        action="store_true",
+                    default=False, help="Be verbose about outcomes in log?")
+
     (options, args) = parser.parse_args()
 
     seqfile = options.seqfile
@@ -209,7 +221,7 @@ if __name__ == '__main__':
     if seqfile =='' or bloqsfile =='':
         parser.print_help()
         sys.exit()
-        
+    verbose = options.verbose
     
     run_all(execute, report, seqfile, bloqsfile, dfolder=dfolder, testIN=testIN,
-        testOUT=testOUT)
+        testOUT=testOUT, verbose=verbose)
