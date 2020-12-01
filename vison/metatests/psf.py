@@ -157,14 +157,14 @@ class MetaPsf(MetaCal):
         super(MetaPsf, self).__init__(*args, **kwargs)
 
         self.Spots = ['ALPHA', 'BRAVO', 'CHARLIE', 'DELTA', 'ECHO']
-        #self.testnames = ['PSF01_590', 'PSF01_730', 'PSF01_800', 'PSF01_880']
-        self.testnames = ['PSF01_730', 'PSF01_800', 'PSF01_880']
+        self.testnames = ['PSF01_590', 'PSF01_730', 'PSF01_800', 'PSF01_880']
+        #self.testnames = ['PSF01_730', 'PSF01_800', 'PSF01_880'] # TESTS
         self.incols = cols2keep
         self.ParsedTable = OrderedDict()
         # self.blocks = self.blocks[1:] # TESTS!
-        self.blocks = ['BORN', 'CURIE', 'DIRAC', 'ERWIN', 'FOWLER', 'GUYE',  \
-        'LORENTZ', 'NIELS', 'OWEN', 'EINSTEIN', 'SKLODOWSKA', 'MAX', 'HEISENBERG', \
-        'JULES']
+        #self.blocks = ['BORN', 'CURIE', 'DIRAC', 'ERWIN', 'FOWLER', 'GUYE', 'JULES2', 'KRAMERS'\
+        #'LORENTZ', 'NIELS', 'OWEN', 'EINSTEIN', 'SKLODOWSKA', 'MAX', 'HEISENBERG', \
+        #'JULES'] # TESTS
         allgains = files.cPickleRead(kwargs['cdps']['gain'])
 
         self.cdps['GAIN'] = OrderedDict()
