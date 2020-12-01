@@ -94,11 +94,10 @@ def run_pipeline(jsonfile, dfolder=None, testIN=None, testOUT=None, verbose=Fals
         assert dfolder in sessions
         sessions = [dfolder]
     
-    summary = []
+    summary = ['\n']
     
     for session in sessions:
 
-        summary.append(session)
         
         pipe_inputs = openpyconfigf(pyconfig,session)
         
@@ -113,6 +112,8 @@ def run_pipeline(jsonfile, dfolder=None, testIN=None, testOUT=None, verbose=Fals
                 pipe_inputs = deselect_tasks(pipe_inputs, tO)
         
         if len(pipe_inputs['tasks'])>0:
+
+            summary.append(session)
         
             pipe = Pipe(pipe_inputs, dolog=True, drill=False,
                 debug=False, startobsid=0,
