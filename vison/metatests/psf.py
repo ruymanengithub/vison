@@ -258,7 +258,7 @@ class MetaPsf(MetaCal):
         fwhmy_nobfe_mean_v = tmp_v_CQ.copy()
         fwhmy_nobfe_slope_v = tmp_v_CQ.copy()
 
-        dd = self.inventoryitem['dd']
+        dd = inventoryitem['dd']
 
         for iCCD, CCDk in enumerate(CCDkeys):
 
