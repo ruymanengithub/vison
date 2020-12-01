@@ -1223,11 +1223,11 @@ class PSF0X(PT.PointTask):
                     plot_FWHM_dict['fwhmx'][CCDk][Q]['y'][BFEtag] = y_fwhmx
 
                     if bfecorr:
-                        xideal = np.array([1.,2.**16])
+                        xideal = (np.array([1.,2.**16])-2.**15)/1.e4
                         pideal = np.poly1d([0.,px[1]])
                         yideal = np.polyval(pideal,xideal)
                         plot_FWHM_dict['fwhmx'][CCDk][Q]['y']['ideal'] = yideal
-                        plot_FWHM_dict['fwhmx'][CCDk][Q]['x']['ideal'] = xideal-2.**15/1.e4
+                        plot_FWHM_dict['fwhmx'][CCDk][Q]['x']['ideal'] = xideal+2.**15/1.e4
 
                     x_fwhmy,y_fwhmy, py = self._get_fwhm_flu_bfit(iCCD, kQ, 
                             'fwhmy',bfecorr=bfecorr)
@@ -1236,11 +1236,11 @@ class PSF0X(PT.PointTask):
                     plot_FWHM_dict['fwhmy'][CCDk][Q]['y'][BFEtag] = y_fwhmy
 
                     if bfecorr:
-                        xideal = np.array([1.,2.**16])
+                        xideal = (np.array([1.,2.**16])-2.**15)/1.e4
                         pideal = np.poly1d([0.,py[1]])
                         yideal = np.polyval(pideal,xideal)
                         plot_FWHM_dict['fwhmy'][CCDk][Q]['y']['ideal'] = yideal
-                        plot_FWHM_dict['fwhmy'][CCDk][Q]['x']['ideal'] = xideal-2.**15/1.e4
+                        plot_FWHM_dict['fwhmy'][CCDk][Q]['x']['ideal'] = xideal+2.**15/1.e4
 
 
         for tag in ['fwhmx', 'fwhmy']:

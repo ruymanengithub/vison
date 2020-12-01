@@ -156,7 +156,8 @@ class MetaPsf(MetaCal):
         super(MetaPsf, self).__init__(*args, **kwargs)
 
         self.Spots = ['ALPHA', 'BRAVO', 'CHARLIE', 'DELTA', 'ECHO']
-        self.testnames = ['PSF01_590', 'PSF01_730', 'PSF01_800', 'PSF01_880']
+        #self.testnames = ['PSF01_590', 'PSF01_730', 'PSF01_800', 'PSF01_880']
+        self.testnames = ['PSF01_730', 'PSF01_800', 'PSF01_880']
         self.incols = cols2keep
         self.ParsedTable = OrderedDict()
         # self.blocks = self.blocks[1:] # TESTS!
@@ -176,17 +177,17 @@ class MetaPsf(MetaCal):
     def parse_single_test(self, jrep, block, testname, inventoryitem):
         """ """
 
-        #NCCDs = len(self.CCDs)
-        #NQuads = len(self.Quads)
+        NCCDs = len(self.CCDs)
+        NQuads = len(self.Quads)
         session = inventoryitem['session']
 
-        #CCDkeys = ['CCD%i' % CCD for CCD in self.CCDs]
+        CCDkeys = ['CCD%i' % CCD for CCD in self.CCDs]
 
         IndexS = vcore.vMultiIndex([vcore.vIndex('ix', vals=[0])])
 
-        # IndexCQ = vcore.vMultiIndex([vcore.vIndex('ix',vals=[0]),
-        #                             vcore.vIndex('CCD',vals=self.CCDs),
-        #                             vcore.vIndex('Quad',vals=self.Quads)])
+        IndexCQ = vcore.vMultiIndex([vcore.vIndex('ix',vals=[0]),
+                                     vcore.vIndex('CCD',vals=self.CCDs),
+                                     vcore.vIndex('Quad',vals=self.Quads)])
 
         # IndexCQS = vcore.vMultiIndex([vcore.vIndex('ix',vals=[0]),
         #                             vcore.vIndex('CCD',vals=self.CCDs),
@@ -237,6 +238,18 @@ class MetaPsf(MetaCal):
         sidd.addColumn(ctalkkey_v, 'XTALK', IndexS, ix=0)
 
         # XTALK-from ROE-TALK
+
+
+        # PSF fits w/wo B-F correction
+
+        stop()
+
+        for iCCD, CCDk in enumerate(CCDkeys):
+
+            for kQ, Q in enumerate(self.Quads):
+
+                stop()
+                
 
         # flatten sidd to table
 
