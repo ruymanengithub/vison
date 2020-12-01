@@ -23,6 +23,7 @@ from vison import Pipe
 from vison.support import vjson
 from vison.support import logger as lg
 from vison.support import vistime
+from vison import __version__
 # END IMPORT
 
 def openpyconfigf(configf,RUN):
@@ -94,7 +95,7 @@ def run_pipeline(jsonfile, dfolder=None, testIN=None, testOUT=None, verbose=Fals
         assert dfolder in sessions
         sessions = [dfolder]
     
-    summary = ['\n']
+    summary = ['_']
     
     for session in sessions:
 
@@ -145,7 +146,7 @@ def run_all(execute, report, seqfile, bloqsfile, dfolder=None, testIN=None,
         os.system('rm %s' % logf)
 
     log = lg.setUpLogger(logf)
-    log.info(['_', 'Starting ElPadrino Batch Processing'])
+    log.info(['_', 'Starting ElPadrino Batch Processing','vison={}'.format(__version__)])
     whereami = subprocess.check_output(['uname','-a'])
     log.info(['_', str(whereami)])
     
