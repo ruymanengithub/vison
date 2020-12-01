@@ -14,6 +14,7 @@ from collections import OrderedDict
 import string as st
 import os
 import matplotlib.cm as cm
+from sklearn import linear_model
 
 from vison.datamodel import cdp
 from vison.fpa import fpa as fpamod
@@ -241,21 +242,115 @@ class MetaPsf(MetaCal):
 
 
         # PSF fits w/wo B-F correction
+        tmp_v_CQ = np.zeros((1, NCCDs, NQuads), dtype='float32')
 
-        stop()
+
+        #i00, fwhmx, fwhmy, didfit
+        fwhmx_bfe_mean_v = tmp_v_CQ.copy()
+        fwhmx_bfe_slope_v = tmp_v_CQ.copy()
+
+        fwhmy_bfe_mean_v = tmp_v_CQ.copy()
+        fwhmy_bfe_slope_v = tmp_v_CQ.copy()
+
+        fwhmx_nobfe_mean_v = tmp_v_CQ.copy()
+        fwhmx_nobfe_slope_v = tmp_v_CQ.copy()
+
+        fwhmy_nobfe_mean_v = tmp_v_CQ.copy()
+        fwhmy_nobfe_slope_v = tmp_v_CQ.copy()
+
+        dd = self.inventoryitem['dd']
 
         for iCCD, CCDk in enumerate(CCDkeys):
 
             for kQ, Q in enumerate(self.Quads):
 
-                stop()
-                
+                cXbfe = self._get_fwhm_flu_bfit(dd, iCCD, kQ, 'fwhmx', bfecorr=False)
+                fwhmx_bfe_slope_v[0, iCCD, kQ] = cXbfe[0]
+                fwhmx_bfe_mean_v[0, iCCD, kQ] = cXbfe[1]
+
+                cYbfe = self._get_fwhm_flu_bfit(dd, iCCD, kQ, 'fwhmy', bfecorr=False)
+                fwhmy_bfe_slope_v[0, iCCD, kQ] = cYbfe[0]
+                fwhmy_bfe_mean_v[0, iCCD, kQ] = cYbfe[1]
+
+                cXnobfe = self._get_fwhm_flu_bfit(dd, iCCD, kQ, 'fwhmx', bfecorr=True)
+                fwhmx_nobfe_slope_v[0, iCCD, kQ] = cXnobfe[0]
+                fwhmx_nobfe_mean_v[0, iCCD, kQ] = cXnobfe[1]
+
+                cYnobfe = self._get_fwhm_flu_bfit(dd, iCCD, kQ, 'fwhmy', bfecorr=True)
+                fwhmy_nobfe_slope_v[0, iCCD, kQ] = cYnobfe[0]
+                fwhmy_nobfe_mean_v[0, iCCD, kQ] = cYnobfe[1]
+
+
+        sidd.addColumn(fwhmx_bfe_mean_v, 'FWHMX_BFE_MEAN', IndexCQ)
+        sidd.addColumn(fwhmx_bfe_slope_v, 'FWHMX_BFE_SLOPE', IndexCQ)
+        sidd.addColumn(fwhmy_bfe_mean_v, 'FWHMY_BFE_MEAN', IndexCQ)
+        sidd.addColumn(fwhmy_bfe_slope_v, 'FWHMY_BFE_SLOPE', IndexCQ)
+
+        sidd.addColumn(fwhmx_nobfe_mean_v, 'FWHMX_NOBFE_MEAN', IndexCQ)
+        sidd.addColumn(fwhmx_nobfe_slope_v, 'FWHMX_NOBFE_SLOPE', IndexCQ)
+        sidd.addColumn(fwhmy_nobfe_mean_v, 'FWHMY_NOBFE_MEAN', IndexCQ)
+        sidd.addColumn(fwhmy_nobfe_slope_v, 'FWHMY_NOBFE_SLOPE', IndexCQ)
+
+
 
         # flatten sidd to table
 
         sit = sidd.flattentoTable()
 
         return sit
+
+
+    def _get_fwhm_flu_bfit(self, dd, iCCD, kQ, fwhmkey, bfecorr):
+        """ """
+
+        xkey = 'gau_i00'
+        ykey = 'gau_%s' % fwhmkey
+        fitkey = 'gau_didfit'
+        if bfecorr:
+            xkey = 'nobfe_%s' % xkey
+            ykey = 'nobfe_%s' % ykey
+            fitkey = 'nobfe_%s' % fitkey
+
+        xdata = dd.mx[xkey][:,iCCD,kQ,:].copy()
+        ydata = dd.mx[ykey][:,iCCD,kQ,:].copy()
+        didfit = dd.mx[fitkey][:,iCCD,kQ,:].copy()
+
+        nSpots = xdata.shape[1]
+
+        slopes = []
+        intercepts = []
+
+        for i in range(nSpots):
+            _x = xdata[:,i]
+            _y = ydata[:,i]
+            _df = didfit[:,i]
+
+            ixsel = np.where((_x>1.e3) & (_df==1))
+
+            if len(ixsel[0])>5:
+                ransac = linear_model.RANSACRegressor()
+
+                x2fit = (_x[ixsel]-2.**15)/1.e4
+
+                x2fit = np.expand_dims(x2fit, 1)
+
+                ransac.fit(x2fit, np.expand_dims(_y[ixsel], 1))
+
+                slopes.append(ransac.estimator_.coef_[0][0])
+                intercepts.append(ransac.estimator_.intercept_[0])
+
+        slope = np.nanmean(slopes)
+        intercept = np.nanmean(intercepts)
+        coeffs = [slope,intercept]
+
+        #p = np.poly1d(coeffs)
+        #xfit = (np.linspace(1.,2.**16,5)-2.**15)/1.e4
+        #ybest = np.polyval(p,xfit)
+
+        #xbest = xfit+2.**15/1.e4
+
+        #return xbest, ybest, coeffs
+        return coeffs
 
     def get_XTALKDICT_from_PT(self, testname):
         """ """
