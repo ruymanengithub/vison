@@ -162,8 +162,8 @@ class MetaPsf(MetaCal):
         self.incols = cols2keep
         self.ParsedTable = OrderedDict()
         # self.blocks = self.blocks[1:] # TESTS!
-        self.blocks = ['BORN', 'CURIE', 'DIRAC', 'ERWIN', 'FOWLER', 'GUYE',  
-        'KRAMERS', 'LORENTZ', 'NIELS', 'OWEN', 'EINSTEIN', 'SKLODOWSKA', 'MAX', 'HEISENBERG', 
+        self.blocks = ['BORN', 'CURIE', 'DIRAC', 'ERWIN', 'FOWLER', 'GUYE',  \
+        'KRAMERS', 'LORENTZ', 'NIELS', 'OWEN', 'EINSTEIN', 'SKLODOWSKA', 'MAX', 'HEISENBERG', \
         'JULES']
         allgains = files.cPickleRead(kwargs['cdps']['gain'])
 
