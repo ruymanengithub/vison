@@ -879,6 +879,14 @@ class MetaPsf(MetaCal):
 
                     self.plot_HISTO(fwhmx_mean_H, **XMEAN_kwargs)
 
+                    captemp5 = '%s: (%s)'
+
+                    if self.report is not None:
+                        self.addFigure2Report(figname5, 
+                            figkey=figkey5, 
+                            caption= captemp5 % (stestname, bfkey),
+                            texfraction=0.9)
+
                     figkey6 = 'PSF_FWHMY_MEAN_%s_%s' % (bfkey.upper(),testname)
                     figname6 = self.figs[figkey6]
 
@@ -893,6 +901,14 @@ class MetaPsf(MetaCal):
                         figname=figname6)
 
                     self.plot_HISTO(fwhmy_mean_H, **YMEAN_kwargs)
+
+                    captemp6 = '%s: (%s)'
+
+                    if self.report is not None:
+                        self.addFigure2Report(figname6, 
+                            figkey=figkey6, 
+                            caption= captemp6 % (stestname, bfkey),
+                            texfraction=0.9)
                     
 
                     # SLOPES - FWHMz vs. fluence
@@ -913,6 +929,14 @@ class MetaPsf(MetaCal):
 
                     self.plot_HISTO(fwhmx_slope_H, **XSLOPE_kwargs)
 
+                    captemp7 = '%s: (%s)'
+
+                    if self.report is not None:
+                        self.addFigure2Report(figname7, 
+                            figkey=figkey7, 
+                            caption= captemp7 % (stestname, bfkey),
+                            texfraction=0.9)
+
                     figkey8 = 'PSF_FWHMY_SLOPE_%s_%s' % (bfkey.upper(),testname)
                     figname8 = self.figs[figkey8]
 
@@ -927,3 +951,11 @@ class MetaPsf(MetaCal):
                         figname=figname8)
 
                     self.plot_HISTO(fwhmy_slope_H, **YSLOPE_kwargs)
+
+                    captemp8 = '%s: (%s)'
+
+                    if self.report is not None:
+                        self.addFigure2Report(figname8, 
+                            figkey=figkey8, 
+                            caption= captemp8 % (stestname, bfkey),
+                            texfraction=0.9)
