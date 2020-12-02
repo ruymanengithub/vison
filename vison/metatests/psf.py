@@ -451,22 +451,18 @@ class MetaPsf(MetaCal):
 
             ixblock = np.where(PT['BLOCK'] == block)[0][0]
 
-            datakey = '%s_%s_%s' % (fwhmkey.upper(),bfkey.upper(),measkey.upper())
-
             
-            for iCr, CCDref in enumerate(self.CCDs):
-                for iQr, Qref in enumerate(self.Quads):
-                    stop()
+            for iCCD, CCDkey in enumerate(self.CCDs):
+                for iQ, Q in enumerate(self.Quads):
 
-                    _y.append(PT[datakey][ixblock,iCr,iQr])
+                    datakey = '%s_%s_%s_%s_Quad%s' % \
+                        (fwhmkey.upper(),bfkey.upper(),measkey.upper(),CCDkey,Q)
 
-                    
-            x[block] = np.array(_x)
-            y[block] = np.array(_y)
+                    _y.append(PT[datakey][ixblock])
 
+        histo = np.histogram(_y, bins=20)
         
-
-        Hdict = dict(x=x, y=y)
+        Hdict = dict(x=histo[1], y=histo[0])
 
         return Hdict
 
