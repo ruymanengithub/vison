@@ -516,10 +516,10 @@ class MetaPsf(MetaCal):
                         os.path.join(self.figspath,'PSF_FWHMX_MEAN_%s_%s.png' % (bfkey.upper(),testname))
 
                 self.figs['PSF_FWHMY_SLOPE_%s_%s' % (bfkey.upper(),testname)] = \
-                        os.path.join(self.figspath,'PSF_FWHMY_SLOPE_%s.png' % (bfkey.upper(),testname))
+                        os.path.join(self.figspath,'PSF_FWHMY_SLOPE_%s_%s.png' % (bfkey.upper(),testname))
 
                 self.figs['PSF_FWHMY_MEAN_%s_%s' % (bfkey.upper(),testname)] = \
-                        os.path.join(self.figspath,'PSF_FWHMY_MEAN_%s.png' % (bfkey.upper(),testname))
+                        os.path.join(self.figspath,'PSF_FWHMY_MEAN_%s_%s.png' % (bfkey.upper(),testname))
 
     def init_outcdpnames(self):
         """ """
