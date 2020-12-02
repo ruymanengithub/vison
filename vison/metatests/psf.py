@@ -905,7 +905,7 @@ class MetaPsf(MetaCal):
 
                     XSLOPE_kwargs = dict(title='%s: FWHMX-Slope (%s)' % (stestname, bfkey.upper()),
                         doLegend=False,
-                        xlabel=r'$\DeltaFWHMX/fluence [pixels/(10 kADU)]$',
+                        xlabel='DeltaFWHMX/fluence [pixels/(10 kADU)]',
                         ylabel='N',
                         #xlim=[],
                         #ylim=[],
@@ -920,7 +920,7 @@ class MetaPsf(MetaCal):
 
                     YSLOPE_kwargs = dict(title='%s: FWHMY-Slope (%s)' % (stestname,bfkey.upper()),
                         doLegend=False,
-                        xlabel=r'$\DeltaFWHMY/fluence [pixels/(10 kADU)]$',
+                        xlabel='DeltaFWHMY/fluence [pixels/(10 kADU)]',
                         ylabel='N',
                         #xlim=[],
                         #ylim=[],
