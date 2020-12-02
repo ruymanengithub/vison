@@ -433,6 +433,45 @@ class MetaPsf(MetaCal):
 
         return XTdict
 
+
+
+
+    def _get_Hdict_FWHM(self, testname, fwhmkey, bfkey, measkey):
+        """ """
+
+
+        x = dict()
+        y = dict()
+
+        PT = self.ParsedTable[testname]
+
+        _y = []
+
+        for block in self.flight_blocks:
+
+            ixblock = np.where(PT['BLOCK'] == block)[0][0]
+
+            datakey = '%s_%s_%s' % (fwhmkey.upper(),bfkey.upper(),measkey.upper())
+
+            
+            for iCr, CCDref in enumerate(self.CCDs):
+                for iQr, Qref in enumerate(self.Quads):
+                    stop()
+
+                    _y.append(PT[datakey][ixblock,iCr,iQr])
+
+                    
+            x[block] = np.array(_x)
+            y[block] = np.array(_y)
+
+        
+
+        Hdict = dict(x=x, y=y)
+
+        return Hdict
+
+
+
     def plot_XtalkMAP(self, XTALKs, **kwargs):
         """ """
 
@@ -466,6 +505,21 @@ class MetaPsf(MetaCal):
         for testname in self.testnames:
             self.figs['XTALK_MAP_%s' % testname] = os.path.join(self.figspath,
                                                                 'XTALK_MAP_%s.png' % testname)
+
+        for testname in self.testnames:
+
+            for bfkey in ['bfe', 'nobfe']:
+                self.figs['PSF_FWHMX_SLOPE_%s_%s' % (bfkey.upper(),testname)] = \
+                    os.path.join(self.figspath,'PSF_FWHMX_SLOPE_%s_%s.png' % (bfkey.upper(),testname))
+
+                self.figs['PSF_FWHMX_MEAN_%s_%s' % (bfkey.upper(),testname)] = \
+                        os.path.join(self.figspath,'PSF_FWHMX_MEAN_%s_%s.png' % (bfkey.upper(),testname))
+
+                self.figs['PSF_FWHMY_SLOPE_%s_%s' % (bfkey.upper(),testname)] = \
+                        os.path.join(self.figspath,'PSF_FWHMY_SLOPE_%s.png' % (bfkey.upper(),testname))
+
+                self.figs['PSF_FWHMY_MEAN_%s_%s' % (bfkey.upper(),testname)] = \
+                        os.path.join(self.figspath,'PSF_FWHMY_MEAN_%s.png' % (bfkey.upper(),testname))
 
     def init_outcdpnames(self):
         """ """
@@ -803,11 +857,75 @@ class MetaPsf(MetaCal):
 
         if doPsf:
 
-            stop()
-
             # Histogram of slopes of FWHWMx/y vs. fluence w/o BF correction
 
+            for testname in self.testnames:
+
+                for bfkey in ['bfe', 'nobfe']:
 
 
-    
+                    # Mean FWHMz
 
+                    figkey5 = 'PSF_FWHMX_MEAN_%s_%s' % (bfkey.upper(),testname)
+                    figname5 = self.figs[figkey5]
+
+                    fwhmx_mean_H = self._get_Hdict_FWHM(testname, 'fwhmx', bfkey, 'mean')
+
+                    XMEAN_kwargs = dict(title='%s: FWHMX-mean (%s)' % (testname,bfkey.upper()),
+                        doLegend=False,
+                        xlabel='FWHMX [pixels]',
+                        ylabel='N',
+                        #xlim=[],
+                        #ylim=[],
+                        figname=figname5)
+
+                    self.plot_HISTO(fwhmx_mean_H, **XMEAN_kwargs)
+
+                    figkey6 = 'PSF_FWHMY_MEAN_%s_%s' % (bfkey.upper(),testname)
+                    figname6 = self.figs[figkey6]
+
+                    fwhmy_mean_H = self._get_Hdict_FWHM(testname, 'fwhmy', bfkey, 'mean')
+
+                    YMEAN_kwargs = dict(title='%s: FWHMY-mean (%s)' % (testname,bfkey.upper()),
+                        doLegend=False,
+                        xlabel='FWHMY [pixels]',
+                        ylabel='N',
+                        #xlim=[],
+                        #ylim=[],
+                        figname=figname6)
+
+                    self.plot_HISTO(fwhmy_mean_H, **YMEAN_kwargs)
+                    
+
+                    # SLOPES - FWHMz vs. fluence
+
+
+                    figkey7 = 'PSF_FWHMX_SLOPE_%s_%s' % (bfkey.upper(),testname)
+                    figname7 = self.figs[figkey7]
+
+                    fwhmx_slope_H = self._get_Hdict_FWHM(testname, 'fwhmx', bfkey, 'slope')
+
+                    XSLOPE_kwargs = dict(title='%s: FWHMX-Slope (%s)' % (testname, bfkey.upper()),
+                        doLegend=False,
+                        xlabel=r'$\DeltaFWHMX/fluence [pixels/(10 kADU)]$',
+                        ylabel='N',
+                        #xlim=[],
+                        #ylim=[],
+                        figname=figname7)
+
+                    self.plot_HISTO(fwhmx_slope_H, **XSLOPE_kwargs)
+
+                    figkey8 = 'PSF_FWHMY_SLOPE_%s_%s' % (bfkey.upper(),testname)
+                    figname8 = self.figs[figkey8]
+
+                    fwhmy_slope_H = self._get_Hdict_FWHM(testname, 'fwhmy', bfkey, 'slope')
+
+                    YSLOPE_kwargs = dict(title='%s: FWHMY-Slope (%s)' % (testname,bfkey.upper()),
+                        doLegend=False,
+                        xlabel=r'$\DeltaFWHMY/fluence [pixels/(10 kADU)]$',
+                        ylabel='N',
+                        #xlim=[],
+                        #ylim=[],
+                        figname=figname8)
+
+                    self.plot_HISTO(fwhmy_slope_H, **YSLOPE_kwargs)
