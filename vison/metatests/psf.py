@@ -857,6 +857,8 @@ class MetaPsf(MetaCal):
 
             for testname in self.testnames:
 
+                stestname = testname.replace('_','\_')
+
                 for bfkey in ['bfe', 'nobfe']:
 
 
@@ -867,7 +869,7 @@ class MetaPsf(MetaCal):
 
                     fwhmx_mean_H = self._get_Hdict_FWHM(testname, 'fwhmx', bfkey, 'mean')
 
-                    XMEAN_kwargs = dict(title='%s: FWHMX-mean (%s)' % (testname,bfkey.upper()),
+                    XMEAN_kwargs = dict(title='%s: FWHMX-mean (%s)' % (stestname,bfkey.upper()),
                         doLegend=False,
                         xlabel='FWHMX [pixels]',
                         ylabel='N',
@@ -882,7 +884,7 @@ class MetaPsf(MetaCal):
 
                     fwhmy_mean_H = self._get_Hdict_FWHM(testname, 'fwhmy', bfkey, 'mean')
 
-                    YMEAN_kwargs = dict(title='%s: FWHMY-mean (%s)' % (testname,bfkey.upper()),
+                    YMEAN_kwargs = dict(title='%s: FWHMY-mean (%s)' % (stestname,bfkey.upper()),
                         doLegend=False,
                         xlabel='FWHMY [pixels]',
                         ylabel='N',
@@ -901,7 +903,7 @@ class MetaPsf(MetaCal):
 
                     fwhmx_slope_H = self._get_Hdict_FWHM(testname, 'fwhmx', bfkey, 'slope')
 
-                    XSLOPE_kwargs = dict(title='%s: FWHMX-Slope (%s)' % (testname, bfkey.upper()),
+                    XSLOPE_kwargs = dict(title='%s: FWHMX-Slope (%s)' % (stestname, bfkey.upper()),
                         doLegend=False,
                         xlabel=r'$\DeltaFWHMX/fluence [pixels/(10 kADU)]$',
                         ylabel='N',
@@ -916,7 +918,7 @@ class MetaPsf(MetaCal):
 
                     fwhmy_slope_H = self._get_Hdict_FWHM(testname, 'fwhmy', bfkey, 'slope')
 
-                    YSLOPE_kwargs = dict(title='%s: FWHMY-Slope (%s)' % (testname,bfkey.upper()),
+                    YSLOPE_kwargs = dict(title='%s: FWHMY-Slope (%s)' % (stestname,bfkey.upper()),
                         doLegend=False,
                         xlabel=r'$\DeltaFWHMY/fluence [pixels/(10 kADU)]$',
                         ylabel='N',
