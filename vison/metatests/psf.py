@@ -452,11 +452,11 @@ class MetaPsf(MetaCal):
             ixblock = np.where(PT['BLOCK'] == block)[0][0]
 
             
-            for iCCD, CCDkey in enumerate(self.CCDs):
+            for iCCD, CCD in enumerate(self.CCDs):
                 for iQ, Q in enumerate(self.Quads):
 
-                    datakey = '%s_%s_%s_%s_Quad%s' % \
-                        (fwhmkey.upper(),bfkey.upper(),measkey.upper(),CCDkey,Q)
+                    datakey = '%s_%s_%s_CCD%s_Quad%s' % \
+                        (fwhmkey.upper(),bfkey.upper(),measkey.upper(),CCD,Q)
 
                     _y.append(PT[datakey][ixblock])
 
