@@ -434,9 +434,62 @@ class MetaPsf(MetaCal):
         return XTdict
 
 
+    def _get_Hdict_FWHM(self, testname):
+        """ """
+        # secondary paramters: fwhmkey, bfkey, measkey
+
+        measkeys = ['MEAN','SLOPE']
+        bfkeys = ['BFE','NOBFE']
+
+        for measkey in measkeys:
+            Hdict[measkey] = dict()
+            for bfkey in bfkeys:
+                Hdict[measkey][bfkey] = dict(x=dict(),y=dict())
+
+        Hdict['labelkeys'] = ['fwhmx','fwhmy']
+            
+
+        PT = self.ParsedTable[testname]
+
+        for measkey in measkeys:
+            for bfkey in bfkeys:
+        
+                _valy = []
+                _valx = []
+
+                for block in self.flight_blocks:
+
+                    ixblock = np.where(PT['BLOCK'] == block)[0][0]
+                    
+                    for iCCD, CCD in enumerate(self.CCDs):
+                        for iQ, Q in enumerate(self.Quads):
+
+                            datakeyX = 'FWHMX_%s_%s_CCD%s_Quad%s' % \
+                                (bfkey,measkey,CCD,Q)
+
+                            _valx.append(PT[datakeyX][ixblock])
+
+                            datakeyY = 'FWHMY_%s_%s_CCD%s_Quad%s' % \
+                                (bfkey,measkey,CCD,Q)
+
+                            _valy.append(PT[datakeyY][ixblock])
 
 
-    def _get_Hdict_FWHM(self, testname, fwhmkey, bfkey, measkey):
+                histoX = np.histogram(_valx, bins=20)
+                Hdict[bfkey][measkey]['x']['fwhmx'] = histoX[0]
+                Hdict[bfkey][measkey]['y']['fwhmx'] = histoX[1]
+                Hdict[bfkey][measkey]['mean']['fwhmx'] = np.nanmean(_valx)
+
+                histoY = np.histogram(_valy, bins=20)
+                Hdict[bfkey][measkey]['x']['fwhmy'] = histoY[0]
+                Hdict[bfkey][measkey]['y']['fwhmy'] = histoY[1]
+                Hdict[bfkey][measkey]['mean']['fwhmy'] = np.nanmean(_valy)
+
+                stop()
+
+        return Hdict
+
+    def OLD_get_Hdict_FWHM(self, testname, fwhmkey, bfkey, measkey):
         """ """
 
 
@@ -503,6 +556,9 @@ class MetaPsf(MetaCal):
                                                                 'XTALK_MAP_%s.png' % testname)
 
         for testname in self.testnames:
+
+            self.figs['PSF_FWHM_MS_%s' % (bfkey.upper(),testname)] = \
+                os.path.join(self.figspath,'PSF_FWHM_MS_%s.png' % (bfkey.upper(),testname))
 
             for bfkey in ['bfe', 'nobfe']:
                 self.figs['PSF_FWHMX_SLOPE_%s_%s' % (bfkey.upper(),testname)] = \
@@ -859,103 +915,112 @@ class MetaPsf(MetaCal):
 
                 stestname = testname.replace('_','\_')
 
-                for bfkey in ['bfe', 'nobfe']:
+                figkey5 = 'PSF_FWHM_MS_%s' % testname
+                figname5 = self.figs[figkey5]
+
+                fwhmxy_H = self._get_Hdict_FWHM(testname)
+
+                skip = True
+
+                if not skip:
+
+                    for bfkey in ['bfe', 'nobfe']:
 
 
-                    # Mean FWHMz
+                        # Mean FWHMz
 
-                    figkey5 = 'PSF_FWHMX_MEAN_%s_%s' % (bfkey.upper(),testname)
-                    figname5 = self.figs[figkey5]
+                        figkey5 = 'PSF_FWHMX_MEAN_%s_%s' % (bfkey.upper(),testname)
+                        figname5 = self.figs[figkey5]
 
-                    fwhmx_mean_H = self._get_Hdict_FWHM(testname, 'fwhmx', bfkey, 'mean')
+                        fwhmx_mean_H = self._get_Hdict_FWHM(testname, 'fwhmx', bfkey, 'mean')
 
-                    XMEAN_kwargs = dict(title='%s: FWHMX-mean (%s)' % (stestname,bfkey.upper()),
-                        doLegend=False,
-                        xlabel='FWHMX [pixels]',
-                        ylabel='N',
-                        #xlim=[],
-                        #ylim=[],
-                        figname=figname5)
+                        XMEAN_kwargs = dict(title='%s: FWHMX-mean (%s)' % (stestname,bfkey.upper()),
+                            doLegend=False,
+                            xlabel='FWHMX [pixels]',
+                            ylabel='N',
+                            #xlim=[],
+                            #ylim=[],
+                            figname=figname5)
 
-                    self.plot_HISTO(fwhmx_mean_H, **XMEAN_kwargs)
+                        self.plot_HISTO(fwhmx_mean_H, **XMEAN_kwargs)
 
-                    captemp5 = '%s: (%s)'
+                        captemp5 = '%s: (%s)'
 
-                    if self.report is not None:
-                        self.addFigure2Report(figname5, 
-                            figkey=figkey5, 
-                            caption= captemp5 % (stestname, bfkey),
-                            texfraction=0.9)
+                        if self.report is not None:
+                            self.addFigure2Report(figname5, 
+                                figkey=figkey5, 
+                                caption= captemp5 % (stestname, bfkey),
+                                texfraction=0.9)
 
-                    figkey6 = 'PSF_FWHMY_MEAN_%s_%s' % (bfkey.upper(),testname)
-                    figname6 = self.figs[figkey6]
+                        figkey6 = 'PSF_FWHMY_MEAN_%s_%s' % (bfkey.upper(),testname)
+                        figname6 = self.figs[figkey6]
 
-                    fwhmy_mean_H = self._get_Hdict_FWHM(testname, 'fwhmy', bfkey, 'mean')
+                        fwhmy_mean_H = self._get_Hdict_FWHM(testname, 'fwhmy', bfkey, 'mean')
 
-                    YMEAN_kwargs = dict(title='%s: FWHMY-mean (%s)' % (stestname,bfkey.upper()),
-                        doLegend=False,
-                        xlabel='FWHMY [pixels]',
-                        ylabel='N',
-                        #xlim=[],
-                        #ylim=[],
-                        figname=figname6)
+                        YMEAN_kwargs = dict(title='%s: FWHMY-mean (%s)' % (stestname,bfkey.upper()),
+                            doLegend=False,
+                            xlabel='FWHMY [pixels]',
+                            ylabel='N',
+                            #xlim=[],
+                            #ylim=[],
+                            figname=figname6)
 
-                    self.plot_HISTO(fwhmy_mean_H, **YMEAN_kwargs)
+                        self.plot_HISTO(fwhmy_mean_H, **YMEAN_kwargs)
 
-                    captemp6 = '%s: (%s)'
+                        captemp6 = '%s: (%s)'
 
-                    if self.report is not None:
-                        self.addFigure2Report(figname6, 
-                            figkey=figkey6, 
-                            caption= captemp6 % (stestname, bfkey),
-                            texfraction=0.9)
-                    
+                        if self.report is not None:
+                            self.addFigure2Report(figname6, 
+                                figkey=figkey6, 
+                                caption= captemp6 % (stestname, bfkey),
+                                texfraction=0.9)
+                        
 
-                    # SLOPES - FWHMz vs. fluence
+                        # SLOPES - FWHMz vs. fluence
 
 
-                    figkey7 = 'PSF_FWHMX_SLOPE_%s_%s' % (bfkey.upper(),testname)
-                    figname7 = self.figs[figkey7]
+                        figkey7 = 'PSF_FWHMX_SLOPE_%s_%s' % (bfkey.upper(),testname)
+                        figname7 = self.figs[figkey7]
 
-                    fwhmx_slope_H = self._get_Hdict_FWHM(testname, 'fwhmx', bfkey, 'slope')
+                        fwhmx_slope_H = self._get_Hdict_FWHM(testname, 'fwhmx', bfkey, 'slope')
 
-                    XSLOPE_kwargs = dict(title='%s: FWHMX-Slope (%s)' % (stestname, bfkey.upper()),
-                        doLegend=False,
-                        xlabel='DeltaFWHMX/fluence [pixels/(10 kADU)]',
-                        ylabel='N',
-                        #xlim=[],
-                        #ylim=[],
-                        figname=figname7)
+                        XSLOPE_kwargs = dict(title='%s: FWHMX-Slope (%s)' % (stestname, bfkey.upper()),
+                            doLegend=False,
+                            xlabel='DeltaFWHMX/fluence [pixels/(10 kADU)]',
+                            ylabel='N',
+                            #xlim=[],
+                            #ylim=[],
+                            figname=figname7)
 
-                    self.plot_HISTO(fwhmx_slope_H, **XSLOPE_kwargs)
+                        self.plot_HISTO(fwhmx_slope_H, **XSLOPE_kwargs)
 
-                    captemp7 = '%s: (%s)'
+                        captemp7 = '%s: (%s)'
 
-                    if self.report is not None:
-                        self.addFigure2Report(figname7, 
-                            figkey=figkey7, 
-                            caption= captemp7 % (stestname, bfkey),
-                            texfraction=0.9)
+                        if self.report is not None:
+                            self.addFigure2Report(figname7, 
+                                figkey=figkey7, 
+                                caption= captemp7 % (stestname, bfkey),
+                                texfraction=0.9)
 
-                    figkey8 = 'PSF_FWHMY_SLOPE_%s_%s' % (bfkey.upper(),testname)
-                    figname8 = self.figs[figkey8]
+                        figkey8 = 'PSF_FWHMY_SLOPE_%s_%s' % (bfkey.upper(),testname)
+                        figname8 = self.figs[figkey8]
 
-                    fwhmy_slope_H = self._get_Hdict_FWHM(testname, 'fwhmy', bfkey, 'slope')
+                        fwhmy_slope_H = self._get_Hdict_FWHM(testname, 'fwhmy', bfkey, 'slope')
 
-                    YSLOPE_kwargs = dict(title='%s: FWHMY-Slope (%s)' % (stestname,bfkey.upper()),
-                        doLegend=False,
-                        xlabel='DeltaFWHMY/fluence [pixels/(10 kADU)]',
-                        ylabel='N',
-                        #xlim=[],
-                        #ylim=[],
-                        figname=figname8)
+                        YSLOPE_kwargs = dict(title='%s: FWHMY-Slope (%s)' % (stestname,bfkey.upper()),
+                            doLegend=False,
+                            xlabel='DeltaFWHMY/fluence [pixels/(10 kADU)]',
+                            ylabel='N',
+                            #xlim=[],
+                            #ylim=[],
+                            figname=figname8)
 
-                    self.plot_HISTO(fwhmy_slope_H, **YSLOPE_kwargs)
+                        self.plot_HISTO(fwhmy_slope_H, **YSLOPE_kwargs)
 
-                    captemp8 = '%s: (%s)'
+                        captemp8 = '%s: (%s)'
 
-                    if self.report is not None:
-                        self.addFigure2Report(figname8, 
-                            figkey=figkey8, 
-                            caption= captemp8 % (stestname, bfkey),
-                            texfraction=0.9)
+                        if self.report is not None:
+                            self.addFigure2Report(figname8, 
+                                figkey=figkey8, 
+                                caption= captemp8 % (stestname, bfkey),
+                                texfraction=0.9)
