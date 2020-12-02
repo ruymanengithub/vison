@@ -21,6 +21,7 @@ from vison.fpa import fpa as fpamod
 from vison.support import utils
 from vison.metatests.metacal import MetaCal
 from vison.plot import plots_fpa as plfpa
+from vison.plot import baseplotclasses as bpc
 
 from vison.support import vcal
 from vison.datamodel import core as vcore
@@ -146,6 +147,173 @@ cols2keep = [
     'chk_fluence',
     'chk_fwhmx',
     'chk_fwhmy']
+
+
+class PsfPlot(bpc.BasicPlot):
+    def __init__(self, data, **kwargs):
+
+        super(BeamPlot, self).__init__(**kwargs)
+
+        meta = dict(suptitle='',
+                    #ccdtitles=dict(CCD1='CCD1', CCD2='CCD2', CCD3='CCD3'),
+                    doLegend=False)
+        meta.update(kwargs)
+
+        self.figsize = (12, 12)
+        self.measkeys = ['MEAN', 'SLOPE']
+        self.bfkeys = ['BFE', 'NOBFE']
+        self.data = copy.deepcopy(data)
+        self.meta = dict()
+        self.meta.update(meta)
+        self.handles = []
+        self.labels = []
+        self.fig = None
+        self.axs = dict()
+        self.axsarr = []
+
+        self.corekwargs = dict()
+        if 'corekwargs' in kwargs:
+            self.corekwargs.update(kwargs['corekwargs'])
+
+    def init_fig(self):
+        self._init_fig_and_axes()
+
+    def _init_fig_and_axes(self):
+        """ """
+        plt.close('all')
+        fig, axsarr = plt.subplots(
+            2, 2, sharex=True, sharey=True, figsize=self.figsize)
+        self.fig = fig
+
+        self.axsarr = axsarr
+
+        # initialisation of self.axs
+
+        k = 0
+
+        for measkey in self.measkeys:
+            self.axs[measkey] = dict()
+            for bfkey in self.bfkeys:
+                self.axs[measkey][bfkey] = self.axsarr.flatten()[k]
+                k+=1
+
+    def _ax_core_funct(self, ax, MBdict, key=''):
+        """ """
+        """ """
+
+        ckwargs = self.corekwargs.copy()
+
+        if key != '':
+            bins = MBdict['x'][key]
+            h = MBdict['y'][key]
+
+            label = key.replace('_', '\_')
+            kwargs = dict(label=label, weights=None, cumulative=False,
+                    histtype='step', align='mid', orientation='vertical', log=False)
+            if key in ckwargs:
+                kwargs.update(ckwargs[key])
+            else:
+                kwargs.update(ckwargs)
+            #kwargs = dict()
+            _, _, handle = ax.hist(h, bins=bins, **kwargs)
+            
+            ax.axvline(x=MBdict['mean'][key],color=kwargs['color'],ls='--')
+
+        else:
+            bins = MBdict['x']
+            h = MBdict['y']
+            kwargs = dict(weights=None, cumulative=False,
+                    histtype='step', align='mid', orientation='vertical', log=False)
+            kwargs.update(ckwargs)
+
+            ax.hist(h, bins=bins, **kwargs)
+
+            ax.axvline(x=MBdict['mean'],color=kwargs['color'],ls='--')
+
+            handle, label = None, None
+            
+
+        return handle, label
+
+    def populate_axes(self):
+        """ """
+
+        try:
+            labelkeys = self.data['labelkeys']
+        except KeyError:
+            labelkeys = []
+
+        k=0
+        for measkey in self.measkeys:
+            for bfkey in self.bfkeys:
+
+                ax = self.axs[measkey][bfkey]
+                BMdict = self.data[measkey][bfkey]
+
+                if len(labelkeys) > 0:
+                    for labelkey in labelkeys:
+                        handle, label = self._ax_core_funct(ax, BMdict, labelkey)
+                        if k==0:
+                            self.handles += handle
+                            self.labels.append(label)
+                else:
+                    _, _ = self._ax_core_funct(ax, CQdict)
+
+                k += 1
+
+                #if Q in ['E', 'H']:
+                #    ax.text(0.05, 0.9, Q, horizontalalignment='left',
+                #            transform=self.axs[CCDkey][Q].transAxes)
+                #elif Q in ['F', 'G']:
+                #    ax.text(0.9, 0.9, Q, horizontalalignment='right',
+                #            transform=self.axs[CCDkey][Q].transAxes)
+
+                #if Q == 'E':
+                #    ax.set_title(CCDkey, x=1)
+
+                #if 'xlabel' in self.meta and Q in ['H', 'G']:
+                #    ax.set_xlabel(self.meta['xlabel'])
+                #if 'ylabel' in self.meta and Q in ['E', 'H'] and CCD == 1:
+                #    ax.set_ylabel(self.meta['ylabel'])
+
+                #if 'ylim' in self.meta:
+                #    ax.set_ylim(self.meta['ylim'])
+                #if 'xlim' in self.meta:
+                #    ax.set_xlim(self.meta['xlim'])
+
+        # self.axs[CCDkey][Q].locator_params(nticks=4,axis='x')
+
+    def plt_trimmer(self):
+
+        for measkey in self.measkeys:
+            plt.setp(self.axs[bfkey]['BFE'].get_xticklabels(), visible=False)
+
+            if measkey == 'SLOPE':
+                for bfkey in self.bfkeys:
+                    plt.setp(self.axs[measkey][bfkey].get_yticklabels(), visible=False)
+
+        if self.meta['doLegend']:
+            plt.figlegend(self.handles, self.labels, loc='center right')
+
+        plt.locator_params(axis='y', nbins=5, prune='both')
+
+        try:
+            plt.locator_params(axis='x', nbins=4, prune='both')
+        except BaseException:
+            pass
+
+        plt.subplots_adjust(hspace=0.0)
+        plt.subplots_adjust(wspace=0.0)
+
+        plt.margins(0.05)
+
+        plt.suptitle(self.meta['suptitle'])
+        # plt.tight_layout()
+        plt.subplots_adjust(top=0.85)
+        if self.meta['doLegend']:
+            plt.subplots_adjust(right=0.85)
+
+        
 
 
 class MetaPsf(MetaCal):
@@ -485,7 +653,6 @@ class MetaPsf(MetaCal):
                 Hdict[bfkey][measkey]['y']['fwhmy'] = histoY[1]
                 Hdict[bfkey][measkey]['mean']['fwhmy'] = np.nanmean(_valy)
 
-                stop()
 
         return Hdict
 
@@ -530,6 +697,16 @@ class MetaPsf(MetaCal):
         else:
             figname = ''
         xtalkmap.render(figname=figname)
+
+    def plot_PSF_HISTOS(self, fwhmxy_H, **psf_kwargs):
+        """ """
+
+        psfhistos = PsfPlot(fwhmxy_H, **psf_kwargs)
+        if 'figname' in psf_kwargs:
+            figname = psf_kwargs['figname']
+        else:
+            figname = ''
+        psfhistos.render(figname=figname)
 
     def init_fignames(self):
         """ """
@@ -919,6 +1096,25 @@ class MetaPsf(MetaCal):
                 figname5 = self.figs[figkey5]
 
                 fwhmxy_H = self._get_Hdict_FWHM(testname)
+
+                psf_kwargs = dict(title='%s: FWHMxy trends' % (stestname,),
+                    doLegend=True,
+                    xlabel='FWHMX [pixels]',
+                    ylabel='N',
+                    #xlim=[],
+                    #ylim=[],
+                    figname=figname5)
+
+                self.plot_PSF_HISTOS(fwhmxy_H, **psf_kwargs)
+
+                captemp5 = '%s'
+
+                if self.report is not None:
+                    self.addFigure2Report(figname5, 
+                        figkey=figkey5, 
+                        caption= captemp5 % (stestname, ),
+                        texfraction=1.0)
+
 
                 skip = True
 
