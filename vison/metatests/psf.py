@@ -215,8 +215,10 @@ class PsfPlot(bpc.BasicPlot):
             else:
                 kwargs.update(ckwargs)
             #kwargs = dict()
-            _, _, handle = ax.hist(h, bins=bins, **kwargs)
-            
+            try: 
+                _, _, handle = ax.hist(h, bins=bins, **kwargs)
+            except:
+                stop()
             ax.axvline(x=MBdict['mean'][key],color=kwargs['color'],ls='--')
 
         else:
