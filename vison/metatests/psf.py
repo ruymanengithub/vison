@@ -1108,6 +1108,8 @@ class MetaPsf(MetaCal):
                         SLOPE=[-5.e-2,1.e-1])
                 fwhmxy_H = self._get_Hdict_FWHM(testname, xlim=xlim, Nbins=30)
 
+                stop()
+
                 psf_kwargs = dict(suptitle='%s: FWHMxy trends' % (stestname,),
                     doLegend=True,
                     xlabel=dict(MEAN='FWHM? [pix]',
