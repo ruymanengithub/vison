@@ -182,7 +182,7 @@ class PsfPlot(bpc.BasicPlot):
         """ """
         plt.close('all')
         fig, axsarr = plt.subplots(
-            2, 2, sharex=True, sharey=True, figsize=self.figsize)
+            2, 2, sharex=False, sharey=True, figsize=self.figsize)
         self.fig = fig
 
         self.axsarr = axsarr
@@ -1107,7 +1107,7 @@ class MetaPsf(MetaCal):
                         SLOPE='delta FWHM / fluence [pixels / (10 kADU)]'),
                     ylabel='N',
                     xlim=dict(MEAN=[0.,2.5],
-                        SLOPE=[-1.e-2,5.e-2]),
+                        SLOPE=[-5.e-2,1.e-1]),
                     #ylim=[],
                     figname=figname5,
                     corekwargs=dict(fwhmx=dict(color='g'),
