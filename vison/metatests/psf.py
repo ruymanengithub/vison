@@ -734,7 +734,7 @@ class MetaPsf(MetaCal):
 
         for testname in self.testnames:
 
-            self.figs['PSF_FWHM_MS_%s' % (bfkey.upper(),testname)] = \
+            self.figs['PSF_FWHM_MS_%s' % (testname,)] = \
                 os.path.join(self.figspath,'PSF_FWHM_MS_%s.png' % (testname,))
 
             #for bfkey in ['bfe', 'nobfe']:
