@@ -645,15 +645,14 @@ class MetaPsf(MetaCal):
                             _valy.append(PT[datakeyY][ixblock])
 
 
-                histoX = np.histogram(_valx, bins=20)
-                stop()
-                Hdict[bfkey][measkey]['x']['fwhmx'] = histoX[0]
-                Hdict[bfkey][measkey]['y']['fwhmx'] = histoX[1]
+                histoX = np.histogram(_valx, bins='sqrt')
+                Hdict[bfkey][measkey]['x']['fwhmx'] = histoX[1]
+                Hdict[bfkey][measkey]['y']['fwhmx'] = histoX[0]
                 Hdict[bfkey][measkey]['mean']['fwhmx'] = np.nanmean(_valx)
 
-                histoY = np.histogram(_valy, bins=20)
-                Hdict[bfkey][measkey]['x']['fwhmy'] = histoY[0]
-                Hdict[bfkey][measkey]['y']['fwhmy'] = histoY[1]
+                histoY = np.histogram(_valy, bins='sqrt')
+                Hdict[bfkey][measkey]['x']['fwhmy'] = histoY[1]
+                Hdict[bfkey][measkey]['y']['fwhmy'] = histoY[0]
                 Hdict[bfkey][measkey]['mean']['fwhmy'] = np.nanmean(_valy)
 
 
