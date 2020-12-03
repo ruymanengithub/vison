@@ -152,7 +152,7 @@ cols2keep = [
 class PsfPlot(bpc.BasicPlot):
     def __init__(self, data, **kwargs):
 
-        super(BeamPlot, self).__init__(**kwargs)
+        super(PsfPlot, self).__init__(**kwargs)
 
         meta = dict(suptitle='',
                     #ccdtitles=dict(CCD1='CCD1', CCD2='CCD2', CCD3='CCD3'),
