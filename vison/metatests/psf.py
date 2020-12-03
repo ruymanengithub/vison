@@ -292,7 +292,7 @@ class PsfPlot(bpc.BasicPlot):
                     plt.setp(self.axs[bfkey][measkey].get_xticklabels(), visible=False)
 
                 if measkey == 'SLOPE':
-                    plt.setp(self.axs[measkey][bfkey].get_yticklabels(), visible=False)
+                    plt.setp(self.axs[bfkey][measkey].get_yticklabels(), visible=False)
 
         if self.meta['doLegend']:
             plt.figlegend(self.handles, self.labels, loc='center right')
