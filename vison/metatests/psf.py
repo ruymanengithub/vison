@@ -15,6 +15,7 @@ import string as st
 import os
 import matplotlib.cm as cm
 from sklearn import linear_model
+from scipy import stats
 
 from vison.datamodel import cdp
 from vison.fpa import fpa as fpamod
@@ -654,12 +655,14 @@ class MetaPsf(MetaCal):
                 bins = np.linspace(xlim[measkey][0],xlim[measkey][1],Nbins)
                 
                 Hdict[bfkey][measkey]['x']['fwhmx'] = bins # histoX[1]
-                Hdict[bfkey][measkey]['y']['fwhmx'] = _valx.copy() # histoX[0]
+                _valx = stats.sigmaclip(_valx.copy(), 4, 4).clipped
+                Hdict[bfkey][measkey]['y']['fwhmx'] = _valx # histoX[0]
                 Hdict[bfkey][measkey]['mean']['fwhmx'] = np.nanmean(_valx)
 
                 #histoY = np.histogram(_valy, bins='sqrt')
                 Hdict[bfkey][measkey]['x']['fwhmy'] = bins # histoY[1]
-                Hdict[bfkey][measkey]['y']['fwhmy'] = _valy.copy() # histoY[0]
+                _valy = stats.sigmaclip(_valy.copy(), 4, 4).clipped
+                Hdict[bfkey][measkey]['y']['fwhmy'] = _valy # histoY[0]
                 Hdict[bfkey][measkey]['mean']['fwhmy'] = np.nanmean(_valy)
 
 
@@ -1107,8 +1110,6 @@ class MetaPsf(MetaCal):
                 xlim = dict(MEAN=[0.,2.5],
                         SLOPE=[-5.e-2,1.e-1])
                 fwhmxy_H = self._get_Hdict_FWHM(testname, xlim=xlim, Nbins=30)
-
-                stop()
 
                 psf_kwargs = dict(suptitle='%s: FWHMxy trends' % (stestname,),
                     doLegend=True,
