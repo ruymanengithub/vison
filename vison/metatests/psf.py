@@ -285,11 +285,13 @@ class PsfPlot(bpc.BasicPlot):
 
     def plt_trimmer(self):
 
-        for measkey in self.measkeys:
-            plt.setp(self.axs[bfkey]['BFE'].get_xticklabels(), visible=False)
+        for bfkey in self.bfkeys:
+            for measkey in self.measkeys:
 
-            if measkey == 'SLOPE':
-                for bfkey in self.bfkeys:
+                if bfkey == 'BFE':
+                    plt.setp(self.axs[bfkey][measkey].get_xticklabels(), visible=False)
+
+                if measkey == 'SLOPE':
                     plt.setp(self.axs[measkey][bfkey].get_yticklabels(), visible=False)
 
         if self.meta['doLegend']:
