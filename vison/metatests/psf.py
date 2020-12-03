@@ -735,20 +735,20 @@ class MetaPsf(MetaCal):
         for testname in self.testnames:
 
             self.figs['PSF_FWHM_MS_%s' % (bfkey.upper(),testname)] = \
-                os.path.join(self.figspath,'PSF_FWHM_MS_%s.png' % (bfkey.upper(),testname))
+                os.path.join(self.figspath,'PSF_FWHM_MS_%s.png' % (testname,))
 
-            for bfkey in ['bfe', 'nobfe']:
-                self.figs['PSF_FWHMX_SLOPE_%s_%s' % (bfkey.upper(),testname)] = \
-                    os.path.join(self.figspath,'PSF_FWHMX_SLOPE_%s_%s.png' % (bfkey.upper(),testname))
+            #for bfkey in ['bfe', 'nobfe']:
+            #    self.figs['PSF_FWHMX_SLOPE_%s_%s' % (bfkey.upper(),testname)] = \
+            #        os.path.join(self.figspath,'PSF_FWHMX_SLOPE_%s_%s.png' % (bfkey.upper(),testname))
 
-                self.figs['PSF_FWHMX_MEAN_%s_%s' % (bfkey.upper(),testname)] = \
-                        os.path.join(self.figspath,'PSF_FWHMX_MEAN_%s_%s.png' % (bfkey.upper(),testname))
+            #    self.figs['PSF_FWHMX_MEAN_%s_%s' % (bfkey.upper(),testname)] = \
+            #            os.path.join(self.figspath,'PSF_FWHMX_MEAN_%s_%s.png' % (bfkey.upper(),testname))
 
-                self.figs['PSF_FWHMY_SLOPE_%s_%s' % (bfkey.upper(),testname)] = \
-                        os.path.join(self.figspath,'PSF_FWHMY_SLOPE_%s_%s.png' % (bfkey.upper(),testname))
+            #    self.figs['PSF_FWHMY_SLOPE_%s_%s' % (bfkey.upper(),testname)] = \
+            #            os.path.join(self.figspath,'PSF_FWHMY_SLOPE_%s_%s.png' % (bfkey.upper(),testname))
 
-                self.figs['PSF_FWHMY_MEAN_%s_%s' % (bfkey.upper(),testname)] = \
-                        os.path.join(self.figspath,'PSF_FWHMY_MEAN_%s_%s.png' % (bfkey.upper(),testname))
+            #    self.figs['PSF_FWHMY_MEAN_%s_%s' % (bfkey.upper(),testname)] = \
+            #            os.path.join(self.figspath,'PSF_FWHMY_MEAN_%s_%s.png' % (bfkey.upper(),testname))
 
     def init_outcdpnames(self):
         """ """
