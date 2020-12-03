@@ -261,23 +261,26 @@ class PsfPlot(bpc.BasicPlot):
 
                 k += 1
 
-                #if Q in ['E', 'H']:
-                #    ax.text(0.05, 0.9, Q, horizontalalignment='left',
-                #            transform=self.axs[CCDkey][Q].transAxes)
-                #elif Q in ['F', 'G']:
-                #    ax.text(0.9, 0.9, Q, horizontalalignment='right',
-                #            transform=self.axs[CCDkey][Q].transAxes)
+                if bfkey == 'BFE':
+                    ax.text(0.05, 0.9, 'with BF', horizontalalignment='left',
+                            transform=ax.transAxes)
+                elif bfkey == 'NOBFE':
+                    ax.text(0.05, 0.9, 'BF corrected', horizontalalignment='left',
+                            transform=ax.transAxes)
 
-                #if Q == 'E':
-                #    ax.set_title(CCDkey, x=1)
+                if bfkey == 'BFE':
+                    if measkey == 'MEAN':
+                        ax.set_title('Mean PSF FWHM')
+                    elif measkey == 'SLOPE':
+                        ax.set_title('FWHM vs. Fluence Slope')
 
                 if 'xlabel' in self.meta and bfkey=='NOBFE':
                     ax.set_xlabel(self.meta['xlabel'][measkey])
                 if 'ylabel' in self.meta and measkey=='MEAN':
                     ax.set_ylabel(self.meta['ylabel'])
 
-                #if 'ylim' in self.meta:
-                #    ax.set_ylim(self.meta['ylim'])
+                if 'ylim' in self.meta:
+                    ax.set_ylim(self.meta['ylim'])
                 if 'xlim' in self.meta:
                     ax.set_xlim(self.meta['xlim'][measkey])
 
@@ -1111,7 +1114,7 @@ class MetaPsf(MetaCal):
                         SLOPE='dFWHM? / flu. [pix / (10 kADU)]'),
                     ylabel='N',
                     xlim=xlim,
-                    #ylim=[],
+                    ylim=[0, 60],
                     figname=figname5,
                     corekwargs=dict(fwhmx=dict(color='g'),
                                     fwhmy=dict(color='b')))
