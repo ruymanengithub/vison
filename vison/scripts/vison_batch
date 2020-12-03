@@ -18,6 +18,7 @@ import sys
 import copy
 import importlib
 import subprocess
+import datetime
 
 from vison import Pipe
 from vison.support import vjson
@@ -154,6 +155,8 @@ def run_all(execute, report, seqfile, bloqsfile, dfolder=None, testIN=None,
     cwd = os.getcwd()
     print('\n')
     
+    tini = datetime.datetime.now()
+
     for block in blocks_sequence:
         
         log.info('Entering %s' % block)
@@ -175,6 +178,11 @@ def run_all(execute, report, seqfile, bloqsfile, dfolder=None, testIN=None,
             
         os.chdir(cwd)
     
+    tend = datetime.datetime.now()
+    Dth = ((tend - tini).seconds) / 3600.
+
+    log.info('\nExecuted in %.1f hours' % Dth)
+
     log.info('\nAll Done!\n')
     
 
