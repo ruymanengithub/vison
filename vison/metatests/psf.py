@@ -604,7 +604,7 @@ class MetaPsf(MetaCal):
         return XTdict
 
 
-    def _get_Hdict_FWHM(self, testname):
+    def _get_Hdict_FWHM(self, testname, xlims, Nbins=30):
         """ """
         # secondary paramters: fwhmkey, bfkey, measkey
 
@@ -647,13 +647,15 @@ class MetaPsf(MetaCal):
                             _valy.append(PT[datakeyY][ixblock])
 
 
-                histoX = np.histogram(_valx, bins='sqrt')
-                Hdict[bfkey][measkey]['x']['fwhmx'] = histoX[1]
+                #histoX = np.histogram(_valx, bins='sqrt')
+                bins = np.linspace(xlims[measkey][0],xlims[measkey][1],Nbins)
+                
+                Hdict[bfkey][measkey]['x']['fwhmx'] = bins # histoX[1]
                 Hdict[bfkey][measkey]['y']['fwhmx'] = _valx.copy() # histoX[0]
                 Hdict[bfkey][measkey]['mean']['fwhmx'] = np.nanmean(_valx)
 
-                histoY = np.histogram(_valy, bins='sqrt')
-                Hdict[bfkey][measkey]['x']['fwhmy'] = histoY[1]
+                #histoY = np.histogram(_valy, bins='sqrt')
+                Hdict[bfkey][measkey]['x']['fwhmy'] = bins # histoY[1]
                 Hdict[bfkey][measkey]['y']['fwhmy'] = _valy.copy() # histoY[0]
                 Hdict[bfkey][measkey]['mean']['fwhmy'] = np.nanmean(_valy)
 
@@ -1099,15 +1101,16 @@ class MetaPsf(MetaCal):
                 figkey5 = 'PSF_FWHM_MS_%s' % testname
                 figname5 = self.figs[figkey5]
 
-                fwhmxy_H = self._get_Hdict_FWHM(testname)
+                xlim = dict(MEAN=[0.,2.5],
+                        SLOPE=[-5.e-2,1.e-1])
+                fwhmxy_H = self._get_Hdict_FWHM(testname, xlim=xlim, Nbins=30)
 
                 psf_kwargs = dict(suptitle='%s: FWHMxy trends' % (stestname,),
                     doLegend=True,
-                    xlabel=dict(MEAN='FWHMX [pixels]',
-                        SLOPE='delta FWHM / fluence [pixels / (10 kADU)]'),
+                    xlabel=dict(MEAN='FWHM? [pix]',
+                        SLOPE='dFWHM? / flu. [pix / (10 kADU)]'),
                     ylabel='N',
-                    xlim=dict(MEAN=[0.,2.5],
-                        SLOPE=[-5.e-2,1.e-1]),
+                    xlim=xlim,
                     #ylim=[],
                     figname=figname5,
                     corekwargs=dict(fwhmx=dict(color='g'),
