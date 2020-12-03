@@ -649,12 +649,12 @@ class MetaPsf(MetaCal):
 
                 histoX = np.histogram(_valx, bins='sqrt')
                 Hdict[bfkey][measkey]['x']['fwhmx'] = histoX[1]
-                Hdict[bfkey][measkey]['y']['fwhmx'] = histoX[0]
+                Hdict[bfkey][measkey]['y']['fwhmx'] = _valx.copy() # histoX[0]
                 Hdict[bfkey][measkey]['mean']['fwhmx'] = np.nanmean(_valx)
 
                 histoY = np.histogram(_valy, bins='sqrt')
                 Hdict[bfkey][measkey]['x']['fwhmy'] = histoY[1]
-                Hdict[bfkey][measkey]['y']['fwhmy'] = histoY[0]
+                Hdict[bfkey][measkey]['y']['fwhmy'] = _valy.copy() # histoY[0]
                 Hdict[bfkey][measkey]['mean']['fwhmy'] = np.nanmean(_valy)
 
 
@@ -1101,7 +1101,7 @@ class MetaPsf(MetaCal):
 
                 fwhmxy_H = self._get_Hdict_FWHM(testname)
 
-                psf_kwargs = dict(title='%s: FWHMxy trends' % (stestname,),
+                psf_kwargs = dict(suptitle='%s: FWHMxy trends' % (stestname,),
                     doLegend=True,
                     xlabel='FWHMX [pixels]',
                     ylabel='N',
