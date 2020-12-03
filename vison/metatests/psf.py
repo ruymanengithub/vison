@@ -1105,7 +1105,9 @@ class MetaPsf(MetaCal):
                     ylabel='N',
                     #xlim=[],
                     #ylim=[],
-                    figname=figname5)
+                    figname=figname5,
+                    corekwargs=dict(fwhmx=dict(color='g'),
+                                    fwhmy=dict(color='b')))
 
                 self.plot_PSF_HISTOS(fwhmxy_H, **psf_kwargs)
 
