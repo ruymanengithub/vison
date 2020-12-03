@@ -191,10 +191,10 @@ class PsfPlot(bpc.BasicPlot):
 
         k = 0
 
-        for measkey in self.measkeys:
-            self.axs[measkey] = dict()
-            for bfkey in self.bfkeys:
-                self.axs[measkey][bfkey] = self.axsarr.flatten()[k]
+        for bfkey in self.bfkeys:
+            self.axs[bfkey] = dict()
+            for measkey in self.measkeys:
+                self.axs[bfkey][measkey] = self.axsarr.flatten()[k]
                 k+=1
 
     def _ax_core_funct(self, ax, MBdict, key=''):
@@ -244,11 +244,11 @@ class PsfPlot(bpc.BasicPlot):
             labelkeys = []
 
         k=0
-        for measkey in self.measkeys:
-            for bfkey in self.bfkeys:
+        for bfkey in self.bfkeys:
+            for measkey in self.measkeys:
 
-                ax = self.axs[measkey][bfkey]
-                BMdict = self.data[measkey][bfkey]
+                ax = self.axs[bfkey][measkey]
+                BMdict = self.data[bfkey][measkey]
 
                 if len(labelkeys) > 0:
                     for labelkey in labelkeys:
@@ -611,10 +611,10 @@ class MetaPsf(MetaCal):
 
         Hdict = dict()
 
-        for measkey in measkeys:
-            Hdict[measkey] = dict()
-            for bfkey in bfkeys:
-                Hdict[measkey][bfkey] = dict(x=dict(),y=dict())
+        for bfkey in bfkeys:
+            Hdict[bfkey] = dict()
+            for measkey in measkeys:
+                Hdict[bfkey][measkey] = dict(x=dict(),y=dict())
 
         Hdict['labelkeys'] = ['fwhmx','fwhmy']
             
