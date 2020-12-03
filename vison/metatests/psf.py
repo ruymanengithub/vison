@@ -215,10 +215,8 @@ class PsfPlot(bpc.BasicPlot):
             else:
                 kwargs.update(ckwargs)
             #kwargs = dict()
-            try: 
-                _, _, handle = ax.hist(h, bins=bins, **kwargs)
-            except:
-                stop()
+            _, _, handle = ax.hist(h, bins=bins, **kwargs)
+            
             ax.axvline(x=MBdict['mean'][key],color=kwargs['color'],ls='--')
 
         else:
@@ -648,6 +646,7 @@ class MetaPsf(MetaCal):
 
 
                 histoX = np.histogram(_valx, bins=20)
+                stop()
                 Hdict[bfkey][measkey]['x']['fwhmx'] = histoX[0]
                 Hdict[bfkey][measkey]['y']['fwhmx'] = histoX[1]
                 Hdict[bfkey][measkey]['mean']['fwhmx'] = np.nanmean(_valx)
