@@ -1081,7 +1081,11 @@ class MetaPsf(MetaCal):
 
                 self.plot_PSF_HISTOS(fwhmxy_H, **psf_kwargs)
 
-                captemp5 = '%s'
+                captemp5 = 'Test %s. Average values of PSF FWHM (left) and slope of the linearly fitted trend of '+\
+                'FWHM vs. fluence (right) for all spots in the beam. Dimensions in "x" and "y" have been color '+\
+                'coded differently. On the top row we have the results with Brighter-Fatter (i.e., without '+\
+                'correction) and on the row below the results after correcting the Brightter-Fatter effect using '+\
+                'the data from the BF0X tests and the algorithms of Guyonnet et al. 2015.'
 
                 if self.report is not None:
                     self.addFigure2Report(figname5, 
