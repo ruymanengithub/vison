@@ -609,6 +609,8 @@ class MetaPsf(MetaCal):
         measkeys = ['MEAN','SLOPE']
         bfkeys = ['BFE','NOBFE']
 
+        Hdict = dict()
+
         for measkey in measkeys:
             Hdict[measkey] = dict()
             for bfkey in bfkeys:
