@@ -851,7 +851,7 @@ class MetaPsf(MetaCal):
         CDP_header.update(dict(function=function, module=module))
         CDP_header['DATE'] = self.get_time_tag()
 
-        doXtalk = False
+        doXtalk = True
         doPsf = True
 
         if doXtalk:
