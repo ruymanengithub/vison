@@ -614,7 +614,7 @@ class MetaPsf(MetaCal):
         for bfkey in bfkeys:
             Hdict[bfkey] = dict()
             for measkey in measkeys:
-                Hdict[bfkey][measkey] = dict(x=dict(),y=dict())
+                Hdict[bfkey][measkey] = dict(x=dict(),y=dict(),mean=dict())
 
         Hdict['labelkeys'] = ['fwhmx','fwhmy']
             
