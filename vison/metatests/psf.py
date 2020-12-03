@@ -668,37 +668,6 @@ class MetaPsf(MetaCal):
 
         return Hdict
 
-    def OLD_get_Hdict_FWHM(self, testname, fwhmkey, bfkey, measkey):
-        """ """
-
-
-        x = dict()
-        y = dict()
-
-        PT = self.ParsedTable[testname]
-
-        _y = []
-
-        for block in self.flight_blocks:
-
-            ixblock = np.where(PT['BLOCK'] == block)[0][0]
-
-            
-            for iCCD, CCD in enumerate(self.CCDs):
-                for iQ, Q in enumerate(self.Quads):
-
-                    datakey = '%s_%s_%s_CCD%s_Quad%s' % \
-                        (fwhmkey.upper(),bfkey.upper(),measkey.upper(),CCD,Q)
-
-                    _y.append(PT[datakey][ixblock])
-
-        histo = np.histogram(_y, bins=20)
-        
-        Hdict = dict(x=histo[1], y=histo[0])
-
-        return Hdict
-
-
 
     def plot_XtalkMAP(self, XTALKs, **kwargs):
         """ """
@@ -749,19 +718,7 @@ class MetaPsf(MetaCal):
             self.figs['PSF_FWHM_MS_%s' % (testname,)] = \
                 os.path.join(self.figspath,'PSF_FWHM_MS_%s.png' % (testname,))
 
-            #for bfkey in ['bfe', 'nobfe']:
-            #    self.figs['PSF_FWHMX_SLOPE_%s_%s' % (bfkey.upper(),testname)] = \
-            #        os.path.join(self.figspath,'PSF_FWHMX_SLOPE_%s_%s.png' % (bfkey.upper(),testname))
-
-            #    self.figs['PSF_FWHMX_MEAN_%s_%s' % (bfkey.upper(),testname)] = \
-            #            os.path.join(self.figspath,'PSF_FWHMX_MEAN_%s_%s.png' % (bfkey.upper(),testname))
-
-            #    self.figs['PSF_FWHMY_SLOPE_%s_%s' % (bfkey.upper(),testname)] = \
-            #            os.path.join(self.figspath,'PSF_FWHMY_SLOPE_%s_%s.png' % (bfkey.upper(),testname))
-
-            #    self.figs['PSF_FWHMY_MEAN_%s_%s' % (bfkey.upper(),testname)] = \
-            #            os.path.join(self.figspath,'PSF_FWHMY_MEAN_%s_%s.png' % (bfkey.upper(),testname))
-
+ 
     def init_outcdpnames(self):
         """ """
 
