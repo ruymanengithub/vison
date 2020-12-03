@@ -271,15 +271,15 @@ class PsfPlot(bpc.BasicPlot):
                 #if Q == 'E':
                 #    ax.set_title(CCDkey, x=1)
 
-                #if 'xlabel' in self.meta and Q in ['H', 'G']:
-                #    ax.set_xlabel(self.meta['xlabel'])
-                #if 'ylabel' in self.meta and Q in ['E', 'H'] and CCD == 1:
-                #    ax.set_ylabel(self.meta['ylabel'])
+                if 'xlabel' in self.meta and bfkey=='NOBFE':
+                    ax.set_xlabel(self.meta['xlabel'][measkey])
+                if 'ylabel' in self.meta and measkey=='MEAN':
+                    ax.set_ylabel(self.meta['ylabel'])
 
                 #if 'ylim' in self.meta:
                 #    ax.set_ylim(self.meta['ylim'])
-                #if 'xlim' in self.meta:
-                #    ax.set_xlim(self.meta['xlim'])
+                if 'xlim' in self.meta:
+                    ax.set_xlim(self.meta['xlim'][measkey])
 
         # self.axs[CCDkey][Q].locator_params(nticks=4,axis='x')
 
@@ -1103,9 +1103,11 @@ class MetaPsf(MetaCal):
 
                 psf_kwargs = dict(suptitle='%s: FWHMxy trends' % (stestname,),
                     doLegend=True,
-                    xlabel='FWHMX [pixels]',
+                    xlabel=dict(MEAN='FWHMX [pixels]',
+                        SLOPE='delta FWHM / fluence [pixels / (10 kADU)]'),
                     ylabel='N',
-                    #xlim=[],
+                    xlim=dict(MEAN=[0.,2.5],
+                        SLOPE=[-1.e-2,5.e-2]),
                     #ylim=[],
                     figname=figname5,
                     corekwargs=dict(fwhmx=dict(color='g'),
