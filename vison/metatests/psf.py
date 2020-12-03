@@ -604,7 +604,7 @@ class MetaPsf(MetaCal):
         return XTdict
 
 
-    def _get_Hdict_FWHM(self, testname, xlims, Nbins=30):
+    def _get_Hdict_FWHM(self, testname, xlim, Nbins=30):
         """ """
         # secondary paramters: fwhmkey, bfkey, measkey
 
@@ -648,7 +648,7 @@ class MetaPsf(MetaCal):
 
 
                 #histoX = np.histogram(_valx, bins='sqrt')
-                bins = np.linspace(xlims[measkey][0],xlims[measkey][1],Nbins)
+                bins = np.linspace(xlim[measkey][0],xlim[measkey][1],Nbins)
                 
                 Hdict[bfkey][measkey]['x']['fwhmx'] = bins # histoX[1]
                 Hdict[bfkey][measkey]['y']['fwhmx'] = _valx.copy() # histoX[0]
