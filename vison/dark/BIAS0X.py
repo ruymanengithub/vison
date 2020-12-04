@@ -363,13 +363,15 @@ class BIAS0X(DarkTask):
         # PLOTS
         # profiles 1D (Hor & Ver) x (CCD&Q)
         # histograms of RON per CCD&Q
+        types = [type(item) for item in prof_all]
+        prof_all = np.array(prof_all)
+        ixNone = np.where(np.array(types) != float)
+        prof_all[ixNone] = np.nan
+
 
         if len(prof_all) != 0:
-            try:
-                ylim_1D = [np.percentile(prof_all, 5) - 20.,
-                       np.percentile(prof_all, 95) + 20.]
-            except:
-                stop()
+            ylim_1D = [np.percentile(prof_all, 5) - 20.,
+                np.percentile(prof_all, 95) + 20.]
         else:
             ylim_1D = [0, 2.**16]
 
