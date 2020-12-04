@@ -45,8 +45,7 @@ def fit_focus_single(x, y, yerror=None, degree=1, doplot=False):
     #coeffs, Vcoeffs = np.polyfit(x, y, degree, w=weights, full=False, cov=True)
     
     try:
-        ixvalid = np.where(np.where((y > 0.) & (~np.isnan(y))))
-        stop()
+        ixvalid = np.where(np.where((y > 0.) & ~np.isnan(y)))
         coeffs, Vcoeffs = np.polyfit(x[ixvalid], y[ixvalid], degree, w=weights[ixvalid], full=False, cov=True)
     except np.linalg.LinAlgError:
         res = dict(coeffs=np.zeros(degree+1)+np.nan,
