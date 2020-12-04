@@ -365,8 +365,11 @@ class BIAS0X(DarkTask):
         # histograms of RON per CCD&Q
 
         if len(prof_all) != 0:
-            ylim_1D = [np.percentile(prof_all, 5) - 20.,
+            try:
+                ylim_1D = [np.percentile(prof_all, 5) - 20.,
                        np.percentile(prof_all, 95) + 20.]
+            except:
+                stop()
         else:
             ylim_1D = [0, 2.**16]
 
