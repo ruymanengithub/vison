@@ -426,9 +426,14 @@ class FOCUS00(PT.PointTask):
                                dobuilddata=False)
 
         # CDP with CBE FOCUS and related tables
-        stop()
-        meta_contents = ['cbe_focus', 'cbe_fwhm', 'poldegree', 'CCDs', 'Quads', 'Spots']
-        focus_meta = OrderedDict([(name, eval(name)) for name in meta_contents])
+        
+        meta_contents = [('cbe_focus', cbe_focus),
+        ('cbe_fwhm',cbe_fwhm),
+        ('poldegree',poldegree),
+        ('CCDs',CCDs),
+        ('Quads',Quads),
+        ('Spots',Spots)]
+        focus_meta = OrderedDict([item for item in meta_contents])
 
         FOCUS_dddf = OrderedDict(FOCUS=pd.DataFrame.from_dict(Focus_dd))
 
