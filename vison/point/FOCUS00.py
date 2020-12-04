@@ -326,7 +326,7 @@ class FOCUS00(PT.PointTask):
                         p_zres = F00lib.fit_focus_single(xmirr[:, iCCD],
                                                          fwhm, yerror=None,
                                                          degree=poldegree, doplot=False)
-                    except ValueError:
+                    except:
                         if self.log is not None:
                             self.log.info('Focus fit did not converge for %s-%s-%s' %
                                           (CCDk, Q, SpotName))
