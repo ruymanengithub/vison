@@ -40,17 +40,17 @@ def fit_focus_single(x, y, yerror=None, degree=1, doplot=False):
         weights = np.ones_like(y)
 
     warnings.simplefilter('ignore', np.RankWarning)
+    
+
+    #coeffs, Vcoeffs = np.polyfit(x, y, degree, w=weights, full=False, cov=True)
+    
     try:
         coeffs, Vcoeffs = np.polyfit(x, y, degree, w=weights, full=False, cov=True)
     except:
-        stop()
-    # try:
-    #    coeffs, Vcoeffs = np.polyfit(x, y, degree, w=weights, full=False, cov=True)
-    # except ValueError:
-    #    res = dict(coeffs=np.zeros(degree+1)+np.nan,
-    #               ecoeffs=np.zeros(degree+1)+np.nan,
-    #               focus=np.nan)
-    #    return res
+        res = dict(coeffs=np.zeros(degree+1)+np.nan,
+                   ecoeffs=np.zeros(degree+1)+np.nan,
+                   focus=np.nan)
+        return res
 
     ecoeffs = np.diag(Vcoeffs)**0.5
 
