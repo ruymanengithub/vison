@@ -322,17 +322,18 @@ class FOCUS00(PT.PointTask):
 
                     fwhm = np.sqrt(fwhmx**2. + fwhmy**2.) / np.sqrt(2.)
 
-                    try:
-                        p_zres = F00lib.fit_focus_single(xmirr[:, iCCD],
-                                                         fwhm, yerror=None,
-                                                         degree=poldegree, doplot=False)
-                    except:
-                        if self.log is not None:
-                            self.log.info('Focus fit did not converge for %s-%s-%s' %
-                                          (CCDk, Q, SpotName))
-                        p_zres = dict(coeffs=np.zeros(poldegree + 1) + np.nan,
-                                      ecoeffs=np.zeros(poldegree + 1) + np.nan,
-                                      focus=np.nan)
+                    #try:
+                    p_zres = F00lib.fit_focus_single(xmirr[:, iCCD],
+                                                     fwhm, yerror=None,
+                                                     degree=poldegree, doplot=False)
+                    #except:
+                    #    stop()
+                    #    if self.log is not None:
+                    #        self.log.info('Focus fit did not converge for %s-%s-%s' %
+                    #                      (CCDk, Q, SpotName))
+                    ##    p_zres = dict(coeffs=np.zeros(poldegree + 1) + np.nan,
+                    #                 ecoeffs=np.zeros(poldegree + 1) + np.nan,
+                    #                 focus=np.nan)
 
                     Focus_dd['CCD'][ix] = iCCD
                     Focus_dd['Q'][ix] = jQ
