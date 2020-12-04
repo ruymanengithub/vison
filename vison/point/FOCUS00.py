@@ -352,7 +352,7 @@ class FOCUS00(PT.PointTask):
                     zres[CCDk][Q][SpotName] = p_zres
 
         # Find centroid of focus values, as Best Focus
-        stop()
+
         cbe_focus = np.mean(stats.sigmaclip(
             Focus_dd['focus'][~np.isnan(Focus_dd['focus'])], 4, 4).clipped)
         # Obtaining delta-focus map
@@ -426,7 +426,7 @@ class FOCUS00(PT.PointTask):
                                dobuilddata=False)
 
         # CDP with CBE FOCUS and related tables
-
+        stop()
         meta_contents = ['cbe_focus', 'cbe_fwhm', 'poldegree', 'CCDs', 'Quads', 'Spots']
         focus_meta = OrderedDict([(name, eval(name)) for name in meta_contents])
 
