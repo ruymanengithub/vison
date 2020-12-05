@@ -449,7 +449,7 @@ class Task(object):
         else:
             explog = pilib.loadexplogs(explogf, elvis=self.elvis, addpedigree=True,
                                        datapath=datapath)
-        stop()
+        
         # META-DATA WORK
         explog, checkreport = self.filterexposures(
             structure, explog, OBSID_lims)
@@ -495,7 +495,7 @@ class Task(object):
             list(map(vistime.get_dtobj, explog['date']))).copy()
 
         # Building DataDict
-
+        stop()
         self.dd = pilib.DataDict_builder(explog, self.inputs, structure)
 
         if not checkreport['checksout']:
