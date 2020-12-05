@@ -184,7 +184,7 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None,
                           CHAMBER='Unknown')
 
     maskcdp.ingest_inputs(data=data, meta=meta)
-    
+
     maskcdp.savehardcopy(outfilename)
 
     os.system('rm %s' % tmp_pickf)
@@ -220,10 +220,12 @@ def do_MergeMasks(inputs):
     outfilename = os.path.join(outpath, 'EUC_MASK_%s_CCD%i_SN_%s.fits' % (tag, CCD, sn_ccd))
 
     dkmaskobj = ccdmod.CCD(dkmask_f)
-    flmaskobj = ccdmod.CCD(flmask_f)
+    ixdk = dkmaskobj.extnames.index('MASK')
+    dkmask = dkmaskobj.extensions[ixdk].data.copy()
 
-    dkmask = dkmaskobj.extensions[-1].data.copy()
-    flmask = flmaskobj.extensions[-1].data.copy()
+    flmaskobj = ccdmod.CCD(flmask_f)
+    ixfl = dkmaskobj.extnames.index('MASK')
+    flmask = flmaskobj.extensions[ixfl].data.copy()
 
     mask = dkmask.astype('int32') | flmask.astype('int32')
 
