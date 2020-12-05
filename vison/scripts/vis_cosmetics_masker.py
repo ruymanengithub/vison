@@ -184,7 +184,7 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None,
                           CHAMBER='Unknown')
 
     maskcdp.ingest_inputs(data=data, meta=meta)
-    stop()
+    
     maskcdp.savehardcopy(outfilename)
 
     os.system('rm %s' % tmp_pickf)

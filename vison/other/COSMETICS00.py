@@ -318,8 +318,8 @@ class COSMETICS00(DarkTask):
 
                     MSKfits = self.dd.products[maskkey][CCDk]
 
-                    MSKccdobj = ccd.CCD(MSKfits)
-                    stop()
+                    MSKccdobj = ccd.CCD(MSKfits, getallextensions=True)
+                    
                     iMext = MSKccdobj.extnames.index('MASK')
 
                     for jQ, Q in enumerate(Quads):
