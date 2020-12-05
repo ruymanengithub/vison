@@ -86,7 +86,7 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None,
             flagWholeColumns=False):
     """ """
 
-    assert subbgd != normbybgd
+    assert subbgd != normbybgd # either you subtract a model or you divide by it
 
     onTests = False
 
@@ -114,7 +114,7 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None,
 
     tmp_pickf = os.path.join(outpath, '%s_%s_%s_ccdobjs.pick' % (masktype, tag, sn_ccd))
 
-    if not onTests:
+    if not onTests: # not debugging
 
         ccdobjList = pre_process(FITS_list, subOffset=True, validrange=validrange)
 
@@ -158,6 +158,7 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None,
     # SETTING PRE/OVERSCANS TO ZERO (those can't have cosmetic defects)
 
     mask = cosmetics.set_extrascans(mask, val=0)
+    stacked = cosmetics.set_extrascans(stacked, val=0)
 
     # DISCARDING WHOLE COLUMNS [OPTIONAL]
 
