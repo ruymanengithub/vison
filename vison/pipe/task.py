@@ -466,6 +466,9 @@ class Task(object):
             if len(checkreport['msgs']) > 0:
                 self.log.info(['_'] + checkreport['msgs'])
 
+            if len(explog)==0:
+                self.log.info('No data selected!')
+
         if self.report is not None:
             ntestkey = testkey.replace( '_', '\_')
             nchecksout = ['\\bf{%s}' % checkreport['checksout']]
@@ -489,13 +492,20 @@ class Task(object):
                     nmsg = msg.replace('_', '\_')
                     self.report.add_Text(nmsg)
 
+            if len(explog)==0:
+                self.report.add_Text('No data selected!')
+
+        if len(explog)==0:
+            print('No data selected, check the data paths?')
+            raise RuntimeError
+
         # Adding Time Axis
 
         explog['time'] = np.array(
             list(map(vistime.get_dtobj, explog['date']))).copy()
 
         # Building DataDict
-        stop()
+        
         self.dd = pilib.DataDict_builder(explog, self.inputs, structure)
 
         if not checkreport['checksout']:
