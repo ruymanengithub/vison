@@ -219,11 +219,11 @@ def do_MergeMasks(inputs):
 
     outfilename = os.path.join(outpath, 'EUC_MASK_%s_CCD%i_SN_%s.fits' % (tag, CCD, sn_ccd))
 
-    dkmaskobj = ccdmod.CCD(dkmask_f)
+    dkmaskobj = ccdmod.CCD(dkmask_f, getallextensions=True)
     ixdk = dkmaskobj.extnames.index('MASK')
     dkmask = dkmaskobj.extensions[ixdk].data.copy()
 
-    flmaskobj = ccdmod.CCD(flmask_f)
+    flmaskobj = ccdmod.CCD(flmask_f, getallextensions=True)
     ixfl = dkmaskobj.extnames.index('MASK')
     flmask = flmaskobj.extensions[ixfl].data.copy()
 
