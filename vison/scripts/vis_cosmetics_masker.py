@@ -157,11 +157,9 @@ def do_Mask(inputs, masktype, subbgd=True, normbybgd=False, validrange=None,
 
     # SETTING PRE/OVERSCANS TO ZERO (those can't have cosmetic defects)
 
-    mask = cosmetics.set_extrascans(mask, val=0)
-    stop()
-    stacked = cosmetics.set_extrascans(stacked, val=0)
-    stop()
-    
+    mask = cosmetics.set_extrascans(mask, val=0, dtype='int32')
+    stacked = cosmetics.set_extrascans(stacked, val=0., dtype='float32')
+
     # DISCARDING WHOLE COLUMNS [OPTIONAL]
 
     if flagWholeColumns:

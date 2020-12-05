@@ -72,7 +72,7 @@ def get_Thresholding_DefectsMask(maskdata, thresholds):
     return mask
 
 
-def set_extrascans(mask, val=0):
+def set_extrascans(mask, val=0, dtype='int32'):
     """ """
 
     assert isinstance(mask,np.ndarray)
@@ -94,7 +94,7 @@ def set_extrascans(mask, val=0):
             Full=False, canonical=True,
             extension=-1)
 
-        Qmask = np.zeros(Qshape,dtype='int32')+val
+        Qmask = np.zeros(Qshape,dtype=dtype)+val
 
         Qmask[prescan:prescan + Qmaskimg.shape[0],
                0:Qmaskimg.shape[1]] = Qmaskimg.copy()
