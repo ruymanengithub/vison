@@ -158,11 +158,11 @@ class COSMETICS00(DarkTask):
         Task.check_data(self, **kwargs)
 
     def get_checkstats_ST(self, **kwargs):
-        """ """
+        """Overriding parent method"""
         pass
 
     def check_metrics_ST(self, **kwargs):
-        """ """
+        """Overriding parent method"""
 
         pass
 
@@ -319,6 +319,7 @@ class COSMETICS00(DarkTask):
                     MSKfits = self.dd.products[maskkey][CCDk]
 
                     MSKccdobj = ccd.CCD(MSKfits)
+                    stop()
                     iMext = MSKccdobj.extnames.index('MASK')
 
                     for jQ, Q in enumerate(Quads):
