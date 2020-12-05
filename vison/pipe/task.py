@@ -449,7 +449,7 @@ class Task(object):
         else:
             explog = pilib.loadexplogs(explogf, elvis=self.elvis, addpedigree=True,
                                        datapath=datapath)
-        
+        stop()
         # META-DATA WORK
         explog, checkreport = self.filterexposures(
             structure, explog, OBSID_lims)
