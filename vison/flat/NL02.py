@@ -412,7 +412,7 @@ class NL02(NL01.NL01):
         fkx = np.linspace(100.,2.**16,100)
         fky = f_non_Lin(fkx, pin)
 
-        doShowNL = True
+        doShowNL = False
 
         if doShowNL:
 
@@ -455,7 +455,7 @@ class NL02(NL01.NL01):
                 ijflu[ixboo_stab,:] = fluxHI * np.expand_dims(texptimes[ixboo_stab], 1)
                 ijflu[ixboo_stab,:] *= np.expand_dims(spatScale,0)
 
-                ijnlpc = f_non_Lin(ijflu)
+                ijnlpc = f_non_Lin(ijflu, pin)
 
                 ijvar = (np.sqrt(ijflu * gain)/gain)**2.
                 ijvar[np.where(ijvar==0.)] = 1.
