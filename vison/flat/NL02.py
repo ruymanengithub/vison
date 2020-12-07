@@ -458,13 +458,14 @@ class NL02(NL01.NL01):
                 ijnlpc = f_non_Lin(ijflu)
 
                 ijvar = (np.sqrt(ijflu * gain)/gain)**2.
+                ijvar[np.where(ijvar==0.)] = 1.
 
                 ijflu *= (1.+ijnlpc/100.)
 
                 # adding noise
-                noisescale = np.sqrt(ijvar+1) / np.sqrt(wpx*hpx)
+                noisescale = np.sqrt(ijvar) / np.sqrt(wpx*hpx)
                 ijflu += np.random.normal(loc=0.0, scale=noisescale, size=ijflu.shape)
-
+                # adding offset
                 ijflu += np.expand_dims(ijoffset,1)
 
 
