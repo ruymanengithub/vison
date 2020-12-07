@@ -306,6 +306,9 @@ class NL02(NL01.NL01):
 
     def simulNL(self):
         """ """
+        from matplotlib import pyplot as plt
+
+        NLdeg = 4
 
         wpx = self.window['wpx']
         hpx = self.window['hpx']
@@ -385,6 +388,34 @@ class NL02(NL01.NL01):
             fluxLO = fluxes[0]
 
         gain = 3.5
+        
+
+        def f_non_Lin(x):
+            """
+            fNL_wExp(x, *p)
+            return p[0] * np.exp(-(x - p[1]) / p[2]) + np.poly1d(p[3:])(x)"""
+            xn = x / 2.**16
+
+            p = np.zeros(3+NLdeg+1)
+            p[0] = 1.
+            p[1] = 500.
+            p[2] = 2.
+            p[-1] = 0.
+            p[-2] = 0.8
+            p[-3] = 0.01
+
+
+            return p[0] * np.exp(-(x - p[1]) / p[2]) + np.poly1d(p[3:])(x)
+
+        fkx = np.linspace(100.,2.**16,100)
+
+        fky = f_non_Lin(fkx)
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.plot(fkx, fky, 'k.')
+        plt.show()
+
         stop()
 
 
@@ -407,9 +438,23 @@ class NL02(NL01.NL01):
                 ijflu = np.zeros((nObs,Nsectors),dtype='float32')
 
                 # ixboo_fluLO
-                stop()
-                ijflu[ixboo_fluLO,:] = fluxLO * texptimes[ixboo_fluxLO] 
+                
+                ijflu[ixboo_fluLO,:] = fluxLO * texptimes[ixboo_fluLO] 
                 ijflu[ixboo_fluLO,:] *= np.expand_dims(spatScale,0)
+
+                ijflu[ixboo_fluHI,:] = fluxHI * texptimes[ixboo_fluHI] 
+                ijflu[ixboo_fluHI,:] *= np.expand_dims(spatScale,0)
+
+                ijflu[ixboo_stab,:] = fluxHI * texptimes[ixboo_stab]
+                ijflu[ixboo_stab,:] *= np.expand_dims(spatScale,0)
+
+                #fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, 
+                #                NLdeg=NLdeg,
+                #                display=debug,
+                #                addExp=True,
+                #                Rcoo=None,
+                #                ObsIDs=fObsIDs)
+
 
 
                 stop()
