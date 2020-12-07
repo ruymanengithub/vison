@@ -444,15 +444,15 @@ class NL02(NL01.NL01):
                 ijflu = np.zeros((nObs,Nsectors),dtype='float32')
 
                 # ixboo_fluLO
-                stop()
                 
-                ijflu[ixboo_fluLO,:] = fluxLO * texptimes[ixboo_fluLO] 
+
+                ijflu[ixboo_fluLO,:] = fluxLO * np.expand_dims(texptimes[ixboo_fluLO],1)
                 ijflu[ixboo_fluLO,:] *= np.expand_dims(spatScale,0)
 
-                ijflu[ixboo_fluHI,:] = fluxHI * texptimes[ixboo_fluHI] 
+                ijflu[ixboo_fluHI,:] = fluxHI * np.expand_dims(texptimes[ixboo_fluHI],1)
                 ijflu[ixboo_fluHI,:] *= np.expand_dims(spatScale,0)
 
-                ijflu[ixboo_stab,:] = fluxHI * texptimes[ixboo_stab]
+                ijflu[ixboo_stab,:] = fluxHI * np.expand_dims(texptimes[ixboo_stab], 1)
                 ijflu[ixboo_stab,:] *= np.expand_dims(spatScale,0)
 
                 ijnlpc = f_non_Lin(ijflu)
