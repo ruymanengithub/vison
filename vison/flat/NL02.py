@@ -310,6 +310,7 @@ class NL02(NL01.NL01):
 
         NLdeg = 4
 
+
         wpx = self.window['wpx']
         hpx = self.window['hpx']
         indices = copy.deepcopy(self.dd.indices)
@@ -397,26 +398,30 @@ class NL02(NL01.NL01):
             xn = x / 2.**16
 
             p = np.zeros(3+NLdeg+1)
-            p[0] = 1.
-            p[1] = 500.
-            p[2] = 2.
+            p[0] = 2.
+            p[1] = 0.05
+            p[2] = .1
             p[-1] = 0.
-            p[-2] = 0.8
-            p[-3] = 0.01
+            p[-2] = 0.5
+            p[-3] = -0.3
+            p[-4] = 0.6
 
 
-            return p[0] * np.exp(-(x - p[1]) / p[2]) + np.poly1d(p[3:])(x)
+            return p[0] * np.exp(-(xn - p[1]) / p[2]) + np.poly1d(p[3:])(xn)
 
         fkx = np.linspace(100.,2.**16,100)
-
         fky = f_non_Lin(fkx)
 
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax.plot(fkx, fky, 'k.')
-        plt.show()
+        doShowNL = True
 
-        stop()
+        if doShowNL:
+
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            ax.plot(fkx, fky, 'k.')
+            ax.set_xlabel('fluence DN')
+            ax.set_ylabel('NL pc')
+            plt.show()
 
 
         for iCCD, CCDkey in enumerate(CCDs):
@@ -448,12 +453,11 @@ class NL02(NL01.NL01):
                 ijflu[ixboo_stab,:] = fluxHI * texptimes[ixboo_stab]
                 ijflu[ixboo_stab,:] *= np.expand_dims(spatScale,0)
 
-                #fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, 
-                #                NLdeg=NLdeg,
-                #                display=debug,
-                #                addExp=True,
-                #                Rcoo=None,
-                #                ObsIDs=fObsIDs)
+                ijnlpc = f_non_Lin(ijflu)
+
+                ijvar = (np.sqrt(ijflu * gain)*gain)**2.
+
+                ijflu *= (1.+ijnlpc/100.)
 
 
 
