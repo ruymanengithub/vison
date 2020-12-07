@@ -385,7 +385,7 @@ class NL02(NL01.NL01):
             fluxLO = fluxes[0]
 
         gain = 3.5
-
+        stop()
 
 
         for iCCD, CCDkey in enumerate(CCDs):
@@ -407,9 +407,10 @@ class NL02(NL01.NL01):
 
                 ijflu = np.zeros((nObs,Nsectors),dtype='float32')
 
+                # ixboo_fluLO
                 ijflu[ixboo_fluLO,:] = fluxLO * texptimes[ixboo_fluxLO] 
                 ijflu[ixboo_fluLO,:] *= np.expand_dims(spatScale,0)
-                
+
 
                 stop()
 
