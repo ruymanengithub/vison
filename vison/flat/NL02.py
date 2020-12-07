@@ -111,6 +111,7 @@ class NL02(NL01.NL01):
         self.subtasks = [('check', self.check_data), 
                          ('prep', self.prep_data),
                          ('extract', self.extract_stats),
+                         ('simulNL', self.simulNL),
                          ('NL', self.produce_NLCs),
                          ('satCTE', self.do_satCTE),
                          ('extract_PTC', self.extract_PTC),
@@ -303,6 +304,64 @@ class NL02(NL01.NL01):
 
                 stop()
 
+    def simulNL(self):
+        """ """
+
+        indices = copy.deepcopy(self.dd.indices)
+
+        ishape = indices.shape
+
+        nObs = ishape[0]
+        #nCCD = ishape[1]
+        nQuad = ishape[2]
+
+        Quads = indices.get_vals('Quad')
+        CCDs = indices.get_vals('CCD')
+
+        tile_coos = dict()
+        for Q in Quads:
+            tile_coos[Q] = self.ccdcalc.get_tile_coos(Q, wpx, hpx, noedges=False)
+
+        Nsectors = tile_coos[Quads[0]]['Nsamps']
+        sectornames = np.arange(Nsectors)
+
+        Sindices = copy.deepcopy(self.dd.indices)
+        if 'Sector' in Sindices.names:
+            Sindices.pop(Sindices.find('Sector'))
+            self.dd.indices.pop(self.dd.indices.find('Sector'))
+        Sindices.append(core.vIndex('Sector', vals=sectornames))
+
+
+        valini = 0.
+        
+        self.dd.initColumn('sec_med_sim', Sindices, dtype='float32', valini=valini)
+        self.dd.initColumn('sec_var_sim', Sindices, dtype='float32', valini=valini)
+        self.dd.initColumn('sec_X', Sindices, dtype='float32', valini=valini)
+        self.dd.initColumn('sec_Y', Sindices, dtype='float32', valini=valini)
+
+        for iCCD, CCDkey in enumerate(CCDs):
+
+            for jQ, Q in enumerate(Quads):
+
+                kk = iCCD * nQ + jQ
+
+                raw_med = self.dd.mx['sec_med'][:, iCCD, jQ, :].copy()
+                raw_var = self.dd.mx['sec_var'][:, iCCD, jQ, :].copy()
+                raw_X = self.dd.mx['sec_X'][:, iCCD, jQ, :].copy()
+                raw_Y = self.dd.mx['sec_Y'][:, iCCD, jQ, :].copy()
+                #col_labels = self.dd.mx['label'][:, iCCD].copy()
+                exptimes = self.dd.mx['exptime'][:, iCCD].copy()
+                wave = self.dd.mx['wave'][:, iCCD].copy()
+
+                #ijoffset = np.median(self.dd.mx['offset_pre'][:, iCCD, jQ])
+                ijoffset = self.dd.mx['offset_pre'][:, iCCD, jQ]
+
+                if doExptimeCalib:
+                    nexptimes = self.recalibrate_exptimes(exptimes)
+                else:
+                    nexptimes = copy.deepcopy(exptimes)
+
+                stop()
 
     def produce_NLCs(self):
         """
