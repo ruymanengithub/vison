@@ -1244,7 +1244,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     pivotfrac = pivotFlu / FullDynRange
 
     # get the X-Y of the NL fit for HI flux filter
-    doDebug = True
+    doDebug = False
     
     
     doLinFit = False # if True, take linear trend from a linear fit over a range of exp-times
