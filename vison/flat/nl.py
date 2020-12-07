@@ -1315,8 +1315,8 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     #stop()
     #fitresults = fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg, display=debug)
     
-    fitresults['Xcoo'] = Xcoo.copy()
-    fitresults['Ycoo'] = Ycoo.copy()
+    #fitresults['Xcoo'] = Xcoo.copy()
+    #fitresults['Ycoo'] = Ycoo.copy()
 
     #fitresults['bgd'] = bgd
     fitresults['stability_pc'] = trackstab # as a percentage
