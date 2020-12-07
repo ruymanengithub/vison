@@ -324,7 +324,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
     W = W[ixsort].copy()
     expix = expix[ixsort].copy()
     regix = regix[ixsort].copy()
-    
+    stop()
     # if debug:
     #     Nside = int(fluencesNL.shape[1]**0.5)
     #     intersectmap = intersect.reshape((Nside,Nside))
