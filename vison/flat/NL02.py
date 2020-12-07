@@ -356,7 +356,7 @@ class NL02(NL01.NL01):
 
         fluences1E = self.dd.mx['sec_med'][:, 0, 0, :].copy()
 
-        ixboo_bgd = exptimes == 0.
+        ixboo_bgd = mexptimes == 0.
         ixboo_stab = mexptimes == exptimestab
         ixboo_fluA = (mexptimes != 0.) & (mexptimes != exptimestab) & (wave == uwaves[0])
         ixboo_fluB = (mexptimes != 0.) & (mexptimes != exptimestab) & (wave == uwaves[1])
