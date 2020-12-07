@@ -698,7 +698,7 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg,
         p0 = np.concatenate((np.array([1., 0.01, 0.05]), np.zeros(NLdeg + 1)))
         bounds = []
         bounds.append([0., 10. / 2**16, 1.e-3] + [-100.] * (NLdeg) + [-10.])
-        bounds.append([10., 10000. / 2**16, 2.E-1] + [100.] * (NLdeg) + [10.])
+        bounds.append([10., 10000. / 2**16, 5.E-1] + [100.] * (NLdeg) + [10.])
         # bounds = [[0.,  10., -1.E-3,-1.E-2, -10.],
         #          [1.E3,1.E3, 1.E-3, 1.E-2,  10.]]
     else:
@@ -1248,7 +1248,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     #doDebug = False
     
     
-    doLinFit = False # if True, take linear trend from a linear fit over a range of exp-times
+    doLinFit = True # if True, take linear trend from a linear fit over a range of exp-times
                      # if false, take linear trend from the exptime at which the fluence is a 
                      # fixed value across all sectors (and both filters)
 
