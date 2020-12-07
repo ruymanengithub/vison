@@ -307,6 +307,8 @@ class NL02(NL01.NL01):
     def simulNL(self):
         """ """
 
+        wpx = self.window['wpx']
+        hpx = self.window['hpx']
         indices = copy.deepcopy(self.dd.indices)
 
         ishape = indices.shape
