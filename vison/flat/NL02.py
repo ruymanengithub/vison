@@ -412,7 +412,7 @@ class NL02(NL01.NL01):
         fkx = np.linspace(100.,2.**16,100)
         fky = f_non_Lin(fkx)
 
-        doShowNL = False
+        doShowNL = True
 
         if doShowNL:
 
@@ -421,7 +421,7 @@ class NL02(NL01.NL01):
             ax.plot(fkx, fky, 'b-')
             ax.set_xlabel('fluence DN')
             ax.set_ylabel('NL pc')
-            ax.set_title('Simulated NL curve')
+            ax.set_title('Input Simulated NL curve')
             plt.show()
 
 
