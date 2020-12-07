@@ -403,6 +403,13 @@ class NL02(NL01.NL01):
                 #ijoffset = np.median(self.dd.mx['offset_pre'][:, iCCD, jQ])
                 ijoffset = self.dd.mx['offset_pre'][:, iCCD, jQ]
 
+                spatScale = (1.-spatDist/spatDist.max()*0.20) # 20% spatial drop in flux
+
+                ijflu = np.zeros((nObs,Nsectors),dtype='float32')
+
+                ijflu[ixboo_fluLO,:] = fluxLO * texptimes[ixboo_fluxLO] 
+                ijflu[ixboo_fluLO,:] *= np.expand_dims(spatScale,0)
+                
 
                 stop()
 
