@@ -412,7 +412,7 @@ class NL02(NL01.NL01):
         fkx = np.linspace(100.,2.**16,100)
         fky = f_non_Lin(fkx)
 
-        doShowNL = True
+        doShowNL = False
 
         if doShowNL:
 
@@ -457,13 +457,21 @@ class NL02(NL01.NL01):
 
                 ijnlpc = f_non_Lin(ijflu)
 
-                ijvar = (np.sqrt(ijflu * gain)*gain)**2.
+                ijvar = (np.sqrt(ijflu * gain)/gain)**2.
 
                 ijflu *= (1.+ijnlpc/100.)
 
+                # adding noise
+                noisescale = np.sqrt(ijvar+1) / np.sqrt(wpx*hpx)
+                ijflu += np.random.normal(loc=0.0, scale=noisescale, size=ijflu.shape)
+
+                ijflu += np.expand_dims(ijoffset,1)
 
 
-                stop()
+                self.dd.mx['sec_med_sim'][:, iCCD, jQ, :] = ijflu.copy()
+                self.dd.mx['sec_var_sim'][:, iCCD, jQ, :] = ijvar.copy()
+
+        stop()
 
     def produce_NLCs(self):
         """
