@@ -25,6 +25,8 @@ from sklearn.pipeline import make_pipeline
 from astropy.stats import sigma_clip
 from scipy.optimize import curve_fit
 
+from matplotlib import pyplot as plt
+import matplotlib.cm as cm
 from scipy import interpolate
 # END IMPORT
 
@@ -324,7 +326,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
     W = W[ixsort].copy()
     expix = expix[ixsort].copy()
     regix = regix[ixsort].copy()
-    stop()
+    
     # if debug:
     #     Nside = int(fluencesNL.shape[1]**0.5)
     #     intersectmap = intersect.reshape((Nside,Nside))
@@ -639,8 +641,7 @@ def fNL(x, *p):
 
 def _display_NLcurves(X,Y, selix, Xfit, Yfit, labels, title=''):
 
-    from matplotlib import pyplot as plt
-    import matplotlib.cm as cm
+    
 
     ulabels, ixulabels = np.unique(labels, return_index=True)
 
@@ -662,8 +663,7 @@ def _display_NLcurves(X,Y, selix, Xfit, Yfit, labels, title=''):
     plt.show()
 
 def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg, 
-                    display=False,
-                   addExp=False, Rcoo=None, ObsIDs=None):
+        display=False,addExp=False, Rcoo=None, ObsIDs=None, pin=None):
     """ """
 
     ixnonan = np.where(~np.isnan(X))
@@ -746,7 +746,21 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg,
             _display_NLcurves(X,Y,selix,fkfluencesNL,Y_bestfit, labels=Rcoo, title='colorcode: region')
         #if ObsIDs is not None:
         #    _display_NLcurves(X,Y,selix,fkfluencesNL,Y_bestfit, labels=ObsIDs, title='colorcode: OBSID')
-        stop()
+        
+        if pin is not None: # TESTS
+            from pylab import plot,show
+
+            Y_in = ff(fkfluencesNL / 2**16, *pin)
+
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            ax.plot(fkfluencesNL, Y_in, 'b-',label='input')
+            ax.plot(fkfluencesNL, Y_bestfit, 'r--',label='output')
+            ax.plot(xfit, yfit, 'ko',label='data')
+            handles, labels = ax.get_legend_handles_labels()
+            ax.legend(handles, labels, loc='best')
+            plt.show()
+
 
 
     fitresults = OrderedDict(
@@ -1055,7 +1069,7 @@ def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.arra
 
 def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.array([]),
                               TrackFlux=True, debug=False, ObsIDs=None, NLdeg=NLdeg,
-                              offset=0., XX=None, YY=None):
+                              offset=0., XX=None, YY=None, pin=None):
     """returns NL modelling results."""
 
     nomG = 3.5  # e/ADU, used for noise estimates
@@ -1248,7 +1262,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     #doDebug = False
     
     
-    doLinFit = True # if True, take linear trend from a linear fit over a range of exp-times
+    doLinFit = False # if True, take linear trend from a linear fit over a range of exp-times
                      # if false, take linear trend from the exptime at which the fluence is a 
                      # fixed value across all sectors (and both filters)
 
@@ -1311,7 +1325,8 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
                                 display=debug,
                                 addExp=True,
                                 Rcoo=None,
-                                ObsIDs=fObsIDs)
+                                ObsIDs=fObsIDs,
+                                pin=pin)
     #stop()
     #fitresults = fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg, display=debug)
     

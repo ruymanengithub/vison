@@ -117,6 +117,7 @@ class NL02(NL01.NL01):
                          ('extract_PTC', self.extract_PTC),
                          ('debugtask', self.debugtask)]
         
+        self.pin = None # TESTS
 
     def set_inpdefaults(self, **kwargs):
 
@@ -389,28 +390,27 @@ class NL02(NL01.NL01):
             fluxLO = fluxes[0]
 
         gain = 3.5
-        
+        pin = np.zeros(3+NLdeg+1)
+        pin[0] = 2.
+        pin[1] = 0.05
+        pin[2] = .1
+        #p[-5] = 0.
+        pin[-4] = 0.6
+        pin[-3] = -0.3
+        pin[-2] = 0.5
+        pin[-1] = 0.
 
-        def f_non_Lin(x):
+
+        def f_non_Lin(x, p):
             """
             fNL_wExp(x, *p)
             return p[0] * np.exp(-(x - p[1]) / p[2]) + np.poly1d(p[3:])(x)"""
             xn = x / 2.**16
 
-            p = np.zeros(3+NLdeg+1)
-            p[0] = 2.
-            p[1] = 0.05
-            p[2] = .1
-            p[-1] = 0.
-            p[-2] = 0.5
-            p[-3] = -0.3
-            p[-4] = 0.6
-
-
             return p[0] * np.exp(-(xn - p[1]) / p[2]) + np.poly1d(p[3:])(xn)
 
         fkx = np.linspace(100.,2.**16,100)
-        fky = f_non_Lin(fkx)
+        fky = f_non_Lin(fkx, pin)
 
         doShowNL = True
 
@@ -472,6 +472,9 @@ class NL02(NL01.NL01):
                 self.dd.mx['sec_med_sim'][:, iCCD, jQ, :] = ijflu.copy()
                 self.dd.mx['sec_var_sim'][:, iCCD, jQ, :] = ijvar.copy()
 
+        self.pin = pin
+        
+
         
 
     def produce_NLCs(self):
@@ -499,7 +502,7 @@ class NL02(NL01.NL01):
         doExptimeCalib = True
         NLdeg = 4
         debug = True  # TESTS
-        useSims = True
+        useSims = True # TESTS
 
         if self.report is not None:
             self.report.add_Section(
@@ -633,7 +636,8 @@ class NL02(NL01.NL01):
                         NLdeg=NLdeg,
                         # offset=0.)
                         offset=ijoffset,
-                        XX=raw_X, YY=raw_Y)
+                        XX=raw_X, YY=raw_Y,
+                        pin=self.pin)
 #                print('WITHOUT shutter nl correction...')
 #                __fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, exptimes, wave,
 #                                            dtobjs,
