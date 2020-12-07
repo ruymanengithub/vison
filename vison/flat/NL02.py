@@ -393,7 +393,6 @@ class NL02(NL01.NL01):
             for jQ, Q in enumerate(Quads):
 
                 kk = iCCD * nQ + jQ
-
                 
                 raw_X = self.dd.mx['sec_X'][0, iCCD, jQ, :].copy()
                 raw_Y = self.dd.mx['sec_Y'][0, iCCD, jQ, :].copy()
@@ -408,6 +407,7 @@ class NL02(NL01.NL01):
                 ijflu = np.zeros((nObs,Nsectors),dtype='float32')
 
                 # ixboo_fluLO
+                stop()
                 ijflu[ixboo_fluLO,:] = fluxLO * texptimes[ixboo_fluxLO] 
                 ijflu[ixboo_fluLO,:] *= np.expand_dims(spatScale,0)
 
