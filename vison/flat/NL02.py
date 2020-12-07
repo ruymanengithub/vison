@@ -371,35 +371,35 @@ class NL02(NL01.NL01):
             ixboo_fluLO = ixboo_fluB
             waveHI = uwaves[0]
             waveLO = uwaves[1]
+            fluxHI = fluxes[0]
+            fluxLO = fluxes[1]
         else:
             ixboo_fluLO = ixboo_fluA
             ixboo_fluHI = ixboo_fluB
             waveHI = uwaves[1]
             waveLO = uwaves[0]
+            fluxHI = fluxes[1]
+            fluxLO = fluxes[0]
 
-        stop()
-        
+        gain = 3.5
+
+
+
         for iCCD, CCDkey in enumerate(CCDs):
 
             for jQ, Q in enumerate(Quads):
 
                 kk = iCCD * nQ + jQ
 
-                #raw_med = self.dd.mx['sec_med'][:, iCCD, jQ, :].copy()
-                #raw_var = self.dd.mx['sec_var'][:, iCCD, jQ, :].copy()
-                raw_X = self.dd.mx['sec_X'][:, iCCD, jQ, :].copy()
-                raw_Y = self.dd.mx['sec_Y'][:, iCCD, jQ, :].copy()
-                #col_labels = self.dd.mx['label'][:, iCCD].copy()
-                exptimes = self.dd.mx['exptime'][:, iCCD].copy()
-                wave = self.dd.mx['wave'][:, iCCD].copy()
+                
+                raw_X = self.dd.mx['sec_X'][0, iCCD, jQ, :].copy()
+                raw_Y = self.dd.mx['sec_Y'][0, iCCD, jQ, :].copy()
+
+                spatDist = ((raw_X-raw_X.mean())**2.+(raw_Y-raw_Y.mean()))**0.5
 
                 #ijoffset = np.median(self.dd.mx['offset_pre'][:, iCCD, jQ])
                 ijoffset = self.dd.mx['offset_pre'][:, iCCD, jQ]
 
-                if doExptimeCalib:
-                    nexptimes = self.recalibrate_exptimes(exptimes)
-                else:
-                    nexptimes = copy.deepcopy(exptimes)
 
                 stop()
 
