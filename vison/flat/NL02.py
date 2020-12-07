@@ -314,11 +314,14 @@ class NL02(NL01.NL01):
         ishape = indices.shape
 
         nObs = ishape[0]
-        #nCCD = ishape[1]
-        nQuad = ishape[2]
 
         Quads = indices.get_vals('Quad')
         CCDs = indices.get_vals('CCD')
+        
+        nC = len(CCDs)
+        nQ = len(Quads)
+        NP = nC * nQ
+
 
         tile_coos = dict()
         for Q in Quads:
