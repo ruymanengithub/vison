@@ -331,22 +331,60 @@ class NL02(NL01.NL01):
             self.dd.indices.pop(self.dd.indices.find('Sector'))
         Sindices.append(core.vIndex('Sector', vals=sectornames))
 
-
         valini = 0.
         
         self.dd.initColumn('sec_med_sim', Sindices, dtype='float32', valini=valini)
         self.dd.initColumn('sec_var_sim', Sindices, dtype='float32', valini=valini)
-        self.dd.initColumn('sec_X', Sindices, dtype='float32', valini=valini)
-        self.dd.initColumn('sec_Y', Sindices, dtype='float32', valini=valini)
 
+        iCCD = 0
+        mexptimes = self.dd.mx['exptime'][:, iCCD].copy()
+        wave = self.dd.mx['wave'][:, iCCD].copy()
+
+        texptimes = self.recalibrate_exptimes(mexptimes)
+
+        nonzeroexptimes = mexptimes[mexptimes > 0.]
+        unonzeroexptimes = np.unique(nonzeroexptimes) # unique non-zero exposure times
+
+        _ixstab = np.array([(mexptimes == iexptime).sum() for iexptime in unonzeroexptimes]).argmax()
+        exptimestab = unonzeroexptimes[_ixstab]
+
+        # boolean indices of the different types of exposures
+
+        uwaves = np.unique(wave) # unique wavelengths used (2)
+
+        fluences1E = self.dd.mx['sec_med'][:, 0, 0, :].copy()
+
+        ixboo_bgd = exptimes == 0.
+        ixboo_stab = mexptimes == exptimestab
+        ixboo_fluA = (mexptimes != 0.) & (mexptimes != exptimestab) & (wave == uwaves[0])
+        ixboo_fluB = (mexptimes != 0.) & (mexptimes != exptimestab) & (wave == uwaves[1])
+
+        fluxes = [np.nanmean((np.nanmean(fluences1E[ixboo_fluA,:],axis=1)/texptimes[ixboo_fluA])),
+            np.nanmean((np.nanmean(fluences1E[ixboo_fluB,:],axis=1)/texptimes[ixboo_fluB]))]
+
+        # identifying which is the high-flux wavelength / set, and which one is the low-flux
+
+        if fluxes[0]>fluxes[1]:
+            ixboo_fluHI = ixboo_fluA
+            ixboo_fluLO = ixboo_fluB
+            waveHI = uwaves[0]
+            waveLO = uwaves[1]
+        else:
+            ixboo_fluLO = ixboo_fluA
+            ixboo_fluHI = ixboo_fluB
+            waveHI = uwaves[1]
+            waveLO = uwaves[0]
+
+        stop()
+        
         for iCCD, CCDkey in enumerate(CCDs):
 
             for jQ, Q in enumerate(Quads):
 
                 kk = iCCD * nQ + jQ
 
-                raw_med = self.dd.mx['sec_med'][:, iCCD, jQ, :].copy()
-                raw_var = self.dd.mx['sec_var'][:, iCCD, jQ, :].copy()
+                #raw_med = self.dd.mx['sec_med'][:, iCCD, jQ, :].copy()
+                #raw_var = self.dd.mx['sec_var'][:, iCCD, jQ, :].copy()
                 raw_X = self.dd.mx['sec_X'][:, iCCD, jQ, :].copy()
                 raw_Y = self.dd.mx['sec_Y'][:, iCCD, jQ, :].copy()
                 #col_labels = self.dd.mx['label'][:, iCCD].copy()
