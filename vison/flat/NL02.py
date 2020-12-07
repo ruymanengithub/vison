@@ -418,9 +418,10 @@ class NL02(NL01.NL01):
 
             fig = plt.figure()
             ax = fig.add_subplot(111)
-            ax.plot(fkx, fky, 'k.')
+            ax.plot(fkx, fky, 'b-')
             ax.set_xlabel('fluence DN')
             ax.set_ylabel('NL pc')
+            ax.set_title('Simulated NL curve')
             plt.show()
 
 
@@ -443,6 +444,7 @@ class NL02(NL01.NL01):
                 ijflu = np.zeros((nObs,Nsectors),dtype='float32')
 
                 # ixboo_fluLO
+                stop()
                 
                 ijflu[ixboo_fluLO,:] = fluxLO * texptimes[ixboo_fluLO] 
                 ijflu[ixboo_fluLO,:] *= np.expand_dims(spatScale,0)
