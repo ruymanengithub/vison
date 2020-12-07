@@ -748,7 +748,6 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg,
         #    _display_NLcurves(X,Y,selix,fkfluencesNL,Y_bestfit, labels=ObsIDs, title='colorcode: OBSID')
         
         if pin is not None: # TESTS
-            from pylab import plot,show
 
             Y_in = ff(fkfluencesNL / 2**16, *pin)
 
@@ -756,7 +755,7 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg,
             ax = fig.add_subplot(111)
             ax.plot(fkfluencesNL, Y_in, 'b-',label='input')
             ax.plot(fkfluencesNL, Y_bestfit, 'r--',label='output')
-            ax.plot(xfit, yfit, 'ko',label='data')
+            ax.plot(xfit*2.**16, yfit, 'k.',label='data')
             handles, labels = ax.get_legend_handles_labels()
             ax.legend(handles, labels, loc='best')
             plt.show()
