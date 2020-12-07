@@ -1244,7 +1244,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     pivotfrac = pivotFlu / FullDynRange
 
     # get the X-Y of the NL fit for HI flux filter
-    doDebug = False
+    #doDebug = False
     
     
     doLinFit = False # if True, take linear trend from a linear fit over a range of exp-times
@@ -1257,7 +1257,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
                                               exptimes[ixfitHI], 
                                               nomG,
                                               ixLinFit=ixoverlapHI,
-                                              debug=doDebug)
+                                              debug=debug)
                                               #minrelflu=minrelflu,
                                               #maxrelflu=maxrelflu)
 
@@ -1266,7 +1266,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
                                               exptimes[ixfitLO], 
                                               nomG,
                                               ixLinFit=ixoverlapLO,
-                                              debug=doDebug)
+                                              debug=debug)
                                           #minrelflu=minrelflu,
                                           #maxrelflu=maxrelflu)
     else:
@@ -1288,7 +1288,6 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
             Full=True)
 
 
-    
 
     bgdnoff = np.median(fluences[ixboo_bgd,:])
 

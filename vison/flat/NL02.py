@@ -498,7 +498,7 @@ class NL02(NL01.NL01):
 
         doExptimeCalib = True
         NLdeg = 4
-        debug = False  # TESTS
+        debug = True  # TESTS
         useSims = True
 
         if self.report is not None:
@@ -628,7 +628,7 @@ class NL02(NL01.NL01):
                         wave,
                         dtobjs,
                         TrackFlux=True,
-                        debug=debug,
+                        debug=debug and (iCCD==0) and (jQ==0),
                         ObsIDs=ObsIDs,
                         NLdeg=NLdeg,
                         # offset=0.)
