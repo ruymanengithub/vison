@@ -471,7 +471,7 @@ class NL02(NL01.NL01):
                 self.dd.mx['sec_med_sim'][:, iCCD, jQ, :] = ijflu.copy()
                 self.dd.mx['sec_var_sim'][:, iCCD, jQ, :] = ijvar.copy()
 
-        stop()
+        
 
     def produce_NLCs(self):
         """
@@ -498,10 +498,13 @@ class NL02(NL01.NL01):
         doExptimeCalib = True
         NLdeg = 4
         debug = True  # TESTS
+        useSims = True
 
         if self.report is not None:
             self.report.add_Section(
                 keyword='NL', Title='Non-Linearity Analysis', level=0)
+            if useSims:
+                self.report.add_Text('Using SIMULATED DATA!')
 
         if doExptimeCalib:
             niceshutterprofname = self.ogse.profile['SHUTTER_CALIB'].replace('_', '\_')
@@ -518,6 +521,7 @@ class NL02(NL01.NL01):
                                   '\\begin{equation}',
                                   'NL=A \cdot e^{-(x-x_0)/s}} + P_%s(x)' % NLdeg,
                                   '\end{equation}'])
+
 
         dIndices = copy.deepcopy(self.dd.indices)
 
@@ -587,8 +591,12 @@ class NL02(NL01.NL01):
 
                 kk = iCCD * nQ + jQ
 
-                raw_med = self.dd.mx['sec_med'][:, iCCD, jQ, :].copy()
-                raw_var = self.dd.mx['sec_var'][:, iCCD, jQ, :].copy()
+                if useSims:
+                    raw_med = self.dd.mx['sec_med_sim'][:, iCCD, jQ, :].copy()
+                    raw_var = self.dd.mx['sec_var_sim'][:, iCCD, jQ, :].copy()
+                else:
+                    raw_med = self.dd.mx['sec_med'][:, iCCD, jQ, :].copy()
+                    raw_var = self.dd.mx['sec_var'][:, iCCD, jQ, :].copy()
                 raw_X = self.dd.mx['sec_X'][:, iCCD, jQ, :].copy()
                 raw_Y = self.dd.mx['sec_Y'][:, iCCD, jQ, :].copy()
                 #col_labels = self.dd.mx['label'][:, iCCD].copy()
