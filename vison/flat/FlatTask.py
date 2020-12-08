@@ -57,10 +57,11 @@ class FlatTask(Task):
                                    'PTC0Xchecks_stds',
                                    'PTC0Xchecks_flu', 'PTC0Xchecks_imgstd'])
         elif test in ['NL01', 'NL02'] or 'NL02' in test:
-            kwargs = dict(figkeys=['NL01checks_offsets', 'NL01checks_deltaoff',
-                                   'NL01checks_stds',
-                                   'NL01checks_flu',
-                                   'NL01checks_imgstd'])
+            kwargs = dict(figkeys=['NL0Xchecks_offsets', 
+                                   'NL0Xchecks_deltaoff',
+                                   'NL0Xchecks_stds',
+                                   'NL0Xchecks_flu',
+                                   'NL0Xchecks_imgstd'])
 
         Task.check_data(self, **kwargs)
 

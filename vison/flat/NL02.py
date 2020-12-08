@@ -107,6 +107,8 @@ class NL02(NL01.NL01):
             debug=debug,
             cleanafter=cleanafter)
         self.name = 'NL02'
+        self.CDP_lib = NL01aux.get_CDP_lib(self.name)
+        self.figdict = NL01aux.get_NL0Xfigs(self.name)
 
         self.subtasks = [('check', self.check_data), 
                          ('prep', self.prep_data),
@@ -706,15 +708,42 @@ class NL02(NL01.NL01):
         self.save_CDP(curves_cdp)
         self.pack_CDP_to_dd(curves_cdp, 'NL_CURVES_CDP')
 
-        fdict_NL = self.figdict['NL01_fit_curves'][1]
+        fdict_NL = self.figdict['NL0X_fit_curves'][1]
         fdict_NL['data'] = curves_cdp.data.copy()
-        fdict_NL['caption'] = fdict_NL['caption'].replace('NL01', 'NL02')
-        fdict_NL['meta']['suptitle'] = fdict_NL['meta']['suptitle'].replace('NL01', 'NL02')
-        fdict_NL['figname'] = fdict_NL['figname'].replace( 'NL01', 'NL02')
+        #fdict_NL['caption'] = fdict_NL['caption'].replace('NL01', 'NL02')
+        #fdict_NL['meta']['suptitle'] = fdict_NL['meta']['suptitle'].replace('NL01', 'NL02')
+        #fdict_NL['figname'] = fdict_NL['figname'].replace( 'NL01', 'NL02')
 
         if self.report is not None:
-            self.addFigures_ST(figkeys=['NL01_fit_curves'],
+            self.addFigures_ST(figkeys=['NL0X_fit_curves'],
                                dobuilddata=False)
+
+        # All NL curves in a single plot, to see them better
+
+        curves_single_plot = OrderedDict(labelkeys=[],
+            x=dict(),
+            y=dict())
+
+        for CCDk in CCDs:
+            for Q in Quads:
+                ckey = '%s%s' % (CCDk,Q)
+                curves_single_plot['labelkeys'].append(ckey)
+
+                curves_single_plot['x'][ckey] = curves_cdp.data[CCDk][Q]['x']['fit'].copy()
+                curves_single_plot['y'][ckey] = curves_cdp.data[CCDk][Q]['y']['fit'].copy()
+
+
+        fdict_singNL = self.figdict['NL0X_fit_curves_single'][1]
+        fdict_singNL['data'] = curves_single_plot.copy()
+
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['NL0X_fit_curves_single'],
+                               dobuilddata=False)        
+
+        # Linearity residuals after applying NL curves
+
+
+
 
         self.canbecleaned = True
 

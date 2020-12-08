@@ -130,8 +130,8 @@ class NL01(FlatTask):
         self.type = 'Simple'
 
         self.HKKeys = HKKeys
-        self.CDP_lib = NL01aux.get_CDP_lib()
-        self.figdict = NL01aux.get_NL01figs()
+        self.CDP_lib = NL01aux.get_CDP_lib(self.name)
+        self.figdict = NL01aux.get_NL0Xfigs(self.name)
         # dict(figs='figs',pickles='ccdpickles')
         self.inputs['subpaths'] = dict(figs='figs', ccdpickles='ccdpickles',
                                        products='products')
@@ -538,7 +538,7 @@ class NL01(FlatTask):
 
         # Do plots
 
-        fdict_NL = self.figdict['NL01_fit_curves'][1]
+        fdict_NL = self.figdict['NL0X_fit_curves'][1]
         fdict_NL['data'] = curves_cdp.data.copy()
         if self.report is not None:
             self.addFigures_ST(figkeys=['NL01_fit_curves'],

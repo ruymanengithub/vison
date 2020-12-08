@@ -92,6 +92,10 @@ class Fig_Beam1DHist(Fig):
 class Fig_BeamImgShow(Fig):
     plotclass = baseplotclasses.BeamImgShow
 
+
+class Fig_XYPlot(Fig):
+    plotclass = baseplotclasses.XYPlot
+
 class Fig_ImgShow(Fig):
     plotclass = baseplotclasses.ImgShow
 
