@@ -1333,7 +1333,10 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     # linearised fluences: yLIN
     yLIN = xres/(1.+fitresults['model'](xres/2.**16,*fitresults['coeffs'])/100.)
     # linear fit to yLIN vs. xres
-    pol1 = np.polyfit(xres,yLIN,1)
+    try:
+        pol1 = np.polyfit(xres,yLIN,1)
+    except:
+        stop()
     # residuals should be around 0 if the linearisation went well
     yres = (yLIN / np.poly1d(pol1)(xres) - 1.)*100. # relative residual, as a percentage!
     
