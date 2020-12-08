@@ -142,6 +142,6 @@ def get_NL0Xfigs(testname):
     NL0Xfigs['NL0X_fit_curves'] = [
         figclasses.Fig_Beam2DPlot, get_NL_curves_dict(testname)]
     NL0Xfigs['NL0X_fit_curves_single'] = [
-        figclasses.Fig_XYPlot, get_NL_singcurves(testname)]
+        figclasses.Fig_XYPlot, get_NL_singcurves_dict(testname)]
     NL0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return NL0Xfigs
