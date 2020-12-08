@@ -119,13 +119,27 @@ def get_NL_singcurves_dict(testname):
       ylabel='Z [percentage]',
       xlabel=r'$Y_{NL} [kADU]$',
       title='{}: Non-Linearity Curves.'.format(testname),
-      ylim=[-10., 10.],
+      #ylim=[-10., 10.],
       corekwargs = dict(linestyle='')
       #corekwargs=dict(data=dict(marker='.', linestyle='', color='b'),
       #                fit=dict(marker='', linestyle='--', color='r')))
       )
     )
 
+def get_NL_res_dict(testname):
+  return dict(
+    figname='{}_curves_residuals.png'.format(testname),
+    caption='{}: Relative Residual non-linearity vs. fluence after applying best fit NL curves.'.format(testname),
+    meta=dict(doLegend=True,
+      ylabel='Z [percentage]',
+      xlabel=r'$Y_{NL} [kADU]$',
+      title='{}: Non-Linearity Curve Residuals.'.format(testname),
+      #ylim=[-10., 10.],
+      corekwargs = dict(linestyle='')
+      #corekwargs=dict(data=dict(marker='.', linestyle='', color='b'),
+      #                fit=dict(marker='', linestyle='--', color='r')))
+      )
+    )
 
 def get_NL0Xfigs(testname):
     NL0Xfigs = dict()
@@ -143,5 +157,7 @@ def get_NL0Xfigs(testname):
         figclasses.Fig_Beam2DPlot, get_NL_curves_dict(testname)]
     NL0Xfigs['NL0X_fit_curves_single'] = [
         figclasses.Fig_XYPlot, get_NL_singcurves_dict(testname)]
+    NL0Xfigs['NL0X_fit_curves_res'] = [
+        figclasses.Fig_XYPlot, get_NL_res_dict(testname)]
     NL0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return NL0Xfigs

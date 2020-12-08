@@ -591,11 +591,17 @@ class NL02(NL01.NL01):
 
         # Fitting the NL curves
 
+        curves_res_plot = OrderedDict(labelkeys=[])
+
         for iCCD, CCDkey in enumerate(CCDs):
 
             for jQ, Q in enumerate(Quads):
 
+                ckey = '%s%s' % (CCDk,Q)
+
                 kk = iCCD * nQ + jQ
+
+                curves_res_plot['labelkeys'].append(ckey)
 
                 if useSims:
                     raw_med = self.dd.mx['sec_med_sim'][:, iCCD, jQ, :].copy()
@@ -664,6 +670,11 @@ class NL02(NL01.NL01):
                 curves_cdp.data[CCDkey][Q]['x']['fit'] = _fitresults['outputcurve']['X'].copy() / \
                     1.E3
                 curves_cdp.data[CCDkey][Q]['y']['fit'] = _fitresults['outputcurve']['Y'].copy()
+
+
+                # Residuals
+
+                
 
         self.dd.products['NL'] = copy.deepcopy(NLall_mx)
 
@@ -743,7 +754,12 @@ class NL02(NL01.NL01):
         # Linearity residuals after applying NL curves
 
 
+        fdict_resNL = self.figdict['NL0X_fit_curves_res'][1]
+        fdict_singNL['data'] = curves_res_plot.copy()
 
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['NL0X_fit_curves_res'],
+                               dobuilddata=False)        
 
         self.canbecleaned = True
 

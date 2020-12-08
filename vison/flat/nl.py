@@ -674,7 +674,6 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg,
     doBin = False
 
     if doBin:
-
         Nbins = 30
         Xnanmin = np.nanmin(X[selix])
         Xnanmax = np.nanmax(X[selix])
@@ -740,7 +739,6 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg,
 
     if display:
 
-
         _display_NLcurves(X,Y,selix,fkfluencesNL,Y_bestfit, labels=Exptimes, title='colorcode: exptimes')
         if Rcoo is not None:
             _display_NLcurves(X,Y,selix,fkfluencesNL,Y_bestfit, labels=Rcoo, title='colorcode: region')
@@ -760,6 +758,10 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg,
             ax.legend(handles, labels, loc='best')
             plt.show()
 
+    stop()
+
+    xres = X[selix].copy()
+    yres = Y[selix]
 
 
     fitresults = OrderedDict(
