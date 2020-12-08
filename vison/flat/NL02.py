@@ -758,7 +758,7 @@ class NL02(NL01.NL01):
 
 
         fdict_resNL = self.figdict['NL0X_fit_curves_res'][1]
-        fdict_singNL['data'] = curves_res_plot.copy()
+        fdict_resNL['data'] = curves_res_plot.copy()
 
         if self.report is not None:
             self.addFigures_ST(figkeys=['NL0X_fit_curves_res'],
