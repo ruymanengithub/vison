@@ -616,6 +616,7 @@ def fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg, display=False)
         plt.show()
 
     fitresults = OrderedDict(
+        model=model,
         coeffs=NLfit,
         NLdeg=NLdeg,
         maxNLpc=maxNLpc,
@@ -758,13 +759,9 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg,
             ax.legend(handles, labels, loc='best')
             plt.show()
 
-    stop()
-
-    xres = X[selix].copy()
-    yres = Y[selix]
-
 
     fitresults = OrderedDict(
+        model=ff,
         coeffs=popt,
         maxNLpc=maxNLpc,
         flu_maxNLpc=flu_maxNLpc,
@@ -1328,7 +1325,10 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
                                 Rcoo=None,
                                 ObsIDs=fObsIDs,
                                 pin=pin)
-    #stop()
+    stop()
+    xres = np.concatenate((fluencesNL[ixfitLO,...].flatten(),fluencesNL[ixfitHI,...].flatten()))
+    yres = xres/(1.+fitresults['model'](xres,*fitresults['coeffs'])/100.)
+
     #fitresults = fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg, display=debug)
     
     #fitresults['Xcoo'] = Xcoo.copy()
