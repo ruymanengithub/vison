@@ -591,7 +591,9 @@ class NL02(NL01.NL01):
 
         # Fitting the NL curves
 
-        curves_res_plot = OrderedDict(labelkeys=[])
+        curves_res_plot = OrderedDict(labelkeys=[],
+            x=dict(),
+            y=dict())
 
         for iCCD, CCDkey in enumerate(CCDs):
 
@@ -674,7 +676,8 @@ class NL02(NL01.NL01):
 
                 # Residuals
 
-                
+                curves_res_plot['x'][ckey] = _fitresults['xres'].copy()
+                curves_res_plot['y'][ckey] = _fitresults['yres'].copy()
 
         self.dd.products['NL'] = copy.deepcopy(NLall_mx)
 

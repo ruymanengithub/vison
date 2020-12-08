@@ -1325,9 +1325,19 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
                                 Rcoo=None,
                                 ObsIDs=fObsIDs,
                                 pin=pin)
-    stop()
-    xres = np.concatenate((fluencesNL[ixfitLO,...].flatten(),fluencesNL[ixfitHI,...].flatten()))
-    yres = xres/(1.+fitresults['model'](xres,*fitresults['coeffs'])/100.)
+    
+    # residuals of linearisation
+
+    # original non-linear fluences: xres
+    xres = np.concatenate((fluences[ixfitLO,...].flatten(),fluences[ixfitHI,...].flatten()))
+    # linearised fluences: yLIN
+    yLIN = xres/(1.+fitresults['model'](xres,*fitresults['coeffs'])/100.)
+    # linear fit to yLIN vs. xres
+    pol1 = np.polyfit(xres,yLIN,1)
+    yres = (yLIN / np.poly1d(pol1)(xres) - 1.)*100. # relative, percentage!
+
+    fitresults['xres'] = xres.copy()
+    fitresults['yres'] = yres.copy()
 
     #fitresults = fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg, display=debug)
     
