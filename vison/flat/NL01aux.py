@@ -123,6 +123,7 @@ def get_NL_singcurves_dict(testname):
       corekwargs = dict(linestyle='')
       #corekwargs=dict(data=dict(marker='.', linestyle='', color='b'),
       #                fit=dict(marker='', linestyle='--', color='r')))
+      )
     )
 
 
