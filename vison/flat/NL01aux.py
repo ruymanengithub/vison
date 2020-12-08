@@ -85,7 +85,7 @@ def get_check_img_flu_dict(testname):
       ylabel='[ADU]',
       xlabel='exptime [s]'))
 
-def get_check_img_flu_dict(testname):
+def get_check_img_std_dict(testname):
   return dict(stats=['flu_std_img'],
     trendaxis='exptime',
     figname='{}_imgstd_vs_exptime.png'.format(testname),
