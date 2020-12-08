@@ -131,8 +131,8 @@ def get_NL_res_dict(testname):
     figname='{}_curves_residuals.png'.format(testname),
     caption='{}: Relative Residual non-linearity vs. fluence after applying best fit NL curves.'.format(testname),
     meta=dict(doLegend=True,
-      ylabel='Z [percentage]',
-      xlabel=r'$Y_{NL} [kADU]$',
+      ylabel=r'$\delta Z\ [percentage]$',
+      xlabel=r'$Y_{NL}\ [kADU]$',
       title='{}: Non-Linearity Curve Residuals.'.format(testname),
       #ylim=[-10., 10.],
       corekwargs = dict(linestyle='')
