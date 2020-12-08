@@ -128,7 +128,7 @@ def get_NL_singcurves_dict(testname):
 
 
 def get_NL0Xfigs(testname):
-    NL01figs = dict()
+    NL0Xfigs = dict()
     NL0Xfigs['NL0Xchecks_offsets'] = [
         trends.Fig_Basic_Checkstat, get_check_offsets_dict(testname)]
     NL0Xfigs['NL0Xchecks_deltaoff'] = [
