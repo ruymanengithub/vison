@@ -313,7 +313,6 @@ class NL02(NL01.NL01):
 
         NLdeg = 4
 
-
         wpx = self.window['wpx']
         hpx = self.window['hpx']
         indices = copy.deepcopy(self.dd.indices)
@@ -475,8 +474,6 @@ class NL02(NL01.NL01):
                 self.dd.mx['sec_var_sim'][:, iCCD, jQ, :] = ijvar.copy()
 
         self.pin = pin
-        
-
         
 
     def produce_NLCs(self):

@@ -1335,7 +1335,8 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     # linear fit to yLIN vs. xres
     pol1 = np.polyfit(xres,yLIN,1)
     yres = (yLIN / np.poly1d(pol1)(xres) - 1.)*100. # relative, percentage!
-
+    stop()
+    
     fitresults['xres'] = xres.copy()
     fitresults['yres'] = yres.copy()
 
