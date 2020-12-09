@@ -500,6 +500,7 @@ def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None
     # X = fluencesNL[ixsel].flatten().copy()
     X = fluencesNL[ixsel,...].flatten().copy()
     Y = Z[ixsel,...].flatten().copy()
+    YL = YL[ixsel,...].flatten().copy()
     W = W[ixsel,...].flatten().copy()
     expix = expix[ixsel,...].flatten().copy()
     regix = regix[ixsel,...].flatten().copy()
@@ -507,6 +508,7 @@ def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None
     ixsort = np.argsort(X)
     X = X[ixsort].copy()
     Y = Y[ixsort].copy()
+    YL = YL[ixsort].copy()
     W = W[ixsort].copy()
     expix = expix[ixsort].copy()
     regix = regix[ixsort].copy()
@@ -530,8 +532,8 @@ def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None
     #     plt.show()
     #     #fig2.close()
     #    plt.close('all')
-
-    return X, Y, W, expix, regix
+    res = dict(X=X,Y=Y,YL=YL,W=W,expix=expix,regix=regix)
+    return res
 
 def fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg, display=False):
     """ """
@@ -1272,22 +1274,34 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
     if doLinFit:
 
-        X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL02(fluences[ixfitHI, :],
-                                              exptimes[ixfitHI], 
-                                              nomG,
-                                              ixLinFit=ixoverlapHI,
-                                              debug=debug)
-                                              #minrelflu=minrelflu,
-                                              #maxrelflu=maxrelflu)
-
+        res_HI = getXYW_NL02(fluences[ixfitHI, :],
+              exptimes[ixfitHI], 
+              nomG,
+              ixLinFit=ixoverlapHI,
+              debug=debug)
+              #minrelflu=minrelflu,
+              #maxrelflu=maxrelflu)
+        X_HI = res_HI['X']
+        Y_HI = res_HI['Y']
+        YLexpect_HI = res_HI['YL']
+        W_HI = res_HI['W']
+        e_HI = res_HI['expix']
+        r_HI = res_HI['regix']
         
-        X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL02(fluences[ixfitLO, :],
-                                              exptimes[ixfitLO], 
-                                              nomG,
-                                              ixLinFit=ixoverlapLO,
-                                              debug=debug)
-                                          #minrelflu=minrelflu,
-                                          #maxrelflu=maxrelflu)
+        res_LO = getXYW_NL02(fluences[ixfitLO, :],
+          exptimes[ixfitLO], 
+          nomG,
+          ixLinFit=ixoverlapLO,
+          debug=debug)
+      #minrelflu=minrelflu,
+      #maxrelflu=maxrelflu)
+        X_LO = res_LO['X']
+        Y_LO = res_LO['Y']
+        YLexpect_LO = res_LO['YL']
+        W_LO = res_LO['W']
+        e_LO = res_LO['expix']
+        r_LO = res_LO['regix']
+
     else:
 
         fitmethod = 'spline'
