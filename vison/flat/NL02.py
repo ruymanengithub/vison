@@ -435,7 +435,7 @@ class NL02(NL01.NL01):
                 raw_X = self.dd.mx['sec_X'][0, iCCD, jQ, :].copy()
                 raw_Y = self.dd.mx['sec_Y'][0, iCCD, jQ, :].copy()
 
-                spatDist = ((raw_X-raw_X.mean())**2.+(raw_Y-raw_Y.mean()))**0.5
+                spatDist = ((raw_X-raw_X.mean())**2.+(raw_Y-raw_Y.mean())**2.)**0.5
 
                 #ijoffset = np.median(self.dd.mx['offset_pre'][:, iCCD, jQ])
                 ijoffset = self.dd.mx['offset_pre'][:, iCCD, jQ]
@@ -446,7 +446,6 @@ class NL02(NL01.NL01):
 
                 # ixboo_fluLO
                 
-                stop()
 
                 ijflu[ixboo_fluLO,:] = fluxLO * np.expand_dims(texptimes[ixboo_fluLO],1)
                 ijflu[ixboo_fluLO,:] *= np.expand_dims(spatScale,0)
