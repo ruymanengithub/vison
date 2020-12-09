@@ -1333,20 +1333,30 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     # Residuals of Linearisation
 
     # expected linear fluences from exposure times: yEXPLIN
+    yEXPLO = np.repeat(np.expand_dims(exptimes[ixfitLO],1),Nsecs,1)*fluxLO
+    yEXPHI = np.repeat(np.expand_dims(exptimes[ixfitHI],1),Nsecs,1)*fluxHI
 
-    stop()
+    yEXPLIN = np.concatenate((yEXPLO.flatten(),yEXPHI.flatten()))
 
     # linearised fluences: yLIN
     yNL = np.concatenate((fluences[ixfitLO,...].flatten(),fluences[ixfitHI,...].flatten()))
-    yNL = yNL[~np.isnan(yNL)]
-    yNL = yNL[(yNL >= minfitFl) & (yNL<= maxfitFl)]
+    ixnonan = np.where(~np.isnan(yNL))
+
+    yNL = yNL[ixnonan]
+    yEXPLIN = yEXPLIN[ixnonan]
+
+    ixwbounds = np.where((yNL >= minfitFl) & (yNL<= maxfitFl)) 
+    yNL = yNL[ixwbounds]
+    yEXPLIN = yEXPLIN[ixwbounds]
+
     yLIN = yNL/(1.+fitresults['model'](yNL/2.**16,*fitresults['coeffs'])/100.)
-    # linear fit to yLIN vs. xres
+
+    # linear fit to yLIN vs. yEXPLIN
     pol1 = np.polyfit(yEXPLIN,yLIN,1)
     # residuals should be around 0 if the linearisation went well
     yres = (yLIN / np.poly1d(pol1)(yEXPLIN) - 1.)*100. # relative residual, as a percentage!
     
-    fitresults['xres'] = yNL.copy()
+    fitresults['xres'] = yEXPLIN.copy()
     fitresults['yres'] = yres.copy()
 
     #fitresults = fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg, display=debug)
