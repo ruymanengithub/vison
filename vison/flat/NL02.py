@@ -389,7 +389,7 @@ class NL02(NL01.NL01):
             waveLO = uwaves[0]
             fluxHI = fluxes[1]
             fluxLO = fluxes[0]
-
+        stop()
         gain = 3.5
         pin = np.zeros(3+NLdeg+1)
 
