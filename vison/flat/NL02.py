@@ -744,7 +744,7 @@ class NL02(NL01.NL01):
         curves_single_plot['labelkeys'] = ['data']
 
         curves_single_plot['x']['data'] = []
-        curves_single_plot['y']['data']
+        curves_single_plot['y']['data'] = []
 
         for iC,CCDk in enumerate(CCDs):
             for jQ,Q in enumerate(Quads):
