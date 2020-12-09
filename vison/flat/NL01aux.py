@@ -133,7 +133,7 @@ def get_NL_res_dict(testname):
     meta=dict(doLegend=True,
       ylabel=r'$\delta Z\ [percentage]$',
       xlabel=r'$Y_{NL}\ [kADU]$',
-      title='{}: Non-Linearity Curve Residuals.'.format(testname),
+      title='{}: Non-Linearity Curve Fit Residuals.'.format(testname),
       #ylim=[-10., 10.],
       corekwargs = dict()
       #corekwargs=dict(data=dict(marker='.', linestyle='', color='b'),
