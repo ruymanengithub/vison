@@ -689,7 +689,7 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg,
         yfit = yfit[ixnonans].copy()
     else:
         #ixnonans = np.where(~(np.isnan(X) | np.isnan(Y)))
-        xfit = X[selix].copy() / FullDynrange
+        xfit = X[selix].copy() / FullDynRange
         yfit = Y[selix].copy()
 
     ixsort = np.argsort(xfit)
