@@ -392,7 +392,6 @@ class NL02(NL01.NL01):
 
         gain = 3.5
         pin = np.zeros(3+NLdeg+1)
-        pin[-2] = 1.
 
         #pin[0] = 2.
         #pin[1] = 0.05
