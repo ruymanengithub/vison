@@ -1354,7 +1354,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     # expected linear fluences, based on exposure times: YLexpect
 
     # non linear fluences: yNL
-    yNL = YLexpect * (1.+Y*/100.)
+    yNL = YLexpect * (1.+Y/100.)
     ixnonan = np.where(~np.isnan(yNL))
 
     yNL = yNL[ixnonan]
