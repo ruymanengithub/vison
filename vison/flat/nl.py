@@ -1351,12 +1351,10 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     #fluxHI = 7247.044204930443 # TEST
     #fluxLO = 2654.7742554938973
     
-    # expected linear fluences, based on exposure times
+    # expected linear fluences, based on exposure times: YLexpect
 
-    YLexpect *= FullDynRange
-
-    # linearised fluences: yLIN
-    yNL = np.concatenate((fluences[ixfitLO,...].flatten(),fluences[ixfitHI,...].flatten()))
+    # non linear fluences: yNL
+    yNL = YLexpect * (1.+Y*/100.)
     ixnonan = np.where(~np.isnan(yNL))
 
     yNL = yNL[ixnonan]
@@ -1367,6 +1365,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     yNL = yNL[ixwbounds]
     YLexpect = YLexpect[ixwbounds]
 
+    # linearised fluences: yLIN
     yLIN = yNL/(1.+fitresults['model'](yNL/FullDynRange,*fitresults['coeffs'])/100.)
 
     # linear fit to yLIN vs. yEXPLIN
@@ -1374,7 +1373,6 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     # residuals should be around 0 if the linearisation went well
     yres = (yLIN / np.poly1d(pol1)(YLexpect) - 1.)*100. # relative residual, as a percentage!
     
-    stop()
 
     fitresults['xres'] = YLexpect.copy()
     fitresults['yres'] = yres.copy()
