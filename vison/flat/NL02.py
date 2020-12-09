@@ -765,7 +765,7 @@ class NL02(NL01.NL01):
                 fdict_singNL['meta']['corekwargs'][ckey] = dict(linestyle='-',
                     color=ijcolor)
 
-        fdict_singNL['meta']['corekwargs']['data'] = dict(linestyle='',marker='.'
+        fdict_singNL['meta']['corekwargs']['data'] = dict(linestyle='',marker='.',
                     color='k',alpha=0.1)
 
         fdict_singNL = self.figdict['NL0X_fit_curves_single'][1]
