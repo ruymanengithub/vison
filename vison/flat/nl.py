@@ -64,7 +64,10 @@ def get_exptime_atfracdynrange(flu1D, exp1D, frac=0.5, method='spline',
     if maxrelflu is None or minrelflu is None:
         ixvalid = np.where(~np.isnan(X))
     else:
-        ixvalid = np.where(~np.isnan(X) & (X >= minrelflu) & (X <= maxrelflu))
+        ixnonan = np.where(~np.isnan(X))
+        ixwbounds = np.where((X[ixnonan] >= minrelflu) & (X[ixnonan] <= maxrelflu))
+        ixvalid = (ixnonan[0][ixwbounds],)
+        #ixvalid = np.where(~np.isnan(X) & (X >= minrelflu) & (X <= maxrelflu))
 
     X = X[ixvalid].copy()
     Y = Y[ixvalid].copy()
