@@ -1354,7 +1354,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     # residuals should be around 0 if the linearisation went well
     yres = (yLIN / np.poly1d(pol1)(yEXPLIN) - 1.)*100. # relative residual, as a percentage!
     
-    stop()
+    
     fitresults['xres'] = yEXPLIN.copy()
     fitresults['yres'] = yres.copy()
 
