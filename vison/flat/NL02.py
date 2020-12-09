@@ -446,6 +446,7 @@ class NL02(NL01.NL01):
 
                 # ixboo_fluLO
                 
+                stop()
 
                 ijflu[ixboo_fluLO,:] = fluxLO * np.expand_dims(texptimes[ixboo_fluLO],1)
                 ijflu[ixboo_fluLO,:] *= np.expand_dims(spatScale,0)
@@ -459,7 +460,7 @@ class NL02(NL01.NL01):
                 ijnlpc = f_non_Lin(ijflu, pin)
 
                 ijvar = (np.sqrt(ijflu * gain)/gain)**2.
-                ijvar[np.where(ijvar==0.)] = 1.
+                ijvar += 1. # adding RON
 
                 ijflu *= (1.+ijnlpc/100.)
 
