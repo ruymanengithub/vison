@@ -165,6 +165,7 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5,
 
     X = fluencesNL[ixsel, ...].flatten().copy()
     Y = Z[ixsel, ...].flatten().copy()
+    YL = YL[ixsel,...].flatten().copy()
     W = W[ixsel,...].flatten().copy()
     expix = expix[ixsel,...].flatten().copy()
     regix = regix[ixsel,...].flatten().copy()
@@ -173,14 +174,16 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5,
     ixsort = np.argsort(X)
     X = X[ixsort].copy()
     Y = Y[ixsort].copy()
+    YL = YL[ixsort].copy()
     W = W[ixsort].copy()
     expix = expix[ixsort].copy()
     regix = regix[ixsort].copy()
     # if len(np.where(np.abs(Y)>5.)[0])>10: stop()# TESTS
     if Full:
-        return X, Y, W, expix, regix
+        res=dict(X=X,Y=Y,YL=YL,W=W,expix=expix,regix=regix)
     else:
-        return X, Y, W
+        res=dict(X=X,Y=Y,W=W)
+    return res
 
 
 def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None, 
@@ -1289,26 +1292,39 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
         fitmethod = 'spline'
         # np.mean(fluences[ixfitHI, :], axis=1),
-        X_HI, Y_HI, W_HI, e_HI, r_HI = getXYW_NL(fluences[ixfitHI, :],
+        res_HI = getXYW_NL(fluences[ixfitHI, :],
             exptimes[ixfitHI], nomG, 
             pivotfrac=pivotfrac, 
             minrelflu=minrelflu,
             maxrelflu=maxrelflu, 
             method=fitmethod,
             Full=True)
+        X_HI = res_HI['X']
+        Y_HI = res_HI['Y']
+        YLexpect_HI = res_HI['YL']
+        W_HI = res_HI['W']
+        e_HI = res_HI['expix']
+        r_HI = res_HI['regix']
+
         # np.mean(fluences[ixfitLO, :], axis=1),
-        X_LO, Y_LO, W_LO, e_LO, r_LO = getXYW_NL(fluences[ixfitLO, :],
+        res_LO = getXYW_NL(fluences[ixfitLO, :],
             exptimes[ixfitLO], nomG, 
             pivotfrac=pivotfrac, 
             minrelflu=minrelflu,
             maxrelflu=maxrelflu, 
             method=fitmethod,
             Full=True)
-
+        X_LO = res_LO['X']
+        Y_LO = res_LO['Y']
+        YLexpect_LO = res_LO['YL']
+        W_LO = res_LO['W']
+        e_LO = res_LO['expix']
+        r_LO = res_LO['regix']
 
     bgdnoff = np.median(fluences[ixboo_bgd,:])
 
     X = np.concatenate((X_HI, X_LO)) # notice the small back-ground is left in!
+    YLexpect = np.concatenate((YLexpect_HI, YLexpect_LO))
     Y = np.concatenate((Y_HI, Y_LO))
     W = np.concatenate((W_HI, W_LO))
     #exps = np.concatenate((e_A,e_B))
@@ -1332,35 +1348,31 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     
     # Residuals of Linearisation
 
-    fluxHI = 7247.044204930443 # TEST
-    fluxLO = 2654.7742554938973
-
-    # expected linear fluences from exposure times: yEXPLIN
-    yEXPLO = np.repeat(np.expand_dims(exptimes[ixfitLO],1),Nsecs,1)*fluxLO
-    yEXPHI = np.repeat(np.expand_dims(exptimes[ixfitHI],1),Nsecs,1)*fluxHI
-
-    yEXPLIN = np.concatenate((yEXPLO.flatten(),yEXPHI.flatten()))
+    #fluxHI = 7247.044204930443 # TEST
+    #fluxLO = 2654.7742554938973
+    
 
     # linearised fluences: yLIN
     yNL = np.concatenate((fluences[ixfitLO,...].flatten(),fluences[ixfitHI,...].flatten()))
     ixnonan = np.where(~np.isnan(yNL))
 
     yNL = yNL[ixnonan]
-    yEXPLIN = yEXPLIN[ixnonan]
+    # expected linear fluences from exposure times: YLexpect
+    YLexpect = YLexpect[ixnonan]
 
     ixwbounds = np.where((yNL >= minfitFl) & (yNL<= maxfitFl)) 
     yNL = yNL[ixwbounds]
-    yEXPLIN = yEXPLIN[ixwbounds]
+    YLexpect = YLexpect[ixwbounds]
 
     yLIN = yNL/(1.+fitresults['model'](yNL/2.**16,*fitresults['coeffs'])/100.)
 
     # linear fit to yLIN vs. yEXPLIN
-    pol1 = np.polyfit(yEXPLIN,yLIN,1)
+    pol1 = np.polyfit(YLexpect,yLIN,1)
     # residuals should be around 0 if the linearisation went well
-    yres = (yLIN / np.poly1d(pol1)(yEXPLIN) - 1.)*100. # relative residual, as a percentage!
+    yres = (yLIN / np.poly1d(pol1)(YLexpect) - 1.)*100. # relative residual, as a percentage!
     
 
-    fitresults['xres'] = yEXPLIN.copy()
+    fitresults['xres'] = YLexpect.copy()
     fitresults['yres'] = yres.copy()
 
     #fitresults = fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg, display=debug)
