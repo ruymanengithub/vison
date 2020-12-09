@@ -1119,11 +1119,15 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
         ixboo_fluLO = ixboo_fluB
         waveHI = uwaves[0]
         waveLO = uwaves[1]
+        fluxHI = fluxes[0]
+        fluxLO = fluxes[1]
     else:
         ixboo_fluLO = ixboo_fluA
         ixboo_fluHI = ixboo_fluB
         waveHI = uwaves[1]
         waveLO = uwaves[0]
+        fluxHI = fluxes[0]
+        fluxLO = fluxes[1]
 
     # subtracting offsets (bias) before flux tracking
     # the same offset is subtracted for all regions in a frame/quadrant.
@@ -1326,20 +1330,23 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
                                 ObsIDs=fObsIDs,
                                 pin=pin)
     
-    # residuals of linearisation
+    # Residuals of Linearisation
 
-    # original non-linear fluences: xres
-    xres = np.concatenate((fluences[ixfitLO,...].flatten(),fluences[ixfitHI,...].flatten()))
-    xres = xres[~np.isnan(xres)]
-    xres = xres[(xres >= minfitFl) & (xres<= maxfitFl)]
+    # expected linear fluences from exposure times: yEXPLIN
+
+    stop()
+
     # linearised fluences: yLIN
-    yLIN = xres/(1.+fitresults['model'](xres/2.**16,*fitresults['coeffs'])/100.)
+    yNL = np.concatenate((fluences[ixfitLO,...].flatten(),fluences[ixfitHI,...].flatten()))
+    yNL = yNL[~np.isnan(yNL)]
+    yNL = yNL[(yNL >= minfitFl) & (yNL<= maxfitFl)]
+    yLIN = yNL/(1.+fitresults['model'](yNL/2.**16,*fitresults['coeffs'])/100.)
     # linear fit to yLIN vs. xres
-    pol1 = np.polyfit(xres,yLIN,1)
+    pol1 = np.polyfit(yEXPLIN,yLIN,1)
     # residuals should be around 0 if the linearisation went well
-    yres = (yLIN / np.poly1d(pol1)(xres) - 1.)*100. # relative residual, as a percentage!
+    yres = (yLIN / np.poly1d(pol1)(yEXPLIN) - 1.)*100. # relative residual, as a percentage!
     
-    fitresults['xres'] = xres.copy()
+    fitresults['xres'] = yNL.copy()
     fitresults['yres'] = yres.copy()
 
     #fitresults = fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg, display=debug)
