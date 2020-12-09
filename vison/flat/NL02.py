@@ -760,7 +760,7 @@ class NL02(NL01.NL01):
                 curves_single_plot['y'][ckey] = yfit[ixorder]
 
                 curves_single_plot['x']['data'] += list(curves_cdp.data[CCDk][Q]['x']['data'].copy())
-                curves_signle_plot['y']['data'] += list(curves_cdp.data[CCDk][Q]['y']['data'].copy())
+                curves_single_plot['y']['data'] += list(curves_cdp.data[CCDk][Q]['y']['data'].copy())
 
                 fdict_singNL['meta']['corekwargs'][ckey] = dict(linestyle='-',
                     color=ijcolor)
