@@ -598,7 +598,7 @@ class NL02(NL01.NL01):
 
             for jQ, Q in enumerate(Quads):
 
-                ckey = '%s%s' % (CCDk,Q)
+                ckey = '%s%s' % (CCDkey,Q)
 
                 kk = iCCD * nQ + jQ
 
@@ -790,7 +790,7 @@ class NL02(NL01.NL01):
 
                 fdict_resNL['meta']['corekwargs'][ckey] = dict(linestyle='',marker='.',
                     color=ijcolor)
-        stop()
+
 
         if self.report is not None:
             self.addFigures_ST(figkeys=['NL0X_fit_curves_res'],
