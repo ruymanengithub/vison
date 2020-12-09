@@ -1330,6 +1330,8 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     
     # Residuals of Linearisation
 
+    stop()
+
     # expected linear fluences from exposure times: yEXPLIN
     yEXPLO = np.repeat(np.expand_dims(exptimes[ixfitLO],1),Nsecs,1)*fluxLO
     yEXPHI = np.repeat(np.expand_dims(exptimes[ixfitHI],1),Nsecs,1)*fluxHI
@@ -1354,7 +1356,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     # residuals should be around 0 if the linearisation went well
     yres = (yLIN / np.poly1d(pol1)(yEXPLIN) - 1.)*100. # relative residual, as a percentage!
     
-    
+
     fitresults['xres'] = yEXPLIN.copy()
     fitresults['yres'] = yres.copy()
 

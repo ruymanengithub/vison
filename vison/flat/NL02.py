@@ -393,14 +393,14 @@ class NL02(NL01.NL01):
         gain = 3.5
         pin = np.zeros(3+NLdeg+1)
 
-        #pin[0] = 2.
-        #pin[1] = 0.05
-        ##pin[2] = .1
-        #p[-5] = 0.
-        #pin[-4] = 0.6
-        #pin[-3] = -0.3
-        #pin[-2] = 0.5
-        #pin[-1] = 0.
+        pin[0] = 2.
+        pin[1] = 0.05
+        #pin[2] = .1
+        p[-5] = 0.
+        pin[-4] = 0.6
+        pin[-3] = -0.3
+        pin[-2] = 0.5
+        pin[-1] = 0.
 
 
         def f_non_Lin(x, p):
