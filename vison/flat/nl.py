@@ -1128,7 +1128,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
         waveLO = uwaves[0]
         fluxHI = fluxes[0]
         fluxLO = fluxes[1]
-
+    stop()
     # subtracting offsets (bias) before flux tracking
     # the same offset is subtracted for all regions in a frame/quadrant.
     fluences = fluences - np.expand_dims(offset,1) 
