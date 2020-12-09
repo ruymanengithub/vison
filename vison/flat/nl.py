@@ -1330,7 +1330,8 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     
     # Residuals of Linearisation
 
-    stop()
+    fluxHI = 7247.044204930443
+    fluxLO = 2654.7742554938973
 
     # expected linear fluences from exposure times: yEXPLIN
     yEXPLO = np.repeat(np.expand_dims(exptimes[ixfitLO],1),Nsecs,1)*fluxLO
