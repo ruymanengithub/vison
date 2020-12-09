@@ -38,6 +38,7 @@ import copy
 from collections import OrderedDict
 import pandas as pd
 import string as st
+import matplotlib.cm as cm
 
 from vison.pipe.task import HKKeys
 from vison.support import context
@@ -736,14 +737,36 @@ class NL02(NL01.NL01):
             x=dict(),
             y=dict())
 
-        for CCDk in CCDs:
-            for Q in Quads:
+        
+        colors = cm.rainbow(np.linspace(0, 1, nC*nQ))
+        fdict_singNL = self.figdict['NL0X_fit_curves_single'][1]
+
+        curves_single_plot['labelkeys'] = ['data']
+
+        curves_single_plot['x']['data'] = []
+        curves_single_plot['y']['data']
+
+        for iC,CCDk in enumerate(CCDs):
+            for jQ,Q in enumerate(Quads):
                 ckey = '%s%s' % (CCDk,Q)
+                ijcolor = colors[iC*nQ+jQ]
+
                 curves_single_plot['labelkeys'].append(ckey)
+                xfit = curves_cdp.data[CCDk][Q]['x']['fit'].copy()
+                yfit = curves_cdp.data[CCDk][Q]['y']['fit'].copy()
+                ixorder = np.argsort(xfit)
 
-                curves_single_plot['x'][ckey] = curves_cdp.data[CCDk][Q]['x']['fit'].copy()
-                curves_single_plot['y'][ckey] = curves_cdp.data[CCDk][Q]['y']['fit'].copy()
+                curves_single_plot['x'][ckey] = xfit[ixorder]
+                curves_single_plot['y'][ckey] = yfit[ixorder]
 
+                curves_single_plot['x']['data'] += list(curves_cdp.data[CCDk][Q]['x']['data'].copy())
+                curves_signle_plot['y']['data'] += list(curves_cdp.data[CCDk][Q]['y']['data'].copy())
+
+                fdict_singNL['meta']['corekwargs'][ckey] = dict(linestyle='-',
+                    color=ijcolor)
+
+        fdict_singNL['meta']['corekwargs']['data'] = dict(linestyle='',marker='.'
+                    color='k',alpha=0.1)
 
         fdict_singNL = self.figdict['NL0X_fit_curves_single'][1]
         fdict_singNL['data'] = curves_single_plot.copy()
