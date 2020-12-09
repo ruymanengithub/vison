@@ -405,7 +405,7 @@ def forward_PTC_LM(indata, npol=6):
     model = 'pol'
 
 
-    doPlot1 = False
+    doPlot1 = True
     if doPlot1:
 
         fig1 = plt.figure()
@@ -419,6 +419,7 @@ def forward_PTC_LM(indata, npol=6):
         plt.show()
         plt.close()
 
+    stop()
     p0 = np.zeros(npol,dtype='float32')
     if model == 'zero':
         p0[0] = 1. # initial conditions: perfectly linear response
