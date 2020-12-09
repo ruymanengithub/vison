@@ -503,7 +503,7 @@ class NL02(NL01.NL01):
         doExptimeCalib = True
         NLdeg = 4
         debug = False  # TESTS
-        useSims = True # TESTS
+        useSims = False # TESTS
 
         if self.report is not None:
             self.report.add_Section(
