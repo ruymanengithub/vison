@@ -246,8 +246,8 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
                 ixsel = np.where(arenonan & presel)
             else:
                 ixnonan = np.where(arenonan)
-                _ixsel = np.where((fluencesNL[ixnonan, isec] >= 2.**16 * minrelflu) &
-                              (fluencesNL[ixnonan, isec] <= 2.**16 * maxrelflu))
+                _ixsel = np.where((fluencesNL[ixnonan, isec] >= FullDynRange * minrelflu) &
+                              (fluencesNL[ixnonan, isec] <= FullDynRange * maxrelflu))
                 ixsel = (ixnonan[0][_ixsel[1]],)
 
 
@@ -288,8 +288,8 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
             ixsel = np.where(arenonan & presel)
         else:
             ixnonan = np.where(arenonan)
-            _ixsel = np.where((fluencesNL[ixnonan] >= 2.**16 * minrelflu) &
-                    (fluencesNL[ixnonan] <= 2.**16 * maxrelflu))
+            _ixsel = np.where((fluencesNL[ixnonan] >= FullDynRange * minrelflu) &
+                    (fluencesNL[ixnonan] <= FullDynRange * maxrelflu))
             
             ixsel = (ixnonan[0][_ixsel],)
 
@@ -469,8 +469,8 @@ def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None
             ixsel = np.where(arenonan & presel)
         else:
             ixnonan = np.where(arenonan)
-            _ixsel = np.where((fluencesNL[ixnonan] >= 2.**16 * minrelflu) &
-                    (fluencesNL[ixnonan] <= 2.**16 * maxrelflu))
+            _ixsel = np.where((fluencesNL[ixnonan] >= FullDynRange * minrelflu) &
+                    (fluencesNL[ixnonan] <= FullDynRange * maxrelflu))
             
             ixsel = (ixnonan[0][_ixsel],)
 
@@ -685,11 +685,11 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg,
         ixbins = np.digitize(X[selix], xfit)
         yfit = np.array([np.median(Y[selix][np.where(ixbins == ix)]) for ix in range(Nbins)])
         ixnonans = np.where(~np.isnan(yfit))
-        xfit = xfit[ixnonans].copy() / 2**16
+        xfit = xfit[ixnonans].copy() / FullDynRange
         yfit = yfit[ixnonans].copy()
     else:
         #ixnonans = np.where(~(np.isnan(X) | np.isnan(Y)))
-        xfit = X[selix].copy() / 2**16
+        xfit = X[selix].copy() / FullDynrange
         yfit = Y[selix].copy()
 
     ixsort = np.argsort(xfit)
@@ -700,8 +700,8 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg,
         #p0 = np.concatenate((np.array([10.,0.15,1.]),np.zeros(NLdeg+1)))
         p0 = np.concatenate((np.array([1., 0.01, 0.05]), np.zeros(NLdeg + 1)))
         bounds = []
-        bounds.append([0., 10. / 2**16, 1.e-3] + [-100.] * (NLdeg) + [-10.])
-        bounds.append([10., 10000. / 2**16, 5.E-1] + [100.] * (NLdeg) + [10.])
+        bounds.append([0., 10. / FullDynRange, 1.e-3] + [-100.] * (NLdeg) + [-10.])
+        bounds.append([10., 10000. / FullDynRange, 5.E-1] + [100.] * (NLdeg) + [10.])
         # bounds = [[0.,  10., -1.E-3,-1.E-2, -10.],
         #          [1.E3,1.E3, 1.E-3, 1.E-2,  10.]]
     else:
@@ -727,7 +727,7 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg,
 
     # array with NL fluences (1 to 2**16, in steps of 20 ADU)
     fkfluencesNL = np.linspace(minfitFl, maxfitFl, 400) * 1.
-    Y_bestfit = ff(fkfluencesNL / 2**16, *popt)
+    Y_bestfit = ff(fkfluencesNL / FullDynRange, *popt)
 
     # Direct measure
 
@@ -751,13 +751,13 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg,
         
         if pin is not None: # TESTS
 
-            Y_in = ff(fkfluencesNL / 2**16, *pin)
+            Y_in = ff(fkfluencesNL / FullDynRange, *pin)
 
             fig = plt.figure()
             ax = fig.add_subplot(111)
             ax.plot(fkfluencesNL, Y_in, 'b-',label='input')
             ax.plot(fkfluencesNL, Y_bestfit, 'r--',label='output')
-            ax.plot(xfit*2.**16, yfit, 'k.',label='data')
+            ax.plot(xfit*FullDynRange, yfit, 'k.',label='data')
             handles, labels = ax.get_legend_handles_labels()
             ax.legend(handles, labels, loc='best')
             plt.show()
@@ -1351,6 +1351,9 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     #fluxHI = 7247.044204930443 # TEST
     #fluxLO = 2654.7742554938973
     
+    # expected linear fluences, based on exposure times
+
+    YLexpect *= FullDynRange
 
     # linearised fluences: yLIN
     yNL = np.concatenate((fluences[ixfitLO,...].flatten(),fluences[ixfitHI,...].flatten()))
@@ -1364,7 +1367,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     yNL = yNL[ixwbounds]
     YLexpect = YLexpect[ixwbounds]
 
-    yLIN = yNL/(1.+fitresults['model'](yNL/2.**16,*fitresults['coeffs'])/100.)
+    yLIN = yNL/(1.+fitresults['model'](yNL/FullDynRange,*fitresults['coeffs'])/100.)
 
     # linear fit to yLIN vs. yEXPLIN
     pol1 = np.polyfit(YLexpect,yLIN,1)
