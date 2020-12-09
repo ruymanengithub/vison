@@ -1111,7 +1111,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
     # subtracting offsets (bias) before flux tracking
     # the same offset is subtracted for all regions in a frame/quadrant.
-    fluences = fluences - np.expand_dims(offset,1)
+    #fluences = fluences - np.expand_dims(offset,1)
 
     fluxes = [np.nanmean((np.nanmean(fluences[ixboo_fluA,:],axis=1)/exptimes[ixboo_fluA])),
             np.nanmean((np.nanmean(fluences[ixboo_fluB,:],axis=1)/exptimes[ixboo_fluB]))]
@@ -1330,7 +1330,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     
     # Residuals of Linearisation
 
-    fluxHI = 7247.044204930443
+    fluxHI = 7247.044204930443 # TEST
     fluxLO = 2654.7742554938973
 
     # expected linear fluences from exposure times: yEXPLIN
