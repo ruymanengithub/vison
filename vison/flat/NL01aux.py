@@ -135,7 +135,7 @@ def get_NL_res_dict(testname):
       xlabel=r'$Y_{NL}\ [kADU]$',
       title='{}: Non-Linearity Curve Residuals.'.format(testname),
       #ylim=[-10., 10.],
-      corekwargs = dict(linestyle='')
+      corekwargs = dict()
       #corekwargs=dict(data=dict(marker='.', linestyle='', color='b'),
       #                fit=dict(marker='', linestyle='--', color='r')))
       )

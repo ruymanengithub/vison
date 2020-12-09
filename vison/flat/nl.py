@@ -702,7 +702,7 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg,
         #p0 = np.concatenate((np.array([10.,0.15,1.]),np.zeros(NLdeg+1)))
         p0 = np.concatenate((np.array([1., 0.01, 0.05]), np.zeros(NLdeg + 1)))
         bounds = []
-        bounds.append([0., 10. / FullDynRange, 1.e-3] + [-100.] * (NLdeg) + [-10.])
+        bounds.append([-10., 10. / FullDynRange, 1.e-3] + [-100.] * (NLdeg) + [-10.])
         bounds.append([10., 10000. / FullDynRange, 5.E-1] + [100.] * (NLdeg) + [10.])
         # bounds = [[0.,  10., -1.E-3,-1.E-2, -10.],
         #          [1.E3,1.E3, 1.E-3, 1.E-2,  10.]]

@@ -777,9 +777,20 @@ class NL02(NL01.NL01):
 
         # Linearity residuals after applying NL curves
 
+        colors = cm.rainbow(np.linspace(0, 1, nC*nQ))
+
 
         fdict_resNL = self.figdict['NL0X_fit_curves_res'][1]
         fdict_resNL['data'] = curves_res_plot.copy()
+
+        for iC,CCDk in enumerate(CCDs):
+            for jQ,Q in enumerate(Quads):
+                ckey = '%s%s' % (CCDk,Q)
+                ijcolor = colors[iC*nQ+jQ]
+
+                fdict_resNL['meta']['corekwargs'][ckey] = dict(linestyle='',marker='.',
+                    color=ijcolor)
+
 
         if self.report is not None:
             self.addFigures_ST(figkeys=['NL0X_fit_curves_res'],
