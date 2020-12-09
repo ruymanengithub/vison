@@ -1109,6 +1109,10 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     ixboo_fluA = (exptimes != 0.) & (exptimes != exptimestab) & (wave == uwaves[0])
     ixboo_fluB = (exptimes != 0.) & (exptimes != exptimestab) & (wave == uwaves[1])
 
+    # subtracting offsets (bias) before flux tracking
+    # the same offset is subtracted for all regions in a frame/quadrant.
+    fluences = fluences - np.expand_dims(offset,1)
+
     fluxes = [np.nanmean((np.nanmean(fluences[ixboo_fluA,:],axis=1)/exptimes[ixboo_fluA])),
             np.nanmean((np.nanmean(fluences[ixboo_fluB,:],axis=1)/exptimes[ixboo_fluB]))]
 
@@ -1128,11 +1132,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
         waveLO = uwaves[0]
         fluxHI = fluxes[0]
         fluxLO = fluxes[1]
-    stop()
-    # subtracting offsets (bias) before flux tracking
-    # the same offset is subtracted for all regions in a frame/quadrant.
-    fluences = fluences - np.expand_dims(offset,1) 
-
+    
 
     dumpCubes=False # True on TESTS
     if dumpCubes:
@@ -1243,7 +1243,6 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
         trackstab = 0.
 
 
-
     #ixfitHI = ixboo_fluHI | ixboo_bgd | ixboo_stab
     ixfitHI = ixboo_fluHI | ixboo_stab
     overlapExpTimesHI = np.unique(exptimes[ixfitHI & (exptimes>0)])[0:3]
@@ -1303,7 +1302,6 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
             maxrelflu=maxrelflu, 
             method=fitmethod,
             Full=True)
-
 
 
     bgdnoff = np.median(fluences[ixboo_bgd,:])
