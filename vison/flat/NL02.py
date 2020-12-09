@@ -299,7 +299,7 @@ class NL02(NL01.NL01):
 
                 indata = dict(mu_nle=medsbinsuboff,
                     var_nle = varsbin,
-                    evar_nle=evarsbin,
+                    evar_nle = evarsbin,
                     ron=1.2,
                     gain=3.5,
                     binfactor=binfactor)

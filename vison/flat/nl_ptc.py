@@ -289,7 +289,9 @@ def fder_non_lin_zero(x,theta,scaled=False):
     for i in range(npar):
         fval += (i+1)*theta[i] * xp**(i)
     
-    return fval
+    if scaled: return fval
+    else: return fval / fscale
+    
 
 def fder_non_lin_pol(x,theta,scaled=False):
     """derivative of the non-linearity function"""
@@ -302,7 +304,8 @@ def fder_non_lin_pol(x,theta,scaled=False):
     for i in range(1,npar):
         fval += i*theta[i] * xp**(i-1.)
     
-    return fval
+    if scaled: return fval
+    else: return fval / fscale
 
 def make_fitPTC_func(ron, binfactor=1,model='zero'):
     """Retrieves function that generates n-l variances, for a fixed value of RON,
@@ -330,7 +333,7 @@ def make_fitPTC_func(ron, binfactor=1,model='zero'):
         
         corr_factor = _fder_non_lin(mu_le,theta,scaled=False)     
         #corr_factor = fnon_lin(mu_le,theta,scaled=False)/mu_le
-        var_nle = corr_factor**2. * mu_le  + ron**2 # Poisson + gaussian_ro
+        var_nle = corr_factor * mu_le  + ron**2 # Poisson + gaussian_ro
         #print '\n',var_nle,mu_le
 
         var_nle /= binfactor**2.
