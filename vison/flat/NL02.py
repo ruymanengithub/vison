@@ -393,7 +393,7 @@ class NL02(NL01.NL01):
         gain = 3.5
         pin = np.zeros(3+NLdeg+1)
 
-        pin[0] = 0. #2.
+        pin[0] = 2.
         pin[1] = 0.05
         pin[2] = .1
         #p[-5] = 0.
@@ -462,7 +462,7 @@ class NL02(NL01.NL01):
                 ijvar = (np.sqrt(ijflu * gain)/gain)**2.
                 ijvar += 1. # adding RON
 
-                ijflu *= (1.+ijnlpc/100.)
+                ijflu *= (1.+ijnlpc/100.) # adding non-linearity
 
                 # adding noise
                 noisescale = np.sqrt(ijvar) / np.sqrt(wpx*hpx)
