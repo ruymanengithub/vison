@@ -393,7 +393,7 @@ class NL02(NL01.NL01):
         gain = 3.5
         pin = np.zeros(3+NLdeg+1)
 
-        pin[0] = 2.
+        pin[0] = 0. #2.
         pin[1] = 0.05
         pin[2] = .1
         #p[-5] = 0.
@@ -468,7 +468,7 @@ class NL02(NL01.NL01):
                 noisescale = np.sqrt(ijvar) / np.sqrt(wpx*hpx)
                 ijflu += np.random.normal(loc=0.0, scale=noisescale, size=ijflu.shape)
                 # adding offset
-                #ijflu += np.expand_dims(ijoffset,1)
+                ijflu += np.expand_dims(ijoffset,1)
 
 
                 self.dd.mx['sec_med_sim'][:, iCCD, jQ, :] = ijflu.copy()
