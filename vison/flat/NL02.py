@@ -366,16 +366,26 @@ class NL02(NL01.NL01):
 
                 refmap = raw_med[ixref,:].reshape((N,N))
 
+                fig = plt.figure()
+                ax1 = fig.add_subplot(121)
+                ax2 = fig.add_subplot(122)
+
                 for i in range(len(nexptimes)):
 
                     imap = raw_med[i,:].reshape((N,N))
                     
                     resmap = imap - refmap * nexptimes[i]/midexpt
 
-                    fig = plt.figure()
-                    ax = fig.add_subplot(111)
-                    ax.imshow(resmap)
-                    plt.show()
+                    prof1 = resmap.mean(axis=0)
+                    prof2 = resmap.mean(axis=2)
+
+                    ax1.plot(prof1)
+                    ax2.plot(prof2)
+
+                ax1.set_title('axis1')
+                ax2.set_title('axis2')
+                plt.suptitle(ckey)
+                plt.show()
 
                 stop()
 
