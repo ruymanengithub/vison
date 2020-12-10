@@ -355,14 +355,14 @@ class NL02(NL01.NL01):
 
                 ixfluHI = np.where((wave==5) & (nexptimes>0))
 
-                raw_med = raw_med[ixfluHI,:]
+                raw_med = raw_med[ixfluHI[0],:]
                 nexptimes = nexptimes[ixfluHI]
 
                 midexpt = np.median(nexptimes)
                 ixref = np.where(nexptimes == midexpt)[0][0]
 
                 N = int(np.sqrt(raw_med.shape[1]))
-                stop()
+                
 
                 refmap = raw_med[ixref,:].reshape((N,N))
 
