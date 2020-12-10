@@ -352,6 +352,7 @@ class NL02(NL01.NL01):
                     nexptimes = copy.deepcopy(exptimes)
 
                 raw_med -= np.expand_dims(ijoffset,1)
+                N = int(np.sqrt(raw_med.shape[1]))
 
                 ixfluHI = np.where((wave==5) & (nexptimes>0))
 
@@ -361,16 +362,31 @@ class NL02(NL01.NL01):
                 midexpt = np.median(nexptimes)
                 ixref = np.where(nexptimes == midexpt)[0][0]
 
-                N = int(np.sqrt(raw_med.shape[1]))
-                
+                ixbgd = np.where(nexptimes==0)[0][0]
 
-                refmap = raw_med[ixref,:].reshape((N,N))
+                fig1 = plt.figure(figsize=(12,6))
+                ax11 = fig1.add_subplot(221)
+                ax12 = fig1.add_subplot(222)
+
+                bgmap = raw_med[ixbgd,:].reshape((N,N))    
+
+                bgprof1 = bgmap.mean(axis=0)
+                bgprof2 = bgmap.mean(axis=1)
+
+                ax11.plot(bgprof1)
+                ax12.plot(bgprof2)
+
+                ax21.set_title('axis1: bgd')
+                ax22.set_title('axis2: bgd')
+                plt.suptitle(ckey)
+                plt.show()
+
 
                 fig2 = plt.figure(figsize=(13,10))
-                ax1 = fig2.add_subplot(221)
-                ax2 = fig2.add_subplot(222)
-                ax3 = fig2.add_subplot(223)
-                ax4 = fig2.add_subplot(224)
+                ax21 = fig2.add_subplot(221)
+                ax22 = fig2.add_subplot(222)
+                ax23 = fig2.add_subplot(223)
+                ax24 = fig2.add_subplot(224)
 
                 NEXP = len(nexptimes)
 
@@ -390,16 +406,16 @@ class NL02(NL01.NL01):
                     prof1 = resmap.mean(axis=0)
                     prof2 = resmap.mean(axis=1)
 
-                    ax1.plot(prof1,color=colors[i],label='%.1f' % nexptimes[i])
-                    ax2.plot(prof2,color=colors[i])
+                    ax21.plot(prof1,color=colors[i],label='%.1f' % nexptimes[i])
+                    ax22.plot(prof2,color=colors[i])
 
                     nmap = imap / np.nanmean(imap)
 
                     prof3 = imap.mean(axis=0)
                     prof4 = imap.mean(axis=1)
 
-                    ax3.plot(prof3,color=colors[i])
-                    ax4.plot(prof4,color=colors[i])
+                    ax23.plot(prof3,color=colors[i])
+                    ax24.plot(prof4,color=colors[i])
 
                     alreadyplotted.append(nexptimes[i])
 
@@ -407,7 +423,7 @@ class NL02(NL01.NL01):
                 ax2.set_title('axis2: delta')
                 ax3.set_title('axis1: norms')
                 ax4.set_title('axis2: norms')
-                handles, labels = ax1.get_legend_handles_labels()
+                handles, labels = ax21.get_legend_handles_labels()
                 plt.suptitle(ckey)
                 fig2.legend(handles, labels)
                 plt.show()
