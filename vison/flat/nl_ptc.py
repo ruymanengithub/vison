@@ -405,7 +405,7 @@ def forward_PTC_LM(indata, npol=6):
     model = 'zero'
 
 
-    doPlot1 = True
+    doPlot1 = False
     if doPlot1:
 
         fig1 = plt.figure()
@@ -429,6 +429,8 @@ def forward_PTC_LM(indata, npol=6):
         p0[1] = 1.
 
     fitfunc = make_fitPTC_func(ron, binfactor, model)
+
+    stop()
 
     popt,pcov = opt.curve_fit(fitfunc,mu_nle,var_nle,
         p0=p0,
