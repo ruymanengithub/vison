@@ -366,7 +366,7 @@ class NL02(NL01.NL01):
 
                 refmap = raw_med[ixref,:].reshape((N,N))
 
-                fig = plt.figure(figsize=(10,6))
+                fig = plt.figure(figsize=(12,6))
                 ax1 = fig.add_subplot(121)
                 ax2 = fig.add_subplot(122)
 
@@ -397,7 +397,7 @@ class NL02(NL01.NL01):
                 ax2.set_title('axis2')
                 handles, labels = ax1.get_legend_handles_labels()
                 plt.suptitle(ckey)
-                plt.legend(handles, labels)
+                fig.legend(handles, labels)
                 plt.show()
 
                 stop()
