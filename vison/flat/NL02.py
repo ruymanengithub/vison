@@ -293,7 +293,8 @@ class NL02(NL01.NL01):
                 varsbin = self.dd.mx['sec_var_bin{:d}'.format(binfactor)][:,jCCD,kQ,:].copy()
                 evarsbin = self.dd.mx['sec_evar_bin{:d}'.format(binfactor)][:,jCCD,kQ,:].copy()
 
-                ixsel = np.where((medsbin>0) & (varsbin>0) & (evarsbin>0) & ~np.isnan(evarsbin))
+                ixsel = np.where((medsbin>0) & (varsbin>0) & (evarsbin>0) & ~np.isnan(evarsbin) &
+                    (medsbinsuboff<4.5E4))
 
                 medsbinsuboff = medsbinsuboff[ixsel]
                 varsbin = varsbin[ixsel]
