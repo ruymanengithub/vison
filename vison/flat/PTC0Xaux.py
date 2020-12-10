@@ -31,74 +31,76 @@ from vison.datamodel import ccd_aux
 class CCDclone(CCD):
 
   def __init__(self, ccd2clone):
-        """ """
+    """ """
 
-        attrs2clone = []
+    attrs2clone = []
 
-        for attr in dir(ccd2clone): 
-            if (not callable(getattr(ccd2clone, attr)) and (attr[0:2] != '__')):
-                attrs2clone.append(attr)
+    for attr in dir(ccd2clone): 
+        if (not callable(getattr(ccd2clone, attr)) and (attr[0:2] != '__')):
+            attrs2clone.append(attr)
 
-        for attr in attrs2clone:
-            setattr(self, attr, getattr(ccd2clone, attr))
+    for attr in attrs2clone:
+        setattr(self, attr, getattr(ccd2clone, attr))
 
   def get_tiles_stats(self, Quad, tile_coos, statkey=None, estimator=None, 
         extension=-1, binfactor=1):
-        """Returns statistics on a list of tiles.
+    """Returns statistics on a list of tiles.
 
-        :param Quad: Quadrant where to take the cutouts from.
-        :type Quad: str
+    :param Quad: Quadrant where to take the cutouts from.
+    :type Quad: str
 
-        :param tile_coos: A dictionary with tiles coordinates, as output by 
-            get_tile_coos.
-        :type tile_coos: dict()
+    :param tile_coos: A dictionary with tiles coordinates, as output by 
+        get_tile_coos.
+    :type tile_coos: dict()
 
-        :param statkey: stat to retrieve (one of mean, median, std)
-        :type statkey: str
+    :param statkey: stat to retrieve (one of mean, median, std)
+    :type statkey: str
 
-        :param estimator: function to retrieve stat (alternative to statkey)
-        :type estimator: obj
+    :param estimator: function to retrieve stat (alternative to statkey)
+    :type estimator: obj
 
-        :param extension: Extension index, last is -1
-        :type extension: int
-  
-        :param binfactor: apply binning of binfactor x binfactor before extracting stat
-        :type binfactor: int
+    :param extension: Extension index, last is -1
+    :type extension: int
 
-        :return: A 1D numpy array with the stat values for the tiles. 
+    :param binfactor: apply binning of binfactor x binfactor before extracting stat
+    :type binfactor: int
 
-        """
+    :return: A 1D numpy array with the stat values for the tiles. 
 
-        if isinstance(self.extensions[extension].data, np.ma.masked_array):
-            stat_dict = dict(
-                mean=np.ma.mean, median=np.ma.median, std=np.ma.std)
-        else:
-            stat_dict = dict(mean=np.mean, median=np.median, std=np.std)
+    """
 
-        if estimator is None and statkey is not None:
-            estimator = stat_dict[statkey]
+    if isinstance(self.extensions[extension].data, np.ma.masked_array):
+        stat_dict = dict(
+            mean=np.ma.mean, median=np.ma.median, std=np.ma.std)
+    else:
+        stat_dict = dict(mean=np.mean, median=np.median, std=np.std)
 
-        assert (binfactor>1) # if not, what are you doing, you dummy?
-        assert isinstance(binfactor,int)
+    if estimator is None and statkey is not None:
+        estimator = stat_dict[statkey]
 
-
-        tiles = self.get_tiles(Quad, tile_coos, extension=extension)
-
-        if binfactor > 1:
-
-          _tiles = copy.deepcopy(tiles)
-
-          newshape = tuple([item//binfactor for item in tiles[0].shape])
-          window = tuple([item*5 for item in newshape])
-
-          tiles = []
-          for i in range(len(_tiles)):
-            tiles.append(ccd_aux.rebin(_tiles[i][0:window[0],0:window[1]],newshape,stat='mean'))
+    assert (binfactor>1) # if not, what are you doing, you dummy?
+    assert isinstance(binfactor,int)
 
 
-        vals = np.array(list(map(estimator, tiles)))
+    tiles = self.get_tiles(Quad, tile_coos, extension=extension)
 
-        return vals
+    if binfactor > 1:
+
+      _tiles = copy.deepcopy(tiles)
+
+      newshape = tuple([item//binfactor for item in tiles[0].shape])
+      window = tuple([item*binfactor for item in newshape]) 
+
+      tiles = []
+      for i in range(len(_tiles)):
+        tiles.append(ccd_aux.rebin(_tiles[i][0:window[0],0:window[1]],newshape,stat='mean'))
+
+      
+
+
+    vals = np.array(list(map(estimator, tiles)))
+
+    return vals
 
 
 
