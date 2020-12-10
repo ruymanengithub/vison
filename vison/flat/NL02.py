@@ -366,9 +366,11 @@ class NL02(NL01.NL01):
 
                 refmap = raw_med[ixref,:].reshape((N,N))
 
-                fig = plt.figure(figsize=(12,6))
-                ax1 = fig.add_subplot(121)
-                ax2 = fig.add_subplot(122)
+                fig2 = plt.figure(figsize=(13,10))
+                ax1 = fig2.add_subplot(221)
+                ax2 = fig2.add_subplot(222)
+                ax3 = fig2.add_subplot(223)
+                ax4 = fig2.add_subplot(224)
 
                 NEXP = len(nexptimes)
 
@@ -391,10 +393,20 @@ class NL02(NL01.NL01):
                     ax1.plot(prof1,color=colors[i],label='%.1f' % nexptimes[i])
                     ax2.plot(prof2,color=colors[i])
 
+                    nmap = imap / np.nanmean(imap)
+
+                    prof3 = imap.mean(axis=0)
+                    prof4 = imap.mean(axis=1)
+
+                    ax3.plot(prof3,color=colors[i])
+                    ax4.plot(prof4,color=colors[i])
+
                     alreadyplotted.append(nexptimes[i])
 
-                ax1.set_title('axis1')
-                ax2.set_title('axis2')
+                ax1.set_title('axis1: delta')
+                ax2.set_title('axis2: delta')
+                ax3.set_title('axis1: norms')
+                ax4.set_title('axis2: norms')
                 handles, labels = ax1.get_legend_handles_labels()
                 plt.suptitle(ckey)
                 fig.legend(handles, labels)
