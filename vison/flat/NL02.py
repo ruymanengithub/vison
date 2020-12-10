@@ -370,7 +370,11 @@ class NL02(NL01.NL01):
                 ax1 = fig.add_subplot(121)
                 ax2 = fig.add_subplot(122)
 
-                for i in range(len(nexptimes)):
+                NEXP = len(nexptimes)
+
+                colors = cm.rainbow(np.linspace(0, 1, NEXP))
+
+                for i in range(NEXP):
 
                     imap = raw_med[i,:].reshape((N,N))
                     
@@ -379,8 +383,8 @@ class NL02(NL01.NL01):
                     prof1 = resmap.mean(axis=0)
                     prof2 = resmap.mean(axis=1)
 
-                    ax1.plot(prof1)
-                    ax2.plot(prof2)
+                    ax1.plot(prof1,color=colors[i])
+                    ax2.plot(prof2,color=colors[i])
 
                 ax1.set_title('axis1')
                 ax2.set_title('axis2')
