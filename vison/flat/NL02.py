@@ -421,10 +421,10 @@ class NL02(NL01.NL01):
 
                     alreadyplotted.append(nexptimes[i])
 
-                ax1.set_title('axis1: delta')
-                ax2.set_title('axis2: delta')
-                ax3.set_title('axis1: norms')
-                ax4.set_title('axis2: norms')
+                ax21.set_title('axis1: delta')
+                ax22.set_title('axis2: delta')
+                ax23.set_title('axis1: norms')
+                ax24.set_title('axis2: norms')
                 handles, labels = ax21.get_legend_handles_labels()
                 plt.suptitle(ckey)
                 fig2.legend(handles, labels)
