@@ -289,8 +289,9 @@ def fder_non_lin_zero(x,theta,scaled=False):
     for i in range(npar):
         fval += (i+1)*theta[i] * xp**(i)
     
-    if scaled: return fval
-    else: return fval / fscale
+    return fval
+    #if scaled: return fval
+    #else: return fval / fscale
     
 
 def fder_non_lin_pol(x,theta,scaled=False):
@@ -386,7 +387,7 @@ def forward_PTC_LM(indata, npol=6):
     from matplotlib import pyplot as plt
 
     gain = indata['gain']
-    ron = indata['ron']
+    ron = indata['ron'] * gain
     binfactor = indata['binfactor']
     mu_nle = indata['mu_nle']
     var_nle = indata['var_nle']
