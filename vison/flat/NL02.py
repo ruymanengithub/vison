@@ -359,8 +359,8 @@ class NL02(NL01.NL01):
 
 
                 fig1 = plt.figure(figsize=(12,6))
-                ax11 = fig1.add_subplot(221)
-                ax12 = fig1.add_subplot(222)
+                ax11 = fig1.add_subplot(121)
+                ax12 = fig1.add_subplot(122)
 
                 bgprof1 = bgmap.mean(axis=0)
                 bgprof2 = bgmap.mean(axis=1)
@@ -380,6 +380,8 @@ class NL02(NL01.NL01):
 
                 midexpt = np.median(nexptimes)
                 ixref = np.where(nexptimes == midexpt)[0][0]
+
+                refmap = raw_med[ixref,:].reshape((N,N)) 
 
 
                 fig2 = plt.figure(figsize=(13,10))
