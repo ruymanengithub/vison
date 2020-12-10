@@ -362,6 +362,7 @@ class NL02(NL01.NL01):
                 ixref = np.where(nexptimes == midexpt)[0][0]
 
                 N = int(np.sqrt(raw_med.shape[1]))
+                stop()
 
                 refmap = raw_med[ixref,:].reshape((N,N))
 
