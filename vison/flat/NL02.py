@@ -366,7 +366,7 @@ class NL02(NL01.NL01):
 
                 refmap = raw_med[ixref,:].reshape((N,N))
 
-                fig = plt.figure(figsize=(8,6))
+                fig = plt.figure(figsize=(10,6))
                 ax1 = fig.add_subplot(121)
                 ax2 = fig.add_subplot(122)
 
@@ -374,7 +374,12 @@ class NL02(NL01.NL01):
 
                 colors = cm.rainbow(np.linspace(0, 1, NEXP))
 
+                alreadyplotted = []
+
                 for i in range(NEXP):
+
+                    if nexptimes[i] in alreadyplotted:
+                        continue
 
                     imap = raw_med[i,:].reshape((N,N))
                     
@@ -383,12 +388,16 @@ class NL02(NL01.NL01):
                     prof1 = resmap.mean(axis=0)
                     prof2 = resmap.mean(axis=1)
 
-                    ax1.plot(prof1,color=colors[i])
+                    ax1.plot(prof1,color=colors[i],label='%.1f' % nexptimes[i])
                     ax2.plot(prof2,color=colors[i])
+
+                    alreadyplotted.append(nexptimes[i])
 
                 ax1.set_title('axis1')
                 ax2.set_title('axis2')
+                handles, labels = ax1.get_legend_handles_labels()
                 plt.suptitle(ckey)
+                plt.legend(handles, labels)
                 plt.show()
 
                 stop()
