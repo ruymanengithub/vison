@@ -39,7 +39,7 @@ def rebin(arr, new_shape, stat='mean'):
 
     shape = (new_shape[0], arr.shape[0] // new_shape[0],
              new_shape[1], arr.shape[1] // new_shape[1])
-
+    
     return fgroup(fgroup(arr.reshape(shape), axis=-1), axis=1)
 
 
