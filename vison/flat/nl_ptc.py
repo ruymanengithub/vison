@@ -334,7 +334,7 @@ def make_fitPTC_func(ron, binfactor=1,model='zero'):
         
         corr_factor = _fder_non_lin(mu_le,theta,scaled=False)     
         #corr_factor = fnon_lin(mu_le,theta,scaled=False)/mu_le
-        var_nle = corr_factor * mu_le  + ron**2 # Poisson + gaussian_ro
+        var_nle = corr_factor**2. * mu_le  + ron**2 # Poisson + gaussian_ro
         #print '\n',var_nle,mu_le
 
         var_nle /= binfactor**2.
@@ -431,7 +431,6 @@ def forward_PTC_LM(indata, npol=6):
 
     fitfunc = make_fitPTC_func(ron, binfactor, model)
 
-    stop()
 
     popt,pcov = opt.curve_fit(fitfunc,mu_nle,var_nle,
         p0=p0,
