@@ -268,7 +268,7 @@ class NL02(NL01.NL01):
                                          doFF=False)
 
 
-    def debugtask(self):
+    def debug_NLPTC(self):
 
         from pylab import plot,show
         
@@ -307,6 +307,59 @@ class NL02(NL01.NL01):
                 NLres = nl_ptc.forward_PTC_LM(indata, npol=6)
 
                 stop()
+
+    def debug_bgdMAPS(self):
+        """ """
+
+        doExptimeCalib = True
+        dIndices = copy.deepcopy(self.dd.indices)
+
+        CCDs = dIndices.get_vals('CCD')
+        Quads = dIndices.get_vals('Quad')
+
+        nC = len(CCDs)
+        nQ = len(Quads)
+        NP = nC * nQ
+
+        if doExptimeCalib:
+            niceshutterprofname = self.ogse.profile['SHUTTER_CALIB'].replace('_', '\_')
+
+        for iCCD, CCDkey in enumerate(CCDs):
+
+            for jQ, Q in enumerate(Quads):
+
+                ckey = '%s%s' % (CCDkey,Q)
+
+                kk = iCCD * nQ + jQ
+
+                raw_med = self.dd.mx['sec_med'][:, iCCD, jQ, :].copy()
+                raw_var = self.dd.mx['sec_var'][:, iCCD, jQ, :].copy()
+                raw_X = self.dd.mx['sec_X'][:, iCCD, jQ, :].copy()
+                raw_Y = self.dd.mx['sec_Y'][:, iCCD, jQ, :].copy()
+                #col_labels = self.dd.mx['label'][:, iCCD].copy()
+                exptimes = self.dd.mx['exptime'][:, iCCD].copy()
+                wave = self.dd.mx['wave'][:, iCCD].copy()
+                dtobjs = self.dd.mx['time'][:, iCCD].copy()
+                ObsIDs = self.dd.mx['ObsID'][:].copy()
+
+                #ijoffset = np.median(self.dd.mx['offset_pre'][:, iCCD, jQ])
+                ijoffset = self.dd.mx['offset_pre'][:, iCCD, jQ]
+
+                if doExptimeCalib:
+                    nexptimes = self.recalibrate_exptimes(exptimes)
+                else:
+                    nexptimes = copy.deepcopy(exptimes)
+
+                stop()
+
+
+
+
+    def debugtask(self):
+
+        #self.debug_NLPTC()
+
+        self.debug_bgdMAPS()
 
     def simulNL(self):
         """ """
