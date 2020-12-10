@@ -409,7 +409,7 @@ class NL02(NL01.NL01):
                 ax4.set_title('axis2: norms')
                 handles, labels = ax1.get_legend_handles_labels()
                 plt.suptitle(ckey)
-                fig.legend(handles, labels)
+                fig2.legend(handles, labels)
                 plt.show()
 
                 stop()
