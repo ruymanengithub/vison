@@ -284,6 +284,8 @@ class NL02(NL01.NL01):
 
             for kQ, Q in enumerate(Quads):
 
+                print('%s%s' % (CCD,Q))
+
                 jkoffset = self.dd.mx['offset_pre'][:, jCCD, kQ]
 
                 medsbin = self.dd.mx['sec_med_bin{:d}'.format(binfactor)][:,jCCD,kQ,:].copy()
@@ -306,7 +308,7 @@ class NL02(NL01.NL01):
 
                 NLres = nl_ptc.forward_PTC_LM(indata, npol=6)
 
-                stop()
+        stop()
 
     def debug_bgdMAPS(self):
         """ """
@@ -437,9 +439,9 @@ class NL02(NL01.NL01):
 
     def debugtask(self):
 
-        #self.debug_NLPTC()
+        self.debug_NLPTC()
 
-        self.debug_bgdMAPS()
+        #self.debug_bgdMAPS()
 
     def simulNL(self):
         """ """
