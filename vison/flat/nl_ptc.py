@@ -410,8 +410,9 @@ def forward_PTC_LM(indata, npol=6):
 
         fig1 = plt.figure()
         ax = fig1.add_subplot(111)
-        ax.errorbar(mu_nle,var_nle*binfactor**2./mu_nle,
-            yerr=evar_nle*binfactor**2./mu_nle,fmt='-.')
+        #ax.errorbar(mu_nle,var_nle*binfactor**2./mu_nle,
+        #    yerr=evar_nle*binfactor**2./mu_nle,fmt='-.')
+        ax.plot(mu_nle,var_nle*binfactor**2./mu_nle,'b.')
         ax.axhline(1.,ls='--',c='k')
         ax.set_xlabel(r'$\mu_{NL,e}$')
         ax.set_ylabel(r'$var_{NL,e}/\mu_{NL,e}$')
