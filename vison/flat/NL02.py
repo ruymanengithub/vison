@@ -368,8 +368,8 @@ class NL02(NL01.NL01):
                 ax11.plot(bgprof1)
                 ax12.plot(bgprof2)
 
-                ax21.set_title('axis1: bgd')
-                ax22.set_title('axis2: bgd')
+                ax11.set_title('axis1: bgd')
+                ax12.set_title('axis2: bgd')
                 plt.suptitle(ckey)
                 plt.show()
 
