@@ -413,8 +413,8 @@ class NL02(NL01.NL01):
 
                     nmap = imap / np.nanmean(imap)
 
-                    prof3 = imap.mean(axis=0)
-                    prof4 = imap.mean(axis=1)
+                    prof3 = nmap.mean(axis=0)
+                    prof4 = nmap.mean(axis=1)
 
                     ax23.plot(prof3,color=colors[i])
                     ax24.plot(prof4,color=colors[i])
