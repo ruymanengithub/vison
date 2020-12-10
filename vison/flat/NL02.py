@@ -310,6 +310,7 @@ class NL02(NL01.NL01):
 
     def debug_bgdMAPS(self):
         """ """
+        from matplotlib import pyplot as plt
 
         doExptimeCalib = True
         dIndices = copy.deepcopy(self.dd.indices)
@@ -349,6 +350,31 @@ class NL02(NL01.NL01):
                     nexptimes = self.recalibrate_exptimes(exptimes)
                 else:
                     nexptimes = copy.deepcopy(exptimes)
+
+                raw_med -= np.expand_dims(ijoffset,1)
+
+                ixfluHI = np.where((wave==5) & (nexptimes>0))
+
+                raw_med = raw_med[ixfluHI,:]
+                nexptimes = nexptimes[ixfluHI]
+
+                midexpt = np.median(nexptimes)
+                ixref = np.where(nexptimes == midexpt)[0][0]
+
+                N = int(np.sqrt(raw_med.shape[1]))
+
+                refmap = raw_med[ixref,:].reshape((N,N))
+
+                for i in range(len(nexptimes)):
+
+                    imap = raw_med[i,:].reshape((N,N))
+                    
+                    resmap = imap - refmap * nexptimes[i]/midexpt
+
+                    fig = plt.figure()
+                    ax = fig.add_subplot(111)
+                    ax.imshow(resmap)
+                    plt.show()
 
                 stop()
 
