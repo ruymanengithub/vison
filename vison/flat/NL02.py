@@ -354,21 +354,13 @@ class NL02(NL01.NL01):
                 raw_med -= np.expand_dims(ijoffset,1)
                 N = int(np.sqrt(raw_med.shape[1]))
 
-                ixfluHI = np.where((wave==5) & (nexptimes>0))
-
-                raw_med = raw_med[ixfluHI[0],:]
-                nexptimes = nexptimes[ixfluHI]
-
-                midexpt = np.median(nexptimes)
-                ixref = np.where(nexptimes == midexpt)[0][0]
-
                 ixbgd = np.where(nexptimes==0)[0][0]
+                bgmap = raw_med[ixbgd,:].reshape((N,N))  
+
 
                 fig1 = plt.figure(figsize=(12,6))
                 ax11 = fig1.add_subplot(221)
                 ax12 = fig1.add_subplot(222)
-
-                bgmap = raw_med[ixbgd,:].reshape((N,N))    
 
                 bgprof1 = bgmap.mean(axis=0)
                 bgprof2 = bgmap.mean(axis=1)
@@ -380,6 +372,14 @@ class NL02(NL01.NL01):
                 ax22.set_title('axis2: bgd')
                 plt.suptitle(ckey)
                 plt.show()
+
+                ixfluHI = np.where((wave==5) & (nexptimes>0))
+
+                raw_med = raw_med[ixfluHI[0],:]
+                nexptimes = nexptimes[ixfluHI]
+
+                midexpt = np.median(nexptimes)
+                ixref = np.where(nexptimes == midexpt)[0][0]
 
 
                 fig2 = plt.figure(figsize=(13,10))
