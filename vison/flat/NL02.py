@@ -269,6 +269,8 @@ class NL02(NL01.NL01):
 
 
     def debug_NLPTC(self):
+        """ """
+        from matplotlib import pyplot as plt
 
         from pylab import plot,show
         
