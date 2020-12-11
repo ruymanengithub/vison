@@ -61,7 +61,7 @@ def get_mse_var(samples):
     return MSEvar
 
 
-def f_extract_PTC(self, ccdobjcol, medcol, varcol, evarcol, binfactor=1):
+def f_extract_PTC(self, ccdobjcol, medcol, varcol, evarcol, binfactor=1, clipsigma=-1):
     """ """
 
     # HARDWIRED VALUES
@@ -185,12 +185,14 @@ def f_extract_PTC(self, ccdobjcol, medcol, varcol, evarcol, binfactor=1):
                         ccdobj_sub = PTC0Xaux.CCDclone(ccdobj_sub)
 
                         _vars = ccdobj_sub.get_tiles_stats(
-                            Quad, _tile_coos, 'std', extension=-1, binfactor=binfactor)**2. / 2.
+                            Quad, _tile_coos, 'std', extension=-1, 
+                            binfactor=binfactor, clipsigma=clipsigma)**2. / 2.
 
                         _evars = ccdobj_sub.get_tiles_stats(
                             Quad, _tile_coos, statkey=None, 
                             estimator=get_mse_var,
-                            extension=-1, binfactor=binfactor) / 2.**2.
+                            extension=-1, 
+                            binfactor=binfactor, clipsigma=clipsigma) / 2.**2.
 
                     else:
                         _meds = ccdobj_odd.get_tiles_stats(
