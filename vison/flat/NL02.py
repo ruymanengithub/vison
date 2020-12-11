@@ -271,8 +271,6 @@ class NL02(NL01.NL01):
     def debug_NLPTC(self):
         """ """
         from matplotlib import pyplot as plt
-
-        from pylab import plot,show
         
         indices = copy.deepcopy(self.dd.indices)
 
@@ -323,11 +321,9 @@ class NL02(NL01.NL01):
                 var_nle = NLres['var_nle']
                 var_le = NLres['var_le']
 
-                ax.plot(mu_nle,(var_nle/var_le-1.)*100.,color=colors[iplot])
+                ax.plot(mu_nle,(var_nle/var_le-1.)*100.,'.',color=colors[iplot])
 
                 iplot += 1
-
-
 
         plt.show()
 
