@@ -288,6 +288,8 @@ class NL02(NL01.NL01):
         fig = plt.figure()
         ax = fig.add_subplot(111)
 
+        iplot = 0
+
         for jCCD, CCD in enumerate(CCDs):
 
             for kQ, Q in enumerate(Quads):
@@ -321,7 +323,13 @@ class NL02(NL01.NL01):
                 var_nle = NLres['var_nle']
                 var_le = NLres['var_le']
 
-                stop()
+                ax.plot(mu_nle,(var_nle/var_le-1.)*100.,color=colors[iplot])
+
+                iplot += 1
+
+
+
+        plt.show()
 
         stop()
 
