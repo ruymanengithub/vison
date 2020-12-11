@@ -271,6 +271,7 @@ class NL02(NL01.NL01):
     def debug_NLPTC(self):
         """ """
         from matplotlib import pyplot as plt
+        plt.switch_backend('TkAgg')
         
         indices = copy.deepcopy(self.dd.indices)
 
