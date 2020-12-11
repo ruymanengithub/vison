@@ -363,8 +363,6 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
     expix = expix[ixsort].copy()
     regix = regix[ixsort].copy()
 
-    if debug:
-
     
     # if debug:
     #     Nside = int(fluencesNL.shape[1]**0.5)
