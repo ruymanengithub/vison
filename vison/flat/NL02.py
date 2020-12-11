@@ -280,6 +280,12 @@ class NL02(NL01.NL01):
 
         binfactor = 10
 
+
+        colors = cm.rainbow(np.linspace(0, 1, nCCD*nQuad))
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+
         for jCCD, CCD in enumerate(CCDs):
 
             for kQ, Q in enumerate(Quads):
@@ -307,7 +313,13 @@ class NL02(NL01.NL01):
                     gain=3.5,
                     binfactor=binfactor)
 
-                NLres = nl_ptc.forward_PTC_LM(indata, npol=6)
+                NLres = nl_ptc.forward_PTC_LM(indata, npol=6, doPlots=False)
+
+                mu_nle = NLres['mu_nle']
+                var_nle = NLres['var_nle']
+                var_le = NLres['var_le']
+
+                stop()
 
         stop()
 

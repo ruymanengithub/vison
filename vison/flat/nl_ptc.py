@@ -382,7 +382,7 @@ def plot_NLcurve(params_fit, model='zero'):
     plt.show()
     plt.close('all')
 
-def forward_PTC_LM(indata, npol=6):
+def forward_PTC_LM(indata, npol=6, doPlots=True):
     """ """
     from matplotlib import pyplot as plt
 
@@ -407,7 +407,7 @@ def forward_PTC_LM(indata, npol=6):
 
 
     doPlot1 = False
-    if doPlot1:
+    if doPlot1 and doPlots:
 
         fig1 = plt.figure()
         ax = fig1.add_subplot(111)
@@ -444,18 +444,18 @@ def forward_PTC_LM(indata, npol=6):
     print('Best Pars: ', params_fit)
     print('Error Pars: ', errors_fit)
     
-    varle = fitfunc(mu_nle, *p0) # linear response
-    varnle_best = fitfunc(mu_nle,*popt) # nl variances from mu_nle, given best fit model pars
+    var_le = fitfunc(mu_nle, *p0) # linear response
+    var_nle_best = fitfunc(mu_nle,*popt) # nl variances from mu_nle, given best fit model pars
 
     doPlot2 = True
 
-    if doPlot2:
+    if doPlot2 and doPlots:
 
         fig2 = plt.figure()
         ax1 = fig2.add_subplot(111)
         ax1.plot(mu_nle, var_nle, 'k.', label='data')
-        ax1.plot(mu_nle, varnle_best, 'r--', label='best-fit')
-        ax1.plot(mu_nle, varle, 'g:', label='linear model')
+        ax1.plot(mu_nle, var_nle_best, 'r--', label='best-fit')
+        ax1.plot(mu_nle, var_le, 'g:', label='linear model')
         handles, labels = ax1.get_legend_handles_labels()
         ax1.legend(handles, labels, loc='best')
         ax1.set_xlabel('mu\\_nle, [e]')
@@ -466,10 +466,12 @@ def forward_PTC_LM(indata, npol=6):
 
 
     doPlotNL = True
-
-    if doPlotNL:
+    if doPlotNL and doPlots:
 
         plot_NLcurve(params_fit, model)
 
-
-    stop()
+    res = dict(mu_nle=mu_nle, 
+        var_le=var_le,
+        var_nle=var_nle)
+    
+    return res
