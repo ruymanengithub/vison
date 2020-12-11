@@ -136,6 +136,29 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5,
         tpivot = np.zeros(Nsec, dtype='float32') + np.nan
 
         for i in range(Nsec):
+
+
+            if i==Nsec/2 and debug:
+                tpivot1 = get_exptime_atfracdynrange(fluencesNL, exptimes,
+                        frac=pivotfrac,
+                        minrelflu=minrelflu,
+                        maxrelflu=maxrelflu,
+                        method='spline',
+                        debug=debug)
+                tpivot2 = get_exptime_atfracdynrange(fluencesNL, exptimes,
+                        frac=pivotfrac,
+                        minrelflu=minrelflu,
+                        maxrelflu=maxrelflu,
+                        method='poly',
+                        debug=debug)
+                tpivot3 = get_exptime_atfracdynrange(fluencesNL, exptimes,
+                        frac=pivotfrac,
+                        minrelflu=minrelflu,
+                        maxrelflu=maxrelflu,
+                        method='ransac',
+                        debug=debug)
+                stop()
+
             tpivot[i] = get_exptime_atfracdynrange(
                 fluencesNL[:, i], exptimes, frac=pivotfrac, method=method, 
                 minrelflu=minrelflu,
@@ -150,34 +173,11 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5,
         expix = np.arange(fluencesNL.shape[0])
         regix = np.ones(fluencesNL.shape[0])
 
-        if debug:
-
-            tpivot1 = get_exptime_atfracdynrange(fluencesNL, exptimes,
-                    frac=pivotfrac,
-                    minrelflu=minrelflu,
-                    maxrelflu=maxrelflu,
-                    method='spline',
-                    debug=debug)
-            tpivot2 = get_exptime_atfracdynrange(fluencesNL, exptimes,
-                    frac=pivotfrac,
-                    minrelflu=minrelflu,
-                    maxrelflu=maxrelflu,
-                    method='poly',
-                    debug=debug)
-            tpivot3 = get_exptime_atfracdynrange(fluencesNL, exptimes,
-                    frac=pivotfrac,
-                    minrelflu=minrelflu,
-                    maxrelflu=maxrelflu,
-                    method='ransac',
-                    debug=debug)
-            stop()
-
-        else:
-
-            tpivot = get_exptime_atfracdynrange(fluencesNL, exptimes,
-                                            frac=pivotfrac,
-                                            maxrelflu=maxrelflu,
-                                            method=method)
+        tpivot = get_exptime_atfracdynrange(fluencesNL, exptimes,
+            frac=pivotfrac,
+            minrelflu=minrelflu,
+            maxrelflu=maxrelflu,
+            method=method)
 
         exptimes_bc = exptimes.copy()
 
