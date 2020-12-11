@@ -383,8 +383,9 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
     #     plt.show()
     #     #fig2.close()
     #     plt.close('all')
+    res=dict(X=X,Y=Y,YL=YL,W=W,expix=expix,regix=regix)
 
-    return X, Y, W, expix, regix
+    return res
 
 def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None, 
         ixLinFit=None, debug=False):
