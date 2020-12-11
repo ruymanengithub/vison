@@ -322,9 +322,14 @@ class NL02(NL01.NL01):
                 var_nle = NLres['var_nle']
                 var_le = NLres['var_le']
 
-                ax.plot(mu_nle,(var_nle/var_le-1.)*100.,'.',color=colors[iplot])
+                Np = len(mu_nle)
+
+                ixsamp = (np.random.choice(np.arange(Np),100),)
+
+                ax.plot(mu_nle[ixsamp],(var_nle/var_le-1.)[ixsamp]*100.,'.',color=colors[iplot])
 
                 iplot += 1
+
 
         plt.show()
 
