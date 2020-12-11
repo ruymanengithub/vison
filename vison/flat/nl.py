@@ -53,7 +53,8 @@ def get_POLY_linear_model(X, Y):
     return predictor
 
 
-def get_exptime_atfracdynrange(flu1D, exp1D, frac=0.5, method='spline',
+def get_exptime_atfracdynrange(flu1D, exp1D, frac=0.5, 
+                               method='spline',
                                minrelflu=None,
                                maxrelflu=None,
                                debug=False):
@@ -149,7 +150,31 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5,
         expix = np.arange(fluencesNL.shape[0])
         regix = np.ones(fluencesNL.shape[0])
 
-        tpivot = get_exptime_atfracdynrange(fluencesNL, exptimes,
+        if debug:
+
+            tpivot1 = get_exptime_atfracdynrange(fluencesNL, exptimes,
+                    frac=pivotfrac,
+                    minrelflu=minrelflu,
+                    maxrelflu=maxrelflu,
+                    method='spline',
+                    debug=debug)
+            tpivot2 = get_exptime_atfracdynrange(fluencesNL, exptimes,
+                    frac=pivotfrac,
+                    minrelflu=minrelflu,
+                    maxrelflu=maxrelflu,
+                    method='poly',
+                    debug=debug)
+            tpivot3 = get_exptime_atfracdynrange(fluencesNL, exptimes,
+                    frac=pivotfrac,
+                    minrelflu=minrelflu,
+                    maxrelflu=maxrelflu,
+                    method='ransac',
+                    debug=debug)
+            stop()
+
+        else:
+
+            tpivot = get_exptime_atfracdynrange(fluencesNL, exptimes,
                                             frac=pivotfrac,
                                             maxrelflu=maxrelflu,
                                             method=method)
@@ -160,7 +185,7 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5,
     Z = 100. * (fluencesNL / YL - 1.)
 
     if debug: stop()
-    
+
     efNL = np.sqrt(fluencesNL * nomG) / nomG # poisson noise
 
     W = 100. * (efNL / YL)
