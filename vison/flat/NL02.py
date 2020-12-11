@@ -992,6 +992,7 @@ class NL02(NL01.NL01):
         # HARDWIRED VALUES
         wpx = self.window['wpx']
         hpx = self.window['hpx']
+        sigmaclip = 4. # applying sigma clipping to deal with cosmic rays and imperfect cosmetics mask
 
         if self.report is not None:
             self.report.add_Section(
@@ -1006,5 +1007,5 @@ class NL02(NL01.NL01):
         ccdobjcol = 'ccdobj_name'
 
         nl_ptc.f_extract_PTC(self, ccdobjcol, medcol, varcol, evarcol,
-            binfactor=binfactor)
+            binfactor=binfactor, sigmaclip=sigmaclip)
 

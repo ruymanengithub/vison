@@ -19,6 +19,7 @@ import string as st
 import pandas as pd
 import copy
 from matplotlib import cm
+from scipy import stats
 
 from vison.plot import figclasses
 from vison.plot import trends
@@ -43,7 +44,7 @@ class CCDclone(CCD):
         setattr(self, attr, getattr(ccd2clone, attr))
 
   def get_tiles_stats(self, Quad, tile_coos, statkey=None, estimator=None, 
-        extension=-1, binfactor=1):
+        extension=-1, binfactor=1, clipsigma=-1):
     """Returns statistics on a list of tiles.
 
     :param Quad: Quadrant where to take the cutouts from.
@@ -95,11 +96,16 @@ class CCDclone(CCD):
       for i in range(len(_tiles)):
         tiles.append(ccd_aux.rebin(_tiles[i][0:window[0],0:window[1]],newshape,stat='mean'))
 
-      
-
-
-    vals = np.array(list(map(estimator, tiles)))
-
+    
+    if clipsigma <0:
+      vals = np.array(list(map(estimator, tiles)))
+    else:
+      vals = []
+      for i in range(len(tiles)):
+        ivals = stats.sigmaclip(tiles[i].flatten(), clipsigma, clipsigma).clipped
+        vals.append(ivals)
+      vals = np.array(vals)
+    
     return vals
 
 
