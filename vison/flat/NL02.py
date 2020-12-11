@@ -326,7 +326,7 @@ class NL02(NL01.NL01):
 
                 ixsamp = (np.random.choice(np.arange(Np),100),)
 
-                ax.plot(mu_nle[ixsamp],(var_nle/var_le-1.)[ixsamp]*100.,marker='.',linestyle='-',
+                ax.plot(mu_nle[ixsamp],(var_nle/var_le-1.)[ixsamp]*100.,marker='.',linestyle='',
                     color=colors[iplot])
 
                 iplot += 1
