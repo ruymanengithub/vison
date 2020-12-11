@@ -345,6 +345,8 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
 
     W = 100. * (efNL / YL)
 
+    if debug: stop()
+
     ixsel = np.where((exptimes > 0.))
 
     # X = fluencesNL[ixsel].flatten().copy()
@@ -360,6 +362,9 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
     W = W[ixsort].copy()
     expix = expix[ixsort].copy()
     regix = regix[ixsort].copy()
+
+    if debug:
+
     
     # if debug:
     #     Nside = int(fluencesNL.shape[1]**0.5)
@@ -1299,9 +1304,8 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     #doDebug = False
     
     
-    doLinFit = False # if True, take linear trend from a linear fit over a range of exp-times
-                     # if false, take linear trend from the exptime at which the fluence is a 
-                     # fixed value across all sectors (and both filters)
+    doLinFit = True # if True, take linear trend from a linear fit over a range of exp-times
+                     # if false, fit over a wider range of exp-times...
 
     if doLinFit:
 
