@@ -111,7 +111,7 @@ def get_exptime_atfracdynrange(flu1D, exp1D, frac=0.5, method='spline',
 
 def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5, 
     minrelflu=None, maxrelflu=None, method='spline',
-    Full=False):
+    Full=False, debug=False):
     """ """
 
     assert fluencesNL.shape[0] == exptimes.shape[0]
@@ -159,7 +159,8 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5,
     YL = exptimes_bc / tpivot * FullDynRange * pivotfrac
     Z = 100. * (fluencesNL / YL - 1.)
 
-
+    if debug: stop()
+    
     efNL = np.sqrt(fluencesNL * nomG) / nomG # poisson noise
 
     W = 100. * (efNL / YL)
@@ -1330,7 +1331,8 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
             minrelflu=minrelflu,
             maxrelflu=maxrelflu, 
             method=fitmethod,
-            Full=True)
+            Full=True,
+            debug=True)
         X_LO = res_LO['X']
         Y_LO = res_LO['Y']
         YLexpect_LO = res_LO['YL']
