@@ -139,19 +139,19 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5,
 
 
             if i==Nsec/2 and debug:
-                tpivot1 = get_exptime_atfracdynrange(fluencesNL, exptimes,
+                tpivot1 = get_exptime_atfracdynrange(fluencesNL[:, i], exptimes,
                         frac=pivotfrac,
                         minrelflu=minrelflu,
                         maxrelflu=maxrelflu,
                         method='spline',
                         debug=debug)
-                tpivot2 = get_exptime_atfracdynrange(fluencesNL, exptimes,
+                tpivot2 = get_exptime_atfracdynrange(fluencesNL[:, i], exptimes,
                         frac=pivotfrac,
                         minrelflu=minrelflu,
                         maxrelflu=maxrelflu,
                         method='poly',
                         debug=debug)
-                tpivot3 = get_exptime_atfracdynrange(fluencesNL, exptimes,
+                tpivot3 = get_exptime_atfracdynrange(fluencesNL[:, i], exptimes,
                         frac=pivotfrac,
                         minrelflu=minrelflu,
                         maxrelflu=maxrelflu,
