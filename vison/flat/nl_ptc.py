@@ -17,11 +17,13 @@ from scipy import stats
 import copy
 import os
 from scipy import interpolate as interp
-from matplotlib import pyplot as plt
 
 from vison.support.files import cPickleRead
 from . import PTC0Xaux
 from scipy import optimize as opt
+
+from matplotlib import pyplot as plt
+plt.switch_backend('TkAgg')
 # END IMPORT
 
 def get_mse_var(samples):
@@ -384,7 +386,7 @@ def plot_NLcurve(params_fit, model='zero'):
 
 def forward_PTC_LM(indata, npol=6, doPlots=True):
     """ """
-    from matplotlib import pyplot as plt
+    
 
     gain = indata['gain']
     ron = indata['ron'] * gain
