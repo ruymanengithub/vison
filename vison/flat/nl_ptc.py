@@ -22,8 +22,8 @@ from vison.support.files import cPickleRead
 from . import PTC0Xaux
 from scipy import optimize as opt
 
-from matplotlib import pyplot as plt
-plt.switch_backend('TkAgg')
+#from matplotlib import pyplot as plt
+#plt.switch_backend('TkAgg')
 # END IMPORT
 
 def get_mse_var(samples):
