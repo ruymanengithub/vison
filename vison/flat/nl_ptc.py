@@ -363,6 +363,8 @@ def plot_NLcurve(params_fit, model='zero'):
     yout = _fnon_lin(x,params_fit,scaled=False)
     youtlin = _fnon_lin(x,params_lin,scaled=False)
 
+    Z = (yout/youtlin-1.)*100.
+
     fig = plt.figure(figsize=(12,7))
     ax1 = fig.add_subplot(121)
     ax1.plot(x,yout-youtlin,'b-',label='NL-curve')
@@ -374,7 +376,7 @@ def plot_NLcurve(params_fit, model='zero'):
     ax1.ticklabel_format(style='sci',axis='x',scilimits=(0,0))
     ax1.ticklabel_format(style='sci',axis='y',scilimits=(0,0))
     ax2 = fig.add_subplot(122)
-    ax2.plot(x,(yout/youtlin-1.)*100.,'b-',label='NL-curve')
+    ax2.plot(x,Z,'b-',label='NL-curve')
     handles, labels = ax2.get_legend_handles_labels()
     ax2.legend(handles,labels,loc='best')
     ax2.set_xlabel('Input [e]')
@@ -385,6 +387,8 @@ def plot_NLcurve(params_fit, model='zero'):
     plt.tight_layout()
     plt.show()
     plt.close('all')
+
+    
 
 def forward_PTC_LM(indata, npol=6, doPlots=True):
     """ """
@@ -474,8 +478,28 @@ def forward_PTC_LM(indata, npol=6, doPlots=True):
 
         plot_NLcurve(params_fit, model)
 
+
+    x = np.linspace(1.,2.E5,500)
+
+    params_lin = copy.deepcopy(params_fit)
+    if model == 'zero':
+        params_lin[1:]=0. # null non-linear terms
+        _fnon_lin = fnon_lin_zero
+    elif model == 'pol':
+        params_lin[2:]=0. # null non-linear terms
+        _fnon_lin = fnon_lin_pol
+
+    yout = _fnon_lin(x,params_fit,scaled=False)
+    youtlin = _fnon_lin(x,params_lin,scaled=False)
+
+    Z = (yout/youtlin-1.)*100.
+
+
+
     res = dict(mu_nle=mu_nle, 
         var_le=var_le,
-        var_nle=var_nle)
+        var_nle=var_nle,
+        x=x,
+        Z=Z)
 
     return res

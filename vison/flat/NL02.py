@@ -318,16 +318,21 @@ class NL02(NL01.NL01):
 
                 NLres = nl_ptc.forward_PTC_LM(indata, npol=6, doPlots=False)
 
-                mu_nle = NLres['mu_nle']
-                var_nle = NLres['var_nle']
-                var_le = NLres['var_le']
+                #mu_nle = NLres['mu_nle']
+                #var_nle = NLres['var_nle']
+                #var_le = NLres['var_le']
+                xplot = NLres['x']
+                yplot = NLres['Z']
 
-                Np = len(mu_nle)
+                #Np = len(mu_nle)
 
-                ixsamp = (np.random.choice(np.arange(Np),100),)
+                #ixsamp = (np.random.choice(np.arange(Np),100),)
 
-                ax.plot(mu_nle[ixsamp],(var_nle/var_le-1.)[ixsamp]*100.,marker='.',linestyle='',
-                    color=colors[iplot])
+                #ax.plot(mu_nle[ixsamp],(var_nle/var_le-1.)[ixsamp]*100.,marker='.',linestyle='',
+                #    color=colors[iplot])
+
+                ax.plot(xplot,yplot,marker='',linestyle='-',
+                    color=colors[iplot])                
 
                 iplot += 1
 
