@@ -92,10 +92,10 @@ def get_exptime_atfracdynrange(flu1D, exp1D, frac=0.5,
             from matplotlib import pyplot as plt
             fig = plt.figure()
             ax = fig.add_subplot(111)
-            ax.plot(X, Y, 'bo')
-            Xplot = np.array([0., 1.])
+            ax.plot(X, Y, 'b.')
+            Xplot = np.array([X.min(), X.max()])
             if method == 'ransac':
-                Yplot = predictor(np.expand_dims(Xplot))[:, 0]
+                Yplot = predictor(np.expand_dims(Xplot,1))[:, 0]
             else:
                 Yplot = predictor(Xplot)
             ax.plot(Xplot, Yplot, 'k--')
