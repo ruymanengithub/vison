@@ -464,7 +464,7 @@ def forward_PTC_LM(indata, npol=6, doPlots=True):
         ax1.set_ylabel('var [e2]')
         ax1.set_title('Fitting the var-mu relation')
         plt.show()
-    plt.close()
+        plt.close()
 
 
     doPlotNL = True
@@ -475,5 +475,5 @@ def forward_PTC_LM(indata, npol=6, doPlots=True):
     res = dict(mu_nle=mu_nle, 
         var_le=var_le,
         var_nle=var_nle)
-    
+
     return res
