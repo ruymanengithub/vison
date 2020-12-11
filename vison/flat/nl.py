@@ -70,21 +70,21 @@ def get_exptime_atfracdynrange(flu1D, exp1D, frac=0.5,
         ixvalid = (ixnonan[0][ixwbounds],)
         #ixvalid = np.where(~np.isnan(X) & (X >= minrelflu) & (X <= maxrelflu))
 
-    X = X[ixvalid].copy()
-    Y = Y[ixvalid].copy()
+    _X = X[ixvalid].copy()
+    _Y = Y[ixvalid].copy()
 
-    ixsort = np.argsort(X)
-    X = X[ixsort].copy()
-    Y = Y[ixsort].copy()
+    ixsort = np.argsort(_X)
+    _X = _X[ixsort].copy()
+    _Y = _Y[ixsort].copy()
 
     if method == 'spline':
-        predictor = interpolate.interp1d(X, Y, kind='linear')
+        predictor = interpolate.interp1d(_X, _Y, kind='linear')
         tfrac = predictor(frac)
     elif method == 'poly':
-        predictor = get_POLY_linear_model(X, Y)
+        predictor = get_POLY_linear_model(_X, _Y)
         tfrac = predictor(frac)
     elif method == 'ransac':
-        predictor = get_RANSAC_linear_model(X, Y)
+        predictor = get_RANSAC_linear_model(_X, _Y)
         tfrac = predictor(frac)[0, 0]
 
     if debug:
@@ -92,13 +92,15 @@ def get_exptime_atfracdynrange(flu1D, exp1D, frac=0.5,
             from matplotlib import pyplot as plt
             fig = plt.figure()
             ax = fig.add_subplot(111)
-            ax.plot(X, Y, 'b.')
+            ax.plot(_X, _Y, 'b.')
+            ax.plot(X,Y,'r.',alpha=0.3)
             Xplot = np.array([X.min(), X.max()])
             if method == 'ransac':
                 Yplot = predictor(np.expand_dims(Xplot,1))[:, 0]
             else:
                 Yplot = predictor(Xplot)
             ax.plot(Xplot, Yplot, 'k--')
+            ax.plot([0.,frac],[0.,tfrac],'r--')
             ax.axvline(frac, c='k', ls='--')
             ax.axhline(tfrac, c='r', ls='--')
             ax.set_xlabel('Flu/DynRange')
@@ -163,7 +165,7 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5,
                 fluencesNL[:, i], exptimes, frac=pivotfrac, method=method, 
                 minrelflu=minrelflu,
                 maxrelflu=maxrelflu, 
-                debug=False)
+                debug=debug and i==0)
         tpivot = np.repeat(tpivot.reshape(1, Nsec), Nexp, axis=0)
 
         exptimes_bc = np.repeat(exptimes.reshape(Nexp, 1), Nsec, axis=1)
