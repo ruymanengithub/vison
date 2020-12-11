@@ -119,7 +119,7 @@ def get_NL_singcurves_dict(testname):
       ylabel='Z [percentage]',
       xlabel=r'$Y_{NL} [kADU]$',
       title='{}: Non-Linearity Curves.'.format(testname),
-      #ylim=[-10., 10.],
+      ylim=[-10., 10.],
       corekwargs = dict(linestyle='')
       #corekwargs=dict(data=dict(marker='.', linestyle='', color='b'),
       #                fit=dict(marker='', linestyle='--', color='r')))
