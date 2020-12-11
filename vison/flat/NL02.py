@@ -336,7 +336,9 @@ class NL02(NL01.NL01):
 
                 iplot += 1
 
-
+        ax.set_title('Non Lin Curves from PTC')
+        ax.set_xlabel('Fluence [e-]')
+        ax.set_ylabel('Non-Lin. [\%]')
         plt.show()
 
         stop()

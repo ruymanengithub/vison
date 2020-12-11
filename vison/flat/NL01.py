@@ -119,6 +119,7 @@ class NL01(FlatTask):
         """ """
         self.Nbgd = 3
         self.Nstab0 = 1
+        self.clipsigma = 4
         self.subtasks = [('check', self.check_data), ('prep', self.prep_data),
                          ('extract', self.extract_stats),
                          ('NL', self.produce_NLCs),
@@ -296,6 +297,7 @@ class NL01(FlatTask):
         # HARDWIRED VALUES
         wpx = self.window['wpx']
         hpx = self.window['hpx']
+        clipsigma = self.clipsigma
 
         if self.report is not None:
             self.report.add_Section(
@@ -360,9 +362,11 @@ class NL01(FlatTask):
                         _tile_coos = tile_coos[Q]
 
                         _meds = ccdobj.get_tiles_stats(
-                            Q, _tile_coos, 'median', extension=-1)
+                            Q, _tile_coos, 'median', 
+                            extension=-1, clipsigma=clipsigma)
                         _vars = ccdobj.get_tiles_stats(
-                            Q, _tile_coos, 'std', extension=-1)**2.
+                            Q, _tile_coos, 'std', 
+                            extension=-1, clipsigma=clipsigma)**2.
 
                         self.dd.mx['sec_med'][iObs, jCCD, kQ, :] = _meds.copy()
                         self.dd.mx['sec_var'][iObs, jCCD, kQ, :] = _vars.copy()

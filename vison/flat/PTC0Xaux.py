@@ -65,6 +65,10 @@ class CCDclone(CCD):
 
     :param binfactor: apply binning of binfactor x binfactor before extracting stat
     :type binfactor: int
+  
+    :param clipsigma: apply sigma clipping of value +-clipsigma if clipsigma>0 
+    :type clipsigma: float/int
+
 
     :return: A 1D numpy array with the stat values for the tiles. 
 

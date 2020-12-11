@@ -559,7 +559,7 @@ class CCD(object):
         return tiles
 
     def get_tiles_stats(self, Quad, tile_coos, statkey=None, estimator=None, 
-        extension=-1):
+        extension=-1, clipsigma=-1):
         """Returns statistics on a list of tiles.
 
         :param Quad: Quadrant where to take the cutouts from.
@@ -578,6 +578,9 @@ class CCD(object):
         :param extension: Extension index, last is -1
         :type extension: int
 
+        :param clipsigma: apply sigma clipping of value +-clipsigma if clipsigma>0 
+        :type clipsigma: float/int
+    
 
         :return: A 1D numpy array with the stat values for the tiles. 
 
@@ -594,7 +597,15 @@ class CCD(object):
         
         tiles = self.get_tiles(Quad, tile_coos, extension=extension)
 
-        vals = np.array(list(map(estimator, tiles)))
+        #vals = np.array(list(map(estimator, tiles)))
+        if clipsigma <0:
+            vals = np.array(list(map(estimator, tiles)))
+        else:
+            vals = []
+            for i in range(len(tiles)):
+                ivals = stats.sigmaclip(tiles[i].flatten(), clipsigma, clipsigma).clipped
+                vals.append(estimator(ivals))
+            vals = np.array(vals)
 
         return vals
 
