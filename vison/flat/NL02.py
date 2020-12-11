@@ -54,7 +54,8 @@ from vison.flat import NL01aux
 from . import nl as nllib
 from . import nl_ptc
 
-from pylab import plot, show
+from matplotlib import pyplot as plt
+plt.switch_backend('TkAgg')
 # END IMPORT
 
 isthere = os.path.exists
@@ -270,8 +271,7 @@ class NL02(NL01.NL01):
 
     def debug_NLPTC(self):
         """ """
-        from matplotlib import pyplot as plt
-        plt.switch_backend('TkAgg')
+        
         
         indices = copy.deepcopy(self.dd.indices)
 
@@ -326,7 +326,8 @@ class NL02(NL01.NL01):
 
                 ixsamp = (np.random.choice(np.arange(Np),100),)
 
-                ax.plot(mu_nle[ixsamp],(var_nle/var_le-1.)[ixsamp]*100.,'.',color=colors[iplot])
+                ax.plot(mu_nle[ixsamp],(var_nle/var_le-1.)[ixsamp]*100.,marker='.',linestyle='-'
+                    color=colors[iplot])
 
                 iplot += 1
 
