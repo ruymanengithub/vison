@@ -99,8 +99,8 @@ def get_exptime_atfracdynrange(flu1D, exp1D, frac=0.5,
                 Yplot = predictor(np.expand_dims(Xplot,1))[:, 0]
             else:
                 Yplot = predictor(Xplot)
-            ax.plot(Xplot, Yplot, 'k--')
-            ax.plot([0.,frac],[0.,tfrac],'r--')
+            ax.plot(Xplot, Yplot, 'k-', alpha=0.5)
+            ax.plot([0.,frac],[0.,tfrac],'r-', alpha=0.5)
             ax.axvline(frac, c='k', ls='--')
             ax.axhline(tfrac, c='r', ls='--')
             ax.set_xlabel('Flu/DynRange')
