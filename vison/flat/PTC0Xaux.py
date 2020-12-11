@@ -103,9 +103,9 @@ class CCDclone(CCD):
       vals = []
       for i in range(len(tiles)):
         ivals = stats.sigmaclip(tiles[i].flatten(), clipsigma, clipsigma).clipped
-        vals.append(ivals)
+        vals.append(estimator(ivals))
       vals = np.array(vals)
-    stop()
+    
     return vals
 
 
