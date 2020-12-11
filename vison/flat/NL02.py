@@ -670,7 +670,7 @@ class NL02(NL01.NL01):
 
         doExptimeCalib = True
         NLdeg = 4
-        debug = False  # TESTS
+        debug = True  # TESTS
         useSims = False # TESTS
 
         if self.report is not None:
