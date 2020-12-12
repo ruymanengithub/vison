@@ -60,12 +60,6 @@ plt.switch_backend('TkAgg')
 
 isthere = os.path.exists
 
-# HKKeys = ['CCD1_OD_T', 'CCD2_OD_T', 'CCD3_OD_T', 'COMM_RD_T',
-#          'CCD2_IG1_T', 'CCD3_IG1_T', 'CCD1_TEMP_T', 'CCD2_TEMP_T', 'CCD3_TEMP_T',
-#          'CCD1_IG1_T', 'COMM_IG2_T', 'FPGA_PCB_TEMP_T', 'CCD1_OD_B',
-#          'CCD2_OD_B', 'CCD3_OD_B', 'COMM_RD_B', 'CCD2_IG1_B', 'CCD3_IG1_B', 'CCD1_TEMP_B',
-#          'CCD2_TEMP_B', 'CCD3_TEMP_B', 'CCD1_IG1_B', 'COMM_IG2_B']
-
 
 NL02_commvalues = dict(program='CALCAMP', test='NL02',
                        flushes=7, siflsh=1, siflsh_p=500,
@@ -318,18 +312,8 @@ class NL02(NL01.NL01):
 
                 NLres = nl_ptc.forward_PTC_LM(indata, npol=6, doPlots=False)
 
-                #mu_nle = NLres['mu_nle']
-                #var_nle = NLres['var_nle']
-                #var_le = NLres['var_le']
                 xplot = NLres['x']
                 yplot = NLres['Z']
-
-                #Np = len(mu_nle)
-
-                #ixsamp = (np.random.choice(np.arange(Np),100),)
-
-                #ax.plot(mu_nle[ixsamp],(var_nle/var_le-1.)[ixsamp]*100.,marker='.',linestyle='',
-                #    color=colors[iplot])
 
                 ax.plot(xplot,yplot,marker='',linestyle='-',
                     color=colors[iplot])                
@@ -343,129 +327,129 @@ class NL02(NL01.NL01):
 
         stop()
 
-    def debug_bgdMAPS(self):
-        """ """
-        from matplotlib import pyplot as plt
+    # def debug_bgdMAPS(self):
+    #     """ """
+    #     from matplotlib import pyplot as plt
 
-        doExptimeCalib = True
-        dIndices = copy.deepcopy(self.dd.indices)
+    #     doExptimeCalib = True
+    #     dIndices = copy.deepcopy(self.dd.indices)
 
-        CCDs = dIndices.get_vals('CCD')
-        Quads = dIndices.get_vals('Quad')
+    #     CCDs = dIndices.get_vals('CCD')
+    #     Quads = dIndices.get_vals('Quad')
 
-        nC = len(CCDs)
-        nQ = len(Quads)
-        NP = nC * nQ
+    #     nC = len(CCDs)
+    #     nQ = len(Quads)
+    #     NP = nC * nQ
 
-        if doExptimeCalib:
-            niceshutterprofname = self.ogse.profile['SHUTTER_CALIB'].replace('_', '\_')
+    #     if doExptimeCalib:
+    #         niceshutterprofname = self.ogse.profile['SHUTTER_CALIB'].replace('_', '\_')
 
-        for iCCD, CCDkey in enumerate(CCDs):
+    #     for iCCD, CCDkey in enumerate(CCDs):
 
-            for jQ, Q in enumerate(Quads):
+    #         for jQ, Q in enumerate(Quads):
 
-                ckey = '%s%s' % (CCDkey,Q)
+    #             ckey = '%s%s' % (CCDkey,Q)
 
-                kk = iCCD * nQ + jQ
+    #             kk = iCCD * nQ + jQ
 
-                raw_med = self.dd.mx['sec_med'][:, iCCD, jQ, :].copy()
-                raw_var = self.dd.mx['sec_var'][:, iCCD, jQ, :].copy()
-                raw_X = self.dd.mx['sec_X'][:, iCCD, jQ, :].copy()
-                raw_Y = self.dd.mx['sec_Y'][:, iCCD, jQ, :].copy()
-                #col_labels = self.dd.mx['label'][:, iCCD].copy()
-                exptimes = self.dd.mx['exptime'][:, iCCD].copy()
-                wave = self.dd.mx['wave'][:, iCCD].copy()
-                dtobjs = self.dd.mx['time'][:, iCCD].copy()
-                ObsIDs = self.dd.mx['ObsID'][:].copy()
+    #             raw_med = self.dd.mx['sec_med'][:, iCCD, jQ, :].copy()
+    #             raw_var = self.dd.mx['sec_var'][:, iCCD, jQ, :].copy()
+    #             raw_X = self.dd.mx['sec_X'][:, iCCD, jQ, :].copy()
+    #             raw_Y = self.dd.mx['sec_Y'][:, iCCD, jQ, :].copy()
+    #             #col_labels = self.dd.mx['label'][:, iCCD].copy()
+    #             exptimes = self.dd.mx['exptime'][:, iCCD].copy()
+    #             wave = self.dd.mx['wave'][:, iCCD].copy()
+    #             dtobjs = self.dd.mx['time'][:, iCCD].copy()
+    #             ObsIDs = self.dd.mx['ObsID'][:].copy()
 
-                #ijoffset = np.median(self.dd.mx['offset_pre'][:, iCCD, jQ])
-                ijoffset = self.dd.mx['offset_pre'][:, iCCD, jQ]
+    #             #ijoffset = np.median(self.dd.mx['offset_pre'][:, iCCD, jQ])
+    #             ijoffset = self.dd.mx['offset_pre'][:, iCCD, jQ]
 
-                if doExptimeCalib:
-                    nexptimes = self.recalibrate_exptimes(exptimes)
-                else:
-                    nexptimes = copy.deepcopy(exptimes)
+    #             if doExptimeCalib:
+    #                 nexptimes = self.recalibrate_exptimes(exptimes)
+    #             else:
+    #                 nexptimes = copy.deepcopy(exptimes)
 
-                raw_med -= np.expand_dims(ijoffset,1)
-                N = int(np.sqrt(raw_med.shape[1]))
+    #             raw_med -= np.expand_dims(ijoffset,1)
+    #             N = int(np.sqrt(raw_med.shape[1]))
 
-                ixbgd = np.where(nexptimes==0)[0][0]
-                bgmap = raw_med[ixbgd,:].reshape((N,N))  
-
-
-                fig1 = plt.figure(figsize=(12,6))
-                ax11 = fig1.add_subplot(121)
-                ax12 = fig1.add_subplot(122)
-
-                bgprof1 = bgmap.mean(axis=0)
-                bgprof2 = bgmap.mean(axis=1)
-
-                ax11.plot(bgprof1)
-                ax12.plot(bgprof2)
-
-                ax11.set_title('axis1: bgd')
-                ax12.set_title('axis2: bgd')
-                plt.suptitle(ckey)
-                plt.show()
-
-                ixfluHI = np.where((wave==5) & (nexptimes>0))
-
-                raw_med = raw_med[ixfluHI[0],:]
-                nexptimes = nexptimes[ixfluHI]
-
-                midexpt = np.median(nexptimes)
-                ixref = np.where(nexptimes == midexpt)[0][0]
-
-                refmap = raw_med[ixref,:].reshape((N,N)) 
+    #             ixbgd = np.where(nexptimes==0)[0][0]
+    #             bgmap = raw_med[ixbgd,:].reshape((N,N))  
 
 
-                fig2 = plt.figure(figsize=(13,10))
-                ax21 = fig2.add_subplot(221)
-                ax22 = fig2.add_subplot(222)
-                ax23 = fig2.add_subplot(223)
-                ax24 = fig2.add_subplot(224)
+    #             fig1 = plt.figure(figsize=(12,6))
+    #             ax11 = fig1.add_subplot(121)
+    #             ax12 = fig1.add_subplot(122)
 
-                NEXP = len(nexptimes)
+    #             bgprof1 = bgmap.mean(axis=0)
+    #             bgprof2 = bgmap.mean(axis=1)
 
-                colors = cm.rainbow(np.linspace(0, 1, NEXP))
+    #             ax11.plot(bgprof1)
+    #             ax12.plot(bgprof2)
 
-                alreadyplotted = []
+    #             ax11.set_title('axis1: bgd')
+    #             ax12.set_title('axis2: bgd')
+    #             plt.suptitle(ckey)
+    #             plt.show()
 
-                for i in range(NEXP):
+    #             ixfluHI = np.where((wave==5) & (nexptimes>0))
 
-                    if nexptimes[i] in alreadyplotted:
-                        continue
+    #             raw_med = raw_med[ixfluHI[0],:]
+    #             nexptimes = nexptimes[ixfluHI]
 
-                    imap = raw_med[i,:].reshape((N,N))
+    #             midexpt = np.median(nexptimes)
+    #             ixref = np.where(nexptimes == midexpt)[0][0]
+
+    #             refmap = raw_med[ixref,:].reshape((N,N)) 
+
+
+    #             fig2 = plt.figure(figsize=(13,10))
+    #             ax21 = fig2.add_subplot(221)
+    #             ax22 = fig2.add_subplot(222)
+    #             ax23 = fig2.add_subplot(223)
+    #             ax24 = fig2.add_subplot(224)
+
+    #             NEXP = len(nexptimes)
+
+    #             colors = cm.rainbow(np.linspace(0, 1, NEXP))
+
+    #             alreadyplotted = []
+
+    #             for i in range(NEXP):
+
+    #                 if nexptimes[i] in alreadyplotted:
+    #                     continue
+
+    #                 imap = raw_med[i,:].reshape((N,N))
                     
-                    resmap = imap - refmap * nexptimes[i]/midexpt
+    #                 resmap = imap - refmap * nexptimes[i]/midexpt
 
-                    prof1 = resmap.mean(axis=0)
-                    prof2 = resmap.mean(axis=1)
+    #                 prof1 = resmap.mean(axis=0)
+    #                 prof2 = resmap.mean(axis=1)
 
-                    ax21.plot(prof1,color=colors[i],label='%.1f' % nexptimes[i])
-                    ax22.plot(prof2,color=colors[i])
+    #                 ax21.plot(prof1,color=colors[i],label='%.1f' % nexptimes[i])
+    #                 ax22.plot(prof2,color=colors[i])
 
-                    nmap = imap / np.nanmean(imap)
+    #                 nmap = imap / np.nanmean(imap)
 
-                    prof3 = nmap.mean(axis=0)
-                    prof4 = nmap.mean(axis=1)
+    #                 prof3 = nmap.mean(axis=0)
+    #                 prof4 = nmap.mean(axis=1)
 
-                    ax23.plot(prof3,color=colors[i])
-                    ax24.plot(prof4,color=colors[i])
+    #                 ax23.plot(prof3,color=colors[i])
+    #                 ax24.plot(prof4,color=colors[i])
 
-                    alreadyplotted.append(nexptimes[i])
+    #                 alreadyplotted.append(nexptimes[i])
 
-                ax21.set_title('axis1: delta')
-                ax22.set_title('axis2: delta')
-                ax23.set_title('axis1: norms')
-                ax24.set_title('axis2: norms')
-                handles, labels = ax21.get_legend_handles_labels()
-                plt.suptitle(ckey)
-                fig2.legend(handles, labels)
-                plt.show()
+    #             ax21.set_title('axis1: delta')
+    #             ax22.set_title('axis2: delta')
+    #             ax23.set_title('axis1: norms')
+    #             ax24.set_title('axis2: norms')
+    #             handles, labels = ax21.get_legend_handles_labels()
+    #             plt.suptitle(ckey)
+    #             fig2.legend(handles, labels)
+    #             plt.show()
 
-                stop()
+    #             stop()
 
 
 
@@ -670,8 +654,8 @@ class NL02(NL01.NL01):
 
         doExptimeCalib = True
         NLdeg = 4
-        debug = False  # TESTS
-        useSims = False # TESTS
+        debug = False  # True only on TESTS
+        useSims = False # True only on TESTS
 
         if self.report is not None:
             self.report.add_Section(
@@ -795,14 +779,11 @@ class NL02(NL01.NL01):
                     nexptimes = copy.deepcopy(exptimes)
                 
 
-                #nexptimes[nexptimes>0] -= .2 # ADHOC TESTS
-
-                # fitresults = OrderedDict(coeffs, NLdeg, maxNLpc,flu_maxNLpc, bgd)
                 if debug:
                     print(('\n%s%s\n' % (CCDkey, Q)))
                 #print('WITH shutter nl correction...')
                 
-                _fitresults = nllib.wrap_fitNL_TwoFilters_Tests(raw_med, 
+                _fitresults = nllib.wrap_fitNL_TwoFilters_Best(raw_med, 
                         raw_var, 
                         nexptimes, 
                         wave,
@@ -815,27 +796,6 @@ class NL02(NL01.NL01):
                         offset=ijoffset,
                         XX=raw_X, YY=raw_Y,
                         pin=self.pin)
-
-                # TEST
-
-                FullDynRange = 2.**16
-
-                xLIN = np.linspace(1.,FullDynRange,200)
-                yNL = xLIN*(1.+_fitresults['model'](xLIN/FullDynRange,*_fitresults['coeffs'])/100.)
-                stop()
-
-                ixsel = np.where(xLIN < 0.03*FullDynRange)
-                mod1d_fit = np.polyfit(xLIN[ixsel], yNL[ixsel], 1)  # a linear approx. is fine
-                predictor = np.poly1d(mod1d_fit)
-                off = predictor.coeffs[1]
-
-                ZNLtrans = (yNL/(predictor(xLIN)-off)-1.)*100.
-
-
-                stop()
-
-
-                # END TEST
 
 
                 NLall_mx[CCDkey][Q].update(_fitresults)
@@ -907,9 +867,6 @@ class NL02(NL01.NL01):
 
         fdict_NL = self.figdict['NL0X_fit_curves'][1]
         fdict_NL['data'] = curves_cdp.data.copy()
-        #fdict_NL['caption'] = fdict_NL['caption'].replace('NL01', 'NL02')
-        #fdict_NL['meta']['suptitle'] = fdict_NL['meta']['suptitle'].replace('NL01', 'NL02')
-        #fdict_NL['figname'] = fdict_NL['figname'].replace( 'NL01', 'NL02')
 
         if self.report is not None:
             self.addFigures_ST(figkeys=['NL0X_fit_curves'],

@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 
-NEEDSREVISION
-
 Module with tools used in NL analysis.
 
 Created on Mon Feb 5 15:51:00 2018
@@ -68,7 +66,6 @@ def get_exptime_atfracdynrange(flu1D, exp1D, frac=0.5,
         ixnonan = np.where(~np.isnan(X))
         ixwbounds = np.where((X[ixnonan] >= minrelflu) & (X[ixnonan] <= maxrelflu))
         ixvalid = (ixnonan[0][ixwbounds],)
-        #ixvalid = np.where(~np.isnan(X) & (X >= minrelflu) & (X <= maxrelflu))
 
     _X = X[ixvalid].copy()
     _Y = Y[ixvalid].copy()
@@ -129,37 +126,12 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5,
             np.arange(
                 fluencesNL.shape[0]), np.arange(
                 fluencesNL.shape[1]), indexing='ij')
-        # expix: exposure index (2D)
-        # regix: region index (2D)
 
         Nsec = fluencesNL.shape[1]
-        #_exptimes = np.repeat(exptimes.reshape(Nexp,1),Nsec,axis=1)
 
         tpivot = np.zeros(Nsec, dtype='float32') + np.nan
 
         for i in range(Nsec):
-
-
-            # if i==Nsec/2 and debug:
-            #     tpivot1 = get_exptime_atfracdynrange(fluencesNL[:, i], exptimes,
-            #             frac=pivotfrac,
-            #             minrelflu=minrelflu,
-            #             maxrelflu=maxrelflu,
-            #             method='spline',
-            #             debug=debug)
-            #     tpivot2 = get_exptime_atfracdynrange(fluencesNL[:, i], exptimes,
-            #             frac=pivotfrac,
-            #             minrelflu=minrelflu,
-            #             maxrelflu=maxrelflu,
-            #             method='poly',
-            #             debug=debug)
-            #     tpivot3 = get_exptime_atfracdynrange(fluencesNL[:, i], exptimes,
-            #             frac=pivotfrac,
-            #             minrelflu=minrelflu,
-            #             maxrelflu=maxrelflu,
-            #             method='ransac',
-            #             debug=debug)
-            #     stop()
 
             tpivot[i] = get_exptime_atfracdynrange(
                 fluencesNL[:, i], exptimes, frac=pivotfrac, method=method, 
@@ -209,7 +181,6 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5,
     W = W[ixsort].copy()
     expix = expix[ixsort].copy()
     regix = regix[ixsort].copy()
-    # if len(np.where(np.abs(Y)>5.)[0])>10: stop()# TESTS
     if Full:
         res=dict(X=X,Y=Y,YL=YL,W=W,expix=expix,regix=regix)
     else:
@@ -220,7 +191,6 @@ def getXYW_NL(fluencesNL, exptimes, nomG, pivotfrac=0.5,
 def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None, 
         ixLinFit=None, debug=False):
     """ """
-    #from pylab import imshow,show,plot
     if debug:
         from matplotlib import pyplot as plt
 
@@ -239,8 +209,7 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
             np.arange(
                 fluencesNL.shape[0]), np.arange(
                 fluencesNL.shape[1]), indexing='ij')
-        # expix: exposure index (2D)
-        # regix: region index (2D)
+        
     else:
         expix = np.arange(fluencesNL.shape[0])
         regix = np.ones(fluencesNL.shape[0])
@@ -262,7 +231,6 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
     if fluencesNL.ndim == 2:
 
         Nsec = fluencesNL.shape[1]
-        #_exptimes = np.repeat(exptimes.reshape(Nexp,1),Nsec,axis=1)
         intersect = np.zeros(Nsec,dtype='float32') # 
 
         for isec in range(Nsec):
@@ -287,30 +255,17 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
             # fitting fluence vs. exptime linearly within the selected pseudo-linear region
             # fluences may be selected by exposure time
             predictor = get_POLY_linear_model(xp, yp) 
-            #predictor.coef[1] = 0.
             intersect[isec] = predictor.coef[1]
             YpredL = predictor(exptimes)
             YL[:, isec] = YpredL.copy()
 
-            #print('sec:%i' % isec)
-            #fig  = plt.figure()
-            #ax = fig.add_subplot()
-            #ax.plot(xp,yp,'k.')
-            #ax.plot(exptimes,YpredL,'r-')
-            #plt.show()
-
-            #stop()
-
-            # plot(YpredL[3:],fluencesNL[3:,isec]/YpredL[3:]-1.,marker='.',ls='')
-        #plt.show()
+            
         intersect = np.expand_dims(intersect,0)
         
 
     elif fluencesNL.ndim == 1:
 
-        #predictor = get_RANSAC_linear_model(exptimes,fluencesNL)
-        #YL[:] = np.squeeze(predictor(np.expand_dims(exptimes,1)))
-
+        
         arenonan = ~np.isnan(fluencesNL)
 
         if ixLinFit is not None:
@@ -324,23 +279,17 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
             
             ixsel = (ixnonan[0][_ixsel],)
 
-        #ixsel=np.where((fluencesNL>=2.**16*minrelflu) & (fluencesNL<=2.**16*maxrelflu))
         xp = exptimes[ixsel].copy()
         yp = np.squeeze(fluencesNL[ixsel]).copy()
         predictor = get_POLY_linear_model(xp, yp)
 
-        #predictor.coef[1] = 0.
         intersect = predictor.coef[1]
         YpredL = predictor(exptimes)
         YL[:] = YpredL.copy()
 
-        # plot(yp,yp/predictor(exptimes[ixsel])-1.,'k.')
-        # show()
-    
 
     Z = 100. * (fluencesNL - YL) / (YL - intersect) # commented on TESTS ONLY
-    #Z = 100. * (fluencesNL - YL) / YL
-
+    
     efNL = np.sqrt((fluencesNL) * nomG) / nomG
 
     W = 100. * (efNL / YL)
@@ -349,7 +298,6 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
 
     ixsel = np.where((exptimes > 0.))
 
-    # X = fluencesNL[ixsel].flatten().copy()
     X = fluencesNL[ixsel,...].flatten().copy()
     Y = Z[ixsel,...].flatten().copy()
     YL  = YL[ixsel,...].flatten().copy()
@@ -365,26 +313,6 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
     expix = expix[ixsort].copy()
     regix = regix[ixsort].copy()
 
-    
-    # if debug:
-    #     Nside = int(fluencesNL.shape[1]**0.5)
-    #     intersectmap = intersect.reshape((Nside,Nside))
-    #     avfluxes = np.nanmean(fluencesNL/np.expand_dims(exptimes,1),axis=0).reshape(Nside,Nside)
-
-    #     fig1 = plt.figure()
-    #     ax1 = fig1.add_subplot()
-    #     ax1.imshow(intersectmap,origin='lower left')
-    #     ax1.set_title('Intersect Map')
-    #     plt.show()
-    #     #fig1.close()
-
-    #     fig2 = plt.figure()
-    #     ax2 = fig2.add_subplot()
-    #     ax2.imshow(avfluxes,origin='lower left')
-    #     ax2.set_title('Flux Map')        
-    #     plt.show()
-    #     #fig2.close()
-    #     plt.close('all')
     res=dict(X=X,Y=Y,YL=YL,W=W,expix=expix,regix=regix)
 
     return res
@@ -392,7 +320,6 @@ def getXYW_NL02(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None,
 def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None, 
         ixLinFit=None, debug=False):
     """ """
-    #from pylab import imshow,show,plot
     if debug:
         from matplotlib import pyplot as plt
 
@@ -411,8 +338,6 @@ def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None
             np.arange(
                 fluencesNL.shape[0]), np.arange(
                 fluencesNL.shape[1]), indexing='ij')
-        # expix: exposure index (2D)
-        # regix: region index (2D)
     else:
         expix = np.arange(fluencesNL.shape[0])
         regix = np.ones(fluencesNL.shape[0])
@@ -447,56 +372,11 @@ def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None
         YpredL = predictor(exptimes)
 
         YL = np.outer(YpredL,avfluxes)
-
-        #for isec in range(Nsec):
-        #   YL[:, isec] = YpredL.copy()
-
-
-        # for isec in range(Nsec):
-        #     # each section is treated INDEPENDENTLY, because each section
-        #     # has a slightly different flux (because of flat-source anisotropy)
-
-        #     arenonan = ~np.isnan(fluencesNL[:, isec])
-
-        #     if ixLinFit is not None:
-        #         presel = np.zeros_like(exptimes,dtype='bool')
-        #         presel[(ixLinFit,)] = True
-        #         ixsel = np.where(arenonan & presel)
-        #     else:
-        #         ixnonan = np.where(arenonan)
-        #         _ixsel = np.where((fluencesNL[ixnonan, isec] >= 2.**16 * minrelflu) &
-        #                       (fluencesNL[ixnonan, isec] <= 2.**16 * maxrelflu))
-        #         ixsel = (ixnonan[0][_ixsel[1]],)
-
-
-        #     xp = exptimes[ixsel]
-        #     yp = np.squeeze(fluencesNL[ixsel, isec])
-        #     # fitting fluence vs. exptime linearly within the selected pseudo-linear region
-        #     # fluences may be selected by exposure time
-        #     predictor = get_POLY_linear_model(xp, yp) 
-        #     #predictor.coef[1] = 0.
-        #     intersect[0,isec] = predictor.coef[1]
-        #     YpredL = predictor(exptimes)
-        #     YL[:, isec] = YpredL.copy()
-
-            #print('sec:%i' % isec)
-            #fig  = plt.figure()
-            #ax = fig.add_subplot()
-            #ax.plot(xp,yp,'k.')
-            #ax.plot(exptimes,YpredL,'r-')
-            #plt.show()
-
-            #stop()
-
-            # plot(YpredL[3:],fluencesNL[3:,isec]/YpredL[3:]-1.,marker='.',ls='')
-        #plt.show()
         
         
 
     elif fluencesNL.ndim == 1:
 
-        #predictor = get_RANSAC_linear_model(exptimes,fluencesNL)
-        #YL[:] = np.squeeze(predictor(np.expand_dims(exptimes,1)))
 
         arenonan = ~np.isnan(fluencesNL)
 
@@ -511,7 +391,6 @@ def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None
             
             ixsel = (ixnonan[0][_ixsel],)
 
-        #ixsel=np.where((fluencesNL>=2.**16*minrelflu) & (fluencesNL<=2.**16*maxrelflu))
         xp = exptimes[ixsel].copy()
         yp = np.squeeze(fluencesNL[ixsel]).copy()
         predictor = get_POLY_linear_model(xp, yp)
@@ -521,11 +400,6 @@ def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None
         YpredL = predictor(exptimes)
         YL[:] = YpredL.copy()
 
-        # plot(yp,yp/predictor(exptimes[ixsel])-1.,'k.')
-        # show()
-    
-
-    #Z = 100. * (fluencesNL - YL) / (YL - intersect) # commented on TESTS ONLY
     Z = 100. * (fluencesNL / YL - 1.)
 
     efNL = np.sqrt((fluencesNL) * nomG) / nomG
@@ -534,7 +408,6 @@ def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None
 
     ixsel = np.where((exptimes > 0.))
 
-    # X = fluencesNL[ixsel].flatten().copy()
     X = fluencesNL[ixsel,...].flatten().copy()
     Y = Z[ixsel,...].flatten().copy()
     YL = YL[ixsel,...].flatten().copy()
@@ -550,25 +423,6 @@ def getXYW_NL02_tests(fluencesNL, exptimes, nomG, minrelflu=None, maxrelflu=None
     expix = expix[ixsort].copy()
     regix = regix[ixsort].copy()
     
-    # if debug:
-    #     Nside = int(fluencesNL.shape[1]**0.5)
-    #     intersectmap = intersect.reshape((Nside,Nside))
-    #     avfluxes = np.nanmean(fluencesNL/np.expand_dims(exptimes,1),axis=0).reshape(Nside,Nside)
-
-    #     fig1 = plt.figure()
-    #     ax1 = fig1.add_subplot()
-    #     ax1.imshow(intersectmap,origin='lower left')
-    #     ax1.set_title('Intersect Map')
-    #     plt.show()
-    #     #fig1.close()
-
-    #     fig2 = plt.figure()
-    #     ax2 = fig2.add_subplot()
-    #     ax2.imshow(avfluxes,origin='lower left')
-    #     ax2.set_title('Flux Map')        
-    #     plt.show()
-    #     #fig2.close()
-    #    plt.close('all')
     res = dict(X=X,Y=Y,YL=YL,W=W,expix=expix,regix=regix)
     return res
 
@@ -604,19 +458,9 @@ def fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg, display=False)
 
     model.fit(xfit[:, np.newaxis], yfit[:, np.newaxis])
 
-    # model.fit(X[selix],Y[selix])
-
-    #x_plot = np.linspace(nanmin,nanmax,1000)[:,np.newaxis]
-    #y_plot = model.predict(x_plot)
     NLfit = model._final_estimator.coef_[0][::-1]
     NLfit[-1] = model._final_estimator.intercept_[0]
 
-    # plot(X[selix],Y[selix],'k.')
-    # plot(xbins,ybins,'go')
-    # plot(x_plot,y_plot,'r--')
-    # show()
-
-    #NLfit = np.polyfit(X[selix], Y[selix], w=W[selix], deg=NLdeg, full=False)
 
     NLpol = np.poly1d(NLfit)
 
@@ -624,10 +468,6 @@ def fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg, display=False)
     fkfluencesNL = np.linspace(minfitFl, maxfitFl, 200) * 1.
     Y_bestfit = NLpol(fkfluencesNL)
 
-    # Based on fit
-    #ixmax = np.abs(Y_bestfit).argmax()
-    #maxNLpc = Y_bestfit[ixmax]
-    #flu_maxNLpc = fkfluencesNL[ixmax]
 
     # Direct measure
 
@@ -727,7 +567,6 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg,
         xfit = xfit[ixnonans].copy() / FullDynRange
         yfit = yfit[ixnonans].copy()
     else:
-        #ixnonans = np.where(~(np.isnan(X) | np.isnan(Y)))
         xfit = X[selix].copy() / FullDynRange
         yfit = Y[selix].copy()
 
@@ -736,21 +575,15 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg,
     yfit = yfit[ixsort]
 
     if addExp:
-        #p0 = np.concatenate((np.array([10.,0.15,1.]),np.zeros(NLdeg+1)))
         p0 = np.concatenate((np.array([1., 0.01, 0.05]), np.zeros(NLdeg + 1)))
         bounds = []
         bounds.append([-10., 10. / FullDynRange, 1.e-3] + [-100.] * (NLdeg) + [-10.])
         bounds.append([10., 10000. / FullDynRange, 5.E-1] + [100.] * (NLdeg) + [10.])
-        # bounds = [[0.,  10., -1.E-3,-1.E-2, -10.],
-        #          [1.E3,1.E3, 1.E-3, 1.E-2,  10.]]
     else:
-        #p0 = np.concatenate((np.array([10.,0.15,1.]),np.zeros(NLdeg+1)))
         p0 = np.zeros(NLdeg + 1)
         bounds = []
         bounds.append([-100.] * (NLdeg) + [-10.])
         bounds.append([100.] * (NLdeg) + [10.])
-        # bounds = [[0.,  10., -1.E-3,-1.E-2, -10.],
-        #          [1.E3,1.E3, 1.E-3, 1.E-2,  10.]]
 
     if addExp:
         ff = fNL_wExp
@@ -768,25 +601,17 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg,
     fkfluencesNL = np.linspace(minfitFl, maxfitFl, 400) * 1.
     Y_bestfit = ff(fkfluencesNL / FullDynRange, *popt)
 
-    # Direct measure
 
-    #ixmax = np.abs(yfit).argmax()
-    #maxNLpc = yfit[ixmax]
-    #flu_maxNLpc = xfit[ixmax]*2.**16
-
-    # From the best fit curve
-
+    # Maximum non-linearity from the best fit curve
     ixmax = np.abs(Y_bestfit).argmax()
     maxNLpc = Y_bestfit[ixmax]
-    flu_maxNLpc = fkfluencesNL[ixmax]
+    flu_maxNLpc = fkfluencesNL[ixmax] # fluence at maximum non-linearity
 
     if display:
 
         _display_NLcurves(X,Y,selix,fkfluencesNL,Y_bestfit, labels=Exptimes, title='colorcode: exptimes')
         if Rcoo is not None:
             _display_NLcurves(X,Y,selix,fkfluencesNL,Y_bestfit, labels=Rcoo, title='colorcode: region')
-        #if ObsIDs is not None:
-        #    _display_NLcurves(X,Y,selix,fkfluencesNL,Y_bestfit, labels=ObsIDs, title='colorcode: OBSID')
         
         if pin is not None: # TESTS
 
@@ -817,297 +642,9 @@ def fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg=NLdeg,
     return fitresults
 
 
-def wrap_fitNL_SingleFilter(fluences, variances, exptimes, times=np.array([]),
-                            TrackFlux=True, subBgd=True):
-    """ """
-    # col001 == BGD
-    # colEVEN = STAB
-    # colODD = Fluences != 0
 
-    nomG = 3.5  # e/ADU, used for noise estimates
-    minfitFl = 2000.  # ADU
-    maxfitFl = FullDynRange - 10000.  # ADU
-    maxrelflu = 0.7  # used in determination of t_pivot
 
-    NObsIDs, Nsecs = fluences.shape
-
-    if TrackFlux:
-        assert len(times) == len(exptimes)
-
-        dtimes = np.array(
-            [(times[i] - times[0]).seconds for i in range(NObsIDs)], dtype='float32')
-
-    #col_numbers = np.array([int(item[3:]) for item in col_labels])
-
-    nonzeroexptimes = exptimes[exptimes > 0.]
-    unonzeroexptimes = np.unique(nonzeroexptimes)
-
-    # the stability exposure time repeats the most
-    _ixstab = np.array([(exptimes == iexptime).sum() for iexptime in unonzeroexptimes]).argmax()
-    exptimestab = unonzeroexptimes[_ixstab]
-
-    # boolean indices of the different types of exposures
-
-    ixboo_bgd = exptimes == 0.
-    ixboo_stab = exptimes == exptimestab
-    ixboo_fluences = ((exptimes > 0.) & (exptimes != exptimestab))
-
-    # Not used any more
-    #ixboo_bgd = col_numbers == 1
-    # ixboo_stab = (col_numbers % 2 == 0) & (col_numbers > 1)  # EVEN
-    # ixboo_fluences = (col_numbers % 2 != 0)  & (col_numbers > 1)# ODD
-
-    if subBgd:
-        bgd = np.nanmean(fluences[ixboo_bgd, :], axis=0)
-        bgd = np.repeat(bgd.reshape(1, Nsecs), NObsIDs, axis=0).copy()
-        fluences -= bgd
-    else:
-        bgd = 0.
-
-    if TrackFlux and len(times) == NObsIDs:
-
-        st_dtimes = dtimes[ixboo_stab].copy()
-        st_fluences = np.nanmean(fluences[ixboo_stab, :], axis=1).copy()
-
-        track_fit = np.polyfit(st_dtimes, st_fluences,
-                               2, full=False, cov=False)
-
-        track_pol = np.poly1d(track_fit)
-
-        track = track_pol(dtimes[ixboo_fluences])
-        track /= np.median(track)
-        #track_bc = np.repeat(track.reshape(len(track), 1), Nsecs, axis=1)
-        fluences[ixboo_fluences, :] /= track.reshape(track.shape[0], -1)
-    else:
-        track = np.ones_like(fluences[ixboo_fluences, 0])
-
-    X, Y, W = getXYW_NL(fluences[ixboo_fluences, :],
-                        exptimes[ixboo_fluences], nomG,
-                        maxrelflu=maxrelflu,
-                        method='ransac')
-
-    fitresults = fitNL_pol(X, Y, W, minfitFl, maxfitFl, display=False)
-    fitresults['bgd'] = bgd
-    fitresults['stability_pc'] = np.std(track) * 100.
-
-    return fitresults
-
-
-def wrap_fitNL_TwoFilters(fluences, variances, exptimes, wave, times=np.array([]),
-                          TrackFlux=True, subBgd=True, debug=False):
-    """ """
-
-    nomG = 3.5  # e/ADU, used for noise estimates
-    minfitFl = 1000.  # ADU
-    maxfitFl = FullDynRange - 10000.  # ADU
-    pivotfrac = 0.2
-    maxrelflu = 0.8
-
-    NObsIDs, Nsecs = fluences.shape
-
-    if TrackFlux:
-        assert len(times) == len(exptimes)
-
-        dtimes = np.array(
-            [(times[i] - times[0]).seconds for i in range(NObsIDs)], dtype='float32')
-
-    #col_numbers = np.array([int(item[3:]) for item in col_labels])
-
-    nonzeroexptimes = exptimes[exptimes > 0.]
-    unonzeroexptimes = np.unique(nonzeroexptimes)
-
-    # the stability exposure time repeats the most
-    _ixstab = np.array([(exptimes == iexptime).sum() for iexptime in unonzeroexptimes]).argmax()
-    exptimestab = unonzeroexptimes[_ixstab]
-
-    # boolean indices of the different types of exposures
-
-    uwaves = np.unique(wave)
-
-    ixboo_bgd = exptimes == 0.
-    ixboo_stab = exptimes == exptimestab
-    ixboo_fluA = ((exptimes > 0.) & (exptimes != exptimestab) & (wave == uwaves[0]))
-    ixboo_fluB = ((exptimes > 0.) & (exptimes != exptimestab) & (wave == uwaves[1]))
-
-    #ixboo_bgd = col_numbers == 1
-    # ixboo_stab = (col_numbers % 2 == 0) & (col_numbers > 1)  # EVEN
-    # ixboo_fluences = (col_numbers % 2 != 0)  & (col_numbers > 1)# ODD
-
-    # assuming here the background is not affected by wavelength selection
-    # in FW.. could be WRONG
-    if subBgd:
-        bgd = np.nanmean(fluences[ixboo_bgd, :], axis=0)
-        bgd = np.repeat(bgd.reshape(1, Nsecs), NObsIDs, axis=0).copy()
-        fluences -= bgd
-    else:
-        bgd = 0.
-
-    if TrackFlux and len(times) == NObsIDs:
-        st_dtimes = dtimes[ixboo_stab].copy()
-        st_fluences = np.nanmean(fluences[ixboo_stab, :], axis=1).copy()
-
-        track_fit = np.polyfit(st_dtimes, st_fluences, 2, full=False, cov=False)
-
-        track_pol = np.poly1d(track_fit)
-
-        trackA = track_pol(dtimes[ixboo_fluA])
-        trackA /= np.median(trackA)
-
-        trackB = track_pol(dtimes[ixboo_fluB])
-        trackB /= np.median(trackB)
-
-        #track_bc = np.repeat(track.reshape(len(track), 1), Nsecs, axis=1)
-        fluences[ixboo_fluA, :] /= trackA.reshape(trackA.shape[0], -1)
-        fluences[ixboo_fluB, :] /= trackB.reshape(trackB.shape[0], -1)
-        trackstab = np.mean([trackA.std(), trackB.std()]) * 100.
-    else:
-        trackstab = 0.
-
-    X_A, Y_A, W_A = getXYW_NL(fluences[ixboo_fluA, :],
-                              exptimes[ixboo_fluA], nomG,
-                              pivotfrac=pivotfrac,
-                              maxrelflu=maxrelflu,
-                              method='ransac')
-
-    X_B, Y_B, W_B = getXYW_NL(fluences[ixboo_fluB, :],
-                              exptimes[ixboo_fluB], nomG,
-                              pivotfrac=pivotfrac,
-                              maxrelflu=maxrelflu,
-                              method='ransac')
-
-    X = np.concatenate((X_A, X_B))
-    Y = np.concatenate((Y_A, Y_B))
-    W = np.concatenate((W_A, W_B))
-
-    fitresults = fitNL_pol(X, Y, W, minfitFl, maxfitFl, display=debug)
-    fitresults['bgd'] = bgd
-    fitresults['stability_pc'] = trackstab
-
-    return fitresults
-
-
-def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.array([]),
-                              TrackFlux=True, debug=False, ObsIDs=None, NLdeg=NLdeg,
-                              offset=0., XX=None, YY=None):
-    """ """
-
-    nomG = 3.5  # e/ADU, used for noise estimates
-    minfitFl = 250.  # ADU
-    maxfitFl = FullDynRange - 10000.  # ADU
-    #pivotfrac = 0.2
-    minrelflu = 0.10
-    maxrelflu = 0.30
-
-    NObsIDs, Nsecs = fluences.shape
-
-    if TrackFlux:
-
-        assert len(times) == len(exptimes)
-
-        dtimes = np.array(
-            [(times[i] - times[0]).seconds for i in range(NObsIDs)], dtype='float32')
-
-    #col_numbers = np.array([int(item[3:]) for item in col_labels])
-
-    nonzeroexptimes = exptimes[exptimes > 0.]
-    unonzeroexptimes = np.unique(nonzeroexptimes)
-
-    # hacky but effective way to identify stability exposures: the stability
-    # exposure time repeats the most
-    _ixstab = np.array([(exptimes == iexptime).sum() for iexptime in unonzeroexptimes]).argmax()
-    exptimestab = unonzeroexptimes[_ixstab]
-
-    # boolean indices of the different types of exposures
-
-    uwaves = np.unique(wave)
-
-    ixboo_bgd = exptimes == 0.
-    ixboo_stab = exptimes == exptimestab
-    ixboo_fluA = (exptimes != 0.) & (exptimes != exptimestab) & (wave == uwaves[0])
-    ixboo_fluB = (exptimes != 0.) & (exptimes != exptimestab) & (wave == uwaves[1])
-
-    if TrackFlux and len(times) == NObsIDs:
-
-        st_dtimes = dtimes[ixboo_stab].copy()
-        st_fluences = np.nanmean(fluences[ixboo_stab, :], axis=1).copy()
-
-        ans = sigma_clip(st_fluences, sigma=3)
-        ixgood = np.where(~ans.mask)
-
-        # tmodel = make_pipeline(PolynomialFeatures(2),
-        #                  linear_model.Ridge(alpha=0.1,
-        #                  solver='auto',max_iter=1000))
-
-        # tmodel.fit(st_dtimes[ixgood,np.newaxis],st_fluences[ixgood,np.newaxis])
-
-        #track_fit = tmodel._final_estimator.coef_[0][::-1]
-        #track_fit[-1] = tmodel._final_estimator.intercept_[0]
-
-        track_fit = np.polyfit(st_dtimes[ixgood], st_fluences[ixgood], 2, 
-            full=False, cov=False)
-
-        track_pol = np.poly1d(track_fit)
-
-        trackA = track_pol(dtimes[ixboo_fluA])
-        trackA /= np.median(trackA)
-
-        trackB = track_pol(dtimes[ixboo_fluB])
-        trackB /= np.median(trackB)
-
-        #track_bc = np.repeat(track.reshape(len(track), 1), Nsecs, axis=1)
-        fluences[ixboo_fluA, :] /= trackA.reshape(trackA.shape[0], -1)
-        fluences[ixboo_fluB, :] /= trackB.reshape(trackB.shape[0], -1)
-        trackstab = np.mean([trackA.std(), trackB.std()]) * 100.
-    else:
-        trackstab = 0.
-
-    ixfitA = ixboo_fluA | ixboo_bgd | ixboo_stab
-    X_A, Y_A, W_A, e_A, r_A = getXYW_NL02(fluences[ixfitA, :],
-                                          exptimes[ixfitA], nomG,
-                                          minrelflu=minrelflu,
-                                          maxrelflu=maxrelflu)
-    ixfitB = ixboo_fluB | ixboo_bgd
-    X_B, Y_B, W_B, e_B, r_B = getXYW_NL02(fluences[ixfitB, :],
-                                          exptimes[ixfitB], nomG,
-                                          minrelflu=minrelflu,
-                                          maxrelflu=maxrelflu)
-
-    #bgdnoff = np.median(fluences[ixboo_bgd,:])
-
-    X = np.concatenate((X_A, X_B)) - offset  # notice the small back-ground is left in!
-    Y = np.concatenate((Y_A, Y_B))
-    W = np.concatenate((W_A, W_B))
-    #exps = np.concatenate((e_A,e_B))
-    #regs = np.concatenate((r_A,r_B))
-
-    Exptimes = np.concatenate((exptimes[ixfitA][e_A], exptimes[ixfitB][e_B]))
-
-    Xcoo = np.concatenate((XX[e_A, r_A], XX[e_B, r_B]))
-    Ycoo = np.concatenate((YY[e_A, r_A], YY[e_B, r_B]))
-
-    fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg,
-        display=debug,
-        addExp=True)
-    fitresults['Xcoo'] = Xcoo.copy()
-    fitresults['Ycoo'] = Ycoo.copy()
-
-    #fitresults['bgd'] = bgd
-    fitresults['stability_pc'] = trackstab
-
-    # TESTS
-    #import matplotlib.cm as cm
-    #uexps = np.unique(exps)
-    #colors = cm.rainbow(np.linspace(0,1,len(uexps)))
-    # for iexp,uexp in enumerate(uexps):
-    #    ixsel = np.where(uexp == exps)
-    #    plot(X[ixsel],Y[ixsel],'.',c=colors[iexp])
-    # show()
-    # stop()
-
-    return fitresults
-
-
-def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.array([]),
+def wrap_fitNL_TwoFilters_Best(fluences, variances, exptimes, wave, times=np.array([]),
                               TrackFlux=True, debug=False, ObsIDs=None, NLdeg=NLdeg,
                               offset=0., XX=None, YY=None, pin=None):
     """returns NL modelling results."""
@@ -1132,8 +669,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
         dtimes = np.array(
             [(times[i] - times[0]).seconds for i in range(NObsIDs)], dtype='float32') # delta-times
 
-    #col_numbers = np.array([int(item[3:]) for item in col_labels])
-
+    
     nonzeroexptimes = exptimes[exptimes > 0.]
     unonzeroexptimes = np.unique(nonzeroexptimes) # unique non-zero exposure times
 
@@ -1251,14 +787,6 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
         ans = sigma_clip(st_fluences, sigma=3) 
         ixgood = np.where(~ans.mask)
 
-        # tmodel = make_pipeline(PolynomialFeatures(2),
-        #                  linear_model.Ridge(alpha=0.1,
-        #                  solver='auto',max_iter=1000))
-
-        # tmodel.fit(st_dtimes[ixgood,np.newaxis],st_fluences[ixgood,np.newaxis])
-
-        #track_fit = tmodel._final_estimator.coef_[0][::-1]
-        #track_fit[-1] = tmodel._final_estimator.intercept_[0]
 
         track_fit = np.polyfit(st_dtimes[ixgood], st_fluences[ixgood], 2, 
             full=False, cov=False) 
@@ -1276,7 +804,6 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
         trackLO = track_pol(dtimes[ixboo_fluLO]) # evaluated for the LO flux data-set
         trackLO /= np.mean(trackLO)
 
-        #track_bc = np.repeat(track.reshape(len(track), 1), Nsecs, axis=1)
         fluences[ixboo_fluHI, :] /= trackHI.reshape(trackHI.shape[0], -1)
         fluences[ixboo_fluLO, :] /= trackLO.reshape(trackLO.shape[0], -1)
         fluences[ixboo_stab, :] /= trackST.reshape(trackST.shape[0], -1)
@@ -1285,14 +812,12 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
         trackstab = 0.
 
 
-    #ixfitHI = ixboo_fluHI | ixboo_bgd | ixboo_stab
     ixfitHI = ixboo_fluHI | ixboo_stab
     overlapExpTimesHI = np.unique(exptimes[ixfitHI & (exptimes>0)])[0:3]
     _ixrangeHI = np.arange(ixfitHI.sum())
     ixoverlapHI = [ix for ix in _ixrangeHI if (exptimes[ixfitHI][ix] in overlapExpTimesHI)]
 
 
-    #ixfitLO = ixboo_fluLO | ixboo_bgd
     ixfitLO = ixboo_fluLO
     overlapExpTimesLO = np.unique(exptimes[ixfitLO & (exptimes>0)])[-3:]
     _ixrangeLO = np.arange(ixfitLO.sum())
@@ -1302,11 +827,10 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     pivotfrac = pivotFlu / FullDynRange
 
     # get the X-Y of the NL fit for HI flux filter
-    #doDebug = False
     
     
-    doLinFit = True # if True, take linear trend from a linear fit over a range of exp-times
-                     # if false, fit over a wider range of exp-times...
+    doLinFit = True # if True, take linear trend from a linear fit over a common range of exp-times
+                     # if false, fit over independent ranges of exp-times for each filter
 
     if doLinFit:
 
@@ -1315,8 +839,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
               nomG,
               ixLinFit=ixoverlapHI,
               debug=debug)
-              #minrelflu=minrelflu,
-              #maxrelflu=maxrelflu)
+
         X_HI = res_HI['X']
         Y_HI = res_HI['Y']
         YLexpect_HI = res_HI['YL']
@@ -1329,8 +852,7 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
           nomG,
           ixLinFit=ixoverlapLO,
           debug=debug)
-      #minrelflu=minrelflu,
-      #maxrelflu=maxrelflu)
+
         X_LO = res_LO['X']
         Y_LO = res_LO['Y']
         YLexpect_LO = res_LO['YL']
@@ -1378,14 +900,8 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     YLexpect = np.concatenate((YLexpect_HI, YLexpect_LO))
     Y = np.concatenate((Y_HI, Y_LO))
     W = np.concatenate((W_HI, W_LO))
-    #exps = np.concatenate((e_A,e_B))
-    #regs = np.concatenate((r_A,r_B))
 
     Exptimes = np.concatenate((exptimes[ixfitHI][e_HI], exptimes[ixfitLO][e_LO]))
-    #stop()
-    #Xcoo = np.concatenate((XX[e_HI, r_HI], XX[e_LO, r_LO]))
-    #Ycoo = np.concatenate((YY[e_HI, r_HI], YY[e_LO, r_LO]))
-    #Rcoo = (Xcoo**2.+Ycoo*2.)**0.5
 
     fObsIDs = np.concatenate((ObsIDs[ixfitHI][e_HI], ObsIDs[ixfitLO][e_LO]))
 
@@ -1412,11 +928,6 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
     # Residuals of Linearisation
 
-    #fluxHI = 7247.044204930443 # TEST
-    #fluxLO = 2654.7742554938973
-    
-    # expected linear fluences, based on exposure times: YLexpect
-
     # non linear fluences: yNL
     yNL = YLexpect * (1.+Y/100.)
     ixnonan = np.where(~np.isnan(yNL))
@@ -1441,12 +952,6 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     fitresults['xres'] = YLexpect.copy()
     fitresults['yres'] = yres.copy()
 
-    #fitresults = fitNL_pol(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg, display=debug)
-    
-    #fitresults['Xcoo'] = Xcoo.copy()
-    #fitresults['Ycoo'] = Ycoo.copy()
-
-    #fitresults['bgd'] = bgd
     fitresults['stability_pc'] = trackstab # as a percentage
 
     #fitresults = OrderedDict(
@@ -1466,118 +971,398 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
 
     return fitresults
 
-def test_wrap_fitNL():
-    """ """
+#def wrap_fitNL_SingleFilter(fluences, variances, exptimes, times=np.array([]),
+#                             TrackFlux=True, subBgd=True):
+#     """ """
+#     # col001 == BGD
+#     # colEVEN = STAB
+#     # colODD = Fluences != 0
 
-    col_labels = np.array(['col001', 'col001', 'col001', 'col001',
-                           'col002', 'col002', 'col002', 'col002', 'col002',
-                           'col003',
-                           'col004', 'col004', 'col004', 'col004', 'col004',
-                           'col005',
-                           'col006', 'col006', 'col006', 'col006', 'col006',
-                           'col007',
-                           'col008', 'col008', 'col008', 'col008', 'col008',
-                           'col009',
-                           'col010', 'col010', 'col010', 'col010', 'col010',
-                           'col013',
-                           'col014', 'col014', 'col014', 'col014', 'col014',
-                           'col015',
-                           'col016', 'col016', 'col016', 'col016', 'col016',
-                           'col017',
-                           'col018', 'col018', 'col018', 'col018', 'col018',
-                           'col019',
-                           'col020', 'col020', 'col020', 'col020', 'col020',
-                           'col021',
-                           'col022', 'col022', 'col022', 'col022', 'col022',
-                           'col023',
-                           'col024', 'col024', 'col024', 'col024', 'col024',
-                           'col025'],
-                          dtype='|S12')
+#     nomG = 3.5  # e/ADU, used for noise estimates
+#     minfitFl = 2000.  # ADU
+#     maxfitFl = FullDynRange - 10000.  # ADU
+#     maxrelflu = 0.7  # used in determination of t_pivot
 
-    exptimes = np.array([0., 0., 0., 0., 1.5, 1.5, 1.5, 1.5, 1.5,
-                         15., 3., 3., 3., 3., 3., 15., 6., 6.,
-                         6., 6., 6., 15., 9., 9., 9., 9., 9.,
-                         15., 15., 15., 15., 15., 15., 15., 21., 21.,
-                         21., 21., 21., 15., 24., 24., 24., 24., 24.,
-                         15., 27., 27., 27., 27., 27., 15., 30., 30.,
-                         30., 30., 30., 15., 33., 33., 33., 33., 33.,
-                         15., 36., 36., 36., 36., 36., 15.])
+#     NObsIDs, Nsecs = fluences.shape
 
-    raw_data = np.repeat((exptimes / exptimes.max() * 2. **
-                          16).reshape((70, 1)), 49, axis=1)
-    dtobjs = np.array([datetime.datetime(2018, 2, 8, 3, 59, 17),
-                       datetime.datetime(2018, 2, 8, 4, 0, 55), datetime.datetime(
-                           2018, 2, 8, 4, 2, 28),
-                       datetime.datetime(2018, 2, 8, 4, 4, 7), datetime.datetime(
-                           2018, 2, 8, 4, 5, 43),
-                       datetime.datetime(2018, 2, 8, 4, 7, 19), datetime.datetime(
-                           2018, 2, 8, 4, 8, 54),
-                       datetime.datetime(2018, 2, 8, 4, 10, 29), datetime.datetime(
-                           2018, 2, 8, 4, 12, 5),
-                       datetime.datetime(2018, 2, 8, 4, 14, 2), datetime.datetime(
-                           2018, 2, 8, 4, 15, 40),
-                       datetime.datetime(2018, 2, 8, 4, 17, 18), datetime.datetime(
-                           2018, 2, 8, 4, 18, 55),
-                       datetime.datetime(2018, 2, 8, 4, 20, 38), datetime.datetime(
-                           2018, 2, 8, 4, 22, 15),
-                       datetime.datetime(2018, 2, 8, 4, 24, 5), datetime.datetime(
-                           2018, 2, 8, 4, 25, 46),
-                       datetime.datetime(2018, 2, 8, 4, 27, 27), datetime.datetime(
-                           2018, 2, 8, 4, 29, 6),
-                       datetime.datetime(2018, 2, 8, 4, 30, 47), datetime.datetime(
-                           2018, 2, 8, 4, 32, 28),
-                       datetime.datetime(2018, 2, 8, 4, 34, 18), datetime.datetime(
-                           2018, 2, 8, 4, 36, 2),
-                       datetime.datetime(2018, 2, 8, 4, 37, 46), datetime.datetime(
-                           2018, 2, 8, 4, 39, 28),
-                       datetime.datetime(2018, 2, 8, 4, 41, 19), datetime.datetime(
-                           2018, 2, 8, 4, 43, 11),
-                       datetime.datetime(2018, 2, 8, 4, 45), datetime.datetime(
-                           2018, 2, 8, 4, 46, 57),
-                       datetime.datetime(2018, 2, 8, 4, 48, 46), datetime.datetime(
-                           2018, 2, 8, 4, 50, 34),
-                       datetime.datetime(2018, 2, 8, 4, 52, 24), datetime.datetime(
-                           2018, 2, 8, 4, 54, 13),
-                       datetime.datetime(2018, 2, 8, 4, 56, 10), datetime.datetime(
-                           2018, 2, 8, 4, 58, 6),
-                       datetime.datetime(2018, 2, 8, 5, 0, 5), datetime.datetime(
-                           2018, 2, 8, 5, 2),
-                       datetime.datetime(2018, 2, 8, 5, 4, 2), datetime.datetime(
-                           2018, 2, 8, 5, 5, 58),
-                       datetime.datetime(2018, 2, 8, 5, 7, 48), datetime.datetime(
-                           2018, 2, 8, 5, 9, 48),
-                       datetime.datetime(2018, 2, 8, 5, 11, 46), datetime.datetime(
-                           2018, 2, 8, 5, 13, 43),
-                       datetime.datetime(2018, 2, 8, 5, 15, 42), datetime.datetime(
-                           2018, 2, 8, 5, 17, 40),
-                       datetime.datetime(2018, 2, 8, 5, 19, 30), datetime.datetime(
-                           2018, 2, 8, 5, 21, 40),
-                       datetime.datetime(2018, 2, 8, 5, 23, 46), datetime.datetime(
-                           2018, 2, 8, 5, 25, 46),
-                       datetime.datetime(2018, 2, 8, 5, 27, 47), datetime.datetime(
-                           2018, 2, 8, 5, 29, 49),
-                       datetime.datetime(2018, 2, 8, 5, 31, 39), datetime.datetime(
-                           2018, 2, 8, 5, 33, 44),
-                       datetime.datetime(2018, 2, 8, 5, 35, 49), datetime.datetime(
-                           2018, 2, 8, 5, 37, 52),
-                       datetime.datetime(2018, 2, 8, 5, 39, 56), datetime.datetime(
-                           2018, 2, 8, 5, 42, 8),
-                       datetime.datetime(2018, 2, 8, 5, 43, 58), datetime.datetime(
-                           2018, 2, 8, 5, 46, 7),
-                       datetime.datetime(2018, 2, 8, 5, 48, 14), datetime.datetime(
-                           2018, 2, 8, 5, 50, 26),
-                       datetime.datetime(2018, 2, 8, 5, 52, 34), datetime.datetime(
-                           2018, 2, 8, 5, 54, 43),
-                       datetime.datetime(2018, 2, 8, 5, 56, 42), datetime.datetime(
-                           2018, 2, 8, 5, 58, 58),
-                       datetime.datetime(2018, 2, 8, 6, 1, 8), datetime.datetime(
-                           2018, 2, 8, 6, 3, 18),
-                       datetime.datetime(2018, 2, 8, 6, 5, 29), datetime.datetime(
-                           2018, 2, 8, 6, 7, 40),
-                       datetime.datetime(2018, 2, 8, 6, 9, 33)], dtype=object)
+#     if TrackFlux:
+#         assert len(times) == len(exptimes)
 
-    fitresults = wrap_fitNL(raw_data, exptimes, col_labels,
-                            times=dtobjs, TrackFlux=True, subBgd=True)
+#         dtimes = np.array(
+#             [(times[i] - times[0]).seconds for i in range(NObsIDs)], dtype='float32')
+
+#     #col_numbers = np.array([int(item[3:]) for item in col_labels])
+
+#     nonzeroexptimes = exptimes[exptimes > 0.]
+#     unonzeroexptimes = np.unique(nonzeroexptimes)
+
+#     # the stability exposure time repeats the most
+#     _ixstab = np.array([(exptimes == iexptime).sum() for iexptime in unonzeroexptimes]).argmax()
+#     exptimestab = unonzeroexptimes[_ixstab]
+
+#     # boolean indices of the different types of exposures
+
+#     ixboo_bgd = exptimes == 0.
+#     ixboo_stab = exptimes == exptimestab
+#     ixboo_fluences = ((exptimes > 0.) & (exptimes != exptimestab))
+
+#     # Not used any more
+#     #ixboo_bgd = col_numbers == 1
+#     # ixboo_stab = (col_numbers % 2 == 0) & (col_numbers > 1)  # EVEN
+#     # ixboo_fluences = (col_numbers % 2 != 0)  & (col_numbers > 1)# ODD
+
+#     if subBgd:
+#         bgd = np.nanmean(fluences[ixboo_bgd, :], axis=0)
+#         bgd = np.repeat(bgd.reshape(1, Nsecs), NObsIDs, axis=0).copy()
+#         fluences -= bgd
+#     else:
+#         bgd = 0.
+
+#     if TrackFlux and len(times) == NObsIDs:
+
+#         st_dtimes = dtimes[ixboo_stab].copy()
+#         st_fluences = np.nanmean(fluences[ixboo_stab, :], axis=1).copy()
+
+#         track_fit = np.polyfit(st_dtimes, st_fluences,
+#                                2, full=False, cov=False)
+
+#         track_pol = np.poly1d(track_fit)
+
+#         track = track_pol(dtimes[ixboo_fluences])
+#         track /= np.median(track)
+#         #track_bc = np.repeat(track.reshape(len(track), 1), Nsecs, axis=1)
+#         fluences[ixboo_fluences, :] /= track.reshape(track.shape[0], -1)
+#     else:
+#         track = np.ones_like(fluences[ixboo_fluences, 0])
+
+#     X, Y, W = getXYW_NL(fluences[ixboo_fluences, :],
+#                         exptimes[ixboo_fluences], nomG,
+#                         maxrelflu=maxrelflu,
+#                         method='ransac')
+
+#     fitresults = fitNL_pol(X, Y, W, minfitFl, maxfitFl, display=False)
+#     fitresults['bgd'] = bgd
+#     fitresults['stability_pc'] = np.std(track) * 100.
+
+#     return fitresults
+
+
+# def wrap_fitNL_TwoFilters(fluences, variances, exptimes, wave, times=np.array([]),
+#                           TrackFlux=True, subBgd=True, debug=False):
+#     """ """
+
+#     nomG = 3.5  # e/ADU, used for noise estimates
+#     minfitFl = 1000.  # ADU
+#     maxfitFl = FullDynRange - 10000.  # ADU
+#     pivotfrac = 0.2
+#     maxrelflu = 0.8
+
+#     NObsIDs, Nsecs = fluences.shape
+
+#     if TrackFlux:
+#         assert len(times) == len(exptimes)
+
+#         dtimes = np.array(
+#             [(times[i] - times[0]).seconds for i in range(NObsIDs)], dtype='float32')
+
+#     #col_numbers = np.array([int(item[3:]) for item in col_labels])
+
+#     nonzeroexptimes = exptimes[exptimes > 0.]
+#     unonzeroexptimes = np.unique(nonzeroexptimes)
+
+#     # the stability exposure time repeats the most
+#     _ixstab = np.array([(exptimes == iexptime).sum() for iexptime in unonzeroexptimes]).argmax()
+#     exptimestab = unonzeroexptimes[_ixstab]
+
+#     # boolean indices of the different types of exposures
+
+#     uwaves = np.unique(wave)
+
+#     ixboo_bgd = exptimes == 0.
+#     ixboo_stab = exptimes == exptimestab
+#     ixboo_fluA = ((exptimes > 0.) & (exptimes != exptimestab) & (wave == uwaves[0]))
+#     ixboo_fluB = ((exptimes > 0.) & (exptimes != exptimestab) & (wave == uwaves[1]))
+
+#     #ixboo_bgd = col_numbers == 1
+#     # ixboo_stab = (col_numbers % 2 == 0) & (col_numbers > 1)  # EVEN
+#     # ixboo_fluences = (col_numbers % 2 != 0)  & (col_numbers > 1)# ODD
+
+#     # assuming here the background is not affected by wavelength selection
+#     # in FW.. could be WRONG
+#     if subBgd:
+#         bgd = np.nanmean(fluences[ixboo_bgd, :], axis=0)
+#         bgd = np.repeat(bgd.reshape(1, Nsecs), NObsIDs, axis=0).copy()
+#         fluences -= bgd
+#     else:
+#         bgd = 0.
+
+#     if TrackFlux and len(times) == NObsIDs:
+#         st_dtimes = dtimes[ixboo_stab].copy()
+#         st_fluences = np.nanmean(fluences[ixboo_stab, :], axis=1).copy()
+
+#         track_fit = np.polyfit(st_dtimes, st_fluences, 2, full=False, cov=False)
+
+#         track_pol = np.poly1d(track_fit)
+
+#         trackA = track_pol(dtimes[ixboo_fluA])
+#         trackA /= np.median(trackA)
+
+#         trackB = track_pol(dtimes[ixboo_fluB])
+#         trackB /= np.median(trackB)
+
+#         #track_bc = np.repeat(track.reshape(len(track), 1), Nsecs, axis=1)
+#         fluences[ixboo_fluA, :] /= trackA.reshape(trackA.shape[0], -1)
+#         fluences[ixboo_fluB, :] /= trackB.reshape(trackB.shape[0], -1)
+#         trackstab = np.mean([trackA.std(), trackB.std()]) * 100.
+#     else:
+#         trackstab = 0.
+
+#     X_A, Y_A, W_A = getXYW_NL(fluences[ixboo_fluA, :],
+#                               exptimes[ixboo_fluA], nomG,
+#                               pivotfrac=pivotfrac,
+#                               maxrelflu=maxrelflu,
+#                               method='ransac')
+
+#     X_B, Y_B, W_B = getXYW_NL(fluences[ixboo_fluB, :],
+#                               exptimes[ixboo_fluB], nomG,
+#                               pivotfrac=pivotfrac,
+#                               maxrelflu=maxrelflu,
+#                               method='ransac')
+
+#     X = np.concatenate((X_A, X_B))
+#     Y = np.concatenate((Y_A, Y_B))
+#     W = np.concatenate((W_A, W_B))
+
+#     fitresults = fitNL_pol(X, Y, W, minfitFl, maxfitFl, display=debug)
+#     fitresults['bgd'] = bgd
+#     fitresults['stability_pc'] = trackstab
+
+#     return fitresults
+
+
+# def wrap_fitNL_TwoFilters_Alt(fluences, variances, exptimes, wave, times=np.array([]),
+#         TrackFlux=True, debug=False, ObsIDs=None, NLdeg=NLdeg,
+#         offset=0., XX=None, YY=None):
+#     """ """
+
+#     nomG = 3.5  # e/ADU, used for noise estimates
+#     minfitFl = 250.  # ADU
+#     maxfitFl = FullDynRange - 10000.  # ADU
+#     #pivotfrac = 0.2
+#     minrelflu = 0.10
+#     maxrelflu = 0.30
+
+#     NObsIDs, Nsecs = fluences.shape
+
+#     if TrackFlux:
+
+#         assert len(times) == len(exptimes)
+
+#         dtimes = np.array(
+#             [(times[i] - times[0]).seconds for i in range(NObsIDs)], dtype='float32')
+
+#     #col_numbers = np.array([int(item[3:]) for item in col_labels])
+
+#     nonzeroexptimes = exptimes[exptimes > 0.]
+#     unonzeroexptimes = np.unique(nonzeroexptimes)
+
+#     # hacky but effective way to identify stability exposures: the stability
+#     # exposure time repeats the most
+#     _ixstab = np.array([(exptimes == iexptime).sum() for iexptime in unonzeroexptimes]).argmax()
+#     exptimestab = unonzeroexptimes[_ixstab]
+
+#     # boolean indices of the different types of exposures
+
+#     uwaves = np.unique(wave)
+
+#     ixboo_bgd = exptimes == 0.
+#     ixboo_stab = exptimes == exptimestab
+#     ixboo_fluA = (exptimes != 0.) & (exptimes != exptimestab) & (wave == uwaves[0])
+#     ixboo_fluB = (exptimes != 0.) & (exptimes != exptimestab) & (wave == uwaves[1])
+
+#     if TrackFlux and len(times) == NObsIDs:
+
+#         st_dtimes = dtimes[ixboo_stab].copy()
+#         st_fluences = np.nanmean(fluences[ixboo_stab, :], axis=1).copy()
+
+#         ans = sigma_clip(st_fluences, sigma=3)
+#         ixgood = np.where(~ans.mask)
+
+#         # tmodel = make_pipeline(PolynomialFeatures(2),
+#         #                  linear_model.Ridge(alpha=0.1,
+#         #                  solver='auto',max_iter=1000))
+
+#         # tmodel.fit(st_dtimes[ixgood,np.newaxis],st_fluences[ixgood,np.newaxis])
+
+#         #track_fit = tmodel._final_estimator.coef_[0][::-1]
+#         #track_fit[-1] = tmodel._final_estimator.intercept_[0]
+
+#         track_fit = np.polyfit(st_dtimes[ixgood], st_fluences[ixgood], 2, 
+#             full=False, cov=False)
+
+#         track_pol = np.poly1d(track_fit)
+
+#         trackA = track_pol(dtimes[ixboo_fluA])
+#         trackA /= np.median(trackA)
+
+#         trackB = track_pol(dtimes[ixboo_fluB])
+#         trackB /= np.median(trackB)
+
+#         #track_bc = np.repeat(track.reshape(len(track), 1), Nsecs, axis=1)
+#         fluences[ixboo_fluA, :] /= trackA.reshape(trackA.shape[0], -1)
+#         fluences[ixboo_fluB, :] /= trackB.reshape(trackB.shape[0], -1)
+#         trackstab = np.mean([trackA.std(), trackB.std()]) * 100.
+#     else:
+#         trackstab = 0.
+
+#     ixfitA = ixboo_fluA | ixboo_bgd | ixboo_stab
+#     X_A, Y_A, W_A, e_A, r_A = getXYW_NL02(fluences[ixfitA, :],
+#                                           exptimes[ixfitA], nomG,
+#                                           minrelflu=minrelflu,
+#                                           maxrelflu=maxrelflu)
+#     ixfitB = ixboo_fluB | ixboo_bgd
+#     X_B, Y_B, W_B, e_B, r_B = getXYW_NL02(fluences[ixfitB, :],
+#                                           exptimes[ixfitB], nomG,
+#                                           minrelflu=minrelflu,
+#                                           maxrelflu=maxrelflu)
+
+#     #bgdnoff = np.median(fluences[ixboo_bgd,:])
+
+#     X = np.concatenate((X_A, X_B)) - offset  # notice the small back-ground is left in!
+#     Y = np.concatenate((Y_A, Y_B))
+#     W = np.concatenate((W_A, W_B))
+#     #exps = np.concatenate((e_A,e_B))
+#     #regs = np.concatenate((r_A,r_B))
+
+#     Exptimes = np.concatenate((exptimes[ixfitA][e_A], exptimes[ixfitB][e_B]))
+
+#     Xcoo = np.concatenate((XX[e_A, r_A], XX[e_B, r_B]))
+#     Ycoo = np.concatenate((YY[e_A, r_A], YY[e_B, r_B]))
+
+#     fitresults = fitNL_taylored(X, Y, W, Exptimes, minfitFl, maxfitFl, NLdeg,
+#         display=debug,
+#         addExp=True)
+#     fitresults['Xcoo'] = Xcoo.copy()
+#     fitresults['Ycoo'] = Ycoo.copy()
+
+#     #fitresults['bgd'] = bgd
+#     fitresults['stability_pc'] = trackstab
+
+
+#     return fitresults
+
+# def test_wrap_fitNL():
+#     """ """
+
+#     col_labels = np.array(['col001', 'col001', 'col001', 'col001',
+#                            'col002', 'col002', 'col002', 'col002', 'col002',
+#                            'col003',
+#                            'col004', 'col004', 'col004', 'col004', 'col004',
+#                            'col005',
+#                            'col006', 'col006', 'col006', 'col006', 'col006',
+#                            'col007',
+#                            'col008', 'col008', 'col008', 'col008', 'col008',
+#                            'col009',
+#                            'col010', 'col010', 'col010', 'col010', 'col010',
+#                            'col013',
+#                            'col014', 'col014', 'col014', 'col014', 'col014',
+#                            'col015',
+#                            'col016', 'col016', 'col016', 'col016', 'col016',
+#                            'col017',
+#                            'col018', 'col018', 'col018', 'col018', 'col018',
+#                            'col019',
+#                            'col020', 'col020', 'col020', 'col020', 'col020',
+#                            'col021',
+#                            'col022', 'col022', 'col022', 'col022', 'col022',
+#                            'col023',
+#                            'col024', 'col024', 'col024', 'col024', 'col024',
+#                            'col025'],
+#                           dtype='|S12')
+
+#     exptimes = np.array([0., 0., 0., 0., 1.5, 1.5, 1.5, 1.5, 1.5,
+#                          15., 3., 3., 3., 3., 3., 15., 6., 6.,
+#                          6., 6., 6., 15., 9., 9., 9., 9., 9.,
+#                          15., 15., 15., 15., 15., 15., 15., 21., 21.,
+#                          21., 21., 21., 15., 24., 24., 24., 24., 24.,
+#                          15., 27., 27., 27., 27., 27., 15., 30., 30.,
+#                          30., 30., 30., 15., 33., 33., 33., 33., 33.,
+#                          15., 36., 36., 36., 36., 36., 15.])
+
+#     raw_data = np.repeat((exptimes / exptimes.max() * 2. **
+#                           16).reshape((70, 1)), 49, axis=1)
+#     dtobjs = np.array([datetime.datetime(2018, 2, 8, 3, 59, 17),
+#                        datetime.datetime(2018, 2, 8, 4, 0, 55), datetime.datetime(
+#                            2018, 2, 8, 4, 2, 28),
+#                        datetime.datetime(2018, 2, 8, 4, 4, 7), datetime.datetime(
+#                            2018, 2, 8, 4, 5, 43),
+#                        datetime.datetime(2018, 2, 8, 4, 7, 19), datetime.datetime(
+#                            2018, 2, 8, 4, 8, 54),
+#                        datetime.datetime(2018, 2, 8, 4, 10, 29), datetime.datetime(
+#                            2018, 2, 8, 4, 12, 5),
+#                        datetime.datetime(2018, 2, 8, 4, 14, 2), datetime.datetime(
+#                            2018, 2, 8, 4, 15, 40),
+#                        datetime.datetime(2018, 2, 8, 4, 17, 18), datetime.datetime(
+#                            2018, 2, 8, 4, 18, 55),
+#                        datetime.datetime(2018, 2, 8, 4, 20, 38), datetime.datetime(
+#                            2018, 2, 8, 4, 22, 15),
+#                        datetime.datetime(2018, 2, 8, 4, 24, 5), datetime.datetime(
+#                            2018, 2, 8, 4, 25, 46),
+#                        datetime.datetime(2018, 2, 8, 4, 27, 27), datetime.datetime(
+#                            2018, 2, 8, 4, 29, 6),
+#                        datetime.datetime(2018, 2, 8, 4, 30, 47), datetime.datetime(
+#                            2018, 2, 8, 4, 32, 28),
+#                        datetime.datetime(2018, 2, 8, 4, 34, 18), datetime.datetime(
+#                            2018, 2, 8, 4, 36, 2),
+#                        datetime.datetime(2018, 2, 8, 4, 37, 46), datetime.datetime(
+#                            2018, 2, 8, 4, 39, 28),
+#                        datetime.datetime(2018, 2, 8, 4, 41, 19), datetime.datetime(
+#                            2018, 2, 8, 4, 43, 11),
+#                        datetime.datetime(2018, 2, 8, 4, 45), datetime.datetime(
+#                            2018, 2, 8, 4, 46, 57),
+#                        datetime.datetime(2018, 2, 8, 4, 48, 46), datetime.datetime(
+#                            2018, 2, 8, 4, 50, 34),
+#                        datetime.datetime(2018, 2, 8, 4, 52, 24), datetime.datetime(
+#                            2018, 2, 8, 4, 54, 13),
+#                        datetime.datetime(2018, 2, 8, 4, 56, 10), datetime.datetime(
+#                            2018, 2, 8, 4, 58, 6),
+#                        datetime.datetime(2018, 2, 8, 5, 0, 5), datetime.datetime(
+#                            2018, 2, 8, 5, 2),
+#                        datetime.datetime(2018, 2, 8, 5, 4, 2), datetime.datetime(
+#                            2018, 2, 8, 5, 5, 58),
+#                        datetime.datetime(2018, 2, 8, 5, 7, 48), datetime.datetime(
+#                            2018, 2, 8, 5, 9, 48),
+#                        datetime.datetime(2018, 2, 8, 5, 11, 46), datetime.datetime(
+#                            2018, 2, 8, 5, 13, 43),
+#                        datetime.datetime(2018, 2, 8, 5, 15, 42), datetime.datetime(
+#                            2018, 2, 8, 5, 17, 40),
+#                        datetime.datetime(2018, 2, 8, 5, 19, 30), datetime.datetime(
+#                            2018, 2, 8, 5, 21, 40),
+#                        datetime.datetime(2018, 2, 8, 5, 23, 46), datetime.datetime(
+#                            2018, 2, 8, 5, 25, 46),
+#                        datetime.datetime(2018, 2, 8, 5, 27, 47), datetime.datetime(
+#                            2018, 2, 8, 5, 29, 49),
+#                        datetime.datetime(2018, 2, 8, 5, 31, 39), datetime.datetime(
+#                            2018, 2, 8, 5, 33, 44),
+#                        datetime.datetime(2018, 2, 8, 5, 35, 49), datetime.datetime(
+#                            2018, 2, 8, 5, 37, 52),
+#                        datetime.datetime(2018, 2, 8, 5, 39, 56), datetime.datetime(
+#                            2018, 2, 8, 5, 42, 8),
+#                        datetime.datetime(2018, 2, 8, 5, 43, 58), datetime.datetime(
+#                            2018, 2, 8, 5, 46, 7),
+#                        datetime.datetime(2018, 2, 8, 5, 48, 14), datetime.datetime(
+#                            2018, 2, 8, 5, 50, 26),
+#                        datetime.datetime(2018, 2, 8, 5, 52, 34), datetime.datetime(
+#                            2018, 2, 8, 5, 54, 43),
+#                        datetime.datetime(2018, 2, 8, 5, 56, 42), datetime.datetime(
+#                            2018, 2, 8, 5, 58, 58),
+#                        datetime.datetime(2018, 2, 8, 6, 1, 8), datetime.datetime(
+#                            2018, 2, 8, 6, 3, 18),
+#                        datetime.datetime(2018, 2, 8, 6, 5, 29), datetime.datetime(
+#                            2018, 2, 8, 6, 7, 40),
+#                        datetime.datetime(2018, 2, 8, 6, 9, 33)], dtype=object)
+
+#     fitresults = wrap_fitNL(raw_data, exptimes, col_labels,
+#                             times=dtobjs, TrackFlux=True, subBgd=True)
 
 
 def recalibrate_exptimes(exptimes, calibrationfile):
@@ -1597,4 +1382,5 @@ def recalibrate_exptimes(exptimes, calibrationfile):
 
 
 if __name__ == '__main__':
-    test_wrap_fitNL()
+    #test_wrap_fitNL()
+    pass
