@@ -1397,6 +1397,19 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
                                 ObsIDs=fObsIDs,
                                 pin=pin)
     
+    #fitresults = OrderedDict(
+    #    model=ff,
+    #    coeffs=popt,
+    #    maxNLpc=maxNLpc,
+    #    flu_maxNLpc=flu_maxNLpc,
+    #    inputcurve=OrderedDict(
+    #        X=X.copy(),
+    #        Y=Y.copy()),
+    #    outputcurve=OrderedDict(
+    #        X=fkfluencesNL.copy(),
+    #        Y=Y_bestfit.copy()))
+    
+
     # Residuals of Linearisation
 
     #fluxHI = 7247.044204930443 # TEST
@@ -1436,15 +1449,20 @@ def wrap_fitNL_TwoFilters_Tests(fluences, variances, exptimes, wave, times=np.ar
     #fitresults['bgd'] = bgd
     fitresults['stability_pc'] = trackstab # as a percentage
 
-    # TESTS
-    #import matplotlib.cm as cm
-    #uexps = np.unique(exps)
-    #colors = cm.rainbow(np.linspace(0,1,len(uexps)))
-    # for iexp,uexp in enumerate(uexps):
-    #    ixsel = np.where(uexp == exps)
-    #    plot(X[ixsel],Y[ixsel],'.',c=colors[iexp])
-    # show()
-    # stop()
+    #fitresults = OrderedDict(
+    #    model=ff,
+    #    coeffs=popt,
+    #    maxNLpc=maxNLpc,
+    #    flu_maxNLpc=flu_maxNLpc,
+    #    inputcurve=OrderedDict(
+    #        X=X.copy(),
+    #        Y=Y.copy()),
+    #    outputcurve=OrderedDict(
+    #        X=fkfluencesNL.copy(),
+    #        Y=Y_bestfit.copy()),
+    #    'xres'=YLexpect.copy(),
+    #    'yres'=yres.copy(),
+    #    'stability_pc'=trackstab))
 
     return fitresults
 

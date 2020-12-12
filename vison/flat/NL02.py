@@ -815,12 +815,19 @@ class NL02(NL01.NL01):
                         offset=ijoffset,
                         XX=raw_X, YY=raw_Y,
                         pin=self.pin)
-#                print('WITHOUT shutter nl correction...')
-#                __fitresults = nllib.wrap_fitNL_TwoFilters_Alt(raw_med, raw_var, exptimes, wave,
-#                                            dtobjs,
-#                                            TrackFlux=True,
-#                                            debug=debug,
-#                                            ObsIDs=ObsIDs)
+
+                # TEST
+
+                FullDynRange = 2.**16
+
+                xNL = np.linspace(1.,FullDynRange,200)
+                yLIN = xNL/(1.+_fitresults['model'](xNL/FullDynRange,*_fitresults['coeffs'])/100.)
+
+                stop()
+
+
+                # END TEST
+
 
                 NLall_mx[CCDkey][Q].update(_fitresults)
 
