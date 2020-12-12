@@ -821,7 +821,8 @@ class NL02(NL01.NL01):
                 FullDynRange = 2.**16
 
                 xLIN = np.linspace(1.,FullDynRange,200)
-                yNL = xNL*(1.+_fitresults['model'](xLIN/FullDynRange,*_fitresults['coeffs'])/100.)
+                yNL = xLIN*(1.+_fitresults['model'](xLIN/FullDynRange,*_fitresults['coeffs'])/100.)
+                stop()
 
                 ixsel = np.where(xLIN < 0.03*FullDynRange)
                 mod1d_fit = np.polyfit(xLIN[ixsel], yNL[ixsel], 1)  # a linear approx. is fine
