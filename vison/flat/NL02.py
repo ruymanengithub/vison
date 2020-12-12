@@ -820,8 +820,16 @@ class NL02(NL01.NL01):
 
                 FullDynRange = 2.**16
 
-                xNL = np.linspace(1.,FullDynRange,200)
-                yLIN = xNL/(1.+_fitresults['model'](xNL/FullDynRange,*_fitresults['coeffs'])/100.)
+                xLIN = np.linspace(1.,FullDynRange,200)
+                yNL = xNL*(1.+_fitresults['model'](xLIN/FullDynRange,*_fitresults['coeffs'])/100.)
+
+                ixsel = np.where(xLIN < 0.03*FullDynRange)
+                mod1d_fit = np.polyfit(xLIN[ixsel], yNL[ixsel], 1)  # a linear approx. is fine
+                predictor = np.poly1d(mod1d_fit)
+                off = predictor.coeffs[1]
+
+                ZNLtrans = (yNL/(predictor(xLIN)-off)-1.)*100.
+
 
                 stop()
 
