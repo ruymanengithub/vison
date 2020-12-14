@@ -803,8 +803,8 @@ class MetaNL(MetaCal):
         self.plot_XY(NLSingleDatadict, **NLDatakwargs)
 
         if self.report is not None:
-            self.addFigure2Report(figname4,
-                figkey=figkey4,
+            self.addFigure2Report(figname41,
+                figkey=figkey41,
                 caption='Data points of the Non-linearity curves for all quadrants '+\
                 'in the flight FPA, given as a percentage vs. fluence in ke-. '+\
                 'The particularly deviant curves of OWEN have been omitted '+\
