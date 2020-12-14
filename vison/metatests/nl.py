@@ -481,6 +481,9 @@ class MetaNL(MetaCal):
         self.figs['NL_curves_data'] = os.path.join(self.figspath,
                                 'NL_curves_rel_data.png')
 
+        self.figs['NL_curves_data_chamber'] = os.path.join(self.figspath,
+                                'NL_curves_rel_data_bychamber.png')
+
         self.figs['NL_curves_abs'] = os.path.join(self.figspath,
                                 'NL_curves_abs_fit.png')
 
@@ -697,7 +700,7 @@ class MetaNL(MetaCal):
         # PLOT All NL curves in single Plot - Differentiate by testing chamber
 
         figkey31 = 'NL_curves_chamber'
-        figname31 = self.figs[figkey1] 
+        figname31 = self.figs[figkey31] 
 
         NLkwargs = dict(
             title='NON-LINEARITY CURVES - by Chamber',
@@ -766,6 +769,47 @@ class MetaNL(MetaCal):
                 'in the flight FPA, given as a percentage vs. fluence in ke-. '+\
                 'The particularly deviant curves of OWEN have been omitted '+\
                 'for clarity. Different colours correspond to different blocks.',
+                texfraction=0.8)
+
+
+        # PLOT All NL curves in single Plot - Relative, data points, By Chamber
+
+        figkey41 = 'NL_curves_data_chamber'
+        figname41 = self.figs[figkey41]
+
+        NLDatakwargs = dict(
+            title='NON-LINEARITY DATA POINTS',
+            doLegend=False,
+            xlabel='Fluence [ke-]',
+            ylabel='Non-Linearity [pc]',
+            ylim=[-3., 7.],
+            figname=figname41)
+
+        pointcorekwargsCH = dict()
+        for jblock, block in enumerate(self.flight_blocks):
+            
+            if block in CHAMBER_A_lot:
+                jcolor = 'g'
+            elif block in CHAMBER_B_lot:
+                jcolor = 'b'
+
+            for iCCD in self.CCDs:
+                for kQ in self.Quads:
+                    pointcorekwargsCH['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(
+                        linestyle='', marker='.', color=jcolor)
+
+        NLDatakwargs['corekwargs'] = pointcorekwargsCH
+
+        self.plot_XY(NLSingleDatadict, **NLDatakwargs)
+
+        if self.report is not None:
+            self.addFigure2Report(figname4,
+                figkey=figkey4,
+                caption='Data points of the Non-linearity curves for all quadrants '+\
+                'in the flight FPA, given as a percentage vs. fluence in ke-. '+\
+                'The particularly deviant curves of OWEN have been omitted '+\
+                'for clarity. Colour-coded by testing chamber: chamber A in '+\
+                'green, chamber B in blue.',
                 texfraction=0.8)
 
 
