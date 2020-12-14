@@ -475,6 +475,8 @@ class MetaNL(MetaCal):
 
         self.figs['NL_curves'] = os.path.join(self.figspath,
                                 'NL_curves_rel_fit.png')
+        self.figs['NL_curves_chamber'] = os.path.join(self.figspath,
+                                'NL_curves_rel_fit_bychamber.png')
 
         self.figs['NL_curves_data'] = os.path.join(self.figspath,
                                 'NL_curves_rel_data.png')
@@ -691,6 +693,51 @@ class MetaNL(MetaCal):
                 'The particularly deviant curves of OWEN have been omitted '+\
                 'for clarity. Different colours correspond to different blocks.',
                 texfraction=0.8)
+
+        # PLOT All NL curves in single Plot - Differentiate by testing chamber
+
+        figkey31 = 'NL_curves_chamber'
+        figname31 = self.figs[figkey1] 
+
+        NLkwargs = dict(
+            title='NON-LINEARITY CURVES - by Chamber',
+            doLegend=False,
+            xlabel='Fluence [ke-]',
+            ylabel='Non-Linearity [pc]',
+            ylim=[-3., 7.],
+            figname=figname31)
+
+        CHAMBER_A_lot = ['DIRAC','FOWLER','JULES','MAX','OWEN']
+        CHAMBER_B_lot = ['BORN','CURIE','EINSTEIN','ERWIN','GUYE',
+            'HEISENBERG','JULES2','KRAMERS','LORENTZ','NIELS','SKLODOWSKA']
+
+        linecorekwargs = dict()
+        for jblock, block in enumerate(self.flight_blocks):
+            if block in CHAMBER_A_lot:
+                jcolor = 'g'
+            elif block in CHAMBER_B_lot:
+                jcolor = 'b'
+            
+            for iCCD in self.CCDs:
+                for kQ in self.Quads:
+                    linecorekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(
+                        linestyle='-', marker='', color=jcolor)
+
+        NLkwargs['corekwargs'] = linecorekwargs
+
+        self.plot_XY(NLSingledict, **NLkwargs)
+
+        if self.report is not None:
+            self.addFigure2Report(figname31,
+                figkey=figkey31,
+                caption='Best fit non-linearity curves for all quadrants in the '+\
+                'flight FPA, given as a percentage vs. fluence in ke-. '+\
+                'The particularly deviant curves of OWEN have been omitted '+\
+                'for clarity. Colour-coded by testing chamber: chamber A in '+\
+                'green, chamber B in blue.',
+                texfraction=0.8)
+
+
 
         # PLOT All NL curves in single Plot - Relative, data points
 
