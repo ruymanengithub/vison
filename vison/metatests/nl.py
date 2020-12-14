@@ -680,9 +680,9 @@ class MetaNL(MetaCal):
             for iCCD in self.CCDs:
                 for kQ in self.Quads:
                     linecorekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(
-                        linestyle='-', marker='', color=jcolor)
+                        linestyle='-', marker='', color=jcolor, alpha=0.5)
                     pointcorekwargs['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(
-                        linestyle='', marker='.', color=jcolor)
+                        linestyle='', marker='.', color=jcolor, alpha=0.5)
 
         NLkwargs['corekwargs'] = linecorekwargs
 
@@ -796,7 +796,7 @@ class MetaNL(MetaCal):
             for iCCD in self.CCDs:
                 for kQ in self.Quads:
                     pointcorekwargsCH['%s_CCD%i_%s' % (block, iCCD, kQ)] = dict(
-                        linestyle='', marker='.', color=jcolor)
+                        linestyle='', marker='.', color=jcolor, alpha=0.5)
 
         NLDatakwargs['corekwargs'] = pointcorekwargsCH
 
