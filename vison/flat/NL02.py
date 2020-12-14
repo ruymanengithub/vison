@@ -774,6 +774,7 @@ class NL02(NL01.NL01):
                 ijoffset = self.dd.mx['offset_pre'][:, iCCD, jQ]
 
                 if doExptimeCalib:
+                    stop()
                     nexptimes = self.recalibrate_exptimes(exptimes)
                 else:
                     nexptimes = copy.deepcopy(exptimes)
