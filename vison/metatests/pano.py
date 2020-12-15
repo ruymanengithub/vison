@@ -211,7 +211,10 @@ class MetaPano(MetaCal):
                                      vcore.vIndex('Quad', vals=self.Quads)])
 
         #idd = copy.deepcopy(inventoryitem['dd'])
-        sidd = self.parse_single_test_gen(jrep, block, testname, inventoryitem)
+        try:
+            sidd = self.parse_single_test_gen(jrep, block, testname, inventoryitem)
+        except:
+            stop()
 
         # TEST SCPECIFIC
         # TO BE ADDED:
@@ -261,11 +264,33 @@ class MetaPano(MetaCal):
     def dump_aggregated_results(self):
         """ """
 
+        stop()
+
         if self.report is not None:
             self.report.add_Section(keyword='dump', 
                 Title='Aggregated Results', level=0)
 
             #self.add_DataAlbaran2Report()
+
+            # Note:
+            # Delta-offsets/RONs are referred to the mean value of offset/ron for each quadrant,
+            # in each campaign
+
+            # histogram of delta-offsets (prescans)
+
+
+            # histogram of delta-RONs (prescans)
+
+
+            # Delta-offset vs. time, color coding by test type
+
+
+            # pre-scan offset vs. image fluence
+
+            
+
+
+
 
         
 
