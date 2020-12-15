@@ -211,10 +211,7 @@ class MetaPano(MetaCal):
                                      vcore.vIndex('Quad', vals=self.Quads)])
 
         #idd = copy.deepcopy(inventoryitem['dd'])
-        try:
-            sidd = self.parse_single_test_gen(jrep, block, testname, inventoryitem)
-        except:
-            stop()
+        sidd = self.parse_single_test_gen(jrep, block, testname, inventoryitem)
 
         # TEST SCPECIFIC
         # TO BE ADDED:
