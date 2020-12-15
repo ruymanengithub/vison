@@ -753,6 +753,7 @@ class MetaBF(MetaCal):
         gpsf_cdp.ingest_inputs(data=gpsf_data.copy(),
             meta=gpsf_meta.copy(),
             header=CDP_header.copy())
+        stop()
         gpsf_cdp.init_HL_and_fillAll()
 
         gpsf_cdp.hdulist[0].header.insert(list(CDP_header.keys())[0],
@@ -772,14 +773,14 @@ class MetaBF(MetaCal):
 
             self.add_DataAlbaran2Report()
 
-        doAll = True
+        doAll = False
 
         doFWHMvWAVE = doAll
         doFWHMvFLU = doAll
         doFWHMvFLUalt = doAll
         doTestMAPs = doAll
         doELLMAP = doAll
-        doCDPs = doAll
+        doCDPs = True
 
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
