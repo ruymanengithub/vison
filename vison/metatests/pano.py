@@ -146,7 +146,7 @@ cols2keep = [
 testnames = ['BIAS01',
 'BIAS02',
 'DARK01',
-'COSMETICS00',
+#'COSMETICS00',
 'CHINJ01',
 'CHINJ02',
 'FLAT01',

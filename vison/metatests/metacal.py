@@ -457,10 +457,8 @@ class MetaCal(object):
                 except NameError:
                     pt = copy.deepcopy(sit)
 
-        try:
-            self.ParsedTable[testname] = pt
-        except:
-            stop()
+        self.ParsedTable[testname] = pt
+        
 
     def add_DataAlbaran2Report(self):
         """Adds a data delivery note to the report."""
