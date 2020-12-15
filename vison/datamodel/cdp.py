@@ -295,7 +295,10 @@ class FitsTables_CDP(CDP):
                 kformat = '%s%i' % (self.formatsdict['char'],
                     dd[k].dtype.itemsize)
             else:
-                kformat = self.formatsdict[dtype]
+                try:
+                    kformat = self.formatsdict[dtype]
+                except:
+                    stop()
 
             columns.append(fts.Column(name=k,
                 format=kformat,

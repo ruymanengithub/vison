@@ -753,7 +753,7 @@ class MetaBF(MetaCal):
         gpsf_cdp.ingest_inputs(data=gpsf_data.copy(),
             meta=gpsf_meta.copy(),
             header=CDP_header.copy())
-        stop()
+        
         gpsf_cdp.init_HL_and_fillAll()
 
         gpsf_cdp.hdulist[0].header.insert(list(CDP_header.keys())[0],
