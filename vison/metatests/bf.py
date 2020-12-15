@@ -773,14 +773,14 @@ class MetaBF(MetaCal):
 
             self.add_DataAlbaran2Report()
 
-        doAll = False
+        doAll = True
 
         doFWHMvWAVE = doAll
         doFWHMvFLU = doAll
         doFWHMvFLUalt = doAll
         doTestMAPs = doAll
         doELLMAP = doAll
-        doCDPs = True
+        doCDPs = doAll
 
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
