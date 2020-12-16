@@ -364,7 +364,7 @@ class MetaPano(MetaCal):
                 xlabel=r'$\Delta Time\ [hrs]$',
                 ylabel=r'$\Delta Offset\ [ADU]$',
                 ylim=[-10., 10.],
-                text=dict(x=0.1,0.9,statstext1,
+                text=dict(x=0.1,y=0.9,text=statstext1,
                     kwargs=dict(horizontalalignment='left')),
                 figname=figname1)
 
