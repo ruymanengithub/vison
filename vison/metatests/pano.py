@@ -261,7 +261,7 @@ class MetaPano(MetaCal):
             os.system('mkdir %s' % self.cdpspath)
 
 
-    def get_pldata_vstime_bytest(statistic):
+    def get_pldata_vstime_bytest(self, statistic):
         """ """
 
         pldata = OrderedDict(labelkeys=[],x=dict(),y=dict())
