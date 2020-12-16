@@ -253,7 +253,6 @@ class MetaPano(MetaCal):
 
         self.figs['doff_colored_bytest'] = os.path.join(self.figspath, 'DELTAOFFSETS_byTEST.png')
 
-        
 
     def init_outcdpnames(self):
         """ """
@@ -284,9 +283,9 @@ class MetaPano(MetaCal):
 
         for block in self.flight_blocks:
 
-            for jCCD, CCD in self.CCDs:
+            for jCCD, CCD in enumerate(self.CCDs):
                 CCDkey = 'CCD%i' % CCD
-                for kQ, Q in self.Quads:
+                for kQ, Q in enumerate(self.Quads):
 
                     statcol = '%s_%s_Quad%s' % (statistic, CCDkey, Q)
                     tcol = 'time_%s' % CCDkey
