@@ -268,8 +268,8 @@ class MetaPano(MetaCal):
             if it ==0:
                 PT = copy.deepcopy(self.ParsedTable[testname])
             else:
-                PT = vstack(PT,self.ParsedTable[testname])
-        stop()
+                PT = vstack([PT,self.ParsedTable[testname]])
+        
 
         return PT
 
@@ -292,6 +292,15 @@ class MetaPano(MetaCal):
                     tcol = 'time_%s' % CCDkey
 
                     ixsel = np.where((PT['BLOCK']==block))
+                    stop()
+
+                    _data = PT[statcol][ixsel]
+                    _time = PT[tcol][ixsel]
+
+                    _time -= (_time-_time.min()).hours
+
+
+
 
                     stop()
 
