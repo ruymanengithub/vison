@@ -355,7 +355,7 @@ class MetaPano(MetaCal):
 
             statstext1 = 'std=%.1f\n' % stats1['std'] +\
                 'p5=%.1f\n' % stats1['p5'] +\
-                'p95=%.2f' % stats2['p95']
+                'p95=%.2f' % stats1['p95']
 
 
             fig1kwargs = dict(
