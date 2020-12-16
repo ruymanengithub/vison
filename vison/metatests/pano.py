@@ -303,16 +303,18 @@ class MetaPano(MetaCal):
 
                     for testname in self.testnames:
 
+                        ixtest = np.where(tests == testname)
+
                         testtype = [ttype for ttype in self.testtypes if ttype in 'BIAS01'][0]
 
                         if testtype not in pldata['labelkeys']:
                             pldata['labelkeys'].append(testtype)
 
-                            pldata['x'][testtype] = list(deltatime)
-                            pldata['y'][testtype] = list(_data)
+                            pldata['x'][testtype] = list(deltatime[ixtest])
+                            pldata['y'][testtype] = list(_data[ixtest])
                         else:
-                            pldata['x'][testtype] += list(deltatime)
-                            pldata['y'][testtype] += list(_data)
+                            pldata['x'][testtype] += list(deltatime[ixtest])
+                            pldata['y'][testtype] += list(_data[ixtest])
 
         return pldata
 
@@ -336,6 +338,8 @@ class MetaPano(MetaCal):
             # Delta-offset vs. time, color coding by test type
 
             pldata1= self.get_pldata_vstime_bytest('offset_pre')
+
+
 
             figkey1 = 'doff_colored_bytest'
             figname1 = self.figs[figkey1]
