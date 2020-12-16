@@ -364,7 +364,7 @@ class MetaPano(MetaCal):
                 xlabel=r'$\Delta Time\ [hrs]$',
                 ylabel=r'$\Delta Offset\ [ADU]$',
                 ylim=[-10., 10.],
-                text=dict(x=0.1,y=0.9,text=statstext1,
+                text=dict(x=0.05,y=0.8,text=statstext1,
                     kwargs=dict(horizontalalignment='left')),
                 figname=figname1)
 
@@ -394,12 +394,19 @@ class MetaPano(MetaCal):
             figkey2 = 'dron_colored_bytest'
             figname2 = self.figs[figkey2]
 
+            statstext2 = 'std=%.1f\n' % stats2['std'] +\
+                'p5=%.1f\n' % stats2['p5'] +\
+                'p95=%.2f' % stats2['p95']
+
+
             fig2kwargs = dict(
                 title='Delta-RON vs. time',
                 doLegend=True,
                 xlabel=r'$\Delta Time\ [hrs]$',
                 ylabel=r'$\Delta RON [ADU]$',
                 ylim=[-0.5, 0.5],
+                text=dict(x=0.05,y=0.8,text=statstext2,
+                    kwargs=dict(horizontalalignment='left')),
                 figname=figname2)
 
             TESTcolors = cm.rainbow(np.linspace(0, 1, len(self.testtypes)))
