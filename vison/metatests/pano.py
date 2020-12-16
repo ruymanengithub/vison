@@ -252,7 +252,7 @@ class MetaPano(MetaCal):
             os.system('mkdir %s' % self.figspath)
 
         self.figs['doff_colored_bytest'] = os.path.join(self.figspath, 'DELTAOFFSETS_byTEST.png')
-
+        self.figs['dron_colored_bytest'] = os.path.join(self.figspath, 'DELTARON_byTEST.png')
 
     def init_outcdpnames(self):
         """ """
@@ -279,7 +279,6 @@ class MetaPano(MetaCal):
 
         pldata = OrderedDict(labelkeys=[],x=dict(),y=dict())
 
-
         PT = self.stack_PTs()
 
         for block in self.flight_blocks:
@@ -292,25 +291,30 @@ class MetaPano(MetaCal):
                     tcol = 'time_%s' % CCDkey
 
                     ixsel = np.where((PT['BLOCK']==block))
-                    stop()
 
                     _data = PT[statcol][ixsel]
+                    _data -= np.nanmean(_data)
+
                     _time = PT[tcol][ixsel]
 
-                    _time -= (_time-_time.min()).hours
+                    deltatime = np.array([dt.seconds/3600. for dt in _time-_time.min()])
 
+                    tests = PT['TEST'][ixsel]
 
+                    for testname in self.testnames:
 
+                        testtype = [ttype for ttype in self.testtypes if ttype in 'BIAS01'][0]
 
-                    stop()
+                        if testtype not in pldata['labelkeys']:
+                            pldata['labelkeys'].append(testtype)
 
-        #for testname in self.testnames:
+                            pldata['x'][testtype] = list(deltatime)
+                            pldata['y'][testtype] = list(_data)
+                        else:
+                            pldata['x'][testtype] += list(deltatime)
+                            pldata['y'][testtype] += list(_data)
 
-            #testtype = [ttype for ttype in self.testtypes if ttype in 'BIAS01'][0]
-
-            #stop()
-
-
+        return pldata
 
 
 
@@ -361,6 +365,40 @@ class MetaPano(MetaCal):
                     figkey=figkey1,
                     caption='',
                     texfraction=0.8)
+
+
+            # Delta-RON vs. time, color coding by test type
+
+            pldata2= self.get_pldata_vstime_bytest('std_pre')
+
+            figkey2 = 'dron_colored_bytest'
+            figname2 = self.figs[figkey2]
+
+            fig2kwargs = dict(
+                title='Delta-RON vs. time',
+                doLegend=True,
+                xlabel=r'$\Delta Time\ [hrs]$',
+                ylabel=r'$\Delta RON [ADU]$',
+                #ylim=[-3., 7.],
+                figname=figname2)
+
+            TESTcolors = cm.rainbow(np.linspace(0, 1, len(self.testtypes)))
+
+            pointcorekwargs2 = dict()
+            for jtest, testtype in enumerate(self.testtypes):
+                pointcorekwargs2['%s' % (testtype,)] = dict(
+                    linestyle='', marker='.', color=TESTcolors[jtest], alpha=0.5)
+
+            fig2kwargs['corekwargs'] = pointcorekwargs2
+
+            self.plot_XY(pldata2, **fig2kwargs)
+
+            if self.report is not None:
+                self.addFigure2Report(figname2,
+                    figkey=figkey2,
+                    caption='',
+                    texfraction=0.8)
+
 
 
             # Delta-offset vs. time, color coding by block
