@@ -502,7 +502,7 @@ class MetaPano(MetaCal):
 
             fig21kwargs['corekwargs'] = pointcorekwargs21
 
-            self.plot_XY(pldata21, **fig2kwargs)
+            self.plot_XY(pldata21, **fig21kwargs)
 
             if self.report is not None:
                 self.addFigure2Report(figname21,
