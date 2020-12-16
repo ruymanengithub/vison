@@ -225,6 +225,13 @@ class XYPlot(BasicPlot):
         if 'xlim' in self.meta:
             self.ax.set_xlim(self.meta['xlim'])
 
+        if 'text' in self.meta:
+            textdict = dict(kwargs=dict())
+            textdict.update(self.meta['text'])
+            self.ax.text(textdict['x'],textdict['y'],textdict['text'],
+                transform=self.ax.transAxes,
+                **textdict['kwargs'])
+
     def plt_trimmer(self):
 
         if self.meta['doLegend']:

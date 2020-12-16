@@ -282,6 +282,8 @@ class MetaPano(MetaCal):
 
         PT = self.stack_PTs()
 
+        allvalues = []
+
         for block in self.flight_blocks:
 
             for jCCD, CCD in enumerate(self.CCDs):
@@ -319,7 +321,13 @@ class MetaPano(MetaCal):
                             pldata['x'][testtype] += list(deltatime[ixtest])
                             pldata['y'][testtype] += list(_data[ixtest])
 
-        return pldata
+                        allvalues += list(_data[ixtest])
+
+        stats = dict(std=np.std(allvalues),
+            p5=np.percentile(allvalues,5.).
+            p95=np.percentile(allvalues,95.))
+
+        return pldata, stats
 
 
 
@@ -340,19 +348,24 @@ class MetaPano(MetaCal):
 
             # Delta-offset vs. time, color coding by test type
 
-            pldata1= self.get_pldata_vstime_bytest('offset_pre')
-
-
+            pldata1, stats1= self.get_pldata_vstime_bytest('offset_pre')
 
             figkey1 = 'doff_colored_bytest'
             figname1 = self.figs[figkey1]
+
+            statstext1 = 'std=%.1f\n' % stats1['std'] +\
+                'p5=%.1f\n' % stats1['p5'] +\
+                'p95=%.2f' % stats2['p95']
+
 
             fig1kwargs = dict(
                 title='Delta-Offset vs. time',
                 doLegend=True,
                 xlabel=r'$\Delta Time\ [hrs]$',
                 ylabel=r'$\Delta Offset\ [ADU]$',
-                #ylim=[-10., 10.],
+                ylim=[-10., 10.],
+                text=dict(x=0.1,0.9,statstext1,
+                    kwargs=dict(horizontalalignment='left')),
                 figname=figname1)
 
 
@@ -376,7 +389,7 @@ class MetaPano(MetaCal):
 
             # Delta-RON vs. time, color coding by test type
 
-            pldata2= self.get_pldata_vstime_bytest('std_pre')
+            pldata2, stats2 = self.get_pldata_vstime_bytest('std_pre')
 
             figkey2 = 'dron_colored_bytest'
             figname2 = self.figs[figkey2]
@@ -386,7 +399,7 @@ class MetaPano(MetaCal):
                 doLegend=True,
                 xlabel=r'$\Delta Time\ [hrs]$',
                 ylabel=r'$\Delta RON [ADU]$',
-                #ylim=[-2., 0.5],
+                ylim=[-0.5, 0.5],
                 figname=figname2)
 
             TESTcolors = cm.rainbow(np.linspace(0, 1, len(self.testtypes)))
