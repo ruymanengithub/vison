@@ -269,6 +269,7 @@ class MetaPano(MetaCal):
                 PT = copy.deepcopy(self.ParsedTable[testname])
             else:
                 PT = vstack(PT,self.ParsedTable[testname])
+        stop()
 
         return PT
 
