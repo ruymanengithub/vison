@@ -177,6 +177,7 @@ class MetaPano(MetaCal):
         super(MetaPano, self).__init__(**kwargs)
 
         self.testnames = testnames
+        self.testtypes = ['BIAS','DARK','CHINJ','FLAT','NL','PERSIST','PSF','PTC','TP']
         self.incols = cols2keep
         self.ParsedTable = OrderedDict()
 
@@ -249,6 +250,8 @@ class MetaPano(MetaCal):
         if not os.path.exists(self.figspath):
             os.system('mkdir %s' % self.figspath)
 
+        self.figs['doff_colored_bytest'] = os.path.join(self.figspath, 'DELTAOFFSETS_byTEST.png')
+
         
 
     def init_outcdpnames(self):
@@ -258,10 +261,24 @@ class MetaPano(MetaCal):
             os.system('mkdir %s' % self.cdpspath)
 
 
+    def get_pldata_vstime_bytest(statistic):
+        """ """
+
+        pldata = OrderedDict(labelkeys=[],x=dict(),y=dict())
+
+        for testname in self.testnames:
+
+            PT = self.ParsedTable[testname]
+
+            stop()
+
+
+
+
+
     def dump_aggregated_results(self):
         """ """
 
-        stop()
 
         if self.report is not None:
             self.report.add_Section(keyword='dump', 
@@ -271,7 +288,46 @@ class MetaPano(MetaCal):
 
             # Note:
             # Delta-offsets/RONs are referred to the mean value of offset/ron for each quadrant,
-            # in each campaign
+            # in each campaign, for tests BIAS02
+
+
+            # Delta-offset vs. time, color coding by test type
+
+            pldata1= self.get_pldata_vstime_bytest('offset')
+
+            figkey1 = 'doff_colored_bytest'
+            figname1 = self.figs[figkey1]
+
+            fig1kwargs = dict(
+                title='Delta-Offset vs. time',
+                doLegend=True,
+                xlabel=r'$\Delta Time\ [hrs]$',
+                ylabel=r'$\Delta Offset [ADU]$',
+                #ylim=[-3., 7.],
+                figname=figname1)
+
+
+            TESTcolors = cm.rainbow(np.linspace(0, 1, len(self.testtypes)))
+
+            pointcorekwargs1 = dict()
+            for jtest, testtype in enumerate(self.testtypes):
+                pointcorekwargs1['%s' % (testtype,)] = dict(
+                    linestyle='', marker='.', color=TESTcolors[jtest], alpha=0.5)
+
+            fig1kwargs['corekwargs'] = pointcorekwargs1
+
+            self.plot_XY(pldata1, **fig1kwargs)
+
+            if self.report is not None:
+                self.addFigure2Report(figname1,
+                    figkey=figkey1,
+                    caption='',
+                    texfraction=0.8)
+
+
+            # Delta-offset vs. time, color coding by block
+
+            
 
             # histogram of delta-offsets (prescans)
 
@@ -279,10 +335,11 @@ class MetaPano(MetaCal):
             # histogram of delta-RONs (prescans)
 
 
-            # Delta-offset vs. time, color coding by test type
+            
 
 
-            # pre-scan offset vs. image fluence
+            # pre-scan offset vs. image fluence (requires changing all tests to measure image fluences
+            # in check stats!)
 
             
 
