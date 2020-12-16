@@ -307,6 +307,8 @@ class MetaPano(MetaCal):
 
                         testtype = [ttype for ttype in self.testtypes if ttype in testname][0]
 
+                        print(testname,testtype) # TEST
+
                         if testtype not in pldata['labelkeys']:
                             pldata['labelkeys'].append(testtype)
 
