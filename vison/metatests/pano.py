@@ -252,8 +252,10 @@ class MetaPano(MetaCal):
         if not os.path.exists(self.figspath):
             os.system('mkdir %s' % self.figspath)
 
-        self.figs['doff_colored_bytest'] = os.path.join(self.figspath, 'DELTAOFFSETS_byTEST.png')
-        self.figs['dron_colored_bytest'] = os.path.join(self.figspath, 'DELTARON_byTEST.png')
+        self.figs['doff_pre_bytest'] = os.path.join(self.figspath, 'DELTAOFF_PRE_byTEST.png')
+        self.figs['doff_ove_bytest'] = os.path.join(self.figspath, 'DELTAOFF_OVE_byTEST.png')
+        self.figs['dron_pre_bytest'] = os.path.join(self.figspath, 'DELTARON_PRE_byTEST.png')
+        self.figs['dron_ove_bytest'] = os.path.join(self.figspath, 'DELTARON_OVE_byTEST.png')
 
     def init_outcdpnames(self):
         """ """
@@ -346,11 +348,11 @@ class MetaPano(MetaCal):
             # in each campaign, for tests BIAS02
 
 
-            # Delta-offset vs. time, color coding by test type
+            # Delta-offset [prescan] vs. time, color coding by test type
 
             pldata1, stats1= self.get_pldata_vstime_bytest('offset_pre')
 
-            figkey1 = 'doff_colored_bytest'
+            figkey1 = 'doff_pre_bytest'
             figname1 = self.figs[figkey1]
 
             statstext1 = 'std=%.1f\n' % stats1['std'] +\
@@ -359,7 +361,7 @@ class MetaPano(MetaCal):
 
 
             fig1kwargs = dict(
-                title='Delta-Offset vs. time',
+                title='Delta-Offset [prescan] vs. time',
                 doLegend=True,
                 xlabel=r'$\Delta Time\ [hrs]$',
                 ylabel=r'$\Delta Offset\ [ADU]$',
@@ -387,11 +389,53 @@ class MetaPano(MetaCal):
                     texfraction=0.8)
 
 
-            # Delta-RON vs. time, color coding by test type
+            # Delta-offset [overscan] vs. time, color coding by test type
+
+            pldata11, stats11= self.get_pldata_vstime_bytest('offset_ove')
+
+            figkey11 = 'doff_ove_bytest'
+            figname11 = self.figs[figkey11]
+
+            statstext11 = 'std=%.1f\n' % stats11['std'] +\
+                'p5=%.1f\n' % stats11['p5'] +\
+                'p95=%.2f' % stats11['p95']
+
+
+            fig11kwargs = dict(
+                title='Delta-Offset [overscan] vs. time',
+                doLegend=True,
+                xlabel=r'$\Delta Time\ [hrs]$',
+                ylabel=r'$\Delta Offset\ [ADU]$',
+                #ylim=[-10., 10.],
+                text=dict(x=0.05,y=0.8,text=statstext11,
+                    kwargs=dict(horizontalalignment='left')),
+                figname=figname11)
+
+
+            TESTcolors = cm.rainbow(np.linspace(0, 1, len(self.testtypes)))
+
+            pointcorekwargs11 = dict()
+            for jtest, testtype in enumerate(self.testtypes):
+                pointcorekwargs11['%s' % (testtype,)] = dict(
+                    linestyle='', marker='.', color=TESTcolors[jtest], alpha=0.5)
+
+            fig11kwargs['corekwargs'] = pointcorekwargs11
+
+            self.plot_XY(pldata11, **fig11kwargs)
+
+            if self.report is not None:
+                self.addFigure2Report(figname11,
+                    figkey=figkey11,
+                    caption='',
+                    texfraction=0.8)
+
+
+
+            # Delta-RON [pre] vs. time, color coding by test type
 
             pldata2, stats2 = self.get_pldata_vstime_bytest('std_pre')
 
-            figkey2 = 'dron_colored_bytest'
+            figkey2 = 'dron_pre_bytest'
             figname2 = self.figs[figkey2]
 
             statstext2 = 'std=%.1f\n' % stats2['std'] +\
@@ -400,7 +444,7 @@ class MetaPano(MetaCal):
 
 
             fig2kwargs = dict(
-                title='Delta-RON vs. time',
+                title='Delta-RON [prescan] vs. time',
                 doLegend=True,
                 xlabel=r'$\Delta Time\ [hrs]$',
                 ylabel=r'$\Delta RON [ADU]$',
@@ -427,15 +471,53 @@ class MetaPano(MetaCal):
                     texfraction=0.8)
 
 
+            # Delta-RON [ove] vs. time, color coding by test type
+
+            pldata21, stats21 = self.get_pldata_vstime_bytest('std_ove')
+
+            figkey21 = 'dron_ove_bytest'
+            figname21 = self.figs[figkey21]
+
+            statstext21 = 'std=%.1f\n' % stats21['std'] +\
+                'p5=%.1f\n' % stats21['p5'] +\
+                'p95=%.2f' % stats21['p95']
+
+
+            fig21kwargs = dict(
+                title='Delta-RON [overscan] vs. time',
+                doLegend=True,
+                xlabel=r'$\Delta Time\ [hrs]$',
+                ylabel=r'$\Delta RON [ADU]$',
+                ylim=[-0.5, 0.5],
+                text=dict(x=0.05,y=0.8,text=statstext21,
+                    kwargs=dict(horizontalalignment='left')),
+                figname=figname21)
+
+            TESTcolors = cm.rainbow(np.linspace(0, 1, len(self.testtypes)))
+
+            pointcorekwargs21 = dict()
+            for jtest, testtype in enumerate(self.testtypes):
+                pointcorekwargs21['%s' % (testtype,)] = dict(
+                    linestyle='', marker='.', color=TESTcolors[jtest], alpha=0.5)
+
+            fig21kwargs['corekwargs'] = pointcorekwargs21
+
+            self.plot_XY(pldata21, **fig2kwargs)
+
+            if self.report is not None:
+                self.addFigure2Report(figname21,
+                    figkey=figkey21,
+                    caption='',
+                    texfraction=0.8)
 
             # Delta-offset vs. time, color coding by block
 
             
 
-            # histogram of delta-offsets (prescans)
+            # histogram of delta-offsets (prescans) [not really needed]
 
 
-            # histogram of delta-RONs (prescans)
+            # histogram of delta-RONs (prescans) [not really needed]
 
 
             
