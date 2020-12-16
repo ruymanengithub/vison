@@ -324,7 +324,7 @@ class MetaPano(MetaCal):
                         allvalues += list(_data[ixtest])
 
         stats = dict(std=np.std(allvalues),
-            p5=np.percentile(allvalues,5.).
+            p5=np.percentile(allvalues,5.),
             p95=np.percentile(allvalues,95.))
 
         return pldata, stats
