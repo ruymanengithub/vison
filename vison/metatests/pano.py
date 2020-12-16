@@ -385,7 +385,9 @@ class MetaPano(MetaCal):
             if self.report is not None:
                 self.addFigure2Report(figname1,
                     figkey=figkey1,
-                    caption='',
+                    caption='Variations in offset, measured in the prescan, and relative to the '+\
+                    'mean for each block-ccd-quadrant, over the course '+\
+                    'of the campaign, segregated by test type.',
                     texfraction=0.8)
 
 
@@ -406,7 +408,7 @@ class MetaPano(MetaCal):
                 doLegend=True,
                 xlabel=r'$\Delta Time\ [hrs]$',
                 ylabel=r'$\Delta Offset\ [ADU]$',
-                #ylim=[-10., 10.],
+                ylim=[-10., 10.],
                 text=dict(x=0.05,y=0.8,text=statstext11,
                     kwargs=dict(horizontalalignment='left')),
                 figname=figname11)
@@ -426,7 +428,9 @@ class MetaPano(MetaCal):
             if self.report is not None:
                 self.addFigure2Report(figname11,
                     figkey=figkey11,
-                    caption='',
+                    caption='Variations in offset, measured in the overscan, and relative to the '+\
+                    'mean for each block-ccd-quadrant, over the course '+\
+                    'of the campaign, segregated by test type.',
                     texfraction=0.8)
 
 
@@ -467,7 +471,9 @@ class MetaPano(MetaCal):
             if self.report is not None:
                 self.addFigure2Report(figname2,
                     figkey=figkey2,
-                    caption='',
+                    caption='Variations in RON, measured in the prescan, and relative to the '+\
+                    'mean for each block-ccd-quadrant, over the course '+\
+                    'of the campaign, segregated by test type.',
                     texfraction=0.8)
 
 
@@ -507,7 +513,9 @@ class MetaPano(MetaCal):
             if self.report is not None:
                 self.addFigure2Report(figname21,
                     figkey=figkey21,
-                    caption='',
+                    caption='Variations in offset, measured in the overscan, and relative to the '+\
+                    'mean for each block-ccd-quadrant, over the course '+\
+                    'of the campaign, segregated by test type.',
                     texfraction=0.8)
 
             # Delta-offset vs. time, color coding by block
