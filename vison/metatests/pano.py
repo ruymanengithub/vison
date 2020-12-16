@@ -305,7 +305,7 @@ class MetaPano(MetaCal):
 
                         ixtest = np.where(tests == testname)
 
-                        testtype = [ttype for ttype in self.testtypes if ttype in 'BIAS01'][0]
+                        testtype = [ttype for ttype in self.testtypes if ttype in testname][0]
 
                         if testtype not in pldata['labelkeys']:
                             pldata['labelkeys'].append(testtype)
