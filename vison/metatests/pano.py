@@ -165,9 +165,10 @@ testnames = ['BIAS01',
 'PTC02_730',
 'PTC02_880',
 'TP01',
-'TP02',
+#'TP02',
 'TP11',
-'TP21']
+#'TP21'
+]
 
 
 class MetaPano(MetaCal):
@@ -351,7 +352,7 @@ class MetaPano(MetaCal):
                 doLegend=True,
                 xlabel=r'$\Delta Time\ [hrs]$',
                 ylabel=r'$\Delta Offset\ [ADU]$',
-                ylim=[-10., 10.],
+                #ylim=[-10., 10.],
                 figname=figname1)
 
 
@@ -385,7 +386,7 @@ class MetaPano(MetaCal):
                 doLegend=True,
                 xlabel=r'$\Delta Time\ [hrs]$',
                 ylabel=r'$\Delta RON [ADU]$',
-                ylim=[-2., 0.5],
+                #ylim=[-2., 0.5],
                 figname=figname2)
 
             TESTcolors = cm.rainbow(np.linspace(0, 1, len(self.testtypes)))
