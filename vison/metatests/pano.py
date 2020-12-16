@@ -260,17 +260,46 @@ class MetaPano(MetaCal):
         if not os.path.exists(self.cdpspath):
             os.system('mkdir %s' % self.cdpspath)
 
+    def stack_PTs(self):
+
+        from astropy.table import vstack
+
+        for it, testname in enumerate(self.testnames):
+
+            if it ==0:
+                PT = copy.deepcopy(self.ParsedTable[testname])
+            else:
+                PT = self.vstack(PT,self.ParsedTable[testname])
+
+        return PT
+
 
     def get_pldata_vstime_bytest(self, statistic):
         """ """
 
         pldata = OrderedDict(labelkeys=[],x=dict(),y=dict())
 
-        for testname in self.testnames:
 
-            PT = self.ParsedTable[testname]
+        PT = self.stack_PTs()
 
-            stop()
+        for block in self.flight_blocks:
+
+            for jCCD, CCD in self.CCDs:
+                CCDkey = 'CCD%i' % CCD
+                for kQ, Q in self.Quads:
+
+                    statcol = '%s_%s_Quad%s' % (statistic, CCDkey, Q)
+                    tcol = 'time_%s' % CCDkey
+
+                    ixsel = np.where((PT['BLOCK']==block))
+
+                    stop()
+
+        #for testname in self.testnames:
+
+            #testtype = [ttype for ttype in self.testtypes if ttype in 'BIAS01'][0]
+
+            #stop()
 
 
 
@@ -293,7 +322,7 @@ class MetaPano(MetaCal):
 
             # Delta-offset vs. time, color coding by test type
 
-            pldata1= self.get_pldata_vstime_bytest('offset')
+            pldata1= self.get_pldata_vstime_bytest('offset_pre')
 
             figkey1 = 'doff_colored_bytest'
             figname1 = self.figs[figkey1]
