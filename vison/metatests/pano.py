@@ -307,7 +307,7 @@ class MetaPano(MetaCal):
 
                         testtype = [ttype for ttype in self.testtypes if ttype in testname][0]
 
-                        print(testname,testtype) # TEST
+                        #print(testname,testtype) # TEST
 
                         if testtype not in pldata['labelkeys']:
                             pldata['labelkeys'].append(testtype)
@@ -350,8 +350,8 @@ class MetaPano(MetaCal):
                 title='Delta-Offset vs. time',
                 doLegend=True,
                 xlabel=r'$\Delta Time\ [hrs]$',
-                ylabel=r'$\Delta Offset [ADU]$',
-                #ylim=[-3., 7.],
+                ylabel=r'$\Delta Offset\ [ADU]$',
+                ylim=[-10., 10.],
                 figname=figname1)
 
 
@@ -385,7 +385,7 @@ class MetaPano(MetaCal):
                 doLegend=True,
                 xlabel=r'$\Delta Time\ [hrs]$',
                 ylabel=r'$\Delta RON [ADU]$',
-                #ylim=[-3., 7.],
+                ylim=[-2., 0.5],
                 figname=figname2)
 
             TESTcolors = cm.rainbow(np.linspace(0, 1, len(self.testtypes)))
