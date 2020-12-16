@@ -16,6 +16,7 @@ import os
 #from scipy import ndimage
 #from skimage import exposure
 import pandas as pd
+from astropy.table import vstack
 
 from vison.datamodel import cdp
 from vison.datamodel import ccd as ccdmod
@@ -261,15 +262,14 @@ class MetaPano(MetaCal):
             os.system('mkdir %s' % self.cdpspath)
 
     def stack_PTs(self):
-
-        from astropy.table import vstack
+        """ """
 
         for it, testname in enumerate(self.testnames):
 
             if it ==0:
                 PT = copy.deepcopy(self.ParsedTable[testname])
             else:
-                PT = self.vstack(PT,self.ParsedTable[testname])
+                PT = vstack(PT,self.ParsedTable[testname])
 
         return PT
 
