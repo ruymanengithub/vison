@@ -383,7 +383,7 @@ class MetaCosmetics(MetaCal):
                 mskfits = os.path.join(productspath, 
                     os.path.split(inventoryitem['dd'].products[masktype][CCDk])[-1])
 
-                ccdobj = ccdmod.CCD(infits=mskfits, extension=extension, getallextensions=False, 
+                ccdobj = ccdmod.CCD(infits=mskfits, extensions=[extension], getallextensions=False, 
                     withpover=True,
                     overscan=20)
                 MSKccd_dict[Ckey] = copy.deepcopy(ccdobj)
@@ -410,7 +410,7 @@ class MetaCosmetics(MetaCal):
 
         # save CDP: COSMETICS MASK
 
-        
+
 
         if not skip:
 
