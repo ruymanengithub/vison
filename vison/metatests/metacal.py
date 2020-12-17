@@ -450,7 +450,6 @@ class MetaCal(object):
 
                 sit = self.parse_single_test(jrep, block, testname, inventoryitem)
 
-                stop()
 
                 # MERGING WITH PREVIOUS DDs
 
@@ -460,6 +459,7 @@ class MetaCal(object):
                     pt = copy.deepcopy(sit)
 
         self.ParsedTable[testname] = pt
+        stop()
         
 
     def add_DataAlbaran2Report(self):
