@@ -409,7 +409,7 @@ class MetaCosmetics(MetaCal):
 
         # save CDP: COSMETICS MASK
 
-        stop()
+        
 
         if not skip:
 

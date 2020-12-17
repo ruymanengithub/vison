@@ -450,6 +450,8 @@ class MetaCal(object):
 
                 sit = self.parse_single_test(jrep, block, testname, inventoryitem)
 
+                stop()
+
                 # MERGING WITH PREVIOUS DDs
 
                 try:
