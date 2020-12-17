@@ -137,7 +137,7 @@ class MetaCal(object):
                 self.parse_test_results(testname)
             parsedbundle = dict(PT=self.ParsedTable,
                                 products=self.products)
-            stop()
+            
             files.cPickleDumpDictionary(parsedbundle, parsedpick)
 
         else:

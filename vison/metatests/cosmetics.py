@@ -159,6 +159,7 @@ class MetaCosmetics(MetaCal):
             CCDkey = 'CCD%i' % CCD
 
             ccdobj = ccdmod.CCD(all_mask_fits[CCDkey])
+            stop()
 
             Ckey = self.fpa.get_Ckey_from_BlockCCD(block, CCD)
 
