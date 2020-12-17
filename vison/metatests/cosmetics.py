@@ -158,8 +158,8 @@ class MetaCosmetics(MetaCal):
         for CCD in self.CCDs:
             CCDkey = 'CCD%i' % CCD
 
-            ccdobj = ccdmod.CCD(all_mask_fits[CCDkey])
-            stop()
+            ccdobj = ccdmod.CCD(all_mask_fits[CCDkey],extensions=[1])
+            assert ccdobj.extensions[0].header['EXTNAME']=='MASK'
 
             Ckey = self.fpa.get_Ckey_from_BlockCCD(block, CCD)
 
