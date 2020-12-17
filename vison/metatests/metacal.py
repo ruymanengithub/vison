@@ -137,6 +137,7 @@ class MetaCal(object):
                 self.parse_test_results(testname)
             parsedbundle = dict(PT=self.ParsedTable,
                                 products=self.products)
+            stop()
             files.cPickleDumpDictionary(parsedbundle, parsedpick)
 
         else:
@@ -459,8 +460,7 @@ class MetaCal(object):
                     pt = copy.deepcopy(sit)
 
         self.ParsedTable[testname] = pt
-        stop()
-        
+
 
     def add_DataAlbaran2Report(self):
         """Adds a data delivery note to the report."""
