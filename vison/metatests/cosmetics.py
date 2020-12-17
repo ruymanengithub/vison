@@ -359,7 +359,7 @@ class MetaCosmetics(MetaCal):
         self.outcdps['MASK_MERGE'] = os.path.join(self.cdpspath,
             'MASK_COSMETICS_MERGED.fits')
 
-    def _get_MSKccd_dict(self, masktype='MERGE'):
+    def _get_MSKccd_dict(self, masktype='MERGE', extension=1):
         """ """
 
         testname = 'COSMETICS00'
@@ -382,8 +382,9 @@ class MetaCosmetics(MetaCal):
                 mskfits = os.path.join(productspath, 
                     os.path.split(inventoryitem['dd'].products[masktype][CCDk])[-1])
 
-                ccdobj = ccdmod.CCD(infits=mskfits, getallextensions=True, withpover=True,
-                                    overscan=20)
+                ccdobj = ccdmod.CCD(infits=mskfits, extension=extension, getallextensions=False, 
+                    withpover=True,
+                    overscan=20)
                 MSKccd_dict[Ckey] = copy.deepcopy(ccdobj)
 
         return MSKccd_dict
@@ -400,13 +401,15 @@ class MetaCosmetics(MetaCal):
 
             self.add_DataAlbaran2Report()
 
-        skip = True
+        skip = False
 
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header['DATE'] = self.get_time_tag()
 
         # save CDP: COSMETICS MASK
+
+        stop()
 
         if not skip:
 
