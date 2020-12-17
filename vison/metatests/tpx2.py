@@ -275,10 +275,8 @@ class MetaTPX2(MetaCal):
         #print('added CHINJNOISE')
 
         mergedL1key = '%s_%s_%s_%i' % (testname, block, session, jrep + 1)
-        try:
-            self.products['MERGEDL1'][mergedL1key] = copy.deepcopy(sidd.products['mergedL1_df'])
-        except:
-            stop()
+        self.products['MERGEDL1'][mergedL1key] = copy.deepcopy(sidd.products['mergedL1_df'])
+        
         sidd.addColumn(np.array([mergedL1key]), 'MERGEDL1', IndexS)
         #print('added MERGEDL1')
 
