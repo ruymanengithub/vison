@@ -304,7 +304,7 @@ class PsfPlot(bpc.BasicPlot):
         plt.locator_params(axis='y', nbins=5, prune='both')
 
         try:
-            plt.locator_params(axis='x', nbins=4, prune='both')
+            plt.locator_params(axis='x', nbins=6, prune='both')
         except BaseException:
             pass
 
