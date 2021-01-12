@@ -292,9 +292,8 @@ class PsfPlot(bpc.BasicPlot):
         for bfkey in self.bfkeys:
             for measkey in self.measkeys:
 
-                self.axs[bfkey][measkey].locator_params(axis='y', nbins=5, prune='both')
-                self.axs[bfkey][measkey].locator_params(axis='x', nbins=5, prune='both')
-
+                #self.axs[bfkey][measkey].locator_params(axis='y', nbins=5, prune='both')
+                #self.axs[bfkey][measkey].locator_params(axis='x', nbins=5, prune='both')
 
                 if bfkey == 'BFE':
                     plt.setp(self.axs[bfkey][measkey].get_xticklabels(), visible=False)
@@ -305,12 +304,12 @@ class PsfPlot(bpc.BasicPlot):
         if self.meta['doLegend']:
             plt.figlegend(self.handles, self.labels, loc='center right')
 
-        #plt.locator_params(axis='y', nbins=5, prune='both')
+        plt.locator_params(axis='y', nbins=5, prune='both')
 
-        #try:
-        #    plt.locator_params(axis='x', nbins=5, prune='both')
-        #except BaseException:
-        #    pass
+        try:
+            plt.locator_params(axis='x', nbins=5, prune='both')
+        except BaseException:
+            pass
 
         plt.subplots_adjust(hspace=0.0)
         plt.subplots_adjust(wspace=0.0)
@@ -614,7 +613,7 @@ class MetaPsf(MetaCal):
 
     def _get_Hdict_FWHM(self, testname, xlim, Nbins=30):
         """ """
-        # secondary paramters: fwhmkey, bfkey, measkey
+        # secondary parameters: fwhmkey, bfkey, measkey
 
         measkeys = ['MEAN','SLOPE']
         bfkeys = ['BFE','NOBFE']
@@ -630,6 +629,7 @@ class MetaPsf(MetaCal):
             
 
         PT = self.ParsedTable[testname]
+        print(testname)
 
         for measkey in measkeys:
             for bfkey in bfkeys:
@@ -668,6 +668,10 @@ class MetaPsf(MetaCal):
                 _valy = stats.sigmaclip(_valy.copy(), 4, 4).clipped
                 Hdict[bfkey][measkey]['y']['fwhmy'] = _valy # histoY[0]
                 Hdict[bfkey][measkey]['mean']['fwhmy'] = np.nanmean(_valy)
+
+                print(bfkey,measkey)
+                print('<fwhmx>= %.2e' % Hdict[bfkey][measkey]['mean']['fwhmx'])
+                print('<fwhmy>= %.2e' % Hdict[bfkey][measkey]['mean']['fwhmy'])
 
 
         return Hdict
