@@ -306,7 +306,7 @@ class PsfPlot(bpc.BasicPlot):
         try:
             plt.locator_params(axis='x', nbins=6, prune='both')
         except BaseException:
-            pass
+            stop()
 
         plt.subplots_adjust(hspace=0.0)
         plt.subplots_adjust(wspace=0.0)
