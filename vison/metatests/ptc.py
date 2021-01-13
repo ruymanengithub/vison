@@ -890,6 +890,7 @@ class MetaPTC(MetaCal):
         doGvsOD = doAll
         doGvsRD = doAll
         doGvsTime = doAll
+        doGvsVCCD = False # input HK data of ROE VCCD is missing in the input DataDicts...
 
         # GAIN matrix (all blocks and test/waves) to dict() saved as pickle
 
@@ -1307,9 +1308,9 @@ class MetaPTC(MetaCal):
                         ' across ROEs.', 
                         texfraction=0.7)
 
-        # GAIN vs. RD-CAL (PTC01)
+        # GAIN vs. VCCD (PTC01)
 
-        if doGvsRD:
+        if doGvsVCCD:
 
             figkey10 = 'GvsVCCD'
             figname10 = self.figs[figkey10]
