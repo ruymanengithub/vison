@@ -131,6 +131,7 @@ cols2keep = [
     'HK_FPGA_PCB_TEMP_B',
     'HK_RPSU_TEMP_2',
     'HK_RPSU_28V_PRI_I',
+    'HK_VCCD_ROE',
     'chk_NPIXOFF',
     'chk_NPIXSAT',
     'offset_pre',
@@ -494,6 +495,9 @@ class MetaPTC(MetaCal):
         self.figs['GvsRD'] = os.path.join(self.figspath,
                                           'GAIN_vs_RD_CAL.png')
 
+        self.figs['GvsVCCD'] = os.path.join(self.figspath,
+                                          'GAIN_vs_ROE_VCCD.png')
+
         for testname in self.testnames:
             self.figs['GAIN_MAP_%s' % testname] = os.path.join(self.figspath,
                                                                'GAIN_MAP_%s.png' % testname)
@@ -662,6 +666,43 @@ class MetaPTC(MetaCal):
                         Xcolumn = 'HK_COMM_RD_T_CAL'
                     else:
                         Xcolumn = 'HK_COMM_RD_B_CAL'
+
+                    _Xdata = PT[Xcolumn].copy()
+
+                    Ycolumn = 'GAIN_CCD%s_Quad%s' % (CCD, Q)
+                    _Ydata = PT[Ycolumn].copy()
+
+                    x[testname] += _Xdata.tolist()
+                    y[testname] += _Ydata.tolist()
+
+            x[testname] = np.array(x[testname])
+            y[testname] = np.array(y[testname])
+
+        XYdict = dict(x=x, y=y, labelkeys=labelkeys)
+
+        return XYdict
+
+    def _get_XYdict_GvsVCCD(self):
+        """ """
+
+        x = dict()
+        y = dict()
+
+        labelkeys = []
+
+        for testname in self.testnames:
+            labelkeys.append(testname)
+
+            PT = self.ParsedTable[testname]
+
+            x[testname] = []
+            y[testname] = []
+
+            for iCCD, CCD in enumerate(self.CCDs):
+
+                for iQ, Q in enumerate(self.Quads):
+
+                    Xcolumn = 'HK_VCCD_ROE'
 
                     _Xdata = PT[Xcolumn].copy()
 
@@ -1263,6 +1304,33 @@ class MetaPTC(MetaCal):
                         caption='Gain vs. Reset Drain Voltage,'+\
                         ' all 144 quadrants. The (small) range in RD is given '+\
                         'from differences in voltage outputs / calibration'+\
+                        ' across ROEs.', 
+                        texfraction=0.7)
+
+        # GAIN vs. RD-CAL (PTC01)
+
+        if doGvsRD:
+
+            figkey10 = 'GvsVCCD'
+            figname10 = self.figs[figkey10]
+
+            GvsVCCDdict = self._get_XYdict_GvsVCCD()
+
+            self.plot_XY(GvsVCCDdict, **dict(
+                title='Gain vs. ROE VCCD',
+                doLegend=True,
+                xlabel='ROE VCCD [V]',
+                ylabel='Gain [e-/ADU]',
+                corekwargs=dict(linestyle='', marker='.'),
+                # figname=''))
+                figname=figname10))
+
+            if self.report is not None:
+                self.addFigure2Report(figname9, 
+                        figkey=figkey10, 
+                        caption='Gain vs. ROE VCCD,'+\
+                        ' all 144 quadrants. The (small) range in VCCD is given '+\
+                        'from differences in voltage outputs'+\
                         ' across ROEs.', 
                         texfraction=0.7)
 
