@@ -1080,6 +1080,10 @@ class MetaPTC(MetaCal):
             
                 ba2d_cdp = cdp.FitsTables_CDP(rootname=self.outcdps['BLOOM_ADU2D_%s' % testname],
                               path=self.cdpspath)
+
+                fpa_design = ba2d_header.pop('fpa_design')
+                ba2d_header['fpadesi'] = fpa_design
+                
                 _ = ba2d_header.pop('FPA')
                 ba2d_header_keys = list(ba2d_header.keys())
                 for key in ba2d_header_keys:
