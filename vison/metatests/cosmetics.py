@@ -361,16 +361,16 @@ class MetaCosmetics(MetaCal):
             'MASK_COSMETICS_MERGED.fits')
 
         self.outcdps['MASK_FLAT'] = os.path.join(self.cdpspath,
-            'MASK_FLAT.fits')
+            'MASK_COSMETICS_FLAT.fits')
 
         self.outcdps['DEFECTS_FLAT'] = os.path.join(self.cdpspath,
-            'MASK_FLAT.fits')
+            'DEFECTS_COSMETICS_FLAT.fits')
 
         self.outcdps['MASK_DARK'] = os.path.join(self.cdpspath,
-            'MASK_DARK.fits')
+            'MASK_COSMETICS_DARK.fits')
 
         self.outcdps['DEFECTS_DARK'] = os.path.join(self.cdpspath,
-            'DEFECTS_DARK.fits')
+            'DEFECTS_COSMETICS_DARK.fits')
 
 
 
@@ -418,11 +418,11 @@ class MetaCosmetics(MetaCal):
 
             self.add_DataAlbaran2Report()
 
-        doMaskMerge = False
+        doMaskMerge = True
         doMaskFlat = True
         doDefFlat = True
-        doMaskDark = False
-        doDefDark = False
+        doMaskDark = True
+        doDefDark = True
 
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
