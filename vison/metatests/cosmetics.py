@@ -360,6 +360,22 @@ class MetaCosmetics(MetaCal):
         self.outcdps['MASK_MERGE'] = os.path.join(self.cdpspath,
             'MASK_COSMETICS_MERGED.fits')
 
+        self.outcdps['MASK_FLAT'] = os.path.join(self.cdpspath,
+            'MASK_FLAT.fits')
+
+        self.outcdps['DEFECTS_FLAT'] = os.path.join(self.cdpspath,
+            'MASK_FLAT.fits')
+
+        self.outcdps['MASK_DARK'] = os.path.join(self.cdpspath,
+            'MASK_DARK.fits')
+
+        self.outcdps['DEFECTS_DARK'] = os.path.join(self.cdpspath,
+            'DEFECTS_DARK.fits')
+
+
+
+
+
     def _get_MSKccd_dict(self, masktype='MERGE', extension=1):
         """ """
 
@@ -402,17 +418,19 @@ class MetaCosmetics(MetaCal):
 
             self.add_DataAlbaran2Report()
 
-        skip = False
+        doMaskMerge = False
+        doMaskFlat = True
+        doDefFlat = True
+        doMaskDark = False
+        doDefDark = False
 
         function, module = utils.get_function_module()
         CDP_header = self.CDP_header.copy()
         CDP_header['DATE'] = self.get_time_tag()
 
-        # save CDP: COSMETICS MASK
+        # save CDP: COSMETICS MASK, MERGE
 
-
-
-        if not skip:
+        if doMaskMerge:
 
             MSKccd_dict = self._get_MSKccd_dict(masktype='MERGE')
 
@@ -435,6 +453,54 @@ class MetaCosmetics(MetaCal):
             MSKcdp.savehardcopy(MSKcdpname, clobber=True, uint16=False)
 
             MSKccd_dict = None
+
+        if doMaskFlat:
+            
+            MSKFLccd_dict = self._get_MSKccd_dict(masktype='FLAT', extension=1)
+
+            MSKFLheader = OrderedDict()
+
+            MSKFLheader['CDP'] = 'COSMETICS_MASK_FLAT'
+            MSKFLheader['TEST'] = 'COSMETICS00'
+            MSKFLheader['MASKTYPE'] = 'FLAT'
+            MSKFLheader['VISON'] = CDP_header['vison']
+            MSKFLheader['FPA_DES'] = CDP_header['fpa_design']
+            MSKFLheader['DATE'] = CDP_header['DATE']
+            
+            MSKFLcdp = cdpmod.LE1_CDP()
+            
+            MSKFLcdp.ingest_inputs(MSKFLccd_dict, header=MSKFLheader, inextension=-1,
+                                    fillval=0)
+            
+            MSKFLcdpname = self.outcdps['MASK_FLAT']
+
+            MSKFLcdp.savehardcopy(MSKFLcdpname, clobber=True, uint16=False)
+
+            MSKFLccd_dict = None
+
+        if doDefFlat:
+            
+            DefFLccd_dict = self._get_MSKccd_dict(masktype='FLAT', extension=2)
+
+            DefFLheader = OrderedDict()
+
+            DefFLheader['CDP'] = 'COSMETICS_DEFECTS_FLAT'
+            DefFLheader['TEST'] = 'COSMETICS00'
+            DefFLheader['MASKTYPE'] = 'FLAT'
+            DefFLheader['VISON'] = CDP_header['vison']
+            DefFLheader['FPA_DES'] = CDP_header['fpa_design']
+            DefFLheader['DATE'] = CDP_header['DATE']
+            
+            DefFLcdp = cdpmod.LE1_CDP()
+            
+            DefFLcdp.ingest_inputs(DefFLccd_dict, header=DefFLheader, inextension=-1,
+                                    fillval=0)
+            
+            DefFLcdpname = self.outcdps['DEFECTS_FLAT']
+
+            DefFLcdp.savehardcopy(DefFLcdpname, clobber=True, uint16=False)
+
+            DefFLccd_dict = None
 
         #import sys
         #print('EXITING EARLY ON TESTS!')
