@@ -502,6 +502,55 @@ class MetaCosmetics(MetaCal):
 
             DefFLccd_dict = None
 
+
+        if doMaskDark:
+            
+            MSKDKccd_dict = self._get_MSKccd_dict(masktype='DARK', extension=1)
+
+            MSKDKheader = OrderedDict()
+
+            MSKDKheader['CDP'] = 'COSMETICS_MASK_DARK'
+            MSKDKheader['TEST'] = 'COSMETICS00'
+            MSKDKheader['MASKTYPE'] = 'DARK'
+            MSKDKheader['VISON'] = CDP_header['vison']
+            MSKDKheader['FPA_DES'] = CDP_header['fpa_design']
+            MSKDKheader['DATE'] = CDP_header['DATE']
+            
+            MSKDKcdp = cdpmod.LE1_CDP()
+            
+            MSKDKcdp.ingest_inputs(MSKDKccd_dict, header=MSKDKheader, inextension=-1,
+                                    fillval=0)
+            
+            MSKDKcdpname = self.outcdps['MASK_DARK']
+
+            MSKDKcdp.savehardcopy(MSKDKcdpname, clobber=True, uint16=False)
+
+            MSKDKccd_dict = None
+
+        if doDefDark:
+            
+            DefDKccd_dict = self._get_MSKccd_dict(masktype='DARK', extension=2)
+
+            DefDKheader = OrderedDict()
+
+            DefDKheader['CDP'] = 'COSMETICS_DEFECTS_DARK'
+            DefDKheader['TEST'] = 'COSMETICS00'
+            DefDKheader['MASKTYPE'] = 'DARK'
+            DefDKheader['VISON'] = CDP_header['vison']
+            DefDKheader['FPA_DES'] = CDP_header['fpa_design']
+            DefDKheader['DATE'] = CDP_header['DATE']
+            
+            DefDKcdp = cdpmod.LE1_CDP()
+            
+            DefDKcdp.ingest_inputs(DefDKccd_dict, header=DefDKheader, inextension=-1,
+                                    fillval=0)
+            
+            DefDKcdpname = self.outcdps['DEFECTS_DARK']
+
+            DefDKcdp.savehardcopy(DefDKcdpname, clobber=True, uint16=False)
+
+            DefDKccd_dict = None
+
         #import sys
         #print('EXITING EARLY ON TESTS!')
         #sys.exit()
