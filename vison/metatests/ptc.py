@@ -131,7 +131,7 @@ cols2keep = [
     'HK_FPGA_PCB_TEMP_B',
     'HK_RPSU_TEMP_2',
     'HK_RPSU_28V_PRI_I',
-    'HK_VCCD_ROE',
+    #'HK_VCCD_ROE',
     'chk_NPIXOFF',
     'chk_NPIXSAT',
     'offset_pre',
