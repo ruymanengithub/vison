@@ -323,9 +323,8 @@ class NL02(NL01.NL01):
         ax.set_title('Non Lin Curves from PTC')
         ax.set_xlabel('Fluence [e-]')
         ax.set_ylabel('Non-Lin. [\%]')
-        plt.show()
+        plt.savefig('NL02_nl_from_PTC.png')
 
-        stop()
 
     # def debug_bgdMAPS(self):
     #     """ """
