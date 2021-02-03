@@ -290,9 +290,9 @@ class FWD_WARM(fpatask.FpaTask):
         self.iterate_over_CCDs_inLE1(LE1, FWD_WARM._basic_onLE1, **Bkwargs)
 
         if self.report is not None:
-
             for prodkey in prodkeys:
-                self.report.add_Text('product: %s, all extracted!' % prodkey)
+                sprodkey = prodkey.replace('_','\_')
+                self.report.add_Text('product: %s, all extracted!' % sprodkey)
 
         # Matrices: HERvalues, RAMPslopes, Offsets, RONs
 
@@ -583,8 +583,9 @@ class FWD_WARM(fpatask.FpaTask):
         self.figdict['BITHISTOS'][1]['meta']['plotter'] = self.metacal.plot_XY
 
         if self.report is not None:
-            self.addFigures_ST(figkeys=['FW_RAMPS', 'SLOPESMAP', 'DIFFSLOPESMAP','HERPROFS',
-                                        'HERVALSMAP', 'BITHISTOS'],
+            self.addFigures_ST(figkeys=['DIFFOFFSETSMAP', 'RATIORONSMAP',
+                        'FW_RAMPS', 'SLOPESMAP', 'DIFFSLOPESMAP','HERPROFS',
+                        'HERVALSMAP', 'BITHISTOS'],
                                dobuilddata=False)
 
     def appendix(self):
