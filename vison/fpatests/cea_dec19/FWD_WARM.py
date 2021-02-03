@@ -350,6 +350,21 @@ class FWD_WARM(fpatask.FpaTask):
                                     cdp=off_tb_cdp,
                                     cdpdict=offcdpdict)
 
+        # Matrix of delta-offsets (pre-scan)
+
+        deltaoff_tb_cdp = cdpmod.Tables_CDP()
+        deltaoffcdpdict = dict(
+            caption='Delta-Offsets (with reference) in the pre-scan region.',
+            valformat='%.2f')
+
+        def _getDELTAOFF_PREval(self, Ckey, Q):
+            return self.dd.products['MED_PRE'][Ckey][Q]-\
+                self.dd.products['REF_OFFs'][Ckey][Q]
+
+        self.add_StandardQuadsTable(extractor=_getDELTAOFF_PREval,
+                                    cdp=deltaoff_tb_cdp,
+                                    cdpdict=deltaoffcdpdict)
+
         # Matrix of RONs (pre-scan)
 
         ron_tb_cdp = cdpmod.Tables_CDP()
@@ -490,6 +505,8 @@ class FWD_WARM(fpatask.FpaTask):
 
         def _get_Diff_MAP(inData, Ckey, Q):
             """ """
+            if inData[0][Ckey][Q] == 0.:
+                return np.nan
             return inData[0][Ckey][Q]-inData[1][Ckey][Q]
 
         DiffOffsetsMap = self.get_FPAMAP((OffsetsMap,RefOffsetsMap),
@@ -518,6 +535,8 @@ class FWD_WARM(fpatask.FpaTask):
 
         def _get_Ratio_MAP(inData, Ckey, Q):
             """ """
+            if inData[0][Ckey][Q] == 0.:
+                return np.nan
             return inData[0][Ckey][Q]/inData[1][Ckey][Q]
 
         RatioRonsMap = self.get_FPAMAP((RonsMap,RefRonsMap),
