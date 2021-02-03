@@ -87,7 +87,7 @@ class FWD_WARM(fpatask.FpaTask):
 
         # Reference offsets
 
-        refoffkey, offreg = 'offsets_fwd_cold', 'ove'
+        refoffkey, offreg = 'offsets_fwd_cold', 'pre'
 
         refOFF_incdp = cdpmod.Json_CDP()
         refOFF_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refoffkey])
@@ -101,6 +101,26 @@ class FWD_WARM(fpatask.FpaTask):
                                         extractor=_get_ref_OFFs_MAP)
 
         self.dd.products['REF_OFFs'] = RefOFFsMap.copy()
+
+
+        # Reference RONs
+
+        refronkey, ronreg = 'rons', 'pre'
+
+        refRON_incdp = cdpmod.Json_CDP()
+        refRON_incdp.loadhardcopy(filef=self.inputs['inCDPs']['references'][refronkey])
+
+
+        def _get_ref_RONs_MAP(inData, Ckey, Q):
+            return inData[Ckey][Q][ronreg]
+
+
+        RefRONsMap = self.get_FPAMAP(refRON_incdp.data.copy(),
+                                        extractor=_get_ref_RONs_MAP)
+
+        self.dd.products['REF_RONs'] = RefRONsMap.copy()
+
+
 
 
     def _get_RAMPslope(self, vQ):
@@ -134,6 +154,10 @@ class FWD_WARM(fpatask.FpaTask):
         # print(CCDID)
         debug = kwargs['debug']
 
+        trimscans = dict(pre=[25, 5],
+                         img=[5, 5],
+                         ove=[5, 5])
+
         HERprofs = MOT_FFaux.extract_transcan_profiles(kccdobj,
                                                        [1.E3, 4.E4],
                                                        direction='serial')
@@ -156,9 +180,19 @@ class FWD_WARM(fpatask.FpaTask):
 
             if not debug:
 
-                # Stats on pre and over scan
+                # Stats on pre-scan
 
-                # PENDING
+                stats = kccdobj.get_stats(
+                    Q,sector='pre',
+                    statkeys=['median','std'],
+                    trimscan=trimscans['pre'],
+                    ignore_pover=True,
+                    extension=-1,
+                    VSTART=vstart,
+                    VEND=vend)
+
+                self.dd.products['MED_PRE'][CCDID][Q] = stats[0]
+                self.dd.products['STD_PRE'][CCDID][Q] = stats[1]
 
                 # vertical profile: RAMP
 
@@ -237,6 +271,7 @@ class FWD_WARM(fpatask.FpaTask):
             self.addFigures_ST(figkeys=['FW_img'], dobuilddata=False)
 
         prodkeys = ['profiles1D', 'RAMPfits',
+                    'MED_PRE', 'STD_PRE',
                     'HER', 'HERval', 'BITS']
 
         for prodkey in prodkeys:
@@ -259,7 +294,7 @@ class FWD_WARM(fpatask.FpaTask):
             for prodkey in prodkeys:
                 self.report.add_Text('product: %s, all extracted!' % prodkey)
 
-        # Matrices: HERvalues, RAMPslopes
+        # Matrices: HERvalues, RAMPslopes, Offsets, RONs
 
         # HERvalues matrix
 
@@ -300,6 +335,37 @@ class FWD_WARM(fpatask.FpaTask):
         self.add_StandardQuadsTable(extractor=_getRSlope,
                                     cdp=rslope_tb_cdp,
                                     cdpdict=rslopecdpdict)
+
+        # Matrix of offsets (pre-scan)
+
+        off_tb_cdp = cdp.Tables_CDP()
+        offcdpdict = dict(
+            caption='Offsets in the pre-scan region.',
+            valformat='%.2f')
+
+        def _getOFF_PREval(self, Ckey, Q):
+            return self.dd.products['MED_PRE'][Ckey][Q]
+
+        self.add_StandardQuadsTable(extractor=_getOFF_PREval,
+                                    cdp=off_tb_cdp,
+                                    cdpdict=offcdpdict)
+
+        # Matrix of RONs (pre-scan)
+
+        ron_tb_cdp = cdp.Tables_CDP()
+        roncdpdict = dict(
+            caption='RON in the pre-scan region.',
+            valformat='%.2f')
+
+        def _getRON_PREval(self, Ckey, Q):
+            return self.dd.products['STD_PRE'][Ckey][Q]
+
+        self.add_StandardQuadsTable(extractor=_getRON_PREval,
+                                    cdp=ron_tb_cdp,
+                                    cdpdict=roncdpdict)
+
+
+
 
     def _get_XYdict_HER(self):
         """ """
@@ -411,6 +477,65 @@ class FWD_WARM(fpatask.FpaTask):
 
         self.figdict['DIFFSLOPESMAP'][1]['data'] = DiffRslopesMap
         self.figdict['DIFFSLOPESMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
+
+        # map difference in offset with reference
+
+        def _get_GenValue_MAP(inData, Ckey, Q):
+            return inData[Ckey][Q]
+
+        OffsetsMap = self.get_FPAMAP(self.dd.products['MED_PRE'],
+                                     extractor=_get_GenValue_MAP)
+
+        RefOffsetsMap = self.dd.products['REF_OFFs'].copy()
+
+        def _get_Diff_MAP(inData, Ckey, Q):
+            """ """
+            return inData[0][Ckey][Q]-inData[1][Ckey][Q]
+
+        DiffOffsetsMap = self.get_FPAMAP((OffsetsMap,RefOffsetsMap),
+                                        extractor=_get_Diff_MAP)
+
+        self.figdict['DIFFOFFSETSMAP'][1]['data'] = DiffOffsetsMap
+        self.figdict['DIFFOFFSETSMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
+
+        DiffOffsetsList = []
+        for Ckey in list(DiffOffsetsMap.keys()):
+            for Q in self.Quads:
+                DiffOffsetsList.append(DiffOffsetsMap[Ckey][Q])
+
+        avgDiffOffset = np.mean(DiffOffsetsList)
+
+        if self.report is not None:
+            self.report.add_Text('Average Differerence in Offset with reference: %.2f ADU' % avgDiffOffset)
+
+        # map RATIO of RON with reference
+
+
+        RonsMap = self.get_FPAMAP(self.dd.products['STD_PRE'],
+                                     extractor=_get_GenValue_MAP)
+
+        RefRonsMap = self.dd.products['REF_RONs'].copy()
+
+        def _get_Ratio_MAP(inData, Ckey, Q):
+            """ """
+            return inData[0][Ckey][Q]/inData[1][Ckey][Q]
+
+        RatioRonsMap = self.get_FPAMAP((RonsMap,RefRonsMap),
+                                        extractor=_get_Ratio_MAP)
+
+        self.figdict['RATIORONSMAP'][1]['data'] = RatioRonsMap
+        self.figdict['RATIORONSMAP'][1]['meta']['plotter'] = self.metacal.plot_SimpleMAP
+
+        RatioRonsList = []
+        for Ckey in list(RatioRonsMap.keys()):
+            for Q in self.Quads:
+                RatioRonsList.append(RatioRonsMap[Ckey][Q])
+
+        avgRatioRon = np.mean(RatioRonsList)
+
+        if self.report is not None:
+            self.report.add_Text('Average Ratio of RON with reference: %.2f (adim.)' % avgRatioRon)
+
 
         # Dispay HER profiles (single plot)
 

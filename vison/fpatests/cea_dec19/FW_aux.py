@@ -81,6 +81,19 @@ FW_BITHISTOS_dict = dict(
         xlim=[0, 16],
         corekwargs=dict(linestyle=' ', marker='.')))
 
+FW_DiffOffsetsMap_dict = dict(
+        figname='FW_DiffOffsetsMap.png',
+        caption='Difference in Offset with Reference image [ADU].',
+        meta=dict(suptitle='Difference in Offsets',
+                    ColorbarText='ADU'))
+
+FW_RatioRonMap_dict = dict(
+        figname='FW_RatioRonMap.png',
+        caption='Ratio of RON measured / reference.',
+        meta=dict(suptitle='Ratio RONs',
+                    ColorbarText='Ratio Measured/Reference'))
+
+
 
 def get_FWfigs():
     """ """
@@ -91,6 +104,8 @@ def get_FWfigs():
     FWfigs['FW_RAMPS'] = [figclasses.Fig_Dynamic, FW_Ramps_dict]
     FWfigs['SLOPESMAP'] = [figclasses.Fig_Dynamic, FW_SlopesMap_dict]
     FWfigs['DIFFSLOPESMAP'] = [figclasses.Fig_Dynamic, FW_DiffSlopesMap_dict]
+    FWfigs['DIFFOFFSETSMAP'] = [figclasses.Fig_Dynamic, FW_DiffOffsetsMap_dict]
+    FWfigs['RATIORONSMAP'] = [figclasses.Fig_Dynamic, FW_RatioRonMap_dict]
     FWfigs['HERPROFS'] = [figclasses.Fig_Dynamic, FW_HERPROFS_dict]
     FWfigs['HERVALSMAP'] = [figclasses.Fig_Dynamic, FW_HERvalsMap_dict]
     FWfigs['BITHISTOS'] = [figclasses.Fig_Dynamic, FW_BITHISTOS_dict]
