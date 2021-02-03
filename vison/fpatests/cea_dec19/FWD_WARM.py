@@ -338,7 +338,7 @@ class FWD_WARM(fpatask.FpaTask):
 
         # Matrix of offsets (pre-scan)
 
-        off_tb_cdp = cdp.Tables_CDP()
+        off_tb_cdp = cdpmod.Tables_CDP()
         offcdpdict = dict(
             caption='Offsets in the pre-scan region.',
             valformat='%.2f')
@@ -352,7 +352,7 @@ class FWD_WARM(fpatask.FpaTask):
 
         # Matrix of RONs (pre-scan)
 
-        ron_tb_cdp = cdp.Tables_CDP()
+        ron_tb_cdp = cdpmod.Tables_CDP()
         roncdpdict = dict(
             caption='RON in the pre-scan region.',
             valformat='%.2f')
