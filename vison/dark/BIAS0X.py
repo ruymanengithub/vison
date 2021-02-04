@@ -536,7 +536,7 @@ class BIAS0X(DarkTask):
         meta=dict(doLegend=False,
               ylabel='STD [ADU]',
               xlabel='MEAN [ADU]',
-              #xlim=[-2., 20.],
+              xlim=[-2., 25.],
               suptitle='BIAS0X: STD vs. OFFSET, prescan')
         )
 
@@ -569,9 +569,12 @@ class BIAS0X(DarkTask):
                     _x = iprofs['data'][Q]['hor'].data['y'][0:self.ccdcalc.prescan].copy()
                     #_x += self.dd.mx['offset_pre'][iObs,jCCD,iQ]
                     _y = iprofs['data'][Q]['horstd'].data['y'][0:self.ccdcalc.prescan].copy()
+                    
+                    # if Differential Non Linearity is playing a role in the RON estimates,
+                    # then it could introduce a correlation between measured STD and offset.
+                    # But we need to "align" all the offset values in these profiles to see it.
 
-                    _x += self.dd.mx['offset_pre'][iObs,jCCD,iQ] # adding back the offset so we
-                            # have information of the absolute "bit codes"
+                    _x += self.dd.mx['offset_pre'][iObs,jCCD,iQ]-self.dd.mx['offset_pre'][0,jCCD,iQ] 
 
                     profs1D2plot[CCDk][Q]['x'][OBStag] = _x
                     profs1D2plot[CCDk][Q]['y'][OBStag] = _y
