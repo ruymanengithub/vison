@@ -153,8 +153,12 @@ class BIAS0X(DarkTask):
 
         """
         super(BIAS0X, self).prepare_images(
-            doExtract=True, doBadPixels=True,
-            doMask=True, doOffset=True, doBias=False, doFF=False)
+            doExtract=True, 
+            doBadPixels=True,
+            doMask=True, 
+            doOffset=True, 
+            doBias=False, 
+            doFF=False)
 
     def basic_analysis(self):
         """
@@ -532,7 +536,7 @@ class BIAS0X(DarkTask):
         meta=dict(doLegend=False,
               ylabel='STD [ADU]',
               xlabel='MEAN [ADU]',
-              xlim=[-2., 20.],
+              #xlim=[-2., 20.],
               suptitle='BIAS0X: STD vs. OFFSET, prescan')
         )
 
@@ -566,11 +570,13 @@ class BIAS0X(DarkTask):
                     #_x += self.dd.mx['offset_pre'][iObs,jCCD,iQ]
                     _y = iprofs['data'][Q]['horstd'].data['y'][0:self.ccdcalc.prescan].copy()
 
-                
+                    _x += self.dd.mx['offset_pre'][iObs,jCCD,iQ] # adding back the offset so we
+                            # have information of the absolute "bit codes"
+
                     profs1D2plot[CCDk][Q]['x'][OBStag] = _x
                     profs1D2plot[CCDk][Q]['y'][OBStag] = _y
 
-                    stop()
+                    
 
         profs1D2plot['labelkeys'] = \
                 list(profs1D2plot[CCDs[0]][Quads[0]]['x'].keys())
