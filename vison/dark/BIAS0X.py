@@ -532,7 +532,7 @@ class BIAS0X(DarkTask):
         meta=dict(doLegend=False,
               ylabel='STD [ADU]',
               xlabel='MEAN [ADU]',
-              xlim=[-2., 10.],
+              xlim=[-2., 20.],
               suptitle='BIAS0X: STD vs. OFFSET, prescan')
         )
 
@@ -569,6 +569,8 @@ class BIAS0X(DarkTask):
                 
                     profs1D2plot[CCDk][Q]['x'][OBStag] = _x
                     profs1D2plot[CCDk][Q]['y'][OBStag] = _y
+
+                    stop()
 
         profs1D2plot['labelkeys'] = \
                 list(profs1D2plot[CCDs[0]][Quads[0]]['x'].keys())
