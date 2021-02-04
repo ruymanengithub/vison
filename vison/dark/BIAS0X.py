@@ -536,7 +536,7 @@ class BIAS0X(DarkTask):
         meta=dict(doLegend=False,
               ylabel='STD [ADU]',
               xlabel='MEAN [ADU]',
-              xlim=[-2., 25.],
+              xlim=[-2., 10.],
               suptitle='BIAS0X: STD vs. OFFSET, prescan')
         )
 
