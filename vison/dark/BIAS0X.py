@@ -532,7 +532,9 @@ class BIAS0X(DarkTask):
 
         debug_fig_dict = dict(
         figname='BIAS0X_std_vs_offset_prescan_allOBSIDs.png',
-        caption='PENDING',
+        caption='Plot of standard deviation vs. mean in each column of the images, in the pre-scan region. '+\
+        'Each colour corresponds to a different frame / acquisition. In each quadrant, the "means" '+\
+        'have the offset value of the first image subtracted for ease of representation.',
         meta=dict(doLegend=False,
               ylabel='STD [ADU]',
               xlabel='MEAN [ADU]',
@@ -644,6 +646,8 @@ class BIAS0X(DarkTask):
                     profs1D2plot[tag][CCDk][Q] = OrderedDict()
                     profs1D2plot[tag][CCDk][Q]['x'] = np.arange(100, dtype='float32')
                     profs1D2plot[tag][CCDk][Q]['y'] = np.zeros(100, dtype='float32')
+
+
 
         # Master Bias Data to be plotted
 
@@ -796,6 +800,52 @@ class BIAS0X(DarkTask):
 
         self.save_CDP(MB_profiles_cdp)
         self.pack_CDP_to_dd(MB_profiles_cdp, 'MB_PROFILES')
+
+
+        # Plots of STD vs. MEAN (related to DNL investigation)
+
+        profsDNL = OrderedDict()
+        profilespath = self.inputs['subpaths']['profiles']
+
+        for CCDk in CCDs:
+            profsDNL[CCDk] = OrderedDict()
+            for Q in Quads:
+                profsDNL[CCDk][Q] = OrderedDict()
+                profsDNL[CCDk][Q]['x'] = OrderedDict()
+                profsDNL[CCDk][Q]['y'] = OrderedDict()
+
+        for iObs in range(nObs):
+
+            OBSID = self.dd.mx['ObsID'][iObs]
+            OBStag = 'OBS{}'.format(OBSID)
+
+            for jCCD, CCDk in enumerate(CCDs):
+
+                iprofsfile = '{}.pick'.format(self.dd.mx['profiles1D_name'][iObs,
+                                                  jCCD])
+                iprofs = files.cPickleRead(os.path.join(profilespath,iprofsfile))
+                
+                for iQ,Q in enumerate(Quads):
+
+                    _x = iprofs['data'][Q]['hor'].data['y'][0:self.ccdcalc.prescan].copy()
+                    #_x += self.dd.mx['offset_pre'][iObs,jCCD,iQ]
+                    _y = iprofs['data'][Q]['horstd'].data['y'][0:self.ccdcalc.prescan].copy()
+                    
+                    # if Differential Non Linearity is playing a role in the RON estimates,
+                    # then it could introduce a correlation between measured STD and offset.
+                    # But we need to "align" all the offset values in these profiles to see it.
+
+                    _x += self.dd.mx['offset_pre'][iObs,jCCD,iQ]-self.dd.mx['offset_pre'][0,jCCD,iQ] 
+
+                    profsDNL[CCDk][Q]['x'][OBStag] = _x
+                    profsDNL[CCDk][Q]['y'][OBStag] = _y
+
+
+        self.figdict['B0Xmeta_std_vs_mean'][1]['data'] = profsDNL.copy()
+
+
+        if self.report is not None:
+            self.addFigures_ST(figkeys=['B0Xmeta_std_vs_mean'], dobuilddata=False)
 
         # DISPLAYING THE MASTER BIAS FRAMES
 

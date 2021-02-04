@@ -158,6 +158,18 @@ meta_MB2D_dict = dict(
 )
 
 
+meta_std_vs_mean_dict = dict(
+        figname='BIAS0X_std_vs_offset_prescan.png',
+        caption='Plot of standard deviation vs. mean in each column of the images, in the pre-scan region. '+\
+        'Each colour corresponds to a different frame / acquisition. In each quadrant, the "means" '+\
+        'have the offset value of the first image subtracted for ease of representation.',
+        meta=dict(doLegend=False,
+              ylabel='STD [ADU]',
+              xlabel='MEAN [ADU]',
+              xlim=[-2., 10.],
+              suptitle='BIAS0X: STD vs. OFFSET, prescan')
+        )
+
 def get_B0Xfigs():
     B0Xfigs = dict()
     B0Xfigs['B0Xchecks_offsets'] = [trends.Fig_Basic_Checkstat, check_offsets_dict]
@@ -179,6 +191,8 @@ def get_B0Xfigs():
         figclasses.Fig_Beam2DPlot, meta_prof1Dstdver_dict]
     B0Xfigs['B0Xmeta_MasterBias_2D'] = [
         figclasses.Fig_BeamImgShow, meta_MB2D_dict]
+    B0Xfigs['B0Xmeta_std_vs_mean'] = [
+        figclasses.Fig_Beam2DPlot, meta_std_vs_mean_dict]
     B0Xfigs['BlueScreen'] = [figclasses.BlueScreen, dict()]
     return B0Xfigs
 
