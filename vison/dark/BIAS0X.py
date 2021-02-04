@@ -823,7 +823,7 @@ class BIAS0X(DarkTask):
 
                 iprofsfile = '{}.pick'.format(self.dd.mx['profiles1D_name'][iObs,
                                                   jCCD])
-                iprofs = files.cPickleRead(os.path.join(profilespath,iprofsfile))
+                iprofs = cPickleRead(os.path.join(profilespath,iprofsfile))
                 
                 for iQ,Q in enumerate(Quads):
 
