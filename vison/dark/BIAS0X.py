@@ -840,6 +840,7 @@ class BIAS0X(DarkTask):
                     profsDNL[CCDk][Q]['x'][OBStag] = _x
                     profsDNL[CCDk][Q]['y'][OBStag] = _y
 
+        profsDNL['labelkeys'] = list(profsDNL[CCDs[0]][Quads[0]]['x'].keys())
 
         self.figdict['B0Xmeta_std_vs_mean'][1]['data'] = profsDNL.copy()
 
