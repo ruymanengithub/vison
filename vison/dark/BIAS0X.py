@@ -582,8 +582,8 @@ class BIAS0X(DarkTask):
                     profs1D2plot[CCDk][Q]['y'][OBStag] = _y
 
                     
-        stop()
         
+
         profs1D2plot['labelkeys'] = \
                 list(profs1D2plot[CCDs[0]][Quads[0]]['x'].keys())
 
