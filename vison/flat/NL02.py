@@ -303,7 +303,7 @@ class NL02(NL01.NL01):
                 varsbin = varsbin[ixsel]
                 evarsbin = evarsbin[ixsel]
 
-                indata = dict(mu_nle=medsbinsuboff,
+                indata = dict(mu_nle = medsbinsuboff,
                     var_nle = varsbin,
                     evar_nle = evarsbin,
                     ron=1.2,
@@ -964,7 +964,7 @@ class NL02(NL01.NL01):
 
 
     def extract_PTC(self):
-        """ """
+        """Extractin a binned PTC (binned to marginalise BF)."""
 
         from vison.flat.PTC0X import PTC0X
 
@@ -979,7 +979,7 @@ class NL02(NL01.NL01):
             self.report.add_Text('Segmenting on %i x %i windows...' % (wpx, hpx))
 
 
-        binfactor=10
+        binfactor = 10
         medcol = 'sec_med_bin{:d}'.format(binfactor)
         varcol = 'sec_var_bin{:d}'.format(binfactor)
         evarcol = 'sec_evar_bin{:d}'.format(binfactor)

@@ -494,8 +494,6 @@ def forward_PTC_LM(indata, npol=6, doPlots=True):
 
     Z = (yout/youtlin-1.)*100.
 
-
-
     res = dict(mu_nle=mu_nle, 
         var_le=var_le,
         var_nle=var_nle,
