@@ -212,7 +212,10 @@ class PSF0X(PT.PointTask):
                 if selectFF:
                     wavelength = self.inputs['wavelength']
                     nmkey = 'nm%i' % wavelength
-                    nmFFs = self.inputs['inCDPs']['FF'][nmkey]
+                    try:
+                        nmFFs = self.inputs['inCDPs']['FF'][nmkey]
+                    except KeyError:
+                        nmFFs = dict()
                     self.inputs['inCDPs']['FF'] = nmFFs.copy()
 
 
