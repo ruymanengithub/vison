@@ -94,6 +94,7 @@ def _get_NL(RAMPdict, offset=0.):
     try:
         ixsatur = np.where(RAMPdict['y'] == 2.**16 - 1)[0][0]
     except IndexError:
+        fluencesNL = RAMPdict['y'][:].copy()
         X = fluencesNL - offset
         Y = np.zeros_like(X,dtype='float32')
         NLdict = dict(x=X / 1.e3, y=Y)
