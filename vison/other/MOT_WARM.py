@@ -91,7 +91,13 @@ def _get_NL(RAMPdict, offset=0.):
     """ """
     from pylab import plot, show
 
-    ixsatur = np.where(RAMPdict['y'] == 2.**16 - 1)[0][0]
+    try:
+        ixsatur = np.where(RAMPdict['y'] == 2.**16 - 1)[0][0]
+    except IndexError:
+        X = fluencesNL - offset
+        Y = np.zeros_like(X,dtype='float32')
+        NLdict = dict(x=X / 1.e3, y=Y)
+        return NLdict
 
     fluencesNL = RAMPdict['y'][3:ixsatur].copy()
     minrelflu = 0.1
