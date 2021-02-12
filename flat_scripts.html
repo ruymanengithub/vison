@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flat-Illumination Scripts &#8212; vison 1.0+283.gd3acf3e.dirty documentation</title>
+    <title>Flat-Illumination Scripts &#8212; vison 1.0+992.g0962209 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="dark_scripts.html" title="“Dark Acquisitions” Scripts"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+283.gd3acf3e.dirty documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+992.g0962209 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Flat-Illumination Scripts</a></li> 
       </ul>
     </div>  
@@ -220,6 +220,11 @@ TEST: NL02</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="vison.flat.NL02.NL02.debug_NLPTC">
+<code class="sig-name descname">debug_NLPTC</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL02.NL02.debug_NLPTC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="vison.flat.NL02.NL02.do_satCTE">
 <code class="sig-name descname">do_satCTE</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL02.NL02.do_satCTE" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>METACODE</strong></p>
@@ -238,6 +243,12 @@ TEST: NL02</p>
 <span class="n">report</span> <span class="n">FWCs</span> <span class="ow">in</span> <span class="n">electrons</span> <span class="p">[</span><span class="n">via</span> <span class="n">gain</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">]</span> <span class="n">f</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">CCD</span><span class="p">,</span> <span class="n">Q</span> <span class="p">(</span><span class="n">table</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="vison.flat.NL02.NL02.extract_PTC">
+<code class="sig-name descname">extract_PTC</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL02.NL02.extract_PTC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extractin a binned PTC (binned to marginalise BF).</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -281,6 +292,11 @@ TEST: NL02</p>
 </pre></div>
 </div>
 </dd></dl>
+
+<dl class="py method">
+<dt id="vison.flat.NL02.NL02.simulNL">
+<code class="sig-name descname">simulNL</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.NL02.NL02.simulNL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -338,9 +354,20 @@ variance(binned difference-frames) vs. fluence</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="vison.flat.PTC0X.PTC0X.debug_PRE_HER">
+<code class="sig-name descname">debug_PRE_HER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.debug_PRE_HER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vison.flat.PTC0X.PTC0X.debugtask">
+<code class="sig-name descname">debugtask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.debugtask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="vison.flat.PTC0X.PTC0X.extract_HER">
 <code class="sig-name descname">extract_HER</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.extract_HER" title="Permalink to this definition">¶</a></dt>
-<dd><p>Hard Edge Response Analysis</p>
+<dd><p>Hard Edge Response Analysis.</p>
+<p>Extraction of overscan profiles (also parallel, for satCTE analysis).</p>
 </dd></dl>
 
 <dl class="py method">
@@ -348,7 +375,7 @@ variance(binned difference-frames) vs. fluence</p>
 <code class="sig-name descname">extract_PTC</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.extract_PTC" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Performs basic analysis of images:</dt><dd><ul class="simple">
-<li><p>builds PTC curves: both on non-binned and binned images</p></li>
+<li><p>builds PTC curves: both on non-binned [and binned images]</p></li>
 </ul>
 </dd>
 </dl>
@@ -370,7 +397,7 @@ variance(binned difference-frames) vs. fluence</p>
 
 <dl class="py method">
 <dt id="vison.flat.PTC0X.PTC0X.f_extract_PTC">
-<code class="sig-name descname">f_extract_PTC</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ccdobjcol</span></em>, <em class="sig-param"><span class="n">medcol</span></em>, <em class="sig-param"><span class="n">varcol</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.f_extract_PTC" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">f_extract_PTC</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ccdobjcol</span></em>, <em class="sig-param"><span class="n">medcol</span></em>, <em class="sig-param"><span class="n">varcol</span></em>, <em class="sig-param"><span class="n">binfactor</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.f_extract_PTC" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -383,6 +410,11 @@ variance(binned difference-frames) vs. fluence</p>
 <code class="sig-name descname">inputsclass</code><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.inputsclass" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#vison.flat.PTC0X.PTC0X_inputs" title="vison.flat.PTC0X.PTC0X_inputs"><code class="xref py py-class docutils literal notranslate"><span class="pre">PTC0X_inputs</span></code></a></p>
 </dd></dl>
+
+<dl class="py method">
+<dt id="vison.flat.PTC0X.PTC0X.make_plotBM_dict">
+<code class="sig-name descname">make_plotBM_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bmcdp</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.make_plotBM_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt id="vison.flat.PTC0X.PTC0X.meta_analysis">
@@ -405,6 +437,11 @@ gain, and gain(fluence)</p>
 </pre></div>
 </div>
 </dd></dl>
+
+<dl class="py method">
+<dt id="vison.flat.PTC0X.PTC0X.produce_Bloom_Maps">
+<code class="sig-name descname">produce_Bloom_Maps</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.flat.PTC0X.PTC0X.produce_Bloom_Maps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt id="vison.flat.PTC0X.PTC0X.set_inpdefaults">
@@ -607,7 +644,7 @@ through PTC.</p>
         <li class="right" >
           <a href="dark_scripts.html" title="“Dark Acquisitions” Scripts"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+283.gd3acf3e.dirty documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+992.g0962209 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Flat-Illumination Scripts</a></li> 
       </ul>
     </div>

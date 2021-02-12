@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Model &#8212; vison 1.0+283.gd3acf3e.dirty documentation</title>
+    <title>Data Model &#8212; vison 1.0+992.g0962209 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="pipe.html" title="Pipeline"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+283.gd3acf3e.dirty documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+992.g0962209 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Data Model</a></li> 
       </ul>
     </div>  
@@ -108,7 +108,7 @@ top-right for F and bottom-right for G.</p></li>
 
 <dl class="py method">
 <dt id="vison.datamodel.ccd.CCD.add_to_hist">
-<code class="sig-name descname">add_to_hist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">action</span></em>, <em class="sig-param"><span class="n">extension</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">vison</span><span class="o">=</span><span class="default_value">'1.0+283.gd3acf3e.dirty'</span></em>, <em class="sig-param"><span class="n">params</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.add_to_hist" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_to_hist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">action</span></em>, <em class="sig-param"><span class="n">extension</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">vison</span><span class="o">=</span><span class="default_value">'1.0+992.g0962209'</span></em>, <em class="sig-param"><span class="n">params</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.add_to_hist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds information to historial of operations applied on object.</p>
 </dd></dl>
 
@@ -292,7 +292,7 @@ get_tile_coos.</p></li>
 
 <dl class="py method">
 <dt id="vison.datamodel.ccd.CCD.get_tiles_stats">
-<code class="sig-name descname">get_tiles_stats</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Quad</span></em>, <em class="sig-param"><span class="n">tile_coos</span></em>, <em class="sig-param"><span class="n">statkey</span></em>, <em class="sig-param"><span class="n">extension</span><span class="o">=</span><span class="default_value">- 1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.get_tiles_stats" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_tiles_stats</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Quad</span></em>, <em class="sig-param"><span class="n">tile_coos</span></em>, <em class="sig-param"><span class="n">statkey</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">estimator</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extension</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">clipsigma</span><span class="o">=</span><span class="default_value">- 1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.ccd.CCD.get_tiles_stats" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns statistics on a list of tiles.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -301,7 +301,9 @@ get_tile_coos.</p></li>
 <li><p><strong>tile_coos</strong> (<em>dict</em><em>(</em><em>)</em>) – A dictionary with tiles coordinates, as output by 
 get_tile_coos.</p></li>
 <li><p><strong>statkey</strong> (<em>str</em>) – stat to retrieve (one of mean, median, std)</p></li>
+<li><p><strong>estimator</strong> (<em>obj</em>) – function to retrieve stat (alternative to statkey)</p></li>
 <li><p><strong>extension</strong> (<em>int</em>) – Extension index, last is -1</p></li>
+<li><p><strong>clipsigma</strong> (<em>float/int</em>) – apply sigma clipping of value +-clipsigma if clipsigma&gt;0</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -577,6 +579,12 @@ a label, and data.</p>
 <em class="property">class </em><code class="sig-prename descclassname">vison.datamodel.cdp.</code><code class="sig-name descname">FitsTables_CDP</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.cdp.FitsTables_CDP" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fits Table CDP.</p>
 <dl class="py method">
+<dt id="vison.datamodel.cdp.FitsTables_CDP.checkInputHardcopy">
+<code class="sig-name descname">checkInputHardcopy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inhdulist</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.cdp.FitsTables_CDP.checkInputHardcopy" title="Permalink to this definition">¶</a></dt>
+<dd><p>To be filled up by a child-class, if so desired.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="vison.datamodel.cdp.FitsTables_CDP.fill_Header">
 <code class="sig-name descname">fill_Header</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.cdp.FitsTables_CDP.fill_Header" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -604,6 +612,11 @@ a label, and data.</p>
 <dl class="py method">
 <dt id="vison.datamodel.cdp.FitsTables_CDP.init_HDUList">
 <code class="sig-name descname">init_HDUList</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.cdp.FitsTables_CDP.init_HDUList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="vison.datamodel.cdp.FitsTables_CDP.loadhardcopy">
+<code class="sig-name descname">loadhardcopy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filef</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.cdp.FitsTables_CDP.loadhardcopy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1146,6 +1159,12 @@ CCDk: ‘CCD1’, ‘CCD2’ or ‘CCD3’</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="vison.datamodel.fpa_dm.FPA_LE1.get_as_FPAmosaic">
+<code class="sig-name descname">get_as_FPAmosaic</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.fpa_dm.FPA_LE1.get_as_FPAmosaic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of self as an FPA mosaic</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="vison.datamodel.fpa_dm.FPA_LE1.get_ccdobj">
 <code class="sig-name descname">get_ccdobj</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">CCDID</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.fpa_dm.FPA_LE1.get_ccdobj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a CCD Object given a CCDID.</p>
@@ -1193,6 +1212,11 @@ Q: ‘E’, ‘F’, ‘G’ or ‘H’</p>
 <dl class="py function">
 <dt id="vison.datamodel.fpa_dm.test1">
 <code class="sig-prename descclassname">vison.datamodel.fpa_dm.</code><code class="sig-name descname">test1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.fpa_dm.test1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="vison.datamodel.fpa_dm.test2">
+<code class="sig-prename descclassname">vison.datamodel.fpa_dm.</code><code class="sig-name descname">test2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vison.datamodel.fpa_dm.test2" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -1743,7 +1767,7 @@ commvalues.</p></li>
         <li class="right" >
           <a href="pipe.html" title="Pipeline"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+283.gd3acf3e.dirty documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison 1.0+992.g0962209 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Data Model</a></li> 
       </ul>
     </div>
