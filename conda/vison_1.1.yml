@@ -165,7 +165,6 @@ dependencies:
     - traitlets==4.3.3
     - twilio==6.44.2
     - urllib3==1.25.10
-    - vison==1.0+78.geb01bc3.dirty
     - wcwidth==0.2.5
     - widgetsnbextension==3.5.1
 prefix: /home/raf/SOFTWARE/anaconda3/envs/vison
