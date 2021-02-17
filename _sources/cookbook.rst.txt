@@ -1298,6 +1298,7 @@ Now we can and will run the pipeline in “wait” mode, using the configuration
     (vison) bash-4.2$ vison_run -y vison_config_NOSTROMO_APR19.py -R D00 -d ../atCALDATA/data/12_Mar_19/ -v 7.5.X -W -l -m 6 -t _D00
 
 **Reminders**:
+
 * We’re telling the pipeline on session D00 (-R D00).
 * We’re telling the pipeline where to look for the data in the command line (-d ../atCALDATA/data/12_Mar_19/).
 * We’re running in “Wait” mode (-W).

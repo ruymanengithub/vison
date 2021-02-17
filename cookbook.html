@@ -1357,11 +1357,13 @@ ANALYSIS  atCALDATA  SCRIPTS
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(vison) bash-4.2$ vison_run -y vison_config_NOSTROMO_APR19.py -R D00 -d ../atCALDATA/data/12_Mar_19/ -v 7.5.X -W -l -m 6 -t _D00
 </pre></div>
 </div>
-<p><strong>Reminders</strong>:
-* We’re telling the pipeline on session D00 (-R D00).
-* We’re telling the pipeline where to look for the data in the command line (-d ../atCALDATA/data/12_Mar_19/).
-* We’re running in “Wait” mode (-W).
-* We’re using multithreading (to 6 cores, -m 6).</p>
+<p><strong>Reminders</strong>:</p>
+<ul class="simple">
+<li><p>We’re telling the pipeline on session D00 (-R D00).</p></li>
+<li><p>We’re telling the pipeline where to look for the data in the command line (-d ../atCALDATA/data/12_Mar_19/).</p></li>
+<li><p>We’re running in “Wait” mode (-W).</p></li>
+<li><p>We’re using multithreading (to 6 cores, -m 6).</p></li>
+</ul>
 <p>The output pipeline log will be named something like: Calib_FM20190401_141840_D00.log.</p>
 <p>When the pipeline has finished running, it will provide this screen output:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  &quot;Unnamed&quot; / no ext. header / 4238x4172 / 32 bits (floats)
