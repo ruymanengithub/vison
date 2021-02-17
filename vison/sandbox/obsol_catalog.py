@@ -20,10 +20,12 @@ class Catalog(dict):
         """ """
 
     def zip(self, f, inputs, outputs, indexes, **kwargs):
-        """ """
-
+        """ 
         self.insert(outputs, indexes) = f(self.burst(inputs, indexes), **kwargs)
 
+        """
+
+        
 
 def proof_of_concept():
     """ """
