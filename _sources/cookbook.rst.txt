@@ -1304,6 +1304,7 @@ Now we can and will run the pipeline in “wait” mode, using the configuration
 * We’re running in “Wait” mode (-W).
 * We’re using multithreading (to 6 cores, -m 6).
 
+
 The output pipeline log will be named something like: Calib_FM20190401_141840_D00.log.
 
 When the pipeline has finished running, it will provide this screen output:
