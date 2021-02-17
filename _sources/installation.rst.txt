@@ -61,7 +61,7 @@ Step-by-Step:
   ::
     ~$ cd conda
     ~$ ls
-    vison_36.yml
+    vison_1.1.yml
 
 * Then execute the following command to create a new conda environment, `vison`.
 Use the OS version that may correspond in your case (by now, only linux-64 bits version available).
