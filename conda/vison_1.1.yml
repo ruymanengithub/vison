@@ -1,15 +1,18 @@
 name: vison
 channels:
+  - astropy
   - http://ssb.stsci.edu/astroconda
   - defaults
 dependencies:
   - _libgcc_mutex=0.1=main
   - alabaster=0.7.12=py36_0
   - astropy=4.0.1.post1=py36h7b6447c_1
+  - astroquery=0.4.1=pyh9f0ad1d_0
   - babel=2.8.0=py_0
+  - beautifulsoup4=4.9.1=py36_0
   - blas=1.0=mkl
   - brotlipy=0.7.0=py36h7b6447c_1000
-  - ca-certificates=2020.6.24=0
+  - ca-certificates=2020.10.14=0
   - certifi=2020.6.20=py36_0
   - cffi=1.14.1=py36he30daa8_0
   - chardet=3.0.4=py36_1003
@@ -17,6 +20,7 @@ dependencies:
   - cycler=0.10.0=py36_0
   - dbus=1.13.16=hb2f20db_0
   - docutils=0.16=py36_1
+  - entrypoints=0.3=py36_0
   - et_xmlfile=1.0.1=py_1001
   - expat=2.2.9=he6710b0_2
   - fontconfig=2.13.0=h9420a91_0
@@ -24,14 +28,19 @@ dependencies:
   - glib=2.65.0=h3eb4bd4_0
   - gst-plugins-base=1.14.0=hbbd80ab_1
   - gstreamer=1.14.0=hb31296c_0
+  - html5lib=1.1=py_0
   - icu=58.2=he6710b0_3
   - idna=2.10=py_0
   - imagesize=1.2.0=py_0
+  - importlib-metadata=1.7.0=py36_0
+  - importlib_metadata=1.7.0=0
   - intel-openmp=2020.1=217
   - jdcal=1.4.1=py_0
+  - jeepney=0.4.3=py_0
   - jinja2=2.11.2=py_0
   - joblib=0.16.0=py_0
   - jpeg=9b=h024ee3a_2
+  - keyring=21.2.1=py36_0
   - kiwisolver=1.2.0=py36hfd86e86_0
   - ld_impl_linux-64=2.33.1=h53a641e_7
   - libedit=3.1.20191231=h14c3975_1
@@ -54,7 +63,7 @@ dependencies:
   - numpy=1.18.5=py36ha1c710e_0
   - numpy-base=1.18.5=py36hde5b4d6_0
   - openpyxl=3.0.4=py_0
-  - openssl=1.1.1g=h7b6447c_0
+  - openssl=1.1.1h=h7b6447c_0
   - packaging=20.4=py_0
   - pandas=1.0.5=py36h0573a6f_0
   - pcre=8.44=he6710b0_0
@@ -72,10 +81,12 @@ dependencies:
   - requests=2.24.0=py_0
   - scikit-learn=0.23.1=py36h423224d_0
   - scipy=1.5.0=py36h0b6359f_0
+  - secretstorage=3.1.2=py36_0
   - setuptools=49.2.0=py36_0
   - sip=4.19.8=py36hf484d3e_0
   - six=1.15.0=py_0
   - snowballstemmer=2.0.0=py_0
+  - soupsieve=2.0.1=py_0
   - sphinx=3.1.2=py_0
   - sphinxcontrib-applehelp=1.0.2=py_0
   - sphinxcontrib-devhelp=1.0.2=py_0
@@ -86,29 +97,76 @@ dependencies:
   - sqlite=3.32.3=h62c20be_0
   - threadpoolctl=2.1.0=pyh5ca1d4c_0
   - tk=8.6.10=hbc83047_0
-  - tornado=6.0.4=py36h7b6447c_1
+  - webencodings=0.5.1=py36_1
   - wheel=0.34.2=py36_0
+  - xlrd=1.2.0=py36_0
   - xz=5.2.5=h7b6447c_0
   - yaml=0.2.5=h7b6447c_0
+  - zipp=3.1.0=py_0
   - zlib=1.2.11=h7b6447c_3
   - pip:
+    - argon2-cffi==20.1.0
     - astroalign==2.0.2
+    - astromatic-wrapper==0.0.dev260
+    - async-generator==1.10
+    - attrs==20.3.0
+    - backcall==0.2.0
+    - bleach==3.2.1
     - corner==2.1.0
     - decorator==4.4.2
+    - defusedxml==0.6.0
     - emcee==3.0.2
+    - healpy==1.14.0
     - imageio==2.9.0
+    - ipykernel==5.4.3
+    - ipython==7.16.1
+    - ipython-genutils==0.2.0
+    - ipywidgets==7.6.3
+    - jedi==0.18.0
+    - jsonschema==3.2.0
+    - jupyter==1.0.0
+    - jupyter-client==6.1.11
+    - jupyter-console==6.2.0
+    - jupyter-core==4.7.0
+    - jupyterlab-pygments==0.1.2
+    - jupyterlab-widgets==1.0.0
+    - mistune==0.8.4
+    - nbclient==0.5.1
+    - nbconvert==6.0.7
+    - nbformat==5.1.2
+    - nest-asyncio==1.4.3
     - networkx==2.4
+    - notebook==6.2.0
+    - pandocfilters==1.4.3
+    - parso==0.8.1
+    - pexpect==4.8.0
+    - pickleshare==0.7.5
     - pillow==7.2.0
     - pip==20.2.1
+    - prometheus-client==0.9.0
+    - prompt-toolkit==3.0.10
+    - ptyprocess==0.7.0
     - pyds9==1.8.1
     - pyjwt==1.7.1
+    - pyrsistent==0.17.3
     - pywavelets==1.1.1
     - pyyaml==5.3.1
+    - pyzmq==21.0.1
+    - qtconsole==5.0.1
+    - qtpy==1.9.0
+    - rawpy==0.16.0
     - scikit-image==0.17.2
+    - send2trash==1.5.0
     - sep==1.0.3
     - setuptools-scm==4.1.2
+    - terminado==0.9.2
+    - testpath==0.4.4
     - tifffile==2020.7.24
+    - tornado==6.1
+    - traitlets==4.3.3
     - twilio==6.44.2
     - urllib3==1.25.10
+    - vison==1.0+78.geb01bc3.dirty
+    - wcwidth==0.2.5
+    - widgetsnbextension==3.5.1
 prefix: /home/raf/SOFTWARE/anaconda3/envs/vison
-
