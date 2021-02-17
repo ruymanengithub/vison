@@ -91,8 +91,8 @@ One dependency of vison not covered by conda, or pip, (in Python > 3.5) is "astr
 And that should be it. You can check it is installed by trying to import it from the python interpreter:
   ::
     ~$ python
-    >>> import astromatic_wrapper
-    >>> print(astromatic_wrapper.__version__)
+    > import astromatic_wrapper
+    > print(astromatic_wrapper.__version__)
     0.0.dev260
 
 
