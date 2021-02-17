@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>vison cook-book &#8212; vison v1.1+3.ge834a63 documentation</title>
+    <title>vison cook-book &#8212; vison v1.1+8.g9ae821f documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison v1.1+3.ge834a63 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison v1.1+8.g9ae821f documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">vison cook-book</a></li> 
       </ul>
     </div>  
@@ -47,7 +47,7 @@
             
   <div class="section" id="vison-cook-book">
 <span id="cookbook"></span><h1>vison cook-book<a class="headerlink" href="#vison-cook-book" title="Permalink to this headline">¶</a></h1>
-<p>This cook-book is an adaptation of a guide used during the actual calibration campaign. As such, it contains mentions to specific machines in MSSL, which are not really important to the workings of the code, but we have decided to leave the document as close to the original as possible, for it illustrate how the code was used in practice.</p>
+<p>This cook-book is an adaptation of a guide used during the actual calibration campaign. As such, it contains mentions to specific machines in MSSL, which are not really important to the workings of the code, but we have decided to leave the document as close to the original as possible, for it illustrates how the code was used in practice.</p>
 <p>This guide was written for users with little acquaintance with Linux. That is why there are so many comments about linux commands and their use throughout the text.</p>
 <div class="section" id="accessing-vison-the-pipeline">
 <h2>Accessing “vison”, the pipeline<a class="headerlink" href="#accessing-vison-the-pipeline" title="Permalink to this headline">¶</a></h2>
@@ -69,6 +69,7 @@
 <li><p>MSSLAN</p></li>
 <li><p>MSSLAO</p></li>
 </ul>
+<p>Update: there are faster machines to run the code now. Ask MSSL IT about that.</p>
 <p>To ssh any of them do, from a terminal:</p>
 <blockquote>
 <div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt;&gt; ssh -Y mssla?    # ? is here just a wildcard, one of (p,n,o)
@@ -124,6 +125,7 @@ bash-4.2$
 </div>
 </div></blockquote>
 <p>This indicates both that the command “vison_run” which executes the pipeline is accessible, and that we’re using the pipeline installed in euclid_caldata06/data06/SOFTWARE_LITE, as we should.</p>
+<p>Note: the copy of the pipeline may need an update in SOFTWARE_LITE. Check the version of the pipeline you’re using before proceeding. You can do this by running the command “vison -h” which will report some help and the vison version you’re running (run the command with the conda ‘vison’ environment activated, of course).</p>
 </div>
 </div>
 <div class="section" id="data-checks-analysis-work-environment-setup">
@@ -198,7 +200,7 @@ bash-4.2$
 <li><p>Doing the data-acquisition monitoring in real-time (using eyegore).</p></li>
 <li><p>Doing the analysis (using vison_run).</p></li>
 </ul>
-<p>These activities should be assigned to different roles/persons, and formally the are. But because in practice, they are usually done by the same person, and regardless of this, they are so closely related, we’ll present them together and interleaved, as they are in practice.</p>
+<p>These activities should be assigned to different roles/persons, and formally they are. But because in practice, they are usually done by the same person, and regardless of this, they are so closely related, we’ll present them together and interleaved.</p>
 <div class="section" id="writing-scripts-sessions">
 <h3>WRITING SCRIPTS / SESSIONS<a class="headerlink" href="#writing-scripts-sessions" title="Permalink to this headline">¶</a></h3>
 <p>Step-by-step description of what to do regarding the writing of test scripts and building sessions.</p>
@@ -510,9 +512,10 @@ bash-4.2$
 <h3>Editing the vison_config_*.py file<a class="headerlink" href="#editing-the-vison-config-py-file" title="Permalink to this headline">¶</a></h3>
 <p>The most delicate and complicated part of running the pipeline is editing the configuration script, a Python script itself, that’s used to configure the pipeline, to tell it what to do, and with which data.</p>
 <p>To execute the pipeline we’ll use the command “<strong>vison_run</strong>”, with a number of options, like for example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(vison) bash$ vison_run vison_run -y vison_config_BLOCK_MMM19.py -R DNN -l -t _DNN -m 6
-</pre></div>
-</div>
+<dl class="simple">
+<dt>::</dt><dd><p>(vison) bash$ vison_run vison_run -y vison_config_BLOCK_MMM19.py -R DNN -l -t _DNN -m 6</p>
+</dd>
+</dl>
 <p>In the preceding command, we have highlighted the reference to the Python configuration file, <strong>vison_config_BLOCK_MMM19.py</strong> of concern here. Now we will go through a template for this file, and comment on what inputs we must provide in order to run the pipeline with it.</p>
 <p>The script is about 400 lines long (the exact total length depends on how many tests are done within the run, as you will soon understand), but you only have to modify some of them.</p>
 <p>To copy the template analysis script to the local working folder, we will do:</p>
@@ -1709,7 +1712,7 @@ results_atCALDATA/D00/FOCUS00_800/FOCUS00_800_report.pdf</p>
         <li class="right" >
           <a href="installation.html" title="Installation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison v1.1+3.ge834a63 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison v1.1+8.g9ae821f documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">vison cook-book</a></li> 
       </ul>
     </div>
