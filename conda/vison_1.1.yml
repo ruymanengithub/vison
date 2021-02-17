@@ -107,7 +107,6 @@ dependencies:
   - pip:
     - argon2-cffi==20.1.0
     - astroalign==2.0.2
-    - astromatic-wrapper==0.0.dev260
     - async-generator==1.10
     - attrs==20.3.0
     - backcall==0.2.0
