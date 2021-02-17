@@ -5,7 +5,7 @@ vison cook-book
 ***************
 
 
-This cook-book is an adaptation of a guide used during the actual calibration campaign. As such, it contains mentions to specific machines in MSSL, which are not really important to the workings of the code, but we have decided to leave the document as close to the original as possible, for it illustrate how the code was used in practice.
+This cook-book is an adaptation of a guide used during the actual calibration campaign. As such, it contains mentions to specific machines in MSSL, which are not really important to the workings of the code, but we have decided to leave the document as close to the original as possible, for it illustrates how the code was used in practice.
 
 This guide was written for users with little acquaintance with Linux. That is why there are so many comments about linux commands and their use throughout the text.
 
@@ -36,6 +36,8 @@ The machines in which we’ll run the pipeline to do data “checks” and “an
 * MSSLAP
 * MSSLAN
 * MSSLAO
+
+Update: there are faster machines to run the code now. Ask MSSL IT about that.
 
 To ssh any of them do, from a terminal:
 
@@ -103,6 +105,9 @@ Now we see (vison) preceeding the bash prompt. This indicates we’re within the
 
 
 This indicates both that the command “vison_run” which executes the pipeline is accessible, and that we’re using the pipeline installed in euclid_caldata06/data06/SOFTWARE_LITE, as we should.
+
+
+Note: the copy of the pipeline may need an update in SOFTWARE_LITE. Check the version of the pipeline you're using before proceeding. You can do this by running the command "vison -h" which will report some help and the vison version you're running (run the command with the conda 'vison' environment activated, of course).
 
 
 Data Checks / Analysis Work Environment Setup
@@ -211,7 +216,7 @@ In this section we describe the work-flow of operations for those doing the foll
 * Doing the data-acquisition monitoring in real-time (using eyegore).
 * Doing the analysis (using vison_run).
 
-These activities should be assigned to different roles/persons, and formally the are. But because in practice, they are usually done by the same person, and regardless of this, they are so closely related, we’ll present them together and interleaved, as they are in practice.
+These activities should be assigned to different roles/persons, and formally they are. But because in practice, they are usually done by the same person, and regardless of this, they are so closely related, we’ll present them together and interleaved.
 
 WRITING SCRIPTS / SESSIONS
 --------------------------
@@ -464,7 +469,6 @@ The most delicate and complicated part of running the pipeline is editing the co
 To execute the pipeline we’ll use the command “**vison_run**”, with a number of options, like for example:
 
 ::
-
     (vison) bash$ vison_run vison_run -y vison_config_BLOCK_MMM19.py -R DNN -l -t _DNN -m 6
 
 
@@ -1294,10 +1298,12 @@ Now we can and will run the pipeline in “wait” mode, using the configuration
     (vison) bash-4.2$ vison_run -y vison_config_NOSTROMO_APR19.py -R D00 -d ../atCALDATA/data/12_Mar_19/ -v 7.5.X -W -l -m 6 -t _D00
 
 **Reminders**:
+
 * We’re telling the pipeline on session D00 (-R D00).
 * We’re telling the pipeline where to look for the data in the command line (-d ../atCALDATA/data/12_Mar_19/).
 * We’re running in “Wait” mode (-W).
 * We’re using multithreading (to 6 cores, -m 6).
+
 
 The output pipeline log will be named something like: Calib_FM20190401_141840_D00.log.
 
