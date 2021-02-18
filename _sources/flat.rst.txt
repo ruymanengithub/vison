@@ -19,7 +19,7 @@ FlatTask.py
 FlatFielding.py
 ---------------
 
-.. automodule:: vison.pipe.FlatFielding
+.. automodule:: vison.flat.FlatFielding
         :members:
 
 nl.py

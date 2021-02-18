@@ -1227,7 +1227,7 @@ First we move to the ANALYSIS subfolder we created above:
 Then we copy the template analysis input script from the templates and rename it:
 
 ::
-    (vison) bash-4.2$ cp /disk/euclid_caldata06/data06/SOFTWARE_LITE/TEMPLATES_CALCAMP/ANALYSIS/vison_config_BLOCK_MMM19.py .
+    (vison) bash-4.2$ cp /disk/euclid_caldata06/data06/ \SOFTWARE_LITE/TEMPLATES_CALCAMP/ANALYSIS/vison_config_BLOCK_MMM19.py .
     (vison) bash-4.2$ mv vison_config_BLOCK_MMM19.py vison_config_NOSTROMO_APR19.py     
 
 
