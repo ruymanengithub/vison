@@ -1585,7 +1585,7 @@ PRACTICAL CASE: Running the pipeline in "FPA" mode
 ==================================================
 
 
-It isn't properly documented (even worse than the rest... go figure!), but the pipeline can also be used to analyse image data from the system, in LE1 FITS format (MEFs with an extension per quadrant). See :ref:`fpa-tests`.
+It isn't properly documented (even worse than the rest... go figure!), but the pipeline can also be used to analyse image data from the system, in LE1 FITS format (MEFs with an extension per quadrant). See :ref:`datamodel_fpa-tests`.
 
 By now, the analysis capabilities of this type are very limited, and basically aimed to the type of tests that were possible during the ambient and TVAC testing of the FPA at CEA in late 2019. This meant only acquiring data in darkness, without optical stimulation.
 
