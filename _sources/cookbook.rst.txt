@@ -1600,8 +1600,9 @@ We have put a copy of part of the data from the CEA FPA campaign at:
 
 In fact, we have put there some other things as well, let's see the contents and what is what:
 
-.. figure:: figs/cookbook/cookbook_fpa_1.png
+.. figure:: figs/cookbook/cookbookfpa_1.png
     :align: center
+
 
 #. The **data** is in data/05_12_19/
     #. the decompr_log_*txt files are logs from the decompressor.
@@ -1623,5 +1624,7 @@ $ vison_run -F -y vison_config_CEAFPA_DEC19.py -R D21 -t _D21 -l -g -m 6 -C -i
 
 And here the key is the **"-F"** option, that calls for execution in FPA mode.
 
-Now let's have a look at the template configuration file and how we must fill it up:
+Now let's have a look at the template configuration file and how we must fill it up. You'll notice the structure of this file is very similar to the one we used to analyse data at block level.
+
+
 
