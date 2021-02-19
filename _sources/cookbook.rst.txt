@@ -1228,7 +1228,7 @@ Then we copy the template analysis input script from the templates and rename it
 
 ::
 
-    $ cp /disk/euclid_caldata06/data06/ \SOFTWARE_LITE/TEMPLATES_CALCAMP/ANALYSIS/vison_config_BLOCK_MMM19.py .
+    $ cp /disk/euclid_caldata06/data06/SOFTWARE_LITE/TEMPLATES_CALCAMP/ANALYSIS/vison_config_BLOCK_MMM19.py .
     $ mv vison_config_BLOCK_MMM19.py vison_config_NOSTROMO_APR19.py     
 
 
@@ -1580,4 +1580,10 @@ After we’ve done this, the D11 sub-folder is significantly lighter. There’s 
 
 
 
+
+PRACTICAL CASE: Running the pipeline in "FPA" mode
+==================================================
+
+
+It isn't properly documented (even worse than the rest... go figure!), but the pipeline can also be used to analyse image data from the system, in LE1 FITS format (MEFs with an extension per quadrant). See :ref:`fpa-tests`.
 
