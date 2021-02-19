@@ -66,7 +66,7 @@ EXPLOGtools.py
 fpa_dm.py
 ---------
 
-.. _fpa_dm.py:
+.. _fpa_dm:
 
 .. automodule:: vison.datamodel.fpa_dm
     :members:
