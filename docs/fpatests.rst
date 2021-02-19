@@ -1,3 +1,5 @@
+.. _fpa-tests:
+
 FPA Tests
 =========
 
