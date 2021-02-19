@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 
-FPA Data Model(s).
+FPA Data Model.
+LE1 FITS files.
 
 Created on Thu Aug  1 17:05:12 2019
 
