@@ -1626,5 +1626,15 @@ And here the key is the **"-F"** option, that calls for execution in FPA mode.
 
 Now let's have a look at the template configuration file and how we must fill it up. You'll notice the structure of this file is very similar to the one we used to analyse data at block level.
 
+.. figure:: figs/cookbook/cookbookfpa_2.png
+    :align: center
+
+
+
+.. figure:: figs/cookbook/cookbookfpa_3.png
+    :align: center
+
+.. figure:: figs/cookbook/cookbookfpa_4.png
+    :align: center
 
 

@@ -69,7 +69,11 @@ EXThdr_dict['INSTRUME'] = 'EUCLID-VIS'
 
 
 class FPA_LE1(object):
-    """ """
+    """Class for LE1 fits files built from system-level image data (whole FPA).
+
+    This class relies on ccdobj instances to do analysis of the images (one CCD at a time).
+
+    """
 
     Quads = ['E', 'F', 'G', 'H']
 
@@ -89,14 +93,14 @@ class FPA_LE1(object):
         self.fillval = 0
 
     def add_extension(self, data, header, label=None, headerdict=None):
-        """ """
+        """Adds an extension."""
         if data is not None:
             assert data.shape == self.Qshape
 
         self.extensions.append(ccdmod.Extension(data, header, label, headerdict))
 
     def set_extension(self, iext, data, header, label=None, headerdict=None):
-        """ """
+        """Changes the contents of an extension."""
         if data is not None:
             assert data.shape == self.Qshape
 
@@ -104,11 +108,11 @@ class FPA_LE1(object):
 
 
     def del_extension(self, ixextension):
-        """ """
+        """Deletes an extension."""
         self.extensions.pop(ixextension)
 
     def initialise_as_blank(self, fillval=None):
-        """ """
+        """Initialises object as a blank (filled with 'fillval') image of the FPA."""
 
         if fillval is None:
             fillval = self.fillval
@@ -133,7 +137,6 @@ class FPA_LE1(object):
             self.extnames.append(None)
 
     def loadfromFITS(self, infits):
-        """ """
         """Loads contents of self from a FITS file."""
 
         hdulist = fts.open(infits)
@@ -165,7 +168,7 @@ class FPA_LE1(object):
         hdulist.close()
 
     def savetoFITS(self, outfits, clobber=True, unsigned16bit=False):
-        """ """
+        """Dumps self to a FITS file."""
 
         prihdr = self.extensions[0].header
 
@@ -194,8 +197,14 @@ class FPA_LE1(object):
 
     def get_CCDID_from_BLCCD(self, BLOCK, CCD):
         """
-        BLOCK: block nickname (e.g. 'CURIE')
-        CCDk: 'CCD1', 'CCD2' or 'CCD3'
+
+        Retrieves CCD ID (e.g. C_11) given BLOCK name and CCD in block.
+
+        Parameters
+        ----------
+
+            :param BLOCK: block nickname (e.g. 'CURIE')
+            :param CCD: 1, 2 or 3
 
         """
 
@@ -203,8 +212,13 @@ class FPA_LE1(object):
 
     def get_extid(self, CCDID, Q):
         """
-        CCDID: e.g. 'C_11'
-        Q: 'E', 'F', 'G' or 'H'
+        Retrieves extension ID given CCDID and quadrant.
+        
+        Parameters
+        ----------
+
+            :param CCDID: e.g. 'C_11'
+            :param Q: 'E', 'F', 'G' or 'H'
 
         """
 
@@ -218,7 +232,7 @@ class FPA_LE1(object):
         return None
 
     def get_ccdobj(self, CCDID):
-        """Returns a CCD Object given a CCDID."""
+        """Returns a CCD Object given a CCDID"""
 
         ccdobj = ccdmod.CCD(withpover=True, overscan=29)
 
@@ -241,13 +255,17 @@ class FPA_LE1(object):
         return ccdobj
 
     def _padd_extra_soverscan(self, Qdata):
-        """ """
+        """Padds extra serial overscan with self.fillval. 
+
+        Used when building synthetic data of LE1 format using as input 
+        images from the VGCC that only have 20 columns of serial 
+        overscan (FPA images have 29)."""
         pQdata = np.zeros((self.QNAXIS1, self.QNAXIS2), dtype=Qdata.dtype)+self.fillval
         pQdata[0:Qdata.shape[0], 0:Qdata.shape[1]] = Qdata.copy()
         return pQdata
 
     def set_ccdobj(self, ccdobj, CCDID, inextension=-1):
-        """ """
+        """Sets the image contents of input ccdobj to the image in self, at CCDID."""
 
         for Q in self.Quads:
 
@@ -276,7 +294,7 @@ class FPA_LE1(object):
         raise NotImplementedError("child class implements abstract method")
 
     def simul(self, simputs=None, zerofirst=False):
-        """ """
+        """Accessory function to simulate FPA images."""
 
         for jY in range(1, self.fpamodel.NSLICES + 1):
             for iX in range(1, self.fpamodel.NSLICES + 1):
@@ -292,7 +310,7 @@ class FPA_LE1(object):
                 self.set_ccdobj(kccdobj, CCDID, inextension=-1)
 
     def apply_function_to_ccds(self, ccdfunction, **kwargs):
-        """ """
+        """Applies a function to each CCD in self."""
 
         for jY in range(1, self.fpamodel.NSLICES + 1):
             for iX in range(1, self.fpamodel.NSLICES + 1):
