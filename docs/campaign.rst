@@ -11,10 +11,10 @@ campaign.py
     :members:
 
 
+.. _CEAFPAcampaign:
+
 CEAFPAcampaign.py
 -----------------
-
-.. _CEAFPAcampaign:
 
 .. automodule:: vison.campaign.CEAFPAcampaign
     :members:

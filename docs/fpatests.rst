@@ -7,7 +7,7 @@ FPA Tests
 
 These are tests made at FPA level, instead of block-level. The core of this is the data models in:
 
-#. :ref:`fpa_dm.py`
+#. :ref:`datamodel_fpa_dm`
 #. vison/fpa/fpa.py
 
 There are only a few tests defined (they are defined in :ref:`CEAFPAcampaign`), all for **single images**:
