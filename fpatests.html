@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FPA Tests &#8212; vison v1.1+16.g5694cdf documentation</title>
+    <title>FPA Tests &#8212; vison v1.1+17.gaa8f2e0 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="flat.html" title="“Flat” Acq. Analysis Tools"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison v1.1+16.g5694cdf documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison v1.1+17.gaa8f2e0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">FPA Tests</a></li> 
       </ul>
     </div>  
@@ -47,7 +47,22 @@
             
   <div class="section" id="fpa-tests">
 <span id="id1"></span><h1>FPA Tests<a class="headerlink" href="#fpa-tests" title="Permalink to this headline">¶</a></h1>
-<p>These are tests made at FPA level, instead of block-level.</p>
+<p>These are tests made at FPA level, instead of block-level. The core of this is the data models in:</p>
+<ol class="arabic simple">
+<li><p><span class="xref std std-ref">fpa_dm.py</span></p></li>
+<li><p>vison/fpa/fpa.py</p></li>
+</ol>
+<p>There are only a few tests defined (they are defined in <span class="xref std std-ref">CEAFPAcampaign</span>), all for <strong>single images</strong>:</p>
+<ol class="arabic simple">
+<li><p>FWD_WARM: forward acquisition in warm. Analysis of dark current ramps.</p></li>
+<li><p>CHINJ: basic test of charge injection (in cold).</p></li>
+<li><p>DARK: basic test of a long exposure dark, in cold.</p></li>
+<li><p>BIAS_RWDVS_WARM: for bias frames acquired in warm, with back clocking in vertical and serial (RWDVS).</p></li>
+<li><p>BIAS_RWDV_WARM: for bias frames acquired in warm, with back clocking only in vertical direction (RWDV).</p></li>
+<li><p>BIAS_RWDVS_COLD: same as BIAS_RWDVS_WARM but for detectors in cold.</p></li>
+<li><p>BIAS_RWDV_WARM: same as BIAS_RWDV_WARM but for detectors in cold.</p></li>
+<li><p>BIAS_FWD_COLD: for bias frames acquired in cold, forward clocking.</p></li>
+</ol>
 <div class="section" id="module-vison.fpatests.fpamaster">
 <span id="fpamaster-py"></span><h2>fpamaster.py<a class="headerlink" href="#module-vison.fpatests.fpamaster" title="Permalink to this headline">¶</a></h2>
 <p>Pipelining for FPA analysis.</p>
@@ -204,7 +219,7 @@ date-folders.</p>
         <li class="right" >
           <a href="flat.html" title="“Flat” Acq. Analysis Tools"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">vison v1.1+16.g5694cdf documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">vison v1.1+17.gaa8f2e0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">FPA Tests</a></li> 
       </ul>
     </div>

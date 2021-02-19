@@ -14,6 +14,8 @@ campaign.py
 CEAFPAcampaign.py
 -----------------
 
+.. _CEAFPAcampaign:
+
 .. automodule:: vison.campaign.CEAFPAcampaign
     :members:
     
